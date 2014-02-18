@@ -1,0 +1,802 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1057</width>
+    <height>688</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="sizeIncrement">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>openIndy</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../res/res.qrc">
+    <normaloff>:/Images/icons/openIndy.png</normaloff>:/Images/icons/openIndy.png</iconset>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <widget class="QLabel" name="label_CoordSystem">
+        <property name="text">
+         <string>active coordinate system: </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBox_activeCoordSystem"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="tabWidget_views">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="sizeIncrement">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="table">
+       <attribute name="title">
+        <string>table</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QTableView" name="tableView_data">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-image: url(:/Images/icons/openIndy_bg.png);
+border-color: rgb(170, 170, 127);
+gridline-color: rgb(170, 170, 127);
+background-repeat: no-repeat;
+background-position: center center;</string>
+          </property>
+          <property name="showGrid">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="graphic">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <attribute name="title">
+        <string>graphic</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0,4">
+          <item>
+           <widget class="QTreeView" name="treeView_featureOverview"/>
+          </item>
+          <item>
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="GLWidget" name="widget_graphics" native="true"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_trafoParam">
+       <attribute name="title">
+        <string>transformation parameter</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QTableView" name="tableView_trafoParam"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1057</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>import</string>
+     </property>
+     <addaction name="actionProject"/>
+     <addaction name="separator"/>
+     <addaction name="actionNominal_geometry"/>
+    </widget>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_as"/>
+    <addaction name="actionClose"/>
+    <addaction name="menuImport"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionShow_help"/>
+   </widget>
+   <widget class="QMenu" name="menuSensor">
+    <property name="title">
+     <string>Station</string>
+    </property>
+    <addaction name="actionCreate_station"/>
+    <addaction name="actionSet_instrument"/>
+    <addaction name="actionMeasurement_Configuration"/>
+    <addaction name="actionActivate_station"/>
+   </widget>
+   <widget class="QMenu" name="menuFunctions">
+    <property name="title">
+     <string>Function</string>
+    </property>
+    <addaction name="actionSet_function"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionControl_pad"/>
+    <addaction name="actionWatch_window"/>
+    <addaction name="actionConsole"/>
+    <addaction name="actionShow_hide_feature_toolbar"/>
+   </widget>
+   <widget class="QMenu" name="menuPlugins">
+    <property name="title">
+     <string>Plugin</string>
+    </property>
+    <addaction name="actionLoad_plugins"/>
+   </widget>
+   <widget class="QMenu" name="menuFeatures">
+    <property name="title">
+     <string>Features</string>
+    </property>
+    <addaction name="actionCreate_point"/>
+    <addaction name="actionCreate_line"/>
+    <addaction name="actionCreate_plane"/>
+    <addaction name="actionCreate_sphere"/>
+    <addaction name="actionCreate_station"/>
+    <addaction name="actionCreate_coordinatesystem"/>
+    <addaction name="actionCreate_trafoParam"/>
+    <addaction name="actionCreate_cylinder"/>
+    <addaction name="actionCreate_scalar_entity"/>
+    <addaction name="actionCreate_cone"/>
+    <addaction name="actionCreate_ellipsoid"/>
+    <addaction name="actionCreate_hyperboloid"/>
+    <addaction name="actionCreate_paraboloid"/>
+    <addaction name="actionCreate_nurbs"/>
+    <addaction name="actionCreate_pointcloud"/>
+    <addaction name="actionCreate_circle"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionView_settings"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSensor"/>
+   <addaction name="menuFeatures"/>
+   <addaction name="menuFunctions"/>
+   <addaction name="menuPlugins"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="actionControl_pad"/>
+   <addaction name="actionMeasurement_Configuration"/>
+   <addaction name="actionSet_function"/>
+   <addaction name="actionWatch_window"/>
+   <addaction name="actionConsole"/>
+   <addaction name="actionShow_help"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolbarCreateFeature">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>CreateFeature</string>
+   </property>
+   <property name="toolTip">
+    <string>toolbar for creating new features</string>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomToolBarArea|Qt::RightToolBarArea|Qt::TopToolBarArea</set>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>true</bool>
+   </attribute>
+  </widget>
+  <widget class="QToolBar" name="toolBar_ControlPad">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="floatable">
+    <bool>true</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_Console">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="windowTitle">
+    <string>Console</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QListView" name="listView_Console">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="sizeIncrement">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Consolas</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="mouseTracking">
+        <bool>false</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::WheelFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(0, 0, 0);
+color: rgb(255, 255, 255);
+</string>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::MultiSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="movement">
+        <enum>QListView::Static</enum>
+       </property>
+       <property name="resizeMode">
+        <enum>QListView::Adjust</enum>
+       </property>
+       <property name="uniformItemSizes">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLineEdit" name="lineEdit_inputConsole"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_loadScript">
+         <property name="text">
+          <string>load script</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar_features">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>50</width>
+     <height>50</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>true</bool>
+   </attribute>
+   <addaction name="actionCreate_point"/>
+   <addaction name="actionCreate_line"/>
+   <addaction name="actionCreate_plane"/>
+   <addaction name="actionCreate_sphere"/>
+   <addaction name="actionCreate_station"/>
+   <addaction name="actionCreate_coordinatesystem"/>
+   <addaction name="actionCreate_trafoParam"/>
+   <addaction name="actionCreate_cylinder"/>
+   <addaction name="actionCreate_scalar_entity"/>
+   <addaction name="actionCreate_cone"/>
+   <addaction name="actionCreate_ellipsoid"/>
+   <addaction name="actionCreate_hyperboloid"/>
+   <addaction name="actionCreate_paraboloid"/>
+   <addaction name="actionCreate_nurbs"/>
+   <addaction name="actionCreate_pointcloud"/>
+   <addaction name="actionCreate_circle"/>
+  </widget>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/folder_open.png</normaloff>:/Images/icons/folder_open.png</iconset>
+   </property>
+   <property name="text">
+    <string>open project</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/cancel.png</normaloff>:/Images/icons/cancel.png</iconset>
+   </property>
+   <property name="text">
+    <string>close</string>
+   </property>
+  </action>
+  <action name="actionShow_help">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/info.png</normaloff>:/Images/icons/info.png</iconset>
+   </property>
+   <property name="text">
+    <string>show help</string>
+   </property>
+  </action>
+  <action name="actionControl_pad">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/sensorcontrol.png</normaloff>:/Images/icons/sensorcontrol.png</iconset>
+   </property>
+   <property name="text">
+    <string>sensor control</string>
+   </property>
+   <property name="toolTip">
+    <string>sensor control pad</string>
+   </property>
+  </action>
+  <action name="actionMeasurement_Configuration">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/measurementconfig.png</normaloff>:/Images/icons/measurementconfig.png</iconset>
+   </property>
+   <property name="text">
+    <string>measurement configuration</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;edit the measurement configuration of the current selected feature. The changes only belong to this feature. At creating new features you can set new measurement configurations for the new ones.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionWatch_window">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/watchwindow.png</normaloff>:/Images/icons/watchwindow.png</iconset>
+   </property>
+   <property name="text">
+    <string>watch window</string>
+   </property>
+  </action>
+  <action name="actionConsole">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/console.png</normaloff>:/Images/icons/console.png</iconset>
+   </property>
+   <property name="text">
+    <string>console</string>
+   </property>
+  </action>
+  <action name="actionLoad_plugins">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/loadPlugin.png</normaloff>:/Images/icons/loadPlugin.png</iconset>
+   </property>
+   <property name="text">
+    <string>load plugins</string>
+   </property>
+  </action>
+  <action name="actionCreate_point">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/point_5e8acf.png</normaloff>:/Images/icons/point_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create point</string>
+   </property>
+  </action>
+  <action name="actionCreate_line">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/line_5e8acf.png</normaloff>:/Images/icons/line_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create line</string>
+   </property>
+  </action>
+  <action name="actionCreate_plane">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/plane_5e8acf.png</normaloff>:/Images/icons/plane_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create plane</string>
+   </property>
+  </action>
+  <action name="actionCreate_sphere">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/sphere_5e8acf.png</normaloff>:/Images/icons/sphere_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create sphere</string>
+   </property>
+  </action>
+  <action name="actionCreate_station">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/station.png</normaloff>:/Images/icons/station.png</iconset>
+   </property>
+   <property name="text">
+    <string>create station</string>
+   </property>
+  </action>
+  <action name="actionCreate_coordinatesystem">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/coordinateSystem.png</normaloff>:/Images/icons/coordinateSystem.png</iconset>
+   </property>
+   <property name="text">
+    <string>create coordinatesystem</string>
+   </property>
+  </action>
+  <action name="actionShow_hide_feature_toolbar">
+   <property name="text">
+    <string>show/ hide feature toolbar</string>
+   </property>
+  </action>
+  <action name="actionSet_instrument">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/setInstrument.png</normaloff>:/Images/icons/setInstrument.png</iconset>
+   </property>
+   <property name="text">
+    <string>set instrument</string>
+   </property>
+  </action>
+  <action name="actionSet_function">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/function.png</normaloff>:/Images/icons/function.png</iconset>
+   </property>
+   <property name="text">
+    <string>set function</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/filesave.png</normaloff>:/Images/icons/filesave.png</iconset>
+   </property>
+   <property name="text">
+    <string>save</string>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/fileexport.png</normaloff>:/Images/icons/fileexport.png</iconset>
+   </property>
+   <property name="text">
+    <string>save as</string>
+   </property>
+  </action>
+  <action name="actionView_settings">
+   <property name="text">
+    <string>view settings</string>
+   </property>
+  </action>
+  <action name="actionCreate_scalar_entity">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/scalarEntities_5e8acf.png</normaloff>:/Images/icons/scalarEntities_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create scalar entity</string>
+   </property>
+  </action>
+  <action name="actionProject">
+   <property name="text">
+    <string>project</string>
+   </property>
+  </action>
+  <action name="actionNominal_geometry">
+   <property name="text">
+    <string>elements</string>
+   </property>
+  </action>
+  <action name="actionCreate_trafoParam">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/trafoParam.png</normaloff>:/Images/icons/trafoParam.png</iconset>
+   </property>
+   <property name="text">
+    <string>create transformation parameter</string>
+   </property>
+  </action>
+  <action name="actionActivate_station">
+   <property name="text">
+    <string>activate station</string>
+   </property>
+   <property name="toolTip">
+    <string>activates the current selected station and deactivates the old active station.</string>
+   </property>
+  </action>
+  <action name="actionCreate_cone">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/cone_5e8acf.png</normaloff>:/Images/icons/cone_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create cone</string>
+   </property>
+   <property name="toolTip">
+    <string>create cone</string>
+   </property>
+  </action>
+  <action name="actionCreate_cylinder">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/cylinder_5e8acf.png</normaloff>:/Images/icons/cylinder_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create cylinder</string>
+   </property>
+   <property name="toolTip">
+    <string>create cylinder</string>
+   </property>
+  </action>
+  <action name="actionCreate_ellipsoid">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/ellipse_5e8acf.png</normaloff>:/Images/icons/ellipse_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create ellipsoid</string>
+   </property>
+   <property name="toolTip">
+    <string>create ellipsoid</string>
+   </property>
+  </action>
+  <action name="actionCreate_hyperboloid">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/hyperboloid_5e8acf.png</normaloff>:/Images/icons/hyperboloid_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create hyperboloid</string>
+   </property>
+   <property name="toolTip">
+    <string>create hyperboloid</string>
+   </property>
+  </action>
+  <action name="actionCreate_paraboloid">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/paraboloid_5e8acf.png</normaloff>:/Images/icons/paraboloid_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create paraboloid</string>
+   </property>
+   <property name="toolTip">
+    <string>create paraboloid</string>
+   </property>
+  </action>
+  <action name="actionCreate_nurbs">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/nurbs_5e8acf.png</normaloff>:/Images/icons/nurbs_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create nurbs</string>
+   </property>
+   <property name="toolTip">
+    <string>create nurbs</string>
+   </property>
+  </action>
+  <action name="actionCreate_pointcloud">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/pointCloud_5e8acf.png</normaloff>:/Images/icons/pointCloud_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create pointcloud</string>
+   </property>
+   <property name="toolTip">
+    <string>create pointcloud</string>
+   </property>
+  </action>
+  <action name="actionCreate_circle">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/circle_5e8acf.png</normaloff>:/Images/icons/circle_5e8acf.png</iconset>
+   </property>
+   <property name="text">
+    <string>create circle</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>GLWidget</class>
+   <extends>QWidget</extends>
+   <header>glwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../res/res.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SensorPluginDialog</class>
+ <widget class="QDialog" name="SensorPluginDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>450</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>sensor</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_8">
+   <item>
+    <widget class="QTabWidget" name="tabWidget_options">
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <widget class="QWidget" name="tab_configs">
+      <attribute name="title">
+       <string>configs</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1">
+         <item>
+          <widget class="QLineEdit" name="lineEdit_configName"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_configName">
+           <property name="text">
+            <string>configuration name</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,1">
+         <item>
+          <widget class="QComboBox" name="comboBox_existingConfigs"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_existingconfigs">
+           <property name="text">
+            <string>existing configurations</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,1">
+         <item>
+          <widget class="QToolButton" name="toolButton_loadConfig">
+           <property name="text">
+            <string>load existing configuration</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton_saveConfig">
+           <property name="text">
+            <string>save configuration</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="plugin">
+      <attribute name="title">
+       <string>plugin</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QLabel" name="label_dialogName">
+             <property name="text">
+              <string>set up sensor for station</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <widget class="QLabel" name="label_availableSensorTypes">
+               <property name="text">
+                <string>available sensor types</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_availableSensorTypes"/>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QTableView" name="tableView_sensorPlugins"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_pluginDescription">
+         <property name="text">
+          <string>description:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="textBrowser_description"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="connection">
+      <attribute name="title">
+       <string>connection</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_22" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_typeOfConnection">
+           <property name="text">
+            <string>connection type</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_typeOfConnection"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_23" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_ip">
+           <property name="text">
+            <string>ip</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_ip"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_21" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_port">
+           <property name="text">
+            <string>port</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_port"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_comPort">
+           <property name="text">
+            <string>com port</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_comPort"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_baudRate">
+           <property name="text">
+            <string>baudrate</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_baudrate"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_18" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_databits">
+           <property name="text">
+            <string>databits</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_databits"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_17" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_flowControl">
+           <property name="text">
+            <string>flowcontrol</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_flowcontrol"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_16" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_parity">
+           <property name="text">
+            <string>parity</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_parity"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_stopBits">
+           <property name="text">
+            <string>stopbits</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_stopbits"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_accuracy">
+      <attribute name="title">
+       <string>accuracy</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_12">
+       <item>
+        <widget class="QToolBox" name="toolBox_accuracy">
+         <property name="currentIndex">
+          <number>3</number>
+         </property>
+         <widget class="QWidget" name="page_sigmaPolar">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>140</width>
+            <height>105</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>sigma polar</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
+             <item>
+              <widget class="QLineEdit" name="lineEdit_sigmaAzimuth"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_sigmaAzimuth">
+               <property name="text">
+                <string>sigma azimuth</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
+             <item>
+              <widget class="QLineEdit" name="lineEdit_sigmaZenith"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_sigmaZenith">
+               <property name="text">
+                <string>sigma zenith</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,1">
+             <item>
+              <widget class="QLineEdit" name="lineEdit_sigmaDistance"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_sigmaDistance">
+               <property name="text">
+                <string>sigma distance</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_sigmaCartesian">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>98</width>
+            <height>105</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>sigma cartesian</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,1">
+             <item>
+              <widget class="QLineEdit" name="lineEdit_sigmaX"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_sigmaX">
+               <property name="text">
+                <string>sigma X</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,1">
+             <item>
+              <widget class="QLineEdit" name="lineEdit_sigmaY"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_sigmaY">
+               <property name="text">
+                <string>sigma Y</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="1,1">
+             <item>
+              <widget class="QLineEdit" name="lineEdit_sigmaZ"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_sigmaZ">
+               <property name="text">
+                <string>sigma Z</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_sigmaTemperature">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>165</width>
+            <height>43</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>sigma temperature</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_10">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,1">
+             <item>
+              <widget class="QLineEdit" name="lineEdit_sigmaTemp"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_sigmaTemp">
+               <property name="text">
+                <string>sigma temperature</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_sigmaLevelMeasurement">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>460</width>
+            <height>209</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>sigma level measurement</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="1,1">
+             <item>
+              <widget class="QLineEdit" name="lineEdit_sigmaAngleXZ"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_sigmaAngleXZ">
+               <property name="text">
+                <string>sigma angle</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="1,1">
+             <item>
+              <widget class="QLineEdit" name="lineEdit_sigmaAngleYZ">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_sigmaAngleYZ">
+               <property name="text">
+                <string>sigma angle</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_sigmaUndefined">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>98</width>
+            <height>28</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>others</string>
+          </attribute>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_sensorConfiguration">
+      <attribute name="title">
+       <string>sensor configuration</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_ok">
+       <property name="text">
+        <string>ok</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_cancel">
+       <property name="text">
+        <string>cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

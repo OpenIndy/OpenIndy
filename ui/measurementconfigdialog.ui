@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MeasurementConfigDialog</class>
+ <widget class="QDialog" name="MeasurementConfigDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>measurement configuration</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,15,1">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1">
+     <item>
+      <widget class="QComboBox" name="comboBox_existingConfigs"/>
+     </item>
+     <item>
+      <widget class="QToolButton" name="toolButton_loadConfig">
+       <property name="text">
+        <string>load configuration</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>generally configuration</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
+        <item>
+         <widget class="QLineEdit" name="lineEdit_configName"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_configName">
+          <property name="text">
+           <string>configuration name</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1">
+        <item>
+         <widget class="QLineEdit" name="lineEdit_count"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_count">
+          <property name="text">
+           <string>number of measurements</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,1">
+        <item>
+         <widget class="QComboBox" name="comboBox_typeOfReading"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_typeOfReading">
+          <property name="text">
+           <string>type of Reading</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_fsbs">
+        <property name="text">
+         <string>two face measurement</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_distanceDependent">
+        <property name="text">
+         <string>distance dependent measurement</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,1">
+        <item>
+         <widget class="QLineEdit" name="lineEdit_distanceInterval"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_distanceInterval">
+          <property name="text">
+           <string>distance interval [m]</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_timeDependent">
+        <property name="text">
+         <string>time dependent measurement</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
+        <item>
+         <widget class="QLineEdit" name="lineEdit_timeInterval"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_timeInterval">
+          <property name="text">
+           <string>time interval [sec]</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1,1">
+     <item>
+      <widget class="QToolButton" name="toolButton_saveConfiguration">
+       <property name="text">
+        <string>save configuration</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_ok">
+       <property name="text">
+        <string>ok</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_cancel">
+       <property name="text">
+        <string>cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

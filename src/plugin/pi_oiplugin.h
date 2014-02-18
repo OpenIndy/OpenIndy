@@ -1,0 +1,27 @@
+#ifndef PI_OIPLUGIN_H
+#define PI_OIPLUGIN_H
+
+#include "function.h"
+#include "sensor.h"
+#include "pi_networkadjustment.h"
+
+class OiPlugin
+{
+
+public:
+    virtual ~OiPlugin(){}
+
+    virtual QList<Sensor*> createSensors() = 0;
+    virtual QList<Function*> createFunctions() = 0;
+    virtual QList<NetworkAdjustment*> createNetworkAdjustments() = 0;
+    virtual Sensor* createSensor(QString name) = 0;
+    virtual Function* createFunction(QString name) = 0;
+    virtual NetworkAdjustment* createNetworkAdjustment(QString name) = 0;
+
+};
+
+#define OiPlugin_iidd "de.openIndy.Plugin.v001"
+
+Q_DECLARE_INTERFACE(OiPlugin, OiPlugin_iidd)
+
+#endif // PI_OIPLUGIN_H
