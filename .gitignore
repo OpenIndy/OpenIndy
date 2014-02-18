@@ -7,8 +7,11 @@
 *.la
 *.lai
 *.so
-#*.dll
+*.dll
 *.dylib
+
+# directories
+bin/
 
 # Qt-es
 
