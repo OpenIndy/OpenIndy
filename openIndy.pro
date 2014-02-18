@@ -94,7 +94,7 @@ SOURCES += \
     ui/functionpluginloader.cpp \
     src/connectionconfig.cpp \
     ui/sensorinfodialog.cpp \
-    controller/featurewrapper.cpp \
+    src/featurewrapper.cpp \
     src/station.cpp \
     ui/glwidget.cpp \
     src/sensorconfiguration.cpp \
@@ -190,7 +190,7 @@ HEADERS  += \
     ui/functionpluginloader.h \
     src/connectionconfig.h \
     ui/sensorinfodialog.h \
-    controller/featurewrapper.h \
+    src/featurewrapper.h \
     src/station.h \
     ui/glwidget.h \
     src/sensorconfiguration.h \
