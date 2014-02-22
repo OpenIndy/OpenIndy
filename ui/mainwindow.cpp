@@ -1053,3 +1053,23 @@ void MainWindow::on_actionActivate_station_triggered()
         break;
     }
 }
+
+void MainWindow::on_actionShow_help_triggered()
+{
+#ifdef Q_OS_MAC
+QDir appDir(qApp->applicationDirPath());
+#endif
+
+
+#ifdef Q_OS_WIN
+QDir appDir(qApp->applicationDirPath());
+#endif
+
+#ifdef Q_OS_LINUX
+QDir appDir(qApp->applicationDirPath());
+#endif
+
+    QString guidePath = appDir.absolutePath();
+    guidePath.append("/doc/index.html");
+    QDesktopServices::openUrl(guidePath);
+}

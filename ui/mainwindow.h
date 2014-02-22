@@ -30,6 +30,8 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QSpinBox>
+#include <QDir>
+#include <QDesktopServices>
 
 #include <QMetaObject>
 #include <QMetaEnum>
@@ -71,8 +73,6 @@ public:
 
     importNominalGeometryDialog importNominalDialog;
     NominalDataDialog nominalDialog;
-
-
 
     //actions
     //create feature
@@ -227,6 +227,8 @@ private slots:
     void on_tableView_trafoParam_doubleClicked(const QModelIndex &index);
 
     void on_actionActivate_station_triggered();
+
+    void on_actionShow_help_triggered();
 
 private:
     Ui::MainWindow *ui;
