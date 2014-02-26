@@ -41,7 +41,7 @@ If using Mac OS:
 
 Default Plugin
 ---------------
-[Here](https://github.com/OpenIndy/OiDefaultPlugin) you can get the OpenIndy default plugin. After you've built the plugin you can embed it via the GUI (`Plugin -> load plugins`).
+You can find the default plugin under `plugins/OiDefaultPlugin`. After you've built the plugin you can embed it via the GUI (`Plugin -> load plugins`). Also you can find a template for a plugin in the folder, which you can copy and start developing your own plugin.
 
 
 
