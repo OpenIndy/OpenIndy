@@ -1,0 +1,16 @@
+{
+    "isOiPlugin": true,
+
+    "name"  : "OpenIndy Default Plugin",
+    "pluginVersion" : "0.0.1",
+    "author"  : "OpenIndyOrg",
+    "compiler" : "clang 64bit",
+    "operatingSystem" : "mac os",
+
+    "description" : "Plugin with many functions and sensors available as standard",
+
+    "dependencies" : false,
+    "libPaths" : [
+        { "name": "dependencies", "path": "app" }
+    ]
+}
