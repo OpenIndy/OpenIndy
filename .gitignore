@@ -14,7 +14,7 @@
 *.pdb
 
 # directories
-# bin/
+bin/
 
 # Qt-es
 
