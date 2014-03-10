@@ -3,8 +3,13 @@
 
 #include "oiexchangeinterface.h"
 
+/*!
+ * \brief The oiExchangeASCII class
+ * implements the oiExchangeInterface to import feature by ascii files
+ */
 class oiExchangeASCII: public oiExchangeInterface
 {
+
 public:
     oiExchangeASCII();
 
@@ -14,6 +19,7 @@ public:
     QList<Configuration::ElementTypes> getSupportedElements();
 
 private:
+    // private functions for importiing different element types
     bool importPoint(oiExchangeObject& data);
     bool importPlane(oiExchangeObject& data);
     bool importLine(oiExchangeObject& data);
