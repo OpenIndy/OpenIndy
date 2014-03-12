@@ -164,7 +164,7 @@ void LeicaTachymeter::sendCommandString(QString cmd){
 
      QString response = this->receive();
 
-     Console::addLine(response);
+     //Console::addLine(response);
 
     }
 

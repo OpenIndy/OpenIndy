@@ -2,7 +2,6 @@
 #define P_PROJECTINPLANE_H
 
 #include "pi_objecttransformation.h"
-#include "console.h"
 #include "point.h"
 #include "plane.h"
 #include "configuration.h"

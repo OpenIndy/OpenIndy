@@ -12,7 +12,6 @@ PluginMetaData* IntersectLinePlane::getMetaData(){
     metaData->description = QString("%1")
             .arg("This function calculates the intersection of a line with a plane.");
     metaData->iid = "de.openIndy.Plugin.Function.ConstructFunction.v001";
-    //...
     return metaData;
 }
 
@@ -56,7 +55,7 @@ bool IntersectLinePlane::exec(Point &p){
     if(this->isValid() && this->checkElementCount()){
         return this->setUpResult( p );
     }else{
-        Console::addLine("Not enough elements available for calculation");
+        this->writeToConsole("Not enough elements available for calculation");
         return false;
     }
 }

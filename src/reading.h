@@ -3,7 +3,6 @@
 
 #include <QDateTime>
 #include <QtCore/qmath.h>
-#include "console.h"
 #include "configuration.h"
 #include "oivec.h"
 

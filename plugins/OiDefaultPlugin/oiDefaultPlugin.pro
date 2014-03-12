@@ -56,7 +56,6 @@ INCLUDEPATH += $$PWD/lib/fitting/util
 SOURCES += p_factory.cpp \
     ../../src/configuration.cpp \
     ../../src/connectionconfig.cpp \
-    ../../src/console.cpp \
     ../../src/coordinatesystem.cpp \
     ../../src/feature.cpp \
     ../../src/function.cpp \
@@ -132,7 +131,6 @@ HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/oivec.h \
     ../../src/configuration.h \
     ../../src/connectionconfig.h \
-    ../../src/console.h \
     ../../src/coordinatesystem.h \
     ../../src/element.h \
     ../../src/feature.h \

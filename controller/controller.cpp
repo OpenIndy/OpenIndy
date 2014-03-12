@@ -486,6 +486,8 @@ void Controller::addFeature(int count, int featureType, QString name, bool actua
                 tmp->position->isSolved = true;
             }
 
+            connect(tmp, SIGNAL(sendToConsole(QString)), this, SLOT(printToConsole(QString)));
+
             FeatureWrapper *fw = new FeatureWrapper();
             fw->setStation(tmp);
 

@@ -13,7 +13,6 @@ PluginMetaData* BestFitLine::getMetaData(){
             .arg("This function calculates an adjusted line.")
             .arg("You can input as many observations as you want which are then used to find the best fit 3D line.");
     metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
-    //...
     return metaData;
 }
 
@@ -51,7 +50,7 @@ bool BestFitLine::exec(Line &l){
     if(this->isValid() && this->checkObservationCount()){
         return this->setUpResult( l );
     }else{
-        Console::addLine("Not enough observations available for calculation");
+        this->writeToConsole("Not enough observations available for calculation");
         return false;
     }
 }
@@ -71,10 +70,7 @@ bool BestFitLine::setUpResult(Line &line){
             n++;
         }
     }
-    qDebug() << "centroid count " << n;
-    qDebug() << "centroid " << centroid.getAt(1);
     centroid = centroid * (1.0/n);
-    qDebug() << "centroid " << centroid.getAt(1);
     //fill a matrix
     OiMat a = this->preCalc(centroid);
     OiMat ata = a.t() * a;

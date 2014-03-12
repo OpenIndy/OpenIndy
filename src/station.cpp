@@ -14,6 +14,8 @@ Station::Station(QString name)
 
     instrument = NULL;
     sensorPad = new SensorControl(this);
+    connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
+
     //InstrumentConfig = new SensorConfiguration; //TODO null pointer??
     InstrumentConfig = NULL;
 
@@ -227,4 +229,8 @@ QString Station::getDisplayStdDev() const{
     }else{
         return "-/-";
     }
+}
+
+void Station::writeToConsole(QString msg){
+    emit this->sendToConsole(msg);
 }

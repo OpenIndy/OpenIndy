@@ -6,13 +6,9 @@
 #include "connectionconfig.h"
 #include "station.h"
 #include "measurementconfig.h"
-
-
+#include "oiemitter.h"
 
 class Station;
-
-
-
 
 /*!
  * \brief The SensorControl class
@@ -38,6 +34,8 @@ public:
     bool isMoveRelativ;
     bool isMState;
     QString cmd;
+
+    OiEmitter& getOiEmitter();
 
 signals:
     void commandFinished(bool);
@@ -66,6 +64,7 @@ public slots:
 private:
     Station *myStation;
     QMutex locker;
+    OiEmitter myEmitter;
 
     void storeReadings(QList<Reading*>readings, Geometry* geom, bool isActiveCoordSys);
     void saveReading(Reading* r, Geometry* geom, bool isActiveCoordSys);
