@@ -2,8 +2,9 @@
 #include "ui_mainwindow.h"
 
 /*!
- * \brief MainWindow::MainWindow
- * Constructor of the MainWindow, which includes most of the connects between GUI elements, other dialogs and controller functions.
+ * \brief MainWindow constructor that most of initializing operations.
+ * most connects between gui elements and  controller class are implemented in this function.
+ * Also some initializations of models, dialogs and gui elements of the main view are made here.
  * \param parent
  */
 MainWindow::MainWindow(QWidget *parent) :
@@ -150,13 +151,19 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 /*!
- * \brief MainWindow::~MainWindow
+ * \brief MainWindow destructor
  */
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+/*!
+ * \brief ChangeCreateFeatureToolbar function enables or disables elements of the create feature toolbar dependend on the selected feature type.
+ * Only possible and relevant configurations and attributes can be set. The elements change on the fly by changing the
+ * selected feature type in the combobox.
+ * \param int i
+ */
 void MainWindow::ChangeCreateFeatureToolbar(int i)
 {
     this->checkBoxActualNominal->setChecked(false);
@@ -283,6 +290,10 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
     }
 }
 
+/*!
+ * \brief CheckBoxNominalToggled function enables or disables the combobox for nominal coordinate systems dependend on the state of the checkbox.
+ * \param toggled
+ */
 void MainWindow::CheckBoxNominalToggled(bool toggled)
 {
     if(toggled){
@@ -293,8 +304,8 @@ void MainWindow::CheckBoxNominalToggled(bool toggled)
 }
 
 /*!
- * \brief MainWindow::setupCreateFeature
- * This function creates and sets upp the create feature toolbar. With that toolbar you can create new features and set all needed
+ * \brief setupCreateFeature function creates and sets upp the create feature toolbar
+ * With that toolbar you can create new features and set all needed
  * information for that function.
  */
 void MainWindow::setupCreateFeature(){
@@ -344,8 +355,7 @@ void MainWindow::setupCreateFeature(){
 }
 
 /*!
- * \brief MainWindow::setupLaserTrackerPad
- * Adds all needed Widgets to the control pad, if the active sensor is a lasertracker.
+ * \brief setupLaserTrackerPad adds all needed Widgets to the control pad, if the active sensor is a lasertracker
  * With that label you can control the laser tracker and start measurements.
  */
 void MainWindow::setupLaserTrackerPad(){
@@ -376,8 +386,7 @@ void MainWindow::setupLaserTrackerPad(){
 }
 
 /*!
- * \brief MainWindow::setupTotalStationPad
- * Adds all needed Widgets to the control pad, if the active sensor is a totalstation.
+ * \brief setupTotalStationPad adds all needed Widgets to the control pad, if the active sensor is a totalstation
  * With that label you can control the totalstation and start measurements.
  */
 void MainWindow::setupTotalStationPad(){
@@ -398,7 +407,7 @@ void MainWindow::setupTotalStationPad(){
 }
 
 /*!
- * \brief MainWindow::on_lineEdit_inputConsole_returnPressed
+ * \brief displays the entered text in the console
  */
 void MainWindow::on_lineEdit_inputConsole_returnPressed()
 {
@@ -407,18 +416,18 @@ void MainWindow::on_lineEdit_inputConsole_returnPressed()
 }
 
 /*!
- * \brief MainWindow::sendCommand
+ * \brief sendCommand function sends the entered command to the controller class.
+ * There the command will be send to the active sensor that analyses and handles the command.
  */
 void MainWindow::sendCommand()
 {
     Console::addLine("test");
     emit sendCommandString(this->lineEditSendCommand->text());
-
 }
 
 /*!
- * \brief MainWindow::on_actionControl_pad_triggered
- * Sets the control pad visible or invisible. Also it calls the needed set up function to add all elements for the active sensor.
+ * \brief Sets the control pad visible or invisible
+ * Also it calls the needed set up function to add all elements for the active sensor.
  */
 void MainWindow::on_actionControl_pad_triggered()
 {
@@ -440,10 +449,10 @@ void MainWindow::on_actionControl_pad_triggered()
 }
 
 /*!
- * \brief save measurement configuration
- * Save it for selected feature, if the measurement configuration of an existing feature was edited.
+ * \brief save measurement configuration for selected feature, if the measurement configuration of an existing feature was edited
  * Else the configuration is saved in the controller for all following new features, that need a measurement configuration.
- * \param mC
+ * \param FeatureWrapper *af
+ * \param MeasurementConfig *mC
  */
 void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig *mC){
 
@@ -456,7 +465,6 @@ void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig *mC){
             this->control.activeFeature->getGeometry()->mConfig = *mC;
         }
     }
-
 }
 
 /*!
@@ -479,12 +487,10 @@ void MainWindow::on_actionMeasurement_Configuration_triggered()
 
         mConfigDialog.show();
     }
-
 }
 
 /*!
- * \brief MainWindow::on_actionConsole_triggered
- * Shows or hides the console.
+ * \brief Shows or hides the console
  */
 void MainWindow::on_actionConsole_triggered()
 {
@@ -496,8 +502,7 @@ void MainWindow::on_actionConsole_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionWatch_window_triggered
- * Opens the watch window and sets the station of the watchwindow to the active station.
+ * \brief Opens the watch window and sets the station of the watchwindow to the active station
  */
 void MainWindow::on_actionWatch_window_triggered()
 {
@@ -506,7 +511,7 @@ void MainWindow::on_actionWatch_window_triggered()
 }
 
 /*!
- * \brief MainWindow::initializeActions
+ * \brief initializeActions
  */
 void MainWindow::initializeActions(){
     //create feature actions
@@ -602,8 +607,7 @@ void MainWindow::initializeActions(){
 }
 
 /*!
- * \brief MainWindow::createFeature
- * Calls the add/ create feature function of the controller, and gives in the GUI set up information to that function.
+ * \brief createFeature aalls the add/ create feature function of the controller, and gives in the GUI set up information to that function
  */
 void MainWindow::createFeature(){
 
@@ -636,7 +640,7 @@ void MainWindow::createFeature(){
 }
 
 /*!
- * \brief MainWindow::on_actionLoad_plugins_triggered
+ * \brief displays the dialog to load a plugin
  */
 void MainWindow::on_actionLoad_plugins_triggered()
 {
@@ -644,7 +648,7 @@ void MainWindow::on_actionLoad_plugins_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionShow_hide_feature_toolbar_triggered
+ * \brief shows/ hides the create feature toolbar
  */
 void MainWindow::on_actionShow_hide_feature_toolbar_triggered()
 {
@@ -656,7 +660,7 @@ void MainWindow::on_actionShow_hide_feature_toolbar_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_point_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (point).
  */
 void MainWindow::on_actionCreate_point_triggered()
 {
@@ -665,7 +669,7 @@ void MainWindow::on_actionCreate_point_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_line_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (line).
  */
 void MainWindow::on_actionCreate_line_triggered()
 {
@@ -674,7 +678,7 @@ void MainWindow::on_actionCreate_line_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_plane_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (plane).
  */
 void MainWindow::on_actionCreate_plane_triggered()
 {
@@ -683,7 +687,7 @@ void MainWindow::on_actionCreate_plane_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_sphere_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (sphere).
  */
 void MainWindow::on_actionCreate_sphere_triggered()
 {
@@ -692,7 +696,7 @@ void MainWindow::on_actionCreate_sphere_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_cone_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (cone).
  */
 void MainWindow::on_actionCreate_cone_triggered()
 {
@@ -701,7 +705,7 @@ void MainWindow::on_actionCreate_cone_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_cylinder_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (cylinder).
  */
 void MainWindow::on_actionCreate_cylinder_triggered()
 {
@@ -710,7 +714,7 @@ void MainWindow::on_actionCreate_cylinder_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_ellipsoid_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (ellipsoid).
  */
 void MainWindow::on_actionCreate_ellipsoid_triggered()
 {
@@ -719,7 +723,7 @@ void MainWindow::on_actionCreate_ellipsoid_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_hyperboloid_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (hyperboloid).
  */
 void MainWindow::on_actionCreate_hyperboloid_triggered()
 {
@@ -728,7 +732,7 @@ void MainWindow::on_actionCreate_hyperboloid_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_paraboloid_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (paraboloid).
  */
 void MainWindow::on_actionCreate_paraboloid_triggered()
 {
@@ -737,7 +741,7 @@ void MainWindow::on_actionCreate_paraboloid_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_nurbs_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (nurbs).
  */
 void MainWindow::on_actionCreate_nurbs_triggered()
 {
@@ -746,7 +750,7 @@ void MainWindow::on_actionCreate_nurbs_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_pointcloud_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (pointcloud).
  */
 void MainWindow::on_actionCreate_pointcloud_triggered()
 {
@@ -755,7 +759,7 @@ void MainWindow::on_actionCreate_pointcloud_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_station_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (station).
  */
 void MainWindow::on_actionCreate_station_triggered()
 {
@@ -764,7 +768,7 @@ void MainWindow::on_actionCreate_station_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_coordinatesystem_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (coordinate system).
  */
 void MainWindow::on_actionCreate_coordinatesystem_triggered()
 {
@@ -773,7 +777,25 @@ void MainWindow::on_actionCreate_coordinatesystem_triggered()
 }
 
 /*!
- * \brief MainWindow::on_actionSet_instrument_triggered
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (transformation parameters)
+ */
+void MainWindow::on_actionCreate_trafoParam_triggered()
+{
+    emit sendFeatureType(Configuration::eTrafoParamFeature);
+    cFeatureDialog->show();
+}
+
+/*!
+ * \brief opens the dialog for creating a feature and emits the feature type that will be created (circle)
+ */
+void MainWindow::on_actionCreate_circle_triggered()
+{
+    emit sendFeatureType(Configuration::eCircleFeature);
+    cFeatureDialog->show();
+}
+
+/*!
+ * \brief set Instrument. Opens the dialog with all configurations for setting an instrument.
  */
 void MainWindow::on_actionSet_instrument_triggered()
 {
@@ -781,8 +803,9 @@ void MainWindow::on_actionSet_instrument_triggered()
 }
 
 /*!
- * \brief MainWindow::handleTableViewClicked
- * \param idx
+ * \brief handleTableViewClicked detects the current selected feature and sends it to the controller class.
+ * Also displays the measurement config of the feature on the fly, if the measurement config dialog is open.
+ * \param const QModelIndex &idx
  */
 void MainWindow::handleTableViewClicked(const QModelIndex &idx){
     if(this->selectedFeature != idx.row()){
@@ -818,7 +841,8 @@ void MainWindow::handleTableViewClicked(const QModelIndex &idx){
 }
 
 /*!
- * \brief MainWindow::on_actionSet_function_triggered
+ * \brief Opens the dialog for setting functions to a feature.
+ * Sets the plugins model and the function treeview model to the class.
  */
 void MainWindow::on_actionSet_function_triggered()
 {
@@ -835,7 +859,9 @@ void MainWindow::on_actionSet_function_triggered()
 }
 
 /*!
- * \brief MainWindow::openCreateFeatureMConfig
+ * \brief opens the measurement configuration dialog.
+ * Also the last configuration and the current active station is set to the class and with this the current active
+ * sensor for the supported reading types.
  */
 void MainWindow::openCreateFeatureMConfig(){
     emit sendConfig(this->control.lastmConfig);
@@ -843,6 +869,13 @@ void MainWindow::openCreateFeatureMConfig(){
     mConfigDialog.show();
 }
 
+/*!
+ * \brief double clicking the view opens a new dialog with specific information about the feature.
+ * If the feature is a nominal geometry the nominal dialog will appear where you can put in and/or change the values.
+ * If it´s not nominal and no coordinate system, the feature dialog will appear, where you can see the readings, observations,
+ * and function statistics of the feature. If it is a station you can additionally view and change the sensor configuration.
+ * \param const QModelIndex &idx
+ */
 void MainWindow::viewDoubleClicked(const QModelIndex &idx){
 
     if(this->control.activeFeature->getGeometry() != NULL &&
@@ -858,6 +891,9 @@ void MainWindow::viewDoubleClicked(const QModelIndex &idx){
     }
 }
 
+/*!
+ * \brief adds all coordinate systems to the coordinate system combobox.
+ */
 void MainWindow::fillCoordSysComboBox(){
 //TODO saubere lösung wäre vllt ein Model für die Combobox
     ui->comboBox_activeCoordSystem->clear();
@@ -880,6 +916,9 @@ void MainWindow::fillCoordSysComboBox(){
     }
 }
 
+/*!
+ * \brief setUpStatusBar displays the current unit settings in the mainwindow status bar.
+ */
 void MainWindow::setUpStatusBar(){
 
     QString statusText = "";
@@ -920,16 +959,25 @@ void MainWindow::setUpStatusBar(){
     ui->statusBar->showMessage(statusText,0);
 }
 
+/*!
+ * \brief shows the settings dialog
+ */
 void MainWindow::on_actionView_settings_triggered()
 {
     setUpDialog.show();
 }
 
+/*!
+ * \brief shows the dialog for creating scalar entities
+ */
 void MainWindow::on_actionCreate_scalar_entity_triggered()
 {
     sEntityDialog->show();
 }
 
+/*!
+ * \brief opens the import dialog for nominal features and sets all coordinate systems for the dialog.
+ */
 void MainWindow::on_actionNominal_geometry_triggered()
 {
     importNominalDialog.setUpCoordinateSystems(control.coordSys);
@@ -937,17 +985,17 @@ void MainWindow::on_actionNominal_geometry_triggered()
     importNominalDialog.show();
 }
 
+/*!
+ * \brief getActiveCoordSystem
+ * \param coordSys
+ */
 void MainWindow::getActiveCoordSystem(QString coordSys){
     emit sendActiveCoordSystem(ui->comboBox_activeCoordSystem->currentText());
 }
 
-void MainWindow::on_actionCreate_trafoParam_triggered()
-{
-    emit sendFeatureType(Configuration::eTrafoParamFeature);
-    //cFeatureDialog.features = this->control.features;
-    cFeatureDialog->show();
-}
-
+/*!
+ * \brief saves the current job
+ */
 void MainWindow::on_actionSave_as_triggered()
 {
 
@@ -979,11 +1027,17 @@ void MainWindow::on_actionSave_as_triggered()
     }
 }
 
+/*!
+ * \brief changedStation makes some new connects after changing a station
+ */
 void MainWindow::changedStation(){
     connect(control.activeStation->sensorPad, SIGNAL(recalcFeature(Feature*)), &control, SLOT(recalcFeature(Feature*)));
     connect(control.activeStation,SIGNAL(actionFinished(bool)),&sInfoDialog,SLOT(hideInfo(bool)));
 }
 
+/*!
+ * \brief loads a job
+ */
 void MainWindow::on_actionOpen_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(
@@ -1013,11 +1067,10 @@ void MainWindow::on_actionOpen_triggered()
 
 }
 
-void MainWindow::on_actionCreate_circle_triggered()
-{
-    emit sendFeatureType(Configuration::eCircleFeature);
-    cFeatureDialog->show();
-}
+/*!
+ * \brief double clicking transformation parameters displays a dialog for editing the values of them
+ * \param const QModelIndex &index
+ */
 void MainWindow::on_tableView_trafoParam_doubleClicked(const QModelIndex &index)
 {
     trafoParamDialog.getSelectedTrafoParam(this->control.activeFeature);
@@ -1025,15 +1078,18 @@ void MainWindow::on_tableView_trafoParam_doubleClicked(const QModelIndex &index)
 }
 
 /*!
- * \brief MainWindow::showMessageBox
- * Show a messagebox with title and message
- * \param title
- * \param message
+ * \brief showMessageBox shows a messagebox with title and message
+ * used for signalizing sensor actions (e.g. measuring)
+ * \param QString title
+ * \param QString message
  */
 void MainWindow::showMessageBox(QString title, QString message){
     QMessageBox::information(NULL, title, message);
 }
 
+/*!
+ * \brief activates a station
+ */
 void MainWindow::on_actionActivate_station_triggered()
 {
     QMessageBox msgBox;

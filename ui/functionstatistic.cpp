@@ -1,11 +1,20 @@
 #include "functionstatistic.h"
 
+/*!
+ * \brief FunctionStatistic constructor
+ * \param parent
+ */
 FunctionStatistic::FunctionStatistic(QObject *parent ) :
     QAbstractTableModel(parent)
 {
     this->selectedFunction = NULL;
 }
 
+/*!
+ * \brief rowCount function for calculating the number of rows by checking the number of residuals of the function statistic object.
+ * \param parent
+ * \return
+ */
 int FunctionStatistic::rowCount(const QModelIndex &parent) const{
     if(this->selectedFunction != NULL){
         return this->selectedFunction->getStatistic().displayResiduals.size();
@@ -15,12 +24,23 @@ int FunctionStatistic::rowCount(const QModelIndex &parent) const{
 
 }
 
+/*!
+ * \brief columnCount function that returns the number of columns by checking the number of residual attibutes (e.g. vx vy vz)
+ * \param parent
+ * \return
+ */
 int FunctionStatistic::columnCount(const QModelIndex &parent) const{
 
     return this->residualName.size();
 
 }
 
+/*!
+ * \brief data function that displays the residual values for eacht residual.
+ * \param index
+ * \param role
+ * \return
+ */
 QVariant FunctionStatistic::data(const QModelIndex &index, int role) const{
 
     if(this->selectedFunction != NULL){
@@ -57,6 +77,13 @@ QVariant FunctionStatistic::data(const QModelIndex &index, int role) const{
     return QVariant();
 }
 
+/*!
+ * \brief headerData function for specifying the names of the columns.
+ * \param section
+ * \param orientation
+ * \param role
+ * \return
+ */
 QVariant FunctionStatistic::headerData(int section, Qt::Orientation orientation, int role) const{
 
     if(this->selectedFunction != NULL && residualName.size() > 0){
@@ -74,11 +101,17 @@ QVariant FunctionStatistic::headerData(int section, Qt::Orientation orientation,
     return QVariant();
 }
 
+/*!
+ * \brief updateModel updates the view on the fly.
+ */
 void FunctionStatistic::updateModel(){
     emit layoutAboutToBeChanged();
     emit layoutChanged();
 }
 
+/*!
+ * \brief getKeys function queries the names of the residual attributes (vx v vz) of the function statistic object.
+ */
 void FunctionStatistic::getKeys(){
 
     if(this->selectedFunction != NULL){
@@ -124,6 +157,10 @@ void FunctionStatistic::getKeys(){
     }
 }
 
+/*!
+ * \brief setFunction function sets the Function pointer of the class, clears all lists and calls getKeys and getIDs
+ * \param Function *f
+ */
 void FunctionStatistic::setFunction(Function *f){
     this->selectedFunction = f;
     this->residualName.clear();
@@ -133,6 +170,9 @@ void FunctionStatistic::setFunction(Function *f){
     this->getIDs();
 }
 
+/*!
+ * \brief getIDs querys the feature ids of the function by iterating the QMap getFeatureOrder
+ */
 void FunctionStatistic::getIDs(){
 
     if(this->selectedFunction != NULL){

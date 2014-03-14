@@ -1,12 +1,17 @@
 #include "featureovserviewproxymodel.h"
 
+/*!
+ * \brief FeatureOvserviewProxyModel constructor
+ * \param QList<FeatureWrapper*> &features
+ * \param parent
+ */
 FeatureOvserviewProxyModel::FeatureOvserviewProxyModel(QList<FeatureWrapper*> &features,QObject *parent) :
     QSortFilterProxyModel(parent),features(features)
 {
 }
 
 /*!
- * \brief FeatureOvserviewProxyModel::filterAcceptsRow
+ * \brief filterAcceptsRow function that filters all relevant feature types. Transformation parameters will not be displayed
  * \param source_row
  * \param source_parent
  * \return
@@ -21,7 +26,7 @@ bool FeatureOvserviewProxyModel::filterAcceptsRow(int source_row, const QModelIn
 }
 
 /*!
- * \brief FeatureOvserviewProxyModel::filterAcceptsColumn
+ * \brief filterAcceptsColumn function that filters all relevant attributes for the displayed feature types.
  * \param source_column
  * \param source_parent
  * \return
