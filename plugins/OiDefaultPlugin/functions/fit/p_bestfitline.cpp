@@ -10,7 +10,7 @@ PluginMetaData* BestFitLine::getMetaData(){
     metaData->pluginName = "OpenIndy Default Plugin";
     metaData->author = "br";
     metaData->description = QString("%1 %2")
-            .arg("This function calculates an adjusted line.")
+            .arg("This function calculates an adjusted line (Drixler).")
             .arg("You can input as many observations as you want which are then used to find the best fit 3D line.");
     metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
     return metaData;
@@ -70,7 +70,7 @@ bool BestFitLine::setUpResult(Line &line){
             n++;
         }
     }
-    centroid = centroid * (1.0/n);
+    centroid = centroid * (double)(1.0/n);
     //fill a matrix
     OiMat a = this->preCalc(centroid);
     OiMat ata = a.t() * a;

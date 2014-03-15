@@ -57,6 +57,12 @@ bool BestFitPlane2::exec(Plane &p){
             }
         }
 
+        for(int i = 0; i < 3; i++){
+            this->writeToConsole(QString("x: %1").arg(x[i]));
+            this->writeToConsole(QString("y: %1").arg(y[i]));
+            this->writeToConsole(QString("z: %1").arg(z[i]));
+        }
+
         //adjust
         double d;
         double n[3];

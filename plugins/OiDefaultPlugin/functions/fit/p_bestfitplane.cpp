@@ -10,7 +10,7 @@ PluginMetaData* BestFitPlane::getMetaData(){
     metaData->pluginName = "OpenIndy Default Plugin";
     metaData->author = "br";
     metaData->description = QString("%1 %2")
-            .arg("This function calculates an adjusted plane.")
+            .arg("This function calculates an adjusted plane (Drixler).")
             .arg("You can input as many observations as you want which are then used to find the best fit plane.");
     metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
     return metaData;
@@ -130,7 +130,7 @@ OiMat BestFitPlane::preCalc(){
             n++;
         }
     }
-    centroid = centroid * (1/n);
+    centroid = centroid * (double)(1.0/n);
     vector<OiVec> crCoord;
     foreach(Observation *obs, this->observations){
         if(obs->isValid){

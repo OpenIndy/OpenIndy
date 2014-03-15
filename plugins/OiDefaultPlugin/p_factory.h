@@ -38,6 +38,7 @@
 #include "p_translateByLine.h"
 #include "p_translateByPlane.h"
 #include "p_projectInPlane.h"
+#include "p_shiftplane.h"
 
 #include "p_helmert7Param.h"
 
