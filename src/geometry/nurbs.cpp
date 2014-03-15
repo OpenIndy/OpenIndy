@@ -22,3 +22,13 @@ Nurbs::Nurbs(const Nurbs &copy){
 void Nurbs::recalc(){
 
 }
+
+bool Nurbs::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+bool Nurbs::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}

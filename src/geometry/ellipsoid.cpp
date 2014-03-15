@@ -22,3 +22,13 @@ Ellipsoid::Ellipsoid(const Ellipsoid &copy){
 void Ellipsoid::recalc(){
 
 }
+
+bool Ellipsoid::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+bool Ellipsoid::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}

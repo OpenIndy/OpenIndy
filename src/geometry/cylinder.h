@@ -10,6 +10,9 @@ public:
     Cylinder(const Cylinder &copy);
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    bool fromOpenIndyXML(QXmlStreamReader& xml);
+
     //TODO implement cylinder
 };
 

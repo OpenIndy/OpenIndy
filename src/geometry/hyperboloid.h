@@ -10,6 +10,9 @@ public:
     Hyperboloid(const Hyperboloid &copy);
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    bool fromOpenIndyXML(QXmlStreamReader& xml);
+
     //TODO implement hyperboloid
 };
 

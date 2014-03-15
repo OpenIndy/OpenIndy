@@ -12,6 +12,9 @@ public:
 
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    bool fromOpenIndyXML(QXmlStreamReader& xml);
+
     double getTemperature() const;
     void setTemperature(double temperature);
 

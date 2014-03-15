@@ -34,6 +34,47 @@ QString CoordinateSystem::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");
 }
 
+bool CoordinateSystem::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    stream.writeStartElement("coordinatesystem");
+    stream.writeAttribute("id", QString::number(this->id));
+    stream.writeAttribute("name", this->name);
+    stream.writeAttribute("solved", QString::number(this->isSolved));
+
+
+        foreach (Observation *obs, this->observations) {
+            obs->writeProxyObservations(stream);
+        }
+
+        foreach (Geometry *geom, this->nominals) {
+
+                stream.writeStartElement("member");
+                stream.writeAttribute("type", "nominalGeometry");
+                stream.writeAttribute("ref", QString::number(geom->id));
+                stream.writeEndElement();
+
+        }
+
+        for(int k =0;k<this->trafoParams.size();k++){
+            stream.writeStartElement("member");
+            stream.writeAttribute("type", "transformationParameter");
+            stream.writeAttribute("ref", QString::number(this->trafoParams.at(k)->id));
+            stream.writeEndElement();
+        }
+
+        this->writeFeatureAttributes(stream);
+
+        stream.writeEndElement();
+
+
+    return true;
+}
+
+bool CoordinateSystem::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}
+
 /*!
  * \brief CoordinateSystem::transformObservations
  * \param to

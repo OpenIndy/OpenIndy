@@ -34,6 +34,8 @@ public:
 //method
     void insertReadingType(Configuration::ReadingTypes readingType, QString displayName);
 
+    virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
+    virtual bool fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
 };
 

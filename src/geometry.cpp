@@ -13,3 +13,10 @@ void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QStrin
         usedReadingTypes.insert(readingType,displayName);
     }
 }
+
+
+
+
+
+
+

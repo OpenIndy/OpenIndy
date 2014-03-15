@@ -64,6 +64,15 @@ bool oiProjectExchanger::saveProject(oiProjectData &data){
 
          oiProjectExchanger::stations.append(data.features.at(i));
 
+         FeatureWrapper* stationCoord = new FeatureWrapper;
+         FeatureWrapper* stationPosition = new FeatureWrapper;
+
+         stationCoord->setCoordinateSystem(data.features.at(i)->getStation()->coordSys);
+         stationPosition->setPoint(data.features.at(i)->getStation()->position);
+
+         oiProjectExchanger::coordSystems.append(stationCoord);
+         oiProjectExchanger::geometries.append(stationPosition);
+
       }else if(data.features.at(i)->getTrafoParam() != NULL){
 
          oiProjectExchanger::trafoParams.append(data.features.at(i));
@@ -71,11 +80,36 @@ bool oiProjectExchanger::saveProject(oiProjectData &data){
        }
     }
 
-    oiProjectExchanger::parseStationsToXML(stream);
-    oiProjectExchanger::parseCoordSysToXML(stream);
-    oiProjectExchanger::parseTrafoParamToXML(stream);
-    oiProjectExchanger::parseGeometryToXML(stream);
-    oiProjectExchanger::parseObservationToXML(stream);
+
+    //write stations to xml
+    foreach(FeatureWrapper* s, oiProjectExchanger::stations){
+        s->getStation()->toOpenIndyXML(stream);
+    }
+
+    //write coordnatesystem to xml
+    foreach(FeatureWrapper* c, oiProjectExchanger::coordSystems){
+        c->getCoordinateSystem()->toOpenIndyXML(stream);
+
+        //harvest all observations
+        foreach(Observation* obs, c->getCoordinateSystem()->observations){
+            oiProjectExchanger::observations.append(obs);
+        }
+    }
+
+    //write all trafoParam to xml
+    foreach(FeatureWrapper* t, oiProjectExchanger::trafoParams){
+        t->getTrafoParam()->toOpenIndyXML(stream);
+    }
+
+    //write all geometries to xml
+    foreach(FeatureWrapper* g, oiProjectExchanger::geometries){
+        g->getGeometry()->toOpenIndyXML(stream);
+    }
+
+    //write all observations to xml
+    foreach(Observation* o, oiProjectExchanger::observations){
+        o->toOpenIndyXML(stream);
+    }
 
     stream.writeEndElement();
     stream.writeEndDocument();
@@ -174,22 +208,13 @@ bool oiProjectExchanger::loadProject(oiProjectData &data){
     return false;
 }
 
-bool oiProjectExchanger::saveSensorConfig(QString name){
 
-
-    return false;
-}
 
 SensorConfiguration* oiProjectExchanger::loadSensorConfig(QString name){
 
     return NULL;
 }
 
-bool oiProjectExchanger::saveMeasurementConfig(QString name){
-
-
-    return false;
-}
 
 MeasurementConfig* oiProjectExchanger::loadMeasurementConfig(QString name){
 
@@ -202,512 +227,6 @@ bool oiProjectExchanger::saveSettings(QString name){
     return false;
 }
 
-bool oiProjectExchanger::parseCommonFeatureToXML(QXmlStreamWriter& stream, Feature *f){
-
-    for(int k =0;k<f ->usedFor.size();k++){
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "usedForFeature");
-        stream.writeAttribute("ref", QString::number(f->usedFor.at(k)->getFeature()->id));
-        stream.writeEndElement();
-    }
-
-    for(int k =0;k<f->previouslyNeeded.size();k++){
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "previouslyNeeded");
-        stream.writeAttribute("ref", QString::number(f->previouslyNeeded.at(k)->getFeature()->id));
-        stream.writeEndElement();
-    }
-
-    for(int k =0;k<f->functionList.size();k++){
-        stream.writeStartElement("function");
-        stream.writeAttribute("name", f->functionList.at(k)->getMetaData()->name);
-        stream.writeAttribute("plugin", f->functionList.at(k)->getMetaData()->pluginName);
-        stream.writeAttribute("executionIndex", QString::number(k));
-
-        QMapIterator<int, QList<InputFeature> > j(f->functionList.at(k)->getFeatureOrder());
-        while (j.hasNext()) {
-            j.next();
-
-            for(int m = 0; m < j.value().size();m++){
-                stream.writeStartElement("inputElement");
-                stream.writeAttribute("index", QString::number(j.key()));
-                int neededFeatureId = j.value().at(m).id;
-                stream.writeAttribute("type", QString::number( j.value().at(m).typeOfElement));
-                stream.writeAttribute("ref", QString::number(neededFeatureId));
-                stream.writeEndElement();
-            }
-
-
-        }
-
-        stream.writeEndElement();
-    }
-
-    return true;
-
-}
-
-bool oiProjectExchanger::saveProxyObservation(QXmlStreamWriter& stream,QList<Observation*> o){
-    for(int k =0;k<o.size();k++){
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "observation");
-        stream.writeAttribute("ref", QString::number(o.at(k)->id));
-        stream.writeEndElement();
-        if(!observations.contains(o.at(k))){
-            observations.append(o.at(k));
-        }
-     }
-    return true;
-}
-
-bool oiProjectExchanger::parseNominalGeometry(QXmlStreamWriter& stream,QList<Geometry*> g){
-
-    for(int k =0;k<g.size();k++){
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "nominalGeometry");
-        stream.writeAttribute("ref", QString::number(g.at(k)->id));
-        stream.writeEndElement();
-    }
-    return true;
-}
-
-bool oiProjectExchanger::parseStationsToXML(QXmlStreamWriter& stream){
-
-    for(int i = 0; i<oiProjectExchanger::stations.size();i++){
-
-        Station *s = oiProjectExchanger::stations.at(i)->getStation();
-
-        stream.writeStartElement("station");
-        stream.writeAttribute("id", QString::number(s->id));
-        stream.writeAttribute("name", s->name);
-
-        if(s->instrument != NULL){
-            stream.writeStartElement("sensor");
-            stream.writeAttribute("name",s->instrument->getMetaData()->name);
-            stream.writeAttribute("plugin", s->instrument->getMetaData()->pluginName);
-            stream.writeEndElement();
-        }
-
-        if(s->position != NULL){
-
-            stream.writeStartElement("member");
-            stream.writeAttribute("type", "position");
-            stream.writeAttribute("ref", QString::number(s->position->id));
-            stream.writeEndElement();
-
-            FeatureWrapper* tp = new FeatureWrapper();
-            tp->setPoint(s->position);
-
-            if(!geometries.contains(tp)){
-                geometries.append(tp);
-            }
-
-
-        }
-
-        if(s->coordSys != NULL){
-            stream.writeStartElement("member");
-            stream.writeAttribute("type", "coordinatesystem");
-            stream.writeAttribute("ref", QString::number(s->coordSys->id));
-            stream.writeEndElement();
-
-            FeatureWrapper* tp = new FeatureWrapper();
-            tp->setCoordinateSystem(s->coordSys);
-
-            if(!coordSystems.contains(tp)){
-                coordSystems.append(tp);
-            }
-
-        }
-
-        oiProjectExchanger::parseCommonFeatureToXML(stream,oiProjectExchanger::stations.at(i)->getFeature());
-
-        stream.writeEndElement();
-    }
-
-    return true;
-}
-
-
-bool oiProjectExchanger::parseCoordSysToXML(QXmlStreamWriter& stream){
-
-    for(int i = 0; i<coordSystems.size();i++){
-
-        CoordinateSystem *c = coordSystems.at(i)->getCoordinateSystem();
-
-        stream.writeStartElement("coordinatesystem");
-        stream.writeAttribute("id", QString::number(c->id));
-        stream.writeAttribute("name", c->name);
-        stream.writeAttribute("solved", QString::number(c->isSolved));
-
-            oiProjectExchanger::saveProxyObservation(stream,c->observations);
-
-            oiProjectExchanger::parseNominalGeometry(stream,c->nominals);
-
-            for(int k =0;k<c->trafoParams.size();k++){
-                stream.writeStartElement("member");
-                stream.writeAttribute("type", "transformationParameter");
-                stream.writeAttribute("ref", QString::number(c->trafoParams.at(k)->id));
-
-                FeatureWrapper* tp = new FeatureWrapper();
-                tp->setTrafoParam(c->trafoParams.at(k));
-
-                if(!trafoParams.contains(tp)){
-                    trafoParams.append(tp);
-                }
-
-                stream.writeEndElement();
-            }
-
-            oiProjectExchanger::parseCommonFeatureToXML(stream,oiProjectExchanger::coordSystems.at(i)->getFeature());
-
-            stream.writeEndElement();
-
-
-    }
-    return true;
-}
-
-bool oiProjectExchanger::parseTrafoParamToXML(QXmlStreamWriter& stream){
-
-    for(int i = 0; i<trafoParams.size();i++){
-
-        TrafoParam *t = trafoParams.at(i)->getTrafoParam();
-
-        stream.writeStartElement("transformationsparameter");
-        stream.writeAttribute("id", QString::number(t->id));
-        stream.writeAttribute("name", t->name);
-        stream.writeAttribute("solved", QString::number(t->isSolved));
-        stream.writeAttribute("tx", QString::number(t->translation.getAt(0)));
-        stream.writeAttribute("ty", QString::number(t->translation.getAt(1)));
-        stream.writeAttribute("tz", QString::number(t->translation.getAt(2)));
-        stream.writeAttribute("rx", QString::number(t->rotation.getAt(0)));
-        stream.writeAttribute("ry", QString::number(t->rotation.getAt(1)));
-        stream.writeAttribute("rz", QString::number(t->rotation.getAt(2)));
-        stream.writeAttribute("mx", QString::number(t->scale.getAt(0)));
-        stream.writeAttribute("my", QString::number(t->scale.getAt(1)));
-        stream.writeAttribute("mz", QString::number(t->scale.getAt(2)));
-
-
-        stream.writeStartElement("from");
-        stream.writeAttribute("type", "coordinatesystem");
-        stream.writeAttribute("ref", QString::number(t->from->id));
-        stream.writeEndElement();
-
-        stream.writeStartElement("to");
-        stream.writeAttribute("type", "coordinatesystem");
-        stream.writeAttribute("ref", QString::number(t->to->id));
-        stream.writeEndElement();
-
-
-        oiProjectExchanger::parseCommonFeatureToXML(stream,trafoParams.at(i)->getFeature());
-
-
-        stream.writeEndElement();
-
-
-    }
-    return true;
-}
-
-bool oiProjectExchanger::parseGeometryToXML(QXmlStreamWriter& stream){
-
-    for(int i = 0; i<geometries.size();i++){
-
-        Geometry *g = geometries.at(i)->getGeometry();
-
-        stream.writeStartElement("geometry");
-        stream.writeAttribute("id", QString::number(g->id));
-        stream.writeAttribute("name", g->name);
-        stream.writeAttribute("type", geometries.at(i)->returnFeatureType());
-        stream.writeAttribute("nominal",QString::number(g->isNominal));
-        stream.writeAttribute("common",QString::number(g->isCommon));
-        stream.writeAttribute("solved", QString::number(g->isSolved));
-
-
-        if(g->isSolved || g->isNominal){
-            if(geometries.at(i)->getPoint() != NULL){
-                stream.writeStartElement("coordinates");
-                stream.writeAttribute("x", QString::number(geometries.at(i)->getPoint()->xyz.getAt(0)));
-                stream.writeAttribute("y", QString::number(geometries.at(i)->getPoint()->xyz.getAt(1)));
-                stream.writeAttribute("z", QString::number(geometries.at(i)->getPoint()->xyz.getAt(2)));
-                stream.writeEndElement();
-
-                stream.writeStartElement("standardDeviation");
-                stream.writeAttribute("value", QString::number(geometries.at(i)->getPoint()->myStatistic.stdev));
-                stream.writeEndElement();
-            }else if(geometries.at(i)->getLine() != NULL){
-                stream.writeStartElement("coordinates");
-                stream.writeAttribute("x", QString::number(geometries.at(i)->getLine()->xyz.getAt(0)));
-                stream.writeAttribute("y", QString::number(geometries.at(i)->getLine()->xyz.getAt(1)));
-                stream.writeAttribute("z", QString::number(geometries.at(i)->getLine()->xyz.getAt(2)));
-                stream.writeEndElement();
-
-                stream.writeStartElement("spatialDirection");
-                stream.writeAttribute("i", QString::number(geometries.at(i)->getLine()->ijk.getAt(0)));
-                stream.writeAttribute("j", QString::number(geometries.at(i)->getLine()->ijk.getAt(1)));
-                stream.writeAttribute("k", QString::number(geometries.at(i)->getLine()->ijk.getAt(2)));
-                stream.writeEndElement();
-
-                stream.writeStartElement("standardDeviation");
-                stream.writeAttribute("value", QString::number(geometries.at(i)->getLine()->myStatistic.stdev));
-                stream.writeEndElement();
-            }else if(geometries.at(i)->getPlane() != NULL){
-                stream.writeStartElement("coordinates");
-                stream.writeAttribute("x", QString::number(geometries.at(i)->getPlane()->xyz.getAt(0)));
-                stream.writeAttribute("y", QString::number(geometries.at(i)->getPlane()->xyz.getAt(1)));
-                stream.writeAttribute("z", QString::number(geometries.at(i)->getPlane()->xyz.getAt(2)));
-                stream.writeEndElement();
-
-                stream.writeStartElement("spatialDirection");
-                stream.writeAttribute("i", QString::number(geometries.at(i)->getPlane()->ijk.getAt(0)));
-                stream.writeAttribute("j", QString::number(geometries.at(i)->getPlane()->ijk.getAt(1)));
-                stream.writeAttribute("k", QString::number(geometries.at(i)->getPlane()->ijk.getAt(2)));
-                stream.writeEndElement();
-
-                stream.writeStartElement("standardDeviation");
-                stream.writeAttribute("value", QString::number(geometries.at(i)->getPlane()->myStatistic.stdev));
-                stream.writeEndElement();
-
-            }else if(geometries.at(i)->getSphere() != NULL){
-
-                stream.writeStartElement("coordinates");
-                stream.writeAttribute("x", QString::number(geometries.at(i)->getSphere()->xyz.getAt(0)));
-                stream.writeAttribute("y", QString::number(geometries.at(i)->getSphere()->xyz.getAt(1)));
-                stream.writeAttribute("z", QString::number(geometries.at(i)->getSphere()->xyz.getAt(2)));
-                stream.writeEndElement();
-
-                stream.writeStartElement("radius");
-                stream.writeAttribute("value", QString::number(geometries.at(i)->getSphere()->radius));
-                stream.writeEndElement();
-
-                stream.writeStartElement("standardDeviation");
-                stream.writeAttribute("value", QString::number(geometries.at(i)->getSphere()->myStatistic.stdev));
-                stream.writeEndElement();
-
-            }else if (geometries.at(i)->getScalarEntityAngle() != NULL){
-
-                stream.writeStartElement("angle");
-                stream.writeAttribute("value", QString::number(geometries.at(i)->getScalarEntityAngle()->getAngle()));
-                stream.writeEndElement();
-
-                stream.writeStartElement("standardDeviation");
-                stream.writeAttribute("value", QString::number(geometries.at(i)->getScalarEntityAngle()->myStatistic.stdev));
-                stream.writeEndElement();
-
-            }else if (geometries.at(i)->getScalarEntityDistance() != NULL){
-
-                stream.writeStartElement("distance");
-                stream.writeAttribute("value", QString::number(geometries.at(i)->getScalarEntityDistance()->getDistance()));
-                stream.writeEndElement();
-
-                stream.writeStartElement("standardDeviation");
-                stream.writeAttribute("value", QString::number(geometries.at(i)->getScalarEntityDistance()->myStatistic.stdev));
-                stream.writeEndElement();
-
-            }
-        }
-
-
-        oiProjectExchanger::saveProxyObservation(stream,g->myObservations);
-
-        oiProjectExchanger::parseNominalGeometry(stream,g->nominals);
-
-        if(g->myNominalCoordSys != NULL){
-            stream.writeStartElement("member");
-            stream.writeAttribute("type", "coordinatesystem");
-            stream.writeAttribute("ref", QString::number(g->myNominalCoordSys->id));
-            stream.writeEndElement();
-        }
-
-        if(!g->isNominal){
-            stream.writeStartElement("measurementconfig");
-            stream.writeAttribute("name", g->mConfig.name);
-            stream.writeEndElement();
-        }
-
-       oiProjectExchanger::parseCommonFeatureToXML(stream,geometries.at(i)->getFeature());
-
-        stream.writeEndElement();
-    }
-    return true;
-}
-
-bool oiProjectExchanger::parseObservationToXML(QXmlStreamWriter& stream){
-
-    for (int i = 0; i < observations.size();i++){
-
-        stream.writeStartElement("observation");
-        stream.writeAttribute("id", QString::number(observations.at(i)->id));
-        stream.writeAttribute("x", QString::number(observations.at(i)->myXyz.getAt(0)));
-        stream.writeAttribute("y", QString::number(observations.at(i)->myXyz.getAt(1)));
-        stream.writeAttribute("z", QString::number(observations.at(i)->myXyz.getAt(2)));
-        stream.writeAttribute("isValid", QString::number(observations.at(i)->isValid));
-        stream.writeAttribute("sigmaX", QString::number(observations.at(i)->sigmaXyz.getAt(0)));
-        stream.writeAttribute("sigmaY", QString::number(observations.at(i)->sigmaXyz.getAt(1)));
-        stream.writeAttribute("sigmaZ", QString::number(observations.at(i)->sigmaXyz.getAt(2)));
-
-
-        if(observations.at(i)->myStation != NULL){
-            stream.writeStartElement("member");
-            stream.writeAttribute("type", "station");
-            stream.writeAttribute("ref", QString::number(observations.at(i)->myStation->id));
-            stream.writeEndElement();
-        }
-
-        if(observations.at(i)->myReading != NULL){
-            stream.writeStartElement("reading");
-            stream.writeAttribute("id",QString::number(observations.at(i)->myReading->id));
-            stream.writeAttribute("type",QString::number(observations.at(i)->myReading->typeofReading));
-
-            QString measuredAtTime = observations.at(i)->myReading->measuredAt.toString(Qt::ISODate);
-
-            switch(observations.at(i)->myReading->typeofReading){
-                case(Configuration::ePolar) :{
-
-                //get current date and time
-
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","azimuth");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rPolar.azimuth));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rPolar.sigmaAzimuth));
-                    stream.writeEndElement();
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","zenith");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rPolar.zenith));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rPolar.sigmaZenith));
-                    stream.writeEndElement();
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","distance");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rPolar.distance));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rPolar.sigmaDistance));
-                    stream.writeEndElement();
-
-
-                    break;
-                }
-                case(Configuration::eDistance) :{
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","distance");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rDistance.distance));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rDistance.sigmaDistance));
-                    stream.writeEndElement();
-
-                    break;
-                }
-                case(Configuration::eDirection) :{
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","azimuth");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rDirection.azimuth));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rDirection.sigmaAzimuth));
-                    stream.writeEndElement();
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","zenith");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rDirection.zenith));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rDirection.sigmaZenith));
-                    stream.writeEndElement();
-
-                    break;
-                }
-                case(Configuration::eCartesian) :{
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","x");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rCartesian.xyz.getAt(0)));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rCartesian.sigmaXyz.getAt(0)));
-                    stream.writeEndElement();
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","y");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rCartesian.xyz.getAt(1)));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rCartesian.sigmaXyz.getAt(1)));
-                    stream.writeEndElement();
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","z");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rCartesian.xyz.getAt(2)));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rCartesian.sigmaXyz.getAt(2)));
-                    stream.writeEndElement();
-
-
-                    break;
-                }
-                case(Configuration::eLevel) :{
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","angleXZ");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rLevel.angleXZ));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rLevel.sigmaAngleXZ));
-                    stream.writeEndElement();
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","angleYZ");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rLevel.angleYZ));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rLevel.sigmaAngleYZ));
-                    stream.writeEndElement();
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","diffXY");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rLevel.diffXY));
-                    stream.writeAttribute("sigma","-");
-                    stream.writeEndElement();
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type","diffXZ");
-                    stream.writeAttribute("value",QString::number(observations.at(i)->myReading->rLevel.diffXZ));
-                    stream.writeAttribute("sigma","-");
-                    stream.writeEndElement();
-
-
-                    break;
-            }
-            case(Configuration::eUndefined) :{
-
-                QMapIterator<QString, double > j(observations.at(i)->myReading->rUndefined.values);
-                while (j.hasNext()) {
-                    j.next();
-
-                    stream.writeStartElement("measurement");
-                    stream.writeAttribute("time",measuredAtTime);
-                    stream.writeAttribute("type",j.key());
-                    stream.writeAttribute("value",QString::number(j.value()));
-                    stream.writeAttribute("sigma",QString::number(observations.at(i)->myReading->rUndefined.sigmaValues.value(j.key())));
-                    stream.writeEndElement();
-
-                }
-
-                    break;
-            }
-            }
-
-            stream.writeEndElement();
-        }
-
-
-        stream.writeEndElement();
-
-    }
-    return true;
-}
 
 Observation* oiProjectExchanger::parseObservation(QXmlStreamReader& xml) {
 

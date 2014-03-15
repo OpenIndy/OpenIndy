@@ -128,6 +128,9 @@ private:
  public:
     void recalc();
 
+    virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
+    virtual bool fromOpenIndyXML(QXmlStreamReader& xml);
+
 };
 
 #endif // STATION_H

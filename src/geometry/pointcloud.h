@@ -15,6 +15,9 @@ public:
 
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    bool fromOpenIndyXML(QXmlStreamReader& xml);
+
     QString getX();
     QString getY();
     QString getZ();

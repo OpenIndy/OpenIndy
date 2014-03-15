@@ -38,6 +38,14 @@ public:
     //TODO myoriginal sigma für Drehung bei Transformation
 
 //methods
+    virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
+
+    virtual bool fromOpenIndyXML(QXmlStreamReader& xml);
+
+    bool writeProxyObservations(QXmlStreamWriter& stream);
+
+ private:
+    Reading* readReading(QXmlStreamReader& xml);
 };
 
 #endif // OBSERVATION_H

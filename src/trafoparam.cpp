@@ -97,6 +97,47 @@ void TrafoParam::generateHomogenMatrix()
     this->homogenMatrix = tmpTranslation*tmpScale*tmpRotation;
 }
 
+bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    stream.writeStartElement("transformationsparameter");
+    stream.writeAttribute("id", QString::number(this->id));
+    stream.writeAttribute("name", this->name);
+    stream.writeAttribute("solved", QString::number(this->isSolved));
+    stream.writeAttribute("tx", QString::number(this->translation.getAt(0)));
+    stream.writeAttribute("ty", QString::number(this->translation.getAt(1)));
+    stream.writeAttribute("tz", QString::number(this->translation.getAt(2)));
+    stream.writeAttribute("rx", QString::number(this->rotation.getAt(0)));
+    stream.writeAttribute("ry", QString::number(this->rotation.getAt(1)));
+    stream.writeAttribute("rz", QString::number(this->rotation.getAt(2)));
+    stream.writeAttribute("mx", QString::number(this->scale.getAt(0)));
+    stream.writeAttribute("my", QString::number(this->scale.getAt(1)));
+    stream.writeAttribute("mz", QString::number(this->scale.getAt(2)));
+
+
+    stream.writeStartElement("from");
+    stream.writeAttribute("type", "coordinatesystem");
+    stream.writeAttribute("ref", QString::number(this->from->id));
+    stream.writeEndElement();
+
+    stream.writeStartElement("to");
+    stream.writeAttribute("type", "coordinatesystem");
+    stream.writeAttribute("ref", QString::number(this->to->id));
+    stream.writeEndElement();
+
+
+    this->writeFeatureAttributes(stream);
+
+
+    stream.writeEndElement();
+
+    return true;
+}
+
+bool TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}
+
 QString TrafoParam::getDisplayStartSystem() const{
     return this->from->name;
 }

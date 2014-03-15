@@ -31,6 +31,16 @@ void ScalarEntityTemperature::recalc(){
     }
 }
 
+bool ScalarEntityTemperature::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+bool ScalarEntityTemperature::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}
+
 void ScalarEntityTemperature::setTemperature(double temperature){
     this->temperature = temperature;
 }

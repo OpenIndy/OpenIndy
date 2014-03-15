@@ -28,6 +28,9 @@ public:
     OiVec xyz;
     OiVec ijk;
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    bool fromOpenIndyXML(QXmlStreamReader& xml);
+
     void recalc();
 
     QString getDisplayX() const;

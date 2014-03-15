@@ -22,3 +22,13 @@ Cylinder::Cylinder(const Cylinder &copy){
 void Cylinder::recalc(){
 
 }
+
+bool Cylinder::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+bool Cylinder::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}

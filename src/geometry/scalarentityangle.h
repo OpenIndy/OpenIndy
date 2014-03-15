@@ -14,6 +14,9 @@ public:
 
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    bool fromOpenIndyXML(QXmlStreamReader& xml);
+
     double getAngle() const;
     void setAngle(double angle);
     void setAngle(OiVec direction1, OiVec direction2);

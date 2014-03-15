@@ -10,6 +10,9 @@ public:
     Cone(const Cone &copy);
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    bool fromOpenIndyXML(QXmlStreamReader& xml);
+
     //TODO implement cone
 };
 

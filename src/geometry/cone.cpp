@@ -22,3 +22,13 @@ Cone::Cone(const Cone &copy){
 void Cone::recalc(){
 
 }
+
+bool Cone::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+bool Cone::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}

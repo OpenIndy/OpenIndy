@@ -22,3 +22,13 @@ Circle::Circle(const Circle &copy){
 void Circle::recalc(){
 
 }
+
+bool Circle::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+bool Circle::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}

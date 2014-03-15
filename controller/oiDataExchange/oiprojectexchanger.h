@@ -45,16 +45,6 @@ private:
 
     static QList<int> stationElements;
 
-    //export functions
-    static bool parseCommonFeatureToXML(QXmlStreamWriter& stream, Feature *f);
-    static bool saveProxyObservation(QXmlStreamWriter& stream, QList<Observation*> o);
-    static bool parseNominalGeometry(QXmlStreamWriter& stream, QList<Geometry*> g);
-    static bool parseStationsToXML(QXmlStreamWriter& stream);
-    static bool parseCoordSysToXML(QXmlStreamWriter& stream);
-    static bool parseTrafoParamToXML(QXmlStreamWriter& stream);
-    static bool parseGeometryToXML(QXmlStreamWriter& stream);
-    static bool parseObservationToXML(QXmlStreamWriter& stream);
-
     //import functions
     static Observation* parseObservation(QXmlStreamReader& xml);
     static Reading* parseReading(QXmlStreamReader& xml);

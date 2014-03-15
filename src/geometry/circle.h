@@ -10,6 +10,9 @@ public:
     Circle(const Circle &copy);
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    bool fromOpenIndyXML(QXmlStreamReader& xml);
+
     //TODO implement circle
 };
 

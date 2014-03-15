@@ -10,6 +10,9 @@ public:
     Nurbs(const Nurbs &copy);
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    bool fromOpenIndyXML(QXmlStreamReader& xml);
+
     //TODO implement nurbs
 };
 

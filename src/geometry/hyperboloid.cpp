@@ -22,3 +22,13 @@ Hyperboloid::Hyperboloid(const Hyperboloid &copy){
 void Hyperboloid::recalc(){
 
 }
+
+bool Hyperboloid::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+bool Hyperboloid::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}

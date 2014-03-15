@@ -78,6 +78,48 @@ void Station::recalc(){
 
 }
 
+bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
+
+        stream.writeStartElement("station");
+        stream.writeAttribute("id", QString::number(this->id));
+        stream.writeAttribute("name", this->name);
+
+        if(this->instrument != NULL){
+            stream.writeStartElement("sensor");
+            stream.writeAttribute("name",this->instrument->getMetaData()->name);
+            stream.writeAttribute("plugin", this->instrument->getMetaData()->pluginName);
+            stream.writeEndElement();
+        }
+
+        if(this->position != NULL){
+
+            stream.writeStartElement("member");
+            stream.writeAttribute("type", "position");
+            stream.writeAttribute("ref", QString::number(this->position->id));
+            stream.writeEndElement();
+
+        }
+
+        if(this->coordSys != NULL){
+            stream.writeStartElement("member");
+            stream.writeAttribute("type", "coordinatesystem");
+            stream.writeAttribute("ref", QString::number(this->coordSys->id));
+            stream.writeEndElement();
+        }
+
+        this->writeFeatureAttributes(stream);
+
+        stream.writeEndElement();
+
+        return true;
+
+}
+
+bool Station::fromOpenIndyXML(QXmlStreamReader &xml){
+
+
+}
+
 /*!
  * \brief Station::emitActionFinished
  * \param wasSuccesful

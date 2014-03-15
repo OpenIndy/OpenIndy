@@ -22,3 +22,13 @@ Paraboloid::Paraboloid(const Paraboloid &copy){
 void Paraboloid::recalc(){
 
 }
+
+bool Paraboloid::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+bool Paraboloid::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}

@@ -10,6 +10,9 @@ public:
     Ellipsoid(const Ellipsoid &copy);
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    bool fromOpenIndyXML(QXmlStreamReader& xml);
+
     //TODO implement ellipsoid
 };
 

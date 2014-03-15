@@ -32,6 +32,16 @@ void ScalarEntityMeasurementSeries::recalc(){
     }
 }
 
+bool ScalarEntityMeasurementSeries::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    return false;
+}
+
 double ScalarEntityMeasurementSeries::getSeriesValue() const{
     return this->seriesValue;
 }
