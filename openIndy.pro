@@ -137,7 +137,8 @@ SOURCES += \
     src/functionconfiguration.cpp \
     src/geometry/scalarentitytemperature.cpp \
     src/geometry/scalarentitymeasurementseries.cpp \
-    ui/customparameterwidget.cpp
+    ui/customparameterwidget.cpp \
+    src/elementdependencies.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -240,7 +241,8 @@ HEADERS  += \
     src/functionconfiguration.h \
     src/geometry/scalarentitytemperature.h \
     src/geometry/scalarentitymeasurementseries.h \
-    ui/customparameterwidget.h
+    ui/customparameterwidget.h \
+    src/elementdependencies.h
 
 
 FORMS    += ui/mainwindow.ui \

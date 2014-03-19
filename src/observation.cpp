@@ -187,12 +187,17 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
 
 }
 
-bool Observation::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    ElementDependencies dependencies;
+
+    dependencies.typeOfElement = Configuration::eObservationElement;
 
     QXmlStreamAttributes attributes = xml.attributes();
 
     if(attributes.hasAttribute("id")) {
         this->id = attributes.value("id").toInt();
+        dependencies.elementID = this->id;
     }
     if(attributes.hasAttribute("x")){
         this->myOriginalXyz.setAt(0,attributes.value("x").toDouble());
@@ -219,12 +224,12 @@ bool Observation::fromOpenIndyXML(QXmlStreamReader &xml){
     xml.readNext();
     /*
      * We're going to loop over the things because the order might change.
-     * We'll continue the loop until we hit an EndElement named person.
+     * We'll continue the loop until we hit an EndElement named observation.
      */
     while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
             xml.name() == "observation")) {
         if(xml.tokenType() == QXmlStreamReader::StartElement) {
-            /* We've found first name. */
+
             if(xml.name() == "reading") {
                 Reading *r = this->readReading(xml);
                 r->obs = this;
@@ -244,8 +249,9 @@ bool Observation::fromOpenIndyXML(QXmlStreamReader &xml){
                             if (memberAttributes.value("type") == "station"){
 
                                 if(memberAttributes.hasAttribute("ref")){
-                                    this->myStation = new Station("proxy");
-                                    this->myStation->id= memberAttributes.value("ref").toInt();
+
+                                    dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"station");
+
                                 }
 
                             }
@@ -264,7 +270,7 @@ bool Observation::fromOpenIndyXML(QXmlStreamReader &xml){
         xml.readNext();
     }
 
-    return true;
+    return dependencies;
 }
 
 bool Observation::writeProxyObservations(QXmlStreamWriter &stream){
@@ -295,12 +301,11 @@ Reading* Observation::readReading(QXmlStreamReader& xml){
     xml.readNext();
     /*
      * We're going to loop over the things because the order might change.
-     * We'll continue the loop until we hit an EndElement named person.
+     * We'll continue the loop until we hit an EndElement named reading.
      */
     while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
             xml.name() == "reading")) {
         if(xml.tokenType() == QXmlStreamReader::StartElement) {
-            /* We've found first name. */
 
             switch(r->typeofReading){
                 case(Configuration::ePolar) :{

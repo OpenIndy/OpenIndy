@@ -28,7 +28,9 @@ bool Hyperboloid::toOpenIndyXML(QXmlStreamWriter &stream){
     return false;
 }
 
-bool Hyperboloid::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies Hyperboloid::fromOpenIndyXML(QXmlStreamReader &xml){
 
-    return false;
+    ElementDependencies dependencies;
+
+    return dependencies;
 }

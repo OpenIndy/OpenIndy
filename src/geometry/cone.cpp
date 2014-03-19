@@ -28,7 +28,9 @@ bool Cone::toOpenIndyXML(QXmlStreamWriter &stream){
     return false;
 }
 
-bool Cone::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies Cone::fromOpenIndyXML(QXmlStreamReader &xml){
 
-    return false;
+    ElementDependencies dependencies;
+
+    return dependencies;
 }

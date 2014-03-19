@@ -40,7 +40,7 @@ public:
 //methods
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
 
-    virtual bool fromOpenIndyXML(QXmlStreamReader& xml);
+    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
     bool writeProxyObservations(QXmlStreamWriter& stream);
 

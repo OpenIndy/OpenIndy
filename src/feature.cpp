@@ -63,3 +63,90 @@ bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
 
 }
 
+bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies dependencies){
+
+    if(xml.name() == "member"){
+
+            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                if(memberAttributes.hasAttribute("type")){
+
+                    if (memberAttributes.value("type") == "usedForFeature"){
+
+                        if(memberAttributes.hasAttribute("ref")){
+                            dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"usedForFeature");
+                        }
+                    }
+
+                    if (memberAttributes.value("type") == "previouslyNeeded"){
+
+                        if(memberAttributes.hasAttribute("ref")){
+                            dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"previouslyNeeded");
+                        }
+                    }
+                }
+
+            }
+
+    return true;
+    }
+}
+
+bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies d){
+
+    functionInfo f;
+
+    if(xml.name() == "function"){
+
+        QXmlStreamAttributes attributes = xml.attributes();
+
+        if(attributes.hasAttribute("name")){
+            f.name= attributes.value("name").toString();
+        }
+        if(attributes.hasAttribute("plugin")) {
+            f.plugin = attributes.value("id").toInt();
+        }
+
+        while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                xml.name() == "function")) {
+            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                if(xml.name() == "inputElement"){
+
+                    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                            xml.name() == "inputElement")) {
+                        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                            QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                                    if(memberAttributes.hasAttribute("index")){
+                                       f.executionIndex = memberAttributes.value("ref").toInt();
+                                    }
+
+                                    if(memberAttributes.hasAttribute("type") && memberAttributes.hasAttribute("ref")){
+
+                                        int elementId = memberAttributes.value("ref").toInt();
+                                        int elementType =  memberAttributes.value("type").toInt();
+
+                                        f.neededElements.insert(elementId,elementType);
+                                    }
+
+                        }
+                        /* ...and next... */
+                        xml.readNext();
+                    }
+                }
+            }
+            /* ...and next... */
+            xml.readNext();
+        }
+
+    d.addFunctionInfo(f);
+    return true;
+    }
+
+}
+
+

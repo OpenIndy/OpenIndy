@@ -115,9 +115,110 @@ bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
 
 }
 
-bool Station::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    ElementDependencies dependencies;
+
+    QXmlStreamAttributes attributes = xml.attributes();
+
+    if(attributes.hasAttribute("name")){
+        this->name = attributes.value("name").toString();
+    }
+    if(attributes.hasAttribute("id")) {
+        this->id = attributes.value("id").toInt();
+    }
+
+    /* Next element... */
+    xml.readNext();
+    /*
+     * We're going to loop over the things because the order might change.
+     * We'll continue the loop until we hit an EndElement named station.
+     */
+    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+            xml.name() == "station")) {
+        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+            /* We've found first name. */
+            if(xml.name() == "sensor") {
+
+                QString sensorName;
+                QString sensorPlugin;
+
+                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                        xml.name() == "sensor")) {
+                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
 
 
+                        QXmlStreamAttributes sensorAttributes = xml.attributes();
+
+                        if(sensorAttributes.hasAttribute("name")){
+                            sensorName = sensorAttributes.value("name").toString();
+                        }
+                        if(sensorAttributes.hasAttribute("plugin")) {
+                            sensorPlugin = sensorAttributes.value("plugin").toString();
+                        }
+
+                    }
+
+                    SensorConfiguration *sc = new SensorConfiguration();
+
+                    //toDO emitSignal and fill sc
+                    //QString sensorPath = SystemDbManager::getPluginFilePath(sensorName,sensorPlugin);
+                    //s->instrument = PluginLoader::loadSensorPlugin(sensorPath,sensorName);
+                    this->InstrumentConfig = sc;
+                    /* ...and next... */
+                    xml.readNext();
+                }
+
+
+            }
+
+            if(xml.name() == "member"){
+
+                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                        xml.name() == "member")) {
+                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                        QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                        if(memberAttributes.hasAttribute("type")){
+
+                            if (memberAttributes.value("type") == "position"){
+
+                                if(memberAttributes.hasAttribute("ref")){
+                                    this->position->id = memberAttributes.value("ref").toInt();
+                                }
+
+                            }else if (memberAttributes.value("type") == "coordinatesystem"){
+
+                                if(memberAttributes.hasAttribute("ref")){
+                                    this->coordSys->id = memberAttributes.value("ref").toInt();
+                                }
+                            }else{
+                                readFeatureAttributes(xml,dependencies);
+                            }
+                    }
+                    /* ...and next... */
+                    xml.readNext();
+                }
+
+            }
+
+            if(xml.name() == "function"){
+
+                this->readFunction(xml, dependencies);
+
+            }
+
+
+        }
+        /* ...and next... */
+        xml.readNext();
+    }
+
+
+    }
+
+    return dependencies;
 }
 
 /*!

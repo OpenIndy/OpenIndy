@@ -129,7 +129,7 @@ private:
     void recalc();
 
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
-    virtual bool fromOpenIndyXML(QXmlStreamReader& xml);
+    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
 };
 

@@ -28,7 +28,9 @@ bool Cylinder::toOpenIndyXML(QXmlStreamWriter &stream){
     return false;
 }
 
-bool Cylinder::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies Cylinder::fromOpenIndyXML(QXmlStreamReader &xml){
 
-    return false;
+    ElementDependencies dependencies;
+
+    return dependencies;
 }

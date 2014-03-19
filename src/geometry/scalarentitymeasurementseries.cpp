@@ -37,9 +37,10 @@ bool ScalarEntityMeasurementSeries::toOpenIndyXML(QXmlStreamWriter &stream){
     return false;
 }
 
-bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies ScalarEntityMeasurementSeries::fromOpenIndyXML(QXmlStreamReader &xml){
+    ElementDependencies dependencies;
 
-    return false;
+    return dependencies;
 }
 
 double ScalarEntityMeasurementSeries::getSeriesValue() const{

@@ -29,7 +29,7 @@ public:
     OiVec ijk;
 
     bool toOpenIndyXML(QXmlStreamWriter& stream);
-    bool fromOpenIndyXML(QXmlStreamReader& xml);
+    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
     void recalc();
 

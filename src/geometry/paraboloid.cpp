@@ -28,7 +28,8 @@ bool Paraboloid::toOpenIndyXML(QXmlStreamWriter &stream){
     return false;
 }
 
-bool Paraboloid::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies Paraboloid::fromOpenIndyXML(QXmlStreamReader &xml){
+    ElementDependencies dependencies;
 
-    return false;
+    return dependencies;
 }

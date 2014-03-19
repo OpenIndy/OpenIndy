@@ -3,6 +3,7 @@
 #include "observation.h"
 #include "trafoparam.h"
 #include "geometry.h"
+#include "point.h"
 
 CoordinateSystem::CoordinateSystem() : origin(4){
     this->id = Configuration::generateID();
@@ -70,9 +71,76 @@ bool CoordinateSystem::toOpenIndyXML(QXmlStreamWriter &stream){
     return true;
 }
 
-bool CoordinateSystem::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies CoordinateSystem::fromOpenIndyXML(QXmlStreamReader &xml){
 
-    return false;
+    ElementDependencies dependencies;
+
+    QXmlStreamAttributes attributes = xml.attributes();
+
+    if(attributes.hasAttribute("name")){
+        this->name = attributes.value("name").toString();
+    }
+    if(attributes.hasAttribute("id")) {
+        this->id = attributes.value("id").toInt();
+        dependencies.elementID = this->id;
+        dependencies.typeOfElement = Configuration::eCoordinateSystemElement;
+    }
+
+    /* Next element... */
+    xml.readNext();
+    /*
+     * We're going to loop over the things because the order might change.
+     * We'll continue the loop until we hit an EndElement named coordinatesystem.
+     */
+    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+            xml.name() == "coordinatesystem")) {
+        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+            if(xml.name() == "member"){
+
+                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                        xml.name() == "member")) {
+                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                        QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                        if(memberAttributes.hasAttribute("type")){
+
+                            if (memberAttributes.value("type") == "observation"){
+
+                                if(memberAttributes.hasAttribute("ref")){
+                                    dependencies.addObservationID(memberAttributes.value("ref").toInt());
+                                }
+
+                            }else if (memberAttributes.value("type") == "nominalGeometry"){
+
+                                if(memberAttributes.hasAttribute("ref")){
+                                    dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"nominalGeometry");
+                                }
+                            }else{
+                                 this->readFeatureAttributes(xml, dependencies);
+                            }
+
+
+                        }
+                    }
+                    /* ...and next... */
+                    xml.readNext();
+                }
+            }
+
+            if(xml.name() == "function"){
+
+                this->readFunction(xml, dependencies);
+
+            }
+
+        }
+        /* ...and next... */
+        xml.readNext();
+    }
+
+    return dependencies;
 }
 
 /*!

@@ -27,7 +27,7 @@ public:
     void recalc();
 
     bool toOpenIndyXML(QXmlStreamWriter& stream);
-    bool fromOpenIndyXML(QXmlStreamReader& xml);
+    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
     QString getDisplayX() const;
     QString getDisplayY() const;

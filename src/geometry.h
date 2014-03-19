@@ -35,7 +35,10 @@ public:
     void insertReadingType(Configuration::ReadingTypes readingType, QString displayName);
 
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
-    virtual bool fromOpenIndyXML(QXmlStreamReader& xml) = 0;
+    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
+
+protected:
+    bool writeGeometryAttributes(QXmlStreamWriter& stream);
 
 };
 

@@ -15,7 +15,7 @@ public:
     void recalc();
 
     bool toOpenIndyXML(QXmlStreamWriter& stream);
-    bool fromOpenIndyXML(QXmlStreamReader& xml);
+    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
     double getAngle() const;
     void setAngle(double angle);

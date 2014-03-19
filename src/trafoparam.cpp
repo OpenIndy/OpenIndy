@@ -133,9 +133,139 @@ bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
     return true;
 }
 
-bool TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
 
-    return false;
+    ElementDependencies dependencies;
+
+
+    QXmlStreamAttributes attributes = xml.attributes();
+
+    if(attributes.hasAttribute("name")){
+        this->name = attributes.value("name").toString();
+    }
+    if(attributes.hasAttribute("id")) {
+        this->id = attributes.value("id").toInt();
+        dependencies.elementID = this->id;
+    }
+    if(attributes.hasAttribute("tx")) {
+        this->translation.setAt(0,attributes.value("tx").toDouble());
+    }
+    if(attributes.hasAttribute("ty")) {
+        this->translation.setAt(1,attributes.value("ty").toDouble());
+    }
+    if(attributes.hasAttribute("tz")) {
+        this->translation.setAt(2,attributes.value("tz").toDouble());
+    }
+    if(attributes.hasAttribute("rx")) {
+        this->rotation.setAt(0,attributes.value("rx").toDouble());
+    }
+    if(attributes.hasAttribute("ry")) {
+        this->rotation.setAt(1,attributes.value("ry").toDouble());
+    }
+    if(attributes.hasAttribute("rz")) {
+        this->rotation.setAt(2,attributes.value("rz").toDouble());
+    }
+    if(attributes.hasAttribute("mx")) {
+        this->scale.setAt(0,attributes.value("mx").toDouble());
+    }
+    if(attributes.hasAttribute("my")) {
+        this->scale.setAt(1,attributes.value("my").toDouble());
+    }
+    if(attributes.hasAttribute("mz")) {
+        this->scale.setAt(2,attributes.value("mz").toDouble());
+    }
+
+    /* Next element... */
+    xml.readNext();
+    /*
+     * We're going to loop over the things because the order might change.
+     * We'll continue the loop until we hit an EndElement named transformationparameter.
+     */
+    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+            xml.name() == "transformationsparameter")) {
+        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+            /* We've found first name. */
+
+            if(xml.name() == "from") {
+
+
+                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                        xml.name() == "from")) {
+                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                        QXmlStreamAttributes fromAttributes = xml.attributes();
+
+                        if(fromAttributes.hasAttribute("ref")){
+
+                        }
+
+                    }
+
+                    xml.readNext();
+                }
+
+
+            }
+
+            if(xml.name() == "to") {
+
+
+                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                        xml.name() == "to")) {
+                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                        QXmlStreamAttributes toAttributes = xml.attributes();
+
+                        if(toAttributes.hasAttribute("ref")){
+                            CoordinateSystem *tmpCoord = new CoordinateSystem();
+                            tmpCoord->id = toAttributes.value("ref").toInt();
+                            this->to = tmpCoord;
+                        }
+
+                    }
+
+                    xml.readNext();
+                }
+
+
+            }
+
+            if(xml.name() == "member"){
+
+                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                        xml.name() == "member")) {
+                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                        QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                        if(memberAttributes.hasAttribute("type")){
+
+                        this->readFeatureAttributes(xml,dependencies);
+
+                        }
+                    }
+                    /* ...and next... */
+                    xml.readNext();
+                }
+
+            }
+
+
+            if(xml.name() == "function"){
+
+                this->readFunction(xml,dependencies);
+
+            }
+
+
+        }
+        /* ...and next... */
+        xml.readNext();
+    }
+
+
+
+    return dependencies;
 }
 
 QString TrafoParam::getDisplayStartSystem() const{

@@ -37,7 +37,7 @@ public:
     virtual void recalc() = 0;
 
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
-    virtual bool fromOpenIndyXML(QXmlStreamReader& xml) = 0;
+    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
     virtual QString getDisplayX() const{
         return "-/-";
@@ -132,6 +132,8 @@ public:
 
 protected:
     bool writeFeatureAttributes(QXmlStreamWriter& stream);
+    bool readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies dependencies);
+    bool readFunction(QXmlStreamReader &xml ,ElementDependencies d);
 };
 
 #endif // FEATURE_H

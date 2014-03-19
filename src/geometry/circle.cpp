@@ -28,7 +28,9 @@ bool Circle::toOpenIndyXML(QXmlStreamWriter &stream){
     return false;
 }
 
-bool Circle::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies Circle::fromOpenIndyXML(QXmlStreamReader &xml){
 
-    return false;
+    ElementDependencies dependencies;
+
+    return dependencies;
 }

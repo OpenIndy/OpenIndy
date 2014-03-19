@@ -28,7 +28,9 @@ bool Nurbs::toOpenIndyXML(QXmlStreamWriter &stream){
     return false;
 }
 
-bool Nurbs::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies Nurbs::fromOpenIndyXML(QXmlStreamReader &xml){
 
-    return false;
+    ElementDependencies dependencies;
+
+    return dependencies;
 }

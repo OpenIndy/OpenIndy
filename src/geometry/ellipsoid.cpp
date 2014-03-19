@@ -28,7 +28,9 @@ bool Ellipsoid::toOpenIndyXML(QXmlStreamWriter &stream){
     return false;
 }
 
-bool Ellipsoid::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies Ellipsoid::fromOpenIndyXML(QXmlStreamReader &xml){
 
-    return false;
+    ElementDependencies dependencies;
+
+    return dependencies;
 }

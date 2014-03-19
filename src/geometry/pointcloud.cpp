@@ -44,9 +44,10 @@ bool PointCloud::toOpenIndyXML(QXmlStreamWriter &stream){
     return false;
 }
 
-bool PointCloud::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies PointCloud::fromOpenIndyXML(QXmlStreamReader &xml){
+    ElementDependencies dependencies;
 
-    return false;
+    return dependencies;
 }
 
 //TODO change functions with unitconverter and String format

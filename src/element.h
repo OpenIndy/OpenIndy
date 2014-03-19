@@ -4,6 +4,8 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 
+#include"elementdependencies.h"
+
 /*!
  * \brief The Element class
  */
@@ -14,7 +16,7 @@ public:
     int id;  
 
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
-    virtual bool fromOpenIndyXML(QXmlStreamReader& xml) = 0;
+    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 };
 
 #endif // ELEMENT_H

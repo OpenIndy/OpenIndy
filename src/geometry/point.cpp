@@ -82,44 +82,18 @@ bool Point::toOpenIndyXML(QXmlStreamWriter &stream){
             stream.writeEndElement();
     }
 
-    //---------------common geometry attributes--------------
-    foreach (Observation *obs, myObservations) {
-        obs->writeProxyObservations(stream);
-    }
 
-    foreach (Geometry *geom, this->nominals) {
-
-            stream.writeStartElement("member");
-            stream.writeAttribute("type", "nominalGeometry");
-            stream.writeAttribute("ref", QString::number(geom->id));
-            stream.writeEndElement();
-
-    }
-
-    if(this->myNominalCoordSys != NULL){
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "coordinatesystem");
-        stream.writeAttribute("ref", QString::number(this->myNominalCoordSys->id));
-        stream.writeEndElement();
-    }
-
-    if(!this->isNominal){
-        stream.writeStartElement("measurementconfig");
-        stream.writeAttribute("name", this->mConfig.name);
-        //TODO this->mConfig.writeMeasurementConfig(stream);
-        stream.writeEndElement();
-    }
-
-   this->writeFeatureAttributes(stream);
+   this->writeGeometryAttributes(stream);
 
    stream.writeEndElement();
 
     return true;
 }
 
-bool Point::fromOpenIndyXML(QXmlStreamReader &xml){
+ElementDependencies Point::fromOpenIndyXML(QXmlStreamReader &xml){
+    ElementDependencies dependencies;
 
-    return false;
+    return dependencies;
 }
 
 QString Point::getDisplayX() const{
