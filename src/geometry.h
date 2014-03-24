@@ -39,6 +39,7 @@ public:
 
 protected:
     bool writeGeometryAttributes(QXmlStreamWriter& stream);
+    bool readGeometryAttributes(QXmlStreamReader &xml ,ElementDependencies d);
 
 };
 

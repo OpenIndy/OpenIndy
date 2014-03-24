@@ -92,30 +92,16 @@ void GLWidget::draw(){
     glRotatef(rotationZ, 0.0, 0.0 ,1.0);
 
 
-
     qglColor(Qt::red);
     if(features->size() > 0){
 
         for(int i =0; i< features->size(); i++){
             OiGraphix::drawFeature(features->at(i));
+
         }
 
 
     }
-
-
-   /* Sphere *s =  new Sphere();
-    s->xyz.setAt(0,1.5);
-    s->xyz.setAt(1,1.5);
-    s->xyz.setAt(2,1.0);
-    s->radius = 1.0;
-
-    FeatureWrapper *f = new FeatureWrapper();
-    f->setSphere(s);
-
-    OiGraphix::drawFeature(f);*/
-
-
 
     glPopMatrix();
     update();
@@ -151,6 +137,9 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event){
 
 void GLWidget::mouseDoubleClickEvent(QMouseEvent *event){
     //TODO bei doppel klick koordinaten abgreifen
+    QString x = QString::number(event->x());
+    QString y =QString::number(event->y());
+    QMessageBox::information(this,"coordinate", QString("x:" + x + " y:" +y));
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event){
@@ -162,7 +151,7 @@ void GLWidget::wheelEvent(QWheelEvent *event){
 
 void GLWidget::focusOnFeature(double x, double y, double z){
     //TODO auf actives feature springen
-    /*translateX = x;
+   /* translateX = x;
     translateY = y;
     translateZ = z-1;*/
 

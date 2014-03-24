@@ -42,17 +42,10 @@ private:
     static QList<FeatureWrapper*> coordSystems;
     static QList<FeatureWrapper*> trafoParams;
     static QList<FeatureWrapper*> features;
+    static QList<ElementDependencies> dependencies;
 
     static QList<int> stationElements;
 
-    //import functions
-    static Observation* parseObservation(QXmlStreamReader& xml);
-    static Reading* parseReading(QXmlStreamReader& xml);
-    static FeatureWrapper* parseStation(QXmlStreamReader& xml);
-    static FeatureWrapper* parseGeometry(QXmlStreamReader& xml);
-    static FeatureWrapper* parseCoordinatesystem(QXmlStreamReader& xml);
-    static FeatureWrapper* parseTrafoPara(QXmlStreamReader& xml);
-    static void parseFunction(QXmlStreamReader& xml, FeatureWrapper *feature);
     static bool regenerateRelations(oiProjectData &data);
     static bool regenerateFeature(Feature* f);
 

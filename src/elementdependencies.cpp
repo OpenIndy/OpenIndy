@@ -2,6 +2,10 @@
 
 ElementDependencies::ElementDependencies()
 {
+    this->hasSensorPlugin = false;
+    this->hasFunctionPlugin = false;
+    this->hasObservations = false;
+    this->hasFeatures = false;
 }
 
 bool ElementDependencies::addFeatureID(int id,QString featureGroup){

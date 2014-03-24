@@ -93,6 +93,58 @@ bool Point::toOpenIndyXML(QXmlStreamWriter &stream){
 ElementDependencies Point::fromOpenIndyXML(QXmlStreamReader &xml){
     ElementDependencies dependencies;
 
+    QXmlStreamAttributes attributes = xml.attributes();
+
+    if(attributes.hasAttribute("name")){
+        this->name = attributes.value("name").toString();
+    }
+    if(attributes.hasAttribute("id")) {
+        this->id = attributes.value("id").toInt();
+    }
+    if(attributes.hasAttribute("nominal")) {
+        this->isNominal = attributes.value("nominal").toInt();
+    }
+    if(attributes.hasAttribute("common")) {
+        this->isCommon = attributes.value("common").toInt();
+    }
+    if(attributes.hasAttribute("solved")) {
+        this->isSolved= attributes.value("solved").toInt();
+    }
+
+    xml.readNext();
+
+    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                xml.name() == "geometry")) {
+            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+                /* We've found first name. */
+                if(xml.name() == "coordinates") {
+
+                        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                            QXmlStreamAttributes coordinatesAttributes = xml.attributes();
+
+                                if(coordinatesAttributes.hasAttribute("x")){
+                                  this->xyz.setAt(0,coordinatesAttributes.value("x").toDouble());
+                                }
+
+                                if(coordinatesAttributes.hasAttribute("y")){
+                                  this->xyz.setAt(1,coordinatesAttributes.value("y").toDouble());
+                                }
+
+                                if(coordinatesAttributes.hasAttribute("z")){
+                                  this->xyz.setAt(2,coordinatesAttributes.value("z").toDouble());
+                                }
+                        }
+                }else{
+                         this->readGeometryAttributes(xml,dependencies);
+                }
+
+            }
+            xml.readNext();
+        }
+
+
+
     return dependencies;
 }
 

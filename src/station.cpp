@@ -119,6 +119,7 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;
 
+
     QXmlStreamAttributes attributes = xml.attributes();
 
     if(attributes.hasAttribute("name")){
@@ -126,6 +127,8 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
     }
     if(attributes.hasAttribute("id")) {
         this->id = attributes.value("id").toInt();
+        dependencies.elementID = this->id;
+        dependencies.typeOfElement = Configuration::eStationElement;
     }
 
     /* Next element... */
@@ -136,6 +139,7 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
      */
     while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
             xml.name() == "station")) {
+
         if(xml.tokenType() == QXmlStreamReader::StartElement) {
             /* We've found first name. */
             if(xml.name() == "sensor") {
@@ -161,9 +165,11 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
 
                     SensorConfiguration *sc = new SensorConfiguration();
 
-                    //toDO emitSignal and fill sc
-                    //QString sensorPath = SystemDbManager::getPluginFilePath(sensorName,sensorPlugin);
-                    //s->instrument = PluginLoader::loadSensorPlugin(sensorPath,sensorName);
+                    sensorInfo sInfo;
+                    sInfo.name = sensorName;
+                    sInfo.plugin = sensorPlugin;
+                    dependencies.addSensorInfo(sInfo);
+
                     this->InstrumentConfig = sc;
                     /* ...and next... */
                     xml.readNext();
@@ -196,25 +202,22 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
                             }else{
                                 readFeatureAttributes(xml,dependencies);
                             }
+                        }
                     }
-                    /* ...and next... */
-                    xml.readNext();
-                }
+                /* ...and next... */
+                xml.readNext();
+               }
+        }
 
-            }
+        if(xml.name() == "function"){
 
-            if(xml.name() == "function"){
-
-                this->readFunction(xml, dependencies);
-
-            }
-
+           this->readFunction(xml, dependencies);
 
         }
         /* ...and next... */
-        xml.readNext();
-    }
+     }
 
+    xml.readNext();
 
     }
 

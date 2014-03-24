@@ -50,6 +50,86 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
 
 }
 
+bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies dependencies){
+
+
+    if(xml.name() == "standardDeviation") {
+
+            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                QXmlStreamAttributes sigmaAttributes = xml.attributes();
+
+                    if(sigmaAttributes.hasAttribute("value")){
+                       this->myStatistic.stdev = sigmaAttributes.value("value").toDouble();
+                    }
+
+             }
+    }
+
+    if(xml.name() == "measurementconfig") {
+
+        while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                xml.name() == "measurementconfig")) {
+            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                QXmlStreamAttributes measurementconfigAttributes = xml.attributes();
+
+               if(!this->isNominal){
+
+                    if(measurementconfigAttributes.hasAttribute("name")){
+                      //TODO MeasurementConfig setzten
+                    }
+
+                 }
+             }
+         xml.readNext();
+        }
+    }
+
+
+
+    if(xml.name() == "member"){
+
+        while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                xml.name() == "member")) {
+            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+
+                QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                if(memberAttributes.hasAttribute("type")){
+
+                    if (memberAttributes.value("type") == "observation"){
+
+                        if(memberAttributes.hasAttribute("ref")){
+                            dependencies.addObservationID(memberAttributes.value("ref").toInt());
+                        }
+
+                    }else if (memberAttributes.value("type") == "coordinatesystem"){
+
+                        if(memberAttributes.hasAttribute("ref")){
+                            dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"coordinatesystem");
+                        }
+                    }else if (memberAttributes.value("type") == "nominalGeometry"){
+
+                        if(memberAttributes.hasAttribute("ref")){
+                            dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"nominalGeometry");
+                        }
+                    }else{
+                        this->readFeatureAttributes(xml,dependencies);
+                    }
+
+                }
+
+            }
+            /* ...and next... */
+            xml.readNext();
+        }
+    }
+
+    return true;
+}
+
 
 
 
