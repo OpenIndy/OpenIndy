@@ -12,212 +12,27 @@ QList<ElementDependencies> oiProjectExchanger::dependencies;
 
 QList<int> oiProjectExchanger::stationElements;
 
+ProjectRestorer* oiProjectExchanger::restorer = new ProjectRestorer();
+
 oiProjectExchanger::oiProjectExchanger()
 {
+
+    restorer->moveToThread(&workingThread);
+
+    workingThread.start();
+
 }
 
 
 bool oiProjectExchanger::saveProject(oiProjectData &data){
 
-    if (!data.device->open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        return false;
-    }
+    return restorer->saveProject(data);
 
-    oiProjectExchanger::observations.clear();
-    oiProjectExchanger::geometries.clear();
-    oiProjectExchanger::stations.clear();
-    oiProjectExchanger::coordSystems.clear();
-    oiProjectExchanger::trafoParams.clear();
-    oiProjectExchanger::features.clear();
-
-    //get current date and time
-    QDateTime dateTime = QDateTime::currentDateTime();
-    QString dateTimeString = dateTime.toString(Qt::ISODate);
-
-
-    QXmlStreamWriter stream(data.device);
-
-    stream.setAutoFormatting(true);
-    stream.writeStartDocument();
-
-    stream.writeStartElement("oiProjectData");
-    stream.writeAttribute("name", data.projectName);
-    stream.writeAttribute("date", dateTimeString);
-    stream.writeAttribute("idcount", QString::number(Configuration::idCount));
-
-    stream.writeStartElement("member");
-    stream.writeAttribute("type", "activeCoordinatesystem");
-    stream.writeAttribute("ref", QString::number(data.activeCoordSystem->id));
-    stream.writeEndElement();
-
-    for(int i = 0; i<data.features.size();i++){
-
-     if(data.features.at(i)->getGeometry() != NULL ){
-
-        oiProjectExchanger::geometries.append(data.features.at(i));
-
-     }else if(data.features.at(i)->getCoordinateSystem() != NULL){
-
-        oiProjectExchanger::coordSystems.append(data.features.at(i));
-
-      }else if (data.features.at(i)->getStation() != NULL){
-
-         oiProjectExchanger::stations.append(data.features.at(i));
-
-         FeatureWrapper* stationCoord = new FeatureWrapper;
-         FeatureWrapper* stationPosition = new FeatureWrapper;
-
-         stationCoord->setCoordinateSystem(data.features.at(i)->getStation()->coordSys);
-         stationPosition->setPoint(data.features.at(i)->getStation()->position);
-
-         oiProjectExchanger::coordSystems.append(stationCoord);
-         oiProjectExchanger::geometries.append(stationPosition);
-
-      }else if(data.features.at(i)->getTrafoParam() != NULL){
-
-         oiProjectExchanger::trafoParams.append(data.features.at(i));
-
-       }
-    }
-
-
-    //write stations to xml
-    foreach(FeatureWrapper* s, oiProjectExchanger::stations){
-        s->getStation()->toOpenIndyXML(stream);
-    }
-
-    //write coordnatesystem to xml
-    foreach(FeatureWrapper* c, oiProjectExchanger::coordSystems){
-        c->getCoordinateSystem()->toOpenIndyXML(stream);
-
-        //harvest all observations
-        foreach(Observation* obs, c->getCoordinateSystem()->observations){
-            oiProjectExchanger::observations.append(obs);
-        }
-    }
-
-    //write all trafoParam to xml
-    foreach(FeatureWrapper* t, oiProjectExchanger::trafoParams){
-        t->getTrafoParam()->toOpenIndyXML(stream);
-    }
-
-    //write all geometries to xml
-    foreach(FeatureWrapper* g, oiProjectExchanger::geometries){
-        g->getGeometry()->toOpenIndyXML(stream);
-    }
-
-    //write all observations to xml
-    foreach(Observation* o, oiProjectExchanger::observations){
-        o->toOpenIndyXML(stream);
-    }
-
-    stream.writeEndElement();
-    stream.writeEndDocument();
-
-    data.device->close();
-
-    return true;
 }
 
 bool oiProjectExchanger::loadProject(oiProjectData &data){
 
-    if (!data.device->open(QIODevice::ReadOnly | QIODevice::Text)) {
-
-        return false;
-    }
-
-    oiProjectExchanger::observations.clear();
-    oiProjectExchanger::geometries.clear();
-    oiProjectExchanger::stations.clear();
-    oiProjectExchanger::coordSystems.clear();
-    oiProjectExchanger::trafoParams.clear();
-    oiProjectExchanger::features.clear();
-
-    QXmlStreamReader xml(data.device);
-
-    while(!xml.atEnd() &&
-            !xml.hasError()) {
-
-        QXmlStreamReader::TokenType token = xml.readNext();
-
-        if(token == QXmlStreamReader::StartDocument) {
-            continue;
-        }
-
-        if(token == QXmlStreamReader::StartElement) {
-
-            qDebug() << xml.name();
-
-            if(xml.name() == "observation") {
-                Observation *o = new Observation(NULL,NULL);
-                ElementDependencies d =  o->fromOpenIndyXML(xml);
-
-                oiProjectExchanger::dependencies.append(d);
-                oiProjectExchanger::observations.append(o);
-            }
-
-            if(xml.name() == "oiProjectData"){
-
-            }
-
-            if(xml.name() == "station"){
-
-                Station *s = new Station("");
-                ElementDependencies d = s->fromOpenIndyXML(xml);
-
-                FeatureWrapper *fs = new FeatureWrapper();
-                fs->setStation(s);
-
-                oiProjectExchanger::stations.append(fs);
-                oiProjectExchanger::dependencies.append(d);
-
-            }
-
-            if(xml.name() == "coordinatesystem"){
-
-                CoordinateSystem *cs = new CoordinateSystem();
-                ElementDependencies d = cs->fromOpenIndyXML(xml);
-
-                FeatureWrapper *fs = new FeatureWrapper();
-                fs->setCoordinateSystem(cs);
-
-                oiProjectExchanger::coordSystems.append(fs);
-                oiProjectExchanger::dependencies.append(d);
-
-            }
-
-            if(xml.name() == "geometry"){
-                FeatureWrapper *fg = oiProjectExchanger::parseGeometry(xml);
-                if(fg!=NULL){
-                    oiProjectExchanger::geometries.append(fg);
-                    features.append(fg);
-                }
-            }
-
-            if(xml.name() == "transformationparameter"){
-                FeatureWrapper *ft = oiProjectExchanger::parseTrafoPara(xml);
-                if(ft!=NULL){
-                    oiProjectExchanger::trafoParams.append(ft);
-                    features.append(ft);
-                }
-            }
-        }
-    }
-
-    if(xml.hasError()) {
-
-        Console::addLine(QString("xml not valid: " + xml.errorString()));
-        data.device->close();
-        return false;
-    }
-
-     data.device->close();
-     oiProjectExchanger::regenerateRelations(data);
-     return true;
-
-
-    return false;
+    return restorer->loadProject(data);
 }
 
 
@@ -367,7 +182,7 @@ bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
     }
 
     //sort
-    qSort(data.features.begin(), data.features.end(), sortID);
+    //qSort(data.features.begin(), data.features.end(), sortID);
 
     return true;
 }

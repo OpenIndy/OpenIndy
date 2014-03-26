@@ -32,6 +32,19 @@ public:
     bool addFunctionInfo(functionInfo info);
     bool addSensorInfo(sensorInfo info);
 
+    bool hasPluginSensor();
+    bool hasPluginFunction();
+    bool hasObservation();
+    bool hasFeature();
+
+    QList<int> getObservationDependencies();
+    QMap< QString,QList<int>* > getfeatureDependencies();
+
+    QList<functionInfo> getNeededFunctions();
+    QList<sensorInfo> getNeededSensors();
+
+
+
 private:
     bool hasSensorPlugin;
     bool hasFunctionPlugin;
@@ -43,9 +56,6 @@ private:
 
     QList<functionInfo> neededFunctions;
     QList<sensorInfo> neededSensors;
-
-
-
 
 };
 

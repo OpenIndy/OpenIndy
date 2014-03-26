@@ -17,7 +17,7 @@ bool ElementDependencies::addFeatureID(int id,QString featureGroup){
         this->features.insert(featureGroup,l);
     }
 
-    this->features.value("featureGroup")->append(id);
+    this->features.value(featureGroup)->append(id);
 
     return true;
 }
@@ -48,4 +48,44 @@ bool ElementDependencies::addSensorInfo(sensorInfo info){
     this->neededSensors.append(info);
 
     return true;
+}
+
+bool ElementDependencies::hasPluginSensor()
+{
+    return this->hasSensorPlugin;
+}
+
+bool ElementDependencies::hasPluginFunction()
+{
+    return this->hasFunctionPlugin;
+}
+
+bool ElementDependencies::hasObservation()
+{
+    return this->hasObservations;
+}
+
+bool ElementDependencies::hasFeature()
+{
+    return this->hasFeatures;
+}
+
+QList<int> ElementDependencies::getObservationDependencies()
+{
+    return this->observations;
+}
+
+QMap<QString, QList<int> *> ElementDependencies::getfeatureDependencies()
+{
+    return this->features;
+}
+
+QList<functionInfo> ElementDependencies::getNeededFunctions()
+{
+    return this->neededFunctions;
+}
+
+QList<sensorInfo> ElementDependencies::getNeededSensors()
+{
+    return this->neededSensors;
 }

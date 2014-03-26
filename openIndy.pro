@@ -138,7 +138,8 @@ SOURCES += \
     src/geometry/scalarentitytemperature.cpp \
     src/geometry/scalarentitymeasurementseries.cpp \
     ui/customparameterwidget.cpp \
-    src/elementdependencies.cpp
+    src/elementdependencies.cpp \
+    controller/oiDataExchange/projectrestorer.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -242,7 +243,8 @@ HEADERS  += \
     src/geometry/scalarentitytemperature.h \
     src/geometry/scalarentitymeasurementseries.h \
     ui/customparameterwidget.h \
-    src/elementdependencies.h
+    src/elementdependencies.h \
+    controller/oiDataExchange/projectrestorer.h
 
 
 FORMS    += ui/mainwindow.ui \

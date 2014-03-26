@@ -11,6 +11,9 @@
 #include "systemdbmanager.h"
 #include "pluginloader.h"
 
+#include "projectrestorer.h"
+#include <QThread>
+
 /*!
  * \brief The oiProjectExchanger class
  * static class for generating a openindyXML of the actual project or to restore
@@ -35,6 +38,9 @@ public:
     //TODO create a settings object
 
 private:
+
+    static ProjectRestorer *restorer;
+    QThread workingThread;
 
     static QList<Observation*> observations;
     static QList<FeatureWrapper*> geometries;
