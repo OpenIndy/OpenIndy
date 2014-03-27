@@ -1071,5 +1071,5 @@ QDir appDir(qApp->applicationDirPath());
 
     QString guidePath = appDir.absolutePath();
     guidePath.append("/doc/index.html");
-    QDesktopServices::openUrl(guidePath);
+    QDesktopServices::openUrl(QUrl::fromLocalFile(guidePath));
 }
