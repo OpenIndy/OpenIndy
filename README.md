@@ -13,6 +13,8 @@ Dependencies
 - [openIndyLib](https://github.com/OpenIndy/OpenIndy/wiki/openIndy-lib-(linear-algebra))
 - [amadillo c++ linear algebra library](http://arma.sourceforge.net)
 - [BLAS/LAPACK](http://www.netlib.org/lapack/)
+- [Qt](http://qt-project.org)
+- [sqlite](https://sqlite.org)
 
 Build
 -----
