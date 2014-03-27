@@ -10,6 +10,10 @@ OpenIndy is developed with the Qt framework (Qt libs + Qt Creator IDE). You can 
 Dependencies
 ------------
 
+- [openIndyLib](https://github.com/OpenIndy/OpenIndy/wiki/openIndy-lib-(linear-algebra))
+- [amadillo c++ linear algebra library](http://arma.sourceforge.net)
+- [BLAS/LAPACK](http://www.netlib.org/lapack/)
+
 Build
 -----
 The easiest way to build OpenIndy is to use the Qt Creator. You can build OpenIndy in `debug` or `release` mode.  
