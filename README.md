@@ -26,8 +26,6 @@ First you have to build the openIndyLib. It includes basic mathematic functional
 
 Then build OpenIndy and copy the dependencies. 
 
-Second you can build main program OpenIndy.
-
 - Qt Creator ----> `openindy.pro`
 - Copy the openIndyLib (`lib/openIndyLib/bin/debug` || `lib/openIndyLib/bin/release`) and the oisystemdb.sqlite (`db/`) to `bin/debug` || `bin/release`. On Mac OS, you can find the binaries under `openindy/contents/MacOs`
 - Include LAPACK/BLAS
