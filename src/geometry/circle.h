@@ -6,11 +6,21 @@
 class Circle : public Geometry
 {
 public:
+    enum CircleUnknowns{
+        unknownX,
+        unknownY,
+        unknownZ,
+        unknownR
+    };
+
     Circle();
     Circle(const Circle &copy);
+
+    OiVec xyz;
+    double radius;
+
     void recalc();
 
-    //TODO implement circle
 };
 
 #endif // CIRCLE_H

@@ -24,6 +24,8 @@ bool BestFitCircle::exec(Circle &)
 
     this->writeToConsole("Hallo Kreis!");
 
+    return true;
+
 }
 
 QList<InputParams> BestFitCircle::getNeededElements()
