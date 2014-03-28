@@ -2,7 +2,7 @@
 
 #include "function.h"
 
-Circle::Circle() : xyz(4), radius(0.0)
+Circle::Circle() : xyz(4), ijk(4), radius(0.0)
 {
     this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;

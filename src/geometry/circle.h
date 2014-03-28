@@ -10,6 +10,9 @@ public:
         unknownX,
         unknownY,
         unknownZ,
+        unknownI,
+        unknownJ,
+        unknownK,
         unknownR
     };
 
@@ -17,6 +20,7 @@ public:
     Circle(const Circle &copy);
 
     OiVec xyz;
+    OiVec ijk;
     double radius;
 
     void recalc();
