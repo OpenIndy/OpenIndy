@@ -363,7 +363,7 @@ void ProjectRestorer::resolveDependencies(oiProjectData &data){
         switch (d.typeOfElement) {
         case (Configuration::eStationElement):{
 
-            resolveStation(resolvedFeature,d);
+            this->resolveStation(resolvedFeature,d);
 
             break;}
         default:
@@ -377,27 +377,27 @@ void ProjectRestorer::resolveDependencies(oiProjectData &data){
 
 }
 
-void ProjectRestorer::resolveFeature(FeatureWrapper *fw, oiProjectData &data)
+void ProjectRestorer::resolveFeature(FeatureWrapper *fw, ElementDependencies &d)
 {
 
 }
 
-void ProjectRestorer::geometryGeometry(FeatureWrapper *fw, oiProjectData &data)
+void ProjectRestorer::geometryGeometry(FeatureWrapper *fw, ElementDependencies &d)
 {
 
 }
 
-void ProjectRestorer::resolveStation(FeatureWrapper *fw, oiProjectData &data)
+void ProjectRestorer::resolveStation(FeatureWrapper *fw, ElementDependencies &d)
 {
 
 }
 
-void ProjectRestorer::resolveTrafoParam(FeatureWrapper *fw, oiProjectData &data)
+void ProjectRestorer::resolveTrafoParam(FeatureWrapper *fw, ElementDependencies &d)
 {
 
 }
 
-void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, oiProjectData &data)
+void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, ElementDependencies &d)
 {
 
 }

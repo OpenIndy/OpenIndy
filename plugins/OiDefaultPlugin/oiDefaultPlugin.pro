@@ -59,6 +59,7 @@ SOURCES += p_factory.cpp \
     ../../src/console.cpp \
     ../../src/coordinatesystem.cpp \
     ../../src/feature.cpp \
+    ../../src/featurewrapper.cpp \
     ../../src/function.cpp \
     ../../src/functionconfiguration.cpp \
     ../../src/geometry.cpp \
@@ -91,6 +92,7 @@ SOURCES += p_factory.cpp \
     ../../src/geometry/scalarentitymeasurementseries.cpp \
     ../../src/geometry/scalarentitytemperature.cpp \
     ../../src/geometry/sphere.cpp \
+    ../../src/elementdependencies.cpp \
     functions/construct/p_intersectlineplane.cpp \
     functions/construct/p_intersectplaneplane.cpp \
     functions/construct/p_linefrompoints.cpp \
@@ -137,6 +139,7 @@ HEADERS += p_factory.h \
     ../../src/coordinatesystem.h \
     ../../src/element.h \
     ../../src/feature.h \
+    ../../src/featurewrapper.h \
     ../../src/function.h \
     ../../src/functionconfiguration.h \
     ../../src/geometry.h \
@@ -179,6 +182,7 @@ HEADERS += p_factory.h \
     ../../src/plugin/pi_oiplugin.h \
     ../../src/plugin/pi_systemtransformation.h \
     ../../src/plugin/pi_totalstation.h \
+    ../../src/elementdependencies.h \
     functions/construct/p_intersectlineplane.h \
     functions/construct/p_intersectplaneplane.h \
     functions/construct/p_linefrompoints.h \
@@ -213,5 +217,6 @@ HEADERS += p_factory.h \
     lib/fitting/util/mystring.h \
     lib/fitting/util/rho.h \
     functions/fit/p_bestfitcircle.h
+
 
 OTHER_FILES += metaInfo.json
