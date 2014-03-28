@@ -10,6 +10,12 @@ OpenIndy is developed with the Qt framework (Qt libs + Qt Creator IDE). You can 
 Dependencies
 ------------
 
+- [openIndyLib](https://github.com/OpenIndy/OpenIndy/wiki/openIndy-lib-(linear-algebra))
+- [amadillo c++ linear algebra library](http://arma.sourceforge.net)
+- [BLAS/LAPACK](http://www.netlib.org/lapack/)
+- [Qt](http://qt-project.org)
+- [sqlite](https://sqlite.org)
+
 Build
 -----
 The easiest way to build OpenIndy is to use the Qt Creator. You can build OpenIndy in `debug` or `release` mode.  
@@ -19,8 +25,6 @@ First you have to build the openIndyLib. It includes basic mathematic functional
 - Qt Creator ----> `lib/openIndyLib/openIndyLib.pro`
 
 Then build OpenIndy and copy the dependencies. 
-
-Second you can build main program OpenIndy.
 
 - Qt Creator ----> `openindy.pro`
 - Copy the openIndyLib (`lib/openIndyLib/bin/debug` || `lib/openIndyLib/bin/release`) and the oisystemdb.sqlite (`db/`) to `bin/debug` || `bin/release`. On Mac OS, you can find the binaries under `openindy/contents/MacOs`
