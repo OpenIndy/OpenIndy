@@ -48,6 +48,13 @@ private:
     Observation *findObservation(int id);
 
     void resolveDependencies(oiProjectData &data);
+    void resolveFeature(FeatureWrapper *fw, oiProjectData &data);
+    void geometryGeometry(FeatureWrapper *fw, oiProjectData &data);
+    void resolveStation(FeatureWrapper *fw, oiProjectData &data);
+    void resolveTrafoParam(FeatureWrapper *fw, oiProjectData &data);
+    void resolveCoordinateSystem(FeatureWrapper *fw, oiProjectData &data);
+
+
 };
 
 #endif // PROJECTRESTORER_H

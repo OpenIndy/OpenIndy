@@ -205,7 +205,8 @@ bool ProjectRestorer::loadProject(oiProjectData &data){
         }
 
          data.device->close();
-         Console::addLine("regenerate project");
+         Console::addLine("resolve dependencies");
+         this->resolveDependencies(data);
          return true;
 
 
@@ -362,6 +363,8 @@ void ProjectRestorer::resolveDependencies(oiProjectData &data){
         switch (d.typeOfElement) {
         case (Configuration::eStationElement):{
 
+            resolveStation(resolvedFeature,d);
+
             break;}
         default:
             break;
@@ -371,6 +374,31 @@ void ProjectRestorer::resolveDependencies(oiProjectData &data){
 
         data.features.append(resolvedFeature);
     }
+
+}
+
+void ProjectRestorer::resolveFeature(FeatureWrapper *fw, oiProjectData &data)
+{
+
+}
+
+void ProjectRestorer::geometryGeometry(FeatureWrapper *fw, oiProjectData &data)
+{
+
+}
+
+void ProjectRestorer::resolveStation(FeatureWrapper *fw, oiProjectData &data)
+{
+
+}
+
+void ProjectRestorer::resolveTrafoParam(FeatureWrapper *fw, oiProjectData &data)
+{
+
+}
+
+void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, oiProjectData &data)
+{
 
 }
 
