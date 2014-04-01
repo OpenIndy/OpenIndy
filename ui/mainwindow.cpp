@@ -1071,5 +1071,10 @@ QDir appDir(qApp->applicationDirPath());
 
     QString guidePath = appDir.absolutePath();
     guidePath.append("/doc/index.html");
-    QDesktopServices::openUrl(guidePath);
+
+    if(QDesktopServices::openUrl(guidePath)){
+        Console::addLine("guide opened");
+    }else{
+        Console::addLine("cannot open user guide");
+    }
 }
