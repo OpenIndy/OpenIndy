@@ -65,7 +65,7 @@ and transformation parameters. In the toolbar on the left there is a button for 
 your settings and parameters for the features you want to create.</p>
 
 <h4>measurement config</h4>
-<p>>For each feature you create, you need to specify a measurement configuration. It includes a name, number of measurements, that should be done and averaged,
+<p>For each feature you create, you need to specify a measurement configuration. It includes a name, number of measurements, that should be done and averaged,
 the reading type (e.g. polar, only distance, only angle,...), two face measurement and so on.</p>
 <p>You can specify it while creating the feature, or edit it later. To specify a complete measurement configuration the sensor must be set, to display the supported 
 reading types. If the measurement config is not complet, it is displayed red in the tableview.</p>
@@ -108,11 +108,9 @@ measure the current selected feature (p1)</p>
 <p>Because we could not measure the focal point of the drillholes directly, we need to solve the problem by applying some functions.</p>
 <p ALIGN="CENTER" ><img src="../pics/offSetProblem.jpg" width=10% height=10% title="offset problem" alt="offset problem" /><br>
 unknown offset problem</p>
-<p>To solve this problem, we measure the ground plane, and move it on its own normal vector with the value of the reflector radius. For this we actually need 
-to copy the plane by creating a new one givimg it the best fit plane and apllying the observations of the first one to it. We then move the ground plane on the 
-normal vector of the copy plane by applying a new function to the ground plane (Translate by plane). This function has to input parameter that you have to
-apply to it: the plane and the distance(scalar entity distance). After this we project our drill-hole points in the plane 
-and have the offset corrected values we want.</p>
+<p>To solve this problem, we measure the ground plane, and move it on its own normal vector with the value of the reflector radius. To do this use the function 
+"ShiftPlane". 
+After this we project our drill-hole points in the plane and have the offset corrected values we want.</p>
 <h4>scalar entity distance</h4>
 <p>To specify the distance value for moving the ground plane you need to crate a scalar entity distance by clicking on the button <b>Create Scalar entity</b>.
 Choose a name, count is 1 and the value is the radius of the reflector. After creating you can solve the unknown offset problem.</p>
