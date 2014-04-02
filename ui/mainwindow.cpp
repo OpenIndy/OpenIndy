@@ -35,17 +35,18 @@ MainWindow::MainWindow(QWidget *parent) :
     sEntityDialog = new ScalarEntityDialog(this->control.features);
 
     //settings for other widgets
-    //mConfigDialog.setModal(true);
+    mConfigDialog.setModal(true);
     pLoadDialog.setModal(true);
     moveDialog.setModal(true);
-    //cFeatureDialog.setModal(true);
+    cFeatureDialog->setModal(true);
     sPluginDialog.setModal(true);
     fPluginDialog.setModal(true);
     sInfoDialog.setModal(true);
     setUpDialog.setModal(true);
-    //sEntityDialog.setModal(true);
+    sEntityDialog->setModal(true);
     nominalDialog.setModal(true);
     trafoParamDialog.setModal(true);
+    watchWindowDialog.setModal(true);
 
     //measurement config settings
     connect(&mConfigDialog,SIGNAL(sendConfig(FeatureWrapper*,MeasurementConfig*)),this,SLOT(receiveConfig(FeatureWrapper*,MeasurementConfig*)));
