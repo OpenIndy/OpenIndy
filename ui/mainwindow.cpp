@@ -823,6 +823,7 @@ void MainWindow::handleTableViewClicked(const QModelIndex &idx){
 
     emit this->sendSelectedFeature(selectedFeature);
 
+    /*  //no more possible, because dialogs can not disappear in the background
     if(this->control.activeFeature->getGeometry() != NULL || this->control.activeFeature->getStation() != NULL){
         if(this->mConfigDialog.isVisible()){
             this->mConfigDialog.activeFeature = this->control.activeFeature;
@@ -837,7 +838,7 @@ void MainWindow::handleTableViewClicked(const QModelIndex &idx){
             this->mConfigDialog.raise();
         }
     }
-
+*/
 }
 
 /*!

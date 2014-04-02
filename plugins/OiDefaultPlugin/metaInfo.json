@@ -4,7 +4,7 @@
     "name"  : "OpenIndy Default Plugin",
     "pluginVersion" : "0.0.1",
     "author"  : "OpenIndyOrg",
-    "compiler" : "minGW",
+    "compiler" : "MVSC 64bit",
     "operatingSystem" : "windows",
 
     "description" : "Plugin with many functions and sensors available as standard",

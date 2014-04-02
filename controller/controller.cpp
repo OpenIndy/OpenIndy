@@ -972,6 +972,8 @@ void Controller::defaultLastmConfig(){
     lastmConfig->measureTwoSides = false;
     if(this->activeStation != NULL && this->activeStation->instrument != NULL){
         lastmConfig->typeOfReading = this->activeStation->instrument->getSupportedReadingTypes()->at(0);
+    }else{
+        lastmConfig->typeOfReading = Configuration::ePolar;
     }
     lastmConfig->timeDependent = false;
     lastmConfig->distanceDependent = false;
@@ -1084,6 +1086,7 @@ void Controller::getSelectedPlugin(int index){
         //this->activeStation->InstrumentConfig = new SensorConfiguration();
         this->activeStation->instrument = PluginLoader::loadSensorPlugin(path, name);
         defaultLastmConfig();
+        updateFeatureMConfig();
     }
 }
 
@@ -1887,4 +1890,53 @@ void Controller::loadProjectData(oiProjectData &data){
  */
 void Controller::printToConsole(QString message){
     Console::addLine(message);
+}
+
+/*!
+ * \brief updateFeatureMConfig checks the previously set measurement configurations for supported reading types
+ */
+void Controller::updateFeatureMConfig()
+{
+    if(this->activeStation != NULL && this->activeStation->instrument != NULL &&
+            this->activeStation->instrument->getSupportedReadingTypes() != NULL &&
+            this->activeStation->instrument->getSupportedReadingTypes()->size() >0){
+
+        QList<Configuration::ReadingTypes> readingTypes = *this->activeStation->instrument->getSupportedReadingTypes();
+
+        //Check and edit lastMConfig
+        bool contains = false;
+        for(int i=0; i< readingTypes.size();i++){
+            if(this->lastmConfig->typeOfReading == readingTypes.at(i)){
+                contains = true;
+            }
+        }
+        if(!contains){
+            this->lastmConfig->typeOfReading = readingTypes.at(0);
+        }
+
+        //check and edit previous mconfigs
+        for(int k=0; k<this->features.size();k++){
+            contains = false;
+            if(this->features.at(k)->getGeometry() != NULL){
+                for(int m=0;m<readingTypes.size();m++){
+                    if(this->features.at(k)->getGeometry()->mConfig.typeOfReading == readingTypes.at(m)){
+                        contains = true;
+                    }
+                }
+                if(!contains){
+                    this->features.at(k)->getGeometry()->mConfig.typeOfReading = this->lastmConfig->typeOfReading;
+                }
+            }
+            if(this->features.at(k)->getStation() != NULL){
+                for(int n=0; n<readingTypes.size();n++){
+                    if(this->features.at(k)->getStation()->position->mConfig.typeOfReading == readingTypes.at(n)){
+                        contains = true;
+                    }
+                }
+                if(!contains){
+                    this->features.at(k)->getStation()->position->mConfig.typeOfReading = this->lastmConfig->typeOfReading;
+                }
+            }
+        }
+    }
 }

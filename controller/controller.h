@@ -162,6 +162,8 @@ public slots:
 
     void printToConsole(QString message);
 
+    void updateFeatureMConfig();
+
 private:
     void changeFunctionTreeViewModel();
     void changeUsedElementsModel(int functionIndex, int elementIndex);

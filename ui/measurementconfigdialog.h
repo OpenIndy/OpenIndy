@@ -13,6 +13,9 @@ namespace Ui {
 class MeasurementConfigDialog;
 }
 
+/*!
+ * \brief The MeasurementConfigDialog class for defining the measurement configuration
+ */
 class MeasurementConfigDialog : public QDialog
 {
     Q_OBJECT
@@ -24,7 +27,6 @@ public:
     Station *myStation;
 
     MeasurementConfig *mConfig;
-    //Configuration config;
 
     FeatureWrapper *activeFeature;
 
