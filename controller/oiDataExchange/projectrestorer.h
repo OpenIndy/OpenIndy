@@ -44,15 +44,17 @@ private:
     FeatureWrapper *findFeature(int id);
     TrafoParam *findTrafoParam(int id);
     CoordinateSystem *findCoordSys(int id);
-    Geometry *findGeometry(int id);
+    FeatureWrapper *findGeometry(int id);
     Observation *findObservation(int id);
 
     void resolveDependencies(oiProjectData &data);
     void resolveFeature(FeatureWrapper *fw, ElementDependencies &d);
-    void geometryGeometry(FeatureWrapper *fw, ElementDependencies &d);
+    void resolveGeometry(FeatureWrapper *fw, ElementDependencies &d);
     void resolveStation(FeatureWrapper *fw, ElementDependencies &d);
     void resolveTrafoParam(FeatureWrapper *fw, ElementDependencies &d);
     void resolveCoordinateSystem(FeatureWrapper *fw, ElementDependencies &d);
+
+    QList<Function*> resolveFunctions(ElementDependencies &d);
 
 
 };

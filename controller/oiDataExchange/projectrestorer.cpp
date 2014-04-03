@@ -303,11 +303,11 @@ Observation* ProjectRestorer::findObservation(int id){
     return NULL;
 }
 
-Geometry* ProjectRestorer::findGeometry(int id){
+FeatureWrapper* ProjectRestorer::findGeometry(int id){
 
     foreach(FeatureWrapper *g, this->geometries){
         if (g->getGeometry()->id == id){
-            return g->getGeometry();
+            return g;
         }
     }
     return NULL;
@@ -380,15 +380,67 @@ void ProjectRestorer::resolveDependencies(oiProjectData &data){
 void ProjectRestorer::resolveFeature(FeatureWrapper *fw, ElementDependencies &d)
 {
 
+    QMap<QString,QList<int>* > featureDependencies = d.getfeatureDependencies();
+
+    QList<int>* usedForFeature = featureDependencies.value("usedForFeature");
+    QList<int>* previouslyNeeded = featureDependencies.value("previouslyNeeded");
+
+    if(usedForFeature != NULL){
+        for(int i = 0;i<usedForFeature->size(); i++){
+            FeatureWrapper* uff = this->findFeature(usedForFeature->at(i));
+            if(uff != NULL){
+                fw->getFeature()->usedFor.append(uff);
+            }
+        }
+    }
+
+    if(previouslyNeeded != NULL){
+        for(int i = 0;i<previouslyNeeded->size(); i++){
+            FeatureWrapper* pnf = this->findFeature(previouslyNeeded->at(i));
+            if(pnf != NULL){
+                fw->getFeature()->previouslyNeeded.append(pnf);
+            }
+        }
+    }
+
+    fw->getFeature()->functionList = this->resolveFunctions(d);
+
+
 }
 
-void ProjectRestorer::geometryGeometry(FeatureWrapper *fw, ElementDependencies &d)
+void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d)
 {
 
 }
 
 void ProjectRestorer::resolveStation(FeatureWrapper *fw, ElementDependencies &d)
 {
+    //find Station
+    foreach(Station* s, this->stations){
+        if(s->id == d.elementID){
+            fw->setStation(s);
+            break;
+        }
+    }
+
+    //resolve common feature attributes
+    this->resolveFeature(fw,d);
+
+    sensorInfo activeSensor =  d.getActiveSensor();
+    QList<sensorInfo> usedSensors = d.getNeededSensors();
+
+    QString sensorPluginPath = SystemDbManager::getPluginFilePath(activeSensor.name,activeSensor.plugin);
+    fw->getStation()->instrument = PluginLoader::loadSensorPlugin(sensorPluginPath,activeSensor.name);
+
+    for(int i = 0; i<usedSensors.size();i++){
+        QString sensorName = usedSensors.at(i).name;
+        QString sensorPlugin = usedSensors.at(i).plugin;
+
+        QString sensorPluginPath = SystemDbManager::getPluginFilePath(sensorName,sensorPlugin);
+        fw->getStation()->usedSensors.append(PluginLoader::loadSensorPlugin(sensorPluginPath,sensorName));
+    }
+
+
 
 }
 
@@ -399,6 +451,83 @@ void ProjectRestorer::resolveTrafoParam(FeatureWrapper *fw, ElementDependencies 
 
 void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, ElementDependencies &d)
 {
+
+}
+
+QList<Function *> ProjectRestorer::resolveFunctions(ElementDependencies &d)
+{
+    QList<Function*> featureFunctions;
+
+    QList<functionInfo>neededFunctions =  d.getNeededFunctions();
+
+    for(int i = 0;i<neededFunctions.size();i++){
+
+        QString name = neededFunctions.at(i).name;
+        QString plugin = neededFunctions.at(i).plugin;
+        int exIndex = neededFunctions.at(i).executionIndex;
+
+        QString functionPluginPath = SystemDbManager::getPluginFilePath(name,plugin);
+        Function* tmpFunction = PluginLoader::loadFunctionPlugin(functionPluginPath,name);
+
+        QMap<int,featureIndex> neededElements = neededFunctions.at(i).neededElements;
+
+        QMapIterator<int, featureIndex> j(neededElements);
+        while (j.hasNext()) {
+            j.next();
+
+
+            switch (j.value().typeOfElement) {
+            case (Configuration::eObservationElement):{
+               Observation *obs = this->findObservation(j.key());
+               tmpFunction->addObservation(obs,j.value().idx);
+                break;}
+            case (Configuration::eStationElement):{
+                Station *s = this->findStation(j.key());
+                tmpFunction->addStation(s,j.value().idx);
+                break;}
+            case (Configuration::eTrafoParamElement):{
+                TrafoParam *t = this->findTrafoParam(j.key());
+                tmpFunction->addTrafoParam(t,j.value().idx);
+                break;}
+            case (Configuration::eCoordinateSystemElement):{
+                CoordinateSystem *c = this->findCoordSys(j.key());
+                tmpFunction->addCoordSystem(c,j.value().idx);
+                break;}
+            case (Configuration::ePointElement):{
+                FeatureWrapper* point = this->findGeometry(j.key());
+                tmpFunction->addPoint(point->getPoint(),j.value().idx);
+                break;}
+            case (Configuration::ePlaneElement):{
+                FeatureWrapper* plane = this->findGeometry(j.key());
+                tmpFunction->addPlane(plane->getPlane(),j.value().idx);
+                break;}
+            case (Configuration::eSphereElement):{
+                FeatureWrapper* sphere = this->findGeometry(j.key());
+                tmpFunction->addSphere(sphere->getSphere(),j.value().idx);
+                break;}
+            case (Configuration::eLineElement):{
+                FeatureWrapper* line = this->findGeometry(j.key());
+                tmpFunction->addLine(line->getLine(),j.value().idx);
+                 break;}
+            case (Configuration::eScalarEntityAngleElement):{
+                FeatureWrapper* angle = this->findGeometry(j.key());
+                tmpFunction->addScalarEntityAngle(angle->getScalarEntityAngle(),j.value().idx);
+                 break;}
+            case (Configuration::eScalarEntityDistanceElement):{
+                FeatureWrapper* distance = this->findGeometry(j.key());
+                tmpFunction->addScalarEntityDistance(distance->getScalarEntityDistance(),j.value().idx);
+                 break;}
+            default:{
+                break;}
+            }
+
+    }
+
+    featureFunctions.insert(exIndex,tmpFunction);
+
+  }
+
+  return featureFunctions;
 
 }
 

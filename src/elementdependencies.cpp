@@ -50,6 +50,13 @@ bool ElementDependencies::addSensorInfo(sensorInfo info){
     return true;
 }
 
+bool ElementDependencies::addActiveSensor(sensorInfo info)
+{
+    this->hasSensorPlugin = true;
+
+    this->activeSensor = info;
+}
+
 bool ElementDependencies::hasPluginSensor()
 {
     return this->hasSensorPlugin;
@@ -88,4 +95,9 @@ QList<functionInfo> ElementDependencies::getNeededFunctions()
 QList<sensorInfo> ElementDependencies::getNeededSensors()
 {
     return this->neededSensors;
+}
+
+sensorInfo ElementDependencies::getActiveSensor()
+{
+    return this->activeSensor;
 }

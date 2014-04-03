@@ -42,6 +42,7 @@ public:
 
     //instrument
     Sensor *instrument;
+    QList<Sensor*> usedSensors;
 
     SensorControl *sensorPad;
 

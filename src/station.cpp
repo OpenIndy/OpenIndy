@@ -85,10 +85,19 @@ bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
         stream.writeAttribute("name", this->name);
 
         if(this->instrument != NULL){
-            stream.writeStartElement("sensor");
+            stream.writeStartElement("activeSensor");
             stream.writeAttribute("name",this->instrument->getMetaData()->name);
             stream.writeAttribute("plugin", this->instrument->getMetaData()->pluginName);
             stream.writeEndElement();
+        }
+
+        if(this->usedSensors.size()>0){
+            for(int i = 0; i<usedSensors.size();i++){
+                stream.writeStartElement("sensor");
+                stream.writeAttribute("name",this->usedSensors.at(i)->getMetaData()->name);
+                stream.writeAttribute("plugin", this->usedSensors.at(i)->getMetaData()->pluginName);
+                stream.writeEndElement();
+            }
         }
 
         if(this->position != NULL){
@@ -169,6 +178,41 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
                     sInfo.name = sensorName;
                     sInfo.plugin = sensorPlugin;
                     dependencies.addSensorInfo(sInfo);
+
+                    /* ...and next... */
+                    xml.readNext();
+                }
+
+
+            }
+
+            if(xml.name() == "activeSensor") {
+
+                QString sensorName;
+                QString sensorPlugin;
+
+                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                        xml.name() == "activeSensor")) {
+                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+
+                        QXmlStreamAttributes sensorAttributes = xml.attributes();
+
+                        if(sensorAttributes.hasAttribute("name")){
+                            sensorName = sensorAttributes.value("name").toString();
+                        }
+                        if(sensorAttributes.hasAttribute("plugin")) {
+                            sensorPlugin = sensorAttributes.value("plugin").toString();
+                        }
+
+                    }
+
+                    SensorConfiguration *sc = new SensorConfiguration();
+
+                    sensorInfo sInfo;
+                    sInfo.name = sensorName;
+                    sInfo.plugin = sensorPlugin;
+                    dependencies.addActiveSensor(sInfo);
 
                     this->InstrumentConfig = sc;
                     /* ...and next... */

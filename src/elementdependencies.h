@@ -5,11 +5,18 @@
 
 #include"configuration.h"
 
+struct featureIndex{
+
+    int idx;
+    int typeOfElement;
+
+};
+
 struct functionInfo{
     QString name;
     QString plugin;
     int executionIndex;
-    QMap<int,int> neededElements;
+    QMap<int,featureIndex> neededElements;
 };
 
 struct sensorInfo{
@@ -31,6 +38,7 @@ public:
     bool addObservationID(int id);
     bool addFunctionInfo(functionInfo info);
     bool addSensorInfo(sensorInfo info);
+    bool addActiveSensor(sensorInfo info);
 
     bool hasPluginSensor();
     bool hasPluginFunction();
@@ -42,6 +50,8 @@ public:
 
     QList<functionInfo> getNeededFunctions();
     QList<sensorInfo> getNeededSensors();
+
+    sensorInfo getActiveSensor();
 
 
 
@@ -56,6 +66,7 @@ private:
 
     QList<functionInfo> neededFunctions;
     QList<sensorInfo> neededSensors;
+    sensorInfo activeSensor;
 
 };
 

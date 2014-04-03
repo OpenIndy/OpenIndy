@@ -108,6 +108,10 @@ bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies d){
         if(attributes.hasAttribute("plugin")) {
             f.plugin = attributes.value("id").toInt();
         }
+        if(attributes.hasAttribute("executionIndex")) {
+            f.executionIndex = attributes.value("executionIndex").toInt();
+        }
+
 
         while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                 xml.name() == "function")) {
@@ -121,16 +125,18 @@ bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies d){
 
                             QXmlStreamAttributes memberAttributes = xml.attributes();
 
+                                    featureIndex idx;
+
                                     if(memberAttributes.hasAttribute("index")){
-                                       f.executionIndex = memberAttributes.value("ref").toInt();
+                                       idx.idx = memberAttributes.value("index").toInt();
                                     }
 
                                     if(memberAttributes.hasAttribute("type") && memberAttributes.hasAttribute("ref")){
 
                                         int elementId = memberAttributes.value("ref").toInt();
-                                        int elementType =  memberAttributes.value("type").toInt();
+                                        idx.typeOfElement =  memberAttributes.value("type").toInt();
 
-                                        f.neededElements.insert(elementId,elementType);
+                                        f.neededElements.insert(elementId,idx);
                                     }
 
                         }
