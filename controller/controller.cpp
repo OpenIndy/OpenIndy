@@ -79,6 +79,10 @@ Controller::Controller(QObject *parent) :
     this->featureGraphicsModel->setHeader("feature overview");
     this->featureGraphicsModel->setSourceModel(this->featureTreeViewModel);
 
+    this->trafoScene.coordSystems = &coordSys;
+    this->trafoScene.stations = &stations;
+    this->trafoScene.trafoParams = &features;
+
     //set up filter mechanism for available elements treeview
     connect(this, SIGNAL(sendAvailableElementsFilter(Configuration::ElementTypes,bool)), this->availableElementsModel, SLOT(setFilter(Configuration::ElementTypes,bool)));
 
@@ -89,7 +93,11 @@ Controller::Controller(QObject *parent) :
     connect(this->activeStation,SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
     connect(this,SIGNAL(refreshGUI(FeatureWrapper*,Station*)),this->tblModel,SLOT(updateModel(FeatureWrapper*,Station*)));
 
+    connect(this,SIGNAL(refreshScene()),&this->trafoScene,SLOT(refreshScene()));
+
+
     emit refreshGUI(this->activeFeature,this->activeStation);
+    emit refreshScene();
 }
 
 /*!

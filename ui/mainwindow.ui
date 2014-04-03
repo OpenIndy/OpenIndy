@@ -88,7 +88,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="table">
        <attribute name="title">
@@ -160,6 +160,16 @@ background-position: center center;</string>
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>transformation order</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QGraphicsView" name="trafoOrderView"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -170,7 +180,7 @@ background-position: center center;</string>
      <x>0</x>
      <y>0</y>
      <width>1057</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

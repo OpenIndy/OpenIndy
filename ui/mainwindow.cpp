@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->widget_graphics->features = &control.features;
 
+    ui->trafoOrderView->setScene(control.trafoScene.trafoModel);
+
     //not working
     ui->tableView_data->setModel(control.featureOverviewModel);
     ui->tableView_trafoParam->setModel(control.trafoParamModel);

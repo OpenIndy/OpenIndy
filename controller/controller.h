@@ -23,6 +23,8 @@
 #include "featuregraphicstreeviewproxymodel.h"
 #include "usedelementsmodel.h"
 
+#include "trafoscenecontroller.h"
+
 #include "point.h"
 #include "pointcloud.h"
 #include "plane.h"
@@ -45,6 +47,7 @@
 #include "oiprojectdata.h"
 
 #include "oiemitter.h"
+
 
 class Feature;
 class CoordinateSystem;
@@ -86,6 +89,8 @@ public:
     FeatureGraphicsTreeViewProxyModel *featureGraphicsModel; //model for treeview with features in graphics view with featureTreeViewModel as source model
     UsedElementsModel *usedElementsModel; //model for listview with elements that are used for a function
 
+    TrafoSceneController trafoScene;
+
 signals:
     void changedStation();
     void featureAdded();
@@ -103,6 +108,8 @@ signals:
 
     void sendExtraParameterForFunction(QMap<QString, int> intParameter, QMap<QString, double> doubleParameter,
                                        QMap<QString, QStringList> stringParameter, FunctionConfiguration config); //connected with function plugin loader
+
+    void refreshScene();
 
 public slots:
 
