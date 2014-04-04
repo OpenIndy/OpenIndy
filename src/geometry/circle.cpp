@@ -43,5 +43,6 @@ void Circle::recalc(){
         this->isSolved = false;
         this->xyz = OiVec(4);
         this->radius = 0.0;
+        this->dist2origin = 0.0;
     }
 }
