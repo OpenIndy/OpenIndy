@@ -17,6 +17,8 @@
 #include "oimat.h"
 #include "pluginmetadata.h"
 
+#include <QtMath>
+
 using namespace std;
 
 class BestFitPoint : public FitFunction

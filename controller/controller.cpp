@@ -15,6 +15,9 @@ Controller::Controller(QObject *parent) :
     c = new Console(0);
     Console::c = c;
 
+    this->myDeleteFeaturesCallback = new DeleteFeaturesFunctor();
+    this->myDeleteFeaturesCallback->c = this;
+
     pluginsModel = new QSqlQueryModel();
     neededElementsModel = new QSqlQueryModel();
 
@@ -1887,4 +1890,177 @@ void Controller::loadProjectData(oiProjectData &data){
  */
 void Controller::printToConsole(QString message){
     Console::addLine(message);
+}
+
+/*!
+ * \brief Controller::deleteFeature
+ * Delete the specified feature if possible
+ * \param myFeature
+ */
+void Controller::deleteFeatures(QList<FeatureWrapper*> myFeatures){
+    this->featuresToDelete = myFeatures;
+
+    //check if delete task is valid
+    int countCoordSys = 0;
+    bool countCheck = true;
+    bool activeCheck = true;
+    foreach(FeatureWrapper *f, this->featuresToDelete){
+        if(f->getStation() != NULL && f->getStation() == this->activeStation){ //do not delete active station
+            activeCheck = false;
+            break;
+        }else if(f->getStation() != NULL || f->getCoordinateSystem() != NULL){
+            countCoordSys++;
+        }
+    }
+    if(countCoordSys >= (this->stations.size() + this->coordSys.size())){
+        countCheck = false;
+    }
+
+    if(activeCheck && countCheck){ //if delete task is valid
+
+        if(myFeatures.size() == 1){
+            emit this->showMessageBoxForDecision("Delete features", QString("%1 %2 %3").arg("You have selected")
+                                                 .arg(myFeatures.size())
+                                                 .arg("feature. Do you really want to delete it, including all dependencies?"), this->myDeleteFeaturesCallback);
+        }else{
+            emit this->showMessageBoxForDecision("Delete features", QString("%1 %2 %3").arg("You have selected")
+                                                 .arg(myFeatures.size())
+                                                 .arg("features. Do you really want to delete them, including all dependencies?"), this->myDeleteFeaturesCallback);
+        }
+
+    }else{ //delete task is not valid
+
+        if(activeCheck == false){
+            emit this->showMessageBox("Delete error", "You cannot delete the active station!");
+        }else{
+            emit this->showMessageBox("Delete error", "At least one coordinate system has to exist!");
+        }
+
+    }
+
+
+
+    /*if(myFeature != NULL && myFeature->getFeature() != NULL){
+
+        if(myFeature->getFeature()->usedFor.size() == 0 && myFeature->getGeometry() != NULL){ //if there are no dependent features and the feature is a geometry
+
+            //clear active feature
+            if(this->activeFeature == myFeature){
+                this->activeFeature = NULL;
+                foreach(FeatureWrapper *f, this->features){
+                    if(f->getStation() != NULL && f->getStation() == this->activeStation){
+                        this->activeFeature = f;
+                        break;
+                    }
+                }
+            }
+            //remove feature from list
+            this->features.removeOne(myFeature);
+            //delete feature
+            this->myFeatureUpdater.deleteFeature(myFeature, this->features);
+
+            emit this->refreshGUI(this->activeFeature, this->activeStation);
+
+        }else{ //if there are dependent features
+
+            this->featureToDelete = myFeature;
+            if(myFeature->getStation() != NULL){ //if feature is a station
+                if(this->activeStation == myFeature->getStation()){
+                    emit this->showMessageBox("Delete feature error", "You cannot delete the active station!");
+                }else if((this->coordSys.size() + this->stations.size()) <= 1){
+                    emit this->showMessageBox("Delete feature error", "At least one coordinate system has to exist!");
+                }else{
+                    emit this->showMessageBoxForDecision("Delete feature warning", QString("%1 %2").arg("If you delete this station, all observations that were")
+                                                         .arg("made from this station are deleted, too."), *this->myDeleteFeatureCallback);
+                }
+            }else if(myFeature->getCoordinateSystem() != NULL){ //if feature is a coordinate system
+                emit this->showMessageBoxForDecision("Delete feature warning", QString("%1 %2").arg("If you delete this coordinate system, all nominals that you read in")
+                                                     .arg("are deleted, too."), *this->myDeleteFeatureCallback);
+            }else if(myFeature->getTrafoParam() != NULL){ //if feature is a transformation parameter
+                emit this->showMessageBoxForDecision("Delete feature warning", QString("%1 %2").arg("If you delete this transformation parameter set, then you")
+                                                     .arg("may not be able to transform between the affected coordinate systems."), *this->myDeleteFeatureCallback);
+            }else if(myFeature->getGeometry() != NULL && myFeature->getFeature()->usedFor.size() > 0){ //if feature is a geometry with dependencies
+                QString dependentFeatures = "";
+                for(int i = 0; i < myFeature->getFeature()->usedFor.size(); i++){
+                    if(myFeature->getFeature()->usedFor.at(i)->getFeature() != NULL){
+                        if(i == 0){
+                            dependentFeatures.append(myFeature->getFeature()->usedFor.at(i)->getFeature()->name);
+                        }else{
+                            dependentFeatures.append(QString(", %1").arg(myFeature->getFeature()->usedFor.at(i)->getFeature()->name));
+                        }
+                    }
+                }
+                emit this->showMessageBoxForDecision("Delete feature warning", QString("%1 %2").arg("If you delete this feature, then the dependent features")
+                                                     .arg(dependentFeatures), *this->myDeleteFeatureCallback);
+            }
+
+        }
+
+    }else{
+        this->printToConsole("The selected feature does not exist and therefor cannot be deleted.");
+    }*/
+}
+
+/*!
+ * \brief Controller::deleteFeatureCallback
+ * Is called after the user has decided wether to delete a feature with dependencies or not
+ * \param command
+ */
+void Controller::deleteFeaturesCallback(bool command){
+    //TODO create a backup file before deleting features
+
+    foreach(FeatureWrapper *delFeature, this->featuresToDelete){
+
+        //clear active feature and set it to active station
+        if(this->activeFeature == delFeature){
+            this->activeFeature = NULL;
+            foreach(FeatureWrapper *f, this->features){
+                if(f->getStation() != NULL && f->getStation() == this->activeStation){
+                    this->activeFeature = f;
+                    break;
+                }
+            }
+        }
+
+        //remove feature from lists
+        this->features.removeOne(delFeature);
+        if(delFeature->getStation() != NULL){
+            this->stations.removeOne(delFeature->getStation());
+        }else if(delFeature->getCoordinateSystem() != NULL){
+            this->coordSys.removeOne(delFeature->getCoordinateSystem());
+        }
+
+        //delete feature
+        this->myFeatureUpdater.deleteFeature(delFeature, this->features);
+
+    }
+
+    emit this->resetFeatureSelection();
+    emit this->refreshGUI(this->activeFeature, this->activeStation);
+
+    /*if(command && this->featureToDelete != NULL && this->featureToDelete->getFeature() != NULL){
+
+        //clear active feature
+        if(this->activeFeature == this->featureToDelete){
+            this->activeFeature = NULL;
+            foreach(FeatureWrapper *f, this->features){
+                if(f->getStation() != NULL && f->getStation() == this->activeStation){
+                    this->activeFeature = f;
+                    break;
+                }
+            }
+        }
+        //remove feature from lists
+        this->features.removeOne(this->featureToDelete);
+        if(this->featureToDelete->getStation() != NULL){
+            this->stations.removeOne(this->featureToDelete->getStation());
+        }else if(this->featureToDelete->getCoordinateSystem() != NULL){
+            this->coordSys.removeOne(this->featureToDelete->getCoordinateSystem());
+        }
+        //delete feature
+        this->myFeatureUpdater.deleteFeature(this->featureToDelete, this->features);
+
+        emit this->refreshGUI(this->activeFeature, this->activeStation);
+
+    }*/
 }

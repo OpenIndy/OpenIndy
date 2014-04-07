@@ -46,6 +46,8 @@
 
 #include "oiemitter.h"
 
+#include "deletefeaturesfunctor.h"
+
 class Feature;
 class CoordinateSystem;
 class Station;
@@ -99,7 +101,9 @@ signals:
     void sendPositionOfActiveFeature(double x, double y, double z);
 
     void showMessageBox(QString title, QString message);
+    void showMessageBoxForDecision(QString title, QString message, OiFunctor *func);
     void sendTempSensor(Sensor *s);
+    void resetFeatureSelection();
 
     void sendExtraParameterForFunction(QMap<QString, int> intParameter, QMap<QString, double> doubleParameter,
                                        QMap<QString, QStringList> stringParameter, FunctionConfiguration config); //connected with function plugin loader
@@ -162,12 +166,18 @@ public slots:
 
     void printToConsole(QString message);
 
+    void deleteFeatures(QList<FeatureWrapper*>);
+    void deleteFeaturesCallback(bool);
+
 private:
     void changeFunctionTreeViewModel();
     void changeUsedElementsModel(int functionIndex, int elementIndex);
     bool checkCircleWarning(Feature *activeFeature, Feature *usedForActiveFeature);
 
     FeatureUpdater myFeatureUpdater;
+    QList<FeatureWrapper*> featuresToDelete;
+
+    DeleteFeaturesFunctor *myDeleteFeaturesCallback;
 };
 
 #endif // CONTROLLER_H

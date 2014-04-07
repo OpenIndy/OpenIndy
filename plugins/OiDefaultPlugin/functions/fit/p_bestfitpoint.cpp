@@ -59,6 +59,7 @@ bool BestFitPoint::exec(Point &p){
         this->writeToConsole("Not enough observations available for calculation");
         return false;
     }
+
 }
 
 /*!

@@ -6,6 +6,7 @@
 #include <QPluginLoader>
 #include <QDebug>
 #include <QMessageBox>
+#include <QPoint>
 
 #include "controller.h"
 #include "station.h"
@@ -137,11 +138,16 @@ signals:
     void getAvailableFunctions();
     //TODO create a signal which will be emit every time if a new coordinate system was created and connect it to fillCoordSysComboBox()
     void sendActiveCoordSystem(QString coordSys);
+    void sendDeleteFeatures(QList<FeatureWrapper*> myFeatures);
 
 public slots:
     void showMessageBox(QString title, QString message);
+    void showMessageBoxForDecision(QString title, QString message, OiFunctor *func);
+    void resetFeatureSelection();
 
 private slots:
+    void deleteFeaturesContextMenu(QPoint point);
+    void deleteFeatures(bool checked);
 
     void ChangeCreateFeatureToolbar(int i);
     void CheckBoxNominalToggled(bool toggled);
@@ -230,6 +236,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    QModelIndexList featuresToDelete;
 };
 
 #endif // MAINWINDOW_H

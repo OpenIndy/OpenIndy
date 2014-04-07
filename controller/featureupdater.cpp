@@ -521,3 +521,20 @@ void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, Tr
         this->switchCoordinateSystem(coordinateSystems, stations, featureSet, activeCoordSystem);
     }
 }
+
+/*!
+ * \brief FeatureUpdater::deleteFeature
+ * Delete the specified feature with all dependencies
+ * \param myFeature
+ * \return
+ */
+bool FeatureUpdater::deleteFeature(FeatureWrapper *myFeature, QList<FeatureWrapper *> featureSet){
+    if(myFeature != NULL && myFeature->getFeature() != NULL){
+
+        if(myFeature->getGeometry() != NULL){
+
+        }
+
+    }
+    return false;
+}

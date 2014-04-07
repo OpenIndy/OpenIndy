@@ -4,7 +4,10 @@
 #include "featurewrapper.h"
 
 Feature::~Feature(){
-
+    //delete all functions when deleting the feature
+    for(int i = 0; i < this->functionList.size(); i++){
+        delete this->functionList.at(i);
+    }
 }
 
 /*!

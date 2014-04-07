@@ -137,7 +137,8 @@ SOURCES += \
     src/functionconfiguration.cpp \
     src/geometry/scalarentitytemperature.cpp \
     src/geometry/scalarentitymeasurementseries.cpp \
-    ui/customparameterwidget.cpp
+    ui/customparameterwidget.cpp \
+    controller/deletefeaturesfunctor.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -240,7 +241,9 @@ HEADERS  += \
     src/functionconfiguration.h \
     src/geometry/scalarentitytemperature.h \
     src/geometry/scalarentitymeasurementseries.h \
-    ui/customparameterwidget.h
+    ui/customparameterwidget.h \
+    controller/oifunctor.h \
+    controller/deletefeaturesfunctor.h
 
 
 FORMS    += ui/mainwindow.ui \

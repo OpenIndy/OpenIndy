@@ -47,6 +47,14 @@ MainWindow::MainWindow(QWidget *parent) :
     nominalDialog.setModal(true);
     trafoParamDialog.setModal(true);
 
+    //delete feature
+    this->ui->tableView_data->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->ui->tableView_trafoParam->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this->ui->tableView_data, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteFeaturesContextMenu(QPoint)));
+    connect(this->ui->tableView_trafoParam, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteFeaturesContextMenu(QPoint)));
+    connect(this, SIGNAL(sendDeleteFeatures(QList<FeatureWrapper*>)), &control, SLOT(deleteFeatures(QList<FeatureWrapper*>)));
+    connect(&control, SIGNAL(resetFeatureSelection()), this, SLOT(resetFeatureSelection()));
+
     //measurement config settings
     connect(&mConfigDialog,SIGNAL(sendConfig(FeatureWrapper*,MeasurementConfig*)),this,SLOT(receiveConfig(FeatureWrapper*,MeasurementConfig*)));
     connect(this,SIGNAL(sendConfig(MeasurementConfig*)),&mConfigDialog,SLOT(receiveConfig(MeasurementConfig*)));
@@ -133,6 +141,7 @@ MainWindow::MainWindow(QWidget *parent) :
             &control, SLOT(setFunctionConfiguration(int,FunctionConfiguration)));
 
     connect(&control, SIGNAL(showMessageBox(QString,QString)), this, SLOT(showMessageBox(QString,QString)));
+    connect(&control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
 
     //setup create feature toolbar
     setupCreateFeature();
@@ -844,8 +853,7 @@ void MainWindow::handleTableViewClicked(const QModelIndex &idx){
  * \brief Opens the dialog for setting functions to a feature.
  * Sets the plugins model and the function treeview model to the class.
  */
-void MainWindow::on_actionSet_function_triggered()
-{
+void MainWindow::on_actionSet_function_triggered(){
     if(this->control.activeFeature != NULL && this->control.activeFeature->getFeature() != NULL){
         //get models from database
         this->control.setFunction();
@@ -1088,6 +1096,31 @@ void MainWindow::showMessageBox(QString title, QString message){
 }
 
 /*!
+ * \brief MainWindow::showMessageBoxForDecision
+ * Show a message box to give the user the possibility to cancel a task
+ * \param title
+ * \param message
+ * \return
+ */
+void MainWindow::showMessageBoxForDecision(QString title, QString message, OiFunctor *func){
+    QMessageBox msgBox;
+    msgBox.setWindowTitle(title);
+    msgBox.setText(message);
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    int ret = msgBox.exec();
+    if(ret == 0){
+        QVariantList result;
+        result.append(true);
+        (*func)(result);
+    }else{
+        QVariantList result;
+        result.append(false);
+        (*func)(result);
+    }
+}
+
+/*!
  * \brief activates a station
  */
 void MainWindow::on_actionActivate_station_triggered()
@@ -1108,4 +1141,38 @@ void MainWindow::on_actionActivate_station_triggered()
     default:
         break;
     }
+}
+
+/*!
+ * \brief MainWindow::deleteFeatureContextMenu
+ * Is called whenever the user does a right-click on a feature in the table view and opens the context menu
+ * \param point
+ */
+void MainWindow::deleteFeaturesContextMenu(QPoint point){
+    this->featuresToDelete = this->ui->tableView_data->selectionModel()->selection().indexes();
+    QMenu *menu = new QMenu();
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete feature(s)"), this, SLOT(deleteFeatures(bool)));
+    menu->exec(ui->tableView_data->mapToGlobal(point));
+}
+
+/*!
+ * \brief MainWindow::deleteFeature
+ * Try to delete the feature that was marked to delete
+ * \param checked
+ */
+void MainWindow::deleteFeatures(bool checked){
+    if(this->featuresToDelete.size() >= 0){
+        FeatureOvserviewProxyModel *tableModel = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+        QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(this->featuresToDelete);
+        emit this->sendDeleteFeatures(myFeatures);
+    }
+}
+
+/*!
+ * \brief MainWindow::resetFeatureSelection
+ * Deselect all features in table view
+ */
+void MainWindow::resetFeatureSelection(){
+    this->ui->tableView_data->clearSelection();
+    this->ui->tableView_trafoParam->clearSelection();
 }

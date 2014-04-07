@@ -41,3 +41,27 @@ bool FeatureOvserviewProxyModel::filterAcceptsColumn(int source_column, const QM
     }
 
 }
+
+/*!
+ * \brief FeatureOvserviewProxyModel::getFeatureAtIndex
+ * Get the feature from the features list at index
+ * \param indices
+ * \return
+ */
+QList<FeatureWrapper*> FeatureOvserviewProxyModel::getFeaturesAtIndices(QModelIndexList &indices){
+    QList<FeatureWrapper*> result;
+
+    foreach(QModelIndex idx, indices){
+        int position = -1;
+        QModelIndex sourceModelIndex = this->mapToSource(idx); //get model index from source model
+        if(sourceModelIndex.row() >= 0){
+            position = sourceModelIndex.row();
+        }
+        if(this->features.size() > position && position >= 0){
+            FeatureWrapper *myFeature = this->features.at(position);
+            result.append(myFeature);
+        }
+    }
+
+    return result;
+}
