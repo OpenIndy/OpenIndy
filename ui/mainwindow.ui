@@ -164,9 +164,16 @@ background-position: center center;</string>
        <attribute name="title">
         <string>transformation order</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QGraphicsView" name="trafoOrderView"/>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,4">
+          <item>
+           <widget class="QGraphicsView" name="trafo_overview"/>
+          </item>
+          <item>
+           <widget class="QGraphicsView" name="trafoOrderView"/>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -180,7 +187,7 @@ background-position: center center;</string>
      <x>0</x>
      <y>0</y>
      <width>1057</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

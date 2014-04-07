@@ -8,6 +8,7 @@ FeatureGraphicsItem::FeatureGraphicsItem(FeatureWrapper* f, qreal pos_x, qreal p
     this->setY(pos_y);
 
     setFlag(ItemIsMovable);
+    setFlag(ItemIsSelectable);
 }
 
 QRectF FeatureGraphicsItem::boundingRect() const

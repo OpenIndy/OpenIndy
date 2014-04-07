@@ -23,8 +23,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->widget_graphics->features = &control.features;
 
-    ui->trafoOrderView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     ui->trafoOrderView->setScene(control.trafoScene.trafoModel);
+
+    ui->trafo_overview->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    ui->trafo_overview->setScene(control.trafoScene.trafoOverview);
 
 
     //not working

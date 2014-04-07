@@ -16,6 +16,7 @@ class TrafoSceneController : public QObject
 public:
     explicit TrafoSceneController(QObject *parent = 0);
     QGraphicsScene *trafoModel;
+    QGraphicsScene *trafoOverview;
     QList<FeatureWrapper*> *trafoParams;
     QList<CoordinateSystem*> *coordSystems;
     QList<Station*> *stations;
@@ -31,6 +32,7 @@ public slots:
 private slots:
     void drawTransformationParams();
     void drawCoordinatesystems();
+    void moveSelectionToModel();
 
 };
 

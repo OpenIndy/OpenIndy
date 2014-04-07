@@ -18,6 +18,7 @@ public:
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
+
 };
 
 #endif // FEATUREGRAPHICSITEM_H
