@@ -1,11 +1,11 @@
 #include "featuregraphicsitem.h"
 
-FeatureGraphicsItem::FeatureGraphicsItem(FeatureWrapper* f, int x, int y)
+FeatureGraphicsItem::FeatureGraphicsItem(FeatureWrapper* f, qreal pos_x, qreal pos_y)
 {
     this->featureToDraw = f;
 
-    pos_y = y;
-    pos_x = x;
+    this->setX(pos_x);
+    this->setY(pos_y);
 
     setFlag(ItemIsMovable);
 }
@@ -19,18 +19,23 @@ void FeatureGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
 {
 
     QRectF rec = boundingRect();
-    QBrush brush(Qt::blue);
+    QBrush brush(Qt::lightGray);
     painter->setBrush(brush);
 
     if(featureToDraw->getTypeOfFeature() == Configuration::eStationFeature){
-        brush.setColor(Qt::yellow);
         painter->drawEllipse(rec);
     }else if(featureToDraw->getTypeOfFeature() == Configuration::eCoordinateSystemFeature){
-        brush.setColor(Qt::green);
         painter->drawEllipse(rec);
     }else if(featureToDraw->getTypeOfFeature() == Configuration::eTrafoParamFeature){
-        brush.setColor(Qt::gray);
         painter->drawRect(rec);
     }
 
+    painter->drawText(rec,Qt::AlignCenter,featureToDraw->getFeature()->name);
+
+}
+
+void FeatureGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
+{
+
+    QMessageBox::information(NULL,"feature info",featureToDraw->getFeature()->name);
 }

@@ -5,8 +5,6 @@ TrafoSceneController::TrafoSceneController(QObject *parent) :
 {
 
     this->trafoModel = new QGraphicsScene();
-    trafoModel->addText("transformation parameter");
-
 
 }
 
@@ -34,16 +32,15 @@ void TrafoSceneController::drawTransformationParams()
 
 void TrafoSceneController::drawCoordinatesystems()
 {
-    int x = 0;
-    int y = 0;
+    qreal x = 10.0;
+    qreal y = 10.0;
     foreach(CoordinateSystem *c, *this->coordSystems){
         FeatureWrapper *f = new FeatureWrapper();
         f->setCoordinateSystem(c);
         QGraphicsItem *item = new FeatureGraphicsItem(f,x,y);
         trafoModel->addItem(item);
-        trafoModel->addText(c->name);
-        x += 10;
-        y += 10;
+        y += item->boundingRect().height()+10.0;
+
     }
 
     foreach(Station *s, *this->stations){
@@ -51,9 +48,7 @@ void TrafoSceneController::drawCoordinatesystems()
         f->setStation(s);
         QGraphicsItem *item = new FeatureGraphicsItem(f,x,y);
         trafoModel->addItem(item);
-        trafoModel->addText(s->name);
-        x += 10;
-        y += 10;
+        y += item->boundingRect().height()+10.0;
     }
 
 }
