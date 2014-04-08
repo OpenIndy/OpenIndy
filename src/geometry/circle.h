@@ -25,6 +25,20 @@ public:
 
     void recalc();
 
+    QString getDisplayX() const;
+    QString getDisplayY() const;
+    QString getDisplayZ() const;
+    QString getDisplayRadius() const;
+    QString getDisplayIsCommon() const;
+    QString getDisplayIsNominal() const;
+    QString getDisplayObs() const;
+    QString getDisplaySolved() const;
+    QString getDisplayMConfig() const;
+    QString getDisplayStdDev() const;
+    QString getDisplayI() const;
+    QString getDisplayJ() const;
+    QString getDisplayK() const;
+
 };
 
 #endif // CIRCLE_H

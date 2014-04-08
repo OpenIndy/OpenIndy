@@ -138,10 +138,10 @@ void FeatureData::on_comboBox_displayedFunction_currentIndexChanged(const QStrin
                 ui->label_s0aprioriValue->setText(QString::number(this->selectedFeature->getFeature()->functionList.at(currentFunction)->getStatistic().s0_apriori,'f',6));
             }
         }
-
+        /*
         if(this->selectedFeature->getPoint() == NULL){
             return;
-        }
+        }*/
 
         if(this->selectedFeature->getFeature()->functionList.at(currentFunction)->getFeatureOrder().size() > 0){
 
