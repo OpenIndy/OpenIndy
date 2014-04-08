@@ -47,6 +47,8 @@ private slots:
 
     void on_toolButton_mConfig_clicked();
 
+    void defaultGUISettings();
+
 private:
     Ui::CreateFeature *ui;
 };

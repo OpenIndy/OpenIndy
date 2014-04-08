@@ -24,7 +24,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_name"/>
+      <widget class="QLineEdit" name="lineEdit_name">
+       <property name="placeholderText">
+        <string>feature name</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -38,7 +42,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinBox_count"/>
+      <widget class="QSpinBox" name="spinBox_count">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>1000</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -50,7 +61,17 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="checkBox_actualNominal">
+    <widget class="QCheckBox" name="checkBox_Actual">
+     <property name="text">
+      <string>is actual</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkBox_Nominal">
      <property name="text">
       <string>is nominal</string>
      </property>

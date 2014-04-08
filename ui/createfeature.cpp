@@ -339,10 +339,10 @@ void CreateFeature::initGUI(){
 }
 
 /*!
- * \brief this function is called when the actual / nominal checkboxes gets toggled and generates specific gui elements for each case.
+ * \brief this function is called when the nominal checkboxes gets toggled and generates specific gui elements for each case.
  * \param bool checked
  */
-void CreateFeature::on_checkBox_actualNominal_toggled(bool checked)
+void CreateFeature::on_checkBox_Nominal_toggled(bool checked)
 {
     if(checked){
         ui->label_nominalSystem->setVisible(true);
@@ -360,4 +360,12 @@ void CreateFeature::on_checkBox_actualNominal_toggled(bool checked)
 void CreateFeature::on_toolButton_mConfig_clicked()
 {
     emit createFeatureMConfig();
+}
+
+/*!
+ * \brief defaultGUISettings restores default name count and checkbox values each time you open this dialog.
+ */
+void CreateFeature::defaultGUISettings()
+{
+
 }
