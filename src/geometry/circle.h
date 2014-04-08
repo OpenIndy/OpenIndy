@@ -13,7 +13,8 @@ public:
         unknownI,
         unknownJ,
         unknownK,
-        unknownR
+        unknownR,
+        unknownD
     };
 
     Circle();
@@ -22,6 +23,7 @@ public:
     OiVec xyz;
     OiVec ijk;
     double radius;
+    double dist2origin;
 
     void recalc();
 
