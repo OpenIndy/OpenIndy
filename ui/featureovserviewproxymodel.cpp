@@ -44,7 +44,7 @@ bool FeatureOvserviewProxyModel::filterAcceptsColumn(int source_column, const QM
 
 /*!
  * \brief FeatureOvserviewProxyModel::getFeatureAtIndex
- * Get the feature from the features list at index
+ * Get all selected features
  * \param indices
  * \return
  */

@@ -252,6 +252,8 @@ public:
     Reading* getReadingCartesian(int id);
     QList<Reading*> getCartesianReadings();
 
+    void removeFeature(int id);
+
 protected:
     void setUseState(int id, bool state);
     void writeToConsole(QString message);

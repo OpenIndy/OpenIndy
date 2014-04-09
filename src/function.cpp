@@ -2131,3 +2131,29 @@ OiEmitter& Function::getOiEmitter(){
 void Function::writeToConsole(QString message){
     myEmitter.sendString(message);
 }
+
+/*!
+ * \brief Function::removeFeature
+ * Remove the feature with the specified id and of given type
+ * \param typeOfFeature
+ * \param id
+ */
+void Function::removeFeature(int id){
+    this->removePoint(id);
+    this->removeLine(id);
+    this->removePlane(id);
+    this->removeSphere(id);
+    this->removeCylinder(id);
+    this->removeCone(id);
+    this->removeCircle(id);
+    this->removeStation(id);
+    this->removeCoordSystem(id);
+    this->removeTrafoParam(id);
+    this->removeEllipsoid(id);
+    this->removeParaboloid(id);
+    this->removeHyperboloid(id);
+    this->removeNurb(id);
+    this->removePointCloud(id);
+    this->removeScalarEntityAngle(id);
+    this->removeScalarEntityDistance(id);
+}

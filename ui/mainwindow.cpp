@@ -50,8 +50,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //delete feature
     this->ui->tableView_data->setContextMenuPolicy(Qt::CustomContextMenu);
     this->ui->tableView_trafoParam->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this->ui->tableView_data, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteFeaturesContextMenu(QPoint)));
-    connect(this->ui->tableView_trafoParam, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteFeaturesContextMenu(QPoint)));
     connect(this, SIGNAL(sendDeleteFeatures(QList<FeatureWrapper*>)), &control, SLOT(deleteFeatures(QList<FeatureWrapper*>)));
     connect(&control, SIGNAL(resetFeatureSelection()), this, SLOT(resetFeatureSelection()));
 
@@ -1109,7 +1107,7 @@ void MainWindow::showMessageBoxForDecision(QString title, QString message, OiFun
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Ok);
     int ret = msgBox.exec();
-    if(ret == 0){
+    if(ret == QMessageBox::Ok){
         QVariantList result;
         result.append(true);
         (*func)(result);
@@ -1148,8 +1146,12 @@ void MainWindow::on_actionActivate_station_triggered()
  * Is called whenever the user does a right-click on a feature in the table view and opens the context menu
  * \param point
  */
-void MainWindow::deleteFeaturesContextMenu(QPoint point){
-    this->featuresToDelete = this->ui->tableView_data->selectionModel()->selection().indexes();
+void MainWindow::deleteFeaturesContextMenu(const QPoint &point){
+    if(this->isTrafoParamSelected){
+        this->featuresToDelete = this->ui->tableView_trafoParam->selectionModel()->selection().indexes();
+    }else{
+        this->featuresToDelete = this->ui->tableView_data->selectionModel()->selection().indexes();
+    }
     QMenu *menu = new QMenu();
     menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete feature(s)"), this, SLOT(deleteFeatures(bool)));
     menu->exec(ui->tableView_data->mapToGlobal(point));
@@ -1157,14 +1159,20 @@ void MainWindow::deleteFeaturesContextMenu(QPoint point){
 
 /*!
  * \brief MainWindow::deleteFeature
- * Try to delete the feature that was marked to delete
+ * Try to delete the features that were marked to delete
  * \param checked
  */
 void MainWindow::deleteFeatures(bool checked){
     if(this->featuresToDelete.size() >= 0){
-        FeatureOvserviewProxyModel *tableModel = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
-        QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(this->featuresToDelete);
-        emit this->sendDeleteFeatures(myFeatures);
+        if(this->isTrafoParamSelected){
+            TrafoParamProxyModel *tableModel = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
+            QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(this->featuresToDelete);
+            emit this->sendDeleteFeatures(myFeatures);
+        }else{
+            FeatureOvserviewProxyModel *tableModel = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+            QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(this->featuresToDelete);
+            emit this->sendDeleteFeatures(myFeatures);
+        }
     }
 }
 
@@ -1175,4 +1183,26 @@ void MainWindow::deleteFeatures(bool checked){
 void MainWindow::resetFeatureSelection(){
     this->ui->tableView_data->clearSelection();
     this->ui->tableView_trafoParam->clearSelection();
+}
+
+/*!
+ * \brief MainWindow::on_tableView_data_customContextMenuRequested
+ * Context menu of table view with features requested
+ * \param pos
+ */
+void MainWindow::on_tableView_data_customContextMenuRequested(const QPoint &pos)
+{
+    this->isTrafoParamSelected = false;
+    this->deleteFeaturesContextMenu(pos);
+}
+
+/*!
+ * \brief MainWindow::on_tableView_trafoParam_customContextMenuRequested
+ * Context menu of table view with trafo params requested
+ * \param pos
+ */
+void MainWindow::on_tableView_trafoParam_customContextMenuRequested(const QPoint &pos)
+{
+    this->isTrafoParamSelected = true;
+    this->deleteFeaturesContextMenu(pos);
 }

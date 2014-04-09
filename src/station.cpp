@@ -48,6 +48,16 @@ Station::~Station(){
 
     stationThread.quit();
     stationThread.wait();
+
+    //delete corresponding coordinate system with all observations made from this station
+    delete this->coordSys;
+
+    //delete position of this station
+    delete this->position;
+
+    //TODO Sensorliste deleten
+    delete this->sensorPad;
+
 }
 
 void Station::stopThread(){

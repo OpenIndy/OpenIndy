@@ -146,7 +146,7 @@ public slots:
     void resetFeatureSelection();
 
 private slots:
-    void deleteFeaturesContextMenu(QPoint point);
+    void deleteFeaturesContextMenu(const QPoint &point);
     void deleteFeatures(bool checked);
 
     void ChangeCreateFeatureToolbar(int i);
@@ -234,10 +234,15 @@ private slots:
 
     void on_actionActivate_station_triggered();
 
+    void on_tableView_data_customContextMenuRequested(const QPoint &pos);
+
+    void on_tableView_trafoParam_customContextMenuRequested(const QPoint &pos);
+
 private:
     Ui::MainWindow *ui;
 
     QModelIndexList featuresToDelete;
+    bool isTrafoParamSelected;
 };
 
 #endif // MAINWINDOW_H

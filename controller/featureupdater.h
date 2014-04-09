@@ -30,7 +30,7 @@ public slots:
                                 QList<FeatureWrapper *> featureSet, CoordinateSystem *to);
     TrafoParam* findTrafoParam(CoordinateSystem *searchSystem, QList<TrafoParam *> trafoParams);
 
-    bool deleteFeature(FeatureWrapper *myFeature, QList<FeatureWrapper *> featureSet);
+    bool deleteFeature(FeatureWrapper *myFeatureWrapper, QList<FeatureWrapper *> featureSet);
 
 private:
     void fillTrafoParamFunctionNN(SystemTransformation *function, TrafoParam *tp);

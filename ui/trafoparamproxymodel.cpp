@@ -25,3 +25,27 @@ bool TrafoParamProxyModel::filterAcceptsColumn(int source_column, const QModelIn
     }
 
 }
+
+/*!
+ * \brief TrafoParamProxyModel::getFeaturesAtIndices
+ * Get all selected features
+ * \param indices
+ * \return
+ */
+QList<FeatureWrapper*> TrafoParamProxyModel::getFeaturesAtIndices(QModelIndexList &indices){
+    QList<FeatureWrapper*> result;
+
+    foreach(QModelIndex idx, indices){
+        int position = -1;
+        QModelIndex sourceModelIndex = this->mapToSource(idx); //get model index from source model
+        if(sourceModelIndex.row() >= 0){
+            position = sourceModelIndex.row();
+        }
+        if(this->features.size() > position && position >= 0){
+            FeatureWrapper *myFeature = this->features.at(position);
+            result.append(myFeature);
+        }
+    }
+
+    return result;
+}

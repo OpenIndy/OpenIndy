@@ -1902,11 +1902,15 @@ void Controller::deleteFeatures(QList<FeatureWrapper*> myFeatures){
 
     //check if delete task is valid
     int countCoordSys = 0;
-    bool countCheck = true;
-    bool activeCheck = true;
+    bool countCheck = true; //at least one coordinate system has to exist
+    bool activeCheck = true; //the active station cannot be deleted
+    bool displayCheck = true; //the display coordinate system cannot be deleted
     foreach(FeatureWrapper *f, this->featuresToDelete){
         if(f->getStation() != NULL && f->getStation() == this->activeStation){ //do not delete active station
             activeCheck = false;
+            break;
+        }else if(f->getCoordinateSystem() != NULL && f->getCoordinateSystem() == this->activeCoordinateSystem){ //do not delete display coordinate system
+            displayCheck = false;
             break;
         }else if(f->getStation() != NULL || f->getCoordinateSystem() != NULL){
             countCoordSys++;
@@ -1937,68 +1941,6 @@ void Controller::deleteFeatures(QList<FeatureWrapper*> myFeatures){
         }
 
     }
-
-
-
-    /*if(myFeature != NULL && myFeature->getFeature() != NULL){
-
-        if(myFeature->getFeature()->usedFor.size() == 0 && myFeature->getGeometry() != NULL){ //if there are no dependent features and the feature is a geometry
-
-            //clear active feature
-            if(this->activeFeature == myFeature){
-                this->activeFeature = NULL;
-                foreach(FeatureWrapper *f, this->features){
-                    if(f->getStation() != NULL && f->getStation() == this->activeStation){
-                        this->activeFeature = f;
-                        break;
-                    }
-                }
-            }
-            //remove feature from list
-            this->features.removeOne(myFeature);
-            //delete feature
-            this->myFeatureUpdater.deleteFeature(myFeature, this->features);
-
-            emit this->refreshGUI(this->activeFeature, this->activeStation);
-
-        }else{ //if there are dependent features
-
-            this->featureToDelete = myFeature;
-            if(myFeature->getStation() != NULL){ //if feature is a station
-                if(this->activeStation == myFeature->getStation()){
-                    emit this->showMessageBox("Delete feature error", "You cannot delete the active station!");
-                }else if((this->coordSys.size() + this->stations.size()) <= 1){
-                    emit this->showMessageBox("Delete feature error", "At least one coordinate system has to exist!");
-                }else{
-                    emit this->showMessageBoxForDecision("Delete feature warning", QString("%1 %2").arg("If you delete this station, all observations that were")
-                                                         .arg("made from this station are deleted, too."), *this->myDeleteFeatureCallback);
-                }
-            }else if(myFeature->getCoordinateSystem() != NULL){ //if feature is a coordinate system
-                emit this->showMessageBoxForDecision("Delete feature warning", QString("%1 %2").arg("If you delete this coordinate system, all nominals that you read in")
-                                                     .arg("are deleted, too."), *this->myDeleteFeatureCallback);
-            }else if(myFeature->getTrafoParam() != NULL){ //if feature is a transformation parameter
-                emit this->showMessageBoxForDecision("Delete feature warning", QString("%1 %2").arg("If you delete this transformation parameter set, then you")
-                                                     .arg("may not be able to transform between the affected coordinate systems."), *this->myDeleteFeatureCallback);
-            }else if(myFeature->getGeometry() != NULL && myFeature->getFeature()->usedFor.size() > 0){ //if feature is a geometry with dependencies
-                QString dependentFeatures = "";
-                for(int i = 0; i < myFeature->getFeature()->usedFor.size(); i++){
-                    if(myFeature->getFeature()->usedFor.at(i)->getFeature() != NULL){
-                        if(i == 0){
-                            dependentFeatures.append(myFeature->getFeature()->usedFor.at(i)->getFeature()->name);
-                        }else{
-                            dependentFeatures.append(QString(", %1").arg(myFeature->getFeature()->usedFor.at(i)->getFeature()->name));
-                        }
-                    }
-                }
-                emit this->showMessageBoxForDecision("Delete feature warning", QString("%1 %2").arg("If you delete this feature, then the dependent features")
-                                                     .arg(dependentFeatures), *this->myDeleteFeatureCallback);
-            }
-
-        }
-
-    }else{
-        this->printToConsole("The selected feature does not exist and therefor cannot be deleted.");
-    }*/
 }
 
 /*!
@@ -2009,58 +1951,77 @@ void Controller::deleteFeatures(QList<FeatureWrapper*> myFeatures){
 void Controller::deleteFeaturesCallback(bool command){
     //TODO create a backup file before deleting features
 
-    foreach(FeatureWrapper *delFeature, this->featuresToDelete){
+    if(command){ //if user decided to delete the selected features
 
-        //clear active feature and set it to active station
-        if(this->activeFeature == delFeature){
-            this->activeFeature = NULL;
-            foreach(FeatureWrapper *f, this->features){
-                if(f->getStation() != NULL && f->getStation() == this->activeStation){
-                    this->activeFeature = f;
-                    break;
+        foreach(FeatureWrapper *delFeature, this->featuresToDelete){
+            if(delFeature != NULL){
+
+                //clear active feature and set it to active station
+                if(this->activeFeature == delFeature){
+                    this->activeFeature = NULL;
+                    foreach(FeatureWrapper *f, this->features){
+                        if(f->getStation() != NULL && f->getStation() == this->activeStation){
+                            this->activeFeature = f;
+                            break;
+                        }
+                    }
                 }
+
+                //remove feature from lists
+                this->features.removeOne(delFeature);
+                if(delFeature->getStation() != NULL){
+                    this->stations.removeOne(delFeature->getStation());
+                    //remove corresponding trafo param set
+                    if(delFeature->getStation()->coordSys != NULL){
+                        foreach(TrafoParam *myTrafo, delFeature->getStation()->coordSys->trafoParams){
+                            if(myTrafo != NULL){
+                                int index = -1;
+                                for(int i = 0; i < this->features.size(); i++){
+                                    if(this->features.at(i) != NULL && this->features.at(i)->getTrafoParam() != NULL
+                                            && this->features.at(i)->getTrafoParam()->id == myTrafo->id){
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if(index >= 0){
+                                    this->features.removeAt(index);
+                                }
+                            }
+                        }
+                    }
+                }else if(delFeature->getCoordinateSystem() != NULL){
+                    this->coordSys.removeOne(delFeature->getCoordinateSystem());
+                    //remove corresponding trafo param set
+                    foreach(TrafoParam *myTrafo, delFeature->getCoordinateSystem()->trafoParams){
+                        if(myTrafo != NULL){
+                            int index = -1;
+                            for(int i = 0; i < this->features.size(); i++){
+                                if(this->features.at(i) != NULL && this->features.at(i)->getTrafoParam() != NULL
+                                        && this->features.at(i)->getTrafoParam()->id == myTrafo->id){
+                                    index = i;
+                                    break;
+                                }
+                            }
+                            if(index >= 0){
+                                this->features.removeAt(index);
+                            }
+                        }
+                    }
+                }
+
+                //delete feature
+                this->myFeatureUpdater.deleteFeature(delFeature, this->features);
+
             }
         }
 
-        //remove feature from lists
-        this->features.removeOne(delFeature);
-        if(delFeature->getStation() != NULL){
-            this->stations.removeOne(delFeature->getStation());
-        }else if(delFeature->getCoordinateSystem() != NULL){
-            this->coordSys.removeOne(delFeature->getCoordinateSystem());
-        }
+        this->myFeatureUpdater.recalcFeatureSet(this->features);
 
-        //delete feature
-        this->myFeatureUpdater.deleteFeature(delFeature, this->features);
+        //refresh feature tree view models
+        this->featureTreeViewModel->refreshModel();
 
-    }
-
-    emit this->resetFeatureSelection();
-    emit this->refreshGUI(this->activeFeature, this->activeStation);
-
-    /*if(command && this->featureToDelete != NULL && this->featureToDelete->getFeature() != NULL){
-
-        //clear active feature
-        if(this->activeFeature == this->featureToDelete){
-            this->activeFeature = NULL;
-            foreach(FeatureWrapper *f, this->features){
-                if(f->getStation() != NULL && f->getStation() == this->activeStation){
-                    this->activeFeature = f;
-                    break;
-                }
-            }
-        }
-        //remove feature from lists
-        this->features.removeOne(this->featureToDelete);
-        if(this->featureToDelete->getStation() != NULL){
-            this->stations.removeOne(this->featureToDelete->getStation());
-        }else if(this->featureToDelete->getCoordinateSystem() != NULL){
-            this->coordSys.removeOne(this->featureToDelete->getCoordinateSystem());
-        }
-        //delete feature
-        this->myFeatureUpdater.deleteFeature(this->featureToDelete, this->features);
-
+        emit this->resetFeatureSelection();
         emit this->refreshGUI(this->activeFeature, this->activeStation);
 
-    }*/
+    }
 }

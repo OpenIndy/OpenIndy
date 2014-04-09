@@ -124,7 +124,8 @@ SOURCES += p_factory.cpp \
     lib/fitting/util/microtim.cpp \
     lib/fitting/util/mystring.cpp \
     lib/fitting/util/rho.cpp \
-    functions/fit/p_bestfitcircle.cpp
+    functions/fit/p_bestfitcircle.cpp \
+    ../../src/featurewrapper.cpp
 
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
@@ -212,6 +213,7 @@ HEADERS += p_factory.h \
     lib/fitting/util/microtim.h \
     lib/fitting/util/mystring.h \
     lib/fitting/util/rho.h \
-    functions/fit/p_bestfitcircle.h
+    functions/fit/p_bestfitcircle.h \
+    ../../src/featurewrapper.h
 
 OTHER_FILES += metaInfo.json

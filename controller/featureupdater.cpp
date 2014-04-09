@@ -528,13 +528,11 @@ void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, Tr
  * \param myFeature
  * \return
  */
-bool FeatureUpdater::deleteFeature(FeatureWrapper *myFeature, QList<FeatureWrapper *> featureSet){
-    if(myFeature != NULL && myFeature->getFeature() != NULL){
-
-        if(myFeature->getGeometry() != NULL){
-
-        }
-
+bool FeatureUpdater::deleteFeature(FeatureWrapper *myFeatureWrapper, QList<FeatureWrapper *> featureSet){
+    if(myFeatureWrapper != NULL && myFeatureWrapper->getFeature() != NULL){
+        Feature *myFeature = myFeatureWrapper->getFeature();
+        delete myFeature;
+        return true;
     }
     return false;
 }
