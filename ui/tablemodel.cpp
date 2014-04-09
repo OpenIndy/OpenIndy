@@ -31,7 +31,7 @@ int TableModel::rowCount(const QModelIndex& ) const{
  */
 int TableModel::columnCount(const QModelIndex &parent) const{
     //return m_columns.size();
-    return 31;
+    return 33;
 }
 
 /*!
@@ -60,13 +60,15 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
             return features.at(index.row())->getFeature()->name;
             break;
         case 2:
+            return features.at(index.row())->getFeature()->group;
+        case 3:
             if(features.at(index.row())->getFeature()->isSolved){
                 return features.at(index.row())->getFeature()->getDisplayX();
             }else{
                 return QVariant();
             }
             break;
-        case 3:
+        case 4:
             if(features.at(index.row())->getFeature()->isSolved){
                 return features.at(index.row())->getFeature()->getDisplayY();
             }else{
@@ -74,23 +76,23 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
             }
 
             break;
-        case 4:
+        case 5:
             if(features.at(index.row())->getFeature()->isSolved){
                 return features.at(index.row())->getFeature()->getDisplayZ();
             }else{
                 return QVariant();
             }
             break;
-        case 5:
+        case 6:
             return features.at(index.row())->getFeature()->getDisplayObs();
             break;
-        case 6:
+        case 7:
             return features.at(index.row())->getFeature()->getDisplaySolved();
             break;
-        case 7:
+        case 8:
             return features.at(index.row())->getFeature()->getDisplayMConfig();
             break;
-        case 8:
+        case 9:
             /*if(features.at(index.row())->getFeature()->functionList.size()==0){
                 return "no function set";
             }else{
@@ -110,95 +112,98 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                     return functions;
             }
             break;
-        case 9:
+        case 10:
             return features.at(index.row())->getFeature()->getDisplayIsCommon();
             break;
-        case 10:
+        case 11:
             return features.at(index.row())->getFeature()->getDisplayIsNominal();
             break;
-        case 11:
+        case 12:
             return features.at(index.row())->getFeature()->getDisplayStdDev();
             break;
-        case 12:
+        case 13:
             if(features.at(index.row())->getFeature()->isSolved){
                 return features.at(index.row())->getFeature()->getDisplayI();
             }else{
                 return QVariant();
             }
             break;
-        case 13:
+        case 14:
             if(features.at(index.row())->getFeature()->isSolved){
                 return features.at(index.row())->getFeature()->getDisplayJ();
             }else{
                 return QVariant();
             }
             break;
-        case 14:
+        case 15:
             if(features.at(index.row())->getFeature()->isSolved){
                 return features.at(index.row())->getFeature()->getDisplayK();
             }else{
                 return QVariant();
             }
             break;
-        case 15:
+        case 16:
             if(features.at(index.row())->getFeature()->isSolved){
                 return features.at(index.row())->getFeature()->getDisplayRadius();
             }else{
                 return QVariant();
             }
             break;
-        case 16:
+        case 17:
             if(features.at(index.row())->getFeature()->isSolved){
                 return features.at(index.row())->getFeature()->getDisplayScalarDistanceValue();
             }else{
                 return QVariant();
             }
             break;
-        case 17:
+        case 18:
             if(features.at(index.row())->getFeature()->isSolved){
                 return features.at(index.row())->getFeature()->getDisplayScalarAngleValue();
             }else{
                 return QVariant();
             }
             break;
-        case 18:
+        case 19:
             return features.at(index.row())->getFeature()->getDisplayStartSystem();
             break;
-        case 19:
+        case 20:
             return features.at(index.row())->getFeature()->getDisplayDestinationSystem();
             break;
-        case 20:
+        case 21:
             return features.at(index.row())->getFeature()->getDisplayTranslationX();
             break;
-        case 21:
+        case 22:
             return this->features.at(index.row())->getFeature()->getDisplayTranslationY();
             break;
-        case 22:
+        case 23:
             return this->features.at(index.row())->getFeature()->getDisplayTranslationZ();
             break;
-        case 23:
+        case 24:
             return this->features.at(index.row())->getFeature()->getDisplayRotationX();
             break;
-        case 24:
+        case 25:
             return this->features.at(index.row())->getFeature()->getDisplayRotationY();
             break;
-        case 25:
+        case 26:
             return this->features.at(index.row())->getFeature()->getDisplayRotationZ();
             break;
-        case 26:
+        case 27:
             return this->features.at(index.row())->getFeature()->getDisplayScaleX();
             break;
-        case 27:
+        case 28:
             return this->features.at(index.row())->getFeature()->getDisplayScaleY();
             break;
-        case 28:
+        case 29:
             return this->features.at(index.row())->getFeature()->getDisplayScaleZ();
             break;
-        case 29:
+        case 30:
             return this->features.at(index.row())->getFeature()->getDisplayScalarTemperatureValue();
             break;
-        case 30:
+        case 31:
             return this->features.at(index.row())->getFeature()->getDisplayScalarMeasurementSeriesValue();
+            break;
+        case 32:
+            return this->features.at(index.row())->getFeature()->comment;
             break;
         default:
             break;
@@ -238,10 +243,10 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
         }
 
         //if feature is not solved
-        if( (index.column() == 2 || index.column() == 3 || index.column() == 4
-                || index.column() == 12 || index.column() == 13
-                || index.column() == 14 || index.column() == 15
-                || index.column() == 16 || index.column() == 17)
+        if( (index.column() == 3 || index.column() == 4 || index.column() == 5
+                || index.column() == 13 || index.column() == 14
+                || index.column() == 15 || index.column() == 16
+                || index.column() == 17 || index.column() == 18)
                 && !features.at(index.row())->getFeature()->isSolved){
             return QColor(Qt::yellow);
         }
@@ -273,6 +278,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 
     m_columns.append("Feature type");
     m_columns.append("Featurename");
+    m_columns.append("Group");
 
     if(UnitConverter::distanceType == UnitConverter::eMETER){
         m_columns.append("X [m]");
@@ -375,6 +381,8 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
     m_columns.append(QString("Temperature " + UnitConverter::getTemperatureUnitString()));
     m_columns.append("Measurement series");
 
+    m_columns.append("Comment");
+
     if((Qt::DisplayRole == role) &&
             (Qt::Horizontal == orientation) &&
             (0 <= section) &&
@@ -389,8 +397,65 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
  * \brief TableModel::updateModel
  */
 void TableModel::updateModel(FeatureWrapper *fW, Station *sT){
-    activeFeature = fW;
-    activeStation = sT;
+    this->activeFeature = fW;
+    this->activeStation = sT;
     emit layoutAboutToBeChanged();
     emit layoutChanged();
+}
+
+/*!
+ * \brief TableModel::flags
+ * Add edit-functionality to some cells of tablemodel
+ * \param index
+ * \return
+ */
+Qt::ItemFlags TableModel::flags(const QModelIndex & index) const{
+    Qt::ItemFlags myFlags = QAbstractTableModel::flags(index);
+    return (myFlags | Qt::ItemIsEditable);
+}
+
+/*!
+ * \brief TableModel::setData
+ * Update the edited features
+ * \param index
+ * \param value
+ * \param role
+ * \return
+ */
+bool TableModel::setData(const QModelIndex & index, const QVariant & value, int role){
+    if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
+        if(index.column() == 1){ //feature name
+
+            if(this->activeFeature->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
+                Geometry *myGeom = this->activeFeature->getGeometry();
+                if(myGeom->isNominal && myGeom->myActual != NULL){
+                    myGeom->myActual->name = value.toString();
+                    foreach(Geometry *nomGeom, myGeom->myActual->nominals){
+                        if(nomGeom != NULL){
+                            nomGeom->name = value.toString();
+                        }
+                    }
+                }else{
+                    myGeom->name = value.toString();
+                    foreach(Geometry *nomGeom, myGeom->nominals){
+                        if(nomGeom != NULL){
+                            nomGeom->name = value.toString();
+                        }
+                    }
+                }
+            }else{
+                this->activeFeature->getFeature()->name = value.toString();
+            }
+
+        }else if(index.column() == 2){ //feature group
+            this->activeFeature->getFeature()->group = value.toString();
+        }else if(index.column() == 32){ //feature comment
+            this->activeFeature->getFeature()->comment = value.toString();
+        }
+
+        this->updateModel(this->activeFeature, this->activeStation);
+
+        return true;
+    }
+    return false;
 }

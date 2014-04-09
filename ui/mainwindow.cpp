@@ -23,9 +23,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->widget_graphics->features = &control.features;
 
-    //not working
-    ui->tableView_data->setModel(control.featureOverviewModel);
-    ui->tableView_trafoParam->setModel(control.trafoParamModel);
+    FeatureOverviewDelegate *myFeatureDelegate = new FeatureOverviewDelegate();
+    this->ui->tableView_data->setItemDelegate(myFeatureDelegate);
+    this->ui->tableView_data->setModel(this->control.featureOverviewModel);
+    TrafoParamDelegate *myTrafoParamDelegate = new TrafoParamDelegate();
+    this->ui->tableView_trafoParam->setItemDelegate(myTrafoParamDelegate);
+    this->ui->tableView_trafoParam->setModel(this->control.trafoParamModel);
 
     ui->treeView_featureOverview->setModel(this->control.featureGraphicsModel);
     fPluginDialog.receiveAvailableElementsModel(this->control.availableElementsModel);
@@ -81,7 +84,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tableView_data,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTableViewClicked(QModelIndex)));
     connect(this->lineEditSendCommand,SIGNAL(returnPressed()),this, SLOT(sendCommand()));
     connect(this->actionCreate,SIGNAL(triggered()),this,SLOT(createFeature()));
-    connect(ui->tableView_data,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(viewDoubleClicked(QModelIndex)));
     connect(this->actionMove,SIGNAL(triggered()),&moveDialog,SLOT(show()));
     connect(&moveDialog,SIGNAL(sendReading(Reading*)),&control,SLOT(startMove(Reading*)));
     //connect(ui->actionActivate_station,SIGNAL(triggered()),&control,SLOT(changeActiveStation()));
@@ -876,28 +878,6 @@ void MainWindow::openCreateFeatureMConfig(){
 }
 
 /*!
- * \brief double clicking the view opens a new dialog with specific information about the feature.
- * If the feature is a nominal geometry the nominal dialog will appear where you can put in and/or change the values.
- * If it´s not nominal and no coordinate system, the feature dialog will appear, where you can see the readings, observations,
- * and function statistics of the feature. If it is a station you can additionally view and change the sensor configuration.
- * \param const QModelIndex &idx
- */
-void MainWindow::viewDoubleClicked(const QModelIndex &idx){
-
-    if(this->control.activeFeature->getGeometry() != NULL &&
-            this->control.activeFeature->getGeometry()->getDisplayIsNominal()=="true"){
-
-        emit sendActiveNominalfeature(this->control.activeFeature);
-        nominalDialog.show();
-    }else{
-        if(this->control.activeFeature->getCoordinateSystem() == NULL){
-            fDataDialog.getActiveFeature(this->control.activeFeature);
-            fDataDialog.show();
-        }
-    }
-}
-
-/*!
  * \brief adds all coordinate systems to the coordinate system combobox.
  */
 void MainWindow::fillCoordSysComboBox(){
@@ -1074,16 +1054,6 @@ void MainWindow::on_actionOpen_triggered()
 }
 
 /*!
- * \brief double clicking transformation parameters displays a dialog for editing the values of them
- * \param const QModelIndex &index
- */
-void MainWindow::on_tableView_trafoParam_doubleClicked(const QModelIndex &index)
-{
-    trafoParamDialog.getSelectedTrafoParam(this->control.activeFeature);
-    trafoParamDialog.show();
-}
-
-/*!
  * \brief showMessageBox shows a messagebox with title and message
  * used for signalizing sensor actions (e.g. measuring)
  * \param QString title
@@ -1146,15 +1116,45 @@ void MainWindow::on_actionActivate_station_triggered()
  * Is called whenever the user does a right-click on a feature in the table view and opens the context menu
  * \param point
  */
-void MainWindow::deleteFeaturesContextMenu(const QPoint &point){
+void MainWindow::featureContextMenu(const QPoint &point){
+    //save model indices to delete later
     if(this->isTrafoParamSelected){
-        this->featuresToDelete = this->ui->tableView_trafoParam->selectionModel()->selection().indexes();
+        this->featuresToDelete = this->ui->tableView_trafoParam->selectionModel()->selectedIndexes();
     }else{
-        this->featuresToDelete = this->ui->tableView_data->selectionModel()->selection().indexes();
+        this->featuresToDelete = this->ui->tableView_data->selectionModel()->selectedIndexes();
     }
+
+    //create menu and add delete action
     QMenu *menu = new QMenu();
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete feature(s)"), this, SLOT(deleteFeatures(bool)));
-    menu->exec(ui->tableView_data->mapToGlobal(point));
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete selected feature(s)"), this, SLOT(deleteFeatures(bool)));
+
+    //check wether the right click was done on the active feature
+    QList<FeatureWrapper*> myFeatures;
+    if(this->isTrafoParamSelected){
+        QModelIndex selectedIndex = this->ui->tableView_trafoParam->indexAt(point);
+        TrafoParamProxyModel *tableModel = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
+        if(tableModel != NULL){
+            QModelIndexList myIndexList;
+            myIndexList.append(selectedIndex);
+            myFeatures = tableModel->getFeaturesAtIndices(myIndexList);
+        }
+    }else{
+        QModelIndex selectedIndex = this->ui->tableView_data->indexAt(point);
+        FeatureOvserviewProxyModel *tableModel = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+        if(tableModel != NULL){
+            QModelIndexList myIndexList;
+            myIndexList.append(selectedIndex);
+            myFeatures = tableModel->getFeaturesAtIndices(myIndexList);
+        }
+    }
+    if(this->control.activeFeature != NULL && this->control.activeFeature->getFeature() != NULL
+            && this->control.activeFeature->getTypeOfFeature() != Configuration::eCoordinateSystemFeature
+            && myFeatures.size() == 1 && myFeatures.at(0) != NULL && myFeatures.at(0)->getFeature() != NULL
+            && myFeatures.at(0)->getFeature()->id == this->control.activeFeature->getFeature()->id){
+        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(control.activeFeature->getFeature()->name), this, SLOT(showProperties(bool)));
+    }
+
+    menu->exec(this->ui->tableView_data->mapToGlobal(point));
 }
 
 /*!
@@ -1164,14 +1164,48 @@ void MainWindow::deleteFeaturesContextMenu(const QPoint &point){
  */
 void MainWindow::deleteFeatures(bool checked){
     if(this->featuresToDelete.size() >= 0){
+
+        //create new index list because of multiple indexes for one row
+        QModelIndexList myIndices;
+        QList<int> rows;
+        for(int i = 0; i < this->featuresToDelete.size(); i++){
+            if(!rows.contains(this->featuresToDelete.at(i).row())){
+                myIndices.append(this->featuresToDelete.at(i));
+                rows.append(this->featuresToDelete.at(i).row());
+            }
+        }
+
+        //send delete features
         if(this->isTrafoParamSelected){
             TrafoParamProxyModel *tableModel = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
-            QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(this->featuresToDelete);
+            QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(myIndices);
             emit this->sendDeleteFeatures(myFeatures);
         }else{
             FeatureOvserviewProxyModel *tableModel = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
-            QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(this->featuresToDelete);
+            QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(myIndices);
             emit this->sendDeleteFeatures(myFeatures);
+        }
+
+    }
+}
+
+/*!
+ * \brief MainWindow::showProperties
+ * Show properties of active feature
+ * \param checked
+ */
+void MainWindow::showProperties(bool checked){
+    //show dialog dependent on which type of feature was clicked
+    if(this->control.activeFeature != NULL){
+        if(this->control.activeFeature->getTypeOfFeature() == Configuration::eTrafoParamFeature){
+            trafoParamDialog.getSelectedTrafoParam(this->control.activeFeature);
+            trafoParamDialog.show();
+        }else if(this->control.activeFeature->getGeometry() != NULL && this->control.activeFeature->getGeometry()->isNominal){
+            emit sendActiveNominalfeature(this->control.activeFeature);
+            nominalDialog.show();
+        }else if(this->control.activeFeature->getCoordinateSystem() == NULL){
+            fDataDialog.getActiveFeature(this->control.activeFeature);
+            fDataDialog.show();
         }
     }
 }
@@ -1193,7 +1227,7 @@ void MainWindow::resetFeatureSelection(){
 void MainWindow::on_tableView_data_customContextMenuRequested(const QPoint &pos)
 {
     this->isTrafoParamSelected = false;
-    this->deleteFeaturesContextMenu(pos);
+    this->featureContextMenu(pos);
 }
 
 /*!
@@ -1204,5 +1238,5 @@ void MainWindow::on_tableView_data_customContextMenuRequested(const QPoint &pos)
 void MainWindow::on_tableView_trafoParam_customContextMenuRequested(const QPoint &pos)
 {
     this->isTrafoParamSelected = true;
-    this->deleteFeaturesContextMenu(pos);
+    this->featureContextMenu(pos);
 }

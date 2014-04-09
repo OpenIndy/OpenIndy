@@ -27,6 +27,9 @@
 #include "edittrafoparamdialog.h"
 #include "oiprojectexchanger.h"
 
+#include "featureoverviewdelegate.h"
+#include "trafoparamdelegate.h"
+
 #include <QComboBox>
 #include <QCheckBox>
 #include <QLabel>
@@ -146,8 +149,9 @@ public slots:
     void resetFeatureSelection();
 
 private slots:
-    void deleteFeaturesContextMenu(const QPoint &point);
+    void featureContextMenu(const QPoint &point);
     void deleteFeatures(bool checked);
+    void showProperties(bool checked);
 
     void ChangeCreateFeatureToolbar(int i);
     void CheckBoxNominalToggled(bool toggled);
@@ -156,7 +160,6 @@ private slots:
 
     void getActiveCoordSystem(QString coordSys);
     void handleTableViewClicked(const QModelIndex &);
-    void viewDoubleClicked(const QModelIndex &);
 
     void initializeActions();
 
@@ -229,8 +232,6 @@ private slots:
     void on_actionCreate_pointcloud_triggered();
 
     void on_actionCreate_circle_triggered();
-
-    void on_tableView_trafoParam_doubleClicked(const QModelIndex &index);
 
     void on_actionActivate_station_triggered();
 

@@ -4,7 +4,7 @@
 #include "observation.h"
 #include "station.h"
 
-Geometry::Geometry(){
+Geometry::Geometry() : myActual(NULL){
 
 }
 
