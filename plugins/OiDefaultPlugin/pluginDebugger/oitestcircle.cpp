@@ -8,6 +8,39 @@ void OiTestCircle::testLoeslerCircle(){
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
 
     qDebug() << "set pseudo observations";
+/*
+    Observation *obs1 = new Observation(NULL,NULL);
+    Observation *obs2 = new Observation(NULL,NULL);
+    Observation *obs3 = new Observation(NULL,NULL);
+    Observation *obs4 = new Observation(NULL,NULL);
+
+    obs1->isValid = true;
+    obs1->myXyz.setAt(0, 1.0);
+    obs1->myXyz.setAt(1, 0.0);
+    obs1->myXyz.setAt(2, 0.0);
+
+    obs2->isValid = true;
+    obs2->myXyz.setAt(0, 0.0);
+    obs2->myXyz.setAt(1, 1.0);
+    obs2->myXyz.setAt(2, 0.0);
+
+    obs3->isValid = true;
+    obs3->myXyz.setAt(0, -1.0);
+    obs3->myXyz.setAt(1, 0.0);
+    obs3->myXyz.setAt(2, 0.0);
+
+    obs4->isValid = true;
+    obs4->myXyz.setAt(0, 0.0);
+    obs4->myXyz.setAt(1, -1.0);
+    obs4->myXyz.setAt(2, 0.0);
+
+    Function *function = new BestFitCircle();
+
+    function->addObservation(obs1,0);
+    function->addObservation(obs2,0);
+    function->addObservation(obs3,0);
+    function->addObservation(obs4,0);
+*/
 
     Observation *obs1 = new Observation(NULL,NULL);
     Observation *obs2 = new Observation(NULL,NULL);

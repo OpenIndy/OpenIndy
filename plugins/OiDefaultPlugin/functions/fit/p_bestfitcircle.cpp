@@ -10,7 +10,7 @@ PluginMetaData *BestFitCircle::getMetaData() {
     metaData->description = QString("%1 %2")
             .arg("This function estimates a spatial circle usnig a general least squares algorithm.")
             .arg("Insert at least three non-collinear observed points, to get the best fit circle.")
-            .arg("The algorithm was ported from the FormFittingToolbox.");
+            .arg("The algorithm was taken from the OpenSource FormFittingToolbox (c) M.Loesler (GNU-GPL).");
     metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
 
     return metaData;
@@ -24,13 +24,9 @@ bool BestFitCircle::exec(Circle &circle) {
     if(this->isValid() && obsCount >= 3){
 
         //fill x,y,z arrays
-        double *x = new double[obsCount];
-        double *y = new double[obsCount];
-        double *z = new double[obsCount];
-
-        double *x_0 = new double[obsCount];
-        double *y_0 = new double[obsCount];
-        double *z_0 = new double[obsCount];
+        double x[obsCount];
+        double y[obsCount];
+        double z[obsCount];
 
         int k = 0;
 
@@ -52,10 +48,6 @@ bool BestFitCircle::exec(Circle &circle) {
                 y[k] = obs->myXyz.getAt(1);
                 z[k] = obs->myXyz.getAt(2);
 
-                x_0[k] = obs->myXyz.getAt(0);
-                y_0[k] = obs->myXyz.getAt(1);
-                z_0[k] = obs->myXyz.getAt(2);
-
                 xc += x[k];
                 yc += y[k];
                 zc += z[k];
@@ -72,25 +64,17 @@ bool BestFitCircle::exec(Circle &circle) {
             rc += sqrt((x[i]-xc)*(x[i]-xc) + (y[i]-yc)*(y[i]-yc) + (z[i]-zc)*(z[i]-zc));
         rc /= obsCount;
 
+        OiVec plane = this->getApproximatedPlane(obsCount, x, y, z, xc, yc, zc);
+
+        int maxItr = 50;
         double maxAbsDu = 1.0E308;
-        double d;
-        double n[3];
-        double qxxPlane[4*4];
-        //double xm[3];
-        //double rc;
-        //double qxxSphere[4*4];
-
-        // Bestimme erste Naeherung; Kugelausgleichung unbrauchbar, daher Schwerpunkt als erste Naeherung
-        if(!fitting_plane(x, y, z, obsCount , n, &d, qxxPlane)) // || !fitting_sphere(x, y, z, obsCount , xm, &rc, qxxSphere))
-            return false;
-
-        double nx = n[0];
-        double ny = n[1];
-        double nz = n[2];
+        double nx = plane.getAt(0);
+        double ny = plane.getAt(1);
+        double nz = plane.getAt(2);
+        double d  = plane.getAt(3);
 
         qDebug() << QString::number(xc) + ", " + QString::number(yc) + ", " + QString::number(zc) + ", " + QString::number(rc);
         qDebug() << QString::number(nx) + ", " + QString::number(ny) + ", " + QString::number(nz) + ", " + QString::number(d);
-
 
         // Stelle Matrizen fuer GH-Modell auf; in einer spaeteren Implementierung sollte die NGL direkt aufgebaut werden
         // um Speicherplatz zu sparen. Fuer wenige Punkte (und aus Gruenden der Uebersicht) wird im Moment darauf verzichtet.
@@ -99,7 +83,9 @@ bool BestFitCircle::exec(Circle &circle) {
 
         OiVec v(3*obsCount);
         OiMat Qxx(8,8);
-        for (int itr=0; itr<100 && maxAbsDu > 1.0E-8; itr++) {
+
+        int itr = 0;
+        while(true) {
             qDebug() << "DEBUG: Starte Iteation " + QString::number( itr+1 );
 
             OiMat A(2*obsCount, 8);
@@ -107,11 +93,11 @@ bool BestFitCircle::exec(Circle &circle) {
             OiVec w(2*obsCount);
 
             for(int i=0; i<obsCount; i++){
-                double xP = x[i];
-                double yP = y[i];
-                double zP = z[i];
+                double xP = x[i] - v.getAt(3*i);
+                double yP = y[i] - v.getAt(3*i+1);
+                double zP = z[i] - v.getAt(3*i+2);
 
-                // qDebug() << "DEBUG: Fuege Punkt P " + QString::number( xP ) + "/" + QString::number( yP ) + "/" + QString::number( zP ) + " hinzu.";
+                //qDebug() << "DEBUG: Fuege Punkt P " + QString::number( xP ) + "/" + QString::number( yP ) + "/" + QString::number( zP ) + " hinzu.";
 
                 // Kugelparameter
                 A.setAt(i, Circle::unknownX, -2.0*(xP - xc));
@@ -213,12 +199,17 @@ bool BestFitCircle::exec(Circle &circle) {
 
             v = B.t()*Pww*(A*du-w);
 
-            for(int i=0; i<obsCount; i++){
-                x[i] = x_0[i] - v.getAt(3*i);
-                y[i] = y_0[i] - v.getAt(3*i+1);
-                z[i] = z_0[i] - v.getAt(3*i+2);
-            }
             qDebug() << "DEBUG: Ende Iteation " + QString::number( itr+1 ) + "  max(|dx|) = " + QString::number( maxAbsDu );
+
+            if (itr<maxItr && maxAbsDu < 1.0E-8) {
+                qDebug() << "DEBUG: Found Solution!";
+                break;
+            }
+            else if (itr>maxItr) {
+                qDebug() << "DEBUG: Estimation failed!";
+                return false;
+            }
+            itr++;
         }
         qDebug() << QString::number(xc) + ", " + QString::number(yc) + ", " + QString::number(zc) + ", "  + QString::number(rc);
         qDebug() << QString::number(nx) + ", " + QString::number(ny) + ", " + QString::number(nz) + ", "  + QString::number(d);
@@ -278,7 +269,11 @@ QList<Configuration::FeatureTypes> BestFitCircle::applicableFor() {
     result.append(Configuration::eCircleFeature);
     return result;
 }
-
+/**
+ * Returns the number of valid Points
+ * @brief BestFitCircle::getObservationCount
+ * @return nop
+ */
 int BestFitCircle::getObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
@@ -290,4 +285,58 @@ int BestFitCircle::getObservationCount(){
             this->setUseState(obs->id, false);
     }
     return count;
+}
+/**
+ * Estimate the approx. Plane. SourceCode is taken from
+ * com.derletztekick.geodesy.formFittingToolbox.v2.form.form3d.Circle3D
+ * @brief BestFitCircle::getApproximatedPlane
+ * @param nop Number of Points
+ * @param x X-values
+ * @param y Y-values
+ * @param z Z-values
+ * @param cx X-value of centroid
+ * @param cy Y-value of centroid
+ * @param cz Z-value of centroid
+ * @return plane
+ */
+OiVec BestFitCircle::getApproximatedPlane(int nop, double x[], double y[], double z[], double cx, double cy, double cz) {
+    OiVec X(4);
+    OiMat H(3,3);
+    for (int k=0; k<nop; k++) {
+        for (int i=0; i<3; i++) {
+            for (int j=0; j<3; j++) {
+                double a=0, b=0;
+                if (i==0)
+                    a = x[k] - cx;
+                else if (i==1)
+                    a = y[k] - cy;
+                else
+                    a = z[k] - cz;
+
+                if (j==0)
+                    b = x[k] - cx;
+                else if (j==1)
+                    b = y[k] - cy;
+                else
+                    b = z[k] - cz;
+                H.setAt(i,j, H.getAt(i,j) + a * b);
+            }
+        }
+    }
+    OiMat u(3,3);
+    OiVec d(3);
+    OiMat v(3,3);
+    H.svd(u, d, v);
+    int indexMinEigVal = 0;
+    double minEigVal = d.getAt(indexMinEigVal);
+    for (int i=indexMinEigVal+1; i<d.getSize(); i++) {
+        if (minEigVal > d.getAt(i)) {
+            minEigVal = d.getAt(i);
+            indexMinEigVal = i;
+        }
+    }
+    for (int i=0; i<3; i++)
+        X.setAt(i, v.getAt(i, indexMinEigVal));
+    X.setAt(3, X.getAt(0)*cx + X.getAt(1)*cy + X.getAt(2)*cz);
+    return X;
 }

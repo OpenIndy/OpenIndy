@@ -19,6 +19,7 @@ public:
 
 private:
     int getObservationCount();
+    OiVec getApproximatedPlane(int nop, double x[], double y[], double z[], double cx, double cy, double cz);
 };
 
 #endif // P_BESTFITCIRCLE_H
