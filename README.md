@@ -45,9 +45,16 @@ If using Windows:
 If using Mac OS:
 
   - Copy `lib/armadillo-3.910.0/examples/framework_mac/Accelerate.framework` to the Mac OS Library `/Library/Frameworks`
-  
 
+OpenGL and GLU
+----------------
 
+If using Linux:
+
+  - Use the Terminal (command line): 
+    - `sudo apt-get install build-essential`
+    - `sudo apt-get install libx11-xcb-dev libglu1-mesa-dev libxrender-dev`
+     
 
 Default Plugin
 ---------------
