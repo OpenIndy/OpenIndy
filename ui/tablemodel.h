@@ -29,6 +29,7 @@ public:
     Station *activeStation;
 
 signals:
+    void groupNameChanged(QString oldValue, QString nweValue);
     
 public slots:
     void updateModel(FeatureWrapper *fW, Station *sT);

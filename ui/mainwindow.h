@@ -84,6 +84,8 @@ public:
     QLabel *labelCount;
     QComboBox *comboBoxFeatureType;
     QLineEdit *lineEditName;
+    QLabel *labelGroup;
+    QComboBox *comboBoxGroup;
     QSpinBox *spinBoxNumber;
     QCheckBox *checkBoxActualNominal;
     QCheckBox *checkBoxCommonPoint;
@@ -117,6 +119,7 @@ public:
     QAction *cFsep5;
     QAction *cFsep6;
     QAction *cFsep7;
+    QAction *cFsep8;
 
     //seperators control pad
     QAction *cPsep;
@@ -147,6 +150,7 @@ public slots:
     void showMessageBox(QString title, QString message);
     void showMessageBoxForDecision(QString title, QString message, OiFunctor *func);
     void resetFeatureSelection();
+    void availableGroupsChanged(QMap<QString, int>);
 
 private slots:
     void featureContextMenu(const QPoint &point);

@@ -108,14 +108,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&setUpDialog,SIGNAL(rejected()),this,SLOT(setUpStatusBar()));
 
     //feature dialog
-    connect(cFeatureDialog,SIGNAL(createFeature(int,int,QString,bool,bool,CoordinateSystem*)),&control,SLOT(addFeature(int,int,QString,bool,bool,CoordinateSystem*)));
+    connect(cFeatureDialog,SIGNAL(createFeature(int,int,QString,QString,bool,bool,CoordinateSystem*)),&control,SLOT(addFeature(int,int,QString,QString,bool,bool,CoordinateSystem*)));
     connect(cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
     connect(cFeatureDialog,SIGNAL(createTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)),&control,SLOT(addTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)));
     connect(&nominalDialog, SIGNAL(sendNominalValues(double,double,double,double,double,double,double,double,double,double,double)),&control,SLOT(getNominalValues(double,double,double,double,double,double,double,double,double,double,double)));
     connect(this,SIGNAL(sendActiveNominalfeature(FeatureWrapper*)),&nominalDialog,SLOT(getActiveFeature(FeatureWrapper*)));
 
     //Scalar entity dialog
-    connect(sEntityDialog,SIGNAL(createEntity(int,int,QString,bool,bool,double,CoordinateSystem*)),&control,SLOT(addScalarEntity(int,int,QString,bool,bool,double,CoordinateSystem*)));
+    connect(sEntityDialog,SIGNAL(createEntity(int,int,QString,QString,bool,bool,double,CoordinateSystem*)),&control,SLOT(addScalarEntity(int,int,QString,QString,bool,bool,double,CoordinateSystem*)));
     connect(sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
 
     //sensor plugin dialog
@@ -142,6 +142,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&control, SIGNAL(showMessageBox(QString,QString)), this, SLOT(showMessageBox(QString,QString)));
     connect(&control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
+
+    //group combo boxes
+    connect(&control, SIGNAL(availableGroupsChanged(QMap<QString,int>)), this, SLOT(availableGroupsChanged(QMap<QString,int>)));
+    connect(control.tblModel, SIGNAL(groupNameChanged(QString,QString)), &control, SLOT(groupNameChanged(QString,QString)));
 
     //setup create feature toolbar
     setupCreateFeature();
@@ -327,6 +331,9 @@ void MainWindow::setupCreateFeature(){
     ui->toolbarCreateFeature->addWidget(labelName);
     ui->toolbarCreateFeature->addWidget(lineEditName);
     ui->toolbarCreateFeature->addAction(cFsep1);
+    this->ui->toolbarCreateFeature->addWidget(this->labelGroup);
+    this->ui->toolbarCreateFeature->addWidget(this->comboBoxGroup);
+    this->ui->toolbarCreateFeature->addAction(this->cFsep8);
     ui->toolbarCreateFeature->addWidget(labelCount);
     ui->toolbarCreateFeature->addWidget(spinBoxNumber);
     ui->toolbarCreateFeature->addAction(cFsep2);
@@ -530,6 +537,9 @@ void MainWindow::initializeActions(){
     labelCount->setText("count:");
     comboBoxFeatureType = new QComboBox();
     lineEditName =  new QLineEdit();
+    this->labelGroup = new QLabel("group:");
+    this->comboBoxGroup = new QComboBox();
+    this->comboBoxGroup->setEditable(true);
     spinBoxNumber = new QSpinBox();
     checkBoxActualNominal = new QCheckBox();
     checkBoxActualNominal->setText("nominal");
@@ -589,6 +599,8 @@ void MainWindow::initializeActions(){
     cFsep6->setSeparator(true);
     cFsep7 = new QAction(0);
     cFsep7->setSeparator(true);
+    cFsep8 = new QAction(0);
+    cFsep8->setSeparator(true);
 
     //seperators control pad
     cPsep = new QAction(0);
@@ -626,6 +638,7 @@ void MainWindow::createFeature(){
 
             int count = this->spinBoxNumber->value();
             QString name = this->lineEditName->text();
+            QString group = this->comboBoxGroup->currentText();
             int featureType = static_cast<Configuration::FeatureTypes>(this->comboBoxFeatureType->itemData(this->comboBoxFeatureType->currentIndex()).toInt());
             bool actual = this->checkBoxActualNominal->isChecked();
             bool comPoint = this->checkBoxCommonPoint->isChecked();
@@ -640,7 +653,7 @@ void MainWindow::createFeature(){
                 }
             }
 
-            control.addFeature(count,featureType,name,actual,comPoint,nominalSystem);
+            control.addFeature(count,featureType,name,group,actual,comPoint,nominalSystem);
 
         }
     }catch(std::exception e){
@@ -1239,4 +1252,18 @@ void MainWindow::on_tableView_trafoParam_customContextMenuRequested(const QPoint
 {
     this->isTrafoParamSelected = true;
     this->featureContextMenu(pos);
+}
+
+/*!
+ * \brief MainWindow::availableGroupsChanged
+ * Update group-comboBoxes
+ * \param availableGroups
+ */
+void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
+    QStringList groups = availableGroups.keys();
+    this->comboBoxGroup->clear();
+    this->comboBoxGroup->clearEditText();
+    this->comboBoxGroup->addItems(groups);
+    this->cFeatureDialog->availableGroupsChanged(groups);
+    this->sEntityDialog->availableGroupsChanged(groups);
 }

@@ -19,9 +19,11 @@ public:
 
     QList<FeatureWrapper*> &featureList;
 
+    void availableGroupsChanged(QStringList myGroups);
+
 signals:
 
-    void createEntity(int count, int featureType, QString name,
+    void createEntity(int count, int featureType, QString name, QString group,
                        bool actualNominal, bool isCommonPoint, double value, CoordinateSystem *nominalSystem);
 
     void createFeatureMConfig();

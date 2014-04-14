@@ -246,6 +246,7 @@ void CreateFeature::on_toolButton_create_clicked()
         int count = ui->spinBox_count->value();
         int featureType = this->typeOfFeature;
         QString name = ui->lineEdit_name->text();
+        QString group = this->ui->comboBox_group->currentText();
         bool isActual = ui->checkBox_actualNominal->isChecked();
         bool isCommon = ui->checkBox_common->isChecked();
         CoordinateSystem *nominalSystem = NULL;
@@ -265,7 +266,7 @@ void CreateFeature::on_toolButton_create_clicked()
                     }
                 }
             }
-        emit createFeature(count,featureType,name,isActual,isCommon,nominalSystem);
+        emit createFeature(count,featureType,name,group,isActual,isCommon,nominalSystem);
 
 
 
@@ -360,4 +361,15 @@ void CreateFeature::on_checkBox_actualNominal_toggled(bool checked)
 void CreateFeature::on_toolButton_mConfig_clicked()
 {
     emit createFeatureMConfig();
+}
+
+/*!
+ * \brief CreateFeature::availableGroupsChanged
+ * Update group combobox
+ * \param myGroups
+ */
+void CreateFeature::availableGroupsChanged(QStringList myGroups){
+    this->ui->comboBox_group->clear();
+    this->ui->comboBox_group->clearEditText();
+    this->ui->comboBox_group->addItems(myGroups);
 }

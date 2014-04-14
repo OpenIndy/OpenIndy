@@ -448,7 +448,9 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
             }
 
         }else if(index.column() == 2){ //feature group
+            QString oldValue = this->activeFeature->getFeature()->group;
             this->activeFeature->getFeature()->group = value.toString();
+            emit this->groupNameChanged(oldValue, value.toString());
         }else if(index.column() == 32){ //feature comment
             this->activeFeature->getFeature()->comment = value.toString();
         }

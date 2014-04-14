@@ -71,6 +71,7 @@ public:
     QList<Station*> stations;
     Station *activeStation;
     CoordinateSystem *activeCoordinateSystem;
+    QMap<QString, int> availableGroups;
 
     MeasurementConfig *lastmConfig;
     TableModel *tblModel;
@@ -108,6 +109,8 @@ signals:
     void sendExtraParameterForFunction(QMap<QString, int> intParameter, QMap<QString, double> doubleParameter,
                                        QMap<QString, QStringList> stringParameter, FunctionConfiguration config); //connected with function plugin loader
 
+    void availableGroupsChanged(QMap<QString, int> availableGroups);
+
 public slots:
 
     void getNominalValues(double nomX, double nomY, double nomZ, double nomI, double nomJ, double nomK, double nomR, double nomSDE, double nomSAE, double nomSTE, double nomSMSE);
@@ -116,8 +119,8 @@ public slots:
     int checkActiveFeatureIndex(int current, int index);
 
     void setActiveCoordSystem(QString CoordSysName);
-    void addFeature(int count, int featureType, QString name, bool actualNominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
-    void addScalarEntity(int count, int featureType, QString name, bool actual, bool commonPoint, double value, CoordinateSystem *nominalSystem);
+    void addFeature(int count, int featureType, QString name, QString group, bool actualNominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
+    void addScalarEntity(int count, int featureType, QString name, QString group, bool actual, bool commonPoint, double value, CoordinateSystem *nominalSystem);
     void addTrafoParam(int count, int featureType, QString name,
                         CoordinateSystem *startSystem, CoordinateSystem *destSystem);
 
@@ -168,6 +171,8 @@ public slots:
 
     void deleteFeatures(QList<FeatureWrapper*>);
     void deleteFeaturesCallback(bool);
+
+    void groupNameChanged(QString oldValue, QString newValue);
 
 private:
     void changeFunctionTreeViewModel();

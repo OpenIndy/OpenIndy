@@ -19,8 +19,8 @@
   <property name="windowTitle">
    <string>create scalar entity</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1">
      <item>
       <widget class="QLabel" name="label_scalarEntityType">
@@ -34,7 +34,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="1" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1">
      <item>
       <widget class="QLabel" name="label_name">
@@ -48,7 +48,25 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="2" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <widget class="QLabel" name="label_group">
+       <property name="text">
+        <string>group</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox_group">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
      <item>
       <widget class="QLabel" name="label_count">
@@ -62,7 +80,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="4" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1">
      <item>
       <widget class="QLabel" name="label_value">
@@ -76,21 +94,21 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="5" column="0">
     <widget class="QCheckBox" name="checkBox_nominal">
      <property name="text">
       <string>nominal</string>
      </property>
     </widget>
    </item>
-   <item>
+   <item row="6" column="0">
     <widget class="QCheckBox" name="checkBox_commonPoint">
      <property name="text">
       <string>commoin point</string>
      </property>
     </widget>
    </item>
-   <item>
+   <item row="7" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,1">
      <item>
       <widget class="QLabel" name="label_nominalSystem">
@@ -104,7 +122,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="8" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1,1">
      <item>
       <spacer name="horizontalSpacer">
