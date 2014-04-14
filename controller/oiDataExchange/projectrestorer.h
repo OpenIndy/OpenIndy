@@ -54,6 +54,9 @@ private:
     void resolveTrafoParam(FeatureWrapper *fw, ElementDependencies &d);
     void resolveCoordinateSystem(FeatureWrapper *fw, ElementDependencies &d);
 
+    void resolveObservation(ElementDependencies &d);
+
+
     QList<Function*> resolveFunctions(ElementDependencies &d);
 
 

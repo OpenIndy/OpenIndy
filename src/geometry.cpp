@@ -50,7 +50,7 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
 
 }
 
-bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies dependencies){
+bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies){
 
 
     if(xml.name() == "standardDeviation") {
@@ -125,6 +125,12 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
             /* ...and next... */
             xml.readNext();
         }
+    }
+
+    if(xml.name() == "function"){
+
+       this->readFunction(xml, dependencies);
+
     }
 
     return true;

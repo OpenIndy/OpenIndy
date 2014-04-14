@@ -63,7 +63,7 @@ bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
 
 }
 
-bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies dependencies){
+bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies){
 
     if(xml.name() == "member"){
 
@@ -94,7 +94,7 @@ bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies d
     }
 }
 
-bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies d){
+bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies &d){
 
     functionInfo f;
 
@@ -106,7 +106,7 @@ bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies d){
             f.name= attributes.value("name").toString();
         }
         if(attributes.hasAttribute("plugin")) {
-            f.plugin = attributes.value("id").toInt();
+            f.plugin = attributes.value("plugin").toString();
         }
         if(attributes.hasAttribute("executionIndex")) {
             f.executionIndex = attributes.value("executionIndex").toInt();

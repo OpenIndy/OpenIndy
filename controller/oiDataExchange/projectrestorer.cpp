@@ -206,6 +206,12 @@ bool ProjectRestorer::loadProject(oiProjectData &data){
 
          data.device->close();
          Console::addLine("resolve dependencies");
+
+         foreach(Station* s, this->stations){
+             this->stationElements.append(s->position->id);
+             this->stationElements.append(s->coordSys->id);
+         }
+
          this->resolveDependencies(data);
          return true;
 
@@ -354,26 +360,66 @@ Station* ProjectRestorer::findStation(int id){
 
 }
 
+/* \brief sortID
+* \param f1
+* \param f2
+* \return
+* comperator function for sorting FeatureWrapper* by id
+*/
+bool sortID(FeatureWrapper *f1, FeatureWrapper *f2){
+   return f1->getFeature()->id < f2->getFeature()->id;
+}
+
 void ProjectRestorer::resolveDependencies(oiProjectData &data){
 
     foreach(ElementDependencies d, this->dependencies){
 
-        FeatureWrapper *resolvedFeature = new FeatureWrapper();
+        FeatureWrapper *resolvedFeature ;
+
+        if(d.typeOfElement != Configuration::eObservationElement){
+        resolvedFeature = new FeatureWrapper();
+        }
 
         switch (d.typeOfElement) {
         case (Configuration::eStationElement):{
 
             this->resolveStation(resolvedFeature,d);
 
+            data.stations.append(resolvedFeature->getStation());
+
             break;}
+        case (Configuration::eCoordinateSystemElement):{
+
+                this->resolveCoordinateSystem(resolvedFeature,d);
+
+
+
+            break;}
+        case (Configuration::eTrafoParamElement):{
+
+            this->resolveTrafoParam(resolvedFeature,d);
+
+            break;}
+        case (Configuration::eObservationElement):{
+
+            this->resolveObservation(d);
+
+            break;}
+
         default:
+
+                this->resolveGeometry(resolvedFeature,d);
+
             break;
         }
 
 
-
-        data.features.append(resolvedFeature);
+        if(d.typeOfElement != Configuration::eObservationElement && !this->stationElements.contains(d.elementID)){
+            data.features.append(resolvedFeature);
+        }
     }
+
+    qSort(data.features.begin(), data.features.end(), sortID);
 
 }
 
@@ -410,6 +456,45 @@ void ProjectRestorer::resolveFeature(FeatureWrapper *fw, ElementDependencies &d)
 
 void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d)
 {
+    for(int i = 0; i< this->geometries.size();i++){
+        if(geometries.at(i)->getFeature()->id == d.elementID){
+            *fw = *geometries.at(i);
+            break;
+        }
+    }
+
+
+    this->resolveFeature(fw,d);
+
+    QList<int> neededObs = d.getObservationDependencies();
+    QList<int>* nominalCoordSys = d.getfeatureDependencies().value("coordinatesystem");
+    QList<int>* nominalGeom= d.getfeatureDependencies().value("nominalGeometry");
+
+    for(int i = 0;i<neededObs.size();i++){
+        Observation* obs = this->findObservation(neededObs.at(i));
+        if(obs != NULL){
+            fw->getGeometry()->myObservations.append(obs);
+            obs->myTargetGeometries.append(fw->getGeometry());
+        }
+    }
+
+    if(nominalCoordSys != NULL){
+        for(int i = 0;i<nominalCoordSys->size();i++){
+            CoordinateSystem* c = this->findCoordSys(nominalCoordSys->at(i));
+            if(c != NULL){
+                fw->getGeometry()->myNominalCoordSys = c;
+            }
+        }
+    }
+
+    if(nominalGeom != NULL){
+        for(int i = 0;i<nominalGeom->size();i++){
+            FeatureWrapper* nominalGeometry = this->findGeometry(nominalGeom->at(i));
+            if(nominalGeometry != NULL){
+                fw->getGeometry()->nominals.append(nominalGeometry->getGeometry());
+            }
+        }
+    }
 
 }
 
@@ -426,6 +511,19 @@ void ProjectRestorer::resolveStation(FeatureWrapper *fw, ElementDependencies &d)
     //resolve common feature attributes
     this->resolveFeature(fw,d);
 
+    //find Station coordsystem and postion
+    CoordinateSystem* stationCoordSys = this->findCoordSys(fw->getStation()->coordSys->id);
+    FeatureWrapper* stationPosition = this->findGeometry(fw->getStation()->position->id);
+
+    if(stationCoordSys != NULL){
+        fw->getStation()->coordSys = stationCoordSys;
+    }
+
+    if(stationPosition != NULL){
+        fw->getStation()->position = stationPosition->getPoint();
+    }
+
+
     sensorInfo activeSensor =  d.getActiveSensor();
     QList<sensorInfo> usedSensors = d.getNeededSensors();
 
@@ -440,19 +538,68 @@ void ProjectRestorer::resolveStation(FeatureWrapper *fw, ElementDependencies &d)
         fw->getStation()->usedSensors.append(PluginLoader::loadSensorPlugin(sensorPluginPath,sensorName));
     }
 
-
-
 }
 
 void ProjectRestorer::resolveTrafoParam(FeatureWrapper *fw, ElementDependencies &d)
 {
+    foreach(TrafoParam* t, this->trafoParams){
+        if(t->id == d.elementID){
+            fw->setTrafoParam(t);
+            break;
+        }
+    }
+
+    this->resolveFeature(fw,d);
 
 }
 
 void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, ElementDependencies &d)
 {
+    foreach(CoordinateSystem* c, this->coordSystems){
+        if(c->id == d.elementID){
+            fw->setCoordinateSystem(c);
+            break;
+        }
+    }
+
+    this->resolveFeature(fw,d);
+
+    QList<int> neededObs = d.getObservationDependencies();
+    QList<int>* nominalGeom= d.getfeatureDependencies().value("nominalGeometry");
+
+    for(int i = 0;i<neededObs.size();i++){
+        Observation* obs = this->findObservation(neededObs.at(i));
+        if(obs != NULL){
+            fw->getCoordinateSystem()->observations.append(obs);
+        }
+    }
+
+    if(nominalGeom != NULL){
+        for(int i = 0;i<nominalGeom->size();i++){
+            FeatureWrapper* nominalGeometry = this->findGeometry(nominalGeom->at(i));
+            if(nominalGeometry != NULL){
+                fw->getCoordinateSystem()->nominals.append(nominalGeometry->getGeometry());
+            }
+        }
+    }
 
 }
+
+void ProjectRestorer::resolveObservation(ElementDependencies &d)
+{
+    Observation* obs = this->findObservation(d.elementID);
+
+    QList<int>* obsStations = d.getfeatureDependencies().value("station");
+
+    if(obsStations != NULL){
+        for(int i = 0;i<obsStations->size();i++){
+            obs->myStation = this->findStation(obsStations->at(i));
+        }
+    }
+
+}
+
+
 
 QList<Function *> ProjectRestorer::resolveFunctions(ElementDependencies &d)
 {

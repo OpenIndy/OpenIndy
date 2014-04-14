@@ -3,7 +3,8 @@
 
 
 
-#include"configuration.h"
+#include "configuration.h"
+#include <QList>
 
 struct featureIndex{
 

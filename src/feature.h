@@ -132,8 +132,8 @@ public:
 
 protected:
     bool writeFeatureAttributes(QXmlStreamWriter& stream);
-    bool readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies dependencies);
-    bool readFunction(QXmlStreamReader &xml ,ElementDependencies d);
+    bool readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies);
+    bool readFunction(QXmlStreamReader &xml ,ElementDependencies &d);
 };
 
 #endif // FEATURE_H

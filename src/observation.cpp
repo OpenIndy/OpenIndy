@@ -201,12 +201,15 @@ ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
     }
     if(attributes.hasAttribute("x")){
         this->myOriginalXyz.setAt(0,attributes.value("x").toDouble());
+        this->myXyz.setAt(0,attributes.value("x").toDouble());
     }
     if(attributes.hasAttribute("y")){
         this->myOriginalXyz.setAt(1,attributes.value("y").toDouble());
+        this->myXyz.setAt(1,attributes.value("y").toDouble());
     }
     if(attributes.hasAttribute("z")){
         this->myOriginalXyz.setAt(2,attributes.value("z").toDouble());
+        this->myXyz.setAt(2,attributes.value("z").toDouble());
     }
     if(attributes.hasAttribute("isValid")){
         this->isValid = attributes.value("isVaild").toInt();

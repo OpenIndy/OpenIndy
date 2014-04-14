@@ -102,6 +102,7 @@ ElementDependencies Plane::fromOpenIndyXML(QXmlStreamReader &xml){
     }
     if(attributes.hasAttribute("id")) {
         this->id = attributes.value("id").toInt();
+        dependencies.elementID = this->id;
     }
     if(attributes.hasAttribute("nominal")) {
         this->isNominal = attributes.value("nominal").toInt();
