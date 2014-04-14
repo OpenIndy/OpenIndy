@@ -74,6 +74,19 @@ QMap <QString, QStringList>* LeicaTachymeter::getStringParameter(){
 
 }
 
+
+QMap<QString, double>* LeicaTachymeter::getDefaultAccuracy()
+{
+   QMap<QString,double> *defaultAccuracy = new QMap<QString,double>;
+
+   defaultAccuracy->insert("sigmaAzimuth",0.000001570);
+   defaultAccuracy->insert("sigmaZenith",0.000001570);
+   defaultAccuracy->insert("sigmaDistance",0.001);
+
+   return defaultAccuracy;
+
+}
+
 //! connect app with laser tracker
 bool LeicaTachymeter::connectSensor(ConnectionConfig* connConfig){
 

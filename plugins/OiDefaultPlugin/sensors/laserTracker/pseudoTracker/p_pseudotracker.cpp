@@ -71,6 +71,23 @@ QMap <QString, QStringList>* PseudoTracker::getStringParameter(){
 
 }
 
+QMap<QString, double>* PseudoTracker::getDefaultAccuracy()
+{
+    QMap<QString,double> *defaultAccuracy = new QMap<QString,double>;
+
+    defaultAccuracy->insert("sigmaAzimuth",0.000001570);
+    defaultAccuracy->insert("sigmaZenith",0.000001570);
+    defaultAccuracy->insert("sigmaDistance",0.000025);
+    defaultAccuracy->insert("sigmaX",0.000025);
+    defaultAccuracy->insert("sigmaY",0.000025);
+    defaultAccuracy->insert("sigmaZ",0.000025);
+    defaultAccuracy->insert("sigmaTempDeg", 0.5);
+    defaultAccuracy->insert("sigmaAngleXZ", 0.000001570);
+    defaultAccuracy->insert("sigmaAngleYZ", 0.000001570);
+
+    return defaultAccuracy;
+}
+
 bool PseudoTracker::checkMeasurementConfig(MeasurementConfig*){
     return true;
 }

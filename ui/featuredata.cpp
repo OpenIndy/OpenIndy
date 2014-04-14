@@ -251,11 +251,11 @@ void FeatureData::getReadingType()
                 break;
             case Configuration::eUndefined:
 
-                if(this->selectedFeature->getStation()->instrument->getUndefinedSigma() != NULL){
+                if(this->selectedFeature->getStation()->instrument->getDefaultAccuracy() != NULL){
 
                     ui->toolBox_accuracy->setItemText(4,this->selectedFeature->getStation()->instrument->getUndefinedReadingName());
 
-                    QMap<QString, double> undefSigma = *this->selectedFeature->getStation()->instrument->getUndefinedSigma();
+                    QMap<QString, double> undefSigma = *this->selectedFeature->getStation()->instrument->getDefaultAccuracy();
 
                     QMapIterator<QString, double> j(undefSigma);
                     while(j.hasNext()){

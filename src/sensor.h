@@ -36,31 +36,48 @@ public:
 
 //methods
 
-    //get sensor capabilities
-    virtual PluginMetaData* getMetaData() = 0;
+    //-----get sensor capabilities-----
 
     virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes() = 0;
     virtual QList<Configuration::ConnectionTypes>* getConnectionType() = 0;
 
+    //! get meta data
+    virtual PluginMetaData* getMetaData() = 0;
+
+    //individually defined sensor parameter
     virtual QMap<QString,int>* getIntegerParameter() = 0;
     virtual QMap<QString,double>* getDoubleParameter() = 0;
     virtual QMap <QString, QStringList>* getStringParameter() = 0;
 
+    //individually defined reading type
     virtual QString getUndefinedReadingName(){return "undefined";}
-    virtual QMap<QString,double>* getUndefinedSigma(){return NULL;}
+    virtual QMap<QString,double>* getDefaultAccuracy() = 0;
+
+    //! sensor configuration
     void setSensorConfiguration(SensorConfiguration* sConfig){myConfiguration = sConfig;}
 
-    //sensor control methods
+    //-----sensor actions-----
+
+    /*! checks given sensor functionality and nd calls the appropriate internal method
+     * of the instance*/
     virtual bool accept(SensorControl*, Configuration::SensorFunctionalities) = 0;
 
+    //! connect app with sensor
     virtual bool connectSensor(ConnectionConfig*) = 0;
+
+    //! disconnect app with sensor
     virtual bool disconnectSensor() = 0;
 
+    //! sensor measures a entity and returns a list of readings
     virtual QList<Reading*> measure(MeasurementConfig*) = 0;
 
+    //stream
     virtual void dataStream() = 0;
+
+    //exec individually defined command strings
     virtual void sendCommandString(QString) = 0;
 
+    //! checks if the measurementconfig is vaild
     virtual bool checkMeasurementConfig(MeasurementConfig*)=0;
 
 };

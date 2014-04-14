@@ -21,7 +21,7 @@ public:
 
       QMap <QString, QStringList>* getStringParameter();
 
-      QMap<QString, double>* getUndefinedSigma();
+      QMap<QString,double>* getDefaultAccuracy();
 
     //! laser tracker measures a point and returns an observation
     QList<Reading*> measure(MeasurementConfig *mc);
