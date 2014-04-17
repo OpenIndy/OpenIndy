@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initializeActions();
 
+    this->ui->comboBox_groups->addItem("All Groups");
+
     ui->toolBar_ControlPad->addWidget(labelSensorControlName);
     ui->toolBar_ControlPad->addAction(cPsep9);
 
@@ -1266,4 +1268,31 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
     this->comboBoxGroup->addItems(groups);
     this->cFeatureDialog->availableGroupsChanged(groups);
     this->sEntityDialog->availableGroupsChanged(groups);
+
+    QString activeGroup = this->ui->comboBox_groups->currentText();
+    if(groups.contains(activeGroup)){
+        this->ui->comboBox_groups->clear();
+        this->ui->comboBox_groups->addItem("All Groups");
+        this->ui->comboBox_groups->addItems(groups);
+        this->ui->comboBox_groups->setCurrentText(activeGroup);
+    }else{
+        this->ui->comboBox_groups->clear();
+        this->ui->comboBox_groups->addItem("All Groups");
+        this->ui->comboBox_groups->addItems(groups);
+        this->ui->comboBox_groups->setCurrentText("All Groups");
+        this->control.tblModel->updateModel(this->control.activeFeature, this->control.activeStation);
+    }
+}
+
+/*!
+ * \brief MainWindow::on_comboBox_groups_currentIndexChanged
+ * \param arg1
+ */
+void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
+{
+    FeatureOvserviewProxyModel *model = this->control.featureOverviewModel;//dynamic_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+    if(model != NULL){
+        model->activeGroupChanged(arg1);
+    }
+    this->control.tblModel->updateModel(this->control.activeFeature, this->control.activeStation);
 }

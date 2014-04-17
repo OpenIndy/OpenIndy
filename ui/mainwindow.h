@@ -39,6 +39,8 @@
 #include <QMetaEnum>
 #include <QString>
 
+#include "tablemodel.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -242,6 +244,8 @@ private slots:
     void on_tableView_data_customContextMenuRequested(const QPoint &pos);
 
     void on_tableView_trafoParam_customContextMenuRequested(const QPoint &pos);
+
+    void on_comboBox_groups_currentIndexChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;
