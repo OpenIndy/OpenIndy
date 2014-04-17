@@ -151,6 +151,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //setup create feature toolbar
     setupCreateFeature();
+    connect(&control, SIGNAL(updateGeometryIcons(QStringList)), this, SLOT(updateGeometryIcons(QStringList)));
+    this->control.checkAvailablePlugins();
 
     //dataimport
     connect(&importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&control,SLOT(importFeatures(QList<FeatureWrapper*>)));
@@ -1295,4 +1297,88 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
         model->activeGroupChanged(arg1);
     }
     this->control.tblModel->updateModel(this->control.activeFeature, this->control.activeStation);
+}
+/*!
+ * \brief MainWindow::updateGeometryIcons
+ * Enable or Disable gemetry buttons dependent on the availability of corresponding plugins
+ * \param availableGeometries
+ */
+void MainWindow::updateGeometryIcons(QStringList availableGeometries){
+    this->comboBoxFeatureType->clear();
+
+    if(availableGeometries.contains("point")){
+        this->ui->actionCreate_point->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"point",Configuration::ePointFeature);
+    }else{
+        this->ui->actionCreate_point->setEnabled(false);
+    }
+    if(availableGeometries.contains("line")){
+        this->ui->actionCreate_line->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"line",Configuration::eLineFeature);
+    }else{
+        this->ui->actionCreate_line->setEnabled(false);
+    }
+    if(availableGeometries.contains("plane")){
+        this->ui->actionCreate_plane->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"plane",Configuration::ePlaneFeature);
+    }else{
+        this->ui->actionCreate_plane->setEnabled(false);
+    }
+    if(availableGeometries.contains("sphere")){
+        this->ui->actionCreate_sphere->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"sphere",Configuration::eSphereFeature);
+    }else{
+        this->ui->actionCreate_sphere->setEnabled(false);
+    }
+    if(availableGeometries.contains("pointcloud")){
+        this->ui->actionCreate_pointcloud->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"pointcloud",Configuration::ePointCloudFeature);
+    }else{
+        this->ui->actionCreate_pointcloud->setEnabled(false);
+    }
+    if(availableGeometries.contains("cone")){
+        this->ui->actionCreate_cone->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cone", Configuration::eConeFeature);
+    }else{
+        this->ui->actionCreate_cone->setEnabled(false);
+    }
+    if(availableGeometries.contains("circle")){
+        this->ui->actionCreate_circle->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"circle",Configuration::eCircleFeature);
+    }else{
+        this->ui->actionCreate_circle->setEnabled(false);
+    }
+    if(availableGeometries.contains("cylinder")){
+        this->ui->actionCreate_cylinder->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cylinder",Configuration::eCylinderFeature);
+    }else{
+        this->ui->actionCreate_cylinder->setEnabled(false);
+    }
+    if(availableGeometries.contains("ellipsoid")){
+        this->ui->actionCreate_ellipsoid->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"ellipsoid",Configuration::eEllipsoidFeature);
+    }else{
+        this->ui->actionCreate_ellipsoid->setEnabled(false);
+    }
+    if(availableGeometries.contains("hyperboloid")){
+        this->ui->actionCreate_hyperboloid->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"hyperboloid",Configuration::eHyperboloidFeature);
+    }else{
+        this->ui->actionCreate_hyperboloid->setEnabled(false);
+    }
+    if(availableGeometries.contains("nurbs")){
+        this->ui->actionCreate_nurbs->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"nurbs",Configuration::eNurbsFeature);
+    }else{
+        this->ui->actionCreate_nurbs->setEnabled(false);
+    }
+    if(availableGeometries.contains("paraboloid")){
+        this->ui->actionCreate_paraboloid->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"paraboloid",Configuration::eParaboloidFeature);
+    }else{
+        this->ui->actionCreate_paraboloid->setEnabled(false);
+    }
+
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"station",Configuration::eStationFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
 }

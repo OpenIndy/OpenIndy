@@ -153,6 +153,7 @@ public slots:
     void showMessageBoxForDecision(QString title, QString message, OiFunctor *func);
     void resetFeatureSelection();
     void availableGroupsChanged(QMap<QString, int>);
+    void updateGeometryIcons(QStringList availableGeometries);
 
 private slots:
     void featureContextMenu(const QPoint &point);

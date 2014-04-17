@@ -1044,6 +1044,8 @@ if (!metaInfo->alreadyExists){
 
     SystemDbManager::savePlugin(metaInfo,functionList,sensorList,networkAdjustmentList);
 
+    this->checkAvailablePlugins();
+
     /*for (int i = 0;i<sensorList.size();i++){
         SystemDbManager::savePlugin(sensorList.at(i)->getMetaData(),functionList,sensorList,networkAdjustmentList);
     }
@@ -2114,4 +2116,13 @@ void Controller::groupNameChanged(QString oldValue, QString newValue){
         emit this->availableGroupsChanged(this->availableGroups);
     }
 
+}
+
+/*!
+ * \brief Controller::checkAvailablePlugins
+ * For each geometry type check wether there is a corresponding plugin to create it
+ */
+void Controller::checkAvailablePlugins(){
+    QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
+    emit this->updateGeometryIcons(availableGeometries);
 }

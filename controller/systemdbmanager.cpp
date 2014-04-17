@@ -545,3 +545,28 @@ void SystemDbManager::saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustmen
     QSqlQuery command(SystemDbManager::db);
     command.exec(query);*/
 }
+
+/*!
+ * \brief SystemDbManager::getSupportedGeometries
+ * Retrieve a list of all geometries for which a corresponding plugin exists
+ * \return
+ */
+QStringList SystemDbManager::getSupportedGeometries(){
+    QStringList result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QString query = QString("SELECT DISTINCT e.element_type FROM elementPlugin AS ep INNER JOIN element AS e ON ep.element_id = e.id");
+
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+        while(command.next()){
+            result.append(command.value(0).toString());
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}

@@ -111,6 +111,8 @@ signals:
 
     void availableGroupsChanged(QMap<QString, int> availableGroups);
 
+    void updateGeometryIcons(QStringList availableGeometries);
+
 public slots:
 
     void getNominalValues(double nomX, double nomY, double nomZ, double nomI, double nomJ, double nomK, double nomR, double nomSDE, double nomSAE, double nomSTE, double nomSMSE);
@@ -173,6 +175,8 @@ public slots:
     void deleteFeaturesCallback(bool);
 
     void groupNameChanged(QString oldValue, QString newValue);
+
+    void checkAvailablePlugins();
 
 private:
     void changeFunctionTreeViewModel();
