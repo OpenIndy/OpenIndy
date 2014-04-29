@@ -77,7 +77,7 @@ SOURCES += \
     src/geometry.cpp \
     src/feature.cpp \
     src/coordinatesystem.cpp \
-    src/console.cpp \
+    controller/console.cpp \
     src/configuration.cpp \
     src/geometry/sphere.cpp \
     src/geometry/pointcloud.cpp \
@@ -165,7 +165,7 @@ HEADERS  += \
     src/feature.h \
     src/element.h \
     src/coordinatesystem.h \
-    src/console.h \
+    controller/console.h \
     src/configuration.h \
     src/plugin/pi_totalstation.h \
     src/plugin/pi_systemtransformation.h \

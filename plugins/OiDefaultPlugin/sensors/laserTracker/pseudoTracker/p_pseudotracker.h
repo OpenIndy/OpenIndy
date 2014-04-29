@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QFile>
+#include <QStringList>
 #include "pi_lasertracker.h"
 
 

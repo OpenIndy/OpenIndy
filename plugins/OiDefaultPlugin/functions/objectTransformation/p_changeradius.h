@@ -8,7 +8,6 @@
 #include <QThread>
 
 #include "pi_objecttransformation.h"
-#include "console.h"
 #include "sphere.h"
 #include "scalarentitydistance.h"
 #include "configuration.h"

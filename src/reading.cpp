@@ -21,9 +21,6 @@ void Reading::toCartesian(){
         this->rCartesian.xyz.setAt( 2, this->rPolar.distance * qCos(this->rPolar.zenith) );
         this->rCartesian.xyz.setAt( 3, 1.0 );
 
-    }else{
-        Console::addLine("polar reading not valid");
-        return;
     }
 
 }

@@ -9,7 +9,6 @@
 #include <qmath.h>
 #include <vector>
 #include "pi_fitfunction.h"
-#include "console.h"
 #include "line.h"
 #include "configuration.h"
 #include "oivec.h"

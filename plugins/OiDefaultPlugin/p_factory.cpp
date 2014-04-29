@@ -51,7 +51,9 @@ QList<Function*> OiTemplatePlugin::createFunctions(){
     resultSet.append(new TranslateByPlane());
     resultSet.append(new ProjectInPlane());
     resultSet.append(new Helmert7Param());
+    resultSet.append(new ShiftPlane());
     resultSet.append(new BestFitCircle());
+
     return resultSet;
 }
 
@@ -123,6 +125,8 @@ Function* OiTemplatePlugin::createFunction(QString name){
         result = new ProjectInPlane();
     }else if(name.compare("HelmertTransformation") == 0){
         result = new Helmert7Param();
+    }else if(name.compare("ShiftPlane") == 0){
+        result = new ShiftPlane();
     }else if(name.compare("BestFitCircle") == 0){
         result = new BestFitCircle();
     }

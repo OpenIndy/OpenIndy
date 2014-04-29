@@ -9,7 +9,6 @@
 #include <qmath.h>
 
 #include "pi_objecttransformation.h"
-#include "console.h"
 #include "point.h"
 #include "line.h"
 #include "sphere.h"

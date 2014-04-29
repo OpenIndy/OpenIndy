@@ -4,7 +4,6 @@
 #include <QMap>
 #include <QStringList>
 #include "configuration.h"
-#include "console.h"
 #include "point.h"
 #include "line.h"
 #include "plane.h"

@@ -13,7 +13,6 @@ PluginMetaData* PointFromPoints::getMetaData(){
             .arg("This function calculates an adjusted point.")
             .arg("You can input as many points as you want which are then used to find the best fit 3D point.");
     metaData->iid = "de.openIndy.Plugin.Function.ConstructFunction.v001";
-    //...
     return metaData;
 }
 
@@ -52,7 +51,7 @@ bool PointFromPoints::exec(Point &p){
         this->setUpPointResult( p );
         return true;
     }else{
-        Console::addLine("Not enough points available for calculation");
+        this->writeToConsole("Not enough points available for calculation");
         return false;
     }
 }
@@ -99,14 +98,14 @@ void PointFromPoints::setUpPointResult(Point &point){
             point.myStatistic.isValid = true;
             this->myStatistic = point.myStatistic;
         }catch(logic_error e){
-            Console::addLine(e.what());
+            this->writeToConsole(e.what());
             return;
         }catch(runtime_error e){
-            Console::addLine(e.what());
+            this->writeToConsole(e.what());
             return;
         }
     }else{
-        Console::addLine("Not enough valid points available for calculation");
+        this->writeToConsole("Not enough valid points available for calculation");
     }
 
 }
