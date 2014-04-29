@@ -9,6 +9,9 @@
 Observation::Observation(Reading *r, Station *s) : myReading(r), myStation(s), myXyz(4), myOriginalXyz(4), sigmaXyz(4)
 {
     this->id = Configuration::generateID();
+    if(r != NULL){
+        r->obs = this;
+    }
 }
 
 Observation::~Observation(){
