@@ -55,6 +55,8 @@ bool ElementDependencies::addActiveSensor(sensorInfo info)
     this->hasSensorPlugin = true;
 
     this->activeSensor = info;
+
+    return true;
 }
 
 bool ElementDependencies::hasPluginSensor()

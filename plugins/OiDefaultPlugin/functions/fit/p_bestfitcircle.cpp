@@ -24,9 +24,9 @@ bool BestFitCircle::exec(Circle &circle) {
     if(this->isValid() && obsCount >= 3){
 
         //fill x,y,z arrays
-        double x[obsCount];
-        double y[obsCount];
-        double z[obsCount];
+        double *x = new double[obsCount];
+        double *y = new double[obsCount];
+        double *z = new double[obsCount];
 
         int k = 0;
 

@@ -93,7 +93,7 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
     }
 
     this->writeFeatureAttributes(stream);
-
+    return true;
 }
 
 bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies){

@@ -202,7 +202,7 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
 
 
     stream.writeEndElement();
-
+    return true;
 }
 
 ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
