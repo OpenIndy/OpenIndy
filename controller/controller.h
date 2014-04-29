@@ -178,6 +178,7 @@ public slots:
     void groupNameChanged(QString oldValue, QString newValue);
 
     void checkAvailablePlugins();
+    bool checkPluginAvailability(Configuration::FeatureTypes typeOfFeature);
 
     void updateFeatureMConfig();
 

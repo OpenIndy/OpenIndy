@@ -82,6 +82,7 @@ public:
 
     //actions
     //create feature
+    QLabel *labelWarning;
     QLabel *labelName;
     QLabel *labelCount;
     QComboBox *comboBoxFeatureType;

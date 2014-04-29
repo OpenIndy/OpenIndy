@@ -152,8 +152,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //setup create feature toolbar
     setupCreateFeature();
-    connect(&control, SIGNAL(updateGeometryIcons(QStringList)), this, SLOT(updateGeometryIcons(QStringList)));
-    this->control.checkAvailablePlugins();
+    //connect(&control, SIGNAL(updateGeometryIcons(QStringList)), this, SLOT(updateGeometryIcons(QStringList)));
+    //this->control.checkAvailablePlugins();
 
     //dataimport
     connect(&importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&control,SLOT(importFeatures(QList<FeatureWrapper*>)));

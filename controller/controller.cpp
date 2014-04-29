@@ -2273,7 +2273,7 @@ void Controller::deleteFeatures(QList<FeatureWrapper*> myFeatures){
         countCheck = false;
     }
 
-    if(activeCheck && countCheck){ //if delete task is valid
+    if(activeCheck && countCheck && displayCheck){ //if delete task is valid
 
         if(myFeatures.size() == 1){
             emit this->showMessageBoxForDecision("Delete features", QString("%1 %2 %3").arg("You have selected")
@@ -2289,6 +2289,8 @@ void Controller::deleteFeatures(QList<FeatureWrapper*> myFeatures){
 
         if(activeCheck == false){
             emit this->showMessageBox("Delete error", "You cannot delete the active station!");
+        }else if(displayCheck == false){
+            emit this->showMessageBox("Delete error", "You cannot delete the display coordinate system!");
         }else{
             emit this->showMessageBox("Delete error", "At least one coordinate system has to exist!");
         }
@@ -2429,7 +2431,20 @@ void Controller::groupNameChanged(QString oldValue, QString newValue){
  * For each geometry type check wether there is a corresponding plugin to create it
  */
 void Controller::checkAvailablePlugins(){
-    QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
-    emit this->updateGeometryIcons(availableGeometries);
+    //QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
+    //emit this->updateGeometryIcons(availableGeometries);
 }
 
+/*!
+ * \brief Controller::checkPluginAvailability
+ * Check wether there are one or more plugins for a specified feature type
+ * \param typeOfFeature
+ * \return
+ */
+bool Controller::checkPluginAvailability(Configuration::FeatureTypes typeOfFeature){
+    QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
+    if(availableGeometries.contains(QString(OiMetaData::findFeature(typeOfFeature)))){
+        return true;
+    }
+    return false;
+}
