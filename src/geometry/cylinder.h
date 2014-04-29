@@ -8,6 +8,11 @@ class Cylinder : public Geometry
 public:
     Cylinder();
     Cylinder(const Cylinder &copy);
+
+    OiVec xyz;
+    OiVec ijk;
+    double radius;
+
     void recalc();
 
     //TODO implement cylinder

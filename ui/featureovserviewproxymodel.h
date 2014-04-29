@@ -3,7 +3,10 @@
 
 #include <QSortFilterProxyModel>
 #include "featurewrapper.h"
-
+/*!
+ * \brief The FeatureOvserviewProxyModel class  is a proxy model that filters all relevant feature attributes.
+ * This proxy model only displays geometries, stations and coordinate systems with all their relevant attributes.
+ */
 class FeatureOvserviewProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT

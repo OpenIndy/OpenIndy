@@ -6,6 +6,7 @@ oiExchangeASCII::oiExchangeASCII()
 
 bool oiExchangeASCII::importOiData(oiExchangeObject &data){
 
+    //check element type
     switch (data.typeOfElement) {
     case (Configuration::ePointElement):{
         return importPoint(data);
@@ -40,15 +41,18 @@ bool oiExchangeASCII::importOiData(oiExchangeObject &data){
 
 bool oiExchangeASCII::exportOiData(oiExchangeObject &data){
 
+    //TODO export feature in ascii format
     return false;
 }
 
 bool oiExchangeASCII::importPoint(oiExchangeObject& data){
 
+    //open and check device
     if (!data.device->open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return false;
     }
+
 
     QTextStream in(data.device);
     while(!in.atEnd())
@@ -81,6 +85,7 @@ bool oiExchangeASCII::importPoint(oiExchangeObject& data){
 
 bool oiExchangeASCII::importPlane(oiExchangeObject& data){
 
+    //open and check device
     if (!data.device->open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return false;
@@ -120,6 +125,8 @@ bool oiExchangeASCII::importPlane(oiExchangeObject& data){
 }
 
 bool oiExchangeASCII::importLine(oiExchangeObject& data){
+
+    //open and check device
     if (!data.device->open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return false;
@@ -159,6 +166,8 @@ bool oiExchangeASCII::importLine(oiExchangeObject& data){
 }
 
 bool oiExchangeASCII::importSphere(oiExchangeObject& data){
+
+    //open and check device
     if (!data.device->open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return false;

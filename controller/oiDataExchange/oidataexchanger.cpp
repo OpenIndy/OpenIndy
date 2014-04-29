@@ -26,6 +26,7 @@ QStringList oiDataExchanger::getOutputFormats(){
 
     QStringList  formats;
 
+    //add a tag for your oiexchange class here
     formats.append("ascii");
 
     return formats;
@@ -33,6 +34,7 @@ QStringList oiDataExchanger::getOutputFormats(){
 
 QList<Configuration::ElementTypes> oiDataExchanger::getSupportedElements(QString format){
 
+    //first check for your tag then call your supported elements function here
     if(format == "ascii"){
         oiExchangeASCII asciiExchange;
         return asciiExchange.getSupportedElements();
@@ -45,6 +47,7 @@ QList<Configuration::ElementTypes> oiDataExchanger::getSupportedElements(QString
 
  bool oiDataExchanger::exchangeData(oiExchangeObject &exchangeData,QString format, bool import){
 
+     //first check for your tag then call your import or export function here
      if(format == "ascii"){
          oiExchangeASCII asciiExchange;
          if (import){

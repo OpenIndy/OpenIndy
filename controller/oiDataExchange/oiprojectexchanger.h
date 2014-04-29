@@ -11,6 +11,12 @@
 #include "systemdbmanager.h"
 #include "pluginloader.h"
 
+/*!
+ * \brief The oiProjectExchanger class
+ * static class for generating a openindyXML of the actual project or to restore
+ * a project from a openindyXML.
+ */
+
 class oiProjectExchanger
 {
 public:

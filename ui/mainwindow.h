@@ -42,7 +42,7 @@ class MainWindow;
 }
 
 /*!
- * \brief The MainWindow class
+ * \brief The MainWindow class that contains the gui elements for the main view of openIndy and all connects to other gui elements.
  */
 class MainWindow : public QMainWindow
 {

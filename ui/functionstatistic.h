@@ -7,6 +7,9 @@
 #include "oimetadata.h"
 #include <QMutableMapIterator>
 
+/*!
+ * \brief The FunctionStatistic class displays the statistic of the selected function with its residuals and residual names.
+ */
 class FunctionStatistic : public QAbstractTableModel
 {
     Q_OBJECT
