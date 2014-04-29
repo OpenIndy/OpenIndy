@@ -142,7 +142,8 @@ SOURCES += \
     controller/oiDataExchange/projectrestorer.cpp \
     controller/deletefeaturesfunctor.cpp \
     ui/featureoverviewdelegate.cpp \
-    ui/trafoparamdelegate.cpp
+    ui/trafoparamdelegate.cpp \
+    controller/featureattributesexchange.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -251,7 +252,8 @@ HEADERS  += \
     controller/oifunctor.h \
     controller/deletefeaturesfunctor.h \
     ui/featureoverviewdelegate.h \
-    ui/trafoparamdelegate.h
+    ui/trafoparamdelegate.h \
+    controller/featureattributesexchange.h
 
 
 FORMS    += ui/mainwindow.ui \

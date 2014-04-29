@@ -105,26 +105,26 @@ Controller::Controller(QObject *parent) :
  * \param actualNominal
  * \param isCommonPoint
  */
-void Controller::addFeature(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem){
+void Controller::addFeature(FeatureAttributesExchange fae){
 
-    for(int k=0; k<count;k++){
+    for(int k=0; k<fae.count;k++){
         QString featureName;
         QString letterName;
         int numberName;
 
         if(k == 0){
-            featureName = name;
+            featureName = fae.name;
         }else{
-            featureName = name + QString::number(k);
+            featureName = fae.name + QString::number(k);
         }
 
-        for (int i=0; i<name.length();i++){
-            if(name.at(i).isDigit()){
-                letterName = name.left(i);
-                numberName = name.mid(i).toInt();
+        for (int i=0; i<fae.name.length();i++){
+            if(fae.name.at(i).isDigit()){
+                letterName = fae.name.left(i);
+                numberName = fae.name.mid(i).toInt();
                 numberName += k;
                 if(numberName == 0){
-                    featureName = name;
+                    featureName = fae.name;
                 }else {
                     featureName = letterName + QString::number(numberName);
                 }
@@ -132,28 +132,28 @@ void Controller::addFeature(int count, int featureType, QString name,QString gro
             }
         }
 
-        switch (featureType) {
+        switch (fae.featureType) {
         case Configuration::eStationFeature:
             for(int k=0; k<this->features.size();k++){
 
                 int res = QString::compare(this->features.at(k)->getFeature()->name,featureName, Qt::CaseSensitive);
                 if(res == 0){
 
-                    if(this->features.at(k)->getTypeOfFeature() != featureType){
+                    if(this->features.at(k)->getTypeOfFeature() != fae.featureType){
                         if(this->features.at(k)->getTypeOfFeature() != Configuration::ePointFeature){
                             Console::addLine("Feature name already exists");
                             return;
                         }
                     }
                     int r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
-                    if(nominal == true && r == 0){
-                        if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == nominalSystem){
+                    if(fae.nominal == true && r == 0){
+                        if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
                             Console::addLine("Feature name already exists");
                             return;
                         }
                     }
                     r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
-                    if(actual == true && r == 0){
+                    if(fae.actual == true && r == 0){
                         Console::addLine("Feature name already exists");
                         return;
                     }
@@ -165,44 +165,66 @@ void Controller::addFeature(int count, int featureType, QString name,QString gro
                 int res = QString::compare(this->features.at(k)->getFeature()->name,featureName,Qt::CaseSensitive);
                 if(res == 0){
 
-                    if(this->features.at(k)->getTypeOfFeature() != featureType){
+                    if(this->features.at(k)->getTypeOfFeature() != fae.featureType){
                         if(this->features.at(k)->getTypeOfFeature() != Configuration::eStationFeature){
                             Console::addLine("Feature name already exists");
                             return;
                         }
                     }
                     int r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
-                    if(nominal == true && r == 0){
-                        if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == nominalSystem){
+                    if(fae.nominal == true && r == 0){
+                        if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
                             Console::addLine("Feature name already exists");
                             return;
                         }
                     }
                     r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
-                    if(actual == true && r == 0){
+                    if(fae.actual == true && r == 0){
                         Console::addLine("Feature name already exists");
                         return;
                     }
                 }
             }
             break;
+        case Configuration::eTrafoParamFeature:
+            for(int k=0; k<this->features.size();k++){
+                        int res = QString::compare(this->features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
+                        if( res == 0){
+                            Console::addLine("Feature name already exists");
+                            return;
+                        }
+                    }
+
+                    for(int l=0; l<this->features.size();l++){
+                        if(this->features.at(l)->getTrafoParam() != NULL){
+                            if(this->features.at(l)->getTrafoParam()->from == fae.startSystem && this->features.at(l)->getTrafoParam()->to == fae.destSystem){
+                                Console::addLine("Transformation parameter for this configuration already exist.");
+                                return;
+                            }
+                            if(this->features.at(l)->getTrafoParam()->from == fae.destSystem && this->features.at(l)->getTrafoParam()->to == fae.startSystem){
+                                Console::addLine("Transformation parameter for this configuration already exist.");
+                                return;
+                            }
+                        }
+                    }
+            break;
         default:
             for(int k=0; k<this->features.size();k++){
                 int res = QString::compare(this->features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
                 if(res == 0){
-                    if(this->features.at(k)->getTypeOfFeature() != featureType){
+                    if(this->features.at(k)->getTypeOfFeature() != fae.featureType){
                         Console::addLine("Feature name already exists");
                         return;
                     }
                     int r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
-                    if(nominal == true && r == 0){
-                        if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == nominalSystem){
+                    if(fae.nominal == true && r == 0){
+                        if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
                             Console::addLine("Feature name already exists");
                             return;
                         }
                     }
                     r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
-                    if(actual == true && r == 0){
+                    if(fae.actual == true && r == 0){
                         Console::addLine("Feature name already exists");
                         return;
                     }
@@ -212,11 +234,13 @@ void Controller::addFeature(int count, int featureType, QString name,QString gro
         }
 
         //create nominal and actual
-        if(actual){
-            this->createFeature(featureType,featureName,group,false,isCommonPoint,NULL);
+        if(fae.actual){
+            this->createFeature(fae.featureType,featureName,fae.group,false,fae.common,fae.nominalSystem,fae.startSystem,
+                                fae.destSystem);
         }
-        if(nominal){
-            this->createFeature(featureType,featureName,group, true,isCommonPoint,nominalSystem);
+        if(fae.nominal){
+            this->createFeature(fae.featureType,featureName,fae.group, true,fae.common,fae.nominalSystem,fae.startSystem,
+                                fae.destSystem);
         }
         //refresh feature tree view models
         this->featureTreeViewModel->refreshModel();
@@ -228,159 +252,16 @@ void Controller::addFeature(int count, int featureType, QString name,QString gro
 
     //update available group names
     int currentCount = 0;
-    if(this->availableGroups.contains(group)){
-        currentCount = this->availableGroups.find(group).value();
-        currentCount += count;
+    if(this->availableGroups.contains(fae.group)){
+        currentCount = this->availableGroups.find(fae.group).value();
+        currentCount += fae.count;
     }else{
-        currentCount += count;
+        currentCount += fae.count;
     }
-    this->availableGroups.insert(group, currentCount);
+    this->availableGroups.insert(fae.group, currentCount);
     emit this->availableGroupsChanged(this->availableGroups);
 }
 
-void Controller::addScalarEntity(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool commonPoint, CoordinateSystem *nominalSystem){
-//TODO scalar entities in neue Liste und nicht in features Liste speichern
-    for(int k=0;k<count;k++){
-        QString featureName;
-        QString letterName;
-        int numberName;
-
-        if(k == 0){
-            featureName = name;
-        }else{
-            featureName = name + QString::number(k);
-        }
-
-        for (int i=0; i<name.length();i++){
-            if(name.at(i).isDigit()){
-                letterName = name.left(i);
-                numberName = name.mid(i).toInt();
-                numberName += k;
-                if(numberName == 0){
-                    featureName = name;
-                }else {
-                    featureName = letterName + QString::number(numberName);
-                }
-
-                break;
-            }
-        }
-
-        for(int k=0; k<this->features.size();k++){
-            int res = QString::compare(this->features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
-            if( res == 0){
-                int r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(), "true", Qt::CaseSensitive);
-                if(actual == true && r == 0){
-                    if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == nominalSystem){
-                        Console::addLine("Feature name already exists");
-                        return;
-                    }
-                }
-                r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(), "false", Qt::CaseSensitive);
-                if(actual == false &&  r == 0){
-                    Console::addLine("Feature name already exists");
-                    return;
-                }
-            }
-        }
-
-        //add function
-        if(actual){
-            this->createScalarEntity(featureType,featureName,group,false,commonPoint,NULL);
-        }
-        if(nominal){
-            this->createScalarEntity(featureType,featureName,group,true,commonPoint,nominalSystem);
-        }
-
-        emit refreshGUI(this->activeFeature, this->activeStation);
-        emit featureAdded();
-    }
-
-    //update available group names
-    int currentCount = 0;
-    if(this->availableGroups.contains(group)){
-        currentCount = this->availableGroups.find(group).value();
-        currentCount += count;
-    }else{
-        currentCount += count;
-    }
-    this->availableGroups.insert(group, currentCount);
-    emit this->availableGroupsChanged(this->availableGroups);
-
-    //refresh feature tree view models
-    this->featureTreeViewModel->refreshModel();
-
-}
-
-void Controller::addTrafoParam(int count, int featureType, QString name,CoordinateSystem *startSystem, CoordinateSystem *destSystem){
-    for(int k=0;k<count;k++){
-        QString featureName;
-        QString letterName;
-        int numberName;
-
-        if(k == 0){
-            featureName = name;
-        }else{
-            featureName = name + QString::number(k);
-        }
-
-        for (int i=0; i<name.length();i++){
-            if(name.at(i).isDigit()){
-                letterName = name.left(i);
-                numberName = name.mid(i).toInt();
-                numberName += k;
-                if(numberName == 0){
-                    featureName = name;
-                }else {
-                    featureName = letterName + QString::number(numberName);
-                }
-
-                break;
-            }
-        }
-
-        for(int k=0; k<this->features.size();k++){
-            int res = QString::compare(this->features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
-            if( res == 0){
-                Console::addLine("Feature name already exists");
-                return;
-            }
-        }
-
-        for(int l=0; l<this->features.size();l++){
-            if(this->features.at(l)->getTrafoParam() != NULL){
-                if(this->features.at(l)->getTrafoParam()->from == startSystem && this->features.at(l)->getTrafoParam()->to == destSystem){
-                    Console::addLine("Transformation parameter for this configuration already exist.");
-                    return;
-                }
-                if(this->features.at(l)->getTrafoParam()->from == destSystem && this->features.at(l)->getTrafoParam()->to == startSystem){
-                    Console::addLine("Transformation parameter for this configuration already exist.");
-                    return;
-                }
-            }
-        }
-
-        TrafoParam *trafopara = new TrafoParam();
-
-        trafopara->name = featureName;
-        trafopara->isSolved = false;
-        trafopara->from = startSystem;
-        trafopara->to = destSystem;
-
-        startSystem->trafoParams.append(trafopara);
-        destSystem->trafoParams.append(trafopara);
-
-        FeatureWrapper *fw = new FeatureWrapper();
-        fw->setTrafoParam(trafopara);
-
-        this->features.append(fw);
-        break;
-    }
-    //refresh feature tree view models
-    this->featureTreeViewModel->refreshModel();
-
-    emit refreshGUI(this->activeFeature, this->activeStation);
-}
 /*!
  * \brief Controller::startMeasurement
  * After checking some conditions, it calls the measure function of the active sensor.
@@ -1593,8 +1474,12 @@ void Controller::updateFeatureMConfig()
  * \param nominal
  * \param common
  * \param nominalSystem
+ * \param startSystem
+ * \param destSystem
  */
-void Controller::createFeature(int featureType, QString name,QString group, bool nominal, bool common, CoordinateSystem *nominalSystem)
+void Controller::createFeature(int featureType, QString name, QString group, bool nominal, bool common,
+                               CoordinateSystem *nominalSystem, CoordinateSystem *startSystem,
+                               CoordinateSystem *destSystem)
 {
     switch(featureType){
     case Configuration::ePointFeature: {
@@ -2045,6 +1930,159 @@ void Controller::createFeature(int featureType, QString name,QString group, bool
 
         break;
     }
+    case Configuration::eTrafoParamFeature:{
+        TrafoParam *trafopara = new TrafoParam();
+
+        trafopara->name = name;
+        trafopara->isSolved = false;
+        trafopara->from = startSystem;
+        trafopara->to = destSystem;
+
+        startSystem->trafoParams.append(trafopara);
+        destSystem->trafoParams.append(trafopara);
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setTrafoParam(trafopara);
+
+        this->features.append(fw);
+        break;
+    }
+    case Configuration::eScalarentityAngleFeature:{
+        ScalarEntityAngle *tmpSEAngle = new ScalarEntityAngle();
+
+        tmpSEAngle->mConfig = *this->lastmConfig;
+        tmpSEAngle->name = name;
+        tmpSEAngle->group = group;
+        tmpSEAngle->isNominal = nominal;
+        tmpSEAngle->isCommon = common;
+        tmpSEAngle->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmpSEAngle->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setScalarEntityAngle(tmpSEAngle);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eScalarEntityDistanceFeature:{
+        ScalarEntityDistance *tmpSEDistance = new ScalarEntityDistance();
+
+        tmpSEDistance->mConfig = *this->lastmConfig;
+        tmpSEDistance->name = name;
+        tmpSEDistance->group = group;
+        tmpSEDistance->isNominal = nominal;
+        tmpSEDistance->isCommon = common;
+        tmpSEDistance->myNominalCoordSys = nominalSystem;
+        tmpSEDistance->isSolved = true;
+
+        if(nominal){
+            tmpSEDistance->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setScalarEntityDistance(tmpSEDistance);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+        break;
+    }
+    case Configuration::eScalarEntityTemperatureFeature:{
+        ScalarEntityTemperature *tmpSETemperature = new ScalarEntityTemperature();
+
+        tmpSETemperature->mConfig = *this->lastmConfig;
+        tmpSETemperature->name = name;
+        tmpSETemperature->group = group;
+        tmpSETemperature->isNominal = nominal;
+        tmpSETemperature->isCommon = common;
+        tmpSETemperature->myNominalCoordSys = nominalSystem;
+        tmpSETemperature->isSolved = true;
+
+        if(nominal){
+            tmpSETemperature->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setScalarEntityTemperature(tmpSETemperature);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eScalarEntityMeasurementSeriesFeature:{
+        ScalarEntityMeasurementSeries *tmpSEMSeries = new ScalarEntityMeasurementSeries();
+
+        tmpSEMSeries->mConfig = *this->lastmConfig;
+        tmpSEMSeries->name = name;
+        tmpSEMSeries->group = group;
+        tmpSEMSeries->isNominal = nominal;
+        tmpSEMSeries->isCommon = common;
+        tmpSEMSeries->myNominalCoordSys = nominalSystem;
+        tmpSEMSeries->isSolved = true;
+
+        if(nominal){
+            tmpSEMSeries->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setScalarEntityMeasurementSeries(tmpSEMSeries);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    default:
+        break;
     }
 
 }
@@ -2056,7 +2094,7 @@ void Controller::createFeature(int featureType, QString name,QString group, bool
  * \param nominal
  * \param common
  * \param nominalSystem
- */
+ *//*
 void Controller::createScalarEntity(int featureType, QString name, QString group,bool nominal, bool common, CoordinateSystem *nominalSystem)
 {
     switch(featureType){
@@ -2197,7 +2235,7 @@ void Controller::createScalarEntity(int featureType, QString name, QString group
     default:
         break;
     }
-}
+}*/
 
 /*!
  * \brief addNominalToActual adds new created nominal features in the list of its parent actual feature

@@ -288,7 +288,9 @@ void CreateFeature::on_toolButton_create_clicked()
                 }
             }
 
-        emit createFeature(count,featureType,name,group,isActual,isNominal,isCommon,nominalSystem);
+            FeatureAttributesExchange featureAttributes(count,featureType,name,group,isActual,isNominal,isCommon,nominalSystem);
+
+            emit createFeature(featureAttributes);
 
         }else{
             CoordinateSystem *from;
@@ -313,8 +315,9 @@ void CreateFeature::on_toolButton_create_clicked()
                         from = featureList.at(i)->getStation()->coordSys;
                     }
                 }
-
-                emit createTrafoParam(count,featureType,name,from,to);
+                FeatureAttributesExchange featureAttributes(count,featureType,name,group,isActual,isNominal,isCommon,nominalSystem,
+                                                            from,to);
+                emit createFeature(featureAttributes);
             }else{
                 return;
             }

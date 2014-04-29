@@ -48,6 +48,8 @@
 
 #include "deletefeaturesfunctor.h"
 
+#include "featureattributesexchange.h"
+
 class Feature;
 class CoordinateSystem;
 class Station;
@@ -121,10 +123,7 @@ public slots:
     int checkActiveFeatureIndex(int current, int index);
 
     void setActiveCoordSystem(QString CoordSysName);
-    void addFeature(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
-    void addScalarEntity(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool commonPoint, CoordinateSystem *nominalSystem);
-    void addTrafoParam(int count, int featureType, QString name,
-                        CoordinateSystem *startSystem, CoordinateSystem *destSystem);
+    void addFeature(FeatureAttributesExchange fae);
 
     //sensor function
     void startMeasurement();
@@ -182,9 +181,8 @@ public slots:
 
     void updateFeatureMConfig();
 
-    void createFeature(int featureType, QString name,QString group,  bool nominal, bool common, CoordinateSystem *nominalSystem);
-
-    void createScalarEntity(int featureType, QString name,QString group,  bool nominal, bool common, CoordinateSystem *nominalSystem);
+    void createFeature(int featureType, QString name,QString group,  bool nominal, bool common,
+                       CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem);
 
     void addNominalToActual(FeatureWrapper *fw);
     void checkForNominals(FeatureWrapper *fw);

@@ -111,14 +111,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&setUpDialog,SIGNAL(rejected()),this,SLOT(setUpStatusBar()));
 
     //feature dialog
-    connect(cFeatureDialog,SIGNAL(createFeature(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)),&control,SLOT(addFeature(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)));
+    connect(cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&control,SLOT(addFeature(FeatureAttributesExchange)));
     connect(cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
-    connect(cFeatureDialog,SIGNAL(createTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)),&control,SLOT(addTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)));
+    //connect(cFeatureDialog,SIGNAL(createTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)),&control,SLOT(addTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)));
     connect(&nominalDialog, SIGNAL(sendNominalValues(double,double,double,double,double,double,double,double,double,double,double)),&control,SLOT(getNominalValues(double,double,double,double,double,double,double,double,double,double,double)));
     connect(this,SIGNAL(sendActiveNominalfeature(FeatureWrapper*)),&nominalDialog,SLOT(getActiveFeature(FeatureWrapper*)));
 
     //Scalar entity dialog
-    connect(sEntityDialog,SIGNAL(createEntity(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)),&control,SLOT(addScalarEntity(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)));
+    connect(sEntityDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&control,SLOT(addFeature(FeatureAttributesExchange)));
     connect(sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
 
     //sensor plugin dialog
@@ -690,7 +690,9 @@ void MainWindow::createFeature(){
                 }
             }
 
-            control.addFeature(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
+            FeatureAttributesExchange featureAttributes(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
+
+            control.addFeature(featureAttributes);
 
 
         }

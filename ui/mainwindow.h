@@ -42,6 +42,7 @@
 #include <QString>
 
 #include "tablemodel.h"
+#include "featureattributesexchange.h"
 
 namespace Ui {
 class MainWindow;
