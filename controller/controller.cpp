@@ -102,7 +102,7 @@ Controller::Controller(QObject *parent) :
  * \param actualNominal
  * \param isCommonPoint
  */
-void Controller::addFeature(int count, int featureType, QString name, bool actualNominal, bool isCommonPoint, CoordinateSystem *nominalSystem){
+void Controller::addFeature(int count, int featureType, QString name, bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem){
 
     for(int k=0; k<count;k++){
         QString featureName;
@@ -125,418 +125,106 @@ void Controller::addFeature(int count, int featureType, QString name, bool actua
                 }else {
                     featureName = letterName + QString::number(numberName);
                 }
-
                 break;
             }
         }
 
-        for(int k=0; k<this->features.size();k++){
-            if(this->features.at(k)->getFeature()->name == featureName){
-                if(actualNominal == true && this->features.at(k)->getFeature()->getDisplayIsNominal() == "true"){
-                    if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == nominalSystem){
+        switch (featureType) {
+        case Configuration::eStationFeature:
+            for(int k=0; k<this->features.size();k++){
+
+                int res = QString::compare(this->features.at(k)->getFeature()->name,featureName, Qt::CaseSensitive);
+                if(res == 0){
+
+                    if(this->features.at(k)->getTypeOfFeature() != featureType){
+                        if(this->features.at(k)->getTypeOfFeature() != Configuration::ePointFeature){
+                            Console::addLine("Feature name already exists");
+                            return;
+                        }
+                    }
+                    int r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
+                    if(nominal == true && r == 0){
+                        if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == nominalSystem){
+                            Console::addLine("Feature name already exists");
+                            return;
+                        }
+                    }
+                    r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
+                    if(actual == true && r == 0){
                         Console::addLine("Feature name already exists");
                         return;
                     }
                 }
-                if(actualNominal == false && this->features.at(k)->getFeature()->getDisplayIsNominal() == "false"){
-                    Console::addLine("Feature name already exists");
-                    return;
-                }
             }
-        }
+            break;
+        case Configuration::ePointFeature:
+            for(int k=0; k<this->features.size();k++){
+                int res = QString::compare(this->features.at(k)->getFeature()->name,featureName,Qt::CaseSensitive);
+                if(res == 0){
 
-        switch(featureType){
-        case Configuration::ePointFeature: {
-            Point *tmpPoint = new Point();
-
-            tmpPoint->mConfig = *this->lastmConfig;
-            tmpPoint->name = featureName;
-            tmpPoint->isNominal = actualNominal;
-            tmpPoint->isCommon = isCommonPoint;
-            tmpPoint->myNominalCoordSys = nominalSystem;
-
-            if(actualNominal){
-                tmpPoint->isSolved = true;
-            }
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setPoint(tmpPoint);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
+                    if(this->features.at(k)->getTypeOfFeature() != featureType){
+                        if(this->features.at(k)->getTypeOfFeature() != Configuration::eStationFeature){
+                            Console::addLine("Feature name already exists");
+                            return;
+                        }
+                    }
+                    int r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
+                    if(nominal == true && r == 0){
+                        if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == nominalSystem){
+                            Console::addLine("Feature name already exists");
+                            return;
+                        }
+                    }
+                    r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
+                    if(actual == true && r == 0){
+                        Console::addLine("Feature name already exists");
+                        return;
                     }
                 }
-            }else{ //if no nominal feature
-                this->features.append(fw);
             }
-
             break;
-        }
-        case Configuration::eLineFeature: {
-            Line *tmp = new Line();
-
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            if(actualNominal){
-                tmp->isSolved = true;
-            }
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setLine(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
+        default:
+            for(int k=0; k<this->features.size();k++){
+                int res = QString::compare(this->features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
+                if(res == 0){
+                    if(this->features.at(k)->getTypeOfFeature() != featureType){
+                        Console::addLine("Feature name already exists");
+                        return;
+                    }
+                    int r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
+                    if(nominal == true && r == 0){
+                        if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == nominalSystem){
+                            Console::addLine("Feature name already exists");
+                            return;
+                        }
+                    }
+                    r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
+                    if(actual == true && r == 0){
+                        Console::addLine("Feature name already exists");
+                        return;
                     }
                 }
-            }else{ //if no nominal feature
-                this->features.append(fw);
             }
-
             break;
         }
-        case Configuration::ePlaneFeature:{
-            Plane *tmp = new Plane();
 
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            if(actualNominal){
-                tmp->isSolved = true;
-            }
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setPlane(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
-                    }
-                }
-            }else{ //if no nominal feature
-                this->features.append(fw);
-            }
-
-            break;
+        //create nominal and actual
+        if(actual){
+            this->createFeature(featureType,featureName,false,isCommonPoint,NULL);
         }
-        case Configuration::eSphereFeature:{
-            Sphere *tmp = new Sphere();
-
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            if(actualNominal){
-                tmp->isSolved = true;
-            }
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setSphere(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
-                    }
-                }
-            }else{ //if no nominal feature
-                this->features.append(fw);
-            }
-
-            break;
+        if(nominal){
+            this->createFeature(featureType,featureName,true,isCommonPoint,nominalSystem);
         }
-        case Configuration::eCircleFeature:{
-            Circle *tmp = new Circle();
-
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setCircle(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
-                    }
-                }
-            }else{ //if no nominal feature
-                this->features.append(fw);
-            }
-
-            break;
-        }
-        case Configuration::eConeFeature:{
-            Cone *tmp = new Cone();
-
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setCone(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
-                    }
-                }
-            }else{ //if no nominal feature
-                this->features.append(fw);
-            }
-
-            break;
-        }
-        case Configuration::eCylinderFeature:{
-            Cylinder *tmp = new Cylinder();
-
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setCylinder(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
-                    }
-                }
-            }else{ //if no nominal feature
-                this->features.append(fw);
-            }
-
-            break;
-        }
-        case Configuration::eEllipsoidFeature:{
-            Ellipsoid *tmp = new Ellipsoid();
-
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setEllipsoid(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
-                    }
-                }
-            }else{ //if no nominal feature
-                this->features.append(fw);
-            }
-
-            break;
-        }
-        case Configuration::eHyperboloidFeature:{
-            Hyperboloid *tmp = new Hyperboloid();
-
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setHyperboloid(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
-                    }
-                }
-            }else{ //if no nominal feature
-                this->features.append(fw);
-            }
-
-            break;
-        }
-        case Configuration::eParaboloidFeature:{
-            Paraboloid *tmp = new Paraboloid();
-
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setParaboloid(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
-                    }
-                }
-            }else{ //if no nominal feature
-                this->features.append(fw);
-            }
-
-            break;
-        }
-        case Configuration::ePointCloudFeature:{
-            PointCloud *tmp = new PointCloud();
-
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setPointCloud(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
-                    }
-                }
-            }else{ //if no nominal feature
-                this->features.append(fw);
-            }
-
-            break;
-        }
-        case Configuration::eNurbsFeature:{
-            Nurbs *tmp = new Nurbs();
-
-            tmp->mConfig = *this->lastmConfig;
-            tmp->name = featureName;
-            tmp->isNominal = actualNominal;
-            tmp->isCommon = isCommonPoint;
-            tmp->myNominalCoordSys = nominalSystem;
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setNurbs(tmp);
-
-            if(actualNominal){ //if nominal feature
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        break;
-                    }
-                }
-            }else{ //if no nominal feature
-                this->features.append(fw);
-            }
-
-            break;
-        }
-        case Configuration::eStationFeature:{
-            Station *tmp = new Station(featureName);
-
-            tmp->position->mConfig = *this->lastmConfig;
-            tmp->position->isNominal = actualNominal;
-            tmp->position->isCommon = isCommonPoint;
-            tmp->position->myNominalCoordSys = nominalSystem;
-
-            if(actualNominal){
-                tmp->position->isSolved = true;
-            }
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setStation(tmp);
-
-            if(actualNominal){
-                for(int i=0; i< this->coordSys.size();i++){
-                    if(this->coordSys.at(i) == nominalSystem){
-                        this->coordSys.at(i)->nominals.append(fw->getGeometry());
-                        this->features.append(fw);
-                        this->stations.append(fw->getStation());
-                        break;
-                    }
-                }
-            }else{
-                this->features.append(fw);
-                this->stations.append(fw->getStation());
-            }
-
-            emit CoordSystemAdded();
-
-            break;
-        }
-        case Configuration::eCoordinateSystemFeature:{
-            CoordinateSystem *tmp = new CoordinateSystem();
-
-            tmp->name = featureName;
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setCoordinateSystem(tmp);
-
-            this->features.append(fw);
-            this->coordSys.append(fw->getCoordinateSystem());
-
-            emit CoordSystemAdded();
-
-            break;
-        }
-        }
-
         //refresh feature tree view models
         this->featureTreeViewModel->refreshModel();
 
-        //this->availableElementsModel->setSourceModel(this->featureTreeViewModel);
-        //this->availableElementsModel->layoutAboutToBeChanged();
-        //this->availableElementsModel->layoutChanged();
 
         emit refreshGUI(this->activeFeature, this->activeStation);
         emit featureAdded();
     }
 }
 
-void Controller::addScalarEntity(int count, int featureType, QString name, bool actual, bool commonPoint, double value, CoordinateSystem *nominalSystem){
+void Controller::addScalarEntity(int count, int featureType, QString name, bool actual, bool nominal, bool commonPoint, CoordinateSystem *nominalSystem){
 //TODO scalar entities in neue Liste und nicht in features Liste speichern
     for(int k=0;k<count;k++){
         QString featureName;
@@ -565,103 +253,34 @@ void Controller::addScalarEntity(int count, int featureType, QString name, bool 
         }
 
         for(int k=0; k<this->features.size();k++){
-            if(this->features.at(k)->getFeature()->name == featureName){
-                if(actual == true && this->features.at(k)->getFeature()->getDisplayIsNominal() == "true"){
+            int res = QString::compare(this->features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
+            if( res == 0){
+                int r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(), "true", Qt::CaseSensitive);
+                if(actual == true && r == 0){
                     if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->myNominalCoordSys == nominalSystem){
                         Console::addLine("Feature name already exists");
                         return;
                     }
                 }
-                if(actual == false && this->features.at(k)->getFeature()->getDisplayIsNominal() == "false"){
+                r = QString::compare(this->features.at(k)->getFeature()->getDisplayIsNominal(), "false", Qt::CaseSensitive);
+                if(actual == false &&  r == 0){
                     Console::addLine("Feature name already exists");
                     return;
                 }
             }
         }
 
-        switch(featureType){
-        case Configuration::eScalarentityAngleFeature:{
-            ScalarEntityAngle *tmpSEAngle = new ScalarEntityAngle();
-
-            tmpSEAngle->mConfig = *this->lastmConfig;
-            tmpSEAngle->name = featureName;
-            tmpSEAngle->isNominal = actual;
-            tmpSEAngle->isCommon = commonPoint;
-            tmpSEAngle->setAngle(value);
-            tmpSEAngle->myNominalCoordSys = nominalSystem;
-            tmpSEAngle->isSolved = true;
-
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setScalarEntityAngle(tmpSEAngle);
-
-            this->features.append(fw);
-
-            break;
+        //add function
+        if(actual){
+            this->createScalarEntity(featureType,featureName,false,commonPoint,NULL);
         }
-        case Configuration::eScalarEntityDistanceFeature:{
-            ScalarEntityDistance *tmpSEDistance = new ScalarEntityDistance();
-
-            tmpSEDistance->mConfig = *this->lastmConfig;
-            tmpSEDistance->name = featureName;
-            tmpSEDistance->isNominal = actual;
-            tmpSEDistance->isCommon = commonPoint;
-            tmpSEDistance->setDistance(value);
-            tmpSEDistance->myNominalCoordSys = nominalSystem;
-            tmpSEDistance->isSolved = true;
-
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setScalarEntityDistance(tmpSEDistance);
-
-            this->features.append(fw);
-            break;
-        }
-        case Configuration::eScalarEntityTemperatureFeature:{
-            ScalarEntityTemperature *tmpSETemperature = new ScalarEntityTemperature();
-
-            tmpSETemperature->mConfig = *this->lastmConfig;
-            tmpSETemperature->name = featureName;
-            tmpSETemperature->isNominal = actual;
-            tmpSETemperature->isCommon = commonPoint;
-            tmpSETemperature->setTemperature(value);
-            tmpSETemperature->myNominalCoordSys = nominalSystem;
-            tmpSETemperature->isSolved = true;
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setScalarEntityTemperature(tmpSETemperature);
-
-            this->features.append(fw);
-
-            break;
-        }
-        case Configuration::eScalarEntityMeasurementSeriesFeature:{
-            ScalarEntityMeasurementSeries *tmpSEMSeries = new ScalarEntityMeasurementSeries();
-
-            tmpSEMSeries->mConfig = *this->lastmConfig;
-            tmpSEMSeries->name = featureName;
-            tmpSEMSeries->isNominal = actual;
-            tmpSEMSeries->isCommon = commonPoint;
-            tmpSEMSeries->setSeriesValue(value);
-            tmpSEMSeries->myNominalCoordSys = nominalSystem;
-            tmpSEMSeries->isSolved = true;
-
-
-            FeatureWrapper *fw = new FeatureWrapper();
-            fw->setScalarEntityMeasurementSeries(tmpSEMSeries);
-
-            this->features.append(fw);
-
-            break;
-        }
-        default:
-            break;
+        if(nominal){
+            this->createScalarEntity(featureType,featureName,true,commonPoint,nominalSystem);
         }
 
         emit refreshGUI(this->activeFeature, this->activeStation);
         emit featureAdded();
     }
-
     //refresh feature tree view models
     this->featureTreeViewModel->refreshModel();
 
@@ -695,7 +314,8 @@ void Controller::addTrafoParam(int count, int featureType, QString name,Coordina
         }
 
         for(int k=0; k<this->features.size();k++){
-            if(this->features.at(k)->getFeature()->name == featureName){
+            int res = QString::compare(this->features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
+            if( res == 0){
                 Console::addLine("Feature name already exists");
                 return;
             }
@@ -730,7 +350,6 @@ void Controller::addTrafoParam(int count, int featureType, QString name,Coordina
         this->features.append(fw);
         break;
     }
-
     //refresh feature tree view models
     this->featureTreeViewModel->refreshModel();
 
@@ -1936,6 +1555,646 @@ void Controller::updateFeatureMConfig()
                 if(!contains){
                     this->features.at(k)->getStation()->position->mConfig.typeOfReading = this->lastmConfig->typeOfReading;
                 }
+            }
+        }
+    }
+}
+
+/*!
+ * \brief createFeature with given parameters
+ * \param featureType
+ * \param name
+ * \param nominal
+ * \param common
+ * \param nominalSystem
+ */
+void Controller::createFeature(int featureType, QString name, bool nominal, bool common, CoordinateSystem *nominalSystem)
+{
+    switch(featureType){
+    case Configuration::ePointFeature: {
+        Point *tmpPoint = new Point();
+
+        tmpPoint->mConfig = *this->lastmConfig;
+        tmpPoint->name = name;
+        tmpPoint->isNominal = nominal;
+        tmpPoint->isCommon = common;
+        tmpPoint->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmpPoint->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setPoint(tmpPoint);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eLineFeature: {
+        Line *tmp = new Line();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setLine(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::ePlaneFeature:{
+        Plane *tmp = new Plane();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setPlane(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eSphereFeature:{
+        Sphere *tmp = new Sphere();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setSphere(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eCircleFeature:{
+        Circle *tmp = new Circle();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setCircle(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eConeFeature:{
+        Cone *tmp = new Cone();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setCone(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eCylinderFeature:{
+        Cylinder *tmp = new Cylinder();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setCylinder(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+        }
+
+        break;
+    }
+    case Configuration::eEllipsoidFeature:{
+        Ellipsoid *tmp = new Ellipsoid();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setEllipsoid(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eHyperboloidFeature:{
+        Hyperboloid *tmp = new Hyperboloid();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setHyperboloid(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eParaboloidFeature:{
+        Paraboloid *tmp = new Paraboloid();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setParaboloid(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::ePointCloudFeature:{
+        PointCloud *tmp = new PointCloud();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setPointCloud(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eNurbsFeature:{
+        Nurbs *tmp = new Nurbs();
+
+        tmp->mConfig = *this->lastmConfig;
+        tmp->name = name;
+        tmp->isNominal = nominal;
+        tmp->isCommon = common;
+        tmp->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setNurbs(tmp);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eStationFeature:{
+        Station *tmp = new Station(name);
+
+        tmp->position->mConfig = *this->lastmConfig;
+        tmp->position->isNominal = nominal;
+        tmp->position->isCommon = common;
+        tmp->position->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmp->position->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setStation(tmp);
+
+        if(nominal){
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    this->stations.append(fw->getStation());
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{
+            this->features.append(fw);
+            this->stations.append(fw->getStation());
+            this->checkForNominals(fw);
+        }
+
+        emit CoordSystemAdded();
+
+        break;
+    }
+    case Configuration::eCoordinateSystemFeature:{
+        CoordinateSystem *tmp = new CoordinateSystem();
+
+        tmp->name = name;
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setCoordinateSystem(tmp);
+
+        this->features.append(fw);
+        this->coordSys.append(fw->getCoordinateSystem());
+
+        emit CoordSystemAdded();
+
+        break;
+    }
+    }
+
+}
+
+/*!
+ * \brief createScalarEntity with given parameters.
+ * \param featureType
+ * \param name
+ * \param nominal
+ * \param common
+ * \param nominalSystem
+ */
+void Controller::createScalarEntity(int featureType, QString name, bool nominal, bool common, CoordinateSystem *nominalSystem)
+{
+    switch(featureType){
+    case Configuration::eScalarentityAngleFeature:{
+        ScalarEntityAngle *tmpSEAngle = new ScalarEntityAngle();
+
+        tmpSEAngle->mConfig = *this->lastmConfig;
+        tmpSEAngle->name = name;
+        tmpSEAngle->isNominal = nominal;
+        tmpSEAngle->isCommon = common;
+        tmpSEAngle->myNominalCoordSys = nominalSystem;
+
+        if(nominal){
+            tmpSEAngle->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setScalarEntityAngle(tmpSEAngle);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eScalarEntityDistanceFeature:{
+        ScalarEntityDistance *tmpSEDistance = new ScalarEntityDistance();
+
+        tmpSEDistance->mConfig = *this->lastmConfig;
+        tmpSEDistance->name = name;
+        tmpSEDistance->isNominal = nominal;
+        tmpSEDistance->isCommon = common;
+        tmpSEDistance->myNominalCoordSys = nominalSystem;
+        tmpSEDistance->isSolved = true;
+
+        if(nominal){
+            tmpSEDistance->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setScalarEntityDistance(tmpSEDistance);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+        break;
+    }
+    case Configuration::eScalarEntityTemperatureFeature:{
+        ScalarEntityTemperature *tmpSETemperature = new ScalarEntityTemperature();
+
+        tmpSETemperature->mConfig = *this->lastmConfig;
+        tmpSETemperature->name = name;
+        tmpSETemperature->isNominal = nominal;
+        tmpSETemperature->isCommon = common;
+        tmpSETemperature->myNominalCoordSys = nominalSystem;
+        tmpSETemperature->isSolved = true;
+
+        if(nominal){
+            tmpSETemperature->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setScalarEntityTemperature(tmpSETemperature);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    case Configuration::eScalarEntityMeasurementSeriesFeature:{
+        ScalarEntityMeasurementSeries *tmpSEMSeries = new ScalarEntityMeasurementSeries();
+
+        tmpSEMSeries->mConfig = *this->lastmConfig;
+        tmpSEMSeries->name = name;
+        tmpSEMSeries->isNominal = nominal;
+        tmpSEMSeries->isCommon = common;
+        tmpSEMSeries->myNominalCoordSys = nominalSystem;
+        tmpSEMSeries->isSolved = true;
+
+        if(nominal){
+            tmpSEMSeries->isSolved = true;
+        }
+
+        FeatureWrapper *fw = new FeatureWrapper();
+        fw->setScalarEntityMeasurementSeries(tmpSEMSeries);
+
+        if(nominal){ //if nominal feature
+            for(int i=0; i< this->coordSys.size();i++){
+                if(this->coordSys.at(i) == nominalSystem){
+                    this->coordSys.at(i)->nominals.append(fw->getGeometry());
+                    this->features.append(fw);
+                    break;
+                }
+            }
+            this->addNominalToActual(fw);
+        }else{ //if no nominal feature
+            this->features.append(fw);
+            this->checkForNominals(fw);
+        }
+
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+/*!
+ * \brief addNominalToActual adds new created nominal features in the list of its parent actual feature
+ * \param fw
+ */
+void Controller::addNominalToActual(FeatureWrapper *fw)
+{
+    for(int i=0; i< this->features.size();i++){
+        int res = QString::compare(this->features.at(i)->getFeature()->name, fw->getFeature()->name, Qt::CaseSensitive);
+        if(res == 0){
+            if(this->features.at(i)->getGeometry() != NULL && this->features.at(i)->getGeometry()->isNominal == false){
+                this->features.at(i)->getGeometry()->nominals.append(fw->getGeometry());
+                break;
+            }else{
+                if(this->features.at(i)->getStation() != NULL){
+                    this->features.at(i)->getStation()->position->nominals.append(fw->getGeometry());
+                    break;
+                }
+            }
+
+        }
+    }
+}
+
+/*!
+ * \brief checkForNominals searches for existing nominals that have been created before the actual feature was created
+ * \param fw
+ */
+void Controller::checkForNominals(FeatureWrapper *fw)
+{
+    if(fw->getTypeOfFeature() == Configuration::eStationFeature){
+        for(int i=0; i<this->features.size();i++){
+            int res = QString::compare(this->features.at(i)->getFeature()->name, fw->getFeature()->name, Qt::CaseSensitive);
+            if(res == 0 && this->features.at(i)->getGeometry() != NULL && this->features.at(i)->getGeometry()->isNominal){
+                fw->getStation()->position->nominals.append(this->features.at(i)->getGeometry());
+            }
+        }
+    }else{
+        for(int i=0; i<this->features.size();i++){
+            int res = QString::compare(this->features.at(i)->getFeature()->name, fw->getFeature()->name, Qt::CaseSensitive);
+            if(res == 0 && this->features.at(i)->getGeometry() != NULL && this->features.at(i)->getGeometry()->isNominal){
+                fw->getGeometry()->nominals.append(this->features.at(i)->getGeometry());
             }
         }
     }

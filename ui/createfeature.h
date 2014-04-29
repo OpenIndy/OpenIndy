@@ -27,7 +27,7 @@ public:
 signals:
 
     void createFeature(int count, int featureType, QString name,
-                       bool actualNominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
+                       bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
 
     void createTrafoParam(int count, int featureType, QString name,
                            CoordinateSystem *startSystem, CoordinateSystem *destSystem);
@@ -43,11 +43,9 @@ private slots:
 
     void on_toolButton_cancel_clicked();
 
-    void on_checkBox_actualNominal_toggled(bool checked);
+    void on_checkBox_Nominal_toggled(bool checked);
 
     void on_toolButton_mConfig_clicked();
-
-    void defaultGUISettings();
 
 private:
     Ui::CreateFeature *ui;

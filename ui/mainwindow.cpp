@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect(ui->actionActivate_station,SIGNAL(triggered()),&control,SLOT(changeActiveStation()));
     connect(ui->tableView_trafoParam,SIGNAL(clicked(QModelIndex)),&control,SLOT(handleTrafoParamClicked(QModelIndex)));
     connect(this->comboBoxFeatureType,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeCreateFeatureToolbar(int)));
-    connect(this->checkBoxActualNominal,SIGNAL(toggled(bool)),this,SLOT(CheckBoxNominalToggled(bool)));
+    connect(this->checkBoxNominal,SIGNAL(toggled(bool)),this,SLOT(CheckBoxNominalToggled(bool)));
 
     connect(this,SIGNAL(sendSelectedFeature(int)),&control,SLOT(getSelectedFeature(int)));
     connect(this,SIGNAL(sendFeatureType(Configuration::FeatureTypes)),cFeatureDialog,SLOT(receiveFeatureType(Configuration::FeatureTypes)));
@@ -101,14 +101,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&setUpDialog,SIGNAL(rejected()),this,SLOT(setUpStatusBar()));
 
     //feature dialog
-    connect(cFeatureDialog,SIGNAL(createFeature(int,int,QString,bool,bool,CoordinateSystem*)),&control,SLOT(addFeature(int,int,QString,bool,bool,CoordinateSystem*)));
+    connect(cFeatureDialog,SIGNAL(createFeature(int,int,QString,bool,bool,bool,CoordinateSystem*)),&control,SLOT(addFeature(int,int,QString,bool,bool,bool,CoordinateSystem*)));
     connect(cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
     connect(cFeatureDialog,SIGNAL(createTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)),&control,SLOT(addTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)));
     connect(&nominalDialog, SIGNAL(sendNominalValues(double,double,double,double,double,double,double,double,double,double,double)),&control,SLOT(getNominalValues(double,double,double,double,double,double,double,double,double,double,double)));
     connect(this,SIGNAL(sendActiveNominalfeature(FeatureWrapper*)),&nominalDialog,SLOT(getActiveFeature(FeatureWrapper*)));
 
     //Scalar entity dialog
-    connect(sEntityDialog,SIGNAL(createEntity(int,int,QString,bool,bool,double,CoordinateSystem*)),&control,SLOT(addScalarEntity(int,int,QString,bool,bool,double,CoordinateSystem*)));
+    connect(sEntityDialog,SIGNAL(createEntity(int,int,QString,bool,bool,bool,CoordinateSystem*)),&control,SLOT(addScalarEntity(int,int,QString,bool,bool,bool,CoordinateSystem*)));
     connect(sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
 
     //sensor plugin dialog
@@ -167,7 +167,8 @@ MainWindow::~MainWindow()
  */
 void MainWindow::ChangeCreateFeatureToolbar(int i)
 {
-    this->checkBoxActualNominal->setChecked(false);
+    this->checkBoxNominal->setChecked(false);
+    this->checkBoxActual->setChecked(true);
     this->checkBoxCommonPoint->setChecked(false);
 
     int featureType = static_cast<Configuration::FeatureTypes>(this->comboBoxFeatureType->itemData(this->comboBoxFeatureType->currentIndex()).toInt());
@@ -176,7 +177,9 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
     case Configuration::eCoordinateSystemFeature:{
         this->actionMConfig->setEnabled(false);
         this->comboBoxNominalSystem->setEnabled(false);
-        this->checkBoxActualNominal->setEnabled(false);
+        this->checkBoxNominal->setEnabled(false);
+        this->checkBoxActual->setChecked(true);
+        this->checkBoxActual->setEnabled(false);
         this->checkBoxCommonPoint->setEnabled(false);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
@@ -184,7 +187,9 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
     case Configuration::eTrafoParamFeature:{
         this->actionMConfig->setEnabled(false);
         this->comboBoxNominalSystem->setEnabled(false);
-        this->checkBoxActualNominal->setEnabled(false);
+        this->checkBoxNominal->setEnabled(false);
+        this->checkBoxActual->setChecked(true);
+        this->checkBoxActual->setEnabled(false);
         this->checkBoxCommonPoint->setEnabled(false);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
@@ -192,103 +197,119 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
     case Configuration::ePlaneFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::ePointFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::eLineFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::eStationFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setChecked(false);
+        this->checkBoxNominal->setEnabled(false);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::eSphereFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::eCylinderFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::eConeFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::eEllipsoidFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::eHyperboloidFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::eParaboloidFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::eNurbsFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::ePointCloudFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     case Configuration::eCircleFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
-        this->checkBoxActualNominal->setEnabled(true);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     default:{
         this->actionMConfig->setEnabled(false);
         this->comboBoxNominalSystem->setEnabled(false);
-        this->checkBoxActualNominal->setEnabled(false);
+        this->checkBoxNominal->setEnabled(true);
+        this->checkBoxActual->setEnabled(true);
         this->checkBoxCommonPoint->setEnabled(false);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     }
     }
+    this->defaultCreateFeatureSettings();
 }
 
 /*!
@@ -322,8 +343,10 @@ void MainWindow::setupCreateFeature(){
     ui->toolbarCreateFeature->addWidget(labelCount);
     ui->toolbarCreateFeature->addWidget(spinBoxNumber);
     ui->toolbarCreateFeature->addAction(cFsep2);
-    ui->toolbarCreateFeature->addWidget(checkBoxActualNominal);
+    ui->toolbarCreateFeature->addWidget(checkBoxActual);
     ui->toolbarCreateFeature->addAction(cFsep3);
+    ui->toolbarCreateFeature->addWidget(checkBoxNominal);
+    ui->toolbarCreateFeature->addAction(cFsep8);
     ui->toolbarCreateFeature->addWidget(checkBoxCommonPoint);
     ui->toolbarCreateFeature->addAction(cFsep4);
     ui->toolbarCreateFeature->addAction(actionMConfig);
@@ -353,6 +376,7 @@ void MainWindow::setupCreateFeature(){
         this->comboBoxNominalSystem->addItem(this->control.coordSys.at(i)->name);
     }
 
+    this->defaultCreateFeatureSettings();
 }
 
 /*!
@@ -522,9 +546,14 @@ void MainWindow::initializeActions(){
     labelCount->setText("count:");
     comboBoxFeatureType = new QComboBox();
     lineEditName =  new QLineEdit();
+    lineEditName->setPlaceholderText("feature name");
     spinBoxNumber = new QSpinBox();
-    checkBoxActualNominal = new QCheckBox();
-    checkBoxActualNominal->setText("nominal");
+    spinBoxNumber->setMaximum(1000);
+    spinBoxNumber->setMinimum(1);
+    checkBoxActual = new QCheckBox();
+    checkBoxActual->setText("actual");
+    checkBoxNominal = new QCheckBox();
+    checkBoxNominal->setText("nominal");
     checkBoxCommonPoint = new QCheckBox();
     checkBoxCommonPoint->setText("common point");
     actionCreate = new QAction(0);
@@ -581,6 +610,8 @@ void MainWindow::initializeActions(){
     cFsep6->setSeparator(true);
     cFsep7 = new QAction(0);
     cFsep7->setSeparator(true);
+    cFsep8 = new QAction(0);
+    cFsep8->setSeparator(true);
 
     //seperators control pad
     cPsep = new QAction(0);
@@ -619,12 +650,15 @@ void MainWindow::createFeature(){
             int count = this->spinBoxNumber->value();
             QString name = this->lineEditName->text();
             int featureType = static_cast<Configuration::FeatureTypes>(this->comboBoxFeatureType->itemData(this->comboBoxFeatureType->currentIndex()).toInt());
-            bool actual = this->checkBoxActualNominal->isChecked();
+            bool actual = this->checkBoxActual->isChecked();
+            bool nominal = this->checkBoxNominal->isChecked();
             bool comPoint = this->checkBoxCommonPoint->isChecked();
 
             CoordinateSystem * nominalSystem = NULL;
 
-            if(actual){
+            //TODO nominal hinzufügen
+
+            if(nominal){
                 for(int i=0;i<this->control.coordSys.size();i++){
                     if(this->comboBoxNominalSystem->currentText() == this->control.coordSys.at(i)->name){
                         nominalSystem = this->control.coordSys.at(i);
@@ -632,12 +666,13 @@ void MainWindow::createFeature(){
                 }
             }
 
-            control.addFeature(count,featureType,name,actual,comPoint,nominalSystem);
+            control.addFeature(count,featureType,name,actual,nominal,comPoint,nominalSystem);
 
         }
     }catch(std::exception e){
 
     }
+    this->defaultCreateFeatureSettings();
 }
 
 /*!
@@ -1110,4 +1145,13 @@ void MainWindow::on_actionActivate_station_triggered()
     default:
         break;
     }
+}
+
+void MainWindow::defaultCreateFeatureSettings()
+{
+    this->lineEditName->setText("");
+    this->spinBoxNumber->setValue(1);
+    this->checkBoxActual->setChecked(true);
+    this->checkBoxCommonPoint->setChecked(false);
+    this->checkBoxNominal->setChecked(false);
 }

@@ -44,7 +44,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_name"/>
+      <widget class="QLineEdit" name="lineEdit_name">
+       <property name="placeholderText">
+        <string>feature name</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -58,23 +62,26 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinBox_count"/>
+      <widget class="QSpinBox" name="spinBox_count">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>1000</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_value">
-       <property name="text">
-        <string>value</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="lineEdit_value"/>
-     </item>
-    </layout>
+    <widget class="QCheckBox" name="checkBox_actual">
+     <property name="text">
+      <string>actual</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QCheckBox" name="checkBox_nominal">

@@ -7,8 +7,6 @@ ScalarEntityDialog::ScalarEntityDialog(QList<FeatureWrapper*> &features, QWidget
 {
     ui->setupUi(this);
     initGUI();
-    ui->comboBox_nominalSystem->setVisible(false);
-    ui->label_nominalSystem->setVisible(false);
 }
 
 ScalarEntityDialog::~ScalarEntityDialog()
@@ -17,10 +15,22 @@ ScalarEntityDialog::~ScalarEntityDialog()
 }
 
 void ScalarEntityDialog::initGUI(){
+
+    ui->lineEdit_name->setText("");
+    ui->checkBox_actual->setChecked(true);
+    ui->checkBox_nominal->setChecked(false);
+    ui->comboBox_nominalSystem->setVisible(false);
+    ui->label_nominalSystem->setVisible(false);
+    ui->spinBox_count->setValue(1);
+
+    ui->comboBox_scalarEntityType->clear();
+
     ui->comboBox_scalarEntityType->insertItem(ui->comboBox_scalarEntityType->count(),"scalar entity distance",Configuration::eScalarEntityDistanceFeature);
     ui->comboBox_scalarEntityType->insertItem(ui->comboBox_scalarEntityType->count(),"scalar entity angle",Configuration::eScalarentityAngleFeature);
     ui->comboBox_scalarEntityType->insertItem(ui->comboBox_scalarEntityType->count(),"scalar entity temperature", Configuration::eScalarEntityTemperatureFeature);
     ui->comboBox_scalarEntityType->insertItem(ui->comboBox_scalarEntityType->count(),"scalar entity measurement series", Configuration::eScalarEntityMeasurementSeriesFeature);
+
+    ui->comboBox_nominalSystem->clear();
 
     if(featureList.size() !=0){
         for(int i=0; i<featureList.size();i++){
@@ -43,14 +53,10 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
         QString name = ui->lineEdit_name->text();
         int count = ui->spinBox_count->value();
         int featureType = static_cast<Configuration::FeatureTypes>(ui->comboBox_scalarEntityType->itemData(ui->comboBox_scalarEntityType->currentIndex()).toInt());
-        bool actual = ui->checkBox_nominal->isChecked();
+        bool actual = ui->checkBox_actual->isChecked();
+        bool nominal = ui->checkBox_nominal->isChecked();
         bool comPoint = ui->checkBox_commonPoint->isChecked();
-        double value = ui->lineEdit_value->text().toDouble();
         CoordinateSystem *nominalSystem = NULL;
-
-        if(featureType == Configuration::eScalarentityAngleFeature){
-            value = value*3.141592653589793/180.0;
-        }
 
         if(actual){
             for(int k=0; k<this->featureList.size();k++){
@@ -65,7 +71,7 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
             }
         }
 
-        emit createEntity(count,featureType,name,actual,comPoint,value,nominalSystem);
+        emit createEntity(count,featureType,name,actual,nominal,comPoint,nominalSystem);
 
         this->close();
     }
@@ -84,7 +90,7 @@ void ScalarEntityDialog::on_checkBox_nominal_toggled(bool checked)
 
 void ScalarEntityDialog::on_comboBox_scalarEntityType_currentTextChanged(const QString &arg1)
 {
-    Configuration::FeatureTypes scalarEntityType = static_cast<Configuration::FeatureTypes>(ui->comboBox_scalarEntityType->itemData(ui->comboBox_scalarEntityType->currentIndex()).toInt());
+    /*Configuration::FeatureTypes scalarEntityType = static_cast<Configuration::FeatureTypes>(ui->comboBox_scalarEntityType->itemData(ui->comboBox_scalarEntityType->currentIndex()).toInt());
 
     switch (scalarEntityType) {
     case Configuration::eScalarentityAngleFeature:
@@ -102,10 +108,16 @@ void ScalarEntityDialog::on_comboBox_scalarEntityType_currentTextChanged(const Q
     default:
         ui->label_value->setText("value");
         break;
-    }
+    }*/
 }
 
 void ScalarEntityDialog::on_toolButton_mConfig_clicked()
 {
     emit createFeatureMConfig();
+}
+
+void ScalarEntityDialog::showEvent(QShowEvent *event)
+{
+    initGUI();
+    event->accept();
 }

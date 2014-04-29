@@ -7,6 +7,7 @@ Station::Station(QString name)
 
     this->id = Configuration::generateID();
     position = new Point();
+    position->name = name;
 
     //ini member
     coordSys = new CoordinateSystem();

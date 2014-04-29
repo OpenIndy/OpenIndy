@@ -81,12 +81,13 @@ public:
     QComboBox *comboBoxFeatureType;
     QLineEdit *lineEditName;
     QSpinBox *spinBoxNumber;
-    QCheckBox *checkBoxActualNominal;
+    QCheckBox *checkBoxActual;
     QCheckBox *checkBoxCommonPoint;
     QAction *actionCreate;
     QLabel *labelNominalSystem;
     QComboBox *comboBoxNominalSystem;
     QAction * actionMConfig;
+    QCheckBox *checkBoxNominal;
 
     //sensor control pad
     QAction *actionConnect;
@@ -113,6 +114,7 @@ public:
     QAction *cFsep5;
     QAction *cFsep6;
     QAction *cFsep7;
+    QAction *cFsep8;
 
     //seperators control pad
     QAction *cPsep;
@@ -227,6 +229,8 @@ private slots:
     void on_tableView_trafoParam_doubleClicked(const QModelIndex &index);
 
     void on_actionActivate_station_triggered();
+
+    void defaultCreateFeatureSettings();
 
 private:
     Ui::MainWindow *ui;

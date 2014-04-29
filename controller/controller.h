@@ -112,8 +112,8 @@ public slots:
     int checkActiveFeatureIndex(int current, int index);
 
     void setActiveCoordSystem(QString CoordSysName);
-    void addFeature(int count, int featureType, QString name, bool actualNominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
-    void addScalarEntity(int count, int featureType, QString name, bool actual, bool commonPoint, double value, CoordinateSystem *nominalSystem);
+    void addFeature(int count, int featureType, QString name, bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
+    void addScalarEntity(int count, int featureType, QString name, bool actual, bool nominal, bool commonPoint, CoordinateSystem *nominalSystem);
     void addTrafoParam(int count, int featureType, QString name,
                         CoordinateSystem *startSystem, CoordinateSystem *destSystem);
 
@@ -163,6 +163,13 @@ public slots:
     void printToConsole(QString message);
 
     void updateFeatureMConfig();
+
+    void createFeature(int featureType, QString name, bool nominal, bool common, CoordinateSystem *nominalSystem);
+
+    void createScalarEntity(int featureType, QString name, bool nominal, bool common, CoordinateSystem *nominalSystem);
+
+    void addNominalToActual(FeatureWrapper *fw);
+    void checkForNominals(FeatureWrapper *fw);
 
 private:
     void changeFunctionTreeViewModel();
