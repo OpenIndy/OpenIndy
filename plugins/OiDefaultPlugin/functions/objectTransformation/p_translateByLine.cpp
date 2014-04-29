@@ -14,7 +14,6 @@ PluginMetaData* TranslateByLine::getMetaData(){
             .arg("<br><br> <u>parameter description:</u> <br>")
             .arg("<b>invert:</b> Defines wether the direction vector shall be inverted before the target geometry is moved");
     metaData->iid = "de.openIndy.Plugin.Function.ObjectTransformation.v001";
-    //...
     return metaData;
 }
 
@@ -86,11 +85,11 @@ bool TranslateByLine::exec(Point &targetPoint){
             this->shiftPoint(targetPoint, line, seDistance);
             return true;
         }else{
-            Console::addLine("Not enough valid geometries available for calculation");
+            this->writeToConsole("Not enough valid geometries available for calculation");
             return false;
         }
     }else{
-        Console::addLine("Not enough valid geometries available for calculation");
+        this->writeToConsole("Not enough valid geometries available for calculation");
         return false;
     }
 }
@@ -115,11 +114,11 @@ bool TranslateByLine::exec(Line &targetLine){
             this->shiftLine(targetLine, line, seDistance);
             return true;
         }else{
-            Console::addLine("Not enough valid geometries available for calculation");
+            this->writeToConsole("Not enough valid geometries available for calculation");
             return false;
         }
     }else{
-        Console::addLine("Not enough valid geometries available for calculation");
+        this->writeToConsole("Not enough valid geometries available for calculation");
         return false;
     }
 }
@@ -144,11 +143,11 @@ bool TranslateByLine::exec(Plane &targetPlane){
             this->shiftPlane(targetPlane, line, seDistance);
             return true;
         }else{
-            Console::addLine("Not enough valid geometries available for calculation");
+            this->writeToConsole("Not enough valid geometries available for calculation");
             return false;
         }
     }else{
-        Console::addLine("Not enough valid geometries available for calculation");
+        this->writeToConsole("Not enough valid geometries available for calculation");
         return false;
     }
 }
@@ -173,11 +172,11 @@ bool TranslateByLine::exec(Sphere &targetSphere){
             this->shiftSphere(targetSphere, line, seDistance);
             return true;
         }else{
-            Console::addLine("Not enough valid geometries available for calculation");
+            this->writeToConsole("Not enough valid geometries available for calculation");
             return false;
         }
     }else{
-        Console::addLine("Not enough valid geometries available for calculation");
+        this->writeToConsole("Not enough valid geometries available for calculation");
         return false;
     }
 }

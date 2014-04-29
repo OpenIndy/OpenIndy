@@ -9,13 +9,14 @@
 #include <vector>
 #include <QStringList>
 #include "pi_fitfunction.h"
-#include "console.h"
 #include "point.h"
 #include "plane.h"
 #include "configuration.h"
 #include "oivec.h"
 #include "oimat.h"
 #include "pluginmetadata.h"
+
+#include <QtMath>
 
 using namespace std;
 

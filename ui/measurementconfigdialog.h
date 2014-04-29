@@ -5,6 +5,7 @@
 #include "measurementconfig.h"
 #include "configuration.h"
 #include "featurewrapper.h"
+#include "console.h"
 #include <QComboBox>
 #include <QCloseEvent>
 #include <QMessageBox>

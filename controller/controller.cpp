@@ -15,6 +15,9 @@ Controller::Controller(QObject *parent) :
     c = new Console(0);
     Console::c = c;
 
+    this->myDeleteFeaturesCallback = new DeleteFeaturesFunctor();
+    this->myDeleteFeaturesCallback->c = this;
+
     pluginsModel = new QSqlQueryModel();
     neededElementsModel = new QSqlQueryModel();
 
@@ -102,7 +105,7 @@ Controller::Controller(QObject *parent) :
  * \param actualNominal
  * \param isCommonPoint
  */
-void Controller::addFeature(int count, int featureType, QString name, bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem){
+void Controller::addFeature(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem){
 
     for(int k=0; k<count;k++){
         QString featureName;
@@ -210,10 +213,10 @@ void Controller::addFeature(int count, int featureType, QString name, bool actua
 
         //create nominal and actual
         if(actual){
-            this->createFeature(featureType,featureName,false,isCommonPoint,NULL);
+            this->createFeature(featureType,featureName,group,false,isCommonPoint,NULL);
         }
         if(nominal){
-            this->createFeature(featureType,featureName,true,isCommonPoint,nominalSystem);
+            this->createFeature(featureType,featureName,group, true,isCommonPoint,nominalSystem);
         }
         //refresh feature tree view models
         this->featureTreeViewModel->refreshModel();
@@ -222,9 +225,20 @@ void Controller::addFeature(int count, int featureType, QString name, bool actua
         emit refreshGUI(this->activeFeature, this->activeStation);
         emit featureAdded();
     }
+
+    //update available group names
+    int currentCount = 0;
+    if(this->availableGroups.contains(group)){
+        currentCount = this->availableGroups.find(group).value();
+        currentCount += count;
+    }else{
+        currentCount += count;
+    }
+    this->availableGroups.insert(group, currentCount);
+    emit this->availableGroupsChanged(this->availableGroups);
 }
 
-void Controller::addScalarEntity(int count, int featureType, QString name, bool actual, bool nominal, bool commonPoint, CoordinateSystem *nominalSystem){
+void Controller::addScalarEntity(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool commonPoint, CoordinateSystem *nominalSystem){
 //TODO scalar entities in neue Liste und nicht in features Liste speichern
     for(int k=0;k<count;k++){
         QString featureName;
@@ -272,15 +286,27 @@ void Controller::addScalarEntity(int count, int featureType, QString name, bool 
 
         //add function
         if(actual){
-            this->createScalarEntity(featureType,featureName,false,commonPoint,NULL);
+            this->createScalarEntity(featureType,featureName,group,false,commonPoint,NULL);
         }
         if(nominal){
-            this->createScalarEntity(featureType,featureName,true,commonPoint,nominalSystem);
+            this->createScalarEntity(featureType,featureName,group,true,commonPoint,nominalSystem);
         }
 
         emit refreshGUI(this->activeFeature, this->activeStation);
         emit featureAdded();
     }
+
+    //update available group names
+    int currentCount = 0;
+    if(this->availableGroups.contains(group)){
+        currentCount = this->availableGroups.find(group).value();
+        currentCount += count;
+    }else{
+        currentCount += count;
+    }
+    this->availableGroups.insert(group, currentCount);
+    emit this->availableGroupsChanged(this->availableGroups);
+
     //refresh feature tree view models
     this->featureTreeViewModel->refreshModel();
 
@@ -1568,7 +1594,7 @@ void Controller::updateFeatureMConfig()
  * \param common
  * \param nominalSystem
  */
-void Controller::createFeature(int featureType, QString name, bool nominal, bool common, CoordinateSystem *nominalSystem)
+void Controller::createFeature(int featureType, QString name,QString group, bool nominal, bool common, CoordinateSystem *nominalSystem)
 {
     switch(featureType){
     case Configuration::ePointFeature: {
@@ -1576,6 +1602,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmpPoint->mConfig = *this->lastmConfig;
         tmpPoint->name = name;
+        tmpPoint->group = group;
         tmpPoint->isNominal = nominal;
         tmpPoint->isCommon = common;
         tmpPoint->myNominalCoordSys = nominalSystem;
@@ -1608,6 +1635,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1640,6 +1668,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1672,6 +1701,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1704,6 +1734,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1736,6 +1767,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1768,6 +1800,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1799,6 +1832,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1831,6 +1865,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1863,6 +1898,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1895,6 +1931,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1927,6 +1964,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
 
         tmp->mConfig = *this->lastmConfig;
         tmp->name = name;
+        tmp->group = group;
         tmp->isNominal = nominal;
         tmp->isCommon = common;
         tmp->myNominalCoordSys = nominalSystem;
@@ -1956,6 +1994,8 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
     }
     case Configuration::eStationFeature:{
         Station *tmp = new Station(name);
+
+        tmp->group = group;
 
         tmp->position->mConfig = *this->lastmConfig;
         tmp->position->isNominal = nominal;
@@ -1993,6 +2033,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
         CoordinateSystem *tmp = new CoordinateSystem();
 
         tmp->name = name;
+        tmp->group = group;
 
         FeatureWrapper *fw = new FeatureWrapper();
         fw->setCoordinateSystem(tmp);
@@ -2016,7 +2057,7 @@ void Controller::createFeature(int featureType, QString name, bool nominal, bool
  * \param common
  * \param nominalSystem
  */
-void Controller::createScalarEntity(int featureType, QString name, bool nominal, bool common, CoordinateSystem *nominalSystem)
+void Controller::createScalarEntity(int featureType, QString name, QString group,bool nominal, bool common, CoordinateSystem *nominalSystem)
 {
     switch(featureType){
     case Configuration::eScalarentityAngleFeature:{
@@ -2024,6 +2065,7 @@ void Controller::createScalarEntity(int featureType, QString name, bool nominal,
 
         tmpSEAngle->mConfig = *this->lastmConfig;
         tmpSEAngle->name = name;
+        tmpSEAngle->group = group;
         tmpSEAngle->isNominal = nominal;
         tmpSEAngle->isCommon = common;
         tmpSEAngle->myNominalCoordSys = nominalSystem;
@@ -2056,6 +2098,7 @@ void Controller::createScalarEntity(int featureType, QString name, bool nominal,
 
         tmpSEDistance->mConfig = *this->lastmConfig;
         tmpSEDistance->name = name;
+        tmpSEDistance->group = group;
         tmpSEDistance->isNominal = nominal;
         tmpSEDistance->isCommon = common;
         tmpSEDistance->myNominalCoordSys = nominalSystem;
@@ -2088,6 +2131,7 @@ void Controller::createScalarEntity(int featureType, QString name, bool nominal,
 
         tmpSETemperature->mConfig = *this->lastmConfig;
         tmpSETemperature->name = name;
+        tmpSETemperature->group = group;
         tmpSETemperature->isNominal = nominal;
         tmpSETemperature->isCommon = common;
         tmpSETemperature->myNominalCoordSys = nominalSystem;
@@ -2121,6 +2165,7 @@ void Controller::createScalarEntity(int featureType, QString name, bool nominal,
 
         tmpSEMSeries->mConfig = *this->lastmConfig;
         tmpSEMSeries->name = name;
+        tmpSEMSeries->group = group;
         tmpSEMSeries->isNominal = nominal;
         tmpSEMSeries->isCommon = common;
         tmpSEMSeries->myNominalCoordSys = nominalSystem;
@@ -2199,3 +2244,192 @@ void Controller::checkForNominals(FeatureWrapper *fw)
         }
     }
 }
+
+/*!
+ * \brief Controller::deleteFeature
+ * Delete the specified feature if possible
+ * \param myFeature
+ */
+void Controller::deleteFeatures(QList<FeatureWrapper*> myFeatures){
+    this->featuresToDelete = myFeatures;
+
+    //check if delete task is valid
+    int countCoordSys = 0;
+    bool countCheck = true; //at least one coordinate system has to exist
+    bool activeCheck = true; //the active station cannot be deleted
+    bool displayCheck = true; //the display coordinate system cannot be deleted
+    foreach(FeatureWrapper *f, this->featuresToDelete){
+        if(f->getStation() != NULL && f->getStation() == this->activeStation){ //do not delete active station
+            activeCheck = false;
+            break;
+        }else if(f->getCoordinateSystem() != NULL && f->getCoordinateSystem() == this->activeCoordinateSystem){ //do not delete display coordinate system
+            displayCheck = false;
+            break;
+        }else if(f->getStation() != NULL || f->getCoordinateSystem() != NULL){
+            countCoordSys++;
+        }
+    }
+    if(countCoordSys >= (this->stations.size() + this->coordSys.size())){
+        countCheck = false;
+    }
+
+    if(activeCheck && countCheck){ //if delete task is valid
+
+        if(myFeatures.size() == 1){
+            emit this->showMessageBoxForDecision("Delete features", QString("%1 %2 %3").arg("You have selected")
+                                                 .arg(myFeatures.size())
+                                                 .arg("feature. Do you really want to delete it, including all dependencies?"), this->myDeleteFeaturesCallback);
+        }else{
+            emit this->showMessageBoxForDecision("Delete features", QString("%1 %2 %3").arg("You have selected")
+                                                 .arg(myFeatures.size())
+                                                 .arg("features. Do you really want to delete them, including all dependencies?"), this->myDeleteFeaturesCallback);
+        }
+
+    }else{ //delete task is not valid
+
+        if(activeCheck == false){
+            emit this->showMessageBox("Delete error", "You cannot delete the active station!");
+        }else{
+            emit this->showMessageBox("Delete error", "At least one coordinate system has to exist!");
+        }
+
+    }
+}
+
+/*!
+ * \brief Controller::deleteFeatureCallback
+ * Is called after the user has decided wether to delete a feature with dependencies or not
+ * \param command
+ */
+void Controller::deleteFeaturesCallback(bool command){
+    //TODO create a backup file before deleting features
+
+    if(command){ //if user decided to delete the selected features
+
+        foreach(FeatureWrapper *delFeature, this->featuresToDelete){
+            if(delFeature != NULL){
+
+                //clear active feature and set it to active station
+                if(this->activeFeature == delFeature){
+                    this->activeFeature = NULL;
+                    foreach(FeatureWrapper *f, this->features){
+                        if(f->getStation() != NULL && f->getStation() == this->activeStation){
+                            this->activeFeature = f;
+                            break;
+                        }
+                    }
+                }
+
+                //remove feature from lists
+                this->features.removeOne(delFeature);
+                if(delFeature->getStation() != NULL){
+                    this->stations.removeOne(delFeature->getStation());
+                    //remove corresponding trafo param set
+                    if(delFeature->getStation()->coordSys != NULL){
+                        foreach(TrafoParam *myTrafo, delFeature->getStation()->coordSys->trafoParams){
+                            if(myTrafo != NULL){
+                                int index = -1;
+                                for(int i = 0; i < this->features.size(); i++){
+                                    if(this->features.at(i) != NULL && this->features.at(i)->getTrafoParam() != NULL
+                                            && this->features.at(i)->getTrafoParam()->id == myTrafo->id){
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if(index >= 0){
+                                    this->features.removeAt(index);
+                                }
+                            }
+                        }
+                    }
+                }else if(delFeature->getCoordinateSystem() != NULL){
+                    this->coordSys.removeOne(delFeature->getCoordinateSystem());
+                    //remove corresponding trafo param set
+                    foreach(TrafoParam *myTrafo, delFeature->getCoordinateSystem()->trafoParams){
+                        if(myTrafo != NULL){
+                            int index = -1;
+                            for(int i = 0; i < this->features.size(); i++){
+                                if(this->features.at(i) != NULL && this->features.at(i)->getTrafoParam() != NULL
+                                        && this->features.at(i)->getTrafoParam()->id == myTrafo->id){
+                                    index = i;
+                                    break;
+                                }
+                            }
+                            if(index >= 0){
+                                this->features.removeAt(index);
+                            }
+                        }
+                    }
+                }
+
+                //update group name map for combo boxes
+                QString group = delFeature->getFeature()->group;
+                if(this->availableGroups.contains(group)){
+                    int count = this->availableGroups.find(group).value();
+                    if(count <= 1){
+                        this->availableGroups.remove(group);
+                    }else{
+                        this->availableGroups.insert(group, count-1);
+                    }
+                }
+
+                //delete feature
+                this->myFeatureUpdater.deleteFeature(delFeature, this->features);
+
+            }
+        }
+
+        this->myFeatureUpdater.recalcFeatureSet(this->features);
+
+        //refresh feature tree view models
+        this->featureTreeViewModel->refreshModel();
+
+        emit this->availableGroupsChanged(this->availableGroups);
+        emit this->resetFeatureSelection();
+        emit this->refreshGUI(this->activeFeature, this->activeStation);
+
+    }
+}
+
+/*!
+ * \brief Controller::groupNameChanged
+ * Group name of one feature was edited in table view
+ * \param oldValue
+ * \param newValue
+ */
+void Controller::groupNameChanged(QString oldValue, QString newValue){
+
+    if(oldValue.compare(newValue) != 0){
+        //count down by 1 the number of occurences of oldValue as group name
+        if(oldValue.compare("") != 0 && this->availableGroups.contains(oldValue)){
+            int count = this->availableGroups.find(oldValue).value();
+            if(count <= 1){
+                this->availableGroups.remove(oldValue);
+            }else{
+                this->availableGroups.insert(oldValue, count-1);
+            }
+        }
+
+        //count up by 1 the number of occurences of newValue as group name
+        if(newValue.compare("") != 0){
+            int count = 0;
+            if(this->availableGroups.contains(newValue)){
+                count += this->availableGroups.find(newValue).value();
+            }
+            this->availableGroups.insert(newValue, count+1);
+        }
+
+        emit this->availableGroupsChanged(this->availableGroups);
+    }
+
+}
+
+/*!
+ * \brief Controller::checkAvailablePlugins
+ * For each geometry type check wether there is a corresponding plugin to create it
+ */
+void Controller::checkAvailablePlugins(){
+    QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
+    emit this->updateGeometryIcons(availableGeometries);
+}
+

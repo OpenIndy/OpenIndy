@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initializeActions();
 
+    this->ui->comboBox_groups->addItem("All Groups");
+
     ui->toolBar_ControlPad->addWidget(labelSensorControlName);
     ui->toolBar_ControlPad->addAction(cPsep9);
 
@@ -23,9 +25,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->widget_graphics->features = &control.features;
 
-    //not working
-    ui->tableView_data->setModel(control.featureOverviewModel);
-    ui->tableView_trafoParam->setModel(control.trafoParamModel);
+    FeatureOverviewDelegate *myFeatureDelegate = new FeatureOverviewDelegate();
+    this->ui->tableView_data->setItemDelegate(myFeatureDelegate);
+    this->ui->tableView_data->setModel(this->control.featureOverviewModel);
+    TrafoParamDelegate *myTrafoParamDelegate = new TrafoParamDelegate();
+    this->ui->tableView_trafoParam->setItemDelegate(myTrafoParamDelegate);
+    this->ui->tableView_trafoParam->setModel(this->control.trafoParamModel);
 
     ui->treeView_featureOverview->setModel(this->control.featureGraphicsModel);
     fPluginDialog.receiveAvailableElementsModel(this->control.availableElementsModel);
@@ -47,6 +52,12 @@ MainWindow::MainWindow(QWidget *parent) :
     nominalDialog.setModal(true);
     trafoParamDialog.setModal(true);
     watchWindowDialog.setModal(true);
+
+    //delete feature
+    this->ui->tableView_data->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->ui->tableView_trafoParam->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this, SIGNAL(sendDeleteFeatures(QList<FeatureWrapper*>)), &control, SLOT(deleteFeatures(QList<FeatureWrapper*>)));
+    connect(&control, SIGNAL(resetFeatureSelection()), this, SLOT(resetFeatureSelection()));
 
     //measurement config settings
     connect(&mConfigDialog,SIGNAL(sendConfig(FeatureWrapper*,MeasurementConfig*)),this,SLOT(receiveConfig(FeatureWrapper*,MeasurementConfig*)));
@@ -76,7 +87,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tableView_data,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTableViewClicked(QModelIndex)));
     connect(this->lineEditSendCommand,SIGNAL(returnPressed()),this, SLOT(sendCommand()));
     connect(this->actionCreate,SIGNAL(triggered()),this,SLOT(createFeature()));
-    connect(ui->tableView_data,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(viewDoubleClicked(QModelIndex)));
     connect(this->actionMove,SIGNAL(triggered()),&moveDialog,SLOT(show()));
     connect(&moveDialog,SIGNAL(sendReading(Reading*)),&control,SLOT(startMove(Reading*)));
     //connect(ui->actionActivate_station,SIGNAL(triggered()),&control,SLOT(changeActiveStation()));
@@ -101,14 +111,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&setUpDialog,SIGNAL(rejected()),this,SLOT(setUpStatusBar()));
 
     //feature dialog
-    connect(cFeatureDialog,SIGNAL(createFeature(int,int,QString,bool,bool,bool,CoordinateSystem*)),&control,SLOT(addFeature(int,int,QString,bool,bool,bool,CoordinateSystem*)));
+    connect(cFeatureDialog,SIGNAL(createFeature(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)),&control,SLOT(addFeature(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)));
     connect(cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
     connect(cFeatureDialog,SIGNAL(createTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)),&control,SLOT(addTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)));
     connect(&nominalDialog, SIGNAL(sendNominalValues(double,double,double,double,double,double,double,double,double,double,double)),&control,SLOT(getNominalValues(double,double,double,double,double,double,double,double,double,double,double)));
     connect(this,SIGNAL(sendActiveNominalfeature(FeatureWrapper*)),&nominalDialog,SLOT(getActiveFeature(FeatureWrapper*)));
 
     //Scalar entity dialog
-    connect(sEntityDialog,SIGNAL(createEntity(int,int,QString,bool,bool,bool,CoordinateSystem*)),&control,SLOT(addScalarEntity(int,int,QString,bool,bool,bool,CoordinateSystem*)));
+    connect(sEntityDialog,SIGNAL(createEntity(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)),&control,SLOT(addScalarEntity(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)));
     connect(sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
 
     //sensor plugin dialog
@@ -134,9 +144,16 @@ MainWindow::MainWindow(QWidget *parent) :
             &control, SLOT(setFunctionConfiguration(int,FunctionConfiguration)));
 
     connect(&control, SIGNAL(showMessageBox(QString,QString)), this, SLOT(showMessageBox(QString,QString)));
+    connect(&control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
+
+    //group combo boxes
+    connect(&control, SIGNAL(availableGroupsChanged(QMap<QString,int>)), this, SLOT(availableGroupsChanged(QMap<QString,int>)));
+    connect(control.tblModel, SIGNAL(groupNameChanged(QString,QString)), &control, SLOT(groupNameChanged(QString,QString)));
 
     //setup create feature toolbar
     setupCreateFeature();
+    connect(&control, SIGNAL(updateGeometryIcons(QStringList)), this, SLOT(updateGeometryIcons(QStringList)));
+    this->control.checkAvailablePlugins();
 
     //dataimport
     connect(&importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&control,SLOT(importFeatures(QList<FeatureWrapper*>)));
@@ -340,6 +357,9 @@ void MainWindow::setupCreateFeature(){
     ui->toolbarCreateFeature->addWidget(labelName);
     ui->toolbarCreateFeature->addWidget(lineEditName);
     ui->toolbarCreateFeature->addAction(cFsep1);
+    this->ui->toolbarCreateFeature->addWidget(this->labelGroup);
+    this->ui->toolbarCreateFeature->addWidget(this->comboBoxGroup);
+    this->ui->toolbarCreateFeature->addAction(this->cFsep8);
     ui->toolbarCreateFeature->addWidget(labelCount);
     ui->toolbarCreateFeature->addWidget(spinBoxNumber);
     ui->toolbarCreateFeature->addAction(cFsep2);
@@ -547,6 +567,9 @@ void MainWindow::initializeActions(){
     comboBoxFeatureType = new QComboBox();
     lineEditName =  new QLineEdit();
     lineEditName->setPlaceholderText("feature name");
+    this->labelGroup = new QLabel("group:");
+    this->comboBoxGroup = new QComboBox();
+    this->comboBoxGroup->setEditable(true);
     spinBoxNumber = new QSpinBox();
     spinBoxNumber->setMaximum(1000);
     spinBoxNumber->setMinimum(1);
@@ -649,6 +672,7 @@ void MainWindow::createFeature(){
 
             int count = this->spinBoxNumber->value();
             QString name = this->lineEditName->text();
+            QString group = this->comboBoxGroup->currentText();
             int featureType = static_cast<Configuration::FeatureTypes>(this->comboBoxFeatureType->itemData(this->comboBoxFeatureType->currentIndex()).toInt());
             bool actual = this->checkBoxActual->isChecked();
             bool nominal = this->checkBoxNominal->isChecked();
@@ -666,7 +690,8 @@ void MainWindow::createFeature(){
                 }
             }
 
-            control.addFeature(count,featureType,name,actual,nominal,comPoint,nominalSystem);
+            control.addFeature(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
+
 
         }
     }catch(std::exception e){
@@ -881,8 +906,7 @@ void MainWindow::handleTableViewClicked(const QModelIndex &idx){
  * \brief Opens the dialog for setting functions to a feature.
  * Sets the plugins model and the function treeview model to the class.
  */
-void MainWindow::on_actionSet_function_triggered()
-{
+void MainWindow::on_actionSet_function_triggered(){
     if(this->control.activeFeature != NULL && this->control.activeFeature->getFeature() != NULL){
         //get models from database
         this->control.setFunction();
@@ -904,28 +928,6 @@ void MainWindow::openCreateFeatureMConfig(){
     emit sendConfig(this->control.lastmConfig);
     mConfigDialog.setStation(this->control.activeStation);
     mConfigDialog.show();
-}
-
-/*!
- * \brief double clicking the view opens a new dialog with specific information about the feature.
- * If the feature is a nominal geometry the nominal dialog will appear where you can put in and/or change the values.
- * If it´s not nominal and no coordinate system, the feature dialog will appear, where you can see the readings, observations,
- * and function statistics of the feature. If it is a station you can additionally view and change the sensor configuration.
- * \param const QModelIndex &idx
- */
-void MainWindow::viewDoubleClicked(const QModelIndex &idx){
-
-    if(this->control.activeFeature->getGeometry() != NULL &&
-            this->control.activeFeature->getGeometry()->getDisplayIsNominal()=="true"){
-
-        emit sendActiveNominalfeature(this->control.activeFeature);
-        nominalDialog.show();
-    }else{
-        if(this->control.activeFeature->getCoordinateSystem() == NULL){
-            fDataDialog.getActiveFeature(this->control.activeFeature);
-            fDataDialog.show();
-        }
-    }
 }
 
 /*!
@@ -1105,16 +1107,6 @@ void MainWindow::on_actionOpen_triggered()
 }
 
 /*!
- * \brief double clicking transformation parameters displays a dialog for editing the values of them
- * \param const QModelIndex &index
- */
-void MainWindow::on_tableView_trafoParam_doubleClicked(const QModelIndex &index)
-{
-    trafoParamDialog.getSelectedTrafoParam(this->control.activeFeature);
-    trafoParamDialog.show();
-}
-
-/*!
  * \brief showMessageBox shows a messagebox with title and message
  * used for signalizing sensor actions (e.g. measuring)
  * \param QString title
@@ -1122,6 +1114,31 @@ void MainWindow::on_tableView_trafoParam_doubleClicked(const QModelIndex &index)
  */
 void MainWindow::showMessageBox(QString title, QString message){
     QMessageBox::information(NULL, title, message);
+}
+
+/*!
+ * \brief MainWindow::showMessageBoxForDecision
+ * Show a message box to give the user the possibility to cancel a task
+ * \param title
+ * \param message
+ * \return
+ */
+void MainWindow::showMessageBoxForDecision(QString title, QString message, OiFunctor *func){
+    QMessageBox msgBox;
+    msgBox.setWindowTitle(title);
+    msgBox.setText(message);
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    int ret = msgBox.exec();
+    if(ret == QMessageBox::Ok){
+        QVariantList result;
+        result.append(true);
+        (*func)(result);
+    }else{
+        QVariantList result;
+        result.append(false);
+        (*func)(result);
+    }
 }
 
 /*!
@@ -1147,6 +1164,7 @@ void MainWindow::on_actionActivate_station_triggered()
     }
 }
 
+
 void MainWindow::defaultCreateFeatureSettings()
 {
     this->lineEditName->setText("");
@@ -1154,4 +1172,286 @@ void MainWindow::defaultCreateFeatureSettings()
     this->checkBoxActual->setChecked(true);
     this->checkBoxCommonPoint->setChecked(false);
     this->checkBoxNominal->setChecked(false);
+}
+
+/*!
+ * \brief MainWindow::deleteFeatureContextMenu
+ * Is called whenever the user does a right-click on a feature in the table view and opens the context menu
+ * \param point
+ */
+void MainWindow::featureContextMenu(const QPoint &point){
+    //save model indices to delete later
+    if(this->isTrafoParamSelected){
+        this->featuresToDelete = this->ui->tableView_trafoParam->selectionModel()->selectedIndexes();
+    }else{
+        this->featuresToDelete = this->ui->tableView_data->selectionModel()->selectedIndexes();
+    }
+
+    //create menu and add delete action
+    QMenu *menu = new QMenu();
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete selected feature(s)"), this, SLOT(deleteFeatures(bool)));
+
+    //check wether the right click was done on the active feature
+    QList<FeatureWrapper*> myFeatures;
+    if(this->isTrafoParamSelected){
+        QModelIndex selectedIndex = this->ui->tableView_trafoParam->indexAt(point);
+        TrafoParamProxyModel *tableModel = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
+        if(tableModel != NULL){
+            QModelIndexList myIndexList;
+            myIndexList.append(selectedIndex);
+            myFeatures = tableModel->getFeaturesAtIndices(myIndexList);
+        }
+    }else{
+        QModelIndex selectedIndex = this->ui->tableView_data->indexAt(point);
+        FeatureOvserviewProxyModel *tableModel = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+        if(tableModel != NULL){
+            QModelIndexList myIndexList;
+            myIndexList.append(selectedIndex);
+            myFeatures = tableModel->getFeaturesAtIndices(myIndexList);
+        }
+    }
+    if(this->control.activeFeature != NULL && this->control.activeFeature->getFeature() != NULL
+            && this->control.activeFeature->getTypeOfFeature() != Configuration::eCoordinateSystemFeature
+            && myFeatures.size() == 1 && myFeatures.at(0) != NULL && myFeatures.at(0)->getFeature() != NULL
+            && myFeatures.at(0)->getFeature()->id == this->control.activeFeature->getFeature()->id){
+        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(control.activeFeature->getFeature()->name), this, SLOT(showProperties(bool)));
+    }
+
+    menu->exec(this->ui->tableView_data->mapToGlobal(point));
+}
+
+/*!
+ * \brief MainWindow::deleteFeature
+ * Try to delete the features that were marked to delete
+ * \param checked
+ */
+void MainWindow::deleteFeatures(bool checked){
+    if(this->featuresToDelete.size() >= 0){
+
+        //create new index list because of multiple indexes for one row
+        QModelIndexList myIndices;
+        QList<int> rows;
+        for(int i = 0; i < this->featuresToDelete.size(); i++){
+            if(!rows.contains(this->featuresToDelete.at(i).row())){
+                myIndices.append(this->featuresToDelete.at(i));
+                rows.append(this->featuresToDelete.at(i).row());
+            }
+        }
+
+        //send delete features
+        if(this->isTrafoParamSelected){
+            TrafoParamProxyModel *tableModel = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
+            QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(myIndices);
+            emit this->sendDeleteFeatures(myFeatures);
+        }else{
+            FeatureOvserviewProxyModel *tableModel = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+            QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(myIndices);
+            emit this->sendDeleteFeatures(myFeatures);
+        }
+
+    }
+}
+
+/*!
+ * \brief MainWindow::showProperties
+ * Show properties of active feature
+ * \param checked
+ */
+void MainWindow::showProperties(bool checked){
+    //show dialog dependent on which type of feature was clicked
+    if(this->control.activeFeature != NULL){
+        if(this->control.activeFeature->getTypeOfFeature() == Configuration::eTrafoParamFeature){
+            trafoParamDialog.getSelectedTrafoParam(this->control.activeFeature);
+            trafoParamDialog.show();
+        }else if(this->control.activeFeature->getGeometry() != NULL && this->control.activeFeature->getGeometry()->isNominal){
+            emit sendActiveNominalfeature(this->control.activeFeature);
+            nominalDialog.show();
+        }else if(this->control.activeFeature->getCoordinateSystem() == NULL){
+            fDataDialog.getActiveFeature(this->control.activeFeature);
+            fDataDialog.show();
+        }
+    }
+}
+
+/*!
+ * \brief MainWindow::resetFeatureSelection
+ * Deselect all features in table view
+ */
+void MainWindow::resetFeatureSelection(){
+    this->ui->tableView_data->clearSelection();
+    this->ui->tableView_trafoParam->clearSelection();
+}
+
+/*!
+ * \brief MainWindow::on_tableView_data_customContextMenuRequested
+ * Context menu of table view with features requested
+ * \param pos
+ */
+void MainWindow::on_tableView_data_customContextMenuRequested(const QPoint &pos)
+{
+    this->isTrafoParamSelected = false;
+    this->featureContextMenu(pos);
+}
+
+/*!
+ * \brief MainWindow::on_tableView_trafoParam_customContextMenuRequested
+ * Context menu of table view with trafo params requested
+ * \param pos
+ */
+void MainWindow::on_tableView_trafoParam_customContextMenuRequested(const QPoint &pos)
+{
+    this->isTrafoParamSelected = true;
+    this->featureContextMenu(pos);
+}
+
+/*!
+ * \brief MainWindow::availableGroupsChanged
+ * Update group-comboBoxes
+ * \param availableGroups
+ */
+void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
+    QStringList groups = availableGroups.keys();
+    this->comboBoxGroup->clear();
+    this->comboBoxGroup->clearEditText();
+    this->comboBoxGroup->addItems(groups);
+    this->cFeatureDialog->availableGroupsChanged(groups);
+    this->sEntityDialog->availableGroupsChanged(groups);
+
+    QString activeGroup = this->ui->comboBox_groups->currentText();
+    if(groups.contains(activeGroup)){
+        this->ui->comboBox_groups->clear();
+        this->ui->comboBox_groups->addItem("All Groups");
+        this->ui->comboBox_groups->addItems(groups);
+        this->ui->comboBox_groups->setCurrentText(activeGroup);
+    }else{
+        this->ui->comboBox_groups->clear();
+        this->ui->comboBox_groups->addItem("All Groups");
+        this->ui->comboBox_groups->addItems(groups);
+        this->ui->comboBox_groups->setCurrentText("All Groups");
+        this->control.tblModel->updateModel(this->control.activeFeature, this->control.activeStation);
+    }
+}
+
+/*!
+ * \brief MainWindow::on_comboBox_groups_currentIndexChanged
+ * \param arg1
+ */
+void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
+{
+    FeatureOvserviewProxyModel *model = this->control.featureOverviewModel;//dynamic_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+    if(model != NULL){
+        model->activeGroupChanged(arg1);
+    }
+    this->control.tblModel->updateModel(this->control.activeFeature, this->control.activeStation);
+}
+
+/*!
+ * \brief MainWindow::updateGeometryIcons
+ * Enable or Disable gemetry buttons dependent on the availability of corresponding plugins
+ * \param availableGeometries
+ */
+void MainWindow::updateGeometryIcons(QStringList availableGeometries){
+    this->comboBoxFeatureType->clear();
+
+    if(availableGeometries.contains("point")){
+        this->ui->actionCreate_point->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"point",Configuration::ePointFeature);
+    }else{
+        this->ui->actionCreate_point->setEnabled(false);
+    }
+    if(availableGeometries.contains("line")){
+        this->ui->actionCreate_line->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"line",Configuration::eLineFeature);
+    }else{
+        this->ui->actionCreate_line->setEnabled(false);
+    }
+    if(availableGeometries.contains("plane")){
+        this->ui->actionCreate_plane->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"plane",Configuration::ePlaneFeature);
+    }else{
+        this->ui->actionCreate_plane->setEnabled(false);
+    }
+    if(availableGeometries.contains("sphere")){
+        this->ui->actionCreate_sphere->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"sphere",Configuration::eSphereFeature);
+    }else{
+        this->ui->actionCreate_sphere->setEnabled(false);
+    }
+    if(availableGeometries.contains("pointcloud")){
+        this->ui->actionCreate_pointcloud->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"pointcloud",Configuration::ePointCloudFeature);
+    }else{
+        this->ui->actionCreate_pointcloud->setEnabled(false);
+    }
+    if(availableGeometries.contains("cone")){
+        this->ui->actionCreate_cone->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cone", Configuration::eConeFeature);
+    }else{
+        this->ui->actionCreate_cone->setEnabled(false);
+    }
+    if(availableGeometries.contains("circle")){
+        this->ui->actionCreate_circle->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"circle",Configuration::eCircleFeature);
+    }else{
+        this->ui->actionCreate_circle->setEnabled(false);
+    }
+    if(availableGeometries.contains("cylinder")){
+        this->ui->actionCreate_cylinder->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cylinder",Configuration::eCylinderFeature);
+    }else{
+        this->ui->actionCreate_cylinder->setEnabled(false);
+    }
+    if(availableGeometries.contains("ellipsoid")){
+        this->ui->actionCreate_ellipsoid->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"ellipsoid",Configuration::eEllipsoidFeature);
+    }else{
+        this->ui->actionCreate_ellipsoid->setEnabled(false);
+    }
+    if(availableGeometries.contains("hyperboloid")){
+        this->ui->actionCreate_hyperboloid->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"hyperboloid",Configuration::eHyperboloidFeature);
+    }else{
+        this->ui->actionCreate_hyperboloid->setEnabled(false);
+    }
+    if(availableGeometries.contains("nurbs")){
+        this->ui->actionCreate_nurbs->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"nurbs",Configuration::eNurbsFeature);
+    }else{
+        this->ui->actionCreate_nurbs->setEnabled(false);
+    }
+    if(availableGeometries.contains("paraboloid")){
+        this->ui->actionCreate_paraboloid->setEnabled(true);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"paraboloid",Configuration::eParaboloidFeature);
+    }else{
+        this->ui->actionCreate_paraboloid->setEnabled(false);
+    }
+
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"station",Configuration::eStationFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
+}
+
+void MainWindow::on_actionShow_help_triggered()
+{
+#ifdef Q_OS_MAC
+QDir appDir(qApp->applicationDirPath());
+#endif
+
+
+#ifdef Q_OS_WIN
+QDir appDir(qApp->applicationDirPath());
+#endif
+
+#ifdef Q_OS_LINUX
+QDir appDir(qApp->applicationDirPath());
+#endif
+
+    QString guidePath = appDir.absolutePath();
+    guidePath.append("/doc/index.html");
+
+    if(QDesktopServices::openUrl(QUrl::fromLocalFile(guidePath))){
+        Console::addLine("guide opened");
+    }else{
+        Console::addLine("cannot open user guide");
+    }
+
 }

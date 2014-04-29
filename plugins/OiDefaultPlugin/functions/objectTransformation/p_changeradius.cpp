@@ -12,7 +12,6 @@ PluginMetaData* ChangeRadius::getMetaData(){
     metaData->description = QString("%1")
             .arg("This functions adds the specified offset to the radius of the target geometry");
     metaData->iid = "de.openIndy.Plugin.Function.ObjectTransformation.v001";
-    //...
     return metaData;
 }
 
@@ -53,11 +52,11 @@ bool ChangeRadius::exec(Sphere &targetSphere){
             this->attachOffsetToSphere(targetSphere, seDistance);
             return true;
         }else{
-            Console::addLine("Not enough valid geometries available for calculation");
+            this->writeToConsole("Not enough valid geometries available for calculation");
             return false;
         }
     }else{
-        Console::addLine("Not enough valid geometries available for calculation");
+        this->writeToConsole("Not enough valid geometries available for calculation");
         return false;
     }
 }

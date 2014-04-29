@@ -24,9 +24,11 @@ public:
     //used for creating trafoparams and filling comboboxes
     QList<FeatureWrapper*> &featureList;
 
+    void availableGroupsChanged(QStringList myGroups);
+
 signals:
 
-    void createFeature(int count, int featureType, QString name,
+    void createFeature(int count, int featureType, QString name,QString group,
                        bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
 
     void createTrafoParam(int count, int featureType, QString name,

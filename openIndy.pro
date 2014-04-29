@@ -31,7 +31,7 @@ win32:RC_FILE = $$PWD/res/openIndy.rc
 unix:ICON = $$PWD/res/openIndy.icns
 
 #-----------------------------------linux dependency---------------------------------------
-linux: LIBS = -lglut -lGLU
+linux: LIBS = -lGLU
 #-----------------------------------Linear Algebra---------------------------------------
 
 INCLUDEPATH += $$PWD/src
@@ -77,7 +77,7 @@ SOURCES += \
     src/geometry.cpp \
     src/feature.cpp \
     src/coordinatesystem.cpp \
-    src/console.cpp \
+    controller/console.cpp \
     src/configuration.cpp \
     src/geometry/sphere.cpp \
     src/geometry/pointcloud.cpp \
@@ -137,7 +137,10 @@ SOURCES += \
     src/functionconfiguration.cpp \
     src/geometry/scalarentitytemperature.cpp \
     src/geometry/scalarentitymeasurementseries.cpp \
-    ui/customparameterwidget.cpp
+    ui/customparameterwidget.cpp \
+    controller/deletefeaturesfunctor.cpp \
+    ui/featureoverviewdelegate.cpp \
+    ui/trafoparamdelegate.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -165,7 +168,7 @@ HEADERS  += \
     src/feature.h \
     src/element.h \
     src/coordinatesystem.h \
-    src/console.h \
+    controller/console.h \
     src/configuration.h \
     src/plugin/pi_totalstation.h \
     src/plugin/pi_systemtransformation.h \
@@ -240,7 +243,11 @@ HEADERS  += \
     src/functionconfiguration.h \
     src/geometry/scalarentitytemperature.h \
     src/geometry/scalarentitymeasurementseries.h \
-    ui/customparameterwidget.h
+    ui/customparameterwidget.h \
+    controller/oifunctor.h \
+    controller/deletefeaturesfunctor.h \
+    ui/featureoverviewdelegate.h \
+    ui/trafoparamdelegate.h
 
 
 FORMS    += ui/mainwindow.ui \

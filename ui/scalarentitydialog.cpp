@@ -51,6 +51,7 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
 {
     if(ui->spinBox_count->value()>0){
         QString name = ui->lineEdit_name->text();
+        QString group = this->ui->comboBox_group->currentText();
         int count = ui->spinBox_count->value();
         int featureType = static_cast<Configuration::FeatureTypes>(ui->comboBox_scalarEntityType->itemData(ui->comboBox_scalarEntityType->currentIndex()).toInt());
         bool actual = ui->checkBox_actual->isChecked();
@@ -71,7 +72,7 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
             }
         }
 
-        emit createEntity(count,featureType,name,actual,nominal,comPoint,nominalSystem);
+        emit createEntity(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
 
         this->close();
     }
@@ -116,8 +117,20 @@ void ScalarEntityDialog::on_toolButton_mConfig_clicked()
     emit createFeatureMConfig();
 }
 
+
 void ScalarEntityDialog::showEvent(QShowEvent *event)
 {
     initGUI();
     event->accept();
+}
+
+/*!
+ * \brief ScalarEntityDialog::availableGroupsChanged
+ * Update group combobox
+ * \param myGroups
+ */
+void ScalarEntityDialog::availableGroupsChanged(QStringList myGroups){
+    this->ui->comboBox_group->clear();
+    this->ui->comboBox_group->clearEditText();
+    this->ui->comboBox_group->addItems(myGroups);
 }

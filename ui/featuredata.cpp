@@ -138,10 +138,10 @@ void FeatureData::on_comboBox_displayedFunction_currentIndexChanged(const QStrin
                 ui->label_s0aprioriValue->setText(QString::number(this->selectedFeature->getFeature()->functionList.at(currentFunction)->getStatistic().s0_apriori,'f',6));
             }
         }
-
+        /*
         if(this->selectedFeature->getPoint() == NULL){
             return;
-        }
+        }*/
 
         if(this->selectedFeature->getFeature()->functionList.at(currentFunction)->getFeatureOrder().size() > 0){
 
@@ -251,11 +251,11 @@ void FeatureData::getReadingType()
                 break;
             case Configuration::eUndefined:
 
-                if(this->selectedFeature->getStation()->instrument->getUndefinedSigma() != NULL){
+                if(this->selectedFeature->getStation()->instrument->getDefaultAccuracy() != NULL){
 
                     ui->toolBox_accuracy->setItemText(4,this->selectedFeature->getStation()->instrument->getUndefinedReadingName());
 
-                    QMap<QString, double> undefSigma = *this->selectedFeature->getStation()->instrument->getUndefinedSigma();
+                    QMap<QString, double> undefSigma = *this->selectedFeature->getStation()->instrument->getDefaultAccuracy();
 
                     QMapIterator<QString, double> j(undefSigma);
                     while(j.hasNext()){

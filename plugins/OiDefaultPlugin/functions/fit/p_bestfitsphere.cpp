@@ -13,7 +13,6 @@ PluginMetaData* BestFitSphere::getMetaData(){
             .arg("This function calculates an adjusted sphere.")
             .arg("You can input as many observations as you want which are then used to find the best fit sphere.");
     metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
-    //...
     return metaData;
 }
 
@@ -79,7 +78,7 @@ bool BestFitSphere::exec(Sphere &s){
             this->setUpResult(s, x, y, z, obsCount, xm, r, qxx);
             check = true;
         }else{
-            Console::addLine("Unknown error while fitting sphere");
+            this->writeToConsole("Unknown error while fitting sphere");
         }
 
         //free space
@@ -87,7 +86,7 @@ bool BestFitSphere::exec(Sphere &s){
         delete[] y;
         delete[] z;
     }else{
-        Console::addLine("Not enough observations available for calculation");
+        this->writeToConsole("Not enough observations available for calculation");
     }
 
     return check;

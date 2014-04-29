@@ -13,7 +13,6 @@ PluginMetaData* BestFitPlane2::getMetaData(){
             .arg("This function calculates an adjusted plane.")
             .arg("You can input as many observations as you want which are then used to find the best fit plane.");
     metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
-    //...
     return metaData;
 }
 
@@ -58,6 +57,12 @@ bool BestFitPlane2::exec(Plane &p){
             }
         }
 
+        for(int i = 0; i < 3; i++){
+            this->writeToConsole(QString("x: %1").arg(x[i]));
+            this->writeToConsole(QString("y: %1").arg(y[i]));
+            this->writeToConsole(QString("z: %1").arg(z[i]));
+        }
+
         //adjust
         double d;
         double n[3];
@@ -66,7 +71,7 @@ bool BestFitPlane2::exec(Plane &p){
             this->setUpResult(p, x, y, z, obsCount, n, d, qxx);
             check = true;
         }else{
-            Console::addLine("Unknown error while fitting plane");
+            this->writeToConsole("Unknown error while fitting plane");
         }
 
         //free space
@@ -74,7 +79,7 @@ bool BestFitPlane2::exec(Plane &p){
         delete[] y;
         delete[] z;
     }else{
-        Console::addLine("Not enough observations available for calculation");
+        this->writeToConsole("Not enough observations available for calculation");
     }
 
     return check;

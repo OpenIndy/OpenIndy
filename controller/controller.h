@@ -46,6 +46,8 @@
 
 #include "oiemitter.h"
 
+#include "deletefeaturesfunctor.h"
+
 class Feature;
 class CoordinateSystem;
 class Station;
@@ -69,6 +71,7 @@ public:
     QList<Station*> stations;
     Station *activeStation;
     CoordinateSystem *activeCoordinateSystem;
+    QMap<QString, int> availableGroups;
 
     MeasurementConfig *lastmConfig;
     TableModel *tblModel;
@@ -99,10 +102,16 @@ signals:
     void sendPositionOfActiveFeature(double x, double y, double z);
 
     void showMessageBox(QString title, QString message);
+    void showMessageBoxForDecision(QString title, QString message, OiFunctor *func);
     void sendTempSensor(Sensor *s);
+    void resetFeatureSelection();
 
     void sendExtraParameterForFunction(QMap<QString, int> intParameter, QMap<QString, double> doubleParameter,
                                        QMap<QString, QStringList> stringParameter, FunctionConfiguration config); //connected with function plugin loader
+
+    void availableGroupsChanged(QMap<QString, int> availableGroups);
+
+    void updateGeometryIcons(QStringList availableGeometries);
 
 public slots:
 
@@ -112,8 +121,8 @@ public slots:
     int checkActiveFeatureIndex(int current, int index);
 
     void setActiveCoordSystem(QString CoordSysName);
-    void addFeature(int count, int featureType, QString name, bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
-    void addScalarEntity(int count, int featureType, QString name, bool actual, bool nominal, bool commonPoint, CoordinateSystem *nominalSystem);
+    void addFeature(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
+    void addScalarEntity(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool commonPoint, CoordinateSystem *nominalSystem);
     void addTrafoParam(int count, int featureType, QString name,
                         CoordinateSystem *startSystem, CoordinateSystem *destSystem);
 
@@ -162,11 +171,19 @@ public slots:
 
     void printToConsole(QString message);
 
+    void deleteFeatures(QList<FeatureWrapper*>);
+
+    void deleteFeaturesCallback(bool);
+
+    void groupNameChanged(QString oldValue, QString newValue);
+
+    void checkAvailablePlugins();
+
     void updateFeatureMConfig();
 
-    void createFeature(int featureType, QString name, bool nominal, bool common, CoordinateSystem *nominalSystem);
+    void createFeature(int featureType, QString name,QString group,  bool nominal, bool common, CoordinateSystem *nominalSystem);
 
-    void createScalarEntity(int featureType, QString name, bool nominal, bool common, CoordinateSystem *nominalSystem);
+    void createScalarEntity(int featureType, QString name,QString group,  bool nominal, bool common, CoordinateSystem *nominalSystem);
 
     void addNominalToActual(FeatureWrapper *fw);
     void checkForNominals(FeatureWrapper *fw);
@@ -177,6 +194,10 @@ private:
     bool checkCircleWarning(Feature *activeFeature, Feature *usedForActiveFeature);
 
     FeatureUpdater myFeatureUpdater;
+
+    QList<FeatureWrapper*> featuresToDelete;
+
+    DeleteFeaturesFunctor *myDeleteFeaturesCallback;
 };
 
 #endif // CONTROLLER_H

@@ -9,7 +9,6 @@
 #include <QtCore/qmath.h>
 #include <vector>
 #include "pi_systemtransformation.h"
-#include "console.h"
 #include "point.h"
 #include "trafoparam.h"
 #include "configuration.h"

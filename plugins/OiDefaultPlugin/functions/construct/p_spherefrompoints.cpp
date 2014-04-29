@@ -13,7 +13,6 @@ PluginMetaData* SphereFromPoints::getMetaData(){
             .arg("This function caclulates an adjusted sphere.")
             .arg("You can input as many points as you want which are then used to find the best fit sphere.");
     metaData->iid = "de.openIndy.Plugin.Function.ConstructFunction.v001";
-    //...
     return metaData;
 }
 
@@ -78,7 +77,7 @@ bool SphereFromPoints::exec(Sphere &s){
             this->setUpResult(s, x, y, z, poiCount, xm, r, qxx);
             check = true;
         }else{
-            Console::addLine("Unknown error while fitting sphere");
+            this->writeToConsole("Unknown error while fitting sphere");
         }
 
         //free space
@@ -86,7 +85,7 @@ bool SphereFromPoints::exec(Sphere &s){
         delete[] y;
         delete[] z;
     }else{
-        Console::addLine("Not enough points available for calculation");
+        this->writeToConsole("Not enough points available for calculation");
     }
 
     return check;

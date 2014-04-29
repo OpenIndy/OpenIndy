@@ -27,6 +27,8 @@ public:
 
     static QString getPluginFilePath(QString name, QString plugin);
 
+    static QStringList getSupportedGeometries();
+
 private:
     static QSqlDatabase db;
     static bool isInit;
