@@ -40,7 +40,14 @@ const QString AppVersion = AppVersionNoDebug + AppMinorVersion + " [DEBUG]";
 #endif
 
 
-
+/*!
+ * \brief main class of openIndy
+ * In this class you need to set the LinearAlgebra implementation that openIndy should use for calculation.
+ * The class also includes the splash screent that displays at the start of openIndy.
+ * \param argc
+ * \param argv
+ * \return
+ */
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -56,56 +63,6 @@ int main(int argc, char *argv[])
 
 
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
-
-    OiVec c(3);
-    OiVec b(3);
-    c.setAt(0, 1.0);
-    c.setAt(1, 1.1);
-    c.setAt(2, 1.2);
-    b.setAt(0, 2.0);
-    b.setAt(1, 2.1);
-    b.setAt(2, 2.2);
-    qDebug() << "test";
-    OiVec d = c + b;
-    qDebug() << "test2";
-    Console::addLine("test ", d.getAt(1));
-
-    OiMat tt(3,3);
-    tt.setAt(1,1,2.2);
-
-    OiMat neutt = tt * (2.2 * 2.2);
-    OiMat neuneu = tt * (1.1);
-    QString test = "";
-
-    //Arma lib Test
-    //arma::mat A;
-    //A.print("A:");
-
-    //PluginLoader p;
-
-    /*FitFunction *ff = p.loadFitFunctionPlugin();
-    if(ff != NULL){
-        Station *s = new Station();
-        CoordinateSystem *cs = new CoordinateSystem();
-        for(int i = 0; i < 5; i++){
-            Observation *obs = new Observation(NULL, s);
-            arma::vec4 v;
-            v(0) = 3+i*0.1;
-            v(1) = 4+i*0.1;
-            v(2) = 5+i*0.1;
-            v(3) = 1;
-            obs->myXyz = v;
-            cs->observations.append(obs);
-        }
-        s->coordSys = cs;
-
-        ff->addStation(s);
-        Point *p = new Point();
-        p->functionList.append(ff);
-        p->recalc();
-
-        p->xyz.print();
-    }*/
 
     a.setOrganizationName(Company);
     a.setOrganizationDomain(Company);

@@ -31,7 +31,7 @@ win32:RC_FILE = $$PWD/res/openIndy.rc
 unix:ICON = $$PWD/res/openIndy.icns
 
 #-----------------------------------linux dependency---------------------------------------
-linux: LIBS = -lglut -lGLU
+linux: LIBS = -lGLU
 #-----------------------------------Linear Algebra---------------------------------------
 
 INCLUDEPATH += $$PWD/src

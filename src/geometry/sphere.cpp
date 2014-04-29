@@ -2,7 +2,7 @@
 
 #include "function.h"
 
-Sphere::Sphere() : xyz(4)
+Sphere::Sphere() : xyz(4), radius(0.0)
 {
     this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
