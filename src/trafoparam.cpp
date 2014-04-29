@@ -12,6 +12,16 @@ TrafoParam::TrafoParam() : homogenMatrix(4, 4), translation(3), rotation(3), sca
 
 TrafoParam::~TrafoParam(){
 
+    //delete this trafo set in from system
+    if(this->from != NULL){
+        this->from->trafoParams.removeOne(this);
+    }
+
+    //delete this trafo set in to system
+    if(this->to != NULL){
+        this->to->trafoParams.removeOne(this);
+    }
+
 }
 
 /*!

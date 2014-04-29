@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QFile>
+#include <QStringList>
 #include "pi_lasertracker.h"
 
 
@@ -25,6 +26,18 @@ public:
     virtual QMap<QString,double>* getDoubleParameter();
 
     virtual QMap <QString, QStringList>* getStringParameter();
+
+    /*default accuracy
+     *keys:
+     * sigmaAzimuth sigmaAzimuth sigmaDistance
+     * sigmaX
+     * sigmaY
+     * sigmaZ
+     * sigmaTempDeg
+     * sigmaAngleXZ
+     * sigmaAngleYZ
+     */
+    QMap<QString,double>* getDefaultAccuracy();
 
     //! laser tracker measures a point and returns an observation
     QList<Reading*> measure(MeasurementConfig *mc);

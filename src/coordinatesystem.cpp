@@ -13,6 +13,27 @@ CoordinateSystem::CoordinateSystem() : origin(4){
 
 CoordinateSystem::~CoordinateSystem(){
 
+    //delete all observations made from this station coordinate system (only if this is a station system)
+    foreach(Observation *myObs, this->observations){
+        if(myObs != NULL){
+            delete myObs;
+        }
+    }
+
+    //delete transformation parameter sets from this coordinate system
+    foreach(TrafoParam *myTrafo, this->trafoParams){
+        if(myTrafo != NULL){
+            delete myTrafo;
+        }
+    }
+
+    //delete nominals of this coordinate system
+    foreach(Geometry *myGeom, this->nominals){
+        if(myGeom != NULL){
+            delete myGeom;
+        }
+    }
+
 }
 
 void CoordinateSystem::recalc(){

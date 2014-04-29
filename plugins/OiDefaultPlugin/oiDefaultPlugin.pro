@@ -56,7 +56,6 @@ INCLUDEPATH += $$PWD/lib/fitting/util
 SOURCES += p_factory.cpp \
     ../../src/configuration.cpp \
     ../../src/connectionconfig.cpp \
-    ../../src/console.cpp \
     ../../src/coordinatesystem.cpp \
     ../../src/feature.cpp \
     ../../src/featurewrapper.cpp \
@@ -126,6 +125,7 @@ SOURCES += p_factory.cpp \
     lib/fitting/util/microtim.cpp \
     lib/fitting/util/mystring.cpp \
     lib/fitting/util/rho.cpp \
+    functions/objectTransformation/p_shiftplane.cpp \
     functions/fit/p_bestfitcircle.cpp
 
 HEADERS += p_factory.h \
@@ -135,7 +135,6 @@ HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/oivec.h \
     ../../src/configuration.h \
     ../../src/connectionconfig.h \
-    ../../src/console.h \
     ../../src/coordinatesystem.h \
     ../../src/element.h \
     ../../src/feature.h \
@@ -216,6 +215,7 @@ HEADERS += p_factory.h \
     lib/fitting/util/microtim.h \
     lib/fitting/util/mystring.h \
     lib/fitting/util/rho.h \
+    functions/objectTransformation/p_shiftplane.h \
     functions/fit/p_bestfitcircle.h
 
 

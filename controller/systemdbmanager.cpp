@@ -490,7 +490,7 @@ void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
     }
     QList<int> neededElements = SystemDbManager::getElementIds(elements);
 
-    if(applicableFor.length() > 0 && neededElements.length() > 0){
+    if(applicableFor.length() > 0){
         //insert function plugin
         QString query = QString("INSERT INTO functionPlugin (plugin_id, iid, name, description) VALUES (%1, '%2', '%3', '%4')")
                 .arg(pluginId).arg(f->getMetaData()->iid).arg(f->getMetaData()->name).arg(f->getMetaData()->description);
@@ -501,13 +501,15 @@ void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
         pluginId = SystemDbManager::getLastId("functionPlugin");
 
         if(pluginId > -1){
-            //insert needed elements
-            query = QString("INSERT INTO pluginElement (functionPlugin_id, element_id, element_infinite) VALUES (%1, %2, %3)")
-                    .arg(pluginId).arg(neededElements.at(0)).arg(le.at(0).infinite?"1":"0");
-            for(int i = 1; i < neededElements.length(); i++){
-                query.append(QString(", (%1, %2, %3)").arg(pluginId).arg(neededElements.at(i)).arg(le.at(i).infinite?"1":"0"));
+            if(neededElements.length() > 0){
+                //insert needed elements
+                query = QString("INSERT INTO pluginElement (functionPlugin_id, element_id, element_infinite) VALUES (%1, %2, %3)")
+                        .arg(pluginId).arg(neededElements.at(0)).arg(le.at(0).infinite?"1":"0");
+                for(int i = 1; i < neededElements.length(); i++){
+                    query.append(QString(", (%1, %2, %3)").arg(pluginId).arg(neededElements.at(i)).arg(le.at(i).infinite?"1":"0"));
+                }
+                command.exec(query);
             }
-            command.exec(query);
 
             //insert applicable for
             query = QString("INSERT INTO elementPlugin (functionPlugin_id, element_id) VALUES (%1, %2)")
@@ -544,4 +546,29 @@ void SystemDbManager::saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustmen
             .arg(pluginId).arg(s->getMetaData()->iid).arg(s->getMetaData()->name).arg(s->getMetaData()->description);
     QSqlQuery command(SystemDbManager::db);
     command.exec(query);*/
+}
+
+/*!
+ * \brief SystemDbManager::getSupportedGeometries
+ * Retrieve a list of all geometries for which a corresponding plugin exists
+ * \return
+ */
+QStringList SystemDbManager::getSupportedGeometries(){
+    QStringList result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QString query = QString("SELECT DISTINCT e.element_type FROM elementPlugin AS ep INNER JOIN element AS e ON ep.element_id = e.id");
+
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+        while(command.next()){
+            result.append(command.value(0).toString());
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
 }

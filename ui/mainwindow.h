@@ -6,6 +6,7 @@
 #include <QPluginLoader>
 #include <QDebug>
 #include <QMessageBox>
+#include <QPoint>
 
 #include "controller.h"
 #include "station.h"
@@ -26,14 +27,21 @@
 #include "edittrafoparamdialog.h"
 #include "oiprojectexchanger.h"
 
+#include "featureoverviewdelegate.h"
+#include "trafoparamdelegate.h"
+
 #include <QComboBox>
 #include <QCheckBox>
 #include <QLabel>
 #include <QSpinBox>
+#include <QDir>
+#include <QDesktopServices>
 
 #include <QMetaObject>
 #include <QMetaEnum>
 #include <QString>
+
+#include "tablemodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -72,21 +80,22 @@ public:
     importNominalGeometryDialog importNominalDialog;
     NominalDataDialog nominalDialog;
 
-
-
     //actions
     //create feature
     QLabel *labelName;
     QLabel *labelCount;
     QComboBox *comboBoxFeatureType;
     QLineEdit *lineEditName;
+    QLabel *labelGroup;
+    QComboBox *comboBoxGroup;
     QSpinBox *spinBoxNumber;
-    QCheckBox *checkBoxActualNominal;
+    QCheckBox *checkBoxActual;
     QCheckBox *checkBoxCommonPoint;
     QAction *actionCreate;
     QLabel *labelNominalSystem;
     QComboBox *comboBoxNominalSystem;
     QAction * actionMConfig;
+    QCheckBox *checkBoxNominal;
 
     //sensor control pad
     QAction *actionConnect;
@@ -113,6 +122,7 @@ public:
     QAction *cFsep5;
     QAction *cFsep6;
     QAction *cFsep7;
+    QAction *cFsep8;
 
     //seperators control pad
     QAction *cPsep;
@@ -137,11 +147,19 @@ signals:
     void getAvailableFunctions();
     //TODO create a signal which will be emit every time if a new coordinate system was created and connect it to fillCoordSysComboBox()
     void sendActiveCoordSystem(QString coordSys);
+    void sendDeleteFeatures(QList<FeatureWrapper*> myFeatures);
 
 public slots:
     void showMessageBox(QString title, QString message);
+    void showMessageBoxForDecision(QString title, QString message, OiFunctor *func);
+    void resetFeatureSelection();
+    void availableGroupsChanged(QMap<QString, int>);
+    void updateGeometryIcons(QStringList availableGeometries);
 
 private slots:
+    void featureContextMenu(const QPoint &point);
+    void deleteFeatures(bool checked);
+    void showProperties(bool checked);
 
     void ChangeCreateFeatureToolbar(int i);
     void CheckBoxNominalToggled(bool toggled);
@@ -150,7 +168,6 @@ private slots:
 
     void getActiveCoordSystem(QString coordSys);
     void handleTableViewClicked(const QModelIndex &);
-    void viewDoubleClicked(const QModelIndex &);
 
     void initializeActions();
 
@@ -224,12 +241,25 @@ private slots:
 
     void on_actionCreate_circle_triggered();
 
-    void on_tableView_trafoParam_doubleClicked(const QModelIndex &index);
-
     void on_actionActivate_station_triggered();
+
+
+    void defaultCreateFeatureSettings();
+
+    void on_tableView_data_customContextMenuRequested(const QPoint &pos);
+
+    void on_tableView_trafoParam_customContextMenuRequested(const QPoint &pos);
+
+    void on_comboBox_groups_currentIndexChanged(const QString &arg1);
+
+    void on_actionShow_help_triggered();
+
 
 private:
     Ui::MainWindow *ui;
+
+    QModelIndexList featuresToDelete;
+    bool isTrafoParamSelected;
 };
 
 #endif // MAINWINDOW_H

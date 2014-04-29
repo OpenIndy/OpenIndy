@@ -6,7 +6,6 @@
 #include <QThread>
 #include "feature.h"
 #include "configuration.h"
-#include "console.h"
 #include "observation.h"
 #include "sensor.h"
 #include "sensorcontrol.h"
@@ -78,6 +77,7 @@ signals:
     void startCompensation();
     void startSendCommand(QString);
 
+    void sendToConsole(QString);
 
 public slots:
 
@@ -120,6 +120,7 @@ public slots:
 private slots:
     //! will be emitted when sensor action is completed
     void emitActionFinished(bool wasSuccessful);
+    void writeToConsole(QString);
 
 private:
     // thread for the SensorControl

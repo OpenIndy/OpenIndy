@@ -7,6 +7,7 @@ Station::Station(QString name)
 
     this->id = Configuration::generateID();
     position = new Point();
+    position->name = name;
 
     //ini member
     coordSys = new CoordinateSystem();
@@ -14,6 +15,8 @@ Station::Station(QString name)
 
     instrument = NULL;
     sensorPad = new SensorControl(this);
+    connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
+
     //InstrumentConfig = new SensorConfiguration; //TODO null pointer??
     InstrumentConfig = NULL;
 
@@ -48,6 +51,16 @@ Station::~Station(){
 
     stationThread.quit();
     stationThread.wait();
+
+    //delete corresponding coordinate system with all observations made from this station
+    delete this->coordSys;
+
+    //delete position of this station
+    delete this->position;
+
+    //TODO Sensorliste deleten
+    delete this->sensorPad;
+
 }
 
 void Station::stopThread(){
@@ -417,4 +430,8 @@ QString Station::getDisplayStdDev() const{
     }else{
         return "-/-";
     }
+}
+
+void Station::writeToConsole(QString msg){
+    emit this->sendToConsole(msg);
 }

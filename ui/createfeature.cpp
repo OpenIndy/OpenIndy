@@ -42,7 +42,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->label_startSystem->setVisible(false);
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
-        ui->checkBox_actualNominal->setEnabled(false);
+        ui->checkBox_Nominal->setEnabled(false);
+        ui->checkBox_Actual->setChecked(true);
+        ui->checkBox_Actual->setEnabled(false);
         ui->checkBox_common->setEnabled(false);
         this->setWindowTitle("create coordinatesystem");
         break;
@@ -55,7 +57,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->label_startSystem->setVisible(true);
         ui->comboBox_destinationSystem->setVisible(true);
         ui->comboBox_startSystem->setVisible(true);
-        ui->checkBox_actualNominal->setEnabled(false);
+        ui->checkBox_Nominal->setEnabled(false);
+        ui->checkBox_Actual->setChecked(true);
+        ui->checkBox_Actual->setEnabled(false);
         ui->checkBox_common->setEnabled(false);
         this->setWindowTitle("create transformation parameter");
         break;
@@ -69,7 +73,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create plane");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::ePointFeature:
@@ -81,7 +86,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create point");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::eLineFeature:
@@ -93,7 +99,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create line");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::eStationFeature:
@@ -105,7 +112,10 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create station");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setChecked(false);
+        ui->checkBox_Nominal->setEnabled(false);
+        ui->checkBox_Actual->setChecked(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::eSphereFeature:
@@ -117,7 +127,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create sphere");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::eCylinderFeature:
@@ -129,7 +140,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create cylinder");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::eConeFeature:
@@ -141,7 +153,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create cone");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::eEllipsoidFeature:
@@ -153,7 +166,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create ellipsoid");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::eHyperboloidFeature:
@@ -165,7 +179,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create hyperboloid");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::eParaboloidFeature:
@@ -177,7 +192,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create paraboloid");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::eNurbsFeature:
@@ -189,7 +205,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create nurbs");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::ePointCloudFeature:
@@ -201,7 +218,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create pointcloud");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     case Configuration::eCircleFeature:
@@ -213,7 +231,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create circle");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     default:{
@@ -225,7 +244,8 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->comboBox_destinationSystem->setVisible(false);
         ui->comboBox_startSystem->setVisible(false);
         this->setWindowTitle("create feature");
-        ui->checkBox_actualNominal->setEnabled(true);
+        ui->checkBox_Nominal->setEnabled(true);
+        ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
         break;
     }
@@ -246,7 +266,9 @@ void CreateFeature::on_toolButton_create_clicked()
         int count = ui->spinBox_count->value();
         int featureType = this->typeOfFeature;
         QString name = ui->lineEdit_name->text();
-        bool isActual = ui->checkBox_actualNominal->isChecked();
+        bool isActual = ui->checkBox_Actual->isChecked();
+        bool isNominal = ui->checkBox_Nominal->isChecked();
+        QString group = this->ui->comboBox_group->currentText();
         bool isCommon = ui->checkBox_common->isChecked();
         CoordinateSystem *nominalSystem = NULL;
 
@@ -256,7 +278,7 @@ void CreateFeature::on_toolButton_create_clicked()
 
         if (typeOfFeature != Configuration::eTrafoParamFeature){
 
-            if(isActual){
+            if(isNominal){
 
                 for(int k=0; k<this->featureList.size();k++){
                     if(this->featureList.at(k)->getCoordinateSystem() != NULL &&
@@ -265,9 +287,8 @@ void CreateFeature::on_toolButton_create_clicked()
                     }
                 }
             }
-        emit createFeature(count,featureType,name,isActual,isCommon,nominalSystem);
 
-
+        emit createFeature(count,featureType,name,group,isActual,isNominal,isCommon,nominalSystem);
 
         }else{
             CoordinateSystem *from;
@@ -319,8 +340,11 @@ void CreateFeature::initGUI(){
     ui->comboBox_destinationSystem->clear();
     ui->comboBox_startSystem->clear();
     ui->comboBox_nominalSystem->clear();
-    ui->checkBox_actualNominal->setChecked(false);
+    ui->checkBox_Nominal->setChecked(false);
+    ui->checkBox_Actual->setChecked(true);
     ui->checkBox_common->setChecked(false);
+    ui->lineEdit_name->setText("");
+    ui->spinBox_count->setValue(1);
 
     if(featureList.size() !=0){
         for(int i=0; i<featureList.size();i++){
@@ -339,10 +363,10 @@ void CreateFeature::initGUI(){
 }
 
 /*!
- * \brief this function is called when the actual / nominal checkboxes gets toggled and generates specific gui elements for each case.
+ * \brief this function is called when the nominal checkboxes gets toggled and generates specific gui elements for each case.
  * \param bool checked
  */
-void CreateFeature::on_checkBox_actualNominal_toggled(bool checked)
+void CreateFeature::on_checkBox_Nominal_toggled(bool checked)
 {
     if(checked){
         ui->label_nominalSystem->setVisible(true);
@@ -360,4 +384,15 @@ void CreateFeature::on_checkBox_actualNominal_toggled(bool checked)
 void CreateFeature::on_toolButton_mConfig_clicked()
 {
     emit createFeatureMConfig();
+}
+
+/*!
+ * \brief CreateFeature::availableGroupsChanged
+ * Update group combobox
+ * \param myGroups
+ */
+void CreateFeature::availableGroupsChanged(QStringList myGroups){
+    this->ui->comboBox_group->clear();
+    this->ui->comboBox_group->clearEditText();
+    this->ui->comboBox_group->addItems(myGroups);
 }

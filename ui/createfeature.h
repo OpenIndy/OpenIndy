@@ -24,10 +24,12 @@ public:
     //used for creating trafoparams and filling comboboxes
     QList<FeatureWrapper*> &featureList;
 
+    void availableGroupsChanged(QStringList myGroups);
+
 signals:
 
-    void createFeature(int count, int featureType, QString name,
-                       bool actualNominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
+    void createFeature(int count, int featureType, QString name,QString group,
+                       bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
 
     void createTrafoParam(int count, int featureType, QString name,
                            CoordinateSystem *startSystem, CoordinateSystem *destSystem);
@@ -43,7 +45,7 @@ private slots:
 
     void on_toolButton_cancel_clicked();
 
-    void on_checkBox_actualNominal_toggled(bool checked);
+    void on_checkBox_Nominal_toggled(bool checked);
 
     void on_toolButton_mConfig_clicked();
 

@@ -10,10 +10,9 @@ PluginMetaData* BestFitPlane::getMetaData(){
     metaData->pluginName = "OpenIndy Default Plugin";
     metaData->author = "br";
     metaData->description = QString("%1 %2")
-            .arg("This function calculates an adjusted plane.")
+            .arg("This function calculates an adjusted plane (Drixler).")
             .arg("You can input as many observations as you want which are then used to find the best fit plane.");
     metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
-    //...
     return metaData;
 }
 
@@ -48,11 +47,10 @@ QList<Configuration::FeatureTypes> BestFitPlane::applicableFor(){
  * \return
  */
 bool BestFitPlane::exec(Plane &p){
-    qDebug() << "valid: " << this->isValid();
     if(this->isValid() && this->checkObservationCount()){
         return this->setUpResult( p );
     }else{
-        Console::addLine("Not enough observations available for calculation");
+        this->writeToConsole("Not enough observations available for calculation");
         return false;
     }
 }
@@ -63,17 +61,12 @@ bool BestFitPlane::exec(Plane &p){
  * \param p
  */
 bool BestFitPlane::setUpResult(Plane &plane){
-    qDebug() << "vor a mat";
     OiMat a = this->preCalc();
-    qDebug() << "vor ata";
     OiMat ata = a.t() * a;
-    qDebug() << "nach a mat";
     OiMat u(3,3);
     OiVec d(3);
     OiMat v(3,3);
-    qDebug() << "vor svd";
     ata.svd(u, d, v);
-    qDebug() << "nach svd";
     //get eigenvector which is n vector
     int eigenIndex = -1;
     double eVal = 0.0;
@@ -84,7 +77,6 @@ bool BestFitPlane::setUpResult(Plane &plane){
         }
     }
     if(eigenIndex > -1){
-        qDebug() << "eigenindex";
         OiVec n = u.getCol(eigenIndex);
         double sumXN = 0.0;
         double sumYN = 0.0;
@@ -98,9 +90,7 @@ bool BestFitPlane::setUpResult(Plane &plane){
                 count++;
             }
         }
-        qDebug() << "vor d";
         double d = (sumXN + sumYN + sumZN) / (double)count;
-        qDebug() << "nach d";
         //normal vector (check that plane always points in the same direction)
         n = n.normalize();
         if(this->referenceDirection.getSize() == 0){ //if this function is executed the first time
@@ -117,11 +107,9 @@ bool BestFitPlane::setUpResult(Plane &plane){
         n.add(1.0);
         plane.ijk = n;
         plane.xyz = d * n;
-        qDebug() << "vor stats";
         plane.myStatistic.stdev = qSqrt( eVal / (count - 3) );
         plane.myStatistic.isValid = true;
         this->myStatistic = plane.myStatistic;
-        qDebug() << "fertig";
         return true;
     }
     return false;
@@ -142,7 +130,7 @@ OiMat BestFitPlane::preCalc(){
             n++;
         }
     }
-    centroid = centroid * (1/n);
+    centroid = centroid * (double)(1.0/n);
     vector<OiVec> crCoord;
     foreach(Observation *obs, this->observations){
         if(obs->isValid){

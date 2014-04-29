@@ -23,6 +23,7 @@ public:
 
     QString name;
     QString group;
+    QString comment;
     bool isUpdated;
     bool isSolved;
     QList<Function*> functionList;

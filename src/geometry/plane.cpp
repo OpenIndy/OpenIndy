@@ -29,7 +29,7 @@ Plane::~Plane(){
 
 /*!
  * \brief Plane::recalc
- * Execute alls functions in the specified order
+ * Execute all functions in the specified order
  */
 void Plane::recalc(){
     /*

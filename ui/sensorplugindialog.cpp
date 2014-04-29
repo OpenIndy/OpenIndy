@@ -394,6 +394,13 @@ void SensorPluginDialog::getReadingType()
                 ui->lineEdit_sigmaAzimuth->setEnabled(true);
                 ui->lineEdit_sigmaZenith->setEnabled(true);
                 ui->lineEdit_sigmaDistance->setEnabled(true);
+
+                if(this->tmpSensor->getDefaultAccuracy() != NULL){
+                     QMap<QString,double> *sigmaPolar = this->tmpSensor->getDefaultAccuracy();
+                      ui->lineEdit_sigmaAzimuth->setText(QString::number(sigmaPolar->value("sigmaAzimuth")));
+                      ui->lineEdit_sigmaZenith->setText(QString::number(sigmaPolar->value("sigmaZenith")));
+                      ui->lineEdit_sigmaDistance->setText(QString::number(sigmaPolar->value("sigmaDistance")));
+                 }
                 break;
             case Configuration::eCartesian:
                 ui->label_sigmaX->setEnabled(true);
@@ -402,55 +409,86 @@ void SensorPluginDialog::getReadingType()
                 ui->lineEdit_sigmaX->setEnabled(true);
                 ui->lineEdit_sigmaY->setEnabled(true);
                 ui->lineEdit_sigmaZ->setEnabled(true);
+
+                if(this->tmpSensor->getDefaultAccuracy() != NULL){
+                     QMap<QString,double> *sigmaPolar = this->tmpSensor->getDefaultAccuracy();
+                      ui->lineEdit_sigmaX->setText(QString::number(sigmaPolar->value("sigmaX")));
+                      ui->lineEdit_sigmaY->setText(QString::number(sigmaPolar->value("sigmaY")));
+                      ui->lineEdit_sigmaZ->setText(QString::number(sigmaPolar->value("sigmaZ")));
+                 }
                 break;
             case Configuration::eDirection:
                 ui->label_sigmaAzimuth->setEnabled(true);
                 ui->label_sigmaZenith->setEnabled(true);
                 ui->lineEdit_sigmaAzimuth->setEnabled(true);
                 ui->lineEdit_sigmaZenith->setEnabled(true);
+
+                if(this->tmpSensor->getDefaultAccuracy() != NULL){
+                     QMap<QString,double> *sigmaDirection = this->tmpSensor->getDefaultAccuracy();
+                      ui->lineEdit_sigmaAzimuth->setText(QString::number(sigmaDirection->value("sigmaAzimuth")));
+                      ui->lineEdit_sigmaZenith->setText(QString::number(sigmaDirection->value("sigmaZenith")));
+                 }
                 break;
             case Configuration::eDistance:
                 ui->label_sigmaDistance->setEnabled(true);
                 ui->lineEdit_sigmaDistance->setEnabled(true);
+
+                if(this->tmpSensor->getDefaultAccuracy() != NULL){
+                     QMap<QString,double> *sigmaDistance = this->tmpSensor->getDefaultAccuracy();
+                      ui->lineEdit_sigmaDistance->setText(QString::number(sigmaDistance->value("sigmaDistance")));
+                 }
                 break;
             case Configuration::eTemperatur:
                 ui->label_sigmaTemp->setEnabled(true);
                 ui->lineEdit_sigmaTemp->setEnabled(true);
+
+                 if(this->tmpSensor->getDefaultAccuracy() != NULL){
+                       QMap<QString,double> *sigmaPolar = this->tmpSensor->getDefaultAccuracy();
+                        ui->lineEdit_sigmaTemp->setText(QString::number(sigmaPolar->value("sigmaTempDeg")));
+                  }
+
                 break;
             case Configuration::eLevel:
                 ui->label_sigmaAngleXZ->setEnabled(true);
                 ui->label_sigmaAngleYZ->setEnabled(true);
                 ui->lineEdit_sigmaAngleXZ->setEnabled(true);
                 ui->lineEdit_sigmaAngleYZ->setEnabled(true);
+
+                if(this->tmpSensor->getDefaultAccuracy() != NULL){
+                     QMap<QString,double> *sigmaLevel = this->tmpSensor->getDefaultAccuracy();
+                      ui->lineEdit_sigmaAngleXZ->setText(QString::number(sigmaLevel->value("sigmaAngleXZ")));
+                      ui->lineEdit_sigmaAngleYZ->setText(QString::number(sigmaLevel->value("sigmaAngleYZ")));
+                 }
                 break;
             case Configuration::eUndefined:
 
-                if(this->tmpSensor->getUndefinedSigma() != NULL){
+                if(this->tmpSensor->getDefaultAccuracy() != NULL){
 
                     ui->toolBox_accuracy->setItemText(4,this->tmpSensor->getUndefinedReadingName());
 
-                    QMap<QString, double> undefSigma = *this->tmpSensor->getUndefinedSigma();
+                    QMap<QString, double> undefSigma = *this->tmpSensor->getDefaultAccuracy();
 
                     QMapIterator<QString, double> j(undefSigma);
                     while(j.hasNext()){
                         j.next();
 
-                        QLabel *l = new QLabel();
-                        l->setText(j.key());
-                        QLineEdit *le = new QLineEdit();
-                        le->setText(QString::number(j.value()));
+                            QLabel *l = new QLabel();
+                            l->setText(j.key());
+                            QLineEdit *le = new QLineEdit();
+                            le->setText(QString::number(j.value()));
 
-                        QHBoxLayout *layout = new QHBoxLayout();
-                        layout->addWidget(l);
-                        layout->addWidget(le);
-                        layout->setStretch(0,1);
-                        layout->setStretch(1,1);
+                            QHBoxLayout *layout = new QHBoxLayout();
+                            layout->addWidget(l);
+                            layout->addWidget(le);
+                            layout->setStretch(0,1);
+                            layout->setStretch(1,1);
 
-                        masterAccuracyLayout->addLayout(layout);
+                            masterAccuracyLayout->addLayout(layout);
 
-                        undefinedSigmaLabel.insert(j.key(),l);
-                        undefinedSigma.insert(j.key(), le);
-                        accuracyLayouts.insert(j.key(),layout);
+                            undefinedSigmaLabel.insert(j.key(),l);
+                            undefinedSigma.insert(j.key(), le);
+                            accuracyLayouts.insert(j.key(),layout);
+
                     }
                     ui->page_sigmaUndefined->setLayout(masterAccuracyLayout);
                 }

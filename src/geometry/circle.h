@@ -10,20 +10,39 @@ public:
         unknownX,
         unknownY,
         unknownZ,
-        unknownR
+        unknownI,
+        unknownJ,
+        unknownK,
+        unknownR,
+        unknownD
     };
 
     Circle();
     Circle(const Circle &copy);
 
     OiVec xyz;
+    OiVec ijk;
     double radius;
+    double dist2origin;
 
     void recalc();
 
-
     bool toOpenIndyXML(QXmlStreamWriter& stream);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+
+    QString getDisplayX() const;
+    QString getDisplayY() const;
+    QString getDisplayZ() const;
+    QString getDisplayRadius() const;
+    QString getDisplayIsCommon() const;
+    QString getDisplayIsNominal() const;
+    QString getDisplayObs() const;
+    QString getDisplaySolved() const;
+    QString getDisplayMConfig() const;
+    QString getDisplayStdDev() const;
+    QString getDisplayI() const;
+    QString getDisplayJ() const;
+    QString getDisplayK() const;
 
 };
 

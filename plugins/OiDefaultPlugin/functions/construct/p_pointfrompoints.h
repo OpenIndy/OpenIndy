@@ -8,7 +8,6 @@
 #include <QThread>
 #include <vector>
 #include "pi_constructfunction.h"
-#include "console.h"
 #include "point.h"
 #include "configuration.h"
 #include "oivec.h"
