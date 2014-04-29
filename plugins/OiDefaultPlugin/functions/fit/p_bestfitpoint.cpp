@@ -13,7 +13,6 @@ PluginMetaData* BestFitPoint::getMetaData(){
             .arg("This function calculates an adjusted point.")
             .arg("You can input as many observations as you want which are then used to find the best fit 3D point.");
     metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
-    //...
     return metaData;
 }
 
@@ -48,11 +47,8 @@ QList<Configuration::FeatureTypes> BestFitPoint::applicableFor(){
  * \return
  */
 bool BestFitPoint::exec(Point &p){
-    qDebug() << "drin";
     if(this->isValid() && this->checkObservationCount()){
-        qDebug() << "vor set up";
         this->setUpPointResult( p );
-        qDebug() << "nach set up";
         this->writeToConsole("point fit completed");
         return true;
     }else{
@@ -71,7 +67,6 @@ void BestFitPoint::setUpPointResult(Point &point){
     //Fill l vector
     OiVec l;
     vector<double> sigma;
-    qDebug() << "l und sigma";
     foreach(Observation *obs, this->observations){
         if(obs->isValid){
             l.add( obs->myXyz.getAt(0) );
@@ -85,7 +80,6 @@ void BestFitPoint::setUpPointResult(Point &point){
             this->setUseState(obs->id, false);
         }
     }
-    qDebug() << "nach l sigma";
     if(l.getSize() > 0){
         //Fill A matrix
         OiMat a(l.getSize(), 3);
@@ -98,13 +92,11 @@ void BestFitPoint::setUpPointResult(Point &point){
                 a.setAt(i, Point::unknownZ, 1.0);
             }
         }
-        qDebug() << "a mat";
         //Fill P matrix
         //OiMat sll(l.getSize(), l.getSize());
         //OiMat p(l.getSize(), l.getSize());
         //sll.diag(sigma);
         //OiMat neu = 3.3 * a;
-        qDebug() << "vor inv";
         //p = sll.inv();
         //Adjust
         OiMat n = a.t() * a;
@@ -115,7 +107,6 @@ void BestFitPoint::setUpPointResult(Point &point){
             OiVec v = a * x - l;
             x.add(1.0);
 
-            qDebug() << "stdv berechnen";
             double stdv = 0.0;
             if(v.getSize() > 3){
                 double sum_vv = 0.0;
@@ -130,40 +121,23 @@ void BestFitPoint::setUpPointResult(Point &point){
             point.myStatistic.s0_aposteriori = stdv;
 
             //set point
-            qDebug() << "set result";
             point.xyz = x;
             point.myStatistic.qxx = qxx;
-            qDebug() << "vor neue berechnung";
-            qDebug() << "danach";
             point.myStatistic.v.replace(v);
             point.myStatistic.stdev = stdv;
-            qDebug() << "nach set result";
-
-            qDebug() << "set residuals";
 
             for(int i = 0; i < point.myStatistic.v.getSize() / 3; i++){
                 Residual r;
-
-                qDebug() << "Verbesserungen:";
-                qDebug() << v.getAt(i*3);
-                qDebug() << v.getAt(1+i*3);
-                qDebug() << v.getAt(2+i*3);
 
                 r.addValue("vx", v.getAt(i*3), UnitConverter::eMetric);
                 r.addValue("vy", v.getAt(1+i*3), UnitConverter::eMetric);
                 r.addValue("vz", v.getAt(2+i*3), UnitConverter::eMetric);
 
                 point.myStatistic.displayResiduals.append(r);
-
-                qDebug() << "ende for";
             }
-
-            qDebug() << "nach for";
 
             point.myStatistic.isValid = true;
             this->myStatistic = point.myStatistic;
-
-            qDebug() << "fertig";
 
         }catch(logic_error e){
             this->writeToConsole(e.what());
@@ -173,7 +147,7 @@ void BestFitPoint::setUpPointResult(Point &point){
             return;
         }
     }else{
-        Console::addLine("Not enough valid observations available for calculation");
+        this->writeToConsole("Not enough valid observations available for calculation");
     }
 
 }

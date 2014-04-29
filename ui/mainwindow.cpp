@@ -1382,3 +1382,30 @@ void MainWindow::updateGeometryIcons(QStringList availableGeometries){
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"station",Configuration::eStationFeature);
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
 }
+
+void MainWindow::on_actionShow_help_triggered()
+{
+#ifdef Q_OS_MAC
+QDir appDir(qApp->applicationDirPath());
+#endif
+
+
+#ifdef Q_OS_WIN
+QDir appDir(qApp->applicationDirPath());
+#endif
+
+#ifdef Q_OS_LINUX
+QDir appDir(qApp->applicationDirPath());
+#endif
+
+    QString guidePath = appDir.absolutePath();
+    guidePath.append("/doc/index.html");
+
+    if(QDesktopServices::openUrl(QUrl::fromLocalFile(guidePath))){
+        Console::addLine("guide opened");
+    }else{
+        Console::addLine("cannot open user guide");
+    }
+
+
+}

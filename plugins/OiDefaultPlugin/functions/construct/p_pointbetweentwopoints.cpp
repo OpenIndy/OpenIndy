@@ -13,7 +13,6 @@ PluginMetaData* PointBetweenTwoPoints::getMetaData(){
             .arg("This function calculates the point between two points.")
             .arg("Therefore you have to input those two points.");
     metaData->iid = "de.openIndy.Plugin.Function.ConstructFunction.v001";
-    //...
     return metaData;
 }
 
@@ -57,7 +56,7 @@ bool PointBetweenTwoPoints::exec(Point &p){
     if(this->isValid() && this->getTwoPoints()){
         return this->calcMidPoint(p);
     }else{
-        Console::addLine("Not enough points available for calculation");
+        this->writeToConsole("Not enough points available for calculation");
         return false;
     }
 }

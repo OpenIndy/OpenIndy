@@ -9,7 +9,6 @@
 #include <qmath.h>
 #include <QList>
 #include "pi_fitfunction.h"
-#include "console.h"
 #include "plane.h"
 #include "configuration.h"
 #include "oivec.h"

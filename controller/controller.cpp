@@ -503,6 +503,8 @@ void Controller::addFeature(int count, int featureType, QString name, QString gr
                 tmp->position->isSolved = true;
             }
 
+            connect(tmp, SIGNAL(sendToConsole(QString)), this, SLOT(printToConsole(QString)));
+
             FeatureWrapper *fw = new FeatureWrapper();
             fw->setStation(tmp);
 

@@ -54,7 +54,7 @@ QMap <QString, QStringList>* PseudoSensor::getStringParameter(){
 
 }
 
-QMap<QString, double> *PseudoSensor::getUndefinedSigma()
+QMap<QString, double> *PseudoSensor::getDefaultAccuracy()
 {
     QMap<QString, double>* undefinedSigma = new QMap<QString, double>;
 

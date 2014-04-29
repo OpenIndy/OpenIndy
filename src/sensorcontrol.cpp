@@ -28,7 +28,7 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
 
     qDebug() << "count readings" << readings.size();
     if(readings.size() == 0){
-        Console::addLine("measurement not valid!");
+        this->myEmitter.sendString("measurement not valid!");
         emit commandFinished(false);
     }else{
         this->storeReadings(readings,geom, isActiveCoordSys);
@@ -389,4 +389,8 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
     }
 
 
+}
+
+OiEmitter& SensorControl::getOiEmitter(){
+    return this->myEmitter;
 }

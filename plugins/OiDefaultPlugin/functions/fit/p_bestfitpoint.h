@@ -9,7 +9,6 @@
 #include <vector>
 #include <QStringList>
 #include "pi_fitfunction.h"
-#include "console.h"
 #include "point.h"
 #include "plane.h"
 #include "configuration.h"

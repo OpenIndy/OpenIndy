@@ -6,7 +6,7 @@
  * \return
  */
 bool Function::exec(Circle &c){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type circle");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type circle");
     return false;
 }
 
@@ -16,7 +16,7 @@ bool Function::exec(Circle &c){
  * \return
  */
 bool Function::exec(Cone &c){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type cone");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type cone");
     return false;
 }
 
@@ -26,7 +26,7 @@ bool Function::exec(Cone &c){
  * \return
  */
 bool Function::exec(Cylinder &c){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type cylinder");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type cylinder");
     return false;
 }
 
@@ -36,7 +36,7 @@ bool Function::exec(Cylinder &c){
  * \return
  */
 bool Function::exec(CoordinateSystem &c){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
     return false;
 }
 
@@ -46,7 +46,7 @@ bool Function::exec(CoordinateSystem &c){
  * \return
  */
 bool Function::exec(Ellipsoid &e){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type ellipsoid");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type ellipsoid");
     return false;
 }
 
@@ -56,7 +56,7 @@ bool Function::exec(Ellipsoid &e){
  * \return
  */
 bool Function::exec(Hyperboloid &h){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type hyperboloid");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type hyperboloid");
     return false;
 }
 
@@ -66,7 +66,7 @@ bool Function::exec(Hyperboloid &h){
  * \return
  */
 bool Function::exec(Line &l){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type line");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type line");
     return false;
 }
 
@@ -76,7 +76,7 @@ bool Function::exec(Line &l){
  * \return
  */
 bool Function::exec(Nurbs &n){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type nurbs");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type nurbs");
     return false;
 }
 
@@ -86,7 +86,7 @@ bool Function::exec(Nurbs &n){
  * \return
  */
 bool Function::exec(Paraboloid &p){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type paraboloid");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type paraboloid");
     return false;
 }
 
@@ -96,7 +96,7 @@ bool Function::exec(Paraboloid &p){
  * \return
  */
 bool Function::exec(Plane &p){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type plane");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type plane");
     return false;
 }
 
@@ -106,7 +106,7 @@ bool Function::exec(Plane &p){
  * \return
  */
 bool Function::exec(Point &p){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
     return false;
 }
 
@@ -116,7 +116,7 @@ bool Function::exec(Point &p){
  * \return
  */
 bool Function::exec(PointCloud &p){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type pointcloud");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type pointcloud");
     return false;
 }
 
@@ -126,7 +126,7 @@ bool Function::exec(PointCloud &p){
  * \return
  */
 bool Function::exec(ScalarEntityAngle &s){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type angle");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type angle");
     return false;
 }
 
@@ -136,7 +136,7 @@ bool Function::exec(ScalarEntityAngle &s){
  * \return
  */
 bool Function::exec(ScalarEntityDistance &s){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type distance");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type distance");
     return false;
 }
 
@@ -146,7 +146,7 @@ bool Function::exec(ScalarEntityDistance &s){
  * \return
  */
 bool Function::exec(Sphere &s){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type sphere");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type sphere");
     return false;
 }
 
@@ -156,7 +156,7 @@ bool Function::exec(Sphere &s){
  * \return
  */
 bool Function::exec(Station &s){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
     return false;
 }
 
@@ -166,7 +166,7 @@ bool Function::exec(Station &s){
  * \return
  */
 bool Function::exec(TrafoParam &t){
-    Console::addLine("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
     return false;
 }
 

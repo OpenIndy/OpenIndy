@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QThread>
 #include "pi_constructfunction.h"
-#include "console.h"
 #include "point.h"
 #include "configuration.h"
 #include "oivec.h"
