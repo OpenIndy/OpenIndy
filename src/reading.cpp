@@ -53,8 +53,12 @@ OiVec Reading::toPolar(double x, double y, double z){
     return g;
 }
 
+/*!
+ * \brief Reading::errorPropagationPolarToCart
+ * Variance propagation to get sigma values for cartesian coordinates
+ * \return
+ */
 OiVec Reading::errorPropagationPolarToCart(){
-
     OiVec sigmaCartXyz = OiVec(3);
 
     //partial derivative
