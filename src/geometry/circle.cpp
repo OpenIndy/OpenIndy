@@ -43,5 +43,75 @@ void Circle::recalc(){
         this->isSolved = false;
         this->xyz = OiVec(4);
         this->radius = 0.0;
+        this->dist2origin = 0.0;
     }
+}
+
+
+bool Circle::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+ElementDependencies Circle::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    ElementDependencies dependencies;
+
+    return dependencies;
+}
+
+QString Circle::getDisplayX() const{
+    return QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+}
+
+QString Circle::getDisplayY() const{
+    return QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+}
+
+QString Circle::getDisplayZ() const{
+    return QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+}
+
+QString Circle::getDisplayRadius() const{
+    return QString::number(this->radius*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+}
+
+QString Circle::getDisplayIsCommon() const{
+    return QString(isCommon?"true":"false");
+}
+
+QString Circle::getDisplayIsNominal() const{
+    return QString(isNominal?"true":"false");
+}
+QString Circle::getDisplayObs() const{
+    return QString::number(this->myObservations.size());
+}
+
+QString Circle::getDisplaySolved() const{
+    return QString(this->isSolved?"true":"false");
+}
+
+QString Circle::getDisplayMConfig() const{
+    return this->mConfig.name;
+}
+
+QString Circle::getDisplayStdDev() const{
+
+    if(this->myStatistic.isValid){
+        return QString::number(this->myStatistic.stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    }else{
+        return "-/-";
+    }
+}
+
+QString Circle::getDisplayI() const{
+    return QString::number(this->ijk.getAt(0),'f',UnitConverter::distanceDigits);
+}
+
+QString Circle::getDisplayJ() const{
+    return QString::number(this->ijk.getAt(1),'f',UnitConverter::distanceDigits);
+}
+
+QString Circle::getDisplayK() const{
+    return QString::number(this->ijk.getAt(2),'f',UnitConverter::distanceDigits);
 }

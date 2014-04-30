@@ -52,6 +52,17 @@ void PointCloud::recalc(){
     }
 }
 
+bool PointCloud::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+ElementDependencies PointCloud::fromOpenIndyXML(QXmlStreamReader &xml){
+    ElementDependencies dependencies;
+
+    return dependencies;
+}
+
 //TODO change functions with unitconverter and String format
 
 QString PointCloud::getX(){

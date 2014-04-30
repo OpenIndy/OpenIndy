@@ -40,3 +40,15 @@ void Hyperboloid::recalc(){
         this->isSolved = false;
     }
 }
+
+bool Hyperboloid::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+ElementDependencies Hyperboloid::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    ElementDependencies dependencies;
+
+    return dependencies;
+}

@@ -43,3 +43,15 @@ void Cylinder::recalc(){
         this->radius = 0.0;
     }
 }
+
+bool Cylinder::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+ElementDependencies Cylinder::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    ElementDependencies dependencies;
+
+    return dependencies;
+}

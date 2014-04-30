@@ -10,6 +10,9 @@ public:
     Paraboloid(const Paraboloid &copy);
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+
     //TODO implement paraboloid
 };
 

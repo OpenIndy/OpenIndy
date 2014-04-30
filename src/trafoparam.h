@@ -31,6 +31,10 @@ public:
 
     void recalc();
     void generateHomogenMatrix();
+
+    virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
+    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+
     QString getDisplayStartSystem()const;
     QString getDisplayDestinationSystem()const;
     QString getDisplayTranslationX()const;

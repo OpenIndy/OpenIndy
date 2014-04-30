@@ -4,6 +4,8 @@
 #include <QDialog>
 #include "configuration.h"
 #include "featurewrapper.h"
+#include "QShowEvent"
+#include "featureattributesexchange.h"
 
 namespace Ui {
 class ScalarEntityDialog;
@@ -19,10 +21,11 @@ public:
 
     QList<FeatureWrapper*> &featureList;
 
+    void availableGroupsChanged(QStringList myGroups);
+
 signals:
 
-    void createEntity(int count, int featureType, QString name,
-                       bool actualNominal, bool isCommonPoint, double value, CoordinateSystem *nominalSystem);
+    void createFeature(FeatureAttributesExchange fae);
 
     void createFeatureMConfig();
 
@@ -38,6 +41,8 @@ private slots:
     void on_comboBox_scalarEntityType_currentTextChanged(const QString &arg1);
 
     void on_toolButton_mConfig_clicked();
+
+    void showEvent(QShowEvent *event);
 
 private:
     Ui::ScalarEntityDialog *ui;

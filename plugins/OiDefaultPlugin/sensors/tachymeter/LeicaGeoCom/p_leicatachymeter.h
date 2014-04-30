@@ -32,6 +32,16 @@ public:
 
     QMap <QString, QStringList>* getStringParameter();
 
+    /*default accuracy
+     *keys:
+     * sigmaAzimuth sigmaAzimuth sigmaDistance
+     * sigmaXyz
+     * sigmaTempDeg
+     * sigmaAngleXZ
+     * sigmaAngleYZ
+     */
+    QMap<QString,double>* getDefaultAccuracy();
+
     //! measure
     QList<Reading*> measure(MeasurementConfig* mc);
 

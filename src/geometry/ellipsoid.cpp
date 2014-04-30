@@ -44,3 +44,15 @@ void Ellipsoid::recalc(){
         this->c = 0.0;
     }
 }
+
+bool Ellipsoid::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+ElementDependencies Ellipsoid::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    ElementDependencies dependencies;
+
+    return dependencies;
+}

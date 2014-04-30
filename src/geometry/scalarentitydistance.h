@@ -12,6 +12,9 @@ public:
 
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+
     double getDistance() const;
     void setDistance(double distance);
 

@@ -33,6 +33,9 @@ public:
     QString getDisplayZ() const;
     QString getDisplaySolved() const;
 
+    virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
+    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+
     bool transformObservations(CoordinateSystem *to);
     void setObservationState(bool valid);
 

@@ -11,6 +11,9 @@
 #include "systemdbmanager.h"
 #include "pluginloader.h"
 
+#include "projectrestorer.h"
+#include <QThread>
+
 /*!
  * \brief The oiProjectExchanger class
  * static class for generating a openindyXML of the actual project or to restore
@@ -36,33 +39,19 @@ public:
 
 private:
 
+    static ProjectRestorer *restorer;
+    QThread workingThread;
+
     static QList<Observation*> observations;
     static QList<FeatureWrapper*> geometries;
     static QList<FeatureWrapper*> stations;
     static QList<FeatureWrapper*> coordSystems;
     static QList<FeatureWrapper*> trafoParams;
     static QList<FeatureWrapper*> features;
+    static QList<ElementDependencies> dependencies;
 
     static QList<int> stationElements;
 
-    //export functions
-    static bool parseCommonFeatureToXML(QXmlStreamWriter& stream, Feature *f);
-    static bool saveProxyObservation(QXmlStreamWriter& stream, QList<Observation*> o);
-    static bool parseNominalGeometry(QXmlStreamWriter& stream, QList<Geometry*> g);
-    static bool parseStationsToXML(QXmlStreamWriter& stream);
-    static bool parseCoordSysToXML(QXmlStreamWriter& stream);
-    static bool parseTrafoParamToXML(QXmlStreamWriter& stream);
-    static bool parseGeometryToXML(QXmlStreamWriter& stream);
-    static bool parseObservationToXML(QXmlStreamWriter& stream);
-
-    //import functions
-    static Observation* parseObservation(QXmlStreamReader& xml);
-    static Reading* parseReading(QXmlStreamReader& xml);
-    static FeatureWrapper* parseStation(QXmlStreamReader& xml);
-    static FeatureWrapper* parseGeometry(QXmlStreamReader& xml);
-    static FeatureWrapper* parseCoordinatesystem(QXmlStreamReader& xml);
-    static FeatureWrapper* parseTrafoPara(QXmlStreamReader& xml);
-    static void parseFunction(QXmlStreamReader& xml, FeatureWrapper *feature);
     static bool regenerateRelations(oiProjectData &data);
     static bool regenerateFeature(Feature* f);
 

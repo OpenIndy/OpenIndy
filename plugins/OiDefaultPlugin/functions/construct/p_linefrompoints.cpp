@@ -13,7 +13,6 @@ PluginMetaData* LineFromPoints::getMetaData(){
             .arg("This function calculates an adjusted line.")
             .arg("You can input as many points as you want which are then used to find the best fit 3D line.");
     metaData->iid = "de.openIndy.Plugin.Function.ConstructFunction.v001";
-    //...
     return metaData;
 }
 
@@ -51,7 +50,7 @@ bool LineFromPoints::exec(Line &l){
     if(this->isValid() && this->checkPointCount()){
         return this->setUpResult( l );
     }else{
-        Console::addLine("Not enough points available for calculation");
+        this->writeToConsole("Not enough points available for calculation");
         return false;
     }
 }

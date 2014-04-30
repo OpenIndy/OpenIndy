@@ -13,7 +13,6 @@ PluginMetaData* Helmert7Param::getMetaData(){
             .arg("This function calculates a 7 parameter helmert transformation.")
             .arg("That transformation is based on identical points in start and target system.");
     metaData->iid = "de.openIndy.Plugin.Function.SystemTransformation.v001";
-    //...
     return metaData;
 }
 
@@ -50,27 +49,21 @@ QList<Configuration::FeatureTypes> Helmert7Param::applicableFor(){
 bool Helmert7Param::exec(TrafoParam &trafoParam){
     this->svdError = false;
 
-    qDebug() << "vor valid test";
     if(this->isValid()){ //check wether all parameters for calculation are available
-        qDebug() << "valid";
         this->init(); //fills the locSystem and refSystem vectors based on the given common points.
-        qDebug() << "init";
         if(locSystem.count() == refSystem.count() && locSystem.count() > 2){ //if enough common points available
-            qDebug() << "vor calc";
             if(this->calc(trafoParam)){
-                qDebug() << "calc";
                 if(locSystem.count() > 3){
-                    qDebug() << "vor adjust";
                     return this->adjust(trafoParam);
                 }else if(locSystem.count() == 3){
                     return true;
                 }
             }
         }else{
-            Console::addLine("Not enough common points!");
+            this->writeToConsole("Not enough common points!");
         }
     }else{
-        Console::addLine("The Input arguments are not valid!");
+        this->writeToConsole("The Input arguments are not valid!");
     }
 
     return false;
@@ -104,24 +97,15 @@ void Helmert7Param::init(){
  * \return
  */
 bool Helmert7Param::calc(TrafoParam &tp){
-    qDebug() << "in calc";
     vector<OiVec> centroidCoords = this->calcCentroidCoord(); //centroid coordinates
-    qDebug() << "centroid coords";
     if(centroidCoords.size() == 2){
-        qDebug() << "vor centroid reduced";
         vector<OiVec> locC = this->centroidReducedCoord(locSystem, centroidCoords.at(0)); //centroid reduced destination coordinates
         vector<OiVec> refC = this->centroidReducedCoord(refSystem, centroidCoords.at(1)); //centroid reduced target coordinates
-        qDebug() << "vor model matrices";
         vector<OiMat> modelMatrices = this->modelMatrix(locC, refC); //vector of model matrices - one for each common point
-        qDebug() << "vor normal equation";
         OiMat n = this->normalEquationMatrix(modelMatrices); //calculate the normal equation matrix
-        qDebug() << "vor quaternion";
         OiVec q = this->quaternion(n);
-        qDebug() << "quaternion";
         if( !svdError ){
-            qDebug() << "vor rotation";
             OiMat r = this->rotationMatrix(q); //fill rotation matrix
-            qDebug() << "fill result";
             this->fillTrafoParam(r, locC, refC, centroidCoords, tp); //fill trafo param object
             return true;
         }
@@ -260,11 +244,6 @@ OiMat Helmert7Param::rotationMatrix(OiVec q){
     result.setAt(2, 0, 2*(q.getAt(3)*q.getAt(1) - q.getAt(0)*q.getAt(2)));
     result.setAt(2, 1, 2*(q.getAt(3)*q.getAt(2) + q.getAt(0)*q.getAt(1)));
     result.setAt(2, 2, q.getAt(0)*q.getAt(0) - q.getAt(1)*q.getAt(1) - q.getAt(2)*q.getAt(2) + q.getAt(3)*q.getAt(3));
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-            qDebug() << QString::number(result.getAt(i, j), 'f', 10);
-        }
-    }
     return result;
 }
 
@@ -278,7 +257,6 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
     //calc scale
     double o = 0.0;
     double u = 0.0;
-    qDebug() << "m";
     for(int i = 0; i < locC.size(); i++){
         OiVec vecO = refC.at(i).t() * r * locC.at(i);
         OiVec vecU = locC.at(i).t() * locC.at(i);
@@ -287,18 +265,12 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
     }
     double m = 1.0;
     if(u > 0){ m = o / u; }
-    qDebug() << "m: " << QString::number(m, 'f', 8);
     tp.scale.setAt(0, m);
     tp.scale.setAt(1, m);
     tp.scale.setAt(2, m);
-    qDebug() << "scale";
     //calc translation
     OiVec t = centroidCoords.at(1) - m * r * centroidCoords.at(0);
     tp.translation = t;
-    for(int i = 0; i < 3; i++){
-        qDebug() << "t: " << QString::number(t.getAt(i), 'f', 8);
-    }
-    qDebug() << "translation";
     //calc rotation
     tp.rotation.setAt(0, qAtan2(-r.getAt(2,1), r.getAt(2,2))); //alpha
     tp.rotation.setAt(1, qAsin(r.getAt(2,0))); //beta
@@ -306,10 +278,6 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
     if( qFabs(qCos(tp.rotation.getAt(1)) * qCos(tp.rotation.getAt(2))) - qFabs(r.getAt(0,0)) > 0.01 ){
         tp.rotation.setAt(1, PI - tp.rotation.getAt(1));
     }
-    for(int i = 0; i < 3; i++){
-        qDebug() << "t: " << QString::number(tp.rotation.getAt(i)*200.0/PI, 'f', 8);
-    }
-    qDebug() << "rotation";
     //fill transformation matrix
     OiMat translation(4, 4);
     translation.setAt(0, 0, 1.0);
@@ -331,9 +299,7 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
         }
     }
     rotation.setAt(3, 3, 1.0);
-    qDebug() << "homogen";
     tp.homogenMatrix = translation * scale * rotation;
-    qDebug() << "fertisch";
 }
 
 /*!

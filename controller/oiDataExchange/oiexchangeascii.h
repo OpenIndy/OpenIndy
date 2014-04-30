@@ -1,6 +1,9 @@
 #ifndef OIEXCHANGEASCII_H
 #define OIEXCHANGEASCII_H
 
+#include <QString>
+#include <QStringList>
+#include <QRegExp>
 #include "oiexchangeinterface.h"
 
 /*!

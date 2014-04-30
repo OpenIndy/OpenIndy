@@ -12,6 +12,9 @@ public:
 
     void recalc();
 
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+
     double getSeriesValue() const;
     void setSeriesValue(double value);
 

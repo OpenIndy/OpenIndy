@@ -48,6 +48,9 @@
 
 #include "oiemitter.h"
 
+#include "deletefeaturesfunctor.h"
+
+#include "featureattributesexchange.h"
 
 class Feature;
 class CoordinateSystem;
@@ -72,6 +75,7 @@ public:
     QList<Station*> stations;
     Station *activeStation;
     CoordinateSystem *activeCoordinateSystem;
+    QMap<QString, int> availableGroups;
 
     MeasurementConfig *lastmConfig;
     TableModel *tblModel;
@@ -104,12 +108,16 @@ signals:
     void sendPositionOfActiveFeature(double x, double y, double z);
 
     void showMessageBox(QString title, QString message);
+    void showMessageBoxForDecision(QString title, QString message, OiFunctor *func);
     void sendTempSensor(Sensor *s);
+    void resetFeatureSelection();
 
     void sendExtraParameterForFunction(QMap<QString, int> intParameter, QMap<QString, double> doubleParameter,
                                        QMap<QString, QStringList> stringParameter, FunctionConfiguration config); //connected with function plugin loader
 
     void refreshScene();
+    void availableGroupsChanged(QMap<QString, int> availableGroups);
+    void updateGeometryIcons(QStringList availableGeometries);
 
 public slots:
 
@@ -119,10 +127,7 @@ public slots:
     int checkActiveFeatureIndex(int current, int index);
 
     void setActiveCoordSystem(QString CoordSysName);
-    void addFeature(int count, int featureType, QString name, bool actualNominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
-    void addScalarEntity(int count, int featureType, QString name, bool actual, bool commonPoint, double value, CoordinateSystem *nominalSystem);
-    void addTrafoParam(int count, int featureType, QString name,
-                        CoordinateSystem *startSystem, CoordinateSystem *destSystem);
+    void addFeature(FeatureAttributesExchange fae);
 
     //sensor function
     void startMeasurement();
@@ -169,12 +174,33 @@ public slots:
 
     void printToConsole(QString message);
 
+    void deleteFeatures(QList<FeatureWrapper*>);
+
+    void deleteFeaturesCallback(bool);
+
+    void groupNameChanged(QString oldValue, QString newValue);
+
+    void checkAvailablePlugins();
+    bool checkPluginAvailability(Configuration::FeatureTypes typeOfFeature);
+
+    void updateFeatureMConfig();
+
+    void createFeature(int featureType, QString name,QString group,  bool nominal, bool common,
+                       CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem);
+
+    void addNominalToActual(FeatureWrapper *fw);
+    void checkForNominals(FeatureWrapper *fw);
+
 private:
     void changeFunctionTreeViewModel();
     void changeUsedElementsModel(int functionIndex, int elementIndex);
     bool checkCircleWarning(Feature *activeFeature, Feature *usedForActiveFeature);
 
     FeatureUpdater myFeatureUpdater;
+
+    QList<FeatureWrapper*> featuresToDelete;
+
+    DeleteFeaturesFunctor *myDeleteFeaturesCallback;
 };
 
 #endif // CONTROLLER_H

@@ -5,6 +5,7 @@
 #include "measurementconfig.h"
 #include "configuration.h"
 #include "featurewrapper.h"
+#include "console.h"
 #include <QComboBox>
 #include <QCloseEvent>
 #include <QMessageBox>
@@ -13,6 +14,9 @@ namespace Ui {
 class MeasurementConfigDialog;
 }
 
+/*!
+ * \brief The MeasurementConfigDialog class for defining the measurement configuration
+ */
 class MeasurementConfigDialog : public QDialog
 {
     Q_OBJECT
@@ -24,7 +28,6 @@ public:
     Station *myStation;
 
     MeasurementConfig *mConfig;
-    //Configuration config;
 
     FeatureWrapper *activeFeature;
 

@@ -12,7 +12,6 @@ PluginMetaData* ProjectInPlane::getMetaData(){
     metaData->description = QString("%1")
             .arg("This function projects the target geometry in the specified plane.");
     metaData->iid = "de.openIndy.Plugin.Function.ObjectTransformation.v001";
-    //...
     return metaData;
 }
 
@@ -53,11 +52,11 @@ bool ProjectInPlane::exec(Point &targetPoint){
             this->projectPoint(targetPoint, plane);
             return true;
         }else{
-            Console::addLine("Not enough valid geometries available for calculation");
+            this->writeToConsole("Not enough valid geometries available for calculation");
             return false;
         }
     }else{
-        Console::addLine("Not enough valid geometries available for calculation");
+        this->writeToConsole("Not enough valid geometries available for calculation");
         return false;
     }
 }

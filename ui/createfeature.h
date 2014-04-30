@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "configuration.h"
 #include "featurewrapper.h"
+#include "featureattributesexchange.h"
 
 namespace Ui {
 class CreateFeature;
@@ -24,13 +25,12 @@ public:
     //used for creating trafoparams and filling comboboxes
     QList<FeatureWrapper*> &featureList;
 
+    void availableGroupsChanged(QStringList myGroups);
+
 signals:
 
-    void createFeature(int count, int featureType, QString name,
-                       bool actualNominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
+    void createFeature(FeatureAttributesExchange fae);
 
-    void createTrafoParam(int count, int featureType, QString name,
-                           CoordinateSystem *startSystem, CoordinateSystem *destSystem);
     void createFeatureMConfig();
 
 private slots:
@@ -43,7 +43,7 @@ private slots:
 
     void on_toolButton_cancel_clicked();
 
-    void on_checkBox_actualNominal_toggled(bool checked);
+    void on_checkBox_Nominal_toggled(bool checked);
 
     void on_toolButton_mConfig_clicked();
 

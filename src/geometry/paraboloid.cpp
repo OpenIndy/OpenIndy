@@ -40,3 +40,14 @@ void Paraboloid::recalc(){
         this->isSolved = false;
     }
 }
+
+bool Paraboloid::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+ElementDependencies Paraboloid::fromOpenIndyXML(QXmlStreamReader &xml){
+    ElementDependencies dependencies;
+
+    return dependencies;
+}

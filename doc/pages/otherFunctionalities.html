@@ -1,0 +1,104 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080" alink="#FF0000">
+&nbsp;
+<table BORDER=5 CELLSPACING=0 CELLPADDING=5 WIDTH=70% >
+<tr>
+<td VALIGN="CENTER" WIDTH=35%>
+<br>&nbsp;
+</td>
+
+<td VALIGN="CENTER" WIDTH=35%>
+<h2 ALIGN="CENTER"><font size=7>OpenIndy</font></h2>
+<h3 ALIGN="CENTER"><font size=6>user guide</font></h3>
+<h4 ALIGN="CENTER"><a href=https://github.com/openindy title="github">https://github.com/openindy</a></h4>
+</td>
+
+<td VALIGN="CENTER" WIDTH=30%>
+<p ALIGN="CENTER" ><img src="../pics/openIndy.png" width=100% height=100% title="OpenIndy" alt="OpenIndy" /></p>
+</td>
+</tr>
+<tr>
+<td VALIGN="CENTER" WIDTH=100% COLSPAN=3>
+<h1 ALIGN="CENTER">other functionalities</h1>
+<h3><hr ALIGN="LEFT">watch window</h3>
+<p>The watch window is a live stream of the actual readings of the active instrument (e.g. vertical and horizontal angle and distance). It makes it possible to 
+watch the current position of the reflector and if it´s moving. With this functionality it is also possible to watch a position while some works at it and 
+corrects it to its nominal value. The watch window only displays the actual readings and does not store them.</p>
+<p ALIGN="CENTER" ><img src="../pics/watchwindow.png" width=35% height=35% title="watch window" alt="watch window" /><br>watch window</p>
+<p>The plugin developer decides the values that get displayed in the view. So it is dynamic and variable for different tasks.</p>
+
+<h3><hr ALIGN="LEFT">edit nominal data</h3>
+<p>In the example measurement we import the nominal data from an ASCII file. It is also possible to create nominal features. For this just check the nominal 
+checkbox and specify the destination system to which this nominal feature belongs to. Features are linked to each other by their name in transformation. You 
+can have one actual feature with the same name but multiple nominal features with the same name, if they have other destination systems (e.g. PART, OBJECTSYSTEM,...). 
+While creating the nominal features by hand you can/ have to specify the values by hand for each feature typ.<br> The values of nominal features can be 
+edited by a double click on the nominal feature in the tableview. Then just change the values and apply the dialog. It´s the same like the transformation 
+parameters.</p>
+
+<h3><hr ALIGN="LEFT">readings, observations and statistic</h3>
+<p>Double clicking on an actual feature opens an dialog that gives more information about this feature. In this dialog you can see the observation, that this 
+feature has with all its attributes like measured values, date, time station,... . Also you can see the observations that are created from the observations 
+with all their attributes. <br> Their third and maybe leading tab is the statistic tab. Here you can find all the statistic of the feature and its functions. 
+All statistic is seperated for each function the feature has. You can switch the function via the combobox. The statistic of the functions is calculated with 
+variance propagation.</p>
+<p ALIGN="CENTER" ><img src="../pics/readings.png" width=100% title="readings" alt="readings" /><br>readings of the point feature</p> 
+<p>&nbsp;</p>
+<p ALIGN="CENTER" ><img src="../pics/observations.png" width=100% title="observations" alt="observations" /><br>observations of the point feature</p> 
+<p>&nbsp;</p>
+<p ALIGN="CENTER" ><img src="../pics/statistic.png" width=100% title="statistic" alt="statistic" /><br>statistic of the best fit function of the 
+point feature</p> 
+<p>&nbsp;</p>
+
+<h4>station</h4>
+<p>Double clicking on a station opens the same dialog with one more tab. In this tab you can change the sensor configuration of the current active instrument. 
+So you can change the connection parameters, the accuracy and all the other instrument parameters. You can´t change the instrument in this dialog. To do this 
+you need to click <b>Station > set instrument</b>.</p>
+
+<h3><hr ALIGN="LEFT">multiple stations</h3>
+<p>It is possible to have more stations in OpenIndy, because this is neccessary to solve some measurement tasks. All stations are marked light grey in the 
+tableview. The current active station is marked in a darker grey. On default when you start OpenIndy STATION01 is activated. You can switch the active station 
+by marking the one you want to activate in the tableview with one left mouse button click. When it´s marked light blue (active feature) go to 
+<b>Station > activate station</b>. The selected station will then be the active station and you can connect a sensor to it. </p>
+
+<h3><hr ALIGN="LEFT">sensor functionalities</h3>
+<p>This section gives a brief description of all current implemented sensor functionalities (sensor + totalstation + lasertracker). The implementation itself 
+depends on the plugin developer and on the implemented sensor, so it can vary between different sensors.</p>
+<h4>connect</h4>
+<p>Connects OpenIndy and the sensor</p>
+<h4>disconnect</h4>
+<p>Disconnects OpenIndy and the sensor</p>
+<h4>initialize</h4>
+<p>Initializes the sensor</p>
+<h4>home</h4>
+<p>Sets the sensor to his home position (lasertracker)</p>
+<h4>measure</h4>
+<p>starts a measurement</p>
+<h4>toggle sight orientation</h4>
+<p>Changes the sensor from frontside to backside and the other way</p>
+<h4>aim</h4>
+<p>aims towards the active feature position. The feature needs to be solved for this functionality, that means it has some valid X Y and Z coordinates.</p>
+<h4>move</h4>
+<p>The user can specify where the sensor should aim towards</p>
+<h4>change motor state</h4>
+<p>enables or disables the motor (lasertracker)</p>
+<h4>compensation</h4>
+<p>starts the compensation (lasertracker)</p>
+</td>
+</tr>
+<tr>
+<td VALIGN="CENTER" WIDTH=100% COLSPAN=3>
+<br>&nbsp;
+<p ALIGN="CENTER"><a href=views.html title="views">go to views</a></p>
+<br>&nbsp;
+</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<br>&nbsp;
+</body>
+</html>

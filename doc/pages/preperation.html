@@ -1,0 +1,59 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080" alink="#FF0000">
+&nbsp;
+<table BORDER=5 CELLSPACING=0 CELLPADDING=5 WIDTH=70% >
+<tr>
+<td VALIGN="CENTER" WIDTH=35%>
+<br>&nbsp;
+</td>
+
+<td VALIGN="CENTER" WIDTH=35%>
+<h2 ALIGN="CENTER"><font size=7>OpenIndy</font></h2>
+<h3 ALIGN="CENTER"><font size=6>user guide</font></h3>
+<h4 ALIGN="CENTER"><a href=https://github.com/openindy title="github">https://github.com/openindy</a></h4>
+</td>
+
+<td VALIGN="CENTER" WIDTH=30%>
+<p ALIGN="CENTER" ><img src="../pics/openIndy.png" width=100% height=100% title="OpenIndy" alt="OpenIndy" /></p>
+</td>
+</tr>
+<tr>
+<td VALIGN="CENTER" WIDTH=100% COLSPAN=3>
+<h1 ALIGN="CENTER">Preperation</h1>
+<h3><hr ALIGN="LEFT">database</h3>
+<p>As one of the first steps you have to put the oisystemdb.sqlite to the OpenIndy executable (on Windows in the same folder with OpenIndy.exe). <br>
+This is neccessary the plugins we need to solve the measurement tasks. This databse handles all dependencies in the plugin and handles the communication
+between the OpenIndy main program and the plugin, where all the functions and sensors are implemented.
+
+<h3><hr ALIGN="LEFT">library for linear algebra and dependencies</h3>
+<p>Like the databse you have to put openIndyLib.dll and OpenIndyLib.lib (for windows) in the same folder with the OpenIndy.exe. For other operating systems you
+need to do the same with the equivalent files. Because the first version depends on armadillo, the openIndyLib depends on LAPACK and BLAS. <br>
+So on a windows system you have to put the LAPACK.dll, LAPACK.lib, BLAS.dll and BLAS.lib next to the OpenIndy.exe. <br>
+You can find the dlls and libs in the "lib" folder of OpenIndy in a 32bit and 64bit version.</p>
+
+<h3><hr ALIGN="LEFT">load plugin in OpenIndy</h3>
+<p>Now, after all libraries and dependencies are copied to the right place, start OpenIndy.<br>
+As the last step of preperation you need to load the plugin in OpenIndy, so you can use all implemented functions and sensors. After this step you can start
+with your task.<br>
+For loading the plugin go to the menu "Plugin" and click "load plugin". After this a new window opens, where you have to select the location of your plugin.
+After accepting the folder dialog, OpenIndy shows you the metadata of the selected plugin and checks if it is valid. Press Ok and then ok in the window to load it.
+OpenIndy will then automatically copy the plugin and all its dependencies to the plugin directory, so that it can work with it.</p>
+<p ALIGN="CENTER" > <img src="../pics/loadPlugin.png" width=100% height=100% title="load Plugin" alt="load Plugin"/><br>The load Plugin dialog</p>
+</td>
+</tr>
+<tr>
+<td VALIGN="CENTER" WIDTH=100% COLSPAN=3>
+<br>&nbsp;
+<p ALIGN="CENTER"><a href=measurement.html title="measurement">go to measurement</a></p>
+<br>&nbsp;
+</td>
+</tr>
+</table>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+</html>

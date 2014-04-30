@@ -53,6 +53,124 @@ void Line::recalc(){
     }
 }
 
+bool Line::toOpenIndyXML(QXmlStreamWriter &stream){
+
+
+    //---------------common geometry attributes--------------
+    stream.writeStartElement("geometry");
+    stream.writeAttribute("id", QString::number(this->id));
+    stream.writeAttribute("name", this->name);
+    stream.writeAttribute("type", Configuration::sPoint);
+    stream.writeAttribute("nominal",QString::number(this->isNominal));
+    stream.writeAttribute("common",QString::number(this->isCommon));
+    stream.writeAttribute("solved", QString::number(this->isSolved));
+
+
+    //---------------specific geometry attributes--------------
+    if(this->isSolved || this->isNominal){
+            stream.writeStartElement("coordinates");
+            stream.writeAttribute("x", QString::number(this->xyz.getAt(0)));
+            stream.writeAttribute("y", QString::number(this->xyz.getAt(1)));
+            stream.writeAttribute("z", QString::number(this->xyz.getAt(2)));
+            stream.writeEndElement();
+
+            stream.writeStartElement("spatialDirection");
+            stream.writeAttribute("i", QString::number(this->ijk.getAt(0)));
+            stream.writeAttribute("j", QString::number(this->ijk.getAt(1)));
+            stream.writeAttribute("k", QString::number(this->ijk.getAt(2)));
+            stream.writeEndElement();
+
+            stream.writeStartElement("standardDeviation");
+            stream.writeAttribute("value", QString::number(this->myStatistic.stdev));
+            stream.writeEndElement();
+    }
+
+   this->writeGeometryAttributes(stream);
+
+   stream.writeEndElement();
+
+    return true;
+
+}
+
+ElementDependencies Line::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    ElementDependencies dependencies;
+
+    QXmlStreamAttributes attributes = xml.attributes();
+
+    if(attributes.hasAttribute("name")){
+        this->name = attributes.value("name").toString();
+    }
+    if(attributes.hasAttribute("id")) {
+        this->id = attributes.value("id").toInt();
+        dependencies.elementID = this->id;
+    }
+    if(attributes.hasAttribute("nominal")) {
+        this->isNominal = attributes.value("nominal").toInt();
+    }
+    if(attributes.hasAttribute("common")) {
+        this->isCommon = attributes.value("common").toInt();
+    }
+    if(attributes.hasAttribute("solved")) {
+        this->isSolved= attributes.value("solved").toInt();
+    }
+
+    xml.readNext();
+
+    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                xml.name() == "geometry")) {
+            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+                /* We've found first name. */
+                if(xml.name() == "coordinates") {
+
+                        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                            QXmlStreamAttributes coordinatesAttributes = xml.attributes();
+
+                                if(coordinatesAttributes.hasAttribute("x")){
+                                  this->xyz.setAt(0,coordinatesAttributes.value("x").toDouble());
+                                }
+
+                                if(coordinatesAttributes.hasAttribute("y")){
+                                  this->xyz.setAt(1,coordinatesAttributes.value("y").toDouble());
+                                }
+
+                                if(coordinatesAttributes.hasAttribute("z")){
+                                  this->xyz.setAt(2,coordinatesAttributes.value("z").toDouble());
+                                }
+                         }
+
+                }else if(xml.name() == "spatialDirection"){
+
+                        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                            QXmlStreamAttributes spatialDirectionAttributes = xml.attributes();
+
+                            if(spatialDirectionAttributes.hasAttribute("i")){
+                               this->ijk.setAt(0,spatialDirectionAttributes.value("i").toDouble());
+                            }
+
+                            if(spatialDirectionAttributes.hasAttribute("j")){
+                               this->ijk.setAt(1,spatialDirectionAttributes.value("j").toDouble());
+                            }
+
+                            if(spatialDirectionAttributes.hasAttribute("k")){
+                               this->ijk.setAt(2,spatialDirectionAttributes.value("k").toDouble());
+                            }
+                        }
+
+                }else{
+                         this->readGeometryAttributes(xml,dependencies);
+                }
+
+            }
+            xml.readNext();
+        }
+
+    return dependencies;
+}
+
 QString Line::getDisplayX() const{
     return QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f', UnitConverter::distanceDigits);
 }

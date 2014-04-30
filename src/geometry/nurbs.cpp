@@ -40,3 +40,15 @@ void Nurbs::recalc(){
         this->isSolved = false;
     }
 }
+
+bool Nurbs::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+ElementDependencies Nurbs::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    ElementDependencies dependencies;
+
+    return dependencies;
+}

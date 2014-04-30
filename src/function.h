@@ -4,7 +4,6 @@
 #include <QMap>
 #include <QStringList>
 #include "configuration.h"
-#include "console.h"
 #include "point.h"
 #include "line.h"
 #include "plane.h"
@@ -251,6 +250,8 @@ public:
     void removeReadingCartesian(int id);
     Reading* getReadingCartesian(int id);
     QList<Reading*> getCartesianReadings();
+
+    void removeFeature(int id);
 
 protected:
     void setUseState(int id, bool state);

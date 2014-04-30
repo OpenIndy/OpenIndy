@@ -43,3 +43,15 @@ void Cone::recalc(){
         this->alpha = 0.0;
     }
 }
+
+bool Cone::toOpenIndyXML(QXmlStreamWriter &stream){
+
+    return false;
+}
+
+ElementDependencies Cone::fromOpenIndyXML(QXmlStreamReader &xml){
+
+    ElementDependencies dependencies;
+
+    return dependencies;
+}

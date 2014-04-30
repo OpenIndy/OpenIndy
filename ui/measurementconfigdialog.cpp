@@ -142,7 +142,17 @@ void MeasurementConfigDialog::initGUI(){
             }else{
                 ui->comboBox_typeOfReading->setCurrentIndex(ui->comboBox_typeOfReading->findData(mConfig->typeOfReading));
             }
+        }else{
+            Console::addLine("Sensor does not support any reading types.");
         }
+    }else{
+        ui->comboBox_typeOfReading->clear();
+        ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sPolar,Configuration::ePolar);
+        ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sCartesian,Configuration::eCartesian);
+        ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sDirection,Configuration::eDirection);
+        ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sDistance,Configuration::eDistance);
+        ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sTemperatur,Configuration::eTemperatur);
+        ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sLevel,Configuration::eLevel);
     }
 }
 
@@ -168,6 +178,10 @@ QString MeasurementConfigDialog::getLabel(QComboBox *cb, int code){
     return cb->itemText(cb->findData(code));
 }
 
+/*!
+ * \brief setStation receives the current active station and sensor for displaying supported reading types etc.
+ * \param s
+ */
 void MeasurementConfigDialog::setStation(Station *s)
 {
     if(s != NULL){
@@ -178,10 +192,17 @@ void MeasurementConfigDialog::setStation(Station *s)
     }
 }
 
+/*!
+ * \brief resetActiveFeature
+ */
 void MeasurementConfigDialog::resetActiveFeature(){
     this->activeFeature = NULL;
 }
 
+/*!
+ * \brief overwritten closeEvent
+ * \param event
+ */
 void MeasurementConfigDialog::closeEvent(QCloseEvent *event){
     resetActiveFeature();
     myStation = NULL;
