@@ -143,7 +143,8 @@ SOURCES += \
     controller/deletefeaturesfunctor.cpp \
     ui/featureoverviewdelegate.cpp \
     ui/trafoparamdelegate.cpp \
-    controller/featureattributesexchange.cpp
+    controller/featureattributesexchange.cpp \
+    controller/nominalattributeexchange.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -253,7 +254,8 @@ HEADERS  += \
     controller/deletefeaturesfunctor.h \
     ui/featureoverviewdelegate.h \
     ui/trafoparamdelegate.h \
-    controller/featureattributesexchange.h
+    controller/featureattributesexchange.h \
+    controller/nominalattributeexchange.h
 
 
 FORMS    += ui/mainwindow.ui \

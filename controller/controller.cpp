@@ -1334,47 +1334,52 @@ void Controller::handleTrafoParamClicked(const QModelIndex &idx){
     }
 }
 
-void Controller::getNominalValues(double nomX, double nomY, double nomZ, double nomI, double nomJ, double nomK, double nomR, double nomSDE, double nomSAE, double nomSTE, double nomSMSE){
+/*!
+ * \brief getNominalValues sets the attributes of the selected feature to the specified values.
+ * It uses the exchange object for nominal data
+ * \param nominalValue
+ */
+void Controller::getNominalValues(NominalAttributeExchange nominalValue){
 
     switch (this->activeFeature->getTypeOfFeature()) {
     case Configuration::ePointFeature:
-        this->activeFeature->getPoint()->xyz.setAt(0,nomX);
-        this->activeFeature->getPoint()->xyz.setAt(1,nomY);
-        this->activeFeature->getPoint()->xyz.setAt(2,nomZ);
+        this->activeFeature->getPoint()->xyz.setAt(0,nominalValue.nomX);
+        this->activeFeature->getPoint()->xyz.setAt(1,nominalValue.nomY);
+        this->activeFeature->getPoint()->xyz.setAt(2,nominalValue.nomZ);
         break;
     case Configuration::ePlaneFeature:
-        this->activeFeature->getPlane()->xyz.setAt(0,nomX);
-        this->activeFeature->getPlane()->xyz.setAt(1,nomY);
-        this->activeFeature->getPlane()->xyz.setAt(2,nomZ);
-        this->activeFeature->getPlane()->ijk.setAt(0,nomI);
-        this->activeFeature->getPlane()->ijk.setAt(1,nomJ);
-        this->activeFeature->getPlane()->ijk.setAt(2,nomK);
+        this->activeFeature->getPlane()->xyz.setAt(0,nominalValue.nomX);
+        this->activeFeature->getPlane()->xyz.setAt(1,nominalValue.nomY);
+        this->activeFeature->getPlane()->xyz.setAt(2,nominalValue.nomZ);
+        this->activeFeature->getPlane()->ijk.setAt(0,nominalValue.nomI);
+        this->activeFeature->getPlane()->ijk.setAt(1,nominalValue.nomJ);
+        this->activeFeature->getPlane()->ijk.setAt(2,nominalValue.nomK);
         break;
     case Configuration::eLineFeature:
-        this->activeFeature->getLine()->xyz.setAt(0,nomX);
-        this->activeFeature->getLine()->xyz.setAt(1,nomY);
-        this->activeFeature->getLine()->xyz.setAt(2,nomZ);
-        this->activeFeature->getLine()->ijk.setAt(0,nomI);
-        this->activeFeature->getLine()->ijk.setAt(1,nomJ);
-        this->activeFeature->getLine()->ijk.setAt(2,nomK);
+        this->activeFeature->getLine()->xyz.setAt(0,nominalValue.nomX);
+        this->activeFeature->getLine()->xyz.setAt(1,nominalValue.nomY);
+        this->activeFeature->getLine()->xyz.setAt(2,nominalValue.nomZ);
+        this->activeFeature->getLine()->ijk.setAt(0,nominalValue.nomI);
+        this->activeFeature->getLine()->ijk.setAt(1,nominalValue.nomJ);
+        this->activeFeature->getLine()->ijk.setAt(2,nominalValue.nomK);
         break;
     case Configuration::eSphereFeature:
-        this->activeFeature->getSphere()->xyz.setAt(0,nomX);
-        this->activeFeature->getSphere()->xyz.setAt(1,nomY);
-        this->activeFeature->getSphere()->xyz.setAt(2,nomZ);
-        this->activeFeature->getSphere()->radius = nomR;
+        this->activeFeature->getSphere()->xyz.setAt(0,nominalValue.nomX);
+        this->activeFeature->getSphere()->xyz.setAt(1,nominalValue.nomY);
+        this->activeFeature->getSphere()->xyz.setAt(2,nominalValue.nomZ);
+        this->activeFeature->getSphere()->radius = nominalValue.nomR;
         break;
     case Configuration::eScalarentityAngleFeature:
-        this->activeFeature->getScalarEntityAngle()->setAngle(nomSAE);
+        this->activeFeature->getScalarEntityAngle()->setAngle(nominalValue.nomSAE);
         break;
     case Configuration::eScalarEntityDistanceFeature:
-        this->activeFeature->getScalarEntityDistance()->setDistance(nomSDE);
+        this->activeFeature->getScalarEntityDistance()->setDistance(nominalValue.nomSDE);
         break;
     case Configuration::eScalarEntityTemperatureFeature:
-        this->activeFeature->getScalarEntityTemperature()->setTemperature(nomSTE);
+        this->activeFeature->getScalarEntityTemperature()->setTemperature(nominalValue.nomSTE);
         break;
     case Configuration::eScalarEntityMeasurementSeriesFeature:
-        this->activeFeature->getScalarEntityMeasurementSeries()->setSeriesValue(nomSMSE);
+        this->activeFeature->getScalarEntityMeasurementSeries()->setSeriesValue(nominalValue.nomSMSE);
         break;
     default:
         break;

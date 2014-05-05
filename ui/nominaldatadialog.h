@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "featurewrapper.h"
 #include "configuration.h"
+#include "nominalattributeexchange.h"
 
 namespace Ui {
 class NominalDataDialog;
@@ -18,7 +19,7 @@ public:
     ~NominalDataDialog();
 
 signals:
-    void sendNominalValues(double nomX, double nomY, double nomZ, double nomI, double nomJ, double nomK, double nomR, double nomSDE, double nomSAE, double nomSTE, double nomSMSE);
+    void sendNominalValues(NominalAttributeExchange nominalValues);
 
 public slots:
 

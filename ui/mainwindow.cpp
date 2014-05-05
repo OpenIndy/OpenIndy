@@ -114,7 +114,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&control,SLOT(addFeature(FeatureAttributesExchange)));
     connect(cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
     //connect(cFeatureDialog,SIGNAL(createTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)),&control,SLOT(addTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)));
-    connect(&nominalDialog, SIGNAL(sendNominalValues(double,double,double,double,double,double,double,double,double,double,double)),&control,SLOT(getNominalValues(double,double,double,double,double,double,double,double,double,double,double)));
+    connect(&nominalDialog, SIGNAL(sendNominalValues(NominalAttributeExchange)),&control,SLOT(getNominalValues(NominalAttributeExchange)));
     connect(this,SIGNAL(sendActiveNominalfeature(FeatureWrapper*)),&nominalDialog,SLOT(getActiveFeature(FeatureWrapper*)));
 
     //Scalar entity dialog

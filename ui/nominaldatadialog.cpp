@@ -1,6 +1,10 @@
 #include "nominaldatadialog.h"
 #include "ui_nominaldatadialog.h"
 
+/*!
+ * \brief NominalDataDialog constructor
+ * \param parent
+ */
 NominalDataDialog::NominalDataDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NominalDataDialog)
@@ -9,11 +13,18 @@ NominalDataDialog::NominalDataDialog(QWidget *parent) :
     this->selectedFeature = NULL;
 }
 
+/*!
+ * \brief NominalDataDialog destructor
+ */
 NominalDataDialog::~NominalDataDialog()
 {
     delete ui;
 }
 
+/*!
+ * \brief getActiveFeature enables or disables gui elements depending on the active feature. also fills the gui with values.
+ * \param aF
+ */
 void NominalDataDialog::getActiveFeature(FeatureWrapper *aF){
 
     ui->label_nominalI->setEnabled(false);
@@ -266,30 +277,39 @@ void NominalDataDialog::getActiveFeature(FeatureWrapper *aF){
     fillGUI();
 }
 
+/*!
+ * \brief ok clicked sends the specified values to the controller via the exchange object for nominal data
+ */
 void NominalDataDialog::on_toolButton_ok_clicked()
 {
-    double nomX = ui->lineEdit_nominalX->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    double nomY = ui->lineEdit_nominalY->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    double nomZ = ui->lineEdit_nominalZ->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    double nomI = ui->lineEdit_nominalI->text().toDouble();
-    double nomJ = ui->lineEdit_nominalJ->text().toDouble();
-    double nomK = ui->lineEdit_nominalK->text().toDouble();
-    double nomR = ui->lineEdit_nominalR->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    double nomSDE = ui->lineEdit_nominalSDE->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    double nomSAE = ui->lineEdit_nominalSAE->text().toDouble()/UnitConverter::getAngleMultiplier();
-    double nomSTE = ui->lineEdit_nominalTemperature->text().toDouble()/UnitConverter::getTemperatureMultiplier();
-    double nomSMSE = ui->lineEdit_nominalMeasurementSeries->text().toDouble();
+    NominalAttributeExchange nominalValue;
+    nominalValue.nomX = ui->lineEdit_nominalX->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    nominalValue.nomY = ui->lineEdit_nominalY->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    nominalValue.nomZ = ui->lineEdit_nominalZ->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    nominalValue.nomI = ui->lineEdit_nominalI->text().toDouble();
+    nominalValue.nomJ = ui->lineEdit_nominalJ->text().toDouble();
+    nominalValue.nomK = ui->lineEdit_nominalK->text().toDouble();
+    nominalValue.nomR = ui->lineEdit_nominalR->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    nominalValue.nomSDE = ui->lineEdit_nominalSDE->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    nominalValue.nomSAE = ui->lineEdit_nominalSAE->text().toDouble()/UnitConverter::getAngleMultiplier();
+    nominalValue.nomSTE = ui->lineEdit_nominalTemperature->text().toDouble()/UnitConverter::getTemperatureMultiplier();
+    nominalValue.nomSMSE = ui->lineEdit_nominalMeasurementSeries->text().toDouble();
 
-    emit sendNominalValues(nomX, nomY, nomZ, nomI, nomJ, nomK, nomR, nomSDE, nomSAE, nomSTE, nomSMSE);
+    emit sendNominalValues(nominalValue);
 
     this->close();
 }
-
+/*!
+ * \brief cancel clicked
+ */
 void NominalDataDialog::on_toolButton_cancel_clicked()
 {
     this->close();
 }
 
+/*!
+ * \brief setLabelText sets the texts of the labels
+ */
 void NominalDataDialog::setLabelText()
 {
     ui->label_nominalI->setText(QString("nominal I value"));
@@ -305,6 +325,9 @@ void NominalDataDialog::setLabelText()
     ui->label_nominalZ->setText(QString("nominal Z value " + UnitConverter::getDistanceUnitString()));
 }
 
+/*!
+ * \brief fillGUI with the attribute values of the selected nominal feature.
+ */
 void NominalDataDialog::fillGUI(){
 
     switch (selectedFeature->getTypeOfFeature()) {
