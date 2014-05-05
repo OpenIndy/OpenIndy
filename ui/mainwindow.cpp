@@ -11,7 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
     ui->setupUi(this);
 
     initializeActions();
@@ -869,7 +868,11 @@ void MainWindow::on_actionSet_instrument_triggered()
  * \param const QModelIndex &idx
  */
 void MainWindow::handleTableViewClicked(const QModelIndex &idx){
-    if(this->selectedFeature != idx.row()){
+    FeatureOvserviewProxyModel *model = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+
+    QModelIndex source_idx = model->mapToSource(idx);
+
+    if(this->selectedFeature != source_idx.row()){
         //hide available elements treeview elements
         if(this->control.availableElementsModel != NULL){
             this->control.availableElementsModel->setFilter(Configuration::eUndefinedElement, true);
@@ -880,26 +883,9 @@ void MainWindow::handleTableViewClicked(const QModelIndex &idx){
         this->fPluginDialog.receiveFunctionDescription("");
     }
 
-    this->selectedFeature = idx.row();
+    this->selectedFeature = source_idx.row();
 
     emit this->sendSelectedFeature(selectedFeature);
-
-    /*  //no more possible, because dialogs can not disappear in the background
-    if(this->control.activeFeature->getGeometry() != NULL || this->control.activeFeature->getStation() != NULL){
-        if(this->mConfigDialog.isVisible()){
-            this->mConfigDialog.activeFeature = this->control.activeFeature;
-            this->mConfigDialog.setStation(this->control.activeStation);
-            if(this->control.activeFeature->getGeometry() != NULL){
-                emit sendConfig(&this->control.activeFeature->getGeometry()->mConfig);
-            }
-            if(this->control.activeFeature->getStation() != NULL){
-                emit sendConfig(&this->control.activeFeature->getStation()->position->mConfig);
-            }
-
-            this->mConfigDialog.raise();
-        }
-    }
-*/
 }
 
 /*!
@@ -1318,6 +1304,7 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
     this->sEntityDialog->availableGroupsChanged(groups);
 
     QString activeGroup = this->ui->comboBox_groups->currentText();
+
     if(groups.contains(activeGroup)){
         this->ui->comboBox_groups->clear();
         this->ui->comboBox_groups->addItem("All Groups");
@@ -1338,11 +1325,10 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
  */
 void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
 {
-    FeatureOvserviewProxyModel *model = this->control.featureOverviewModel;//dynamic_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+    FeatureOvserviewProxyModel *model = this->control.featureOverviewModel;
     if(model != NULL){
         model->activeGroupChanged(arg1);
     }
-    this->control.tblModel->updateModel(this->control.activeFeature, this->control.activeStation);
 }
 
 /*!

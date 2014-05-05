@@ -227,15 +227,17 @@ void Controller::addFeature(int count, int featureType, QString name,QString gro
     }
 
     //update available group names
-    int currentCount = 0;
-    if(this->availableGroups.contains(group)){
-        currentCount = this->availableGroups.find(group).value();
-        currentCount += count;
-    }else{
-        currentCount += count;
+    if(group.compare("") != 0){
+        int currentCount = 0;
+        if(this->availableGroups.contains(group)){
+            currentCount = this->availableGroups.find(group).value();
+            currentCount += count;
+        }else{
+            currentCount += count;
+        }
+        this->availableGroups.insert(group, currentCount);
+        emit this->availableGroupsChanged(this->availableGroups);
     }
-    this->availableGroups.insert(group, currentCount);
-    emit this->availableGroupsChanged(this->availableGroups);
 }
 
 void Controller::addScalarEntity(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool commonPoint, CoordinateSystem *nominalSystem){
@@ -297,15 +299,17 @@ void Controller::addScalarEntity(int count, int featureType, QString name,QStrin
     }
 
     //update available group names
-    int currentCount = 0;
-    if(this->availableGroups.contains(group)){
-        currentCount = this->availableGroups.find(group).value();
-        currentCount += count;
-    }else{
-        currentCount += count;
+    if(group.compare("") != 0){
+        int currentCount = 0;
+        if(this->availableGroups.contains(group)){
+            currentCount = this->availableGroups.find(group).value();
+            currentCount += count;
+        }else{
+            currentCount += count;
+        }
+        this->availableGroups.insert(group, currentCount);
+        emit this->availableGroupsChanged(this->availableGroups);
     }
-    this->availableGroups.insert(group, currentCount);
-    emit this->availableGroupsChanged(this->availableGroups);
 
     //refresh feature tree view models
     this->featureTreeViewModel->refreshModel();
