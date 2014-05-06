@@ -50,6 +50,9 @@
 
 #include "deletefeaturesfunctor.h"
 
+#include "featureattributesexchange.h"
+#include "nominalattributeexchange.h"
+
 class Feature;
 class CoordinateSystem;
 class Station;
@@ -118,16 +121,13 @@ signals:
 
 public slots:
 
-    void getNominalValues(double nomX, double nomY, double nomZ, double nomI, double nomJ, double nomK, double nomR, double nomSDE, double nomSAE, double nomSTE, double nomSMSE);
+    void getNominalValues(NominalAttributeExchange nominalValue);
     void handleTrafoParamClicked(const QModelIndex &);
     int getActiveFeatureIndex(int index);
     int checkActiveFeatureIndex(int current, int index);
 
     void setActiveCoordSystem(QString CoordSysName);
-    void addFeature(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
-    void addScalarEntity(int count, int featureType, QString name,QString group, bool actual, bool nominal, bool commonPoint, CoordinateSystem *nominalSystem);
-    void addTrafoParam(int count, int featureType, QString name,
-                        CoordinateSystem *startSystem, CoordinateSystem *destSystem);
+    void addFeature(FeatureAttributesExchange fae);
 
     //sensor function
     void startMeasurement();
@@ -185,9 +185,8 @@ public slots:
 
     void updateFeatureMConfig();
 
-    void createFeature(int featureType, QString name,QString group,  bool nominal, bool common, CoordinateSystem *nominalSystem);
-
-    void createScalarEntity(int featureType, QString name,QString group,  bool nominal, bool common, CoordinateSystem *nominalSystem);
+    void createFeature(int featureType, QString name,QString group,  bool nominal, bool common,
+                       CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem);
 
     void addNominalToActual(FeatureWrapper *fw);
     void checkForNominals(FeatureWrapper *fw);

@@ -5,6 +5,7 @@
 #include "configuration.h"
 #include "featurewrapper.h"
 #include "QShowEvent"
+#include "featureattributesexchange.h"
 
 namespace Ui {
 class ScalarEntityDialog;
@@ -24,9 +25,7 @@ public:
 
 signals:
 
-    void createEntity(int count, int featureType, QString name,QString group,
-                       bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
-
+    void createFeature(FeatureAttributesExchange fae);
 
     void createFeatureMConfig();
 

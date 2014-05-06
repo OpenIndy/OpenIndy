@@ -72,7 +72,9 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
             }
         }
 
-        emit createEntity(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
+        FeatureAttributesExchange featureAttributes(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
+
+        emit createFeature(featureAttributes);
 
         this->close();
     }
