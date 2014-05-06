@@ -40,6 +40,8 @@
 #include "trafoparamproxymodel.h"
 #include "featuretreeitem.h"
 
+#include "plugintreeviewmodel.h"
+
 #include "featureupdater.h"
 
 #include "oiprojectdata.h"
@@ -91,6 +93,7 @@ public:
     AvailableElementsTreeViewProxyModel *availableElementsModel; //model for available elements with featureTreeViewModel as source model
     FeatureGraphicsTreeViewProxyModel *featureGraphicsModel; //model for treeview with features in graphics view with featureTreeViewModel as source model
     UsedElementsModel *usedElementsModel; //model for listview with elements that are used for a function
+    PluginTreeViewModel *myPluginTreeViewModel; //model with all available plugins for plugin manager
 
 signals:
     void changedStation();

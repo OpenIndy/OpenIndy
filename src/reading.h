@@ -80,9 +80,6 @@ public:
     Sensor *instrument;
     Observation *obs;
 
-    //OiVec test;
-    //double test;
-
     sReadingPolar rPolar;
     sReadingCartesian rCartesian;
     sReadingDirection rDirection;
@@ -90,7 +87,6 @@ public:
     sReadingTemperature rTemperature;
     sReadingUndefined rUndefined;
     sReadingLevel rLevel;
-
 
     void toCartesian();
     static OiVec toCartesian(double, double, double);

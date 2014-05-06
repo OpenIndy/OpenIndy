@@ -72,6 +72,8 @@ Controller::Controller(QObject *parent) :
 
     this->usedElementsModel = new UsedElementsModel();
 
+    this->myPluginTreeViewModel = new PluginTreeViewModel();
+
     //set up feature treeview models
     this->featureTreeViewModel = new FeatureTreeViewModel(this->features);
     this->featureTreeViewModel->refreshModel();
@@ -250,17 +252,23 @@ void Controller::addFeature(FeatureAttributesExchange fae){
         emit featureAdded();
         this->sortFeatures();
     }
-
-    //update available group names
-    int currentCount = 0;
-    if(this->availableGroups.contains(fae.group)){
-        currentCount = this->availableGroups.find(fae.group).value();
-        currentCount += fae.count;
-    }else{
-        currentCount += fae.count;
+	
+	//update available group names
+    if(fae.group.compare("") != 0){
+        int currentCount = 0;
+        if(this->availableGroups.contains(fae.group)){
+            currentCount = this->availableGroups.find(fae.group).value();
+            currentCount += fae.count;
+        }else{
+            currentCount += fae.count;
+        }
+        this->availableGroups.insert(fae.group, currentCount);
+        emit this->availableGroupsChanged(this->availableGroups);
     }
-    this->availableGroups.insert(fae.group, currentCount);
-    emit this->availableGroupsChanged(this->availableGroups);
+
+    //refresh feature tree view models
+    this->featureTreeViewModel->refreshModel();
+	
 }
 
 /*!

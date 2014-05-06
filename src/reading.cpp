@@ -53,43 +53,50 @@ OiVec Reading::toPolar(double x, double y, double z){
     return g;
 }
 
+/*!
+ * \brief Reading::errorPropagationPolarToCart
+ * Variance propagation to get sigma values for cartesian coordinates
+ * \return
+ */
 OiVec Reading::errorPropagationPolarToCart(){
+    OiVec sigmaCartXyz;
 
-    OiVec sigmaCartXyz = OiVec(3);
+    OiMat F(3,3);
+    F.setAt(0, 0, qSin(this->rPolar.zenith) * qCos(this->rPolar.azimuth));
+    F.setAt(0, 1, this->rPolar.distance * qSin(this->rPolar.zenith) * -qSin(this->rPolar.azimuth));
+    F.setAt(0, 2, this->rPolar.distance * qCos(this->rPolar.zenith) * qCos(this->rPolar.azimuth));
+    F.setAt(1, 0, qSin(this->rPolar.zenith) * qSin(this->rPolar.azimuth));
+    F.setAt(1, 1, this->rPolar.distance * qSin(this->rPolar.zenith) * qCos(this->rPolar.azimuth));
+    F.setAt(1, 2, this->rPolar.distance * qCos(this->rPolar.zenith) * qSin(this->rPolar.azimuth));
+    F.setAt(2, 0, qCos(this->rPolar.zenith));
+    F.setAt(2, 1, 0.0);
+    F.setAt(2, 2, this->rPolar.distance * -qSin(this->rPolar.zenith));
 
-    //partial derivative
-    double dxds = qSin(this->rPolar.zenith)*qCos(this->rPolar.azimuth);
-    double dxdr = this->rPolar.distance * qSin(this->rPolar.zenith)*-qSin(this->rPolar.azimuth);
-    double dxdv = this->rPolar.distance * qCos(this->rPolar.zenith)*qCos(this->rPolar.azimuth);
+    OiMat Sll(3,3);
+    Sll.setAt(0, 0, this->rPolar.sigmaDistance * this->rPolar.sigmaDistance);
+    Sll.setAt(1, 1, this->rPolar.sigmaAzimuth * this->rPolar.sigmaAzimuth);
+    Sll.setAt(2, 2, this->rPolar.sigmaZenith * this->rPolar.sigmaZenith);
 
-    double dyds = qSin(this->rPolar.zenith)*qSin(this->rPolar.azimuth);
-    double dydr = this->rPolar.distance * qSin(this->rPolar.zenith)*qCos(this->rPolar.azimuth);
-    double dydv = this->rPolar.distance * qCos(this->rPolar.zenith)*qSin(this->rPolar.azimuth);
+    OiMat Qxx = F * Sll * F.t();
 
-    double dzds = qCos(this->rPolar.zenith);
-    double dzdr = 0.0;
-    double dzdv = this->rPolar.distance * -qSin(this->rPolar.zenith);
+    //transform Qxx into homogeneous coordinates
+    OiMat Qxx_hc(4,4);
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            Qxx_hc.setAt(i,j, Qxx.getAt(i,j));
+        }
+    }
 
-    //sigma reading
-    double sS = this->rPolar.sigmaDistance;
-    double sR = this->rPolar.sigmaAzimuth;
-    double sV = this->rPolar.sigmaZenith;
-
-    //sigma xyz
-    double sigmaX = (dxds*dxds)*(sS*sS)+(dxdr*dxdr)*(sR*sR)+(dxdv*dxdv)*(sV*sV);
-    sigmaX = qSqrt(sigmaX);
-
-    double sigmaY = (dyds*dyds)*(sS*sS)+(dydr*dydr)*(sR*sR)+(dydv*dydv)*(sV*sV);
-    sigmaY = qSqrt(sigmaY);
-
-    double sigmaZ = (dzds*dzds)*(sS*sS)+(dzdr*dzdr)*(sR*sR)+(dzdv*dzdv)*(sV*sV);
-    sigmaZ = qSqrt(sigmaZ);
-
-    sigmaCartXyz.setAt(0,sigmaX);
-    sigmaCartXyz.setAt(1,sigmaY);
-    sigmaCartXyz.setAt(2,sigmaZ);
+    sigmaCartXyz.add(qSqrt(Qxx.getAt(0,0)));
+    sigmaCartXyz.add(qSqrt(Qxx.getAt(1,1)));
+    sigmaCartXyz.add(qSqrt(Qxx.getAt(2,2)));
     sigmaCartXyz.add(1.0);
 
+    if(this->obs != NULL){
+        this->obs->myStatistic.qxx = Qxx_hc;
+        this->obs->myStatistic.s0_apriori = 1.0;
+        this->obs->myOriginalStatistic = this->obs->myStatistic;
+    }
 
     return sigmaCartXyz;
 }
