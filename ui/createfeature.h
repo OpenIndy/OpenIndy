@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "configuration.h"
 #include "featurewrapper.h"
+#include "featureattributesexchange.h"
 
 namespace Ui {
 class CreateFeature;
@@ -28,11 +29,8 @@ public:
 
 signals:
 
-    void createFeature(int count, int featureType, QString name,QString group,
-                       bool actual, bool nominal, bool isCommonPoint, CoordinateSystem *nominalSystem);
+    void createFeature(FeatureAttributesExchange fae);
 
-    void createTrafoParam(int count, int featureType, QString name,
-                           CoordinateSystem *startSystem, CoordinateSystem *destSystem);
     void createFeatureMConfig();
 
 private slots:

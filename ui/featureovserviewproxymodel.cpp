@@ -78,4 +78,5 @@ QList<FeatureWrapper*> FeatureOvserviewProxyModel::getFeaturesAtIndices(QModelIn
  */
 void FeatureOvserviewProxyModel::activeGroupChanged(QString group){
     this->activeGroup = group;
+    this->invalidateFilter();
 }

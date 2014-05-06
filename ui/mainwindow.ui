@@ -277,6 +277,7 @@ background-position: center center;</string>
      <string>Plugin</string>
     </property>
     <addaction name="actionLoad_plugins"/>
+    <addaction name="actionPlugin_manager"/>
    </widget>
    <widget class="QMenu" name="menuFeatures">
     <property name="title">
@@ -834,6 +835,15 @@ color: rgb(255, 255, 255);
    </property>
    <property name="text">
     <string>create circle</string>
+   </property>
+  </action>
+  <action name="actionPlugin_manager">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/settings.png</normaloff>:/Images/icons/settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>plugin manager</string>
    </property>
   </action>
  </widget>

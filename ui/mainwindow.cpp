@@ -11,7 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
     ui->setupUi(this);
 
     initializeActions();
@@ -35,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->treeView_featureOverview->setModel(this->control.featureGraphicsModel);
     fPluginDialog.receiveAvailableElementsModel(this->control.availableElementsModel);
     fPluginDialog.receiveUsedElementsModel(this->control.usedElementsModel);
+
+    this->setUpDialog.setPluginsModel(this->control.myPluginTreeViewModel);
 
     cFeatureDialog = new CreateFeature(this->control.features);
     sEntityDialog = new ScalarEntityDialog(this->control.features);
@@ -111,14 +112,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&setUpDialog,SIGNAL(rejected()),this,SLOT(setUpStatusBar()));
 
     //feature dialog
-    connect(cFeatureDialog,SIGNAL(createFeature(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)),&control,SLOT(addFeature(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)));
+    connect(cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&control,SLOT(addFeature(FeatureAttributesExchange)));
     connect(cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
-    connect(cFeatureDialog,SIGNAL(createTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)),&control,SLOT(addTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)));
-    connect(&nominalDialog, SIGNAL(sendNominalValues(double,double,double,double,double,double,double,double,double,double,double)),&control,SLOT(getNominalValues(double,double,double,double,double,double,double,double,double,double,double)));
+    //connect(cFeatureDialog,SIGNAL(createTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)),&control,SLOT(addTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)));
+    connect(&nominalDialog, SIGNAL(sendNominalValues(NominalAttributeExchange)),&control,SLOT(getNominalValues(NominalAttributeExchange)));
     connect(this,SIGNAL(sendActiveNominalfeature(FeatureWrapper*)),&nominalDialog,SLOT(getActiveFeature(FeatureWrapper*)));
 
     //Scalar entity dialog
-    connect(sEntityDialog,SIGNAL(createEntity(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)),&control,SLOT(addScalarEntity(int,int,QString,QString,bool,bool,bool,CoordinateSystem*)));
+    connect(sEntityDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&control,SLOT(addFeature(FeatureAttributesExchange)));
     connect(sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
 
     //sensor plugin dialog
@@ -152,8 +153,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //setup create feature toolbar
     setupCreateFeature();
-    connect(&control, SIGNAL(updateGeometryIcons(QStringList)), this, SLOT(updateGeometryIcons(QStringList)));
-    this->control.checkAvailablePlugins();
+    //connect(&control, SIGNAL(updateGeometryIcons(QStringList)), this, SLOT(updateGeometryIcons(QStringList)));
+    //this->control.checkAvailablePlugins();
 
     //dataimport
     connect(&importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&control,SLOT(importFeatures(QList<FeatureWrapper*>)));
@@ -690,7 +691,9 @@ void MainWindow::createFeature(){
                 }
             }
 
-            control.addFeature(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
+            FeatureAttributesExchange featureAttributes(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
+
+            control.addFeature(featureAttributes);
 
 
         }
@@ -706,6 +709,13 @@ void MainWindow::createFeature(){
 void MainWindow::on_actionLoad_plugins_triggered()
 {
     pLoadDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_actionPlugin_manager_triggered
+ */
+void MainWindow::on_actionPlugin_manager_triggered(){
+
 }
 
 /*!
@@ -869,7 +879,11 @@ void MainWindow::on_actionSet_instrument_triggered()
  * \param const QModelIndex &idx
  */
 void MainWindow::handleTableViewClicked(const QModelIndex &idx){
-    if(this->selectedFeature != idx.row()){
+    FeatureOvserviewProxyModel *model = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+
+    QModelIndex source_idx = model->mapToSource(idx);
+
+    if(this->selectedFeature != source_idx.row()){
         //hide available elements treeview elements
         if(this->control.availableElementsModel != NULL){
             this->control.availableElementsModel->setFilter(Configuration::eUndefinedElement, true);
@@ -880,26 +894,9 @@ void MainWindow::handleTableViewClicked(const QModelIndex &idx){
         this->fPluginDialog.receiveFunctionDescription("");
     }
 
-    this->selectedFeature = idx.row();
+    this->selectedFeature = source_idx.row();
 
     emit this->sendSelectedFeature(selectedFeature);
-
-    /*  //no more possible, because dialogs can not disappear in the background
-    if(this->control.activeFeature->getGeometry() != NULL || this->control.activeFeature->getStation() != NULL){
-        if(this->mConfigDialog.isVisible()){
-            this->mConfigDialog.activeFeature = this->control.activeFeature;
-            this->mConfigDialog.setStation(this->control.activeStation);
-            if(this->control.activeFeature->getGeometry() != NULL){
-                emit sendConfig(&this->control.activeFeature->getGeometry()->mConfig);
-            }
-            if(this->control.activeFeature->getStation() != NULL){
-                emit sendConfig(&this->control.activeFeature->getStation()->position->mConfig);
-            }
-
-            this->mConfigDialog.raise();
-        }
-    }
-*/
 }
 
 /*!
@@ -1318,6 +1315,7 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
     this->sEntityDialog->availableGroupsChanged(groups);
 
     QString activeGroup = this->ui->comboBox_groups->currentText();
+
     if(groups.contains(activeGroup)){
         this->ui->comboBox_groups->clear();
         this->ui->comboBox_groups->addItem("All Groups");
@@ -1338,11 +1336,10 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
  */
 void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
 {
-    FeatureOvserviewProxyModel *model = this->control.featureOverviewModel;//dynamic_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+    FeatureOvserviewProxyModel *model = this->control.featureOverviewModel;
     if(model != NULL){
         model->activeGroupChanged(arg1);
     }
-    this->control.tblModel->updateModel(this->control.activeFeature, this->control.activeStation);
 }
 
 /*!

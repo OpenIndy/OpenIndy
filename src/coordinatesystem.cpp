@@ -186,8 +186,10 @@ bool CoordinateSystem::transformObservations(CoordinateSystem *to){
                 }else{ //homogen matrix needs to be inverted
                     t = tp->homogenMatrix.inv();
                 }
+                //transform coordinates and Qxx matrix of each observation
                 foreach(Observation *obs, this->observations){
                     obs->myXyz = t * obs->myOriginalXyz;
+                    obs->myStatistic.qxx = t * obs->myOriginalStatistic.qxx;
                     obs->isValid = true;
                 }
                 return true;

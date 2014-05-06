@@ -42,6 +42,7 @@
 #include <QString>
 
 #include "tablemodel.h"
+#include "featureattributesexchange.h"
 
 namespace Ui {
 class MainWindow;
@@ -82,6 +83,7 @@ public:
 
     //actions
     //create feature
+    QLabel *labelWarning;
     QLabel *labelName;
     QLabel *labelCount;
     QComboBox *comboBoxFeatureType;
@@ -254,6 +256,8 @@ private slots:
 
     void on_actionShow_help_triggered();
 
+
+    void on_actionPlugin_manager_triggered();
 
 private:
     Ui::MainWindow *ui;

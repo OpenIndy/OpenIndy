@@ -3,7 +3,9 @@
 
 #include <QDialog>
 #include <QShowEvent>
+
 #include "unitconverter.h"
+#include "plugintreeviewmodel.h"
 
 namespace Ui {
 class SettingsDialog;
@@ -16,6 +18,8 @@ class SettingsDialog : public QDialog
 public:
     explicit SettingsDialog(QWidget *parent = 0);
     ~SettingsDialog();
+
+    void setPluginsModel(PluginTreeViewModel *model);
 
 private slots:
     void on_pushButton_ok_clicked();
