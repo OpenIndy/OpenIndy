@@ -72,6 +72,8 @@ Controller::Controller(QObject *parent) :
 
     this->usedElementsModel = new UsedElementsModel();
 
+    this->myPluginTreeViewModel = new PluginTreeViewModel();
+
     //set up feature treeview models
     this->featureTreeViewModel = new FeatureTreeViewModel(this->features);
     this->featureTreeViewModel->refreshModel();

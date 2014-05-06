@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent) :
     fPluginDialog.receiveAvailableElementsModel(this->control.availableElementsModel);
     fPluginDialog.receiveUsedElementsModel(this->control.usedElementsModel);
 
+    this->setUpDialog.setPluginsModel(this->control.myPluginTreeViewModel);
+
     cFeatureDialog = new CreateFeature(this->control.features);
     sEntityDialog = new ScalarEntityDialog(this->control.features);
 
@@ -705,6 +707,13 @@ void MainWindow::createFeature(){
 void MainWindow::on_actionLoad_plugins_triggered()
 {
     pLoadDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_actionPlugin_manager_triggered
+ */
+void MainWindow::on_actionPlugin_manager_triggered(){
+
 }
 
 /*!

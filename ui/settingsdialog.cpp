@@ -15,6 +15,13 @@ SettingsDialog::~SettingsDialog()
     delete ui;
 }
 
+/*!
+ * \brief SettingsDialog::setPluginsModel
+ */
+void SettingsDialog::setPluginsModel(PluginTreeViewModel *model){
+    this->ui->treeView_plugins->setModel(model);
+}
+
 void SettingsDialog::on_pushButton_ok_clicked()
 {
     saveSettings();

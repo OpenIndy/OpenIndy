@@ -256,6 +256,8 @@ private slots:
     void on_actionShow_help_triggered();
 
 
+    void on_actionPlugin_manager_triggered();
+
 private:
     Ui::MainWindow *ui;
 
