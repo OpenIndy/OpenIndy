@@ -7,7 +7,8 @@
 class PluginTreeItem
 {
 public:
-    PluginTreeItem();
+    PluginTreeItem(QVariant val);
+    ~PluginTreeItem();
 
     QVariant getDisplayValue();
 
@@ -15,6 +16,11 @@ public:
     PluginTreeItem* getChild(int row);
     PluginTreeItem* getParent();
     int getIndex();
+
+    void addChild(PluginTreeItem *child);
+
+    void deleteChildren();
+    void deleteChild(PluginTreeItem *child);
 
     bool getIsPlugin();
     bool getIsPluginType();
@@ -24,6 +30,8 @@ public:
     void setIsPluginType(bool state);
     void setIsFeatureType(bool state);
     void setIsSensorType(bool state);
+
+    void setParent(PluginTreeItem *parent);
 
 private:
     QVariant displayValue;

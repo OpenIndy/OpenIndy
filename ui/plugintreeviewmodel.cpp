@@ -2,7 +2,7 @@
 
 PluginTreeViewModel::PluginTreeViewModel(QObject *parent)
 {
-    this->rootItem = new PluginTreeItem();
+    this->rootItem = new PluginTreeItem("available plugins");
 }
 
 /*!
@@ -10,6 +10,15 @@ PluginTreeViewModel::PluginTreeViewModel(QObject *parent)
  * Refresh the model by querying the database for available plugins
  */
 void PluginTreeViewModel::refreshModel(){
+    //delete old tree view items
+    this->rootItem->deleteChildren();
+
+    //query database
+
+    //update view
+    emit this->beginResetModel();
+    emit this->endResetModel();
+
     emit this->layoutAboutToBeChanged();
     emit this->layoutChanged();
 }
@@ -119,5 +128,19 @@ QVariant PluginTreeViewModel::data(const QModelIndex &index, int role) const{
         }
     }
 
+    return QVariant();
+}
+
+/*!
+ * \brief PluginTreeViewModel::headerData
+ * \param section
+ * \param orientation
+ * \param role
+ * \return
+ */
+QVariant PluginTreeViewModel::headerData(int section, Qt::Orientation orientation, int role) const{
+    if(section == 0 && role == Qt::DisplayRole){
+        return QVariant("available plugins");
+    }
     return QVariant();
 }
