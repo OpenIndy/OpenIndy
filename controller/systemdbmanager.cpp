@@ -584,17 +584,72 @@ QList<Plugin> SystemDbManager::getAvailablePlugins(){
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
 
-        QString query = QString("SELECT %1, %2, %3 FROM plugin AS p %4 %5")
-                .arg("")
-                .arg("")
-                .arg("")
-                .arg("INNER JOIN functionPlugin AS fp ON p.id = fp.plugin_id")
-                .arg("INNER JOIN sensorPlugin AS sp ON p.id = sp.plugin_id");
-
         QSqlQuery command(SystemDbManager::db);
+
+        //query all available plugins
+
+        QString query = QString("SELECT %1 FROM plugin")
+                .arg("id, iid, name, description, version, author, compiler, "
+                     "operating_sys, has_dependencies, file_path, is_active");
+
         command.exec(query);
         while(command.next()){
-            result.append(command.value(0).toString());
+
+            Plugin myPlugin;
+            myPlugin.id = command.value("id").toInt();
+            myPlugin.iid = command.value("iid").toString();
+            myPlugin.name = command.value("name").toString();
+            myPlugin.description = command.value("description").toString();
+            myPlugin.version = command.value("version").toString();
+            myPlugin.author = command.value("author").toString();
+            myPlugin.compiler = command.value("compiler").toString();
+            myPlugin.operating_sys = command.value("operating_sys").toString();
+            myPlugin.has_dependencies = command.value("has_dependencies").toBool();
+            myPlugin.file_path = command.value("file_path").toString();
+            myPlugin.is_active = command.value("is_active").toBool();
+            result.append(myPlugin);
+
+        }
+
+        //for each available plugin query its functions and sensors
+
+        for(int i = 0; i < result.size(); i++){
+            Plugin &myPlugin = result[i];
+
+            //query functions
+            query = QString("SELECT %1 FROM functionPlugin WHERE plugin_id = %2")
+                    .arg("id, iid, name, description")
+                    .arg(myPlugin.id);
+
+            command.exec(query);
+            while(command.next()){
+
+                FunctionPlugin myFunction;
+                myFunction.id = command.value("id").toInt();
+                myFunction.iid = command.value("iid").toString();
+                myFunction.name = command.value("name").toString();
+                myFunction.description = command.value("description").toString();
+                myPlugin.myFunctions.append(myFunction);
+
+            }
+
+            //query sensors
+            query = QString("SELECT %1 FROM sensorPlugin WHERE plugin_id = %2")
+                    .arg("id, iid, name, description")
+                    .arg(myPlugin.id);
+
+            command.exec(query);
+            while(command.next()){
+
+                SensorPlugin mySensor;
+                mySensor.id = command.value("id").toInt();
+                mySensor.iid = command.value("iid").toString();
+                mySensor.name = command.value("name").toString();
+                mySensor.description = command.value("description").toString();
+                myPlugin.mySensors.append(mySensor);
+
+            }
+
         }
 
         SystemDbManager::disconnect();

@@ -13,7 +13,24 @@ void PluginTreeViewModel::refreshModel(){
     //delete old tree view items
     this->rootItem->deleteChildren();
 
-    //query database
+    //query database for available plugins
+    QList<Plugin> myPlugins = SystemDbManager::getAvailablePlugins();
+
+    //create tree view hierarchy
+    foreach(Plugin myPlugin, myPlugins){
+        PluginTreeItem *plugin = new PluginTreeItem(myPlugin.name);
+
+        //function hierarchy
+        PluginTreeItem *functionHeader = new PluginTreeItem("functions:");
+
+        //sensor hierarchy
+        PluginTreeItem *sensorHeader = new PluginTreeItem("sensors:");
+
+        plugin->addChild(functionHeader);
+        plugin->addChild(sensorHeader);
+
+        this->rootItem->addChild(plugin);
+    }
 
     //update view
     emit this->beginResetModel();
@@ -123,7 +140,7 @@ QVariant PluginTreeViewModel::data(const QModelIndex &index, int role) const{
         }else if(role == Qt::DecorationRole){ //return icon for tree view item
             if(item->getIsPlugin()){
                 QPixmap pix(":/Images/icons/loadPlugin.png");
-                return pix.scaledToHeight(12, Qt::SmoothTransformation);
+                return pix.scaledToHeight(20, Qt::SmoothTransformation);
             }
         }
     }
