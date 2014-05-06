@@ -27,6 +27,7 @@ protected:
 
 private:
     QString activeGroup;
+    void sortNominalToActual();
     
 };
 

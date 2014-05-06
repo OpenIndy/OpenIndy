@@ -188,6 +188,8 @@ public slots:
     void addNominalToActual(FeatureWrapper *fw);
     void checkForNominals(FeatureWrapper *fw);
 
+    void sortFeatures();
+
 private:
     void changeFunctionTreeViewModel();
     void changeUsedElementsModel(int functionIndex, int elementIndex);

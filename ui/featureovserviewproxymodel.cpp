@@ -32,6 +32,23 @@ bool FeatureOvserviewProxyModel::filterAcceptsRow(int source_row, const QModelIn
     }
 }
 
+void FeatureOvserviewProxyModel::sortNominalToActual()
+{/*
+    int row = 2;
+    for(int i=0; i<row-1;i++){
+        if(row < 0){
+            return;
+        }
+        if(this->features.at(row)->getFeature()->name.compare(this->features.at(i)->getFeature()->name)==0){
+            if(this->features.at(row)->getGeometry() != NULL && this->features.at(row)->getGeometry()->isNominal){
+                beginMoveRows(this->parent,i,i,this->parent,row+1);
+            }else if(this->features.at(i)->getGeometry() != NULL && this->features.at(i)->getGeometry()->isNominal){
+                beginMoveRows(this->parent,row,row,this->parent,i+1);
+            }
+        }
+    }*/
+}
+
 /*!
  * \brief filterAcceptsColumn function that filters all relevant attributes for the displayed feature types.
  * \param source_column

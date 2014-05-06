@@ -248,6 +248,7 @@ void Controller::addFeature(FeatureAttributesExchange fae){
 
         emit refreshGUI(this->activeFeature, this->activeStation);
         emit featureAdded();
+        this->sortFeatures();
     }
 
     //update available group names
@@ -2283,6 +2284,50 @@ void Controller::checkForNominals(FeatureWrapper *fw)
             int res = QString::compare(this->features.at(i)->getFeature()->name, fw->getFeature()->name, Qt::CaseSensitive);
             if(res == 0 && this->features.at(i)->getGeometry() != NULL && this->features.at(i)->getGeometry()->isNominal){
                 fw->getGeometry()->nominals.append(this->features.at(i)->getGeometry());
+            }
+        }
+    }
+}
+
+/*!
+ * \brief sortFeatures sorts the featureList, so that nominals are sorted next to their actual features.
+ */
+void Controller::sortFeatures()
+{
+    for(int i=0; i<this->features.size();i++){
+        if(this->features.at(i)->getGeometry() != NULL && this->features.at(i)->getGeometry()->isNominal == false){
+            for(int k=0;k<this->features.size();k++){
+                if(this->features.at(k)->getGeometry() != NULL && this->features.at(k)->getGeometry()->isNominal == true){
+                    if(this->features.at(i)->getFeature()->name.compare(this->features.at(k)->getFeature()->name,Qt::CaseSensitive)==0){
+                        if(!(i ==k-1)){
+                            this->features.insert(i+1,this->features.at(k));
+                            if(i<k){
+                                this->features.removeAt(k+1);
+                            }else{
+                                i -= 1;
+                                this->features.removeAt(k);
+                            }
+                            k -= 1;
+                        }
+                    }
+                }
+            }
+        }else if(this->features.at(i)->getStation() != NULL){
+            for(int j=0;j<this->features.size();j++){
+                if(this->features.at(j)->getPoint() != NULL && this->features.at(j)->getPoint()->isNominal == true){
+                    if(this->features.at(i)->getStation()->name.compare(this->features.at(j)->getPoint()->name,Qt::CaseSensitive)==0){
+                        if(!(i ==j-1)){
+                            this->features.insert(i+1,this->features.at(j));
+                            if(i<j){
+                                this->features.removeAt(j+1);
+                            }else{
+                                i -= 1;
+                                this->features.removeAt(j);
+                            }
+                            j -= 1;
+                        }
+                    }
+                }
             }
         }
     }
