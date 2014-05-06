@@ -572,3 +572,33 @@ QStringList SystemDbManager::getSupportedGeometries(){
 
     return result;
 }
+
+/*!
+ * \brief SystemDbManager::getAvailablePlugins
+ * Returns a list with all available plugins
+ * \return
+ */
+QList<Plugin> SystemDbManager::getAvailablePlugins(){
+    QList<Plugin> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QString query = QString("SELECT %1, %2, %3 FROM plugin AS p %4 %5")
+                .arg("")
+                .arg("")
+                .arg("")
+                .arg("INNER JOIN functionPlugin AS fp ON p.id = fp.plugin_id")
+                .arg("INNER JOIN sensorPlugin AS sp ON p.id = sp.plugin_id");
+
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+        while(command.next()){
+            result.append(command.value(0).toString());
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}

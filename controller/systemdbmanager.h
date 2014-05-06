@@ -11,6 +11,37 @@
 #include "console.h"
 #include "configuration.h"
 
+struct FunctionPlugin{
+    int id;
+    QString iid;
+    QString name;
+    QString description;
+};
+
+struct SensorPlugin{
+    int id;
+    QString iid;
+    QString name;
+    QString description;
+};
+
+struct Plugin{
+    int id;
+    QString iid;
+    QString name;
+    QString description;
+    QString version;
+    QString author;
+    QString compiler;
+    QString operating_sys;
+    bool has_dependencies;
+    QString file_path;
+    bool is_active;
+
+    QList<FunctionPlugin> myFunctions;
+    QList<SensorPlugin> mySensors;
+};
+
 class SystemDbManager
 {
 public:
@@ -28,6 +59,8 @@ public:
     static QString getPluginFilePath(QString name, QString plugin);
 
     static QStringList getSupportedGeometries();
+
+    static QList<Plugin> getAvailablePlugins();
 
 private:
     static QSqlDatabase db;
