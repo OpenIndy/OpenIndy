@@ -5,6 +5,11 @@
 #include "connectionconfig.h"
 #include "oivec.h"
 
+#include <QXmlStreamWriter>
+#include <QXmlStreamReader>
+
+#include "elementdependencies.h"
+
 struct Accuracy{
 
     Accuracy(){
@@ -35,6 +40,10 @@ public:
     QMap<QString, QString> stringParameter;
 
     Accuracy sigma;
+
+    //xml import export
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
 };
 

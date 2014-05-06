@@ -65,6 +65,8 @@ void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QStrin
 
 bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
 
+    this->mConfig.toOpenIndyXML(stream);
+
     foreach (Observation *obs, myObservations) {
         obs->writeProxyObservations(stream);
     }
