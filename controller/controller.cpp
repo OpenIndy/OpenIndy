@@ -2437,9 +2437,9 @@ void Controller::deleteFeaturesCallback(bool command){
         //refresh feature tree view models
         this->featureTreeViewModel->refreshModel();
 
+        emit this->refreshGUI(this->activeFeature, this->activeStation);
         emit this->availableGroupsChanged(this->availableGroups);
         emit this->resetFeatureSelection();
-        emit this->refreshGUI(this->activeFeature, this->activeStation);
 
     }
 }
