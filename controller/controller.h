@@ -185,11 +185,13 @@ public slots:
 
     void updateFeatureMConfig();
 
-    void createFeature(int featureType, QString name,QString group,  bool nominal, bool common,
+   /* void createFeature(int featureType, QString name,QString group,  bool nominal, bool common,
                        CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem);
+*/
+    //void addNominalToActual(FeatureWrapper *fw);
+    //void checkForNominals(FeatureWrapper *fw);
 
-    void addNominalToActual(FeatureWrapper *fw);
-    void checkForNominals(FeatureWrapper *fw);
+    //void sortFeatures();
 
 private:
     void changeFunctionTreeViewModel();

@@ -1427,6 +1427,9 @@ void MainWindow::updateGeometryIcons(QStringList availableGeometries){
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
 }
 
+/*!
+ * \brief on_actionShow_help_triggered opens the local help document with the user guide.
+ */
 void MainWindow::on_actionShow_help_triggered()
 {
 #ifdef Q_OS_MAC

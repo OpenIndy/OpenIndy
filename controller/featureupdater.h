@@ -10,13 +10,21 @@
 #include "function.h"
 #include "pi_systemtransformation.h"
 #include "sortlistbyname.h"
+#include "featureattributesexchange.h"
+#include "console.h"
 
 class FeatureUpdater : public QObject
 {
     Q_OBJECT
 public:
     explicit FeatureUpdater(QObject *parent = 0);
-    
+
+    static bool validateFeatureName(QList<FeatureWrapper*> features, QString featureName,FeatureAttributesExchange fae);
+    static int addFeature(QList<Station*>&stations,QList<CoordinateSystem*>&coordSys, QList<FeatureWrapper*>&features, FeatureAttributesExchange fae, MeasurementConfig mConfig);
+    static QStringList ConstructFeatureName(QString name, int count);
+    static void sortFeatures(QList<FeatureWrapper*> &features);
+    static void checkForNominals(QList<FeatureWrapper*>&features, FeatureWrapper *fw);
+    static void addNominalToActual(QList<FeatureWrapper*>&features, FeatureWrapper *fw);
 signals:
     
 public slots:
@@ -43,6 +51,9 @@ private:
     void switchCoordinateSystemWithoutTransformation(QList<CoordinateSystem*> coordinateSystems,
                                 QList<Station*> stations,
                                 QList<FeatureWrapper *> featureSet, CoordinateSystem *to);
+
+    static void createFeature(QList<Station*>&stations,QList<CoordinateSystem *> &coordSys, QList<FeatureWrapper *> &features,
+                       MeasurementConfig mConfig, QString name, bool nominal, FeatureAttributesExchange fae);
 
 };
 
