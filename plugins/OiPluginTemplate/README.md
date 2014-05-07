@@ -23,6 +23,14 @@ Then develop and build your OpenIndy plugin.
 
 Now you can use your Plugin in [OpenIndy](https://github.com/OpenIndy/OpenIndy).
 
+plugin debugger
+----
+you can use the /pluginDebugger/PluginDebugger.pro project to debug your plugin classes. Just add your classes and write a unit test. 
+Here you can find an example:
+
+- [OiTest testFit.h](https://github.com/OpenIndy/OiPluginTemplate/blob/master/pluginDebugger/oitestTestFit.h)
+- [OiTest testFit.cpp](https://github.com/OpenIndy/OiPluginTemplate/blob/master/pluginDebugger/oitestTestFit.cpp)
+
 fork and upstream
 ------------------
 If you want to develop your plugin on github, then simply [fork](https://github.com/OpenIndy/OiPluginTemplate/wiki/Get-Started) this repo!
