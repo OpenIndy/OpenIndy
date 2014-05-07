@@ -1,7 +1,12 @@
 #ifndef MEASUREMENTCONFIG_H
 #define MEASUREMENTCONFIG_H
 
+#include <QXmlStreamWriter>
+#include <QXmlStreamReader>
+
 #include "configuration.h"
+#include "elementdependencies.h"
+
 
 /*!
  * \brief The MeasurementConfig class
@@ -24,6 +29,10 @@ public:
 
     //reading
     Configuration::ReadingTypes typeOfReading;
+
+    //xml import export
+    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 };
 
 #endif // MEASUREMENTCONFIG_H
