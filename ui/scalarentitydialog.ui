@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>303</height>
+    <height>348</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -94,20 +94,6 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>function:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="comboBox_function"/>
-       </item>
-      </layout>
-     </item>
-     <item>
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -122,6 +108,20 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,3">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>function:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_function"/>
+       </item>
+      </layout>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_8">
@@ -155,16 +155,6 @@
       </layout>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBox_actual">
-       <property name="text">
-        <string>actual</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -179,6 +169,16 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_actual">
+       <property name="text">
+        <string>actual</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QCheckBox" name="checkBox_nominal">

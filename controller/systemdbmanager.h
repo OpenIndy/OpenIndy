@@ -16,6 +16,7 @@ struct FunctionPlugin{
     QString iid;
     QString name;
     QString description;
+    QString pluginName;
 };
 
 struct SensorPlugin{
@@ -23,6 +24,7 @@ struct SensorPlugin{
     QString iid;
     QString name;
     QString description;
+    QString pluginName;
 };
 
 struct Plugin{

@@ -418,6 +418,9 @@ void CreateFeature::availableGroupsChanged(QStringList myGroups){
  * \param defaultFunction
  */
 void CreateFeature::setAvailableFunctions(QStringList functions, QString defaultFunction){
+    this->ui->checkBox_useDefault->setChecked(false);
+    this->ui->checkBox_useNow->setChecked(false);
+
     this->ui->comboBox_function->clear();
     this->ui->comboBox_function->addItems(functions);
     if(defaultFunction.compare("") != 0){

@@ -1569,10 +1569,10 @@ QStringList Controller::getAvailableCreateFunctions(Configuration::FeatureTypes 
 
     //add the function names to the result list
     foreach(FunctionPlugin plugin, fitFunctions){
-        result.append(plugin.name);
+        result.append(QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName));
     }
     foreach(FunctionPlugin plugin, createFunctions){
-        result.append(plugin.name);
+        result.append(QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName));
     }
 
     return result;
@@ -1588,7 +1588,7 @@ QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
     QString result;
 
     FunctionPlugin plugin = SystemDbManager::getDefaultFunction(featureType);
-    result = plugin.name;
+    result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
 
     return result;
 }
