@@ -21,7 +21,6 @@ public slots:
     void emitSendDataMap(QVariantMap*);
     void emitSendString(QString);
 
-
 };
 
 #endif // OIEMITTER_H

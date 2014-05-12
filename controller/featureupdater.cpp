@@ -478,7 +478,14 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(QList<Coordinat
 void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSystem *> &coordSys, QList<FeatureWrapper *> &features,
                                    MeasurementConfig mConfig, QString name, bool nominal, FeatureAttributesExchange fae)
 {
-    QStringList functionPlugin = fae.function.split('[');
+    Function *defaultFunction = NULL;
+    bool functionValid = false;
+    if(fae.useNow && fae.function.compare("") != 0){
+        defaultFunction = FeatureUpdater::getFunctionFromComboValue(fae.function);
+        if(defaultFunction != NULL){
+            functionValid = true;
+        }
+    }
 
     switch(fae.featureType){
     case Configuration::ePointFeature: {
@@ -490,9 +497,8 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpPoint->isNominal = nominal;
         tmpPoint->isCommon = fae.common;
         tmpPoint->myNominalCoordSys = fae.nominalSystem;
-        if(fae.useNow){
-
-            //tmpPoint->addFunction();
+        if(functionValid){
+            tmpPoint->addFunction(defaultFunction);
         }
 
         if(nominal){
@@ -527,6 +533,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -560,6 +567,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -593,6 +601,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -626,6 +635,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -659,6 +669,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -692,6 +703,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -725,6 +737,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -758,6 +771,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -791,6 +805,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -824,6 +839,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -857,6 +873,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
         tmp->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->isSolved = true;
@@ -890,6 +907,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->position->isNominal = nominal;
         tmp->position->isCommon = fae.common;
         tmp->position->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
             tmp->position->isSolved = true;
@@ -921,6 +939,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
 
         tmp->name = name;
         tmp->group = fae.group;
+        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         FeatureWrapper *fw = new FeatureWrapper();
         fw->setCoordinateSystem(tmp);
@@ -937,6 +956,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         trafopara->isSolved = false;
         trafopara->from = fae.startSystem;
         trafopara->to = fae.destSystem;
+        if(functionValid){ trafopara->addFunction(defaultFunction); }
 
         //fae.startSystem->trafoParams.append(trafopara);
         //fae.destSystem->trafoParams.append(trafopara);
@@ -967,6 +987,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpSEAngle->isNominal = nominal;
         tmpSEAngle->isCommon = fae.common;
         tmpSEAngle->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmpSEAngle->addFunction(defaultFunction); }
 
         if(nominal){
             tmpSEAngle->isSolved = true;
@@ -1000,6 +1021,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpSEDistance->isNominal = nominal;
         tmpSEDistance->isCommon = fae.common;
         tmpSEDistance->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmpSEDistance->addFunction(defaultFunction); }
         tmpSEDistance->isSolved = true;
 
         if(nominal){
@@ -1033,6 +1055,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpSETemperature->isNominal = nominal;
         tmpSETemperature->isCommon = fae.common;
         tmpSETemperature->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmpSETemperature->addFunction(defaultFunction); }
         tmpSETemperature->isSolved = true;
 
         if(nominal){
@@ -1067,6 +1090,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpSEMSeries->isNominal = nominal;
         tmpSEMSeries->isCommon = fae.common;
         tmpSEMSeries->myNominalCoordSys = fae.nominalSystem;
+        if(functionValid){ tmpSEMSeries->addFunction(defaultFunction); }
         tmpSEMSeries->isSolved = true;
 
         if(nominal){
@@ -1455,11 +1479,10 @@ bool FeatureUpdater::deleteFeature(FeatureWrapper *myFeatureWrapper, QList<Featu
  * \brief FeatureUpdater::getFunctionFromComboValue
  * Helper function that parses a special string into function and plugin name and queries the corresponding function plugin.
  * String format: <FunctionName> [<PluginName>]
- * \param f
  * \param functionValue
  * \return
  */
-bool FeatureUpdater::getFunctionFromComboValue(Function *f, QString functionValue){
+Function* FeatureUpdater::getFunctionFromComboValue(QString functionValue){
     QStringList split1 = functionValue.split('[');
     if(split1.size() >= 2){
         QStringList split2 = split1.at(split1.size()-1).split(']');
@@ -1470,17 +1493,16 @@ bool FeatureUpdater::getFunctionFromComboValue(Function *f, QString functionValu
             for(int i = 0; i < split1.size()-1; i++){
                 functionName.append(split1.at(i));
             }
+            functionName.truncate(functionName.size()-1);
             QString pluginName = split2.at(0);
 
             //get instance of the function defined by its name and the plugin name
             QString filePath = SystemDbManager::getPluginFilePath(functionName, pluginName);
-            f = PluginLoader::loadFunctionPlugin(filePath, functionName);
+            Function *checkFunction = PluginLoader::loadFunctionPlugin(filePath, functionName);
 
-            if(f != NULL){
-                return true;
-            }
+            return checkFunction;
 
         }
     }
-    return false;
+    return NULL;
 }
