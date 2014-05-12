@@ -6,8 +6,8 @@
  * \param coordSys
  * \param parent
  */
-TableModel::TableModel(QList<FeatureWrapper*> &features, Station *myStation,FeatureWrapper *myFeature,QObject *parent) :
-    QAbstractTableModel(parent),features(features),activeStation(myStation),activeFeature(myFeature)
+TableModel::TableModel(QStringList &columns, QList<FeatureWrapper*> &features, Station *myStation,FeatureWrapper *myFeature,QObject *parent) :
+    QAbstractTableModel(parent),features(features),activeStation(myStation),activeFeature(myFeature),m_columns(columns)
 {
 
 }
@@ -30,8 +30,8 @@ int TableModel::rowCount(const QModelIndex& ) const{
  * \return
  */
 int TableModel::columnCount(const QModelIndex &parent) const{
-    //return m_columns.size();
-    return 33;
+    return m_columns.size();
+    //return 33;
 }
 
 /*!
@@ -274,7 +274,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
  */
 QVariant TableModel::headerData(int section, Qt::Orientation orientation, int role) const{
 
-    QStringList m_columns;
+/*    QStringList m_columns;
 
     m_columns.append("Feature type");
     m_columns.append("Featurename");
@@ -381,7 +381,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
     m_columns.append(QString("Temperature " + UnitConverter::getTemperatureUnitString()));
     m_columns.append("Measurement series");
 
-    m_columns.append("Comment");
+    m_columns.append("Comment"); */
 
     if((Qt::DisplayRole == role) &&
             (Qt::Horizontal == orientation) &&

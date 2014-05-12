@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QMetaEnum>
 #include <QMetaObject>
+#include <QStringList>
+#include "unitconverter.h"
 
 /*!
  * \brief The Configuration class
@@ -26,6 +28,10 @@ public:
     explicit Configuration(QObject *parent = 0);
     //Configuration();
     ~Configuration();
+
+    static QStringList allAttributes;
+    static QStringList featureAttributes;
+    static QStringList trafoParamAttributes;
 
     static QString sPlane;
     static QString sPoint;
@@ -152,6 +158,9 @@ public:
 
     static Configuration::ElementTypes getElementTypeEnum(QString s);
     static QString getElementTypeString(Configuration::ElementTypes e);
+    static void generateAllAttributes();
+    static void generateFeatureAttributes();
+    static void generateTrafoParamAttributes();
 
 };
 

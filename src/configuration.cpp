@@ -44,6 +44,10 @@ QString Configuration::sLevel = "level";
 
 QString Configuration::sObservation = "observation";
 
+QStringList Configuration::allAttributes;
+QStringList Configuration::featureAttributes;
+QStringList Configuration::trafoParamAttributes;
+
 int Configuration::idCount = 0;
 
 int Configuration::generateID(){
@@ -152,4 +156,56 @@ QString Configuration::getElementTypeString(Configuration::ElementTypes e){
         return "";
         break;
     }
+}
+
+/*!
+ * \brief generateAllAttributes fills the QStringList with all existing attribute names.
+ * This list is later used for the tableview model.
+ * Call this function at project beginning and after every change in unit setting!
+ */
+void Configuration::generateAllAttributes()
+{
+    Configuration::allAttributes.append("feature type");
+    Configuration::allAttributes.append("feature name");
+    Configuration::allAttributes.append("group");
+    Configuration::allAttributes.append(QString("x" + UnitConverter::getDistanceUnitString()));
+    Configuration::allAttributes.append(QString("y" + UnitConverter::getDistanceUnitString()));
+    Configuration::allAttributes.append(QString("z" + UnitConverter::getDistanceUnitString()));
+    Configuration::allAttributes.append("observations");
+    Configuration::allAttributes.append("solved");
+    Configuration::allAttributes.append("measurement config");
+    Configuration::allAttributes.append("functions");
+    Configuration::allAttributes.append("common point");
+    Configuration::allAttributes.append("nominal");
+    Configuration::allAttributes.append(QString("stddev" + UnitConverter::getDistanceUnitString()));
+    Configuration::allAttributes.append("I");
+    Configuration::allAttributes.append("J");
+    Configuration::allAttributes.append("K");
+    Configuration::allAttributes.append(QString("radius" + UnitConverter::getDistanceUnitString()));
+    Configuration::allAttributes.append("scalar value [m]");
+    Configuration::allAttributes.append("scalar value [dec. degree]");
+    Configuration::allAttributes.append("start");
+    Configuration::allAttributes.append("destination");
+    Configuration::allAttributes.append(QString("translation x" + UnitConverter::getDistanceUnitString()));
+    Configuration::allAttributes.append(QString("translation y" + UnitConverter::getDistanceUnitString()));
+    Configuration::allAttributes.append(QString("translation z" + UnitConverter::getDistanceUnitString()));
+    Configuration::allAttributes.append(QString("rotation x" + UnitConverter::getAngleUnitString()));
+    Configuration::allAttributes.append(QString("rotation y" + UnitConverter::getAngleUnitString()));
+    Configuration::allAttributes.append(QString("rotation z" + UnitConverter::getAngleUnitString()));
+    Configuration::allAttributes.append("scale x");
+    Configuration::allAttributes.append("scale y");
+    Configuration::allAttributes.append("scale z");
+    Configuration::allAttributes.append(QString("temperature" + UnitConverter::getTemperatureUnitString()));
+    Configuration::allAttributes.append("measurement series");
+    Configuration::allAttributes.append("comment");
+}
+
+void Configuration::generateFeatureAttributes()
+{
+
+}
+
+void Configuration::generateTrafoParamAttributes()
+{
+
 }

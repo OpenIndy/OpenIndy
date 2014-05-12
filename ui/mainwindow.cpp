@@ -13,6 +13,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    Configuration::generateAllAttributes();
+    Configuration::generateFeatureAttributes();
+    Configuration::generateTrafoParamAttributes();
+
     initializeActions();
 
     this->ui->comboBox_groups->addItem("All Groups");
@@ -27,9 +31,14 @@ MainWindow::MainWindow(QWidget *parent) :
     FeatureOverviewDelegate *myFeatureDelegate = new FeatureOverviewDelegate();
     this->ui->tableView_data->setItemDelegate(myFeatureDelegate);
     this->ui->tableView_data->setModel(this->control.featureOverviewModel);
+    ui->tableView_data->horizontalHeader()->setSectionsMovable(true);
+    ui->tableView_data->verticalHeader()->setSectionsMovable(true);
+
     TrafoParamDelegate *myTrafoParamDelegate = new TrafoParamDelegate();
     this->ui->tableView_trafoParam->setItemDelegate(myTrafoParamDelegate);
     this->ui->tableView_trafoParam->setModel(this->control.trafoParamModel);
+    ui->tableView_trafoParam->horizontalHeader()->setSectionsMovable(true);
+    ui->tableView_trafoParam->verticalHeader()->setSectionsMovable(true);
 
     ui->treeView_featureOverview->setModel(this->control.featureGraphicsModel);
     fPluginDialog.receiveAvailableElementsModel(this->control.availableElementsModel);
@@ -1428,6 +1437,9 @@ void MainWindow::updateGeometryIcons(QStringList availableGeometries){
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
 }
 
+/*!
+ * \brief on_actionShow_help_triggered opens the local help document with the user guide.
+ */
 void MainWindow::on_actionShow_help_triggered()
 {
 #ifdef Q_OS_MAC
