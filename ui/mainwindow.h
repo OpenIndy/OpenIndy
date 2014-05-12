@@ -259,6 +259,8 @@ private slots:
 
     void on_actionPlugin_manager_triggered();
 
+    void showCreateFeatureDialog(Configuration::FeatureTypes featureType);
+
 private:
     Ui::MainWindow *ui;
 

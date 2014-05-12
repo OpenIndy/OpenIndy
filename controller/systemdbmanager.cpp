@@ -657,3 +657,120 @@ QList<Plugin> SystemDbManager::getAvailablePlugins(){
 
     return result;
 }
+
+/*!
+ * \brief SystemDbManager::getAvailableFitFunctions
+ * Returns all fit functions that are available for the specified feature type
+ * \param featureType
+ * \return
+ */
+QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::FeatureTypes featureType){
+    QList<FunctionPlugin> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT %1 FROM functionPlugin AS fp %2 %3 WHERE %4")
+                .arg("fp.id, fp.iid, fp.name, fp.description")
+                .arg("INNER JOIN elementPlugin AS ep ON fp.id = ep.functionPlugin_id")
+                .arg("INNER JOIN element AS e ON e.id = ep.element_id")
+                .arg(QString("e.element_type = \'%1\' AND fp.iid = \'%2\'")
+                     .arg(OiMetaData::findFeature(featureType)).arg(FitFunction_iidd));
+
+        command.exec(query);
+        while(command.next()){
+
+            FunctionPlugin myPlugin;
+            myPlugin.id = command.value("id").toInt();
+            myPlugin.iid = command.value("iid").toString();
+            myPlugin.name = command.value("name").toString();
+            myPlugin.description = command.value("description").toString();
+            result.append(myPlugin);
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}
+
+/*!
+ * \brief SystemDbManager::getAvailableConstructFunctions
+ * Returns all construct functions that are available for the specified feature type
+ * \param featureType
+ * \return
+ */
+QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(Configuration::FeatureTypes featureType){
+    QList<FunctionPlugin> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT %1 FROM functionPlugin AS fp %2 %3 WHERE %4")
+                .arg("fp.id, fp.iid, fp.name, fp.description")
+                .arg("INNER JOIN elementPlugin AS ep ON fp.id = ep.functionPlugin_id")
+                .arg("INNER JOIN element AS e ON e.id = ep.element_id")
+                .arg(QString("e.element_type = \'%1\' AND fp.iid = \'%2\'")
+                     .arg(OiMetaData::findFeature(featureType)).arg(ConstructFunction_iidd));
+
+        command.exec(query);
+        while(command.next()){
+
+            FunctionPlugin myPlugin;
+            myPlugin.id = command.value("id").toInt();
+            myPlugin.iid = command.value("iid").toString();
+            myPlugin.name = command.value("name").toString();
+            myPlugin.description = command.value("description").toString();
+            result.append(myPlugin);
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}
+
+/*!
+ * \brief SystemDbManager::getDefaultFunction
+ * Returns the default function for the specified feature type
+ * \param featureType
+ * \return
+ */
+FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes featureType){
+    FunctionPlugin result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT %1 FROM functionPlugin AS fp %2 %3 WHERE %4")
+                .arg("fp.id, fp.iid, fp.name, fp.description")
+                .arg("INNER JOIN elementPlugin AS ep ON fp.id = ep.functionPlugin_id")
+                .arg("INNER JOIN element AS e ON e.id = ep.element_id")
+                .arg(QString("e.element_type = \'%1\' AND ep.use_as_default = true").arg(OiMetaData::findFeature(featureType)));
+
+        command.exec(query);
+        while(command.next()){
+
+            FunctionPlugin myPlugin;
+            myPlugin.id = command.value("id").toInt();
+            myPlugin.iid = command.value("iid").toString();
+            myPlugin.name = command.value("name").toString();
+            myPlugin.description = command.value("description").toString();
+            result = myPlugin;
+            break;
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}

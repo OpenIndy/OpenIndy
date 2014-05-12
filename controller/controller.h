@@ -95,6 +95,9 @@ public:
     UsedElementsModel *usedElementsModel; //model for listview with elements that are used for a function
     PluginTreeViewModel *myPluginTreeViewModel; //model with all available plugins for plugin manager
 
+    QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
+    QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
+
 signals:
     void changedStation();
     void featureAdded();

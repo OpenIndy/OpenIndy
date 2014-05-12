@@ -26,6 +26,7 @@ public:
     QList<FeatureWrapper*> &featureList;
 
     void availableGroupsChanged(QStringList myGroups);
+    void setAvailableFunctions(QStringList functions, QString defaultFunction);
 
 signals:
 

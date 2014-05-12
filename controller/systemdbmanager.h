@@ -61,6 +61,9 @@ public:
     static QStringList getSupportedGeometries();
 
     static QList<Plugin> getAvailablePlugins();
+    static FunctionPlugin getDefaultFunction(Configuration::FeatureTypes featureType);
+    static QList<FunctionPlugin> getAvailableFitFunctions(Configuration::FeatureTypes featureType);
+    static QList<FunctionPlugin> getAvailableConstructFunctions(Configuration::FeatureTypes featureType);
 
 private:
     static QSqlDatabase db;

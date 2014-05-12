@@ -2500,3 +2500,42 @@ bool Controller::checkPluginAvailability(Configuration::FeatureTypes typeOfFeatu
     }
     return false;
 }
+
+/*!
+ * \brief Controller::getAvailableCreateFunctions
+ * Returns a list of all available fit and create functions of the specified feature type
+ * \param featureType
+ * \return
+ */
+QStringList Controller::getAvailableCreateFunctions(Configuration::FeatureTypes featureType){
+    QStringList result;
+
+    //query database for all available fit and construct functions of featureType
+    QList<FunctionPlugin> fitFunctions = SystemDbManager::getAvailableFitFunctions(featureType);
+    QList<FunctionPlugin> createFunctions = SystemDbManager::getAvailableConstructFunctions(featureType);
+
+    //add the function names to the result list
+    foreach(FunctionPlugin plugin, fitFunctions){
+        result.append(plugin.name);
+    }
+    foreach(FunctionPlugin plugin, createFunctions){
+        result.append(plugin.name);
+    }
+
+    return result;
+}
+
+/*!
+ * \brief Controller::getDefaultFunction
+ * Returns the default function of the specified feature type or an empty string if no default function is available
+ * \param featureType
+ * \return
+ */
+QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
+    QString result;
+
+    FunctionPlugin plugin = SystemDbManager::getDefaultFunction(featureType);
+    result = plugin.name;
+
+    return result;
+}
