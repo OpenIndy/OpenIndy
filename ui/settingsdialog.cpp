@@ -25,6 +25,9 @@ void SettingsDialog::setPluginsModel(PluginTreeViewModel *model){
 void SettingsDialog::on_pushButton_ok_clicked()
 {
     saveSettings();
+    Configuration::generateAllAttributes();
+    Configuration::generateFeatureAttributes();
+    Configuration::generateTrafoParamAttributes();
     this->close();
 }
 

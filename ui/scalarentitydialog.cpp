@@ -59,7 +59,7 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
         bool comPoint = ui->checkBox_commonPoint->isChecked();
         CoordinateSystem *nominalSystem = NULL;
 
-        if(actual){
+        if(nominal){
             for(int k=0; k<this->featureList.size();k++){
                 if(this->featureList.at(k)->getCoordinateSystem() != NULL &&
                         ui->comboBox_nominalSystem->currentText() == this->featureList.at(k)->getCoordinateSystem()->name){

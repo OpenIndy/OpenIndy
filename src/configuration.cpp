@@ -45,8 +45,8 @@ QString Configuration::sLevel = "level";
 QString Configuration::sObservation = "observation";
 
 QStringList Configuration::allAttributes;
-QStringList Configuration::featureAttributes;
-QStringList Configuration::trafoParamAttributes;
+QMap<QString,bool> Configuration::featureAttributes;
+QMap<QString,bool> Configuration::trafoParamAttributes;
 
 int Configuration::idCount = 0;
 
@@ -200,12 +200,77 @@ void Configuration::generateAllAttributes()
     Configuration::allAttributes.append("comment");
 }
 
+/*!
+ * \brief generateFeatureAttributes fills the QMap with all available attributes for features except trafo parameter.
+ * Also includes a boolean that handles if the attributes is displayed or not.
+ */
 void Configuration::generateFeatureAttributes()
 {
-
+    Configuration::featureAttributes.insert("feature type",true);
+    Configuration::featureAttributes.insert("feature name",true);
+    Configuration::featureAttributes.insert("group",true);
+    Configuration::featureAttributes.insert("x",true);
+    Configuration::featureAttributes.insert("y",true);
+    Configuration::featureAttributes.insert("z",true);
+    Configuration::featureAttributes.insert("observation",true);
+    Configuration::featureAttributes.insert("solved",true);
+    Configuration::featureAttributes.insert("measurement config",true);
+    Configuration::featureAttributes.insert("functions",true);
+    Configuration::featureAttributes.insert("common point",true);
+    Configuration::featureAttributes.insert("nominal",true);
+    Configuration::featureAttributes.insert("stddev",true);
+    Configuration::featureAttributes.insert("I",true);
+    Configuration::featureAttributes.insert("J",true);
+    Configuration::featureAttributes.insert("K",true);
+    Configuration::featureAttributes.insert("radius",true);
+    Configuration::featureAttributes.insert("scalar value [m]",true);
+    Configuration::featureAttributes.insert("scalar value [dec. degree]",true);
+    Configuration::featureAttributes.insert("temperature",true);
+    Configuration::featureAttributes.insert("measurement series",true);
+    Configuration::featureAttributes.insert("comment",true);
 }
 
+/*!
+ * \brief generateTrafoParamAttributes fills the QMap with all available attributes for trafo parameter.
+ * Also includes a boolean that handles if the attributes is displayed or not.
+ */
 void Configuration::generateTrafoParamAttributes()
 {
+    Configuration::trafoParamAttributes.insert("feature type",true);
+    Configuration::trafoParamAttributes.insert("feature name",true);
+    Configuration::trafoParamAttributes.insert("group",true);
+    Configuration::trafoParamAttributes.insert("solved",true);
+    Configuration::trafoParamAttributes.insert("functions",true);
+    Configuration::trafoParamAttributes.insert("start",true);
+    Configuration::trafoParamAttributes.insert("destination",true);
+    Configuration::trafoParamAttributes.insert("translation x",true);
+    Configuration::trafoParamAttributes.insert("translation y",true);
+    Configuration::trafoParamAttributes.insert("translation z",true);
+    Configuration::trafoParamAttributes.insert("rotation x",true);
+    Configuration::trafoParamAttributes.insert("rotation y",true);
+    Configuration::trafoParamAttributes.insert("rotation z",true);
+    Configuration::trafoParamAttributes.insert("scale x",true);
+    Configuration::trafoParamAttributes.insert("scale y",true);
+    Configuration::trafoParamAttributes.insert("scale z",true);
+    Configuration::trafoParamAttributes.insert("comment",true);
+}
 
+/*!
+ * \brief displayAttributes checks which attributes should be displayed. returns the column indices for this attributes.
+ * \param attributes
+ * \return
+ */
+QList<int> Configuration::displayAttributes(QMap<QString, bool> attributes)
+{
+    QList<int> display;
+
+    QMapIterator<QString,bool>i(attributes);
+    while(i.hasNext()){
+        i.next();
+        int res = Configuration::allAttributes.indexOf(i.key());
+        if(res != -1){
+            display.append(res);
+        }
+    }
+    return display;
 }

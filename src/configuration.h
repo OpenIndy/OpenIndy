@@ -30,8 +30,8 @@ public:
     ~Configuration();
 
     static QStringList allAttributes;
-    static QStringList featureAttributes;
-    static QStringList trafoParamAttributes;
+    static QMap<QString,bool> featureAttributes;
+    static QMap<QString,bool> trafoParamAttributes;
 
     static QString sPlane;
     static QString sPoint;
@@ -161,6 +161,7 @@ public:
     static void generateAllAttributes();
     static void generateFeatureAttributes();
     static void generateTrafoParamAttributes();
+    static QList<int> displayAttributes(QMap<QString,bool> attributes);
 
 };
 
