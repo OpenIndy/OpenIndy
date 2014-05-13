@@ -375,13 +375,9 @@ void CreateFeature::on_checkBox_Nominal_toggled(bool checked)
     if(checked){
         ui->label_nominalSystem->setVisible(true);
         ui->comboBox_nominalSystem->setVisible(true);
-
-        this->ui->comboBox_function->setEnabled(false);
     }else{
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
-
-        this->ui->comboBox_function->setEnabled(true);
     }
 }
 
@@ -412,8 +408,20 @@ void CreateFeature::availableGroupsChanged(QStringList myGroups){
  * \param defaultFunction
  */
 void CreateFeature::setAvailableFunctions(QStringList functions, QString defaultFunction){
-
     this->ui->comboBox_function->clear();
     this->ui->comboBox_function->addItems(functions);
     this->ui->comboBox_function->setCurrentText(defaultFunction);
+}
+
+/*!
+ * \brief CreateFeature::on_checkBox_Actual_toggled
+ * \param checked
+ */
+void CreateFeature::on_checkBox_Actual_toggled(bool checked)
+{
+    if(checked){
+        this->ui->comboBox_function->setEnabled(true);
+    }else{
+        this->ui->comboBox_function->setEnabled(false);
+    }
 }

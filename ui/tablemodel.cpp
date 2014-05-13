@@ -436,6 +436,7 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
                 myExchange.destSystem = this->activeFeature->getTrafoParam()->to;
             }
             myExchange.featureType = this->activeFeature->getTypeOfFeature();
+            myExchange.name = this->activeFeature->getFeature()->name;
 
             if(FeatureUpdater::validateFeatureName(this->features, value.toString(), myExchange)){
 

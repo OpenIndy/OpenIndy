@@ -86,13 +86,9 @@ void ScalarEntityDialog::on_checkBox_nominal_toggled(bool checked)
     if(checked){
         ui->comboBox_nominalSystem->setVisible(true);
         ui->label_nominalSystem->setVisible(true);
-
-        this->ui->comboBox_function->setEnabled(false);
     }else{
         ui->comboBox_nominalSystem->setVisible(false);
         ui->label_nominalSystem->setVisible(false);
-
-        this->ui->comboBox_function->setEnabled(true);
     }
 }
 
@@ -140,4 +136,29 @@ void ScalarEntityDialog::availableGroupsChanged(QStringList myGroups){
     this->ui->comboBox_group->clear();
     this->ui->comboBox_group->clearEditText();
     this->ui->comboBox_group->addItems(myGroups);
+}
+
+/*!
+ * \brief ScalarEntityDialog::on_checkBox_actual_toggled
+ * \param checked
+ */
+void ScalarEntityDialog::on_checkBox_actual_toggled(bool checked)
+{
+    if(checked){
+        this->ui->comboBox_function->setEnabled(true);
+    }else{
+        this->ui->comboBox_function->setEnabled(false);
+    }
+}
+
+/*!
+ * \brief ScalarEntityDialog::setAvailableFunctions
+ * Assign all available create functions to the function combo box and select default value
+ * \param functions
+ * \param defaultFunction
+ */
+void ScalarEntityDialog::setAvailableFunctions(QStringList functions, QString defaultFunction){
+    this->ui->comboBox_function->clear();
+    this->ui->comboBox_function->addItems(functions);
+    this->ui->comboBox_function->setCurrentText(defaultFunction);
 }

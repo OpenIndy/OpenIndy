@@ -82,15 +82,15 @@ bool FeatureUpdater::validateFeatureName(QList<FeatureWrapper *> features, QStri
         break;
     case Configuration::eTrafoParamFeature:
         for(int k=0; k<features.size();k++){
-                    int res = QString::compare(features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
-                    if( res == 0){
-                        Console::addLine(QString("Feature name already exists " + featureName));
-                        return false;
-                    }
+            int res = QString::compare(features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
+            if( res == 0){
+                Console::addLine(QString("Feature name already exists " + featureName));
+                return false;
+            }
         }
 
         for(int l=0; l<features.size();l++){
-            if(features.at(l)->getTrafoParam() != NULL){
+            if(features.at(l)->getTrafoParam() != NULL && features.at(l)->getFeature()->name != fae.name){
                 if(features.at(l)->getTrafoParam()->from == fae.startSystem && features.at(l)->getTrafoParam()->to == fae.destSystem){
                     Console::addLine("Transformation parameter for this configuration already exist.");
                     return false;

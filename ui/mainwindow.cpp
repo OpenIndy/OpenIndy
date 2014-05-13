@@ -1474,3 +1474,13 @@ void MainWindow::showCreateFeatureDialog(Configuration::FeatureTypes featureType
     this->cFeatureDialog->setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
     this->cFeatureDialog->show();
 }
+
+/*!
+ * \brief MainWindow::showScalarEntityDialog
+ * After a create scalar entity button was clicked this function is called to update and display the create feature dialog
+ * \param featureType
+ */
+void MainWindow::showScalarEntityDialog(Configuration::FeatureTypes featureType){
+    this->sEntityDialog->setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
+    this->sEntityDialog->show();
+}
