@@ -2,7 +2,7 @@
 
 PluginTreeViewModel::PluginTreeViewModel(QObject *parent)
 {
-    this->rootItem = new PluginTreeItem();
+    this->rootItem = new PluginTreeItem("available plugins");
 }
 
 /*!
@@ -10,6 +10,32 @@ PluginTreeViewModel::PluginTreeViewModel(QObject *parent)
  * Refresh the model by querying the database for available plugins
  */
 void PluginTreeViewModel::refreshModel(){
+    //delete old tree view items
+    this->rootItem->deleteChildren();
+
+    //query database for available plugins
+    QList<Plugin> myPlugins = SystemDbManager::getAvailablePlugins();
+
+    //create tree view hierarchy
+    foreach(Plugin myPlugin, myPlugins){
+        PluginTreeItem *plugin = new PluginTreeItem(myPlugin.name);
+
+        //function hierarchy
+        PluginTreeItem *functionHeader = new PluginTreeItem("functions:");
+
+        //sensor hierarchy
+        PluginTreeItem *sensorHeader = new PluginTreeItem("sensors:");
+
+        plugin->addChild(functionHeader);
+        plugin->addChild(sensorHeader);
+
+        this->rootItem->addChild(plugin);
+    }
+
+    //update view
+    emit this->beginResetModel();
+    emit this->endResetModel();
+
     emit this->layoutAboutToBeChanged();
     emit this->layoutChanged();
 }
@@ -114,10 +140,24 @@ QVariant PluginTreeViewModel::data(const QModelIndex &index, int role) const{
         }else if(role == Qt::DecorationRole){ //return icon for tree view item
             if(item->getIsPlugin()){
                 QPixmap pix(":/Images/icons/loadPlugin.png");
-                return pix.scaledToHeight(12, Qt::SmoothTransformation);
+                return pix.scaledToHeight(20, Qt::SmoothTransformation);
             }
         }
     }
 
+    return QVariant();
+}
+
+/*!
+ * \brief PluginTreeViewModel::headerData
+ * \param section
+ * \param orientation
+ * \param role
+ * \return
+ */
+QVariant PluginTreeViewModel::headerData(int section, Qt::Orientation orientation, int role) const{
+    if(section == 0 && role == Qt::DisplayRole){
+        return QVariant("available plugins");
+    }
     return QVariant();
 }

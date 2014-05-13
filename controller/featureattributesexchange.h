@@ -10,8 +10,10 @@ class FeatureAttributesExchange
 public:
     FeatureAttributesExchange();
     FeatureAttributesExchange(int count, int featureType, QString name, QString group,
+                              QString function, bool useAsDefault, bool useNow,
                               bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem);
     FeatureAttributesExchange(int count, int featureType, QString name, QString group,
+                              QString function, bool useAsDefault, bool useNow,
                               bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem,
                               CoordinateSystem *startSystem, CoordinateSystem *destSystem);
 
@@ -25,6 +27,9 @@ public:
     CoordinateSystem *nominalSystem;
     CoordinateSystem *startSystem;
     CoordinateSystem *destSystem;
+    QString function;
+    bool useAsDefault;
+    bool useNow;
 };
 
 #endif // FEATUREATTRIBUTESEXCHANGE_H

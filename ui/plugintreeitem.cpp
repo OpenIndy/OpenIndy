@@ -1,9 +1,20 @@
 #include "plugintreeitem.h"
 
-PluginTreeItem::PluginTreeItem() : myParent(NULL)
+PluginTreeItem::PluginTreeItem(QVariant val) : myParent(NULL), displayValue(val)
 {
 }
 
+PluginTreeItem::~PluginTreeItem(){
+    if(this->myParent != NULL){
+        this->myParent->deleteChild(this);
+    }
+    this->deleteChildren();
+}
+
+/*!
+ * \brief PluginTreeItem::getDisplayValue
+ * \return
+ */
 QVariant PluginTreeItem::getDisplayValue(){
     return this->displayValue;
 }
@@ -129,4 +140,47 @@ int PluginTreeItem::getIndex(){
         }
     }
     return 0;
+}
+
+/*!
+ * \brief PluginTreeItem::deleteChildren
+ */
+void PluginTreeItem::deleteChildren(){
+    qDeleteAll(this->myChildren);
+    this->myChildren.clear();
+}
+
+/*!
+ * \brief PluginTreeItem::deleteChild
+ * \param child
+ */
+void PluginTreeItem::deleteChild(PluginTreeItem *child){
+    int index = -1;
+    for(int i = 0; i < this->myChildren.size(); i++){
+        if(this->myChildren.at(i) == child){
+            index = i;
+        }
+    }
+    if(index > -1){
+        this->myChildren.removeAt(index);
+    }
+}
+
+/*!
+ * \brief PluginTreeItem::addChild
+ * \param child
+ */
+void PluginTreeItem::addChild(PluginTreeItem *child){
+    if(child != NULL){
+        this->myChildren.append(child);
+        child->setParent(this);
+    }
+}
+
+/*!
+ * \brief PluginTreeItem::setParent
+ * \param parent
+ */
+void PluginTreeItem::setParent(PluginTreeItem *parent){
+    this->myParent = parent;
 }

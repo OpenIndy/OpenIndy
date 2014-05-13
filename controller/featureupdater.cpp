@@ -14,6 +14,10 @@ FeatureUpdater::FeatureUpdater(QObject *parent) :
  */
 bool FeatureUpdater::validateFeatureName(QList<FeatureWrapper *> features, QString featureName, FeatureAttributesExchange fae)
 {
+    if(featureName.compare("") == 0){
+        Console::addLine("Feature name is empty");
+        return false;
+    }
     switch (fae.featureType) {
     case Configuration::eStationFeature:
         for(int k=0; k<features.size();k++){
@@ -23,22 +27,30 @@ bool FeatureUpdater::validateFeatureName(QList<FeatureWrapper *> features, QStri
 
                 if(features.at(k)->getTypeOfFeature() != fae.featureType){
                     if(features.at(k)->getTypeOfFeature() != Configuration::ePointFeature){
-                        Console::addLine(QString("Feature name already exists" + featureName));
+                        Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
                 }
                 int r = QString::compare(features.at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
                 if(fae.nominal == true && r == 0){
                     if(features.at(k)->getGeometry() != NULL && features.at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
-                        Console::addLine(QString("Feature name already exists" + featureName));
+                        Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
                 }
                 r = QString::compare(features.at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
                 if(fae.actual == true && r == 0){
-                    Console::addLine(QString("Feature name already exists" + featureName));
+                    Console::addLine(QString("Feature name already exists " + featureName));
                     return false;
                 }
+            }
+        }
+        break;
+    case Configuration::eCoordinateSystemFeature:
+        for(int k = 0; k < features.size(); k++){
+            if(features.at(k)->getFeature()->name.compare(featureName) == 0){
+                Console::addLine(QString("Feature name already exists " + featureName));
+                return false;
             }
         }
         break;
@@ -49,20 +61,20 @@ bool FeatureUpdater::validateFeatureName(QList<FeatureWrapper *> features, QStri
 
                 if(features.at(k)->getTypeOfFeature() != fae.featureType){
                     if(features.at(k)->getTypeOfFeature() != Configuration::eStationFeature){
-                        Console::addLine(QString("Feature name already exists" + featureName));
+                        Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
                 }
                 int r = QString::compare(features.at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
                 if(fae.nominal == true && r == 0){
                     if(features.at(k)->getGeometry() != NULL && features.at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
-                        Console::addLine(QString("Feature name already exists" + featureName));
+                        Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
                 }
                 r = QString::compare(features.at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
                 if(fae.actual == true && r == 0){
-                    Console::addLine(QString("Feature name already exists" + featureName));
+                    Console::addLine(QString("Feature name already exists " + featureName));
                     return false;
                 }
             }
@@ -72,7 +84,7 @@ bool FeatureUpdater::validateFeatureName(QList<FeatureWrapper *> features, QStri
         for(int k=0; k<features.size();k++){
                     int res = QString::compare(features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
                     if( res == 0){
-                        Console::addLine(QString("Feature name already exists" + featureName));
+                        Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
         }
@@ -95,19 +107,19 @@ bool FeatureUpdater::validateFeatureName(QList<FeatureWrapper *> features, QStri
             int res = QString::compare(features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
             if(res == 0){
                 if(features.at(k)->getTypeOfFeature() != fae.featureType){
-                    Console::addLine(QString("Feature name already exists" + featureName));
+                    Console::addLine(QString("Feature name already exists " + featureName));
                     return false;
                 }
                 int r = QString::compare(features.at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
                 if(fae.nominal == true && r == 0){
                     if(features.at(k)->getGeometry() != NULL && features.at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
-                        Console::addLine(QString("Feature name already exists" + featureName));
+                        Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
                 }
                 r = QString::compare(features.at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
                 if(fae.actual == true && r == 0){
-                    Console::addLine(QString("Feature name already exists" + featureName));
+                    Console::addLine(QString("Feature name already exists " + featureName));
                     return false;
                 }
             }
@@ -466,6 +478,8 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(QList<Coordinat
 void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSystem *> &coordSys, QList<FeatureWrapper *> &features,
                                    MeasurementConfig mConfig, QString name, bool nominal, FeatureAttributesExchange fae)
 {
+    QStringList functionPlugin = fae.function.split('[');
+
     switch(fae.featureType){
     case Configuration::ePointFeature: {
         Point *tmpPoint = new Point();
@@ -476,6 +490,10 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpPoint->isNominal = nominal;
         tmpPoint->isCommon = fae.common;
         tmpPoint->myNominalCoordSys = fae.nominalSystem;
+        if(fae.useNow){
+
+            //tmpPoint->addFunction();
+        }
 
         if(nominal){
             tmpPoint->isSolved = true;
@@ -1429,6 +1447,40 @@ bool FeatureUpdater::deleteFeature(FeatureWrapper *myFeatureWrapper, QList<Featu
         Feature *myFeature = myFeatureWrapper->getFeature();
         delete myFeature;
         return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief FeatureUpdater::getFunctionFromComboValue
+ * Helper function that parses a special string into function and plugin name and queries the corresponding function plugin.
+ * String format: <FunctionName> [<PluginName>]
+ * \param f
+ * \param functionValue
+ * \return
+ */
+bool FeatureUpdater::getFunctionFromComboValue(Function *f, QString functionValue){
+    QStringList split1 = functionValue.split('[');
+    if(split1.size() >= 2){
+        QStringList split2 = split1.at(split1.size()-1).split(']');
+        if(split2.size() == 2){
+
+            //get function name and plugin name
+            QString functionName = "";
+            for(int i = 0; i < split1.size()-1; i++){
+                functionName.append(split1.at(i));
+            }
+            QString pluginName = split2.at(0);
+
+            //get instance of the function defined by its name and the plugin name
+            QString filePath = SystemDbManager::getPluginFilePath(functionName, pluginName);
+            f = PluginLoader::loadFunctionPlugin(filePath, functionName);
+
+            if(f != NULL){
+                return true;
+            }
+
+        }
     }
     return false;
 }

@@ -58,6 +58,9 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
         bool nominal = ui->checkBox_nominal->isChecked();
         bool comPoint = ui->checkBox_commonPoint->isChecked();
         CoordinateSystem *nominalSystem = NULL;
+        QString function = this->ui->comboBox_function->currentText();
+        bool useAsDefault = this->ui->checkBox_useDefault->isChecked();
+        bool useNow = this->ui->checkBox_useNow->isChecked();
 
         if(nominal){
             for(int k=0; k<this->featureList.size();k++){
@@ -72,7 +75,7 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
             }
         }
 
-        FeatureAttributesExchange featureAttributes(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
+        FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,useAsDefault,useNow,actual,nominal,comPoint,nominalSystem);
 
         emit createFeature(featureAttributes);
 
@@ -85,9 +88,17 @@ void ScalarEntityDialog::on_checkBox_nominal_toggled(bool checked)
     if(checked){
         ui->comboBox_nominalSystem->setVisible(true);
         ui->label_nominalSystem->setVisible(true);
+
+        this->ui->comboBox_function->setEnabled(false);
+        this->ui->checkBox_useDefault->setEnabled(false);
+        this->ui->checkBox_useNow->setEnabled(false);
     }else{
         ui->comboBox_nominalSystem->setVisible(false);
         ui->label_nominalSystem->setVisible(false);
+
+        this->ui->comboBox_function->setEnabled(true);
+        this->ui->checkBox_useDefault->setEnabled(true);
+        this->ui->checkBox_useNow->setEnabled(true);
     }
 }
 

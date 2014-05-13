@@ -700,7 +700,7 @@ void MainWindow::createFeature(){
                 }
             }
 
-            FeatureAttributesExchange featureAttributes(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
+            FeatureAttributesExchange featureAttributes(count,featureType,name,group,"",false,false,actual,nominal,comPoint,nominalSystem);
 
             control.addFeature(featureAttributes);
 
@@ -745,7 +745,8 @@ void MainWindow::on_actionShow_hide_feature_toolbar_triggered()
 void MainWindow::on_actionCreate_point_triggered()
 {
     emit sendFeatureType(Configuration::ePointFeature);
-    cFeatureDialog->show();
+    //cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::ePointFeature);
 }
 
 /*!
@@ -1463,4 +1464,14 @@ QDir appDir(qApp->applicationDirPath());
         Console::addLine("cannot open user guide");
     }
 
+}
+
+/*!
+ * \brief MainWindow::showCreateFeatureDialog
+ * After a create feature button was clicked this function is called to update and display the create feature dialog
+ * \param featureType
+ */
+void MainWindow::showCreateFeatureDialog(Configuration::FeatureTypes featureType){
+    this->cFeatureDialog->setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
+    this->cFeatureDialog->show();
 }

@@ -10,6 +10,7 @@
 #include <QStringList>
 #include <QColor>
 #include <QFont>
+#include "featureupdater.h"
 
 class TableModel : public QAbstractTableModel
 {
