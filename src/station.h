@@ -24,7 +24,7 @@ class Sensor;
 /*!
  * \brief The Station class
  * The station contains a list of all readings made from this station, the coordinate system that belongs
- * to this station, a sensor and a sensorcontroller. The station slots emit a station signal, which starts
+ * to this station, sensorcontroller. The station slots emit a station signal, which starts
  * a sensor action  of the sensorcontroller(slot). The sensorcontroller runs on a seperate
  * thread (stationThread). If the sensor action is completed, the actionFinished signal will be emitted.
  */
@@ -39,10 +39,6 @@ public:
 
     Point *position;
 
-    //instrument
-    Sensor *instrument;
-    QList<Sensor*> usedSensors;
-
     SensorControl *sensorPad;
 
     //coordinatesystem
@@ -53,6 +49,9 @@ public:
     QList<Reading*> readingsDir;
     QList<Reading*> readingsDist;
     QList<Reading*> readingsPol;
+    QList<Reading*> readingsLevel;
+    QList<Reading*> readingsTemperatur;
+    QList<Reading*> readingsUndefined;
 
 
 signals:
@@ -62,20 +61,22 @@ signals:
     //starts the measurement
     void startMeasure(Geometry *geom, bool isActiveCoordSys);
 
-    //data stream
-    void startStream();
+    //data streams
+    void startReadingStream(Configuration::ReadingTypes);
+    void startSensorStatsStream();
+
 
     //sensor actions (station signals)
     void startMove(double, double, double, bool);
     void startMove(double, double, double);
     void startInitialize();
-    void startMotorState(bool);
+    void startMotorState();
     void startHome();
     void startToggleSight();
     void startConnect(ConnectionConfig*);
     void startDisconnect();
     void startCompensation();
-    void startSendCommand(QString);
+    void startSelfDefinedAction(QString s);
 
     void sendToConsole(QString);
 
@@ -92,20 +93,22 @@ public slots:
     void emitStartMeasure(Geometry *geom, bool isActiveCoordSys);
 
     //data stream
-    void emitStartStream();
-    void stopStream();
+    void emitStartReadingStream(Configuration::ReadingTypes r);
+    void emitStopReadingStream();
+    void emitStartSensorStatsStream();
+    void emitStopSensorStatsStream();
 
     //sensor actions (slots to emit the station signals)
     void emitStartMove(double, double, double, bool);
     void emitStartMove(double, double, double);
     void emitStartInitialize();
-    void emitStartMotorState(bool);
+    void emitStartMotorState();
     void emitStartHome();
     void emitStartToggleSight();
     void emitStartConnect(ConnectionConfig*);
     void emitStartDisconnect();
     void emitStartCompensation();
-    void emitStartCommand(QString);
+    void emitSelfDefinedAction(QString s);
 
     QString getDisplayX() const;
     QString getDisplayY() const;
@@ -125,7 +128,6 @@ private slots:
 private:
     // thread for the SensorControl
     QThread stationThread;
-    SensorConfiguration *InstrumentConfig;
 
  public:
     void recalc();

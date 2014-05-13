@@ -14,11 +14,9 @@ public:
     explicit OiEmitter(QObject *parent = 0);
 
 signals:
-    void sendDataMap(QVariantMap*);
     void sendString(QString);
 
 public slots:
-    void emitSendDataMap(QVariantMap*);
     void emitSendString(QString);
 
 

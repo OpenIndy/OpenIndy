@@ -1,5 +1,6 @@
 #include "sensorcontrol.h"
 #include "function.h"
+#include "sensorlistener.h"
 
 #include "oimetadata.h"
 
@@ -7,6 +8,16 @@ SensorControl::SensorControl(Station *st)
 {
 
     myStation = st;
+
+    instrument = NULL;
+    InstrumentConfig = NULL;
+    instrumentListener = new SensorListener(instrument);
+
+    connect(this,SIGNAL(activateCheckStream()),this->instrumentListener,SLOT(sensorCheckStream()));
+
+    instrumentListener->moveToThread(&listenerThread);
+
+    listenerThread.start();
 
 }
 
@@ -24,7 +35,7 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
 
     locker.lock();
 
-    QList<Reading*> readings = myStation->instrument->measure(&(geom->mConfig));
+    QList<Reading*> readings = instrument->measure(&(geom->mConfig));
 
     qDebug() << "count readings" << readings.size();
     if(readings.size() == 0){
@@ -40,17 +51,20 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
 
 }
 
-void SensorControl::stream(){
-    myStation->instrument->dataStream();
+void SensorControl::readingStream(Configuration::ReadingTypes streamFormat){
+
+    this->myEmitter.sendString("starting reading stream!");
+
+    while(isReadingStreamActive){
+      QVariantMap m = instrument->readingStream(streamFormat);
+    }
+
 }
 
-/*!
- * \brief sendCommandString
- * \param command
- */
-void SensorControl::sendCommandString(QString command){
-    myStation->instrument->sendCommandString(command);
+void SensorControl::sensorStatsStream()
+{
 }
+
 
 /*!
  * \brief SensorControl::move
@@ -63,12 +77,14 @@ void SensorControl::move(double azimuth, double zenith, double distance, bool is
 
     locker.lock();
 
+    this->myEmitter.sendString("start move command");
+
     this->az =azimuth;
     this->ze= zenith;
     this->dist = distance;
     this->isMoveRelativ = isRelative;
 
-    bool wasSuccessful = myStation->instrument->accept(this, Configuration::eMoveAngle);
+    bool wasSuccessful = instrument->accept(this, Configuration::eMoveAngle);
 
     emit commandFinished(wasSuccessful);
 
@@ -86,11 +102,13 @@ void SensorControl::move(double x, double y, double z){
 
     locker.lock();
 
+    this->myEmitter.sendString("start move command");
+
     this->x_ =x;
     this->y_ =y;
     this->z_ =z;
 
-    bool wasSuccessful = myStation->instrument->accept(this, Configuration::eMoveXYZ);
+    bool wasSuccessful = instrument->accept(this, Configuration::eMoveXYZ);
 
     emit commandFinished(wasSuccessful);
 
@@ -104,7 +122,9 @@ void SensorControl::initialize(){
 
     locker.lock();
 
-    bool wasSuccessful = myStation->instrument->accept(this, Configuration::eInitialize);
+    this->myEmitter.sendString("start initialize");
+
+    bool wasSuccessful = instrument->accept(this, Configuration::eInitialize);
 
     emit commandFinished(wasSuccessful);
 
@@ -114,13 +134,13 @@ void SensorControl::initialize(){
 /*!
  * \brief SensorControl::motorState
  */
-void SensorControl::motorState(bool b){
+void SensorControl::motorState(){
 
     locker.lock();
 
-    this->motorState(b);
+    this->myEmitter.sendString("changing motor state");
 
-    bool wasSuccessful = myStation->instrument->accept(this, Configuration::eMotorState);
+    bool wasSuccessful = instrument->accept(this, Configuration::eMotorState);
 
     emit commandFinished(wasSuccessful);
 
@@ -134,7 +154,9 @@ void SensorControl::home(){
 
     locker.lock();
 
-    bool wasSuccessful = myStation->instrument->accept(this, Configuration::eHome);
+    this->myEmitter.sendString("set home");
+
+    bool wasSuccessful = instrument->accept(this, Configuration::eHome);
 
     emit commandFinished(wasSuccessful);
 
@@ -147,7 +169,10 @@ void SensorControl::home(){
 void SensorControl::toggleSight(){
 
     locker.lock();
-    bool wasSuccessful =  myStation->instrument->accept(this, Configuration::eToggleSight);
+
+    this->myEmitter.sendString("toggleSight");
+
+    bool wasSuccessful =  instrument->accept(this, Configuration::eToggleSight);
 
     emit commandFinished(wasSuccessful);
 
@@ -160,12 +185,28 @@ void SensorControl::toggleSight(){
 void SensorControl::compensation(){
 
     locker.lock();
-    bool wasSuccessful =  myStation->instrument->accept(this, Configuration::eCompensation);
+
+    this->myEmitter.sendString("start compensation");
+
+    bool wasSuccessful =  instrument->accept(this, Configuration::eCompensation);
 
     emit commandFinished(wasSuccessful);
 
     locker.unlock();
 }
+
+void SensorControl::doSelfDefinedAction(QString s)
+{
+    locker.lock();
+
+    bool wasSuccessful =  instrument->doSelfDefinedAction(s);
+
+    emit commandFinished(wasSuccessful);
+
+    locker.unlock();
+
+}
+
 
 /*!
  * \brief SensorControl::connect
@@ -174,8 +215,10 @@ void SensorControl::connectSensor(ConnectionConfig *connConfig){
 
     locker.lock();
 
-    bool wasSuccessful = myStation->instrument->connectSensor(connConfig);
-    myStation->instrument->isConnected = wasSuccessful;
+    this->myEmitter.sendString("connecting sensor");
+
+    bool wasSuccessful = instrument->connectSensor(connConfig);
+
     emit commandFinished(wasSuccessful);
 
     locker.unlock();
@@ -188,11 +231,9 @@ void SensorControl::disconnectSensor(){
 
     locker.lock();
 
-    bool wasSuccessful = myStation->instrument->disconnectSensor();
+    this->myEmitter.sendString("disconnecting sensor");
 
-    if (wasSuccessful){
-            myStation->instrument->isConnected = false;
-    }
+    bool wasSuccessful = instrument->disconnectSensor();
 
     emit commandFinished(wasSuccessful);
 
@@ -344,7 +385,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //set type
             r->typeofReading = Configuration::eLevel;
             //store reading in station
-            this->myStation->readingsXyz.append(r);
+            this->myStation->readingsLevel.append(r);
             //create observation
             Observation *obs = new Observation(r, myStation);
             //check if the active coordSys is the station sys
@@ -363,11 +404,34 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
 
         break;
     }
+    case(Configuration::eTemperatur) :{
+        //set type
+        r->typeofReading = Configuration::eTemperatur;
+        //store reading in station
+        this->myStation->readingsTemperatur.append(r);
+        //create observation
+        Observation *obs = new Observation(r, myStation);
+        //check if the active coordSys is the station sys
+        obs->isValid = false;
+        //save geometry in observation
+        //add observation to fit function of geom
+        if(geom->functionList.size() > 0 && geom->functionList.at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
+            geom->functionList.at(0)->addObservation(obs, 0);
+        }
+        obs->myTargetGeometries.append(geom);
+        //save observation in geometry
+        geom->myObservations.append(obs);
+        geom->insertReadingType(Configuration::eTemperatur,Configuration::sTemperatur);
+        //save observation in station
+        this->myStation->coordSys->observations.append(obs);
+
+    break;
+    }
     case(Configuration::eUndefined) :{
             //set type
             r->typeofReading = Configuration::eUndefined;
             //store reading in station
-            this->myStation->readingsXyz.append(r);
+            this->myStation->readingsUndefined.append(r);
             //create observation
             Observation *obs = new Observation(r, myStation);
             //check if the active coordSys is the station sys
@@ -380,7 +444,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
             geom->myObservations.append(obs);
-            geom->insertReadingType(Configuration::eUndefined, this->myStation->instrument->getUndefinedReadingName());
+            geom->insertReadingType(Configuration::eUndefined, instrument->getUndefinedReadingName());
             //save observation in station
             this->myStation->coordSys->observations.append(obs);
 
@@ -390,6 +454,63 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
 
 
 }
+
+void SensorControl::sendActivateCheckStream(streamType t)
+{
+    instrumentListener->isCheckStreamActive = true;
+
+    switch (t) {
+    case eCheckStream:
+        emit activateCheckStream();
+        break;
+    case eReadingStream:
+        emit activateReadingStream();
+        break;
+    case eSenorStats:
+        emit activateStatStream();
+        break;
+    default:
+        break;
+    }
+
+
+}
+
+bool SensorControl::sendDeactivateCheckStream()
+{
+    instrumentListener->isCheckStreamActive = false;
+
+    QTime timer;
+
+    while(!instrumentListener->checkStreamFinished){
+
+        if(timer.elapsed()>30000){
+            listenerThread.quit();
+            listenerThread.wait();
+            listenerThread.start();
+            this->myEmitter.sendString("timeout");
+            return false;
+        }
+    }
+
+    if(!instrument->getConnectionState()){
+        this->myEmitter.sendString("sensor not connected");
+        return false;
+    }else{
+        if(instrument->isBusy()){
+          this->myEmitter.sendString("sensor is busy");
+          return false;
+        }
+        if(!instrument->isReady()){
+          this->myEmitter.sendString("sensor not ready");
+          return false;
+        }
+    }
+
+    return true;
+}
+
+
 
 OiEmitter& SensorControl::getOiEmitter(){
     return this->myEmitter;

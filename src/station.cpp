@@ -13,12 +13,8 @@ Station::Station(QString name)
     coordSys = new CoordinateSystem();
     coordSys->name = this->name;
 
-    instrument = NULL;
     sensorPad = new SensorControl(this);
     connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
-
-    //InstrumentConfig = new SensorConfiguration; //TODO null pointer??
-    InstrumentConfig = NULL;
 
     //move controller to the station thread
     sensorPad->moveToThread(&stationThread);
@@ -27,17 +23,18 @@ Station::Station(QString name)
     connect(this->sensorPad,SIGNAL(commandFinished(bool)),this,SLOT(emitActionFinished(bool)));
 
     connect(this,SIGNAL(startMeasure(Geometry*,bool)),this->sensorPad,SLOT(measure(Geometry*,bool)));
-    connect(this,SIGNAL(startStream()),this->sensorPad,SLOT(stream()));
     connect(this,SIGNAL(startMove(double,double,double,bool)),this->sensorPad,SLOT(move(double,double,double,bool)));
     connect(this,SIGNAL(startMove(double,double,double)),this->sensorPad,SLOT(move(double,double,double)));
     connect(this,SIGNAL(startInitialize()),this->sensorPad,SLOT(initialize()));
-    connect(this,SIGNAL(startMotorState(bool)),this->sensorPad,SLOT(motorState(bool)));
+    connect(this,SIGNAL(startMotorState()),this->sensorPad,SLOT(motorState()));
     connect(this,SIGNAL(startHome()),this->sensorPad,SLOT(home()));
     connect(this,SIGNAL(startToggleSight()),this->sensorPad,SLOT(toggleSight()));
     connect(this,SIGNAL(startCompensation()),this->sensorPad,SLOT(compensation()));
-    connect(this,SIGNAL(startSendCommand(QString)),this->sensorPad,SLOT(sendCommandString(QString)));
     connect(this,SIGNAL(startConnect(ConnectionConfig*)),this->sensorPad,SLOT(connectSensor(ConnectionConfig*)));
     connect(this,SIGNAL(startDisconnect()),this->sensorPad,SLOT(disconnectSensor()));
+    connect(this,SIGNAL(startReadingStream(Configuration::ReadingTypes)),this->sensorPad,SLOT(readingStream(Configuration::ReadingTypes)));
+    connect(this,SIGNAL(startSensorStatsStream()),this->sensorPad,SLOT(sensorStatsStream()));
+    connect(this,SIGNAL(startSelfDefinedAction(QString)),this->sensorPad,SLOT(doSelfDefinedAction(QString)));
 
     //start the station thread
     stationThread.start();
@@ -74,13 +71,13 @@ void Station::startThread(){
 
 void Station::setInstrumentConfig(SensorConfiguration *sensorConfig){
 
-    InstrumentConfig = sensorConfig;
-    instrument->setSensorConfiguration(sensorConfig);
+    sensorPad->InstrumentConfig = sensorConfig;
+    sensorPad->instrument->setSensorConfiguration(sensorConfig);
 
 }
 
 SensorConfiguration* Station::getInstrumentConfig(){
-    return InstrumentConfig;
+    return sensorPad->InstrumentConfig;
 }
 
 /*!
@@ -97,18 +94,18 @@ bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
         stream.writeAttribute("id", QString::number(this->id));
         stream.writeAttribute("name", this->name);
 
-        if(this->instrument != NULL){
+        if(this->sensorPad->instrument != NULL){
             stream.writeStartElement("activeSensor");
-            stream.writeAttribute("name",this->instrument->getMetaData()->name);
-            stream.writeAttribute("plugin", this->instrument->getMetaData()->pluginName);
+            stream.writeAttribute("name",this->sensorPad->instrument->getMetaData()->name);
+            stream.writeAttribute("plugin", this->sensorPad->instrument->getMetaData()->pluginName);
             stream.writeEndElement();
         }
 
-        if(this->usedSensors.size()>0){
-            for(int i = 0; i<usedSensors.size();i++){
+        if(this->sensorPad->usedSensors.size()>0){
+            for(int i = 0; i<this->sensorPad->usedSensors.size();i++){
                 stream.writeStartElement("sensor");
-                stream.writeAttribute("name",this->usedSensors.at(i)->getMetaData()->name);
-                stream.writeAttribute("plugin", this->usedSensors.at(i)->getMetaData()->pluginName);
+                stream.writeAttribute("name",this->sensorPad->usedSensors.at(i)->getMetaData()->name);
+                stream.writeAttribute("plugin", this->sensorPad->usedSensors.at(i)->getMetaData()->pluginName);
                 stream.writeEndElement();
             }
         }
@@ -227,7 +224,7 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
                     sInfo.plugin = sensorPlugin;
                     dependencies.addActiveSensor(sInfo);
 
-                    this->InstrumentConfig = sc;
+                    this->sensorPad->InstrumentConfig = sc;
                     /* ...and next... */
                     xml.readNext();
                 }
@@ -294,22 +291,29 @@ void Station::emitActionFinished(bool wasSuccesful){
 /*!
  * \brief emitStartStream
  */
-void Station::emitStartStream(){
-    emit startStream();
+void Station::emitStartReadingStream(Configuration::ReadingTypes r){
+    emit startReadingStream(r);
 }
 
 /*!
  * \brief Station::stopStream
  */
-void Station::stopStream(){
-    QThread::msleep(1);
-    this->instrument->dataStreamIsActive = false;
+void Station::emitStopReadingStream(){
+    sensorPad->isReadingStreamActive = false;
     emit actionFinished(true);
 }
 
-void Station::emitStartCommand(QString cmd){
-    emit startSendCommand(cmd);
+void Station::emitStartSensorStatsStream()
+{
+    emit startSensorStatsStream();
 }
+
+void Station::emitStopSensorStatsStream()
+{
+    sensorPad->isSensorStatStreamActive = false;
+    emit actionFinished(true);
+}
+
 
 /*!
  * \brief Station::emitStartMeasure
@@ -354,13 +358,18 @@ void Station::emitStartInitialize(){
 /*!
  * \brief Station::emitStartMotorState
  */
-void Station::emitStartMotorState(bool b){
-    emit startMotorState(b);
+void Station::emitStartMotorState(){
+    emit startMotorState();
 }
 
 
 void Station::emitStartCompensation(){
     emit startCompensation();
+}
+
+void Station::emitSelfDefinedAction(QString s)
+{
+    emit startSelfDefinedAction(s);
 }
 
 /*!

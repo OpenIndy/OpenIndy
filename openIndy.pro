@@ -146,7 +146,8 @@ SOURCES += \
     ui/plugintreeviewmodel.cpp \
     ui/plugintreeitem.cpp \
     controller/featureattributesexchange.cpp \
-    controller/nominalattributeexchange.cpp
+    controller/nominalattributeexchange.cpp \
+    src/sensorlistener.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -259,7 +260,8 @@ HEADERS  += \
     ui/plugintreeviewmodel.h \
     ui/plugintreeitem.h \
     controller/featureattributesexchange.h \
-    controller/nominalattributeexchange.h
+    controller/nominalattributeexchange.h \
+    src/sensorlistener.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

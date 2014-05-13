@@ -32,7 +32,7 @@ WatchWindow::~WatchWindow()
 void WatchWindow::on_pushButton_clicked()
 {
 
-    connect(&myStation->instrument->myEmitter,SIGNAL(sendDataMap(QVariantMap*)),this,SLOT(setLCDNumber(QVariantMap*)));
+    /*connect(&myStation->instrument->myEmitter,SIGNAL(sendDataMap(QVariantMap*)),this,SLOT(setLCDNumber(QVariantMap*)));
 
     if (myStation->instrument->dataStreamIsActive == false){
 
@@ -42,7 +42,7 @@ void WatchWindow::on_pushButton_clicked()
 
     }else{
         myStation->stopStream();
-    }
+    }*/
 }
 
 void WatchWindow::setLCDNumber(QVariantMap* m){

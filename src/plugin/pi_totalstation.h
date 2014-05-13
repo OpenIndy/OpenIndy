@@ -34,15 +34,18 @@ public:
     //-----get sensor capabilities-----
 
     virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes() = 0;
+    virtual QList<Configuration::SensorFunctionalities> getSupportedSensorActions() = 0;
     virtual QList<Configuration::ConnectionTypes>* getConnectionType() = 0;
 
     //get meta data
     virtual PluginMetaData* getMetaData() = 0;
 
     //individually defined sensor parameter
-    virtual QMap<QString,int>* getIntegerParameter() = 0;
-    virtual QMap<QString,double>* getDoubleParameter() = 0;
-    virtual QMap <QString, QStringList>* getStringParameter() = 0;
+    virtual QMap<QString,int>* getIntegerParameter();
+    virtual QMap<QString,double>* getDoubleParameter();
+    virtual QMap <QString, QStringList>* getStringParameter();
+    virtual QStringList selfDefinedActions();
+    virtual bool doSelfDefinedAction(QString a);
 
     /*default accuracy
      *keys:
@@ -55,6 +58,8 @@ public:
     virtual QMap<QString,double>* getDefaultAccuracy() = 0;
 
     //-----sensor actions-----
+    //! abort a running action
+    virtual void abortAction() = 0;
 
     //! connect app with total station
     virtual bool connectSensor(ConnectionConfig* connConfig) = 0;
@@ -65,22 +70,28 @@ public:
     //! total station measures a point and returns a list of readings
     virtual QList<Reading*> measure(MeasurementConfig *mc) = 0;
 
-    //stream
-    virtual void dataStream() = 0;
+    //! stream
+    virtual QVariantMap readingStream(Configuration::ReadingTypes streamFormat) = 0;
 
-    //exec individually defined command strings
-    virtual void sendCommandString(QString cmd) = 0;
+    //! getConnectionState
+    virtual bool getConnectionState() = 0;
 
-    //! checks if the measurementconfig is vaild
-    virtual bool checkMeasurementConfig(MeasurementConfig* mc)=0;
+    //! return ready state of the sensor
+    virtual bool isReady() = 0;
+
+    //!sensor stats
+    virtual QMap<QString,QString> getSensorStats()=0;
+
+    //!checks if sensor is busy
+    virtual bool isBusy() = 0;
 
 protected:
 
      //! move totalstation to specified position
-    virtual bool move(double azimuth, double zenith, double distance,bool isrelativ) = 0;
+    virtual bool move(double azimuth, double zenith, double distance,bool isrelativ){this->writeToConsole("not available");}
 
     //! toggle between frontside and backside
-    virtual bool toggleSightOrientation() = 0;
+    virtual bool toggleSightOrientation(){this->writeToConsole("not available");}
 
 
 };
