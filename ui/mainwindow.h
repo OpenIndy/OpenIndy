@@ -157,6 +157,7 @@ public slots:
     void resetFeatureSelection();
     void availableGroupsChanged(QMap<QString, int>);
     void updateGeometryIcons(QStringList availableGeometries);
+    void updateModel();
 
 private slots:
     void featureContextMenu(const QPoint &point);

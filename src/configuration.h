@@ -5,7 +5,9 @@
 #include <QMetaEnum>
 #include <QMetaObject>
 #include <QStringList>
+#include <QDebug>
 #include "unitconverter.h"
+#include "displayattribute.h"
 
 /*!
  * \brief The Configuration class
@@ -30,8 +32,8 @@ public:
     ~Configuration();
 
     static QStringList allAttributes;
-    static QStringList featureAttributes;
-    static QStringList trafoParamAttributes;
+    static QList<DisplayAttribute*> featureAttributes;
+    static QList<DisplayAttribute> trafoParamAttributes;
 
     static QString sPlane;
     static QString sPoint;
@@ -161,6 +163,7 @@ public:
     static void generateAllAttributes();
     static void generateFeatureAttributes();
     static void generateTrafoParamAttributes();
+    static QList<int> displayAttributes(QList<DisplayAttribute*> attributes);
 
 };
 

@@ -119,6 +119,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //TODO Loesung finden, da statusbar Text verschwindet
     connect(&setUpDialog,SIGNAL(accepted()),this,SLOT(setUpStatusBar()));
     connect(&setUpDialog,SIGNAL(rejected()),this,SLOT(setUpStatusBar()));
+    connect(&setUpDialog,SIGNAL(modelChanged()),this,SLOT(updateModel()));
 
     //feature dialog
     connect(cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&control,SLOT(addFeature(FeatureAttributesExchange)));
@@ -1434,6 +1435,11 @@ void MainWindow::updateGeometryIcons(QStringList availableGeometries){
 
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"station",Configuration::eStationFeature);
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
+}
+
+void MainWindow::updateModel()
+{
+    emit control.tblModel->updateModel(control.activeFeature,control.activeStation);
 }
 
 /*!

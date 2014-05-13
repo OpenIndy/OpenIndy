@@ -56,14 +56,19 @@ void FeatureOvserviewProxyModel::sortNominalToActual()
  * \return
  */
 bool FeatureOvserviewProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
-    if(source_column == 19 || source_column == 20 || source_column == 21 || source_column == 22 || source_column == 23
+    /*if(source_column == 19 || source_column == 20 || source_column == 21 || source_column == 22 || source_column == 23
             || source_column == 24 || source_column == 25 || source_column == 26 || source_column == 27
             || source_column == 28 || source_column == 29){
         return false;
     }else{
         return true;
+    }*/
+    QList<int> displayColumns = Configuration::displayAttributes(Configuration::featureAttributes);
+    if(displayColumns.contains(source_column)){
+        return true;
+    }else{
+        return false;
     }
-
 }
 
 /*!

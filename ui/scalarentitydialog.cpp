@@ -60,7 +60,7 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
         CoordinateSystem *nominalSystem = NULL;
         QString function = this->ui->comboBox_function->currentText();
 
-        if(actual){
+        if(nominal){
             for(int k=0; k<this->featureList.size();k++){
                 if(this->featureList.at(k)->getCoordinateSystem() != NULL &&
                         ui->comboBox_nominalSystem->currentText() == this->featureList.at(k)->getCoordinateSystem()->name){

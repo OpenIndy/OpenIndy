@@ -94,11 +94,11 @@ double UnitConverter::getTemperatureMultiplier(){
 QString UnitConverter::getAngleUnitString(){
     switch(UnitConverter::angleType){
     case UnitConverter::eDECIMALDEGREE:
-        return "°";
+        return " [°]";
     case UnitConverter::eGON:
-        return "gon";
+        return " [gon]";
     case UnitConverter::eRADIANT:
-        return "rad";
+        return " [rad]";
     default:
         return "";
     }
@@ -112,9 +112,9 @@ QString UnitConverter::getAngleUnitString(){
 QString UnitConverter::getDistanceUnitString(){
     switch(UnitConverter::distanceType){
     case UnitConverter::eMETER:
-        return "m";
+        return " [m]";
     case UnitConverter::eMILLIMETER:
-        return "mm";
+        return " [mm]";
     default:
         return "";
     }
@@ -128,7 +128,7 @@ QString UnitConverter::getDistanceUnitString(){
 QString UnitConverter::getTemperatureUnitString(){
     switch(UnitConverter::temperatureType){
     case UnitConverter::eGRAD:
-        return "°C";
+        return " [°C]";
     default:
         return "";
     }
