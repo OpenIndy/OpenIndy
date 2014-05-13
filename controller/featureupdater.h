@@ -57,7 +57,7 @@ private:
     static void createFeature(QList<Station*>&stations,QList<CoordinateSystem *> &coordSys, QList<FeatureWrapper *> &features,
                        MeasurementConfig mConfig, QString name, bool nominal, FeatureAttributesExchange fae);
 
-    static Function* getFunctionFromComboValue(QString functionValue);
+    static Function* getFunctionFromComboValue(QString functionValue, QString &functionName, QString &pluginName);
 
 };
 

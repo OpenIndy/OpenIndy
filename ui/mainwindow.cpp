@@ -683,7 +683,7 @@ void MainWindow::createFeature(){
             int count = this->spinBoxNumber->value();
             QString name = this->lineEditName->text();
             QString group = this->comboBoxGroup->currentText();
-            int featureType = static_cast<Configuration::FeatureTypes>(this->comboBoxFeatureType->itemData(this->comboBoxFeatureType->currentIndex()).toInt());
+            Configuration::FeatureTypes featureType = static_cast<Configuration::FeatureTypes>(this->comboBoxFeatureType->itemData(this->comboBoxFeatureType->currentIndex()).toInt());
             bool actual = this->checkBoxActual->isChecked();
             bool nominal = this->checkBoxNominal->isChecked();
             bool comPoint = this->checkBoxCommonPoint->isChecked();
@@ -700,7 +700,7 @@ void MainWindow::createFeature(){
                 }
             }
 
-            FeatureAttributesExchange featureAttributes(count,featureType,name,group,"",false,false,actual,nominal,comPoint,nominalSystem);
+            FeatureAttributesExchange featureAttributes(count,featureType,name,group,"",actual,nominal,comPoint,nominalSystem);
 
             control.addFeature(featureAttributes);
 
@@ -745,7 +745,6 @@ void MainWindow::on_actionShow_hide_feature_toolbar_triggered()
 void MainWindow::on_actionCreate_point_triggered()
 {
     emit sendFeatureType(Configuration::ePointFeature);
-    //cFeatureDialog->show();
     this->showCreateFeatureDialog(Configuration::ePointFeature);
 }
 
@@ -755,7 +754,7 @@ void MainWindow::on_actionCreate_point_triggered()
 void MainWindow::on_actionCreate_line_triggered()
 {
     emit sendFeatureType(Configuration::eLineFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eLineFeature);
 }
 
 /*!
@@ -764,7 +763,7 @@ void MainWindow::on_actionCreate_line_triggered()
 void MainWindow::on_actionCreate_plane_triggered()
 {
     emit sendFeatureType(Configuration::ePlaneFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::ePlaneFeature);
 }
 
 /*!
@@ -773,7 +772,7 @@ void MainWindow::on_actionCreate_plane_triggered()
 void MainWindow::on_actionCreate_sphere_triggered()
 {
     emit sendFeatureType(Configuration::eSphereFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eSphereFeature);
 }
 
 /*!
@@ -782,7 +781,7 @@ void MainWindow::on_actionCreate_sphere_triggered()
 void MainWindow::on_actionCreate_cone_triggered()
 {
     emit sendFeatureType(Configuration::eConeFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eConeFeature);
 }
 
 /*!
@@ -791,7 +790,7 @@ void MainWindow::on_actionCreate_cone_triggered()
 void MainWindow::on_actionCreate_cylinder_triggered()
 {
     emit sendFeatureType(Configuration::eCylinderFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eCylinderFeature);
 }
 
 /*!
@@ -800,7 +799,7 @@ void MainWindow::on_actionCreate_cylinder_triggered()
 void MainWindow::on_actionCreate_ellipsoid_triggered()
 {
     emit sendFeatureType(Configuration::eEllipsoidFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eEllipsoidFeature);
 }
 
 /*!
@@ -809,7 +808,7 @@ void MainWindow::on_actionCreate_ellipsoid_triggered()
 void MainWindow::on_actionCreate_hyperboloid_triggered()
 {
     emit sendFeatureType(Configuration::eHyperboloidFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eHyperboloidFeature);
 }
 
 /*!
@@ -818,7 +817,7 @@ void MainWindow::on_actionCreate_hyperboloid_triggered()
 void MainWindow::on_actionCreate_paraboloid_triggered()
 {
     emit sendFeatureType(Configuration::eParaboloidFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eParaboloidFeature);
 }
 
 /*!
@@ -827,7 +826,7 @@ void MainWindow::on_actionCreate_paraboloid_triggered()
 void MainWindow::on_actionCreate_nurbs_triggered()
 {
     emit sendFeatureType(Configuration::eNurbsFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eNurbsFeature);
 }
 
 /*!
@@ -836,7 +835,7 @@ void MainWindow::on_actionCreate_nurbs_triggered()
 void MainWindow::on_actionCreate_pointcloud_triggered()
 {
     emit sendFeatureType(Configuration::ePointCloudFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::ePointCloudFeature);
 }
 
 /*!
@@ -845,7 +844,7 @@ void MainWindow::on_actionCreate_pointcloud_triggered()
 void MainWindow::on_actionCreate_station_triggered()
 {
     emit sendFeatureType(Configuration::eStationFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eStationFeature);
 }
 
 /*!
@@ -854,7 +853,7 @@ void MainWindow::on_actionCreate_station_triggered()
 void MainWindow::on_actionCreate_coordinatesystem_triggered()
 {
     emit sendFeatureType(Configuration::eCoordinateSystemFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eCoordinateSystemFeature);
 }
 
 /*!
@@ -863,7 +862,7 @@ void MainWindow::on_actionCreate_coordinatesystem_triggered()
 void MainWindow::on_actionCreate_trafoParam_triggered()
 {
     emit sendFeatureType(Configuration::eTrafoParamFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eTrafoParamFeature);
 }
 
 /*!
@@ -872,7 +871,7 @@ void MainWindow::on_actionCreate_trafoParam_triggered()
 void MainWindow::on_actionCreate_circle_triggered()
 {
     emit sendFeatureType(Configuration::eCircleFeature);
-    cFeatureDialog->show();
+    this->showCreateFeatureDialog(Configuration::eCircleFeature);
 }
 
 /*!

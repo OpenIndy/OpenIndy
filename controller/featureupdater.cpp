@@ -152,6 +152,14 @@ int FeatureUpdater::addFeature(QList<Station*>&stations,QList<CoordinateSystem*>
 
     }
     sortFeatures(features);
+
+    //if a function was selected save it as new default function for the specified feature type
+    if(fae.function.compare("") != 0){
+        QString functionName, pluginName;
+        FeatureUpdater::getFunctionFromComboValue(fae.function, functionName, pluginName);
+        SystemDbManager::saveDefaultFunction(fae.featureType, functionName, pluginName);
+    }
+
     return fae.featureType;
 }
 
@@ -480,8 +488,9 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
 {
     Function *defaultFunction = NULL;
     bool functionValid = false;
-    if(fae.useNow && fae.function.compare("") != 0){
-        defaultFunction = FeatureUpdater::getFunctionFromComboValue(fae.function);
+    QString functionName, pluginName;
+    if(fae.function.compare("") != 0){
+        defaultFunction = FeatureUpdater::getFunctionFromComboValue(fae.function, functionName, pluginName);
         if(defaultFunction != NULL){
             functionValid = true;
         }
@@ -497,9 +506,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpPoint->isNominal = nominal;
         tmpPoint->isCommon = fae.common;
         tmpPoint->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){
-            tmpPoint->addFunction(defaultFunction);
-        }
+        if(functionValid){ tmpPoint->addFunction(defaultFunction); }
 
         if(nominal){
             tmpPoint->isSolved = true;
@@ -1480,21 +1487,23 @@ bool FeatureUpdater::deleteFeature(FeatureWrapper *myFeatureWrapper, QList<Featu
  * Helper function that parses a special string into function and plugin name and queries the corresponding function plugin.
  * String format: <FunctionName> [<PluginName>]
  * \param functionValue
+ * \param functionName
+ * \param pluginName
  * \return
  */
-Function* FeatureUpdater::getFunctionFromComboValue(QString functionValue){
+Function* FeatureUpdater::getFunctionFromComboValue(QString functionValue, QString &functionName, QString &pluginName){
     QStringList split1 = functionValue.split('[');
     if(split1.size() >= 2){
         QStringList split2 = split1.at(split1.size()-1).split(']');
         if(split2.size() == 2){
 
             //get function name and plugin name
-            QString functionName = "";
+            functionName = "";
             for(int i = 0; i < split1.size()-1; i++){
                 functionName.append(split1.at(i));
             }
             functionName.truncate(functionName.size()-1);
-            QString pluginName = split2.at(0);
+            pluginName = split2.at(0);
 
             //get instance of the function defined by its name and the plugin name
             QString filePath = SystemDbManager::getPluginFilePath(functionName, pluginName);

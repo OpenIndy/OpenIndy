@@ -8,7 +8,6 @@
 FeatureAttributesExchange::FeatureAttributesExchange()
 {
     this->count = 0;
-    this->featureType = -1;
     this->name = "";
     this->group = "";
     this->actual = false;
@@ -18,11 +17,9 @@ FeatureAttributesExchange::FeatureAttributesExchange()
     this->startSystem = NULL;
     this->destSystem = NULL;
     this->function = "";
-    this->useAsDefault = false;
-    this->useNow = false;
 }
 
-FeatureAttributesExchange::FeatureAttributesExchange(int count, int featureType, QString name, QString group, QString function, bool useAsDefault, bool useNow, bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem)
+FeatureAttributesExchange::FeatureAttributesExchange(int count, Configuration::FeatureTypes featureType, QString name, QString group, QString function, bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem)
 {
     this->count = count;
     this->featureType = featureType;
@@ -35,11 +32,9 @@ FeatureAttributesExchange::FeatureAttributesExchange(int count, int featureType,
     this->startSystem = NULL;
     this->destSystem = NULL;
     this->function = function;
-    this->useAsDefault = useAsDefault;
-    this->useNow = useNow;
 }
 
-FeatureAttributesExchange::FeatureAttributesExchange(int count, int featureType, QString name, QString group, QString function, bool useAsDefault, bool useNow, bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem)
+FeatureAttributesExchange::FeatureAttributesExchange(int count, Configuration::FeatureTypes featureType, QString name, QString group, QString function, bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem)
 {
     this->count = count;
     this->featureType = featureType;
@@ -52,7 +47,5 @@ FeatureAttributesExchange::FeatureAttributesExchange(int count, int featureType,
     this->startSystem = startSystem;
     this->destSystem = destSystem;
     this->function = function;
-    this->useAsDefault = useAsDefault;
-    this->useNow = useNow;
 }
 

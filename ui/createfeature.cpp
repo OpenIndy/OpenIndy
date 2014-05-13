@@ -264,7 +264,7 @@ void CreateFeature::on_toolButton_create_clicked()
     if(ui->spinBox_count->value()>0){
 
         int count = ui->spinBox_count->value();
-        int featureType = this->typeOfFeature;
+        Configuration::FeatureTypes featureType = this->typeOfFeature;
         QString name = ui->lineEdit_name->text();
         bool isActual = ui->checkBox_Actual->isChecked();
         bool isNominal = ui->checkBox_Nominal->isChecked();
@@ -272,8 +272,6 @@ void CreateFeature::on_toolButton_create_clicked()
         bool isCommon = ui->checkBox_common->isChecked();
         CoordinateSystem *nominalSystem = NULL;
         QString function = this->ui->comboBox_function->currentText();
-        bool useAsDefault = this->ui->checkBox_useDefault->isChecked();
-        bool useNow = this->ui->checkBox_useNow->isChecked();
 
         if(name == ""){
             return;
@@ -291,7 +289,7 @@ void CreateFeature::on_toolButton_create_clicked()
                 }
             }
 
-            FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,useAsDefault,useNow,isActual,isNominal,isCommon,nominalSystem);
+            FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,isActual,isNominal,isCommon,nominalSystem);
 
             emit createFeature(featureAttributes);
 
@@ -318,7 +316,7 @@ void CreateFeature::on_toolButton_create_clicked()
                         from = featureList.at(i)->getStation()->coordSys;
                     }
                 }
-                FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,useAsDefault,useNow,isActual,isNominal,isCommon,nominalSystem,
+                FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,isActual,isNominal,isCommon,nominalSystem,
                                                             from,to);
                 emit createFeature(featureAttributes);
             }else{
@@ -379,15 +377,11 @@ void CreateFeature::on_checkBox_Nominal_toggled(bool checked)
         ui->comboBox_nominalSystem->setVisible(true);
 
         this->ui->comboBox_function->setEnabled(false);
-        this->ui->checkBox_useDefault->setEnabled(false);
-        this->ui->checkBox_useNow->setEnabled(false);
     }else{
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
 
         this->ui->comboBox_function->setEnabled(true);
-        this->ui->checkBox_useDefault->setEnabled(true);
-        this->ui->checkBox_useNow->setEnabled(true);
     }
 }
 
@@ -418,17 +412,8 @@ void CreateFeature::availableGroupsChanged(QStringList myGroups){
  * \param defaultFunction
  */
 void CreateFeature::setAvailableFunctions(QStringList functions, QString defaultFunction){
-    this->ui->checkBox_useDefault->setChecked(false);
-    this->ui->checkBox_useNow->setChecked(false);
 
     this->ui->comboBox_function->clear();
     this->ui->comboBox_function->addItems(functions);
-    if(defaultFunction.compare("") != 0){
-        this->ui->comboBox_function->setCurrentText(defaultFunction);
-        this->ui->checkBox_useDefault->setChecked(true);
-        this->ui->checkBox_useNow->setChecked(true);
-    }else{
-        this->ui->checkBox_useDefault->setChecked(false);
-        this->ui->checkBox_useNow->setChecked(false);
-    }
+    this->ui->comboBox_function->setCurrentText(defaultFunction);
 }
