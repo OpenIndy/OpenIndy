@@ -1040,6 +1040,12 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
             }else if(element->getIsObservation() && element->getObservation() != NULL
                      && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eObservationElement){
                 feature->functionList.at(functionIndex)->addObservation(element->getObservation(), elementIndex);
+
+                //if feature is a geometry add the observation to the list of observations in class geometry
+                Geometry *geom = this->activeFeature->getGeometry();
+                if(geom != NULL){
+                    geom->myObservations.append(element->getObservation());
+                }
             }
         }
         this->changeUsedElementsModel(functionIndex, elementIndex);
