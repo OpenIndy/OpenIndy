@@ -3,7 +3,9 @@
 
 #include <QDialog>
 #include <QShowEvent>
-
+#include <QCloseEvent>
+#include <QLayout>
+#include <QCheckBox>
 #include "unitconverter.h"
 #include "plugintreeviewmodel.h"
 
@@ -20,6 +22,8 @@ public:
     ~SettingsDialog();
 
     void setPluginsModel(PluginTreeViewModel *model);
+signals:
+    void modelChanged();
 
 private slots:
     void on_pushButton_ok_clicked();
@@ -28,11 +32,30 @@ private slots:
 
     void initGUI();
 
-    void showEvent(QShowEvent * event);
+    void showEvent(QShowEvent *event);
+
+    void closeEvent(QCloseEvent *event);
 
     void saveSettings();
 
+    void displayFeatureColumns();
+
+    void displayTrafoParamColumns();
+
+    void getFeatureColumns();
+
+    void destructFeatureColumns();
+
 private:
+
+    QVBoxLayout *featureAttrLayout;
+    QVBoxLayout *trafoParamAttrLayout;
+
+    QList<QLayout*> featureLayouts;
+    QList<QCheckBox*> featureCheckbox;
+    QList<QLayout*> trafoParamLayouts;
+    QList<QCheckBox*> trafoParamCheckbox;
+
     Ui::SettingsDialog *ui;
 };
 

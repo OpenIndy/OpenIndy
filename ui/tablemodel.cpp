@@ -6,8 +6,8 @@
  * \param coordSys
  * \param parent
  */
-TableModel::TableModel(QStringList &columns, QList<FeatureWrapper*> &features, Station *myStation,FeatureWrapper *myFeature,QObject *parent) :
-    QAbstractTableModel(parent),features(features),activeStation(myStation),activeFeature(myFeature),m_columns(columns)
+TableModel::TableModel(QList<FeatureWrapper*> &features, Station *myStation,FeatureWrapper *myFeature,QObject *parent) :
+    QAbstractTableModel(parent),features(features),activeStation(myStation),activeFeature(myFeature)
 {
 
 }
@@ -30,7 +30,7 @@ int TableModel::rowCount(const QModelIndex& ) const{
  * \return
  */
 int TableModel::columnCount(const QModelIndex &parent) const{
-    return m_columns.size();
+    return Configuration::allAttributes.size();
     //return 33;
 }
 
@@ -382,6 +382,8 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
     m_columns.append("Measurement series");
 
     m_columns.append("Comment"); */
+
+    QStringList m_columns = Configuration::allAttributes;
 
     if((Qt::DisplayRole == role) &&
             (Qt::Horizontal == orientation) &&

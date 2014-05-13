@@ -124,6 +124,30 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="tab_columnSettings">
+        <attribute name="title">
+         <string>column settings</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QTabWidget" name="tabWidget_columnSettings">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="tab_featureAttributes">
+            <attribute name="title">
+             <string>display feature attributes</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="tab_TrafoParamAttributes">
+            <attribute name="title">
+             <string>display trafoParam attributes</string>
+            </attribute>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="tab_plugins">
         <attribute name="title">
          <string>plugins</string>

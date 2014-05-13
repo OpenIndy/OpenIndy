@@ -59,7 +59,7 @@ Controller::Controller(QObject *parent) :
         this->activeCoordinateSystem  = NULL;
     }
 
-    tblModel = new TableModel(Configuration::allAttributes,features,activeStation,activeFeature);
+    tblModel = new TableModel(features,activeStation,activeFeature);
 
     this->featureOverviewModel = new FeatureOvserviewProxyModel(this->features);
     this->featureOverviewModel->setSourceModel(this->tblModel);

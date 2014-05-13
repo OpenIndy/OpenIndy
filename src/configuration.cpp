@@ -45,8 +45,8 @@ QString Configuration::sLevel = "level";
 QString Configuration::sObservation = "observation";
 
 QStringList Configuration::allAttributes;
-QMap<QString,bool> Configuration::featureAttributes;
-QMap<QString,bool> Configuration::trafoParamAttributes;
+QList<DisplayAttribute*> Configuration::featureAttributes;
+QList<DisplayAttribute> Configuration::trafoParamAttributes;
 
 int Configuration::idCount = 0;
 
@@ -165,6 +165,8 @@ QString Configuration::getElementTypeString(Configuration::ElementTypes e){
  */
 void Configuration::generateAllAttributes()
 {
+    Configuration::allAttributes.clear();
+
     Configuration::allAttributes.append("feature type");
     Configuration::allAttributes.append("feature name");
     Configuration::allAttributes.append("group");
@@ -206,28 +208,52 @@ void Configuration::generateAllAttributes()
  */
 void Configuration::generateFeatureAttributes()
 {
-    Configuration::featureAttributes.insert("feature type",true);
-    Configuration::featureAttributes.insert("feature name",true);
-    Configuration::featureAttributes.insert("group",true);
-    Configuration::featureAttributes.insert("x",true);
-    Configuration::featureAttributes.insert("y",true);
-    Configuration::featureAttributes.insert("z",true);
-    Configuration::featureAttributes.insert("observation",true);
-    Configuration::featureAttributes.insert("solved",true);
-    Configuration::featureAttributes.insert("measurement config",true);
-    Configuration::featureAttributes.insert("functions",true);
-    Configuration::featureAttributes.insert("common point",true);
-    Configuration::featureAttributes.insert("nominal",true);
-    Configuration::featureAttributes.insert("stddev",true);
-    Configuration::featureAttributes.insert("I",true);
-    Configuration::featureAttributes.insert("J",true);
-    Configuration::featureAttributes.insert("K",true);
-    Configuration::featureAttributes.insert("radius",true);
-    Configuration::featureAttributes.insert("scalar value [m]",true);
-    Configuration::featureAttributes.insert("scalar value [dec. degree]",true);
-    Configuration::featureAttributes.insert("temperature",true);
-    Configuration::featureAttributes.insert("measurement series",true);
-    Configuration::featureAttributes.insert("comment",true);
+    Configuration::featureAttributes.clear();
+
+    DisplayAttribute *ftype = new DisplayAttribute("feature type",true);
+    Configuration::featureAttributes.append(ftype);
+    DisplayAttribute *fname = new DisplayAttribute("feature name",true);
+    Configuration::featureAttributes.append(fname);
+    DisplayAttribute *fgroup = new DisplayAttribute("group",true);
+    Configuration::featureAttributes.append(fgroup);
+    DisplayAttribute *fX = new DisplayAttribute(QString("x"+UnitConverter::getDistanceUnitString()),true);
+    Configuration::featureAttributes.append(fX);
+    DisplayAttribute *fY = new DisplayAttribute(QString("y"+UnitConverter::getDistanceUnitString()),true);
+    Configuration::featureAttributes.append(fY);
+    DisplayAttribute *fZ = new DisplayAttribute(QString("z"+UnitConverter::getDistanceUnitString()),true);
+    Configuration::featureAttributes.append(fZ);
+    DisplayAttribute *fobs = new DisplayAttribute("observation",true);
+    Configuration::featureAttributes.append(fobs);
+    DisplayAttribute *fSolved = new DisplayAttribute("solved",true);
+    Configuration::featureAttributes.append(fSolved);
+    DisplayAttribute *fMConfig = new DisplayAttribute("measurement config",true);
+    Configuration::featureAttributes.append(fMConfig);
+    DisplayAttribute *fFunctions = new DisplayAttribute("functions",true);
+    Configuration::featureAttributes.append(fFunctions);
+    DisplayAttribute *fcomPoint = new DisplayAttribute("common point",true);
+    Configuration::featureAttributes.append(fcomPoint);
+    DisplayAttribute *fNominal = new DisplayAttribute("nominal",true);
+    Configuration::featureAttributes.append(fNominal);
+    DisplayAttribute *fStddev = new DisplayAttribute(QString("stddev"+UnitConverter::getDistanceUnitString()),true);
+    Configuration::featureAttributes.append(fStddev);
+    DisplayAttribute *fI = new DisplayAttribute("I",true);
+    Configuration::featureAttributes.append(fI);
+    DisplayAttribute *fJ = new DisplayAttribute("J",true);
+    Configuration::featureAttributes.append(fJ);
+    DisplayAttribute *fK = new DisplayAttribute("K",true);
+    Configuration::featureAttributes.append(fK);
+    DisplayAttribute *fRadius = new DisplayAttribute(QString("radius"+UnitConverter::getDistanceUnitString()),true);
+    Configuration::featureAttributes.append(fRadius);
+    DisplayAttribute *fscalarD = new DisplayAttribute("scalar value [m]",true);
+    Configuration::featureAttributes.append(fscalarD);
+    DisplayAttribute *fscalarA = new DisplayAttribute("scalar value [dec.degree]",true);
+    Configuration::featureAttributes.append(fscalarA);
+    DisplayAttribute *fTemperature = new DisplayAttribute(QString("temperature"+UnitConverter::getTemperatureUnitString()),true);
+    Configuration::featureAttributes.append(fTemperature);
+    DisplayAttribute *fMeasSeries = new DisplayAttribute("measurement series",true);
+    Configuration::featureAttributes.append(fMeasSeries);
+    DisplayAttribute *fcomment = new DisplayAttribute("comment",true);
+    Configuration::featureAttributes.append(fcomment);
 }
 
 /*!
@@ -235,41 +261,41 @@ void Configuration::generateFeatureAttributes()
  * Also includes a boolean that handles if the attributes is displayed or not.
  */
 void Configuration::generateTrafoParamAttributes()
-{
-    Configuration::trafoParamAttributes.insert("feature type",true);
-    Configuration::trafoParamAttributes.insert("feature name",true);
-    Configuration::trafoParamAttributes.insert("group",true);
-    Configuration::trafoParamAttributes.insert("solved",true);
-    Configuration::trafoParamAttributes.insert("functions",true);
-    Configuration::trafoParamAttributes.insert("start",true);
-    Configuration::trafoParamAttributes.insert("destination",true);
-    Configuration::trafoParamAttributes.insert("translation x",true);
-    Configuration::trafoParamAttributes.insert("translation y",true);
-    Configuration::trafoParamAttributes.insert("translation z",true);
-    Configuration::trafoParamAttributes.insert("rotation x",true);
-    Configuration::trafoParamAttributes.insert("rotation y",true);
-    Configuration::trafoParamAttributes.insert("rotation z",true);
-    Configuration::trafoParamAttributes.insert("scale x",true);
-    Configuration::trafoParamAttributes.insert("scale y",true);
-    Configuration::trafoParamAttributes.insert("scale z",true);
-    Configuration::trafoParamAttributes.insert("comment",true);
-}
+{/*
+    Configuration::trafoParamAttributes.append("feature type",true);
+    Configuration::trafoParamAttributes.append("feature name",true);
+    Configuration::trafoParamAttributes.append("group",true);
+    Configuration::trafoParamAttributes.append("solved",true);
+    Configuration::trafoParamAttributes.append("functions",true);
+    Configuration::trafoParamAttributes.append("start",true);
+    Configuration::trafoParamAttributes.append("destination",true);
+    Configuration::trafoParamAttributes.append("translation x",true);
+    Configuration::trafoParamAttributes.append("translation y",true);
+    Configuration::trafoParamAttributes.append("translation z",true);
+    Configuration::trafoParamAttributes.append("rotation x",true);
+    Configuration::trafoParamAttributes.append("rotation y",true);
+    Configuration::trafoParamAttributes.append("rotation z",true);
+    Configuration::trafoParamAttributes.append("scale x",true);
+    Configuration::trafoParamAttributes.append("scale y",true);
+    Configuration::trafoParamAttributes.append("scale z",true);
+    Configuration::trafoParamAttributes.append("comment",true);
+*/}
 
 /*!
  * \brief displayAttributes checks which attributes should be displayed. returns the column indices for this attributes.
  * \param attributes
  * \return
  */
-QList<int> Configuration::displayAttributes(QMap<QString, bool> attributes)
+QList<int> Configuration::displayAttributes(QList<DisplayAttribute*> attributes)
 {
     QList<int> display;
 
-    QMapIterator<QString,bool>i(attributes);
-    while(i.hasNext()){
-        i.next();
-        int res = Configuration::allAttributes.indexOf(i.key());
-        if(res != -1){
-            display.append(res);
+    for(int i =0; i<attributes.size();i++){
+        if(attributes.at(i)->displayState == true){
+            int res = Configuration::allAttributes.indexOf(attributes.at(i)->attrName);
+            if(res != -1){
+                display.append(res);
+            }
         }
     }
     return display;

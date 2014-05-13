@@ -16,15 +16,13 @@ class TableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit TableModel(QStringList &columns, QList<FeatureWrapper*> &features, Station *myStation,FeatureWrapper *myFeature,QObject *parent = 0);
+    explicit TableModel(QList<FeatureWrapper*> &features, Station *myStation,FeatureWrapper *myFeature,QObject *parent = 0);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
     Qt::ItemFlags flags(const QModelIndex & index) const;
     bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
-
-    QStringList &m_columns;
 
     QList<FeatureWrapper*> &features;
 
