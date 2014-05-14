@@ -19,12 +19,45 @@ void PluginTreeViewModel::refreshModel(){
     //create tree view hierarchy
     foreach(Plugin myPlugin, myPlugins){
         PluginTreeItem *plugin = new PluginTreeItem(myPlugin.name);
+        plugin->setIsPlugin(true);
 
         //function hierarchy
         PluginTreeItem *functionHeader = new PluginTreeItem("functions:");
+        PluginTreeItem *fit = new PluginTreeItem("fit functions:");
+        PluginTreeItem *construct = new PluginTreeItem("construct functions:");
+        PluginTreeItem *objectTrafo = new PluginTreeItem("object transformations:");
+        PluginTreeItem *systemTrafo = new PluginTreeItem("system transformations:");
+        PluginTreeItem *geodetic = new PluginTreeItem("geodetic functions:");
+        foreach(FunctionPlugin myFunction, myPlugin.myFunctions){
+            PluginTreeItem *function = new PluginTreeItem(myFunction.name);
+            if(myFunction.iid.compare(FitFunction_iidd) == 0){ fit->addChild(function); }
+            else if(myFunction.iid.compare(ConstructFunction_iidd) == 0){ construct->addChild(function); }
+            else if(myFunction.iid.compare(ObjectTransformation_iidd) == 0){ objectTrafo->addChild(function); }
+            else if(myFunction.iid.compare(SystemTransformation_iidd) == 0){ systemTrafo->addChild(function); }
+            else if(myFunction.iid.compare(GeodeticFunction_iidd) == 0){ geodetic->addChild(function); }
+        }
+        functionHeader->addChild(fit);
+        functionHeader->addChild(construct);
+        functionHeader->addChild(objectTrafo);
+        functionHeader->addChild(systemTrafo);
+        functionHeader->addChild(geodetic);
+        functionHeader->setIsPluginType(true);
 
         //sensor hierarchy
         PluginTreeItem *sensorHeader = new PluginTreeItem("sensors:");
+        PluginTreeItem *laserTracker = new PluginTreeItem("lasertrackers:");
+        PluginTreeItem *totalStation = new PluginTreeItem("totalstations:");
+        PluginTreeItem *customSensor = new PluginTreeItem("custom sensors:");
+        foreach(SensorPlugin mySensor, myPlugin.mySensors){
+            PluginTreeItem *sensor = new PluginTreeItem(mySensor.name);
+            if(mySensor.iid.compare(LaserTracker_iidd) == 0){ laserTracker->addChild(sensor); }
+            else if(mySensor.iid.compare(TotalStation_iidd) == 0){ totalStation->addChild(sensor); }
+            else if(mySensor.iid.compare(Sensor_iidd) == 0){ customSensor->addChild(sensor); }
+        }
+        sensorHeader->addChild(laserTracker);
+        sensorHeader->addChild(totalStation);
+        sensorHeader->addChild(customSensor);
+        sensorHeader->setIsPluginType(true);
 
         plugin->addChild(functionHeader);
         plugin->addChild(sensorHeader);
@@ -142,6 +175,13 @@ QVariant PluginTreeViewModel::data(const QModelIndex &index, int role) const{
                 QPixmap pix(":/Images/icons/loadPlugin.png");
                 return pix.scaledToHeight(20, Qt::SmoothTransformation);
             }
+        }else if(role == Qt::FontRole){
+            if(item->getIsPluginType()){
+                QFont boldFont;
+                boldFont.setBold(true);
+                return boldFont;
+            }
+            return QFont();
         }
     }
 
