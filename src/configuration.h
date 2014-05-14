@@ -33,7 +33,7 @@ public:
 
     static QStringList allAttributes;
     static QList<DisplayAttribute*> featureAttributes;
-    static QList<DisplayAttribute> trafoParamAttributes;
+    static QList<DisplayAttribute*> trafoParamAttributes;
 
     static QString sPlane;
     static QString sPoint;

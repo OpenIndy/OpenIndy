@@ -44,7 +44,11 @@ private slots:
 
     void getFeatureColumns();
 
+    void getTrafoParamColumns();
+
     void destructFeatureColumns();
+
+    void destructTrafoParamColumns();
 
 private:
 

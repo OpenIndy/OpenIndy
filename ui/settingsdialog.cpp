@@ -35,12 +35,15 @@ void SettingsDialog::on_pushButton_ok_clicked()
     //then they get the boolean for display or not.
     getFeatureColumns();
     destructFeatureColumns();
+    getTrafoParamColumns();
+    destructTrafoParamColumns();
     this->close();
 }
 
 void SettingsDialog::on_pushButton_cancel_clicked()
 {
     destructFeatureColumns();
+    destructTrafoParamColumns();
     this->close();
 }
 
@@ -72,13 +75,14 @@ void SettingsDialog::showEvent(QShowEvent *event){
     ui->comboBox_temperatureType->setCurrentIndex(ui->comboBox_temperatureType->findData(UnitConverter::temperatureType));
 
     displayFeatureColumns();
-
+    displayTrafoParamColumns();
     event->accept();
 }
 
 void SettingsDialog::closeEvent(QCloseEvent *event)
 {
     destructFeatureColumns();
+    destructTrafoParamColumns();
     emit modelChanged();
     event->accept();
 }
@@ -138,16 +142,60 @@ void SettingsDialog::displayFeatureColumns()
  */
 void SettingsDialog::displayTrafoParamColumns()
 {
+    for(int i=0;i<Configuration::trafoParamAttributes.size();i++){
+        QCheckBox *cb = new QCheckBox();
+        cb->setText(Configuration::trafoParamAttributes.at(i)->attrName);
+        cb->setChecked(Configuration::trafoParamAttributes.at(i)->displayState);
+        trafoParamCheckbox.append(cb);
+    }
+
+    int layoutCount = 0;
+    if(trafoParamCheckbox.size()%3 == 0){
+        layoutCount = trafoParamCheckbox.size()/3;
+    }else{
+        layoutCount = (trafoParamCheckbox.size()/3)+1;
+    }
+
+    for(int i=0;i<layoutCount;i++){
+
+        QHBoxLayout *layout = new QHBoxLayout();
+        //layout->setStretch(1,1,1);
+        trafoParamLayouts.append(layout);
+        trafoParamAttrLayout->addLayout(layout);
+    }
+
+    int j=-1;
+    for(int k=0;k<trafoParamCheckbox.size();k++){
+
+        if(k%3==0){
+            j+=1;
+        }
+        trafoParamLayouts.at(j)->addWidget(trafoParamCheckbox.at(k));
+
+    }
+
+    ui->tab_TrafoParamAttributes->setLayout(trafoParamAttrLayout);
 }
 
 /*!
- * \brief getFeatureColumns checks if the feature should be displayed or not. It saves the changes in the configuration class.
+ * \brief getFeatureColumns checks if the attribute should be displayed or not. It saves the changes in the configuration class.
  * Order of both lists is the same, so you can directly set the boolean without checking for a equal name.
  */
 void SettingsDialog::getFeatureColumns()
 {
     for(int i =0; i<featureCheckbox.size();i++){
         Configuration::featureAttributes.at(i)->displayState = featureCheckbox.at(i)->isChecked();
+    }
+}
+
+/*!
+ * \brief getTrafoParamColumns checks if the attribute should be displayed or not. It saves the changes in the configuration class.
+ * Order of both lists is the same, so you can directly set the boolean without checking for a equal name.
+ */
+void SettingsDialog::getTrafoParamColumns()
+{
+    for(int i=0;i<trafoParamCheckbox.size();i++){
+        Configuration::trafoParamAttributes.at(i)->displayState = trafoParamCheckbox.at(i)->isChecked();
     }
 }
 
@@ -169,4 +217,24 @@ void SettingsDialog::destructFeatureColumns()
         delete featureLayouts.at(i);
     }
     featureLayouts.clear();
+}
+
+/*!
+ * \brief destructTrafoParamColumns destructs the dynamic gui for displaying the available trafo parameter attribute columns.
+ */
+void SettingsDialog::destructTrafoParamColumns()
+{
+    //delete all checkboxes
+   for(int k=0; k<trafoParamCheckbox.size();k++){
+        ui->tab_TrafoParamAttributes->layout()->removeWidget(trafoParamCheckbox.at(k));
+        delete trafoParamCheckbox.at(k);
+    }
+    trafoParamCheckbox.clear();
+
+    //delete all layouts
+    for(int i=0; i<trafoParamLayouts.size();i++){
+        ui->tab_TrafoParamAttributes->layout()->removeItem(trafoParamLayouts.at(i));
+        delete trafoParamLayouts.at(i);
+    }
+    trafoParamLayouts.clear();
 }

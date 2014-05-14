@@ -46,7 +46,7 @@ QString Configuration::sObservation = "observation";
 
 QStringList Configuration::allAttributes;
 QList<DisplayAttribute*> Configuration::featureAttributes;
-QList<DisplayAttribute> Configuration::trafoParamAttributes;
+QList<DisplayAttribute*> Configuration::trafoParamAttributes;
 
 int Configuration::idCount = 0;
 
@@ -261,25 +261,44 @@ void Configuration::generateFeatureAttributes()
  * Also includes a boolean that handles if the attributes is displayed or not.
  */
 void Configuration::generateTrafoParamAttributes()
-{/*
-    Configuration::trafoParamAttributes.append("feature type",true);
-    Configuration::trafoParamAttributes.append("feature name",true);
-    Configuration::trafoParamAttributes.append("group",true);
-    Configuration::trafoParamAttributes.append("solved",true);
-    Configuration::trafoParamAttributes.append("functions",true);
-    Configuration::trafoParamAttributes.append("start",true);
-    Configuration::trafoParamAttributes.append("destination",true);
-    Configuration::trafoParamAttributes.append("translation x",true);
-    Configuration::trafoParamAttributes.append("translation y",true);
-    Configuration::trafoParamAttributes.append("translation z",true);
-    Configuration::trafoParamAttributes.append("rotation x",true);
-    Configuration::trafoParamAttributes.append("rotation y",true);
-    Configuration::trafoParamAttributes.append("rotation z",true);
-    Configuration::trafoParamAttributes.append("scale x",true);
-    Configuration::trafoParamAttributes.append("scale y",true);
-    Configuration::trafoParamAttributes.append("scale z",true);
-    Configuration::trafoParamAttributes.append("comment",true);
-*/}
+{
+    Configuration::trafoParamAttributes.clear();
+
+    DisplayAttribute *ftype = new DisplayAttribute("feature type",true);
+    Configuration::trafoParamAttributes.append(ftype);
+    DisplayAttribute *fname = new DisplayAttribute("feature name",true);
+    Configuration::trafoParamAttributes.append(fname);
+    DisplayAttribute *fgroup = new DisplayAttribute("group",true);
+    Configuration::trafoParamAttributes.append(fgroup);
+    DisplayAttribute *fsolved = new DisplayAttribute("solved",true);
+    Configuration::trafoParamAttributes.append(fsolved);
+    DisplayAttribute *fFunctions = new DisplayAttribute("functions",true);
+    Configuration::trafoParamAttributes.append(fFunctions);
+    DisplayAttribute *fstart = new DisplayAttribute("start",true);
+    Configuration::trafoParamAttributes.append(fstart);
+    DisplayAttribute *fdest = new DisplayAttribute("destination",true);
+    Configuration::trafoParamAttributes.append(fdest);
+    DisplayAttribute *fTranslationX = new DisplayAttribute(QString("translation x"+UnitConverter::getDistanceUnitString()),true);
+    Configuration::trafoParamAttributes.append(fTranslationX);
+    DisplayAttribute *fTranslationY = new DisplayAttribute(QString("translation y"+UnitConverter::getDistanceUnitString()),true);
+    Configuration::trafoParamAttributes.append(fTranslationY);
+    DisplayAttribute *fTranslationZ = new DisplayAttribute(QString("translation z"+UnitConverter::getDistanceUnitString()),true);
+    Configuration::trafoParamAttributes.append(fTranslationZ);
+    DisplayAttribute *fRotationX = new DisplayAttribute(QString("rotation x"+UnitConverter::getAngleUnitString()),true);
+    Configuration::trafoParamAttributes.append(fRotationX);
+    DisplayAttribute *fRotationY = new DisplayAttribute(QString("rotation y"+UnitConverter::getAngleUnitString()),true);
+    Configuration::trafoParamAttributes.append(fRotationY);
+    DisplayAttribute *fRotationZ = new DisplayAttribute(QString("rotation z"+UnitConverter::getAngleUnitString()),true);
+    Configuration::trafoParamAttributes.append(fRotationZ);
+    DisplayAttribute *fScaleX = new DisplayAttribute("scale x",true);
+    Configuration::trafoParamAttributes.append(fScaleX);
+    DisplayAttribute *fScaleY = new DisplayAttribute("scale y",true);
+    Configuration::trafoParamAttributes.append(fScaleY);
+    DisplayAttribute *fScaleZ = new DisplayAttribute("scale z",true);
+    Configuration::trafoParamAttributes.append(fScaleZ);
+    DisplayAttribute *fcomment = new DisplayAttribute("comment",true);
+    Configuration::trafoParamAttributes.append(fcomment);
+}
 
 /*!
  * \brief displayAttributes checks which attributes should be displayed. returns the column indices for this attributes.
