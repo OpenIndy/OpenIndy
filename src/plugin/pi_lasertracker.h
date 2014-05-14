@@ -56,8 +56,8 @@ public:
     virtual QMap<QString,int>* getIntegerParameter() = 0;
     virtual QMap<QString,double>* getDoubleParameter() = 0;
     virtual QMap <QString, QStringList>* getStringParameter() = 0;
-    virtual QStringList selfDefinedActions();
-    virtual bool doSelfDefinedAction(QString a);
+    virtual QStringList selfDefinedActions() = 0;
+    virtual bool doSelfDefinedAction(QString a) = 0;
 
     /*default accuracy
      *keys:

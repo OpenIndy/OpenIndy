@@ -45,11 +45,11 @@ public:
     virtual PluginMetaData* getMetaData() = 0;
 
     //individually defined sensor parameter
-    virtual QMap<QString,int>* getIntegerParameter();
-    virtual QMap<QString,double>* getDoubleParameter();
-    virtual QMap <QString, QStringList>* getStringParameter();
-    virtual QStringList selfDefinedActions();
-    virtual bool doSelfDefinedAction(QString a);
+    virtual QMap<QString,int>* getIntegerParameter() = 0;
+    virtual QMap<QString,double>* getDoubleParameter() = 0;
+    virtual QMap <QString, QStringList>* getStringParameter() = 0;
+    virtual QStringList selfDefinedActions() = 0;
+    virtual bool doSelfDefinedAction(QString a) = 0;
 
     //individually defined reading type
     virtual QString getUndefinedReadingName(){return "undefined";}
