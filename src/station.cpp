@@ -35,6 +35,8 @@ Station::Station(QString name)
     connect(this,SIGNAL(startReadingStream(Configuration::ReadingTypes)),this->sensorPad,SLOT(readingStream(Configuration::ReadingTypes)));
     connect(this,SIGNAL(startSensorStatsStream()),this->sensorPad,SLOT(sensorStatsStream()));
     connect(this,SIGNAL(startSelfDefinedAction(QString)),this->sensorPad,SLOT(doSelfDefinedAction(QString)));
+    connect(this,SIGNAL(stopReadingStream()),this->sensorPad,SLOT(stopReadingStream()));
+    connect(this,SIGNAL(stopSensorStatsStream()),this->sensorPad,SLOT(stopStatStream()));
 
     //start the station thread
     stationThread.start();

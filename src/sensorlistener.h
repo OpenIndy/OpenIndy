@@ -3,34 +3,43 @@
 
 #include <QObject>
 #include <QThread>
-#include <QEventLoop>
 #include "sensor.h"
 
+/*!
+ * \brief The SensorListener class
+ * the sensor listener handles all sensor streams
+ * it should be run on a custom thread and the
+ * sensorcontroller of the station delegates the
+ * stream activity
+ */
 class SensorListener : public QObject
 {
     Q_OBJECT
 public:
     SensorListener(Sensor* s);
 
-    bool isCheckStreamActive;
-    bool checkStreamFinished;
+
+    /*booleans to check and control
+     *stream activity
+    */
+    bool isStreamActive;
+    bool isStreamFinished;
     
 signals:
-
-    void sendConnectionState(bool);
-    void sendIsReady(bool);
 
     void sendReadingMap(QVariantMap);
     void sendSensorStats(QMap<QString,QString>);
     
 public slots:
 
-    void sensorCheckStream();
+    //streams
+    void sensorStatStream();
+    void sensorReadingStream(Configuration::ReadingTypes streamFormat);
+
+    //abort actual sensor action
     void abortSensorAction();
 
-    void emitReadingMap(QVariantMap m);
-    void emitSensorStats(QMap<QString,QString>);
-
+    //sensor
     void setInstrument(Sensor* s);
     Sensor* getInstrument();
 

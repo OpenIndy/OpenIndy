@@ -77,7 +77,7 @@ public:
     virtual bool getConnectionState() = 0;
 
     //! return ready state of the sensor
-    virtual bool isReady() = 0;
+    virtual bool isReadyForMeasurement() = 0;
 
     //!sensor stats
     virtual QMap<QString,QString> getSensorStats()=0;
@@ -88,10 +88,10 @@ public:
 protected:
 
      //! move totalstation to specified position
-    virtual bool move(double azimuth, double zenith, double distance,bool isrelativ){this->writeToConsole("not available");}
+    virtual bool move(double azimuth, double zenith, double distance,bool isrelativ){this->writeToConsole("not available");return false;}
 
     //! toggle between frontside and backside
-    virtual bool toggleSightOrientation(){this->writeToConsole("not available");}
+    virtual bool toggleSightOrientation(){this->writeToConsole("not available");return false;}
 
 
 };

@@ -15,10 +15,13 @@ public:
 
 signals:
     void sendString(QString);
+    void sendConnectionStat(bool);
+    void sendIsReadyForMeasurement(bool);
 
 public slots:
     void emitSendString(QString);
-
+    void emitSendConnectionStat(bool);
+    void emitSendIsReadyForMeasurement(bool);
 
 };
 

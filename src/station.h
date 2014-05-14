@@ -64,6 +64,8 @@ signals:
     //data streams
     void startReadingStream(Configuration::ReadingTypes);
     void startSensorStatsStream();
+    void stopReadingStream();
+    void stopSensorStatsStream();
 
 
     //sensor actions (station signals)

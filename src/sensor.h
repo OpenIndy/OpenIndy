@@ -31,6 +31,7 @@ public:
 //attributes
     OiEmitter myEmitter;
     SensorConfiguration* myConfiguration;
+    bool sensorActionInProgress;
 
 //methods
 
@@ -82,7 +83,7 @@ public:
     virtual bool getConnectionState() = 0;
 
     //! return ready state of the sensor
-    virtual bool isReady() = 0;
+    virtual bool isReadyForMeasurement() = 0;
 
     //!sensor stats
     virtual QMap<QString,QString> getSensorStats()=0;
@@ -91,7 +92,7 @@ public:
     virtual bool isBusy() = 0;
 
  protected:
-    void writeToConsole(QString s){myEmitter.sendString(s);}
+    void writeToConsole(QString s){myEmitter.emitSendString(s);}
 
 };
 

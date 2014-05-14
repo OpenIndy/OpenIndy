@@ -3,42 +3,38 @@
 SensorListener::SensorListener(Sensor* s)
 {
     instrument = s;
-    isCheckStreamActive = false;
-    checkStreamFinished = false;
+    isStreamActive = false;
+    isStreamFinished = false;
 }
 
-void SensorListener::sensorCheckStream()
+
+void SensorListener::sensorStatStream()
 {
+    isStreamFinished = false;
 
-
-    checkStreamFinished = false;
-
-    while(isCheckStreamActive){
-        bool conCheck = instrument->getConnectionState();
-        emit sendConnectionState(conCheck);
-        bool readyCheck = instrument->isReady();
-        emit sendIsReady(readyCheck);
+    while(isStreamActive){
+        QMap<QString,QString> m= instrument->getSensorStats();
+        emit sendSensorStats(m);
     }
 
-    checkStreamFinished = true;
+    isStreamFinished = true;
+}
 
+void SensorListener::sensorReadingStream(Configuration::ReadingTypes streamFormat)
+{
+    isStreamFinished = false;
+
+    while(isStreamActive){
+        QVariantMap m = instrument->readingStream(streamFormat);
+        emit sendReadingMap(m);
+    }
+
+    isStreamFinished = true;
 }
 
 void SensorListener::abortSensorAction()
 {
     instrument->abortAction();
-}
-
-
-void SensorListener::emitReadingMap(QVariantMap m)
-{
-
-    emit sendReadingMap(m);
-}
-
-void SensorListener::emitSensorStats(QMap<QString, QString> m)
-{
-    emit sendSensorStats(m);
 }
 
 void SensorListener::setInstrument(Sensor *s)
@@ -50,6 +46,9 @@ Sensor *SensorListener::getInstrument()
 {
     return instrument;
 }
+
+
+
 
 
 

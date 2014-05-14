@@ -3,6 +3,7 @@
 LeicaTachymeter::LeicaTachymeter(){
 
     serial = new QSerialPort();
+    this->sensorActionInProgress = false;
 }
 
 
@@ -17,7 +18,7 @@ PluginMetaData* LeicaTachymeter::getMetaData(){
     metaData->description = "Plugin zur Steuerung von Leica Tachymetern";
     metaData->iid = "de.openIndy.Plugin.Sensor.TotalStation.v001";
     //...
-
+    this->sensorActionInProgress = false;
     return metaData;
 }
 
@@ -31,6 +32,18 @@ QList<Configuration::ReadingTypes>* LeicaTachymeter::getSupportedReadingTypes(){
     readingTypes->append(Configuration::eCartesian);
 
     return readingTypes;
+}
+
+QList<Configuration::SensorFunctionalities> LeicaTachymeter::getSupportedSensorActions()
+{
+    QList<Configuration::SensorFunctionalities> sensorActions;
+
+    sensorActions.append(Configuration::eMoveAngle);
+    sensorActions.append(Configuration::eToggleSight);
+
+
+    return sensorActions;
+
 }
 
 QList<Configuration::ConnectionTypes>* LeicaTachymeter::getConnectionType(){
@@ -74,6 +87,18 @@ QMap <QString, QStringList>* LeicaTachymeter::getStringParameter(){
 
 }
 
+QStringList LeicaTachymeter::selfDefinedActions()
+{
+    QStringList a;
+    return a;
+}
+
+bool LeicaTachymeter::doSelfDefinedAction(QString a)
+{
+
+    return true;
+}
+
 
 QMap<QString, double>* LeicaTachymeter::getDefaultAccuracy()
 {
@@ -84,12 +109,17 @@ QMap<QString, double>* LeicaTachymeter::getDefaultAccuracy()
    defaultAccuracy->insert("sigmaDistance",0.001);
 
    return defaultAccuracy;
+}
 
+void LeicaTachymeter::abortAction()
+{
+    //abort action here;
 }
 
 //! connect app with laser tracker
 bool LeicaTachymeter::connectSensor(ConnectionConfig* connConfig){
 
+    this->sensorActionInProgress = true;
     //set port
     this->serial->setPortName(connConfig->comPort);
 
@@ -105,9 +135,12 @@ bool LeicaTachymeter::connectSensor(ConnectionConfig* connConfig){
 
             myEmitter.emitSendString("port properties set");
             myEmitter.emitSendString("connection open");
+            this->sensorActionInProgress = false;
             return true;
         }
       }
+
+    this->sensorActionInProgress = false;
     return false;
 
 }
@@ -115,76 +148,21 @@ bool LeicaTachymeter::connectSensor(ConnectionConfig* connConfig){
 //! disconnect app with laser tracker
 bool LeicaTachymeter::disconnectSensor(){
 
+    this->sensorActionInProgress = true;
     if(this->serial->isOpen()){
        this->serial->close();
         myEmitter.emitSendString("connection closed");
     }
 
+    this->sensorActionInProgress = false;
     return true;
 
 }
 
-bool LeicaTachymeter::checkMeasurementConfig(MeasurementConfig* mc){
-
-    return true;
-
-}
-
-void LeicaTachymeter::dataStream(){
-
-    this->dataStreamIsActive = true;
-
-    QVariantMap *tmpMap = new QVariantMap();
-
-    this->streamFormat = Configuration::eDirection;
-
-    if( this->serial->isOpen()){
-        while(this->dataStreamIsActive == true){
-
-
-                QString command = "%R1Q,2107:1\r\n";
-
-                if(executeCommand(command)){
-
-                 QString measureData = this->receive();
-
-                 QStringList polarElements = measureData.split(",");
-
-                 double azimuth = polarElements.at(polarElements.size()-2).toDouble();
-                 double zenith = polarElements.at(polarElements.size()-1).toDouble();
-
-                 if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-                     QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
-                     if(sense.compare("mathematical") == 0){
-                         azimuth = 2 * PI - azimuth;
-                     }
-                 }
-
-                 tmpMap->insert("azimuth",azimuth);
-                 tmpMap->insert("zenith",zenith);
-
-                }
-
-        myEmitter.emitSendDataMap(tmpMap);
-        }
-    }
-
-}
-
-void LeicaTachymeter::sendCommandString(QString cmd){
-
-    if(executeCommand(cmd)){
-
-     QString response = this->receive();
-
-     //Console::addLine(response);
-
-    }
-
-}
 
 bool LeicaTachymeter::toggleSightOrientation(){
 
+    this->sensorActionInProgress = true;
     if( this->serial->isOpen()){
 
         QString command = "%R1Q,9028:0,0,0\r\n";
@@ -196,18 +174,19 @@ bool LeicaTachymeter::toggleSightOrientation(){
              QString measureData = this->receive();
              myEmitter.emitSendString(measureData);
 
+             this->sensorActionInProgress = false;
              return true;
-
             }
-
     }
 
-return false;
+    this->sensorActionInProgress = false;
+    return false;
 
 }
 
 bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool isrelativ){
 
+    this->sensorActionInProgress = true;
     if(isrelativ){
 
     }else{
@@ -231,11 +210,11 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
         }
 
     }
+    this->sensorActionInProgress = false;
     return true;
 }
 
 QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
-
 
 
     switch (m->typeOfReading){
@@ -255,11 +234,76 @@ QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
         break;
     }
 
+
     QList<Reading*> emptyList;
     return emptyList;
 }
 
+QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFormat)
+{
+    this->sensorActionInProgress = true;
+    QVariantMap tmpMap;
+
+    if( this->serial->isOpen()){
+
+                QString command = "%R1Q,2107:1\r\n";
+
+                if(executeCommand(command)){
+
+                 QString measureData = this->receive();
+
+                 QStringList polarElements = measureData.split(",");
+
+                 double azimuth = polarElements.at(polarElements.size()-2).toDouble();
+                 double zenith = polarElements.at(polarElements.size()-1).toDouble();
+
+                 if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                     QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                     if(sense.compare("mathematical") == 0){
+                         azimuth = 2 * PI - azimuth;
+                     }
+                 }
+
+                 tmpMap.insert("azimuth",azimuth);
+                 tmpMap.insert("zenith",zenith);
+
+                }
+        this->sensorActionInProgress = false;
+        return tmpMap;
+
+    }
+}
+
+bool LeicaTachymeter::getConnectionState()
+{
+    return this->serial->isOpen();
+}
+
+bool LeicaTachymeter::isReadyForMeasurement()
+{
+    return true;
+}
+
+QMap<QString, QString> LeicaTachymeter::getSensorStats()
+{
+    this->sensorActionInProgress = true;
+    QMap<QString, QString> stats;
+
+    stats.insert("connected", QString::number(this->serial->isOpen()));
+
+    this->sensorActionInProgress = false;
+    return stats;
+
+}
+
+bool LeicaTachymeter::isBusy()
+{
+    return this->sensorActionInProgress;
+}
+
 QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
+
+    this->sensorActionInProgress = true;
 
     QList<Reading*> readings;
 
@@ -310,11 +354,14 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
         }
     }
 
+    this->sensorActionInProgress = false;
     return readings;
 
 }
 
 QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
+
+    this->sensorActionInProgress = true;
 
     QList<Reading*> readings;
 
@@ -345,10 +392,14 @@ QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
         }
     }
 
+    this->sensorActionInProgress = false;
+
     return readings;
 }
 
 QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
+
+    this->sensorActionInProgress = true;
 
     QList<Reading*> readings;
 
@@ -393,10 +444,14 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
         }
     }
 
+    this->sensorActionInProgress = false;
+
     return readings;
 }
 
 QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
+
+    this->sensorActionInProgress = true;
 
     QList<Reading*> readings = this->measurePolar(m);
 
@@ -404,7 +459,7 @@ QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
         readings.at(i)->toCartesian();
     }
 
-
+    this->sensorActionInProgress = false;
     return readings;
 
 }

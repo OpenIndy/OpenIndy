@@ -56,7 +56,7 @@ signals:
     void recalcFeature(Feature*);
     void activateCheckStream();
     void activateStatStream();
-    void activateReadingStream();
+    void activateReadingStream(Configuration::ReadingTypes);
 
 
 public slots:
@@ -79,12 +79,13 @@ public slots:
     void disconnectSensor();
     void compensation();
     void doSelfDefinedAction(QString s);
+    void stopReadingStream();
+    void stopStatStream();
 
 
 private:
 
     enum streamType{
-        eCheckStream,
         eReadingStream,
         eSenorStats
     };
@@ -93,12 +94,15 @@ private:
     QMutex locker;
     OiEmitter myEmitter;
 
+    streamType t;
+    Configuration::ReadingTypes typeOfReadingStream;
+
     void storeReadings(QList<Reading*>readings, Geometry* geom, bool isActiveCoordSys);
     void saveReading(Reading* r, Geometry* geom, bool isActiveCoordSys);
 
-    void sendActivateCheckStream(streamType t);
-    bool sendDeactivateCheckStream();
-
+    bool sendActivateStream();
+    bool sendDeactivateStream();
+    bool checkSensor();
 
 
 };

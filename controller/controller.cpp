@@ -337,7 +337,7 @@ void Controller::changeActiveStation(){
 
     if(this->activeFeature->getStation() != NULL){
 
-            if(this->activeStation->sensorPad->instrument != NULL && this->activeStation->sensorPad->instrument->getConnectionState()){
+            if(this->activeStation->sensorPad->instrument != NULL){
                 this->activeStation->startDisconnect();
             }
             //this->activeStation->isSolved = false;
@@ -646,7 +646,7 @@ bool Controller::checkFeatureValid(){
 bool Controller::checkSensorValid(){
 
     if(this->activeStation != NULL){
-        if(this->activeStation->sensorPad->instrument != NULL && this->activeStation->sensorPad->instrument->getConnectionState()){
+        if(this->activeStation->sensorPad->instrument != NULL){
             return true;
         }else{
             Console::addLine("sensor not connected");

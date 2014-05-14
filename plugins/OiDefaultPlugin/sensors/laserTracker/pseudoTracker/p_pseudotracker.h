@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QThread>
 #include <QFile>
-#include <QStringList>
 #include "pi_lasertracker.h"
 
 
@@ -17,15 +16,17 @@ public:
 
     PseudoTracker();
 
-    virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes();
+    QList<Configuration::ReadingTypes>* getSupportedReadingTypes();
+    QList<Configuration::SensorFunctionalities> getSupportedSensorActions();
+    QList<Configuration::ConnectionTypes>* getConnectionType();
 
-    virtual QList<Configuration::ConnectionTypes>* getConnectionType();
+    PluginMetaData* getMetaData();
 
-    virtual QMap<QString,int>* getIntegerParameter();
-
-    virtual QMap<QString,double>* getDoubleParameter();
-
-    virtual QMap <QString, QStringList>* getStringParameter();
+    QMap<QString,int>* getIntegerParameter();
+    QMap<QString,double>* getDoubleParameter();
+    QMap <QString, QStringList>* getStringParameter();
+    QStringList selfDefinedActions();
+    bool doSelfDefinedAction(QString a);
 
     /*default accuracy
      *keys:
@@ -39,15 +40,8 @@ public:
      */
     QMap<QString,double>* getDefaultAccuracy();
 
-    //! laser tracker measures a point and returns an observation
-    QList<Reading*> measure(MeasurementConfig *mc);
-
-    void dataStream() ;
-
-    void sendCommandString(QString);
-
-    //! checks if the measurementconfig is vaild
-    bool checkMeasurementConfig(MeasurementConfig*);
+    //! abort a running action
+    void abortAction();
 
     //! connect app with laser tracker
     bool connectSensor(ConnectionConfig*);
@@ -55,7 +49,23 @@ public:
     //! disconnect app with laser tracker
     bool disconnectSensor();
 
-    PluginMetaData* getMetaData();
+    //! laser tracker measures a point and returns an observation
+    QList<Reading*> measure(MeasurementConfig *mc);
+
+    //! stream
+    QVariantMap readingStream(Configuration::ReadingTypes streamFormat);
+
+    //! getConnectionState
+    bool getConnectionState();
+
+    //! return ready state of the sensor
+    bool isReadyForMeasurement();
+
+    //!sensor stats
+    QMap<QString,QString> getSensorStats();
+
+    //!checks if sensor is busy
+    bool isBusy();
 
 protected:
 
@@ -71,7 +81,7 @@ protected:
     bool home();
 
     //! turns motors on or off
-    bool changeMotorState(bool state);
+    bool changeMotorState();
 
     //! toggle between frontside and backside
     bool toggleSightOrientation();
@@ -91,6 +101,9 @@ private:
     bool myMotor;
     bool myInit;
     bool myCompIt;
+    int side;
+
+    bool isConnected;
 
 };
 

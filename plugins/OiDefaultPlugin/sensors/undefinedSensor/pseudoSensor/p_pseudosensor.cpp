@@ -2,6 +2,7 @@
 
 PseudoSensor::PseudoSensor()
 {
+    this->sensorActionInProgress = false;
 }
 
 
@@ -30,6 +31,13 @@ QList<Configuration::ReadingTypes>* PseudoSensor::getSupportedReadingTypes(){
     return readingTypes;
 }
 
+QList<Configuration::SensorFunctionalities> PseudoSensor::getSupportedSensorActions()
+{
+    QList<Configuration::SensorFunctionalities> a;
+
+    return a;
+}
+
 QList<Configuration::ConnectionTypes>* PseudoSensor::getConnectionType(){
 
     QList<Configuration::ConnectionTypes> *connectionTypes = new QList<Configuration::ConnectionTypes>;
@@ -54,18 +62,40 @@ QMap <QString, QStringList>* PseudoSensor::getStringParameter(){
 
 }
 
+QStringList PseudoSensor::selfDefinedActions()
+{
+    QStringList a;
+    return a;
+}
+
+bool PseudoSensor::doSelfDefinedAction(QString a)
+{
+    return true;
+}
+
+QString PseudoSensor::getUndefinedReadingName()
+{
+    return "pseudo reading";
+}
+
 QMap<QString, double> *PseudoSensor::getDefaultAccuracy()
 {
     QMap<QString, double>* undefinedSigma = new QMap<QString, double>;
 
-    undefinedSigma->insert("undef sigma", 0.54);
+    undefinedSigma->insert("pseudo sigma", 0.54);
 
     return undefinedSigma;
+}
+
+void PseudoSensor::abortAction()
+{
+    //abort
 }
 
 //! laser tracker measures a point and returns an observation
 QList<Reading*> PseudoSensor::measure(MeasurementConfig *mc){
 
+    this->sensorActionInProgress = true;
     QList<Reading*> readings;
 
     switch (mc->typeOfReading) {
@@ -75,8 +105,8 @@ QList<Reading*> PseudoSensor::measure(MeasurementConfig *mc){
 
         double randomValue = ((double) std::rand()/RAND_MAX)*(6.283185-0.0001)+1.0;
 
-        r->rUndefined.values.insert("undefinedMeasurement1",randomValue);
-        r->rUndefined.values.insert("undefinedMeasurement2",randomValue);
+        r->rUndefined.values.insert("pseudoMeasurement_1",randomValue);
+        r->rUndefined.values.insert("pseudoMeasurement_2",randomValue);
 
         readings.append(r);
 
@@ -86,59 +116,72 @@ QList<Reading*> PseudoSensor::measure(MeasurementConfig *mc){
         break;
     }
 
+    this->sensorActionInProgress = false;
     return readings;
 }
 
-void PseudoSensor::dataStream(){
+QVariantMap PseudoSensor::readingStream(Configuration::ReadingTypes streamFormat)
+{
+    this->sensorActionInProgress = true;
+    QVariantMap r;
 
-    this->dataStreamIsActive = true;
+    double randomValue = ((double) std::rand()/RAND_MAX)*(6.283185-0.0001)+1.0;
 
-    double value = 0.0;
-
-    QVariantMap *m = new QVariantMap();
-
-    while(this->dataStreamIsActive == true){
-
-        value =((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-
-        m->insert("value",value);
-
-        QThread::msleep(50);
-        myEmitter.emitSendDataMap(m);
-        QThread::msleep(50);
-    }
+    r.insert("pseudoMeasurement_1",randomValue);
+    r.insert("pseudoMeasurement_2",randomValue);
+    QThread::msleep(100);
+    this->sensorActionInProgress = false;
+    return r;
 
 }
 
-void PseudoSensor::sendCommandString(QString){
-
+bool PseudoSensor::getConnectionState()
+{
+    return isConnected;
 }
 
-//! checks if the measurementconfig is vaild
-bool PseudoSensor::checkMeasurementConfig(MeasurementConfig*){
-
+bool PseudoSensor::isReadyForMeasurement()
+{
     return true;
-
 }
+
+QMap<QString, QString> PseudoSensor::getSensorStats()
+{
+    QMap<QString, QString> a;
+    a.insert("connected",QString::number(this->sensorActionInProgress));
+    return a;
+}
+
+bool PseudoSensor::isBusy()
+{
+    return this->sensorActionInProgress;
+}
+
 
 //! connect app with laser tracker
 bool PseudoSensor::connectSensor(ConnectionConfig* cConfig){
 
+    this->sensorActionInProgress = true;
     if(cConfig != NULL){
         isConnected = true;
         QThread::msleep(1000);
+        this->sensorActionInProgress = false;
         return true;
     }else{
+        this->sensorActionInProgress = false;
         return false;
     }
+
 
 }
 
 //! disconnect app with laser tracker
 bool PseudoSensor::disconnectSensor(){
 
+    this->sensorActionInProgress = true;
     isConnected = false;
     QThread::msleep(1000);
+    this->sensorActionInProgress = false;
     return true;
 
 }

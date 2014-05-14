@@ -7,6 +7,10 @@ PseudoTracker::PseudoTracker(){
     myMotor = false;
     myInit = false;
     myCompIt = false;
+    isConnected = false;
+    side = 1;
+
+    this->sensorActionInProgress = false;
 }
 
 PluginMetaData* PseudoTracker::getMetaData(){
@@ -38,6 +42,22 @@ QList<Configuration::ReadingTypes>* PseudoTracker::getSupportedReadingTypes(){
     return readingTypes;
 }
 
+QList<Configuration::SensorFunctionalities> PseudoTracker::getSupportedSensorActions()
+{
+    QList<Configuration::SensorFunctionalities> sensorActions;
+
+    sensorActions.append(Configuration::eHome);
+    sensorActions.append(Configuration::eInitialize);
+    sensorActions.append(Configuration::eMoveAngle);
+    sensorActions.append(Configuration::eMoveXYZ);
+    sensorActions.append(Configuration::eToggleSight);
+    sensorActions.append(Configuration::eCompensation);
+    sensorActions.append(Configuration::eMotorState);
+
+    return sensorActions;
+
+}
+
 QList<Configuration::ConnectionTypes>* PseudoTracker::getConnectionType(){
     QList<Configuration::ConnectionTypes> *connectionTypes = new QList<Configuration::ConnectionTypes>;
     connectionTypes->append(Configuration::eNetwork);
@@ -61,14 +81,34 @@ QMap <QString, QStringList>* PseudoTracker::getStringParameter(){
     QMap <QString, QStringList>* stringParameter = new QMap<QString, QStringList>;
 
     QStringList SMRTypes;
-    SMRTypes.append("0.5''");
-    SMRTypes.append("1.0''");
+
     SMRTypes.append("1.5''");
+    SMRTypes.append("1.0''");
+    SMRTypes.append("0.5''");
 
     stringParameter->insert("active probe",SMRTypes);
 
     return stringParameter;
 
+}
+
+QStringList PseudoTracker::selfDefinedActions()
+{
+    QStringList ownActions;
+
+    ownActions.append("echo");
+
+    return ownActions;
+}
+
+bool PseudoTracker::doSelfDefinedAction(QString a)
+{
+    this->sensorActionInProgress = true;
+    if(a == "echo"){
+      writeToConsole(a);
+    }
+    this->sensorActionInProgress = false;
+    return true;
 }
 
 QMap<QString, double>* PseudoTracker::getDefaultAccuracy()
@@ -88,41 +128,50 @@ QMap<QString, double>* PseudoTracker::getDefaultAccuracy()
     return defaultAccuracy;
 }
 
-bool PseudoTracker::checkMeasurementConfig(MeasurementConfig*){
-    return true;
+void PseudoTracker::abortAction()
+{
+    //abort action
 }
+
 
 //! connect app with laser tracker
 bool PseudoTracker::connectSensor(ConnectionConfig *cConfig){
 
+    this->sensorActionInProgress = true;
     if(cConfig != NULL){
         qDebug() << cConfig->ip;
         qDebug() << cConfig->port;
         isConnected = true;
         QThread::msleep(1000);
+        this->sensorActionInProgress = false;
         return true;
     }else{
         qDebug() << "null pointer";
+        this->sensorActionInProgress = false;
         return false;
     }
+
 
 }
 
 //! disconnect app with laser tracker
 bool PseudoTracker::disconnectSensor(){
-
+    this->sensorActionInProgress  = true;
     qDebug() << "pseudo tracker disconnect";
     isConnected = false;
     QThread::msleep(1000);
+    this->sensorActionInProgress = false;
     return true;
 }
 
 //! starts initialization
 bool PseudoTracker::initialize(){
 
+    this->sensorActionInProgress = true;
     qDebug() << "pseudo tracker is initialized";
     myInit = true;
     QThread::msleep(1000);
+    this->sensorActionInProgress = false;
     return true;
 }
 
@@ -130,25 +179,27 @@ bool PseudoTracker::initialize(){
 bool PseudoTracker::move(double azimuth, double zenith, double distance,bool isrelativ){
 
     qDebug() << "pseudo tracker is moved to:" << azimuth << "," << zenith << "," << distance << "," << isrelativ ;
-
+    this->sensorActionInProgress = true;
     myAzimuth = azimuth;
     myZenith = zenith;
     myDistance = distance;
 
 
     QThread::msleep(1000);
+    this->sensorActionInProgress = false;
     return true;
 }
 
 bool PseudoTracker::move(double x, double y, double z){
 
     qDebug() << "pseudo tracker is moved to:" << x << "," << y << "," << z;
-
+    this->sensorActionInProgress = true;
     myAzimuth = qAtan2(y,x);
     myDistance = qSqrt(x*x+y*y+z*z);
     myZenith = acos(z/myDistance);
 
     QThread::msleep(1000);
+    this->sensorActionInProgress = false;
     return true;
 }
 
@@ -156,16 +207,27 @@ bool PseudoTracker::move(double x, double y, double z){
 bool PseudoTracker::home(){
 
     qDebug() << "pseudo tracker is moved to home" ;
+    this->sensorActionInProgress = true;
     QThread::msleep(1000);
+    this->sensorActionInProgress = false;
     return true;
 
 }
 
 //! turns motors on or off
-bool PseudoTracker::changeMotorState(bool state){
+bool PseudoTracker::changeMotorState(){
 
+    this->sensorActionInProgress = true;
     qDebug() << "pseudo tracker changed motor state" ;
+    if(myMotor){
+        this->sensorActionInProgress = false;
+        myMotor = false;
+    }else{
+        this->sensorActionInProgress = false;
+        myMotor = true;
+    }
     QThread::msleep(1000);
+    this->sensorActionInProgress = false;
     return true;
 
 }
@@ -174,46 +236,26 @@ bool PseudoTracker::changeMotorState(bool state){
 bool PseudoTracker::toggleSightOrientation(){
 
     qDebug() << "pseudo tracker toggeld Sight orientation" ;
+    this->sensorActionInProgress = true;
+    if(side = 1){
+       side = 2;
+    }else{
+        side = 1;
+    }
     QThread::msleep(1000);
-        return true;
+    this->sensorActionInProgress = false;
+    return true;
 }
 
 bool PseudoTracker::compensation() {
     qDebug() << "compensation successful";
-    QThread::msleep(2000);
+    this->sensorActionInProgress = true;
+    QThread::msleep(5000);
     myCompIt = true;
+    this->sensorActionInProgress = false;
     return true;
 }
 
-void PseudoTracker::dataStream() {
-
-    this->dataStreamIsActive = true;
-
-    double x = 0.0;
-    double y = 0.0;
-    double z = 0.0;
-    QVariantMap *m = new QVariantMap();
-
-    while(this->dataStreamIsActive == true){
-
-
-        //x +=1.5;
-        //y +=-1.1;
-        //z +=2.3;
-
-        x =((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-        y =((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-        z =((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-
-        m->insert("x",x);
-        m->insert("y",y);
-        m->insert("z",z);
-
-        QThread::msleep(50);
-        myEmitter.emitSendDataMap(m);
-        QThread::msleep(50);
-    }
-}
 
 QList<Reading*> PseudoTracker::measure(MeasurementConfig *mc){
 
@@ -239,9 +281,71 @@ QList<Reading*> PseudoTracker::measure(MeasurementConfig *mc){
     return readings;
 }
 
+QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamFormat)
+{
+    this->sensorActionInProgress = true;
+
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+
+    QVariantMap m;
+
+
+        x =((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+        y =((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+        z =((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+
+        m.insert("x",x);
+        m.insert("y",y);
+        m.insert("z",z);
+
+    QThread::msleep(100);
+
+    this->sensorActionInProgress = false;
+
+    return m;
+
+}
+
+bool PseudoTracker::getConnectionState()
+{
+    return isConnected;
+}
+
+bool PseudoTracker::isReadyForMeasurement()
+{
+    return true;
+}
+
+QMap<QString, QString> PseudoTracker::getSensorStats()
+{
+    this->sensorActionInProgress = true;
+    QMap<QString, QString> stats;
+
+    stats.insert("connected",QString::number(isConnected));
+    stats.insert("side", QString::number(side));
+    stats.insert("myAzimuth", QString::number(myAzimuth));
+    stats.insert("myZenith", QString::number(myZenith));
+    stats.insert("myDistance", QString::number(myDistance));
+    stats.insert("myMotor", QString::number(myMotor));
+    stats.insert("myInit", QString::number(myInit));
+    stats.insert("myCompIt", QString::number(myCompIt));
+
+    this->sensorActionInProgress = false;
+    return stats;
+
+}
+
+bool PseudoTracker::isBusy()
+{
+    return this->sensorActionInProgress;
+}
+
 
 QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
 
+    this->sensorActionInProgress = true;
     QList<Reading*> readings;
 
     Reading *p = new Reading();
@@ -262,12 +366,14 @@ QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
     QThread::msleep(1000);
 
     readings.append(p);
+    this->sensorActionInProgress = false;
     return readings;
 
 }
 
 QList<Reading*> PseudoTracker::measureDistance(MeasurementConfig *m){
 
+    this->sensorActionInProgress = true;
     QList<Reading*> readings;
 
     Reading *p = new Reading();
@@ -279,11 +385,13 @@ QList<Reading*> PseudoTracker::measureDistance(MeasurementConfig *m){
     QThread::msleep(1000);
 
     readings.append(p);
+    this->sensorActionInProgress = false;
     return readings;
 }
 
 QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
 
+    this->sensorActionInProgress = true;
     QList<Reading*> readings;
 
     Reading *p = new Reading();
@@ -298,11 +406,13 @@ QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
     QThread::msleep(1000);
 
     readings.append(p);
+    this->sensorActionInProgress = false;
     return readings;
 }
 
 QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
 
+    this->sensorActionInProgress = true;
     QList<Reading*> readings;
 
     Reading *p = new Reading();
@@ -318,11 +428,6 @@ QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
     QThread::msleep(1000);
 
     readings.append(p);
+    this->sensorActionInProgress = false;
     return readings;
-}
-
-void PseudoTracker::sendCommandString(QString s){
-    if(s == "compensation"){
-        this->compensation();
-    }
 }

@@ -20,10 +20,6 @@ public:
 
     virtual ~LaserTracker(){}
 
-    double sigmaAzimuth;
-    double sigmaZenith;
-    double sigmaDistance;
-
     bool accept(SensorControl* s, Configuration::SensorFunctionalities f){
 
         switch(f){
@@ -94,7 +90,7 @@ public:
     virtual bool getConnectionState() = 0;
 
     //! return ready state of the sensor
-    virtual bool isReady() = 0;
+    virtual bool isReadyForMeasurement() = 0;
 
     //!sensor stats
     virtual QMap<QString,QString> getSensorStats()=0;
@@ -106,24 +102,24 @@ public:
 protected:
 
     //! starts initialization
-    virtual bool initialize(){this->writeToConsole("not available");}
+    virtual bool initialize(){this->writeToConsole("not available");return false;}
 
     //! move laser tracker to specified position
-    virtual bool move(double azimuth, double zenith, double distance,bool isrelativ){this->writeToConsole("not available");}
+    virtual bool move(double azimuth, double zenith, double distance,bool isrelativ){this->writeToConsole("not available");return false;}
 
-    virtual bool move(double x, double y, double z){this->writeToConsole("not available");}
+    virtual bool move(double x, double y, double z){this->writeToConsole("not available");return false;}
 
     //! sets laser tracke to home position
-    virtual bool home(){this->writeToConsole("not available");}
+    virtual bool home(){this->writeToConsole("not available");return false;}
 
     //! turns motors on or off
-    virtual bool changeMotorState(){this->writeToConsole("not available");}
+    virtual bool changeMotorState(){this->writeToConsole("not available");return false;}
 
     //! toggle between frontside and backside
-    virtual bool toggleSightOrientation(){this->writeToConsole("not available");}
+    virtual bool toggleSightOrientation(){this->writeToConsole("not available");return false;}
 
     //! compensation
-    virtual bool compensation(){this->writeToConsole("not available");}
+    virtual bool compensation(){this->writeToConsole("not available");return false;}
 
 };
 
