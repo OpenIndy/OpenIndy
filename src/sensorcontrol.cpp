@@ -12,11 +12,10 @@ SensorControl::SensorControl(Station *st)
     instrument = NULL;
     InstrumentConfig = NULL;
     instrumentListener = new SensorListener(instrument);
-
+    this->t = this->eNoStream;
 
     connect(this,SIGNAL(activateStatStream()),this->instrumentListener,SLOT(sensorStatStream()));
-    connect(this,SIGNAL(activateReadingStream(Configuration::ReadingTypes)),
-            this->instrumentListener,SLOT(sensorReadingStream(Configuration::ReadingTypes)));
+    connect(this,SIGNAL(activateReadingStream(int)),this->instrumentListener,SLOT(sensorReadingStream(int)));
 
     instrumentListener->moveToThread(&listenerThread);
 
@@ -68,7 +67,7 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
 
 }
 
-void SensorControl::readingStream(Configuration::ReadingTypes streamFormat){
+void SensorControl::readingStream(int r){
 
     this->myEmitter.sendString("starting reading stream!");
 
@@ -76,6 +75,8 @@ void SensorControl::readingStream(Configuration::ReadingTypes streamFormat){
         emit commandFinished(false);
         return;
     }
+
+    typeOfReadingStream = r;
 
     this->t = this->eReadingStream;
 
@@ -291,11 +292,13 @@ void SensorControl::doSelfDefinedAction(QString s)
 void SensorControl::stopReadingStream()
 {
     this->sendDeactivateStream();
+    this->t = this->eNoStream;
 }
 
 void SensorControl::stopStatStream()
 {
     this->sendDeactivateStream();
+    this->t = this->eNoStream;
 }
 
 
@@ -309,6 +312,10 @@ void SensorControl::connectSensor(ConnectionConfig *connConfig){
     this->myEmitter.sendString("connecting sensor");
 
     bool wasSuccessful = instrument->connectSensor(connConfig);
+
+    if(wasSuccessful){
+       instrumentListener->setInstrument(instrument);
+    }
 
     emit commandFinished(wasSuccessful);
 
@@ -576,6 +583,9 @@ bool SensorControl::sendActivateStream()
     case eSenorStats:
         emit activateStatStream();
         break;
+    case eNoStream:
+
+        break;
     default:
         break;
     }
@@ -585,11 +595,15 @@ bool SensorControl::sendActivateStream()
 
 bool SensorControl::sendDeactivateStream()
 {
+    if(!instrumentListener->isStreamActive){
+        return true;
+    }
+
     instrumentListener->isStreamActive = false;
 
     QTime timer;
 
-    while(!instrumentListener->isStreamFinished){
+    while(instrumentListener->isStreamFinished){
 
         if(timer.elapsed()>30000){
             listenerThread.quit();

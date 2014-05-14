@@ -7,6 +7,8 @@ WatchWindow::WatchWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    streamActiv = false;
+
     ui->lcdNumber->setMode(QLCDNumber::Dec);
     ui->lcdNumber_2->setMode(QLCDNumber::Dec);
     ui->lcdNumber_3->setMode(QLCDNumber::Dec);
@@ -18,6 +20,8 @@ WatchWindow::WatchWindow(QWidget *parent) :
     ui->lcdNumber->setSmallDecimalPoint(true);
     ui->lcdNumber_2->setSmallDecimalPoint(true);
     ui->lcdNumber_3->setSmallDecimalPoint(true);
+
+
 
 
 }
@@ -32,22 +36,24 @@ WatchWindow::~WatchWindow()
 void WatchWindow::on_pushButton_clicked()
 {
 
-    /*connect(&myStation->instrument->myEmitter,SIGNAL(sendDataMap(QVariantMap*)),this,SLOT(setLCDNumber(QVariantMap*)));
+     connect(myStation->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
 
-    if (myStation->instrument->dataStreamIsActive == false){
+    if (streamActiv == false){
 
-        myStation->emitStartStream();
+        int r = Configuration::ePolar;
 
-
+        myStation->emitStartReadingStream(r);
+        streamActiv = true;
 
     }else{
-        myStation->stopStream();
-    }*/
+        myStation->emitStopReadingStream();
+        streamActiv = false;
+    }
 }
 
-void WatchWindow::setLCDNumber(QVariantMap* m){
+void WatchWindow::setLCDNumber(QVariantMap m){
 
-        QMap<QString,QVariant>::const_iterator i = m->constBegin();
+        QMap<QString,QVariant>::const_iterator i = m.constBegin();
 
 
         QString name1 = i.key();

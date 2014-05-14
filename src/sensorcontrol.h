@@ -35,8 +35,8 @@ public:
 
     QThread listenerThread;
 
-    bool isReadingStreamActive;
-    bool isSensorStatStreamActive;
+   // bool isReadingStreamActive;
+   // bool isSensorStatStreamActive;
 
     //attributes
     double az;
@@ -56,7 +56,7 @@ signals:
     void recalcFeature(Feature*);
     void activateCheckStream();
     void activateStatStream();
-    void activateReadingStream(Configuration::ReadingTypes);
+    void activateReadingStream(int);
 
 
 public slots:
@@ -65,7 +65,7 @@ public slots:
     void measure(Geometry *geom,bool isActiveCoordSys);
 
     //data stream
-    void readingStream(Configuration::ReadingTypes streamFormat);
+    void readingStream(int);
     void sensorStatsStream();
 
     //sensor actions
@@ -87,7 +87,8 @@ private:
 
     enum streamType{
         eReadingStream,
-        eSenorStats
+        eSenorStats,
+        eNoStream
     };
 
     Station *myStation;
@@ -95,7 +96,7 @@ private:
     OiEmitter myEmitter;
 
     streamType t;
-    Configuration::ReadingTypes typeOfReadingStream;
+    int typeOfReadingStream;
 
     void storeReadings(QList<Reading*>readings, Geometry* geom, bool isActiveCoordSys);
     void saveReading(Reading* r, Geometry* geom, bool isActiveCoordSys);

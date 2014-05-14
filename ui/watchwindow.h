@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "station.h"
+#include "sensorlistener.h"
 #include "pluginloader.h"
 #include <QMap>
 
@@ -23,10 +24,11 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-    void setLCDNumber(QVariantMap*);
+    void setLCDNumber(QVariantMap);
 
 private:
     Ui::WatchWindow *ui;
+    bool streamActiv;
 
 };
 

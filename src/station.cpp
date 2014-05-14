@@ -32,7 +32,7 @@ Station::Station(QString name)
     connect(this,SIGNAL(startCompensation()),this->sensorPad,SLOT(compensation()));
     connect(this,SIGNAL(startConnect(ConnectionConfig*)),this->sensorPad,SLOT(connectSensor(ConnectionConfig*)));
     connect(this,SIGNAL(startDisconnect()),this->sensorPad,SLOT(disconnectSensor()));
-    connect(this,SIGNAL(startReadingStream(Configuration::ReadingTypes)),this->sensorPad,SLOT(readingStream(Configuration::ReadingTypes)));
+    connect(this,SIGNAL(startReadingStream(int)),this->sensorPad,SLOT(readingStream(int)));
     connect(this,SIGNAL(startSensorStatsStream()),this->sensorPad,SLOT(sensorStatsStream()));
     connect(this,SIGNAL(startSelfDefinedAction(QString)),this->sensorPad,SLOT(doSelfDefinedAction(QString)));
     connect(this,SIGNAL(stopReadingStream()),this->sensorPad,SLOT(stopReadingStream()));
@@ -293,16 +293,15 @@ void Station::emitActionFinished(bool wasSuccesful){
 /*!
  * \brief emitStartStream
  */
-void Station::emitStartReadingStream(Configuration::ReadingTypes r){
-    emit startReadingStream(r);
+void Station::emitStartReadingStream(int readingType){
+    emit startReadingStream(readingType);
 }
 
 /*!
  * \brief Station::stopStream
  */
 void Station::emitStopReadingStream(){
-    sensorPad->isReadingStreamActive = false;
-    emit actionFinished(true);
+    emit stopReadingStream();
 }
 
 void Station::emitStartSensorStatsStream()
@@ -312,8 +311,7 @@ void Station::emitStartSensorStatsStream()
 
 void Station::emitStopSensorStatsStream()
 {
-    sensorPad->isSensorStatStreamActive = false;
-    emit actionFinished(true);
+    emit stopSensorStatsStream();
 }
 
 

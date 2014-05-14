@@ -12,21 +12,27 @@ void SensorListener::sensorStatStream()
 {
     isStreamFinished = false;
 
-    while(isStreamActive){
-        QMap<QString,QString> m= instrument->getSensorStats();
-        emit sendSensorStats(m);
+    if(instrument != NULL){
+        while(isStreamActive){
+            QMap<QString,QString> m= instrument->getSensorStats();
+            emit sendSensorStats(m);
+        }
     }
 
     isStreamFinished = true;
 }
 
-void SensorListener::sensorReadingStream(Configuration::ReadingTypes streamFormat)
+void SensorListener::sensorReadingStream(int streamFormat)
 {
     isStreamFinished = false;
 
-    while(isStreamActive){
-        QVariantMap m = instrument->readingStream(streamFormat);
-        emit sendReadingMap(m);
+    Configuration::ReadingTypes readingTyp = (Configuration::ReadingTypes) streamFormat;
+
+    if(instrument != NULL){
+        while(isStreamActive){
+            QVariantMap m = instrument->readingStream(readingTyp);
+            emit sendReadingMap(m);
+        }
     }
 
     isStreamFinished = true;

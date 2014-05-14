@@ -62,7 +62,7 @@ signals:
     void startMeasure(Geometry *geom, bool isActiveCoordSys);
 
     //data streams
-    void startReadingStream(Configuration::ReadingTypes);
+    void startReadingStream(int);
     void startSensorStatsStream();
     void stopReadingStream();
     void stopSensorStatsStream();
@@ -95,7 +95,7 @@ public slots:
     void emitStartMeasure(Geometry *geom, bool isActiveCoordSys);
 
     //data stream
-    void emitStartReadingStream(Configuration::ReadingTypes r);
+    void emitStartReadingStream(int readingType);
     void emitStopReadingStream();
     void emitStartSensorStatsStream();
     void emitStopSensorStatsStream();

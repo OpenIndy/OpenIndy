@@ -34,7 +34,7 @@ public slots:
 
     //streams
     void sensorStatStream();
-    void sensorReadingStream(Configuration::ReadingTypes streamFormat);
+    void sensorReadingStream(int streamFormat);
 
     //abort actual sensor action
     void abortSensorAction();
