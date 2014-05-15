@@ -52,7 +52,6 @@ MainWindow::MainWindow(QWidget *parent) :
     sEntityDialog->setModal(true);
     nominalDialog.setModal(true);
     trafoParamDialog.setModal(true);
-    watchWindowDialog.setModal(true);
 
     //delete feature
     this->ui->tableView_data->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -552,8 +551,17 @@ void MainWindow::on_actionConsole_triggered()
  */
 void MainWindow::on_actionWatch_window_triggered()
 {
-    watchWindowDialog.myStation = control.activeStation;
-    watchWindowDialog.show();
+
+    WatchWindow *newWatchWindow = new WatchWindow();
+
+    connect(newWatchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
+    connect(newWatchWindow,SIGNAL(destroyed()),&control,SLOT(startMeasurement()));
+
+    newWatchWindow->myStation = control.activeStation;
+    newWatchWindow->activeCoordinateSystem = control.activeCoordinateSystem;
+    newWatchWindow->activeFeature = control.activeFeature;
+    newWatchWindow->show();
+
 }
 
 /*!

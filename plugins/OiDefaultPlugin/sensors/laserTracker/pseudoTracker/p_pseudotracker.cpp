@@ -1,9 +1,9 @@
 #include "p_pseudotracker.h"
 
 PseudoTracker::PseudoTracker(){
-    myAzimuth = 0.0;
-    myZenith = 0.0;
-    myDistance =0.0;
+    myAzimuth = 0.00001;
+    myZenith = 0.00001;
+    myDistance =0.000001;
     myMotor = false;
     myInit = false;
     myCompIt = false;
@@ -291,16 +291,32 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
 
     QVariantMap m;
 
+        Reading r;
 
-        x =((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-        y =((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-        z =((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+        r.rPolar.azimuth = myAzimuth;
+        r.rPolar.zenith = myZenith;
+        r.rPolar.distance = myDistance;
+        r.rPolar.isValid = true;
+
+        r.toCartesian();
+
+        double dx = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+        double dy = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+        double dz = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+
+        dx = dx/100;
+        dy = dy/100;
+        dz = dz/100;
+
+        x =r.rCartesian.xyz.getAt(0)+dx;
+        y =r.rCartesian.xyz.getAt(1)+dy;
+        z =r.rCartesian.xyz.getAt(2)+dz;
 
         m.insert("x",x);
         m.insert("y",y);
         m.insert("z",z);
 
-    QThread::msleep(100);
+    QThread::msleep(300);
 
     this->sensorActionInProgress = false;
 

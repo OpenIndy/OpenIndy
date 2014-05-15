@@ -65,7 +65,6 @@ public:
 
     MeasurementConfigDialog mConfigDialog;
     MovementDialog moveDialog;
-    WatchWindow watchWindowDialog;
     PluginLoaderDialog pLoadDialog;
 
     CreateFeature *cFeatureDialog;
