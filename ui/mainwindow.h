@@ -156,6 +156,7 @@ public slots:
     void resetFeatureSelection();
     void availableGroupsChanged(QMap<QString, int>);
     void updateGeometryIcons(QStringList availableGeometries);
+    void updateModel();
 
 private slots:
     void featureContextMenu(const QPoint &point);
@@ -257,6 +258,9 @@ private slots:
 
 
     void on_actionPlugin_manager_triggered();
+
+    void showCreateFeatureDialog(Configuration::FeatureTypes featureType);
+    void showScalarEntityDialog(Configuration::FeatureTypes featureType);
 
 private:
     Ui::MainWindow *ui;

@@ -1,9 +1,21 @@
 #include "plugintreeitem.h"
 
-PluginTreeItem::PluginTreeItem() : myParent(NULL)
+PluginTreeItem::PluginTreeItem(QVariant val) : myParent(NULL), displayValue(val), isPlugin(false), isFunctionType(false),
+    isPluginType(false), isSensorType(false)
 {
 }
 
+PluginTreeItem::~PluginTreeItem(){
+    if(this->myParent != NULL){
+        this->myParent->deleteChild(this);
+    }
+    this->deleteChildren();
+}
+
+/*!
+ * \brief PluginTreeItem::getDisplayValue
+ * \return
+ */
 QVariant PluginTreeItem::getDisplayValue(){
     return this->displayValue;
 }
@@ -40,16 +52,16 @@ bool PluginTreeItem::getIsSensorType(){
  * Returns true if this represents the feature type of a function plugin (point, line , plane, ...)
  * \return
  */
-bool PluginTreeItem::getIsFeatureType(){
-    return this->isFeatureType;
+bool PluginTreeItem::getIsFunctionType(){
+    return this->isFunctionType;
 }
 
 /*!
  * \brief PluginTreeItem::setIsFeatureType
  * \param state
  */
-void PluginTreeItem::setIsFeatureType(bool state){
-    this->isFeatureType = state;
+void PluginTreeItem::setIsFunctionType(bool state){
+    this->isFunctionType = state;
     this->isPlugin = !state;
     this->isPluginType = !state;
     this->isSensorType = !state;
@@ -60,7 +72,7 @@ void PluginTreeItem::setIsFeatureType(bool state){
  * \param state
  */
 void PluginTreeItem::setIsPlugin(bool state){
-    this->isFeatureType = !state;
+    this->isFunctionType = !state;
     this->isPlugin = state;
     this->isPluginType = !state;
     this->isSensorType = !state;
@@ -71,7 +83,7 @@ void PluginTreeItem::setIsPlugin(bool state){
  * \param state
  */
 void PluginTreeItem::setIsPluginType(bool state){
-    this->isFeatureType = !state;
+    this->isFunctionType = !state;
     this->isPlugin = !state;
     this->isPluginType = state;
     this->isSensorType = !state;
@@ -82,7 +94,7 @@ void PluginTreeItem::setIsPluginType(bool state){
  * \param state
  */
 void PluginTreeItem::setIsSensorType(bool state){
-    this->isFeatureType = !state;
+    this->isFunctionType = !state;
     this->isPlugin = !state;
     this->isPluginType = !state;
     this->isSensorType = state;
@@ -129,4 +141,47 @@ int PluginTreeItem::getIndex(){
         }
     }
     return 0;
+}
+
+/*!
+ * \brief PluginTreeItem::deleteChildren
+ */
+void PluginTreeItem::deleteChildren(){
+    qDeleteAll(this->myChildren);
+    this->myChildren.clear();
+}
+
+/*!
+ * \brief PluginTreeItem::deleteChild
+ * \param child
+ */
+void PluginTreeItem::deleteChild(PluginTreeItem *child){
+    int index = -1;
+    for(int i = 0; i < this->myChildren.size(); i++){
+        if(this->myChildren.at(i) == child){
+            index = i;
+        }
+    }
+    if(index > -1){
+        this->myChildren.removeAt(index);
+    }
+}
+
+/*!
+ * \brief PluginTreeItem::addChild
+ * \param child
+ */
+void PluginTreeItem::addChild(PluginTreeItem *child){
+    if(child != NULL){
+        this->myChildren.append(child);
+        child->setParent(this);
+    }
+}
+
+/*!
+ * \brief PluginTreeItem::setParent
+ * \param parent
+ */
+void PluginTreeItem::setParent(PluginTreeItem *parent){
+    this->myParent = parent;
 }

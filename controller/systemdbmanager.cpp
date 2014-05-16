@@ -572,3 +572,263 @@ QStringList SystemDbManager::getSupportedGeometries(){
 
     return result;
 }
+
+/*!
+ * \brief SystemDbManager::getAvailablePlugins
+ * Returns a list with all available plugins
+ * \return
+ */
+QList<Plugin> SystemDbManager::getAvailablePlugins(){
+    QList<Plugin> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        //query all available plugins
+
+        QString query = QString("SELECT %1 FROM plugin")
+                .arg("id, iid, name, description, version, author, compiler, "
+                     "operating_sys, has_dependencies, file_path, is_active");
+
+        command.exec(query);
+        while(command.next()){
+
+            Plugin myPlugin;
+            myPlugin.id = command.value("id").toInt();
+            myPlugin.iid = command.value("iid").toString();
+            myPlugin.name = command.value("name").toString();
+            myPlugin.description = command.value("description").toString();
+            myPlugin.version = command.value("version").toString();
+            myPlugin.author = command.value("author").toString();
+            myPlugin.compiler = command.value("compiler").toString();
+            myPlugin.operating_sys = command.value("operating_sys").toString();
+            myPlugin.has_dependencies = command.value("has_dependencies").toBool();
+            myPlugin.file_path = command.value("file_path").toString();
+            myPlugin.is_active = command.value("is_active").toBool();
+            result.append(myPlugin);
+
+        }
+
+        //for each available plugin query its functions and sensors
+
+        for(int i = 0; i < result.size(); i++){
+            Plugin &myPlugin = result[i];
+
+            //query functions
+            query = QString("SELECT %1 FROM functionPlugin WHERE plugin_id = %2")
+                    .arg("id, iid, name, description")
+                    .arg(myPlugin.id);
+
+            command.exec(query);
+            while(command.next()){
+
+                FunctionPlugin myFunction;
+                myFunction.id = command.value("id").toInt();
+                myFunction.iid = command.value("iid").toString();
+                myFunction.name = command.value("name").toString();
+                myFunction.description = command.value("description").toString();
+                myFunction.pluginName = myPlugin.name;
+                myPlugin.myFunctions.append(myFunction);
+
+            }
+
+            //query sensors
+            query = QString("SELECT %1 FROM sensorPlugin WHERE plugin_id = %2")
+                    .arg("id, iid, name, description")
+                    .arg(myPlugin.id);
+
+            command.exec(query);
+            while(command.next()){
+
+                SensorPlugin mySensor;
+                mySensor.id = command.value("id").toInt();
+                mySensor.iid = command.value("iid").toString();
+                mySensor.name = command.value("name").toString();
+                mySensor.description = command.value("description").toString();
+                mySensor.pluginName = myPlugin.name;
+                myPlugin.mySensors.append(mySensor);
+
+            }
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}
+
+/*!
+ * \brief SystemDbManager::getAvailableFitFunctions
+ * Returns all fit functions that are available for the specified feature type
+ * \param featureType
+ * \return
+ */
+QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::FeatureTypes featureType){
+    QList<FunctionPlugin> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT %1 FROM functionPlugin AS fp %2 %3 %4 WHERE %5")
+                .arg("fp.id, fp.iid, fp.name, fp.description, p.name AS pluginName")
+                .arg("INNER JOIN elementPlugin AS ep ON fp.id = ep.functionPlugin_id")
+                .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
+                .arg("INNER JOIN element AS e ON e.id = ep.element_id")
+                .arg(QString("e.element_type = \'%1\' AND fp.iid = \'%2\'")
+                     .arg(OiMetaData::findFeature(featureType)).arg(FitFunction_iidd));
+
+        command.exec(query);
+        while(command.next()){
+
+            FunctionPlugin myPlugin;
+            myPlugin.id = command.value("id").toInt();
+            myPlugin.iid = command.value("iid").toString();
+            myPlugin.name = command.value("name").toString();
+            myPlugin.description = command.value("description").toString();
+            myPlugin.pluginName = command.value("pluginName").toString();
+            result.append(myPlugin);
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}
+
+/*!
+ * \brief SystemDbManager::getAvailableConstructFunctions
+ * Returns all construct functions that are available for the specified feature type
+ * \param featureType
+ * \return
+ */
+QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(Configuration::FeatureTypes featureType){
+    QList<FunctionPlugin> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT %1 FROM functionPlugin AS fp %2 %3 %4 WHERE %5")
+                .arg("fp.id, fp.iid, fp.name, fp.description, p.name AS pluginName")
+                .arg("INNER JOIN elementPlugin AS ep ON fp.id = ep.functionPlugin_id")
+                .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
+                .arg("INNER JOIN element AS e ON e.id = ep.element_id")
+                .arg(QString("e.element_type = \'%1\' AND fp.iid = \'%2\'")
+                     .arg(OiMetaData::findFeature(featureType)).arg(ConstructFunction_iidd));
+
+        command.exec(query);
+        while(command.next()){
+
+            FunctionPlugin myPlugin;
+            myPlugin.id = command.value("id").toInt();
+            myPlugin.iid = command.value("iid").toString();
+            myPlugin.name = command.value("name").toString();
+            myPlugin.description = command.value("description").toString();
+            myPlugin.pluginName = command.value("pluginName").toString();
+            result.append(myPlugin);
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}
+
+/*!
+ * \brief SystemDbManager::getDefaultFunction
+ * Returns the default function for the specified feature type
+ * \param featureType
+ * \return
+ */
+FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes featureType){
+    FunctionPlugin result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT %1 FROM functionPlugin AS fp %2 %3 %4 WHERE %5")
+                .arg("fp.id, fp.iid, fp.name, fp.description, p.name AS pluginName")
+                .arg("INNER JOIN elementPlugin AS ep ON fp.id = ep.functionPlugin_id")
+                .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
+                .arg("INNER JOIN element AS e ON e.id = ep.element_id")
+                .arg(QString("e.element_type = \'%1\' AND ep.use_as_default = 1").arg(OiMetaData::findFeature(featureType)));
+
+        command.exec(query);
+        while(command.next()){
+
+            FunctionPlugin myPlugin;
+            myPlugin.id = command.value("id").toInt();
+            myPlugin.iid = command.value("iid").toString();
+            myPlugin.name = command.value("name").toString();
+            myPlugin.description = command.value("description").toString();
+            myPlugin.pluginName = command.value("pluginName").toString();
+            result = myPlugin;
+            break;
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}
+
+/*!
+ * \brief SystemDbManager::saveDefaultFunction
+ * Save function as default
+ * \param featureType
+ * \param function
+ * \param plugin
+ */
+void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureType, QString function, QString plugin){
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        bool transaction = SystemDbManager::db.transaction();
+        if(transaction){
+
+            QSqlQuery command(SystemDbManager::db);
+
+            //set default state of all functions for featureType to false
+            QString query = QString("UPDATE elementPlugin SET use_as_default = 0 WHERE id IN %1")
+                    .arg(QString("(SELECT ep.id FROM elementPlugin AS ep %1 %2")
+                         .arg("INNER JOIN element AS e ON ep.element_id = e.id")
+                         .arg(QString("WHERE e.element_type = \'%1\')").arg(OiMetaData::findFeature(featureType))));
+
+            if(command.exec(query)){
+
+                //set default state of the given function to true
+                query = QString("UPDATE elementPlugin SET use_as_default = 1 WHERE id IN %1")
+                        .arg(QString("(SELECT ep.id FROM elementPlugin AS ep %1 %2 %3 %4")
+                             .arg("INNER JOIN element AS e ON ep.element_id = e.id")
+                             .arg("INNER JOIN functionPlugin AS fp ON ep.functionPlugin_id = fp.id")
+                             .arg("INNER JOIN plugin AS p ON fp.plugin_id = p.id")
+                             .arg(QString("WHERE e.element_type = \'%1\' AND fp.name = \'%2\' AND p.name = \'%3\')")
+                                  .arg(OiMetaData::findFeature(featureType))
+                                  .arg(function)
+                                  .arg(plugin)));
+                command.exec(query);
+
+            }
+
+            if(!SystemDbManager::db.commit()){
+                SystemDbManager::db.rollback();
+            }
+
+        }else{
+            Console::addLine( QString("Database error: %1").arg(SystemDbManager::db.lastError().text()) );
+        }
+
+        SystemDbManager::disconnect();
+    }
+}

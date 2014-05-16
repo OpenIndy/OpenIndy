@@ -840,7 +840,7 @@ color: rgb(255, 255, 255);
   <action name="actionPlugin_manager">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/settings.png</normaloff>:/Images/icons/settings.png</iconset>
+     <normaloff>:/Images/icons/pluginmanager.png</normaloff>:/Images/icons/pluginmanager.png</iconset>
    </property>
    <property name="text">
     <string>plugin manager</string>

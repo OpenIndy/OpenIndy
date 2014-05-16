@@ -8,7 +8,6 @@
 FeatureAttributesExchange::FeatureAttributesExchange()
 {
     this->count = 0;
-    this->featureType = -1;
     this->name = "";
     this->group = "";
     this->actual = false;
@@ -17,9 +16,10 @@ FeatureAttributesExchange::FeatureAttributesExchange()
     this->nominalSystem = NULL;
     this->startSystem = NULL;
     this->destSystem = NULL;
+    this->function = "";
 }
 
-FeatureAttributesExchange::FeatureAttributesExchange(int count, int featureType, QString name, QString group, bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem)
+FeatureAttributesExchange::FeatureAttributesExchange(int count, Configuration::FeatureTypes featureType, QString name, QString group, QString function, bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem)
 {
     this->count = count;
     this->featureType = featureType;
@@ -31,9 +31,10 @@ FeatureAttributesExchange::FeatureAttributesExchange(int count, int featureType,
     this->nominalSystem = nominalSystem;
     this->startSystem = NULL;
     this->destSystem = NULL;
+    this->function = function;
 }
 
-FeatureAttributesExchange::FeatureAttributesExchange(int count, int featureType, QString name, QString group, bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem)
+FeatureAttributesExchange::FeatureAttributesExchange(int count, Configuration::FeatureTypes featureType, QString name, QString group, QString function, bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem)
 {
     this->count = count;
     this->featureType = featureType;
@@ -45,5 +46,6 @@ FeatureAttributesExchange::FeatureAttributesExchange(int count, int featureType,
     this->nominalSystem = nominalSystem;
     this->startSystem = startSystem;
     this->destSystem = destSystem;
+    this->function = function;
 }
 

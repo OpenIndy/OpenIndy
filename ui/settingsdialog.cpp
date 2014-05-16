@@ -8,6 +8,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
 
     initGUI();
+    featureAttrLayout = new QVBoxLayout();
+    trafoParamAttrLayout = new QVBoxLayout();
 }
 
 SettingsDialog::~SettingsDialog()
@@ -20,16 +22,26 @@ SettingsDialog::~SettingsDialog()
  */
 void SettingsDialog::setPluginsModel(PluginTreeViewModel *model){
     this->ui->treeView_plugins->setModel(model);
+    this->ui->treeView_plugins->expandToDepth(1);
 }
 
 void SettingsDialog::on_pushButton_ok_clicked()
 {
+
+    //first call generate, so they get the new unit string, if changed.
     saveSettings();
+    Configuration::generateAllAttributes();
+    Configuration::generateFeatureAttributes();
+    Configuration::generateTrafoParamAttributes();
+    //then they get the boolean for display or not.
+    getFeatureColumns();
+    destructFeatureColumns();
     this->close();
 }
 
 void SettingsDialog::on_pushButton_cancel_clicked()
 {
+    destructFeatureColumns();
     this->close();
 }
 
@@ -60,6 +72,15 @@ void SettingsDialog::showEvent(QShowEvent *event){
     ui->comboBox_distanceType->setCurrentIndex(ui->comboBox_distanceType->findData(UnitConverter::distanceType));
     ui->comboBox_temperatureType->setCurrentIndex(ui->comboBox_temperatureType->findData(UnitConverter::temperatureType));
 
+    displayFeatureColumns();
+
+    event->accept();
+}
+
+void SettingsDialog::closeEvent(QCloseEvent *event)
+{
+    destructFeatureColumns();
+    emit modelChanged();
     event->accept();
 }
 
@@ -71,4 +92,82 @@ void SettingsDialog::saveSettings(){
     UnitConverter::setAngleUnit(static_cast<UnitConverter::unitType>(ui->comboBox_angleType->itemData(ui->comboBox_angleType->currentIndex()).toInt()));
     UnitConverter::setDistanceUnit(static_cast<UnitConverter::unitType>(ui->comboBox_distanceType->itemData(ui->comboBox_distanceType->currentIndex()).toInt()));
     UnitConverter::setTemperatureUnit(static_cast<UnitConverter::unitType>(ui->comboBox_temperatureType->itemData(ui->comboBox_temperatureType->currentIndex()).toInt()));
+}
+
+/*!
+ * \brief displayColumns shows all available attribute columns for feature view as a checkbox.
+ */
+void SettingsDialog::displayFeatureColumns()
+{
+    for(int i=0;i<Configuration::featureAttributes.size();i++){
+        QCheckBox *cb = new QCheckBox();
+        cb->setText(Configuration::featureAttributes.at(i)->attrName);
+        cb->setChecked(Configuration::featureAttributes.at(i)->displayState);
+        featureCheckbox.append(cb);
+    }
+
+    int layoutCount = 0;
+    if(featureCheckbox.size()%3 == 0){
+        layoutCount = featureCheckbox.size()/3;
+    }else{
+        layoutCount = (featureCheckbox.size()/3)+1;
+    }
+
+    for(int i=0;i<layoutCount;i++){
+
+        QHBoxLayout *layout = new QHBoxLayout();
+        //layout->setStretch(1,1,1);
+        featureLayouts.append(layout);
+        featureAttrLayout->addLayout(layout);
+    }
+
+    int j=-1;
+    for(int k=0;k<featureCheckbox.size();k++){
+
+        if(k%3==0){
+            j+=1;
+        }
+        featureLayouts.at(j)->addWidget(featureCheckbox.at(k));
+
+    }
+
+    ui->tab_featureAttributes->setLayout(featureAttrLayout);
+}
+
+/*!
+ * \brief displayTrafoParamColumns shows all available attributes for trafoParam view.
+ */
+void SettingsDialog::displayTrafoParamColumns()
+{
+}
+
+/*!
+ * \brief getFeatureColumns checks if the feature should be displayed or not. It saves the changes in the configuration class.
+ * Order of both lists is the same, so you can directly set the boolean without checking for a equal name.
+ */
+void SettingsDialog::getFeatureColumns()
+{
+    for(int i =0; i<featureCheckbox.size();i++){
+        Configuration::featureAttributes.at(i)->displayState = featureCheckbox.at(i)->isChecked();
+    }
+}
+
+/*!
+ * \brief destructFeatureColumns destructs the dynamic gui for displaying the available feature attribute columns.
+ */
+void SettingsDialog::destructFeatureColumns()
+{
+    //delete all checkboxes
+   for(int k=0; k<featureCheckbox.size();k++){
+        ui->tab_featureAttributes->layout()->removeWidget(featureCheckbox.at(k));
+        delete featureCheckbox.at(k);
+    }
+    featureCheckbox.clear();
+
+    //delete all layouts
+    for(int i=0; i<featureLayouts.size();i++){
+        ui->tab_featureAttributes->layout()->removeItem(featureLayouts.at(i));
+        delete featureLayouts.at(i);
+    }
+    featureLayouts.clear();
 }

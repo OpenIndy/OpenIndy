@@ -30,8 +30,8 @@ int TableModel::rowCount(const QModelIndex& ) const{
  * \return
  */
 int TableModel::columnCount(const QModelIndex &parent) const{
-    //return m_columns.size();
-    return 33;
+    return Configuration::allAttributes.size();
+    //return 33;
 }
 
 /*!
@@ -274,7 +274,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
  */
 QVariant TableModel::headerData(int section, Qt::Orientation orientation, int role) const{
 
-    QStringList m_columns;
+/*    QStringList m_columns;
 
     m_columns.append("Feature type");
     m_columns.append("Featurename");
@@ -381,7 +381,9 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
     m_columns.append(QString("Temperature " + UnitConverter::getTemperatureUnitString()));
     m_columns.append("Measurement series");
 
-    m_columns.append("Comment");
+    m_columns.append("Comment"); */
+
+    QStringList m_columns = Configuration::allAttributes;
 
     if((Qt::DisplayRole == role) &&
             (Qt::Horizontal == orientation) &&
@@ -426,25 +428,45 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
     if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
         if(index.column() == 1){ //feature name
 
-            if(this->activeFeature->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
-                Geometry *myGeom = this->activeFeature->getGeometry();
-                if(myGeom->isNominal && myGeom->myActual != NULL){
-                    myGeom->myActual->name = value.toString();
-                    foreach(Geometry *nomGeom, myGeom->myActual->nominals){
-                        if(nomGeom != NULL){
-                            nomGeom->name = value.toString();
+            FeatureAttributesExchange myExchange;
+            if(this->activeFeature->getGeometry() != NULL){
+                myExchange.actual = !this->activeFeature->getGeometry()->isNominal;
+                myExchange.nominal = this->activeFeature->getGeometry()->isNominal;
+                myExchange.nominalSystem = this->activeFeature->getGeometry()->myNominalCoordSys;
+            }else if(this->activeFeature->getTrafoParam() != NULL){
+                myExchange.startSystem = this->activeFeature->getTrafoParam()->from;
+                myExchange.destSystem = this->activeFeature->getTrafoParam()->to;
+            }
+            myExchange.featureType = this->activeFeature->getTypeOfFeature();
+            myExchange.name = this->activeFeature->getFeature()->name;
+
+            if(FeatureUpdater::validateFeatureName(this->features, value.toString(), myExchange)){
+
+                if(this->activeFeature->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
+                    Geometry *myGeom = this->activeFeature->getGeometry();
+                    if(myGeom->isNominal && myGeom->myActual != NULL){
+                        myGeom->myActual->name = value.toString();
+                        foreach(Geometry *nomGeom, myGeom->myActual->nominals){
+                            if(nomGeom != NULL){
+                                nomGeom->name = value.toString();
+                            }
+                        }
+                    }else{
+                        myGeom->name = value.toString();
+                        foreach(Geometry *nomGeom, myGeom->nominals){
+                            if(nomGeom != NULL){
+                                nomGeom->name = value.toString();
+                            }
                         }
                     }
                 }else{
-                    myGeom->name = value.toString();
-                    foreach(Geometry *nomGeom, myGeom->nominals){
-                        if(nomGeom != NULL){
-                            nomGeom->name = value.toString();
-                        }
-                    }
+                    this->activeFeature->getFeature()->name = value.toString();
                 }
-            }else{
-                this->activeFeature->getFeature()->name = value.toString();
+
+                FeatureUpdater::checkForNominals(this->features, this->activeFeature);
+                FeatureUpdater::addNominalToActual(this->features, this->activeFeature);
+                FeatureUpdater::sortFeatures(this->features);
+
             }
 
         }else if(index.column() == 2){ //feature group

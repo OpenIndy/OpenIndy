@@ -264,13 +264,14 @@ void CreateFeature::on_toolButton_create_clicked()
     if(ui->spinBox_count->value()>0){
 
         int count = ui->spinBox_count->value();
-        int featureType = this->typeOfFeature;
+        Configuration::FeatureTypes featureType = this->typeOfFeature;
         QString name = ui->lineEdit_name->text();
         bool isActual = ui->checkBox_Actual->isChecked();
         bool isNominal = ui->checkBox_Nominal->isChecked();
         QString group = this->ui->comboBox_group->currentText();
         bool isCommon = ui->checkBox_common->isChecked();
         CoordinateSystem *nominalSystem = NULL;
+        QString function = this->ui->comboBox_function->currentText();
 
         if(name == ""){
             return;
@@ -288,7 +289,7 @@ void CreateFeature::on_toolButton_create_clicked()
                 }
             }
 
-            FeatureAttributesExchange featureAttributes(count,featureType,name,group,isActual,isNominal,isCommon,nominalSystem);
+            FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,isActual,isNominal,isCommon,nominalSystem);
 
             emit createFeature(featureAttributes);
 
@@ -315,7 +316,7 @@ void CreateFeature::on_toolButton_create_clicked()
                         from = featureList.at(i)->getStation()->coordSys;
                     }
                 }
-                FeatureAttributesExchange featureAttributes(count,featureType,name,group,isActual,isNominal,isCommon,nominalSystem,
+                FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,isActual,isNominal,isCommon,nominalSystem,
                                                             from,to);
                 emit createFeature(featureAttributes);
             }else{
@@ -398,4 +399,29 @@ void CreateFeature::availableGroupsChanged(QStringList myGroups){
     this->ui->comboBox_group->clear();
     this->ui->comboBox_group->clearEditText();
     this->ui->comboBox_group->addItems(myGroups);
+}
+
+/*!
+ * \brief CreateFeature::setAvailableFunctions
+ * Assign all available create functions to the function combo box and select default value
+ * \param functions
+ * \param defaultFunction
+ */
+void CreateFeature::setAvailableFunctions(QStringList functions, QString defaultFunction){
+    this->ui->comboBox_function->clear();
+    this->ui->comboBox_function->addItems(functions);
+    this->ui->comboBox_function->setCurrentText(defaultFunction);
+}
+
+/*!
+ * \brief CreateFeature::on_checkBox_Actual_toggled
+ * \param checked
+ */
+void CreateFeature::on_checkBox_Actual_toggled(bool checked)
+{
+    if(checked){
+        this->ui->comboBox_function->setEnabled(true);
+    }else{
+        this->ui->comboBox_function->setEnabled(false);
+    }
 }

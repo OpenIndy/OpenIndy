@@ -73,6 +73,7 @@ Controller::Controller(QObject *parent) :
     this->usedElementsModel = new UsedElementsModel();
 
     this->myPluginTreeViewModel = new PluginTreeViewModel();
+    this->myPluginTreeViewModel->refreshModel();
 
     //set up feature treeview models
     this->featureTreeViewModel = new FeatureTreeViewModel(this->features);
@@ -1041,6 +1042,12 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
             }else if(element->getIsObservation() && element->getObservation() != NULL
                      && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eObservationElement){
                 feature->functionList.at(functionIndex)->addObservation(element->getObservation(), elementIndex);
+
+                //if feature is a geometry add the observation to the list of observations in class geometry
+                Geometry *geom = this->activeFeature->getGeometry();
+                if(geom != NULL){
+                    geom->myObservations.append(element->getObservation());
+                }
             }
         }
         this->changeUsedElementsModel(functionIndex, elementIndex);
@@ -1553,4 +1560,46 @@ bool Controller::checkPluginAvailability(Configuration::FeatureTypes typeOfFeatu
         return true;
     }
     return false;
+}
+
+/*!
+ * \brief Controller::getAvailableCreateFunctions
+ * Returns a list of all available fit and create functions of the specified feature type
+ * \param featureType
+ * \return
+ */
+QStringList Controller::getAvailableCreateFunctions(Configuration::FeatureTypes featureType){
+    QStringList result;
+
+    //query database for all available fit and construct functions of featureType
+    QList<FunctionPlugin> fitFunctions = SystemDbManager::getAvailableFitFunctions(featureType);
+    QList<FunctionPlugin> createFunctions = SystemDbManager::getAvailableConstructFunctions(featureType);
+
+    //add the function names to the result list
+    result.append("");
+    foreach(FunctionPlugin plugin, fitFunctions){
+        result.append(QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName));
+    }
+    foreach(FunctionPlugin plugin, createFunctions){
+        result.append(QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName));
+    }
+
+    return result;
+}
+
+/*!
+ * \brief Controller::getDefaultFunction
+ * Returns the default function of the specified feature type or an empty string if no default function is available
+ * \param featureType
+ * \return
+ */
+QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
+    QString result;
+
+    FunctionPlugin plugin = SystemDbManager::getDefaultFunction(featureType);
+    if(plugin.name.compare("") != 0){
+        result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
+    }
+
+    return result;
 }

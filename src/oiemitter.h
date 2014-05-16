@@ -27,6 +27,7 @@ public slots:
     void emitSendSensorError(QString);
     void emitSendMeasureTrigger();
 
+
 };
 
 #endif // OIEMITTER_H

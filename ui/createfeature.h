@@ -26,6 +26,7 @@ public:
     QList<FeatureWrapper*> &featureList;
 
     void availableGroupsChanged(QStringList myGroups);
+    void setAvailableFunctions(QStringList functions, QString defaultFunction);
 
 signals:
 
@@ -46,6 +47,8 @@ private slots:
     void on_checkBox_Nominal_toggled(bool checked);
 
     void on_toolButton_mConfig_clicked();
+
+    void on_checkBox_Actual_toggled(bool checked);
 
 private:
     Ui::CreateFeature *ui;

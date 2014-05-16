@@ -9,14 +9,14 @@ class FeatureAttributesExchange
 {
 public:
     FeatureAttributesExchange();
-    FeatureAttributesExchange(int count, int featureType, QString name, QString group,
+    FeatureAttributesExchange(int count, Configuration::FeatureTypes featureType, QString name, QString group, QString function,
                               bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem);
-    FeatureAttributesExchange(int count, int featureType, QString name, QString group,
+    FeatureAttributesExchange(int count, Configuration::FeatureTypes featureType, QString name, QString group, QString function,
                               bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem,
                               CoordinateSystem *startSystem, CoordinateSystem *destSystem);
 
     int count;
-    int featureType;
+    Configuration::FeatureTypes featureType;
     QString name;
     QString group;
     bool actual;
@@ -25,6 +25,7 @@ public:
     CoordinateSystem *nominalSystem;
     CoordinateSystem *startSystem;
     CoordinateSystem *destSystem;
+    QString function;
 };
 
 #endif // FEATUREATTRIBUTESEXCHANGE_H
