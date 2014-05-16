@@ -3,6 +3,7 @@
 LeicaTachymeter::LeicaTachymeter(){
 
     serial = new QSerialPort();
+
 }
 
 
@@ -31,6 +32,18 @@ QList<Configuration::ReadingTypes>* LeicaTachymeter::getSupportedReadingTypes(){
     readingTypes->append(Configuration::eCartesian);
 
     return readingTypes;
+}
+
+QList<Configuration::SensorFunctionalities> LeicaTachymeter::getSupportedSensorActions()
+{
+    QList<Configuration::SensorFunctionalities> sensorActions;
+
+    sensorActions.append(Configuration::eMoveAngle);
+    sensorActions.append(Configuration::eToggleSight);
+
+
+    return sensorActions;
+
 }
 
 QList<Configuration::ConnectionTypes>* LeicaTachymeter::getConnectionType(){
@@ -74,6 +87,18 @@ QMap <QString, QStringList>* LeicaTachymeter::getStringParameter(){
 
 }
 
+QStringList LeicaTachymeter::selfDefinedActions()
+{
+    QStringList a;
+    return a;
+}
+
+bool LeicaTachymeter::doSelfDefinedAction(QString a)
+{
+
+    return true;
+}
+
 
 QMap<QString, double>* LeicaTachymeter::getDefaultAccuracy()
 {
@@ -84,7 +109,11 @@ QMap<QString, double>* LeicaTachymeter::getDefaultAccuracy()
    defaultAccuracy->insert("sigmaDistance",0.001);
 
    return defaultAccuracy;
+}
 
+void LeicaTachymeter::abortAction()
+{
+    //abort action here;
 }
 
 //! connect app with laser tracker
@@ -108,6 +137,7 @@ bool LeicaTachymeter::connectSensor(ConnectionConfig* connConfig){
             return true;
         }
       }
+
     return false;
 
 }
@@ -124,64 +154,6 @@ bool LeicaTachymeter::disconnectSensor(){
 
 }
 
-bool LeicaTachymeter::checkMeasurementConfig(MeasurementConfig* mc){
-
-    return true;
-
-}
-
-void LeicaTachymeter::dataStream(){
-
-    this->dataStreamIsActive = true;
-
-    QVariantMap *tmpMap = new QVariantMap();
-
-    this->streamFormat = Configuration::eDirection;
-
-    if( this->serial->isOpen()){
-        while(this->dataStreamIsActive == true){
-
-
-                QString command = "%R1Q,2107:1\r\n";
-
-                if(executeCommand(command)){
-
-                 QString measureData = this->receive();
-
-                 QStringList polarElements = measureData.split(",");
-
-                 double azimuth = polarElements.at(polarElements.size()-2).toDouble();
-                 double zenith = polarElements.at(polarElements.size()-1).toDouble();
-
-                 if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-                     QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
-                     if(sense.compare("mathematical") == 0){
-                         azimuth = 2 * PI - azimuth;
-                     }
-                 }
-
-                 tmpMap->insert("azimuth",azimuth);
-                 tmpMap->insert("zenith",zenith);
-
-                }
-
-        myEmitter.emitSendDataMap(tmpMap);
-        }
-    }
-
-}
-
-void LeicaTachymeter::sendCommandString(QString cmd){
-
-    if(executeCommand(cmd)){
-
-     QString response = this->receive();
-
-     //Console::addLine(response);
-
-    }
-
-}
 
 bool LeicaTachymeter::toggleSightOrientation(){
 
@@ -197,12 +169,10 @@ bool LeicaTachymeter::toggleSightOrientation(){
              myEmitter.emitSendString(measureData);
 
              return true;
-
             }
-
     }
 
-return false;
+    return false;
 
 }
 
@@ -231,11 +201,11 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
         }
 
     }
+
     return true;
 }
 
 QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
-
 
 
     switch (m->typeOfReading){
@@ -255,11 +225,73 @@ QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
         break;
     }
 
+
     QList<Reading*> emptyList;
     return emptyList;
 }
 
+QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFormat)
+{
+    QVariantMap tmpMap;
+
+    if( this->serial->isOpen()){
+
+                QString command = "%R1Q,2107:1\r\n";
+
+                if(executeCommand(command)){
+
+                 QString measureData = this->receive();
+
+                 QStringList polarElements = measureData.split(",");
+
+                 double azimuth = polarElements.at(polarElements.size()-2).toDouble();
+                 double zenith = polarElements.at(polarElements.size()-1).toDouble();
+
+                 if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                     QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                     if(sense.compare("mathematical") == 0){
+                         azimuth = 2 * PI - azimuth;
+                     }
+                 }
+
+                 tmpMap.insert("azimuth",azimuth);
+                 tmpMap.insert("zenith",zenith);
+
+                }
+        return tmpMap;
+
+    }
+}
+
+bool LeicaTachymeter::getConnectionState()
+{
+    return this->serial->isOpen();
+}
+
+bool LeicaTachymeter::isReadyForMeasurement()
+{
+    return true;
+}
+
+QMap<QString, QString> LeicaTachymeter::getSensorStats()
+{
+
+    QMap<QString, QString> stats;
+
+    stats.insert("connected", QString::number(this->serial->isOpen()));
+
+
+    return stats;
+
+}
+
+bool LeicaTachymeter::isBusy()
+{
+    return false;
+}
+
 QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
+
 
     QList<Reading*> readings;
 
@@ -316,6 +348,7 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
 
 QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
 
+
     QList<Reading*> readings;
 
     if( this->serial->isOpen()){
@@ -345,10 +378,12 @@ QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
         }
     }
 
+
     return readings;
 }
 
 QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
+
 
     QList<Reading*> readings;
 
@@ -393,17 +428,18 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
         }
     }
 
+
     return readings;
 }
 
 QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
+
 
     QList<Reading*> readings = this->measurePolar(m);
 
     for(int i = 0; i<readings.size();i++){
         readings.at(i)->toCartesian();
     }
-
 
     return readings;
 

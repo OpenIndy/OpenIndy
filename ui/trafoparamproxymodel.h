@@ -3,6 +3,7 @@
 
 #include "featurewrapper.h"
 #include <QSortFilterProxyModel>
+#include "guiconfiguration.h"
 
 class TrafoParamProxyModel : public QSortFilterProxyModel
 {

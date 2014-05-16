@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>350</width>
     <height>348</height>
    </rect>
   </property>
@@ -23,7 +23,7 @@
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2">
        <item>
         <widget class="QLabel" name="label_scalarEntityType">
          <property name="text">
@@ -37,7 +37,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1">
+      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,2">
        <item>
         <widget class="QLabel" name="label_name">
          <property name="text">
@@ -55,7 +55,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,2">
        <item>
         <widget class="QLabel" name="label_group">
          <property name="text">
@@ -73,7 +73,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
+      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,2">
        <item>
         <widget class="QLabel" name="label_count">
          <property name="text">
@@ -94,23 +94,7 @@
       </layout>
      </item>
      <item>
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>282</width>
-         <height>13</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,3">
+      <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,2">
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
@@ -122,53 +106,6 @@
         <widget class="QComboBox" name="comboBox_function"/>
        </item>
       </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_8">
-       <item>
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="checkBox_useDefault">
-         <property name="text">
-          <string>use as default</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="checkBox_useNow">
-         <property name="text">
-          <string>use now</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>282</width>
-         <height>13</height>
-        </size>
-       </property>
-      </spacer>
      </item>
      <item>
       <widget class="QCheckBox" name="checkBox_actual">
@@ -195,7 +132,7 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,1">
+      <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,2">
        <item>
         <widget class="QLabel" name="label_nominalSystem">
          <property name="text">

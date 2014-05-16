@@ -20,10 +20,6 @@ public:
 
     virtual ~LaserTracker(){}
 
-    double sigmaAzimuth;
-    double sigmaZenith;
-    double sigmaDistance;
-
     bool accept(SensorControl* s, Configuration::SensorFunctionalities f){
 
         switch(f){
@@ -38,7 +34,7 @@ public:
         case(Configuration::eToggleSight):
             return this->toggleSightOrientation();
         case(Configuration::eMotorState):
-            return this->changeMotorState(s->isMState);
+            return this->changeMotorState();
         case(Configuration::eCompensation):
             return this->compensation();
         }
@@ -50,6 +46,7 @@ public:
     //-----get sensor capabilities-----
 
     virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes() = 0;
+    virtual QList<Configuration::SensorFunctionalities> getSupportedSensorActions() = 0;
     virtual QList<Configuration::ConnectionTypes>* getConnectionType() = 0;
 
     //get meta data
@@ -59,6 +56,8 @@ public:
     virtual QMap<QString,int>* getIntegerParameter() = 0;
     virtual QMap<QString,double>* getDoubleParameter() = 0;
     virtual QMap <QString, QStringList>* getStringParameter() = 0;
+    virtual QStringList selfDefinedActions() = 0;
+    virtual bool doSelfDefinedAction(QString a) = 0;
 
     /*default accuracy
      *keys:
@@ -72,6 +71,9 @@ public:
 
     //-----sensor actions-----
 
+    //! abort a running action
+    virtual void abortAction() = 0;
+
     //! connect app with laser tracker
     virtual bool connectSensor(ConnectionConfig*) = 0;
 
@@ -81,37 +83,43 @@ public:
     //! laser tracker measures a point and returns a list of readings
     virtual QList<Reading*>measure(MeasurementConfig *mc) = 0;
 
-    //stream
-    virtual void dataStream() = 0;
+    //! stream
+    virtual QVariantMap readingStream(Configuration::ReadingTypes streamFormat) = 0;
 
-    //exec individually defined command strings
-    virtual void sendCommandString(QString) = 0;
+    //! getConnectionState
+    virtual bool getConnectionState() = 0;
 
-    //! checks if the measurementconfig is vaild
-    virtual bool checkMeasurementConfig(MeasurementConfig*)=0;
+    //! return ready state of the sensor
+    virtual bool isReadyForMeasurement() = 0;
+
+    //!sensor stats
+    virtual QMap<QString,QString> getSensorStats()=0;
+
+    //!checks if sensor is busy
+    virtual bool isBusy() = 0;
 
 
 protected:
 
     //! starts initialization
-    virtual bool initialize() = 0;
+    virtual bool initialize(){this->writeToConsole("not available");return false;}
 
     //! move laser tracker to specified position
-    virtual bool move(double azimuth, double zenith, double distance,bool isrelativ) = 0;
+    virtual bool move(double azimuth, double zenith, double distance,bool isrelativ){this->writeToConsole("not available");return false;}
 
-    virtual bool move(double x, double y, double z) = 0;
+    virtual bool move(double x, double y, double z){this->writeToConsole("not available");return false;}
 
     //! sets laser tracke to home position
-    virtual bool home() = 0;
+    virtual bool home(){this->writeToConsole("not available");return false;}
 
     //! turns motors on or off
-    virtual bool changeMotorState(bool state) = 0;
+    virtual bool changeMotorState(){this->writeToConsole("not available");return false;}
 
     //! toggle between frontside and backside
-    virtual bool toggleSightOrientation() = 0;
+    virtual bool toggleSightOrientation(){this->writeToConsole("not available");return false;}
 
     //! compensation
-    virtual bool compensation() = 0;
+    virtual bool compensation(){this->writeToConsole("not available");return false;}
 
 };
 

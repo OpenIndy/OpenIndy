@@ -22,6 +22,7 @@ SettingsDialog::~SettingsDialog()
  */
 void SettingsDialog::setPluginsModel(PluginTreeViewModel *model){
     this->ui->treeView_plugins->setModel(model);
+    this->ui->treeView_plugins->expandToDepth(1);
 }
 
 void SettingsDialog::on_pushButton_ok_clicked()
@@ -29,9 +30,9 @@ void SettingsDialog::on_pushButton_ok_clicked()
 
     //first call generate, so they get the new unit string, if changed.
     saveSettings();
-    Configuration::generateAllAttributes();
-    Configuration::generateFeatureAttributes();
-    Configuration::generateTrafoParamAttributes();
+    GUIConfiguration::generateAllAttributes();
+    GUIConfiguration::generateFeatureAttributes();
+    GUIConfiguration::generateTrafoParamAttributes();
     //then they get the boolean for display or not.
     getFeatureColumns();
     destructFeatureColumns();
@@ -102,10 +103,10 @@ void SettingsDialog::saveSettings(){
  */
 void SettingsDialog::displayFeatureColumns()
 {
-    for(int i=0;i<Configuration::featureAttributes.size();i++){
+    for(int i=0;i<GUIConfiguration::featureAttributes.size();i++){
         QCheckBox *cb = new QCheckBox();
-        cb->setText(Configuration::featureAttributes.at(i)->attrName);
-        cb->setChecked(Configuration::featureAttributes.at(i)->displayState);
+        cb->setText(GUIConfiguration::featureAttributes.at(i)->attrName);
+        cb->setChecked(GUIConfiguration::featureAttributes.at(i)->displayState);
         featureCheckbox.append(cb);
     }
 
@@ -142,10 +143,10 @@ void SettingsDialog::displayFeatureColumns()
  */
 void SettingsDialog::displayTrafoParamColumns()
 {
-    for(int i=0;i<Configuration::trafoParamAttributes.size();i++){
+    for(int i=0;i<GUIConfiguration::trafoParamAttributes.size();i++){
         QCheckBox *cb = new QCheckBox();
-        cb->setText(Configuration::trafoParamAttributes.at(i)->attrName);
-        cb->setChecked(Configuration::trafoParamAttributes.at(i)->displayState);
+        cb->setText(GUIConfiguration::trafoParamAttributes.at(i)->attrName);
+        cb->setChecked(GUIConfiguration::trafoParamAttributes.at(i)->displayState);
         trafoParamCheckbox.append(cb);
     }
 
@@ -184,7 +185,7 @@ void SettingsDialog::displayTrafoParamColumns()
 void SettingsDialog::getFeatureColumns()
 {
     for(int i =0; i<featureCheckbox.size();i++){
-        Configuration::featureAttributes.at(i)->displayState = featureCheckbox.at(i)->isChecked();
+        GUIConfiguration::featureAttributes.at(i)->displayState = featureCheckbox.at(i)->isChecked();
     }
 }
 
@@ -195,7 +196,7 @@ void SettingsDialog::getFeatureColumns()
 void SettingsDialog::getTrafoParamColumns()
 {
     for(int i=0;i<trafoParamCheckbox.size();i++){
-        Configuration::trafoParamAttributes.at(i)->displayState = trafoParamCheckbox.at(i)->isChecked();
+        GUIConfiguration::trafoParamAttributes.at(i)->displayState = trafoParamCheckbox.at(i)->isChecked();
     }
 }
 

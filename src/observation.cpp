@@ -152,30 +152,23 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
 
                 stream.writeStartElement("measurement");
                 stream.writeAttribute("time",measuredAtTime);
-                stream.writeAttribute("type","angleXZ");
-                stream.writeAttribute("value",QString::number(this->myReading->rLevel.angleXZ));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaAngleXZ));
+                stream.writeAttribute("type","RX");
+                stream.writeAttribute("value",QString::number(this->myReading->rLevel.RX));
+                stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaRX));
                 stream.writeEndElement();
 
                 stream.writeStartElement("measurement");
                 stream.writeAttribute("time",measuredAtTime);
-                stream.writeAttribute("type","angleYZ");
-                stream.writeAttribute("value",QString::number(this->myReading->rLevel.angleYZ));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaAngleYZ));
+                stream.writeAttribute("type","RY");
+                stream.writeAttribute("value",QString::number(this->myReading->rLevel.RY));
+                stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaRY));
                 stream.writeEndElement();
 
                 stream.writeStartElement("measurement");
                 stream.writeAttribute("time",measuredAtTime);
-                stream.writeAttribute("type","diffXY");
-                stream.writeAttribute("value",QString::number(this->myReading->rLevel.diffXY));
-                stream.writeAttribute("sigma","-");
-                stream.writeEndElement();
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
-                stream.writeAttribute("type","diffXZ");
-                stream.writeAttribute("value",QString::number(this->myReading->rLevel.diffXZ));
-                stream.writeAttribute("sigma","-");
+                stream.writeAttribute("type","RZ");
+                stream.writeAttribute("value",QString::number(this->myReading->rLevel.RZ));
+                stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaRZ));
                 stream.writeEndElement();
 
 
@@ -496,46 +489,37 @@ Reading* Observation::readReading(QXmlStreamReader& xml){
                             }
                             if(attributes.hasAttribute("type")){
 
-                                if(attributes.value("type").toString() == "angleXZ"){
+                                if(attributes.value("type").toString() == "RX"){
 
                                     if(attributes.hasAttribute("value")){
-                                        r->rLevel.angleXZ = attributes.value("value").toDouble();
+                                        r->rLevel.RX = attributes.value("value").toDouble();
                                     }
                                     if(attributes.hasAttribute("sigma")){
-                                        r->rLevel.sigmaAngleXZ = attributes.value("sigma").toDouble();
+                                        r->rLevel.sigmaRX = attributes.value("sigma").toDouble();
                                     }
 
                                 }
-                                if(attributes.value("type").toString() == "angleYZ"){
+                                if(attributes.value("type").toString() == "RY"){
 
                                     if(attributes.hasAttribute("value")){
-                                        r->rLevel.angleYZ = attributes.value("value").toDouble();
+                                        r->rLevel.RY = attributes.value("value").toDouble();
                                     }
                                     if(attributes.hasAttribute("sigma")){
-                                        r->rLevel.sigmaAngleYZ = attributes.value("sigma").toDouble();
+                                        r->rLevel.sigmaRY = attributes.value("sigma").toDouble();
                                     }
 
                                 }
-                                if(attributes.value("type").toString() == "diffXY"){
+                                if(attributes.value("type").toString() == "RZ"){
 
                                     if(attributes.hasAttribute("value")){
-                                        r->rLevel.diffXY = attributes.value("value").toDouble();
+                                        r->rLevel.RZ = attributes.value("value").toDouble();
                                     }
                                     if(attributes.hasAttribute("sigma")){
-
+                                        r->rLevel.sigmaRZ = attributes.value("sigma").toDouble();
                                     }
 
                                 }
-                                if(attributes.value("type").toString() == "diffXZ"){
 
-                                    if(attributes.hasAttribute("value")){
-                                        r->rLevel.diffXZ = attributes.value("value").toDouble();
-                                    }
-                                    if(attributes.hasAttribute("sigma")){
-
-                                    }
-
-                                }
 
                             }
                         }

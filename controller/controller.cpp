@@ -93,6 +93,7 @@ Controller::Controller(QObject *parent) :
 
 
     connect(this->activeStation,SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
+    connect(&this->activeStation->sensorPad->getOiEmitter(),SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
     connect(this,SIGNAL(refreshGUI(FeatureWrapper*,Station*)),this->tblModel,SLOT(updateModel(FeatureWrapper*,Station*)));
 
     emit refreshGUI(this->activeFeature,this->activeStation);
@@ -197,7 +198,7 @@ void Controller::startAim(){
 void Controller::startConnect(){
 
     if(this->activeStation != NULL){
-        if(this->activeStation->instrument != NULL){
+        if(this->activeStation->sensorPad->instrument != NULL){
             this->activeStation->emitStartConnect(this->activeStation->getInstrumentConfig()->connConfig);
             emit sensorWorks("connecting...");
         }else{
@@ -239,7 +240,8 @@ void Controller::startToggleSight(){
 void Controller::sendCmdString(QString cmd){
 
     if(checkSensorValid()){
-        this->activeStation->emitStartCommand(cmd);
+        //TODO do self defined action
+        //this->activeStation->emitStartCommand(cmd);
         emit sensorWorks(QString("sending command..."+ cmd));
     }
 }
@@ -337,7 +339,7 @@ void Controller::changeActiveStation(){
 
     if(this->activeFeature->getStation() != NULL){
 
-            if(this->activeStation->instrument != NULL && this->activeStation->instrument->isConnected){
+            if(this->activeStation->sensorPad->instrument != NULL){
                 this->activeStation->startDisconnect();
             }
             //this->activeStation->isSolved = false;
@@ -374,8 +376,8 @@ void Controller::defaultLastmConfig(){
     lastmConfig->name = "default configuration";
     lastmConfig->count = 1;
     lastmConfig->measureTwoSides = false;
-    if(this->activeStation != NULL && this->activeStation->instrument != NULL){
-        lastmConfig->typeOfReading = this->activeStation->instrument->getSupportedReadingTypes()->at(0);
+    if(this->activeStation != NULL && this->activeStation->sensorPad->instrument != NULL){
+        lastmConfig->typeOfReading = this->activeStation->sensorPad->instrument->getSupportedReadingTypes()->at(0);
     }else{
         lastmConfig->typeOfReading = Configuration::ePolar;
     }
@@ -488,7 +490,7 @@ void Controller::getSelectedPlugin(int index){
     if(path != NULL){
 
         //this->activeStation->InstrumentConfig = new SensorConfiguration();
-        this->activeStation->instrument = PluginLoader::loadSensorPlugin(path, name);
+        this->activeStation->sensorPad->instrument = PluginLoader::loadSensorPlugin(path, name);
         defaultLastmConfig();
         updateFeatureMConfig();
     }
@@ -646,7 +648,7 @@ bool Controller::checkFeatureValid(){
 bool Controller::checkSensorValid(){
 
     if(this->activeStation != NULL){
-        if(this->activeStation->instrument != NULL && this->activeStation->instrument->isConnected){
+        if(this->activeStation->sensorPad->instrument != NULL){
             return true;
         }else{
             Console::addLine("sensor not connected");
@@ -1040,6 +1042,12 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
             }else if(element->getIsObservation() && element->getObservation() != NULL
                      && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eObservationElement){
                 feature->functionList.at(functionIndex)->addObservation(element->getObservation(), elementIndex);
+
+                //if feature is a geometry add the observation to the list of observations in class geometry
+                Geometry *geom = this->activeFeature->getGeometry();
+                if(geom != NULL){
+                    geom->myObservations.append(element->getObservation());
+                }
             }
         }
         this->changeUsedElementsModel(functionIndex, elementIndex);
@@ -1306,11 +1314,11 @@ void Controller::printToConsole(QString message){
  */
 void Controller::updateFeatureMConfig()
 {
-    if(this->activeStation != NULL && this->activeStation->instrument != NULL &&
-            this->activeStation->instrument->getSupportedReadingTypes() != NULL &&
-            this->activeStation->instrument->getSupportedReadingTypes()->size() >0){
+    if(this->activeStation != NULL && this->activeStation->sensorPad->instrument != NULL &&
+            this->activeStation->sensorPad->instrument->getSupportedReadingTypes() != NULL &&
+            this->activeStation->sensorPad->instrument->getSupportedReadingTypes()->size() >0){
 
-        QList<Configuration::ReadingTypes> readingTypes = *this->activeStation->instrument->getSupportedReadingTypes();
+        QList<Configuration::ReadingTypes> readingTypes = *this->activeStation->sensorPad->instrument->getSupportedReadingTypes();
 
         //Check and edit lastMConfig
         bool contains = false;
@@ -1568,6 +1576,7 @@ QStringList Controller::getAvailableCreateFunctions(Configuration::FeatureTypes 
     QList<FunctionPlugin> createFunctions = SystemDbManager::getAvailableConstructFunctions(featureType);
 
     //add the function names to the result list
+    result.append("");
     foreach(FunctionPlugin plugin, fitFunctions){
         result.append(QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName));
     }
@@ -1588,7 +1597,9 @@ QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
     QString result;
 
     FunctionPlugin plugin = SystemDbManager::getDefaultFunction(featureType);
-    result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
+    if(plugin.name.compare("") != 0){
+        result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
+    }
 
     return result;
 }

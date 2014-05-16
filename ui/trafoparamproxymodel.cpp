@@ -23,7 +23,7 @@ bool TrafoParamProxyModel::filterAcceptsColumn(int source_column, const QModelIn
     }else{
         return false;
     }*/
-    QList<int> displayColumns = Configuration::displayAttributes(Configuration::trafoParamAttributes);
+    QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::trafoParamAttributes);
     if(displayColumns.contains(source_column)){
         return true;
     }else{

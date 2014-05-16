@@ -761,7 +761,7 @@ FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes f
                 .arg("INNER JOIN elementPlugin AS ep ON fp.id = ep.functionPlugin_id")
                 .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
                 .arg("INNER JOIN element AS e ON e.id = ep.element_id")
-                .arg(QString("e.element_type = \'%1\' AND ep.use_as_default = true").arg(OiMetaData::findFeature(featureType)));
+                .arg(QString("e.element_type = \'%1\' AND ep.use_as_default = 1").arg(OiMetaData::findFeature(featureType)));
 
         command.exec(query);
         while(command.next()){
@@ -781,4 +781,54 @@ FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes f
     }
 
     return result;
+}
+
+/*!
+ * \brief SystemDbManager::saveDefaultFunction
+ * Save function as default
+ * \param featureType
+ * \param function
+ * \param plugin
+ */
+void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureType, QString function, QString plugin){
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        bool transaction = SystemDbManager::db.transaction();
+        if(transaction){
+
+            QSqlQuery command(SystemDbManager::db);
+
+            //set default state of all functions for featureType to false
+            QString query = QString("UPDATE elementPlugin SET use_as_default = 0 WHERE id IN %1")
+                    .arg(QString("(SELECT ep.id FROM elementPlugin AS ep %1 %2")
+                         .arg("INNER JOIN element AS e ON ep.element_id = e.id")
+                         .arg(QString("WHERE e.element_type = \'%1\')").arg(OiMetaData::findFeature(featureType))));
+
+            if(command.exec(query)){
+
+                //set default state of the given function to true
+                query = QString("UPDATE elementPlugin SET use_as_default = 1 WHERE id IN %1")
+                        .arg(QString("(SELECT ep.id FROM elementPlugin AS ep %1 %2 %3 %4")
+                             .arg("INNER JOIN element AS e ON ep.element_id = e.id")
+                             .arg("INNER JOIN functionPlugin AS fp ON ep.functionPlugin_id = fp.id")
+                             .arg("INNER JOIN plugin AS p ON fp.plugin_id = p.id")
+                             .arg(QString("WHERE e.element_type = \'%1\' AND fp.name = \'%2\' AND p.name = \'%3\')")
+                                  .arg(OiMetaData::findFeature(featureType))
+                                  .arg(function)
+                                  .arg(plugin)));
+                command.exec(query);
+
+            }
+
+            if(!SystemDbManager::db.commit()){
+                SystemDbManager::db.rollback();
+            }
+
+        }else{
+            Console::addLine( QString("Database error: %1").arg(SystemDbManager::db.lastError().text()) );
+        }
+
+        SystemDbManager::disconnect();
+    }
 }

@@ -1,6 +1,7 @@
 #include "plugintreeitem.h"
 
-PluginTreeItem::PluginTreeItem(QVariant val) : myParent(NULL), displayValue(val)
+PluginTreeItem::PluginTreeItem(QVariant val) : myParent(NULL), displayValue(val), isPlugin(false), isFunctionType(false),
+    isPluginType(false), isSensorType(false)
 {
 }
 
@@ -51,16 +52,16 @@ bool PluginTreeItem::getIsSensorType(){
  * Returns true if this represents the feature type of a function plugin (point, line , plane, ...)
  * \return
  */
-bool PluginTreeItem::getIsFeatureType(){
-    return this->isFeatureType;
+bool PluginTreeItem::getIsFunctionType(){
+    return this->isFunctionType;
 }
 
 /*!
  * \brief PluginTreeItem::setIsFeatureType
  * \param state
  */
-void PluginTreeItem::setIsFeatureType(bool state){
-    this->isFeatureType = state;
+void PluginTreeItem::setIsFunctionType(bool state){
+    this->isFunctionType = state;
     this->isPlugin = !state;
     this->isPluginType = !state;
     this->isSensorType = !state;
@@ -71,7 +72,7 @@ void PluginTreeItem::setIsFeatureType(bool state){
  * \param state
  */
 void PluginTreeItem::setIsPlugin(bool state){
-    this->isFeatureType = !state;
+    this->isFunctionType = !state;
     this->isPlugin = state;
     this->isPluginType = !state;
     this->isSensorType = !state;
@@ -82,7 +83,7 @@ void PluginTreeItem::setIsPlugin(bool state){
  * \param state
  */
 void PluginTreeItem::setIsPluginType(bool state){
-    this->isFeatureType = !state;
+    this->isFunctionType = !state;
     this->isPlugin = !state;
     this->isPluginType = state;
     this->isSensorType = !state;
@@ -93,7 +94,7 @@ void PluginTreeItem::setIsPluginType(bool state){
  * \param state
  */
 void PluginTreeItem::setIsSensorType(bool state){
-    this->isFeatureType = !state;
+    this->isFunctionType = !state;
     this->isPlugin = !state;
     this->isPluginType = !state;
     this->isSensorType = state;

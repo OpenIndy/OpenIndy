@@ -8,6 +8,7 @@
 #include <QCheckBox>
 #include "unitconverter.h"
 #include "plugintreeviewmodel.h"
+#include "guiconfiguration.h"
 
 namespace Ui {
 class SettingsDialog;

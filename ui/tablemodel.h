@@ -11,6 +11,7 @@
 #include <QColor>
 #include <QFont>
 #include "featureupdater.h"
+#include "guiconfiguration.h"
 
 class TableModel : public QAbstractTableModel
 {

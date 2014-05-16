@@ -70,8 +70,8 @@ void FeatureData::getActiveFeature(FeatureWrapper *activeFeature){
     initGUI();
 
     //station specific
-    if(this->selectedFeature->getStation() != NULL && this->selectedFeature->getStation()->instrument != NULL){
-        ui->label_activeSensor->setText(this->selectedFeature->getStation()->instrument->getMetaData()->name);
+    if(this->selectedFeature->getStation() != NULL && this->selectedFeature->getStation()->sensorPad->instrument != NULL){
+        ui->label_activeSensor->setText(this->selectedFeature->getStation()->sensorPad->instrument->getMetaData()->name);
         ui->lineEdit_configName->setText(this->selectedFeature->getStation()->getInstrumentConfig()->name);
         ui->tab_sensorInformation->setEnabled(true);
         getReadingType();
@@ -204,9 +204,9 @@ void FeatureData::getSensorConfiguration()
  */
 void FeatureData::getReadingType()
 {
-    if(this->selectedFeature->getStation()->instrument != NULL && this->selectedFeature->getStation()->instrument->getSupportedReadingTypes() != NULL){
+    if(this->selectedFeature->getStation()->sensorPad->instrument != NULL && this->selectedFeature->getStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
 
-        QList<Configuration::ReadingTypes> readingTypes = *this->selectedFeature->getStation()->instrument->getSupportedReadingTypes();
+        QList<Configuration::ReadingTypes> readingTypes = *this->selectedFeature->getStation()->sensorPad->instrument->getSupportedReadingTypes();
 
         for(int i=0; i<readingTypes.size();i++){
 
@@ -251,11 +251,11 @@ void FeatureData::getReadingType()
                 break;
             case Configuration::eUndefined:
 
-                if(this->selectedFeature->getStation()->instrument->getDefaultAccuracy() != NULL){
+                if(this->selectedFeature->getStation()->sensorPad->instrument->getDefaultAccuracy() != NULL){
 
-                    ui->toolBox_accuracy->setItemText(4,this->selectedFeature->getStation()->instrument->getUndefinedReadingName());
+                    ui->toolBox_accuracy->setItemText(4,this->selectedFeature->getStation()->sensorPad->instrument->getUndefinedReadingName());
 
-                    QMap<QString, double> undefSigma = *this->selectedFeature->getStation()->instrument->getDefaultAccuracy();
+                    QMap<QString, double> undefSigma = *this->selectedFeature->getStation()->sensorPad->instrument->getDefaultAccuracy();
 
                     QMapIterator<QString, double> j(undefSigma);
                     while(j.hasNext()){
@@ -471,9 +471,9 @@ void FeatureData::initSensorConfiguration()
  */
 void FeatureData::getSensorParameters()
 {
-    if(this->selectedFeature->getStation()->instrument != NULL && this->selectedFeature->getStation()->instrument->getDoubleParameter() != NULL){
+    if(this->selectedFeature->getStation()->sensorPad->instrument != NULL && this->selectedFeature->getStation()->sensorPad->instrument->getDoubleParameter() != NULL){
 
-        QMap<QString, double> doubleparam = *this->selectedFeature->getStation()->instrument->getDoubleParameter();
+        QMap<QString, double> doubleparam = *this->selectedFeature->getStation()->sensorPad->instrument->getDoubleParameter();
 
         QMapIterator<QString, double> j(doubleparam);
         while(j.hasNext()){
@@ -499,9 +499,9 @@ void FeatureData::getSensorParameters()
         }
     }
 
-    if(this->selectedFeature->getStation()->instrument != NULL && this->selectedFeature->getStation()->instrument->getIntegerParameter() != NULL){
+    if(this->selectedFeature->getStation()->sensorPad->instrument != NULL && this->selectedFeature->getStation()->sensorPad->instrument->getIntegerParameter() != NULL){
 
-        QMap<QString, int> intParameter = *this->selectedFeature->getStation()->instrument->getIntegerParameter();
+        QMap<QString, int> intParameter = *this->selectedFeature->getStation()->sensorPad->instrument->getIntegerParameter();
 
         QMapIterator<QString, int> k(intParameter);
         while(k.hasNext()){
@@ -527,9 +527,9 @@ void FeatureData::getSensorParameters()
         }
     }
 
-    if(this->selectedFeature->getStation()->instrument != NULL && this->selectedFeature->getStation()->instrument->getStringParameter() != NULL){
+    if(this->selectedFeature->getStation()->sensorPad->instrument != NULL && this->selectedFeature->getStation()->sensorPad->instrument->getStringParameter() != NULL){
 
-        QMap<QString,QStringList> strParameter = *this->selectedFeature->getStation()->instrument->getStringParameter();
+        QMap<QString,QStringList> strParameter = *this->selectedFeature->getStation()->sensorPad->instrument->getStringParameter();
 
         QMapIterator<QString,QStringList> m(strParameter);
         while(m.hasNext()){
@@ -582,9 +582,9 @@ void FeatureData::on_pushButton_setSensorConfig_clicked()
  */
 void FeatureData::initConnection()
 {
-    if(this->selectedFeature->getStation()->instrument->getConnectionType() != NULL){
+    if(this->selectedFeature->getStation()->sensorPad->instrument->getConnectionType() != NULL){
 
-        QList<Configuration::ConnectionTypes> conTypes = *this->selectedFeature->getStation()->instrument->getConnectionType();
+        QList<Configuration::ConnectionTypes> conTypes = *this->selectedFeature->getStation()->sensorPad->instrument->getConnectionType();
         for(int i=0; i<conTypes.size();i++){
             switch (conTypes.at(i)) {
             case Configuration::eNetwork:

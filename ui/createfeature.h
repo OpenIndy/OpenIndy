@@ -48,6 +48,8 @@ private slots:
 
     void on_toolButton_mConfig_clicked();
 
+    void on_checkBox_Actual_toggled(bool checked);
+
 private:
     Ui::CreateFeature *ui;
 };

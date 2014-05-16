@@ -59,12 +59,12 @@ struct sReadingUndefined{
 };
 
 struct sReadingLevel{
-    double angleXZ;
-    double angleYZ;
-    double diffXZ;
-    double diffXY;
-    double sigmaAngleXZ;
-    double sigmaAngleYZ;
+    double RX;
+    double RY;
+    double RZ;
+    double sigmaRX;
+    double sigmaRY;
+    double sigmaRZ;
     bool isValid;
 };
 

@@ -43,6 +43,7 @@
 
 #include "tablemodel.h"
 #include "featureattributesexchange.h"
+#include "guiconfiguration.h"
 
 namespace Ui {
 class MainWindow;
@@ -65,7 +66,6 @@ public:
 
     MeasurementConfigDialog mConfigDialog;
     MovementDialog moveDialog;
-    WatchWindow watchWindowDialog;
     PluginLoaderDialog pLoadDialog;
 
     CreateFeature *cFeatureDialog;
@@ -261,6 +261,7 @@ private slots:
     void on_actionPlugin_manager_triggered();
 
     void showCreateFeatureDialog(Configuration::FeatureTypes featureType);
+    void showScalarEntityDialog(Configuration::FeatureTypes featureType);
 
 private:
     Ui::MainWindow *ui;

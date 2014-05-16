@@ -30,7 +30,7 @@ int TableModel::rowCount(const QModelIndex& ) const{
  * \return
  */
 int TableModel::columnCount(const QModelIndex &parent) const{
-    return Configuration::allAttributes.size();
+    return GUIConfiguration::allAttributes.size();
     //return 33;
 }
 
@@ -389,7 +389,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 
     m_columns.append("Comment"); */
 
-    QStringList m_columns = Configuration::allAttributes;
+    QStringList m_columns = GUIConfiguration::allAttributes;
 
     if((Qt::DisplayRole == role) &&
             (Qt::Horizontal == orientation) &&
@@ -444,6 +444,7 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
                 myExchange.destSystem = this->activeFeature->getTrafoParam()->to;
             }
             myExchange.featureType = this->activeFeature->getTypeOfFeature();
+            myExchange.name = this->activeFeature->getFeature()->name;
 
             if(FeatureUpdater::validateFeatureName(this->features, value.toString(), myExchange)){
 

@@ -22,6 +22,7 @@ public:
     QList<FeatureWrapper*> &featureList;
 
     void availableGroupsChanged(QStringList myGroups);
+    void setAvailableFunctions(QStringList functions, QString defaultFunction);
 
 signals:
 
@@ -43,6 +44,8 @@ private slots:
     void on_toolButton_mConfig_clicked();
 
     void showEvent(QShowEvent *event);
+
+    void on_checkBox_actual_toggled(bool checked);
 
 private:
     Ui::ScalarEntityDialog *ui;
