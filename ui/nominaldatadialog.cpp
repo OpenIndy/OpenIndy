@@ -384,7 +384,7 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalK->setText("");
         break;
     case Configuration::eScalarentityAngleFeature:
-        ui->lineEdit_nominalSAE->setText(QString::number(selectedFeature->getScalarEntityAngle()->getAngle()*180.0/3.141592653589793,'f',6));
+        ui->lineEdit_nominalSAE->setText(QString::number(selectedFeature->getScalarEntityAngle()->getAngle()*UnitConverter::getAngleMultiplier(),'f',6));
         ui->lineEdit_nominalI->setText("");
         ui->lineEdit_nominalJ->setText("");
         ui->lineEdit_nominalK->setText("");
@@ -397,7 +397,7 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalZ->setText("");
         break;
     case Configuration::eScalarEntityDistanceFeature:
-        ui->lineEdit_nominalSDE->setText(QString::number(selectedFeature->getScalarEntityDistance()->getDistance(),'f',6));
+        ui->lineEdit_nominalSDE->setText(QString::number(selectedFeature->getScalarEntityDistance()->getDistance()*UnitConverter::getDistanceMultiplier(),'f',6));
         ui->lineEdit_nominalI->setText("");
         ui->lineEdit_nominalJ->setText("");
         ui->lineEdit_nominalK->setText("");

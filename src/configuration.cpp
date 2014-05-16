@@ -184,8 +184,8 @@ void Configuration::generateAllAttributes()
     Configuration::allAttributes.append("J");
     Configuration::allAttributes.append("K");
     Configuration::allAttributes.append(QString("radius" + UnitConverter::getDistanceUnitString()));
-    Configuration::allAttributes.append("scalar value [m]");
-    Configuration::allAttributes.append("scalar value [dec. degree]");
+    Configuration::allAttributes.append(QString("scalar value" + UnitConverter::getDistanceUnitString()));
+    Configuration::allAttributes.append(QString("scalar value" + UnitConverter::getAngleUnitString()));
     Configuration::allAttributes.append("start");
     Configuration::allAttributes.append("destination");
     Configuration::allAttributes.append(QString("translation x" + UnitConverter::getDistanceUnitString()));
@@ -200,6 +200,8 @@ void Configuration::generateAllAttributes()
     Configuration::allAttributes.append(QString("temperature" + UnitConverter::getTemperatureUnitString()));
     Configuration::allAttributes.append("measurement series");
     Configuration::allAttributes.append("comment");
+    Configuration::allAttributes.append("use");
+    Configuration::allAttributes.append("time");
 }
 
 /*!
@@ -244,9 +246,9 @@ void Configuration::generateFeatureAttributes()
     Configuration::featureAttributes.append(fK);
     DisplayAttribute *fRadius = new DisplayAttribute(QString("radius"+UnitConverter::getDistanceUnitString()),true);
     Configuration::featureAttributes.append(fRadius);
-    DisplayAttribute *fscalarD = new DisplayAttribute("scalar value [m]",true);
+    DisplayAttribute *fscalarD = new DisplayAttribute(QString("scalar value" + UnitConverter::getDistanceUnitString()),true);
     Configuration::featureAttributes.append(fscalarD);
-    DisplayAttribute *fscalarA = new DisplayAttribute("scalar value [dec.degree]",true);
+    DisplayAttribute *fscalarA = new DisplayAttribute(QString("scalar value" + UnitConverter::getAngleUnitString()),true);
     Configuration::featureAttributes.append(fscalarA);
     DisplayAttribute *fTemperature = new DisplayAttribute(QString("temperature"+UnitConverter::getTemperatureUnitString()),true);
     Configuration::featureAttributes.append(fTemperature);
@@ -298,6 +300,10 @@ void Configuration::generateTrafoParamAttributes()
     Configuration::trafoParamAttributes.append(fScaleZ);
     DisplayAttribute *fcomment = new DisplayAttribute("comment",true);
     Configuration::trafoParamAttributes.append(fcomment);
+    DisplayAttribute *fuse = new DisplayAttribute("use",true);
+    Configuration::trafoParamAttributes.append(fuse);
+    DisplayAttribute *ftime = new DisplayAttribute("time",true);
+    Configuration::trafoParamAttributes.append(ftime);
 }
 
 /*!

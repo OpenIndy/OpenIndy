@@ -205,6 +205,12 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
         case 32:
             return this->features.at(index.row())->getFeature()->comment;
             break;
+        case 33:
+            return this->features.at(index.row())->getFeature()->getDisplayUse();
+            break;
+        case 34:
+            return this->features.at(index.row())->getFeature()->getDisplayTime();
+            break;
         default:
             break;
         }

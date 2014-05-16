@@ -8,6 +8,8 @@ TrafoParam::TrafoParam() : homogenMatrix(4, 4), translation(3), rotation(3), sca
 {
     this->id = Configuration::generateID();
     this->isUpdated = false;
+    this->use = true;
+    this->validTime = QDateTime::currentDateTime();
 }
 
 TrafoParam::~TrafoParam(){
@@ -329,4 +331,14 @@ QString TrafoParam::getDisplayScaleY() const
 QString TrafoParam::getDisplayScaleZ() const
 {
     return QString::number(this->scale.getAt(2),'f',6);
+}
+
+QString TrafoParam::getDisplayUse() const
+{
+    return QString(use?"true":"false");
+}
+
+QString TrafoParam::getDisplayTime() const
+{
+    return this->validTime.toLocalTime().toString();
 }
