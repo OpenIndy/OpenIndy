@@ -14,8 +14,12 @@ void SensorListener::sensorStatStream()
 
     if(instrument != NULL){
         while(isStreamActive){
-            QMap<QString,QString> m= instrument->getSensorStats();
-            emit sendSensorStats(m);
+            if(instrument->getConnectionState()){
+                QMap<QString,QString> m= instrument->getSensorStats();
+                emit sendSensorStats(m);
+            }else{
+                emit connectionLost();
+            }
         }
     }
 
@@ -28,10 +32,14 @@ void SensorListener::sensorReadingStream(int streamFormat)
 
     Configuration::ReadingTypes readingTyp = (Configuration::ReadingTypes) streamFormat;
 
-    if(instrument != NULL){
+    if(instrument != NULL && instrument->getConnectionState()){
         while(isStreamActive){
-            QVariantMap m = instrument->readingStream(readingTyp);
-            emit sendReadingMap(m);
+            if(instrument->getConnectionState()){
+               QVariantMap m = instrument->readingStream(readingTyp);
+               emit sendReadingMap(m);
+            }else{
+               emit connectionLost();
+            }
         }
     }
 

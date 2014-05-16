@@ -3,7 +3,7 @@
 LeicaTachymeter::LeicaTachymeter(){
 
     serial = new QSerialPort();
-    this->sensorActionInProgress = false;
+
 }
 
 
@@ -18,7 +18,7 @@ PluginMetaData* LeicaTachymeter::getMetaData(){
     metaData->description = "Plugin zur Steuerung von Leica Tachymetern";
     metaData->iid = "de.openIndy.Plugin.Sensor.TotalStation.v001";
     //...
-    this->sensorActionInProgress = false;
+
     return metaData;
 }
 
@@ -119,7 +119,6 @@ void LeicaTachymeter::abortAction()
 //! connect app with laser tracker
 bool LeicaTachymeter::connectSensor(ConnectionConfig* connConfig){
 
-    this->sensorActionInProgress = true;
     //set port
     this->serial->setPortName(connConfig->comPort);
 
@@ -135,12 +134,10 @@ bool LeicaTachymeter::connectSensor(ConnectionConfig* connConfig){
 
             myEmitter.emitSendString("port properties set");
             myEmitter.emitSendString("connection open");
-            this->sensorActionInProgress = false;
             return true;
         }
       }
 
-    this->sensorActionInProgress = false;
     return false;
 
 }
@@ -148,13 +145,11 @@ bool LeicaTachymeter::connectSensor(ConnectionConfig* connConfig){
 //! disconnect app with laser tracker
 bool LeicaTachymeter::disconnectSensor(){
 
-    this->sensorActionInProgress = true;
     if(this->serial->isOpen()){
        this->serial->close();
         myEmitter.emitSendString("connection closed");
     }
 
-    this->sensorActionInProgress = false;
     return true;
 
 }
@@ -162,7 +157,6 @@ bool LeicaTachymeter::disconnectSensor(){
 
 bool LeicaTachymeter::toggleSightOrientation(){
 
-    this->sensorActionInProgress = true;
     if( this->serial->isOpen()){
 
         QString command = "%R1Q,9028:0,0,0\r\n";
@@ -174,19 +168,16 @@ bool LeicaTachymeter::toggleSightOrientation(){
              QString measureData = this->receive();
              myEmitter.emitSendString(measureData);
 
-             this->sensorActionInProgress = false;
              return true;
             }
     }
 
-    this->sensorActionInProgress = false;
     return false;
 
 }
 
 bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool isrelativ){
 
-    this->sensorActionInProgress = true;
     if(isrelativ){
 
     }else{
@@ -210,7 +201,7 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
         }
 
     }
-    this->sensorActionInProgress = false;
+
     return true;
 }
 
@@ -241,7 +232,6 @@ QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
 
 QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFormat)
 {
-    this->sensorActionInProgress = true;
     QVariantMap tmpMap;
 
     if( this->serial->isOpen()){
@@ -268,7 +258,6 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
                  tmpMap.insert("zenith",zenith);
 
                 }
-        this->sensorActionInProgress = false;
         return tmpMap;
 
     }
@@ -286,24 +275,23 @@ bool LeicaTachymeter::isReadyForMeasurement()
 
 QMap<QString, QString> LeicaTachymeter::getSensorStats()
 {
-    this->sensorActionInProgress = true;
+
     QMap<QString, QString> stats;
 
     stats.insert("connected", QString::number(this->serial->isOpen()));
 
-    this->sensorActionInProgress = false;
+
     return stats;
 
 }
 
 bool LeicaTachymeter::isBusy()
 {
-    return this->sensorActionInProgress;
+    return false;
 }
 
 QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
 
-    this->sensorActionInProgress = true;
 
     QList<Reading*> readings;
 
@@ -354,14 +342,12 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
         }
     }
 
-    this->sensorActionInProgress = false;
     return readings;
 
 }
 
 QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
 
-    this->sensorActionInProgress = true;
 
     QList<Reading*> readings;
 
@@ -392,14 +378,12 @@ QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
         }
     }
 
-    this->sensorActionInProgress = false;
 
     return readings;
 }
 
 QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
 
-    this->sensorActionInProgress = true;
 
     QList<Reading*> readings;
 
@@ -444,14 +428,12 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
         }
     }
 
-    this->sensorActionInProgress = false;
 
     return readings;
 }
 
 QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
 
-    this->sensorActionInProgress = true;
 
     QList<Reading*> readings = this->measurePolar(m);
 
@@ -459,7 +441,6 @@ QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
         readings.at(i)->toCartesian();
     }
 
-    this->sensorActionInProgress = false;
     return readings;
 
 }

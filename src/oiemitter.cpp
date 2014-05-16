@@ -21,3 +21,15 @@ void OiEmitter::emitSendIsReadyForMeasurement(bool b)
 {
     emit sendIsReadyForMeasurement(b);
 }
+
+void OiEmitter::emitSendSensorError(QString s)
+{
+    emit sendSensorError(s);
+}
+
+void OiEmitter::emitSendMeasureTrigger()
+{
+    emit sendMeasureTrigger();
+}
+
+

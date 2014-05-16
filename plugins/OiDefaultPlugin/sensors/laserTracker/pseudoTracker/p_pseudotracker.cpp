@@ -10,7 +10,6 @@ PseudoTracker::PseudoTracker(){
     isConnected = false;
     side = 1;
 
-    this->sensorActionInProgress = false;
 }
 
 PluginMetaData* PseudoTracker::getMetaData(){
@@ -103,11 +102,9 @@ QStringList PseudoTracker::selfDefinedActions()
 
 bool PseudoTracker::doSelfDefinedAction(QString a)
 {
-    this->sensorActionInProgress = true;
     if(a == "echo"){
       writeToConsole(a);
     }
-    this->sensorActionInProgress = false;
     return true;
 }
 
@@ -137,41 +134,35 @@ void PseudoTracker::abortAction()
 //! connect app with laser tracker
 bool PseudoTracker::connectSensor(ConnectionConfig *cConfig){
 
-    this->sensorActionInProgress = true;
     if(cConfig != NULL){
         qDebug() << cConfig->ip;
         qDebug() << cConfig->port;
         isConnected = true;
         QThread::msleep(1000);
-        this->sensorActionInProgress = false;
         return true;
     }else{
         qDebug() << "null pointer";
-        this->sensorActionInProgress = false;
         return false;
     }
+
 
 
 }
 
 //! disconnect app with laser tracker
 bool PseudoTracker::disconnectSensor(){
-    this->sensorActionInProgress  = true;
     qDebug() << "pseudo tracker disconnect";
     isConnected = false;
     QThread::msleep(1000);
-    this->sensorActionInProgress = false;
     return true;
 }
 
 //! starts initialization
 bool PseudoTracker::initialize(){
 
-    this->sensorActionInProgress = true;
     qDebug() << "pseudo tracker is initialized";
     myInit = true;
     QThread::msleep(1000);
-    this->sensorActionInProgress = false;
     return true;
 }
 
@@ -179,27 +170,23 @@ bool PseudoTracker::initialize(){
 bool PseudoTracker::move(double azimuth, double zenith, double distance,bool isrelativ){
 
     qDebug() << "pseudo tracker is moved to:" << azimuth << "," << zenith << "," << distance << "," << isrelativ ;
-    this->sensorActionInProgress = true;
     myAzimuth = azimuth;
     myZenith = zenith;
     myDistance = distance;
 
 
     QThread::msleep(1000);
-    this->sensorActionInProgress = false;
     return true;
 }
 
 bool PseudoTracker::move(double x, double y, double z){
 
     qDebug() << "pseudo tracker is moved to:" << x << "," << y << "," << z;
-    this->sensorActionInProgress = true;
     myAzimuth = qAtan2(y,x);
     myDistance = qSqrt(x*x+y*y+z*z);
     myZenith = acos(z/myDistance);
 
     QThread::msleep(1000);
-    this->sensorActionInProgress = false;
     return true;
 }
 
@@ -207,9 +194,7 @@ bool PseudoTracker::move(double x, double y, double z){
 bool PseudoTracker::home(){
 
     qDebug() << "pseudo tracker is moved to home" ;
-    this->sensorActionInProgress = true;
     QThread::msleep(1000);
-    this->sensorActionInProgress = false;
     return true;
 
 }
@@ -217,17 +202,13 @@ bool PseudoTracker::home(){
 //! turns motors on or off
 bool PseudoTracker::changeMotorState(){
 
-    this->sensorActionInProgress = true;
     qDebug() << "pseudo tracker changed motor state" ;
     if(myMotor){
-        this->sensorActionInProgress = false;
         myMotor = false;
     }else{
-        this->sensorActionInProgress = false;
         myMotor = true;
     }
     QThread::msleep(1000);
-    this->sensorActionInProgress = false;
     return true;
 
 }
@@ -236,23 +217,19 @@ bool PseudoTracker::changeMotorState(){
 bool PseudoTracker::toggleSightOrientation(){
 
     qDebug() << "pseudo tracker toggeld Sight orientation" ;
-    this->sensorActionInProgress = true;
     if(side = 1){
        side = 2;
     }else{
         side = 1;
     }
     QThread::msleep(1000);
-    this->sensorActionInProgress = false;
     return true;
 }
 
 bool PseudoTracker::compensation() {
     qDebug() << "compensation successful";
-    this->sensorActionInProgress = true;
     QThread::msleep(5000);
     myCompIt = true;
-    this->sensorActionInProgress = false;
     return true;
 }
 
@@ -283,7 +260,6 @@ QList<Reading*> PseudoTracker::measure(MeasurementConfig *mc){
 
 QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamFormat)
 {
-    this->sensorActionInProgress = true;
 
     double x = 0.0;
     double y = 0.0;
@@ -318,7 +294,6 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
 
     QThread::msleep(300);
 
-    this->sensorActionInProgress = false;
 
     return m;
 
@@ -336,7 +311,6 @@ bool PseudoTracker::isReadyForMeasurement()
 
 QMap<QString, QString> PseudoTracker::getSensorStats()
 {
-    this->sensorActionInProgress = true;
     QMap<QString, QString> stats;
 
     stats.insert("connected",QString::number(isConnected));
@@ -348,20 +322,18 @@ QMap<QString, QString> PseudoTracker::getSensorStats()
     stats.insert("myInit", QString::number(myInit));
     stats.insert("myCompIt", QString::number(myCompIt));
 
-    this->sensorActionInProgress = false;
     return stats;
 
 }
 
 bool PseudoTracker::isBusy()
 {
-    return this->sensorActionInProgress;
+    return false;
 }
 
 
 QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
 
-    this->sensorActionInProgress = true;
     QList<Reading*> readings;
 
     Reading *p = new Reading();
@@ -382,14 +354,12 @@ QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
     QThread::msleep(1000);
 
     readings.append(p);
-    this->sensorActionInProgress = false;
     return readings;
 
 }
 
 QList<Reading*> PseudoTracker::measureDistance(MeasurementConfig *m){
 
-    this->sensorActionInProgress = true;
     QList<Reading*> readings;
 
     Reading *p = new Reading();
@@ -401,13 +371,11 @@ QList<Reading*> PseudoTracker::measureDistance(MeasurementConfig *m){
     QThread::msleep(1000);
 
     readings.append(p);
-    this->sensorActionInProgress = false;
     return readings;
 }
 
 QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
 
-    this->sensorActionInProgress = true;
     QList<Reading*> readings;
 
     Reading *p = new Reading();
@@ -422,13 +390,11 @@ QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
     QThread::msleep(1000);
 
     readings.append(p);
-    this->sensorActionInProgress = false;
     return readings;
 }
 
 QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
 
-    this->sensorActionInProgress = true;
     QList<Reading*> readings;
 
     Reading *p = new Reading();
@@ -444,6 +410,5 @@ QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
     QThread::msleep(1000);
 
     readings.append(p);
-    this->sensorActionInProgress = false;
     return readings;
 }

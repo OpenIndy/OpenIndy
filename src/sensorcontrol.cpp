@@ -16,6 +16,7 @@ SensorControl::SensorControl(Station *st)
 
     connect(this,SIGNAL(activateStatStream()),this->instrumentListener,SLOT(sensorStatStream()));
     connect(this,SIGNAL(activateReadingStream(int)),this->instrumentListener,SLOT(sensorReadingStream(int)));
+    connect(instrumentListener,SIGNAL(connectionLost()),this,SLOT(streamLostSignal()));
 
     instrumentListener->moveToThread(&listenerThread);
 
@@ -40,13 +41,21 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
     if(!this->sendDeactivateStream()){
         locker.unlock();
         emit commandFinished(false);
-        this->sendActivateStream();
         return;
     }
     if(!instrument->isReadyForMeasurement()){
+      locker.unlock();
+      emit commandFinished(false);
       this->myEmitter.sendString("sensor not ready for measurement");
       return ;
     }
+
+    if(!checkSensor()){
+       locker.unlock();
+       emit commandFinished(false);
+       return;
+    }
+
 
     QList<Reading*> readings = instrument->measure(&(geom->mConfig));
 
@@ -119,6 +128,12 @@ void SensorControl::move(double azimuth, double zenith, double distance, bool is
 
     locker.lock();
 
+    if(!this->sendDeactivateStream()){
+        locker.unlock();
+        emit commandFinished(false);
+        return;
+    }
+
     if(!this->checkSensor()){
        locker.unlock();
        emit commandFinished(false);
@@ -136,6 +151,8 @@ void SensorControl::move(double azimuth, double zenith, double distance, bool is
 
     emit commandFinished(wasSuccessful);
 
+    this->sendActivateStream();
+
     locker.unlock();
 
 }
@@ -149,6 +166,12 @@ void SensorControl::move(double azimuth, double zenith, double distance, bool is
 void SensorControl::move(double x, double y, double z){
 
     locker.lock();
+
+    if(!this->sendDeactivateStream()){
+        locker.unlock();
+        emit commandFinished(false);
+        return;
+    }
 
     if(!this->checkSensor()){
        locker.unlock();
@@ -166,6 +189,8 @@ void SensorControl::move(double x, double y, double z){
     bool wasSuccessful = instrument->accept(this, Configuration::eMoveXYZ);
 
     emit commandFinished(wasSuccessful);
+
+    this->sendActivateStream();
 
     locker.unlock();
 }
@@ -221,6 +246,12 @@ void SensorControl::home(){
 
     locker.lock();
 
+    if(!this->sendDeactivateStream()){
+        locker.unlock();
+        emit commandFinished(false);
+        return;
+    }
+
     if(!this->checkSensor()){
        locker.unlock();
        emit commandFinished(false);
@@ -233,6 +264,8 @@ void SensorControl::home(){
 
     emit commandFinished(wasSuccessful);
 
+    this->sendActivateStream();
+
     locker.unlock();
 }
 
@@ -242,6 +275,12 @@ void SensorControl::home(){
 void SensorControl::toggleSight(){
 
     locker.lock();
+
+    if(!this->sendDeactivateStream()){
+        locker.unlock();
+        emit commandFinished(false);
+        return;
+    }
 
     if(!this->checkSensor()){
        locker.unlock();
@@ -254,6 +293,8 @@ void SensorControl::toggleSight(){
     bool wasSuccessful =  instrument->accept(this, Configuration::eToggleSight);
 
     emit commandFinished(wasSuccessful);
+
+    this->sendActivateStream();
 
     locker.unlock();
 }
@@ -302,12 +343,14 @@ void SensorControl::stopReadingStream()
 {
     this->sendDeactivateStream();
     this->t = this->eNoStream;
+    this->myEmitter.sendString("reading stream stopped");
 }
 
 void SensorControl::stopStatStream()
 {
     this->sendDeactivateStream();
     this->t = this->eNoStream;
+    this->myEmitter.sendString("stat stream stopped");
 }
 
 
@@ -318,6 +361,25 @@ void SensorControl::connectSensor(ConnectionConfig *connConfig){
 
     locker.lock();
 
+
+    if(this->t != eNoStream){
+        this->sendDeactivateStream();
+    }
+
+    if(instrument->getConnectionState()){
+        this->myEmitter.sendString("sensor already connected");
+
+        if(this->t != eNoStream){
+            this->sendActivateStream();
+        }
+
+        emit commandFinished(true);
+
+        locker.unlock();
+
+        return;
+    }
+
     this->myEmitter.sendString("connecting sensor");
 
     bool wasSuccessful = instrument->connectSensor(connConfig);
@@ -325,6 +387,11 @@ void SensorControl::connectSensor(ConnectionConfig *connConfig){
     if(wasSuccessful){
        instrumentListener->setInstrument(instrument);
     }
+
+    if(this->t != eNoStream){
+        this->sendActivateStream();
+    }
+
 
     emit commandFinished(wasSuccessful);
 
@@ -339,9 +406,17 @@ void SensorControl::disconnectSensor(){
 
     locker.lock();
 
+    if(this->t != eNoStream){
+        this->sendDeactivateStream();
+    }
+
     this->myEmitter.sendString("disconnecting sensor");
 
     bool wasSuccessful = instrument->disconnectSensor();
+
+    if(wasSuccessful){
+        this->t = eNoStream;
+    }
 
     emit commandFinished(wasSuccessful);
 
@@ -359,39 +434,25 @@ void SensorControl::disconnectSensor(){
 
     bool SensorControl::sendActivateStream()
     {
+        checkSensor();
 
-        if(!this->checkSensor()){
-            return false;
+        if(this->t != eNoStream){
+           instrumentListener->isStreamActive = true;
+
+           switch (t) {
+           case eReadingStream:
+               emit activateReadingStream(typeOfReadingStream);
+               break;
+           case eSenorStats:
+               emit activateStatStream();
+               break;
+           default:
+               break;
+           }
         }
 
-        instrumentListener->isStreamActive = true;
 
-        QTime timer;
-
-        while(instrument->sensorActionInProgress){
-
-            if(timer.elapsed()>30000){
-                listenerThread.quit();
-                listenerThread.wait();
-                listenerThread.start();
-                this->myEmitter.sendString("timeout - stream failed");
-                return false;
-            }
-        }
-
-        switch (t) {
-        case eReadingStream:
-            emit activateReadingStream(typeOfReadingStream);
-            break;
-        case eSenorStats:
-            emit activateStatStream();
-            break;
-        case eNoStream:
-
-            break;
-        default:
-            break;
-        }
+        return true;
 
 
     }
@@ -419,33 +480,38 @@ void SensorControl::disconnectSensor(){
             }
         }
 
+
         return true;
     }
 
     bool SensorControl::checkSensor()
     {
-        if(!instrument->sensorActionInProgress){
+        if(this->instrumentListener->isStreamActive){
+            this->myEmitter.sendString("sensor stream is active");
+            return false;
+        }
 
-            if(!instrument->getConnectionState()){
-                this->myEmitter.sendString("sensor not connected");
-                return false;
-            }else{
-                if(instrument->isBusy()){
-                  this->myEmitter.sendString("sensor is busy");
-                  return false;
-                }
+        if(instrument->getConnectionState()){
+
+            if(instrument->isBusy()){
+              this->myEmitter.sendString("sensor is busy");
+              return false;
             }
 
-
         }else{
-           this->myEmitter.sendString("sensor action in progess... please wait");
+           this->myEmitter.sendString("sensor not connected");
             return false;
         }
 
         return true;
     }
 
-
+    void SensorControl::streamLostSignal()
+    {
+        this->t = eNoStream;
+        this->instrumentListener->isStreamActive = false;
+        this->myEmitter.sendString("lost sensor connection");
+    }
 
     OiEmitter& SensorControl::getOiEmitter(){
         return this->myEmitter;

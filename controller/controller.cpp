@@ -92,6 +92,7 @@ Controller::Controller(QObject *parent) :
 
 
     connect(this->activeStation,SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
+    connect(&this->activeStation->sensorPad->getOiEmitter(),SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
     connect(this,SIGNAL(refreshGUI(FeatureWrapper*,Station*)),this->tblModel,SLOT(updateModel(FeatureWrapper*,Station*)));
 
     emit refreshGUI(this->activeFeature,this->activeStation);

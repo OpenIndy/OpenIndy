@@ -31,7 +31,6 @@ public:
 //attributes
     OiEmitter myEmitter;
     SensorConfiguration* myConfiguration;
-    bool sensorActionInProgress;
 
 //methods
 

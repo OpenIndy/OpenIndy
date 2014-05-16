@@ -54,7 +54,6 @@ public:
 signals:
     void commandFinished(bool);
     void recalcFeature(Feature*);
-    void activateCheckStream();
     void activateStatStream();
     void activateReadingStream(int);
 
@@ -104,6 +103,9 @@ private:
     bool sendActivateStream();
     bool sendDeactivateStream();
     bool checkSensor();
+
+private slots:
+    void streamLostSignal();
 
 
 };

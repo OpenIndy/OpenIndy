@@ -17,11 +17,15 @@ signals:
     void sendString(QString);
     void sendConnectionStat(bool);
     void sendIsReadyForMeasurement(bool);
+    void sendSensorError(QString);
+    void sendMeasureTrigger();
 
 public slots:
     void emitSendString(QString);
     void emitSendConnectionStat(bool);
     void emitSendIsReadyForMeasurement(bool);
+    void emitSendSensorError(QString);
+    void emitSendMeasureTrigger();
 
 };
 

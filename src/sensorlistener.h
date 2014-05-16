@@ -29,6 +29,7 @@ signals:
 
     void sendReadingMap(QVariantMap);
     void sendSensorStats(QMap<QString,QString>);
+    void connectionLost();
     
 public slots:
 
