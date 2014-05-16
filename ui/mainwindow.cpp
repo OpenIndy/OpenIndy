@@ -13,9 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    Configuration::generateAllAttributes();
-    Configuration::generateFeatureAttributes();
-    Configuration::generateTrafoParamAttributes();
+    GUIConfiguration::generateAllAttributes();
+    GUIConfiguration::generateFeatureAttributes();
+    GUIConfiguration::generateTrafoParamAttributes();
 
     initializeActions();
 

@@ -43,6 +43,7 @@
 
 #include "tablemodel.h"
 #include "featureattributesexchange.h"
+#include "guiconfiguration.h"
 
 namespace Ui {
 class MainWindow;

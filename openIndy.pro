@@ -148,7 +148,8 @@ SOURCES += \
     controller/featureattributesexchange.cpp \
     controller/nominalattributeexchange.cpp \
     controller/displayattribute.cpp \
-    src/sensorlistener.cpp
+    src/sensorlistener.cpp \
+    controller/guiconfiguration.cpp
 
 
 HEADERS  += \
@@ -264,7 +265,8 @@ HEADERS  += \
     controller/featureattributesexchange.h \
     controller/nominalattributeexchange.h \
     controller/displayattribute.h \
-    src/sensorlistener.h
+    src/sensorlistener.h \
+    controller/guiconfiguration.h
 
 
 FORMS    += ui/mainwindow.ui \

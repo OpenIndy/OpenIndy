@@ -7,7 +7,6 @@
 #include <QStringList>
 #include <QDebug>
 #include "unitconverter.h"
-#include "displayattribute.h"
 
 /*!
  * \brief The Configuration class
@@ -30,10 +29,6 @@ public:
     explicit Configuration(QObject *parent = 0);
     //Configuration();
     ~Configuration();
-
-    static QStringList allAttributes;
-    static QList<DisplayAttribute*> featureAttributes;
-    static QList<DisplayAttribute*> trafoParamAttributes;
 
     static QString sPlane;
     static QString sPoint;
@@ -160,10 +155,6 @@ public:
 
     static Configuration::ElementTypes getElementTypeEnum(QString s);
     static QString getElementTypeString(Configuration::ElementTypes e);
-    static void generateAllAttributes();
-    static void generateFeatureAttributes();
-    static void generateTrafoParamAttributes();
-    static QList<int> displayAttributes(QList<DisplayAttribute*> attributes);
 
 };
 
