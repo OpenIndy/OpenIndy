@@ -7,17 +7,10 @@ WatchWindow::WatchWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->lcdNumber->setMode(QLCDNumber::Dec);
-    ui->lcdNumber_2->setMode(QLCDNumber::Dec);
-    ui->lcdNumber_3->setMode(QLCDNumber::Dec);
+    isGUIReady = false;
+    digitCount = 4;
 
-    ui->lcdNumber->setDigitCount(4);
-    ui->lcdNumber_2->setDigitCount(4);
-    ui->lcdNumber_3->setDigitCount(4);
-
-    ui->lcdNumber->setSmallDecimalPoint(true);
-    ui->lcdNumber_2->setSmallDecimalPoint(true);
-    ui->lcdNumber_3->setSmallDecimalPoint(true);
+    masterLayout = new QVBoxLayout();
 
 
 }
@@ -25,53 +18,119 @@ WatchWindow::WatchWindow(QWidget *parent) :
 WatchWindow::~WatchWindow()
 {
 
-
     delete ui;
 }
 
-void WatchWindow::on_pushButton_clicked()
+
+void WatchWindow::setLCDNumber(QVariantMap m){
+
+    if(!isGUIReady){
+        this->iniGUI(m);
+    }
+
+    QMapIterator<QString,QVariant> j(m);
+    while (j.hasNext()) {
+        j.next();
+
+        QString name = j.key();
+        QVariant qvalue = j.value();
+        QString value =  qvalue.toString();
+
+        streamData.value(name)->display(value);
+
+
+    }
+
+}
+
+void WatchWindow::iniGUI(QVariantMap m)
 {
 
-    connect(&myStation->instrument->myEmitter,SIGNAL(sendDataMap(QVariantMap*)),this,SLOT(setLCDNumber(QVariantMap*)));
+    if(activeFeature != NULL){
+        QLabel *featureName = new QLabel();
+        QFont f( "Arial", 30, QFont::Bold);
+        featureName->setFont(f);
+        featureName->setText(activeFeature->getFeature()->name);
+        masterLayout->addWidget(featureName);
+    }
 
-    if (myStation->instrument->dataStreamIsActive == false){
 
-        myStation->emitStartStream();
+    QMapIterator<QString,QVariant> j(m);
+    while (j.hasNext()) {
+        j.next();
 
+        QString name = j.key();
+        QVariant qvalue = j.value();
+        QString value =  qvalue.toString();
 
+        QFont f( "Arial", 60, QFont::Bold);
 
-    }else{
-        myStation->stopStream();
+        QLabel *l = new QLabel();
+        l->setText(name);
+        l->setFont(f);
+
+        QLCDNumber *n = new QLCDNumber();
+        n->display(value);
+
+        n->setMode(QLCDNumber::Dec);
+        n->setDigitCount(4);
+        n->setSmallDecimalPoint(true);
+
+        QHBoxLayout *layout = new QHBoxLayout();
+        layout->addWidget(l);
+        layout->addWidget(n);
+        layout->setStretch(0,1);
+        layout->setStretch(1,4);
+
+        masterLayout->addLayout(layout);
+
+        streamData.insert(name,n);
+
+    }
+
+    ui->pageWatchWindow->setLayout(masterLayout);
+
+    isGUIReady = true;
+
+}
+
+void WatchWindow::keyPressEvent(QKeyEvent *e)
+{
+    if(e->key() == Qt::Key_F3){
+        emit startMeasure();
     }
 }
 
-void WatchWindow::setLCDNumber(QVariantMap* m){
+void WatchWindow::closeEvent(QCloseEvent *e)
+{
+    myStation->emitStopReadingStream();
+    isGUIReady = false;
+    streamData.clear();
 
-        QMap<QString,QVariant>::const_iterator i = m->constBegin();
+    disconnect(myStation->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
 
+    e->accept();
 
-        QString name1 = i.key();
-        QVariant q1 = i.value();
-        QString x =  q1.toString();
+    this->destroy(true,true);
 
-        ui->label->setText(name1);
-        ui->lcdNumber->display(x);
-
-
-        i++;
-        QString name2 = i.key();
-        QVariant q2 = i.value();
-        QString y = q2.toString();
-
-        ui->label_2->setText(name2);
-        ui->lcdNumber_2->display(y);
-
-        /*i++;
-        QString name3 = i.key();
-        QVariant q3 = i.value();
-        QString z =  q3.toString();
-
-        ui->label_3->setText(name3);
-        ui->lcdNumber_3->display(z);*/
+    emit destroy();
 
 }
+
+void WatchWindow::showEvent(QShowEvent *event)
+{
+    if(myStation != NULL && myStation->sensorPad->instrument != NULL){
+        connect(myStation->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
+
+        int r = Configuration::ePolar;
+
+        myStation->emitStartReadingStream(r);
+
+        event->accept();
+    }
+}
+
+
+
+
+

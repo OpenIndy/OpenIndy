@@ -23,14 +23,16 @@ public:
 public:
 
     QList<Configuration::ReadingTypes>* getSupportedReadingTypes();
-
+    QList<Configuration::SensorFunctionalities> getSupportedSensorActions();
     QList<Configuration::ConnectionTypes>* getConnectionType();
 
+    PluginMetaData* getMetaData();
+
     QMap<QString,int>* getIntegerParameter();
-
     QMap<QString,double>* getDoubleParameter();
-
     QMap <QString, QStringList>* getStringParameter();
+    QStringList selfDefinedActions();
+    bool doSelfDefinedAction(QString a);
 
     /*default accuracy
      *keys:
@@ -42,8 +44,8 @@ public:
      */
     QMap<QString,double>* getDefaultAccuracy();
 
-    //! measure
-    QList<Reading*> measure(MeasurementConfig* mc);
+    //! abort a running action
+    void abortAction();
 
     //! connect to sensor
     virtual bool connectSensor(ConnectionConfig* connConfig);
@@ -51,21 +53,30 @@ public:
     //! disconnect to sensor
     virtual bool disconnectSensor();
 
-    //!datastream
-    void dataStream();
+    //! measure
+    QList<Reading*> measure(MeasurementConfig* mc);
 
-    //! executes own defined command string
-    void sendCommandString(QString cmd) ;
+    //! stream
+    QVariantMap readingStream(Configuration::ReadingTypes streamFormat);
 
-    //! checks if the measurementconfig is vaild
-    bool checkMeasurementConfig(MeasurementConfig* mc);
+    //! getConnectionState
+    bool getConnectionState();
 
-    PluginMetaData* getMetaData();
+    //! return ready state of the sensor
+    bool isReadyForMeasurement();
+
+    //!sensor stats
+    QMap<QString,QString> getSensorStats();
+
+    //!checks if sensor is busy
+    bool isBusy();
 
 protected:
 
+    //! move totalstation to specified position
     bool move(double azimuth, double zenith, double distance,bool isrelativ);
 
+    //! toggle between frontside and backside
     bool toggleSightOrientation();
 
 private:

@@ -104,12 +104,12 @@ void MeasurementConfigDialog::receiveConfig(MeasurementConfig *mC){
  */
 void MeasurementConfigDialog::initGUI(){
 
-    if(this->myStation != NULL && this->myStation->instrument != NULL){
-        if(this->myStation->instrument->getSupportedReadingTypes() != NULL){
+    if(this->myStation != NULL && this->myStation->sensorPad->instrument != NULL){
+        if(this->myStation->sensorPad->instrument->getSupportedReadingTypes() != NULL){
 
             ui->comboBox_typeOfReading->clear();
 
-            QList<Configuration::ReadingTypes> readingTypes = *this->myStation->instrument->getSupportedReadingTypes();
+            QList<Configuration::ReadingTypes> readingTypes = *this->myStation->sensorPad->instrument->getSupportedReadingTypes();
             for(int i=0; i< readingTypes.size();i++){
                 switch (readingTypes.at(i)) {
                 case Configuration::ePolar:
@@ -131,7 +131,7 @@ void MeasurementConfigDialog::initGUI(){
                     ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sLevel,Configuration::eLevel);
                     break;
                 case Configuration::eUndefined:
-                    ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),this->myStation->instrument->getUndefinedReadingName(),Configuration::eUndefined);
+                    ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),this->myStation->sensorPad->instrument->getUndefinedReadingName(),Configuration::eUndefined);
                     break;
                 default:
                     break;

@@ -3,11 +3,14 @@
 
 #include <QMutex>
 #include <QDebug>
+#include <QTime>
 #include "connectionconfig.h"
 #include "station.h"
 #include "measurementconfig.h"
 #include "oiemitter.h"
+#include "sensorconfiguration.h"
 
+class SensorListener;
 class Station;
 
 /*!
@@ -23,6 +26,17 @@ public:
     //constructor
     SensorControl(Station *st);
     ~SensorControl();
+
+    //instrument
+    Sensor *instrument;
+    QList<Sensor*> usedSensors;
+    SensorConfiguration *InstrumentConfig;
+    SensorListener *instrumentListener;
+
+    QThread listenerThread;
+
+   // bool isReadingStreamActive;
+   // bool isSensorStatStreamActive;
 
     //attributes
     double az;
@@ -40,6 +54,9 @@ public:
 signals:
     void commandFinished(bool);
     void recalcFeature(Feature*);
+    void activateStatStream();
+    void activateReadingStream(int);
+
 
 public slots:
 
@@ -47,27 +64,49 @@ public slots:
     void measure(Geometry *geom,bool isActiveCoordSys);
 
     //data stream
-    void stream();
+    void readingStream(int);
+    void sensorStatsStream();
 
     //sensor actions
     void move(double, double, double, bool);
     void move(double, double, double);
     void initialize();
-    void motorState(bool b);
+    void motorState();
     void home();
-    void sendCommandString(QString);
     void toggleSight();
     void connectSensor(ConnectionConfig *connConfig);
     void disconnectSensor();
     void compensation();
+    void doSelfDefinedAction(QString s);
+    void stopReadingStream();
+    void stopStatStream();
+
 
 private:
+
+    enum streamType{
+        eReadingStream,
+        eSenorStats,
+        eNoStream
+    };
+
     Station *myStation;
     QMutex locker;
     OiEmitter myEmitter;
 
+    streamType t;
+    int typeOfReadingStream;
+
     void storeReadings(QList<Reading*>readings, Geometry* geom, bool isActiveCoordSys);
     void saveReading(Reading* r, Geometry* geom, bool isActiveCoordSys);
+
+    bool sendActivateStream();
+    bool sendDeactivateStream();
+    bool checkSensor();
+
+private slots:
+    void streamLostSignal();
+
 
 };
 

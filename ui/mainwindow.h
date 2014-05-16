@@ -65,7 +65,6 @@ public:
 
     MeasurementConfigDialog mConfigDialog;
     MovementDialog moveDialog;
-    WatchWindow watchWindowDialog;
     PluginLoaderDialog pLoadDialog;
 
     CreateFeature *cFeatureDialog;
@@ -261,6 +260,7 @@ private slots:
     void on_actionPlugin_manager_triggered();
 
     void showCreateFeatureDialog(Configuration::FeatureTypes featureType);
+    void showScalarEntityDialog(Configuration::FeatureTypes featureType);
 
 private:
     Ui::MainWindow *ui;

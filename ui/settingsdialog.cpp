@@ -22,6 +22,7 @@ SettingsDialog::~SettingsDialog()
  */
 void SettingsDialog::setPluginsModel(PluginTreeViewModel *model){
     this->ui->treeView_plugins->setModel(model);
+    this->ui->treeView_plugins->expandToDepth(1);
 }
 
 void SettingsDialog::on_pushButton_ok_clicked()
