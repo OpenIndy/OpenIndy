@@ -110,6 +110,7 @@ public:
         eSphereElement,
         eScalarEntityAngleElement,
         eScalarEntityDistanceElement,
+        eScalarEntityTemperatureElement,
         eStationElement,
         eCoordinateSystemElement,
         eTrafoParamElement,

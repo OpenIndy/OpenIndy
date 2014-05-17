@@ -80,7 +80,7 @@ bool FeatureUpdater::validateFeatureName(QList<FeatureWrapper *> features, QStri
             }
         }
         break;
-    case Configuration::eTrafoParamFeature:
+    /*case Configuration::eTrafoParamFeature:
         for(int k=0; k<features.size();k++){
             int res = QString::compare(features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
             if( res == 0){
@@ -101,7 +101,7 @@ bool FeatureUpdater::validateFeatureName(QList<FeatureWrapper *> features, QStri
                 }
             }
         }
-        break;
+        break;*/
     default:
         for(int k=0; k<features.size();k++){
             int res = QString::compare(features.at(k)->getFeature()->name, featureName, Qt::CaseSensitive);

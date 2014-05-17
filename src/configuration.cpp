@@ -89,6 +89,8 @@ Configuration::ElementTypes Configuration::getElementTypeEnum(QString s){
         return Configuration::ePointCloudElement;
     }else if(s == Configuration::sObservation){
         return Configuration::eObservationElement;
+    }else if(s == Configuration::sEntityTemperature){
+        return Configuration::eScalarEntityTemperatureElement;
     }
 }
 
@@ -147,6 +149,9 @@ QString Configuration::getElementTypeString(Configuration::ElementTypes e){
         break;
     case Configuration::eObservationElement:
         return Configuration::sObservation;
+        break;
+    case Configuration::eScalarEntityTemperatureElement:
+        return Configuration::sEntityTemperature;
         break;
     default:
         return "";

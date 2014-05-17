@@ -130,6 +130,12 @@ public:
     virtual QString getDisplayScalarMeasurementSeriesValue() const{
         return "-/-";
     }
+    virtual QString getDisplayUse() const{
+        return "-/-";
+    }
+    virtual QString getDisplayTime() const{
+        return "-/-";
+    }
 
 protected:
     bool writeFeatureAttributes(QXmlStreamWriter& stream);

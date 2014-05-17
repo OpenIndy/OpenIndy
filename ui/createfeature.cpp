@@ -296,7 +296,7 @@ void CreateFeature::on_toolButton_create_clicked()
         }else{
             CoordinateSystem *from;
             CoordinateSystem *to;
-            if(ui->comboBox_destinationSystem->currentText() != ui->comboBox_startSystem->currentText()){
+            //if(ui->comboBox_destinationSystem->currentText() != ui->comboBox_startSystem->currentText()){
 
                 for(int i=0;i<this->featureList.size();i++){
                     if(featureList.at(i)->getCoordinateSystem() != NULL &&
@@ -319,9 +319,9 @@ void CreateFeature::on_toolButton_create_clicked()
                 FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,isActual,isNominal,isCommon,nominalSystem,
                                                             from,to);
                 emit createFeature(featureAttributes);
-            }else{
-                return;
-            }
+            //}else{
+            //    return;
+            //}
         }
 
         this->close();
