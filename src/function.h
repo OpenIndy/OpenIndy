@@ -23,6 +23,7 @@
 #include "statistic.h"
 #include "scalarentitydistance.h"
 #include "scalarentityangle.h"
+#include "scalarentitytemperature.h"
 #include "reading.h"
 #include "functionconfiguration.h"
 #include "oiemitter.h"
@@ -125,6 +126,7 @@ protected:
     QList<Reading*> distanceReadings;
     QList<Reading*> directionReadings;
     QList<Reading*> cartesianReadings;
+    QList<ScalarEntityTemperature*> scalarEntityTemperatures;
 
     Statistic myStatistic;
 
@@ -250,6 +252,11 @@ public:
     void removeReadingCartesian(int id);
     Reading* getReadingCartesian(int id);
     QList<Reading*> getCartesianReadings();
+
+    void addScalarEntityTemperature(ScalarEntityTemperature *SET, int position);
+    void removeScalarEntityTemperature(int id);
+    ScalarEntityTemperature* getScalaeEntityTemperature(int id);
+    QList<ScalarEntityTemperature*> getScalarEntityTemperatures();
 
     void removeFeature(int id);
 

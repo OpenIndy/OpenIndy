@@ -44,6 +44,12 @@ QString Configuration::sLevel = "level";
 
 QString Configuration::sObservation = "observation";
 
+QString Configuration::sSteel = "steel";
+QString Configuration::sAluminum = "aluminum";
+
+double Configuration::dSteel = 0.0;
+double Configuration::dAluminum = 0.0;
+
 int Configuration::idCount = 0;
 
 int Configuration::generateID(){
@@ -150,6 +156,39 @@ QString Configuration::getElementTypeString(Configuration::ElementTypes e){
         break;
     default:
         return "";
+        break;
+    }
+}
+
+/*!
+ * \brief getExpansionCoefficient returns the expansion coefficient of the material.
+ * \param material
+ * \return
+ */
+double Configuration::getExpansionCoefficient(QString material)
+{
+    if(material.compare(Configuration::sSteel)){
+        return Configuration::dSteel;
+    }
+    if(material.compare(Configuration::sAluminum)){
+        return Configuration::dAluminum;
+    }
+}
+
+/*!
+ * \brief getExpansionCoefficient returns the expansion coefficient of the material.
+ * \return
+ */
+double Configuration::getExpansionCoefficient(Configuration::Materials material)
+{
+    switch (material) {
+    case Configuration::eSteel:
+        return Configuration::dSteel;
+        break;
+    case Configuration::eAluminum:
+        return Configuration::dAluminum;
+        break;
+    default:
         break;
     }
 }

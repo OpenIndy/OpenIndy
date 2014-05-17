@@ -127,7 +127,8 @@ SOURCES += p_factory.cpp \
     lib/fitting/util/rho.cpp \
     functions/objectTransformation/p_shiftplane.cpp \
     functions/fit/p_bestfitcircle.cpp \
-    ../../src/sensorlistener.cpp
+    ../../src/sensorlistener.cpp \
+    functions/systemTransformation/p_simpletemperaturecompensation.cpp
 
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
@@ -218,7 +219,8 @@ HEADERS += p_factory.h \
     lib/fitting/util/rho.h \
     functions/objectTransformation/p_shiftplane.h \
     functions/fit/p_bestfitcircle.h \
-    ../../src/sensorlistener.h
+    ../../src/sensorlistener.h \
+    functions/systemTransformation/p_simpletemperaturecompensation.h
 
 
 OTHER_FILES += metaInfo.json
