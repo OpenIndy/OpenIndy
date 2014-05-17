@@ -36,7 +36,33 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         QVariant qvalue = j.value();
         QString value =  qvalue.toString();
 
-        streamData.value(name)->display(value);
+        if(activeCoordinateSystem == myStation->coordSys && activeFeature != NULL){
+            if(name == "x"){
+
+                double featureX = activeFeature->getFeature()->getDisplayX().toDouble();
+                double dx = featureX - value.toDouble();
+                streamData.value(name)->display(QString::number(dx));
+
+            }else if(name == "y"){
+
+                double featureY = activeFeature->getFeature()->getDisplayY().toDouble();
+                double dy = featureY - value.toDouble();
+                streamData.value(name)->display(QString::number(dy));
+
+            }else if(name == "z"){
+
+                double featureZ = activeFeature->getFeature()->getDisplayZ().toDouble();
+                double dz = featureZ - value.toDouble();
+                streamData.value(name)->display(QString::number(dz));
+
+            }else{
+                streamData.value(name)->display(value);
+            }
+        }else{
+            streamData.value(name)->display(value);
+        }
+
+
 
 
     }
