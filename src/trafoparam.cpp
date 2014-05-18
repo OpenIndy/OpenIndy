@@ -335,7 +335,7 @@ QString TrafoParam::getDisplayScaleZ() const
 
 QString TrafoParam::getDisplayUse() const
 {
-    return QString(use?"true":"false");
+    return QString(this->use?"true":"false");
 }
 
 QString TrafoParam::getDisplayTime() const

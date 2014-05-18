@@ -35,7 +35,7 @@ QList<InputParams> SimpleTemperatureCompensation::getNeededElements()
         param.index = 0;
         param.description = "Select scalar entity temperature for calculating the compensation.";
         param.infinite = false;
-        param.typeOfElement = Configuration::eScalarEntityTemperatureFeature;
+        param.typeOfElement = Configuration::eScalarEntityTemperatureElement;
         result.append(param);
         return result;
 }
@@ -95,10 +95,10 @@ QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter()
 {
     QMap<QString,double> result;
     QString key = "referenceTemperature";
-    double value = "20.0";
+    double value = 20.0;
     result.insert(key,value);
     key = "temperatureAccuracy";
-    value = "0.1";
+    value = 0.1;
     result.insert(key, value);
     return result;
 }
@@ -126,11 +126,11 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
             protExpansionCoeff = QString::number(expansionCoefficient,'f',6);
         }
         if(doubleParameter.contains("referenceTemperature")){
-            refTemp = static_cast<double>(doubleParameter.find("referenceTemperature"));
+            refTemp = static_cast<double>(doubleParameter.find("referenceTemperature").value());
             protRefTemp = QString::number(refTemp,'f',2);
         }
         if(doubleParameter.contains("temperatureAccuracy")){
-            tempAccuracy = static_cast<double>(doubleParameter.find("temperatureAccuracy"));
+            tempAccuracy = static_cast<double>(doubleParameter.find("temperatureAccuracy").value());
             protTempAccuracy = QString::number(tempAccuracy,'f',2);
         }
 
@@ -168,7 +168,10 @@ void SimpleTemperatureCompensation::calcAccuracy(TrafoParam &tp, double tempAccu
     tp.stats->stdev = stddev;
     tp.stats->isValid = true;
 
-    this->myStatistic = tp.stats;
+    this->myStatistic.s0_aposteriori = tp.stats->s0_aposteriori;
+    this->myStatistic.s0_apriori = tp.stats->s0_apriori;
+    this->myStatistic.stdev = tp.stats->stdev;
+    this->myStatistic.isValid = tp.stats->isValid;
 }
 
 QStringList SimpleTemperatureCompensation::getResultProtocol()

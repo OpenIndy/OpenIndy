@@ -2042,7 +2042,7 @@ void Function::addScalarEntityTemperature(ScalarEntityTemperature *SET, int posi
     this->scalarEntityTemperatures.append(SET);
     InputFeature feature;
     feature.id = SET->id;
-    feature.typeOfElement = Configuration::eScalarEntityTemperatureFeature;
+    feature.typeOfElement = Configuration::eScalarEntityTemperatureElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
