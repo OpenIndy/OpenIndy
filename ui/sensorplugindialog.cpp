@@ -110,7 +110,11 @@ void SensorPluginDialog::initSensorConfig()
    sensorConfig->connConfig->comPort = ui->comboBox_comPort->currentText();
    sensorConfig->connConfig->dataBits = static_cast<QSerialPort::DataBits>(ui->comboBox_databits->itemData(ui->comboBox_databits->currentIndex()).toInt());
    sensorConfig->connConfig->flowControl = static_cast<QSerialPort::FlowControl>(ui->comboBox_flowcontrol->itemData(ui->comboBox_flowcontrol->currentIndex()).toInt());
-   sensorConfig->connConfig->ip = ui->comboBox_ip->currentText();
+   if(ui->lineEdit_ip->text().compare("") == 0){
+       sensorConfig->connConfig->ip = ui->comboBox_ip->currentText();
+   }else{
+       sensorConfig->connConfig->ip = ui->lineEdit_ip->text();
+   }
    sensorConfig->connConfig->parity = static_cast<QSerialPort::Parity>(ui->comboBox_parity->itemData(ui->comboBox_parity->currentIndex()).toInt());
    sensorConfig->connConfig->port = ui->lineEdit_port->text();
    sensorConfig->connConfig->stopBits = static_cast<QSerialPort::StopBits>(ui->comboBox_stopbits->itemData(ui->comboBox_stopbits->currentIndex()).toInt());

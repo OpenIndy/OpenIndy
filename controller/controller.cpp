@@ -375,6 +375,7 @@ void Controller::showResults(bool b){
 void Controller::defaultLastmConfig(){
     lastmConfig->name = "default configuration";
     lastmConfig->count = 1;
+    lastmConfig->iterations = 1;
     lastmConfig->measureTwoSides = false;
     if(this->activeStation != NULL && this->activeStation->sensorPad->instrument != NULL){
         lastmConfig->typeOfReading = this->activeStation->sensorPad->instrument->getSupportedReadingTypes()->at(0);
