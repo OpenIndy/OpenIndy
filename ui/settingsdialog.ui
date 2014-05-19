@@ -132,7 +132,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidget_columnSettings">
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tab_featureAttributes">
             <attribute name="title">
@@ -149,7 +149,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QListView" name="listView_allFeatureAttributes"/>
+                <widget class="QListView" name="listView_allFeatureAttributes">
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -189,7 +193,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QListView" name="listView_displayedFeatureAttributes"/>
+                <widget class="QListView" name="listView_displayedFeatureAttributes">
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -210,7 +218,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QListView" name="listView_allTrafoParamAttributes"/>
+                <widget class="QListView" name="listView_allTrafoParamAttributes">
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -250,7 +262,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QListView" name="listView_displayedTrafoParamAttributes"/>
+                <widget class="QListView" name="listView_displayedTrafoParamAttributes">
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>

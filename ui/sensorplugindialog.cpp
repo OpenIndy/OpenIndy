@@ -12,7 +12,7 @@ SensorPluginDialog::SensorPluginDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    initGUI();
+
     tmpSensor = NULL;
     sensorConfig = NULL;
 
@@ -306,6 +306,12 @@ void SensorPluginDialog::closeEvent(QCloseEvent *event){
     disableConnectionSettings();
     disableAccuracyElements();
     destructDynamicGUI();
+    event->accept();
+}
+
+void SensorPluginDialog::showEvent(QShowEvent *event)
+{
+    initGUI();
     event->accept();
 }
 

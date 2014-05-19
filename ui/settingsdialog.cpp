@@ -8,8 +8,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
 
     initGUI();
-    featureAttrLayout = new QVBoxLayout();
-    trafoParamAttrLayout = new QVBoxLayout();
 }
 
 SettingsDialog::~SettingsDialog()

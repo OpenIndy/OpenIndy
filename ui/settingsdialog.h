@@ -68,14 +68,6 @@ private slots:
 
 private:
 
-    QVBoxLayout *featureAttrLayout;
-    QVBoxLayout *trafoParamAttrLayout;
-
-    QList<QLayout*> featureLayouts;
-    QList<QCheckBox*> featureCheckbox;
-    QList<QLayout*> trafoParamLayouts;
-    QList<QCheckBox*> trafoParamCheckbox;
-
     Ui::SettingsDialog *ui;
 };
 

@@ -14,6 +14,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QMessageBox>
+#include <QShowEvent>
 
 #include "configuration.h"
 #include "console.h"
@@ -49,6 +50,8 @@ signals:
 private slots:
 
     void closeEvent(QCloseEvent *event);
+
+    void showEvent(QShowEvent *event);
 
     void receiveTempSensor(Sensor *s);
 
