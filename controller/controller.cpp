@@ -542,7 +542,8 @@ void Controller::receiveSensorConfiguration(SensorConfiguration *sc, bool connec
 
     if(connect){
         this->activeStation->setInstrumentConfig(sc);
-        this->activeStation->emitStartConnect(sc->connConfig);
+        //this->activeStation->emitStartConnect(sc->connConfig);
+        this->startConnect();
     }else{
         this->activeStation->setInstrumentConfig(sc);
     }
