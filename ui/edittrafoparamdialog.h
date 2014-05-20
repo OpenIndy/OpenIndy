@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QMessageBox>
+#include <QShowEvent>
+#include <QDesktopWidget>
 #include "featurewrapper.h"
 #include "unitconverter.h"
 #include "functionstatistic.h"
@@ -30,6 +32,8 @@ signals:
 public slots:
 
     void getSelectedTrafoParam(FeatureWrapper *fw);
+
+    void showEvent(QShowEvent *event);
 
 private slots:
     void on_toolButton_cancel_clicked();

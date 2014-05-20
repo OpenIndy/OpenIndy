@@ -91,6 +91,14 @@ void importNominalGeometryDialog::setUpCoordinateSystems(QList<CoordinateSystem*
 
 }
 
+void importNominalGeometryDialog::showEvent(QShowEvent *event)
+{
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
+    event->accept();
+}
+
 void importNominalGeometryDialog::on_comboBox_format_currentIndexChanged(const QString &arg1)
 {
 

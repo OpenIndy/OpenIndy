@@ -80,7 +80,7 @@ void GUIConfiguration::generateFeatureAttributes()
     GUIConfiguration::featureAttributes.append(fY);
     DisplayAttribute *fZ = new DisplayAttribute(QString("z"+UnitConverter::getDistanceUnitString()),true);
     GUIConfiguration::featureAttributes.append(fZ);
-    DisplayAttribute *fobs = new DisplayAttribute("observation",true);
+    DisplayAttribute *fobs = new DisplayAttribute("observations",true);
     GUIConfiguration::featureAttributes.append(fobs);
     DisplayAttribute *fSolved = new DisplayAttribute("solved",true);
     GUIConfiguration::featureAttributes.append(fSolved);

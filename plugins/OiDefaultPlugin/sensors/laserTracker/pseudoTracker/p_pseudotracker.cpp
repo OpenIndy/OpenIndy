@@ -338,14 +338,17 @@ QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
 
     Reading *p = new Reading();
 
-    /*p->rPolar.azimuth = ((double) std::rand()/RAND_MAX)*(6.283185-0.0001)+1.0;
-    p->rPolar.zenith = ((double) std::rand()/RAND_MAX)*(1.57079-0.0001)+1.0;
-    p->rPolar.distance = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-    p->rPolar.fsBs = m->face;*/
+    double daz = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+    double dze = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+    double dd = ((double) std::rand()/RAND_MAX)*(20.0-1.0)+1.0;
 
-    p->rPolar.azimuth = myAzimuth;
-    p->rPolar.zenith = myZenith;
-    p->rPolar.distance = myDistance;
+    daz = daz/1000;
+    dze = dze/1000;
+    dd = dd/10000;
+
+    p->rPolar.azimuth = myAzimuth+daz;
+    p->rPolar.zenith = myZenith+dze;
+    p->rPolar.distance = myDistance+dd;
     p->rPolar.fsBs = m->face;
 
     p->instrument = this;
@@ -364,7 +367,11 @@ QList<Reading*> PseudoTracker::measureDistance(MeasurementConfig *m){
 
     Reading *p = new Reading();
 
-    p->rDistance.distance = myDistance;
+    double dd = ((double) std::rand()/RAND_MAX)*(20.0-1.0)+1.0;
+
+    dd = dd/10000;
+
+    p->rDistance.distance = myDistance + dd;
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
 
@@ -380,8 +387,14 @@ QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
 
     Reading *p = new Reading();
 
-    p->rDirection.azimuth = myAzimuth;
-    p->rDirection.zenith = myZenith;
+    double daz = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+    double dze = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+
+    daz = daz/1000;
+    dze = dze/1000;
+
+    p->rDirection.azimuth = myAzimuth+daz;
+    p->rDirection.zenith = myZenith+dze;
     p->rDirection.fsBs = m->face;
 
     p->instrument = this;
@@ -399,9 +412,17 @@ QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
 
     Reading *p = new Reading();
 
-    p->rCartesian.xyz.setAt(0, (myDistance * qSin(myZenith) * qCos(myAzimuth)));
-    p->rCartesian.xyz.setAt(1, (myDistance * qSin(myZenith) * qSin(myAzimuth)));
-    p->rCartesian.xyz.setAt(2, (myDistance * qCos(myZenith)));
+    double dx = ((double) std::rand()/RAND_MAX)*(30.0-1.0)+1.0;
+    double dy = ((double) std::rand()/RAND_MAX)*(30.0-1.0)+1.0;
+    double dz = ((double) std::rand()/RAND_MAX)*(30.0-1.0)+1.0;
+
+    dx = dx/10000;
+    dy = dy/10000;
+    dz = dz/10000;
+
+    p->rCartesian.xyz.setAt(0, (myDistance * qSin(myZenith) * qCos(myAzimuth))+dx);
+    p->rCartesian.xyz.setAt(1, (myDistance * qSin(myZenith) * qSin(myAzimuth))+dy);
+    p->rCartesian.xyz.setAt(2, (myDistance * qCos(myZenith))+dz);
     p->rCartesian.xyz.setAt(3, 1);
 
     p->instrument = this;

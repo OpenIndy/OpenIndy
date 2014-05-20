@@ -33,6 +33,14 @@ void EditTrafoparamDialog::getSelectedTrafoParam(FeatureWrapper *fw)
     }
 }
 
+void EditTrafoparamDialog::showEvent(QShowEvent *event)
+{
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
+    event->accept();
+}
+
 /*!
  * \brief closes the window without saving or changing values.
  */

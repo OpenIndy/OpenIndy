@@ -20,6 +20,8 @@
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtNetwork/QNetworkInterface>
+#include <QShowEvent>
+#include <QDesktopWidget>
 
 namespace Ui {
 class FeatureData;
@@ -42,6 +44,8 @@ public:
     MatrixModel *sxxModel;
 
     void getActiveFeature(FeatureWrapper *activeFeature);
+
+    void showEvent(QShowEvent *event);
 
 private slots:
     void on_pushButton_cancel_clicked();
