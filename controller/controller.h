@@ -144,6 +144,7 @@ public slots:
     void startHome();
     void startCompensation();
     void startChangeMotorState();
+    void startCustomAction(QString s);
 
     void recalcActiveFeature();
     void recalcFeature(Feature *f);

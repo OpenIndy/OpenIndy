@@ -160,6 +160,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&control, SIGNAL(availableGroupsChanged(QMap<QString,int>)), this, SLOT(availableGroupsChanged(QMap<QString,int>)));
     connect(control.tblModel, SIGNAL(groupNameChanged(QString,QString)), &control, SLOT(groupNameChanged(QString,QString)));
 
+    //watchwindow
+    connect(&watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
+    connect(&watchWindow,SIGNAL(destroyed()),&control,SLOT(startMeasurement()));
+
     //setup create feature toolbar
     setupCreateFeature();
     //connect(&control, SIGNAL(updateGeometryIcons(QStringList)), this, SLOT(updateGeometryIcons(QStringList)));
@@ -499,6 +503,27 @@ void MainWindow::on_actionControl_pad_triggered()
                 labelSensorControlName->setText("sensor control total station");
                 setupTotalStationPad();
             }
+            if(control.activeStation->sensorPad->instrument != NULL){
+                //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
+                signalMapper = new QSignalMapper();
+                connect(signalMapper,SIGNAL(mapped(QString)),&control,SLOT(startCustomAction(QString)));
+                //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
+                QStringList customActionStrings = control.activeStation->sensorPad->instrument->selfDefinedActions();
+                this->clearCustomWidgets();
+                for(int i=0; i<customActionStrings.size();i++){
+                    QAction *sep = new QAction(0);
+                    sep->setSeparator(true);
+                    customActions.append(sep);
+                    QAction *act = new QAction(0);
+                    act->setText(customActionStrings.at(i));
+                    customActions.append(act);
+                    ui->toolBar_ControlPad->addAction(sep);
+                    ui->toolBar_ControlPad->addAction(act);
+                    connect(act,SIGNAL(triggered()),signalMapper,SLOT(map()));
+                    signalMapper->setMapping(act,act->text());
+
+                }
+            }
         }
     }
 }
@@ -562,15 +587,13 @@ void MainWindow::on_actionConsole_triggered()
 void MainWindow::on_actionWatch_window_triggered()
 {
 
-    WatchWindow *newWatchWindow = new WatchWindow();
 
-    connect(newWatchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
-    connect(newWatchWindow,SIGNAL(destroyed()),&control,SLOT(startMeasurement()));
 
-    newWatchWindow->myStation = control.activeStation;
-    newWatchWindow->activeCoordinateSystem = control.activeCoordinateSystem;
-    newWatchWindow->activeFeature = control.activeFeature;
-    newWatchWindow->show();
+    watchWindow.myStation = control.activeStation;
+    watchWindow.activeCoordinateSystem = control.activeCoordinateSystem;
+    watchWindow.activeFeature = control.activeFeature;
+
+    watchWindow.show();
 
 }
 
@@ -1497,4 +1520,15 @@ void MainWindow::showCreateFeatureDialog(Configuration::FeatureTypes featureType
 void MainWindow::showScalarEntityDialog(Configuration::FeatureTypes featureType){
     this->sEntityDialog->setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
     this->sEntityDialog->show();
+}
+
+/*!
+ * \brief clearCustomWidgets deletes all existing custom actions.
+ */
+void MainWindow::clearCustomWidgets()
+{
+    for(int i=0;i<this->customActions.size();i++){
+        delete this->customActions.at(i);
+    }
+    this->customActions.clear();
 }

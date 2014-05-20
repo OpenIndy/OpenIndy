@@ -94,6 +94,7 @@ Controller::Controller(QObject *parent) :
 
     connect(this->activeStation,SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
     connect(&this->activeStation->sensorPad->getOiEmitter(),SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
+    //connect(&this->activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
     connect(this,SIGNAL(refreshGUI(FeatureWrapper*,Station*)),this->tblModel,SLOT(updateModel(FeatureWrapper*,Station*)));
 
     emit refreshGUI(this->activeFeature,this->activeStation);
@@ -295,6 +296,17 @@ void Controller::startChangeMotorState(){
 }
 
 /*!
+ * \brief Controller::startCustomAction calls the custom action of the sensor.
+ * \param s
+ */
+void Controller::startCustomAction(QString s)
+{
+    if(checkSensorValid()){
+        this->activeStation->emitSelfDefinedAction(s);
+    }
+}
+
+/*!
  * \brief Controller::recalcActiveFeature
  * Call recalcFeature function for active feature
  */
@@ -492,6 +504,7 @@ void Controller::getSelectedPlugin(int index){
 
         //this->activeStation->InstrumentConfig = new SensorConfiguration();
         this->activeStation->sensorPad->instrument = PluginLoader::loadSensorPlugin(path, name);
+        connect(&this->activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
         defaultLastmConfig();
         updateFeatureMConfig();
     }

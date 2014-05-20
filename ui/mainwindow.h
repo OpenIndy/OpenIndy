@@ -40,6 +40,7 @@
 #include <QMetaObject>
 #include <QMetaEnum>
 #include <QString>
+#include <QSignalMapper>
 
 #include "tablemodel.h"
 #include "featureattributesexchange.h"
@@ -59,6 +60,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+    QSignalMapper *signalMapper;
 
     int selectedFeature;
 
@@ -80,6 +83,8 @@ public:
 
     importNominalGeometryDialog importNominalDialog;
     NominalDataDialog nominalDialog;
+
+    WatchWindow watchWindow;
 
     //actions
     //create feature
@@ -263,8 +268,12 @@ private slots:
     void showCreateFeatureDialog(Configuration::FeatureTypes featureType);
     void showScalarEntityDialog(Configuration::FeatureTypes featureType);
 
+    void clearCustomWidgets();
+
 private:
     Ui::MainWindow *ui;
+
+    QList<QAction*> customActions;
 
     QModelIndexList featuresToDelete;
     bool isTrafoParamSelected;
