@@ -234,20 +234,6 @@ void Controller::startToggleSight(){
 }
 
 /*!
- * \brief Controller::sendCmdString
- * After checking some conditions, it calls the command function of the active sensor with the given parameter.
- * \param cmd
- */
-void Controller::sendCmdString(QString cmd){
-
-    if(checkSensorValid()){
-        //TODO do self defined action
-        //this->activeStation->emitStartCommand(cmd);
-        emit sensorWorks(QString("sending command..."+ cmd));
-    }
-}
-
-/*!
  * \brief Controller::startInitialize
  * After checking some conditions, it calls the initialize function of the active sensor.
  */
@@ -290,8 +276,8 @@ void Controller::startCompensation(){
 void Controller::startChangeMotorState(){
 
     if(checkSensorValid()){
-        //this->activeStation->emitStartMotorState();
-        //emit sensorWorks("change motor state...");
+        this->activeStation->emitStartMotorState();
+        emit sensorWorks("change motor state...");
     }
 }
 
@@ -301,9 +287,8 @@ void Controller::startChangeMotorState(){
  */
 void Controller::startCustomAction(QString s)
 {
-    if(checkSensorValid()){
-        this->activeStation->emitSelfDefinedAction(s);
-    }
+    emit sensorWorks(s);
+    this->activeStation->emitSelfDefinedAction(s);
 }
 
 /*!

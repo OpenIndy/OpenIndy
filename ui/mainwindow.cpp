@@ -78,7 +78,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->actionConnect,SIGNAL(triggered()),&control,SLOT(startConnect()));
     connect(this->actionDisconnect,SIGNAL(triggered()),&control,SLOT(startDisconnect()));
     connect(this->actionToggleSightOrientation,SIGNAL(triggered()),&control,SLOT(startToggleSight()));
-    connect(this,SIGNAL(sendCommandString(QString)),&control,SLOT(sendCmdString(QString)));
     connect(this->actionInitialize,SIGNAL(triggered()),&control,SLOT(startInitialize()));
     connect(this->actionHome,SIGNAL(triggered()),&control,SLOT(startHome()));
     connect(this->actionChangeMotorState,SIGNAL(triggered()),&control,SLOT(startChangeMotorState()));
@@ -94,7 +93,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->actionMConfig,SIGNAL(triggered()),this,SLOT(openCreateFeatureMConfig()));
     connect(ui->actionClose,SIGNAL(triggered()),this,SLOT(close()));
     connect(ui->tableView_data,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTableViewClicked(QModelIndex)));
-    connect(this->lineEditSendCommand,SIGNAL(returnPressed()),this, SLOT(sendCommand()));
     connect(this->actionCreate,SIGNAL(triggered()),this,SLOT(createFeature()));
     connect(this->actionMove,SIGNAL(triggered()),&moveDialog,SLOT(show()));
     connect(&moveDialog,SIGNAL(sendReading(Reading*)),&control,SLOT(startMove(Reading*)));
@@ -419,8 +417,6 @@ void MainWindow::setupCreateFeature(){
  */
 void MainWindow::setupLaserTrackerPad(){
 
-    ui->toolBar_ControlPad->addWidget(labelSendCommand);
-    ui->toolBar_ControlPad->addWidget(lineEditSendCommand);
     ui->toolBar_ControlPad->addAction(cPsep);
     ui->toolBar_ControlPad->addAction(actionConnect);
     ui->toolBar_ControlPad->addAction(cPsep1);
@@ -450,8 +446,6 @@ void MainWindow::setupLaserTrackerPad(){
  */
 void MainWindow::setupTotalStationPad(){
 
-    ui->toolBar_ControlPad->addWidget(labelSendCommand);
-    ui->toolBar_ControlPad->addWidget(lineEditSendCommand);
     ui->toolBar_ControlPad->addAction(cPsep);
     ui->toolBar_ControlPad->addAction(actionConnect);
     ui->toolBar_ControlPad->addAction(cPsep1);
@@ -472,16 +466,6 @@ void MainWindow::on_lineEdit_inputConsole_returnPressed()
 {
     Console::addLine(ui->lineEdit_inputConsole->text());
     ui->lineEdit_inputConsole->clear();
-}
-
-/*!
- * \brief sendCommand function sends the entered command to the controller class.
- * There the command will be send to the active sensor that analyses and handles the command.
- */
-void MainWindow::sendCommand()
-{
-    Console::addLine("test");
-    emit sendCommandString(this->lineEditSendCommand->text());
 }
 
 /*!
@@ -649,9 +633,6 @@ void MainWindow::initializeActions(){
     actionChangeMotorState->setText("change motor state");
     actionToggleSightOrientation = new QAction(0);
     actionToggleSightOrientation->setText("toggle sight orientation");
-    lineEditSendCommand = new QLineEdit();
-    labelSendCommand = new QLabel();
-    labelSendCommand->setText("insert command string:");
     actionCompensation = new QAction(0);
     actionCompensation->setText("compensation");
     labelSensorControlName = new QLabel();

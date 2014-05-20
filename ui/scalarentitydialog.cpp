@@ -123,6 +123,9 @@ void ScalarEntityDialog::on_toolButton_mConfig_clicked()
 
 void ScalarEntityDialog::showEvent(QShowEvent *event)
 {
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
     initGUI();
     event->accept();
 }

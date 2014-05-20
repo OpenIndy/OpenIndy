@@ -210,6 +210,14 @@ void FunctionPluginLoader::setActiveFeatureTitle(QString activeFeature){
     this->setWindowTitle(QString("function plugin loader - active feature: %1").arg(activeFeature));
 }
 
+void FunctionPluginLoader::showEvent(QShowEvent *event)
+{
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
+    event->accept();
+}
+
 /*!
  * \brief FunctionPluginLoader::on_treeView_availableElements_clicked
  * Is called when an available element was selected

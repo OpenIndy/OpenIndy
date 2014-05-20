@@ -2,6 +2,8 @@
 #define SENSORINFODIALOG_H
 
 #include <QDialog>
+#include <QShowEvent>
+#include <QDesktopWidget>
 
 namespace Ui {
 class SensorInfoDialog;
@@ -18,6 +20,7 @@ public:
 public slots:
     void showInfo(QString info);
     void hideInfo(bool check);
+    void showEvent(QShowEvent *event);
 
 private slots:
     void on_pushButton_cancel_clicked();

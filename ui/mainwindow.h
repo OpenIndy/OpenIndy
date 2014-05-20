@@ -114,8 +114,6 @@ public:
     QAction *actionHome;
     QAction *actionChangeMotorState;
     QAction *actionToggleSightOrientation;
-    QLineEdit *lineEditSendCommand;
-    QLabel *labelSendCommand;
     QAction *actionCompensation;
     QLabel *labelSensorControlName;
 
@@ -180,7 +178,6 @@ private slots:
     void initializeActions();
 
     void on_lineEdit_inputConsole_returnPressed();
-    void sendCommand();
     void setupCreateFeature();
     void setupLaserTrackerPad();
     void setupTotalStationPad();

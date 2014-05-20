@@ -15,6 +15,7 @@
 #include <QLayout>
 #include <QMessageBox>
 #include <QShowEvent>
+#include <QDesktopWidget>
 
 #include "configuration.h"
 #include "console.h"

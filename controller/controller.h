@@ -139,7 +139,6 @@ public slots:
     void startConnect();
     void startDisconnect();
     void startToggleSight();
-    void sendCmdString(QString cmd);
     void startInitialize();
     void startHome();
     void startCompensation();

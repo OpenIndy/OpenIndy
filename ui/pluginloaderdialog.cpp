@@ -14,6 +14,14 @@ PluginLoaderDialog::~PluginLoaderDialog()
     delete ui;
 }
 
+void PluginLoaderDialog::showEvent(QShowEvent *event)
+{
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
+    event->accept();
+}
+
 void PluginLoaderDialog::on_toolButton_Path_clicked()
 {
 

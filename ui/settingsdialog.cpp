@@ -73,6 +73,9 @@ void SettingsDialog::initGUI(){
  * \param event
  */
 void SettingsDialog::showEvent(QShowEvent *event){
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
 
     ui->lineEdit_angleDigits->setText(QString::number(UnitConverter::angleDigits));
     ui->lineEdit_distanceDigits->setText(QString::number(UnitConverter::distanceDigits));
