@@ -81,6 +81,14 @@ void FeatureData::getActiveFeature(FeatureWrapper *activeFeature){
     }
 }
 
+void FeatureData::showEvent(QShowEvent *event)
+{
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
+    event->accept();
+}
+
 /*!
  * \brief initiates the gui and fills the combobox with the functions of the given feature.
  */

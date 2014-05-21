@@ -201,6 +201,9 @@ QString OiMetaData::findFeature(Configuration::FeatureTypes f){
     case Configuration::eScalarEntityDistanceFeature:
         return "distance";
         break;
+    case Configuration::eScalarEntityTemperatureFeature:
+        return "temperature";
+        break;
     default:
         return "";
         break;
@@ -274,6 +277,9 @@ QString OiMetaData::findElement(Configuration::ElementTypes e){
         break;
     case Configuration::eNurbsElement:
         return "nurbs";
+        break;
+    case Configuration::eScalarEntityTemperatureElement:
+        return "temperature";
         break;
     default:
         return "";

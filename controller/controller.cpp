@@ -94,6 +94,7 @@ Controller::Controller(QObject *parent) :
 
     connect(this->activeStation,SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
     connect(&this->activeStation->sensorPad->getOiEmitter(),SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
+    //connect(&this->activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
     connect(this,SIGNAL(refreshGUI(FeatureWrapper*,Station*)),this->tblModel,SLOT(updateModel(FeatureWrapper*,Station*)));
 
     emit refreshGUI(this->activeFeature,this->activeStation);
@@ -233,20 +234,6 @@ void Controller::startToggleSight(){
 }
 
 /*!
- * \brief Controller::sendCmdString
- * After checking some conditions, it calls the command function of the active sensor with the given parameter.
- * \param cmd
- */
-void Controller::sendCmdString(QString cmd){
-
-    if(checkSensorValid()){
-        //TODO do self defined action
-        //this->activeStation->emitStartCommand(cmd);
-        emit sensorWorks(QString("sending command..."+ cmd));
-    }
-}
-
-/*!
  * \brief Controller::startInitialize
  * After checking some conditions, it calls the initialize function of the active sensor.
  */
@@ -289,9 +276,19 @@ void Controller::startCompensation(){
 void Controller::startChangeMotorState(){
 
     if(checkSensorValid()){
-        //this->activeStation->emitStartMotorState();
-        //emit sensorWorks("change motor state...");
+        this->activeStation->emitStartMotorState();
+        emit sensorWorks("change motor state...");
     }
+}
+
+/*!
+ * \brief Controller::startCustomAction calls the custom action of the sensor.
+ * \param s
+ */
+void Controller::startCustomAction(QString s)
+{
+    emit sensorWorks(s);
+    this->activeStation->emitSelfDefinedAction(s);
 }
 
 /*!
@@ -375,6 +372,7 @@ void Controller::showResults(bool b){
 void Controller::defaultLastmConfig(){
     lastmConfig->name = "default configuration";
     lastmConfig->count = 1;
+    lastmConfig->iterations = 1;
     lastmConfig->measureTwoSides = false;
     if(this->activeStation != NULL && this->activeStation->sensorPad->instrument != NULL){
         lastmConfig->typeOfReading = this->activeStation->sensorPad->instrument->getSupportedReadingTypes()->at(0);
@@ -491,6 +489,7 @@ void Controller::getSelectedPlugin(int index){
 
         //this->activeStation->InstrumentConfig = new SensorConfiguration();
         this->activeStation->sensorPad->instrument = PluginLoader::loadSensorPlugin(path, name);
+        connect(&this->activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
         defaultLastmConfig();
         updateFeatureMConfig();
     }
@@ -516,10 +515,10 @@ void Controller::getTempSensor(int index)
  */
 void Controller::getSelectedFeature(int index){
     //if a new feature was selected
-    if(this->activeFeature != this->features.at(getActiveFeatureIndex(index))){
+    if(this->activeFeature != this->features.at(index)){
         this->changeUsedElementsModel(-1, -1);
     }
-    this->activeFeature = this->features.at(getActiveFeatureIndex(index));
+    this->activeFeature = this->features.at(index);
     if(this->activeFeature->getGeometry()!= NULL){
         double x  = this->activeFeature->getGeometry()->getDisplayX().toDouble();
         double y = this->activeFeature->getGeometry()->getDisplayY().toDouble();
@@ -542,7 +541,8 @@ void Controller::receiveSensorConfiguration(SensorConfiguration *sc, bool connec
 
     if(connect){
         this->activeStation->setInstrumentConfig(sc);
-        this->activeStation->emitStartConnect(sc->connConfig);
+        //this->activeStation->emitStartConnect(sc->connConfig);
+        this->startConnect();
     }else{
         this->activeStation->setInstrumentConfig(sc);
     }
@@ -1163,23 +1163,6 @@ bool Controller::checkCircleWarning(Feature *activeFeature, Feature *usedForActi
     return true;
 }
 
-/*!
- * \brief Controller::getActiveFeatureIndex
- * searches the active feature in the features list. transformation parameters cannot be selected as active feature.
- * So they donot get marked in the tableview.
- * \param index
- * \return
- */
-int Controller::getActiveFeatureIndex(int index){
-
-    int tmpINdex = index;
-
-    int result = checkActiveFeatureIndex(0, index);
-    result += tmpINdex;
-
-    return result;
-}
-
 int Controller::checkActiveFeatureIndex(int current, int index){
 
     //int tmpIndex = index;
@@ -1197,27 +1180,6 @@ int Controller::checkActiveFeatureIndex(int current, int index){
     }
 
     return featureIndex;
-}
-
-void Controller::handleTrafoParamClicked(const QModelIndex &idx){
-    int index = idx.row();
-    int tmpCount = 0;
-
-    for(int i=0;i<this->features.size();i++){
-        if(this->features.at(i)->getTrafoParam() != NULL){
-            tmpCount += 1;
-
-            if(tmpCount-1 == index){
-                this->activeFeature = this->features.at(i);
-
-                emit refreshGUI(this->activeFeature, this->activeStation);
-                //set up tree view model with all functions of selected feature
-                this->changeFunctionTreeViewModel();
-
-                break;
-            }
-        }
-    }
 }
 
 /*!

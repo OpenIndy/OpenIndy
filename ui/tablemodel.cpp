@@ -206,10 +206,17 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
             return this->features.at(index.row())->getFeature()->comment;
             break;
         case 33:
-            return this->features.at(index.row())->getFeature()->getDisplayUse();
+            if(this->features.at(index.row())->getTrafoParam() != NULL){
+                return this->features.at(index.row())->getTrafoParam()->use;
+            }//else{
+            //    return this->features.at(index.row())->getFeature()->getDisplayUse();
+            //}
             break;
         case 34:
-            return this->features.at(index.row())->getFeature()->getDisplayTime();
+            if(this->features.at(index.row())->getTrafoParam() != NULL){
+                return this->features.at(index.row())->getTrafoParam()->validTime;
+            }
+            //return this->features.at(index.row())->getFeature()->getDisplayTime();
             break;
         default:
             break;
@@ -481,6 +488,10 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
             emit this->groupNameChanged(oldValue, value.toString());
         }else if(index.column() == 32){ //feature comment
             this->activeFeature->getFeature()->comment = value.toString();
+        }else if(index.column() == 33){//trafo param use
+            this->activeFeature->getTrafoParam()->use = value.toBool();
+        }else if(index.column() == 34){//trafo param time
+            this->activeFeature->getTrafoParam()->validTime = value.toDateTime();
         }
 
         this->updateModel(this->activeFeature, this->activeStation);

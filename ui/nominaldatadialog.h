@@ -2,6 +2,8 @@
 #define NOMINALDATADIALOG_H
 
 #include <QDialog>
+#include <QShowEvent>
+#include <QDesktopWidget>
 #include "featurewrapper.h"
 #include "configuration.h"
 #include "nominalattributeexchange.h"
@@ -34,6 +36,8 @@ private slots:
     void on_toolButton_cancel_clicked();
 
     void setLabelText();
+
+    void showEvent(QShowEvent *event);
 
 private:
     FeatureWrapper *selectedFeature;

@@ -34,9 +34,36 @@ void WatchWindow::setLCDNumber(QVariantMap m){
 
         QString name = j.key();
         QVariant qvalue = j.value();
-        QString value =  qvalue.toString();
+        double dvalue = qvalue.toDouble()*UnitConverter::getDistanceMultiplier();
+        QString value =  QString::number(dvalue);
 
-        streamData.value(name)->display(value);
+        if(activeCoordinateSystem == myStation->coordSys && activeFeature != NULL){
+            if(name == "x"){
+
+                double featureX = activeFeature->getFeature()->getDisplayX().toDouble();
+                double dx = featureX - value.toDouble();
+                streamData.value(name)->display(QString::number(dx,'f',UnitConverter::distanceDigits));
+
+            }else if(name == "y"){
+
+                double featureY = activeFeature->getFeature()->getDisplayY().toDouble();
+                double dy = featureY - value.toDouble();
+                streamData.value(name)->display(QString::number(dy,'f',UnitConverter::distanceDigits));
+
+            }else if(name == "z"){
+
+                double featureZ = activeFeature->getFeature()->getDisplayZ().toDouble();
+                double dz = featureZ - value.toDouble();
+                streamData.value(name)->display(QString::number(dz,'f',UnitConverter::distanceDigits));
+
+            }else{
+                streamData.value(name)->display(value);
+            }
+        }else{
+            streamData.value(name)->display(value);
+        }
+
+
 
 
     }
@@ -45,6 +72,9 @@ void WatchWindow::setLCDNumber(QVariantMap m){
 
 void WatchWindow::iniGUI(QVariantMap m)
 {
+    if(masterLayout == NULL){
+        masterLayout = new QVBoxLayout();
+    }
 
     if(activeFeature != NULL){
         QLabel *featureName = new QLabel();
@@ -73,7 +103,7 @@ void WatchWindow::iniGUI(QVariantMap m)
         n->display(value);
 
         n->setMode(QLCDNumber::Dec);
-        n->setDigitCount(4);
+        n->setDigitCount(10);
         n->setSmallDecimalPoint(true);
 
         QHBoxLayout *layout = new QHBoxLayout();
@@ -109,11 +139,15 @@ void WatchWindow::closeEvent(QCloseEvent *e)
 
     disconnect(myStation->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
 
-    e->accept();
-
+    emit destroy();
     this->destroy(true,true);
 
-    emit destroy();
+    this->close();
+
+    delete masterLayout;
+    masterLayout = NULL;
+
+    e->accept();
 
 }
 

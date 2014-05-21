@@ -4,7 +4,8 @@
 #include <QDialog>
 #include "configuration.h"
 #include "featurewrapper.h"
-#include "QShowEvent"
+#include <QShowEvent>
+#include <QDesktopWidget>
 #include "featureattributesexchange.h"
 
 namespace Ui {

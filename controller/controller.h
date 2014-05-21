@@ -125,8 +125,6 @@ signals:
 public slots:
 
     void getNominalValues(NominalAttributeExchange nominalValue);
-    void handleTrafoParamClicked(const QModelIndex &);
-    int getActiveFeatureIndex(int index);
     int checkActiveFeatureIndex(int current, int index);
 
     void setActiveCoordSystem(QString CoordSysName);
@@ -139,11 +137,11 @@ public slots:
     void startConnect();
     void startDisconnect();
     void startToggleSight();
-    void sendCmdString(QString cmd);
     void startInitialize();
     void startHome();
     void startCompensation();
     void startChangeMotorState();
+    void startCustomAction(QString s);
 
     void recalcActiveFeature();
     void recalcFeature(Feature *f);

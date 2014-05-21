@@ -15,6 +15,14 @@ MovementDialog::~MovementDialog()
     delete ui;
 }
 
+void MovementDialog::showEvent(QShowEvent *event)
+{
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
+    event->accept();
+}
+
 void MovementDialog::on_pushButton_move_clicked()
 {
     Reading *r = new Reading();

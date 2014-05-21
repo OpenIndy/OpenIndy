@@ -35,6 +35,7 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked()
 
     mConfig->name = ui->lineEdit_configName->text();
     mConfig->count = ui->lineEdit_count->text().toInt();
+    mConfig->iterations = ui->lineEdit_iterations->text().toInt();
     mConfig->measureTwoSides = ui->checkBox_fsbs->isChecked();
     mConfig->typeOfReading = static_cast<Configuration::ReadingTypes>(ui->comboBox_typeOfReading->itemData(ui->comboBox_typeOfReading->currentIndex()).toInt());
     mConfig->distanceDependent = ui->checkBox_distanceDependent->isChecked();
@@ -81,6 +82,7 @@ void MeasurementConfigDialog::receiveConfig(MeasurementConfig *mC){
     if(this->mConfig != NULL){
         ui->lineEdit_configName->setText(mConfig->name);
         ui->lineEdit_count->setText(QString::number(mConfig->count));
+        ui->lineEdit_iterations->setText(QString::number(mConfig->iterations));
         ui->checkBox_fsbs->setChecked(this->mConfig->measureTwoSides);
         initGUI();
         ui->checkBox_distanceDependent->setChecked(this->mConfig->distanceDependent);
@@ -90,6 +92,7 @@ void MeasurementConfigDialog::receiveConfig(MeasurementConfig *mC){
     }else{
         ui->lineEdit_configName->setText("default");
         ui->lineEdit_count->setText(QString::number(1));
+        ui->lineEdit_iterations->setText(QString::number(1));
         ui->checkBox_fsbs->setChecked(false);
         initGUI();
         ui->checkBox_distanceDependent->setChecked(false);
@@ -146,6 +149,7 @@ void MeasurementConfigDialog::initGUI(){
             Console::addLine("Sensor does not support any reading types.");
         }
     }else{
+        QString currentText = ui->comboBox_typeOfReading->currentText();
         ui->comboBox_typeOfReading->clear();
         ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sPolar,Configuration::ePolar);
         ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sCartesian,Configuration::eCartesian);
@@ -153,6 +157,10 @@ void MeasurementConfigDialog::initGUI(){
         ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sDistance,Configuration::eDistance);
         ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sTemperatur,Configuration::eTemperatur);
         ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sLevel,Configuration::eLevel);
+        int idx = ui->comboBox_typeOfReading->findText(currentText);
+        if(idx != -1){
+            ui->comboBox_typeOfReading->setCurrentIndex(idx);
+        }
     }
 }
 
@@ -190,6 +198,14 @@ void MeasurementConfigDialog::setStation(Station *s)
             initGUI();
         }
     }
+}
+
+void MeasurementConfigDialog::showEvent(QShowEvent *event)
+{
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
+    event->accept();
 }
 
 /*!

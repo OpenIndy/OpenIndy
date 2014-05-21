@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QLCDNumber>
 #include <QVBoxLayout>
+#include "unitconverter.h"
 
 
 namespace Ui {

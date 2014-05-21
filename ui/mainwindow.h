@@ -40,6 +40,7 @@
 #include <QMetaObject>
 #include <QMetaEnum>
 #include <QString>
+#include <QSignalMapper>
 
 #include "tablemodel.h"
 #include "featureattributesexchange.h"
@@ -59,6 +60,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+    QSignalMapper *signalMapper;
 
     int selectedFeature;
 
@@ -80,6 +83,8 @@ public:
 
     importNominalGeometryDialog importNominalDialog;
     NominalDataDialog nominalDialog;
+
+    WatchWindow watchWindow;
 
     //actions
     //create feature
@@ -109,8 +114,6 @@ public:
     QAction *actionHome;
     QAction *actionChangeMotorState;
     QAction *actionToggleSightOrientation;
-    QLineEdit *lineEditSendCommand;
-    QLabel *labelSendCommand;
     QAction *actionCompensation;
     QLabel *labelSensorControlName;
 
@@ -171,11 +174,11 @@ private slots:
 
     void getActiveCoordSystem(QString coordSys);
     void handleTableViewClicked(const QModelIndex &);
+    void handleTrafoParamClicked(const QModelIndex &);
 
     void initializeActions();
 
     void on_lineEdit_inputConsole_returnPressed();
-    void sendCommand();
     void setupCreateFeature();
     void setupLaserTrackerPad();
     void setupTotalStationPad();
@@ -263,8 +266,12 @@ private slots:
     void showCreateFeatureDialog(Configuration::FeatureTypes featureType);
     void showScalarEntityDialog(Configuration::FeatureTypes featureType);
 
+    void clearCustomWidgets();
+
 private:
     Ui::MainWindow *ui;
+
+    QList<QAction*> customActions;
 
     QModelIndexList featuresToDelete;
     bool isTrafoParamSelected;

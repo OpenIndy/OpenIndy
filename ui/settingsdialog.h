@@ -6,6 +6,8 @@
 #include <QCloseEvent>
 #include <QLayout>
 #include <QCheckBox>
+#include <QStringListModel>
+#include <QDesktopWidget>
 #include "unitconverter.h"
 #include "plugintreeviewmodel.h"
 #include "guiconfiguration.h"
@@ -21,6 +23,16 @@ class SettingsDialog : public QDialog
 public:
     explicit SettingsDialog(QWidget *parent = 0);
     ~SettingsDialog();
+
+    QStringList allFeatureAttributes;
+    QStringList displayedFeatureAttributes;
+    QStringListModel *m_featureAttributes;
+    QStringListModel *m_displayedFeatureAttributes;
+
+    QStringList allTrafoParamAttributes;
+    QStringList displayedTrafoParamAttributes;
+    QStringListModel *m_TrafoParamAttributes;
+    QStringListModel *m_displayedTrafoParamAttributes;
 
     void setPluginsModel(PluginTreeViewModel *model);
 signals:
@@ -47,19 +59,15 @@ private slots:
 
     void getTrafoParamColumns();
 
-    void destructFeatureColumns();
+    void on_toolButton_addFeatureAttribute_clicked();
 
-    void destructTrafoParamColumns();
+    void on_toolButton_removeFeatureAttribute_clicked();
+
+    void on_toolButton_addTrafoParamAttribute_clicked();
+
+    void on_toolButton_removeTrafoParamAttribute_clicked();
 
 private:
-
-    QVBoxLayout *featureAttrLayout;
-    QVBoxLayout *trafoParamAttrLayout;
-
-    QList<QLayout*> featureLayouts;
-    QList<QCheckBox*> featureCheckbox;
-    QList<QLayout*> trafoParamLayouts;
-    QList<QCheckBox*> trafoParamCheckbox;
 
     Ui::SettingsDialog *ui;
 };

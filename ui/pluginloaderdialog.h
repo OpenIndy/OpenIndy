@@ -7,6 +7,8 @@
 #include <QFileDialog>
 //#include <QMessagebox>
 #include <QtWidgets/QMessageBox>
+#include <QShowEvent>
+#include <QDesktopWidget>
 
 namespace Ui {
 class PluginLoaderDialog;
@@ -19,6 +21,8 @@ class PluginLoaderDialog : public QDialog
 public:
     explicit PluginLoaderDialog(QWidget *parent = 0);
     ~PluginLoaderDialog();
+
+    void showEvent(QShowEvent *event);
 
 private slots:
 

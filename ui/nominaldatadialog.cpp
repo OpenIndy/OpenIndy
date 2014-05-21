@@ -325,6 +325,14 @@ void NominalDataDialog::setLabelText()
     ui->label_nominalZ->setText(QString("nominal Z value " + UnitConverter::getDistanceUnitString()));
 }
 
+void NominalDataDialog::showEvent(QShowEvent *event)
+{
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
+    event->accept();
+}
+
 /*!
  * \brief fillGUI with the attribute values of the selected nominal feature.
  */
