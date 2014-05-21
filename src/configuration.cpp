@@ -47,8 +47,8 @@ QString Configuration::sObservation = "observation";
 QString Configuration::sSteel = "steel";
 QString Configuration::sAluminum = "aluminum";
 
-double Configuration::dSteel = 0.0;
-double Configuration::dAluminum = 0.0;
+double Configuration::dSteel = 10.0;
+double Configuration::dAluminum = 110.0;
 
 int Configuration::idCount = 0;
 

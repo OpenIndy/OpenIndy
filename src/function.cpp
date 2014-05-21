@@ -2093,7 +2093,7 @@ void Function::removeScalarEntityTemperature(int id)
  * \param id
  * \return
  */
-ScalarEntityTemperature *Function::getScalaeEntityTemperature(int id)
+ScalarEntityTemperature *Function::getScalarEntityTemperature(int id)
 {
     foreach(ScalarEntityTemperature *SET, this->scalarEntityTemperatures){
         if(SET->id == id){

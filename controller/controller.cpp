@@ -899,6 +899,18 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         }
                     }
                     break;
+                case Configuration::eScalarEntityTemperatureElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        ScalarEntityTemperature *s = func->getScalarEntityTemperature(featurePosition.at(i).id);
+                        if(s != NULL){
+                            FeatureWrapper *temperatureWrapper = new FeatureWrapper();
+                            temperatureWrapper->setScalarEntityTemperature(s);
+                            FeatureTreeItem *temperature = new FeatureTreeItem(s->name);
+                            temperature->setFeature(temperatureWrapper);
+                            this->usedElementsModel->addElement(temperature);
+                        }
+                    }
+                    break;
             }
         }
     }
@@ -1012,6 +1024,12 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
                             feature->functionList.at(functionIndex)->addScalarEntityDistance(element->getFeature()->getScalarEntityDistance(), elementIndex);
                         }
                         break;
+                    case Configuration::eScalarEntityTemperatureFeature:
+                        if(element->getFeature()->getScalarEntityTemperature() != NULL
+                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityTemperatureElement){
+                            feature->functionList.at(functionIndex)->addScalarEntityTemperature(element->getFeature()->getScalarEntityTemperature(), elementIndex);
+                        }
+                        break;
                 }
                 //set usedFor and previouslyNeeded for active feature and used element
                 feature->previouslyNeeded.append(element->getFeature());
@@ -1108,10 +1126,15 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
                         }
                         break;
                     case Configuration::eScalarEntityDistanceFeature:
-                    if(element->getFeature()->getScalarEntityDistance() != NULL){
-                        feature->functionList.at(functionIndex)->removeScalarEntityDistance(element->getFeature()->getFeature()->id);
-                    }
-                    break;
+                        if(element->getFeature()->getScalarEntityDistance() != NULL){
+                            feature->functionList.at(functionIndex)->removeScalarEntityDistance(element->getFeature()->getFeature()->id);
+                        }
+                        break;
+                    case Configuration::eScalarEntityTemperatureFeature:
+                        if(element->getFeature()->getScalarEntityTemperature() != NULL){
+                            feature->functionList.at(functionIndex)->removeScalarEntityTemperature(element->getFeature()->getFeature()->id);
+                        }
+                        break;
                 }
                 //set usedFor and previouslyNeeded for active feature and used element
                 feature->previouslyNeeded.removeOne(element->getFeature());

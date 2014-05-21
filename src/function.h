@@ -255,7 +255,7 @@ public:
 
     void addScalarEntityTemperature(ScalarEntityTemperature *SET, int position);
     void removeScalarEntityTemperature(int id);
-    ScalarEntityTemperature* getScalaeEntityTemperature(int id);
+    ScalarEntityTemperature* getScalarEntityTemperature(int id);
     QList<ScalarEntityTemperature*> getScalarEntityTemperatures();
 
     void removeFeature(int id);
