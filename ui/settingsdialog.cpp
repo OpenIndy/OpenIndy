@@ -7,6 +7,11 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QGridLayout *pluginInfoLayout = new QGridLayout();
+    this->ui->widget_pluginInfo->setLayout(pluginInfoLayout);
+    this->myPluginInformation = new PluginInfoWidget();
+    pluginInfoLayout->addWidget(this->myPluginInformation);
+
     initGUI();
 }
 
@@ -276,4 +281,25 @@ void SettingsDialog::on_toolButton_removeTrafoParamAttribute_clicked()
             ui->listView_displayedTrafoParamAttributes->setModel(m_displayedTrafoParamAttributes);
         }
     }
+}
+
+/*!
+ * \brief SettingsDialog::on_treeView_plugins_clicked
+ * Is called whenever a treeview item of plugins treeview is clicked
+ * \param index
+ */
+void SettingsDialog::on_treeView_plugins_clicked(const QModelIndex &index){
+    PluginTreeItem *item = static_cast<PluginTreeItem*>(index.internalPointer());
+
+    //display general plugin information
+    Plugin selectedPlugin = item->getPlugin();
+    this->ui->txt_pluginDescription->setText(selectedPlugin.description);
+    this->ui->txt_pluginAuthor->setText(selectedPlugin.author);
+    this->ui->txt_pluginVersion->setText(selectedPlugin.version);
+    this->ui->txt_pluginFilePath->setText(selectedPlugin.file_path);
+
+    if(item->getIsFunction()){
+        this->myPluginInformation->displayFunction(item->getFunction());
+    }
+
 }
