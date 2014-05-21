@@ -125,8 +125,6 @@ signals:
 public slots:
 
     void getNominalValues(NominalAttributeExchange nominalValue);
-    void handleTrafoParamClicked(const QModelIndex &);
-    int getActiveFeatureIndex(int index);
     int checkActiveFeatureIndex(int current, int index);
 
     void setActiveCoordSystem(QString CoordSysName);

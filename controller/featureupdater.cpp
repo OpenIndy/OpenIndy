@@ -523,11 +523,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpPoint->group = fae.group;
         tmpPoint->isNominal = nominal;
         tmpPoint->isCommon = fae.common;
-        tmpPoint->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmpPoint->addFunction(defaultFunction); }
 
         if(nominal){
+            tmpPoint->myNominalCoordSys = fae.nominalSystem;
             tmpPoint->isSolved = true;
+        }else{
+            if(functionValid){ tmpPoint->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -557,11 +558,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -591,11 +593,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -625,11 +628,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -659,11 +663,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -693,11 +698,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -727,11 +733,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -761,11 +768,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -795,11 +803,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -829,11 +838,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -863,11 +873,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -897,11 +908,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->group = fae.group;
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
-        tmp->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
+            tmp->myNominalCoordSys = fae.nominalSystem;
             tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -931,11 +943,11 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmp->position->mConfig = mConfig;
         tmp->position->isNominal = nominal;
         tmp->position->isCommon = fae.common;
-        tmp->position->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmp->addFunction(defaultFunction); }
 
         if(nominal){
-            tmp->position->isSolved = true;
+            tmp->isSolved = true;
+        }else{
+            if(functionValid){ tmp->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -964,6 +976,7 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
 
         tmp->name = name;
         tmp->group = fae.group;
+
         if(functionValid){ tmp->addFunction(defaultFunction); }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -983,16 +996,20 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         trafopara->to = fae.destSystem;
         if(functionValid){ trafopara->addFunction(defaultFunction); }
 
-        //fae.startSystem->trafoParams.append(trafopara);
-        //fae.destSystem->trafoParams.append(trafopara);
-
-        //TODO check with debug if it works !!!!!!!!
         for(int i=0; i<coordSys.size();i++){
             if(coordSys.at(i) == fae.startSystem){
                 coordSys.at(i)->trafoParams.append(trafopara);
             }
             if(coordSys.at(i) == fae.destSystem){
                 coordSys.at(i)->trafoParams.append(trafopara);
+            }
+        }
+        for(int i=0; i<stations.size();i++){
+            if(stations.at(i)->coordSys == fae.startSystem){
+                stations.at(i)->coordSys->trafoParams.append(trafopara);
+            }
+            if(stations.at(i)->coordSys == fae.destSystem){
+                stations.at(i)->coordSys->trafoParams.append(trafopara);
             }
         }
 
@@ -1011,11 +1028,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpSEAngle->group = fae.group;
         tmpSEAngle->isNominal = nominal;
         tmpSEAngle->isCommon = fae.common;
-        tmpSEAngle->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmpSEAngle->addFunction(defaultFunction); }
 
         if(nominal){
+            tmpSEAngle->myNominalCoordSys = fae.nominalSystem;
             tmpSEAngle->isSolved = true;
+        }else{
+            if(functionValid){ tmpSEAngle->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -1045,12 +1063,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpSEDistance->group = fae.group;
         tmpSEDistance->isNominal = nominal;
         tmpSEDistance->isCommon = fae.common;
-        tmpSEDistance->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmpSEDistance->addFunction(defaultFunction); }
-        tmpSEDistance->isSolved = true;
 
         if(nominal){
+            tmpSEDistance->myNominalCoordSys = fae.nominalSystem;
             tmpSEDistance->isSolved = true;
+        }else{
+            if(functionValid){ tmpSEDistance->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -1079,12 +1097,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpSETemperature->group = fae.group;
         tmpSETemperature->isNominal = nominal;
         tmpSETemperature->isCommon = fae.common;
-        tmpSETemperature->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmpSETemperature->addFunction(defaultFunction); }
-        tmpSETemperature->isSolved = true;
 
         if(nominal){
+            tmpSETemperature->myNominalCoordSys = fae.nominalSystem;
             tmpSETemperature->isSolved = true;
+        }else{
+            if(functionValid){ tmpSETemperature->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
@@ -1114,12 +1132,12 @@ void FeatureUpdater::createFeature(QList<Station*>&stations,QList<CoordinateSyst
         tmpSEMSeries->group = fae.group;
         tmpSEMSeries->isNominal = nominal;
         tmpSEMSeries->isCommon = fae.common;
-        tmpSEMSeries->myNominalCoordSys = fae.nominalSystem;
-        if(functionValid){ tmpSEMSeries->addFunction(defaultFunction); }
-        tmpSEMSeries->isSolved = true;
 
         if(nominal){
+            tmpSEMSeries->myNominalCoordSys = fae.nominalSystem;
             tmpSEMSeries->isSolved = true;
+        }else{
+            if(functionValid){ tmpSEMSeries->addFunction(defaultFunction); }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();
