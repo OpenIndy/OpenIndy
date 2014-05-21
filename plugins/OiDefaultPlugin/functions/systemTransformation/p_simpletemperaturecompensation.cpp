@@ -70,6 +70,7 @@ bool SimpleTemperatureCompensation::exec(TrafoParam &tp)
         this->writeToConsole("No valid scalar entity temperature available.");
         return false;
     }
+    return true;
 }
 
 /*!
@@ -110,7 +111,7 @@ QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter()
  */
 void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTemperature *SET)
 {
-    if(tp.isSolved && SET->isSolved){
+    if(SET->isSolved){
         FunctionConfiguration myConfig = this->getFunctionConfiguration();
         QMap<QString,QString> stringParameter = myConfig.stringParameter;
         QMap<QString,double> doubleParameter = myConfig.doubleParameter;
@@ -136,7 +137,7 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
 
         double expansion = (refTemp-SET->getTemperature())*expansionCoefficient;
         protExpansion = QString::number(expansion,'f',4);
-        double scale = (1+ (expansion*1000000));
+        double scale = (1+ (expansion/1000000));
         tp.scale.setAt(0,scale);
         tp.scale.setAt(1,scale);
         tp.scale.setAt(2,scale);
@@ -163,6 +164,7 @@ void SimpleTemperatureCompensation::calcAccuracy(TrafoParam &tp, double tempAccu
 {
     double stddev = tempAccuracy*(expansion*1000000);
     protSTDDEV = QString::number(stddev,'f',6);
+    tp.stats = new Statistic();
     tp.stats->s0_apriori = 1.0;
     tp.stats->s0_aposteriori = stddev;
     tp.stats->stdev = stddev;
