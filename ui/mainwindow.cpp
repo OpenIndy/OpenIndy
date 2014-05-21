@@ -13,9 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    Configuration::generateAllAttributes();
-    Configuration::generateFeatureAttributes();
-    Configuration::generateTrafoParamAttributes();
+    GUIConfiguration::generateAllAttributes();
+    GUIConfiguration::generateFeatureAttributes();
+    GUIConfiguration::generateTrafoParamAttributes();
 
     initializeActions();
 
@@ -61,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent) :
     sEntityDialog->setModal(true);
     nominalDialog.setModal(true);
     trafoParamDialog.setModal(true);
-    watchWindowDialog.setModal(true);
 
     //delete feature
     this->ui->tableView_data->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -79,7 +78,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->actionConnect,SIGNAL(triggered()),&control,SLOT(startConnect()));
     connect(this->actionDisconnect,SIGNAL(triggered()),&control,SLOT(startDisconnect()));
     connect(this->actionToggleSightOrientation,SIGNAL(triggered()),&control,SLOT(startToggleSight()));
-    connect(this,SIGNAL(sendCommandString(QString)),&control,SLOT(sendCmdString(QString)));
     connect(this->actionInitialize,SIGNAL(triggered()),&control,SLOT(startInitialize()));
     connect(this->actionHome,SIGNAL(triggered()),&control,SLOT(startHome()));
     connect(this->actionChangeMotorState,SIGNAL(triggered()),&control,SLOT(startChangeMotorState()));
@@ -95,7 +93,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->actionMConfig,SIGNAL(triggered()),this,SLOT(openCreateFeatureMConfig()));
     connect(ui->actionClose,SIGNAL(triggered()),this,SLOT(close()));
     connect(ui->tableView_data,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTableViewClicked(QModelIndex)));
-    connect(this->lineEditSendCommand,SIGNAL(returnPressed()),this, SLOT(sendCommand()));
     connect(this->actionCreate,SIGNAL(triggered()),this,SLOT(createFeature()));
     connect(this->actionMove,SIGNAL(triggered()),&moveDialog,SLOT(show()));
     connect(&moveDialog,SIGNAL(sendReading(Reading*)),&control,SLOT(startMove(Reading*)));
@@ -160,6 +157,10 @@ MainWindow::MainWindow(QWidget *parent) :
     //group combo boxes
     connect(&control, SIGNAL(availableGroupsChanged(QMap<QString,int>)), this, SLOT(availableGroupsChanged(QMap<QString,int>)));
     connect(control.tblModel, SIGNAL(groupNameChanged(QString,QString)), &control, SLOT(groupNameChanged(QString,QString)));
+
+    //watchwindow
+    connect(&watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
+    connect(&watchWindow,SIGNAL(destroyed()),&control,SLOT(startMeasurement()));
 
     //setup create feature toolbar
     setupCreateFeature();
@@ -416,8 +417,6 @@ void MainWindow::setupCreateFeature(){
  */
 void MainWindow::setupLaserTrackerPad(){
 
-    ui->toolBar_ControlPad->addWidget(labelSendCommand);
-    ui->toolBar_ControlPad->addWidget(lineEditSendCommand);
     ui->toolBar_ControlPad->addAction(cPsep);
     ui->toolBar_ControlPad->addAction(actionConnect);
     ui->toolBar_ControlPad->addAction(cPsep1);
@@ -447,8 +446,6 @@ void MainWindow::setupLaserTrackerPad(){
  */
 void MainWindow::setupTotalStationPad(){
 
-    ui->toolBar_ControlPad->addWidget(labelSendCommand);
-    ui->toolBar_ControlPad->addWidget(lineEditSendCommand);
     ui->toolBar_ControlPad->addAction(cPsep);
     ui->toolBar_ControlPad->addAction(actionConnect);
     ui->toolBar_ControlPad->addAction(cPsep1);
@@ -472,16 +469,6 @@ void MainWindow::on_lineEdit_inputConsole_returnPressed()
 }
 
 /*!
- * \brief sendCommand function sends the entered command to the controller class.
- * There the command will be send to the active sensor that analyses and handles the command.
- */
-void MainWindow::sendCommand()
-{
-    Console::addLine("test");
-    emit sendCommandString(this->lineEditSendCommand->text());
-}
-
-/*!
  * \brief Sets the control pad visible or invisible
  * Also it calls the needed set up function to add all elements for the active sensor.
  */
@@ -499,6 +486,27 @@ void MainWindow::on_actionControl_pad_triggered()
             }else if(control.activeStation->getInstrumentConfig()->instrumentType==Configuration::eTotalStation){
                 labelSensorControlName->setText("sensor control total station");
                 setupTotalStationPad();
+            }
+            if(control.activeStation->sensorPad->instrument != NULL){
+                //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
+                signalMapper = new QSignalMapper();
+                connect(signalMapper,SIGNAL(mapped(QString)),&control,SLOT(startCustomAction(QString)));
+                //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
+                QStringList customActionStrings = control.activeStation->sensorPad->instrument->selfDefinedActions();
+                this->clearCustomWidgets();
+                for(int i=0; i<customActionStrings.size();i++){
+                    QAction *sep = new QAction(0);
+                    sep->setSeparator(true);
+                    customActions.append(sep);
+                    QAction *act = new QAction(0);
+                    act->setText(customActionStrings.at(i));
+                    customActions.append(act);
+                    ui->toolBar_ControlPad->addAction(sep);
+                    ui->toolBar_ControlPad->addAction(act);
+                    connect(act,SIGNAL(triggered()),signalMapper,SLOT(map()));
+                    signalMapper->setMapping(act,act->text());
+
+                }
             }
         }
     }
@@ -562,8 +570,15 @@ void MainWindow::on_actionConsole_triggered()
  */
 void MainWindow::on_actionWatch_window_triggered()
 {
-    watchWindowDialog.myStation = control.activeStation;
-    watchWindowDialog.show();
+
+
+
+    watchWindow.myStation = control.activeStation;
+    watchWindow.activeCoordinateSystem = control.activeCoordinateSystem;
+    watchWindow.activeFeature = control.activeFeature;
+
+    watchWindow.show();
+
 }
 
 /*!
@@ -618,9 +633,6 @@ void MainWindow::initializeActions(){
     actionChangeMotorState->setText("change motor state");
     actionToggleSightOrientation = new QAction(0);
     actionToggleSightOrientation->setText("toggle sight orientation");
-    lineEditSendCommand = new QLineEdit();
-    labelSendCommand = new QLabel();
-    labelSendCommand->setText("insert command string:");
     actionCompensation = new QAction(0);
     actionCompensation->setText("compensation");
     labelSensorControlName = new QLabel();
@@ -1489,4 +1501,15 @@ void MainWindow::showCreateFeatureDialog(Configuration::FeatureTypes featureType
 void MainWindow::showScalarEntityDialog(Configuration::FeatureTypes featureType){
     this->sEntityDialog->setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
     this->sEntityDialog->show();
+}
+
+/*!
+ * \brief clearCustomWidgets deletes all existing custom actions.
+ */
+void MainWindow::clearCustomWidgets()
+{
+    for(int i=0;i<this->customActions.size();i++){
+        delete this->customActions.at(i);
+    }
+    this->customActions.clear();
 }

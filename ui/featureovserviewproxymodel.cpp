@@ -63,7 +63,7 @@ bool FeatureOvserviewProxyModel::filterAcceptsColumn(int source_column, const QM
     }else{
         return true;
     }*/
-    QList<int> displayColumns = Configuration::displayAttributes(Configuration::featureAttributes);
+    QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::featureAttributes);
     if(displayColumns.contains(source_column)){
         return true;
     }else{

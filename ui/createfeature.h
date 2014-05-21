@@ -2,6 +2,8 @@
 #define CREATEFEATURE_H
 
 #include <QDialog>
+#include <QShowEvent>
+#include <QDesktopWidget>
 #include "configuration.h"
 #include "featurewrapper.h"
 #include "featureattributesexchange.h"
@@ -27,6 +29,8 @@ public:
 
     void availableGroupsChanged(QStringList myGroups);
     void setAvailableFunctions(QStringList functions, QString defaultFunction);
+
+    void showEvent(QShowEvent *event);
 
 signals:
 

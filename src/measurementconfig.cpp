@@ -14,6 +14,7 @@ bool MeasurementConfig::toOpenIndyXML(QXmlStreamWriter &stream)
 
     stream.writeTextElement("count", QString::number(this->count));
     stream.writeTextElement("face", QString::number(this->face));
+    stream.writeTextElement("iterations",QString::number(this->iterations));
     stream.writeTextElement("measureTwoSides",QString::number(this->measureTwoSides));
     stream.writeTextElement("timeDependent",QString::number(this->timeDependent));
     stream.writeTextElement("distanceDependent", QString::number(this->distanceDependent));

@@ -93,6 +93,8 @@ Controller::Controller(QObject *parent) :
 
 
     connect(this->activeStation,SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
+    connect(&this->activeStation->sensorPad->getOiEmitter(),SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
+    //connect(&this->activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
     connect(this,SIGNAL(refreshGUI(FeatureWrapper*,Station*)),this->tblModel,SLOT(updateModel(FeatureWrapper*,Station*)));
 
     emit refreshGUI(this->activeFeature,this->activeStation);
@@ -197,7 +199,7 @@ void Controller::startAim(){
 void Controller::startConnect(){
 
     if(this->activeStation != NULL){
-        if(this->activeStation->instrument != NULL){
+        if(this->activeStation->sensorPad->instrument != NULL){
             this->activeStation->emitStartConnect(this->activeStation->getInstrumentConfig()->connConfig);
             emit sensorWorks("connecting...");
         }else{
@@ -228,19 +230,6 @@ void Controller::startToggleSight(){
     if(checkSensorValid()){
         this->activeStation->emitStartToggleSight();
         emit sensorWorks("toggle sight...");
-    }
-}
-
-/*!
- * \brief Controller::sendCmdString
- * After checking some conditions, it calls the command function of the active sensor with the given parameter.
- * \param cmd
- */
-void Controller::sendCmdString(QString cmd){
-
-    if(checkSensorValid()){
-        this->activeStation->emitStartCommand(cmd);
-        emit sensorWorks(QString("sending command..."+ cmd));
     }
 }
 
@@ -287,9 +276,19 @@ void Controller::startCompensation(){
 void Controller::startChangeMotorState(){
 
     if(checkSensorValid()){
-        //this->activeStation->emitStartMotorState();
-        //emit sensorWorks("change motor state...");
+        this->activeStation->emitStartMotorState();
+        emit sensorWorks("change motor state...");
     }
+}
+
+/*!
+ * \brief Controller::startCustomAction calls the custom action of the sensor.
+ * \param s
+ */
+void Controller::startCustomAction(QString s)
+{
+    emit sensorWorks(s);
+    this->activeStation->emitSelfDefinedAction(s);
 }
 
 /*!
@@ -337,7 +336,7 @@ void Controller::changeActiveStation(){
 
     if(this->activeFeature->getStation() != NULL){
 
-            if(this->activeStation->instrument != NULL && this->activeStation->instrument->isConnected){
+            if(this->activeStation->sensorPad->instrument != NULL){
                 this->activeStation->startDisconnect();
             }
             //this->activeStation->isSolved = false;
@@ -373,9 +372,10 @@ void Controller::showResults(bool b){
 void Controller::defaultLastmConfig(){
     lastmConfig->name = "default configuration";
     lastmConfig->count = 1;
+    lastmConfig->iterations = 1;
     lastmConfig->measureTwoSides = false;
-    if(this->activeStation != NULL && this->activeStation->instrument != NULL){
-        lastmConfig->typeOfReading = this->activeStation->instrument->getSupportedReadingTypes()->at(0);
+    if(this->activeStation != NULL && this->activeStation->sensorPad->instrument != NULL){
+        lastmConfig->typeOfReading = this->activeStation->sensorPad->instrument->getSupportedReadingTypes()->at(0);
     }else{
         lastmConfig->typeOfReading = Configuration::ePolar;
     }
@@ -488,7 +488,8 @@ void Controller::getSelectedPlugin(int index){
     if(path != NULL){
 
         //this->activeStation->InstrumentConfig = new SensorConfiguration();
-        this->activeStation->instrument = PluginLoader::loadSensorPlugin(path, name);
+        this->activeStation->sensorPad->instrument = PluginLoader::loadSensorPlugin(path, name);
+        connect(&this->activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
         defaultLastmConfig();
         updateFeatureMConfig();
     }
@@ -540,7 +541,8 @@ void Controller::receiveSensorConfiguration(SensorConfiguration *sc, bool connec
 
     if(connect){
         this->activeStation->setInstrumentConfig(sc);
-        this->activeStation->emitStartConnect(sc->connConfig);
+        //this->activeStation->emitStartConnect(sc->connConfig);
+        this->startConnect();
     }else{
         this->activeStation->setInstrumentConfig(sc);
     }
@@ -646,7 +648,7 @@ bool Controller::checkFeatureValid(){
 bool Controller::checkSensorValid(){
 
     if(this->activeStation != NULL){
-        if(this->activeStation->instrument != NULL && this->activeStation->instrument->isConnected){
+        if(this->activeStation->sensorPad->instrument != NULL){
             return true;
         }else{
             Console::addLine("sensor not connected");
@@ -1312,11 +1314,11 @@ void Controller::printToConsole(QString message){
  */
 void Controller::updateFeatureMConfig()
 {
-    if(this->activeStation != NULL && this->activeStation->instrument != NULL &&
-            this->activeStation->instrument->getSupportedReadingTypes() != NULL &&
-            this->activeStation->instrument->getSupportedReadingTypes()->size() >0){
+    if(this->activeStation != NULL && this->activeStation->sensorPad->instrument != NULL &&
+            this->activeStation->sensorPad->instrument->getSupportedReadingTypes() != NULL &&
+            this->activeStation->sensorPad->instrument->getSupportedReadingTypes()->size() >0){
 
-        QList<Configuration::ReadingTypes> readingTypes = *this->activeStation->instrument->getSupportedReadingTypes();
+        QList<Configuration::ReadingTypes> readingTypes = *this->activeStation->sensorPad->instrument->getSupportedReadingTypes();
 
         //Check and edit lastMConfig
         bool contains = false;

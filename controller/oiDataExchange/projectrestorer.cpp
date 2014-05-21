@@ -528,14 +528,14 @@ void ProjectRestorer::resolveStation(FeatureWrapper *fw, ElementDependencies &d)
     QList<sensorInfo> usedSensors = d.getNeededSensors();
 
     QString sensorPluginPath = SystemDbManager::getPluginFilePath(activeSensor.name,activeSensor.plugin);
-    fw->getStation()->instrument = PluginLoader::loadSensorPlugin(sensorPluginPath,activeSensor.name);
+    fw->getStation()->sensorPad->instrument = PluginLoader::loadSensorPlugin(sensorPluginPath,activeSensor.name);
 
     for(int i = 0; i<usedSensors.size();i++){
         QString sensorName = usedSensors.at(i).name;
         QString sensorPlugin = usedSensors.at(i).plugin;
 
         QString sensorPluginPath = SystemDbManager::getPluginFilePath(sensorName,sensorPlugin);
-        fw->getStation()->usedSensors.append(PluginLoader::loadSensorPlugin(sensorPluginPath,sensorName));
+        fw->getStation()->sensorPad->usedSensors.append(PluginLoader::loadSensorPlugin(sensorPluginPath,sensorName));
     }
 
 }

@@ -111,7 +111,7 @@ bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
         Station* proxyStation= oiProjectExchanger::findStation(obs->myStation->id);
         if(proxyStation != NULL){
            obs->myStation = proxyStation;
-           obs->myReading->instrument = proxyStation->instrument;
+           obs->myReading->instrument = proxyStation->sensorPad->instrument;
         }
 
     }

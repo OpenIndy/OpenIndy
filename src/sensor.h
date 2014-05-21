@@ -2,6 +2,7 @@
 #define SENSOR_H
 
 #include <QString>
+#include <QStringList>
 #include <QMap>
 #include <QVariant>
 #include "sensorcontrol.h"
@@ -28,9 +29,6 @@ public:
     virtual ~Sensor(){}
 
 //attributes
-    bool isConnected;
-    bool dataStreamIsActive;
-    Configuration::ReadingTypes streamFormat;
     OiEmitter myEmitter;
     SensorConfiguration* myConfiguration;
 
@@ -39,6 +37,7 @@ public:
     //-----get sensor capabilities-----
 
     virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes() = 0;
+    virtual QList<Configuration::SensorFunctionalities> getSupportedSensorActions() = 0;
     virtual QList<Configuration::ConnectionTypes>* getConnectionType() = 0;
 
     //! get meta data
@@ -48,6 +47,8 @@ public:
     virtual QMap<QString,int>* getIntegerParameter() = 0;
     virtual QMap<QString,double>* getDoubleParameter() = 0;
     virtual QMap <QString, QStringList>* getStringParameter() = 0;
+    virtual QStringList selfDefinedActions() = 0;
+    virtual bool doSelfDefinedAction(QString a) = 0;
 
     //individually defined reading type
     virtual QString getUndefinedReadingName(){return "undefined";}
@@ -62,6 +63,9 @@ public:
      * of the instance*/
     virtual bool accept(SensorControl*, Configuration::SensorFunctionalities) = 0;
 
+    //! abort a running action
+    virtual void abortAction() = 0;
+
     //! connect app with sensor
     virtual bool connectSensor(ConnectionConfig*) = 0;
 
@@ -71,14 +75,23 @@ public:
     //! sensor measures a entity and returns a list of readings
     virtual QList<Reading*> measure(MeasurementConfig*) = 0;
 
-    //stream
-    virtual void dataStream() = 0;
+    //! stream
+    virtual QVariantMap readingStream(Configuration::ReadingTypes streamFormat) = 0;
 
-    //exec individually defined command strings
-    virtual void sendCommandString(QString) = 0;
+    //! getConnectionState
+    virtual bool getConnectionState() = 0;
 
-    //! checks if the measurementconfig is vaild
-    virtual bool checkMeasurementConfig(MeasurementConfig*)=0;
+    //! return ready state of the sensor
+    virtual bool isReadyForMeasurement() = 0;
+
+    //!sensor stats
+    virtual QMap<QString,QString> getSensorStats()=0;
+
+    //!checks if sensor is busy
+    virtual bool isBusy() = 0;
+
+ protected:
+    void writeToConsole(QString s){myEmitter.emitSendString(s);}
 
 };
 

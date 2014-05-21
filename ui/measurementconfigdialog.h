@@ -9,6 +9,8 @@
 #include <QComboBox>
 #include <QCloseEvent>
 #include <QMessageBox>
+#include <QShowEvent>
+#include <QDesktopWidget>
 
 namespace Ui {
 class MeasurementConfigDialog;
@@ -37,7 +39,9 @@ signals:
 public slots:
 
     void setStation(Station *s);
-    
+
+    void showEvent(QShowEvent *event);
+
 private slots:
 
     void closeEvent(QCloseEvent *event);

@@ -30,7 +30,7 @@ int TableModel::rowCount(const QModelIndex& ) const{
  * \return
  */
 int TableModel::columnCount(const QModelIndex &parent) const{
-    return Configuration::allAttributes.size();
+    return GUIConfiguration::allAttributes.size();
     //return 33;
 }
 
@@ -383,7 +383,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 
     m_columns.append("Comment"); */
 
-    QStringList m_columns = Configuration::allAttributes;
+    QStringList m_columns = GUIConfiguration::allAttributes;
 
     if((Qt::DisplayRole == role) &&
             (Qt::Horizontal == orientation) &&

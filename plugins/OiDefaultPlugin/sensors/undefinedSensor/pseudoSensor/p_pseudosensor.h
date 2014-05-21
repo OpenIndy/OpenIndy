@@ -9,29 +9,24 @@ public:
 
     PseudoSensor();
 
-     bool accept(SensorControl*, Configuration::SensorFunctionalities){return false;}
+    QList<Configuration::ReadingTypes>* getSupportedReadingTypes();
+    QList<Configuration::SensorFunctionalities> getSupportedSensorActions();
+    QList<Configuration::ConnectionTypes>* getConnectionType();
 
-     QList<Configuration::ReadingTypes>* getSupportedReadingTypes();
+    PluginMetaData* getMetaData();
 
-     QList<Configuration::ConnectionTypes>* getConnectionType();
+    QMap<QString,int>* getIntegerParameter();
+    QMap<QString,double>* getDoubleParameter();
+    QMap <QString, QStringList>* getStringParameter();
+    QStringList selfDefinedActions();
+    bool doSelfDefinedAction(QString a);
 
-     QMap<QString,int>* getIntegerParameter();
+    QString getUndefinedReadingName();
+    QMap<QString,double>* getDefaultAccuracy();
 
-     QMap<QString,double>* getDoubleParameter();
+    bool accept(SensorControl*, Configuration::SensorFunctionalities){return false;}
 
-      QMap <QString, QStringList>* getStringParameter();
-
-      QMap<QString,double>* getDefaultAccuracy();
-
-    //! laser tracker measures a point and returns an observation
-    QList<Reading*> measure(MeasurementConfig *mc);
-
-    void dataStream() ;
-
-    void sendCommandString(QString);
-
-    //! checks if the measurementconfig is vaild
-    bool checkMeasurementConfig(MeasurementConfig*);
+    void abortAction();
 
     //! connect app with laser tracker
     bool connectSensor(ConnectionConfig*);
@@ -39,7 +34,27 @@ public:
     //! disconnect app with laser tracker
     bool disconnectSensor();
 
-    PluginMetaData* getMetaData();
+    //! laser tracker measures a point and returns an observation
+    QList<Reading*> measure(MeasurementConfig *mc);
+
+    //! stream
+    QVariantMap readingStream(Configuration::ReadingTypes streamFormat);
+
+    //! getConnectionState
+    bool getConnectionState();
+
+    //! return ready state of the sensor
+    bool isReadyForMeasurement();
+
+    //!sensor stats
+    QMap<QString,QString> getSensorStats();
+
+    //!checks if sensor is busy
+    bool isBusy();
+
+private:
+    bool isConnected;
+
 
 };
 

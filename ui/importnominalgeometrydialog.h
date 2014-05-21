@@ -6,6 +6,8 @@
 #include "oidataimporter.h"
 #include <QFileDialog>
 #include "configuration.h"
+#include <QShowEvent>
+#include <QDesktopWidget>
 
 namespace Ui {
 class importNominalGeometryDialog;
@@ -36,6 +38,7 @@ private slots:
 public slots:
     void setUpCoordinateSystems(QList<CoordinateSystem*> coordSystems);
 
+    void showEvent(QShowEvent *event);
 
 private:
     Ui::importNominalGeometryDialog *ui;

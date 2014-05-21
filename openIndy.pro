@@ -147,7 +147,10 @@ SOURCES += \
     ui/plugintreeitem.cpp \
     controller/featureattributesexchange.cpp \
     controller/nominalattributeexchange.cpp \
-    controller/displayattribute.cpp
+    controller/displayattribute.cpp \
+    src/sensorlistener.cpp \
+    controller/guiconfiguration.cpp
+
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -261,7 +264,10 @@ HEADERS  += \
     ui/plugintreeitem.h \
     controller/featureattributesexchange.h \
     controller/nominalattributeexchange.h \
-    controller/displayattribute.h
+    controller/displayattribute.h \
+    src/sensorlistener.h \
+    controller/guiconfiguration.h
+
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

@@ -14,12 +14,19 @@ public:
     explicit OiEmitter(QObject *parent = 0);
 
 signals:
-    void sendDataMap(QVariantMap*);
     void sendString(QString);
+    void sendConnectionStat(bool);
+    void sendIsReadyForMeasurement(bool);
+    void sendSensorError(QString);
+    void sendMeasureTrigger();
 
 public slots:
-    void emitSendDataMap(QVariantMap*);
     void emitSendString(QString);
+    void emitSendConnectionStat(bool);
+    void emitSendIsReadyForMeasurement(bool);
+    void emitSendSensorError(QString);
+    void emitSendMeasureTrigger();
+
 
 };
 
