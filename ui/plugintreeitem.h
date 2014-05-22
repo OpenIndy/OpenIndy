@@ -5,6 +5,7 @@
 #include <QList>
 
 #include "configuration.h"
+#include "systemdbmanager.h"
 
 class PluginTreeItem
 {
@@ -16,6 +17,7 @@ public:
 
     int getChildCount();
     PluginTreeItem* getChild(int row);
+    bool hasParent();
     PluginTreeItem* getParent();
     int getIndex();
 
@@ -25,13 +27,14 @@ public:
     void deleteChild(PluginTreeItem *child);
 
     bool getIsPlugin();
-    bool getIsPluginType();
-    bool getIsFunctionType();
-    bool getIsSensorType();
-    void setIsPlugin(bool state);
-    void setIsPluginType(bool state);
-    void setIsFunctionType(bool state);
-    void setIsSensorType(bool state);
+    bool getIsFunction();
+    bool getIsSensor();
+    Plugin getPlugin();
+    FunctionPlugin getFunction();
+    SensorPlugin getSensor();
+    void setPlugin(Plugin myPlugin);
+    void setFunction(FunctionPlugin myFunction);
+    void setSensor(SensorPlugin mySensor);
 
     void setParent(PluginTreeItem *parent);
 
@@ -41,20 +44,13 @@ private:
     PluginTreeItem *myParent;
     QList<PluginTreeItem*> myChildren;
 
-    bool isPlugin; //true if this represents the name of a plugin
-    bool isPluginType; //true if this represents the plugin type (function, sensor)
-    bool isFunctionType; //true if this represents the function type of a function plugin (fit, construct, ...)
-    bool isSensorType; //true if this represents the sensor type of a sensor plugin (lasertracker, tachymeter, ...)
+    bool isPlugin; //true if this represents a plugin
+    bool isFunction; //true if this represents a function plugin (fit, construct, ...)
+    bool isSensor; //true if this represents a sensor plugin (lasertracker, tachymeter, ...)
 
-    QString pluginName;
-    QString pluginAuthor;
-    QString pluginDescription;
-    QString pluginVersion;
-    QString pluginFilePath;
-
-    QString functionName;
-    QString functionDescription;
-    QList<Configuration::FeatureTypes> applicableFor;
+    Plugin myPlugin;
+    FunctionPlugin myFunction;
+    SensorPlugin mySensor;
 };
 
 #endif // PLUGINTREEITEM_H
