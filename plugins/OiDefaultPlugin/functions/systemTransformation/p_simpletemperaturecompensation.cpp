@@ -162,7 +162,7 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
  */
 void SimpleTemperatureCompensation::calcAccuracy(TrafoParam &tp, double tempAccuracy, double expansion)
 {
-    double stddev = tempAccuracy*(expansion*1000000);
+    double stddev = tempAccuracy*(expansion/1000000);
     protSTDDEV = QString::number(stddev,'f',6);
     tp.stats = new Statistic();
     tp.stats->s0_apriori = 1.0;
