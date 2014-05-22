@@ -515,10 +515,10 @@ void Controller::getTempSensor(int index)
  */
 void Controller::getSelectedFeature(int index){
     //if a new feature was selected
-    if(this->activeFeature != this->features.at(getActiveFeatureIndex(index))){
+    if(this->activeFeature != this->features.at(index)){
         this->changeUsedElementsModel(-1, -1);
     }
-    this->activeFeature = this->features.at(getActiveFeatureIndex(index));
+    this->activeFeature = this->features.at(index);
     if(this->activeFeature->getGeometry()!= NULL){
         double x  = this->activeFeature->getGeometry()->getDisplayX().toDouble();
         double y = this->activeFeature->getGeometry()->getDisplayY().toDouble();
@@ -1163,23 +1163,6 @@ bool Controller::checkCircleWarning(Feature *activeFeature, Feature *usedForActi
     return true;
 }
 
-/*!
- * \brief Controller::getActiveFeatureIndex
- * searches the active feature in the features list. transformation parameters cannot be selected as active feature.
- * So they donot get marked in the tableview.
- * \param index
- * \return
- */
-int Controller::getActiveFeatureIndex(int index){
-
-    int tmpINdex = index;
-
-    int result = checkActiveFeatureIndex(0, index);
-    result += tmpINdex;
-
-    return result;
-}
-
 int Controller::checkActiveFeatureIndex(int current, int index){
 
     //int tmpIndex = index;
@@ -1197,27 +1180,6 @@ int Controller::checkActiveFeatureIndex(int current, int index){
     }
 
     return featureIndex;
-}
-
-void Controller::handleTrafoParamClicked(const QModelIndex &idx){
-    int index = idx.row();
-    int tmpCount = 0;
-
-    for(int i=0;i<this->features.size();i++){
-        if(this->features.at(i)->getTrafoParam() != NULL){
-            tmpCount += 1;
-
-            if(tmpCount-1 == index){
-                this->activeFeature = this->features.at(i);
-
-                emit refreshGUI(this->activeFeature, this->activeStation);
-                //set up tree view model with all functions of selected feature
-                this->changeFunctionTreeViewModel();
-
-                break;
-            }
-        }
-    }
 }
 
 /*!

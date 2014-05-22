@@ -174,6 +174,7 @@ private slots:
 
     void getActiveCoordSystem(QString coordSys);
     void handleTableViewClicked(const QModelIndex &);
+    void handleTrafoParamClicked(const QModelIndex &);
 
     void initializeActions();
 
