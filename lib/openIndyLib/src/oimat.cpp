@@ -325,3 +325,70 @@ OiMat OiMat::inv(){
 void OiMat::svd(OiMat &u, OiVec &d, OiMat &v){
     OiMat::myLinearAlgebra->svd(u, d, v, *this);
 }
+
+/*!
+ * \brief OiMat::getRotationMatrix
+ * Get the rotation matrix corresponding to a rotation around an arbitrary rotation axis by the given amount
+ * \param angle
+ * \param axis
+ * \return
+ */
+OiMat OiMat::getRotationMatrix(double angle, OiVec axis){
+    if(axis.getSize() == 3){
+        OiMat result(3, 3);
+
+        axis = axis.normalize();
+
+        double w = qCos(angle / 2.0);
+        OiVec x = qSin(angle / 2.0) * axis;
+
+        result.setAt(0, 0, 1.0 - 2.0 * (x.getAt(1)*x.getAt(1) + x.getAt(2)*x.getAt(2)));
+        result.setAt(0, 1, 2.0 * (x.getAt(0)*x.getAt(1) - w * x.getAt(2)));
+        result.setAt(0, 2, 2.0 * (x.getAt(0)*x.getAt(2) + w * x.getAt(1)));
+        result.setAt(1, 0, 2.0 * (x.getAt(0)*x.getAt(1) + w * x.getAt(2)));
+        result.setAt(1, 1, 1.0 - 2.0 * (x.getAt(0)*x.getAt(0) + x.getAt(2)*x.getAt(2)));
+        result.setAt(1, 2, 2.0 * (x.getAt(1)*x.getAt(2) - w * x.getAt(0)));
+        result.setAt(2, 0, 2.0 * (x.getAt(0)*x.getAt(2) - w * x.getAt(1)));
+        result.setAt(2, 1, 2.0 * (x.getAt(1)*x.getAt(2) + w * x.getAt(0)));
+        result.setAt(2, 2, 1.0 - 2.0 * (x.getAt(0)*x.getAt(0) + x.getAt(1)*x.getAt(1)));
+
+        return result;
+    }else{
+        throw logic_error("To set up the rotation matrix the given axis has to be of size 3");
+        return OiMat();
+    }
+}
+
+/*!
+ * \brief OiMat::getRotationMatrix
+ * Get the rotation matrix corresponding to a rotation around the X, Y or Z axis by the given amount
+ * \param angle
+ * \param axis
+ * \return
+ */
+OiMat OiMat::getRotationMatrix(double angle, Rotation::RotationAxis axis){
+    OiVec myAxis(3);
+    switch(axis){
+    case Rotation::X_AXIS:
+        myAxis.setAt(0, 1.0);
+        break;
+    case Rotation::Y_AXIS:
+        myAxis.setAt(1, 1.0);
+        break;
+    case Rotation::Z_AXIS:
+        myAxis.setAt(2, 1.0);
+        break;
+    }
+
+    return OiMat::getRotationMatrix(angle, myAxis);
+}
+
+/*!
+ * \brief OiMat::getRotationMatrix
+ * Get the rotation matrix corresponding to the given chain of rotations around X, Y or Z axes
+ * \param rotationChain
+ * \return
+ */
+OiMat OiMat::getRotationMatrix(RotationChain rotationChain){
+    return OiMat();
+}
