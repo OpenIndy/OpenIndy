@@ -11,6 +11,7 @@
 #include "unitconverter.h"
 #include "plugintreeviewmodel.h"
 #include "guiconfiguration.h"
+#include "plugininfowidget.h"
 
 namespace Ui {
 class SettingsDialog;
@@ -67,9 +68,13 @@ private slots:
 
     void on_toolButton_removeTrafoParamAttribute_clicked();
 
+    void on_treeView_plugins_clicked(const QModelIndex &index);
+
 private:
 
     Ui::SettingsDialog *ui;
+
+    PluginInfoWidget *myPluginInformation;
 };
 
 #endif // SETTINGSDIALOG_H

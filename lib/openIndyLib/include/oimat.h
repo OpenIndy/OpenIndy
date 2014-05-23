@@ -11,6 +11,47 @@ class OiVec;
 
 using namespace std;
 
+/*!
+ * \brief The Rotation struct
+ * Struct that represents a rotation around one of the three coordinate axes
+ */
+struct OI_LIB_EXPORT Rotation{
+
+    enum RotationAxis{
+        X_AXIS,
+        Y_AXIS,
+        Z_AXIS
+    };
+
+    Rotation(double angle, RotationAxis axis){
+        this->angle = angle;
+        this->axis = axis;
+    }
+
+    RotationAxis axis;
+    double angle;
+
+};
+
+/*!
+ * \brief The RotationChain class
+ */
+class OI_LIB_EXPORT RotationChain{
+
+public:
+    void clear(){ this->myRotations.clear(); }
+    void appendRotation(Rotation r){ this->myRotations.push_back(r); }
+    int getRotationCount(){ return this->myRotations.size(); }
+    Rotation getRotationAt(int index){ return this->myRotations.at(index); }
+
+private:
+    vector<Rotation> myRotations;
+
+};
+
+/*!
+ * \brief The OiMat class
+ */
 class OI_LIB_EXPORT OiMat
 {
 public:
@@ -21,7 +62,6 @@ public:
 
 private:
     vector< vector<double> > values;
-
 
 public:
 
@@ -57,6 +97,10 @@ public:
     OiMat inv();
 
     void svd(OiMat &u, OiVec &d, OiMat &v);
+
+    static OiMat getRotationMatrix(double angle, OiVec axis);
+    static OiMat getRotationMatrix(double angle, Rotation::RotationAxis axis);
+    static OiMat getRotationMatrix(RotationChain rotationChain);
 
 private:
     static OiMat mult(const double value, const OiMat &m);

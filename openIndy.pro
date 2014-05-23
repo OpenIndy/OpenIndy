@@ -149,7 +149,8 @@ SOURCES += \
     controller/nominalattributeexchange.cpp \
     controller/displayattribute.cpp \
     src/sensorlistener.cpp \
-    controller/guiconfiguration.cpp
+    controller/guiconfiguration.cpp \
+    ui/plugininfowidget.cpp
 
 
 HEADERS  += \
@@ -266,7 +267,8 @@ HEADERS  += \
     controller/nominalattributeexchange.h \
     controller/displayattribute.h \
     src/sensorlistener.h \
-    controller/guiconfiguration.h
+    controller/guiconfiguration.h \
+    ui/plugininfowidget.h
 
 
 FORMS    += ui/mainwindow.ui \

@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->actionMove,SIGNAL(triggered()),&moveDialog,SLOT(show()));
     connect(&moveDialog,SIGNAL(sendReading(Reading*)),&control,SLOT(startMove(Reading*)));
     //connect(ui->actionActivate_station,SIGNAL(triggered()),&control,SLOT(changeActiveStation()));
-    connect(ui->tableView_trafoParam,SIGNAL(clicked(QModelIndex)),&control,SLOT(handleTrafoParamClicked(QModelIndex)));
+    connect(ui->tableView_trafoParam,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTrafoParamClicked(QModelIndex)));
     connect(this->comboBoxFeatureType,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeCreateFeatureToolbar(int)));
     connect(this->checkBoxNominal,SIGNAL(toggled(bool)),this,SLOT(CheckBoxNominalToggled(bool)));
 
@@ -902,6 +902,32 @@ void MainWindow::on_actionSet_instrument_triggered()
  */
 void MainWindow::handleTableViewClicked(const QModelIndex &idx){
     FeatureOvserviewProxyModel *model = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+
+    QModelIndex source_idx = model->mapToSource(idx);
+
+    if(this->selectedFeature != source_idx.row()){
+        //hide available elements treeview elements
+        if(this->control.availableElementsModel != NULL){
+            this->control.availableElementsModel->setFilter(Configuration::eUndefinedElement, true);
+        }
+        //disable used elements and available elements treeviews
+        this->fPluginDialog.disableFunctionInteractions();
+        //set description of function plugin loader to empty text
+        this->fPluginDialog.receiveFunctionDescription("");
+    }
+
+    this->selectedFeature = source_idx.row();
+
+    emit this->sendSelectedFeature(selectedFeature);
+}
+
+/*!
+ * \brief MainWindow::handleTrafoParamClicked
+ * \param idx
+ */
+void MainWindow::handleTrafoParamClicked(const QModelIndex &idx)
+{
+    TrafoParamProxyModel *model = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
 
     QModelIndex source_idx = model->mapToSource(idx);
 

@@ -1,7 +1,9 @@
 #include "p_pseudotracker.h"
 
 
-
+/*!
+ * \brief PseudoTracker::PseudoTracker
+ */
 PseudoTracker::PseudoTracker(){
     myAzimuth = 0.00001;
     myZenith = 0.00001;
@@ -14,6 +16,10 @@ PseudoTracker::PseudoTracker(){
 
 }
 
+/*!
+ * \brief PseudoTracker::getMetaData
+ * \return
+ */
 PluginMetaData* PseudoTracker::getMetaData(){
 
     PluginMetaData* metaData = new PluginMetaData();
@@ -28,7 +34,10 @@ PluginMetaData* PseudoTracker::getMetaData(){
     return metaData;
 }
 
-
+/*!
+ * \brief PseudoTracker::getSupportedReadingTypes
+ * \return
+ */
 QList<Configuration::ReadingTypes>* PseudoTracker::getSupportedReadingTypes(){
 
     QList<Configuration::ReadingTypes> *readingTypes = new QList<Configuration::ReadingTypes>;
@@ -43,6 +52,10 @@ QList<Configuration::ReadingTypes>* PseudoTracker::getSupportedReadingTypes(){
     return readingTypes;
 }
 
+/*!
+ * \brief PseudoTracker::getSupportedSensorActions
+ * \return
+ */
 QList<Configuration::SensorFunctionalities> PseudoTracker::getSupportedSensorActions()
 {
     QList<Configuration::SensorFunctionalities> sensorActions;
@@ -59,6 +72,10 @@ QList<Configuration::SensorFunctionalities> PseudoTracker::getSupportedSensorAct
 
 }
 
+/*!
+ * \brief PseudoTracker::getConnectionType
+ * \return
+ */
 QList<Configuration::ConnectionTypes>* PseudoTracker::getConnectionType(){
     QList<Configuration::ConnectionTypes> *connectionTypes = new QList<Configuration::ConnectionTypes>;
     connectionTypes->append(Configuration::eNetwork);
@@ -67,10 +84,18 @@ QList<Configuration::ConnectionTypes>* PseudoTracker::getConnectionType(){
     return connectionTypes;
 }
 
+/*!
+ * \brief PseudoTracker::getIntegerParameter
+ * \return
+ */
 QMap<QString,int>* PseudoTracker::getIntegerParameter(){
     return NULL;
 }
 
+/*!
+ * \brief PseudoTracker::getDoubleParameter
+ * \return
+ */
 QMap<QString,double>* PseudoTracker::getDoubleParameter(){
 
     QMap<QString,double>* trackerErrors = new QMap<QString,double>;
@@ -96,6 +121,10 @@ QMap<QString,double>* PseudoTracker::getDoubleParameter(){
 
 }
 
+/*!
+ * \brief PseudoTracker::getStringParameter
+ * \return
+ */
 QMap <QString, QStringList>* PseudoTracker::getStringParameter(){
 
     QMap <QString, QStringList>* stringParameter = new QMap<QString, QStringList>;
@@ -112,6 +141,10 @@ QMap <QString, QStringList>* PseudoTracker::getStringParameter(){
 
 }
 
+/*!
+ * \brief PseudoTracker::selfDefinedActions
+ * \return
+ */
 QStringList PseudoTracker::selfDefinedActions()
 {
     QStringList ownActions;
@@ -121,6 +154,11 @@ QStringList PseudoTracker::selfDefinedActions()
     return ownActions;
 }
 
+/*!
+ * \brief PseudoTracker::doSelfDefinedAction
+ * \param a
+ * \return
+ */
 bool PseudoTracker::doSelfDefinedAction(QString a)
 {
     if(a == "echo"){
@@ -129,6 +167,10 @@ bool PseudoTracker::doSelfDefinedAction(QString a)
     return true;
 }
 
+/*!
+ * \brief PseudoTracker::getDefaultAccuracy
+ * \return
+ */
 QMap<QString, double>* PseudoTracker::getDefaultAccuracy()
 {
     QMap<QString,double> *defaultAccuracy = new QMap<QString,double>;
@@ -146,13 +188,22 @@ QMap<QString, double>* PseudoTracker::getDefaultAccuracy()
     return defaultAccuracy;
 }
 
+/*!
+ * \brief PseudoTracker::abortAction
+ */
 void PseudoTracker::abortAction()
 {
     //abort action
 }
 
 
-//! connect app with laser tracker
+/*!
+ * \brief PseudoTracker::connectSensor
+ * \param cConfig
+ * \return
+ *
+ *  connect app with laser tracker
+ */
 bool PseudoTracker::connectSensor(ConnectionConfig *cConfig){
 
     if(cConfig != NULL){
@@ -165,12 +216,15 @@ bool PseudoTracker::connectSensor(ConnectionConfig *cConfig){
         qDebug() << "null pointer";
         return false;
     }
-
-
-
 }
 
-//! disconnect app with laser tracker
+
+/*!
+ * \brief PseudoTracker::disconnectSensor
+ * \return
+ *
+ *  disconnect app with laser tracker
+ */
 bool PseudoTracker::disconnectSensor(){
     qDebug() << "pseudo tracker disconnect";
     isConnected = false;
@@ -178,7 +232,12 @@ bool PseudoTracker::disconnectSensor(){
     return true;
 }
 
-//! starts initialization
+/*!
+ * \brief PseudoTracker::initialize
+ * \return
+ *
+ *  starts initialization
+ */
 bool PseudoTracker::initialize(){
 
     qDebug() << "pseudo tracker is initialized";
@@ -187,7 +246,16 @@ bool PseudoTracker::initialize(){
     return true;
 }
 
-//! move laser tracker to specified position
+/*!
+ * \brief PseudoTracker::move
+ * \param azimuth
+ * \param zenith
+ * \param distance
+ * \param isrelativ
+ * \return
+ *
+ *  move laser tracker to specified position
+ */
 bool PseudoTracker::move(double azimuth, double zenith, double distance,bool isrelativ){
 
     qDebug() << "pseudo tracker is moved to:" << azimuth << "," << zenith << "," << distance << "," << isrelativ ;
@@ -200,6 +268,13 @@ bool PseudoTracker::move(double azimuth, double zenith, double distance,bool isr
     return true;
 }
 
+/*!
+ * \brief PseudoTracker::move
+ * \param x
+ * \param y
+ * \param z
+ * \return
+ */
 bool PseudoTracker::move(double x, double y, double z){
 
     qDebug() << "pseudo tracker is moved to:" << x << "," << y << "," << z;
@@ -211,7 +286,12 @@ bool PseudoTracker::move(double x, double y, double z){
     return true;
 }
 
-//! sets laser tracke to home position
+/*!
+ * \brief PseudoTracker::home
+ * \return
+ *
+ *  sets laser tracke to home position
+ */
 bool PseudoTracker::home(){
 
     qDebug() << "pseudo tracker is moved to home" ;
@@ -220,7 +300,12 @@ bool PseudoTracker::home(){
 
 }
 
-//! turns motors on or off
+/*!
+ * \brief PseudoTracker::changeMotorState
+ * \return
+ *
+ *  turns motors on or off
+ */
 bool PseudoTracker::changeMotorState(){
 
     qDebug() << "pseudo tracker changed motor state" ;
@@ -234,7 +319,13 @@ bool PseudoTracker::changeMotorState(){
 
 }
 
-//! toggle between frontside and backside
+
+/*!
+ * \brief PseudoTracker::toggleSightOrientation
+ * \return
+ *
+ *  toggle between frontside and backside
+ */
 bool PseudoTracker::toggleSightOrientation(){
 
     qDebug() << "pseudo tracker toggeld Sight orientation" ;
@@ -247,6 +338,10 @@ bool PseudoTracker::toggleSightOrientation(){
     return true;
 }
 
+/*!
+ * \brief PseudoTracker::compensation
+ * \return
+ */
 bool PseudoTracker::compensation() {
     qDebug() << "compensation successful";
     QThread::msleep(5000);
@@ -254,7 +349,11 @@ bool PseudoTracker::compensation() {
     return true;
 }
 
-
+/*!
+ * \brief PseudoTracker::measure
+ * \param mc
+ * \return
+ */
 QList<Reading*> PseudoTracker::measure(MeasurementConfig *mc){
 
     switch (mc->typeOfReading) {
@@ -279,6 +378,11 @@ QList<Reading*> PseudoTracker::measure(MeasurementConfig *mc){
     return readings;
 }
 
+/*!
+ * \brief PseudoTracker::readingStream
+ * \param streamFormat
+ * \return
+ */
 QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamFormat)
 {
 
@@ -295,19 +399,13 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
         r.rPolar.distance = myDistance;
         r.rPolar.isValid = true;
 
+        this->noisyPolarReading(&r);
+
         r.toCartesian();
 
-        double dx = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-        double dy = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-        double dz = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-
-        dx = dx/100;
-        dy = dy/100;
-        dz = dz/100;
-
-        x =r.rCartesian.xyz.getAt(0)+dx;
-        y =r.rCartesian.xyz.getAt(1)+dy;
-        z =r.rCartesian.xyz.getAt(2)+dz;
+        x =r.rCartesian.xyz.getAt(0);
+        y =r.rCartesian.xyz.getAt(1);
+        z =r.rCartesian.xyz.getAt(2);
 
         m.insert("x",x);
         m.insert("y",y);
@@ -320,16 +418,28 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
 
 }
 
+/*!
+ * \brief PseudoTracker::getConnectionState
+ * \return
+ */
 bool PseudoTracker::getConnectionState()
 {
     return isConnected;
 }
 
+/*!
+ * \brief PseudoTracker::isReadyForMeasurement
+ * \return
+ */
 bool PseudoTracker::isReadyForMeasurement()
 {
     return true;
 }
 
+/*!
+ * \brief PseudoTracker::getSensorStats
+ * \return
+ */
 QMap<QString, QString> PseudoTracker::getSensorStats()
 {
     QMap<QString, QString> stats;
@@ -347,12 +457,20 @@ QMap<QString, QString> PseudoTracker::getSensorStats()
 
 }
 
+/*!
+ * \brief PseudoTracker::isBusy
+ * \return
+ */
 bool PseudoTracker::isBusy()
 {
     return false;
 }
 
-
+/*!
+ * \brief PseudoTracker::measurePolar
+ * \param m
+ * \return
+ */
 QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
 
     QList<Reading*> readings;
@@ -360,19 +478,6 @@ QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
     Reading *p = new Reading();
     p->typeofReading = m->typeOfReading;
 
-
-
-    /*double daz = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-    double dze = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-    double dd = ((double) std::rand()/RAND_MAX)*(20.0-1.0)+1.0;
-
-    daz = daz/1000;
-    dze = dze/1000;
-    dd = dd/10000;
-
-    p->rPolar.azimuth = myAzimuth+daz;
-    p->rPolar.zenith = myZenith+dze;
-    p->rPolar.distance = myDistance+dd;*/
 
     p->rPolar.azimuth = myAzimuth;
     p->rPolar.zenith = myZenith;
@@ -392,6 +497,11 @@ QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
 
 }
 
+/*!
+ * \brief PseudoTracker::measureDistance
+ * \param m
+ * \return
+ */
 QList<Reading*> PseudoTracker::measureDistance(MeasurementConfig *m){
 
     QList<Reading*> readings;
@@ -412,6 +522,11 @@ QList<Reading*> PseudoTracker::measureDistance(MeasurementConfig *m){
     return readings;
 }
 
+/*!
+ * \brief PseudoTracker::measureDirection
+ * \param m
+ * \return
+ */
 QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
 
     QList<Reading*> readings;
@@ -437,6 +552,12 @@ QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
     return readings;
 }
 
+/*!
+ * \brief PseudoTracker::measureCartesian
+ * \param m
+ * \return
+ *
+ */
 QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
 
     QList<Reading*> readings;
@@ -465,35 +586,53 @@ QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
     return readings;
 }
 
+/*!
+ * \brief PseudoTracker::randomX
+ * \param d
+ * \param m
+ * \param s
+ * \return
+ *
+ *  This method generates a random number
+ *  depending on the specified distribution.
+ *
+ *  d = method of distribution:
+ *  0 : uniform distribution (m-s,m+s)
+ *  1 : normal distributed around m (s=sigma)
+ *  2 : triangular distribution around m (m-s,m+s)
+ */
 double PseudoTracker::randomX(int d, double m, double s)
 {
     double rv = 0.0;
-     // d = Art der Verteilung:
-     // 0 : Wert zw. m-s und m+s (gleichverteilt)
-     // 1 : Wert normalverteilt um m mit s=s
-     // 2 : Dreiecksverteilung
+
 
       switch(d)
       {
         case 0 :
-          rv = 2.0*(double)rand()/(double)RAND_MAX-1.0;  // Wert zw.  -1 und   1 (gleichverteilt)
-          rv = m+s*rv;                                 // Wert zw. m-s und m+s (gleichverteilt)
+          rv = 2.0*(double)rand()/(double)RAND_MAX-1.0;
+          rv = m+s*rv;
           break;
         case 1 :
-          rv = randomNorm();                          // Wert normalverteilt um Null mit s=1
-          rv = m+s*rv;                                 // Wert normalverteilt um m  mit s=s
+          rv = randomNorm();
+          rv = m+s*rv;
           break;
         case 2 :
-          rv = randomTriangular(m,m-s,m+s);                                     // Wert dreiecksverteilt
+          rv = randomTriangular(m,m-s,m+s);
           break;
         default :
-          rv = -2;                                      // Wert = m, d.h. const. - keine Verteilung
+          rv = -2;
           break;
         }
 
       return(rv);
 }
 
+/*!
+ * \brief PseudoTracker::randomNorm
+ * \return
+ *
+ * This method generates a normally distributed random number.
+ */
 double PseudoTracker::randomNorm()
 {
     static int   iset=0;
@@ -524,8 +663,14 @@ double PseudoTracker::randomNorm()
     return rnum;
 }
 
-/*
- *Dreicecksverteilung
+/*!
+ * \brief PseudoTracker::randomTriangular
+ * \param c
+ * \param a
+ * \param b
+ * \return
+ *
+ *  This method generates a triangular distributed random number.
  */
 double PseudoTracker::randomTriangular(double c, double a, double b)
 {
@@ -537,6 +682,16 @@ double PseudoTracker::randomTriangular(double c, double a, double b)
            return b - sqrt((1 - U) * (b - a) * (b - c));
 }
 
+/*!
+ * \brief PseudoTracker::noisyPolarReading
+ * \param r
+ *
+ * This method noisy a given polar Reading using randomly generated numbers.
+ * It is used the error model described by  Hughes B, Sun W, Forbes A, Lewis A
+ * 2010 Determining laser tracker alignment errors using
+ * a network measurement CMSC Journal Autumn 2010, 26-32
+ *
+ */
 void PseudoTracker::noisyPolarReading(Reading *r)
 {
     if(r->typeofReading != Configuration::ePolar){
