@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QMap>
 #include <QString>
+#include <cmath>
 #include "pi_lasertracker.h"
 
 
@@ -106,6 +107,14 @@ private:
     int side;
 
     bool isConnected;
+
+    //methodes to generate random value
+    double randomX(int d, double m, double s);
+    double randomNorm();
+    double randomTriangular(double c, double a,double b);
+
+    void noisyPolarReading(Reading *r);
+
 
 };
 

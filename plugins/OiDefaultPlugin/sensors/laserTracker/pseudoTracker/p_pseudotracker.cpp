@@ -1,5 +1,7 @@
 #include "p_pseudotracker.h"
 
+
+
 PseudoTracker::PseudoTracker(){
     myAzimuth = 0.00001;
     myZenith = 0.00001;
@@ -71,7 +73,26 @@ QMap<QString,int>* PseudoTracker::getIntegerParameter(){
 
 QMap<QString,double>* PseudoTracker::getDoubleParameter(){
 
-    return NULL;
+    QMap<QString,double>* trackerErrors = new QMap<QString,double>;
+
+    trackerErrors->insert("lambda [mm]",0.000403);
+    trackerErrors->insert("mu",0.000005);
+    trackerErrors->insert("ex [mm]",0.0000122);
+    trackerErrors->insert("by [mm]",0.0000654);
+    trackerErrors->insert("bz [mm]",0.0000974);
+    trackerErrors->insert("alpha [arc sec]",0.128);
+    trackerErrors->insert("gamma [arc sec]",0.079);
+    trackerErrors->insert("Aa1 [arc sec]",0.064);
+    trackerErrors->insert("Ba1 [arc sec]",0.080);
+    trackerErrors->insert("Aa2 [arc sec]",0.073);
+    trackerErrors->insert("Ba2 [arc sec]",0.090);
+    trackerErrors->insert("Ae0 [arc sec]",0.223);
+    trackerErrors->insert("Ae1 [arc sec]",0.152);
+    trackerErrors->insert("Be1 [arc sec]",0.183);
+    trackerErrors->insert("Ae2 [arc sec]",0.214);
+    trackerErrors->insert("Be2 [arc sec]",0.179);
+
+    return trackerErrors;
 
 }
 
@@ -337,8 +358,11 @@ QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
     QList<Reading*> readings;
 
     Reading *p = new Reading();
+    p->typeofReading = m->typeOfReading;
 
-    double daz = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+
+
+    /*double daz = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
     double dze = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
     double dd = ((double) std::rand()/RAND_MAX)*(20.0-1.0)+1.0;
 
@@ -348,7 +372,14 @@ QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
 
     p->rPolar.azimuth = myAzimuth+daz;
     p->rPolar.zenith = myZenith+dze;
-    p->rPolar.distance = myDistance+dd;
+    p->rPolar.distance = myDistance+dd;*/
+
+    p->rPolar.azimuth = myAzimuth;
+    p->rPolar.zenith = myZenith;
+    p->rPolar.distance = myDistance;
+
+    this->noisyPolarReading(p);
+
     p->rPolar.fsBs = m->face;
 
     p->instrument = this;
@@ -432,4 +463,139 @@ QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
 
     readings.append(p);
     return readings;
+}
+
+double PseudoTracker::randomX(int d, double m, double s)
+{
+    double rv = 0.0;
+     // d = Art der Verteilung:
+     // 0 : Wert zw. m-s und m+s (gleichverteilt)
+     // 1 : Wert normalverteilt um m mit s=s
+     // 2 : Dreiecksverteilung
+
+      switch(d)
+      {
+        case 0 :
+          rv = 2.0*(double)rand()/(double)RAND_MAX-1.0;  // Wert zw.  -1 und   1 (gleichverteilt)
+          rv = m+s*rv;                                 // Wert zw. m-s und m+s (gleichverteilt)
+          break;
+        case 1 :
+          rv = randomNorm();                          // Wert normalverteilt um Null mit s=1
+          rv = m+s*rv;                                 // Wert normalverteilt um m  mit s=s
+          break;
+        case 2 :
+          rv = randomTriangular(m,m-s,m+s);                                     // Wert dreiecksverteilt
+          break;
+        default :
+          rv = -2;                                      // Wert = m, d.h. const. - keine Verteilung
+          break;
+        }
+
+      return(rv);
+}
+
+double PseudoTracker::randomNorm()
+{
+    static int   iset=0;
+    static double gset;
+    double rnum;
+    double fac;
+    double rsq;
+    double v1,v2;
+
+    if ( iset == 0 )
+      {
+        do {
+      v1  = 2.0*(double)rand()/(double)RAND_MAX-1.0;
+      v2  = 2.0*(double)rand()/(double)RAND_MAX-1.0;
+      rsq = v1*v1+v2*v2;
+        } while ( rsq >= 1.0 || rsq == 0.0);
+
+        fac = sqrt(-2.0*log(rsq)/rsq);
+        rnum = v1*fac;
+        gset = v2*fac;
+        iset = 1;
+      }
+    else
+      {
+        rnum = gset;
+        iset = 0;
+      }
+    return rnum;
+}
+
+/*
+ *Dreicecksverteilung
+ */
+double PseudoTracker::randomTriangular(double c, double a, double b)
+{
+    double U = (double) rand() / (double) RAND_MAX;
+       double F = (c - a) / (b - a);
+       if (U <= F)
+          return a + sqrt(U * (b - a) * (c - a));
+       else
+           return b - sqrt((1 - U) * (b - a) * (b - c));
+}
+
+void PseudoTracker::noisyPolarReading(Reading *r)
+{
+    if(r->typeofReading != Configuration::ePolar){
+        return;
+    }
+
+    double lambda = this->myConfiguration->doubleParameter.value("lambda [mm]")/1000;
+    double mu = this->myConfiguration->doubleParameter.value("mu");
+    double ex = this->myConfiguration->doubleParameter.value("ex [mm]")/1000;
+    double by = this->myConfiguration->doubleParameter.value("by [mm]")/1000;
+    double bz = this->myConfiguration->doubleParameter.value("bz [mm]")/1000;
+    double alpha = this->myConfiguration->doubleParameter.value("alpha [arc sec]")*(M_PI/648000.0);
+    double gamma = this->myConfiguration->doubleParameter.value("gamma [arc sec]")*(M_PI/648000.0);
+    double Aa1 = this->myConfiguration->doubleParameter.value("Aa1 [arc sec]")*(M_PI/648000.0);
+    double Ba1 = this->myConfiguration->doubleParameter.value("Ba1 [arc sec]")*(M_PI/648000.0);
+    double Aa2 = this->myConfiguration->doubleParameter.value("Aa2 [arc sec]")*(M_PI/648000.0);
+    double Ba2 = this->myConfiguration->doubleParameter.value("Ba2 [arc sec]")*(M_PI/648000.0);
+    double Ae0 = this->myConfiguration->doubleParameter.value("Ae0 [arc sec]")*(M_PI/648000.0);
+    double Ae1 = this->myConfiguration->doubleParameter.value("Ae1 [arc sec]")*(M_PI/648000.0);
+    double Be1 = this->myConfiguration->doubleParameter.value("Be1 [arc sec]")*(M_PI/648000.0);
+    double Ae2 = this->myConfiguration->doubleParameter.value("Ae2 [arc sec]")*(M_PI/648000.0);
+    double Be2 = this->myConfiguration->doubleParameter.value("Be2 [arc sec]")*(M_PI/648000.0);
+
+    lambda = randomX(1,0,lambda);
+    lambda = randomX(1,0,mu);
+    lambda = randomX(1,0,ex);
+    lambda = randomX(1,0,by);
+    lambda = randomX(1,0,bz);
+    lambda = randomX(1,0,alpha);
+    lambda = randomX(1,0,gamma);
+    lambda = randomX(1,0,Aa1);
+    lambda = randomX(1,0,Ba1);
+    lambda = randomX(1,0,Aa2);
+    lambda = randomX(1,0,Ba2);
+    lambda = randomX(1,0,Ae0);
+    lambda = randomX(1,0,Ae1);
+    lambda = randomX(1,0,Be1);
+    lambda = randomX(1,0,Ae2);
+    lambda = randomX(1,0,Be2);
+
+    double az = r->rPolar.azimuth;
+    double ze = r->rPolar.zenith;
+    double d = r->rPolar.distance;
+
+    d = (1+mu)*d+lambda;
+
+    double azF1 = Aa1*cos(az) + Ba1*sin(az);
+    double azF2 = Aa2*cos(2*az) + Ba2*sin(2*az);
+
+    az = az+azF1+azF2;
+
+    double zeF1 = Ae1*cos(ze) + Be1*sin(ze);
+    double zeF2 = Ae2*cos(2*ze) + Be2*sin(2*ze);
+
+    ze = ze+Ae0+zeF1+zeF2;
+
+
+    r->rPolar.azimuth =  az;
+    r->rPolar.zenith= ze;
+    r->rPolar.distance = d;
+
 }
