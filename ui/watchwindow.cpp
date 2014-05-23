@@ -101,6 +101,7 @@ void WatchWindow::iniGUI(QVariantMap m)
 
         QLCDNumber *n = new QLCDNumber();
         n->display(value);
+        n->setFont(f);
 
         n->setMode(QLCDNumber::Dec);
         n->setDigitCount(10);
@@ -139,13 +140,12 @@ void WatchWindow::closeEvent(QCloseEvent *e)
 
     disconnect(myStation->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
 
-    emit destroy();
-    this->destroy(true,true);
+    delete masterLayout;
+    masterLayout = NULL;
 
     this->close();
 
-    delete masterLayout;
-    masterLayout = NULL;
+    delete this;
 
     e->accept();
 

@@ -399,6 +399,7 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
         r.rPolar.distance = myDistance;
         r.rPolar.isValid = true;
 
+        r.typeofReading = Configuration::ePolar;
         this->noisyPolarReading(&r);
 
         r.toCartesian();
@@ -716,21 +717,21 @@ void PseudoTracker::noisyPolarReading(Reading *r)
     double Be2 = this->myConfiguration->doubleParameter.value("Be2 [arc sec]")*(M_PI/648000.0);
 
     lambda = randomX(1,0,lambda);
-    lambda = randomX(1,0,mu);
-    lambda = randomX(1,0,ex);
-    lambda = randomX(1,0,by);
-    lambda = randomX(1,0,bz);
-    lambda = randomX(1,0,alpha);
-    lambda = randomX(1,0,gamma);
-    lambda = randomX(1,0,Aa1);
-    lambda = randomX(1,0,Ba1);
-    lambda = randomX(1,0,Aa2);
-    lambda = randomX(1,0,Ba2);
-    lambda = randomX(1,0,Ae0);
-    lambda = randomX(1,0,Ae1);
-    lambda = randomX(1,0,Be1);
-    lambda = randomX(1,0,Ae2);
-    lambda = randomX(1,0,Be2);
+    mu = randomX(1,0,mu);
+    ex = randomX(1,0,ex);
+    by = randomX(1,0,by);
+    bz = randomX(1,0,bz);
+    alpha = randomX(1,0,alpha);
+    gamma = randomX(1,0,gamma);
+    Aa1 = randomX(1,0,Aa1);
+    Ba1 = randomX(1,0,Ba1);
+    Aa2 = randomX(1,0,Aa2);
+    Ba2 = randomX(1,0,Ba2);
+    Ae0 = randomX(1,0,Ae0);
+    Ae1 = randomX(1,0,Ae1);
+    Be1 = randomX(1,0,Be1);
+    Ae2 = randomX(1,0,Ae2);
+    Be2 = randomX(1,0,Be2);
 
     double az = r->rPolar.azimuth;
     double ze = r->rPolar.zenith;
@@ -748,9 +749,45 @@ void PseudoTracker::noisyPolarReading(Reading *r)
 
     ze = ze+Ae0+zeF1+zeF2;
 
+    OiVec ebb;
+    ebb.add(-ex);
+    ebb.add(by);
+    ebb.add(bz);
 
-    r->rPolar.azimuth =  az;
+    OiVec e00;
+    e00.add(ex);
+    e00.add(0.0);
+    e00.add(0.0);
+
+    OiVec xAxis;
+    xAxis.add(1);
+    xAxis.add(0);
+    xAxis.add(0);
+
+
+    OiMat Rz_Azimuth = OiMat::getRotationMatrix(az,Rotation::Z_AXIS);
+    OiMat Rx_alpha = OiMat::getRotationMatrix(alpha,Rotation::X_AXIS);
+    OiMat Ry_zenith = OiMat::getRotationMatrix(ze-(M_PI/2.0),Rotation::Y_AXIS);
+    OiMat Rx_minusAlpha = OiMat::getRotationMatrix(-1.0*alpha,Rotation::X_AXIS);
+    OiMat Rz_gamma = OiMat::getRotationMatrix(gamma,Rotation::Z_AXIS);
+
+
+    OiVec b(3);
+    b = Rz_Azimuth*e00 + Rz_Azimuth*Rx_alpha*Ry_zenith*Rx_minusAlpha*ebb;;
+
+    OiVec n(3);
+    n = Rz_Azimuth*Rx_alpha*Ry_zenith*Rx_minusAlpha*Rz_gamma*xAxis;
+
+
+    OiVec p(3);
+    p = b+d*n;
+
+    r->rPolar.azimuth = qAtan2(p.getAt(1),p.getAt(0));
+    r->rPolar.distance = qSqrt(p.getAt(0)*p.getAt(0)+p.getAt(1)*p.getAt(1)+p.getAt(2)*p.getAt(2));
+    r->rPolar.zenith = acos(p.getAt(2)/r->rPolar.distance);
+
+   /* r->rPolar.azimuth =  az;
     r->rPolar.zenith= ze;
-    r->rPolar.distance = d;
+    r->rPolar.distance = d;*/
 
 }

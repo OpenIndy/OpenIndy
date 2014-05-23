@@ -11,6 +11,7 @@
 #include <QString>
 #include <cmath>
 #include "pi_lasertracker.h"
+#include "oimat.h"
 
 
 class PseudoTracker : public LaserTracker

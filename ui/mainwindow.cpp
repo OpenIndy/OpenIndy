@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     cFeatureDialog = new CreateFeature(this->control.features);
     sEntityDialog = new ScalarEntityDialog(this->control.features);
+    watchWindow = NULL;
 
     //settings for other widgets
     mConfigDialog.setModal(true);
@@ -157,10 +158,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //group combo boxes
     connect(&control, SIGNAL(availableGroupsChanged(QMap<QString,int>)), this, SLOT(availableGroupsChanged(QMap<QString,int>)));
     connect(control.tblModel, SIGNAL(groupNameChanged(QString,QString)), &control, SLOT(groupNameChanged(QString,QString)));
-
-    //watchwindow
-    connect(&watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
-    connect(&watchWindow,SIGNAL(destroyed()),&control,SLOT(startMeasurement()));
 
     //setup create feature toolbar
     setupCreateFeature();
@@ -572,12 +569,15 @@ void MainWindow::on_actionWatch_window_triggered()
 {
 
 
+    watchWindow = new WatchWindow();
 
-    watchWindow.myStation = control.activeStation;
-    watchWindow.activeCoordinateSystem = control.activeCoordinateSystem;
-    watchWindow.activeFeature = control.activeFeature;
+    connect(watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
 
-    watchWindow.show();
+    watchWindow->myStation = control.activeStation;
+    watchWindow->activeCoordinateSystem = control.activeCoordinateSystem;
+    watchWindow->activeFeature = control.activeFeature;
+
+    watchWindow->show();
 
 }
 
