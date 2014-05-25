@@ -30,6 +30,8 @@
 #include "featureoverviewdelegate.h"
 #include "trafoparamdelegate.h"
 
+#include "oisimulationwidget.h"
+
 #include <QComboBox>
 #include <QCheckBox>
 #include <QLabel>
@@ -70,6 +72,7 @@ public:
     MeasurementConfigDialog mConfigDialog;
     MovementDialog moveDialog;
     PluginLoaderDialog pLoadDialog;
+    OiSimulationWidget simulationWidget;
 
     CreateFeature *cFeatureDialog;
     ScalarEntityDialog *sEntityDialog;

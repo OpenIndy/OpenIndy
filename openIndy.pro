@@ -150,7 +150,8 @@ SOURCES += \
     controller/displayattribute.cpp \
     src/sensorlistener.cpp \
     controller/guiconfiguration.cpp \
-    ui/plugininfowidget.cpp
+    ui/plugininfowidget.cpp \
+    ui/oisimulationwidget.cpp
 
 
 HEADERS  += \
@@ -268,7 +269,8 @@ HEADERS  += \
     controller/displayattribute.h \
     src/sensorlistener.h \
     controller/guiconfiguration.h \
-    ui/plugininfowidget.h
+    ui/plugininfowidget.h \
+    ui/oisimulationwidget.h
 
 
 FORMS    += ui/mainwindow.ui \
@@ -285,6 +287,7 @@ FORMS    += ui/mainwindow.ui \
     ui/scalarentitydialog.ui \
     ui/importnominalgeometrydialog.ui \
     ui/nominaldatadialog.ui \
-    ui/edittrafoparamdialog.ui
+    ui/edittrafoparamdialog.ui \
+    ui/oisimulationwidget.ui
 
 

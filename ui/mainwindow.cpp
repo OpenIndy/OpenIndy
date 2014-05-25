@@ -159,6 +159,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&control, SIGNAL(availableGroupsChanged(QMap<QString,int>)), this, SLOT(availableGroupsChanged(QMap<QString,int>)));
     connect(control.tblModel, SIGNAL(groupNameChanged(QString,QString)), &control, SLOT(groupNameChanged(QString,QString)));
 
+    //simluation
+    connect(ui->actionSimulation,SIGNAL(triggered()),&simulationWidget,SLOT(show()));
+
     //setup create feature toolbar
     setupCreateFeature();
     //connect(&control, SIGNAL(updateGeometryIcons(QStringList)), this, SLOT(updateGeometryIcons(QStringList)));

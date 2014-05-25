@@ -221,7 +221,7 @@ background-position: center center;</string>
      <x>0</x>
      <y>0</y>
      <width>1057</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -271,6 +271,7 @@ background-position: center center;</string>
     <addaction name="actionWatch_window"/>
     <addaction name="actionConsole"/>
     <addaction name="actionShow_hide_feature_toolbar"/>
+    <addaction name="actionSimulation"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
     <property name="title">
@@ -663,6 +664,10 @@ color: rgb(255, 255, 255);
    </property>
   </action>
   <action name="actionShow_hide_feature_toolbar">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/featureToolBar.png</normaloff>:/Images/icons/featureToolBar.png</iconset>
+   </property>
    <property name="text">
     <string>show/ hide feature toolbar</string>
    </property>
@@ -844,6 +849,15 @@ color: rgb(255, 255, 255);
    </property>
    <property name="text">
     <string>plugin manager</string>
+   </property>
+  </action>
+  <action name="actionSimulation">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/simulation.png</normaloff>:/Images/icons/simulation.png</iconset>
+   </property>
+   <property name="text">
+    <string>simulation</string>
    </property>
   </action>
  </widget>
