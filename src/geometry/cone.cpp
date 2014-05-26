@@ -21,6 +21,26 @@ Cone::Cone(const Cone &copy){
     this->isSolved = copy.isSolved;
 }
 
+/*!
+ * \brief Cone::getXYZ returns xyz as double values in vector
+ * \return
+ */
+OiVec *Cone::getXYZ()
+{
+    OiVec *xyz = &this->xyz;
+    return xyz;
+}
+
+/*!
+ * \brief Cone::getIJK returns ijk vector
+ * \return
+ */
+OiVec *Cone::getIJK()
+{
+    OiVec *ijk = &this->ijk;
+    return ijk;
+}
+
 void Cone::recalc(){
     /*
      * isDefined -> becomes true as soon as the first function of a feature has been executed, which defines the feature

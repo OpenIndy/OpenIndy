@@ -21,6 +21,26 @@ Cylinder::Cylinder(const Cylinder &copy){
     this->isSolved = copy.isSolved;
 }
 
+/*!
+ * \brief Cylinder::getXYZ returns xyz vector
+ * \return
+ */
+OiVec *Cylinder::getXYZ()
+{
+    OiVec* xyz = &this->xyz;
+    return xyz;
+}
+
+/*!
+ * \brief Cylinder::getIJK returns ijk vector
+ * \return
+ */
+OiVec *Cylinder::getIJK()
+{
+    OiVec* ijk = &this->ijk;
+    return ijk;
+}
+
 void Cylinder::recalc(){
     /*
      * isDefined -> becomes true as soon as the first function of a feature has been executed, which defines the feature

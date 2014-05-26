@@ -35,32 +35,59 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         QString name = j.key();
         QVariant qvalue = j.value();
         double dvalue = qvalue.toDouble()*UnitConverter::getDistanceMultiplier();
-        QString value =  QString::number(dvalue);
 
-        if(activeCoordinateSystem == myStation->coordSys && activeFeature != NULL){
+        if(myStation->coordSys != activeCoordinateSystem){
+
+            TrafoParam *tp = myStation->coordSys->findTrafoParam(activeCoordinateSystem);
+            if(tp != NULL){
+                OiMat t;
+                if(tp->to == activeCoordinateSystem){
+                    t = tp->homogenMatrix;
+                }else{
+                    t = tp->homogenMatrix.inv();
+                }
+
+                OiVec trackerXYZ(3);
+                trackerXYZ.setAt(0,m.value("x").toDouble());
+                trackerXYZ.setAt(1,m.value("y").toDouble());
+                trackerXYZ.setAt(2,m.value("z").toDouble());
+
+                trackerXYZ = t*trackerXYZ;
+
+                if(name == "x"){
+                    dvalue =trackerXYZ.getAt(0);
+                }else if (name == "y"){
+                    dvalue = trackerXYZ.getAt(1);
+                }else if (name == "z"){
+                    dvalue =trackerXYZ.getAt(2);
+                }
+            }
+        }
+
+        if(activeFeature != NULL && activeFeature->getGeometry() != NULL && activeFeature->getGeometry()->getXYZ() != NULL){
             if(name == "x"){
 
-                double featureX = activeFeature->getFeature()->getDisplayX().toDouble();
-                double dx = featureX - value.toDouble();
+                double featureX = activeFeature->getGeometry()->getXYZ()->getAt(0);
+                double dx = featureX - dvalue;
                 streamData.value(name)->display(QString::number(dx,'f',UnitConverter::distanceDigits));
 
             }else if(name == "y"){
 
-                double featureY = activeFeature->getFeature()->getDisplayY().toDouble();
-                double dy = featureY - value.toDouble();
+                double featureY = activeFeature->getGeometry()->getXYZ()->getAt(1);
+                double dy = featureY - dvalue;
                 streamData.value(name)->display(QString::number(dy,'f',UnitConverter::distanceDigits));
 
             }else if(name == "z"){
 
-                double featureZ = activeFeature->getFeature()->getDisplayZ().toDouble();
-                double dz = featureZ - value.toDouble();
+                double featureZ = activeFeature->getGeometry()->getXYZ()->getAt(2);
+                double dz = featureZ - dvalue;
                 streamData.value(name)->display(QString::number(dz,'f',UnitConverter::distanceDigits));
 
             }else{
-                streamData.value(name)->display(value);
+                streamData.value(name)->display(QString::number(dvalue,'f',UnitConverter::distanceDigits));
             }
         }else{
-            streamData.value(name)->display(value);
+            streamData.value(name)->display(QString::number(dvalue,'f',UnitConverter::distanceDigits));
         }
 
 

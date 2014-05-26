@@ -21,6 +21,16 @@ Ellipsoid::Ellipsoid(const Ellipsoid &copy){
     this->isSolved = copy.isSolved;
 }
 
+/*!
+ * \brief Ellipsoid::getXYZ returns the xyz vector
+ * \return
+ */
+OiVec *Ellipsoid::getXYZ()
+{
+    OiVec *xyz = &this->xyz;
+    return xyz;
+}
+
 void Ellipsoid::recalc(){
     /*
      * isDefined -> becomes true as soon as the first function of a feature has been executed, which defines the feature

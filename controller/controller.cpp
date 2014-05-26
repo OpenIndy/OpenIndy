@@ -181,10 +181,29 @@ void Controller::startMove(Reading *parameter){
 void Controller::startAim(){
 
     if(checkFeatureValid() && checkSensorValid()){
-        OiVec polarElements = Reading::toPolar(activeFeature->getGeometry()->getDisplayX().toDouble(),
-                                                                 activeFeature->getGeometry()->getDisplayY().toDouble(),
-                                                                 activeFeature->getGeometry()->getDisplayZ().toDouble());
-
+        OiVec *xyz = activeFeature->getGeometry()->getXYZ();
+        if(xyz == NULL){
+            return;
+        }
+        OiVec polarElements = Reading::toPolar(xyz->getAt(0),xyz->getAt(1),xyz->getAt(2));
+        if(this->activeStation->coordSys != this->activeCoordinateSystem){
+            TrafoParam *tp = this->activeCoordinateSystem->findTrafoParam(this->activeStation->coordSys);
+            if(tp != NULL){
+                OiMat t;
+                if(tp->to == this->activeStation->coordSys){
+                    t = tp->homogenMatrix;
+                }else{
+                    t = tp->homogenMatrix.inv();
+                }
+                OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
+                xyz = t * xyz;
+                Console::addLine("x ", xyz.getAt(0));
+                Console::addLine("y ",xyz.getAt(1));
+                Console::addLine("z ",xyz.getAt(2));
+                Console::addLine("homoFaktor ",xyz.getAt(3));
+                polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+            }
+        }
 
         this->activeStation->emitStartMove(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2),false);
         emit sensorWorks("moving...");

@@ -13,6 +13,9 @@ public:
     OiVec ijk;
     double radius;
 
+    OiVec* getXYZ();
+    OiVec* getIJK();
+
     void recalc();
 
     bool toOpenIndyXML(QXmlStreamWriter& stream);

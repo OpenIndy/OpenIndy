@@ -28,6 +28,9 @@ public:
     OiVec xyz;
     OiVec ijk;
 
+    OiVec* getXYZ();
+    OiVec* getIJK();
+
     bool toOpenIndyXML(QXmlStreamWriter& stream);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 

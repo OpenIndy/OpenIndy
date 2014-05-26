@@ -28,6 +28,13 @@ public:
     CoordinateSystem* myNominalCoordSys;
     QMap<Configuration::ReadingTypes,QString> usedReadingTypes;
 
+    virtual OiVec* getXYZ(){
+        return NULL;
+    }
+    virtual OiVec* getIJK(){
+        return NULL;
+    }
+
 
     MeasurementConfig mConfig;
 

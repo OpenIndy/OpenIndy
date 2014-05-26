@@ -28,6 +28,16 @@ Sphere::~Sphere(){
 }
 
 /*!
+ * \brief Sphere::getXYZ returns the xyz vector
+ * \return
+ */
+OiVec *Sphere::getXYZ()
+{
+    OiVec *xyz = &this->xyz;
+    return xyz;
+}
+
+/*!
  * \brief Sphere::recalc
  * Execute alls functions in the specified order
  */

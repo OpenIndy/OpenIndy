@@ -24,6 +24,8 @@ public:
 
     OiVec xyz;
 
+    OiVec* getXYZ();
+
     void recalc();
 
     bool toOpenIndyXML(QXmlStreamWriter& stream);
