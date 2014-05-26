@@ -150,7 +150,9 @@ SOURCES += \
     controller/displayattribute.cpp \
     src/sensorlistener.cpp \
     controller/guiconfiguration.cpp \
-    ui/plugininfowidget.cpp
+    ui/plugininfowidget.cpp \
+    controller/trafocontroller.cpp \
+    controller/datalisthandler.cpp
 
 
 HEADERS  += \
@@ -268,7 +270,9 @@ HEADERS  += \
     controller/displayattribute.h \
     src/sensorlistener.h \
     controller/guiconfiguration.h \
-    ui/plugininfowidget.h
+    ui/plugininfowidget.h \
+    controller/trafocontroller.h \
+    controller/datalisthandler.h
 
 
 FORMS    += ui/mainwindow.ui \

@@ -713,7 +713,16 @@ void MainWindow::createFeature(){
                 }
             }
 
-            FeatureAttributesExchange featureAttributes(count,featureType,name,group,"",actual,nominal,comPoint,nominalSystem);
+            FeatureAttributesExchange featureAttributes;
+            featureAttributes.count = count;
+            featureAttributes.featureType = featureType;
+            featureAttributes.name = name;
+            featureAttributes.group = group;
+            featureAttributes.function = "";
+            featureAttributes.actual = actual;
+            featureAttributes.nominal = nominal;
+            featureAttributes.common = comPoint;
+            featureAttributes.nominalSystem = nominalSystem;
 
             control.addFeature(featureAttributes);
 

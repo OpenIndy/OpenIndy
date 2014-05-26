@@ -98,6 +98,16 @@ Controller::Controller(QObject *parent) :
     connect(this,SIGNAL(refreshGUI(FeatureWrapper*,Station*)),this->tblModel,SLOT(updateModel(FeatureWrapper*,Station*)));
 
     emit refreshGUI(this->activeFeature,this->activeStation);
+
+    dataListHandler.activeCoordinateSystem = this->activeCoordinateSystem;
+    dataListHandler.activeFeature = this->activeFeature;
+    dataListHandler.activeStation = this->activeStation;
+    dataListHandler.availableGroups = &this->availableGroups;
+    dataListHandler.coordSys = &this->coordSys;
+    dataListHandler.features = &this->features;
+    dataListHandler.stations = &this->stations;
+
+    FeatureUpdater::initPointers(dataListHandler);
 }
 
 /*!
@@ -112,8 +122,7 @@ Controller::Controller(QObject *parent) :
  */
 void Controller::addFeature(FeatureAttributesExchange fae){
 
-        int fType = FeatureUpdater::addFeature(this->stations,this->coordSys,this->features,
-                                                                       fae,*this->lastmConfig);
+        int fType = FeatureUpdater::addFeature(fae,*this->lastmConfig);
         if(fType == Configuration::eStationFeature && fType == Configuration::eCoordinateSystemFeature){
             emit CoordSystemAdded();
         }
@@ -322,7 +331,7 @@ void Controller::recalcFeature(Feature *f){
  */
 void Controller::recalcTrafoParam(TrafoParam *tp){
     //start recalcing
-    this->myFeatureUpdater.recalcTrafoParam(tp, this->features, this->coordSys, this->stations, this->activeCoordinateSystem);
+    this->myFeatureUpdater.recalcTrafoParam(tp);
     //refresh feature tree view models
     this->featureTreeViewModel->refreshModel();
 }
@@ -678,18 +687,18 @@ void Controller::setActiveCoordSystem(QString CoordSysName){
     qDebug() << CoordSysName;
     for(int i=0; i<this->features.size();i++){
         if(this->features.at(i)->getCoordinateSystem() != NULL && this->features.at(i)->getCoordinateSystem()->name == CoordSysName){
-            this->activeCoordinateSystem = this->features.at(i)->getCoordinateSystem();
+            *this->activeCoordinateSystem = *this->features.at(i)->getCoordinateSystem();
         }
         if(this->features.at(i)->getStation() != NULL &&
                 this->features.at(i)->getStation()->coordSys != NULL &&
                 this->features.at(i)->getStation()->name == CoordSysName){
-            this->activeCoordinateSystem = this->features.at(i)->getStation()->coordSys;
+            *this->activeCoordinateSystem = *this->features.at(i)->getStation()->coordSys;
 
         }
     }
 
     //transform observations to current system and recalc all features
-    this->myFeatureUpdater.switchCoordinateSystem(this->coordSys, this->stations, this->features, this->activeCoordinateSystem);
+    this->myFeatureUpdater.switchCoordinateSystem(this->activeCoordinateSystem);
 
     //update table view for all features
     emit this->refreshGUI(this->activeFeature, this->activeStation);
@@ -1474,7 +1483,7 @@ void Controller::deleteFeaturesCallback(bool command){
                 }
 
                 //delete feature
-                this->myFeatureUpdater.deleteFeature(delFeature, this->features);
+                this->myFeatureUpdater.deleteFeature(delFeature);
 
             }
         }

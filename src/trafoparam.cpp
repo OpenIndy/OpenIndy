@@ -8,8 +8,9 @@ TrafoParam::TrafoParam() : homogenMatrix(4, 4), translation(3), rotation(3), sca
 {
     this->id = Configuration::generateID();
     this->isUpdated = false;
-    this->use = true;
+    this->use = false;
     this->validTime = QDateTime::currentDateTime();
+    this->isMovement = false;
 }
 
 TrafoParam::~TrafoParam(){
@@ -124,7 +125,9 @@ bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
     stream.writeAttribute("mx", QString::number(this->scale.getAt(0)));
     stream.writeAttribute("my", QString::number(this->scale.getAt(1)));
     stream.writeAttribute("mz", QString::number(this->scale.getAt(2)));
-
+    stream.writeAttribute("use",QString::number(this->use));
+    stream.writeAttribute("time", this->validTime.toLocalTime().toString());
+    stream.writeAttribute("movement", QString::number(this->isMovement));
 
     stream.writeStartElement("from");
     stream.writeAttribute("type", "coordinatesystem");
@@ -185,6 +188,15 @@ ElementDependencies TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
     }
     if(attributes.hasAttribute("mz")) {
         this->scale.setAt(2,attributes.value("mz").toDouble());
+    }
+    if(attributes.hasAttribute("use")){
+        this->use = attributes.value("use").toInt();
+    }
+    if(attributes.hasAttribute("time")){
+        this->validTime = QDateTime::fromString(attributes.value("time").toString(),Qt::LocalDate);
+    }
+    if(attributes.hasAttribute("movement")){
+        this->isMovement = attributes.value("movement").toInt();
     }
 
     /* Next element... */

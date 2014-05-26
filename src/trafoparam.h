@@ -33,6 +33,7 @@ public:
 
     bool use;
     QDateTime validTime;
+    bool isMovement;
 
     void recalc();
     void generateHomogenMatrix();

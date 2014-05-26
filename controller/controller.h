@@ -52,6 +52,7 @@
 
 #include "featureattributesexchange.h"
 #include "nominalattributeexchange.h"
+#include "datalisthandler.h"
 
 class Feature;
 class CoordinateSystem;
@@ -78,9 +79,10 @@ public:
     CoordinateSystem *activeCoordinateSystem;
     QMap<QString, int> availableGroups;
 
+    DataListHandler dataListHandler;
+
     MeasurementConfig *lastmConfig;
     TableModel *tblModel;
-    LaserTracker *lt; //test
     Console *c;
     Configuration conf;
     QSqlQueryModel *pluginsModel;

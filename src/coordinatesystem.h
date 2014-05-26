@@ -36,10 +36,10 @@ public:
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
-    bool transformObservations(CoordinateSystem *to);
-    void setObservationState(bool valid);
+    //bool transformObservations(CoordinateSystem *to);
+    //void setObservationState(bool valid);
 
-    TrafoParam* findTrafoParam(CoordinateSystem *searchToSystem);
+    //TrafoParam* findTrafoParam(CoordinateSystem *searchToSystem);
 };
 
 #endif // COORDINATESYSTEM_H

@@ -169,7 +169,7 @@ ElementDependencies CoordinateSystem::fromOpenIndyXML(QXmlStreamReader &xml){
  * \param to
  * \return
  */
-bool CoordinateSystem::transformObservations(CoordinateSystem *to){
+/*bool CoordinateSystem::transformObservations(CoordinateSystem *to){
     if(to != NULL){
         if(this == to){ //if coordinate systems are identical
             foreach(Observation *obs, this->observations){
@@ -202,28 +202,28 @@ bool CoordinateSystem::transformObservations(CoordinateSystem *to){
         }
     }
     return false;
-}
+}*/
 
 /*!
  * \brief CoordinateSystem::setObservationState
  * Set observations isValid to valid
  * \param valid
  */
-void CoordinateSystem::setObservationState(bool valid){
+/*void CoordinateSystem::setObservationState(bool valid){
     foreach(Observation *obs, this->observations){
         if(valid == true){
             obs->myXyz = obs->myOriginalXyz;
         }
         obs->isValid = valid;
     }
-}
+}*/
 
 /*!
  * \brief CoordinateSystem::findTrafoParam
  * \param searchTP
  * \return
  */
-TrafoParam* CoordinateSystem::findTrafoParam(CoordinateSystem *searchToSystem){
+/*TrafoParam* CoordinateSystem::findTrafoParam(CoordinateSystem *searchToSystem){
     foreach(TrafoParam *tp, this->trafoParams){
         if(tp->to != NULL && tp->from != NULL){
             if(tp->to == searchToSystem || tp->from == searchToSystem){
@@ -232,4 +232,4 @@ TrafoParam* CoordinateSystem::findTrafoParam(CoordinateSystem *searchToSystem){
         }
     }
     return NULL;
-}
+}*/

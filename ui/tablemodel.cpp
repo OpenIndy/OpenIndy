@@ -453,7 +453,7 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
             myExchange.featureType = this->activeFeature->getTypeOfFeature();
             myExchange.name = this->activeFeature->getFeature()->name;
 
-            if(FeatureUpdater::validateFeatureName(this->features, value.toString(), myExchange)){
+            if(FeatureUpdater::validateFeatureName(value.toString(), myExchange)){
 
                 if(this->activeFeature->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
                     Geometry *myGeom = this->activeFeature->getGeometry();
@@ -476,9 +476,9 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
                     this->activeFeature->getFeature()->name = value.toString();
                 }
 
-                FeatureUpdater::checkForNominals(this->features, this->activeFeature);
-                FeatureUpdater::addNominalToActual(this->features, this->activeFeature);
-                FeatureUpdater::sortFeatures(this->features);
+                FeatureUpdater::checkForNominals(this->activeFeature);
+                FeatureUpdater::addNominalToActual(this->activeFeature);
+                FeatureUpdater::sortFeatures();
 
             }
 
