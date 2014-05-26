@@ -34,7 +34,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
 
         QString name = j.key();
         QVariant qvalue = j.value();
-        double dvalue = qvalue.toDouble()*UnitConverter::getDistanceMultiplier();
+        double dvalue = qvalue.toDouble();
 
         if(myStation->coordSys != activeCoordinateSystem){
 
@@ -68,33 +68,33 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             if(name == "x"){
 
                 double featureX = activeFeature->getGeometry()->getXYZ()->getAt(0);
+                Console::addLine("get x",featureX);
                 double dx = featureX - dvalue;
-                streamData.value(name)->display(QString::number(dx,'f',UnitConverter::distanceDigits));
+                streamData.value(name)->display(QString::number(dx*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 
             }else if(name == "y"){
 
                 double featureY = activeFeature->getGeometry()->getXYZ()->getAt(1);
                 double dy = featureY - dvalue;
-                streamData.value(name)->display(QString::number(dy,'f',UnitConverter::distanceDigits));
+                streamData.value(name)->display(QString::number(dy*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 
             }else if(name == "z"){
 
                 double featureZ = activeFeature->getGeometry()->getXYZ()->getAt(2);
                 double dz = featureZ - dvalue;
-                streamData.value(name)->display(QString::number(dz,'f',UnitConverter::distanceDigits));
+                streamData.value(name)->display(QString::number(dz*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 
             }else{
-                streamData.value(name)->display(QString::number(dvalue,'f',UnitConverter::distanceDigits));
+                streamData.value(name)->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
             }
         }else{
-            streamData.value(name)->display(QString::number(dvalue,'f',UnitConverter::distanceDigits));
+            streamData.value(name)->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
         }
 
 
 
 
     }
-
 }
 
 void WatchWindow::iniGUI(QVariantMap m)

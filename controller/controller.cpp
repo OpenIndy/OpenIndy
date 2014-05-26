@@ -155,6 +155,10 @@ void Controller::startMeasurement(){
     }
 
     if(checkSensorValid() && checkFeatureValid()){
+        if(this->activeFeature->getGeometry()->isNominal){
+            Console::addLine("can not measure nominal feature");
+            return;
+        }
         this->activeStation->emitStartMeasure(this->activeFeature->getGeometry(),checkActiveCoordSys);
         emit sensorWorks("measuring...");
     }
@@ -651,8 +655,7 @@ void Controller::deleteFunctionFromFeature(int index){
 
 bool Controller::checkFeatureValid(){
     if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
-        if(this->activeFeature->getGeometry() != NULL && this->activeFeature->getGeometry() != this->activeStation->position &&
-                this->activeFeature->getGeometry()->isNominal == false){
+        if(this->activeFeature->getGeometry() != NULL && this->activeFeature->getGeometry() != this->activeStation->position){
             return true;
         }else{
             Console::addLine("you cannot measure this feature");
