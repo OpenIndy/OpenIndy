@@ -157,6 +157,9 @@ QVariant FeatureTreeViewModel::data(const QModelIndex &index, int role) const{
             }else if(item->getIsFeature() && item->getFeature()->getPointCloud() != NULL){
                 QPixmap pix(":/Images/icons/pointCloud_5e8acf.png");
                 return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            }else if(item->getIsFeature() && item->getFeature()->getScalarEntityTemperature() != NULL){
+                QPixmap pix(":/Images/icons/scalarEntities_5e8acf.png");
+                return pix.scaledToHeight(12, Qt::SmoothTransformation);
             }
         }
     }
@@ -180,7 +183,7 @@ void FeatureTreeViewModel::refreshModel(){
     this->rootItem->deleteChildren();
 
     QList<FeatureWrapper*> points, lines, planes, spheres, stations, coordinateSystems, trafoParams, angles, distances,
-            circles, cones, cylinders, ellipsoids, hyperboloids, nurbs, paraboloids, pointClouds;
+            circles, cones, cylinders, ellipsoids, hyperboloids, nurbs, paraboloids, pointClouds, temperatures;
     foreach(FeatureWrapper *wrapper, this->features){
         if(wrapper->getGeometry() != NULL){ //if current feature wrapper contains a geometry
             if(wrapper->getPoint() != NULL){
@@ -211,6 +214,8 @@ void FeatureTreeViewModel::refreshModel(){
                 paraboloids.append(wrapper);
             }else if(wrapper->getPointCloud() != NULL){
                 pointClouds.append(wrapper);
+            }else if(wrapper->getScalarEntityTemperature() != NULL){
+                temperatures.append(wrapper);
             }
         }else if(wrapper->getFeature() != NULL){ //if current feature wrapper contains a feature
             if(wrapper->getCoordinateSystem() != NULL){
@@ -229,6 +234,7 @@ void FeatureTreeViewModel::refreshModel(){
     if(planes.size() > 0){ this->appendGeometries(this->rootItem, planes, "planes:"); }
     if(angles.size() > 0){ this->appendGeometries(this->rootItem, angles, "angles:"); }
     if(distances.size() > 0){ this->appendGeometries(this->rootItem, distances, "distances:"); }
+    if(temperatures.size() > 0){ this->appendGeometries(this->rootItem, temperatures, "temperatures:"); }
     if(circles.size() > 0){ this->appendGeometries(this->rootItem, circles, "circles:"); }
     if(cylinders.size() > 0){ this->appendGeometries(this->rootItem, cylinders, "cylinders:"); }
     if(cones.size() > 0){ this->appendGeometries(this->rootItem, cones, "cones:"); }

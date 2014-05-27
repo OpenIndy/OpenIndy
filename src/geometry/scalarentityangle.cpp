@@ -190,5 +190,5 @@ QString ScalarEntityAngle::getDisplayStdDev() const{
 }
 
 QString ScalarEntityAngle::getDisplayScalarAngleValue() const{
-    return QString::number(this->angle*180.0/3.141592653589793,'f',UnitConverter::angleDigits);
+    return QString::number(this->angle*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
 }

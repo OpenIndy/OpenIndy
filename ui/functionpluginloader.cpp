@@ -273,6 +273,9 @@ void FunctionPluginLoader::on_treeView_availableElements_clicked(const QModelInd
                 case Configuration::eReadingPolarElement:
                     enable = (item->getReading() != NULL && item->getReading()->typeofReading == Configuration::ePolar);
                     break;
+                case Configuration::eScalarEntityTemperatureElement:
+                    enable = (item->getFeature() != NULL && item->getFeature()->getScalarEntityTemperature() != NULL);
+                    break;
             }
             this->selectedAvailableElement = item;
             this->ui->cmd_addElement->setEnabled(enable);

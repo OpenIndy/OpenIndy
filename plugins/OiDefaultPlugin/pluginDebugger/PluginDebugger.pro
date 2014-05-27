@@ -90,10 +90,13 @@ SOURCES += \
     ../lib/fitting/util/microtim.cpp \
     ../lib/fitting/util/iskeyword.cpp \
     ../lib/fitting/util/Getopt.cpp \
+    oitestcircle.cpp \
+    ../functions/systemTransformation/p_simpletemperaturecompensation.cpp \
     ../../../src/unitconverter.cpp \
     ../../../src/trafoparam.cpp \
     ../../../src/statistic.cpp \
     ../../../src/station.cpp \
+    ../../../src/sensorlistener.cpp \
     ../../../src/sensorcontrol.cpp \
     ../../../src/sensorconfiguration.cpp \
     ../../../src/residual.cpp \
@@ -108,8 +111,8 @@ SOURCES += \
     ../../../src/function.cpp \
     ../../../src/featurewrapper.cpp \
     ../../../src/feature.cpp \
+    ../../../src/elementdependencies.cpp \
     ../../../src/coordinatesystem.cpp \
-    ../../../src/console.cpp \
     ../../../src/connectionconfig.cpp \
     ../../../src/configuration.cpp \
     ../../../src/geometry/sphere.cpp \
@@ -128,7 +131,7 @@ SOURCES += \
     ../../../src/geometry/cylinder.cpp \
     ../../../src/geometry/cone.cpp \
     ../../../src/geometry/circle.cpp \
-    oitestcircle.cpp
+    oitesttempcomp.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
@@ -167,10 +170,18 @@ HEADERS += \
     ../lib/fitting/util/microtim.h \
     ../lib/fitting/util/iskeyword.h \
     ../lib/fitting/util/getopt.h \
+    oitestcircle.h \
+    ../../../lib/openIndyLib/include/oivec.h \
+    ../../../lib/openIndyLib/include/oimat.h \
+    ../../../lib/openIndyLib/include/linearalgebra.h \
+    ../../../lib/openIndyLib/include/global.h \
+    ../../../lib/openIndyLib/include/chooselalib.h \
+    ../functions/systemTransformation/p_simpletemperaturecompensation.h \
     ../../../src/unitconverter.h \
     ../../../src/trafoparam.h \
     ../../../src/statistic.h \
     ../../../src/station.h \
+    ../../../src/sensorlistener.h \
     ../../../src/sensorcontrol.h \
     ../../../src/sensorconfiguration.h \
     ../../../src/sensor.h \
@@ -186,9 +197,9 @@ HEADERS += \
     ../../../src/function.h \
     ../../../src/featurewrapper.h \
     ../../../src/feature.h \
+    ../../../src/elementdependencies.h \
     ../../../src/element.h \
     ../../../src/coordinatesystem.h \
-    ../../../src/console.h \
     ../../../src/connectionconfig.h \
     ../../../src/configuration.h \
     ../../../src/geometry/sphere.h \
@@ -216,9 +227,4 @@ HEADERS += \
     ../../../src/plugin/pi_geodeticfunction.h \
     ../../../src/plugin/pi_fitfunction.h \
     ../../../src/plugin/pi_constructfunction.h \
-    oitestcircle.h \
-    ../../../lib/openIndyLib/include/oivec.h \
-    ../../../lib/openIndyLib/include/oimat.h \
-    ../../../lib/openIndyLib/include/linearalgebra.h \
-    ../../../lib/openIndyLib/include/global.h \
-    ../../../lib/openIndyLib/include/chooselalib.h
+    oitesttempcomp.h

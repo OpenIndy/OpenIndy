@@ -73,7 +73,16 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
             }
         }
 
-        FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,actual,nominal,comPoint,nominalSystem);
+        FeatureAttributesExchange featureAttributes;
+        featureAttributes.count = count;
+        featureAttributes.featureType = featureType;
+        featureAttributes.name = name;
+        featureAttributes.group = group;
+        featureAttributes.function = function;
+        featureAttributes.actual = actual;
+        featureAttributes.nominal = nominal;
+        featureAttributes.common = comPoint;
+        featureAttributes.nominalSystem = nominalSystem;
 
         emit createFeature(featureAttributes);
 

@@ -162,6 +162,12 @@ void EditTrafoparamDialog::on_comboBox_displayedFunction_currentIndexChanged(con
 
     if(currentFunction != -1){
 
+        ui->textBrowser_statistic->clear();
+        QStringList protocol =  this->selectedTrafoParam->getFeature()->functionList.at(currentFunction)->getResultProtocol();
+        for(int i= 0;i<protocol.size();i++){
+            ui->textBrowser_statistic->append(protocol.at(i));
+        }
+
         fModel = new FunctionStatistic();
         fModel->setFunction(NULL);
         ui->tableView_statistic->setModel(fModel);

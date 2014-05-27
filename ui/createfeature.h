@@ -54,6 +54,10 @@ private slots:
 
     void on_checkBox_Actual_toggled(bool checked);
 
+    void on_checkBox_movement_toggled(bool checked);
+
+    void on_comboBox_destinationSystem_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::CreateFeature *ui;
 };

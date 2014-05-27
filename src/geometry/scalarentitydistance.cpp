@@ -169,5 +169,5 @@ QString ScalarEntityDistance::getDisplayStdDev() const{
 }
 
 QString ScalarEntityDistance::getDisplayScalarDistanceValue() const{
-    return QString::number(this->distance,'f',UnitConverter::distanceDigits);
+    return QString::number(this->distance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }

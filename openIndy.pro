@@ -151,8 +151,9 @@ SOURCES += \
     src/sensorlistener.cpp \
     controller/guiconfiguration.cpp \
     ui/plugininfowidget.cpp \
-    controller/oifeaturestate.cpp
-
+    controller/oifeaturestate.cpp \
+    controller/trafocontroller.cpp \
+    controller/datalisthandler.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -270,8 +271,9 @@ HEADERS  += \
     src/sensorlistener.h \
     controller/guiconfiguration.h \
     ui/plugininfowidget.h \
-    controller/oifeaturestate.h
-
+    controller/oifeaturestate.h \
+    controller/trafocontroller.h \
+    controller/datalisthandler.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

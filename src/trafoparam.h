@@ -2,10 +2,12 @@
 #define TRAFOPARAM_H
 
 #include <QtCore/qmath.h>
+#include <QDateTime>
 #include "feature.h"
 #include "oivec.h"
 #include "oimat.h"
 #include "unitconverter.h"
+
 
 class CoordinateSystem;
 class Statistic;
@@ -29,6 +31,10 @@ public:
     CoordinateSystem *to;
     Statistic *stats;
 
+    bool use;
+    QDateTime validTime;
+    bool isMovement;
+
     void recalc();
     void generateHomogenMatrix();
 
@@ -46,6 +52,8 @@ public:
     QString getDisplayScaleX()const;
     QString getDisplayScaleY()const;
     QString getDisplayScaleZ()const;
+    QString getDisplayUse()const;
+    QString getDisplayTime()const;
 };
 
 #endif // TRAFOPARAM_H

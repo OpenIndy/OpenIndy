@@ -79,6 +79,7 @@ Controller::Controller(QObject *parent) :
     connect(this,SIGNAL(refreshGUI(FeatureWrapper*,Station*)),this->tblModel,SLOT(updateModel(FeatureWrapper*,Station*)));
 
     emit refreshGUI();
+	
 }
 
 /*!
@@ -93,8 +94,7 @@ Controller::Controller(QObject *parent) :
  */
 void Controller::addFeature(FeatureAttributesExchange fae){
 
-        int fType = FeatureUpdater::addFeature(this->stations,this->coordSys,this->features,
-                                                                       fae,*this->lastmConfig);
+        int fType = FeatureUpdater::addFeature(fae,*this->lastmConfig);
         if(fType == Configuration::eStationFeature && fType == Configuration::eCoordinateSystemFeature){
             emit CoordSystemAdded();
         }
@@ -303,7 +303,7 @@ void Controller::recalcFeature(Feature *f){
  */
 void Controller::recalcTrafoParam(TrafoParam *tp){
     //start recalcing
-    this->myFeatureUpdater.recalcTrafoParam(tp, this->features, this->coordSys, this->stations, this->activeCoordinateSystem);
+    this->myFeatureUpdater.recalcTrafoParam(tp);
     //refresh feature tree view models
     this->featureTreeViewModel->refreshModel();
 }
@@ -659,18 +659,18 @@ void Controller::setActiveCoordSystem(QString CoordSysName){
     qDebug() << CoordSysName;
     for(int i=0; i<this->features.size();i++){
         if(this->features.at(i)->getCoordinateSystem() != NULL && this->features.at(i)->getCoordinateSystem()->name == CoordSysName){
-            this->activeCoordinateSystem = this->features.at(i)->getCoordinateSystem();
+            *this->activeCoordinateSystem = *this->features.at(i)->getCoordinateSystem();
         }
         if(this->features.at(i)->getStation() != NULL &&
                 this->features.at(i)->getStation()->coordSys != NULL &&
                 this->features.at(i)->getStation()->name == CoordSysName){
-            this->activeCoordinateSystem = this->features.at(i)->getStation()->coordSys;
+            *this->activeCoordinateSystem = *this->features.at(i)->getStation()->coordSys;
 
         }
     }
 
     //transform observations to current system and recalc all features
-    this->myFeatureUpdater.switchCoordinateSystem(this->coordSys, this->stations, this->features, this->activeCoordinateSystem);
+    this->myFeatureUpdater.switchCoordinateSystem(this->activeCoordinateSystem);
 
     //update table view for all features
     emit this->refreshGUI(this->activeFeature, this->activeStation);
@@ -880,6 +880,18 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         }
                     }
                     break;
+                case Configuration::eScalarEntityTemperatureElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        ScalarEntityTemperature *s = func->getScalarEntityTemperature(featurePosition.at(i).id);
+                        if(s != NULL){
+                            FeatureWrapper *temperatureWrapper = new FeatureWrapper();
+                            temperatureWrapper->setScalarEntityTemperature(s);
+                            FeatureTreeItem *temperature = new FeatureTreeItem(s->name);
+                            temperature->setFeature(temperatureWrapper);
+                            this->usedElementsModel->addElement(temperature);
+                        }
+                    }
+                    break;
             }
         }
     }
@@ -993,6 +1005,12 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
                             feature->functionList.at(functionIndex)->addScalarEntityDistance(element->getFeature()->getScalarEntityDistance(), elementIndex);
                         }
                         break;
+                    case Configuration::eScalarEntityTemperatureFeature:
+                        if(element->getFeature()->getScalarEntityTemperature() != NULL
+                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityTemperatureElement){
+                            feature->functionList.at(functionIndex)->addScalarEntityTemperature(element->getFeature()->getScalarEntityTemperature(), elementIndex);
+                        }
+                        break;
                 }
                 //set usedFor and previouslyNeeded for active feature and used element
                 feature->previouslyNeeded.append(element->getFeature());
@@ -1089,10 +1107,15 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
                         }
                         break;
                     case Configuration::eScalarEntityDistanceFeature:
-                    if(element->getFeature()->getScalarEntityDistance() != NULL){
-                        feature->functionList.at(functionIndex)->removeScalarEntityDistance(element->getFeature()->getFeature()->id);
-                    }
-                    break;
+                        if(element->getFeature()->getScalarEntityDistance() != NULL){
+                            feature->functionList.at(functionIndex)->removeScalarEntityDistance(element->getFeature()->getFeature()->id);
+                        }
+                        break;
+                    case Configuration::eScalarEntityTemperatureFeature:
+                        if(element->getFeature()->getScalarEntityTemperature() != NULL){
+                            feature->functionList.at(functionIndex)->removeScalarEntityTemperature(element->getFeature()->getFeature()->id);
+                        }
+                        break;
                 }
                 //set usedFor and previouslyNeeded for active feature and used element
                 feature->previouslyNeeded.removeOne(element->getFeature());
@@ -1432,7 +1455,7 @@ void Controller::deleteFeaturesCallback(bool command){
                 }
 
                 //delete feature
-                this->myFeatureUpdater.deleteFeature(delFeature, this->features);
+                this->myFeatureUpdater.deleteFeature(delFeature);
 
             }
         }

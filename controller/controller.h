@@ -72,17 +72,8 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = 0);
 
-    /*QList<FeatureWrapper*> features;
-    FeatureWrapper *activeFeature;
-    QList<CoordinateSystem*> coordSys;
-    QList<Station*> stations;
-    Station *activeStation;
-    CoordinateSystem *activeCoordinateSystem;
-    QMap<QString, int> availableGroups;*/
-
     MeasurementConfig *lastmConfig;
     TableModel *tblModel;
-    LaserTracker *lt; //test
     Console *c;
     Configuration conf;
     QSqlQueryModel *pluginsModel;

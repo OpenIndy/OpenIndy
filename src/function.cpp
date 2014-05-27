@@ -2033,6 +2033,86 @@ QList<Reading*> Function::getCartesianReadings(){
 }
 
 /*!
+ * \brief addScalarEntityTemperature
+ * \param SET
+ * \param position
+ */
+void Function::addScalarEntityTemperature(ScalarEntityTemperature *SET, int position)
+{
+    this->scalarEntityTemperatures.append(SET);
+    InputFeature feature;
+    feature.id = SET->id;
+    feature.typeOfElement = Configuration::eScalarEntityTemperatureElement;
+    feature.isUsed = true;
+    if(this->featureOrder.contains(position)){
+        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
+        if(i != this->featureOrder.end()){
+            QList<InputFeature> featurePosition = i.value();
+            featurePosition.append(feature);
+            this->featureOrder.insert(position, featurePosition);
+        }
+    }else{
+        QList<InputFeature> featurePosition;
+        featurePosition.append(feature);
+        this->featureOrder.insert(position, featurePosition);
+    }
+}
+
+/*!
+ * \brief removeScalarEntityTemperature removes the scalar entity temperature with the specified id from the list of scalar entity temperatures (if present)
+ * \param id
+ */
+void Function::removeScalarEntityTemperature(int id)
+{
+    foreach(ScalarEntityTemperature *SET, this->scalarEntityTemperatures){
+        if(SET->id == id){
+            this->scalarEntityTemperatures.removeOne(SET);
+            for(int i = 0; i < this->getNeededElements().length(); i++){
+                if(this->featureOrder.contains(i)){
+                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
+                    if(idx != this->featureOrder.end()){
+                        QList<InputFeature> featurePosition = idx.value();
+                        for(int j = 0; j < featurePosition.size(); j++){
+                            if(featurePosition.at(j).id == id){
+                                featurePosition.removeAt(j);
+                                break;
+                            }
+                        }
+                        this->featureOrder.insert(i, featurePosition);
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+    }
+}
+
+/*!
+ * \brief getScalaeEntityTemperature returns the scalar entity temperature with the specified id (if present) or NULL
+ * \param id
+ * \return
+ */
+ScalarEntityTemperature *Function::getScalarEntityTemperature(int id)
+{
+    foreach(ScalarEntityTemperature *SET, this->scalarEntityTemperatures){
+        if(SET->id == id){
+            return SET;
+        }
+    }
+    return NULL;
+}
+
+/*!
+ * \brief getScalarEntityTemperatures returns the complete list of scalar entity temperatures
+ * \return
+ */
+QList<ScalarEntityTemperature *> Function::getScalarEntityTemperatures()
+{
+    return this->scalarEntityTemperatures;
+}
+
+/*!
  * \brief clear
  * Reset function
  */

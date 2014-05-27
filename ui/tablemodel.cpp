@@ -203,6 +203,19 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
         case 32:
             return OiFeatureState::getFeatures().at(index.row())->getFeature()->comment;
             break;
+        case 33:
+            if(this->features.at(index.row())->getTrafoParam() != NULL){
+                return this->features.at(index.row())->getTrafoParam()->use;
+            }//else{
+            //    return this->features.at(index.row())->getFeature()->getDisplayUse();
+            //}
+            break;
+        case 34:
+            if(this->features.at(index.row())->getTrafoParam() != NULL){
+                return this->features.at(index.row())->getTrafoParam()->validTime;
+            }
+            //return this->features.at(index.row())->getFeature()->getDisplayTime();
+            break;
         default:
             break;
         }
@@ -436,7 +449,7 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
             myExchange.featureType = OiFeatureState::getActiveFeature()->getTypeOfFeature();
             myExchange.name = OiFeatureState::getActiveFeature()->getFeature()->name;
 
-            if(FeatureUpdater::validateFeatureName(OiFeatureState::getFeatures(), value.toString(), myExchange)){
+            if(FeatureUpdater::validateFeatureName(value.toString(), myExchange)){
 
                 if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
                     Geometry *myGeom = OiFeatureState::getActiveFeature()->getGeometry();
@@ -459,8 +472,9 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
                     OiFeatureState::getActiveFeature()->getFeature()->name = value.toString();
                 }
 
-                FeatureUpdater::checkForNominals();
-                FeatureUpdater::addNominalToActual();
+                FeatureUpdater::checkForNominals(this->activeFeature);
+                FeatureUpdater::addNominalToActual(this->activeFeature);
+				
                 FeatureUpdater::sortFeatures();
 
             }
@@ -471,6 +485,10 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
             emit this->groupNameChanged(oldValue, value.toString());
         }else if(index.column() == 32){ //feature comment
             OiFeatureState::getActiveFeature()->getFeature()->comment = value.toString();
+        }else if(index.column() == 33){//trafo param use
+            this->activeFeature->getTrafoParam()->use = value.toBool();
+        }else if(index.column() == 34){//trafo param time
+            this->activeFeature->getTrafoParam()->validTime = value.toDateTime();
         }
 
         this->updateModel();

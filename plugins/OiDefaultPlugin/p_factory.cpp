@@ -53,6 +53,7 @@ QList<Function*> OiTemplatePlugin::createFunctions(){
     resultSet.append(new Helmert7Param());
     resultSet.append(new ShiftPlane());
     resultSet.append(new BestFitCircle());
+    resultSet.append(new SimpleTemperatureCompensation());
 
     return resultSet;
 }
@@ -129,6 +130,8 @@ Function* OiTemplatePlugin::createFunction(QString name){
         result = new ShiftPlane();
     }else if(name.compare("BestFitCircle") == 0){
         result = new BestFitCircle();
+    }else if(name.compare("SimpleTempComp") == 0){
+        result = new SimpleTemperatureCompensation();
     }
     return result;
 }
