@@ -249,25 +249,22 @@ void FeatureUpdater::sortFeatures(QList<FeatureWrapper *> &features)
 
 /*!
  * \brief checkForNominals searches for existing nominals that have been created before the actual feature was created
- * \param features
- * \param fw
  */
-void FeatureUpdater::checkForNominals(QList<FeatureWrapper *> &features, FeatureWrapper *fw)
-{
-    if(fw->getTypeOfFeature() == Configuration::eStationFeature){
-        for(int i=0; i<features.size();i++){
-            int res = QString::compare(features.at(i)->getFeature()->name, fw->getFeature()->name, Qt::CaseSensitive);
-            if(res == 0 && features.at(i)->getGeometry() != NULL && features.at(i)->getGeometry()->isNominal){
-                fw->getStation()->position->nominals.append(features.at(i)->getGeometry());
-                features.at(i)->getGeometry()->myActual = fw->getStation()->position;
+void FeatureUpdater::checkForNominals(){
+    if(OiFeatureState::getActiveFeature()->getTypeOfFeature() == Configuration::eStationFeature){
+        for(int i=0; i<OiFeatureState::getFeatures().size();i++){
+            int res = QString::compare(OiFeatureState::getFeatures().at(i)->getFeature()->name, OiFeatureState::getActiveFeature()->getFeature()->name, Qt::CaseSensitive);
+            if(res == 0 && OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal){
+                OiFeatureState::getActiveFeature()->getStation()->position->nominals.append(OiFeatureState::getFeatures().at(i)->getGeometry());
+                OiFeatureState::getFeatures().at(i)->getGeometry()->myActual = OiFeatureState::getActiveFeature()->getStation()->position;
             }
         }
     }else{
-        for(int i=0; i<features.size();i++){
-            int res = QString::compare(features.at(i)->getFeature()->name, fw->getFeature()->name, Qt::CaseSensitive);
-            if(res == 0 && features.at(i)->getGeometry() != NULL && features.at(i)->getGeometry()->isNominal){
-                fw->getGeometry()->nominals.append(features.at(i)->getGeometry());
-                features.at(i)->getGeometry()->myActual = fw->getGeometry();
+        for(int i=0; i<OiFeatureState::getFeatures().size();i++){
+            int res = QString::compare(OiFeatureState::getFeatures().at(i)->getFeature()->name, OiFeatureState::getActiveFeature()->getFeature()->name, Qt::CaseSensitive);
+            if(res == 0 && OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal){
+                OiFeatureState::getActiveFeature()->getGeometry()->nominals.append(OiFeatureState::getFeatures().at(i)->getGeometry());
+                OiFeatureState::getFeatures().at(i)->getGeometry()->myActual = OiFeatureState::getActiveFeature()->getGeometry();
             }
         }
     }
@@ -275,36 +272,34 @@ void FeatureUpdater::checkForNominals(QList<FeatureWrapper *> &features, Feature
 
 /*!
  * \brief addNominalToActual adds new created nominal features in the list of its parent actual feature
- * \param features
- * \param fw
  */
-void FeatureUpdater::addNominalToActual(QList<FeatureWrapper *> &features, FeatureWrapper *fw)
+void FeatureUpdater::addNominalToActual()
 {
-    for(int i=0; i< features.size();i++){
-        int res = QString::compare(features.at(i)->getFeature()->name, fw->getFeature()->name, Qt::CaseSensitive);
+    for(int i=0; i< OiFeatureState::getFeatures().size();i++){
+        int res = QString::compare(OiFeatureState::getFeatures().at(i)->getFeature()->name, OiFeatureState::getActiveFeature()->getFeature()->name, Qt::CaseSensitive);
         if(res == 0){
-            if(fw->getStation() != NULL){
-                if(features.at(i)->getGeometry() != NULL && features.at(i)->getGeometry()->isNominal == false){
-                    features.at(i)->getGeometry()->nominals.append(fw->getStation()->position);
-                    fw->getStation()->position->myActual = features.at(i)->getGeometry();
+            if(OiFeatureState::getActiveFeature()->getStation() != NULL){
+                if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal == false){
+                    OiFeatureState::getFeatures().at(i)->getGeometry()->nominals.append(OiFeatureState::getActiveFeature()->getStation()->position);
+                    OiFeatureState::getActiveFeature()->getStation()->position->myActual = OiFeatureState::getFeatures().at(i)->getGeometry();
                     break;
                 }else{
-                    if(features.at(i)->getStation() != NULL){
-                        features.at(i)->getStation()->position->nominals.append(fw->getStation()->position);
-                        fw->getStation()->position->myActual = features.at(i)->getStation()->position;
+                    if(OiFeatureState::getFeatures().at(i)->getStation() != NULL){
+                        OiFeatureState::getFeatures().at(i)->getStation()->position->nominals.append(OiFeatureState::getActiveFeature()->getStation()->position);
+                        OiFeatureState::getActiveFeature()->getStation()->position->myActual = OiFeatureState::getFeatures().at(i)->getStation()->position;
                         break;
                     }
                 }
             }
-            if(fw->getGeometry() != NULL){
-                if(features.at(i)->getGeometry() != NULL && features.at(i)->getGeometry()->isNominal == false){
-                    features.at(i)->getGeometry()->nominals.append(fw->getGeometry());
-                    fw->getGeometry()->myActual = features.at(i)->getGeometry();
+            if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+                if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal == false){
+                    OiFeatureState::getFeatures().at(i)->getGeometry()->nominals.append(OiFeatureState::getActiveFeature()->getGeometry());
+                    OiFeatureState::getActiveFeature()->getGeometry()->myActual = OiFeatureState::getFeatures().at(i)->getGeometry();
                     break;
                 }else{
-                    if(features.at(i)->getStation() != NULL){
-                        features.at(i)->getStation()->position->nominals.append(fw->getGeometry());
-                        fw->getGeometry()->myActual = features.at(i)->getStation()->position;
+                    if(OiFeatureState::getFeatures().at(i)->getStation() != NULL){
+                        OiFeatureState::getFeatures().at(i)->getStation()->position->nominals.append(OiFeatureState::getActiveFeature()->getGeometry());
+                        OiFeatureState::getActiveFeature()->getGeometry()->myActual = OiFeatureState::getFeatures().at(i)->getStation()->position;
                         break;
                     }
                 }

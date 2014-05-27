@@ -6,8 +6,7 @@
  * \param coordSys
  * \param parent
  */
-TableModel::TableModel(QList<FeatureWrapper*> &features, Station *myStation,FeatureWrapper *myFeature,QObject *parent) :
-    QAbstractTableModel(parent),features(features),activeStation(myStation),activeFeature(myFeature)
+TableModel::TableModel(QObject *parent) : QAbstractTableModel(parent)
 {
 
 }
@@ -17,10 +16,9 @@ TableModel::TableModel(QList<FeatureWrapper*> &features, Station *myStation,Feat
  * \return
  */
 int TableModel::rowCount(const QModelIndex& ) const{
-    if(features.size()>0){
-        return features.size();
+    if(OiFeatureState::getFeatureCount() > 0){
+        return OiFeatureState::getFeatureCount();
     }
-
     return 0;
 }
 
@@ -52,45 +50,45 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
 
         switch (index.column()) {
         case 0:
-            return features.at(index.row())->returnFeatureType();
+            return OiFeatureState::getFeatures().at(index.row())->returnFeatureType();
             //Configuration::FeatureTypes f = features.at(index.row())->getTypeOfFeature();
             //return featureType(f);
             break;
         case 1:
-            return features.at(index.row())->getFeature()->name;
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->name;
             break;
         case 2:
-            return features.at(index.row())->getFeature()->group;
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->group;
         case 3:
-            if(features.at(index.row())->getFeature()->isSolved){
-                return features.at(index.row())->getFeature()->getDisplayX();
+            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
+                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayX();
             }else{
                 return QVariant();
             }
             break;
         case 4:
-            if(features.at(index.row())->getFeature()->isSolved){
-                return features.at(index.row())->getFeature()->getDisplayY();
+            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
+                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayY();
             }else{
                 return QVariant();
             }
 
             break;
         case 5:
-            if(features.at(index.row())->getFeature()->isSolved){
-                return features.at(index.row())->getFeature()->getDisplayZ();
+            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
+                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayZ();
             }else{
                 return QVariant();
             }
             break;
         case 6:
-            return features.at(index.row())->getFeature()->getDisplayObs();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayObs();
             break;
         case 7:
-            return features.at(index.row())->getFeature()->getDisplaySolved();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplaySolved();
             break;
         case 8:
-            return features.at(index.row())->getFeature()->getDisplayMConfig();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayMConfig();
             break;
         case 9:
             /*if(features.at(index.row())->getFeature()->functionList.size()==0){
@@ -102,108 +100,108 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                 }
                 return functions;
             }*/
-            if(features.at(index.row())->getFeature()->functionList.size()==0){
+            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->functionList.size()==0){
                             return "no function set";
                 }else{
-                    functions += features.at(index.row())->getFeature()->functionList.at(0)->getMetaData()->name;
-                    for(int i=1;i<features.at(index.row())->getFeature()->functionList.size();i++){
-                        functions += "," + features.at(index.row())->getFeature()->functionList.at(i)->getMetaData()->name;
+                    functions += OiFeatureState::getFeatures().at(index.row())->getFeature()->functionList.at(0)->getMetaData()->name;
+                    for(int i=1;i<OiFeatureState::getFeatures().at(index.row())->getFeature()->functionList.size();i++){
+                        functions += "," + OiFeatureState::getFeatures().at(index.row())->getFeature()->functionList.at(i)->getMetaData()->name;
                     }
                     return functions;
             }
             break;
         case 10:
-            return features.at(index.row())->getFeature()->getDisplayIsCommon();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayIsCommon();
             break;
         case 11:
-            return features.at(index.row())->getFeature()->getDisplayIsNominal();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayIsNominal();
             break;
         case 12:
-            return features.at(index.row())->getFeature()->getDisplayStdDev();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayStdDev();
             break;
         case 13:
-            if(features.at(index.row())->getFeature()->isSolved){
-                return features.at(index.row())->getFeature()->getDisplayI();
+            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
+                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayI();
             }else{
                 return QVariant();
             }
             break;
         case 14:
-            if(features.at(index.row())->getFeature()->isSolved){
-                return features.at(index.row())->getFeature()->getDisplayJ();
+            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
+                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayJ();
             }else{
                 return QVariant();
             }
             break;
         case 15:
-            if(features.at(index.row())->getFeature()->isSolved){
-                return features.at(index.row())->getFeature()->getDisplayK();
+            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
+                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayK();
             }else{
                 return QVariant();
             }
             break;
         case 16:
-            if(features.at(index.row())->getFeature()->isSolved){
-                return features.at(index.row())->getFeature()->getDisplayRadius();
+            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
+                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayRadius();
             }else{
                 return QVariant();
             }
             break;
         case 17:
-            if(features.at(index.row())->getFeature()->isSolved){
-                return features.at(index.row())->getFeature()->getDisplayScalarDistanceValue();
+            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
+                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScalarDistanceValue();
             }else{
                 return QVariant();
             }
             break;
         case 18:
-            if(features.at(index.row())->getFeature()->isSolved){
-                return features.at(index.row())->getFeature()->getDisplayScalarAngleValue();
+            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
+                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScalarAngleValue();
             }else{
                 return QVariant();
             }
             break;
         case 19:
-            return features.at(index.row())->getFeature()->getDisplayStartSystem();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayStartSystem();
             break;
         case 20:
-            return features.at(index.row())->getFeature()->getDisplayDestinationSystem();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayDestinationSystem();
             break;
         case 21:
-            return features.at(index.row())->getFeature()->getDisplayTranslationX();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayTranslationX();
             break;
         case 22:
-            return this->features.at(index.row())->getFeature()->getDisplayTranslationY();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayTranslationY();
             break;
         case 23:
-            return this->features.at(index.row())->getFeature()->getDisplayTranslationZ();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayTranslationZ();
             break;
         case 24:
-            return this->features.at(index.row())->getFeature()->getDisplayRotationX();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayRotationX();
             break;
         case 25:
-            return this->features.at(index.row())->getFeature()->getDisplayRotationY();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayRotationY();
             break;
         case 26:
-            return this->features.at(index.row())->getFeature()->getDisplayRotationZ();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayRotationZ();
             break;
         case 27:
-            return this->features.at(index.row())->getFeature()->getDisplayScaleX();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScaleX();
             break;
         case 28:
-            return this->features.at(index.row())->getFeature()->getDisplayScaleY();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScaleY();
             break;
         case 29:
-            return this->features.at(index.row())->getFeature()->getDisplayScaleZ();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScaleZ();
             break;
         case 30:
-            return this->features.at(index.row())->getFeature()->getDisplayScalarTemperatureValue();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScalarTemperatureValue();
             break;
         case 31:
-            return this->features.at(index.row())->getFeature()->getDisplayScalarMeasurementSeriesValue();
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScalarMeasurementSeriesValue();
             break;
         case 32:
-            return this->features.at(index.row())->getFeature()->comment;
+            return OiFeatureState::getFeatures().at(index.row())->getFeature()->comment;
             break;
         default:
             break;
@@ -212,9 +210,9 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
 
     if (role == Qt::BackgroundRole){
 
-        if(features.at(index.row())->getStation() == NULL && features.at(index.row())->getCoordinateSystem() == NULL &&
-                features.at(index.row())->getCoordinateSystem() == NULL){
-            if(features.at(index.row())->getGeometry() != NULL && features.at(index.row())->getGeometry()->mConfig.typeOfReading == -1){
+        if(OiFeatureState::getFeatures().at(index.row())->getStation() == NULL && OiFeatureState::getFeatures().at(index.row())->getCoordinateSystem() == NULL &&
+                OiFeatureState::getFeatures().at(index.row())->getCoordinateSystem() == NULL){
+            if(OiFeatureState::getFeatures().at(index.row())->getGeometry() != NULL && OiFeatureState::getFeatures().at(index.row())->getGeometry()->mConfig.typeOfReading == -1){
                 if(index.column() == 7){
                     return QColor(Qt::red);
                 }
@@ -222,23 +220,23 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
         }
 
 
-        if(features.at(index.row())->getStation() != NULL && features.at(index.row())->getStation()->position->mConfig.typeOfReading == -1){
+        if(OiFeatureState::getFeatures().at(index.row())->getStation() != NULL && OiFeatureState::getFeatures().at(index.row())->getStation()->position->mConfig.typeOfReading == -1){
             if(index.column() == 7){
                 return QColor(Qt::red);
             }
         }
 
-        if (activeFeature != NULL && features.at(index.row())->getFeature() == activeFeature->getFeature()){
+        if (OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getFeatures().at(index.row())->getFeature() == OiFeatureState::getActiveFeature()->getFeature()){
             return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
         }
 
-        if(features.at(index.row())->getStation() != NULL){
-            if(features.at(index.row())->getStation() == this->activeStation){
+        if(OiFeatureState::getFeatures().at(index.row())->getStation() != NULL){
+            if(OiFeatureState::getFeatures().at(index.row())->getStation() == OiFeatureState::getActiveStation()){
                 return QColor(Qt::darkGray);
             }
         }
 
-        if (features.at(index.row())->getStation()!=NULL){
+        if (OiFeatureState::getFeatures().at(index.row())->getStation()!=NULL){
             return QColor(Qt::lightGray);
         }
 
@@ -247,7 +245,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                 || index.column() == 13 || index.column() == 14
                 || index.column() == 15 || index.column() == 16
                 || index.column() == 17 || index.column() == 18)
-                && !features.at(index.row())->getFeature()->isSolved){
+                && !OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
             return QColor(Qt::yellow);
         }
 
@@ -255,8 +253,8 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
 
     if (role == Qt::ForegroundRole ) {
 
-        if(features.at(index.row())->getStation() != NULL){
-            if(features.at(index.row())->getStation() == this->activeStation){
+        if(OiFeatureState::getFeatures().at(index.row())->getStation() != NULL){
+            if(OiFeatureState::getFeatures().at(index.row())->getStation() == OiFeatureState::getActiveStation()){
                 return QColor(Qt::white);
             }
         }
@@ -398,9 +396,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 /*!
  * \brief TableModel::updateModel
  */
-void TableModel::updateModel(FeatureWrapper *fW, Station *sT){
-    this->activeFeature = fW;
-    this->activeStation = sT;
+void TableModel::updateModel(){
     emit layoutAboutToBeChanged();
     emit layoutChanged();
 }
@@ -425,25 +421,25 @@ Qt::ItemFlags TableModel::flags(const QModelIndex & index) const{
  * \return
  */
 bool TableModel::setData(const QModelIndex & index, const QVariant & value, int role){
-    if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
+    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         if(index.column() == 1){ //feature name
 
             FeatureAttributesExchange myExchange;
-            if(this->activeFeature->getGeometry() != NULL){
-                myExchange.actual = !this->activeFeature->getGeometry()->isNominal;
-                myExchange.nominal = this->activeFeature->getGeometry()->isNominal;
-                myExchange.nominalSystem = this->activeFeature->getGeometry()->myNominalCoordSys;
-            }else if(this->activeFeature->getTrafoParam() != NULL){
-                myExchange.startSystem = this->activeFeature->getTrafoParam()->from;
-                myExchange.destSystem = this->activeFeature->getTrafoParam()->to;
+            if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+                myExchange.actual = !OiFeatureState::getActiveFeature()->getGeometry()->isNominal;
+                myExchange.nominal = OiFeatureState::getActiveFeature()->getGeometry()->isNominal;
+                myExchange.nominalSystem = OiFeatureState::getActiveFeature()->getGeometry()->myNominalCoordSys;
+            }else if(OiFeatureState::getActiveFeature()->getTrafoParam() != NULL){
+                myExchange.startSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->from;
+                myExchange.destSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->to;
             }
-            myExchange.featureType = this->activeFeature->getTypeOfFeature();
-            myExchange.name = this->activeFeature->getFeature()->name;
+            myExchange.featureType = OiFeatureState::getActiveFeature()->getTypeOfFeature();
+            myExchange.name = OiFeatureState::getActiveFeature()->getFeature()->name;
 
-            if(FeatureUpdater::validateFeatureName(this->features, value.toString(), myExchange)){
+            if(FeatureUpdater::validateFeatureName(OiFeatureState::getFeatures(), value.toString(), myExchange)){
 
-                if(this->activeFeature->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
-                    Geometry *myGeom = this->activeFeature->getGeometry();
+                if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
+                    Geometry *myGeom = OiFeatureState::getActiveFeature()->getGeometry();
                     if(myGeom->isNominal && myGeom->myActual != NULL){
                         myGeom->myActual->name = value.toString();
                         foreach(Geometry *nomGeom, myGeom->myActual->nominals){
@@ -460,24 +456,24 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
                         }
                     }
                 }else{
-                    this->activeFeature->getFeature()->name = value.toString();
+                    OiFeatureState::getActiveFeature()->getFeature()->name = value.toString();
                 }
 
-                FeatureUpdater::checkForNominals(this->features, this->activeFeature);
-                FeatureUpdater::addNominalToActual(this->features, this->activeFeature);
-                FeatureUpdater::sortFeatures(this->features);
+                FeatureUpdater::checkForNominals();
+                FeatureUpdater::addNominalToActual();
+                FeatureUpdater::sortFeatures();
 
             }
 
         }else if(index.column() == 2){ //feature group
-            QString oldValue = this->activeFeature->getFeature()->group;
-            this->activeFeature->getFeature()->group = value.toString();
+            QString oldValue = OiFeatureState::getActiveFeature()->getFeature()->group;
+            OiFeatureState::getActiveFeature()->getFeature()->group = value.toString();
             emit this->groupNameChanged(oldValue, value.toString());
         }else if(index.column() == 32){ //feature comment
-            this->activeFeature->getFeature()->comment = value.toString();
+            OiFeatureState::getActiveFeature()->getFeature()->comment = value.toString();
         }
 
-        this->updateModel(this->activeFeature, this->activeStation);
+        this->updateModel();
 
         return true;
     }

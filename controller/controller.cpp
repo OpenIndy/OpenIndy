@@ -21,50 +21,31 @@ Controller::Controller(QObject *parent) :
     pluginsModel = new QSqlQueryModel();
     neededElementsModel = new QSqlQueryModel();
 
-    this->activeStation = NULL;
-    this->activeFeature = NULL;
-    this->activeCoordinateSystem = NULL;
-
     lastmConfig = new MeasurementConfig();
     this->defaultLastmConfig();
 
-    this->activeFeature = NULL;
+    if(OiFeatureState::getFeatureCount() == 0){
 
-    if(this->features.size()==0){
-        CoordinateSystem *cs = new CoordinateSystem();
-        cs->name ="PART";
-        FeatureWrapper *fwPart = new FeatureWrapper();
-        fwPart->setCoordinateSystem(cs);
-        this->features.append(fwPart);
-        this->coordSys.append(fwPart->getCoordinateSystem());
+        //create PART and STATION01 as default
+        FeatureWrapper *part = OiFeatureState::addFeature(Configuration::eCoordinateSystemFeature, "PART");
+        FeatureWrapper *station01 = OiFeatureState::addFeature(Configuration::eStationFeature, "STATION01");
 
-        Station *firstStation = new Station("STATION01");
-        firstStation->position->mConfig = *this->lastmConfig;
-        firstStation->position->isCommon = false;
-        firstStation->position->isNominal = false;
-        this->activeStation = firstStation;
-        //TODO station solved Problem. siehe unten
-        //this->activeStation->isSolved = true;
-        FeatureWrapper *fwFirstStation = new FeatureWrapper();
-        fwFirstStation->setStation(firstStation);
+        //set position parameter for STATION01
+        station01->getStation()->position->mConfig = *this->lastmConfig;
+        station01->getStation()->position->isCommon = false;
+        station01->getStation()->position->isNominal = false;
 
-        this->features.append(fwFirstStation);
+        //set STATION01's station system as active coordinate system
+        OiFeatureState::setActiveCoordinateSystem(station01->getStation()->coordSys->id);
 
-        this->stations.append(fwFirstStation->getStation());
-
-        this->activeCoordinateSystem = activeStation->coordSys;
-
-    }else{
-        this->activeStation = NULL;
-        this->activeCoordinateSystem  = NULL;
     }
 
-    tblModel = new TableModel(features,activeStation,activeFeature);
+    this->tblModel = new TableModel();
 
-    this->featureOverviewModel = new FeatureOvserviewProxyModel(this->features);
+    this->featureOverviewModel = new FeatureOvserviewProxyModel(OiFeatureState::getFeatures());
     this->featureOverviewModel->setSourceModel(this->tblModel);
 
-    this->trafoParamModel = new TrafoParamProxyModel(this->features);
+    this->trafoParamModel = new TrafoParamProxyModel(OiFeatureState::getFeatures());
     this->trafoParamModel->setSourceModel(this->tblModel);
 
     this->functionTreeViewModel = new QStandardItemModel();
@@ -76,7 +57,7 @@ Controller::Controller(QObject *parent) :
     this->myPluginTreeViewModel->refreshModel();
 
     //set up feature treeview models
-    this->featureTreeViewModel = new FeatureTreeViewModel(this->features);
+    this->featureTreeViewModel = new FeatureTreeViewModel(OiFeatureState::getFeatures());
     this->featureTreeViewModel->refreshModel();
     this->availableElementsModel = new AvailableElementsTreeViewProxyModel();
     this->availableElementsModel->setHeader("available elements");
@@ -92,12 +73,12 @@ Controller::Controller(QObject *parent) :
     connect(PluginLoader::myMetaInfo,SIGNAL(sendMe(PluginMetaData*)),this,SLOT(savePluginData(PluginMetaData*)));
 
 
-    connect(this->activeStation,SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
-    connect(&this->activeStation->sensorPad->getOiEmitter(),SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
+    connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
+    connect(&OiFeatureState::getActiveStation()->sensorPad->getOiEmitter(),SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
     //connect(&this->activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
     connect(this,SIGNAL(refreshGUI(FeatureWrapper*,Station*)),this->tblModel,SLOT(updateModel(FeatureWrapper*,Station*)));
 
-    emit refreshGUI(this->activeFeature,this->activeStation);
+    emit refreshGUI();
 }
 
 /*!

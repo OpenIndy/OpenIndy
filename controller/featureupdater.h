@@ -14,6 +14,7 @@
 #include "console.h"
 #include "systemdbmanager.h"
 #include "pluginloader.h"
+#include "oifeaturestate.h"
 
 class FeatureUpdater : public QObject
 {
@@ -24,9 +25,9 @@ public:
     static bool validateFeatureName(QList<FeatureWrapper*> features, QString featureName,FeatureAttributesExchange fae);
     static int addFeature(QList<Station*>&stations,QList<CoordinateSystem*>&coordSys, QList<FeatureWrapper*>&features, FeatureAttributesExchange fae, MeasurementConfig mConfig);
     static QStringList ConstructFeatureName(QString name, int count);
-    static void sortFeatures(QList<FeatureWrapper*> &features);
-    static void checkForNominals(QList<FeatureWrapper*>&features, FeatureWrapper *fw);
-    static void addNominalToActual(QList<FeatureWrapper*>&features, FeatureWrapper *fw);
+    static void sortFeatures();
+    static void checkForNominals();
+    static void addNominalToActual();
 signals:
     
 public slots:

@@ -53,6 +53,8 @@
 #include "featureattributesexchange.h"
 #include "nominalattributeexchange.h"
 
+#include "oifeaturestate.h"
+
 class Feature;
 class CoordinateSystem;
 class Station;
@@ -70,13 +72,13 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = 0);
 
-    QList<FeatureWrapper*> features;
+    /*QList<FeatureWrapper*> features;
     FeatureWrapper *activeFeature;
     QList<CoordinateSystem*> coordSys;
     QList<Station*> stations;
     Station *activeStation;
     CoordinateSystem *activeCoordinateSystem;
-    QMap<QString, int> availableGroups;
+    QMap<QString, int> availableGroups;*/
 
     MeasurementConfig *lastmConfig;
     TableModel *tblModel;
@@ -101,7 +103,7 @@ public:
 signals:
     void changedStation();
     void featureAdded();
-    void refreshGUI(FeatureWrapper *fW, Station *sT);
+    void refreshGUI();
     void sendSQLModel(QSqlQueryModel*); //kommt raus wenn dialoge angepasst
     void sensorWorks(QString);
     void CoordSystemAdded();
