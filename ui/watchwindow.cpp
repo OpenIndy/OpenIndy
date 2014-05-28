@@ -47,11 +47,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                     t = tp->homogenMatrix.inv();
                 }
 
-                OiVec trackerXYZ(3);
+                OiVec trackerXYZ(4);
                 trackerXYZ.setAt(0,m.value("x").toDouble());
                 trackerXYZ.setAt(1,m.value("y").toDouble());
                 trackerXYZ.setAt(2,m.value("z").toDouble());
-
+                trackerXYZ.setAt(3,1.0);
                 trackerXYZ = t*trackerXYZ;
 
                 if(name == "x"){
@@ -68,7 +68,6 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             if(name == "x"){
 
                 double featureX = activeFeature->getGeometry()->getXYZ()->getAt(0);
-                Console::addLine("get x",featureX);
                 double dx = featureX - dvalue;
                 streamData.value(name)->display(QString::number(dx*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 

@@ -184,6 +184,10 @@ void Controller::startMove(Reading *parameter){
 
 void Controller::startAim(){
 
+    if(this->activeFeature->getGeometry() != NULL && !this->activeFeature->getGeometry()->isSolved){
+        Console::addLine("Cannot aim a unsolved feature.");
+        return;
+    }
     if(checkFeatureValid() && checkSensorValid()){
         OiVec *xyz = activeFeature->getGeometry()->getXYZ();
         if(xyz == NULL){
