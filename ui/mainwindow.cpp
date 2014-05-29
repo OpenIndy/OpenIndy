@@ -106,7 +106,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this,SIGNAL(sendFeatureType(Configuration::FeatureTypes)),cFeatureDialog,SLOT(receiveFeatureType(Configuration::FeatureTypes)));
     connect(control.c,SIGNAL(changedList()),this->ui->listView_Console,SLOT(scrollToBottom()));
 
-    connect(&control,SIGNAL(CoordSystemAdded()),this,SLOT(fillCoordSysComboBox()));
+    connect(&control,SIGNAL(featureAdded()),this,SLOT(fillCoordSysComboBox()));
     connect(ui->comboBox_activeCoordSystem,SIGNAL(currentIndexChanged(QString)),this,SLOT(getActiveCoordSystem(QString)));
     connect(this,SIGNAL(sendActiveCoordSystem(QString)),&control,SLOT(setActiveCoordSystem(QString)));
 

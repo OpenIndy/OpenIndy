@@ -19,8 +19,8 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,2">
      <item>
       <widget class="QLabel" name="label_format">
@@ -41,7 +41,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="1" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2">
      <item>
       <widget class="QLabel" name="label_typeOfElement">
@@ -62,7 +62,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,2">
      <item>
       <widget class="QLabel" name="label_coordSys">
@@ -83,7 +83,20 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="3" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QComboBox" name="comboBox_distUnit"/>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox_angleUnit"/>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox_tempUnit"/>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLineEdit" name="lineEdit_path"/>
@@ -97,7 +110,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="5" column="0">
     <widget class="QPushButton" name="pushButton_import">
      <property name="text">
       <string>import</string>

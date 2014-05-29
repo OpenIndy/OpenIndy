@@ -39,7 +39,27 @@ public:
      */
     virtual QList<Configuration::ElementTypes> getSupportedElements() = 0;
 
+    /*!
+     * \brief getSupportedDistanceUnits
+     * \param format
+     * \return
+     */
+    virtual QList<UnitConverter::unitType> getSupportedDistanceUnits() = 0;
+
+    /*!
+     * \brief getSupportedAngleUnits
+     * \return
+     */
+    virtual QList<UnitConverter::unitType> getSupportedAngleUnits() = 0;
+
+    /*!
+     * \brief getSupportedTemperatureUnits
+     * \return
+     */
+    virtual QList<UnitConverter::unitType> getSupportedTemperatureUnits() = 0;
+
 };
 
 
 #endif // OIEXCHANGEINTERFACE_H
+

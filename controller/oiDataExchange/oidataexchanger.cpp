@@ -45,6 +45,40 @@ QList<Configuration::ElementTypes> oiDataExchanger::getSupportedElements(QString
 
 }
 
+QList<UnitConverter::unitType> oiDataExchanger::getDistanceUnits(QString format)
+{
+    if(format == "ascii"){
+        oiExchangeASCII asciiExchange;
+        return asciiExchange.getSupportedDistanceUnits();
+    }
+
+    QList<UnitConverter::unitType> proxyList;
+    return proxyList;
+}
+
+QList<UnitConverter::unitType> oiDataExchanger::getAngleUnits(QString format)
+{
+    if(format == "ascii"){
+        oiExchangeASCII asciiExchange;
+        return asciiExchange.getSupportedAngleUnits();
+    }
+
+    QList<UnitConverter::unitType> proxyList;
+    return proxyList;
+}
+
+QList<UnitConverter::unitType> oiDataExchanger::getTemperatureUnits(QString format)
+{
+    if(format == "ascii"){
+        oiExchangeASCII asciiExchange;
+        return asciiExchange.getSupportedTemperatureUnits();
+    }
+
+    QList<UnitConverter::unitType> proxyList;
+    return proxyList;
+
+}
+
  bool oiDataExchanger::exchangeData(oiExchangeObject &exchangeData,QString format, bool import){
 
      //first check for your tag then call your import or export function here

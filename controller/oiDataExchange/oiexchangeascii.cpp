@@ -36,7 +36,30 @@ bool oiExchangeASCII::importOiData(oiExchangeObject &data){
         elements.append(Configuration::ePlaneElement);
         elements.append(Configuration::eSphereElement);
 
-     return elements;
+        return elements;
+ }
+
+ QList<UnitConverter::unitType> oiExchangeASCII::getSupportedDistanceUnits()
+ {
+     QList<UnitConverter::unitType> d;
+
+     d.append(UnitConverter::eMETER);
+     d.append(UnitConverter::eMILLIMETER);
+
+     return d;
+ }
+
+ QList<UnitConverter::unitType> oiExchangeASCII::getSupportedAngleUnits()
+ {
+     QList<UnitConverter::unitType> a;
+     return a;
+
+ }
+
+ QList<UnitConverter::unitType> oiExchangeASCII::getSupportedTemperatureUnits()
+ {
+     QList<UnitConverter::unitType> t;
+     return t;
  }
 
 bool oiExchangeASCII::exportOiData(oiExchangeObject &data){
@@ -68,6 +91,9 @@ bool oiExchangeASCII::importPoint(oiExchangeObject& data){
         p->xyz.setAt(0,list.at(1).toDouble());
         p->xyz.setAt(1,list.at(2).toDouble());
         p->xyz.setAt(2,list.at(3).toDouble());
+        if(data.unit.value(UnitConverter::eMetric) == UnitConverter::eMILLIMETER){
+            p->xyz = p->xyz/1000;
+        }
         p->isNominal = true;
         p->isSolved = true;
 

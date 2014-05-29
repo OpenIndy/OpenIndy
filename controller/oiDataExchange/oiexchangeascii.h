@@ -20,6 +20,9 @@ public:
     bool exportOiData(oiExchangeObject& data);
 
     QList<Configuration::ElementTypes> getSupportedElements();
+    QList<UnitConverter::unitType> getSupportedDistanceUnits();
+    QList<UnitConverter::unitType> getSupportedAngleUnits();
+    QList<UnitConverter::unitType> getSupportedTemperatureUnits();
 
 private:
     // private functions for importiing different element types

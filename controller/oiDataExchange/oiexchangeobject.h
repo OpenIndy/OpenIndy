@@ -22,6 +22,8 @@ public:
     //features that will be imported or exported
     QList<FeatureWrapper*> features;
 
+    QMap<UnitConverter::dimensionType, UnitConverter::unitType> unit;
+
     // Reference coordinate system of the features
     CoordinateSystem* nominalCoordSys;
 

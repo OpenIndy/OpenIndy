@@ -17,10 +17,16 @@ importNominalGeometryDialog::~importNominalGeometryDialog()
 
 void importNominalGeometryDialog::initGUI(){
 
+    ui->comboBox_angleUnit->clear();
+    ui->comboBox_distUnit->clear();
+    ui->comboBox_tempUnit->clear();
+    ui->comboBox_angleUnit->setVisible(true);
+    ui->comboBox_distUnit->setVisible(true);
+    ui->comboBox_tempUnit->setVisible(true);
     ui->comboBox_format->addItems(oiDataExchanger::getOutputFormats());
-    ui->comboBox_format->addItem("test");
 
     setUpSupportedElements(oiDataExchanger::getOutputFormats().at(0));
+    setUpSupportedUnits(oiDataExchanger::getOutputFormats().at(0));
 
 }
 
@@ -37,6 +43,49 @@ void importNominalGeometryDialog::setUpSupportedElements(QString format){
     }
 
     ui->comboBox_typeOfElement->addItems(supportedElements);
+
+}
+
+void importNominalGeometryDialog::setUpSupportedUnits(QString format)
+{
+    ui->comboBox_angleUnit->clear();
+    ui->comboBox_distUnit->clear();
+    ui->comboBox_tempUnit->clear();
+
+    QList<UnitConverter::unitType> angleUnit = oiDataExchanger::getAngleUnits(format);
+    QList<UnitConverter::unitType> distUnit = oiDataExchanger::getDistanceUnits(format);
+    QList<UnitConverter::unitType> tempUnit = oiDataExchanger::getTemperatureUnits(format);
+
+    if(angleUnit.size()>0){
+        QStringList a;
+        for(int i = 0 ;i<angleUnit.size();i++){
+            a.append(UnitConverter::getUnitString(angleUnit.at(i)));
+        }
+        ui->comboBox_angleUnit->addItems(a);
+    }else{
+        ui->comboBox_angleUnit->setVisible(false);
+    }
+
+    if(distUnit.size()>0){
+        QStringList d;
+        for(int i = 0 ;i<distUnit.size();i++){
+            d.append(UnitConverter::getUnitString(distUnit.at(i)));
+        }
+        ui->comboBox_distUnit->addItems(d);
+    }else{
+        ui->comboBox_distUnit->setVisible(false);
+    }
+
+
+    if(tempUnit.size()>0){
+        QStringList t;
+        for(int i = 0 ;i<tempUnit.size();i++){
+            t.append(UnitConverter::getUnitString(tempUnit.at(i)));
+        }
+        ui->comboBox_tempUnit->addItems(t);
+    }else{
+        ui->comboBox_tempUnit->setVisible(false);
+    }
 }
 
 void importNominalGeometryDialog::on_pushButton_import_clicked()
@@ -55,6 +104,19 @@ void importNominalGeometryDialog::on_pushButton_import_clicked()
     QString typeOfElement = ui->comboBox_typeOfElement->currentText();
 
     ExchangeData.typeOfElement = Configuration::getElementTypeEnum(typeOfElement);
+
+    ExchangeData.unit.clear();
+
+    if(ui->comboBox_distUnit->isVisible()){
+        QString distUnit = ui->comboBox_distUnit->currentText();
+        ExchangeData.unit.insert(UnitConverter::eMetric,UnitConverter::getUnitType(distUnit));
+    }else if(ui->comboBox_angleUnit->isVisible()){
+        QString angleUnit = ui->comboBox_angleUnit->currentText();
+        ExchangeData.unit.insert(UnitConverter::eAngular,UnitConverter::getUnitType(angleUnit));
+    }else if(ui->comboBox_tempUnit->isVisible()){
+        QString tempUnit = ui->comboBox_tempUnit->currentText();
+        ExchangeData.unit.insert(UnitConverter::eTemperature,UnitConverter::getUnitType(tempUnit));
+    }
 
     QString outputFormat = ui->comboBox_format->currentText();
 
@@ -103,5 +165,6 @@ void importNominalGeometryDialog::on_comboBox_format_currentIndexChanged(const Q
 {
 
     setUpSupportedElements(arg1);
+    setUpSupportedUnits(arg1);
 
 }

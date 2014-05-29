@@ -5,6 +5,7 @@
 #include <QStringList>
 
 #include "oiexchangeascii.h"
+#include "unitconverter.h"
 
 /*!
  * \brief The oiDataExchanger class
@@ -49,6 +50,13 @@ public:
      * \return
      */
     static QList<Configuration::ElementTypes> getSupportedElements(QString format);
+
+
+    static QList<UnitConverter::unitType> getDistanceUnits(QString format);
+
+    static QList<UnitConverter::unitType> getAngleUnits(QString format);
+
+    static QList<UnitConverter::unitType> getTemperatureUnits(QString format);
 
 
 private:

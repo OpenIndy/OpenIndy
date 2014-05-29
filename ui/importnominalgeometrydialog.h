@@ -32,7 +32,6 @@ private slots:
 
     void initGUI();
 
-
     void on_comboBox_format_currentIndexChanged(const QString &arg1);
 
 public slots:
@@ -46,6 +45,7 @@ private:
     QList<CoordinateSystem*> availableCoordSys;
 
     void setUpSupportedElements(QString format);
+    void setUpSupportedUnits(QString format);
 };
 
 #endif // IMPORTNOMINALGEOMETRYDIALOG_H
