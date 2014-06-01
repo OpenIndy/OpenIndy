@@ -8,6 +8,7 @@
 #include "configuration.h"
 #include <QShowEvent>
 #include <QDesktopWidget>
+#include <QStringListModel>
 
 namespace Ui {
 class importNominalGeometryDialog;
@@ -34,6 +35,8 @@ private slots:
 
     void on_comboBox_format_currentIndexChanged(const QString &arg1);
 
+    void on_comboBox_typeOfElement_currentIndexChanged(const QString &arg1);
+
 public slots:
     void setUpCoordinateSystems(QList<CoordinateSystem*> coordSystems);
 
@@ -46,6 +49,7 @@ private:
 
     void setUpSupportedElements(QString format);
     void setUpSupportedUnits(QString format);
+    void setUpDescription();
 };
 
 #endif // IMPORTNOMINALGEOMETRYDIALOG_H

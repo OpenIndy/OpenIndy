@@ -27,6 +27,7 @@ void importNominalGeometryDialog::initGUI(){
 
     setUpSupportedElements(oiDataExchanger::getOutputFormats().at(0));
     setUpSupportedUnits(oiDataExchanger::getOutputFormats().at(0));
+    setUpDescription();
 
 }
 
@@ -86,6 +87,20 @@ void importNominalGeometryDialog::setUpSupportedUnits(QString format)
     }else{
         ui->comboBox_tempUnit->setVisible(false);
     }
+
+
+}
+
+void importNominalGeometryDialog::setUpDescription()
+{
+    QString typeOfElement = ui->comboBox_typeOfElement->currentText();
+    QString format = ui->comboBox_format->currentText();
+
+    QStringList description = oiDataExchanger::getElementDescription(format,Configuration::getElementTypeEnum(typeOfElement));
+
+    QStringListModel *model = new QStringListModel;
+    model->setStringList(description);
+    ui->listView_description->setModel(model);
 }
 
 void importNominalGeometryDialog::on_pushButton_import_clicked()
@@ -167,4 +182,9 @@ void importNominalGeometryDialog::on_comboBox_format_currentIndexChanged(const Q
     setUpSupportedElements(arg1);
     setUpSupportedUnits(arg1);
 
+}
+
+void importNominalGeometryDialog::on_comboBox_typeOfElement_currentIndexChanged(const QString &arg1)
+{
+    this->setUpDescription();
 }

@@ -12,6 +12,7 @@ public:
     ~PointCloud();
 
     OiVec xyz;
+    QList<OiVec> points;
 
     void recalc();
 

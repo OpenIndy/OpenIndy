@@ -150,7 +150,8 @@ SOURCES += \
     controller/displayattribute.cpp \
     src/sensorlistener.cpp \
     controller/guiconfiguration.cpp \
-    ui/plugininfowidget.cpp
+    ui/plugininfowidget.cpp \
+    controller/oiDataExchange/oiexchangepts.cpp
 
 
 HEADERS  += \
@@ -268,7 +269,8 @@ HEADERS  += \
     controller/displayattribute.h \
     src/sensorlistener.h \
     controller/guiconfiguration.h \
-    ui/plugininfowidget.h
+    ui/plugininfowidget.h \
+    controller/oiDataExchange/oiexchangepts.h
 
 
 FORMS    += ui/mainwindow.ui \

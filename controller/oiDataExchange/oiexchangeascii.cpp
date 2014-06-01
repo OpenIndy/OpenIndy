@@ -39,6 +39,38 @@ bool oiExchangeASCII::importOiData(oiExchangeObject &data){
         return elements;
  }
 
+ QStringList oiExchangeASCII::getElementDescription(Configuration::ElementTypes t)
+ {
+     QStringList description;
+
+     switch (t) {
+     case Configuration::ePointElement:
+         description.append("imports points according to the following scheme:");
+         description.append("name  x  y  z");
+         return description;
+         break;
+     case Configuration::eLineElement:
+         description.append("imports lines according to the following scheme:");
+         description.append("name  x  y  z i j k");
+         return description;
+         break;
+     case Configuration::ePlaneElement:
+         description.append("imports planes according to the following scheme:");
+         description.append("name  x  y  z i j k");
+         return description;
+         break;
+     case Configuration::eSphereElement:
+         description.append("imports spheres according to the following scheme:");
+         description.append("name  x  y  z radius");
+         return description;
+         break;
+     default:
+         return description;
+         break;
+     }
+
+ }
+
  QList<UnitConverter::unitType> oiExchangeASCII::getSupportedDistanceUnits()
  {
      QList<UnitConverter::unitType> d;

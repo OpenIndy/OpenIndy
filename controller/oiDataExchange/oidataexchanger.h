@@ -5,6 +5,7 @@
 #include <QStringList>
 
 #include "oiexchangeascii.h"
+#include "oiexchangepts.h"
 #include "unitconverter.h"
 
 /*!
@@ -51,6 +52,7 @@ public:
      */
     static QList<Configuration::ElementTypes> getSupportedElements(QString format);
 
+    static QStringList getElementDescription(QString format, Configuration::ElementTypes);
 
     static QList<UnitConverter::unitType> getDistanceUnits(QString format);
 
