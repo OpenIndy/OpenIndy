@@ -45,8 +45,8 @@ void importNominalGeometryDialog::on_pushButton_import_clicked()
     QString choosenCoordName = ui->comboBox_coordSys->currentText();
 
 
-    foreach(CoordinateSystem* c, availableCoordSys){
-        if (c->name == choosenCoordName){
+    foreach(CoordinateSystem* c, OiFeatureState::getCoordinateSystems()){
+        if (c->getFeatureName() == choosenCoordName){
             ExchangeData.nominalCoordSys = c;
             break;
         }
@@ -80,13 +80,13 @@ void importNominalGeometryDialog::on_toolButton_open_clicked()
 
 void importNominalGeometryDialog::setUpCoordinateSystems(QList<CoordinateSystem*> coordSystems){
 
-    ui->comboBox_coordSys->clear();
+    /*ui->comboBox_coordSys->clear();
 
     availableCoordSys = coordSystems;
 
     for(int i = 0; i < availableCoordSys.size(); i++){
         ui->comboBox_coordSys->insertItem(i,availableCoordSys.at(i)->name);
-    }
+    }*/
 
 
 }

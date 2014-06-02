@@ -1,88 +1,30 @@
 #include "oifeaturestate.h"
 
-QList<FeatureWrapper*> OiFeatureState::features;
+OiFeatureState *OiFeatureState::myFeatureState = OiFeatureState::getInstance();
+
+QList<FeatureWrapper*> OiFeatureState::myFeatures;
 FeatureWrapper *OiFeatureState::myActiveFeature = NULL;
 QList<CoordinateSystem*> OiFeatureState::myCoordinateSystems;
 QList<Station*> OiFeatureState::myStations;
 Station *OiFeatureState::myActiveStation = NULL;
 CoordinateSystem *OiFeatureState::myActiveCoordinateSystem = NULL;
 QMap<QString, int> OiFeatureState::myAvailableGroups;
+bool OiFeatureState::groupsToBeUpdated = false;
 
+OiFeatureState::OiFeatureState(QObject *parent) : QObject(parent){
 
-/*!
- * \brief OiFeatureState::isActiveFeature
- * Returns true if the given feature is the active feature
- * \param myFeature
- * \return
- */
-bool OiFeatureState::isActiveFeature(const FeatureWrapper *myFeature){
-    try{
-
-        if(OiFeatureState::myActiveFeature != NULL && OiFeatureState::myActiveFeature->getFeature() != NULL &&
-                myFeature != NULL && myFeature->getFeature() != NULL){
-
-            //compare the id of the given feature with the id of the active feature
-            if(myFeature->getFeature()->id == OiFeatureState::myActiveFeature->getFeature()->id){
-                return true;
-            }
-
-        }
-        return false;
-
-    }catch(exception &e){
-        Console::addLine(e.what());
-        return false;
-    }
 }
 
 /*!
- * \brief OiFeatureState::isActiveStation
- * Returns true if the given station is the active station
- * \param myStation
+ * \brief OiFeatureState::getInstance
+ * Returns a new or the previously created instance of this class
  * \return
  */
-bool OiFeatureState::isActiveStation(const Station *myStation){
-    try{
-
-        if(OiFeatureState::myActiveStation != NULL && myStation != NULL){
-
-            //compare the id of the given station with the id of the active station
-            if(myStation->id == OiFeatureState::myActiveStation->id){
-                return true;
-            }
-
-        }
-        return false;
-
-    }catch(exception &e){
-        Console::addLine(e.what());
-        return false;
+OiFeatureState *OiFeatureState::getInstance(){
+    if(OiFeatureState::myFeatureState == NULL){
+        OiFeatureState::myFeatureState = new OiFeatureState();
     }
-}
-
-/*!
- * \brief OiFeatureState::isActiveCoordinateSystem
- * Returns true if the given coordinate system is the active coordinate system
- * \param myCoordinateSystem
- * \return
- */
-bool OiFeatureState::isActiveCoordinateSystem(const CoordinateSystem *myCoordinateSystem){
-    try{
-
-        if(OiFeatureState::myActiveCoordinateSystem != NULL && myCoordinateSystem != NULL){
-
-            //compare the id of the given coordinate system with the id of the active coordinate system
-            if(myCoordinateSystem->id == OiFeatureState::myActiveCoordinateSystem->id){
-                return true;
-            }
-
-        }
-        return false;
-
-    }catch(exception &e){
-        Console::addLine(e.what());
-        return false;
-    }
+    return OiFeatureState::myFeatureState;
 }
 
 /*!
@@ -99,8 +41,24 @@ int OiFeatureState::getFeatureCount(){
  * Returns a constant reference to the list of features
  * \return
  */
-QList<FeatureWrapper *> &OiFeatureState::getFeatures(){
+const QList<FeatureWrapper *> &OiFeatureState::getFeatures(){
     return OiFeatureState::myFeatures;
+}
+
+/*!
+ * \brief OiFeatureState::getStations
+ * \return
+ */
+const QList<Station *> &OiFeatureState::getStations(){
+    return OiFeatureState::myStations;
+}
+
+/*!
+ * \brief OiFeatureState::getCoordinateSystems
+ * \return
+ */
+const QList<CoordinateSystem *> &OiFeatureState::getCoordinateSystems(){
+    return OiFeatureState::myCoordinateSystems;
 }
 
 /*!
@@ -108,7 +66,7 @@ QList<FeatureWrapper *> &OiFeatureState::getFeatures(){
  * Returns a pointer to the active feature's feature wrapper or NULL.
  * \return
  */
-FeatureWrapper *OiFeatureState::getActiveFeature(){
+FeatureWrapper* OiFeatureState::getActiveFeature(){
     try{
 
         if(OiFeatureState::myActiveFeature != NULL && OiFeatureState::myActiveFeature->getFeature() != NULL){
@@ -127,7 +85,7 @@ FeatureWrapper *OiFeatureState::getActiveFeature(){
  * Returns a pointer to the active station or NULL.
  * \return
  */
-Station *OiFeatureState::getActiveStation(){
+Station* OiFeatureState::getActiveStation(){
     try{
 
         if(OiFeatureState::myActiveStation != NULL){
@@ -146,7 +104,7 @@ Station *OiFeatureState::getActiveStation(){
  * Returns a pointer to the active coordinate system or NULL.
  * \return
  */
-CoordinateSystem *OiFeatureState::getActiveCoordinateSystem(){
+CoordinateSystem* OiFeatureState::getActiveCoordinateSystem(){
     try{
 
         if(OiFeatureState::myActiveCoordinateSystem != NULL){
@@ -161,12 +119,20 @@ CoordinateSystem *OiFeatureState::getActiveCoordinateSystem(){
 }
 
 /*!
+ * \brief OiFeatureState::getAvailableGroups
+ * \return
+ */
+const QMap<QString, int> OiFeatureState::getAvailableGroups(){
+    return OiFeatureState::myAvailableGroups;
+}
+
+/*!
  * \brief OiFeatureState::addFeature
  * Creates a new feature and adds it to the list of features. A pointer to that new feature is returned
  * \param myFeatureType
  * \return
  */
-FeatureWrapper *OiFeatureState::addFeature(const Configuration::FeatureTypes featureType, const QString name){
+FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureType, QString name){
     try{
 
         FeatureWrapper *myFeature = new FeatureWrapper();
@@ -221,10 +187,15 @@ FeatureWrapper *OiFeatureState::addFeature(const Configuration::FeatureTypes fea
         }}
 
         //set feature's name
-        myFeature->getFeature()->name = name;
+        myFeature->getFeature()->setFeatureName(name);
 
         //add the feature to the list of features
         OiFeatureState::myFeatures.append(myFeature);
+
+        //connect the feature's signals to slots in OiFeatureState
+        OiFeatureState::connectFeature(myFeature);
+
+        OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
 
         return myFeature;
 
@@ -235,30 +206,40 @@ FeatureWrapper *OiFeatureState::addFeature(const Configuration::FeatureTypes fea
 }
 
 /*!
- * \brief OiFeatureState::setActiveFeature
- * If there is a feature with the given id mark that feature as active feature and return true. Otherwise return false
- * \param id
+ * \brief OiFeatureState::addFeature
+ * Adds a feature to the list of features
+ * \param feature
  * \return
  */
-bool OiFeatureState::setActiveFeature(const unsigned int id){
+bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
     try{
 
-        //iterate through all available features...
-        foreach(FeatureWrapper *myFeature, OiFeatureState::myFeatures){
+        //TODO hier evtl den Namen des neuen Features prüfen
+        //TODO alle anderen Listen füllen
 
-            //...and if they are valid...
-            if(myFeature != NULL && myFeature->getFeature() != NULL){
+        if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
 
-                //...and if their id equals the given id...
-                if(myFeature->getFeature()->id == id){
+            //add the feature to the list of features
+            OiFeatureState::myFeatures.append(myFeature);
 
-                    //set them as the active feature
-                    OiFeatureState::myActiveFeature = myFeature;
-                    return true;
+            //connect the feature's signals to slots in OiFeatureState
+            OiFeatureState::connectFeature(myFeature);
 
+            //if a group is set for the new feature emit the group changed signal
+            if(myFeature->getFeature()->getGroupName().compare("") != 0){
+                QString group = myFeature->getFeature()->getGroupName();
+                if(OiFeatureState::myAvailableGroups.contains(group)){
+                    OiFeatureState::myAvailableGroups.insert(group, 1);
+                }else{
+                    int count = OiFeatureState::myAvailableGroups.find(group).value();
+                    OiFeatureState::myAvailableGroups.insert(group, count+1);
                 }
-
+                OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
             }
+
+            OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
+
+            return true;
 
         }
         return false;
@@ -266,75 +247,373 @@ bool OiFeatureState::setActiveFeature(const unsigned int id){
     }catch(exception &e){
         Console::addLine(e.what());
         return false;
+    }
+}
+
+/*!
+ * \brief OiFeatureState::removeFeature
+ * \param feature
+ * \return
+ */
+bool OiFeatureState::removeFeature(FeatureWrapper *myFeature){
+    try{
+
+        if(myFeature != NULL && myFeature->getFeature() != NULL){
+
+            int removeFeatureIndex = OiFeatureState::getFeatureListIndex(myFeature->getFeature()->getId());
+
+            if(removeFeatureIndex >= 0){
+
+                //disconnect feature's signals from OiFeatureState
+                OiFeatureState::disconnectFeature(myFeature);
+
+                //if needed set active pointers to NULL
+                if(OiFeatureState::myActiveCoordinateSystem != NULL
+                        && OiFeatureState::myActiveCoordinateSystem->getId() == myFeature->getFeature()->getId()){
+                    OiFeatureState::myActiveCoordinateSystem = NULL;
+                    OiFeatureState::myFeatureState->emitSignal(eActiveCoordinateSystemChanged);
+                }
+                if(OiFeatureState::myActiveStation != NULL
+                        && OiFeatureState::myActiveStation->getId() == myFeature->getFeature()->getId()){
+                    OiFeatureState::myActiveStation = NULL;
+                    OiFeatureState::myFeatureState->emitSignal(eActiveStationChanged);
+                }
+                if(OiFeatureState::myActiveFeature != NULL && OiFeatureState::myActiveFeature->getFeature() != NULL
+                        && OiFeatureState::myActiveFeature->getFeature()->getId() == myFeature->getFeature()->getId()){
+                    OiFeatureState::myActiveFeature = NULL;
+                    OiFeatureState::myFeatureState->emitSignal(eActiveFeatureChanged);
+                }
+
+                //remove group from groups map if needed
+                if(myFeature->getFeature()->getGroupName().compare("") != 0){
+                    QString group = myFeature->getFeature()->getGroupName();
+                    if(OiFeatureState::myAvailableGroups.contains(group)){
+                        int count = OiFeatureState::myAvailableGroups.find(group).value();
+                        if(count == 1){
+                            OiFeatureState::myAvailableGroups.remove(group);
+                        }else{
+                            OiFeatureState::myAvailableGroups.insert(group, count-1);
+                        }
+                        OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
+                    }
+                }
+
+                //remove feature from list of features
+                OiFeatureState::myFeatures.removeAt(removeFeatureIndex);
+                if(myFeature->getStation() != NULL){
+                    int removeStationIndex = OiFeatureState::getStationListIndex(myFeature->getFeature()->getId());
+                    if(removeStationIndex >= 0){
+                        OiFeatureState::myStations.removeAt(removeStationIndex);
+                    }
+                }else if(myFeature->getCoordinateSystem() != NULL){
+                    int removeCoordinateSystemIndex = OiFeatureState::getCoordinateSystemIndex(myFeature->getFeature()->getId());
+                    if(removeCoordinateSystemIndex >= 0){
+                        OiFeatureState::myCoordinateSystems.removeAt(removeCoordinateSystemIndex);
+                    }
+                }
+
+                //delete the feature
+                delete myFeature->getFeature();
+                delete myFeature;
+
+                OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
+
+                return true;
+
+            }
+            return false;
+
+        }
+        return false;
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+        return false;
+    }
+}
+
+/*!
+ * \brief OiFeatureState::emitSignal
+ * Emits the given signal
+ * \param mySignalType
+ */
+void OiFeatureState::emitSignal(OiFeatureState::SignalType mySignalType){
+    switch(mySignalType){
+    case eActiveCoordinateSystemChanged:
+        emit this->activeCoordinateSystemChanged();
+        break;
+    case eActiveFeatureChanged:
+        emit this->activeFeatureChanged();
+        break;
+    case eActiveStationChanged:
+        emit this->activeStationChanged();
+        break;
+    case eAvailableGroupsChanged:
+        emit this->availableGroupsChanged();
+        break;
+    case eFeatureSetChanged:
+        emit this->featureSetChanged();
+        break;
+    }
+}
+
+/*!
+ * \brief OiFeatureState::updateAvailableGroups
+ * Refill groups map
+ */
+void OiFeatureState::updateAvailableGroups(){
+    try{
+
+        //clear groups map
+        OiFeatureState::myAvailableGroups.clear();
+
+        //iterate through all features and add their group names
+        foreach(FeatureWrapper *myFeature, OiFeatureState::myFeatures){
+
+            if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getGroupName().compare("") != 0){
+
+                QString groupName = myFeature->getFeature()->getGroupName();
+                if(OiFeatureState::myAvailableGroups.contains(groupName)){
+                    int count = OiFeatureState::myAvailableGroups.find(groupName).value();
+                    OiFeatureState::myAvailableGroups.insert(groupName, count+1);
+                }else{
+                    OiFeatureState::myAvailableGroups.insert(groupName, 1);
+                }
+
+            }
+
+        }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief OiFeatureState::connectFeature
+ * \param myFeature
+ */
+void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
+    try{
+
+        //general feature connects
+        connect(myFeature->getFeature(), SIGNAL(featureIsActiveChanged(int)),
+                OiFeatureState::myFeatureState, SLOT(setActiveFeature(int)));
+        connect(myFeature->getFeature(), SIGNAL(featureGroupChanged(int)),
+                OiFeatureState::myFeatureState, SLOT(setFeatureGroups(int)));
+
+        //station specific connects
+        if(myFeature->getStation() != NULL){
+
+            connect(myFeature->getStation(), SIGNAL(activeStationChanged(int)),
+                    OiFeatureState::myFeatureState, SLOT(setActiveStation(int)));
+
+        }
+
+        //coordinate system specific connects
+        if(myFeature->getCoordinateSystem() != NULL){
+
+            connect(myFeature->getCoordinateSystem(), SIGNAL(activeCoordinateSystemChanged(int)),
+                    OiFeatureState::myFeatureState, SLOT(setActiveCoordinateSystem(int)));
+
+        }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief OiFeatureState::disconnectFeature
+ * \param myFeature
+ */
+void OiFeatureState::disconnectFeature(FeatureWrapper *myFeature){
+    disconnect(myFeature->getFeature(), SIGNAL(featureIsActiveChanged(int)),
+            OiFeatureState::myFeatureState, SLOT(setActiveFeature(int)));
+    disconnect(myFeature->getFeature(), SIGNAL(featureGroupChanged(int)),
+            OiFeatureState::myFeatureState, SLOT(setFeatureGroups(int)));
+}
+
+/*!
+ * \brief OiFeatureState::setActiveFeature
+ * \param featureId
+ */
+void OiFeatureState::setActiveFeature(int featureId){
+    try{
+
+        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
+        if(featureIndex >= 0){
+
+            if(OiFeatureState::myFeatures.at(featureIndex)->getFeature()->getIsActiveFeature()){
+
+                //set the feature as active feature
+                OiFeatureState::myActiveFeature = OiFeatureState::myFeatures.at(featureIndex);
+
+                //set isActive of active feature to true and all other feature's isActive property to false
+                for(unsigned int i = 0; i < OiFeatureState::getFeatureCount(); i++){
+                    if(i != featureIndex && OiFeatureState::myFeatures.at(i) != NULL
+                            && OiFeatureState::myFeatures.at(i)->getFeature() != NULL){
+
+                        OiFeatureState::myFeatures.at(i)->getFeature()->setActiveFeatureState(false);
+
+                    }else{
+
+                        OiFeatureState::myFeatures.at(i)->getFeature()->setActiveFeatureState(true);
+
+                    }
+                }
+
+                OiFeatureState::myFeatureState->emitSignal(eActiveFeatureChanged);
+
+            }
+
+        }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
     }
 }
 
 /*!
  * \brief OiFeatureState::setActiveStation
- * If there is a station with the given id mark that station as active station and return true. Otherwise return false
- * \param id
- * \return
+ * \param featureId
  */
-bool OiFeatureState::setActiveStation(const unsigned int id){
+void OiFeatureState::setActiveStation(int featureId){
     try{
 
-        //iterate through all available stations...
-        foreach(Station *myStation, OiFeatureState::myStations){
+        int stationIndex = OiFeatureState::getStationListIndex(featureId);
+        if(stationIndex >= 0){
 
-            //...and if they are valid...
-            if(myStation != NULL){
+            if(OiFeatureState::myStations.at(stationIndex)->getIsActiveStation()){
 
-                //...and if their id equals the given id...
-                if(myStation->id == id){
+                //set the station as active station
+                OiFeatureState::myActiveStation = OiFeatureState::myStations.at(stationIndex);
 
-                    //set them as the active station
-                    OiFeatureState::myActiveStation = myStation;
-                    return true;
+                //set isActiveStation of active station to true and all other station's isActiveStation property to false
+                for(unsigned int i = 0; i < OiFeatureState::myStations.size(); i++){
+                    if(i != stationIndex && OiFeatureState::myStations.at(i) != NULL){
 
+                        OiFeatureState::myStations.at(i)->setActiveStationState(false);
+
+                    }else{
+
+                        OiFeatureState::myStations.at(i)->setActiveStationState(true);
+
+                    }
                 }
+
+                OiFeatureState::myFeatureState->emitSignal(eActiveStationChanged);
 
             }
 
         }
-        return false;
 
     }catch(exception &e){
         Console::addLine(e.what());
-        return false;
     }
 }
 
 /*!
  * \brief OiFeatureState::setActiveCoordinateSystem
- * If there is a coordinate system with the given id mark that system as active system and return true. Otherwise return false
- * \param id
- * \return
+ * \param featureId
  */
-bool OiFeatureState::setActiveCoordinateSystem(const unsigned int id){
+void OiFeatureState::setActiveCoordinateSystem(int featureId){
     try{
 
-        //iterate through all available coordinate systems...
-        foreach(CoordinateSystem *mySystem, OiFeatureState::myCoordinateSystems){
+        int csIndex = OiFeatureState::getCoordinateSystemIndex(featureId);
+        if(csIndex >= 0){
 
-            //...and if they are valid...
-            if(mySystem != NULL){
+            if(OiFeatureState::myCoordinateSystems.at(csIndex)->getIsActiveCoordinateSystem()){
 
-                //...and if their id equals the given id...
-                if(mySystem->id == id){
+                //set the coordinate system as active coordinate system
+                OiFeatureState::myActiveCoordinateSystem = OiFeatureState::myCoordinateSystems.at(csIndex);
 
-                    //set them as the active coordinate system
-                    OiFeatureState::myActiveCoordinateSystem = mySystem;
-                    return true;
+                //set isActiveCoordinateSystem of active system to true and all other system's isActiveCoordinateSystem property to false
+                for(unsigned int i = 0; i < OiFeatureState::myCoordinateSystems.size(); i++){
+                    if(i != csIndex && OiFeatureState::myCoordinateSystems.at(i) != NULL){
 
+                        OiFeatureState::myCoordinateSystems.at(i)->setActiveCoordinateSystemState(false);
+
+                    }else{
+
+                        OiFeatureState::myCoordinateSystems.at(i)->setActiveCoordinateSystemState(true);
+
+                    }
                 }
+
+                OiFeatureState::myFeatureState->emitSignal(eActiveCoordinateSystemChanged);
 
             }
 
         }
-        return false;
 
     }catch(exception &e){
         Console::addLine(e.what());
-        return false;
     }
+}
+
+/*!
+ * \brief OiFeatureState::setFeatureGroups
+ * \param featureId
+ */
+void OiFeatureState::setFeatureGroups(int featureId){
+    try{
+
+        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
+        if(featureIndex >= 0){
+
+            OiFeatureState::updateAvailableGroups();
+
+            OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
+
+        }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief OiFeatureState::getFeatureListIndex
+ * \param featureId
+ * \return
+ */
+int OiFeatureState::getFeatureListIndex(int featureId){
+    for(unsigned int i = 0; i < OiFeatureState::getFeatureCount(); i++){
+        FeatureWrapper *myFeature = OiFeatureState::myFeatures.at(i);
+        if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getId() == featureId){
+            return i;
+        }
+    }
+    return -1;
+}
+
+/*!
+ * \brief OiFeatureState::getStationListIndex
+ * \param featureId
+ * \return
+ */
+int OiFeatureState::getStationListIndex(int featureId){
+    for(unsigned int i = 0; i < OiFeatureState::myStations.size(); i++){
+        Station *myStation = OiFeatureState::myStations.at(i);
+        if(myStation != NULL && myStation->getId() == featureId){
+            return i;
+        }
+    }
+    return -1;
+}
+
+/*!
+ * \brief OiFeatureState::getCoordinateSystemIndex
+ * \param featureId
+ * \return
+ */
+int OiFeatureState::getCoordinateSystemIndex(int featureId){
+    for(unsigned int i = 0; i < OiFeatureState::myCoordinateSystems.size(); i++){
+        CoordinateSystem *mySystem = OiFeatureState::myCoordinateSystems.at(i);
+        if(mySystem != NULL && mySystem->getId() == featureId){
+            return i;
+        }
+    }
+    return -1;
 }

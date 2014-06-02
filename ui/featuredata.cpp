@@ -11,7 +11,6 @@ FeatureData::FeatureData(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    selectedFeature = NULL;
     ui->tab_sensorInformation->setEnabled(false);
     sensorConfig = NULL;
     connectionChanged = false;
@@ -51,12 +50,12 @@ void FeatureData::on_pushButton_ok_clicked()
  * and connect the instrument new, if the connection settings were changed.
  * \param FeatureWrapper activeFeature
  */
-void FeatureData::getActiveFeature(FeatureWrapper *activeFeature){
+/*void FeatureData::getActiveFeature(FeatureWrapper *activeFeature){
 
     this->selectedFeature = activeFeature;
-    this->setWindowTitle(QString("information abaout " + this->selectedFeature->getFeature()->name));
+    this->setWindowTitle(QString("information abaout " + OiFeatureState::getActiveFeature()->getFeature()->name));
     rModel = new ReadingModel(*this->selectedFeature,0);
-    oModel = new ObservationModel(*this->selectedFeature,0);
+    oModel = new ObservationModel(*OiFeatureState::getActiveFeature(),0);
 
     ui->tableView_observation->setModel(oModel);
     ui->tableView_readings->setModel(rModel);
@@ -79,7 +78,7 @@ void FeatureData::getActiveFeature(FeatureWrapper *activeFeature){
         getSensorParameters();
         initConnection();
     }
-}
+}*/
 
 void FeatureData::showEvent(QShowEvent *event)
 {
@@ -96,8 +95,8 @@ void FeatureData::initGUI(){
 
     ui->comboBox_displayedFunction->clear();
 
-    for(int i=0; i<this->selectedFeature->getFeature()->functionList.size();i++){
-        ui->comboBox_displayedFunction->addItem(this->selectedFeature->getFeature()->functionList.at(i)->getMetaData()->name);
+    for(int i=0; i<OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size();i++){
+        ui->comboBox_displayedFunction->addItem(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(i)->getMetaData()->name);
     }
 }
 
@@ -123,17 +122,17 @@ void FeatureData::on_comboBox_displayedFunction_currentIndexChanged(const QStrin
         ui->tableView_qxxAposteriori->setModel(qxxModel);
         ui->tableView_sxxApriori->setModel(sxxModel);
 
-        if(this->selectedFeature->getFeature()->functionList.size()>0){
+        if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size()>0){
             ui->textBrowser_protocol->clear();
 
-            for(int i=0; i<this->selectedFeature->getFeature()->functionList.at(currentFunction)->getResultProtocol().size();i++){
-                ui->textBrowser_protocol->append(this->selectedFeature->getFeature()->functionList.at(currentFunction)->getResultProtocol().at(i));
+            for(int i=0; i<OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getResultProtocol().size();i++){
+                ui->textBrowser_protocol->append(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getResultProtocol().at(i));
             }
 
-            if(this->selectedFeature->getFeature()->functionList.at(currentFunction)->getStatistic().isValid){
-                OiMat tmpQxxOriginal = this->selectedFeature->getFeature()->functionList.at(currentFunction)->getStatistic().qxx;
-                double tmps0aposteriori = this->selectedFeature->getFeature()->functionList.at(currentFunction)->getStatistic().s0_aposteriori;
-                double tmps0apriori = this->selectedFeature->getFeature()->functionList.at(currentFunction)->getStatistic().s0_apriori;
+            if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().isValid){
+                OiMat tmpQxxOriginal = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().qxx;
+                double tmps0aposteriori = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_aposteriori;
+                double tmps0apriori = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_apriori;
 
 
                 OiMat tmpQxx = (tmps0aposteriori*tmps0aposteriori)*tmpQxxOriginal;
@@ -142,8 +141,8 @@ void FeatureData::on_comboBox_displayedFunction_currentIndexChanged(const QStrin
 
                 qxxModel->updateModel(tmpQxx);
                 sxxModel->updateModel(tmpSxx);
-                ui->label_s0aposterioriValue->setText(QString::number(this->selectedFeature->getFeature()->functionList.at(currentFunction)->getStatistic().s0_aposteriori,'f',6));
-                ui->label_s0aprioriValue->setText(QString::number(this->selectedFeature->getFeature()->functionList.at(currentFunction)->getStatistic().s0_apriori,'f',6));
+                ui->label_s0aposterioriValue->setText(QString::number(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_aposteriori,'f',6));
+                ui->label_s0aprioriValue->setText(QString::number(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_apriori,'f',6));
             }
         }
         /*
@@ -151,9 +150,9 @@ void FeatureData::on_comboBox_displayedFunction_currentIndexChanged(const QStrin
             return;
         }*/
 
-        if(this->selectedFeature->getFeature()->functionList.at(currentFunction)->getFeatureOrder().size() > 0){
+        if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getFeatureOrder().size() > 0){
 
-            fModel->setFunction(this->selectedFeature->getFeature()->functionList.at(currentFunction));
+            fModel->setFunction(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction));
             ui->tableView_displayedfunctionStatistic->setModel(fModel);
             fModel->updateModel();
         }else{
@@ -196,15 +195,15 @@ void FeatureData::getSensorConfiguration()
     ui->label_sigmaZ->setText(QString("sigma z " + UnitConverter::getDistanceUnitString()));
     ui->label_sigmaZenith->setText(QString("sigma zenith " + UnitConverter::getAngleUnitString()));
 
-    ui->lineEdit_sigmaAzimuth->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaAzimuth*UnitConverter::getAngleMultiplier()));
-    ui->lineEdit_sigmaDistance->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaDistance*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaZenith->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaZenith*UnitConverter::getAngleMultiplier()));
-    ui->lineEdit_sigmaTemperature->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaTemp*UnitConverter::getTemperatureMultiplier()));
-    ui->lineEdit_sigmaX->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaY->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaZ->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaXZ->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaAngleXZ*UnitConverter::getAngleMultiplier()));
-    ui->lineEdit_sigmaYZ->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaAngleYZ*UnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaAzimuth->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaAzimuth*UnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaDistance->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaDistance*UnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaZenith->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaZenith*UnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaTemperature->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaTemp*UnitConverter::getTemperatureMultiplier()));
+    ui->lineEdit_sigmaX->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaY->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaXZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaAngleXZ*UnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaYZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaAngleYZ*UnitConverter::getAngleMultiplier()));
 }
 
 /*!
@@ -212,9 +211,9 @@ void FeatureData::getSensorConfiguration()
  */
 void FeatureData::getReadingType()
 {
-    if(this->selectedFeature->getStation()->sensorPad->instrument != NULL && this->selectedFeature->getStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
+    if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
 
-        QList<Configuration::ReadingTypes> readingTypes = *this->selectedFeature->getStation()->sensorPad->instrument->getSupportedReadingTypes();
+        QList<Configuration::ReadingTypes> readingTypes = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getSupportedReadingTypes();
 
         for(int i=0; i<readingTypes.size();i++){
 
@@ -259,11 +258,11 @@ void FeatureData::getReadingType()
                 break;
             case Configuration::eUndefined:
 
-                if(this->selectedFeature->getStation()->sensorPad->instrument->getDefaultAccuracy() != NULL){
+                if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getDefaultAccuracy() != NULL){
 
-                    ui->toolBox_accuracy->setItemText(4,this->selectedFeature->getStation()->sensorPad->instrument->getUndefinedReadingName());
+                    ui->toolBox_accuracy->setItemText(4,OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getUndefinedReadingName());
 
-                    QMap<QString, double> undefSigma = *this->selectedFeature->getStation()->sensorPad->instrument->getDefaultAccuracy();
+                    QMap<QString, double> undefSigma = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getDefaultAccuracy();
 
                     QMapIterator<QString, double> j(undefSigma);
                     while(j.hasNext()){
@@ -273,7 +272,7 @@ void FeatureData::getReadingType()
                         l->setText(j.key());
                         QLineEdit *le = new QLineEdit();
                         //le->setText(QString::number(j.value()));
-                        le->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaUndefined.value(j.key())));
+                        le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaUndefined.value(j.key())));
 
                         QHBoxLayout *layout = new QHBoxLayout();
                         layout->addWidget(l);
@@ -426,7 +425,7 @@ void FeatureData::initSensorConfiguration()
     sensorConfig = new SensorConfiguration();
 
     sensorConfig->name = ui->lineEdit_configName->text();
-    sensorConfig->instrumentType = this->selectedFeature->getStation()->getInstrumentConfig()->instrumentType;
+    sensorConfig->instrumentType = OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->instrumentType;
 
     sensorConfig->connConfig->baudRate = static_cast<QSerialPort::BaudRate>(ui->comboBox_baudrate->itemData(ui->comboBox_baudrate->currentIndex()).toInt());
     sensorConfig->connConfig->comPort = ui->comboBox_comport->currentText();
@@ -479,9 +478,9 @@ void FeatureData::initSensorConfiguration()
  */
 void FeatureData::getSensorParameters()
 {
-    if(this->selectedFeature->getStation()->sensorPad->instrument != NULL && this->selectedFeature->getStation()->sensorPad->instrument->getDoubleParameter() != NULL){
+    if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getDoubleParameter() != NULL){
 
-        QMap<QString, double> doubleparam = *this->selectedFeature->getStation()->sensorPad->instrument->getDoubleParameter();
+        QMap<QString, double> doubleparam = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getDoubleParameter();
 
         QMapIterator<QString, double> j(doubleparam);
         while(j.hasNext()){
@@ -491,7 +490,7 @@ void FeatureData::getSensorParameters()
             l->setText(j.key());
             QLineEdit *le = new QLineEdit();
             //le->setText(QString::number(j.value()));
-            le->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->doubleParameter.value(j.key())));
+            le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->doubleParameter.value(j.key())));
 
             QHBoxLayout *layout = new QHBoxLayout();
             layout->addWidget(l);
@@ -507,9 +506,9 @@ void FeatureData::getSensorParameters()
         }
     }
 
-    if(this->selectedFeature->getStation()->sensorPad->instrument != NULL && this->selectedFeature->getStation()->sensorPad->instrument->getIntegerParameter() != NULL){
+    if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getIntegerParameter() != NULL){
 
-        QMap<QString, int> intParameter = *this->selectedFeature->getStation()->sensorPad->instrument->getIntegerParameter();
+        QMap<QString, int> intParameter = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getIntegerParameter();
 
         QMapIterator<QString, int> k(intParameter);
         while(k.hasNext()){
@@ -519,7 +518,7 @@ void FeatureData::getSensorParameters()
             l->setText(k.key());
             QLineEdit *le = new QLineEdit();
             //le->setText(QString::number(k.value()));
-            le->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->integerParameter.value(k.key())));
+            le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->integerParameter.value(k.key())));
 
             QHBoxLayout *layout = new QHBoxLayout();
             layout->addWidget(l);
@@ -535,9 +534,9 @@ void FeatureData::getSensorParameters()
         }
     }
 
-    if(this->selectedFeature->getStation()->sensorPad->instrument != NULL && this->selectedFeature->getStation()->sensorPad->instrument->getStringParameter() != NULL){
+    if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getStringParameter() != NULL){
 
-        QMap<QString,QStringList> strParameter = *this->selectedFeature->getStation()->sensorPad->instrument->getStringParameter();
+        QMap<QString,QStringList> strParameter = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getStringParameter();
 
         QMapIterator<QString,QStringList> m(strParameter);
         while(m.hasNext()){
@@ -549,7 +548,7 @@ void FeatureData::getSensorParameters()
             for(int a=0;a< m.value().size();a++){
                 cb->addItem(m.value().at(a));
             }
-            cb->setCurrentIndex(cb->findText(this->selectedFeature->getStation()->getInstrumentConfig()->stringParameter.value(m.key())));
+            cb->setCurrentIndex(cb->findText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->stringParameter.value(m.key())));
 
             QHBoxLayout *layout = new QHBoxLayout();
             layout->addWidget(l);
@@ -574,13 +573,13 @@ void FeatureData::getSensorParameters()
 void FeatureData::on_pushButton_setSensorConfig_clicked()
 {
     if(connectionChanged){
-        this->selectedFeature->getStation()->startDisconnect();
+        OiFeatureState::getActiveFeature()->getStation()->startDisconnect();
         initSensorConfiguration();
-        this->selectedFeature->getStation()->setInstrumentConfig(this->sensorConfig);
-        this->selectedFeature->getStation()->startConnect(this->selectedFeature->getStation()->getInstrumentConfig()->connConfig);
+        OiFeatureState::getActiveFeature()->getStation()->setInstrumentConfig(this->sensorConfig);
+        OiFeatureState::getActiveFeature()->getStation()->startConnect(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig);
     }else{
         initSensorConfiguration();
-        this->selectedFeature->getStation()->setInstrumentConfig(this->sensorConfig);
+        OiFeatureState::getActiveFeature()->getStation()->setInstrumentConfig(this->sensorConfig);
     }
 
 }
@@ -590,9 +589,9 @@ void FeatureData::on_pushButton_setSensorConfig_clicked()
  */
 void FeatureData::initConnection()
 {
-    if(this->selectedFeature->getStation()->sensorPad->instrument->getConnectionType() != NULL){
+    if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getConnectionType() != NULL){
 
-        QList<Configuration::ConnectionTypes> conTypes = *this->selectedFeature->getStation()->sensorPad->instrument->getConnectionType();
+        QList<Configuration::ConnectionTypes> conTypes = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getConnectionType();
         for(int i=0; i<conTypes.size();i++){
             switch (conTypes.at(i)) {
             case Configuration::eNetwork:
@@ -607,7 +606,7 @@ void FeatureData::initConnection()
         }
 
     }
-    ui->comboBox_connectiontype->setCurrentIndex(ui->comboBox_connectiontype->findData(this->selectedFeature->getStation()->getInstrumentConfig()->connConfig->typeOfConnection));
+    ui->comboBox_connectiontype->setCurrentIndex(ui->comboBox_connectiontype->findData(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->typeOfConnection));
 
     ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"1200",QSerialPort::Baud1200);
     ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"2400",QSerialPort::Baud2400);
@@ -617,20 +616,20 @@ void FeatureData::initConnection()
     ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"38400",QSerialPort::Baud38400);
     ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"57600",QSerialPort::Baud57600);
     ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"115200",QSerialPort::Baud115200);
-    ui->comboBox_baudrate->setCurrentIndex(ui->comboBox_baudrate->findData(this->selectedFeature->getStation()->getInstrumentConfig()->connConfig->baudRate));
+    ui->comboBox_baudrate->setCurrentIndex(ui->comboBox_baudrate->findData(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->baudRate));
 
     ui->comboBox_databits->insertItem(ui->comboBox_databits->count(),"5",QSerialPort::Data5);
     ui->comboBox_databits->insertItem(ui->comboBox_databits->count(),"6",QSerialPort::Data6);
     ui->comboBox_databits->insertItem(ui->comboBox_databits->count(),"7",QSerialPort::Data7);
     ui->comboBox_databits->insertItem(ui->comboBox_databits->count(),"8",QSerialPort::Data8);
     ui->comboBox_databits->insertItem(ui->comboBox_databits->count(),"unknown",QSerialPort::UnknownDataBits);
-    ui->comboBox_databits->setCurrentIndex(ui->comboBox_databits->findData(this->selectedFeature->getStation()->getInstrumentConfig()->connConfig->dataBits));
+    ui->comboBox_databits->setCurrentIndex(ui->comboBox_databits->findData(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->dataBits));
 
     ui->comboBox_flowcontrol->insertItem(ui->comboBox_flowcontrol->count(),"no flowcontrol",QSerialPort::NoFlowControl);
     ui->comboBox_flowcontrol->insertItem(ui->comboBox_flowcontrol->count(),"hardware flowcontrol",QSerialPort::HardwareControl);
     ui->comboBox_flowcontrol->insertItem(ui->comboBox_flowcontrol->count(),"software flowcontrol",QSerialPort::SoftwareControl);
     ui->comboBox_flowcontrol->insertItem(ui->comboBox_flowcontrol->count(),"unknown flowcontrol",QSerialPort::UnknownFlowControl);
-    ui->comboBox_flowcontrol->setCurrentIndex(ui->comboBox_flowcontrol->findData(this->selectedFeature->getStation()->getInstrumentConfig()->connConfig->flowControl));
+    ui->comboBox_flowcontrol->setCurrentIndex(ui->comboBox_flowcontrol->findData(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->flowControl));
 
     ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"no parity",QSerialPort::NoParity);
     ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"even parity",QSerialPort::EvenParity);
@@ -638,26 +637,26 @@ void FeatureData::initConnection()
     ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"space parity",QSerialPort::SpaceParity);
     ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"mark parity",QSerialPort::MarkParity);
     ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"unknown parity",QSerialPort::UnknownParity);
-    ui->comboBox_parity->setCurrentIndex(ui->comboBox_parity->findData(this->selectedFeature->getStation()->getInstrumentConfig()->connConfig->parity));
+    ui->comboBox_parity->setCurrentIndex(ui->comboBox_parity->findData(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->parity));
 
     ui->comboBox_stopbits->insertItem(ui->comboBox_stopbits->count(),"one stop",QSerialPort::OneStop);
     ui->comboBox_stopbits->insertItem(ui->comboBox_stopbits->count(),"one and half stop",QSerialPort::OneAndHalfStop);
     ui->comboBox_stopbits->insertItem(ui->comboBox_stopbits->count(),"two stop",QSerialPort::TwoStop);
     ui->comboBox_stopbits->insertItem(ui->comboBox_stopbits->count(),"unknown stopbits",QSerialPort::UnknownStopBits);
-    ui->comboBox_stopbits->setCurrentIndex(ui->comboBox_stopbits->findData(this->selectedFeature->getStation()->getInstrumentConfig()->connConfig->stopBits));
+    ui->comboBox_stopbits->setCurrentIndex(ui->comboBox_stopbits->findData(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->stopBits));
 
     foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts()){
         ui->comboBox_comport->insertItem(ui->comboBox_comport->count(),info.portName());
     }
-    ui->comboBox_comport->setCurrentIndex(ui->comboBox_comport->findText(this->selectedFeature->getStation()->getInstrumentConfig()->connConfig->port));
+    ui->comboBox_comport->setCurrentIndex(ui->comboBox_comport->findText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->port));
 
     QList<QHostAddress> ipAdresses = QNetworkInterface::allAddresses();
     foreach(const QHostAddress &adress, ipAdresses){
         ui->comboBox_ip->insertItem(ui->comboBox_ip->count(),adress.toString());
     }
-    ui->comboBox_ip->setCurrentIndex(ui->comboBox_ip->findText(this->selectedFeature->getStation()->getInstrumentConfig()->connConfig->ip));
+    ui->comboBox_ip->setCurrentIndex(ui->comboBox_ip->findText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->ip));
 
-    ui->lineEdit_port->setText(this->selectedFeature->getStation()->getInstrumentConfig()->connConfig->port);
+    ui->lineEdit_port->setText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->port);
 }
 
 /*!

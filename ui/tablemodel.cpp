@@ -46,232 +46,190 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
 
     QString functions = "";
 
-    if(Qt::DisplayRole == role){
-
-        switch (index.column()) {
-        case 0:
-            return OiFeatureState::getFeatures().at(index.row())->returnFeatureType();
-            //Configuration::FeatureTypes f = features.at(index.row())->getTypeOfFeature();
-            //return featureType(f);
-            break;
-        case 1:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->name;
-            break;
-        case 2:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->group;
-        case 3:
-            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
-                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayX();
-            }else{
-                return QVariant();
-            }
-            break;
-        case 4:
-            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
-                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayY();
-            }else{
-                return QVariant();
-            }
-
-            break;
-        case 5:
-            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
-                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayZ();
-            }else{
-                return QVariant();
-            }
-            break;
-        case 6:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayObs();
-            break;
-        case 7:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplaySolved();
-            break;
-        case 8:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayMConfig();
-            break;
-        case 9:
-            /*if(features.at(index.row())->getFeature()->functionList.size()==0){
-                return "no function set";
-            }else{
-                functions += features.at(index.row())->getFeature()->functionList.at(0)->getName();
-                for(int i=1;i<features.at(index.row())->getFeature()->functionList.size();i++){
-                    functions += "," + features.at(index.row())->getFeature()->functionList.at(i)->getName();
-                }
-                return functions;
-            }*/
-            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->functionList.size()==0){
-                            return "no function set";
-                }else{
-                    functions += OiFeatureState::getFeatures().at(index.row())->getFeature()->functionList.at(0)->getMetaData()->name;
-                    for(int i=1;i<OiFeatureState::getFeatures().at(index.row())->getFeature()->functionList.size();i++){
-                        functions += "," + OiFeatureState::getFeatures().at(index.row())->getFeature()->functionList.at(i)->getMetaData()->name;
-                    }
-                    return functions;
-            }
-            break;
-        case 10:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayIsCommon();
-            break;
-        case 11:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayIsNominal();
-            break;
-        case 12:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayStdDev();
-            break;
-        case 13:
-            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
-                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayI();
-            }else{
-                return QVariant();
-            }
-            break;
-        case 14:
-            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
-                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayJ();
-            }else{
-                return QVariant();
-            }
-            break;
-        case 15:
-            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
-                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayK();
-            }else{
-                return QVariant();
-            }
-            break;
-        case 16:
-            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
-                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayRadius();
-            }else{
-                return QVariant();
-            }
-            break;
-        case 17:
-            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
-                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScalarDistanceValue();
-            }else{
-                return QVariant();
-            }
-            break;
-        case 18:
-            if(OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
-                return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScalarAngleValue();
-            }else{
-                return QVariant();
-            }
-            break;
-        case 19:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayStartSystem();
-            break;
-        case 20:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayDestinationSystem();
-            break;
-        case 21:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayTranslationX();
-            break;
-        case 22:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayTranslationY();
-            break;
-        case 23:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayTranslationZ();
-            break;
-        case 24:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayRotationX();
-            break;
-        case 25:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayRotationY();
-            break;
-        case 26:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayRotationZ();
-            break;
-        case 27:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScaleX();
-            break;
-        case 28:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScaleY();
-            break;
-        case 29:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScaleZ();
-            break;
-        case 30:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScalarTemperatureValue();
-            break;
-        case 31:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->getDisplayScalarMeasurementSeriesValue();
-            break;
-        case 32:
-            return OiFeatureState::getFeatures().at(index.row())->getFeature()->comment;
-            break;
-        case 33:
-            if(this->features.at(index.row())->getTrafoParam() != NULL){
-                return this->features.at(index.row())->getTrafoParam()->use;
-            }//else{
-            //    return this->features.at(index.row())->getFeature()->getDisplayUse();
-            //}
-            break;
-        case 34:
-            if(this->features.at(index.row())->getTrafoParam() != NULL){
-                return this->features.at(index.row())->getTrafoParam()->validTime;
-            }
-            //return this->features.at(index.row())->getFeature()->getDisplayTime();
-            break;
-        default:
-            break;
-        }
+    FeatureWrapper *currentFeature = NULL;
+    if(OiFeatureState::getFeatureCount() > index.row()){
+        currentFeature = OiFeatureState::getFeatures().at(index.row());
     }
 
-    if (role == Qt::BackgroundRole){
+    if(currentFeature != NULL && currentFeature->getFeature() != NULL){
 
-        if(OiFeatureState::getFeatures().at(index.row())->getStation() == NULL && OiFeatureState::getFeatures().at(index.row())->getCoordinateSystem() == NULL &&
-                OiFeatureState::getFeatures().at(index.row())->getCoordinateSystem() == NULL){
-            if(OiFeatureState::getFeatures().at(index.row())->getGeometry() != NULL && OiFeatureState::getFeatures().at(index.row())->getGeometry()->mConfig.typeOfReading == -1){
-                if(index.column() == 7){
+        if(Qt::DisplayRole == role){
+
+            switch (index.column()) {
+            case 0:
+                return currentFeature->returnFeatureType();
+            case 1:
+                return currentFeature->getFeature()->getFeatureName();
+            case 2:
+                return currentFeature->getFeature()->getGroupName();
+            case 3:
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayX();
+                }else{
+                    return QVariant();
+                }
+            case 4:
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayY();
+                }else{
+                    return QVariant();
+                }
+            case 5:
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayZ();
+                }else{
+                    return QVariant();
+                }
+            case 6:
+                return currentFeature->getFeature()->getDisplayObs();
+            case 7:
+                return currentFeature->getFeature()->getDisplaySolved();
+            case 8:
+                return currentFeature->getFeature()->getDisplayMConfig();
+            case 9:
+                if(currentFeature->getFeature()->getFunctions().size() == 0){
+                    return "no function set";
+                }else{
+                    functions += currentFeature->getFeature()->getFunctions().at(0)->getMetaData()->name;
+                    for(int i=1;i<currentFeature->getFeature()->getFunctions().size();i++){
+                        functions += "," + currentFeature->getFeature()->getFunctions().at(i)->getMetaData()->name;
+                    }
+                    return functions;
+                }
+            case 10:
+                return currentFeature->getFeature()->getDisplayIsCommon();
+            case 11:
+                return currentFeature->getFeature()->getDisplayIsNominal();
+            case 12:
+                return currentFeature->getFeature()->getDisplayStdDev();
+            case 13:
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayI();
+                }else{
+                    return QVariant();
+                }
+            case 14:
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayJ();
+                }else{
+                    return QVariant();
+                }
+            case 15:
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayK();
+                }else{
+                    return QVariant();
+                }
+            case 16:
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayRadius();
+                }else{
+                    return QVariant();
+                }
+            case 17:
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayScalarDistanceValue();
+                }else{
+                    return QVariant();
+                }
+            case 18:
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayScalarAngleValue();
+                }else{
+                    return QVariant();
+                }
+            case 19:
+                return currentFeature->getFeature()->getDisplayStartSystem();
+            case 20:
+                return currentFeature->getFeature()->getDisplayDestinationSystem();
+            case 21:
+                return currentFeature->getFeature()->getDisplayTranslationX();
+            case 22:
+                return currentFeature->getFeature()->getDisplayTranslationY();
+            case 23:
+                return currentFeature->getFeature()->getDisplayTranslationZ();
+            case 24:
+                return currentFeature->getFeature()->getDisplayRotationX();
+            case 25:
+                return currentFeature->getFeature()->getDisplayRotationY();
+            case 26:
+                return currentFeature->getFeature()->getDisplayRotationZ();
+            case 27:
+                return currentFeature->getFeature()->getDisplayScaleX();
+            case 28:
+                return currentFeature->getFeature()->getDisplayScaleY();
+            case 29:
+                return currentFeature->getFeature()->getDisplayScaleZ();
+            case 30:
+                return currentFeature->getFeature()->getDisplayScalarTemperatureValue();
+            case 31:
+                return currentFeature->getFeature()->getDisplayScalarMeasurementSeriesValue();
+            case 32:
+                return currentFeature->getFeature()->getComment();
+            case 33:
+                if(currentFeature->getTrafoParam() != NULL){
+                    return currentFeature->getTrafoParam()->getIsUsed();
+                }
+                return QVariant();
+            case 34:
+                if(currentFeature->getTrafoParam() != NULL){
+                    return currentFeature->getTrafoParam()->getValidTime();
+                }
+                return QVariant();
+            default:
+                break;
+            }
+        }
+
+        if (role == Qt::BackgroundRole){
+
+            if(currentFeature->getGeometry() != NULL && currentFeature->getGeometry()->mConfig.typeOfReading == -1){
+                if(index.column() == 8){
                     return QColor(Qt::red);
                 }
             }
-        }
 
-
-        if(OiFeatureState::getFeatures().at(index.row())->getStation() != NULL && OiFeatureState::getFeatures().at(index.row())->getStation()->position->mConfig.typeOfReading == -1){
-            if(index.column() == 7){
-                return QColor(Qt::red);
+            if(currentFeature->getStation() != NULL && currentFeature->getStation()->position->mConfig.typeOfReading == -1){
+                if(index.column() == 8){
+                    return QColor(Qt::red);
+                }
             }
-        }
 
-        if (OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getFeatures().at(index.row())->getFeature() == OiFeatureState::getActiveFeature()->getFeature()){
-            return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
-        }
-
-        if(OiFeatureState::getFeatures().at(index.row())->getStation() != NULL){
-            if(OiFeatureState::getFeatures().at(index.row())->getStation() == OiFeatureState::getActiveStation()){
-                return QColor(Qt::darkGray);
+            if (OiFeatureState::getActiveFeature() != NULL && currentFeature->getFeature() == OiFeatureState::getActiveFeature()->getFeature()){
+                return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
             }
+
+            if(OiFeatureState::getFeatures().at(index.row())->getStation() != NULL){
+                if(OiFeatureState::getFeatures().at(index.row())->getStation() == OiFeatureState::getActiveStation()){
+                    return QColor(Qt::darkGray);
+                }
+            }
+
+            if (OiFeatureState::getFeatures().at(index.row())->getStation()!=NULL){
+                return QColor(Qt::lightGray);
+            }
+
+            //if feature is not solved
+            if( (index.column() == 3 || index.column() == 4 || index.column() == 5
+                    || index.column() == 13 || index.column() == 14
+                    || index.column() == 15 || index.column() == 16
+                    || index.column() == 17 || index.column() == 18)
+                    && !currentFeature->getFeature()->getIsSolved()){
+                return QColor(Qt::yellow);
+            }
+
         }
 
-        if (OiFeatureState::getFeatures().at(index.row())->getStation()!=NULL){
-            return QColor(Qt::lightGray);
-        }
+        if (role == Qt::ForegroundRole ) {
 
-        //if feature is not solved
-        if( (index.column() == 3 || index.column() == 4 || index.column() == 5
-                || index.column() == 13 || index.column() == 14
-                || index.column() == 15 || index.column() == 16
-                || index.column() == 17 || index.column() == 18)
-                && !OiFeatureState::getFeatures().at(index.row())->getFeature()->isSolved){
-            return QColor(Qt::yellow);
-        }
-
-    }
-
-    if (role == Qt::ForegroundRole ) {
-
-        if(OiFeatureState::getFeatures().at(index.row())->getStation() != NULL){
-            if(OiFeatureState::getFeatures().at(index.row())->getStation() == OiFeatureState::getActiveStation()){
+            if(currentFeature->getStation() != NULL && currentFeature->getStation()->getIsActiveStation()){
                 return QColor(Qt::white);
             }
         }
+
     }
+
+
 
     return QVariant();
 }
@@ -434,7 +392,7 @@ Qt::ItemFlags TableModel::flags(const QModelIndex & index) const{
  * \return
  */
 bool TableModel::setData(const QModelIndex & index, const QVariant & value, int role){
-    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
+    if(OiFeatureState::getActiveFeature() != NULL){
         if(index.column() == 1){ //feature name
 
             FeatureAttributesExchange myExchange;
@@ -443,52 +401,52 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
                 myExchange.nominal = OiFeatureState::getActiveFeature()->getGeometry()->isNominal;
                 myExchange.nominalSystem = OiFeatureState::getActiveFeature()->getGeometry()->myNominalCoordSys;
             }else if(OiFeatureState::getActiveFeature()->getTrafoParam() != NULL){
-                myExchange.startSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->from;
-                myExchange.destSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->to;
+                myExchange.startSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->getStartSystem();
+                myExchange.destSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->getDestinationSystem();
             }
             myExchange.featureType = OiFeatureState::getActiveFeature()->getTypeOfFeature();
-            myExchange.name = OiFeatureState::getActiveFeature()->getFeature()->name;
+            myExchange.name = OiFeatureState::getActiveFeature()->getFeature()->getFeatureName();
 
             if(FeatureUpdater::validateFeatureName(value.toString(), myExchange)){
 
                 if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
                     Geometry *myGeom = OiFeatureState::getActiveFeature()->getGeometry();
                     if(myGeom->isNominal && myGeom->myActual != NULL){
-                        myGeom->myActual->name = value.toString();
+                        myGeom->myActual->setFeatureName(value.toString());
                         foreach(Geometry *nomGeom, myGeom->myActual->nominals){
                             if(nomGeom != NULL){
-                                nomGeom->name = value.toString();
+                                nomGeom->setFeatureName(value.toString());
                             }
                         }
                     }else{
-                        myGeom->name = value.toString();
+                        myGeom->setFeatureName(value.toString());
                         foreach(Geometry *nomGeom, myGeom->nominals){
                             if(nomGeom != NULL){
-                                nomGeom->name = value.toString();
+                                nomGeom->setFeatureName(value.toString());
                             }
                         }
                     }
                 }else{
-                    OiFeatureState::getActiveFeature()->getFeature()->name = value.toString();
+                    OiFeatureState::getActiveFeature()->getFeature()->setFeatureName(value.toString());
                 }
 
-                FeatureUpdater::checkForNominals(this->activeFeature);
-                FeatureUpdater::addNominalToActual(this->activeFeature);
+                FeatureUpdater::checkForNominals(OiFeatureState::getActiveFeature());
+                FeatureUpdater::addNominalToActual(OiFeatureState::getActiveFeature());
 				
                 FeatureUpdater::sortFeatures();
 
             }
 
         }else if(index.column() == 2){ //feature group
-            QString oldValue = OiFeatureState::getActiveFeature()->getFeature()->group;
-            OiFeatureState::getActiveFeature()->getFeature()->group = value.toString();
+            QString oldValue = OiFeatureState::getActiveFeature()->getFeature()->getGroupName();
+            OiFeatureState::getActiveFeature()->getFeature()->setGroupName(value.toString());
             emit this->groupNameChanged(oldValue, value.toString());
         }else if(index.column() == 32){ //feature comment
-            OiFeatureState::getActiveFeature()->getFeature()->comment = value.toString();
+            OiFeatureState::getActiveFeature()->getFeature()->setComment(value.toString());
         }else if(index.column() == 33){//trafo param use
-            this->activeFeature->getTrafoParam()->use = value.toBool();
+            OiFeatureState::getActiveFeature()->getTrafoParam()->setIsUsed(value.toBool());
         }else if(index.column() == 34){//trafo param time
-            this->activeFeature->getTrafoParam()->validTime = value.toDateTime();
+            OiFeatureState::getActiveFeature()->getTrafoParam()->setValidTime(value.toDateTime());
         }
 
         this->updateModel();

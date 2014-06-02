@@ -7,11 +7,11 @@ Station::Station(QString name)
 
     this->id = Configuration::generateID();
     position = new Point();
-    position->name = name;
+    position->setFeatureName(name);
 
     //ini member
     coordSys = new CoordinateSystem();
-    coordSys->name = this->name;
+    coordSys->setFeatureName(this->name);
 
     sensorPad = new SensorControl(this);
     connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
@@ -60,6 +60,28 @@ Station::~Station(){
     //TODO Sensorliste deleten
     delete this->sensorPad;
 
+}
+
+/*!
+ * \brief Station::getIsActiveStation
+ * \return
+ */
+bool Station::getIsActiveStation(){
+    return this->isActiveStation;
+}
+
+/*!
+ * \brief Station::setAciteStationState
+ * \param isActiveStation
+ * \return
+ */
+bool Station::setActiveStationState(bool isActiveStation){
+    if(this->isActiveStation != isActiveStation){
+        this->isActiveStation = isActiveStation;
+        emit this->activeStationChanged(this->id);
+        return true;
+    }
+    return false;
 }
 
 void Station::stopThread(){
@@ -116,7 +138,7 @@ bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
 
             stream.writeStartElement("member");
             stream.writeAttribute("type", "position");
-            stream.writeAttribute("ref", QString::number(this->position->id));
+            stream.writeAttribute("ref", QString::number(this->position->getId()));
             stream.writeEndElement();
 
         }
@@ -124,7 +146,7 @@ bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
         if(this->coordSys != NULL){
             stream.writeStartElement("member");
             stream.writeAttribute("type", "coordinatesystem");
-            stream.writeAttribute("ref", QString::number(this->coordSys->id));
+            stream.writeAttribute("ref", QString::number(this->coordSys->getId()));
             stream.writeEndElement();
         }
 
@@ -247,13 +269,13 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
                             if (memberAttributes.value("type") == "position"){
 
                                 if(memberAttributes.hasAttribute("ref")){
-                                    this->position->id = memberAttributes.value("ref").toInt();
+                                    this->position->setId(memberAttributes.value("ref").toInt());
                                 }
 
                             }else if (memberAttributes.value("type") == "coordinatesystem"){
 
                                 if(memberAttributes.hasAttribute("ref")){
-                                    this->coordSys->id = memberAttributes.value("ref").toInt();
+                                    this->coordSys->setId(memberAttributes.value("ref").toInt());
                                 }
                             }else{
                                 readFeatureAttributes(xml,dependencies);

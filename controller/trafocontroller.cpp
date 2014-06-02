@@ -1,13 +1,5 @@
 #include "trafocontroller.h"
 
-QList<FeatureWrapper*>* TrafoController::features;
-FeatureWrapper* TrafoController::activeFeature;
-QList<CoordinateSystem*>* TrafoController::coordSys;
-QList<Station*>* TrafoController::stations;
-Station* TrafoController::activeStation;
-CoordinateSystem* TrafoController::activeCoordinateSystem;
-QMap<QString, int>* TrafoController::availableGroups;
-
 TrafoController::TrafoController(QObject *parent) :
     QObject(parent)
 {
@@ -22,7 +14,7 @@ void TrafoController::addObservation(Observation *obs)
     if(obs->myReading->typeofReading == Configuration::ePolar || obs->myReading->typeofReading == Configuration::eCartesian){
         applyMovements(obs);
         transformNewObservations(obs);
-        this->activeStation->coordSys->observations.append(obs);
+        //OiFeatureState::getActiveStation()->coordSys->observations.append(obs);
     }
 }
 
@@ -34,10 +26,10 @@ void TrafoController::applyMovements(Observation *obs)
 {
     //find movements for that observation
     QList<TrafoParam*> movements;
-    for(int i=0;i<features->size();i++){
-        if(features->at(i)->getTrafoParam() != NULL && features->at(i)->getTrafoParam()->isMovement){
-            if(features->at(i)->getTrafoParam()->to == obs->myStation->coordSys){
-                movements.append(features->at(i)->getTrafoParam());
+    for(int i=0;i<OiFeatureState::getFeatureCount();i++){
+        if(OiFeatureState::getFeatures().at(i)->getTrafoParam() != NULL && OiFeatureState::getFeatures().at(i)->getTrafoParam()->getIsMovement()){
+            if(OiFeatureState::getFeatures().at(i)->getTrafoParam()->getDestinationSystem() == obs->myStation->coordSys){
+                movements.append(OiFeatureState::getFeatures().at(i)->getTrafoParam());
             }
         }
     }
@@ -45,14 +37,14 @@ void TrafoController::applyMovements(Observation *obs)
         //sort list on valid time attributes
         QMap<QDateTime,TrafoParam*> map;
         for(int k=0;k<movements.size();k++){
-            map.insert(movements.at(k)->validTime,movements.at(k));
+            map.insert(movements.at(k)->getValidTime(),movements.at(k));
         }
         movements = map.values();
 
         //apply movement
         for(int i=0;i<movements.size();i++){
-            if(obs->myReading->measuredAt<movements.at(i)->validTime && i != 0){
-                OiMat t= movements.at(i)->homogenMatrix;
+            if(obs->myReading->measuredAt<movements.at(i)->getValidTime() && i != 0){
+                OiMat t= movements.at(i)->getHomogenMatrix();
                 obs->myXyz = t * obs->myOriginalXyz;
                 obs->myStatistic.qxx = t * obs->myOriginalStatistic.qxx;
             }
@@ -70,14 +62,14 @@ void TrafoController::applyMovements(Observation *obs)
  */
 void TrafoController::transformNewObservations(Observation *obs)
 {
-    if(obs->myStation->coordSys != activeCoordinateSystem){
-        TrafoParam *tp = findTrafoParam(obs->myStation->coordSys,activeCoordinateSystem);
+    if(obs->myStation->coordSys != OiFeatureState::getActiveCoordinateSystem()){
+        TrafoParam *tp = findTrafoParam(obs->myStation->coordSys,OiFeatureState::getActiveCoordinateSystem());
         if(tp != NULL){
             OiMat t;
-            if(tp->to == activeCoordinateSystem){
-                t = tp->homogenMatrix;
+            if(tp->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
+                t = tp->getHomogenMatrix();
             }else{
-                t = tp->homogenMatrix.inv();
+                t = tp->getHomogenMatrix().inv();
             }
             obs->myXyz = t * obs->myXyz;
             obs->myStatistic.qxx = t * obs->myStatistic.qxx;
@@ -91,13 +83,13 @@ void TrafoController::transformNewObservations(Observation *obs)
  */
 void TrafoController::initPointers(DataListHandler dlh)
 {
-    TrafoController::features = dlh.features;
+    /*TrafoController::features = dlh.features;
     TrafoController::activeFeature = dlh.activeFeature;
     TrafoController::coordSys = dlh.coordSys;
     TrafoController::stations = dlh.stations;
     TrafoController::activeStation = dlh.activeStation;
     TrafoController::activeCoordinateSystem = dlh.activeCoordinateSystem;
-    TrafoController::availableGroups = dlh.availableGroups;
+    TrafoController::availableGroups = dlh.availableGroups;*/
 }
 
 /*!
@@ -109,29 +101,29 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
 {
     if(from != NULL){
         //first apply movements
-        foreach (Observation *obs, from->observations) {
+        foreach (Observation *obs, from->getObservations()) {
             applyMovements(obs);
         }
-        if(from == activeCoordinateSystem){
+        if(from == OiFeatureState::getActiveCoordinateSystem()){
             return true;
         }
         //then transform
-        TrafoParam *tp = findTrafoParam(from,activeCoordinateSystem);
+        TrafoParam *tp = findTrafoParam(from,OiFeatureState::getActiveCoordinateSystem());
         if(tp != NULL){
             OiMat t;
-            if(tp->from == from){
-                t = tp->homogenMatrix;
+            if(tp->getStartSystem() == from){
+                t = tp->getHomogenMatrix();
             }else{
-                t = tp->homogenMatrix.inv();
+                t = tp->getHomogenMatrix().inv();
             }
-            foreach (Observation *obs, from->observations) {
+            foreach (Observation *obs, from->getObservations()) {
                 obs->myXyz = t*obs->myXyz;
                 obs->myStatistic.qxx = t*obs->myStatistic.qxx;
                 obs->isValid = true;
             }
             return true;
         }else{ //no trafo params available
-            foreach(Observation *obs, from->observations){
+            foreach(Observation *obs, from->getObservations()){
                 obs->isValid = false;
             }
             return false;
@@ -147,7 +139,7 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
  */
 void TrafoController::setObservationState(CoordinateSystem *cs, bool valid)
 {
-    foreach(Observation *obs, cs->observations){
+    foreach(Observation *obs, cs->getObservations()){
         if(valid == true){
             applyMovements(obs);
             //obs->myXyz = obs->myOriginalXyz;
@@ -171,9 +163,9 @@ void TrafoController::MovementsChanged()
  */
 void TrafoController::recalcAllMovements()
 {
-    for(int i=0;i<features->size();i++){
-        if(features->at(i)->getTrafoParam() != NULL){
-            features->at(i)->getTrafoParam()->recalc();
+    for(int i=0;i<OiFeatureState::getFeatures().size();i++){
+        if(OiFeatureState::getFeatures().at(i)->getTrafoParam() != NULL){
+            OiFeatureState::getFeatures().at(i)->getTrafoParam()->recalc();
         }
     }
 }
@@ -183,12 +175,12 @@ void TrafoController::recalcAllMovements()
  */
 void TrafoController::recalcObservations()
 {
-    for(int i=0;i<stations->size();i++){
-        foreach (Observation *obs, stations->at(i)->coordSys->observations) {
+    for(int i=0;i<OiFeatureState::getStations().size();i++){
+        foreach (Observation *obs, OiFeatureState::getStations().at(i)->coordSys->getObservations()) {
             applyMovements(obs);
         }
-    }for(int i=0;i<coordSys->size();i++){
-        foreach (Observation *obs, coordSys->at(i)->observations) {
+    }for(int i=0;i<OiFeatureState::getCoordinateSystems().size();i++){
+        foreach (Observation *obs, OiFeatureState::getCoordinateSystems().at(i)->getObservations()) {
             applyMovements(obs);
         }
     }
@@ -202,10 +194,10 @@ void TrafoController::recalcObservations()
  */
 TrafoParam *TrafoController::findTrafoParam(CoordinateSystem *from, CoordinateSystem *to)
 {
-    foreach(TrafoParam *tp, from->trafoParams){
-        if(tp->to != NULL && tp->from != NULL){
-            if(tp->to == to || tp->from == to){
-                if(tp->use){
+    foreach(TrafoParam *tp, from->getTransformationParameters()){
+        if(tp->getDestinationSystem() != NULL && tp->getStartSystem() != NULL){
+            if(tp->getDestinationSystem() == to || tp->getStartSystem() == to){
+                if(tp->getIsUsed()){
                     return tp;
                 }
             }

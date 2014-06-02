@@ -23,6 +23,8 @@
 #include <QShowEvent>
 #include <QDesktopWidget>
 
+#include "oifeaturestate.h"
+
 namespace Ui {
 class FeatureData;
 }
@@ -43,7 +45,7 @@ public:
     MatrixModel *qxxModel;
     MatrixModel *sxxModel;
 
-    void getActiveFeature(FeatureWrapper *activeFeature);
+    //void getActiveFeature(FeatureWrapper *activeFeature);
 
     void showEvent(QShowEvent *event);
 
@@ -104,7 +106,6 @@ private:
     QMap<QString, QLayout*> accuracyLayouts;
     QMap<QString, QLayout*> sensorConfigLayouts;
 
-    FeatureWrapper *selectedFeature;
     Ui::FeatureData *ui;
 };
 

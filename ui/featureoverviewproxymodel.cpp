@@ -1,12 +1,12 @@
-#include "featureovserviewproxymodel.h"
+#include "featureoverviewproxymodel.h"
 
 /*!
  * \brief FeatureOvserviewProxyModel constructor
  * \param QList<FeatureWrapper*> &features
  * \param parent
  */
-FeatureOvserviewProxyModel::FeatureOvserviewProxyModel(QList<FeatureWrapper*> &features,QObject *parent) :
-    QSortFilterProxyModel(parent),features(features),activeGroup("All Groups")
+FeatureOverviewProxyModel::FeatureOverviewProxyModel(QObject *parent) :
+    QSortFilterProxyModel(parent),activeGroup("All Groups")
 {
 }
 
@@ -16,15 +16,15 @@ FeatureOvserviewProxyModel::FeatureOvserviewProxyModel(QList<FeatureWrapper*> &f
  * \param source_parent
  * \return
  */
-bool FeatureOvserviewProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
+bool FeatureOverviewProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
     if(this->activeGroup.compare("All Groups") == 0){
-        if(this->features.at(source_row)->getTrafoParam() != NULL){
+        if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL){
             return false;
         }else{
             return true;
         }
     }else{
-        if(this->features.at(source_row)->getTrafoParam() != NULL || this->features.at(source_row)->getFeature()->group.compare(this->activeGroup) != 0){
+        if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL || OiFeatureState::getFeatures().at(source_row)->getFeature()->getGroupName().compare(this->activeGroup) != 0){
             return false;
         }else{
             return true;
@@ -32,7 +32,7 @@ bool FeatureOvserviewProxyModel::filterAcceptsRow(int source_row, const QModelIn
     }
 }
 
-void FeatureOvserviewProxyModel::sortNominalToActual()
+void FeatureOverviewProxyModel::sortNominalToActual()
 {/*
     int row = 2;
     for(int i=0; i<row-1;i++){
@@ -55,7 +55,7 @@ void FeatureOvserviewProxyModel::sortNominalToActual()
  * \param source_parent
  * \return
  */
-bool FeatureOvserviewProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
+bool FeatureOverviewProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
     /*if(source_column == 19 || source_column == 20 || source_column == 21 || source_column == 22 || source_column == 23
             || source_column == 24 || source_column == 25 || source_column == 26 || source_column == 27
             || source_column == 28 || source_column == 29){
@@ -77,7 +77,7 @@ bool FeatureOvserviewProxyModel::filterAcceptsColumn(int source_column, const QM
  * \param indices
  * \return
  */
-QList<FeatureWrapper*> FeatureOvserviewProxyModel::getFeaturesAtIndices(QModelIndexList &indices){
+QList<FeatureWrapper*> FeatureOverviewProxyModel::getFeaturesAtIndices(QModelIndexList &indices){
     QList<FeatureWrapper*> result;
 
     foreach(QModelIndex idx, indices){
@@ -86,8 +86,8 @@ QList<FeatureWrapper*> FeatureOvserviewProxyModel::getFeaturesAtIndices(QModelIn
         if(sourceModelIndex.row() >= 0){
             position = sourceModelIndex.row();
         }
-        if(this->features.size() > position && position >= 0){
-            FeatureWrapper *myFeature = this->features.at(position);
+        if(OiFeatureState::getFeatures().size() > position && position >= 0){
+            FeatureWrapper *myFeature = OiFeatureState::getFeatures().at(position);
             result.append(myFeature);
         }
     }
@@ -98,7 +98,7 @@ QList<FeatureWrapper*> FeatureOvserviewProxyModel::getFeaturesAtIndices(QModelIn
 /*!
  * \brief FeatureOvserviewProxyModel::activeGroupChanged
  */
-void FeatureOvserviewProxyModel::activeGroupChanged(QString group){
+void FeatureOverviewProxyModel::activeGroupChanged(QString group){
     this->activeGroup = group;
     this->invalidateFilter();
 }

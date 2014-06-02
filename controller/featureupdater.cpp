@@ -22,25 +22,25 @@ bool FeatureUpdater::validateFeatureName(QString featureName, FeatureAttributesE
     }
     switch (fae.featureType) {
     case Configuration::eStationFeature:
-        for(int k=0; k<FeatureUpdater::features->size();k++){
+        for(int k=0; k<OiFeatureState::getFeatures().size();k++){
 
-            int res = QString::compare(FeatureUpdater::features->at(k)->getFeature()->name,featureName, Qt::CaseSensitive);
+            int res = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getFeatureName(),featureName, Qt::CaseSensitive);
             if(res == 0){
 
-                if(FeatureUpdater::features->at(k)->getTypeOfFeature() != fae.featureType){
-                    if(FeatureUpdater::features->at(k)->getTypeOfFeature() != Configuration::ePointFeature){
+                if(OiFeatureState::getFeatures().at(k)->getTypeOfFeature() != fae.featureType){
+                    if(OiFeatureState::getFeatures().at(k)->getTypeOfFeature() != Configuration::ePointFeature){
                         Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
                 }
-                int r = QString::compare(FeatureUpdater::features->at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
+                int r = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
                 if(fae.nominal == true && r == 0){
-                    if(FeatureUpdater::features->at(k)->getGeometry() != NULL && FeatureUpdater::features->at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
+                    if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
                         Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
                 }
-                r = QString::compare(FeatureUpdater::features->at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
+                r = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
                 if(fae.actual == true && r == 0){
                     Console::addLine(QString("Feature name already exists " + featureName));
                     return false;
@@ -49,32 +49,32 @@ bool FeatureUpdater::validateFeatureName(QString featureName, FeatureAttributesE
         }
         break;
     case Configuration::eCoordinateSystemFeature:
-        for(int k = 0; k < FeatureUpdater::features->size(); k++){
-            if(FeatureUpdater::features->at(k)->getFeature()->name.compare(featureName) == 0){
+        for(int k = 0; k < OiFeatureState::getFeatures().size(); k++){
+            if(OiFeatureState::getFeatures().at(k)->getFeature()->getFeatureName().compare(featureName) == 0){
                 Console::addLine(QString("Feature name already exists " + featureName));
                 return false;
             }
         }
         break;
     case Configuration::ePointFeature:
-        for(int k=0; k<FeatureUpdater::features->size();k++){
-            int res = QString::compare(FeatureUpdater::features->at(k)->getFeature()->name,featureName,Qt::CaseSensitive);
+        for(int k=0; k<OiFeatureState::getFeatures().size();k++){
+            int res = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getFeatureName(),featureName,Qt::CaseSensitive);
             if(res == 0){
 
-                if(FeatureUpdater::features->at(k)->getTypeOfFeature() != fae.featureType){
-                    if(FeatureUpdater::features->at(k)->getTypeOfFeature() != Configuration::eStationFeature){
+                if(OiFeatureState::getFeatures().at(k)->getTypeOfFeature() != fae.featureType){
+                    if(OiFeatureState::getFeatures().at(k)->getTypeOfFeature() != Configuration::eStationFeature){
                         Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
                 }
-                int r = QString::compare(FeatureUpdater::features->at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
+                int r = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
                 if(fae.nominal == true && r == 0){
-                    if(FeatureUpdater::features->at(k)->getGeometry() != NULL && FeatureUpdater::features->at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
+                    if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
                         Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
                 }
-                r = QString::compare(FeatureUpdater::features->at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
+                r = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
                 if(fae.actual == true && r == 0){
                     Console::addLine(QString("Feature name already exists " + featureName));
                     return false;
@@ -105,21 +105,21 @@ bool FeatureUpdater::validateFeatureName(QString featureName, FeatureAttributesE
         }
         break;*/
     default:
-        for(int k=0; k<FeatureUpdater::features->size();k++){
-            int res = QString::compare(FeatureUpdater::features->at(k)->getFeature()->name, featureName, Qt::CaseSensitive);
+        for(int k=0; k<OiFeatureState::getFeatures().size();k++){
+            int res = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getFeatureName(), featureName, Qt::CaseSensitive);
             if(res == 0){
-                if(FeatureUpdater::features->at(k)->getTypeOfFeature() != fae.featureType){
+                if(OiFeatureState::getFeatures().at(k)->getTypeOfFeature() != fae.featureType){
                     Console::addLine(QString("Feature name already exists " + featureName));
                     return false;
                 }
-                int r = QString::compare(FeatureUpdater::features->at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
+                int r = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
                 if(fae.nominal == true && r == 0){
-                    if(FeatureUpdater::features->at(k)->getGeometry() != NULL && FeatureUpdater::features->at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
+                    if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
                         Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
                 }
-                r = QString::compare(FeatureUpdater::features->at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
+                r = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getDisplayIsNominal(),"false",Qt::CaseSensitive);
                 if(fae.actual == true && r == 0){
                     Console::addLine(QString("Feature name already exists " + featureName));
                     return false;
@@ -210,11 +210,11 @@ QStringList FeatureUpdater::ConstructFeatureName(QString name, int count)
  */
 void FeatureUpdater::sortFeatures()
 {
-    for(int i=0; i<features->size();i++){
-        if(features->at(i)->getGeometry() != NULL && features->at(i)->getGeometry()->isNominal == false){
+    /*for(int i=0; i<OiFeatureState::getFeatureCount();i++){
+        if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal == false){
             for(int k=0;k<features->size();k++){
-                if(features->at(k)->getGeometry() != NULL && features->at(k)->getGeometry()->isNominal == true){
-                    if(features->at(i)->getFeature()->name.compare(features->at(k)->getFeature()->name,Qt::CaseSensitive)==0){
+                if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->isNominal == true){
+                    if(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName().compare(OiFeatureState::getFeatures().at(k)->getFeature()->getFeatureName(),Qt::CaseSensitive)==0){
                         if(!(i ==k-1)){
                             features->insert(i+1,features->at(k));
                             if(i<k){
@@ -246,7 +246,7 @@ void FeatureUpdater::sortFeatures()
                 }
             }
         }
-    }
+    }*/
 }
 
 /*!
@@ -255,19 +255,19 @@ void FeatureUpdater::sortFeatures()
 void FeatureUpdater::checkForNominals(FeatureWrapper *fw)
 {
     if(fw->getTypeOfFeature() == Configuration::eStationFeature){
-        for(int i=0; i<features->size();i++){
-            int res = QString::compare(features->at(i)->getFeature()->name, fw->getFeature()->name, Qt::CaseSensitive);
-            if(res == 0 && features->at(i)->getGeometry() != NULL && features->at(i)->getGeometry()->isNominal){
-                fw->getStation()->position->nominals.append(features->at(i)->getGeometry());
-                features->at(i)->getGeometry()->myActual = fw->getStation()->position;
+        for(int i=0; i<OiFeatureState::getFeatureCount();i++){
+            int res = QString::compare(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName(), fw->getFeature()->getFeatureName(), Qt::CaseSensitive);
+            if(res == 0 && OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal){
+                fw->getStation()->position->nominals.append(OiFeatureState::getFeatures().at(i)->getGeometry());
+                OiFeatureState::getFeatures().at(i)->getGeometry()->myActual = fw->getStation()->position;
             }
         }
     }else{
-        for(int i=0; i<features->size();i++){
-            int res = QString::compare(features->at(i)->getFeature()->name, fw->getFeature()->name, Qt::CaseSensitive);
-            if(res == 0 && features->at(i)->getGeometry() != NULL && features->at(i)->getGeometry()->isNominal){
-                fw->getGeometry()->nominals.append(features->at(i)->getGeometry());
-                features->at(i)->getGeometry()->myActual = fw->getGeometry();
+        for(int i=0; i<OiFeatureState::getFeatures().size();i++){
+            int res = QString::compare(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName(), fw->getFeature()->getFeatureName(), Qt::CaseSensitive);
+            if(res == 0 && OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal){
+                fw->getGeometry()->nominals.append(OiFeatureState::getFeatures().at(i)->getGeometry());
+                OiFeatureState::getFeatures().at(i)->getGeometry()->myActual = fw->getGeometry();
             }
         }
     }
@@ -278,31 +278,31 @@ void FeatureUpdater::checkForNominals(FeatureWrapper *fw)
  */
 void FeatureUpdater::addNominalToActual(FeatureWrapper *fw)
 {
-    for(int i=0; i< features->size();i++){
-        int res = QString::compare(features->at(i)->getFeature()->name, fw->getFeature()->name, Qt::CaseSensitive);
+    for(int i=0; i< OiFeatureState::getFeatures().size();i++){
+        int res = QString::compare(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName(), fw->getFeature()->getFeatureName(), Qt::CaseSensitive);
         if(res == 0){
             if(fw->getStation() != NULL){
-                if(features->at(i)->getGeometry() != NULL && features->at(i)->getGeometry()->isNominal == false){
-                    features->at(i)->getGeometry()->nominals.append(fw->getStation()->position);
-                    fw->getStation()->position->myActual = features->at(i)->getGeometry();
+                if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal == false){
+                    OiFeatureState::getFeatures().at(i)->getGeometry()->nominals.append(fw->getStation()->position);
+                    fw->getStation()->position->myActual = OiFeatureState::getFeatures().at(i)->getGeometry();
                     break;
                 }else{
-                    if(features->at(i)->getStation() != NULL){
-                        features->at(i)->getStation()->position->nominals.append(fw->getStation()->position);
-                        fw->getStation()->position->myActual = features->at(i)->getStation()->position;
+                    if(OiFeatureState::getFeatures().at(i)->getStation() != NULL){
+                        OiFeatureState::getFeatures().at(i)->getStation()->position->nominals.append(fw->getStation()->position);
+                        fw->getStation()->position->myActual = OiFeatureState::getFeatures().at(i)->getStation()->position;
                         break;
                     }
                 }
             }
             if(fw->getGeometry() != NULL){
-                if(features->at(i)->getGeometry() != NULL && features->at(i)->getGeometry()->isNominal == false){
-                    features->at(i)->getGeometry()->nominals.append(fw->getGeometry());
-                    fw->getGeometry()->myActual = features->at(i)->getGeometry();
+                if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal == false){
+                    OiFeatureState::getFeatures().at(i)->getGeometry()->nominals.append(fw->getGeometry());
+                    fw->getGeometry()->myActual = OiFeatureState::getFeatures().at(i)->getGeometry();
                     break;
                 }else{
-                    if(features->at(i)->getStation() != NULL){
-                        features->at(i)->getStation()->position->nominals.append(fw->getGeometry());
-                        fw->getGeometry()->myActual = features->at(i)->getStation()->position;
+                    if(OiFeatureState::getFeatures().at(i)->getStation() != NULL){
+                        OiFeatureState::getFeatures().at(i)->getStation()->position->nominals.append(fw->getGeometry());
+                        fw->getGeometry()->myActual = OiFeatureState::getFeatures().at(i)->getStation()->position;
                         break;
                     }
                 }
@@ -320,13 +320,13 @@ void FeatureUpdater::recalcFeature(Feature *f){
         //recalc needed features
         foreach(FeatureWrapper *neededFeature, f->previouslyNeeded){
             if(neededFeature->getFeature() != NULL && neededFeature->getTrafoParam() == NULL){ //if wrapper contains a feature but not a trafo param
-                if(!neededFeature->getFeature()->isUpdated){
+                if(!neededFeature->getFeature()->getIsUpdated()){
                     this->recalcFeature(neededFeature->getFeature());
                 }
             }
         }
         f->recalc();
-        f->isUpdated = true;
+        f->setIsUpdated(true);
         //recalc dependent features
         foreach(FeatureWrapper *dependentFeature, f->usedFor){
             if(dependentFeature->getFeature() != NULL && dependentFeature->getTrafoParam() == NULL){ //if wrapper contains a feature but not a trafo param
@@ -342,10 +342,10 @@ void FeatureUpdater::recalcFeature(Feature *f){
  */
 void FeatureUpdater::recalcTrafoParam(TrafoParam *tp){
     //if trafo param has "from", "to" and a function
-    if(tp != NULL && tp->from != NULL && tp->to != NULL && tp->functionList.size() > 0
-            && tp->functionList.at(0) != NULL){
+    if(tp != NULL && tp->getStartSystem() != NULL && tp->getDestinationSystem() != NULL && tp->getFunctions().size() > 0
+            && tp->getFunctions().at(0) != NULL){
 
-        SystemTransformation *tpFunction = dynamic_cast<SystemTransformation*>(tp->functionList.at(0));
+        SystemTransformation *tpFunction = dynamic_cast<SystemTransformation*>(tp->getFunctions().at(0));
         //if function of tp is a system transformation
         if(tpFunction != NULL){
 
@@ -363,19 +363,19 @@ void FeatureUpdater::recalcTrafoParam(TrafoParam *tp){
             tpFunction->scalarEntityDistances_startSystem.clear();
             tpFunction->scalarEntityDistances_targetSystem.clear();
 
-            if(tp->from->nominals.size() > 0 && tp->to->nominals.size() > 0){ //if both nominals
+            if(tp->getStartSystem()->getNominals().size() > 0 && tp->getDestinationSystem()->getNominals().size() > 0){ //if both nominals
                 this->fillTrafoParamFunctionNN(tpFunction, tp);
-            }else if(tp->from->nominals.size() == 0 && tp->to->nominals.size() == 0){ //if both actual
+            }else if(tp->getStartSystem()->getNominals().size() == 0 && tp->getDestinationSystem()->getNominals().size() == 0){ //if both actual
                 this->fillTrafoParamFunctionAA(tpFunction, tp);
-            }else if( (tp->from->nominals.size() == 0 && tp->to->nominals.size() > 0)
-                      || (tp->from->nominals.size() > 0 && tp->to->nominals.size() == 0) ){ //if one actual one nominal
+            }else if( (tp->getStartSystem()->getNominals().size() == 0 && tp->getDestinationSystem()->getNominals().size() > 0)
+                      || (tp->getStartSystem()->getNominals().size() > 0 && tp->getDestinationSystem()->getNominals().size() == 0) ){ //if one actual one nominal
                 this->fillTrafoParamFunctionAN(tpFunction, tp);
             }
 
         }
 
         tp->recalc();
-        tp->isUpdated = true;
+        tp->setIsUpdated(true);
 
         //recalc dependent features
         foreach(FeatureWrapper *dependentFeature, tp->usedFor){
@@ -388,19 +388,18 @@ void FeatureUpdater::recalcTrafoParam(TrafoParam *tp){
 
 /*!
  * \brief FeatureUpdater::recalcFeatureSet
- * \param featureSet
  */
-void FeatureUpdater::recalcFeatureSet(QList<FeatureWrapper *> featureSet){
+void FeatureUpdater::recalcFeatureSet(){
     //set all features to not have been updated
-    foreach(FeatureWrapper *feature, featureSet){
+    foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
         if(feature != NULL && feature->getFeature() != NULL){
-            feature->getFeature()->isUpdated = false;
+            feature->getFeature()->setIsUpdated(false);
         }
     }
     //recalc recursively
-    foreach(FeatureWrapper *feature, featureSet){
+    foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
         if(feature != NULL && feature->getFeature() != NULL){
-            if(!feature->getFeature()->isUpdated && feature->getTrafoParam() == NULL){
+            if(!feature->getFeature()->getIsUpdated() && feature->getTrafoParam() == NULL){
                 this->recalcFeature(feature->getFeature());
             }
         }
@@ -417,29 +416,29 @@ void FeatureUpdater::recalcFeatureSet(QList<FeatureWrapper *> featureSet){
 void FeatureUpdater::switchCoordinateSystem(CoordinateSystem *to){
     if(to != NULL){
         //transform all observations to current coordinate system
-        foreach(CoordinateSystem* cs, *coordSys){
+        foreach(CoordinateSystem* cs, OiFeatureState::getCoordinateSystems()){
             if(cs != NULL){
                 //cs->transformObservations(to);
                 trafoControl.transformObservations(cs);
             }
         }
-        foreach(Station* s, *stations){
+        foreach(Station* s, OiFeatureState::getStations()){
             if(s != NULL && s->coordSys != NULL){
                 //s->coordSys->transformObservations(to);
                 trafoControl.transformObservations(s->coordSys);
             }
         }
         //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
-        foreach(FeatureWrapper *feature, *features){
+        foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
             if(feature->getGeometry() != NULL && feature->getGeometry()->isNominal
                     && feature->getGeometry()->myNominalCoordSys != to){
-                feature->getGeometry()->isSolved = false;
+                feature->getGeometry()->setIsSolved(false);
             }else if(feature->getGeometry() != NULL && feature->getGeometry()->isNominal){
-                feature->getGeometry()->isSolved = true;
+                feature->getGeometry()->setIsSolved(true);
             }
         }
         //recalc all features
-        this->recalcFeatureSet(*features);
+        this->recalcFeatureSet();
     }
 }
 
@@ -453,7 +452,7 @@ void FeatureUpdater::switchCoordinateSystem(CoordinateSystem *to){
 void FeatureUpdater::switchCoordinateSystemWithoutTransformation(CoordinateSystem *to){
     if(to != NULL){
         //set all observation to target coordinate system
-        foreach(CoordinateSystem* cs, *coordSys){
+        foreach(CoordinateSystem* cs, OiFeatureState::getCoordinateSystems()){
             if(cs != NULL){
                 if(cs == to){ //if cs is the target coordinate system
                     //cs->setObservationState(true);
@@ -464,7 +463,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(CoordinateSyste
                 }
             }
         }
-        foreach(Station* s, *stations){
+        foreach(Station* s, OiFeatureState::getStations()){
             if(s != NULL && s->coordSys != NULL){
                 if(s->coordSys == to){ //if cs is the target coordinate system
                     //s->coordSys->setObservationState(true);
@@ -476,16 +475,16 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(CoordinateSyste
             }
         }
         //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
-        foreach(FeatureWrapper *feature, *features){
+        foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
             if(feature->getGeometry() != NULL && feature->getGeometry()->isNominal
                     && feature->getGeometry()->myNominalCoordSys != to){
-                feature->getGeometry()->isSolved = false;
+                feature->getGeometry()->setIsSolved(false);
             }else if(feature->getGeometry() != NULL && feature->getGeometry()->isNominal){
-                feature->getGeometry()->isSolved = true;
+                feature->getGeometry()->setIsSolved(true);
             }
         }
         //recalc all features
-        this->recalcFeatureSet(*features);
+        this->recalcFeatureSet();
     }
 }
 
@@ -516,14 +515,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Point *tmpPoint = new Point();
 
         tmpPoint->mConfig = mConfig;
-        tmpPoint->name = name;
-        tmpPoint->group = fae.group;
+        tmpPoint->setFeatureName(name);
+        tmpPoint->setGroupName(fae.group);
         tmpPoint->isNominal = nominal;
         tmpPoint->isCommon = fae.common;
 
         if(nominal){
             tmpPoint->myNominalCoordSys = fae.nominalSystem;
-            tmpPoint->isSolved = true;
+            tmpPoint->setIsSolved(true);
         }else{
             if(functionValid){ tmpPoint->addFunction(defaultFunction); }
         }
@@ -532,16 +531,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setPoint(tmpPoint);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->getNominals().append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -551,14 +550,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Line *tmp = new Line();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -567,16 +566,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setLine(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -586,14 +585,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Plane *tmp = new Plane();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -602,16 +601,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setPlane(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -621,14 +620,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Sphere *tmp = new Sphere();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -637,16 +636,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setSphere(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -656,14 +655,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Circle *tmp = new Circle();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -672,16 +671,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setCircle(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -691,14 +690,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Cone *tmp = new Cone();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -707,16 +706,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setCone(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -726,14 +725,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Cylinder *tmp = new Cylinder();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -742,16 +741,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setCylinder(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -761,14 +760,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Ellipsoid *tmp = new Ellipsoid();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -777,16 +776,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setEllipsoid(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -796,14 +795,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Hyperboloid *tmp = new Hyperboloid();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -812,16 +811,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setHyperboloid(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -831,14 +830,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Paraboloid *tmp = new Paraboloid();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -847,16 +846,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setParaboloid(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -866,14 +865,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         PointCloud *tmp = new PointCloud();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -882,16 +881,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setPointCloud(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -901,14 +900,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         Nurbs *tmp = new Nurbs();
 
         tmp->mConfig = mConfig;
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
         tmp->isNominal = nominal;
         tmp->isCommon = fae.common;
 
         if(nominal){
             tmp->myNominalCoordSys = fae.nominalSystem;
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -917,16 +916,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setNurbs(tmp);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -935,14 +934,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
     case Configuration::eStationFeature:{
         Station *tmp = new Station(name);
 
-        tmp->group = fae.group;
+        tmp->setGroupName(fae.group);
 
         tmp->position->mConfig = mConfig;
         tmp->position->isNominal = nominal;
         tmp->position->isCommon = fae.common;
 
         if(nominal){
-            tmp->isSolved = true;
+            tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
         }
@@ -951,18 +950,18 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setStation(tmp);
 
         if(nominal){
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
-                    stations->append(fw->getStation());
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
+                    //stations->append(fw->getStation());
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{
-            features->append(fw);
-            stations->append(fw->getStation());
+            OiFeatureState::addFeature(fw);
+            //stations->append(fw->getStation());
             checkForNominals(fw);
         }
 
@@ -971,44 +970,43 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
     case Configuration::eCoordinateSystemFeature:{
         CoordinateSystem *tmp = new CoordinateSystem();
 
-        tmp->name = name;
-        tmp->group = fae.group;
+        tmp->setFeatureName(name);
+        tmp->setGroupName(fae.group);
 
         if(functionValid){ tmp->addFunction(defaultFunction); }
 
         FeatureWrapper *fw = new FeatureWrapper();
         fw->setCoordinateSystem(tmp);
 
-        features->append(fw);
-        coordSys->append(fw->getCoordinateSystem());
+        OiFeatureState::addFeature(fw);
+        //coordSys->append(fw->getCoordinateSystem());
 
         break;
     }
     case Configuration::eTrafoParamFeature:{
         TrafoParam *trafopara = new TrafoParam();
 
-        trafopara->name = name;
-        trafopara->isSolved = false;
-        trafopara->from = fae.startSystem;
-        trafopara->to = fae.destSystem;
-        trafopara->isMovement = fae.isMovement;
+        trafopara->setFeatureName(name);
+        trafopara->setIsSolved(false);
+        trafopara->setCoordinateSystems(fae.startSystem, fae.destSystem);
+        trafopara->setIsMovement(fae.isMovement);
 
         if(functionValid){ trafopara->addFunction(defaultFunction); }
 
-        for(int i=0; i<coordSys->size();i++){
-            if(coordSys->at(i) == fae.startSystem){
-                coordSys->at(i)->trafoParams.append(trafopara);
+        for(int i=0; i<OiFeatureState::getCoordinateSystems().size();i++){
+            if(OiFeatureState::getCoordinateSystems().at(i) == fae.startSystem){
+                OiFeatureState::getCoordinateSystems().at(i)->addTransformationParameter(trafopara);
             }
-            if(coordSys->at(i) == fae.destSystem){
-                coordSys->at(i)->trafoParams.append(trafopara);
+            if(OiFeatureState::getCoordinateSystems().at(i) == fae.destSystem){
+                OiFeatureState::getCoordinateSystems().at(i)->addTransformationParameter(trafopara);
             }
         }
-        for(int i=0; i<stations->size();i++){
-            if(stations->at(i)->coordSys == fae.startSystem){
-                stations->at(i)->coordSys->trafoParams.append(trafopara);
+        for(int i=0; i<OiFeatureState::getStations().size();i++){
+            if(OiFeatureState::getStations().at(i)->coordSys == fae.startSystem){
+                OiFeatureState::getStations().at(i)->coordSys->addTransformationParameter(trafopara);
             }
-            if(stations->at(i)->coordSys == fae.destSystem){
-                stations->at(i)->coordSys->trafoParams.append(trafopara);
+            if(OiFeatureState::getStations().at(i)->coordSys == fae.destSystem){
+                OiFeatureState::getStations().at(i)->coordSys->addTransformationParameter(trafopara);
             }
         }
 
@@ -1016,21 +1014,21 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         FeatureWrapper *fw = new FeatureWrapper();
         fw->setTrafoParam(trafopara);
 
-        features->append(fw);
+        OiFeatureState::addFeature(fw);
         break;
     }
     case Configuration::eScalarentityAngleFeature:{
         ScalarEntityAngle *tmpSEAngle = new ScalarEntityAngle();
 
         tmpSEAngle->mConfig = mConfig;
-        tmpSEAngle->name = name;
-        tmpSEAngle->group = fae.group;
+        tmpSEAngle->setFeatureName(name);
+        tmpSEAngle->setGroupName(fae.group);
         tmpSEAngle->isNominal = nominal;
         tmpSEAngle->isCommon = fae.common;
 
         if(nominal){
             tmpSEAngle->myNominalCoordSys = fae.nominalSystem;
-            tmpSEAngle->isSolved = true;
+            tmpSEAngle->setIsSolved(true);
         }else{
             if(functionValid){ tmpSEAngle->addFunction(defaultFunction); }
         }
@@ -1039,16 +1037,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setScalarEntityAngle(tmpSEAngle);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -1058,14 +1056,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         ScalarEntityDistance *tmpSEDistance = new ScalarEntityDistance();
 
         tmpSEDistance->mConfig = mConfig;
-        tmpSEDistance->name = name;
-        tmpSEDistance->group = fae.group;
+        tmpSEDistance->setFeatureName(name);
+        tmpSEDistance->setGroupName(fae.group);
         tmpSEDistance->isNominal = nominal;
         tmpSEDistance->isCommon = fae.common;
 
         if(nominal){
             tmpSEDistance->myNominalCoordSys = fae.nominalSystem;
-            tmpSEDistance->isSolved = true;
+            tmpSEDistance->setIsSolved(true);
         }else{
             if(functionValid){ tmpSEDistance->addFunction(defaultFunction); }
         }
@@ -1074,16 +1072,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setScalarEntityDistance(tmpSEDistance);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
         break;
@@ -1092,14 +1090,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         ScalarEntityTemperature *tmpSETemperature = new ScalarEntityTemperature();
 
         tmpSETemperature->mConfig = mConfig;
-        tmpSETemperature->name = name;
-        tmpSETemperature->group = fae.group;
+        tmpSETemperature->setFeatureName(name);
+        tmpSETemperature->setGroupName(fae.group);
         tmpSETemperature->isNominal = nominal;
         tmpSETemperature->isCommon = fae.common;
 
         if(nominal){
             tmpSETemperature->myNominalCoordSys = fae.nominalSystem;
-            tmpSETemperature->isSolved = true;
+            tmpSETemperature->setIsSolved(true);
         }else{
             if(functionValid){ tmpSETemperature->addFunction(defaultFunction); }
         }
@@ -1108,16 +1106,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setScalarEntityTemperature(tmpSETemperature);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -1127,14 +1125,14 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         ScalarEntityMeasurementSeries *tmpSEMSeries = new ScalarEntityMeasurementSeries();
 
         tmpSEMSeries->mConfig = mConfig;
-        tmpSEMSeries->name = name;
-        tmpSEMSeries->group = fae.group;
+        tmpSEMSeries->setFeatureName(name);
+        tmpSEMSeries->setGroupName(fae.group);
         tmpSEMSeries->isNominal = nominal;
         tmpSEMSeries->isCommon = fae.common;
 
         if(nominal){
             tmpSEMSeries->myNominalCoordSys = fae.nominalSystem;
-            tmpSEMSeries->isSolved = true;
+            tmpSEMSeries->setIsSolved(true);
         }else{
             if(functionValid){ tmpSEMSeries->addFunction(defaultFunction); }
         }
@@ -1143,16 +1141,16 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         fw->setScalarEntityMeasurementSeries(tmpSEMSeries);
 
         if(nominal){ //if nominal feature
-            for(int i=0; i< coordSys->size();i++){
-                if(coordSys->at(i) == fae.nominalSystem){
-                    coordSys->at(i)->nominals.append(fw->getGeometry());
-                    features->append(fw);
+            for(int i=0; i< OiFeatureState::getCoordinateSystems().size();i++){
+                if(OiFeatureState::getCoordinateSystems().at(i) == fae.nominalSystem){
+                    //OiFeatureState::getCoordinateSystems().at(i)->nominals.append(fw->getGeometry());
+                    OiFeatureState::addFeature(fw);
                     break;
                 }
             }
             addNominalToActual(fw);
         }else{ //if no nominal feature
-            features->append(fw);
+            OiFeatureState::addFeature(fw);
             checkForNominals(fw);
         }
 
@@ -1171,7 +1169,7 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
  */
 TrafoParam* FeatureUpdater::findTrafoParam(CoordinateSystem *searchSystem, QList<TrafoParam *> trafoParams){
     foreach(TrafoParam *tp, trafoParams){
-        if(tp->to != NULL && tp->to == searchSystem){
+        if(tp->getDestinationSystem() != NULL && tp->getDestinationSystem() == searchSystem){
             return tp;
         }
     }
@@ -1191,60 +1189,60 @@ void FeatureUpdater::fillTrafoParamFunctionNN(SystemTransformation *function, Tr
     //add all points
     foreach(Point *p, function->getPoints()){
         Point cpyP(*p);
-        cpyP.isSolved = true;
-        if(p->isNominal && p->myNominalCoordSys == tp->from){
+        cpyP.setIsSolved(true);
+        if(p->isNominal && p->myNominalCoordSys == tp->getStartSystem()){
             mySorter.addLocPoint(cpyP);
-        }else if(p->isNominal && p->myNominalCoordSys == tp->to){
+        }else if(p->isNominal && p->myNominalCoordSys == tp->getDestinationSystem()){
             mySorter.addRefPoint(cpyP);
         }
     }
     //add all lines
     foreach(Line *l, function->getLines()){
         Line cpyL(*l);
-        cpyL.isSolved = true;
-        if(l->isNominal && l->myNominalCoordSys == tp->from){
+        cpyL.setIsSolved(true);
+        if(l->isNominal && l->myNominalCoordSys == tp->getStartSystem()){
             mySorter.addLocLine(cpyL);
-        }else if(l->isNominal && l->myNominalCoordSys == tp->to){
+        }else if(l->isNominal && l->myNominalCoordSys == tp->getDestinationSystem()){
             mySorter.addRefLine(cpyL);
         }
     }
     //add all planes
     foreach(Plane *p, function->getPlanes()){
         Plane cpyP(*p);
-        cpyP.isSolved = true;
-        if(p->isNominal && p->myNominalCoordSys == tp->from){
+        cpyP.setIsSolved(true);
+        if(p->isNominal && p->myNominalCoordSys == tp->getStartSystem()){
             mySorter.addLocPlane(cpyP);
-        }else if(p->isNominal && p->myNominalCoordSys == tp->to){
+        }else if(p->isNominal && p->myNominalCoordSys == tp->getDestinationSystem()){
             mySorter.addRefPlane(cpyP);
         }
     }
     //add all spheres
     foreach(Sphere *s, function->getSpheres()){
         Sphere cpyS(*s);
-        cpyS.isSolved = true;
-        if(s->isNominal && s->myNominalCoordSys == tp->from){
+        cpyS.setIsSolved(true);
+        if(s->isNominal && s->myNominalCoordSys == tp->getStartSystem()){
             mySorter.addLocSphere(cpyS);
-        }else if(s->isNominal && s->myNominalCoordSys == tp->to){
+        }else if(s->isNominal && s->myNominalCoordSys == tp->getDestinationSystem()){
             mySorter.addRefSphere(cpyS);
         }
     }
     //add all scalar entity distances
     foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
         ScalarEntityDistance cpyS(*s);
-        cpyS.isSolved = true;
-        if(s->isNominal && s->myNominalCoordSys == tp->from){
+        cpyS.setIsSolved(true);
+        if(s->isNominal && s->myNominalCoordSys == tp->getStartSystem()){
             mySorter.addLocScalarEntityDistance(cpyS);
-        }else if(s->isNominal && s->myNominalCoordSys == tp->to){
+        }else if(s->isNominal && s->myNominalCoordSys == tp->getDestinationSystem()){
             mySorter.addRefScalarEntityDistance(cpyS);
         }
     }
     //add all scalar entity angles
     foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
         ScalarEntityAngle cpyS(*s);
-        cpyS.isSolved = true;
-        if(s->isNominal && s->myNominalCoordSys == tp->from){
+        cpyS.setIsSolved(true);
+        if(s->isNominal && s->myNominalCoordSys == tp->getStartSystem()){
             mySorter.addLocScalarEntityAngle(cpyS);
-        }else if(s->isNominal && s->myNominalCoordSys == tp->to){
+        }else if(s->isNominal && s->myNominalCoordSys == tp->getDestinationSystem()){
             mySorter.addRefScalarEntityAngle(cpyS);
         }
     }
@@ -1276,18 +1274,18 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
 
     CoordinateSystem *actualSystem = NULL;
     CoordinateSystem *nominalSystem = NULL;
-    if(tp->from->nominals.size() == 0){ //if "from" system is actual
-        actualSystem = tp->from;
-        nominalSystem = tp->to;
-    }else if(tp->to->nominals.size() == 0){ //if "to" system is actual
-        actualSystem = tp->to;
-        nominalSystem = tp->from;
+    if(tp->getStartSystem()->getNominals().size() == 0){ //if "from" system is actual
+        actualSystem = tp->getStartSystem();
+        nominalSystem = tp->getDestinationSystem();
+    }else if(tp->getDestinationSystem()->getNominals().size() == 0){ //if "to" system is actual
+        actualSystem = tp->getDestinationSystem();
+        nominalSystem = tp->getStartSystem();
     }
 
     if(actualSystem != NULL && nominalSystem != NULL){
 
         //if coord sys needs to be switched
-        if(actualSystem != activeCoordinateSystem){
+        if(actualSystem->getIsActiveCoordinateSystem()){
             this->switchCoordinateSystemWithoutTransformation(actualSystem);
         }
 
@@ -1295,9 +1293,9 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
         foreach(Point *p, function->getPoints()){
             if(p->isNominal && p->myNominalCoordSys == nominalSystem){
                 Point cpyP(*p);
-                cpyP.isSolved = true;
+                cpyP.setIsSolved(true);
                 mySorter.addLocPoint(cpyP);
-            }else if(!p->isNominal && p->isSolved){
+            }else if(!p->isNominal && p->getIsSolved()){
                 mySorter.addRefPoint(Point(*p));
             }
         }
@@ -1305,9 +1303,9 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
         foreach(Line *l, function->getLines()){
             if(l->isNominal && l->myNominalCoordSys == nominalSystem){
                 Line cpyL(*l);
-                cpyL.isSolved = true;
+                cpyL.setIsSolved(true);
                 mySorter.addLocLine(cpyL);
-            }else if(!l->isNominal && l->isSolved){
+            }else if(!l->isNominal && l->getIsSolved()){
                 mySorter.addRefLine(Line(*l));
             }
         }
@@ -1315,9 +1313,9 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
         foreach(Plane *p, function->getPlanes()){
             if(p->isNominal && p->myNominalCoordSys == nominalSystem){
                 Plane cpyP(*p);
-                cpyP.isSolved = true;
+                cpyP.setIsSolved(true);
                 mySorter.addLocPlane(cpyP);
-            }else if(!p->isNominal && p->isSolved){
+            }else if(!p->isNominal && p->getIsSolved()){
                 mySorter.addRefPlane(Plane(*p));
             }
         }
@@ -1325,9 +1323,9 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
         foreach(Sphere *s, function->getSpheres()){
             if(s->isNominal && s->myNominalCoordSys == nominalSystem){
                 Sphere cpyS(*s);
-                cpyS.isSolved = true;
+                cpyS.setIsSolved(true);
                 mySorter.addLocSphere(cpyS);
-            }else if(!s->isNominal && s->isSolved){
+            }else if(!s->isNominal && s->getIsSolved()){
                 mySorter.addRefSphere(Sphere(*s));
             }
         }
@@ -1335,9 +1333,9 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
         foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
             if(s->isNominal && s->myNominalCoordSys == nominalSystem){
                 ScalarEntityDistance cpyS(*s);
-                cpyS.isSolved = true;
+                cpyS.setIsSolved(true);
                 mySorter.addLocScalarEntityDistance(cpyS);
-            }else if(!s->isNominal && s->isSolved){
+            }else if(!s->isNominal && s->getIsSolved()){
                 mySorter.addRefScalarEntityDistance(ScalarEntityDistance(*s));
             }
         }
@@ -1345,15 +1343,15 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
         foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
             if(s->isNominal && s->myNominalCoordSys == nominalSystem){
                 ScalarEntityAngle cpyS(*s);
-                cpyS.isSolved = true;
+                cpyS.setIsSolved(true);
                 mySorter.addLocScalarEntityAngle(cpyS);
-            }else if(!s->isNominal && s->isSolved){
+            }else if(!s->isNominal && s->getIsSolved()){
                 mySorter.addRefScalarEntityAngle(ScalarEntityAngle(*s));
             }
         }
 
         //add sorted lists to the function
-        if(tp->from->nominals.size() > 0){ //if "from" system is nominal
+        if(tp->getStartSystem()->getNominals().size() > 0){ //if "from" system is nominal
             function->points_startSystem = mySorter.getLocPoints();
             function->points_targetSystem = mySorter.getRefPoints();
             function->lines_startSystem = mySorter.getLocLines();
@@ -1366,7 +1364,7 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
             function->scalarEntityAngles_targetSystem = mySorter.getRefScalarEntityAngles();
             function->scalarEntityDistances_startSystem = mySorter.getLocScalarEntityDistances();
             function->scalarEntityDistances_targetSystem = mySorter.getRefScalarEntityDistances();
-        }else if(tp->to->nominals.size() > 0){ //if "to" system is nominal
+        }else if(tp->getDestinationSystem()->getNominals().size() > 0){ //if "to" system is nominal
             function->points_startSystem = mySorter.getRefPoints();
             function->points_targetSystem = mySorter.getLocPoints();
             function->lines_startSystem = mySorter.getRefLines();
@@ -1382,8 +1380,8 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
         }
 
         //if coord sys needs to be re-switched
-        if(actualSystem != activeCoordinateSystem){
-            this->switchCoordinateSystem(activeCoordinateSystem);
+        if(!actualSystem->getIsActiveCoordinateSystem()){
+            this->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
         }
     }
 }
@@ -1399,83 +1397,83 @@ void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, Tr
     SortListByName mySorter;
 
     //if coord sys needs to be switched to "from" system
-    if(tp->from != activeCoordinateSystem){
-        this->switchCoordinateSystemWithoutTransformation(tp->from);
+    if(!tp->getStartSystem()->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystemWithoutTransformation(tp->getStartSystem());
     }
 
     //add all points
     foreach(Point *p, function->getPoints()){
-        if(!p->isNominal && p->isSolved){
+        if(!p->isNominal && p->getIsSolved()){
             mySorter.addLocPoint(Point(*p));
         }
     }
     //add all lines
     foreach(Line *l, function->getLines()){
-        if(!l->isNominal && l->isSolved){
+        if(!l->isNominal && l->getIsSolved()){
             mySorter.addLocLine(Line(*l));
         }
     }
     //add all planes
     foreach(Plane *p, function->getPlanes()){
-        if(!p->isNominal && p->isSolved){
+        if(!p->isNominal && p->getIsSolved()){
             mySorter.addLocPlane(Plane(*p));
         }
     }
     //add all spheres
     foreach(Sphere *s, function->getSpheres()){
-        if(!s->isNominal && s->isSolved){
+        if(!s->isNominal && s->getIsSolved()){
             mySorter.addLocSphere(Sphere(*s));
         }
     }
     //add all scalar entity distances
     foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
-        if(!s->isNominal && s->isSolved){
+        if(!s->isNominal && s->getIsSolved()){
             mySorter.addLocScalarEntityDistance(ScalarEntityDistance(*s));
         }
     }
     //add all scalar entity angles
     foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
-        if(!s->isNominal && s->isSolved){
+        if(!s->isNominal && s->getIsSolved()){
             mySorter.addLocScalarEntityAngle(ScalarEntityAngle(*s));
         }
     }
 
     //switch to "to" system
-    this->switchCoordinateSystemWithoutTransformation(tp->to);
+    this->switchCoordinateSystemWithoutTransformation(tp->getDestinationSystem());
 
     //add all points
     foreach(Point *p, function->getPoints()){
-        if(!p->isNominal && p->isSolved){
+        if(!p->isNominal && p->getIsSolved()){
             mySorter.addRefPoint(Point(*p));
         }
     }
     //add all lines
     foreach(Line *l, function->getLines()){
-        if(!l->isNominal && l->isSolved){
+        if(!l->isNominal && l->getIsSolved()){
             mySorter.addRefLine(Line(*l));
         }
     }
     //add all planes
     foreach(Plane *p, function->getPlanes()){
-        if(!p->isNominal && p->isSolved){
+        if(!p->isNominal && p->getIsSolved()){
             mySorter.addRefPlane(Plane(*p));
         }
     }
     //add all spheres
     foreach(Sphere *s, function->getSpheres()){
-        if(!s->isNominal && s->isSolved){
+        if(!s->isNominal && s->getIsSolved()){
             mySorter.addRefSphere(Sphere(*s));
         }
     }
     //add all scalar entity distances
     foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
-        if(!s->isNominal && s->isSolved){
+        if(!s->isNominal && s->getIsSolved()){
             mySorter.addRefScalarEntityDistance(ScalarEntityDistance(*s));
         }
     }
     //add all scalar entity angles
     foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
-        if(!s->isNominal && s->isSolved){
+        if(!s->isNominal && s->getIsSolved()){
             mySorter.addRefScalarEntityAngle(ScalarEntityAngle(*s));
         }
     }
@@ -1495,8 +1493,8 @@ void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, Tr
     function->scalarEntityDistances_targetSystem = mySorter.getRefScalarEntityDistances();
 
     //if coord sys needs to be re-switched
-    if(tp->to != activeCoordinateSystem){
-        this->switchCoordinateSystem(activeCoordinateSystem);
+    if(!tp->getDestinationSystem()->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
     }
 }
 
@@ -1506,14 +1504,14 @@ void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, Tr
  * \param myFeature
  * \return
  */
-bool FeatureUpdater::deleteFeature(FeatureWrapper *myFeatureWrapper){
+/*bool FeatureUpdater::deleteFeature(FeatureWrapper *myFeatureWrapper){
     if(myFeatureWrapper != NULL && myFeatureWrapper->getFeature() != NULL){
         Feature *myFeature = myFeatureWrapper->getFeature();
         delete myFeature;
         return true;
     }
     return false;
-}
+}*/
 
 /*!
  * \brief FeatureUpdater::getFunctionFromComboValue

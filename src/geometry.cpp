@@ -4,7 +4,7 @@
 #include "observation.h"
 #include "station.h"
 
-Geometry::Geometry() : myActual(NULL), myNominalCoordSys(NULL){
+Geometry::Geometry(QObject *parent) : Feature(parent), myActual(NULL), myNominalCoordSys(NULL){
 
 }
 
@@ -29,7 +29,7 @@ Geometry::~Geometry(){
 
         //delete this geometry from list of nominals in myNominalCoordSys
         if(this->myNominalCoordSys != NULL){
-            this->myNominalCoordSys->nominals.removeOne(this);
+            this->myNominalCoordSys->removeNominal(this);
         }
     }else{
         //delete observations that only belong to this geometry
@@ -38,7 +38,7 @@ Geometry::~Geometry(){
             if(myObs->myTargetGeometries.size() == 1){
                 Station *myStation = myObs->myStation;
                 if(myStation != NULL && myStation->coordSys != NULL){
-                    myStation->coordSys->observations.removeOne(myObs);
+                    //myStation->coordSys->getObservations().removeOne(myObs);
                 }
             }
             delete myObs;
@@ -83,7 +83,7 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
     if(this->myNominalCoordSys != NULL){
         stream.writeStartElement("member");
         stream.writeAttribute("type", "coordinatesystem");
-        stream.writeAttribute("ref", QString::number(this->myNominalCoordSys->id));
+        stream.writeAttribute("ref", QString::number(this->myNominalCoordSys->getId()));
         stream.writeEndElement();
     }
 

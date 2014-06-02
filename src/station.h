@@ -20,7 +20,6 @@ class Reading;
 class CoordinateSystem;
 class Sensor;
 
-
 /*!
  * \brief The Station class
  * The station contains a list of all readings made from this station, the coordinate system that belongs
@@ -28,7 +27,7 @@ class Sensor;
  * a sensor action  of the sensorcontroller(slot). The sensorcontroller runs on a seperate
  * thread (stationThread). If the sensor action is completed, the actionFinished signal will be emitted.
  */
-class Station : public QObject, public Feature
+class Station : public Feature
 {
     Q_OBJECT
 public:
@@ -36,6 +35,9 @@ public:
     //constructor
     Station(QString name);
     virtual ~Station();
+
+    bool getIsActiveStation();
+    bool setActiveStationState(bool isActiveStation);
 
     Point *position;
 
@@ -67,7 +69,6 @@ signals:
     void stopReadingStream();
     void stopSensorStatsStream();
 
-
     //sensor actions (station signals)
     void startMove(double, double, double, bool);
     void startMove(double, double, double);
@@ -81,6 +82,8 @@ signals:
     void startSelfDefinedAction(QString s);
 
     void sendToConsole(QString);
+
+    void activeStationChanged(int stationId);
 
 public slots:
 
@@ -130,6 +133,8 @@ private slots:
 private:
     // thread for the SensorControl
     QThread stationThread;
+
+    bool isActiveStation;
 
  public:
     void recalc();

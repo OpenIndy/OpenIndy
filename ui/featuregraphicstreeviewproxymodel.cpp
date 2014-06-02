@@ -1,7 +1,7 @@
 #include "featuregraphicstreeviewproxymodel.h"
 
 FeatureGraphicsTreeViewProxyModel::FeatureGraphicsTreeViewProxyModel(QObject *parent) :
-    QSortFilterProxyModel(parent), activeFeature(NULL)
+    QSortFilterProxyModel(parent)
 {
 }
 
@@ -24,14 +24,6 @@ QVariant FeatureGraphicsTreeViewProxyModel::headerData(int section, Qt::Orientat
 }
 
 /*!
- * \brief FeatureGraphicsTreeViewProxyModel::setActiveFeature
- * \param feature
- */
-void FeatureGraphicsTreeViewProxyModel::setActiveFeature(FeatureWrapper *feature){
-    this->activeFeature = feature;
-}
-
-/*!
  * \brief FeatureGraphicsTreeViewProxyModel::setHeader
  * \param header
  */
@@ -51,7 +43,7 @@ QVariant FeatureGraphicsTreeViewProxyModel::data(const QModelIndex &index, int r
         if(source_index.isValid()){
             FeatureTreeItem *item = static_cast<FeatureTreeItem*>(source_index.internalPointer());
             if(item != NULL && item->getIsFeature()){
-                if(this->activeFeature != NULL && item->getFeature()->getFeature() == activeFeature->getFeature()){
+                if(OiFeatureState::getActiveFeature() != NULL && item->getFeature()->getFeature() == OiFeatureState::getActiveFeature()->getFeature()){
                     return QColor(Qt::green);
                 }
                 if(item->getFeature()->getStation() != NULL){

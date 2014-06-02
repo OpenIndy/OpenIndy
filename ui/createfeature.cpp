@@ -5,9 +5,8 @@
  * \brief CreateFeature constructor. Initiates the gui.
  * \param parent
  */
-CreateFeature::CreateFeature(QList<FeatureWrapper*> &features, QWidget *parent) :
-    QDialog(parent),featureList(features),
-    ui(new Ui::CreateFeature)
+CreateFeature::CreateFeature(QWidget *parent) :
+    QDialog(parent), ui(new Ui::CreateFeature)
 {
     ui->setupUi(this);
     initGUI();
@@ -330,10 +329,10 @@ void CreateFeature::on_toolButton_create_clicked()
 
             if(isNominal){
 
-                for(int k=0; k<this->featureList.size();k++){
-                    if(this->featureList.at(k)->getCoordinateSystem() != NULL &&
-                            ui->comboBox_nominalSystem->currentText() == this->featureList.at(k)->getCoordinateSystem()->name){
-                        nominalSystem = this->featureList.at(k)->getCoordinateSystem();
+                for(int k=0; k<OiFeatureState::getFeatureCount();k++){
+                    if(OiFeatureState::getFeatures().at(k)->getCoordinateSystem() != NULL &&
+                            ui->comboBox_nominalSystem->currentText() == OiFeatureState::getFeatures().at(k)->getCoordinateSystem()->getFeatureName()){
+                        nominalSystem = OiFeatureState::getFeatures().at(k)->getCoordinateSystem();
                     }
                 }
             }
@@ -357,22 +356,22 @@ void CreateFeature::on_toolButton_create_clicked()
             //if(ui->comboBox_destinationSystem->currentText() != ui->comboBox_startSystem->currentText()){
             //allow multiple parameter for same direction
             //also parameter from system to itself (neccessary for temperature compensation) !
-                for(int i=0;i<this->featureList.size();i++){
-                    if(featureList.at(i)->getCoordinateSystem() != NULL &&
-                            ui->comboBox_destinationSystem->currentText() == featureList.at(i)->getCoordinateSystem()->name){
-                        to = featureList.at(i)->getCoordinateSystem();
+                for(int i=0;i<OiFeatureState::getFeatureCount();i++){
+                    if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL &&
+                            ui->comboBox_destinationSystem->currentText() == OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName()){
+                        to = OiFeatureState::getFeatures().at(i)->getCoordinateSystem();
                     }
-                    if(featureList.at(i)->getStation() != NULL &&
-                            ui->comboBox_destinationSystem->currentText() == featureList.at(i)->getStation()->name){
-                        to = featureList.at(i)->getStation()->coordSys;
+                    if(OiFeatureState::getFeatures().at(i)->getStation() != NULL &&
+                            ui->comboBox_destinationSystem->currentText() == OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName()){
+                        to = OiFeatureState::getFeatures().at(i)->getStation()->coordSys;
                     }
-                    if(featureList.at(i)->getCoordinateSystem() != NULL &&
-                            ui->comboBox_startSystem->currentText() == featureList.at(i)->getCoordinateSystem()->name){
-                        from = featureList.at(i)->getCoordinateSystem();
+                    if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL &&
+                            ui->comboBox_startSystem->currentText() == OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName()){
+                        from = OiFeatureState::getFeatures().at(i)->getCoordinateSystem();
                     }
-                    if(featureList.at(i)->getStation() != NULL &&
-                            ui->comboBox_startSystem->currentText() == featureList.at(i)->getStation()->name){
-                        from = featureList.at(i)->getStation()->coordSys;
+                    if(OiFeatureState::getFeatures().at(i)->getStation() != NULL &&
+                            ui->comboBox_startSystem->currentText() == OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName()){
+                        from = OiFeatureState::getFeatures().at(i)->getStation()->coordSys;
                     }
                 }
                 if(isMovement){
@@ -424,16 +423,16 @@ void CreateFeature::initGUI(){
     ui->lineEdit_name->setText("");
     ui->spinBox_count->setValue(1);
 
-    if(featureList.size() !=0){
-        for(int i=0; i<featureList.size();i++){
-            if(featureList.at(i)->getCoordinateSystem() != NULL){
-                ui->comboBox_destinationSystem->addItem(featureList.at(i)->getCoordinateSystem()->name);
-                ui->comboBox_startSystem->addItem(featureList.at(i)->getCoordinateSystem()->name);
-                ui->comboBox_nominalSystem->addItem(featureList.at(i)->getCoordinateSystem()->name);
+    if(OiFeatureState::getFeatures().size() !=0){
+        for(int i=0; i<OiFeatureState::getFeatures().size();i++){
+            if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL){
+                ui->comboBox_destinationSystem->addItem(OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
+                ui->comboBox_startSystem->addItem(OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
+                ui->comboBox_nominalSystem->addItem(OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
             }
-            if(featureList.at(i)->getStation() != NULL){
-                ui->comboBox_destinationSystem->addItem(featureList.at(i)->getStation()->name);
-                ui->comboBox_startSystem->addItem(featureList.at(i)->getStation()->name);
+            if(OiFeatureState::getFeatures().at(i)->getStation() != NULL){
+                ui->comboBox_destinationSystem->addItem(OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName());
+                ui->comboBox_startSystem->addItem(OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName());
 
             }
         }

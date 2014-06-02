@@ -203,9 +203,9 @@ void UsedElementsModel::removeElement(FeatureTreeItem *item){
         int id = -1;
         //get id of the element in item
         if(item->getIsFeature() && item->getFeature() != NULL && item->getFeature()->getFeature() != NULL){
-            id = item->getFeature()->getFeature()->id;
+            id = item->getFeature()->getFeature()->getId();
         }else if(item->getIsObservation() && item->getObservation() != NULL){
-            id = item->getObservation()->id;
+            id = item->getObservation()->getId();
         }else if(item->getIsReading() && item->getReading() != NULL){
             id = item->getReading()->id;
         }
@@ -215,12 +215,12 @@ void UsedElementsModel::removeElement(FeatureTreeItem *item){
             for(int i = 0; i < this->items.size(); i++){
                 FeatureTreeItem *tmpItem = this->items.at(i);
                 if(tmpItem->getFeature() != NULL && tmpItem->getFeature()->getFeature() != NULL){
-                    if(id == tmpItem->getFeature()->getFeature()->id){
+                    if(id == tmpItem->getFeature()->getFeature()->getId()){
                         index = i;
                         break;
                     }
                 }else if(tmpItem->getObservation() != NULL){
-                    if(id == tmpItem->getObservation()->id){
+                    if(id == tmpItem->getObservation()->getId()){
                         index = i;
                         break;
                     }

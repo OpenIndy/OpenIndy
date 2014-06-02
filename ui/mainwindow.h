@@ -46,6 +46,8 @@
 #include "featureattributesexchange.h"
 #include "guiconfiguration.h"
 
+#include "oifeaturestate.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -117,7 +119,6 @@ public:
     QAction *actionCompensation;
     QLabel *labelSensorControlName;
 
-
     //seperators create feature
     QAction *cFsep;
     QAction *cFsep1;
@@ -144,10 +145,10 @@ public:
 
 signals:
 
-    void sendActiveNominalfeature(FeatureWrapper *anf);
+    //void sendActiveNominalfeature(FeatureWrapper *anf);
     void sendConfig(MeasurementConfig*);
     void sendFeatureType(Configuration::FeatureTypes);
-    void sendSelectedFeature(int);
+    void sendSelectedFeature(int featureIndex); //is emitted when a new active feature was selected by the user
     void sendCommandString(QString);
     void getAvailableFunctions();
     //TODO create a signal which will be emit every time if a new coordinate system was created and connect it to fillCoordSysComboBox()
@@ -275,6 +276,9 @@ private:
 
     QModelIndexList featuresToDelete;
     bool isTrafoParamSelected;
+
+    void setConnects();
+    void setModels();
 };
 
 #endif // MAINWINDOW_H

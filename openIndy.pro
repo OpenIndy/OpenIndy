@@ -79,6 +79,7 @@ SOURCES += \
     src/coordinatesystem.cpp \
     controller/console.cpp \
     src/configuration.cpp \
+    src/element.cpp \
     src/geometry/sphere.cpp \
     src/geometry/pointcloud.cpp \
     src/geometry/point.cpp \
@@ -116,7 +117,6 @@ SOURCES += \
     ui/importnominalgeometrydialog.cpp \
     ui/featuretreeviewmodel.cpp \
     ui/featuretreeitem.cpp \
-    ui/featureovserviewproxymodel.cpp \
     ui/availableelementstreeviewproxymodel.cpp \
     ui/trafoparamproxymodel.cpp \
     ui/nominaldatadialog.cpp \
@@ -153,7 +153,8 @@ SOURCES += \
     ui/plugininfowidget.cpp \
     controller/oifeaturestate.cpp \
     controller/trafocontroller.cpp \
-    controller/datalisthandler.cpp
+    controller/datalisthandler.cpp \
+    ui/featureoverviewproxymodel.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -235,7 +236,6 @@ HEADERS  += \
     ui/importnominalgeometrydialog.h \
     ui/featuretreeviewmodel.h \
     ui/featuretreeitem.h \
-    ui/featureovserviewproxymodel.h \
     ui/availableelementstreeviewproxymodel.h \
     ui/trafoparamproxymodel.h \
     ui/nominaldatadialog.h \
@@ -273,7 +273,8 @@ HEADERS  += \
     ui/plugininfowidget.h \
     controller/oifeaturestate.h \
     controller/trafocontroller.h \
-    controller/datalisthandler.h
+    controller/datalisthandler.h \
+    ui/featureoverviewproxymodel.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

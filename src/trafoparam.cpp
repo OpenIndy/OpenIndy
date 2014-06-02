@@ -4,7 +4,7 @@
 #include "statistic.h"
 #include "function.h"
 
-TrafoParam::TrafoParam() : homogenMatrix(4, 4), translation(3), rotation(3), scale(3), quaternion(4)
+TrafoParam::TrafoParam(QObject *parent) : Feature(parent), homogenMatrix(4, 4), translation(3), rotation(3), scale(3), quaternion(4)
 {
     this->id = Configuration::generateID();
     this->isUpdated = false;
@@ -17,14 +17,22 @@ TrafoParam::~TrafoParam(){
 
     //delete this trafo set in from system
     if(this->from != NULL){
-        this->from->trafoParams.removeOne(this);
+        this->from->removeTransformationParameter(this);
     }
 
     //delete this trafo set in to system
     if(this->to != NULL){
-        this->to->trafoParams.removeOne(this);
+        this->to->removeTransformationParameter(this);
     }
 
+}
+
+/*!
+ * \brief TrafoParam::getHomogenMatrix
+ * \return
+ */
+OiMat TrafoParam::getHomogenMatrix() const{
+    return this->homogenMatrix;
 }
 
 /*!
@@ -108,6 +116,173 @@ void TrafoParam::generateHomogenMatrix()
     tmpRotation.setAt(3,3,1.0);
 
     this->homogenMatrix = tmpTranslation*tmpScale*tmpRotation;
+
+    emit this->transformationParameterChanged(this->id);
+}
+
+/*!
+ * \brief TrafoParam::getTranslation
+ * \return
+ */
+OiVec TrafoParam::getTranslation() const{
+    return this->translation;
+}
+
+/*!
+ * \brief TrafoParam::setTranslation
+ * \param translation
+ */
+bool TrafoParam::setTranslation(OiVec translation){
+    if(translation.getSize() == 3){
+        this->translation = translation;
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief TrafoParam::getRotation
+ * \return
+ */
+OiVec TrafoParam::getRotation() const{
+    return this->rotation;
+}
+
+/*!
+ * \brief TrafoParam::setRotation
+ * \param rotation
+ */
+bool TrafoParam::setRotation(OiVec rotation){
+    if(rotation.getSize() == 3){
+        this->rotation = rotation;
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief TrafoParam::getScale
+ * \return
+ */
+OiVec TrafoParam::getScale() const{
+    return this->scale;
+}
+
+/*!
+ * \brief TrafoParam::setScale
+ * \param scale
+ * \return
+ */
+bool TrafoParam::setScale(OiVec scale){
+    if(scale.getSize() == 3){
+        this->scale = scale;
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief TrafoParam::getQuaternion
+ * \return
+ */
+OiVec TrafoParam::getQuaternion() const{
+    return this->quaternion;
+}
+
+/*!
+ * \brief TrafoParam::setQuaternion
+ * \param quaternion
+ * \return
+ */
+bool TrafoParam::setQuaternion(OiVec quaternion){
+    if(quaternion.getSize() == 4){
+        this->quaternion = quaternion;
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief TrafoParam::getStartSystem
+ * \return
+ */
+CoordinateSystem * const TrafoParam::getStartSystem() const{
+    return this->from;
+}
+
+/*!
+ * \brief TrafoParam::getDestinationSystem
+ * \return
+ */
+CoordinateSystem * const TrafoParam::getDestinationSystem() const{
+    return this->to;
+}
+
+/*!
+ * \brief TrafoParam::setCoordinateSystems
+ * \param from
+ * \param to
+ * \return
+ */
+bool TrafoParam::setCoordinateSystems(CoordinateSystem * const from, CoordinateSystem * const to){
+    if(from != NULL && to != NULL){
+        this->from = from;
+        this->to = to;
+        emit this->coordinateSystemsChanged(this->id);
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief TrafoParam::getIsUsed
+ * \return
+ */
+bool TrafoParam::getIsUsed() const{
+    return this->use;
+}
+
+/*!
+ * \brief TrafoParam::setIsUsed
+ * \param isUsed
+ */
+void TrafoParam::setIsUsed(bool isUsed){
+    this->use = isUsed;
+    emit this->isUsedChanged(this->id);
+}
+
+/*!
+ * \brief TrafoParam::getValidTime
+ * \return
+ */
+QDateTime TrafoParam::getValidTime(){
+    return this->validTime;
+}
+
+/*!
+ * \brief TrafoParam::setValidTime
+ * \param validTime
+ */
+void TrafoParam::setValidTime(QDateTime validTime){
+    this->validTime = validTime;
+    emit this->validTimeChanged(this->id);
+}
+
+/*!
+ * \brief TrafoParam::getIsMovement
+ * \return
+ */
+bool TrafoParam::getIsMovement(){
+    return this->isMovement;
+}
+
+/*!
+ * \brief TrafoParam::setIsMovement
+ * \param isMovement
+ */
+void TrafoParam::setIsMovement(bool isMovement){
+    this->isMovement = isMovement;
+    emit this->isMovementChanged(this->id);
 }
 
 bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
@@ -131,12 +306,12 @@ bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
 
     stream.writeStartElement("from");
     stream.writeAttribute("type", "coordinatesystem");
-    stream.writeAttribute("ref", QString::number(this->from->id));
+    stream.writeAttribute("ref", QString::number(this->from->getId()));
     stream.writeEndElement();
 
     stream.writeStartElement("to");
     stream.writeAttribute("type", "coordinatesystem");
-    stream.writeAttribute("ref", QString::number(this->to->id));
+    stream.writeAttribute("ref", QString::number(this->to->getId()));
     stream.writeEndElement();
 
 
@@ -242,7 +417,7 @@ ElementDependencies TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
 
                         if(toAttributes.hasAttribute("ref")){
                             CoordinateSystem *tmpCoord = new CoordinateSystem();
-                            tmpCoord->id = toAttributes.value("ref").toInt();
+                            tmpCoord->setId(toAttributes.value("ref").toInt());
                             this->to = tmpCoord;
                         }
 
@@ -293,11 +468,11 @@ ElementDependencies TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
 }
 
 QString TrafoParam::getDisplayStartSystem() const{
-    return this->from->name;
+    return this->from->getFeatureName();
 }
 
 QString TrafoParam::getDisplayDestinationSystem() const{
-    return this->to->name;
+    return this->to->getFeatureName();
 }
 
 QString TrafoParam::getDisplayTranslationX() const

@@ -5,6 +5,7 @@
 #include "observation.h"
 #include "datalisthandler.h"
 #include "function.h"
+#include "oifeaturestate.h"
 
 /*!
  * \brief The TrafoController class handles all transformations and corrections caused by movements (temperature compensation)
@@ -42,16 +43,7 @@ public slots:
 
 
 private:
-
     TrafoParam* findTrafoParam(CoordinateSystem *from, CoordinateSystem *to);
-
-    static QList<FeatureWrapper*> *features;
-    static FeatureWrapper *activeFeature;
-    static QList<CoordinateSystem*> *coordSys;
-    static QList<Station*> *stations;
-    static Station *activeStation;
-    static CoordinateSystem *activeCoordinateSystem;
-    static QMap<QString, int> *availableGroups;
     
 };
 

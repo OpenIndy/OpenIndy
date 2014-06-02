@@ -36,11 +36,11 @@ signals:
 public slots:
     void recalcFeature(Feature *f);
     void recalcTrafoParam(TrafoParam *tp);
-    void recalcFeatureSet(QList<FeatureWrapper*> featureSet);
+    void recalcFeatureSet();
     void switchCoordinateSystem(CoordinateSystem *to);
     TrafoParam* findTrafoParam(CoordinateSystem *searchSystem, QList<TrafoParam *> trafoParams);
 
-    bool deleteFeature(FeatureWrapper *myFeatureWrapper);
+    //bool deleteFeature(FeatureWrapper *myFeatureWrapper);
 
 private:
     void fillTrafoParamFunctionNN(SystemTransformation *function, TrafoParam *tp);

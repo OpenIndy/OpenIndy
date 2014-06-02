@@ -3,6 +3,10 @@
 #include "function.h"
 #include "featurewrapper.h"
 
+Feature::Feature(QObject *parent) : Element(parent), isActiveFeature(false), isSolved(false), isUpdated(false), isDrawn(false){
+
+}
+
 Feature::~Feature(){
 
     //check and update features which need this feature to recalc
@@ -67,6 +71,135 @@ Feature::~Feature(){
 }
 
 /*!
+ * \brief Feature::getFeatureName
+ * \return
+ */
+QString Feature::getFeatureName() const{
+    return this->name;
+}
+
+/*!
+ * \brief Feature::setFeatureName
+ * \param name
+ * \return
+ */
+bool Feature::setFeatureName(QString name){
+    this->name = name;
+    emit this->featureNameChanged(this->id);
+    return true;
+}
+
+/*!
+ * \brief Feature::getGroupName
+ * \return
+ */
+QString Feature::getGroupName() const{
+    return this->group;
+}
+
+/*!
+ * \brief Feature::setGroupName
+ * \param group
+ */
+void Feature::setGroupName(QString group){
+    this->group = group;
+    emit this->featureGroupChanged(this->id);
+}
+
+/*!
+ * \brief Feature::getComment
+ * \return
+ */
+QString Feature::getComment() const{
+    return this->comment;
+}
+
+/*!
+ * \brief Feature::setComment
+ * \param comment
+ */
+void Feature::setComment(QString comment){
+    this->comment = comment;
+    emit this->featureCommentChanged(this->id);
+}
+
+/*!
+ * \brief Feature::getIsUpdated
+ * \return
+ */
+bool Feature::getIsUpdated() const{
+    return this->isUpdated;
+}
+
+/*!
+ * \brief Feature::setIsUpdated
+ * \param isUpdated
+ */
+void Feature::setIsUpdated(bool isUpdated){
+    this->isUpdated = isUpdated;
+    emit this->featureIsUpdatedChanged(this->id);
+}
+
+/*!
+ * \brief Feature::getIsSolved
+ * \return
+ */
+bool Feature::getIsSolved() const{
+    return this->isSolved;
+}
+
+/*!
+ * \brief Feature::setIsSolved
+ * \param isSolved
+ */
+void Feature::setIsSolved(bool isSolved){
+    this->isSolved = isSolved;
+    emit this->featureIsSolvedChanged(this->id);
+}
+
+/*!
+ * \brief Feature::getDisplayColor
+ * \return
+ */
+Configuration::eColor Feature::getDisplayColor() const{
+    return displayColor;
+}
+
+/*!
+ * \brief Feature::setDisplayColor
+ * \param displayColor
+ */
+void Feature::setDisplayColor(Configuration::eColor displayColor){
+    this->displayColor = displayColor;
+    emit this->featureDisplayColorChanged(this->id);
+}
+
+/*!
+ * \brief Feature::getIsDrawn
+ * \return
+ */
+bool Feature::getIsDrawn() const{
+    return this->isDrawn;
+}
+
+/*!
+ * \brief Feature::setIsDrawn
+ * \param isDrawn
+ */
+void Feature::setIsDrawn(bool isDrawn){
+    this->isDrawn = isDrawn;
+    emit this->featureIsDrawnChanged(this->id);
+}
+
+/*!
+ * \brief Feature::getFunctions
+ * \return
+ */
+const QList<Function *> Feature::getFunctions() const{
+    return this->functionList;
+}
+
+/*!
  * \brief Feature::addFunction
  * \param f
  */
@@ -76,7 +209,291 @@ void Feature::addFunction(Function *f){
     }
 }
 
+/*!
+ * \brief Feature::removeFunction
+ * \param index
+ * \return
+ */
+bool Feature::removeFunction(int index){
+    try{
 
+        if(this->functionList.size() > index){
+            delete this->functionList.at(index);
+            this->functionList.removeAt(index);
+            return true;
+        }
+        return false;
+
+    }catch(exception &e){
+
+        return false;
+    }
+}
+
+/*!
+ * \brief Feature::getIsActive
+ * \return
+ */
+bool Feature::getIsActiveFeature() const{
+    return this->isActiveFeature;
+}
+
+/*!
+ * \brief Feature::setActiveState
+ * \param isActive
+ */
+void Feature::setActiveFeatureState(bool isActive){
+    if(this->isActiveFeature != isActive){
+        this->isActiveFeature = isActive;
+        emit this->featureIsActiveChanged(this->id);
+    }
+}
+
+/*!
+ * \brief Feature::getDisplayX
+ * \return
+ */
+QString Feature::getDisplayX() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayY
+ * \return
+ */
+QString Feature::getDisplayY() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayZ
+ * \return
+ */
+QString Feature::getDisplayZ() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayI
+ * \return
+ */
+QString Feature::getDisplayI() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayJ
+ * \return
+ */
+QString Feature::getDisplayJ() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayK
+ * \return
+ */
+QString Feature::getDisplayK() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayRadius
+ * \return
+ */
+QString Feature::getDisplayRadius() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayIsCommon
+ * \return
+ */
+QString Feature::getDisplayIsCommon() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayIsNominal
+ * \return
+ */
+QString Feature::getDisplayIsNominal() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayObs
+ * \return
+ */
+QString Feature::getDisplayObs() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplaySolved
+ * \return
+ */
+QString Feature::getDisplaySolved() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayMConfig
+ * \return
+ */
+QString Feature::getDisplayMConfig() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayStdDev
+ * \return
+ */
+QString Feature::getDisplayStdDev() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayScalarDistanceValue
+ * \return
+ */
+QString Feature::getDisplayScalarDistanceValue() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayScalarAngleValue
+ * \return
+ */
+QString Feature::getDisplayScalarAngleValue() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayStartSystem
+ * \return
+ */
+QString Feature::getDisplayStartSystem() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayDestinationSystem
+ * \return
+ */
+QString Feature::getDisplayDestinationSystem() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayTranslationX
+ * \return
+ */
+QString Feature::getDisplayTranslationX() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayTranslationY
+ * \return
+ */
+QString Feature::getDisplayTranslationY() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayTranslationZ
+ * \return
+ */
+QString Feature::getDisplayTranslationZ() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayScaleX
+ * \return
+ */
+QString Feature::getDisplayScaleX() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayScaleY
+ * \return
+ */
+QString Feature::getDisplayScaleY() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayScaleZ
+ * \return
+ */
+QString Feature::getDisplayScaleZ() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayRotationX
+ * \return
+ */
+QString Feature::getDisplayRotationX() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayRotationY
+ * \return
+ */
+QString Feature::getDisplayRotationY() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayRotationZ
+ * \return
+ */
+QString Feature::getDisplayRotationZ() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayScalarTemperatureValue
+ * \return
+ */
+QString Feature::getDisplayScalarTemperatureValue() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayScalarMeasurementSeriesValue
+ * \return
+ */
+QString Feature::getDisplayScalarMeasurementSeriesValue() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayUse
+ * \return
+ */
+QString Feature::getDisplayUse() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::getDisplayTime
+ * \return
+ */
+QString Feature::getDisplayTime() const{
+    return "-/-";
+}
+
+/*!
+ * \brief Feature::writeFeatureAttributes
+ * \param stream
+ * \return
+ */
 bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
 
     for(int k =0;k<this ->usedFor.size();k++){
@@ -213,5 +630,3 @@ bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies &d){
     }
 
 }
-
-

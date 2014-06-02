@@ -10,6 +10,7 @@
 #include <QStandardItemModel>
 #include <QDir>
 #include <QApplication>
+#include <QStringListModel>
 
 #include "console.h"
 #include "tablemodel.h"
@@ -36,7 +37,7 @@
 #include "scalarentitytemperature.h"
 #include "scalarentitymeasurementseries.h"
 
-#include "featureovserviewproxymodel.h"
+#include "featureoverviewproxymodel.h"
 #include "trafoparamproxymodel.h"
 #include "featuretreeitem.h"
 
@@ -72,12 +73,14 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = 0);
 
+    OiFeatureState *myFeatureState;
+
     MeasurementConfig *lastmConfig;
     TableModel *tblModel;
     Console *c;
     Configuration conf;
     QSqlQueryModel *pluginsModel;
-    FeatureOvserviewProxyModel *featureOverviewModel;
+    FeatureOverviewProxyModel *featureOverviewModel;
     QSqlQueryModel *neededElementsModel;
     TrafoParamProxyModel * trafoParamModel;
 
@@ -87,6 +90,8 @@ public:
     FeatureGraphicsTreeViewProxyModel *featureGraphicsModel; //model for treeview with features in graphics view with featureTreeViewModel as source model
     UsedElementsModel *usedElementsModel; //model for listview with elements that are used for a function
     PluginTreeViewModel *myPluginTreeViewModel; //model with all available plugins for plugin manager
+    QStringListModel *myFeatureGroupsModel; //model with all available groups
+    QStringListModel *myCoordinateSystemsModel; //model with coordinate systems
 
     QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
@@ -116,6 +121,8 @@ signals:
     void updateGeometryIcons(QStringList availableGeometries);
 
 public slots:
+    void setUpFeatureGroupsModel();
+    void setUpCoordinateSystemsModel();
 
     void getNominalValues(NominalAttributeExchange nominalValue);
     int checkActiveFeatureIndex(int current, int index);
@@ -146,7 +153,7 @@ public slots:
     void setSensorModel(Configuration::SensorTypes);
     void getSelectedPlugin(int index);
     void getTempSensor(int index);
-    void getSelectedFeature(int index);
+    void setSelectedFeature(int featureIndex);
     void receiveSensorConfiguration(SensorConfiguration *sc, bool connect);
     void receiveFunctionId(int id);
 
@@ -172,7 +179,7 @@ public slots:
 
     void deleteFeaturesCallback(bool);
 
-    void groupNameChanged(QString oldValue, QString newValue);
+    //void groupNameChanged(QString oldValue, QString newValue);
 
     void checkAvailablePlugins();
     bool checkPluginAvailability(Configuration::FeatureTypes typeOfFeature);
@@ -191,6 +198,10 @@ private:
     void changeFunctionTreeViewModel();
     void changeUsedElementsModel(int functionIndex, int elementIndex);
     bool checkCircleWarning(Feature *activeFeature, Feature *usedForActiveFeature);
+
+    void initModels();
+    void connectModels();
+    void createDefaultFeatures();
 
     FeatureUpdater myFeatureUpdater;
 

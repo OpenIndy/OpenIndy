@@ -94,21 +94,21 @@ void EditTrafoparamDialog::initGUI()
 
     ui->comboBox_displayedFunction->clear();
 
-    for(int i=0; i<this->selectedTrafoParam->getFeature()->functionList.size();i++){
-        ui->comboBox_displayedFunction->addItem(this->selectedTrafoParam->getFeature()->functionList.at(i)->getMetaData()->name);
+    for(int i=0; i<this->selectedTrafoParam->getFeature()->getFunctions().size();i++){
+        ui->comboBox_displayedFunction->addItem(this->selectedTrafoParam->getFeature()->getFunctions().at(i)->getMetaData()->name);
     }
 
-    this->setWindowTitle(QString("edit transformation parameter of: " + this->selectedTrafoParam->getFeature()->name));
+    this->setWindowTitle(QString("edit transformation parameter of: " + this->selectedTrafoParam->getFeature()->getFeatureName()));
 
-    ui->lineEdit_translationX->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->translation.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-    ui->lineEdit_translationY->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->translation.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-    ui->lineEdit_translationZ->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->translation.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-    ui->lineEdit_rotationX->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->rotation.getAt(0)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
-    ui->lineEdit_rotationY->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->rotation.getAt(1)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
-    ui->lineEdit_rotationZ->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->rotation.getAt(2)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
-    ui->lineEdit_scaleX->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->scale.getAt(0),'f',UnitConverter::distanceDigits));
-    ui->lineEdit_scaleY->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->scale.getAt(1),'f',UnitConverter::distanceDigits));
-    ui->lineEdit_scaleZ->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->scale.getAt(2),'f',UnitConverter::distanceDigits));
+    ui->lineEdit_translationX->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getTranslation().getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+    ui->lineEdit_translationY->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getTranslation().getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+    ui->lineEdit_translationZ->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getTranslation().getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+    ui->lineEdit_rotationX->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getRotation().getAt(0)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
+    ui->lineEdit_rotationY->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getRotation().getAt(1)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
+    ui->lineEdit_rotationZ->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getRotation().getAt(2)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
+    ui->lineEdit_scaleX->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getScale().getAt(0),'f',UnitConverter::distanceDigits));
+    ui->lineEdit_scaleY->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getScale().getAt(1),'f',UnitConverter::distanceDigits));
+    ui->lineEdit_scaleZ->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getScale().getAt(2),'f',UnitConverter::distanceDigits));
 
 }
 
@@ -117,21 +117,21 @@ void EditTrafoparamDialog::initGUI()
  */
 void EditTrafoparamDialog::getValues()
 {
-    this->selectedTrafoParam->getTrafoParam()->translation.setAt(0,ui->lineEdit_translationX->text().toDouble()/UnitConverter::getDistanceMultiplier());
-    this->selectedTrafoParam->getTrafoParam()->translation.setAt(1,ui->lineEdit_translationY->text().toDouble()/UnitConverter::getDistanceMultiplier());
-    this->selectedTrafoParam->getTrafoParam()->translation.setAt(2,ui->lineEdit_translationZ->text().toDouble()/UnitConverter::getDistanceMultiplier());
-    this->selectedTrafoParam->getTrafoParam()->rotation.setAt(0,ui->lineEdit_rotationX->text().toDouble()/UnitConverter::getAngleMultiplier());
-    this->selectedTrafoParam->getTrafoParam()->rotation.setAt(1,ui->lineEdit_rotationY->text().toDouble()/UnitConverter::getAngleMultiplier());
-    this->selectedTrafoParam->getTrafoParam()->rotation.setAt(2,ui->lineEdit_rotationZ->text().toDouble()/UnitConverter::getAngleMultiplier());
+    this->selectedTrafoParam->getTrafoParam()->getTranslation().setAt(0,ui->lineEdit_translationX->text().toDouble()/UnitConverter::getDistanceMultiplier());
+    this->selectedTrafoParam->getTrafoParam()->getTranslation().setAt(1,ui->lineEdit_translationY->text().toDouble()/UnitConverter::getDistanceMultiplier());
+    this->selectedTrafoParam->getTrafoParam()->getTranslation().setAt(2,ui->lineEdit_translationZ->text().toDouble()/UnitConverter::getDistanceMultiplier());
+    this->selectedTrafoParam->getTrafoParam()->getRotation().setAt(0,ui->lineEdit_rotationX->text().toDouble()/UnitConverter::getAngleMultiplier());
+    this->selectedTrafoParam->getTrafoParam()->getRotation().setAt(1,ui->lineEdit_rotationY->text().toDouble()/UnitConverter::getAngleMultiplier());
+    this->selectedTrafoParam->getTrafoParam()->getRotation().setAt(2,ui->lineEdit_rotationZ->text().toDouble()/UnitConverter::getAngleMultiplier());
 
     if(ui->checkBox_identicalScale->isChecked()){
-        this->selectedTrafoParam->getTrafoParam()->scale.setAt(0,ui->lineEdit_scaleX->text().toDouble());
-        this->selectedTrafoParam->getTrafoParam()->scale.setAt(1,ui->lineEdit_scaleX->text().toDouble());
-        this->selectedTrafoParam->getTrafoParam()->scale.setAt(2,ui->lineEdit_scaleX->text().toDouble());
+        this->selectedTrafoParam->getTrafoParam()->getScale().setAt(0,ui->lineEdit_scaleX->text().toDouble());
+        this->selectedTrafoParam->getTrafoParam()->getScale().setAt(1,ui->lineEdit_scaleX->text().toDouble());
+        this->selectedTrafoParam->getTrafoParam()->getScale().setAt(2,ui->lineEdit_scaleX->text().toDouble());
     }else{
-        this->selectedTrafoParam->getTrafoParam()->scale.setAt(0,ui->lineEdit_scaleX->text().toDouble());
-        this->selectedTrafoParam->getTrafoParam()->scale.setAt(1,ui->lineEdit_scaleY->text().toDouble());
-        this->selectedTrafoParam->getTrafoParam()->scale.setAt(2,ui->lineEdit_scaleZ->text().toDouble());
+        this->selectedTrafoParam->getTrafoParam()->getScale().setAt(0,ui->lineEdit_scaleX->text().toDouble());
+        this->selectedTrafoParam->getTrafoParam()->getScale().setAt(1,ui->lineEdit_scaleY->text().toDouble());
+        this->selectedTrafoParam->getTrafoParam()->getScale().setAt(2,ui->lineEdit_scaleZ->text().toDouble());
     }
 
     this->selectedTrafoParam->getTrafoParam()->generateHomogenMatrix();
@@ -163,7 +163,7 @@ void EditTrafoparamDialog::on_comboBox_displayedFunction_currentIndexChanged(con
     if(currentFunction != -1){
 
         ui->textBrowser_statistic->clear();
-        QStringList protocol =  this->selectedTrafoParam->getFeature()->functionList.at(currentFunction)->getResultProtocol();
+        QStringList protocol =  this->selectedTrafoParam->getFeature()->getFunctions().at(currentFunction)->getResultProtocol();
         for(int i= 0;i<protocol.size();i++){
             ui->textBrowser_statistic->append(protocol.at(i));
         }
@@ -176,14 +176,14 @@ void EditTrafoparamDialog::on_comboBox_displayedFunction_currentIndexChanged(con
         mModel = new MatrixModel();
         ui->tableView_qxx->setModel(mModel);
 
-        if(this->selectedTrafoParam->getFeature()->functionList.size()>0){
-            if(this->selectedTrafoParam->getFeature()->functionList.at(currentFunction)->getStatistic().isValid){
-                mModel->updateModel(this->selectedTrafoParam->getFeature()->functionList.at(currentFunction)->getStatistic().qxx);
+        if(this->selectedTrafoParam->getFeature()->getFunctions().size()>0){
+            if(this->selectedTrafoParam->getFeature()->getFunctions().at(currentFunction)->getStatistic().isValid){
+                mModel->updateModel(this->selectedTrafoParam->getFeature()->getFunctions().at(currentFunction)->getStatistic().qxx);
             }
         }
 
-        if(this->selectedTrafoParam->getFeature()->functionList.at(currentFunction)->getFeatureOrder().size()>0){
-            fModel->setFunction(this->selectedTrafoParam->getFeature()->functionList.at(currentFunction));
+        if(this->selectedTrafoParam->getFeature()->getFunctions().at(currentFunction)->getFeatureOrder().size()>0){
+            fModel->setFunction(this->selectedTrafoParam->getFeature()->getFunctions().at(currentFunction));
             ui->tableView_statistic->setModel(fModel);
             fModel->updateModel();
         }else{

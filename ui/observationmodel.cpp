@@ -1,7 +1,7 @@
 #include "observationmodel.h"
 
-ObservationModel::ObservationModel(FeatureWrapper &activeFeature,QObject *parent ) :
-    QAbstractTableModel(parent),selectedFeature(activeFeature)
+ObservationModel::ObservationModel(QObject *parent ) :
+    QAbstractTableModel(parent)
 {
     /*
     m_columns.append("id");
@@ -19,11 +19,11 @@ ObservationModel::ObservationModel(FeatureWrapper &activeFeature,QObject *parent
 
 int ObservationModel::rowCount(const QModelIndex& ) const{
 
-    if(this->selectedFeature.getGeometry() != NULL && this->selectedFeature.getGeometry()->myObservations.size() > 0){
-        return this->selectedFeature.getGeometry()->myObservations.size();
+    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry()->myObservations.size() > 0){
+        return OiFeatureState::getActiveFeature()->getGeometry()->myObservations.size();
     }
-    if(this->selectedFeature.getStation() != NULL && this->selectedFeature.getStation()->position->myObservations.size() >0){
-        return this->selectedFeature.getStation()->position->myObservations.size();
+    if(OiFeatureState::getActiveFeature()->getStation() != NULL && OiFeatureState::getActiveFeature()->getStation()->position->myObservations.size() >0){
+        return OiFeatureState::getActiveFeature()->getStation()->position->myObservations.size();
     }
     return 0;
 }
@@ -38,23 +38,23 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
     if(!index.isValid())
         return QVariant();
 
-    if(this->selectedFeature.getGeometry() != NULL){
-        Geometry *geom = this->selectedFeature.getGeometry();
+    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+        Geometry *geom = OiFeatureState::getActiveFeature()->getGeometry();
         QString targetgeoms;
 
         if(Qt::DisplayRole == role){
 
             switch (index.column()) {
             case 0:
-                return QString::number(geom->myObservations.at(index.row())->id,'f',0);
+                return QString::number(geom->myObservations.at(index.row())->getId(),'f',0);
                 break;
             case 1:
-                return geom->myObservations.at(index.row())->myStation->name;
+                return geom->myObservations.at(index.row())->myStation->getFeatureName();
                 break;
             case 2:
-                targetgeoms = geom->myObservations.at(index.row())->myTargetGeometries.at(0)->name;
+                targetgeoms = geom->myObservations.at(index.row())->myTargetGeometries.at(0)->getFeatureName();
                 for(int i=1; i<geom->myObservations.at(index.row())->myTargetGeometries.size();i++){
-                    targetgeoms += ", " + geom->myObservations.at(index.row())->myTargetGeometries.at(i)->name;
+                    targetgeoms += ", " + geom->myObservations.at(index.row())->myTargetGeometries.at(i)->getFeatureName();
                 }
                 return targetgeoms;
                 break;
@@ -84,23 +84,23 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
             }
         }
     }
-    if(this->selectedFeature.getStation() != NULL){
-        Geometry *geom = this->selectedFeature.getStation()->position;
+    if(OiFeatureState::getActiveFeature()->getStation() != NULL){
+        Geometry *geom = OiFeatureState::getActiveFeature()->getStation()->position;
         QString targetgeoms;
 
         if(Qt::DisplayRole == role){
 
             switch (index.column()) {
             case 0:
-                return QString::number(geom->myObservations.at(index.row())->id,'f',0);
+                return QString::number(geom->myObservations.at(index.row())->getId(),'f',0);
                 break;
             case 1:
-                return geom->myObservations.at(index.row())->myStation->name;
+                return geom->myObservations.at(index.row())->myStation->getFeatureName();
                 break;
             case 2:
-                targetgeoms = geom->myObservations.at(index.row())->myTargetGeometries.at(0)->name;
+                targetgeoms = geom->myObservations.at(index.row())->myTargetGeometries.at(0)->getFeatureName();
                 for(int i=1; i<geom->myObservations.at(index.row())->myTargetGeometries.size();i++){
-                    targetgeoms += ", " + geom->myObservations.at(index.row())->myTargetGeometries.at(i)->name;
+                    targetgeoms += ", " + geom->myObservations.at(index.row())->myTargetGeometries.at(i)->getFeatureName();
                 }
                 return targetgeoms;
                 break;

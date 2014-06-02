@@ -8,6 +8,7 @@
 #include "configuration.h"
 #include <QShowEvent>
 #include <QDesktopWidget>
+#include "oifeaturestate.h"
 
 namespace Ui {
 class importNominalGeometryDialog;
@@ -43,7 +44,6 @@ public slots:
 private:
     Ui::importNominalGeometryDialog *ui;
     oiExchangeObject ExchangeData;
-    QList<CoordinateSystem*> availableCoordSys;
 
     void setUpSupportedElements(QString format);
 };

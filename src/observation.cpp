@@ -25,7 +25,7 @@ Observation::~Observation(){
     foreach(Geometry *myGeom, this->myTargetGeometries){
         if(myGeom != NULL){
             myGeom->myObservations.removeOne(this);
-            foreach(Function *myFunc, myGeom->functionList){
+            foreach(Function *myFunc, myGeom->getFunctions()){
                 if(myFunc != NULL){
                     myFunc->removeObservation(this->id);
                 }
@@ -52,7 +52,7 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
     if(this->myStation != NULL){
         stream.writeStartElement("member");
         stream.writeAttribute("type", "station");
-        stream.writeAttribute("ref", QString::number(this->myStation->id));
+        stream.writeAttribute("ref", QString::number(this->myStation->getId()));
         stream.writeEndElement();
     }
 

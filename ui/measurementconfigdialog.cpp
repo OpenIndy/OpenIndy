@@ -11,9 +11,6 @@ MeasurementConfigDialog::MeasurementConfigDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     mConfig = new MeasurementConfig();
-    myStation = NULL;
-
-    resetActiveFeature();
 
     initGUI();
 }
@@ -56,8 +53,7 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked()
         return;
     }
 
-    emit sendConfig(activeFeature,mConfig);
-    resetActiveFeature();
+    emit sendConfig(OiFeatureState::getActiveFeature(), mConfig);
     this->close();
 }
 
@@ -66,7 +62,6 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked()
  */
 void MeasurementConfigDialog::on_pushButton_cancel_clicked()
 {
-    resetActiveFeature();
     this->close();
 }
 
@@ -107,12 +102,12 @@ void MeasurementConfigDialog::receiveConfig(MeasurementConfig *mC){
  */
 void MeasurementConfigDialog::initGUI(){
 
-    if(this->myStation != NULL && this->myStation->sensorPad->instrument != NULL){
-        if(this->myStation->sensorPad->instrument->getSupportedReadingTypes() != NULL){
+    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+        if(OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
 
             ui->comboBox_typeOfReading->clear();
 
-            QList<Configuration::ReadingTypes> readingTypes = *this->myStation->sensorPad->instrument->getSupportedReadingTypes();
+            QList<Configuration::ReadingTypes> readingTypes = *OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
             for(int i=0; i< readingTypes.size();i++){
                 switch (readingTypes.at(i)) {
                 case Configuration::ePolar:
@@ -134,7 +129,7 @@ void MeasurementConfigDialog::initGUI(){
                     ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sLevel,Configuration::eLevel);
                     break;
                 case Configuration::eUndefined:
-                    ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),this->myStation->sensorPad->instrument->getUndefinedReadingName(),Configuration::eUndefined);
+                    ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),OiFeatureState::getActiveStation()->sensorPad->instrument->getUndefinedReadingName(),Configuration::eUndefined);
                     break;
                 default:
                     break;
@@ -186,20 +181,6 @@ QString MeasurementConfigDialog::getLabel(QComboBox *cb, int code){
     return cb->itemText(cb->findData(code));
 }
 
-/*!
- * \brief setStation receives the current active station and sensor for displaying supported reading types etc.
- * \param s
- */
-void MeasurementConfigDialog::setStation(Station *s)
-{
-    if(s != NULL){
-        this->myStation = s;
-        if(this->activeFeature == NULL){
-            initGUI();
-        }
-    }
-}
-
 void MeasurementConfigDialog::showEvent(QShowEvent *event)
 {
     //Put the dialog in the screen center
@@ -209,18 +190,9 @@ void MeasurementConfigDialog::showEvent(QShowEvent *event)
 }
 
 /*!
- * \brief resetActiveFeature
- */
-void MeasurementConfigDialog::resetActiveFeature(){
-    this->activeFeature = NULL;
-}
-
-/*!
  * \brief overwritten closeEvent
  * \param event
  */
 void MeasurementConfigDialog::closeEvent(QCloseEvent *event){
-    resetActiveFeature();
-    myStation = NULL;
     event->accept();
 }
