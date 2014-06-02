@@ -9,6 +9,7 @@ ScalarEntityTemperature::ScalarEntityTemperature()
     this->isSolved = false;
     this->isUpdated = false;
     this->isDrawn = false;
+    this->setTemperature(20.0);
 }
 
 ScalarEntityTemperature::ScalarEntityTemperature(const ScalarEntityTemperature &copy){
@@ -79,5 +80,5 @@ QString ScalarEntityTemperature::getDisplayStdDev() const{
 }
 
 QString ScalarEntityTemperature::getDisplayScalarTemperatureValue() const{
-    return QString::number(this->temperature,'f',UnitConverter::temperatureDigits);
+    return QString::number(UnitConverter::getTemperature(this->temperature),'f',UnitConverter::temperatureDigits);
 }

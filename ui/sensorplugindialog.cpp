@@ -124,7 +124,7 @@ void SensorPluginDialog::initSensorConfig()
    sensorConfig->sigma.sigmaAngleYZ = ui->lineEdit_sigmaAngleYZ->text().toDouble()/UnitConverter::getAngleMultiplier();
    sensorConfig->sigma.sigmaAzimuth = ui->lineEdit_sigmaAzimuth->text().toDouble()/UnitConverter::getAngleMultiplier();
    sensorConfig->sigma.sigmaDistance = ui->lineEdit_sigmaDistance->text().toDouble()/UnitConverter::getDistanceMultiplier();
-   sensorConfig->sigma.sigmaTemp = ui->lineEdit_sigmaTemp->text().toDouble()/UnitConverter::getTemperatureMultiplier();
+   sensorConfig->sigma.sigmaTemp = UnitConverter::getReverseTemperature(ui->lineEdit_sigmaTemp->text().toDouble());
    sensorConfig->sigma.sigmaZenith = ui->lineEdit_sigmaZenith->text().toDouble()/UnitConverter::getAngleMultiplier();
    sensorConfig->sigma.sigmaXyz.setAt(0,ui->lineEdit_sigmaX->text().toDouble()/UnitConverter::getDistanceMultiplier());
    sensorConfig->sigma.sigmaXyz.setAt(1,ui->lineEdit_sigmaY->text().toDouble()/UnitConverter::getDistanceMultiplier());

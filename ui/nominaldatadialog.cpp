@@ -292,7 +292,7 @@ void NominalDataDialog::on_toolButton_ok_clicked()
     nominalValue.nomR = ui->lineEdit_nominalR->text().toDouble()/UnitConverter::getDistanceMultiplier();
     nominalValue.nomSDE = ui->lineEdit_nominalSDE->text().toDouble()/UnitConverter::getDistanceMultiplier();
     nominalValue.nomSAE = ui->lineEdit_nominalSAE->text().toDouble()/UnitConverter::getAngleMultiplier();
-    nominalValue.nomSTE = ui->lineEdit_nominalTemperature->text().toDouble()/UnitConverter::getTemperatureMultiplier();
+    nominalValue.nomSTE = UnitConverter::getReverseTemperature(ui->lineEdit_nominalTemperature->text().toDouble());
     nominalValue.nomSMSE = ui->lineEdit_nominalMeasurementSeries->text().toDouble();
 
     emit sendNominalValues(nominalValue);
@@ -424,7 +424,7 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalMeasurementSeries->setText("");
         ui->lineEdit_nominalR->setText("");
         ui->lineEdit_nominalSAE->setText("");
-        ui->lineEdit_nominalTemperature->setText(QString::number(selectedFeature->getScalarEntityTemperature()->getTemperature()*UnitConverter::getTemperatureMultiplier(),'f',UnitConverter::temperatureDigits));
+        ui->lineEdit_nominalTemperature->setText(QString::number(UnitConverter::getTemperature(selectedFeature->getScalarEntityTemperature()->getTemperature()),'f',UnitConverter::temperatureDigits));
         ui->lineEdit_nominalX->setText("");
         ui->lineEdit_nominalY->setText("");
         ui->lineEdit_nominalZ->setText("");

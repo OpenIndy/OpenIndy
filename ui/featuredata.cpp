@@ -199,7 +199,7 @@ void FeatureData::getSensorConfiguration()
     ui->lineEdit_sigmaAzimuth->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaAzimuth*UnitConverter::getAngleMultiplier()));
     ui->lineEdit_sigmaDistance->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaDistance*UnitConverter::getDistanceMultiplier()));
     ui->lineEdit_sigmaZenith->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaZenith*UnitConverter::getAngleMultiplier()));
-    ui->lineEdit_sigmaTemperature->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaTemp*UnitConverter::getTemperatureMultiplier()));
+    ui->lineEdit_sigmaTemperature->setText(QString::number(UnitConverter::getTemperature(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaTemp)));
     ui->lineEdit_sigmaX->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier()));
     ui->lineEdit_sigmaY->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier()));
     ui->lineEdit_sigmaZ->setText(QString::number(this->selectedFeature->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier()));
@@ -442,7 +442,7 @@ void FeatureData::initSensorConfiguration()
     sensorConfig->sigma.sigmaAngleYZ = ui->lineEdit_sigmaYZ->text().toDouble()/UnitConverter::getAngleMultiplier();
     sensorConfig->sigma.sigmaAzimuth = ui->lineEdit_sigmaAzimuth->text().toDouble()/UnitConverter::getAngleMultiplier();
     sensorConfig->sigma.sigmaDistance = ui->lineEdit_sigmaDistance->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    sensorConfig->sigma.sigmaTemp = ui->lineEdit_sigmaTemperature->text().toDouble()/UnitConverter::getTemperatureMultiplier();
+    sensorConfig->sigma.sigmaTemp = UnitConverter::getReverseTemperature(ui->lineEdit_sigmaTemperature->text().toDouble());
     sensorConfig->sigma.sigmaZenith = ui->lineEdit_sigmaZenith->text().toDouble()/UnitConverter::getAngleMultiplier();
     sensorConfig->sigma.sigmaXyz.setAt(0,ui->lineEdit_sigmaX->text().toDouble()/UnitConverter::getDistanceMultiplier());
     sensorConfig->sigma.sigmaXyz.setAt(1,ui->lineEdit_sigmaY->text().toDouble()/UnitConverter::getDistanceMultiplier());

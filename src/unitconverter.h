@@ -19,7 +19,12 @@ public:
         eRADIANT,
         eGON,
         eDECIMALDEGREE,
-        eGRAD
+        eGRAD,
+        eInch,
+        eArcSeconds,
+        eMilliRadians,
+        eKelvin,
+        eFahrenheit
     };
 
     enum dimensionType{
@@ -53,7 +58,8 @@ public:
 
     static double getAngleMultiplier();
     static double getDistanceMultiplier();
-    static double getTemperatureMultiplier();
+    static double getTemperature(double temp);
+    static double getReverseTemperature(double temp);
 
     static QString getAngleUnitString();
     static QString getDistanceUnitString();
