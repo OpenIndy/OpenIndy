@@ -27,6 +27,9 @@ public:
     CoordinateSystem* myNominalCoordSys;
     QMap<Configuration::ReadingTypes,QString> usedReadingTypes;
 
+    virtual OiVec* getXYZ();
+    virtual OiVec* getIJK();
+	
     MeasurementConfig mConfig;
 
     Statistic myStatistic;

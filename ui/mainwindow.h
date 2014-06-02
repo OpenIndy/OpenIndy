@@ -86,7 +86,7 @@ public:
     importNominalGeometryDialog importNominalDialog;
     NominalDataDialog nominalDialog;
 
-    WatchWindow watchWindow;
+    WatchWindow *watchWindow;
 
     //actions
     //create feature

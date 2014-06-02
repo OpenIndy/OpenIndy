@@ -133,3 +133,41 @@ QString UnitConverter::getTemperatureUnitString(){
         return "";
     }
 }
+
+QString UnitConverter::getUnitString(UnitConverter::unitType u)
+{
+    switch(u){
+    case UnitConverter::eMETER:
+        return " [m]";
+    case UnitConverter::eMILLIMETER:
+        return " [mm]";
+    case UnitConverter::eGRAD:
+        return " [°C]";
+    case UnitConverter::eDECIMALDEGREE:
+        return " [°]";
+    case UnitConverter::eGON:
+        return " [gon]";
+    case UnitConverter::eRADIANT:
+        return " [rad]";
+    default:
+        return "";
+    }
+}
+
+UnitConverter::unitType UnitConverter::getUnitType(QString s)
+{
+    if(s == " [m]"){
+        return UnitConverter::eMETER;
+    }else if(s == " [mm]"){
+        return UnitConverter::eMILLIMETER;
+    }else if(s == " [°C]"){
+        return UnitConverter::eGRAD;
+    }else if(s == " [°]"){
+        return UnitConverter::eDECIMALDEGREE;
+    }else if(s == " [gon]"){
+        return UnitConverter::eGON;
+    }else if(s == " [rad]"){
+        return UnitConverter::eRADIANT;
+    }
+
+}

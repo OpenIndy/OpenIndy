@@ -36,10 +36,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableView_trafoParam->horizontalHeader()->setSectionsMovable(true);
     ui->tableView_trafoParam->verticalHeader()->setSectionsMovable(true);
 
-
-
     cFeatureDialog = new CreateFeature();
     sEntityDialog = new ScalarEntityDialog();
+	watchWindow = NULL;
 
     //settings for other widgets
     mConfigDialog.setModal(true);
@@ -88,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(control.c,SIGNAL(changedList()),this->ui->listView_Console,SLOT(scrollToBottom()));
 
     //connect(&control,SIGNAL(CoordSystemAdded()),this,SLOT(fillCoordSysComboBox()));
+
     connect(ui->comboBox_activeCoordSystem,SIGNAL(currentIndexChanged(QString)),this,SLOT(getActiveCoordSystem(QString)));
     connect(this,SIGNAL(sendActiveCoordSystem(QString)),&control,SLOT(setActiveCoordSystem(QString)));
 
@@ -139,10 +139,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //group combo boxes
     //connect(&control, SIGNAL(availableGroupsChanged(QMap<QString,int>)), this, SLOT(availableGroupsChanged(QMap<QString,int>)));
     //connect(control.tblModel, SIGNAL(groupNameChanged(QString,QString)), &control, SLOT(groupNameChanged(QString,QString)));
-
-    //watchwindow
-    connect(&watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
-    connect(&watchWindow,SIGNAL(destroyed()),&control,SLOT(startMeasurement()));
 
     //setup create feature toolbar
     setupCreateFeature();
@@ -606,12 +602,15 @@ void MainWindow::on_actionWatch_window_triggered()
 {
 
 
+    watchWindow = new WatchWindow();
+
+    connect(watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
 
     /*watchWindow.myStation = OiFeatureState::getActiveStation();
     watchWindow.activeCoordinateSystem = control.activeCoordinateSystem;
     watchWindow.activeFeature = control.activeFeature;*/
 
-    watchWindow.show();
+    watchWindow->show();
 
 }
 

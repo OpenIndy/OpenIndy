@@ -28,6 +28,9 @@ public:
     OiVec xyz;
     OiVec ijk;
 
+    OiVec* getXYZ();
+    OiVec* getIJK();
+
     void recalc();
 
     bool toOpenIndyXML(QXmlStreamWriter& stream);

@@ -1,20 +1,15 @@
-#ifndef OIEXCHANGEASCII_H
-#define OIEXCHANGEASCII_H
+#ifndef OIEXCHANGEPTS_H
+#define OIEXCHANGEPTS_H
 
 #include <QString>
 #include <QStringList>
 #include <QRegExp>
 #include "oiexchangeinterface.h"
 
-/*!
- * \brief The oiExchangeASCII class
- * implements the oiExchangeInterface to import feature by ascii files
- */
-class oiExchangeASCII: public oiExchangeInterface
+class oiExchangePTS: public oiExchangeInterface
 {
-
 public:
-    oiExchangeASCII();
+    oiExchangePTS();
 
     bool importOiData(oiExchangeObject& data);
     bool exportOiData(oiExchangeObject& data);
@@ -29,10 +24,7 @@ public:
 
 private:
     // private functions for importiing different element types
-    bool importPoint(oiExchangeObject& data);
-    bool importPlane(oiExchangeObject& data);
-    bool importLine(oiExchangeObject& data);
-    bool importSphere(oiExchangeObject& data);
+    bool importPointCloud(oiExchangeObject& data);
 };
 
-#endif // OIEXCHANGEASCII_H
+#endif // OIEXCHANGEPTS_H

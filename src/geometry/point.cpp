@@ -26,6 +26,16 @@ Point::~Point(){
 }
 
 /*!
+ * \brief Point::getXYZ returns the xyz vector
+ * \return
+ */
+OiVec *Point::getXYZ()
+{
+    OiVec *xyz = &this->xyz;
+    return xyz;
+}
+
+/*!
  * \brief Point::recalc
  * Execute alls functions in the specified order
  */

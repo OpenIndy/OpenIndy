@@ -28,6 +28,26 @@ Plane::~Plane(){
 }
 
 /*!
+ * \brief Plane::getXYZ returns xyz vector
+ * \return
+ */
+OiVec *Plane::getXYZ()
+{
+    OiVec *xyz = &this->xyz;
+    return xyz;
+}
+
+/*!
+ * \brief Plane::getIJK returns ijk vector
+ * \return
+ */
+OiVec *Plane::getIJK()
+{
+    OiVec *ijk = &this->ijk;
+    return ijk;
+}
+
+/*!
  * \brief Plane::recalc
  * Execute all functions in the specified order
  */

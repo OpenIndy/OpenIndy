@@ -6,4 +6,5 @@ oiExchangeObject::oiExchangeObject(QObject *parent) :
 
     device = NULL;
 
+
 }

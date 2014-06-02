@@ -18,6 +18,8 @@ public:
     OiVec xyz;
     double radius;
 
+    OiVec* getXYZ();
+
     void recalc();
 
     bool toOpenIndyXML(QXmlStreamWriter& stream);

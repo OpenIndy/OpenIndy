@@ -184,9 +184,10 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
     return true;
 }
 
+OiVec* getXYZ(){
+	return NULL;
+}
 
-
-
-
-
-
+OiVec* getIJK(){
+	return NULL;
+}

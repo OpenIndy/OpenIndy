@@ -22,6 +22,26 @@ Circle::Circle(const Circle &copy){
 }
 
 /*!
+ * \brief Circle::getXYZ returns xyz vector
+ * \return
+ */
+OiVec *Circle::getXYZ()
+{
+    OiVec* xyz = &this->xyz;
+    return xyz;
+}
+
+/*!
+ * \brief Circle::getIJK returns ijk vector
+ * \return
+ */
+OiVec *Circle::getIJK()
+{
+    OiVec *ijk = &this->ijk;
+    return ijk;
+}
+
+/*!
  * \brief Circle::recalc
  */
 void Circle::recalc(){

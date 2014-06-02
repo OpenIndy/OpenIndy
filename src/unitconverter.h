@@ -59,6 +59,9 @@ public:
     static QString getDistanceUnitString();
     static QString getTemperatureUnitString();
 
+    static QString getUnitString(UnitConverter::unitType u);
+    static UnitConverter::unitType getUnitType(QString s);
+
 };
 
 #endif // UNITCONVERTER_H

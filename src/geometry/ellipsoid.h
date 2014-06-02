@@ -11,6 +11,7 @@ public:
 
     OiVec xyz;
     double a,b,c;
+    OiVec* getXYZ();
 
     void recalc();
 

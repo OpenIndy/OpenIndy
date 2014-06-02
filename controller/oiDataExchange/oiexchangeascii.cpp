@@ -36,7 +36,62 @@ bool oiExchangeASCII::importOiData(oiExchangeObject &data){
         elements.append(Configuration::ePlaneElement);
         elements.append(Configuration::eSphereElement);
 
-     return elements;
+        return elements;
+ }
+
+ QStringList oiExchangeASCII::getElementDescription(Configuration::ElementTypes t)
+ {
+     QStringList description;
+
+     switch (t) {
+     case Configuration::ePointElement:
+         description.append("imports points according to the following scheme:");
+         description.append("name  x  y  z");
+         return description;
+         break;
+     case Configuration::eLineElement:
+         description.append("imports lines according to the following scheme:");
+         description.append("name  x  y  z i j k");
+         return description;
+         break;
+     case Configuration::ePlaneElement:
+         description.append("imports planes according to the following scheme:");
+         description.append("name  x  y  z i j k");
+         return description;
+         break;
+     case Configuration::eSphereElement:
+         description.append("imports spheres according to the following scheme:");
+         description.append("name  x  y  z radius");
+         return description;
+         break;
+     default:
+         return description;
+         break;
+     }
+
+ }
+
+ QList<UnitConverter::unitType> oiExchangeASCII::getSupportedDistanceUnits()
+ {
+     QList<UnitConverter::unitType> d;
+
+     d.append(UnitConverter::eMETER);
+     d.append(UnitConverter::eMILLIMETER);
+
+     return d;
+ }
+
+ QList<UnitConverter::unitType> oiExchangeASCII::getSupportedAngleUnits()
+ {
+     QList<UnitConverter::unitType> a;
+     return a;
+
+ }
+
+ QList<UnitConverter::unitType> oiExchangeASCII::getSupportedTemperatureUnits()
+ {
+     QList<UnitConverter::unitType> t;
+     return t;
  }
 
 bool oiExchangeASCII::exportOiData(oiExchangeObject &data){
@@ -68,6 +123,9 @@ bool oiExchangeASCII::importPoint(oiExchangeObject& data){
         p->xyz.setAt(0,list.at(1).toDouble());
         p->xyz.setAt(1,list.at(2).toDouble());
         p->xyz.setAt(2,list.at(3).toDouble());
+        if(data.unit.value(UnitConverter::eMetric) == UnitConverter::eMILLIMETER){
+            p->xyz = p->xyz/1000;
+        }
         p->isNominal = true;
         p->setIsSolved(true);
 

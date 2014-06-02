@@ -34,40 +34,66 @@ void WatchWindow::setLCDNumber(QVariantMap m){
 
         QString name = j.key();
         QVariant qvalue = j.value();
-        double dvalue = qvalue.toDouble()*UnitConverter::getDistanceMultiplier();
-        QString value =  QString::number(dvalue);
+        double dvalue = qvalue.toDouble();
+
+        if(myStation->coordSys != activeCoordinateSystem){
+
+            TrafoParam *tp = myStation->coordSys->findTrafoParam(activeCoordinateSystem);
+            if(tp != NULL){
+                OiMat t;
+                if(tp->to == activeCoordinateSystem){
+                    t = tp->homogenMatrix;
+                }else{
+                    t = tp->homogenMatrix.inv();
+                }
+
+                OiVec trackerXYZ(4);
+                trackerXYZ.setAt(0,m.value("x").toDouble());
+                trackerXYZ.setAt(1,m.value("y").toDouble());
+                trackerXYZ.setAt(2,m.value("z").toDouble());
+                trackerXYZ.setAt(3,1.0);
+                trackerXYZ = t*trackerXYZ;
+
+                if(name == "x"){
+                    dvalue =trackerXYZ.getAt(0);
+                }else if (name == "y"){
+                    dvalue = trackerXYZ.getAt(1);
+                }else if (name == "z"){
+                    dvalue =trackerXYZ.getAt(2);
+                }
+            }
+        }
 
         if(OiFeatureState::getActiveCoordinateSystem() == OiFeatureState::getActiveStation()->coordSys && OiFeatureState::getActiveFeature() != NULL){
             if(name == "x"){
 
-                double featureX = OiFeatureState::getActiveFeature()->getFeature()->getDisplayX().toDouble();
-                double dx = featureX - value.toDouble();
-                streamData.value(name)->display(QString::number(dx,'f',UnitConverter::distanceDigits));
+                double featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ()->getAt(0);
+                double dx = featureX - dvalue;
+                streamData.value(name)->display(QString::number(dx*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 
             }else if(name == "y"){
 
-                double featureY = OiFeatureState::getActiveFeature()->getFeature()->getDisplayY().toDouble();
-                double dy = featureY - value.toDouble();
-                streamData.value(name)->display(QString::number(dy,'f',UnitConverter::distanceDigits));
+                double featureY = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ()->getAt(1);
+                double dy = featureY - dvalue;
+                streamData.value(name)->display(QString::number(dy*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 
             }else if(name == "z"){
 
-                double featureZ = OiFeatureState::getActiveFeature()->getFeature()->getDisplayZ().toDouble();
-                double dz = featureZ - value.toDouble();
-                streamData.value(name)->display(QString::number(dz,'f',UnitConverter::distanceDigits));
-
+                double featureZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ()->getAt(2);
+                double dz = featureZ - dvalue;
+                streamData.value(name)->display(QString::number(dz*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+				
             }else{
-                streamData.value(name)->display(value);
+                streamData.value(name)->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
             }
         }else{
-            streamData.value(name)->display(value);
+            streamData.value(name)->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
         }
 
 
 
 
     }
-
 }
 
 void WatchWindow::iniGUI(QVariantMap m)
@@ -101,6 +127,7 @@ void WatchWindow::iniGUI(QVariantMap m)
 
         QLCDNumber *n = new QLCDNumber();
         n->display(value);
+        n->setFont(f);
 
         n->setMode(QLCDNumber::Dec);
         n->setDigitCount(10);
@@ -139,13 +166,12 @@ void WatchWindow::closeEvent(QCloseEvent *e)
 
     disconnect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
 
-    emit destroy();
-    this->destroy(true,true);
+    delete masterLayout;
+    masterLayout = NULL;
 
     this->close();
 
-    delete masterLayout;
-    masterLayout = NULL;
+    delete this;
 
     e->accept();
 

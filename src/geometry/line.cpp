@@ -28,6 +28,26 @@ Line::~Line(){
 }
 
 /*!
+ * \brief Line::getXYZ returns the xyz vector
+ * \return
+ */
+OiVec *Line::getXYZ()
+{
+    OiVec *xyz = &this->xyz;
+    return xyz;
+}
+
+/*!
+ * \brief Line::getIJK returns the ijk vector
+ * \return
+ */
+OiVec *Line::getIJK()
+{
+    OiVec *ijk = &this->ijk;
+    return ijk;
+}
+
+/*!
  * \brief Line::recalc
  * Execute alls functions in the specified order
  */

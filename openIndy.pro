@@ -155,6 +155,7 @@ SOURCES += \
     controller/trafocontroller.cpp \
     controller/datalisthandler.cpp \
     ui/featureoverviewproxymodel.cpp
+    controller/oiDataExchange/oiexchangepts.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -275,6 +276,7 @@ HEADERS  += \
     controller/trafocontroller.h \
     controller/datalisthandler.h \
     ui/featureoverviewproxymodel.h
+    controller/oiDataExchange/oiexchangepts.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

@@ -2,6 +2,7 @@
 #define IMPORTNOMINALGEOMETRYDIALOG_H
 
 #include <QDialog>
+#include <QStringListModel>
 #include "oidataexchanger.h"
 #include "oidataimporter.h"
 #include <QFileDialog>
@@ -33,8 +34,9 @@ private slots:
 
     void initGUI();
 
-
     void on_comboBox_format_currentIndexChanged(const QString &arg1);
+
+    void on_comboBox_typeOfElement_currentIndexChanged(const QString &arg1);
 
 public slots:
     void setUpCoordinateSystems(QList<CoordinateSystem*> coordSystems);
@@ -46,6 +48,8 @@ private:
     oiExchangeObject ExchangeData;
 
     void setUpSupportedElements(QString format);
+    void setUpSupportedUnits(QString format);
+    void setUpDescription();
 };
 
 #endif // IMPORTNOMINALGEOMETRYDIALOG_H

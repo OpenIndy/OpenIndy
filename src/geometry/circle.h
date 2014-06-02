@@ -24,6 +24,8 @@ public:
     OiVec ijk;
     double radius;
     double dist2origin;
+    OiVec* getXYZ();
+    OiVec* getIJK();
 
     void recalc();
 
