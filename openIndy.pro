@@ -151,7 +151,8 @@ SOURCES += \
     src/sensorlistener.cpp \
     controller/guiconfiguration.cpp \
     ui/plugininfowidget.cpp \
-    controller/oiDataExchange/oiexchangepts.cpp
+    controller/oiDataExchange/oiexchangepts.cpp \
+    ui/stationinfodialog.cpp
 
 
 HEADERS  += \
@@ -270,7 +271,8 @@ HEADERS  += \
     src/sensorlistener.h \
     controller/guiconfiguration.h \
     ui/plugininfowidget.h \
-    controller/oiDataExchange/oiexchangepts.h
+    controller/oiDataExchange/oiexchangepts.h \
+    ui/stationinfodialog.h
 
 
 FORMS    += ui/mainwindow.ui \
@@ -287,6 +289,7 @@ FORMS    += ui/mainwindow.ui \
     ui/scalarentitydialog.ui \
     ui/importnominalgeometrydialog.ui \
     ui/nominaldatadialog.ui \
-    ui/edittrafoparamdialog.ui
+    ui/edittrafoparamdialog.ui \
+    ui/stationinfodialog.ui
 
 

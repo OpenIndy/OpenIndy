@@ -364,7 +364,8 @@ void Controller::changeActiveStation(){
     if(this->activeFeature->getStation() != NULL){
 
             if(this->activeStation->sensorPad->instrument != NULL){
-                this->activeStation->startDisconnect();
+                this->startDisconnect();
+                //this->activeStation->startDisconnect();
             }
             //this->activeStation->isSolved = false;
             //TODO solved für station setzen !

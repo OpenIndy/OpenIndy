@@ -437,6 +437,7 @@ void SensorControl::disconnectSensor(){
         checkSensor();
 
         if(this->t != eNoStream){
+
            instrumentListener->isStreamActive = true;
 
            switch (t) {
@@ -480,6 +481,9 @@ void SensorControl::disconnectSensor(){
             }
         }
 
+        listenerThread.quit();
+        listenerThread.wait();
+        listenerThread.start();
 
         return true;
     }

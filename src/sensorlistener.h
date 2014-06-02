@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QTime>
 #include "sensor.h"
 
 /*!

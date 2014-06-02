@@ -62,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
     sEntityDialog->setModal(true);
     nominalDialog.setModal(true);
     trafoParamDialog.setModal(true);
+    stationDialog.setModal(true);
 
     //delete feature
     this->ui->tableView_data->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -89,6 +90,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&control,SIGNAL(sensorWorks(QString)),&sInfoDialog,SLOT(showInfo(QString)));
     connect(control.activeStation,SIGNAL(actionFinished(bool)),&sInfoDialog,SLOT(hideInfo(bool)));
     connect(&control, SIGNAL(changedStation()),this,SLOT(changedStation()));
+
+    //station and sensor setting
+    connect(&stationDialog,SIGNAL(disconnectSensor()),&control,SLOT(startDisconnect()));
+    connect(&stationDialog,SIGNAL(connectSensor()),&control,SLOT(startConnect()));
+    connect(&stationDialog,SIGNAL(showStationGeomProperties(FeatureWrapper*)),this,SLOT(openStationGeomProperties(FeatureWrapper*)));
 
     //mainwindow actions
     connect(this->actionMConfig,SIGNAL(triggered()),this,SLOT(openCreateFeatureMConfig()));
@@ -1311,6 +1317,9 @@ void MainWindow::showProperties(bool checked){
         }else if(this->control.activeFeature->getGeometry() != NULL && this->control.activeFeature->getGeometry()->isNominal){
             emit sendActiveNominalfeature(this->control.activeFeature);
             nominalDialog.show();
+        }else if(this->control.activeFeature->getStation() != NULL){
+            stationDialog.getActiveFeature(this->control.activeFeature);
+            stationDialog.show();
         }else if(this->control.activeFeature->getCoordinateSystem() == NULL){
             fDataDialog.getActiveFeature(this->control.activeFeature);
             fDataDialog.show();
@@ -1538,4 +1547,14 @@ void MainWindow::clearCustomWidgets()
         delete this->customActions.at(i);
     }
     this->customActions.clear();
+}
+
+/*!
+ * \brief MainWindow::openStationGeomProperties shows properties and functions of the station geometrie point.
+ * \param fw
+ */
+void MainWindow::openStationGeomProperties(FeatureWrapper *fw)
+{
+    fDataDialog.getActiveFeature(fw);
+    fDataDialog.show();
 }
