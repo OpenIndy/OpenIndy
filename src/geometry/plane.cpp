@@ -203,15 +203,15 @@ QString Plane::getDisplayZ() const{
 }
 
 QString Plane::getDisplayI() const{
-    return QString::number(this->ijk.getAt(0),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(0),'f',6);
 }
 
 QString Plane::getDisplayJ() const{
-    return QString::number(this->ijk.getAt(1),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(1),'f',6);
 }
 
 QString Plane::getDisplayK() const{
-    return QString::number(this->ijk.getAt(2),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(2),'f',6);
 }
 
 QString Plane::getDisplayIsCommon() const{
