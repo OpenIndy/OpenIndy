@@ -35,6 +35,8 @@ public:
         return NULL;
     }
 
+    QString getDisplayObs() const;
+
 
     MeasurementConfig mConfig;
 

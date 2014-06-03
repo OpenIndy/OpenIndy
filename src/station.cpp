@@ -420,9 +420,9 @@ QString Station::getDisplayIsNominal() const{
     return QString(position->isNominal?"true":"false");
 }
 
-QString Station::getDisplayObs() const{
+/*QString Station::getDisplayObs() const{
     return QString::number(this->position->myObservations.size());
-}
+}*/
 
 QString Station::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

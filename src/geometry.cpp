@@ -54,6 +54,23 @@ Geometry::~Geometry(){
 
 }
 
+/*!
+ * \brief getDisplayObs displays the number of current valid observations and total observations in the gui.
+ * Display style x/y where x is current valid and y is total observation count.
+ * \return
+ */
+QString Geometry::getDisplayObs() const
+{
+    int validObs = 0;
+    int totalObs = this->myObservations.size();
+    for(int i=0;i<totalObs;i++){
+        if(this->myObservations.at(i)->isValid){
+            validObs += 1;
+        }
+    }
+    return QString(QString::number(validObs)+"/"+QString::number(totalObs));
+}
+
 void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QString displayName){
 
     QMap<Configuration::ReadingTypes,QString>::const_iterator i = usedReadingTypes.find(readingType);

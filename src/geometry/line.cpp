@@ -223,9 +223,9 @@ QString Line::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
 
-QString Line::getDisplayObs() const{
+/*QString Line::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString Line::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

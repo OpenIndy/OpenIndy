@@ -222,9 +222,9 @@ QString Plane::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
 
-QString Plane::getDisplayObs() const{
+/*QString Plane::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString Plane::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

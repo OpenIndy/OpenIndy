@@ -58,9 +58,9 @@ QString ScalarEntityMeasurementSeries::getDisplayIsCommon() const{
 QString ScalarEntityMeasurementSeries::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
-QString ScalarEntityMeasurementSeries::getDisplayObs() const{
+/*QString ScalarEntityMeasurementSeries::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString ScalarEntityMeasurementSeries::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

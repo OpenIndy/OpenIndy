@@ -58,9 +58,9 @@ QString ScalarEntityTemperature::getDisplayIsCommon() const{
 QString ScalarEntityTemperature::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
-QString ScalarEntityTemperature::getDisplayObs() const{
+/*QString ScalarEntityTemperature::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString ScalarEntityTemperature::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

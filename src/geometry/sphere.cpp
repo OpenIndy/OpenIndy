@@ -192,9 +192,9 @@ QString Sphere::getDisplayIsCommon() const{
 QString Sphere::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
-QString Sphere::getDisplayObs() const{
+/*QString Sphere::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString Sphere::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

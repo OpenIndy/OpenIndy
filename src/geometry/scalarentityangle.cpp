@@ -168,9 +168,9 @@ QString ScalarEntityAngle::getDisplayIsCommon() const{
 QString ScalarEntityAngle::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
-QString ScalarEntityAngle::getDisplayObs() const{
+/*QString ScalarEntityAngle::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString ScalarEntityAngle::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

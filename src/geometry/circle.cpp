@@ -103,9 +103,9 @@ QString Circle::getDisplayIsCommon() const{
 QString Circle::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
-QString Circle::getDisplayObs() const{
+/*QString Circle::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString Circle::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");
