@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
     sEntityDialog->setModal(true);
     nominalDialog.setModal(true);
     trafoParamDialog.setModal(true);
-    stationDialog.setModal(true);
+    //stationDialog.setModal(true);
 
     //delete feature
     this->ui->tableView_data->setContextMenuPolicy(Qt::CustomContextMenu);

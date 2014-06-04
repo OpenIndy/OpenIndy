@@ -87,6 +87,10 @@ void SensorPluginDialog::receiveModel(QSqlQueryModel *sqlModel){
  * \param idx
  */
 void SensorPluginDialog::handleTableClicked(const QModelIndex &idx){
+    if(!idx.isValid()){
+        return;
+    }
+    destructDynamicGUI();
     selectedIndex = idx.row();
     ui->textBrowser_description->clear();
     QModelIndex modelIdx = ui->tableView_sensorPlugins->model()->index(idx.row(), 1);
