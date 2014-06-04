@@ -105,6 +105,24 @@ void importNominalGeometryDialog::setUpDescription()
 
 void importNominalGeometryDialog::on_pushButton_import_clicked()
 {
+    if(ExchangeData.device == NULL){
+
+        QMessageBox msgBox;
+        msgBox.setText("No file selected!");
+        msgBox.setInformativeText("Please chose a file.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+        case QMessageBox::Ok:
+            return;
+            break;
+        default:
+            return;
+            break;
+        }
+    }
 
     QString choosenCoordName = ui->comboBox_coordSys->currentText();
 
