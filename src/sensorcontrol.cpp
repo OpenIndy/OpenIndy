@@ -466,7 +466,7 @@ void SensorControl::disconnectSensor(){
 
         instrumentListener->isStreamActive = false;
 
-        QTime timer;
+        /*QTime timer;
 
         timer.start();
 
@@ -479,10 +479,15 @@ void SensorControl::disconnectSensor(){
                 this->myEmitter.sendString("timeout - stream failed");
                 return false;
             }
-        }
+        }*/
 
         listenerThread.quit();
-        listenerThread.wait();
+
+        if(!listenerThread.wait()){
+           this->myEmitter.sendString("timeout - stream failed");
+            return false;
+        }
+
         listenerThread.start();
 
         return true;
