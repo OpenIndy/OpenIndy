@@ -77,14 +77,14 @@ void Helmert7Param::init(){
     this->refSystem.clear();
     if(this->points_startSystem.size() == this->points_targetSystem.size()){
         for(int i = 0; i < this->points_startSystem.size(); i++){
-            if(this->points_startSystem.at(i).isSolved && this->points_targetSystem.at(i).isSolved){
+            if(this->points_startSystem.at(i).getIsSolved() && this->points_targetSystem.at(i).getIsSolved()){
                 this->locSystem.append(this->points_startSystem.at(i).xyz);
                 this->refSystem.append(this->points_targetSystem.at(i).xyz);
-                this->setUseState(this->points_startSystem.at(i).id, true);
-                this->setUseState(this->points_targetSystem.at(i).id, true);
+                this->setUseState(this->points_startSystem.at(i).getId(), true);
+                this->setUseState(this->points_targetSystem.at(i).getId(), true);
             }else{
-                this->setUseState(this->points_startSystem.at(i).id, false);
-                this->setUseState(this->points_targetSystem.at(i).id, false);
+                this->setUseState(this->points_startSystem.at(i).getId(), false);
+                this->setUseState(this->points_targetSystem.at(i).getId(), false);
             }
         }
     }
@@ -265,19 +265,19 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
     }
     double m = 1.0;
     if(u > 0){ m = o / u; }
-    tp.scale.setAt(0, m);
-    tp.scale.setAt(1, m);
-    tp.scale.setAt(2, m);
+    tp.setScale(m, m, m);
     //calc translation
     OiVec t = centroidCoords.at(1) - m * r * centroidCoords.at(0);
-    tp.translation = t;
+    tp.setTranslation(t.getAt(0), t.getAt(1), t.getAt(2));
     //calc rotation
-    tp.rotation.setAt(0, qAtan2(-r.getAt(2,1), r.getAt(2,2))); //alpha
-    tp.rotation.setAt(1, qAsin(r.getAt(2,0))); //beta
-    tp.rotation.setAt(2, qAtan2(-r.getAt(1,0), r.getAt(0,0))); //gamma
-    if( qFabs(qCos(tp.rotation.getAt(1)) * qCos(tp.rotation.getAt(2))) - qFabs(r.getAt(0,0)) > 0.01 ){
-        tp.rotation.setAt(1, PI - tp.rotation.getAt(1));
+    OiVec rot(3);
+    rot.setAt(0, qAtan2(-r.getAt(2,1), r.getAt(2,2))); //alpha
+    rot.setAt(1, qAsin(r.getAt(2,0))); //beta
+    rot.setAt(2, qAtan2(-r.getAt(1,0), r.getAt(0,0))); //gamma
+    if( qFabs(qCos(rot.getAt(1)) * qCos(rot.getAt(2))) - qFabs(r.getAt(0,0)) > 0.01 ){
+        rot.setAt(1, PI - rot.getAt(1));
     }
+    tp.setRotation(rot.getAt(0), rot.getAt(1), rot.getAt(2));
     //fill transformation matrix
     OiMat translation(4, 4);
     translation.setAt(0, 0, 1.0);
@@ -299,7 +299,8 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
         }
     }
     rotation.setAt(3, 3, 1.0);
-    tp.homogenMatrix = translation * scale * rotation;
+    //tp translation * scale * rotation;
+    tp.generateHomogenMatrix();
 }
 
 /*!
@@ -313,13 +314,13 @@ bool Helmert7Param::adjust(TrafoParam &tp){
 
     //approximation
     OiVec x0(7);
-    x0.setAt(0, tp.rotation.getAt(0));
-    x0.setAt(1, tp.rotation.getAt(1));
-    x0.setAt(2, tp.rotation.getAt(2));
-    x0.setAt(3, tp.scale.getAt(0));
-    x0.setAt(4, tp.translation.getAt(0));
-    x0.setAt(5, tp.translation.getAt(1));
-    x0.setAt(6, tp.translation.getAt(2));
+    x0.setAt(0, tp.getRotation().getAt(0));
+    x0.setAt(1, tp.getRotation().getAt(1));
+    x0.setAt(2, tp.getRotation().getAt(2));
+    x0.setAt(3, tp.getScale().getAt(0));
+    x0.setAt(4, tp.getTranslation().getAt(0));
+    x0.setAt(5, tp.getTranslation().getAt(1));
+    x0.setAt(6, tp.getTranslation().getAt(2));
 
     //observations
     OiVec l = this->fillLVector();

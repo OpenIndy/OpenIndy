@@ -1353,10 +1353,10 @@ void MainWindow::showProperties(bool checked){
         }else if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
             //emit sendActiveNominalfeature(OiFeatureState::getActiveFeature());
             nominalDialog.show();
-        }else if(this->control.activeFeature->getStation() != NULL){
+        }else if(OiFeatureState::getActiveFeature()->getStation() != NULL){
             //stationDialog.getActiveFeature(this->control.activeFeature);
             stationDialog.show();
-        }else if(this->control.activeFeature->getCoordinateSystem() == NULL){
+        }else if(OiFeatureState::getActiveFeature()->getCoordinateSystem() == NULL){
             //fDataDialog.getActiveFeature(this->control.activeFeature);
             fDataDialog.show();
         }

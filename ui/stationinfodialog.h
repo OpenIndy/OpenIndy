@@ -16,6 +16,7 @@
 #include <QMessageBox>
 #include "featurewrapper.h"
 #include "unitconverter.h"
+#include "oifeaturestate.h"
 
 namespace Ui {
 class StationInfoDialog;
@@ -35,8 +36,6 @@ public:
 
     void showEvent(QShowEvent *event);
     void closeEvent(QCloseEvent *event);
-    
-    void getActiveFeature(FeatureWrapper *activeFeature);
 
 signals:
     void connectSensor();
@@ -91,8 +90,6 @@ private:
 
     QMap<QString, QLayout*> accuracyLayouts;
     QMap<QString, QLayout*> sensorConfigLayouts;
-
-    FeatureWrapper *selectedFeature;
 
     Ui::StationInfoDialog *ui;
 };

@@ -83,7 +83,7 @@ bool PlaneFromPoints::setUpResult(Plane &plane){
         double sumZN = 0.0;
         int count = 0;
         foreach(Point *p, this->points){
-            if(p->isSolved){
+            if(p->getIsSolved()){
                 sumXN += p->xyz.getAt(0) * n.getAt(0);
                 sumXN += p->xyz.getAt(1) * n.getAt(1);
                 sumXN += p->xyz.getAt(2) * n.getAt(2);
@@ -107,8 +107,10 @@ bool PlaneFromPoints::setUpResult(Plane &plane){
         n.add(1.0);
         plane.ijk = n;
         plane.xyz = d * n;
-        plane.myStatistic.isValid = true;
-        plane.myStatistic.stdev = qSqrt( eVal / (count - 3) );
+        Statistic myStats;
+        myStats.isValid = true;
+        myStats.stdev = qSqrt( eVal / (count - 3) );
+        plane.setStatistic(myStats);
         return true;
     }
     return false;
@@ -124,7 +126,7 @@ OiMat PlaneFromPoints::preCalc(){
     OiVec centroid(4);
     int n = 0;
     foreach(Point *p, this->points){
-        if(p->isSolved){
+        if(p->getIsSolved()){
             centroid = centroid + p->xyz;
             n++;
         }
@@ -132,7 +134,7 @@ OiMat PlaneFromPoints::preCalc(){
     centroid = centroid * (1/n);
     vector<OiVec> crCoord;
     foreach(Point *p, this->points){
-        if(p->isSolved){
+        if(p->getIsSolved()){
             crCoord.push_back( (p->xyz - centroid) );
         }
     }
@@ -154,11 +156,11 @@ OiMat PlaneFromPoints::preCalc(){
 bool PlaneFromPoints::checkPointCount(){
     int count = 0;
     foreach(Point *p, this->points){
-        if(p->isSolved){
-            this->setUseState(p->id, true);
+        if(p->getIsSolved()){
+            this->setUseState(p->getId(), true);
             count++;
         }else{
-            this->setUseState(p->id, false);
+            this->setUseState(p->getId(), false);
         }
     }
     if(count >= 3){

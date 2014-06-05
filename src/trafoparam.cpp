@@ -132,12 +132,11 @@ OiVec TrafoParam::getTranslation() const{
  * \brief TrafoParam::setTranslation
  * \param translation
  */
-bool TrafoParam::setTranslation(OiVec translation){
-    if(translation.getSize() == 3){
-        this->translation = translation;
-        return true;
-    }
-    return false;
+bool TrafoParam::setTranslation(double tx, double ty, double tz){
+    this->translation.setAt(0, tx);
+    this->translation.setAt(1, ty);
+    this->translation.setAt(2, tz);
+    return true;
 }
 
 /*!
@@ -152,12 +151,11 @@ OiVec TrafoParam::getRotation() const{
  * \brief TrafoParam::setRotation
  * \param rotation
  */
-bool TrafoParam::setRotation(OiVec rotation){
-    if(rotation.getSize() == 3){
-        this->rotation = rotation;
-        return true;
-    }
-    return false;
+bool TrafoParam::setRotation(double rx, double ry, double rz){
+    this->rotation.setAt(0, rx);
+    this->rotation.setAt(1, ry);
+    this->rotation.setAt(2, rz);
+    return true;
 }
 
 /*!
@@ -173,12 +171,11 @@ OiVec TrafoParam::getScale() const{
  * \param scale
  * \return
  */
-bool TrafoParam::setScale(OiVec scale){
-    if(scale.getSize() == 3){
-        this->scale = scale;
-        return true;
-    }
-    return false;
+bool TrafoParam::setScale(double mx, double my, double mz){
+    this->scale.setAt(0, mx);
+    this->scale.setAt(1, my);
+    this->scale.setAt(2, mz);
+    return true;
 }
 
 /*!
@@ -283,6 +280,27 @@ bool TrafoParam::getIsMovement(){
 void TrafoParam::setIsMovement(bool isMovement){
     this->isMovement = isMovement;
     emit this->isMovementChanged(this->id);
+}
+
+/*!
+ * \brief TrafoParam::getStatistic
+ * \return
+ */
+Statistic *TrafoParam::getStatistic() const{
+    return this->myStatistic;
+}
+
+/*!
+ * \brief TrafoParam::setStatistic
+ * \param myStatistic
+ */
+void TrafoParam::setStatistic(Statistic *myStatistic){
+    if(myStatistic != NULL){
+        if(this->myStatistic != NULL){
+            delete this->myStatistic;
+        }
+        this->myStatistic = myStatistic;
+    }
 }
 
 bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){

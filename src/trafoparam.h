@@ -25,11 +25,11 @@ public:
     OiMat getHomogenMatrix() const;
     void generateHomogenMatrix();
     OiVec getTranslation() const;
-    bool setTranslation(OiVec translation);
+    bool setTranslation(double tx, double ty, double tz);
     OiVec getRotation() const;
-    bool setRotation(OiVec rotation);
+    bool setRotation(double rx, double ry, double rz);
     OiVec getScale() const;
-    bool setScale(OiVec scale);
+    bool setScale(double mx, double my, double mz);
     OiVec getQuaternion() const;
     bool setQuaternion(OiVec quaternion);
     CoordinateSystem * const getStartSystem() const;
@@ -41,6 +41,8 @@ public:
     void setValidTime(QDateTime validTime);
     bool getIsMovement();
     void setIsMovement(bool isMovement);
+    Statistic *getStatistic() const;
+    void setStatistic(Statistic *myStatistic);
 
     void recalc();
 

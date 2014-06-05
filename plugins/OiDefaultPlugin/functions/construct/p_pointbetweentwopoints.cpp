@@ -95,8 +95,8 @@ bool PointBetweenTwoPoints::getTwoPoints(){
  * \return
  */
 bool PointBetweenTwoPoints::calcMidPoint(Point &p){
-    if(this->startPoint->isSolved && this->startPoint->isUpdated
-            && this->destPoint->isSolved && this->destPoint->isUpdated){
+    if(this->startPoint->getIsSolved() && this->startPoint->getIsUpdated()
+            && this->destPoint->getIsSolved() && this->destPoint->getIsUpdated()){
         OiVec result = (startPoint->xyz + destPoint->xyz) / 2.0;
         result.setAt(3, 1.0);
         p.xyz = result;

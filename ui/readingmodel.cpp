@@ -711,11 +711,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 17:
-<<<<<<< HEAD
-                        return QString::number(geom->getObservations().at(index.row())->myReading->rTemperature.tempDeg*UnitConverter::getTemperatureMultiplier(),'f',UnitConverter::temperatureDigits);
-=======
-                        return QString::number(UnitConverter::getTemperature(geom->myObservations.at(index.row())->myReading->rTemperature.tempDeg),'f',UnitConverter::temperatureDigits);
->>>>>>> task_Jens
+                        return QString::number(UnitConverter::getTemperature(geom->getObservations().at(index.row())->myReading->rTemperature.tempDeg),'f',UnitConverter::temperatureDigits);
                         break;
                     case 18:
                         return QString(geom->getObservations().at(index.row())->myReading->rTemperature.isValid?"true":"false");

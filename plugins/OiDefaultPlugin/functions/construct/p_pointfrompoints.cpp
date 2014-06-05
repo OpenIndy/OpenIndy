@@ -65,7 +65,7 @@ void PointFromPoints::setUpPointResult(Point &point){
     //Fill l vector
     OiVec l;
     foreach(Point *p, this->points){
-        if(p->isSolved){
+        if(p->getIsSolved()){
             l.add( p->xyz.getAt(0) );
             l.add( p->xyz.getAt(1) );
             l.add( p->xyz.getAt(2) );
@@ -93,10 +93,12 @@ void PointFromPoints::setUpPointResult(Point &point){
             x.add(1.0);
             //set point
             point.xyz = x;
-            point.myStatistic.qxx = qxx;
-            point.myStatistic.v = v;
-            point.myStatistic.isValid = true;
-            this->myStatistic = point.myStatistic;
+            Statistic myStats;
+            myStats.qxx = qxx;
+            myStats.v = v;
+            myStats.isValid = true;
+            point.setStatistic(myStats);
+            this->myStatistic = point.getStatistic();
         }catch(logic_error e){
             this->writeToConsole(e.what());
             return;
@@ -118,11 +120,11 @@ void PointFromPoints::setUpPointResult(Point &point){
 bool PointFromPoints::checkPointCount(){
     int count = 0;
     foreach(Point *p, this->points){
-        if(p->isSolved){
-            this->setUseState(p->id, true);
+        if(p->getIsSolved()){
+            this->setUseState(p->getId(), true);
             count++;
         }else{
-            this->setUseState(p->id, false);
+            this->setUseState(p->getId(), false);
         }
     }
     if(count >= 1){

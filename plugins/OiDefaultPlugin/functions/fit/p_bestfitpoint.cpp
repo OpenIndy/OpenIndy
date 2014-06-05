@@ -75,9 +75,9 @@ void BestFitPoint::setUpPointResult(Point &point){
             //sigma.push_back( obs->sigmaXyz.getAt(0)*obs->sigmaXyz.getAt(0) );
             //sigma.push_back( obs->sigmaXyz.getAt(1)*obs->sigmaXyz.getAt(1) );
             //sigma.push_back( obs->sigmaXyz.getAt(2)*obs->sigmaXyz.getAt(2) );
-            this->setUseState(obs->id, true);
+            this->setUseState(obs->getId(), true);
         }else{
-            this->setUseState(obs->id, false);
+            this->setUseState(obs->getId(), false);
         }
     }
     if(l.getSize() > 0){
@@ -117,27 +117,29 @@ void BestFitPoint::setUpPointResult(Point &point){
             }else{
                 stdv = 0.0;
             }
-            point.myStatistic.s0_apriori = 1.0;
-            point.myStatistic.s0_aposteriori = stdv;
+            Statistic myStats;
+            myStats.s0_apriori = 1.0;
+            myStats.s0_aposteriori = stdv;
 
             //set point
             point.xyz = x;
-            point.myStatistic.qxx = qxx;
-            point.myStatistic.v.replace(v);
-            point.myStatistic.stdev = stdv;
+            myStats.qxx = qxx;
+            myStats.v.replace(v);
+            myStats.stdev = stdv;
 
-            for(int i = 0; i < point.myStatistic.v.getSize() / 3; i++){
+            for(int i = 0; i < myStats.v.getSize() / 3; i++){
                 Residual r;
 
                 r.addValue("vx", v.getAt(i*3), UnitConverter::eMetric);
                 r.addValue("vy", v.getAt(1+i*3), UnitConverter::eMetric);
                 r.addValue("vz", v.getAt(2+i*3), UnitConverter::eMetric);
 
-                point.myStatistic.displayResiduals.append(r);
+                myStats.displayResiduals.append(r);
             }
 
-            point.myStatistic.isValid = true;
-            this->myStatistic = point.myStatistic;
+            myStats.isValid = true;
+            point.setStatistic(myStats);
+            this->myStatistic = point.getStatistic();
 
         }catch(logic_error e){
             this->writeToConsole(e.what());
@@ -163,7 +165,7 @@ bool BestFitPoint::checkObservationCount(){
         if(obs->isValid){
             count++;
         }else{
-            this->setUseState(obs->id, false);
+            this->setUseState(obs->getId(), false);
         }
     }
     if(count >= 1){

@@ -111,7 +111,7 @@ QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter()
  */
 void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTemperature *SET)
 {
-    if(SET->isSolved){
+    if(SET->getIsSolved()){
         FunctionConfiguration myConfig = this->getFunctionConfiguration();
         QMap<QString,QString> stringParameter = myConfig.stringParameter;
         QMap<QString,double> doubleParameter = myConfig.doubleParameter;
@@ -138,15 +138,9 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
         double expansion = (refTemp-SET->getTemperature())*expansionCoefficient;
         protExpansion = QString::number(expansion,'f',4);
         double scale = (1+ (expansion/1000000));
-        tp.scale.setAt(0,scale);
-        tp.scale.setAt(1,scale);
-        tp.scale.setAt(2,scale);
-        tp.translation.setAt(0,0.0);
-        tp.translation.setAt(1,0.0);
-        tp.translation.setAt(2,0.0);
-        tp.rotation.setAt(0,0.0);
-        tp.rotation.setAt(1,0.0);
-        tp.rotation.setAt(2,0.0);
+        tp.setScale(scale, scale, scale);
+        tp.setTranslation(0.0, 0.0, 0.0);
+        tp.setRotation(0.0, 0.0, 0.0);
         tp.generateHomogenMatrix();
 
         this->calcAccuracy(tp,tempAccuracy,expansion);
@@ -164,16 +158,19 @@ void SimpleTemperatureCompensation::calcAccuracy(TrafoParam &tp, double tempAccu
 {
     double stddev = tempAccuracy*(expansion/1000000);
     protSTDDEV = QString::number(stddev,'f',6);
-    tp.stats = new Statistic();
-    tp.stats->s0_apriori = 1.0;
-    tp.stats->s0_aposteriori = stddev;
-    tp.stats->stdev = stddev;
-    tp.stats->isValid = true;
+    Statistic *myStats = new Statistic();
 
-    this->myStatistic.s0_aposteriori = tp.stats->s0_aposteriori;
-    this->myStatistic.s0_apriori = tp.stats->s0_apriori;
-    this->myStatistic.stdev = tp.stats->stdev;
-    this->myStatistic.isValid = tp.stats->isValid;
+    myStats->s0_apriori = 1.0;
+    myStats->s0_aposteriori = stddev;
+    myStats->stdev = stddev;
+    myStats->isValid = true;
+
+    tp.setStatistic(myStats);
+
+    this->myStatistic.s0_aposteriori = myStats->s0_aposteriori;
+    this->myStatistic.s0_apriori = myStats->s0_apriori;
+    this->myStatistic.stdev = myStats->stdev;
+    this->myStatistic.isValid = myStats->isValid;
 }
 
 QStringList SimpleTemperatureCompensation::getResultProtocol()
@@ -198,11 +195,11 @@ ScalarEntityTemperature *SimpleTemperatureCompensation::getScalarEntityTemperatu
 {
     ScalarEntityTemperature *result = NULL;
     foreach(ScalarEntityTemperature *set, this->scalarEntityTemperatures){
-        if(result == NULL && set->isSolved){
+        if(result == NULL && set->getIsSolved()){
             result = set;
-            this->setUseState(result->id, true);
+            this->setUseState(result->getId(), true);
         }else{
-            this->setUseState(set->id, false);
+            this->setUseState(set->getId(), false);
         }
     }
     return result;

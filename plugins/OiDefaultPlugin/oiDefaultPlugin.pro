@@ -128,7 +128,8 @@ SOURCES += p_factory.cpp \
     functions/objectTransformation/p_shiftplane.cpp \
     functions/fit/p_bestfitcircle.cpp \
     ../../src/sensorlistener.cpp \
-    functions/systemTransformation/p_simpletemperaturecompensation.cpp
+    functions/systemTransformation/p_simpletemperaturecompensation.cpp \
+    ../../src/element.cpp
 
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
