@@ -155,9 +155,9 @@ QString ScalarEntityDistance::getDisplayIsCommon() const{
 QString ScalarEntityDistance::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
-QString ScalarEntityDistance::getDisplayObs() const{
+/*QString ScalarEntityDistance::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString ScalarEntityDistance::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

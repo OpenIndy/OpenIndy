@@ -205,15 +205,15 @@ QString Line::getDisplayZ() const{
 }
 
 QString Line::getDisplayI() const{
-    return QString::number(this->ijk.getAt(0),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(0),'f',6);
 }
 
 QString Line::getDisplayJ() const{
-    return QString::number(this->ijk.getAt(1),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(1),'f',6);
 }
 
 QString Line::getDisplayK() const{
-    return QString::number(this->ijk.getAt(2),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(2),'f',6);
 }
 
 QString Line::getDisplayIsCommon() const{
@@ -224,9 +224,9 @@ QString Line::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
 
-QString Line::getDisplayObs() const{
+/*QString Line::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString Line::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

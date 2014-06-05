@@ -31,6 +31,7 @@ public:
     Geometry *getMyActual() const;
     bool setMyActual(Geometry *myActual);
 
+	QString getDisplayObs() const;
     QList<Observation *> getObservations() const;
     bool addObservation(Observation *obs);
     bool removeObservation(Observation *obs);

@@ -155,7 +155,8 @@ SOURCES += \
     controller/trafocontroller.cpp \
     controller/datalisthandler.cpp \
     ui/featureoverviewproxymodel.cpp \
-    controller/oiDataExchange/oiexchangepts.cpp
+    controller/oiDataExchange/oiexchangepts.cpp \
+    ui/stationinfodialog.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -276,7 +277,8 @@ HEADERS  += \
     controller/trafocontroller.h \
     controller/datalisthandler.h \
     ui/featureoverviewproxymodel.h \
-    controller/oiDataExchange/oiexchangepts.h
+    controller/oiDataExchange/oiexchangepts.h \
+    ui/stationinfodialog.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
@@ -292,6 +294,7 @@ FORMS    += ui/mainwindow.ui \
     ui/scalarentitydialog.ui \
     ui/importnominalgeometrydialog.ui \
     ui/nominaldatadialog.ui \
-    ui/edittrafoparamdialog.ui
+    ui/edittrafoparamdialog.ui \
+    ui/stationinfodialog.ui
 
 

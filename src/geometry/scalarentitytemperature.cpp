@@ -9,6 +9,7 @@ ScalarEntityTemperature::ScalarEntityTemperature(bool isNominal, QObject *parent
     this->isSolved = false;
     this->isUpdated = false;
     this->isDrawn = false;
+    this->setTemperature(20.0);
 }
 
 ScalarEntityTemperature::ScalarEntityTemperature(const ScalarEntityTemperature &copy) : Geometry(copy.isNominal){
@@ -67,9 +68,9 @@ QString ScalarEntityTemperature::getDisplayIsCommon() const{
 QString ScalarEntityTemperature::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
-QString ScalarEntityTemperature::getDisplayObs() const{
+/*QString ScalarEntityTemperature::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString ScalarEntityTemperature::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");
@@ -89,5 +90,5 @@ QString ScalarEntityTemperature::getDisplayStdDev() const{
 }
 
 QString ScalarEntityTemperature::getDisplayScalarTemperatureValue() const{
-    return QString::number(this->temperature,'f',UnitConverter::temperatureDigits);
+    return QString::number(UnitConverter::getTemperature(this->temperature),'f',UnitConverter::temperatureDigits);
 }

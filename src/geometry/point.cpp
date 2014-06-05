@@ -183,9 +183,9 @@ QString Point::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
 
-QString Point::getDisplayObs() const{
+/*QString Point::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString Point::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

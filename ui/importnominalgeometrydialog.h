@@ -10,6 +10,8 @@
 #include <QShowEvent>
 #include <QDesktopWidget>
 #include "oifeaturestate.h"
+#include <QStringListModel>
+#include <QMessageBox>
 
 namespace Ui {
 class importNominalGeometryDialog;

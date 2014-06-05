@@ -124,6 +124,11 @@ void MainWindow::setConnects(){
     connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),&this->sInfoDialog,SLOT(hideInfo(bool)));
     connect(this->control.myFeatureState, SIGNAL(activeStationChanged()), this, SLOT(changedStation()));
 
+    //station and sensor setting
+    connect(&stationDialog,SIGNAL(disconnectSensor()),&control,SLOT(startDisconnect()));
+    connect(&stationDialog,SIGNAL(connectSensor()),&control,SLOT(startConnect()));
+    connect(&stationDialog,SIGNAL(showStationGeomProperties(FeatureWrapper*)),this,SLOT(openStationGeomProperties(FeatureWrapper*)));
+
     //mainwindow actions
     connect(this->actionMConfig,SIGNAL(triggered()),this,SLOT(openCreateFeatureMConfig()));
     connect(this->ui->actionClose,SIGNAL(triggered()),this,SLOT(close()));
@@ -1348,7 +1353,11 @@ void MainWindow::showProperties(bool checked){
         }else if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
             //emit sendActiveNominalfeature(OiFeatureState::getActiveFeature());
             nominalDialog.show();
-        }else if(OiFeatureState::getActiveFeature()->getCoordinateSystem() == NULL){
+        }else if(this->control.activeFeature->getStation() != NULL){
+            //stationDialog.getActiveFeature(this->control.activeFeature);
+            stationDialog.show();
+        }else if(this->control.activeFeature->getCoordinateSystem() == NULL){
+            //fDataDialog.getActiveFeature(this->control.activeFeature);
             fDataDialog.show();
         }
     }
@@ -1606,4 +1615,14 @@ void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString
     }else{
         this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());
     }
+}
+
+/*!
+ * \brief MainWindow::openStationGeomProperties shows properties and functions of the station geometrie point.
+ * \param fw
+ */
+void MainWindow::openStationGeomProperties(FeatureWrapper *fw)
+{
+    //fDataDialog.getActiveFeature(fw);
+    fDataDialog.show();
 }

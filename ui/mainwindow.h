@@ -26,6 +26,7 @@
 #include "nominaldatadialog.h"
 #include "edittrafoparamdialog.h"
 #include "oiprojectexchanger.h"
+#include "stationinfodialog.h"
 
 #include "featureoverviewdelegate.h"
 #include "trafoparamdelegate.h"
@@ -85,6 +86,8 @@ public:
 
     importNominalGeometryDialog importNominalDialog;
     NominalDataDialog nominalDialog;
+
+    StationInfoDialog stationDialog;
 
     WatchWindow *watchWindow;
 
@@ -272,6 +275,7 @@ private slots:
     void clearCustomWidgets();
 
     void on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1);
+    void openStationGeomProperties(FeatureWrapper *fw);
 
 private:
     Ui::MainWindow *ui;

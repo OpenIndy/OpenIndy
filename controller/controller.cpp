@@ -408,7 +408,7 @@ void Controller::changeActiveStation(){
     if(OiFeatureState::getActiveFeature()->getStation() != NULL){
 
             if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-                OiFeatureState::getActiveStation()->startDisconnect();
+                this->startDisconnect();
             }
             //this->activeStation->isSolved = false;
             //TODO solved für station setzen !

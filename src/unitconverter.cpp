@@ -32,6 +32,14 @@ void UnitConverter::setAngleUnit(unitType scalar){
         UnitConverter::angleMultiplier = 1.0;
         UnitConverter::angleType = scalar;
         break;
+    case UnitConverter::eMilliRadians:
+        UnitConverter::angleMultiplier = 1000;
+        UnitConverter::angleType = scalar;
+        break;
+    case UnitConverter::eArcSeconds:
+        UnitConverter::angleMultiplier = 206264.8062471;
+        UnitConverter::angleType = scalar;
+        break;
     default:
         break;
     }
@@ -51,6 +59,10 @@ void UnitConverter::setDistanceUnit(unitType scalar){
         UnitConverter::distanceMultiplier = 1000;
         UnitConverter::distanceType = scalar;
         break;
+    case UnitConverter::eInch:
+        UnitConverter::distanceMultiplier = 39.37007874;
+        UnitConverter::distanceType = scalar;
+        break;
     default:
         break;
     }
@@ -61,7 +73,15 @@ void UnitConverter::setTemperatureUnit(unitType scalar){
 
     switch (scalar) {
     case UnitConverter::eGRAD:
-        UnitConverter::temperatureMultiplier = 1.0;
+        //UnitConverter::temperatureMultiplier = 1.0;
+        UnitConverter::temperatureType = scalar;
+        break;
+    case UnitConverter::eKelvin:
+        //UnitConverter::temperatureMultiplier = 1.0 + 273.15;
+        UnitConverter::temperatureType = scalar;
+        break;
+    case UnitConverter::eFahrenheit:
+        //UnitConverter::temperatureMultiplier = 1.8 + 32;
         UnitConverter::temperatureType = scalar;
         break;
     default:
@@ -81,9 +101,50 @@ double UnitConverter::getDistanceMultiplier(){
     return UnitConverter::distanceMultiplier;
 }
 
-double UnitConverter::getTemperatureMultiplier(){
+/*!
+ * \brief UnitConverter::getTemperature converts the temperature value from °Celsius to the specified temperature unit.
+ * \param temp
+ * \return
+ */
+double UnitConverter::getTemperature(double temp){
 
+    switch (temperatureType) {
+    case eGRAD:
+        return temp;
+        break;
+    case eKelvin:
+        return (temp + 273.15);
+        break;
+    case eFahrenheit:
+        return ((temp *1.8) + 32.0);
+        break;
+    default:
+        break;
+    }
     return UnitConverter::temperatureMultiplier;
+}
+
+/*!
+ * \brief UnitConverter::getReverseTemperature converts the specified temperature in the active temperature unit to °Celsius
+ * \param temp
+ * \return
+ */
+double UnitConverter::getReverseTemperature(double temp)
+{
+    switch (temperatureType) {
+    case eGRAD:
+        return temp;
+        break;
+    case eKelvin:
+        return (temp -273.15);
+        break;
+    case eFahrenheit:
+        return ((temp -32.0) / 1.8);
+        break;
+    default:
+        break;
+    }
+
 }
 
 /*!
@@ -99,6 +160,10 @@ QString UnitConverter::getAngleUnitString(){
         return " [gon]";
     case UnitConverter::eRADIANT:
         return " [rad]";
+    case UnitConverter::eMilliRadians:
+        return " [mrad]";
+    case UnitConverter::eArcSeconds:
+        return " [arcsec]";
     default:
         return "";
     }
@@ -115,6 +180,8 @@ QString UnitConverter::getDistanceUnitString(){
         return " [m]";
     case UnitConverter::eMILLIMETER:
         return " [mm]";
+    case UnitConverter::eInch:
+        return " [inch]";
     default:
         return "";
     }
@@ -129,6 +196,10 @@ QString UnitConverter::getTemperatureUnitString(){
     switch(UnitConverter::temperatureType){
     case UnitConverter::eGRAD:
         return " [°C]";
+    case UnitConverter::eKelvin:
+        return " [°K]";
+    case UnitConverter::eFahrenheit:
+        return " [°F]";
     default:
         return "";
     }
@@ -149,6 +220,16 @@ QString UnitConverter::getUnitString(UnitConverter::unitType u)
         return " [gon]";
     case UnitConverter::eRADIANT:
         return " [rad]";
+    case UnitConverter::eInch:
+        return " [inch]";
+    case UnitConverter::eArcSeconds:
+        return " [arcsec]";
+    case UnitConverter::eMilliRadians:
+        return " [mrad]";
+    case UnitConverter::eKelvin:
+        return " [°K]";
+    case UnitConverter::eFahrenheit:
+        return " [°F]";
     default:
         return "";
     }
@@ -168,6 +249,16 @@ UnitConverter::unitType UnitConverter::getUnitType(QString s)
         return UnitConverter::eGON;
     }else if(s == " [rad]"){
         return UnitConverter::eRADIANT;
+    }else if(s == " [arcsec]"){
+        return UnitConverter::eArcSeconds;
+    }else if(s == " [mrad]"){
+        return UnitConverter::eMilliRadians;
+    }else if(s == " [inch]"){
+        return UnitConverter::eInch;
+    }else if(s == " [°K]"){
+        return UnitConverter::eKelvin;
+    }else if(s == " [°F]"){
+        return UnitConverter::eFahrenheit;
     }
 
 }

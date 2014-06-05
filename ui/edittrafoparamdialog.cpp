@@ -82,15 +82,15 @@ void EditTrafoparamDialog::on_toolButton_ok_clicked()
  */
 void EditTrafoparamDialog::initGUI()
 {
-    ui->lineEdit_rotationX->setText(QString("rotation x " + UnitConverter::getAngleUnitString()));
-    ui->lineEdit_rotationY->setText(QString("rotation y " + UnitConverter::getAngleUnitString()));
-    ui->lineEdit_rotationZ->setText(QString("rotation z " + UnitConverter::getAngleUnitString()));
-    ui->lineEdit_scaleX->setText(QString("scale x"));
-    ui->lineEdit_scaleY->setText(QString("scale y"));
-    ui->lineEdit_scaleZ->setText(QString("scale z"));
-    ui->lineEdit_translationX->setText(QString("translation x " + UnitConverter::getDistanceUnitString()));
-    ui->lineEdit_translationY->setText(QString("translation y " + UnitConverter::getDistanceUnitString()));
-    ui->lineEdit_translationZ->setText(QString("translation z " + UnitConverter::getDistanceUnitString()));
+    ui->label_rotationX->setText(QString("rotation x " + UnitConverter::getAngleUnitString()));
+    ui->label_rotationY->setText(QString("rotation y " + UnitConverter::getAngleUnitString()));
+    ui->label_rotationZ->setText(QString("rotation z " + UnitConverter::getAngleUnitString()));
+    ui->label_scaleX->setText(QString("scale x"));
+    ui->label_scaleY->setText(QString("scale y"));
+    ui->label_scaleZ->setText(QString("scale z"));
+    ui->label_translationX->setText(QString("translation x " + UnitConverter::getDistanceUnitString()));
+    ui->label_translationY->setText(QString("translation y " + UnitConverter::getDistanceUnitString()));
+    ui->label_translationZ->setText(QString("translation z " + UnitConverter::getDistanceUnitString()));
 
     ui->comboBox_displayedFunction->clear();
 
@@ -106,9 +106,9 @@ void EditTrafoparamDialog::initGUI()
     ui->lineEdit_rotationX->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getRotation().getAt(0)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
     ui->lineEdit_rotationY->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getRotation().getAt(1)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
     ui->lineEdit_rotationZ->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getRotation().getAt(2)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
-    ui->lineEdit_scaleX->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getScale().getAt(0),'f',UnitConverter::distanceDigits));
-    ui->lineEdit_scaleY->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getScale().getAt(1),'f',UnitConverter::distanceDigits));
-    ui->lineEdit_scaleZ->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getScale().getAt(2),'f',UnitConverter::distanceDigits));
+    ui->lineEdit_scaleX->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getScale().getAt(0),'f',6));
+    ui->lineEdit_scaleY->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getScale().getAt(1),'f',6));
+    ui->lineEdit_scaleZ->setText(QString::number(this->selectedTrafoParam->getTrafoParam()->getScale().getAt(2),'f',6));
 
 }
 
