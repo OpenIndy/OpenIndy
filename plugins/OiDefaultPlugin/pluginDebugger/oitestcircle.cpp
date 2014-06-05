@@ -103,7 +103,7 @@ void OiTestCircle::testLoeslerCircle(){
     function->addObservation(obs7,0);
     function->addObservation(obs8,0);
 
-    Circle *myCircle = new Circle();
+    Circle *myCircle = new Circle(false);
 
     QVERIFY2(function->exec(*myCircle), "failed");
 }
