@@ -37,7 +37,7 @@ Controller::Controller(QObject *parent) :
     //connect(this, SIGNAL(sendAvailableElementsFilter(Configuration::ElementTypes,bool)), this->availableElementsModel, SLOT(setFilter(Configuration::ElementTypes,bool)));
 
 
-    //connect(PluginLoader::myMetaInfo,SIGNAL(sendMe(PluginMetaData*)),this,SLOT(savePluginData(PluginMetaData*)));
+    connect(PluginLoader::myMetaInfo,SIGNAL(sendMe(PluginMetaData*)),this,SLOT(savePluginData(PluginMetaData*)));
 
 
     //connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
@@ -470,7 +470,7 @@ if (!metaInfo->alreadyExists){
     QList<Function*> functionList = PluginLoader::loadFunctionPlugins(metaInfo->path);
     QList<NetworkAdjustment*> networkAdjustmentList = PluginLoader::loadNetworkAdjustmentPlugins(metaInfo->path);
 
-    SystemDbManager::savePlugin(metaInfo,functionList,sensorList,networkAdjustmentList);
+    SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList);
 
     /*for (int i = 0;i<sensorList.size();i++){
         SystemDbManager::savePlugin(sensorList.at(i)->getMetaData(),functionList,sensorList,networkAdjustmentList);

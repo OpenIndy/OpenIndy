@@ -3,6 +3,7 @@
 
 #include <QtGlobal>
 #include <QObject>
+#include <QString>
 
 #include "pi_oiplugin.h"
 
