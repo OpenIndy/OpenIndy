@@ -5,8 +5,9 @@
 
 class Paraboloid : public Geometry
 {
+    Q_OBJECT
 public:
-    Paraboloid();
+    Paraboloid(bool isNominal, QObject *parent = 0);
     Paraboloid(const Paraboloid &copy);
     void recalc();
 

@@ -11,6 +11,7 @@
  */
 class Point : public Geometry
 {
+    Q_OBJECT
 public:
     enum PointUnknowns{
         unknownX,
@@ -18,13 +19,13 @@ public:
         unknownZ
     };
 
-    Point();
+    Point(bool isNominal, QObject *parent = 0);
     Point(const Point &copy);
     ~Point();
 
     OiVec xyz;
 
-    OiVec* getXYZ();
+    OiVec getXYZ() const;
 
     void recalc();
 

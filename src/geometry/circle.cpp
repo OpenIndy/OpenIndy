@@ -2,7 +2,7 @@
 
 #include "function.h"
 
-Circle::Circle() : xyz(4), ijk(4), radius(0.0)
+Circle::Circle(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4), radius(0.0)
 {
     this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
@@ -15,7 +15,7 @@ Circle::Circle() : xyz(4), ijk(4), radius(0.0)
  * \brief Circle::Circle
  * \param copy
  */
-Circle::Circle(const Circle &copy){
+Circle::Circle(const Circle &copy) : Geometry(copy.isNominal){
     this->id = copy.id;
     this->name = copy.name;
     this->isSolved = copy.isSolved;
@@ -25,46 +25,46 @@ Circle::Circle(const Circle &copy){
  * \brief Circle::getXYZ returns xyz vector
  * \return
  */
-OiVec *Circle::getXYZ()
-{
-    OiVec* xyz = &this->xyz;
-    return xyz;
+OiVec Circle::getXYZ() const{
+    return this->xyz;
 }
 
 /*!
  * \brief Circle::getIJK returns ijk vector
  * \return
  */
-OiVec *Circle::getIJK()
+OiVec Circle::getIJK() const
 {
-    OiVec *ijk = &this->ijk;
-    return ijk;
+    return this->ijk;
 }
 
 /*!
  * \brief Circle::recalc
  */
 void Circle::recalc(){
-    /*
-     * isDefined -> becomes true as soon as the first function of a feature has been executed, which defines the feature
-     * isSolved -> is true as long as there isn't any function which cannot be successfully executed
-     */
-    bool isDefined = false;
-    foreach(Function *f, this->functionList){
-        if(!isDefined){
-            this->isSolved = f->exec(*this);
-            isDefined = true;
-        }else if(this->isSolved){
-            this->isSolved = f->exec(*this);
+
+    if(this->functionList.size() > 0){
+
+        bool solved = true;
+        foreach(Function *f, this->functionList){
+
+            //execute the function if it exists and if the last function was executed successfully
+            if(f != NULL && solved == true){
+                solved = f->exec(*this);
+            }
+
         }
-    }
-    //if no function is set this feature cannot be solved and its coordinates are reset
-    if(this->functionList.size() == 0 && this->isNominal == false){
-        this->isSolved = false;
+        this->setIsSolved(solved);
+
+    }else if(this->isNominal == false){
+
         this->xyz = OiVec(4);
         this->radius = 0.0;
         this->dist2origin = 0.0;
+        this->setIsSolved(false);
+
     }
+
 }
 
 

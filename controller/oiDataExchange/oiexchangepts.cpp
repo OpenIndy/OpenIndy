@@ -79,7 +79,7 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data)
 
     QTextStream in(data.device);
 
-    PointCloud *pc = new PointCloud();
+    PointCloud *pc = new PointCloud(false);
 
     OiVec focalPoint(4); //Schwerpunkt der Punktwolke
     int pointCount;
@@ -112,9 +112,8 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data)
         }
     }
 
-    pc->name = QString::number(pc->id);
-    pc->isNominal = true;
-    pc->isSolved = true;
+    pc->setFeatureName(QString::number(pc->getId()));
+    pc->setIsSolved(true);
 
     pc->xyz = focalPoint/pointCount;
 
@@ -124,7 +123,7 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data)
 
     data.features.append(f);
 
-    data.nominalCoordSys->nominals.append(pc);
+    //data.nominalCoordSys->getNominals().append(pc);
 }
 
 

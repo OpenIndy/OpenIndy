@@ -90,6 +90,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                 if(currentFeature->getFeature()->getFunctions().size() == 0){
                     return "no function set";
                 }else{
+                    return QVariant();
                     functions += currentFeature->getFeature()->getFunctions().at(0)->getMetaData()->name;
                     for(int i=1;i<currentFeature->getFeature()->getFunctions().size();i++){
                         functions += "," + currentFeature->getFeature()->getFunctions().at(i)->getMetaData()->name;
@@ -127,6 +128,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                     return QVariant();
                 }
             case 17:
+                return QVariant();
                 if(currentFeature->getFeature()->getIsSolved()){
                     return currentFeature->getFeature()->getDisplayScalarDistanceValue();
                 }else{
@@ -183,13 +185,13 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
 
         if (role == Qt::BackgroundRole){
 
-            if(currentFeature->getGeometry() != NULL && currentFeature->getGeometry()->mConfig.typeOfReading == -1){
+            if(currentFeature->getGeometry() != NULL && currentFeature->getGeometry()->getMeasurementConfig().typeOfReading == -1){
                 if(index.column() == 8){
                     return QColor(Qt::red);
                 }
             }
 
-            if(currentFeature->getStation() != NULL && currentFeature->getStation()->position->mConfig.typeOfReading == -1){
+            if(currentFeature->getStation() != NULL && currentFeature->getStation()->position->getMeasurementConfig().typeOfReading == -1){
                 if(index.column() == 8){
                     return QColor(Qt::red);
                 }
@@ -397,9 +399,9 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
 
             FeatureAttributesExchange myExchange;
             if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-                myExchange.actual = !OiFeatureState::getActiveFeature()->getGeometry()->isNominal;
-                myExchange.nominal = OiFeatureState::getActiveFeature()->getGeometry()->isNominal;
-                myExchange.nominalSystem = OiFeatureState::getActiveFeature()->getGeometry()->myNominalCoordSys;
+                myExchange.actual = !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal();
+                myExchange.nominal = OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal();
+                myExchange.nominalSystem = OiFeatureState::getActiveFeature()->getGeometry()->getNominalSystem();
             }else if(OiFeatureState::getActiveFeature()->getTrafoParam() != NULL){
                 myExchange.startSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->getStartSystem();
                 myExchange.destSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->getDestinationSystem();
@@ -411,16 +413,16 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
 
                 if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
                     Geometry *myGeom = OiFeatureState::getActiveFeature()->getGeometry();
-                    if(myGeom->isNominal && myGeom->myActual != NULL){
-                        myGeom->myActual->setFeatureName(value.toString());
-                        foreach(Geometry *nomGeom, myGeom->myActual->nominals){
+                    if(myGeom->getIsNominal() && myGeom->getMyActual() != NULL){
+                        myGeom->getMyActual()->setFeatureName(value.toString());
+                        foreach(Geometry *nomGeom, myGeom->getMyActual()->getMyNominals()){
                             if(nomGeom != NULL){
                                 nomGeom->setFeatureName(value.toString());
                             }
                         }
                     }else{
                         myGeom->setFeatureName(value.toString());
-                        foreach(Geometry *nomGeom, myGeom->nominals){
+                        foreach(Geometry *nomGeom, myGeom->getMyNominals()){
                             if(nomGeom != NULL){
                                 nomGeom->setFeatureName(value.toString());
                             }

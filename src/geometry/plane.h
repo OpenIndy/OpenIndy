@@ -11,6 +11,7 @@
 
 class Plane : public Geometry
 {
+    Q_OBJECT
 public:
     enum PlaneUnknowns{
         unknownX,
@@ -21,15 +22,15 @@ public:
         unknownK
     };
 
-    Plane();
+    Plane(bool isNominal, QObject *parent = 0);
     Plane(const Plane &copy);
     ~Plane();
 
     OiVec xyz;
     OiVec ijk;
 
-    OiVec* getXYZ();
-    OiVec* getIJK();
+    OiVec getXYZ() const;
+    OiVec getIJK() const;
 
     void recalc();
 

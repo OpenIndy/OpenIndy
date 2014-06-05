@@ -154,7 +154,7 @@ SOURCES += \
     controller/oifeaturestate.cpp \
     controller/trafocontroller.cpp \
     controller/datalisthandler.cpp \
-    ui/featureoverviewproxymodel.cpp
+    ui/featureoverviewproxymodel.cpp \
     controller/oiDataExchange/oiexchangepts.cpp
 
 HEADERS  += \
@@ -275,7 +275,7 @@ HEADERS  += \
     controller/oifeaturestate.h \
     controller/trafocontroller.h \
     controller/datalisthandler.h \
-    ui/featureoverviewproxymodel.h
+    ui/featureoverviewproxymodel.h \
     controller/oiDataExchange/oiexchangepts.h
 
 FORMS    += ui/mainwindow.ui \

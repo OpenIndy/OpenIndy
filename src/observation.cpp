@@ -24,12 +24,7 @@ Observation::~Observation(){
     //delete this observation from target geometries
     foreach(Geometry *myGeom, this->myTargetGeometries){
         if(myGeom != NULL){
-            myGeom->myObservations.removeOne(this);
-            foreach(Function *myFunc, myGeom->getFunctions()){
-                if(myFunc != NULL){
-                    myFunc->removeObservation(this->id);
-                }
-            }
+            myGeom->removeObservation(this);
         }
     }
 

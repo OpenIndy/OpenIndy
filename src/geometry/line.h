@@ -11,6 +11,7 @@
 
 class Line : public Geometry
 {
+    Q_OBJECT
 public:
     enum LineUnknowns{
         unknownX,
@@ -21,15 +22,15 @@ public:
         unknownK
     };
 
-    Line();
+    Line(bool isNominal, QObject *parent = 0);
     Line(const Line &copy);
     ~Line();
 
     OiVec xyz;
     OiVec ijk;
 
-    OiVec* getXYZ();
-    OiVec* getIJK();
+    OiVec getXYZ() const;
+    OiVec getIJK() const;
 
     bool toOpenIndyXML(QXmlStreamWriter& stream);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);

@@ -269,8 +269,8 @@ void FeatureTreeViewModel::appendGeometries(FeatureTreeItem *root, QList<Feature
         FeatureTreeItem *geom_readings = new FeatureTreeItem("readings:");
         geom->appendChild(geom_observations);
         geom->appendChild(geom_readings);
-        for(int j = 0; j < geometries.at(i)->getGeometry()->myObservations.size(); j++){
-            Observation *obs = geometries.at(i)->getGeometry()->myObservations.at(j);
+        for(int j = 0; j < geometries.at(i)->getGeometry()->getObservations().size(); j++){
+            Observation *obs = geometries.at(i)->getGeometry()->getObservations().at(j);
             if(obs != NULL && obs->myReading != NULL){
                 if(obs->myStation != NULL){
                     this->appendObservation(geom_observations, obs);
@@ -315,8 +315,8 @@ void FeatureTreeViewModel::appendStations(FeatureTreeItem *root, QList<FeatureWr
         station->appendChild(station_observations);
         station->appendChild(station_readings);
         if(stations.at(i)->getStation()->position != NULL){
-            for(int j = 0; j < stations.at(i)->getStation()->position->myObservations.size(); j++){
-                Observation *obs = stations.at(i)->getStation()->position->myObservations.at(j);
+            for(int j = 0; j < stations.at(i)->getStation()->position->getObservations().size(); j++){
+                Observation *obs = stations.at(i)->getStation()->position->getObservations().at(j);
                 if(obs != NULL && obs->myReading != NULL){
                     if(obs->myStation != NULL){
                         this->appendObservation(station_observations, obs);

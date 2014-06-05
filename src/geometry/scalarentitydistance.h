@@ -6,8 +6,9 @@
 
 class ScalarEntityDistance : public Geometry
 {
+    Q_OBJECT
 public:
-    ScalarEntityDistance();
+    ScalarEntityDistance(bool isNominal, QObject *parent = 0);
     ScalarEntityDistance(const ScalarEntityDistance &copy);
 
     void recalc();

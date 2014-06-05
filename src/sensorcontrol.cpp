@@ -57,7 +57,7 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
     }
 
 
-    QList<Reading*> readings = instrument->measure(&(geom->mConfig));
+    QList<Reading*> readings = instrument->measure(&(geom->getMeasurementConfig()));
 
     qDebug() << "count readings" << readings.size();
     if(readings.size() == 0){
@@ -532,7 +532,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
     r->id = Configuration::generateID();
     r->measuredAt = QDateTime::currentDateTime();
 
-    switch(geom->mConfig.typeOfReading){
+    switch(geom->getMeasurementConfig().typeOfReading){
         case(Configuration::ePolar) :{
             //set type
             r->typeofReading = Configuration::ePolar;
@@ -563,7 +563,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             }
 
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::ePolar,Configuration::sPolar);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
@@ -588,7 +588,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
                 geom->getFunctions().at(0)->addObservation(obs, 0);
             }
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::eDistance,Configuration::sDistance);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
@@ -614,7 +614,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
                 geom->getFunctions().at(0)->addObservation(obs, 0);
             }
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::eDirection,Configuration::sDirection);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
@@ -643,7 +643,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             }
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::eCartesian,Configuration::sCartesian);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
@@ -666,7 +666,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             }
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::eLevel,Configuration::sLevel);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
@@ -689,7 +689,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             }
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::eTemperatur,Configuration::sTemperatur);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
@@ -712,7 +712,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
                 }
                 obs->myTargetGeometries.append(geom);
                 //save observation in geometry
-                geom->myObservations.append(obs);
+                geom->addObservation(obs);
                 geom->insertReadingType(Configuration::eUndefined, instrument->getUndefinedReadingName());
                 //save observation in station
                 this->myStation->coordSys->addObservation(obs);

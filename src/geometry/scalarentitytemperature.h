@@ -6,8 +6,9 @@
 
 class ScalarEntityTemperature : public Geometry
 {
+    Q_OBJECT
 public:
-    ScalarEntityTemperature();
+    ScalarEntityTemperature(bool isNominal, QObject *parent = 0);
     ScalarEntityTemperature(const ScalarEntityTemperature &copy);
 
     void recalc();

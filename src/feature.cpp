@@ -84,9 +84,13 @@ QString Feature::getFeatureName() const{
  * \return
  */
 bool Feature::setFeatureName(QString name){
-    this->name = name;
-    emit this->featureNameChanged(this->id);
-    return true;
+    if(this->name.compare(name) != 0){
+        QString oldName = this->name;
+        this->name = name;
+        emit this->featureNameChanged(this->id, oldName);
+        return true;
+    }
+    return false;
 }
 
 /*!
@@ -102,8 +106,10 @@ QString Feature::getGroupName() const{
  * \param group
  */
 void Feature::setGroupName(QString group){
-    this->group = group;
-    emit this->featureGroupChanged(this->id);
+    if(this->group.compare(group) != 0){
+        this->group = group;
+        emit this->featureGroupChanged(this->id);
+    }
 }
 
 /*!
@@ -119,8 +125,10 @@ QString Feature::getComment() const{
  * \param comment
  */
 void Feature::setComment(QString comment){
-    this->comment = comment;
-    emit this->featureCommentChanged(this->id);
+    if(this->comment.compare(comment) != 0){
+        this->comment = comment;
+        emit this->featureCommentChanged(this->id);
+    }
 }
 
 /*!
@@ -136,8 +144,10 @@ bool Feature::getIsUpdated() const{
  * \param isUpdated
  */
 void Feature::setIsUpdated(bool isUpdated){
-    this->isUpdated = isUpdated;
-    emit this->featureIsUpdatedChanged(this->id);
+    if(this->isUpdated != isUpdated){
+        this->isUpdated = isUpdated;
+        emit this->featureIsUpdatedChanged(this->id);
+    }
 }
 
 /*!
@@ -153,8 +163,10 @@ bool Feature::getIsSolved() const{
  * \param isSolved
  */
 void Feature::setIsSolved(bool isSolved){
-    this->isSolved = isSolved;
-    emit this->featureIsSolvedChanged(this->id);
+    if(this->isSolved != isSolved){
+        this->isSolved = isSolved;
+        emit this->featureIsSolvedChanged(this->id);
+    }
 }
 
 /*!
@@ -170,8 +182,10 @@ Configuration::eColor Feature::getDisplayColor() const{
  * \param displayColor
  */
 void Feature::setDisplayColor(Configuration::eColor displayColor){
-    this->displayColor = displayColor;
-    emit this->featureDisplayColorChanged(this->id);
+    if(this->displayColor != displayColor){
+        this->displayColor = displayColor;
+        emit this->featureDisplayColorChanged(this->id);
+    }
 }
 
 /*!
@@ -187,8 +201,10 @@ bool Feature::getIsDrawn() const{
  * \param isDrawn
  */
 void Feature::setIsDrawn(bool isDrawn){
-    this->isDrawn = isDrawn;
-    emit this->featureIsDrawnChanged(this->id);
+    if(this->isDrawn != isDrawn){
+        this->isDrawn = isDrawn;
+        emit this->featureIsDrawnChanged(this->id);
+    }
 }
 
 /*!
@@ -206,6 +222,7 @@ const QList<Function *> Feature::getFunctions() const{
 void Feature::addFunction(Function *f){
     if(f != NULL){
         this->functionList.append(f);
+        emit this->featureFunctionListChanged(this->id);
     }
 }
 
@@ -220,6 +237,7 @@ bool Feature::removeFunction(int index){
         if(this->functionList.size() > index){
             delete this->functionList.at(index);
             this->functionList.removeAt(index);
+            emit this->featureFunctionListChanged(this->id);
             return true;
         }
         return false;

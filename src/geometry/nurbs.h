@@ -5,8 +5,9 @@
 
 class Nurbs : public Geometry
 {
+    Q_OBJECT
 public:
-    Nurbs();
+    Nurbs(bool isNominal, QObject *parent = 0);
     Nurbs(const Nurbs &copy);
     void recalc();
 

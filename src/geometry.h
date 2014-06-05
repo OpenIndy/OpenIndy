@@ -16,30 +16,65 @@ class Geometry : public Feature
 {
     Q_OBJECT
 public:
-    explicit Geometry(QObject *parent = 0);
+    explicit Geometry(bool isNominal, QObject *parent = 0);
     virtual ~Geometry();
 
+    bool getIsCommon() const;
+    void setCommonState(bool isCommon);
+
+    bool getIsNominal() const;
+
+    QList<Geometry *> getMyNominals() const;
+    bool addNominal(Geometry *myNominal);
+    bool removeNominal(Geometry *myNominal);
+
+    Geometry *getMyActual() const;
+    bool setMyActual(Geometry *myActual);
+
+    QList<Observation *> getObservations() const;
+    bool addObservation(Observation *obs);
+    bool removeObservation(Observation *obs);
+
+    CoordinateSystem *getNominalSystem() const;
+    bool setNominalSystem(CoordinateSystem *nomSys);
+
+    virtual OiVec getXYZ() const;
+    virtual OiVec getIJK() const;
+	
+    QMap<Configuration::ReadingTypes, QString> getUsedReadingTypes() const;
+    void insertReadingType(Configuration::ReadingTypes readingType, QString displayName);
+
+    MeasurementConfig getMeasurementConfig() const;
+    void setMeasurementConfig(MeasurementConfig myConfig);
+
+    Statistic getStatistic() const;
+    void setStatistic(Statistic myStatistic);
+
+    virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
+    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
+
+signals:
+    void geomIsCommonChanged(int featureId);
+    void geomMyNominalsChanged(int featureId);
+    void geomMyActualChanged(int featureId);
+    void geomMyObservationsChanged(int featureId);
+    void geomMyNominalSystemChanged(int featureId);
+    void geomMyStatisticChanged(int featureId);
+    void geomMyMeasurementConfigChanged(int featureId);
+    void geomUsedReadingTypesChanged(int featureId);
+
+protected:
     bool isCommon;
     bool isNominal;
     QList<Geometry*> nominals;
     Geometry *myActual;
     QList<Observation*> myObservations;
     CoordinateSystem* myNominalCoordSys;
-    QMap<Configuration::ReadingTypes,QString> usedReadingTypes;
 
-    virtual OiVec* getXYZ();
-    virtual OiVec* getIJK();
-	
     MeasurementConfig mConfig;
-
     Statistic myStatistic;
+    QMap<Configuration::ReadingTypes, QString> usedReadingTypes;
 
-    void insertReadingType(Configuration::ReadingTypes readingType, QString displayName);
-
-    virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
-    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
-
-protected:
     bool writeGeometryAttributes(QXmlStreamWriter& stream);
     bool readGeometryAttributes(QXmlStreamReader &xml ,ElementDependencies &d);
 

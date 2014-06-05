@@ -142,6 +142,24 @@ bool Function::exec(ScalarEntityDistance &s){
 
 /*!
  * \brief Function::exec
+ * \return
+ */
+bool Function::exec(ScalarEntityTemperature &s){
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type temperature");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \return
+ */
+bool Function::exec(ScalarEntityMeasurementSeries &s){
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type temperature");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
  * \param s
  * \return
  */

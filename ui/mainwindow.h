@@ -161,7 +161,9 @@ public slots:
     void resetFeatureSelection();
     void availableGroupsChanged(QMap<QString, int>);
     void updateGeometryIcons(QStringList availableGeometries);
-    void updateModel();
+    //void updateModel();
+
+    //void updateCoordSys();
 
 private slots:
     void featureContextMenu(const QPoint &point);
@@ -173,7 +175,7 @@ private slots:
 
     void changedStation();
 
-    void getActiveCoordSystem(QString coordSys);
+    //void getActiveCoordSystem(QString coordSys);
     void handleTableViewClicked(const QModelIndex &);
     void handleTrafoParamClicked(const QModelIndex &);
 
@@ -186,7 +188,7 @@ private slots:
     void receiveConfig(FeatureWrapper*,MeasurementConfig*);
     void createFeature();
 
-    void fillCoordSysComboBox();
+    //void fillCoordSysComboBox();
 
     void on_actionControl_pad_triggered();
 
@@ -268,6 +270,8 @@ private slots:
     void showScalarEntityDialog(Configuration::FeatureTypes featureType);
 
     void clearCustomWidgets();
+
+    void on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;

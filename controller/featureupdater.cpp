@@ -35,7 +35,7 @@ bool FeatureUpdater::validateFeatureName(QString featureName, FeatureAttributesE
                 }
                 int r = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
                 if(fae.nominal == true && r == 0){
-                    if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
+                    if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->getNominalSystem() == fae.nominalSystem){
                         Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
@@ -69,7 +69,7 @@ bool FeatureUpdater::validateFeatureName(QString featureName, FeatureAttributesE
                 }
                 int r = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
                 if(fae.nominal == true && r == 0){
-                    if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
+                    if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->getNominalSystem() == fae.nominalSystem){
                         Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
@@ -114,7 +114,7 @@ bool FeatureUpdater::validateFeatureName(QString featureName, FeatureAttributesE
                 }
                 int r = QString::compare(OiFeatureState::getFeatures().at(k)->getFeature()->getDisplayIsNominal(),"true",Qt::CaseSensitive);
                 if(fae.nominal == true && r == 0){
-                    if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->myNominalCoordSys == fae.nominalSystem){
+                    if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->getNominalSystem() == fae.nominalSystem){
                         Console::addLine(QString("Feature name already exists " + featureName));
                         return false;
                     }
@@ -257,17 +257,17 @@ void FeatureUpdater::checkForNominals(FeatureWrapper *fw)
     if(fw->getTypeOfFeature() == Configuration::eStationFeature){
         for(int i=0; i<OiFeatureState::getFeatureCount();i++){
             int res = QString::compare(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName(), fw->getFeature()->getFeatureName(), Qt::CaseSensitive);
-            if(res == 0 && OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal){
-                fw->getStation()->position->nominals.append(OiFeatureState::getFeatures().at(i)->getGeometry());
-                OiFeatureState::getFeatures().at(i)->getGeometry()->myActual = fw->getStation()->position;
+            if(res == 0 && OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->getIsNominal()){
+                fw->getStation()->position->addNominal(OiFeatureState::getFeatures().at(i)->getGeometry());
+                OiFeatureState::getFeatures().at(i)->getGeometry()->setMyActual(fw->getStation()->position);
             }
         }
     }else{
         for(int i=0; i<OiFeatureState::getFeatures().size();i++){
             int res = QString::compare(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName(), fw->getFeature()->getFeatureName(), Qt::CaseSensitive);
-            if(res == 0 && OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal){
-                fw->getGeometry()->nominals.append(OiFeatureState::getFeatures().at(i)->getGeometry());
-                OiFeatureState::getFeatures().at(i)->getGeometry()->myActual = fw->getGeometry();
+            if(res == 0 && OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->getIsNominal()){
+                fw->getGeometry()->addNominal(OiFeatureState::getFeatures().at(i)->getGeometry());
+                OiFeatureState::getFeatures().at(i)->getGeometry()->setMyActual(fw->getGeometry());
             }
         }
     }
@@ -282,27 +282,27 @@ void FeatureUpdater::addNominalToActual(FeatureWrapper *fw)
         int res = QString::compare(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName(), fw->getFeature()->getFeatureName(), Qt::CaseSensitive);
         if(res == 0){
             if(fw->getStation() != NULL){
-                if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal == false){
-                    OiFeatureState::getFeatures().at(i)->getGeometry()->nominals.append(fw->getStation()->position);
-                    fw->getStation()->position->myActual = OiFeatureState::getFeatures().at(i)->getGeometry();
+                if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->getIsNominal() == false){
+                    OiFeatureState::getFeatures().at(i)->getGeometry()->addNominal(fw->getStation()->position);
+                    fw->getStation()->position->setMyActual(OiFeatureState::getFeatures().at(i)->getGeometry());
                     break;
                 }else{
                     if(OiFeatureState::getFeatures().at(i)->getStation() != NULL){
-                        OiFeatureState::getFeatures().at(i)->getStation()->position->nominals.append(fw->getStation()->position);
-                        fw->getStation()->position->myActual = OiFeatureState::getFeatures().at(i)->getStation()->position;
+                        OiFeatureState::getFeatures().at(i)->getStation()->position->addNominal(fw->getStation()->position);
+                        fw->getStation()->position->setMyActual(OiFeatureState::getFeatures().at(i)->getStation()->position);
                         break;
                     }
                 }
             }
             if(fw->getGeometry() != NULL){
-                if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal == false){
-                    OiFeatureState::getFeatures().at(i)->getGeometry()->nominals.append(fw->getGeometry());
-                    fw->getGeometry()->myActual = OiFeatureState::getFeatures().at(i)->getGeometry();
+                if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->getIsNominal() == false){
+                    OiFeatureState::getFeatures().at(i)->getGeometry()->addNominal(fw->getGeometry());
+                    fw->getGeometry()->setMyActual(OiFeatureState::getFeatures().at(i)->getGeometry());
                     break;
                 }else{
                     if(OiFeatureState::getFeatures().at(i)->getStation() != NULL){
-                        OiFeatureState::getFeatures().at(i)->getStation()->position->nominals.append(fw->getGeometry());
-                        fw->getGeometry()->myActual = OiFeatureState::getFeatures().at(i)->getStation()->position;
+                        OiFeatureState::getFeatures().at(i)->getStation()->position->addNominal(fw->getGeometry());
+                        fw->getGeometry()->setMyActual(OiFeatureState::getFeatures().at(i)->getStation()->position);
                         break;
                     }
                 }
@@ -430,10 +430,10 @@ void FeatureUpdater::switchCoordinateSystem(CoordinateSystem *to){
         }
         //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
         foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
-            if(feature->getGeometry() != NULL && feature->getGeometry()->isNominal
-                    && feature->getGeometry()->myNominalCoordSys != to){
+            if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()
+                    && feature->getGeometry()->getNominalSystem() != to){
                 feature->getGeometry()->setIsSolved(false);
-            }else if(feature->getGeometry() != NULL && feature->getGeometry()->isNominal){
+            }else if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()){
                 feature->getGeometry()->setIsSolved(true);
             }
         }
@@ -476,10 +476,10 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(CoordinateSyste
         }
         //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
         foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
-            if(feature->getGeometry() != NULL && feature->getGeometry()->isNominal
-                    && feature->getGeometry()->myNominalCoordSys != to){
+            if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()
+                    && feature->getGeometry()->getNominalSystem() != to){
                 feature->getGeometry()->setIsSolved(false);
-            }else if(feature->getGeometry() != NULL && feature->getGeometry()->isNominal){
+            }else if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()){
                 feature->getGeometry()->setIsSolved(true);
             }
         }
@@ -512,16 +512,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
 
     switch(fae.featureType){
     case Configuration::ePointFeature: {
-        Point *tmpPoint = new Point();
+        Point *tmpPoint = new Point(nominal);
 
-        tmpPoint->mConfig = mConfig;
+        tmpPoint->setMeasurementConfig(mConfig);
         tmpPoint->setFeatureName(name);
         tmpPoint->setGroupName(fae.group);
-        tmpPoint->isNominal = nominal;
-        tmpPoint->isCommon = fae.common;
+        tmpPoint->setCommonState(fae.common);
 
         if(nominal){
-            tmpPoint->myNominalCoordSys = fae.nominalSystem;
+            tmpPoint->setNominalSystem(fae.nominalSystem);
             tmpPoint->setIsSolved(true);
         }else{
             if(functionValid){ tmpPoint->addFunction(defaultFunction); }
@@ -547,16 +546,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eLineFeature: {
-        Line *tmp = new Line();
+        Line *tmp = new Line(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -582,16 +580,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::ePlaneFeature:{
-        Plane *tmp = new Plane();
+        Plane *tmp = new Plane(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -617,16 +614,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eSphereFeature:{
-        Sphere *tmp = new Sphere();
+        Sphere *tmp = new Sphere(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -652,16 +648,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eCircleFeature:{
-        Circle *tmp = new Circle();
+        Circle *tmp = new Circle(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -687,16 +682,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eConeFeature:{
-        Cone *tmp = new Cone();
+        Cone *tmp = new Cone(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -722,16 +716,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eCylinderFeature:{
-        Cylinder *tmp = new Cylinder();
+        Cylinder *tmp = new Cylinder(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -757,16 +750,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eEllipsoidFeature:{
-        Ellipsoid *tmp = new Ellipsoid();
+        Ellipsoid *tmp = new Ellipsoid(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -792,16 +784,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eHyperboloidFeature:{
-        Hyperboloid *tmp = new Hyperboloid();
+        Hyperboloid *tmp = new Hyperboloid(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -827,16 +818,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eParaboloidFeature:{
-        Paraboloid *tmp = new Paraboloid();
+        Paraboloid *tmp = new Paraboloid(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -862,16 +852,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::ePointCloudFeature:{
-        PointCloud *tmp = new PointCloud();
+        PointCloud *tmp = new PointCloud(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -897,16 +886,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eNurbsFeature:{
-        Nurbs *tmp = new Nurbs();
+        Nurbs *tmp = new Nurbs(nominal);
 
-        tmp->mConfig = mConfig;
+        tmp->setMeasurementConfig(mConfig);
         tmp->setFeatureName(name);
         tmp->setGroupName(fae.group);
-        tmp->isNominal = nominal;
-        tmp->isCommon = fae.common;
+        tmp->setCommonState(fae.common);
 
         if(nominal){
-            tmp->myNominalCoordSys = fae.nominalSystem;
+            tmp->setNominalSystem(fae.nominalSystem);
             tmp->setIsSolved(true);
         }else{
             if(functionValid){ tmp->addFunction(defaultFunction); }
@@ -936,9 +924,7 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
 
         tmp->setGroupName(fae.group);
 
-        tmp->position->mConfig = mConfig;
-        tmp->position->isNominal = nominal;
-        tmp->position->isCommon = fae.common;
+        tmp->position->setMeasurementConfig(mConfig);
 
         if(nominal){
             tmp->setIsSolved(true);
@@ -1018,16 +1004,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eScalarentityAngleFeature:{
-        ScalarEntityAngle *tmpSEAngle = new ScalarEntityAngle();
+        ScalarEntityAngle *tmpSEAngle = new ScalarEntityAngle(nominal);
 
-        tmpSEAngle->mConfig = mConfig;
+        tmpSEAngle->setMeasurementConfig(mConfig);
         tmpSEAngle->setFeatureName(name);
         tmpSEAngle->setGroupName(fae.group);
-        tmpSEAngle->isNominal = nominal;
-        tmpSEAngle->isCommon = fae.common;
+        tmpSEAngle->setCommonState(fae.common);
 
         if(nominal){
-            tmpSEAngle->myNominalCoordSys = fae.nominalSystem;
+            tmpSEAngle->setNominalSystem(fae.nominalSystem);
             tmpSEAngle->setIsSolved(true);
         }else{
             if(functionValid){ tmpSEAngle->addFunction(defaultFunction); }
@@ -1053,16 +1038,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eScalarEntityDistanceFeature:{
-        ScalarEntityDistance *tmpSEDistance = new ScalarEntityDistance();
+        ScalarEntityDistance *tmpSEDistance = new ScalarEntityDistance(nominal);
 
-        tmpSEDistance->mConfig = mConfig;
+        tmpSEDistance->setMeasurementConfig(mConfig);
         tmpSEDistance->setFeatureName(name);
         tmpSEDistance->setGroupName(fae.group);
-        tmpSEDistance->isNominal = nominal;
-        tmpSEDistance->isCommon = fae.common;
+        tmpSEDistance->setCommonState(fae.common);
 
         if(nominal){
-            tmpSEDistance->myNominalCoordSys = fae.nominalSystem;
+            tmpSEDistance->setNominalSystem(fae.nominalSystem);
             tmpSEDistance->setIsSolved(true);
         }else{
             if(functionValid){ tmpSEDistance->addFunction(defaultFunction); }
@@ -1087,16 +1071,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eScalarEntityTemperatureFeature:{
-        ScalarEntityTemperature *tmpSETemperature = new ScalarEntityTemperature();
+        ScalarEntityTemperature *tmpSETemperature = new ScalarEntityTemperature(nominal);
 
-        tmpSETemperature->mConfig = mConfig;
+        tmpSETemperature->setMeasurementConfig(mConfig);
         tmpSETemperature->setFeatureName(name);
         tmpSETemperature->setGroupName(fae.group);
-        tmpSETemperature->isNominal = nominal;
-        tmpSETemperature->isCommon = fae.common;
+        tmpSETemperature->setCommonState(fae.common);
 
         if(nominal){
-            tmpSETemperature->myNominalCoordSys = fae.nominalSystem;
+            tmpSETemperature->setNominalSystem(fae.nominalSystem);
             tmpSETemperature->setIsSolved(true);
         }else{
             if(functionValid){ tmpSETemperature->addFunction(defaultFunction); }
@@ -1122,16 +1105,15 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         break;
     }
     case Configuration::eScalarEntityMeasurementSeriesFeature:{
-        ScalarEntityMeasurementSeries *tmpSEMSeries = new ScalarEntityMeasurementSeries();
+        ScalarEntityMeasurementSeries *tmpSEMSeries = new ScalarEntityMeasurementSeries(nominal);
 
-        tmpSEMSeries->mConfig = mConfig;
+        tmpSEMSeries->setMeasurementConfig(mConfig);
         tmpSEMSeries->setFeatureName(name);
         tmpSEMSeries->setGroupName(fae.group);
-        tmpSEMSeries->isNominal = nominal;
-        tmpSEMSeries->isCommon = fae.common;
+        tmpSEMSeries->setCommonState(fae.common);
 
         if(nominal){
-            tmpSEMSeries->myNominalCoordSys = fae.nominalSystem;
+            tmpSEMSeries->setNominalSystem(fae.nominalSystem);
             tmpSEMSeries->setIsSolved(true);
         }else{
             if(functionValid){ tmpSEMSeries->addFunction(defaultFunction); }
@@ -1190,9 +1172,9 @@ void FeatureUpdater::fillTrafoParamFunctionNN(SystemTransformation *function, Tr
     foreach(Point *p, function->getPoints()){
         Point cpyP(*p);
         cpyP.setIsSolved(true);
-        if(p->isNominal && p->myNominalCoordSys == tp->getStartSystem()){
+        if(p->getIsNominal() && p->getNominalSystem() == tp->getStartSystem()){
             mySorter.addLocPoint(cpyP);
-        }else if(p->isNominal && p->myNominalCoordSys == tp->getDestinationSystem()){
+        }else if(p->getIsNominal() && p->getNominalSystem() == tp->getDestinationSystem()){
             mySorter.addRefPoint(cpyP);
         }
     }
@@ -1200,9 +1182,9 @@ void FeatureUpdater::fillTrafoParamFunctionNN(SystemTransformation *function, Tr
     foreach(Line *l, function->getLines()){
         Line cpyL(*l);
         cpyL.setIsSolved(true);
-        if(l->isNominal && l->myNominalCoordSys == tp->getStartSystem()){
+        if(l->getIsNominal() && l->getNominalSystem() == tp->getStartSystem()){
             mySorter.addLocLine(cpyL);
-        }else if(l->isNominal && l->myNominalCoordSys == tp->getDestinationSystem()){
+        }else if(l->getIsNominal() && l->getNominalSystem() == tp->getDestinationSystem()){
             mySorter.addRefLine(cpyL);
         }
     }
@@ -1210,9 +1192,9 @@ void FeatureUpdater::fillTrafoParamFunctionNN(SystemTransformation *function, Tr
     foreach(Plane *p, function->getPlanes()){
         Plane cpyP(*p);
         cpyP.setIsSolved(true);
-        if(p->isNominal && p->myNominalCoordSys == tp->getStartSystem()){
+        if(p->getIsNominal() && p->getNominalSystem() == tp->getStartSystem()){
             mySorter.addLocPlane(cpyP);
-        }else if(p->isNominal && p->myNominalCoordSys == tp->getDestinationSystem()){
+        }else if(p->getIsNominal() && p->getNominalSystem() == tp->getDestinationSystem()){
             mySorter.addRefPlane(cpyP);
         }
     }
@@ -1220,9 +1202,9 @@ void FeatureUpdater::fillTrafoParamFunctionNN(SystemTransformation *function, Tr
     foreach(Sphere *s, function->getSpheres()){
         Sphere cpyS(*s);
         cpyS.setIsSolved(true);
-        if(s->isNominal && s->myNominalCoordSys == tp->getStartSystem()){
+        if(s->getIsNominal() && s->getNominalSystem() == tp->getStartSystem()){
             mySorter.addLocSphere(cpyS);
-        }else if(s->isNominal && s->myNominalCoordSys == tp->getDestinationSystem()){
+        }else if(s->getIsNominal() && s->getNominalSystem() == tp->getDestinationSystem()){
             mySorter.addRefSphere(cpyS);
         }
     }
@@ -1230,9 +1212,9 @@ void FeatureUpdater::fillTrafoParamFunctionNN(SystemTransformation *function, Tr
     foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
         ScalarEntityDistance cpyS(*s);
         cpyS.setIsSolved(true);
-        if(s->isNominal && s->myNominalCoordSys == tp->getStartSystem()){
+        if(s->getIsNominal() && s->getNominalSystem() == tp->getStartSystem()){
             mySorter.addLocScalarEntityDistance(cpyS);
-        }else if(s->isNominal && s->myNominalCoordSys == tp->getDestinationSystem()){
+        }else if(s->getIsNominal() && s->getNominalSystem() == tp->getDestinationSystem()){
             mySorter.addRefScalarEntityDistance(cpyS);
         }
     }
@@ -1240,9 +1222,9 @@ void FeatureUpdater::fillTrafoParamFunctionNN(SystemTransformation *function, Tr
     foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
         ScalarEntityAngle cpyS(*s);
         cpyS.setIsSolved(true);
-        if(s->isNominal && s->myNominalCoordSys == tp->getStartSystem()){
+        if(s->getIsNominal() && s->getNominalSystem() == tp->getStartSystem()){
             mySorter.addLocScalarEntityAngle(cpyS);
-        }else if(s->isNominal && s->myNominalCoordSys == tp->getDestinationSystem()){
+        }else if(s->getIsNominal() && s->getNominalSystem() == tp->getDestinationSystem()){
             mySorter.addRefScalarEntityAngle(cpyS);
         }
     }
@@ -1291,61 +1273,61 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
 
         //add all points
         foreach(Point *p, function->getPoints()){
-            if(p->isNominal && p->myNominalCoordSys == nominalSystem){
+            if(p->getIsNominal() && p->getNominalSystem() == nominalSystem){
                 Point cpyP(*p);
                 cpyP.setIsSolved(true);
                 mySorter.addLocPoint(cpyP);
-            }else if(!p->isNominal && p->getIsSolved()){
+            }else if(!p->getIsNominal() && p->getIsSolved()){
                 mySorter.addRefPoint(Point(*p));
             }
         }
         //add all lines
         foreach(Line *l, function->getLines()){
-            if(l->isNominal && l->myNominalCoordSys == nominalSystem){
+            if(l->getIsNominal() && l->getNominalSystem() == nominalSystem){
                 Line cpyL(*l);
                 cpyL.setIsSolved(true);
                 mySorter.addLocLine(cpyL);
-            }else if(!l->isNominal && l->getIsSolved()){
+            }else if(!l->getIsNominal() && l->getIsSolved()){
                 mySorter.addRefLine(Line(*l));
             }
         }
         //add all planes
         foreach(Plane *p, function->getPlanes()){
-            if(p->isNominal && p->myNominalCoordSys == nominalSystem){
+            if(p->getIsNominal() && p->getNominalSystem() == nominalSystem){
                 Plane cpyP(*p);
                 cpyP.setIsSolved(true);
                 mySorter.addLocPlane(cpyP);
-            }else if(!p->isNominal && p->getIsSolved()){
+            }else if(!p->getIsNominal() && p->getIsSolved()){
                 mySorter.addRefPlane(Plane(*p));
             }
         }
         //add all spheres
         foreach(Sphere *s, function->getSpheres()){
-            if(s->isNominal && s->myNominalCoordSys == nominalSystem){
+            if(s->getIsNominal() && s->getNominalSystem() == nominalSystem){
                 Sphere cpyS(*s);
                 cpyS.setIsSolved(true);
                 mySorter.addLocSphere(cpyS);
-            }else if(!s->isNominal && s->getIsSolved()){
+            }else if(!s->getIsNominal() && s->getIsSolved()){
                 mySorter.addRefSphere(Sphere(*s));
             }
         }
         //add all scalar entity distances
         foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
-            if(s->isNominal && s->myNominalCoordSys == nominalSystem){
+            if(s->getIsNominal() && s->getNominalSystem() == nominalSystem){
                 ScalarEntityDistance cpyS(*s);
                 cpyS.setIsSolved(true);
                 mySorter.addLocScalarEntityDistance(cpyS);
-            }else if(!s->isNominal && s->getIsSolved()){
+            }else if(!s->getIsNominal() && s->getIsSolved()){
                 mySorter.addRefScalarEntityDistance(ScalarEntityDistance(*s));
             }
         }
         //add all scalar entity angles
         foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
-            if(s->isNominal && s->myNominalCoordSys == nominalSystem){
+            if(s->getIsNominal() && s->getNominalSystem() == nominalSystem){
                 ScalarEntityAngle cpyS(*s);
                 cpyS.setIsSolved(true);
                 mySorter.addLocScalarEntityAngle(cpyS);
-            }else if(!s->isNominal && s->getIsSolved()){
+            }else if(!s->getIsNominal() && s->getIsSolved()){
                 mySorter.addRefScalarEntityAngle(ScalarEntityAngle(*s));
             }
         }
@@ -1403,37 +1385,37 @@ void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, Tr
 
     //add all points
     foreach(Point *p, function->getPoints()){
-        if(!p->isNominal && p->getIsSolved()){
+        if(!p->getIsNominal() && p->getIsSolved()){
             mySorter.addLocPoint(Point(*p));
         }
     }
     //add all lines
     foreach(Line *l, function->getLines()){
-        if(!l->isNominal && l->getIsSolved()){
+        if(!l->getIsNominal() && l->getIsSolved()){
             mySorter.addLocLine(Line(*l));
         }
     }
     //add all planes
     foreach(Plane *p, function->getPlanes()){
-        if(!p->isNominal && p->getIsSolved()){
+        if(!p->getIsNominal() && p->getIsSolved()){
             mySorter.addLocPlane(Plane(*p));
         }
     }
     //add all spheres
     foreach(Sphere *s, function->getSpheres()){
-        if(!s->isNominal && s->getIsSolved()){
+        if(!s->getIsNominal() && s->getIsSolved()){
             mySorter.addLocSphere(Sphere(*s));
         }
     }
     //add all scalar entity distances
     foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
-        if(!s->isNominal && s->getIsSolved()){
+        if(!s->getIsNominal() && s->getIsSolved()){
             mySorter.addLocScalarEntityDistance(ScalarEntityDistance(*s));
         }
     }
     //add all scalar entity angles
     foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
-        if(!s->isNominal && s->getIsSolved()){
+        if(!s->getIsNominal() && s->getIsSolved()){
             mySorter.addLocScalarEntityAngle(ScalarEntityAngle(*s));
         }
     }
@@ -1443,37 +1425,37 @@ void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, Tr
 
     //add all points
     foreach(Point *p, function->getPoints()){
-        if(!p->isNominal && p->getIsSolved()){
+        if(!p->getIsNominal() && p->getIsSolved()){
             mySorter.addRefPoint(Point(*p));
         }
     }
     //add all lines
     foreach(Line *l, function->getLines()){
-        if(!l->isNominal && l->getIsSolved()){
+        if(!l->getIsNominal() && l->getIsSolved()){
             mySorter.addRefLine(Line(*l));
         }
     }
     //add all planes
     foreach(Plane *p, function->getPlanes()){
-        if(!p->isNominal && p->getIsSolved()){
+        if(!p->getIsNominal() && p->getIsSolved()){
             mySorter.addRefPlane(Plane(*p));
         }
     }
     //add all spheres
     foreach(Sphere *s, function->getSpheres()){
-        if(!s->isNominal && s->getIsSolved()){
+        if(!s->getIsNominal() && s->getIsSolved()){
             mySorter.addRefSphere(Sphere(*s));
         }
     }
     //add all scalar entity distances
     foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
-        if(!s->isNominal && s->getIsSolved()){
+        if(!s->getIsNominal() && s->getIsSolved()){
             mySorter.addRefScalarEntityDistance(ScalarEntityDistance(*s));
         }
     }
     //add all scalar entity angles
     foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
-        if(!s->isNominal && s->getIsSolved()){
+        if(!s->getIsNominal() && s->getIsSolved()){
             mySorter.addRefScalarEntityAngle(ScalarEntityAngle(*s));
         }
     }

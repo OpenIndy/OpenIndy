@@ -20,14 +20,13 @@ public:
     QList<FeatureWrapper*> getFeaturesAtIndices(QModelIndexList &indices);
 
 public slots:
-    void activeGroupChanged(QString group);
+    void activeGroupChanged();
     
 protected:
     bool filterAcceptsColumn ( int source_column, const QModelIndex & source_parent ) const;
     bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
 
 private:
-    QString activeGroup;
     void sortNominalToActual();
     
 };

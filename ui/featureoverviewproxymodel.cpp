@@ -6,7 +6,7 @@
  * \param parent
  */
 FeatureOverviewProxyModel::FeatureOverviewProxyModel(QObject *parent) :
-    QSortFilterProxyModel(parent),activeGroup("All Groups")
+    QSortFilterProxyModel(parent)
 {
 }
 
@@ -17,14 +17,14 @@ FeatureOverviewProxyModel::FeatureOverviewProxyModel(QObject *parent) :
  * \return
  */
 bool FeatureOverviewProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
-    if(this->activeGroup.compare("All Groups") == 0){
+    if(OiFeatureState::getActiveGroup().compare("All Groups") == 0){
         if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL){
             return false;
         }else{
             return true;
         }
     }else{
-        if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL || OiFeatureState::getFeatures().at(source_row)->getFeature()->getGroupName().compare(this->activeGroup) != 0){
+        if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL || OiFeatureState::getFeatures().at(source_row)->getFeature()->getGroupName().compare(OiFeatureState::getActiveGroup()) != 0){
             return false;
         }else{
             return true;
@@ -98,7 +98,6 @@ QList<FeatureWrapper*> FeatureOverviewProxyModel::getFeaturesAtIndices(QModelInd
 /*!
  * \brief FeatureOvserviewProxyModel::activeGroupChanged
  */
-void FeatureOverviewProxyModel::activeGroupChanged(QString group){
-    this->activeGroup = group;
+void FeatureOverviewProxyModel::activeGroupChanged(){
     this->invalidateFilter();
 }

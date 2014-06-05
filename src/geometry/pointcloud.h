@@ -6,8 +6,9 @@
 
 class PointCloud : public Geometry
 {
+    Q_OBJECT
 public:
-    PointCloud();
+    PointCloud(bool isNominal, QObject *parent = 0);
     PointCloud(const PointCloud &copy);
     ~PointCloud();
 

@@ -52,24 +52,24 @@ bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
             //TODO error handling
         }
 
-        for(int i = 0; i< fg->getGeometry()->myObservations.size();i++){
-            Observation* proxyObs = oiProjectExchanger::findObservation(fg->getGeometry()->myObservations.at(i)->getId());
+        for(int i = 0; i< fg->getGeometry()->getObservations().size();i++){
+            Observation* proxyObs = oiProjectExchanger::findObservation(fg->getGeometry()->getObservations().at(i)->getId());
             if(proxyObs != NULL){
-               fg->getGeometry()->myObservations.replace(i,proxyObs);
+               fg->getGeometry()->getObservations().replace(i,proxyObs);
             }
         }
 
-        for(int i = 0; i< fg->getGeometry()->nominals.size();i++){
-            Geometry* proxyGeom = oiProjectExchanger::findGeometrie(fg->getGeometry()->nominals.at(i)->getId());
+        for(int i = 0; i< fg->getGeometry()->getMyNominals().size();i++){
+            Geometry* proxyGeom = oiProjectExchanger::findGeometrie(fg->getGeometry()->getMyNominals().at(i)->getId());
             if(proxyGeom != NULL){
-               fg->getGeometry()->nominals.replace(i,proxyGeom);
+               fg->getGeometry()->getMyNominals().replace(i,proxyGeom);
             }
         }
 
-        if(fg->getGeometry()->myNominalCoordSys != NULL){
-            CoordinateSystem* proxyCoord= oiProjectExchanger::findCoordSys(fg->getGeometry()->myNominalCoordSys->getId());
+        if(fg->getGeometry()->getNominalSystem() != NULL){
+            CoordinateSystem* proxyCoord= oiProjectExchanger::findCoordSys(fg->getGeometry()->getNominalSystem()->getId());
             if(proxyCoord != NULL){
-               fg->getGeometry()->myNominalCoordSys = proxyCoord;
+               fg->getGeometry()->setNominalSystem(proxyCoord);
             }
         }
 

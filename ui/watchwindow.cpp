@@ -36,15 +36,19 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         QVariant qvalue = j.value();
         double dvalue = qvalue.toDouble();
 
-        if(myStation->coordSys != activeCoordinateSystem){
+        if(OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
 
-            TrafoParam *tp = myStation->coordSys->findTrafoParam(activeCoordinateSystem);
+            TrafoParam *tp = NULL;
+            QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveStation()->coordSys->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
+            if(myTrafoParams.size() > 0){
+                tp = myTrafoParams.at(0);
+            }
             if(tp != NULL){
                 OiMat t;
-                if(tp->to == activeCoordinateSystem){
-                    t = tp->homogenMatrix;
+                if(tp->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
+                    t = tp->getHomogenMatrix();
                 }else{
-                    t = tp->homogenMatrix.inv();
+                    t = tp->getHomogenMatrix().inv();
                 }
 
                 OiVec trackerXYZ(4);
@@ -67,19 +71,19 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         if(OiFeatureState::getActiveCoordinateSystem() == OiFeatureState::getActiveStation()->coordSys && OiFeatureState::getActiveFeature() != NULL){
             if(name == "x"){
 
-                double featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ()->getAt(0);
+                double featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(0);
                 double dx = featureX - dvalue;
                 streamData.value(name)->display(QString::number(dx*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 
             }else if(name == "y"){
 
-                double featureY = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ()->getAt(1);
+                double featureY = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
                 double dy = featureY - dvalue;
                 streamData.value(name)->display(QString::number(dy*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 
             }else if(name == "z"){
 
-                double featureZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ()->getAt(2);
+                double featureZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(2);
                 double dz = featureZ - dvalue;
                 streamData.value(name)->display(QString::number(dz*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 				

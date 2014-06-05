@@ -234,7 +234,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
 
     switch (typeOfElement) {
     case (Configuration::ePointElement):{
-            Point *p = new Point();
+            Point *p = new Point(false);
             ElementDependencies dp = p->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwp = new FeatureWrapper();
@@ -244,7 +244,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
             this->dependencies.append(dp);
         break;}
     case (Configuration::ePlaneElement):{
-            Plane *pl = new Plane();
+            Plane *pl = new Plane(false);
             ElementDependencies dpl = pl->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwpl = new FeatureWrapper();
@@ -254,7 +254,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
             this->dependencies.append(dpl);
         break;}
     case (Configuration::eSphereElement):{
-            Sphere *sp = new Sphere();
+            Sphere *sp = new Sphere(false);
             ElementDependencies dsp = sp->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwsp = new FeatureWrapper();
@@ -264,7 +264,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
             this->dependencies.append(dsp);
         break;}
     case (Configuration::eLineElement):{
-            Line *l = new Line();
+            Line *l = new Line(false);
             ElementDependencies dl = l->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwl = new FeatureWrapper();
@@ -274,7 +274,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
             this->dependencies.append(dl);
          break;}
     case (Configuration::eScalarEntityAngleElement):{
-            ScalarEntityAngle *sAngle = new ScalarEntityAngle();
+            ScalarEntityAngle *sAngle = new ScalarEntityAngle(false);
             ElementDependencies dsAngle = sAngle->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwsAngle = new FeatureWrapper();
@@ -284,7 +284,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
             this->dependencies.append(dsAngle);
          break;}
     case (Configuration::eScalarEntityDistanceElement):{
-            ScalarEntityDistance *sDistance = new ScalarEntityDistance();
+            ScalarEntityDistance *sDistance = new ScalarEntityDistance(false);
             ElementDependencies dsDistance = sDistance->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwsDistance = new FeatureWrapper();
@@ -473,7 +473,7 @@ void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d
     for(int i = 0;i<neededObs.size();i++){
         Observation* obs = this->findObservation(neededObs.at(i));
         if(obs != NULL){
-            fw->getGeometry()->myObservations.append(obs);
+            fw->getGeometry()->addObservation(obs);
             obs->myTargetGeometries.append(fw->getGeometry());
         }
     }
@@ -482,7 +482,7 @@ void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d
         for(int i = 0;i<nominalCoordSys->size();i++){
             CoordinateSystem* c = this->findCoordSys(nominalCoordSys->at(i));
             if(c != NULL){
-                fw->getGeometry()->myNominalCoordSys = c;
+                fw->getGeometry()->setNominalSystem(c);
             }
         }
     }
@@ -491,7 +491,7 @@ void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d
         for(int i = 0;i<nominalGeom->size();i++){
             FeatureWrapper* nominalGeometry = this->findGeometry(nominalGeom->at(i));
             if(nominalGeometry != NULL){
-                fw->getGeometry()->nominals.append(nominalGeometry->getGeometry());
+                fw->getGeometry()->addNominal(nominalGeometry->getGeometry());
             }
         }
     }

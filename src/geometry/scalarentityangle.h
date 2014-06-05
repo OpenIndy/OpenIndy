@@ -8,8 +8,9 @@
 
 class ScalarEntityAngle : public Geometry
 {
+    Q_OBJECT
 public:
-    ScalarEntityAngle();
+    ScalarEntityAngle(bool isNominal, QObject *parent = 0);
     ScalarEntityAngle(const ScalarEntityAngle &copy);
 
     void recalc();

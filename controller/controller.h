@@ -102,7 +102,7 @@ signals:
     void refreshGUI();
     void sendSQLModel(QSqlQueryModel*); //kommt raus wenn dialoge angepasst
     void sensorWorks(QString);
-    void CoordSystemAdded();
+    void CoordSystemsModelChanged();
 
     void sendFunctionDescription(QString); //set description for function plugin loader dialog
     void sendAvailableElementsFilter(Configuration::ElementTypes typeOfElement, bool hideAll); //send filter for display available elements treeview
@@ -123,6 +123,7 @@ signals:
 public slots:
     void setUpFeatureGroupsModel();
     void setUpCoordinateSystemsModel();
+    void setActiveGroup(QString group);
 
     void getNominalValues(NominalAttributeExchange nominalValue);
     int checkActiveFeatureIndex(int current, int index);

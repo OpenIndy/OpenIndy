@@ -40,7 +40,6 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked()
     mConfig->distanceInterval = ui->lineEdit_distanceInterval->text().toDouble();
     mConfig->timeInterval = ui->lineEdit_timeInterval->text().toLong();
 
-
     if(mConfig->timeDependent == true && mConfig->distanceDependent == true){
 
         QMessageBox msgBox;

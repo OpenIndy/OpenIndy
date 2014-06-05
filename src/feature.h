@@ -91,7 +91,7 @@ public:
     virtual QString getDisplayTime() const;
 
 signals:
-    void featureNameChanged(int featureId);
+    void featureNameChanged(int featureId, QString oldName);
     void featureGroupChanged(int featureId);
     void featureCommentChanged(int featureId);
     void featureIsUpdatedChanged(int featureId);

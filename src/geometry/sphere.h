@@ -10,15 +10,16 @@
  */
 class Sphere : public Geometry
 {
+    Q_OBJECT
 public:
-    Sphere();
+    Sphere(bool isNominal, QObject *parent = 0);
     Sphere(const Sphere &copy);
     ~Sphere();
 
     OiVec xyz;
     double radius;
 
-    OiVec* getXYZ();
+    OiVec getXYZ() const;
 
     void recalc();
 

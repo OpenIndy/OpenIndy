@@ -6,8 +6,9 @@
 
 class ScalarEntityMeasurementSeries : public Geometry
 {
+    Q_OBJECT
 public:
-    ScalarEntityMeasurementSeries();
+    ScalarEntityMeasurementSeries(bool isNominal, QObject *parent = 0);
     ScalarEntityMeasurementSeries(const ScalarEntityMeasurementSeries &copy);
 
     void recalc();

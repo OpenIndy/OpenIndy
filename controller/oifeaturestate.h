@@ -26,7 +26,7 @@ public:
     static int getFeatureCount();
 
     static const QList<FeatureWrapper *> &getFeatures();
-    static FeatureWrapper *addFeature(Configuration::FeatureTypes featureType, QString name);
+    static FeatureWrapper *addFeature(Configuration::FeatureTypes featureType, bool isNominal, QString name);
     static bool addFeature(FeatureWrapper *myFeature);
     static bool removeFeature(FeatureWrapper *myFeature);
 
@@ -39,20 +39,33 @@ public:
 
     static const QMap<QString, int> getAvailableGroups();
 
+    static QString getActiveGroup();
+    static void setActiveGroup(QString group);
+
 signals:
-    void activeFeatureChanged();
-    void activeStationChanged();
-    void activeCoordinateSystemChanged();
+    void activeFeatureChanged(); //emitted when active feature has changed
+    void activeStationChanged(); //emitted when active station has changed
+    void activeCoordinateSystemChanged(); //emitted when display coordinate system has changed
 
-    void featureSetChanged();
+    void featureSetChanged(); //emitted when features where created or deleted
+    void coordSystemSetChanged(); //emitted when coordinate systems (nominal or station) where created or deleted
 
-    void availableGroupsChanged();
+    void availableGroupsChanged(); //emitted when the set of groups which features belong to has changed
+
+    void featureAttributesChanged(); //emitted when feature's attributes like name, comment etc. have changed
 
 private slots:
-    void setActiveFeature(int featureId);
-    void setActiveStation(int featureId);
-    void setActiveCoordinateSystem(int featureId);
-    void setFeatureGroups(int featureId);
+    void setActiveFeature(int featureId); //is called when a feature becomes the active feature
+    void setActiveStation(int featureId); //is called when a station becomes the active station
+    void setActiveCoordinateSystem(int featureId); //is called when a coordinate system becomes the display system
+
+    void setFeatureGroup(int featureId); //is called when the group attribute of a feature is changed
+    void setFeatureName(int featureId, QString oldName); //is called when the name of a feature is changed
+    void setFeatureComment(int featureId); //is called when the comment of a feature is changed
+    void setFeatureFunctions(int featureId); //is called when the list of functions of a feature was edited
+
+    void setGeometryActual(int featureId); //is called when the actual geometry of a nominal is set
+    void setGeometryNominals(int featureId); //is called when a nominal was added or removed from an actual geometry
 
 private:
     static OiFeatureState *myFeatureState;
@@ -64,22 +77,29 @@ private:
     static Station *myActiveStation; //the currently selected station
     static CoordinateSystem *myActiveCoordinateSystem; //the currently selected display coordinate system*/
     static QMap<QString, int> myAvailableGroups; //map of all available groups with number of assigned features
+    static QString myActiveGroup; //currently selected feature group
 
     static bool groupsToBeUpdated;
 
     static int getFeatureListIndex(int featureId);
     static int getStationListIndex(int featureId);
     static int getCoordinateSystemIndex(int featureId);
+    static int getStationCoordinayteSystemIndex(int featureId);
     static void updateAvailableGroups();
     static void connectFeature(FeatureWrapper *myFeature);
     static void disconnectFeature(FeatureWrapper *myFeature);
+
+    static bool validateFeatureName(Configuration::FeatureTypes featureType, QString featureName,
+                                    bool isNominal = false, CoordinateSystem *myNomSys = NULL, int featureId = -1);
 
     enum SignalType{
         eActiveFeatureChanged,
         eActiveStationChanged,
         eActiveCoordinateSystemChanged,
         eFeatureSetChanged,
-        eAvailableGroupsChanged
+        eCoordSysSetChanged,
+        eAvailableGroupsChanged,
+        eFeatureAttributesChanged
     };
 
     void emitSignal(SignalType mySignalType);

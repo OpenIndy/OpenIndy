@@ -116,17 +116,16 @@ bool oiExchangeASCII::importPoint(oiExchangeObject& data){
 
         QStringList list = line.split(QRegExp("\\s+"));
 
-        Point *p = new Point;
+        Point *p = new Point(true);
 
         p->setFeatureName(list.at(0));
-        p->myNominalCoordSys = data.nominalCoordSys;
+        p->setNominalSystem(data.nominalCoordSys);
         p->xyz.setAt(0,list.at(1).toDouble());
         p->xyz.setAt(1,list.at(2).toDouble());
         p->xyz.setAt(2,list.at(3).toDouble());
         if(data.unit.value(UnitConverter::eMetric) == UnitConverter::eMILLIMETER){
             p->xyz = p->xyz/1000;
         }
-        p->isNominal = true;
         p->setIsSolved(true);
 
         FeatureWrapper *f = new FeatureWrapper();
@@ -158,16 +157,15 @@ bool oiExchangeASCII::importPlane(oiExchangeObject& data){
 
         FeatureWrapper *geom = new FeatureWrapper();
 
-            Plane *p = new Plane();
+            Plane *p = new Plane(true);
             p->setFeatureName(list.at(0));
-            p->myNominalCoordSys = data.nominalCoordSys;
+            p->setNominalSystem(data.nominalCoordSys);
             p->xyz.setAt(0,list.at(1).toDouble());
             p->xyz.setAt(1,list.at(2).toDouble());
             p->xyz.setAt(2,list.at(3).toDouble());
             p->ijk.setAt(0,list.at(4).toDouble());
             p->ijk.setAt(1,list.at(5).toDouble());
             p->ijk.setAt(2,list.at(6).toDouble());
-            p->isNominal = true;
             p->setIsSolved(true);
 
 
@@ -199,16 +197,15 @@ bool oiExchangeASCII::importLine(oiExchangeObject& data){
 
         FeatureWrapper *geom = new FeatureWrapper();
 
-            Line *l = new Line();
+            Line *l = new Line(true);
             l->setFeatureName(list.at(0));
-            l->myNominalCoordSys = data.nominalCoordSys;
+            l->setNominalSystem(data.nominalCoordSys);
             l->xyz.setAt(0,list.at(1).toDouble());
             l->xyz.setAt(1,list.at(2).toDouble());
             l->xyz.setAt(2,list.at(3).toDouble());
             l->ijk.setAt(0,list.at(4).toDouble());
             l->ijk.setAt(1,list.at(5).toDouble());
             l->ijk.setAt(2,list.at(6).toDouble());
-            l->isNominal = true;
             l->setIsSolved(true);
 
 
@@ -240,14 +237,13 @@ bool oiExchangeASCII::importSphere(oiExchangeObject& data){
 
         FeatureWrapper *geom = new FeatureWrapper();
 
-            Sphere *s = new Sphere();
+            Sphere *s = new Sphere(true);
             s->setFeatureName(list.at(0));
-            s->myNominalCoordSys = data.nominalCoordSys;
+            s->setNominalSystem(data.nominalCoordSys);
             s->xyz.setAt(0,list.at(1).toDouble());
             s->xyz.setAt(1,list.at(2).toDouble());
             s->xyz.setAt(2,list.at(3).toDouble());
             s->radius=list.at(4).toDouble();
-            s->isNominal = true;
             s->setIsSolved(true);
 
             geom->setSphere(s);

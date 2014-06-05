@@ -133,17 +133,18 @@ void Controller::createDefaultFeatures(){
     if(OiFeatureState::getFeatureCount() == 0){
 
         //create PART and STATION01 as default
-        FeatureWrapper *part = OiFeatureState::addFeature(Configuration::eCoordinateSystemFeature, "PART");
-        FeatureWrapper *station01 = OiFeatureState::addFeature(Configuration::eStationFeature, "STATION01");
+        FeatureWrapper *part = OiFeatureState::addFeature(Configuration::eCoordinateSystemFeature, false, "PART");
+        FeatureWrapper *station01 = OiFeatureState::addFeature(Configuration::eStationFeature, false, "STATION01");
 
         //set position parameter for STATION01
-        station01->getStation()->position->mConfig = *this->lastmConfig;
-        station01->getStation()->position->isCommon = false;
-        station01->getStation()->position->isNominal = false;
+        station01->getStation()->position->setMeasurementConfig(*this->lastmConfig);
+        station01->getStation()->position->setCommonState(false);
 
-        //set STATION01's station system as active coordinate system
-        station01->getStation()->coordSys->setActiveCoordinateSystemState(true);
+        //set STATION01's station system as active station
         station01->getStation()->setActiveStationState(true);
+
+        //set PART as active coordinate system
+        part->getCoordinateSystem()->setActiveCoordinateSystemState(true);
 
     }
 
@@ -163,7 +164,7 @@ void Controller::addFeature(FeatureAttributesExchange fae){
 
     int fType = FeatureUpdater::addFeature(fae,*this->lastmConfig);
     if(fType == Configuration::eStationFeature && fType == Configuration::eCoordinateSystemFeature){
-        emit CoordSystemAdded();
+        emit CoordSystemsModelChanged();
     }
 
     //refresh feature tree view models
@@ -221,25 +222,30 @@ void Controller::startMove(Reading *parameter){
 
 void Controller::startAim(){
 
-    if(this->activeFeature->getGeometry() != NULL && !this->activeFeature->getGeometry()->isSolved){
+    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && !OiFeatureState::getActiveFeature()->getGeometry()->getIsSolved()){
         Console::addLine("Cannot aim a unsolved feature.");
         return;
     }
     if(checkFeatureValid() && checkSensorValid()){
 
-        OiVec *xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
-        if(xyz == NULL){
+        OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+        if(xyz.getSize() < 3){
             return;
         }
-        OiVec polarElements = Reading::toPolar(xyz->getAt(0),xyz->getAt(1),xyz->getAt(2));
-        if(this->activeStation->coordSys != this->activeCoordinateSystem){
-            TrafoParam *tp = this->activeCoordinateSystem->findTrafoParam(this->activeStation->coordSys);
+        OiVec polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+        if(OiFeatureState::getActiveStation()->coordSys != OiFeatureState::getActiveCoordinateSystem()){
+
+            QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveCoordinateSystem()->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
+            TrafoParam *tp = NULL;
+            if(myTrafoParams.size() > 0){
+                tp = myTrafoParams.at(0);
+            }
             if(tp != NULL){
                 OiMat t;
-                if(tp->to == this->activeStation->coordSys){
-                    t = tp->homogenMatrix;
+                if(tp->getDestinationSystem() == OiFeatureState::getActiveStation()->coordSys){
+                    t = tp->getHomogenMatrix();
                 }else{
-                    t = tp->homogenMatrix.inv();
+                    t = tp->getHomogenMatrix().inv();
                 }
                 OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
                 xyz = t * xyz;
@@ -630,7 +636,7 @@ void Controller::receiveSensorConfiguration(SensorConfiguration *sc, bool connec
 void Controller::setFunction(){
     if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() == 0
-                && (OiFeatureState::getActiveFeature()->getGeometry() == NULL || !OiFeatureState::getActiveFeature()->getGeometry()->isNominal)){
+                && (OiFeatureState::getActiveFeature()->getGeometry() == NULL || !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal())){
             SystemDbManager::getCreateFunctionModel(this->pluginsModel,OiFeatureState::getActiveFeature()->getTypeOfFeature());
         }else{
             SystemDbManager::getChangeFunctionModel(this->pluginsModel,OiFeatureState::getActiveFeature()->getTypeOfFeature());
@@ -663,7 +669,7 @@ void Controller::createFunction(int index){
     if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         //if the active feature is not a nominal geometry
         if(OiFeatureState::getActiveFeature()->getGeometry() == NULL
-                || !OiFeatureState::getActiveFeature()->getGeometry()->isNominal){
+                || !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
             //create function and connect oiemitter to console
             Function *newFunction = PluginLoader::loadFunctionPlugin(path,name);
             if(newFunction != NULL){
@@ -706,7 +712,7 @@ void Controller::deleteFunctionFromFeature(int index){
 bool Controller::checkFeatureValid(){
     if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry() != OiFeatureState::getActiveStation()->position &&
-                OiFeatureState::getActiveFeature()->getGeometry()->isNominal == false){
+                OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal() == false){
             return true;
         }else{
             Console::addLine("you cannot measure this feature");
@@ -750,6 +756,8 @@ void Controller::setActiveCoordSystem(QString CoordSysName){
 
     qDebug() << CoordSysName;
     for(int i=0; i<OiFeatureState::getFeatures().size();i++){
+
+        FeatureWrapper *fw = OiFeatureState::getFeatures().at(i);
 
         if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL && OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName() == CoordSysName){
             OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->setActiveCoordinateSystemState(true);
@@ -1140,7 +1148,7 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
                 //if feature is a geometry add the observation to the list of observations in class geometry
                 Geometry *geom = OiFeatureState::getActiveFeature()->getGeometry();
                 if(geom != NULL){
-                    geom->myObservations.append(element->getObservation());
+                    geom->getObservations().append(element->getObservation());
                 }
             }
         }
@@ -1402,22 +1410,26 @@ void Controller::updateFeatureMConfig()
             contains = false;
             if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL){
                 for(int m=0;m<readingTypes.size();m++){
-                    if(OiFeatureState::getFeatures().at(k)->getGeometry()->mConfig.typeOfReading == readingTypes.at(m)){
+                    if(OiFeatureState::getFeatures().at(k)->getGeometry()->getMeasurementConfig().typeOfReading == readingTypes.at(m)){
                         contains = true;
                     }
                 }
                 if(!contains){
-                    OiFeatureState::getFeatures().at(k)->getGeometry()->mConfig.typeOfReading = this->lastmConfig->typeOfReading;
+                    MeasurementConfig myConfig = OiFeatureState::getFeatures().at(k)->getGeometry()->getMeasurementConfig();
+                    myConfig.typeOfReading = this->lastmConfig->typeOfReading;
+                    OiFeatureState::getFeatures().at(k)->getGeometry()->setMeasurementConfig(myConfig);
                 }
             }
             if(OiFeatureState::getFeatures().at(k)->getStation() != NULL){
                 for(int n=0; n<readingTypes.size();n++){
-                    if(OiFeatureState::getFeatures().at(k)->getStation()->position->mConfig.typeOfReading == readingTypes.at(n)){
+                    if(OiFeatureState::getFeatures().at(k)->getStation()->position->getMeasurementConfig().typeOfReading == readingTypes.at(n)){
                         contains = true;
                     }
                 }
                 if(!contains){
-                    OiFeatureState::getFeatures().at(k)->getStation()->position->mConfig.typeOfReading = this->lastmConfig->typeOfReading;
+                    MeasurementConfig myConfig = OiFeatureState::getFeatures().at(k)->getStation()->position->getMeasurementConfig();
+                    myConfig.typeOfReading = this->lastmConfig->typeOfReading;
+                    OiFeatureState::getFeatures().at(k)->getStation()->position->setMeasurementConfig(myConfig);
                 }
             }
         }
@@ -1689,7 +1701,6 @@ void Controller::setUpFeatureGroupsModel(){
             myFeatureGroups.append(group);
         }
 
-
         this->myFeatureGroupsModel->setStringList(myFeatureGroups);
 
     }catch(exception &e){
@@ -1721,7 +1732,17 @@ void Controller::setUpCoordinateSystemsModel(){
 
         this->myCoordinateSystemsModel->setStringList(myCoordSys);
 
+        //emit this->CoordSystemsModelChanged();
+
     }catch(exception &e){
         Console::addLine(e.what());
     }
+}
+
+/*!
+ * \brief Controller::setActiveGroup
+ * \param group
+ */
+void Controller::setActiveGroup(QString group){
+    OiFeatureState::setActiveGroup(group);
 }

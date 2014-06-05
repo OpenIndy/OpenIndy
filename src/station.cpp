@@ -6,7 +6,7 @@ Station::Station(QString name)
     this->name = name;
 
     this->id = Configuration::generateID();
-    position = new Point();
+    position = new Point(false);
     position->setFeatureName(name);
 
     //ini member
@@ -435,15 +435,15 @@ QString Station::getDisplayZ() const{
 }
 
 QString Station::getDisplayIsCommon() const{
-    return QString(position->isCommon?"true":"false");
+    return QString(position->getIsCommon()?"true":"false");
 }
 
 QString Station::getDisplayIsNominal() const{
-    return QString(position->isNominal?"true":"false");
+    return QString(position->getIsNominal()?"true":"false");
 }
 
 QString Station::getDisplayObs() const{
-    return QString::number(this->position->myObservations.size());
+    return QString::number(this->position->getObservations().size());
 }
 
 QString Station::getDisplaySolved() const{
@@ -451,13 +451,13 @@ QString Station::getDisplaySolved() const{
 }
 
 QString Station::getDisplayMConfig() const{
-    return this->position->mConfig.name;
+    return this->position->getMeasurementConfig().name;
 }
 
 QString Station::getDisplayStdDev() const{
 
-    if(this->position->myStatistic.isValid){
-        return QString::number(this->position->myStatistic.stdev * UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    if(this->position->getStatistic().isValid){
+        return QString::number(this->position->getStatistic().stdev * UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
     }else{
         return "-/-";
     }
