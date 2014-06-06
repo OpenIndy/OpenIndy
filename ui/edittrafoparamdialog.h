@@ -9,6 +9,7 @@
 #include "unitconverter.h"
 #include "functionstatistic.h"
 #include "matrixmodel.h"
+#include "oifeaturestate.h"
 
 namespace Ui {
 class EditTrafoparamDialog;
@@ -31,8 +32,6 @@ signals:
 
 public slots:
 
-    void getSelectedTrafoParam(FeatureWrapper *fw);
-
     void showEvent(QShowEvent *event);
 
 private slots:
@@ -50,7 +49,6 @@ private slots:
 
 private:
     Ui::EditTrafoparamDialog *ui;
-    FeatureWrapper *selectedTrafoParam;
 };
 
 #endif // EDITTRAFOPARAMDIALOG_H

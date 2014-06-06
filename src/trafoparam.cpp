@@ -11,6 +11,7 @@ TrafoParam::TrafoParam(QObject *parent) : Feature(parent), homogenMatrix(4, 4), 
     this->use = false;
     this->validTime = QDateTime::currentDateTime();
     this->isMovement = false;
+    this->isDatumTrafo = false;
 }
 
 TrafoParam::~TrafoParam(){
@@ -303,6 +304,24 @@ void TrafoParam::setStatistic(Statistic *myStatistic){
     }
 }
 
+/*!
+ * \brief TrafoParam::getisDatumTrafo
+ * \return
+ */
+bool TrafoParam::getisDatumTrafo()
+{
+    return this->isDatumTrafo;
+}
+
+/*!
+ * \brief TrafoParam::setisDatumTrafo
+ * \param isDatumTrafo
+ */
+void TrafoParam::setisDatumTrafo(bool isDatumTrafo)
+{
+    this->isDatumTrafo =isDatumTrafo;
+}
+
 bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
 
     stream.writeStartElement("transformationsparameter");
@@ -321,6 +340,7 @@ bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
     stream.writeAttribute("use",QString::number(this->use));
     stream.writeAttribute("time", this->validTime.toLocalTime().toString());
     stream.writeAttribute("movement", QString::number(this->isMovement));
+    stream.writeAttribute("datumtrafo", QString::number(this->isDatumTrafo));
 
     stream.writeStartElement("from");
     stream.writeAttribute("type", "coordinatesystem");
@@ -390,6 +410,9 @@ ElementDependencies TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
     }
     if(attributes.hasAttribute("movement")){
         this->isMovement = attributes.value("movement").toInt();
+    }
+    if(attributes.hasAttribute("datumtrafo")){
+        this->isDatumTrafo = attributes.value("datumtrafo").toInt();
     }
 
     /* Next element... */
