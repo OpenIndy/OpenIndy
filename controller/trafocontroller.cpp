@@ -140,7 +140,73 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                 obs->isValid = true;
             }
             return true;
-        }else{ //no trafo params available
+        }else{ //no trafo params available from this coordsys to active coord sys.
+               //search for datumstransformation of other station
+            foreach(TrafoParam *tp, from->getTransformationParameters()){
+                foreach (TrafoParam *t, tp->getStartSystem()->getTransformationParameters()) {
+                    if(t->getisDatumTrafo() && t->getIsUsed() && t->getStartSystem() == OiFeatureState::getActiveCoordinateSystem()){
+                        OiMat tt = t->getHomogenMatrix().inv();
+                        OiMat ttp;
+                        if(tp->getStartSystem() == from){
+                            ttp = tp->getHomogenMatrix();
+                        }else{
+                            ttp = tp->getHomogenMatrix().inv();
+                        }
+                        foreach (Observation *obs, from->getObservations()) {
+                            obs->myXyz = ttp * (tt * obs->myXyz);
+                            obs->myStatistic.qxx = ttp * (tt * obs->myStatistic.qxx);
+                            obs->isValid = true;
+                        }
+                        return true;
+                    }else if(t->getisDatumTrafo() && t->getIsUsed() && t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
+                        OiMat tt = t->getHomogenMatrix();
+                        OiMat ttp;
+                        if(tp->getStartSystem() == from){
+                            ttp = tp->getHomogenMatrix();
+                        }else{
+                            ttp = tp->getHomogenMatrix().inv();
+                        }
+                        foreach (Observation *obs, from->getObservations()) {
+                            obs->myXyz = ttp * (tt * obs->myXyz);
+                            obs->myStatistic.qxx = ttp * (tt * obs->myStatistic.qxx);
+                            obs->isValid = true;
+                        }
+                        return true;
+                    }
+                }
+                foreach (TrafoParam *t, tp->getDestinationSystem()->getTransformationParameters()) {
+                    if(t->getisDatumTrafo() && t->getIsUsed() && t->getStartSystem() == OiFeatureState::getActiveCoordinateSystem()){
+                        OiMat tt = t->getHomogenMatrix().inv();
+                        OiMat ttp;
+                        if(tp->getStartSystem() == from){
+                            ttp = tp->getHomogenMatrix();
+                        }else{
+                            ttp = tp->getHomogenMatrix().inv();
+                        }
+                        foreach (Observation *obs, from->getObservations()) {
+                            obs->myXyz = ttp * (tt * obs->myXyz);
+                            obs->myStatistic.qxx = ttp * (tt * obs->myStatistic.qxx);
+                            obs->isValid = true;
+                        }
+                        return true;
+                    }else if(t->getisDatumTrafo() && t->getIsUsed() && t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
+                        OiMat tt = t->getHomogenMatrix();
+                        OiMat ttp;
+                        if(tp->getStartSystem() == from){
+                            ttp = tp->getHomogenMatrix();
+                        }else{
+                            ttp = tp->getHomogenMatrix().inv();
+                        }
+                        foreach (Observation *obs, from->getObservations()) {
+                            obs->myXyz = ttp * (tt * obs->myXyz);
+                            obs->myStatistic.qxx = ttp * (tt * obs->myStatistic.qxx);
+                            obs->isValid = true;
+                        }
+                        return true;
+                    }
+                }
+            }
+            //no trafo params available
             foreach(Observation *obs, from->getObservations()){
                 obs->isValid = false;
             }
