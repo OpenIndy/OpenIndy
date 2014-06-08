@@ -68,11 +68,11 @@ bool ProjectInPlane::exec(Point &targetPoint){
 Plane* ProjectInPlane::getPlane(){
     Plane *result = NULL;
     foreach(Plane *p, this->planes){
-        if(result == NULL && p->isSolved){
+        if(result == NULL && p->getIsSolved()){
             result = p;
-            this->setUseState(result->id, true);
+            this->setUseState(result->getId(), true);
         }else{
-            this->setUseState(p->id, false);
+            this->setUseState(p->getId(), false);
         }
     }
     return result;

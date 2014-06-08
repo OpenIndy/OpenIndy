@@ -12,6 +12,8 @@
 #include <QShowEvent>
 #include <QDesktopWidget>
 
+#include "oifeaturestate.h"
+
 namespace Ui {
 class MeasurementConfigDialog;
 }
@@ -27,26 +29,17 @@ public:
     explicit MeasurementConfigDialog(QWidget *parent = 0);
     ~MeasurementConfigDialog();
 
-    Station *myStation;
-
     MeasurementConfig *mConfig;
-
-    FeatureWrapper *activeFeature;
 
 signals:
     void sendConfig(FeatureWrapper*, MeasurementConfig*);
 
 public slots:
-
-    void setStation(Station *s);
-
     void showEvent(QShowEvent *event);
 
 private slots:
 
     void closeEvent(QCloseEvent *event);
-
-    void resetActiveFeature();
 
     void initGUI();
 

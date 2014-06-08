@@ -64,9 +64,9 @@ bool BestFitSphere::exec(Sphere &s){
                 y[k] = obs->myXyz.getAt(1);
                 z[k] = obs->myXyz.getAt(2);
                 k++;
-                this->setUseState(obs->id, true);
+                this->setUseState(obs->getId(), true);
             }else{
-                this->setUseState(obs->id, false);
+                this->setUseState(obs->getId(), false);
             }
         }
 

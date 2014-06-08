@@ -1,7 +1,7 @@
 #include "readingmodel.h"
 
 ReadingModel::ReadingModel(FeatureWrapper &activeFeature,QObject *parent) :
-    QAbstractTableModel(parent),selectedFeature(activeFeature)
+    QAbstractTableModel(parent)
 {
     /*
     m_columns.append("id");
@@ -29,11 +29,11 @@ ReadingModel::ReadingModel(FeatureWrapper &activeFeature,QObject *parent) :
 
 int ReadingModel::rowCount(const QModelIndex& ) const{
 
-    if(this->selectedFeature.getGeometry() != NULL && this->selectedFeature.getGeometry()->myObservations.size() > 0){
-        return this->selectedFeature.getGeometry()->myObservations.size();
+    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size() > 0){
+        return OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size();
     }
-    if(this->selectedFeature.getStation() != NULL && this->selectedFeature.getStation()->position->myObservations.size() >0){
-        return this->selectedFeature.getStation()->position->myObservations.size();
+    if(OiFeatureState::getActiveFeature()->getStation() != NULL && OiFeatureState::getActiveFeature()->getStation()->position->getObservations().size() >0){
+        return OiFeatureState::getActiveFeature()->getStation()->position->getObservations().size();
     }
     return 0;
 }
@@ -48,23 +48,23 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
     if(!index.isValid())
         return QVariant();
 
-    if(this->selectedFeature.getGeometry() != NULL){
-        Geometry *geom = this->selectedFeature.getGeometry();
+    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+        Geometry *geom = OiFeatureState::getActiveFeature()->getGeometry();
 
         if(Qt::DisplayRole == role){
 
-            for(int i=0; i<geom->myObservations.size();i++){
-                switch (geom->myObservations.at(i)->myReading->typeofReading) {
+            for(int i=0; i<geom->getObservations().size();i++){
+                switch (geom->getObservations().at(i)->myReading->typeofReading) {
                 case Configuration::ePolar:
                     switch (index.column()) {
                     case 0:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->id);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->id);
                         break;
                     case 1:
                         return "polar reading";
                         break;
                     case 2:
-                        return geom->myObservations.at(index.row())->myReading->measuredAt.toString();
+                        return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
                         break;
                     case 3:
                         //was soll hier dargestellt werden ?
@@ -72,22 +72,22 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "instrument ?!";
                         break;
                     case 4:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.azimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.azimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 5:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.zenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.zenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 6:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.distance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.distance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 7:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.sigmaAzimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaAzimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 8:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.sigmaZenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaZenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 9:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.sigmaDistance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaDistance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 10:
                         return "-/-";
@@ -108,13 +108,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 16:
-                        return QString(geom->myObservations.at(index.row())->myReading->rPolar.fsBs?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rPolar.fsBs?"true":"false");
                         break;
                     case 17:
                         return "-/-";
                         break;
                     case 18:
-                        return QString(geom->myObservations.at(index.row())->myReading->rPolar.isValid?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rPolar.isValid?"true":"false");
                         break;
                     default:
                         break;
@@ -123,13 +123,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 case Configuration::eCartesian:
                     switch (index.column()) {
                     case 0:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->id);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->id);
                         break;
                     case 1:
                         return "cartesian reading";
                         break;
                     case 2:
-                        return geom->myObservations.at(index.row())->myReading->measuredAt.toString();
+                        return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
                         break;
                     case 3:
                         //was soll hier dargestellt werden ?
@@ -155,22 +155,22 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 10:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 11:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 12:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 13:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 14:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 15:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 16:
                         return "-/-";
@@ -179,7 +179,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 18:
-                        return QString(geom->myObservations.at(index.row())->myReading->rCartesian.isValid?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rCartesian.isValid?"true":"false");
                         break;
                     default:
                         break;
@@ -188,13 +188,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 case Configuration::eDistance:
                     switch (index.column()) {
                     case 0:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->id);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->id);
                         break;
                     case 1:
                         return "cartesian reading";
                         break;
                     case 2:
-                        return geom->myObservations.at(index.row())->myReading->measuredAt.toString();
+                        return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
                         break;
                     case 3:
                         //was soll hier dargestellt werden ?
@@ -208,7 +208,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 6:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDistance.distance * UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDistance.distance * UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 7:
                         return "-/-";
@@ -217,7 +217,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 9:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDistance.sigmaDistance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDistance.sigmaDistance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 10:
                         return "-/-";
@@ -244,7 +244,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 18:
-                        return QString(geom->myObservations.at(index.row())->myReading->rCartesian.isValid?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rCartesian.isValid?"true":"false");
                         break;
                     default:
                         break;
@@ -253,13 +253,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 case Configuration::eDirection:
                     switch (index.column()) {
                     case 0:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->id);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->id);
                         break;
                     case 1:
                         return "direction reading";
                         break;
                     case 2:
-                        return geom->myObservations.at(index.row())->myReading->measuredAt.toString();
+                        return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
                         break;
                     case 3:
                         //was soll hier dargestellt werden ?
@@ -267,19 +267,19 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "instrument ?!";
                         break;
                     case 4:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDirection.azimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.azimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 5:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDirection.zenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.zenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 6:
                         return "-/-";
                         break;
                     case 7:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDirection.sigmaAzimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.sigmaAzimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 8:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDirection.sigmaZenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.sigmaZenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 9:
                         return "-/-";
@@ -303,13 +303,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 16:
-                        return QString(geom->myObservations.at(index.row())->myReading->rDirection.fsBs?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rDirection.fsBs?"true":"false");
                         break;
                     case 17:
                         return "-/-";
                         break;
                     case 18:
-                        return QString(geom->myObservations.at(index.row())->myReading->rDirection.isValid?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rDirection.isValid?"true":"false");
                         break;
                     default:
                         break;
@@ -318,13 +318,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 case Configuration::eTemperatur:
                     switch (index.column()) {
                     case 0:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->id);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->id);
                         break;
                     case 1:
                         return "temperatur reading";
                         break;
                     case 2:
-                        return geom->myObservations.at(index.row())->myReading->measuredAt.toString();
+                        return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
                         break;
                     case 3:
                         //was soll hier dargestellt werden ?
@@ -371,10 +371,10 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 17:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rTemperature.tempDeg*UnitConverter::getTemperatureMultiplier(),'f',UnitConverter::temperatureDigits);
+                        return QString::number(UnitConverter::getTemperature(geom->getObservations().at(index.row())->myReading->rTemperature.tempDeg),'f',UnitConverter::temperatureDigits);
                         break;
                     case 18:
-                        return QString(geom->myObservations.at(index.row())->myReading->rTemperature.isValid?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rTemperature.isValid?"true":"false");
                         break;
                     default:
                         break;
@@ -388,23 +388,23 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
 
         }
     }
-    if(this->selectedFeature.getStation() != NULL){
-        Geometry *geom = this->selectedFeature.getStation()->position;
+    if(OiFeatureState::getActiveFeature()->getStation() != NULL){
+        Geometry *geom = OiFeatureState::getActiveFeature()->getStation()->position;
 
         if(Qt::DisplayRole == role){
 
-            for(int i=0; i<geom->myObservations.size();i++){
-                switch (geom->myObservations.at(i)->myReading->typeofReading) {
+            for(int i=0; i<geom->getObservations().size();i++){
+                switch (geom->getObservations().at(i)->myReading->typeofReading) {
                 case Configuration::ePolar:
                     switch (index.column()) {
                     case 0:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->id);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->id);
                         break;
                     case 1:
                         return "polar reading";
                         break;
                     case 2:
-                        return geom->myObservations.at(index.row())->myReading->measuredAt.toString();
+                        return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
                         break;
                     case 3:
                         //was soll hier dargestellt werden ?
@@ -412,22 +412,22 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "instrument ?!";
                         break;
                     case 4:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.azimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.azimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 5:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.zenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.zenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 6:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.distance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.distance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 7:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.sigmaAzimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaAzimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 8:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.sigmaZenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaZenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 9:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rPolar.sigmaDistance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaDistance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 10:
                         return "-/-";
@@ -448,13 +448,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 16:
-                        return QString(geom->myObservations.at(index.row())->myReading->rPolar.fsBs?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rPolar.fsBs?"true":"false");
                         break;
                     case 17:
                         return "-/-";
                         break;
                     case 18:
-                        return QString(geom->myObservations.at(index.row())->myReading->rPolar.isValid?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rPolar.isValid?"true":"false");
                         break;
                     default:
                         break;
@@ -463,13 +463,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 case Configuration::eCartesian:
                     switch (index.column()) {
                     case 0:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->id);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->id);
                         break;
                     case 1:
                         return "cartesian reading";
                         break;
                     case 2:
-                        return geom->myObservations.at(index.row())->myReading->measuredAt.toString();
+                        return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
                         break;
                     case 3:
                         //was soll hier dargestellt werden ?
@@ -495,22 +495,22 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 10:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 11:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 12:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 13:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 14:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 15:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rCartesian.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 16:
                         return "-/-";
@@ -519,7 +519,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 18:
-                        return QString(geom->myObservations.at(index.row())->myReading->rCartesian.isValid?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rCartesian.isValid?"true":"false");
                         break;
                     default:
                         break;
@@ -528,13 +528,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 case Configuration::eDistance:
                     switch (index.column()) {
                     case 0:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->id);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->id);
                         break;
                     case 1:
                         return "cartesian reading";
                         break;
                     case 2:
-                        return geom->myObservations.at(index.row())->myReading->measuredAt.toString();
+                        return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
                         break;
                     case 3:
                         //was soll hier dargestellt werden ?
@@ -548,7 +548,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 6:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDistance.distance * UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDistance.distance * UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 7:
                         return "-/-";
@@ -557,7 +557,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 9:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDistance.sigmaDistance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDistance.sigmaDistance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                         break;
                     case 10:
                         return "-/-";
@@ -584,7 +584,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 18:
-                        return QString(geom->myObservations.at(index.row())->myReading->rCartesian.isValid?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rCartesian.isValid?"true":"false");
                         break;
                     default:
                         break;
@@ -593,13 +593,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 case Configuration::eDirection:
                     switch (index.column()) {
                     case 0:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->id);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->id);
                         break;
                     case 1:
                         return "direction reading";
                         break;
                     case 2:
-                        return geom->myObservations.at(index.row())->myReading->measuredAt.toString();
+                        return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
                         break;
                     case 3:
                         //was soll hier dargestellt werden ?
@@ -607,19 +607,19 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "instrument ?!";
                         break;
                     case 4:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDirection.azimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.azimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 5:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDirection.zenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.zenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 6:
                         return "-/-";
                         break;
                     case 7:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDirection.sigmaAzimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.sigmaAzimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 8:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rDirection.sigmaZenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.sigmaZenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
                         break;
                     case 9:
                         return "-/-";
@@ -643,13 +643,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 16:
-                        return QString(geom->myObservations.at(index.row())->myReading->rDirection.fsBs?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rDirection.fsBs?"true":"false");
                         break;
                     case 17:
                         return "-/-";
                         break;
                     case 18:
-                        return QString(geom->myObservations.at(index.row())->myReading->rDirection.isValid?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rDirection.isValid?"true":"false");
                         break;
                     default:
                         break;
@@ -658,13 +658,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 case Configuration::eTemperatur:
                     switch (index.column()) {
                     case 0:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->id);
+                        return QString::number(geom->getObservations().at(index.row())->myReading->id);
                         break;
                     case 1:
                         return "temperatur reading";
                         break;
                     case 2:
-                        return geom->myObservations.at(index.row())->myReading->measuredAt.toString();
+                        return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
                         break;
                     case 3:
                         //was soll hier dargestellt werden ?
@@ -711,10 +711,10 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                         return "-/-";
                         break;
                     case 17:
-                        return QString::number(geom->myObservations.at(index.row())->myReading->rTemperature.tempDeg*UnitConverter::getTemperatureMultiplier(),'f',UnitConverter::temperatureDigits);
+                        return QString::number(UnitConverter::getTemperature(geom->getObservations().at(index.row())->myReading->rTemperature.tempDeg),'f',UnitConverter::temperatureDigits);
                         break;
                     case 18:
-                        return QString(geom->myObservations.at(index.row())->myReading->rTemperature.isValid?"true":"false");
+                        return QString(geom->getObservations().at(index.row())->myReading->rTemperature.isValid?"true":"false");
                         break;
                     default:
                         break;

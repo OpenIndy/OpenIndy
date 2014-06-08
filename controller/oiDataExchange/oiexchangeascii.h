@@ -21,6 +21,12 @@ public:
 
     QList<Configuration::ElementTypes> getSupportedElements();
 
+    QStringList getElementDescription(Configuration::ElementTypes);
+
+    QList<UnitConverter::unitType> getSupportedDistanceUnits();
+    QList<UnitConverter::unitType> getSupportedAngleUnits();
+    QList<UnitConverter::unitType> getSupportedTemperatureUnits();
+
 private:
     // private functions for importiing different element types
     bool importPoint(oiExchangeObject& data);

@@ -33,7 +33,7 @@ bool ProjectRestorer::saveProject(oiProjectData &data){
 
     stream.writeStartElement("member");
     stream.writeAttribute("type", "activeCoordinatesystem");
-    stream.writeAttribute("ref", QString::number(data.activeCoordSystem->id));
+    stream.writeAttribute("ref", QString::number(data.activeCoordSystem->getId()));
     stream.writeEndElement();
 
     //sort and seperate features
@@ -80,7 +80,7 @@ bool ProjectRestorer::saveProject(oiProjectData &data){
         c->toOpenIndyXML(stream);
 
         //harvest all observations
-        foreach(Observation* obs, c->observations){
+        foreach(Observation* obs, c->getObservations()){
             this->observations.append(obs);
         }
     }
@@ -154,8 +154,8 @@ bool ProjectRestorer::loadProject(oiProjectData &data){
                     Station *s = new Station("");
                     ElementDependencies d = s->fromOpenIndyXML(xml);
 
-                    stationElements.append(s->coordSys->id);
-                    stationElements.append(s->position->id);
+                    stationElements.append(s->coordSys->getId());
+                    stationElements.append(s->position->getId());
 
                     this->stations.append(s);
                     this->dependencies.append(d);
@@ -208,8 +208,8 @@ bool ProjectRestorer::loadProject(oiProjectData &data){
          Console::addLine("resolve dependencies");
 
          foreach(Station* s, this->stations){
-             this->stationElements.append(s->position->id);
-             this->stationElements.append(s->coordSys->id);
+             this->stationElements.append(s->position->getId());
+             this->stationElements.append(s->coordSys->getId());
          }
 
          this->resolveDependencies(data);
@@ -234,7 +234,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
 
     switch (typeOfElement) {
     case (Configuration::ePointElement):{
-            Point *p = new Point();
+            Point *p = new Point(false);
             ElementDependencies dp = p->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwp = new FeatureWrapper();
@@ -244,7 +244,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
             this->dependencies.append(dp);
         break;}
     case (Configuration::ePlaneElement):{
-            Plane *pl = new Plane();
+            Plane *pl = new Plane(false);
             ElementDependencies dpl = pl->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwpl = new FeatureWrapper();
@@ -254,7 +254,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
             this->dependencies.append(dpl);
         break;}
     case (Configuration::eSphereElement):{
-            Sphere *sp = new Sphere();
+            Sphere *sp = new Sphere(false);
             ElementDependencies dsp = sp->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwsp = new FeatureWrapper();
@@ -264,7 +264,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
             this->dependencies.append(dsp);
         break;}
     case (Configuration::eLineElement):{
-            Line *l = new Line();
+            Line *l = new Line(false);
             ElementDependencies dl = l->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwl = new FeatureWrapper();
@@ -274,7 +274,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
             this->dependencies.append(dl);
          break;}
     case (Configuration::eScalarEntityAngleElement):{
-            ScalarEntityAngle *sAngle = new ScalarEntityAngle();
+            ScalarEntityAngle *sAngle = new ScalarEntityAngle(false);
             ElementDependencies dsAngle = sAngle->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwsAngle = new FeatureWrapper();
@@ -284,7 +284,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
             this->dependencies.append(dsAngle);
          break;}
     case (Configuration::eScalarEntityDistanceElement):{
-            ScalarEntityDistance *sDistance = new ScalarEntityDistance();
+            ScalarEntityDistance *sDistance = new ScalarEntityDistance(false);
             ElementDependencies dsDistance = sDistance->fromOpenIndyXML(xml);
 
             FeatureWrapper *fwsDistance = new FeatureWrapper();
@@ -302,7 +302,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
 Observation* ProjectRestorer::findObservation(int id){
 
     foreach(Observation *obs, this->observations){
-        if (obs->id == id){
+        if (obs->getId() == id){
             return obs;
         }
     }
@@ -312,7 +312,7 @@ Observation* ProjectRestorer::findObservation(int id){
 FeatureWrapper* ProjectRestorer::findGeometry(int id){
 
     foreach(FeatureWrapper *g, this->geometries){
-        if (g->getGeometry()->id == id){
+        if (g->getGeometry()->getId() == id){
             return g;
         }
     }
@@ -322,7 +322,7 @@ FeatureWrapper* ProjectRestorer::findGeometry(int id){
 CoordinateSystem* ProjectRestorer::findCoordSys(int id){
 
     foreach(CoordinateSystem *cs, this->coordSystems){
-        if (cs->id == id){
+        if (cs->getId() == id){
             return cs;
         }
     }
@@ -332,7 +332,7 @@ CoordinateSystem* ProjectRestorer::findCoordSys(int id){
 TrafoParam* ProjectRestorer::findTrafoParam(int id){
 
     foreach(TrafoParam *t, this->trafoParams){
-        if (t->id == id){
+        if (t->getId() == id){
             return t;
         }
     }
@@ -342,7 +342,7 @@ TrafoParam* ProjectRestorer::findTrafoParam(int id){
 FeatureWrapper* ProjectRestorer::findFeature(int id){
 
     foreach(FeatureWrapper *f, this->features){
-        if (f->getFeature()->id == id){
+        if (f->getFeature()->getId() == id){
             return f;
         }
     }
@@ -352,7 +352,7 @@ FeatureWrapper* ProjectRestorer::findFeature(int id){
 Station* ProjectRestorer::findStation(int id){
 
     foreach(Station *s, this->stations){
-        if (s->id == id){
+        if (s->getId() == id){
             return s;
         }
     }
@@ -367,7 +367,7 @@ Station* ProjectRestorer::findStation(int id){
 * comperator function for sorting FeatureWrapper* by id
 */
 bool sortID(FeatureWrapper *f1, FeatureWrapper *f2){
-   return f1->getFeature()->id < f2->getFeature()->id;
+   return f1->getFeature()->getId() < f2->getFeature()->getId();
 }
 
 void ProjectRestorer::resolveDependencies(oiProjectData &data){
@@ -449,7 +449,7 @@ void ProjectRestorer::resolveFeature(FeatureWrapper *fw, ElementDependencies &d)
         }
     }
 
-    fw->getFeature()->functionList = this->resolveFunctions(d);
+    //fw->getFeature()->getFunctions() = this->resolveFunctions(d);
 
 
 }
@@ -457,7 +457,7 @@ void ProjectRestorer::resolveFeature(FeatureWrapper *fw, ElementDependencies &d)
 void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d)
 {
     for(int i = 0; i< this->geometries.size();i++){
-        if(geometries.at(i)->getFeature()->id == d.elementID){
+        if(geometries.at(i)->getFeature()->getId() == d.elementID){
             *fw = *geometries.at(i);
             break;
         }
@@ -473,7 +473,7 @@ void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d
     for(int i = 0;i<neededObs.size();i++){
         Observation* obs = this->findObservation(neededObs.at(i));
         if(obs != NULL){
-            fw->getGeometry()->myObservations.append(obs);
+            fw->getGeometry()->addObservation(obs);
             obs->myTargetGeometries.append(fw->getGeometry());
         }
     }
@@ -482,7 +482,7 @@ void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d
         for(int i = 0;i<nominalCoordSys->size();i++){
             CoordinateSystem* c = this->findCoordSys(nominalCoordSys->at(i));
             if(c != NULL){
-                fw->getGeometry()->myNominalCoordSys = c;
+                fw->getGeometry()->setNominalSystem(c);
             }
         }
     }
@@ -491,7 +491,7 @@ void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d
         for(int i = 0;i<nominalGeom->size();i++){
             FeatureWrapper* nominalGeometry = this->findGeometry(nominalGeom->at(i));
             if(nominalGeometry != NULL){
-                fw->getGeometry()->nominals.append(nominalGeometry->getGeometry());
+                fw->getGeometry()->addNominal(nominalGeometry->getGeometry());
             }
         }
     }
@@ -502,7 +502,7 @@ void ProjectRestorer::resolveStation(FeatureWrapper *fw, ElementDependencies &d)
 {
     //find Station
     foreach(Station* s, this->stations){
-        if(s->id == d.elementID){
+        if(s->getId() == d.elementID){
             fw->setStation(s);
             break;
         }
@@ -512,8 +512,8 @@ void ProjectRestorer::resolveStation(FeatureWrapper *fw, ElementDependencies &d)
     this->resolveFeature(fw,d);
 
     //find Station coordsystem and postion
-    CoordinateSystem* stationCoordSys = this->findCoordSys(fw->getStation()->coordSys->id);
-    FeatureWrapper* stationPosition = this->findGeometry(fw->getStation()->position->id);
+    CoordinateSystem* stationCoordSys = this->findCoordSys(fw->getStation()->coordSys->getId());
+    FeatureWrapper* stationPosition = this->findGeometry(fw->getStation()->position->getId());
 
     if(stationCoordSys != NULL){
         fw->getStation()->coordSys = stationCoordSys;
@@ -543,7 +543,7 @@ void ProjectRestorer::resolveStation(FeatureWrapper *fw, ElementDependencies &d)
 void ProjectRestorer::resolveTrafoParam(FeatureWrapper *fw, ElementDependencies &d)
 {
     foreach(TrafoParam* t, this->trafoParams){
-        if(t->id == d.elementID){
+        if(t->getId() == d.elementID){
             fw->setTrafoParam(t);
             break;
         }
@@ -556,7 +556,7 @@ void ProjectRestorer::resolveTrafoParam(FeatureWrapper *fw, ElementDependencies 
 void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, ElementDependencies &d)
 {
     foreach(CoordinateSystem* c, this->coordSystems){
-        if(c->id == d.elementID){
+        if(c->getId() == d.elementID){
             fw->setCoordinateSystem(c);
             break;
         }
@@ -570,7 +570,7 @@ void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, ElementDepende
     for(int i = 0;i<neededObs.size();i++){
         Observation* obs = this->findObservation(neededObs.at(i));
         if(obs != NULL){
-            fw->getCoordinateSystem()->observations.append(obs);
+            //fw->getCoordinateSystem()->observations.append(obs);
         }
     }
 
@@ -578,7 +578,7 @@ void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, ElementDepende
         for(int i = 0;i<nominalGeom->size();i++){
             FeatureWrapper* nominalGeometry = this->findGeometry(nominalGeom->at(i));
             if(nominalGeometry != NULL){
-                fw->getCoordinateSystem()->nominals.append(nominalGeometry->getGeometry());
+                //fw->getCoordinateSystem()->nominals.append(nominalGeometry->getGeometry());
             }
         }
     }

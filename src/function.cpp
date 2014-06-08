@@ -142,6 +142,24 @@ bool Function::exec(ScalarEntityDistance &s){
 
 /*!
  * \brief Function::exec
+ * \return
+ */
+bool Function::exec(ScalarEntityTemperature &s){
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type temperature");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \return
+ */
+bool Function::exec(ScalarEntityMeasurementSeries &s){
+    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type temperature");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
  * \param s
  * \return
  */
@@ -302,7 +320,7 @@ int Function::getId(){
 void Function::addStation(Station *s, int position){
     this->stations.append(s);
     InputFeature feature;
-    feature.id = s->id;
+    feature.id = s->getId();
     feature.typeOfElement = Configuration::eStationElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -326,7 +344,7 @@ void Function::addStation(Station *s, int position){
  */
 void Function::removeStation(int id){
     foreach(Station *s, this->stations){
-        if(s->id == id){
+        if(s->getId() == id){
             this->stations.removeOne(s);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -357,7 +375,7 @@ void Function::removeStation(int id){
  */
 Station* Function::getStation(int id){
     foreach(Station *s, this->stations){
-        if(s->id == id){
+        if(s->getId() == id){
             return s;
         }
     }
@@ -381,7 +399,7 @@ QList<Station*> Function::getStations(){
 void Function::addCoordSystem(CoordinateSystem *c, int position){
     this->coordSystems.append(c);
     InputFeature feature;
-    feature.id = c->id;
+    feature.id = c->getId();
     feature.typeOfElement = Configuration::eCoordinateSystemElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -405,7 +423,7 @@ void Function::addCoordSystem(CoordinateSystem *c, int position){
  */
 void Function::removeCoordSystem(int id){
     foreach(CoordinateSystem *c, this->coordSystems){
-        if(c->id == id){
+        if(c->getId() == id){
             this->coordSystems.removeOne(c);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -436,7 +454,7 @@ void Function::removeCoordSystem(int id){
  */
 CoordinateSystem* Function::getCoordinateSystem(int id){
     foreach(CoordinateSystem *cs, this->coordSystems){
-        if(cs->id == id){
+        if(cs->getId() == id){
             return cs;
         }
     }
@@ -460,7 +478,7 @@ QList<CoordinateSystem*> Function::getCoordinateSystems(){
 void Function::addTrafoParam(TrafoParam *t, int position){
     this->trafoParams.append(t);
     InputFeature feature;
-    feature.id = t->id;
+    feature.id = t->getId();
     feature.typeOfElement = Configuration::eTrafoParamElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -484,7 +502,7 @@ void Function::addTrafoParam(TrafoParam *t, int position){
  */
 void Function::removeTrafoParam(int id){
     foreach(TrafoParam *t, this->trafoParams){
-        if(t->id == id){
+        if(t->getId() == id){
             this->trafoParams.removeOne(t);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -515,7 +533,7 @@ void Function::removeTrafoParam(int id){
  */
 TrafoParam* Function::getTrafoParam(int id){
     foreach(TrafoParam *t, this->trafoParams){
-        if(t->id == id){
+        if(t->getId() == id){
             return t;
         }
     }
@@ -539,7 +557,7 @@ QList<TrafoParam*> Function::getTrafoParams(){
 void Function::addPoint(Point *p, int position){
     this->points.append(p);
     InputFeature feature;
-    feature.id = p->id;
+    feature.id = p->getId();
     feature.typeOfElement = Configuration::ePointElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -563,7 +581,7 @@ void Function::addPoint(Point *p, int position){
  */
 void Function::removePoint(int id){
     foreach(Point *p, this->points){
-        if(p->id == id){
+        if(p->getId() == id){
             this->points.removeOne(p);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -594,7 +612,7 @@ void Function::removePoint(int id){
  */
 Point* Function::getPoint(int id){
     foreach(Point *p, this->points){
-        if(p->id == id){
+        if(p->getId() == id){
             return p;
         }
     }
@@ -618,7 +636,7 @@ QList<Point*> Function::getPoints(){
 void Function::addLine(Line *l, int position){
     this->lines.append(l);
     InputFeature feature;
-    feature.id = l->id;
+    feature.id = l->getId();
     feature.typeOfElement = Configuration::eLineElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -642,7 +660,7 @@ void Function::addLine(Line *l, int position){
  */
 void Function::removeLine(int id){
     foreach(Line *l, this->lines){
-        if(l->id == id){
+        if(l->getId() == id){
             this->lines.removeOne(l);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -673,7 +691,7 @@ void Function::removeLine(int id){
  */
 Line* Function::getLine(int id){
     foreach(Line *l, this->lines){
-        if(l->id == id){
+        if(l->getId() == id){
             return l;
         }
     }
@@ -697,7 +715,7 @@ QList<Line*> Function::getLines(){
 void Function::addPlane(Plane *p, int position){
     this->planes.append(p);
     InputFeature feature;
-    feature.id = p->id;
+    feature.id = p->getId();
     feature.typeOfElement = Configuration::ePlaneElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -721,7 +739,7 @@ void Function::addPlane(Plane *p, int position){
  */
 void Function::removePlane(int id){
     foreach(Plane *p, this->planes){
-        if(p->id == id){
+        if(p->getId() == id){
             this->planes.removeOne(p);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -752,7 +770,7 @@ void Function::removePlane(int id){
  */
 Plane* Function::getPlane(int id){
     foreach(Plane *p, this->planes){
-        if(p->id == id){
+        if(p->getId() == id){
             return p;
         }
     }
@@ -776,7 +794,7 @@ QList<Plane*> Function::getPlanes(){
 void Function::addSphere(Sphere *s, int position){
     this->spheres.append(s);
     InputFeature feature;
-    feature.id = s->id;
+    feature.id = s->getId();
     feature.typeOfElement = Configuration::eSphereElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -800,7 +818,7 @@ void Function::addSphere(Sphere *s, int position){
  */
 void Function::removeSphere(int id){
     foreach(Sphere *s, this->spheres){
-        if(s->id == id){
+        if(s->getId() == id){
             this->spheres.removeOne(s);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -831,7 +849,7 @@ void Function::removeSphere(int id){
  */
 Sphere* Function::getSphere(int id){
     foreach(Sphere *s, this->spheres){
-        if(s->id == id){
+        if(s->getId() == id){
             return s;
         }
     }
@@ -855,7 +873,7 @@ QList<Sphere*> Function::getSpheres(){
 void Function::addCircle(Circle *c, int position){
     this->circles.append(c);
     InputFeature feature;
-    feature.id = c->id;
+    feature.id = c->getId();
     feature.typeOfElement = Configuration::eCircleElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -879,7 +897,7 @@ void Function::addCircle(Circle *c, int position){
  */
 void Function::removeCircle(int id){
     foreach(Circle *c, this->circles){
-        if(c->id == id){
+        if(c->getId() == id){
             this->circles.removeOne(c);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -910,7 +928,7 @@ void Function::removeCircle(int id){
  */
 Circle* Function::getCircle(int id){
     foreach(Circle *c, this->circles){
-        if(c->id == id){
+        if(c->getId() == id){
             return c;
         }
     }
@@ -934,7 +952,7 @@ QList<Circle*> Function::getCircles(){
 void Function::addCone(Cone *c, int position){
     this->cones.append(c);
     InputFeature feature;
-    feature.id = c->id;
+    feature.id = c->getId();
     feature.typeOfElement = Configuration::eConeElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -958,7 +976,7 @@ void Function::addCone(Cone *c, int position){
  */
 void Function::removeCone(int id){
     foreach(Cone *c, this->cones){
-        if(c->id == id){
+        if(c->getId() == id){
             this->cones.removeOne(c);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -989,7 +1007,7 @@ void Function::removeCone(int id){
  */
 Cone* Function::getCone(int id){
     foreach(Cone *c, this->cones){
-        if(c->id == id){
+        if(c->getId() == id){
             return c;
         }
     }
@@ -1013,7 +1031,7 @@ QList<Cone*> Function::getCones(){
 void Function::addCylinder(Cylinder *c, int position){
     this->cylinders.append(c);
     InputFeature feature;
-    feature.id = c->id;
+    feature.id = c->getId();
     feature.typeOfElement = Configuration::eCylinderElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -1037,7 +1055,7 @@ void Function::addCylinder(Cylinder *c, int position){
  */
 void Function::removeCylinder(int id){
     foreach(Cylinder *c, this->cylinders){
-        if(c->id == id){
+        if(c->getId() == id){
             this->cylinders.removeOne(c);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -1068,7 +1086,7 @@ void Function::removeCylinder(int id){
  */
 Cylinder* Function::getCylinder(int id){
     foreach(Cylinder *c, this->cylinders){
-        if(c->id == id){
+        if(c->getId() == id){
             return c;
         }
     }
@@ -1092,7 +1110,7 @@ QList<Cylinder*> Function::getCylinders(){
 void Function::addEllipsoid(Ellipsoid *e, int position){
     this->ellipsoids.append(e);
     InputFeature feature;
-    feature.id = e->id;
+    feature.id = e->getId();
     feature.typeOfElement = Configuration::eEllipsoidElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -1116,7 +1134,7 @@ void Function::addEllipsoid(Ellipsoid *e, int position){
  */
 void Function::removeEllipsoid(int id){
     foreach(Ellipsoid *e, this->ellipsoids){
-        if(e->id == id){
+        if(e->getId() == id){
             this->ellipsoids.removeOne(e);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -1147,7 +1165,7 @@ void Function::removeEllipsoid(int id){
  */
 Ellipsoid* Function::getEllipsoid(int id){
     foreach(Ellipsoid *e, this->ellipsoids){
-        if(e->id == id){
+        if(e->getId() == id){
             return e;
         }
     }
@@ -1171,7 +1189,7 @@ QList<Ellipsoid*> Function::getEllipsoids(){
 void Function::addParaboloid(Paraboloid *p, int position){
     this->paraboloids.append(p);
     InputFeature feature;
-    feature.id = p->id;
+    feature.id = p->getId();
     feature.typeOfElement = Configuration::eParaboloidElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -1195,7 +1213,7 @@ void Function::addParaboloid(Paraboloid *p, int position){
  */
 void Function::removeParaboloid(int id){
     foreach(Paraboloid *p, this->paraboloids){
-        if(p->id == id){
+        if(p->getId() == id){
             this->paraboloids.removeOne(p);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -1226,7 +1244,7 @@ void Function::removeParaboloid(int id){
  */
 Paraboloid* Function::getParaboloid(int id){
     foreach(Paraboloid *p, this->paraboloids){
-        if(p->id == id){
+        if(p->getId() == id){
             return p;
         }
     }
@@ -1250,7 +1268,7 @@ QList<Paraboloid*> Function::getParaboloids(){
 void Function::addHyperboloid(Hyperboloid *h, int position){
     this->hyperboloids.append(h);
     InputFeature feature;
-    feature.id = h->id;
+    feature.id = h->getId();
     feature.typeOfElement = Configuration::eHyperboloidElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -1274,7 +1292,7 @@ void Function::addHyperboloid(Hyperboloid *h, int position){
  */
 void Function::removeHyperboloid(int id){
     foreach(Hyperboloid *h, this->hyperboloids){
-        if(h->id == id){
+        if(h->getId() == id){
             this->hyperboloids.removeOne(h);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -1305,7 +1323,7 @@ void Function::removeHyperboloid(int id){
  */
 Hyperboloid* Function::getHyperboloid(int id){
     foreach(Hyperboloid *h, this->hyperboloids){
-        if(h->id == id){
+        if(h->getId() == id){
             return h;
         }
     }
@@ -1329,7 +1347,7 @@ QList<Hyperboloid*> Function::getHyperboloids(){
 void Function::addNurb(Nurbs *n, int position){
     this->nurbs.append(n);
     InputFeature feature;
-    feature.id = n->id;
+    feature.id = n->getId();
     feature.typeOfElement = Configuration::eNurbsElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -1353,7 +1371,7 @@ void Function::addNurb(Nurbs *n, int position){
  */
 void Function::removeNurb(int id){
     foreach(Nurbs *n, this->nurbs){
-        if(n->id == id){
+        if(n->getId() == id){
             this->nurbs.removeOne(n);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -1384,7 +1402,7 @@ void Function::removeNurb(int id){
  */
 Nurbs* Function::getNurb(int id){
     foreach(Nurbs *n, this->nurbs){
-        if(n->id == id){
+        if(n->getId() == id){
             return n;
         }
     }
@@ -1408,7 +1426,7 @@ QList<Nurbs*> Function::getNurbs(){
 void Function::addPointCloud(PointCloud *p, int position){
     this->pointClouds.append(p);
     InputFeature feature;
-    feature.id = p->id;
+    feature.id = p->getId();
     feature.typeOfElement = Configuration::ePointCloudElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -1432,7 +1450,7 @@ void Function::addPointCloud(PointCloud *p, int position){
  */
 void Function::removePointCloud(int id){
     foreach(PointCloud *p, this->pointClouds){
-        if(p->id == id){
+        if(p->getId() == id){
             this->pointClouds.removeOne(p);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -1463,7 +1481,7 @@ void Function::removePointCloud(int id){
  */
 PointCloud* Function::getPointCloud(int id){
     foreach(PointCloud *p, this->pointClouds){
-        if(p->id == id){
+        if(p->getId() == id){
             return p;
         }
     }
@@ -1487,7 +1505,7 @@ QList<PointCloud*> Function::getPointClouds(){
 void Function::addScalarEntityDistance(ScalarEntityDistance *sed, int position){
     this->scalarEntityDistances.append(sed);
     InputFeature feature;
-    feature.id = sed->id;
+    feature.id = sed->getId();
     feature.typeOfElement = Configuration::eScalarEntityDistanceElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -1511,7 +1529,7 @@ void Function::addScalarEntityDistance(ScalarEntityDistance *sed, int position){
  */
 void Function::removeScalarEntityDistance(int id){
     foreach(ScalarEntityDistance *sed, this->scalarEntityDistances){
-        if(sed->id == id){
+        if(sed->getId() == id){
             this->scalarEntityDistances.removeOne(sed);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -1542,7 +1560,7 @@ void Function::removeScalarEntityDistance(int id){
  */
 ScalarEntityDistance* Function::getScalarEntityDistance(int id){
     foreach(ScalarEntityDistance *sed, this->scalarEntityDistances){
-        if(sed->id == id){
+        if(sed->getId() == id){
             return sed;
         }
     }
@@ -1566,7 +1584,7 @@ QList<ScalarEntityDistance*> Function::getScalarEntityDistances(){
 void Function::addScalarEntityAngle(ScalarEntityAngle *sea, int position){
     this->scalarEntityAngles.append(sea);
     InputFeature feature;
-    feature.id = sea->id;
+    feature.id = sea->getId();
     feature.typeOfElement = Configuration::eScalarEntityAngleElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -1590,7 +1608,7 @@ void Function::addScalarEntityAngle(ScalarEntityAngle *sea, int position){
  */
 void Function::removeScalarEntityAngle(int id){
     foreach(ScalarEntityAngle *sea, this->scalarEntityAngles){
-        if(sea->id == id){
+        if(sea->getId() == id){
             this->scalarEntityAngles.removeOne(sea);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -1621,7 +1639,7 @@ void Function::removeScalarEntityAngle(int id){
  */
 ScalarEntityAngle* Function::getScalarEntityAngle(int id){
     foreach(ScalarEntityAngle *sea, this->scalarEntityAngles){
-        if(sea->id == id){
+        if(sea->getId() == id){
             return sea;
         }
     }
@@ -1645,7 +1663,7 @@ QList<ScalarEntityAngle*> Function::getScalarEntityAngles(){
 void Function::addObservation(Observation *o, int position){
     this->observations.append(o);
     InputFeature feature;
-    feature.id = o->id;
+    feature.id = o->getId();
     feature.typeOfElement = Configuration::eObservationElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -1669,7 +1687,7 @@ void Function::addObservation(Observation *o, int position){
  */
 void Function::removeObservation(int id){
     foreach(Observation *o, this->observations){
-        if(o->id == id){
+        if(o->getId() == id){
             this->observations.removeOne(o);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -1700,7 +1718,7 @@ void Function::removeObservation(int id){
  */
 Observation* Function::getObservation(int id){
     foreach(Observation *o, this->observations){
-        if(o->id == id){
+        if(o->getId() == id){
             return o;
         }
     }
@@ -2041,7 +2059,7 @@ void Function::addScalarEntityTemperature(ScalarEntityTemperature *SET, int posi
 {
     this->scalarEntityTemperatures.append(SET);
     InputFeature feature;
-    feature.id = SET->id;
+    feature.id = SET->getId();
     feature.typeOfElement = Configuration::eScalarEntityTemperatureElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
@@ -2065,7 +2083,7 @@ void Function::addScalarEntityTemperature(ScalarEntityTemperature *SET, int posi
 void Function::removeScalarEntityTemperature(int id)
 {
     foreach(ScalarEntityTemperature *SET, this->scalarEntityTemperatures){
-        if(SET->id == id){
+        if(SET->getId() == id){
             this->scalarEntityTemperatures.removeOne(SET);
             for(int i = 0; i < this->getNeededElements().length(); i++){
                 if(this->featureOrder.contains(i)){
@@ -2096,7 +2114,7 @@ void Function::removeScalarEntityTemperature(int id)
 ScalarEntityTemperature *Function::getScalarEntityTemperature(int id)
 {
     foreach(ScalarEntityTemperature *SET, this->scalarEntityTemperatures){
-        if(SET->id == id){
+        if(SET->getId() == id){
             return SET;
         }
     }

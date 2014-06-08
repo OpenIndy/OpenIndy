@@ -452,7 +452,7 @@ void FeatureWrapper::setScalarEntityMeasurementSeries(ScalarEntityMeasurementSer
  * \brief FeatureWrapper::returnFeatureType
  * \return
  */
-QString FeatureWrapper::returnFeatureType(){
+QString FeatureWrapper::returnFeatureType() const{
     switch (this->typeOfFeature) {
     case Configuration::ePlaneFeature:
         return Configuration::sPlane;

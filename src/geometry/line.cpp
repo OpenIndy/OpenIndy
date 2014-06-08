@@ -2,7 +2,7 @@
 
 #include "function.h"
 
-Line::Line() : xyz(4), ijk(4)
+Line::Line(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4)
 {
     this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
@@ -15,7 +15,7 @@ Line::Line() : xyz(4), ijk(4)
  * \brief Line::Line
  * \param copy
  */
-Line::Line(const Line &copy){
+Line::Line(const Line &copy) : Geometry(copy.isNominal) {
     this->id = copy.id;
     this->name = copy.name;
     this->xyz = copy.xyz;
@@ -28,29 +28,50 @@ Line::~Line(){
 }
 
 /*!
+ * \brief Line::getXYZ returns the xyz vector
+ * \return
+ */
+OiVec Line::getXYZ() const
+{
+    return this->xyz;
+}
+
+/*!
+ * \brief Line::getIJK returns the ijk vector
+ * \return
+ */
+OiVec Line::getIJK() const
+{
+    return this->ijk;
+}
+
+/*!
  * \brief Line::recalc
  * Execute alls functions in the specified order
  */
 void Line::recalc(){
-    /*
-     * isDefined -> becomes true as soon as the first function of a feature has been executed, which defines the feature
-     * isSolved -> is true as long as there isn't any function which cannot be successfully executed
-     */
-    bool isDefined = false;
-    foreach(Function *f, this->functionList){
-        if(!isDefined){
-            this->isSolved = f->exec(*this);
-            isDefined = true;
-        }else if(this->isSolved){
-            this->isSolved = f->exec(*this);
+
+    if(this->functionList.size() > 0){
+
+        bool solved = true;
+        foreach(Function *f, this->functionList){
+
+            //execute the function if it exists and if the last function was executed successfully
+            if(f != NULL && solved == true){
+                solved = f->exec(*this);
+            }
+
         }
-    }
-    //if no function is set this feature cannot be solved and its coordinates are reset
-    if(this->functionList.size() == 0 && this->isNominal == false){
-        this->isSolved = false;
+        this->setIsSolved(solved);
+
+    }else if(this->isNominal == false){
+
         this->xyz = OiVec(4);
         this->ijk = OiVec(4);
+        this->setIsSolved(false);
+
     }
+
 }
 
 bool Line::toOpenIndyXML(QXmlStreamWriter &stream){
@@ -184,15 +205,15 @@ QString Line::getDisplayZ() const{
 }
 
 QString Line::getDisplayI() const{
-    return QString::number(this->ijk.getAt(0),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(0),'f',6);
 }
 
 QString Line::getDisplayJ() const{
-    return QString::number(this->ijk.getAt(1),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(1),'f',6);
 }
 
 QString Line::getDisplayK() const{
-    return QString::number(this->ijk.getAt(2),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(2),'f',6);
 }
 
 QString Line::getDisplayIsCommon() const{
@@ -203,9 +224,9 @@ QString Line::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
 
-QString Line::getDisplayObs() const{
+/*QString Line::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString Line::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

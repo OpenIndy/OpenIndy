@@ -58,6 +58,7 @@ void GUIConfiguration::generateAllAttributes()
     GUIConfiguration::allAttributes.append("comment");
     GUIConfiguration::allAttributes.append("use");
     GUIConfiguration::allAttributes.append("time");
+    GUIConfiguration::allAttributes.append("datumTransformation");
 }
 
 /*!
@@ -160,6 +161,8 @@ void GUIConfiguration::generateTrafoParamAttributes()
     GUIConfiguration::trafoParamAttributes.append(fuse);
     DisplayAttribute *ftime = new DisplayAttribute("time",true);
     GUIConfiguration::trafoParamAttributes.append(ftime);
+    DisplayAttribute *fdatumTrafo = new DisplayAttribute("datumTransformation",true);
+    GUIConfiguration::trafoParamAttributes.append(fdatumTrafo);
 }
 
 /*!

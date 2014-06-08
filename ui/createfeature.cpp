@@ -5,9 +5,8 @@
  * \brief CreateFeature constructor. Initiates the gui.
  * \param parent
  */
-CreateFeature::CreateFeature(QList<FeatureWrapper*> &features, QWidget *parent) :
-    QDialog(parent),featureList(features),
-    ui(new Ui::CreateFeature)
+CreateFeature::CreateFeature(QWidget *parent) :
+    QDialog(parent), ui(new Ui::CreateFeature)
 {
     ui->setupUi(this);
     initGUI();
@@ -46,6 +45,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Actual->setChecked(true);
         ui->checkBox_Actual->setEnabled(false);
         ui->checkBox_common->setEnabled(false);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         this->setWindowTitle("create coordinatesystem");
         break;
     }
@@ -61,6 +63,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Actual->setChecked(true);
         ui->checkBox_Actual->setEnabled(false);
         ui->checkBox_common->setEnabled(false);
+        ui->checkBox_movement->setVisible(true);
+        ui->checkBox_movement->setEnabled(true);
+        ui->checkBox_movement->setChecked(false);
         this->setWindowTitle("create transformation parameter");
         break;
     }
@@ -76,6 +81,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::ePointFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -89,6 +97,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::eLineFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -102,6 +113,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::eStationFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -117,6 +131,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Actual->setChecked(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::eSphereFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -130,6 +147,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::eCylinderFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -143,6 +163,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::eConeFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -156,6 +179,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::eEllipsoidFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -169,6 +195,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::eHyperboloidFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -182,6 +211,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::eParaboloidFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -195,6 +227,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::eNurbsFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -208,6 +243,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::ePointCloudFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -221,6 +259,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     case Configuration::eCircleFeature:
         ui->toolButton_mConfig->setVisible(true);
@@ -234,6 +275,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     default:{
         ui->toolButton_mConfig->setVisible(false);
@@ -247,6 +291,9 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
         ui->checkBox_Nominal->setEnabled(true);
         ui->checkBox_Actual->setEnabled(true);
         ui->checkBox_common->setEnabled(true);
+        ui->checkBox_movement->setVisible(false);
+        ui->checkBox_movement->setEnabled(false);
+        ui->checkBox_movement->setChecked(false);
         break;
     }
     }
@@ -272,6 +319,7 @@ void CreateFeature::on_toolButton_create_clicked()
         bool isCommon = ui->checkBox_common->isChecked();
         CoordinateSystem *nominalSystem = NULL;
         QString function = this->ui->comboBox_function->currentText();
+        bool isMovement = ui->checkBox_movement->isChecked();
 
         if(name == ""){
             return;
@@ -281,15 +329,24 @@ void CreateFeature::on_toolButton_create_clicked()
 
             if(isNominal){
 
-                for(int k=0; k<this->featureList.size();k++){
-                    if(this->featureList.at(k)->getCoordinateSystem() != NULL &&
-                            ui->comboBox_nominalSystem->currentText() == this->featureList.at(k)->getCoordinateSystem()->name){
-                        nominalSystem = this->featureList.at(k)->getCoordinateSystem();
+                for(int k=0; k<OiFeatureState::getFeatureCount();k++){
+                    if(OiFeatureState::getFeatures().at(k)->getCoordinateSystem() != NULL &&
+                            ui->comboBox_nominalSystem->currentText() == OiFeatureState::getFeatures().at(k)->getCoordinateSystem()->getFeatureName()){
+                        nominalSystem = OiFeatureState::getFeatures().at(k)->getCoordinateSystem();
                     }
                 }
             }
 
-            FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,isActual,isNominal,isCommon,nominalSystem);
+            FeatureAttributesExchange featureAttributes;
+            featureAttributes.count = count;
+            featureAttributes.featureType = featureType;
+            featureAttributes.name = name;
+            featureAttributes.group = group;
+            featureAttributes.function = function;
+            featureAttributes.actual = isActual;
+            featureAttributes.nominal = isNominal;
+            featureAttributes.common = isCommon;
+            featureAttributes.nominalSystem = nominalSystem;
 
             emit createFeature(featureAttributes);
 
@@ -299,26 +356,41 @@ void CreateFeature::on_toolButton_create_clicked()
             //if(ui->comboBox_destinationSystem->currentText() != ui->comboBox_startSystem->currentText()){
             //allow multiple parameter for same direction
             //also parameter from system to itself (neccessary for temperature compensation) !
-                for(int i=0;i<this->featureList.size();i++){
-                    if(featureList.at(i)->getCoordinateSystem() != NULL &&
-                            ui->comboBox_destinationSystem->currentText() == featureList.at(i)->getCoordinateSystem()->name){
-                        to = featureList.at(i)->getCoordinateSystem();
+                for(int i=0;i<OiFeatureState::getFeatureCount();i++){
+                    if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL &&
+                            ui->comboBox_destinationSystem->currentText() == OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName()){
+                        to = OiFeatureState::getFeatures().at(i)->getCoordinateSystem();
                     }
-                    if(featureList.at(i)->getStation() != NULL &&
-                            ui->comboBox_destinationSystem->currentText() == featureList.at(i)->getStation()->name){
-                        to = featureList.at(i)->getStation()->coordSys;
+                    if(OiFeatureState::getFeatures().at(i)->getStation() != NULL &&
+                            ui->comboBox_destinationSystem->currentText() == OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName()){
+                        to = OiFeatureState::getFeatures().at(i)->getStation()->coordSys;
                     }
-                    if(featureList.at(i)->getCoordinateSystem() != NULL &&
-                            ui->comboBox_startSystem->currentText() == featureList.at(i)->getCoordinateSystem()->name){
-                        from = featureList.at(i)->getCoordinateSystem();
+                    if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL &&
+                            ui->comboBox_startSystem->currentText() == OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName()){
+                        from = OiFeatureState::getFeatures().at(i)->getCoordinateSystem();
                     }
-                    if(featureList.at(i)->getStation() != NULL &&
-                            ui->comboBox_startSystem->currentText() == featureList.at(i)->getStation()->name){
-                        from = featureList.at(i)->getStation()->coordSys;
+                    if(OiFeatureState::getFeatures().at(i)->getStation() != NULL &&
+                            ui->comboBox_startSystem->currentText() == OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName()){
+                        from = OiFeatureState::getFeatures().at(i)->getStation()->coordSys;
                     }
                 }
-                FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,isActual,isNominal,isCommon,nominalSystem,
-                                                            from,to);
+                if(isMovement){
+                    from = to;
+                }
+                FeatureAttributesExchange featureAttributes;
+                featureAttributes.count = count;
+                featureAttributes.featureType = featureType;
+                featureAttributes.name = name;
+                featureAttributes.group = group;
+                featureAttributes.function = function;
+                featureAttributes.actual = isActual;
+                featureAttributes.nominal = isNominal;
+                featureAttributes.common = isCommon;
+                featureAttributes.nominalSystem = nominalSystem;
+                featureAttributes.startSystem = from;
+                featureAttributes.destSystem = to;
+                featureAttributes.isMovement = isMovement;
+
                 emit createFeature(featureAttributes);
             //}else{
             //    return;
@@ -351,16 +423,16 @@ void CreateFeature::initGUI(){
     ui->lineEdit_name->setText("");
     ui->spinBox_count->setValue(1);
 
-    if(featureList.size() !=0){
-        for(int i=0; i<featureList.size();i++){
-            if(featureList.at(i)->getCoordinateSystem() != NULL){
-                ui->comboBox_destinationSystem->addItem(featureList.at(i)->getCoordinateSystem()->name);
-                ui->comboBox_startSystem->addItem(featureList.at(i)->getCoordinateSystem()->name);
-                ui->comboBox_nominalSystem->addItem(featureList.at(i)->getCoordinateSystem()->name);
+    if(OiFeatureState::getFeatures().size() !=0){
+        for(int i=0; i<OiFeatureState::getFeatures().size();i++){
+            if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL){
+                ui->comboBox_destinationSystem->addItem(OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
+                ui->comboBox_startSystem->addItem(OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
+                ui->comboBox_nominalSystem->addItem(OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
             }
-            if(featureList.at(i)->getStation() != NULL){
-                ui->comboBox_destinationSystem->addItem(featureList.at(i)->getStation()->name);
-                ui->comboBox_startSystem->addItem(featureList.at(i)->getStation()->name);
+            if(OiFeatureState::getFeatures().at(i)->getStation() != NULL){
+                ui->comboBox_destinationSystem->addItem(OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName());
+                ui->comboBox_startSystem->addItem(OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName());
 
             }
         }
@@ -432,5 +504,21 @@ void CreateFeature::on_checkBox_Actual_toggled(bool checked)
         this->ui->comboBox_function->setEnabled(true);
     }else{
         this->ui->comboBox_function->setEnabled(false);
+    }
+}
+
+void CreateFeature::on_checkBox_movement_toggled(bool checked)
+{
+    if(checked){
+        ui->comboBox_startSystem->setEnabled(false);
+    }else{
+        ui->comboBox_startSystem->setEnabled(true);
+    }
+}
+
+void CreateFeature::on_comboBox_destinationSystem_currentIndexChanged(const QString &arg1)
+{
+    if(ui->checkBox_movement->isChecked()){
+        ui->comboBox_startSystem->setCurrentText(arg1);
     }
 }

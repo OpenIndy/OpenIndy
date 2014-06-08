@@ -6,12 +6,13 @@
 #include <QPixmap>
 
 #include "featuretreeitem.h"
+#include "oifeaturestate.h"
 
 class FeatureTreeViewModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit FeatureTreeViewModel(QList<FeatureWrapper*> &features, QObject *parent = 0);
+    explicit FeatureTreeViewModel(QObject *parent = 0);
 
     QModelIndex	index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
     QModelIndex	parent(const QModelIndex & index) const;
@@ -19,11 +20,12 @@ public:
     int	columnCount(const QModelIndex & parent = QModelIndex()) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
-    void refreshModel();
     FeatureTreeItem* getRootItem() const;
 
+public slots:
+    void refreshModel();
+
 private:
-    QList<FeatureWrapper*> &features;
     FeatureTreeItem *rootItem;
 
     void appendGeometries(FeatureTreeItem *root, QList<FeatureWrapper*> geometries, QString geomType);

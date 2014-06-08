@@ -2,7 +2,7 @@
 
 #include "function.h"
 
-ScalarEntityDistance::ScalarEntityDistance()
+ScalarEntityDistance::ScalarEntityDistance(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
@@ -15,7 +15,7 @@ ScalarEntityDistance::ScalarEntityDistance()
  * \brief ScalarEntityDistance::ScalarEntityDistance
  * \param copy
  */
-ScalarEntityDistance::ScalarEntityDistance(const ScalarEntityDistance &copy){
+ScalarEntityDistance::ScalarEntityDistance(const ScalarEntityDistance &copy) : Geometry(copy.isNominal){
     this->id = copy.id;
     this->name = copy.name;
     this->distance = copy.getDistance();
@@ -27,19 +27,27 @@ ScalarEntityDistance::ScalarEntityDistance(const ScalarEntityDistance &copy){
  * Execute alls functions in the specified order
  */
 void ScalarEntityDistance::recalc(){
-    /*
-     * isDefined -> becomes true as soon as the first function of a feature has been executed, which defines the feature
-     * isSolved -> is true as long as there isn't any function which cannot be successfully executed
-     */
-    bool isDefined = false;
-    foreach(Function *f, this->functionList){
-        if(!isDefined){
-            //this->isSolved = f->exec(*this);
-            isDefined = true;
-        }else if(this->isSolved){
-            //this->isSolved = f->exec(*this);
+
+    if(this->functionList.size() > 0){
+
+        bool solved = true;
+        foreach(Function *f, this->functionList){
+
+            //execute the function if it exists and if the last function was executed successfully
+            if(f != NULL && solved == true){
+                solved = f->exec(*this);
+            }
+
         }
+        this->setIsSolved(solved);
+
+    }else if(this->isNominal == false){
+
+        this->distance = 0.0;
+        this->setIsSolved(false);
+
     }
+
 }
 
 bool ScalarEntityDistance::toOpenIndyXML(QXmlStreamWriter &stream){
@@ -147,9 +155,9 @@ QString ScalarEntityDistance::getDisplayIsCommon() const{
 QString ScalarEntityDistance::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
-QString ScalarEntityDistance::getDisplayObs() const{
+/*QString ScalarEntityDistance::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString ScalarEntityDistance::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

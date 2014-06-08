@@ -5,6 +5,7 @@
 #include "feature.h"
 #include "featurewrapper.h"
 #include "QStringList"
+#include "oifeaturestate.h"
 
 class ReadingModel : public QAbstractTableModel
 {
@@ -15,9 +16,6 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-
-    FeatureWrapper &selectedFeature;
-    //QStringList m_columns;
 
 signals:
 

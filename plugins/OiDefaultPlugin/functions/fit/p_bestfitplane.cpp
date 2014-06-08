@@ -107,9 +107,11 @@ bool BestFitPlane::setUpResult(Plane &plane){
         n.add(1.0);
         plane.ijk = n;
         plane.xyz = d * n;
-        plane.myStatistic.stdev = qSqrt( eVal / (count - 3) );
-        plane.myStatistic.isValid = true;
-        this->myStatistic = plane.myStatistic;
+        Statistic myStats;
+        myStats.stdev = qSqrt( eVal / (count - 3) );
+        myStats.isValid = true;
+        plane.setStatistic(myStats);
+        this->myStatistic = plane.getStatistic();
         return true;
     }
     return false;
@@ -156,10 +158,10 @@ bool BestFitPlane::checkObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
         if(obs->isValid){
-            this->setUseState(obs->id, true);
+            this->setUseState(obs->getId(), true);
             count++;
         }else{
-            this->setUseState(obs->id, false);
+            this->setUseState(obs->getId(), false);
         }
     }
     if(count >= 3){

@@ -24,6 +24,7 @@
 #include "scalarentitydistance.h"
 #include "scalarentityangle.h"
 #include "scalarentitytemperature.h"
+#include "scalarentitymeasurementseries.h"
 #include "reading.h"
 #include "functionconfiguration.h"
 #include "oiemitter.h"
@@ -80,6 +81,8 @@ public:
     virtual bool exec(PointCloud&);
     virtual bool exec(ScalarEntityAngle&);
     virtual bool exec(ScalarEntityDistance&);
+    virtual bool exec(ScalarEntityTemperature&);
+    virtual bool exec(ScalarEntityMeasurementSeries&);
 
     virtual QList<InputParams> getNeededElements() = 0;
     virtual QList<Configuration::FeatureTypes> applicableFor() = 0;

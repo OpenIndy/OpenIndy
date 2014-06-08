@@ -215,8 +215,9 @@ bool BestFitCircle::exec(Circle &circle) {
         qDebug() << QString::number(nx) + ", " + QString::number(ny) + ", " + QString::number(nz) + ", "  + QString::number(d);
 
         // Statistik
-        circle.myStatistic.s0_apriori     = 1.0;
-        circle.myStatistic.s0_aposteriori = (obsCount-6) > 0 ? sqrt(OiVec::dot(v,v)/(obsCount-6)) : 1.0;
+        Statistic myStats;
+        myStats.s0_apriori     = 1.0;
+        myStats.s0_aposteriori = (obsCount-6) > 0 ? sqrt(OiVec::dot(v,v)/(obsCount-6)) : 1.0;
 
         circle.xyz.setAt(0, xc);
         circle.xyz.setAt(1, yc);
@@ -227,18 +228,19 @@ bool BestFitCircle::exec(Circle &circle) {
         circle.ijk.setAt(2, nz);
         circle.dist2origin = d;
 
-        circle.myStatistic.v.replace(v);
+        myStats.v.replace(v);
         for(int i=0; i<obsCount; i++){
             Residual r;
             r.addValue("vx", v.getAt(i*3),   UnitConverter::eMetric);
             r.addValue("vy", v.getAt(3*i+1), UnitConverter::eMetric);
             r.addValue("vz", v.getAt(3*i+2), UnitConverter::eMetric);
-            circle.myStatistic.displayResiduals.append(r);
+            myStats.displayResiduals.append(r);
         }
-        circle.myStatistic.qxx = Qxx;
+        myStats.qxx = Qxx;
 
-        circle.myStatistic.isValid = true;
-        this->myStatistic = circle.myStatistic;
+        myStats.isValid = true;
+        circle.setStatistic(myStats);
+        this->myStatistic = circle.getStatistic();
 
         return true;
     }
@@ -278,11 +280,11 @@ int BestFitCircle::getObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
         if(obs->isValid){
-            this->setUseState(obs->id, true);
+            this->setUseState(obs->getId(), true);
             count++;
         }
         else
-            this->setUseState(obs->id, false);
+            this->setUseState(obs->getId(), false);
     }
     return count;
 }

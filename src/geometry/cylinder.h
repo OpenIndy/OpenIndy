@@ -5,13 +5,17 @@
 
 class Cylinder : public Geometry
 {
+    Q_OBJECT
 public:
-    Cylinder();
+    Cylinder(bool isNominal, QObject *parent = 0);
     Cylinder(const Cylinder &copy);
 
     OiVec xyz;
     OiVec ijk;
     double radius;
+
+    OiVec getXYZ() const;
+    OiVec getIJK() const;
 
     void recalc();
 

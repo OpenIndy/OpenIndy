@@ -72,10 +72,10 @@ bool IntersectPlanePlane::setUpResult(Line &line){
     Plane *plane2 = NULL;
     int count = 0;
     foreach(Plane *p, this->planes){
-        if(p->isSolved && count == 0){
+        if(p->getIsSolved() && count == 0){
             plane1 = p;
             count++;
-        }else if(p->isSolved && count == 1){
+        }else if(p->getIsSolved() && count == 1){
             plane2 = p;
             break;
         }
@@ -123,11 +123,11 @@ bool IntersectPlanePlane::setUpResult(Line &line){
 bool IntersectPlanePlane::checkElementCount(){
     int count = 0;
     foreach(Plane *p, this->planes){
-        if(p->isSolved && count < 2){
-            this->setUseState(p->id, true);
+        if(p->getIsSolved() && count < 2){
+            this->setUseState(p->getId(), true);
             count++;
         }else{
-            this->setUseState(p->id, false);
+            this->setUseState(p->getId(), false);
         }
     }
     if(count == 2){

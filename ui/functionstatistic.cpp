@@ -67,7 +67,7 @@ QVariant FunctionStatistic::data(const QModelIndex &index, int role) const{
                     }
                     if(this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residualUnitType.value(keyName) == UnitConverter::eTemperature){
                         double value = (double) this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residual.value(keyName);
-                        return QString::number(value*UnitConverter::getTemperatureMultiplier(),'f',UnitConverter::temperatureDigits);
+                        return QString::number(UnitConverter::getTemperature(value),'f',UnitConverter::temperatureDigits);
                     }
                 }
             }

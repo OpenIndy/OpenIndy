@@ -188,11 +188,11 @@ bool TranslateByPlane::exec(Sphere &targetSphere){
 Plane* TranslateByPlane::getPlane(){
     Plane *result = NULL;
     foreach(Plane *p, this->planes){
-        if(result == NULL && p->isSolved){
+        if(result == NULL && p->getIsSolved()){
             result = p;
-            this->setUseState(result->id, true);
+            this->setUseState(result->getId(), true);
         }else{
-            this->setUseState(p->id, false);
+            this->setUseState(p->getId(), false);
         }
     }
     return result;
@@ -205,11 +205,11 @@ Plane* TranslateByPlane::getPlane(){
 ScalarEntityDistance* TranslateByPlane::getDistance(){
     ScalarEntityDistance *result = NULL;
     foreach(ScalarEntityDistance *sed, this->scalarEntityDistances){
-        if(result == NULL && sed->isSolved){
+        if(result == NULL && sed->getIsSolved()){
             result = sed;
-            this->setUseState(result->id, true);
+            this->setUseState(result->getId(), true);
         }else{
-            this->setUseState(sed->id, false);
+            this->setUseState(sed->getId(), false);
         }
     }
     return result;
@@ -222,8 +222,8 @@ ScalarEntityDistance* TranslateByPlane::getDistance(){
  * \param distance
  */
 void TranslateByPlane::shiftPoint(Point &targetPoint, Plane *plane, ScalarEntityDistance *distance){
-    if(targetPoint.isSolved && plane->isSolved && distance->isSolved){ //if all elements are solved
-        if(targetPoint.isUpdated && plane->isUpdated && distance->isUpdated){ //if all elements are in the same coordinate system
+    if(targetPoint.getIsSolved() && plane->getIsSolved() && distance->getIsSolved()){ //if all elements are solved
+        if(targetPoint.getIsUpdated() && plane->getIsUpdated() && distance->getIsUpdated()){ //if all elements are in the same coordinate system
             FunctionConfiguration myConfig = this->getFunctionConfiguration();
             QMap<QString, QString> stringParameter = myConfig.stringParameter;
             bool invert = false;
@@ -250,8 +250,8 @@ void TranslateByPlane::shiftPoint(Point &targetPoint, Plane *plane, ScalarEntity
  * \param distance
  */
 void TranslateByPlane::shiftLine(Line &targetLine, Plane *plane, ScalarEntityDistance *distance){
-    if(targetLine.isSolved && plane->isSolved && distance->isSolved){ //if all elements are solved
-        if(targetLine.isUpdated && plane->isUpdated && distance->isUpdated){ //if all elements are in the same coordinate system
+    if(targetLine.getIsSolved() && plane->getIsSolved() && distance->getIsSolved()){ //if all elements are solved
+        if(targetLine.getIsUpdated() && plane->getIsUpdated() && distance->getIsUpdated()){ //if all elements are in the same coordinate system
             FunctionConfiguration myConfig = this->getFunctionConfiguration();
             QMap<QString, QString> stringParameter = myConfig.stringParameter;
             bool invert = false;
@@ -278,8 +278,8 @@ void TranslateByPlane::shiftLine(Line &targetLine, Plane *plane, ScalarEntityDis
  * \param distance
  */
 void TranslateByPlane::shiftPlane(Plane &targetPlane, Plane *plane, ScalarEntityDistance *distance){
-    if(targetPlane.isSolved && plane->isSolved && distance->isSolved){ //if all elements are solved
-        if(targetPlane.isUpdated && plane->isUpdated && distance->isUpdated){ //if all elements are in the same coordinate system
+    if(targetPlane.getIsSolved() && plane->getIsSolved() && distance->getIsSolved()){ //if all elements are solved
+        if(targetPlane.getIsUpdated() && plane->getIsUpdated() && distance->getIsUpdated()){ //if all elements are in the same coordinate system
             FunctionConfiguration myConfig = this->getFunctionConfiguration();
             QMap<QString, QString> stringParameter = myConfig.stringParameter;
             bool invert = false;
@@ -306,8 +306,8 @@ void TranslateByPlane::shiftPlane(Plane &targetPlane, Plane *plane, ScalarEntity
  * \param distance
  */
 void TranslateByPlane::shiftSphere(Sphere &targetSphere, Plane *plane, ScalarEntityDistance *distance){
-    if(targetSphere.isSolved && plane->isSolved && distance->isSolved){ //if all elements are solved
-        if(targetSphere.isUpdated && plane->isUpdated && distance->isUpdated){ //if all elements are in the same coordinate system
+    if(targetSphere.getIsSolved() && plane->getIsSolved() && distance->getIsSolved()){ //if all elements are solved
+        if(targetSphere.getIsUpdated() && plane->getIsUpdated() && distance->getIsUpdated()){ //if all elements are in the same coordinate system
             FunctionConfiguration myConfig = this->getFunctionConfiguration();
             QMap<QString, QString> stringParameter = myConfig.stringParameter;
             bool invert = false;

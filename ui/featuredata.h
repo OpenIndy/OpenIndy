@@ -23,6 +23,8 @@
 #include <QShowEvent>
 #include <QDesktopWidget>
 
+#include "oifeaturestate.h"
+
 namespace Ui {
 class FeatureData;
 }
@@ -43,7 +45,7 @@ public:
     MatrixModel *qxxModel;
     MatrixModel *sxxModel;
 
-    void getActiveFeature(FeatureWrapper *activeFeature);
+    //void getActiveFeature(FeatureWrapper *activeFeature);
 
     void showEvent(QShowEvent *event);
 
@@ -58,53 +60,7 @@ private slots:
 
     void closeEvent(QCloseEvent *event);
 
-    void getSensorConfiguration();
-
-    void getReadingType();
-
-    void disableAccuracyElements();
-
-    void getSensorParameters();
-
-    void destructDynamicGUI();
-
-    void initSensorConfiguration();
-
-    void on_pushButton_setSensorConfig_clicked();
-
-    void initConnection();
-
-    void disableConnectionSettings();
-
-    void on_comboBox_connectiontype_currentIndexChanged(const QString &arg1);
-
-    void on_pushButton_connectionChanged_clicked();
-
 private:
-
-    bool connectionChanged;
-
-    SensorConfiguration *sensorConfig;
-
-    QVBoxLayout *masterAccuracyLayout;
-    QVBoxLayout *masterSensorConfigLayout;
-
-    QMap<QString, QLineEdit*> integerParameter;
-    QMap<QString, QLabel*> integerParameterLabel;
-
-    QMap<QString, QLineEdit*> doubleParameter;
-    QMap<QString, QLabel*> doubleParameterLabel;
-
-    QMap<QString, QComboBox*> stringParameter;
-    QMap<QString, QLabel*> stringParameterLabel;
-
-    QMap<QString, QLineEdit*> undefinedSigma;
-    QMap<QString, QLabel*> undefinedSigmaLabel;
-
-    QMap<QString, QLayout*> accuracyLayouts;
-    QMap<QString, QLayout*> sensorConfigLayouts;
-
-    FeatureWrapper *selectedFeature;
     Ui::FeatureData *ui;
 };
 
