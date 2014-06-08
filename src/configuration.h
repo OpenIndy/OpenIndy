@@ -61,9 +61,23 @@ public:
 
     static QString sSteel;
     static QString sAluminum;
+    static QString sPlumb;
+    static QString sIron;
+    static QString sGrayCastIron;
+    static QString sCopper;
+    static QString sBrass;
+    static QString sZinc;
+    static QString sPlatinum;
 
     static double dSteel;
     static double dAluminum;
+    static double dPlumb;
+    static double dIron;
+    static double dGrayCastIron;
+    static double dCopper;
+    static double dBrass;
+    static double dZinc;
+    static double dPlatinum;
 
     enum eColor{
         red,
@@ -158,7 +172,14 @@ public:
 
     enum Materials{
         eSteel,
-        eAluminum
+        eAluminum,
+        ePlumb,
+        eIron,
+        eGrayCastIron,
+        eCopper,
+        eBrass,
+        eZinc,
+        ePlatinum
     };
 
     static int idCount;
