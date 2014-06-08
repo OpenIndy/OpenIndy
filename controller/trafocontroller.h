@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include "observation.h"
-#include "datalisthandler.h"
 #include "function.h"
 #include "oifeaturestate.h"
 
@@ -23,7 +22,6 @@ public slots:
     void addObservation(Observation *obs);
     void applyMovements(Observation *obs);
     void transformNewObservations(Observation *obs);
-    void initPointers(DataListHandler dlh);
 
     bool transformObservations(CoordinateSystem *from);
     void setObservationState(CoordinateSystem *cs, bool valid);

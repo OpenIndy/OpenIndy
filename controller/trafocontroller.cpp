@@ -96,21 +96,6 @@ void TrafoController::transformNewObservations(Observation *obs)
 }
 
 /*!
- * \brief initPointers gets actual lists
- * \param dlh
- */
-void TrafoController::initPointers(DataListHandler dlh)
-{
-    /*TrafoController::features = dlh.features;
-    TrafoController::activeFeature = dlh.activeFeature;
-    TrafoController::coordSys = dlh.coordSys;
-    TrafoController::stations = dlh.stations;
-    TrafoController::activeStation = dlh.activeStation;
-    TrafoController::activeCoordinateSystem = dlh.activeCoordinateSystem;
-    TrafoController::availableGroups = dlh.availableGroups;*/
-}
-
-/*!
  * \brief transformObservations transforms the observations of the specified coordinatesystem.
  * \param from
  * \return
