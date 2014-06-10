@@ -20,10 +20,58 @@ NominalDataDialog::~NominalDataDialog()
 }
 
 /*!
- * \brief getActiveFeature enables or disables gui elements depending on the active feature. also fills the gui with values.
- * \param aF
+ * \brief ok clicked sends the specified values to the controller via the exchange object for nominal data
  */
-void NominalDataDialog::getActiveFeature(FeatureWrapper *aF){
+void NominalDataDialog::on_toolButton_ok_clicked()
+{
+    NominalAttributeExchange nominalValue;
+    nominalValue.nomX = ui->lineEdit_nominalX->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    nominalValue.nomY = ui->lineEdit_nominalY->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    nominalValue.nomZ = ui->lineEdit_nominalZ->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    nominalValue.nomI = ui->lineEdit_nominalI->text().toDouble();
+    nominalValue.nomJ = ui->lineEdit_nominalJ->text().toDouble();
+    nominalValue.nomK = ui->lineEdit_nominalK->text().toDouble();
+    nominalValue.nomR = ui->lineEdit_nominalR->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    nominalValue.nomSDE = ui->lineEdit_nominalSDE->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    nominalValue.nomSAE = ui->lineEdit_nominalSAE->text().toDouble()/UnitConverter::getAngleMultiplier();
+    nominalValue.nomSTE = UnitConverter::getReverseTemperature(ui->lineEdit_nominalTemperature->text().toDouble());
+    nominalValue.nomSMSE = ui->lineEdit_nominalMeasurementSeries->text().toDouble();
+
+    emit sendNominalValues(nominalValue);
+
+    this->close();
+}
+/*!
+ * \brief cancel clicked
+ */
+void NominalDataDialog::on_toolButton_cancel_clicked()
+{
+    this->close();
+}
+
+/*!
+ * \brief setLabelText sets the texts of the labels
+ */
+void NominalDataDialog::setLabelText()
+{
+    ui->label_nominalI->setText(QString("nominal I value"));
+    ui->label_nominalJ->setText(QString("nominal J value"));
+    ui->label_nominalK->setText(QString("nominal K value"));
+    ui->label_nominalMeasurementSeries->setText(QString("nominal measurement series"));
+    ui->label_nominalR->setText(QString("nominal radius value " + UnitConverter::getDistanceUnitString()));
+    ui->label_nominalSAE->setText(QString("nominal scalar entity angle value " + UnitConverter::getAngleUnitString()));
+    ui->label_nominalSDE->setText(QString("nominal scalar distance value " + UnitConverter::getDistanceUnitString()));
+    ui->label_nominalTemperature->setText(QString("nominal scalar entity temperature value " + UnitConverter::getTemperatureUnitString()));
+    ui->label_nominalX->setText(QString("nominal X value " + UnitConverter::getDistanceUnitString()));
+    ui->label_nominalY->setText(QString("nominal Y value " + UnitConverter::getDistanceUnitString()));
+    ui->label_nominalZ->setText(QString("nominal Z value " + UnitConverter::getDistanceUnitString()));
+}
+
+void NominalDataDialog::showEvent(QShowEvent *event)
+{
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
 
     ui->label_nominalI->setEnabled(false);
     ui->label_nominalJ->setEnabled(false);
@@ -272,61 +320,7 @@ void NominalDataDialog::getActiveFeature(FeatureWrapper *aF){
     }
 
     fillGUI();
-}
 
-/*!
- * \brief ok clicked sends the specified values to the controller via the exchange object for nominal data
- */
-void NominalDataDialog::on_toolButton_ok_clicked()
-{
-    NominalAttributeExchange nominalValue;
-    nominalValue.nomX = ui->lineEdit_nominalX->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    nominalValue.nomY = ui->lineEdit_nominalY->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    nominalValue.nomZ = ui->lineEdit_nominalZ->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    nominalValue.nomI = ui->lineEdit_nominalI->text().toDouble();
-    nominalValue.nomJ = ui->lineEdit_nominalJ->text().toDouble();
-    nominalValue.nomK = ui->lineEdit_nominalK->text().toDouble();
-    nominalValue.nomR = ui->lineEdit_nominalR->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    nominalValue.nomSDE = ui->lineEdit_nominalSDE->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    nominalValue.nomSAE = ui->lineEdit_nominalSAE->text().toDouble()/UnitConverter::getAngleMultiplier();
-    nominalValue.nomSTE = UnitConverter::getReverseTemperature(ui->lineEdit_nominalTemperature->text().toDouble());
-    nominalValue.nomSMSE = ui->lineEdit_nominalMeasurementSeries->text().toDouble();
-
-    emit sendNominalValues(nominalValue);
-
-    this->close();
-}
-/*!
- * \brief cancel clicked
- */
-void NominalDataDialog::on_toolButton_cancel_clicked()
-{
-    this->close();
-}
-
-/*!
- * \brief setLabelText sets the texts of the labels
- */
-void NominalDataDialog::setLabelText()
-{
-    ui->label_nominalI->setText(QString("nominal I value"));
-    ui->label_nominalJ->setText(QString("nominal J value"));
-    ui->label_nominalK->setText(QString("nominal K value"));
-    ui->label_nominalMeasurementSeries->setText(QString("nominal measurement series"));
-    ui->label_nominalR->setText(QString("nominal radius value " + UnitConverter::getDistanceUnitString()));
-    ui->label_nominalSAE->setText(QString("nominal scalar entity angle value " + UnitConverter::getAngleUnitString()));
-    ui->label_nominalSDE->setText(QString("nominal scalar distance value " + UnitConverter::getDistanceUnitString()));
-    ui->label_nominalTemperature->setText(QString("nominal scalar entity temperature value " + UnitConverter::getTemperatureUnitString()));
-    ui->label_nominalX->setText(QString("nominal X value " + UnitConverter::getDistanceUnitString()));
-    ui->label_nominalY->setText(QString("nominal Y value " + UnitConverter::getDistanceUnitString()));
-    ui->label_nominalZ->setText(QString("nominal Z value " + UnitConverter::getDistanceUnitString()));
-}
-
-void NominalDataDialog::showEvent(QShowEvent *event)
-{
-    //Put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
     event->accept();
 }
 

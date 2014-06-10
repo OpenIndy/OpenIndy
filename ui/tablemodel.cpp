@@ -178,6 +178,11 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                     return currentFeature->getTrafoParam()->getValidTime();
                 }
                 return QVariant();
+            case 35:
+                if(currentFeature->getTrafoParam() != NULL){
+                    return currentFeature->getTrafoParam()->getisDatumTrafo();
+                }
+                return QVariant();
             default:
                 break;
             }
@@ -244,115 +249,6 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
  * \return
  */
 QVariant TableModel::headerData(int section, Qt::Orientation orientation, int role) const{
-
-/*    QStringList m_columns;
-
-    m_columns.append("Feature type");
-    m_columns.append("Featurename");
-    m_columns.append("Group");
-
-    if(UnitConverter::distanceType == UnitConverter::eMETER){
-        m_columns.append("X [m]");
-        m_columns.append("Y [m]");
-        m_columns.append("Z [m]");
-    }
-
-    if(UnitConverter::distanceType == UnitConverter::eMILLIMETER){
-        m_columns.append("X [mm]");
-        m_columns.append("Y [mm]");
-        m_columns.append("Z [mm]");
-    }
-
-    m_columns.append("observations");
-    m_columns.append("solved");
-    m_columns.append("measurement config");
-    m_columns.append("Functions");
-    m_columns.append("isCommonPoint");
-    m_columns.append("isNominal");
-
-    if(UnitConverter::distanceType == UnitConverter::eMETER){
-        m_columns.append("stddev [m]");
-    }
-
-    if(UnitConverter::distanceType == UnitConverter::eMILLIMETER){
-        m_columns.append("stddev [mm]");
-    }
-
-    m_columns.append("I");
-    m_columns.append("J");
-    m_columns.append("K");
-
-    if(UnitConverter::distanceType == UnitConverter::eMETER){
-        m_columns.append("Radius [m]");
-    }
-
-    if(UnitConverter::distanceType == UnitConverter::eMILLIMETER){
-        m_columns.append("Radius [mm]");
-    }
-
-    m_columns.append("scalar value [m]");
-    m_columns.append("scalar value [dec. degree]");
-    m_columns.append("start");
-    m_columns.append("destination");
-
-    if(UnitConverter::distanceType == UnitConverter::eMETER){
-        m_columns.append("Translation X [m]");
-    }
-    if(UnitConverter::distanceType == UnitConverter::eMILLIMETER){
-        m_columns.append("Translation X [m]");
-    }
-
-    if(UnitConverter::distanceType == UnitConverter::eMETER){
-        m_columns.append("Translation Y [m]");
-    }
-    if(UnitConverter::distanceType == UnitConverter::eMILLIMETER){
-        m_columns.append("Translation Y [m]");
-    }
-
-    if(UnitConverter::distanceType == UnitConverter::eMETER){
-        m_columns.append("Translation Z [m]");
-    }
-    if(UnitConverter::distanceType == UnitConverter::eMILLIMETER){
-        m_columns.append("Translation Z [m]");
-    }
-
-    if(UnitConverter::angleType == UnitConverter::eRADIANT){
-        m_columns.append("Rotation X [rad]");
-    }
-    if(UnitConverter::angleType == UnitConverter::eGON){
-        m_columns.append("Rotation X [gon]");
-    }
-    if(UnitConverter::angleType == UnitConverter::eDECIMALDEGREE){
-        m_columns.append("Rotation X [dec. degree]");
-    }
-
-    if(UnitConverter::angleType == UnitConverter::eRADIANT){
-        m_columns.append("Rotation Y [rad]");
-    }
-    if(UnitConverter::angleType == UnitConverter::eGON){
-        m_columns.append("Rotation Y [gon]");
-    }
-    if(UnitConverter::angleType == UnitConverter::eDECIMALDEGREE){
-        m_columns.append("Rotation Y [dec. degree]");
-    }
-
-    if(UnitConverter::angleType == UnitConverter::eRADIANT){
-        m_columns.append("Rotation Z [rad]");
-    }
-    if(UnitConverter::angleType == UnitConverter::eGON){
-        m_columns.append("Rotation Z [gon]");
-    }
-    if(UnitConverter::angleType == UnitConverter::eDECIMALDEGREE){
-        m_columns.append("Rotation Z [dec. degree]");
-    }
-
-    m_columns.append("Scale X");
-    m_columns.append("Scale Y");
-    m_columns.append("Scale Z");
-    m_columns.append(QString("Temperature " + UnitConverter::getTemperatureUnitString()));
-    m_columns.append("Measurement series");
-
-    m_columns.append("Comment"); */
 
     QStringList m_columns = GUIConfiguration::allAttributes;
 
@@ -449,6 +345,8 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
             OiFeatureState::getActiveFeature()->getTrafoParam()->setIsUsed(value.toBool());
         }else if(index.column() == 34){//trafo param time
             OiFeatureState::getActiveFeature()->getTrafoParam()->setValidTime(value.toDateTime());
+        }else if(index.column() == 35){//trafo param datum transformation
+            OiFeatureState::getActiveFeature()->getTrafoParam()->setisDatumTrafo(value.toBool());
         }
 
         this->updateModel();

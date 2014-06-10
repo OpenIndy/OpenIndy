@@ -153,7 +153,6 @@ SOURCES += \
     ui/plugininfowidget.cpp \
     controller/oifeaturestate.cpp \
     controller/trafocontroller.cpp \
-    controller/datalisthandler.cpp \
     ui/featureoverviewproxymodel.cpp \
     controller/oiDataExchange/oiexchangepts.cpp \
     ui/stationinfodialog.cpp
@@ -275,7 +274,6 @@ HEADERS  += \
     ui/plugininfowidget.h \
     controller/oifeaturestate.h \
     controller/trafocontroller.h \
-    controller/datalisthandler.h \
     ui/featureoverviewproxymodel.h \
     controller/oiDataExchange/oiexchangepts.h \
     ui/stationinfodialog.h

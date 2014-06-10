@@ -58,7 +58,11 @@ QList<Configuration::FeatureTypes> SimpleTemperatureCompensation::applicableFor(
 bool SimpleTemperatureCompensation::exec(TrafoParam &tp)
 {
     if(this->isValid()){
+        FunctionConfiguration myConfig = this->getFunctionConfiguration();
+        QMap<QString,QString> stringParameter = myConfig.stringParameter;
+
         ScalarEntityTemperature *myScalarEntityTemperature = this->getScalarEntityTemperature();
+
         if(myScalarEntityTemperature != NULL){
             this->calcExpansion(tp,myScalarEntityTemperature);
         }else{
@@ -84,6 +88,13 @@ QMap<QString, QStringList> SimpleTemperatureCompensation::getStringParameter()
     QStringList value;
     value.append(Configuration::sSteel);
     value.append(Configuration::sAluminum);
+    value.append(Configuration::sPlumb);
+    value.append(Configuration::sIron);
+    value.append(Configuration::sGrayCastIron);
+    value.append(Configuration::sCopper);
+    value.append(Configuration::sBrass);
+    value.append(Configuration::sZinc);
+    value.append(Configuration::sPlatinum);
     result.insert(key,value);
     return result;
 }
@@ -95,7 +106,7 @@ QMap<QString, QStringList> SimpleTemperatureCompensation::getStringParameter()
 QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter()
 {
     QMap<QString,double> result;
-    QString key = "referenceTemperature";
+    QString key = "reference Temperature";
     double value = 20.0;
     result.insert(key,value);
     key = "temperatureAccuracy";
@@ -111,10 +122,14 @@ QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter()
  */
 void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTemperature *SET)
 {
+    double actualTemp = 0.0;
+
+    FunctionConfiguration myConfig = this->getFunctionConfiguration();
+    QMap<QString,QString> stringParameter = myConfig.stringParameter;
+    QMap<QString,double> doubleParameter = myConfig.doubleParameter;
+
     if(SET->getIsSolved()){
-        FunctionConfiguration myConfig = this->getFunctionConfiguration();
-        QMap<QString,QString> stringParameter = myConfig.stringParameter;
-        QMap<QString,double> doubleParameter = myConfig.doubleParameter;
+        actualTemp = SET->getTemperature();
 
         QString material = "";
         double refTemp = 0.0;
@@ -135,16 +150,15 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
             protTempAccuracy = QString::number(tempAccuracy,'f',2);
         }
 
-        double expansion = (refTemp-SET->getTemperature())*expansionCoefficient;
+        double expansion = (actualTemp-refTemp)*expansionCoefficient;
         protExpansion = QString::number(expansion,'f',4);
         double scale = (1+ (expansion/1000000));
-        tp.setScale(scale, scale, scale);
-        tp.setTranslation(0.0, 0.0, 0.0);
-        tp.setRotation(0.0, 0.0, 0.0);
+        tp.setScale(scale,scale,scale);
+        tp.setTranslation(0.0,0.0,0.0);
+        tp.setRotation(0.0,0.0,0.0);
         tp.generateHomogenMatrix();
 
         this->calcAccuracy(tp,tempAccuracy,expansion);
-
     }
 }
 

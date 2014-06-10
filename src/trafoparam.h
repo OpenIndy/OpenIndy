@@ -43,6 +43,8 @@ public:
     void setIsMovement(bool isMovement);
     Statistic *getStatistic() const;
     void setStatistic(Statistic *myStatistic);
+    bool getisDatumTrafo();
+    void setisDatumTrafo(bool isDatumTrafo);
 
     void recalc();
 
@@ -82,6 +84,7 @@ protected:
     bool use;
     QDateTime validTime;
     bool isMovement;
+    bool isDatumTrafo;
 };
 
 #endif // TRAFOPARAM_H

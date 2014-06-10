@@ -26,8 +26,6 @@ signals:
 
 public slots:
 
-    void getActiveFeature(FeatureWrapper *aF);
-
 private slots:
 
     void fillGUI();
