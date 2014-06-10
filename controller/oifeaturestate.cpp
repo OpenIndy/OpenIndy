@@ -801,7 +801,7 @@ void OiFeatureState::setFeatureFunctions(int featureId){
         int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
         if(featureIndex >= 0){
 
-            OiFeatureState::myFeatureState->emitSignal(eFeatureAttributesChanged);
+            OiFeatureState::myFeatureState->emitSignal(eFeatureFunctionsChanged);
 
         }
 
@@ -840,6 +840,25 @@ void OiFeatureState::setGeometryNominals(int featureId){
         if(featureIndex >= 0){
 
             OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
+
+        }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief OiFeatureState::setGeometryObservations
+ * \param featureId
+ */
+void OiFeatureState::setGeometryObservations(int featureId){
+    try{
+
+        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
+        if(featureIndex >= 0){
+
+            OiFeatureState::myFeatureState->emitSignal(eGeomObservationsChanged);
 
         }
 
