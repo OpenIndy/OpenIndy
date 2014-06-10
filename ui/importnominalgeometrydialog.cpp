@@ -173,15 +173,15 @@ void importNominalGeometryDialog::on_toolButton_open_clicked()
 
 
 
-void importNominalGeometryDialog::setUpCoordinateSystems(QList<CoordinateSystem*> coordSystems){
+void importNominalGeometryDialog::setUpCoordinateSystems(){
 
-    /*ui->comboBox_coordSys->clear();
+    ui->comboBox_coordSys->clear();
 
-    availableCoordSys = coordSystems;
+    QList<CoordinateSystem*> availableCoordSys = OiFeatureState::getCoordinateSystems();
 
     for(int i = 0; i < availableCoordSys.size(); i++){
-        ui->comboBox_coordSys->insertItem(i,availableCoordSys.at(i)->name);
-    }*/
+        ui->comboBox_coordSys->insertItem(i,availableCoordSys.at(i)->getFeatureName());
+    }
 
 
 }
@@ -191,6 +191,7 @@ void importNominalGeometryDialog::showEvent(QShowEvent *event)
     //Put the dialog in the screen center
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
+    setUpCoordinateSystems();
     event->accept();
 }
 

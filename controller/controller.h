@@ -147,7 +147,7 @@ public slots:
     void recalcActiveFeature();
     void recalcFeature(Feature *f);
     void recalcTrafoParam(TrafoParam *tp);
-    void changeActiveStation();
+    void changeActiveStation(bool setSensor);
     void showResults(bool);
     void defaultLastmConfig();
     void savePluginData(PluginMetaData* metaInfo);

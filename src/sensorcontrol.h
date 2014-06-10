@@ -81,6 +81,7 @@ public slots:
     void stopReadingStream();
     void stopStatStream();
 
+    void copyMe(SensorControl *sc);
 
 private:
 

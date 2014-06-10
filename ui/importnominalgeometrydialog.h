@@ -41,7 +41,7 @@ private slots:
     void on_comboBox_typeOfElement_currentIndexChanged(const QString &arg1);
 
 public slots:
-    void setUpCoordinateSystems(QList<CoordinateSystem*> coordSystems);
+    void setUpCoordinateSystems();
 
     void showEvent(QShowEvent *event);
 

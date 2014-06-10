@@ -353,6 +353,12 @@ void SensorControl::stopStatStream()
     this->myEmitter.sendString("stat stream stopped");
 }
 
+void SensorControl::copyMe(SensorControl *sc)
+{
+    sc->instrument = this->instrument;
+    sc->InstrumentConfig = this->InstrumentConfig;
+}
+
 
 /*!
  * \brief SensorControl::connect
@@ -466,7 +472,7 @@ void SensorControl::disconnectSensor(){
 
         instrumentListener->isStreamActive = false;
 
-        QTime timer;
+        /*QTime timer;
 
         timer.start();
 
@@ -479,10 +485,15 @@ void SensorControl::disconnectSensor(){
                 this->myEmitter.sendString("timeout - stream failed");
                 return false;
             }
-        }
+        }*/
 
         listenerThread.quit();
-        listenerThread.wait();
+
+        if(!listenerThread.wait()){
+           this->myEmitter.sendString("timeout - stream failed");
+            return false;
+        }
+
         listenerThread.start();
 
         return true;

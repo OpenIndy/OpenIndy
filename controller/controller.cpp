@@ -400,25 +400,30 @@ void Controller::recalcTrafoParam(TrafoParam *tp){
 
 /*!
  * \brief Controller::changeActiveStation
- * this function changes the active station to the given one.
- * \param s
+ * this function changes the active station to the given one and set the sensor object to the new one.
+ * \param setSensor
  */
-void Controller::changeActiveStation(){
+void Controller::changeActiveStation(bool setSensor){
 
     if(OiFeatureState::getActiveFeature()->getStation() != NULL){
 
-            if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-                this->startDisconnect();
-            }
-            //this->activeStation->isSolved = false;
-            //TODO solved für station setzen !
+        /*if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+            this->startDisconnect();
+        }*/
 
+        if(setSensor){
+            OiFeatureState::getActiveStation()->sensorPad->copyMe(OiFeatureState::getActiveFeature()->getStation()->sensorPad);
+            //OiFeatureState::getActiveFeature()->getStation()->sensorPad = OiFeatureState::getActiveStation()->sensorPad;
+            //OiFeatureState::getActiveFeature()->getStation()->setInstrumentConfig(OiFeatureState::getActiveStation()->getInstrumentConfig());
             OiFeatureState::getActiveFeature()->getStation()->setActiveStationState(true);
-            //this->activeStation->isSolved = true;
+            //this->startConnect();
+        }else{
+            OiFeatureState::getActiveFeature()->getStation()->setActiveStationState(true);
+        }
 
-            connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
-            emit changedStation();
-            emit refreshGUI();
+    connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
+    emit changedStation();
+    emit refreshGUI();
     }
 }
 

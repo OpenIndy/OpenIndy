@@ -1236,16 +1236,33 @@ void MainWindow::on_actionActivate_station_triggered()
 {
     QMessageBox msgBox;
     msgBox.setText("Selected station will be activated and current station will be deactivated!");
-    msgBox.setInformativeText("Want to continue?");
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Ok);
     int ret = msgBox.exec();
 
+    int ret2;
+
     switch (ret) {
     case QMessageBox::Ok:
-        this->control.changeActiveStation();
+
+        msgBox.setText("Want to move sensor to new station");
+        msgBox.setInformativeText("Sensor will be connected to the new station.");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        ret2 = msgBox.exec();
         break;
     case QMessageBox::Cancel:
+        break;
+    default:
+        break;
+    }
+
+    switch (ret2) {
+    case QMessageBox::Yes:
+        this->control.changeActiveStation(true);
+        break;
+    case QMessageBox::No:
+        this->control.changeActiveStation(false);
         break;
     default:
         break;
