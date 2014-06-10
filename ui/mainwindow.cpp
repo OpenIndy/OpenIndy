@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->sEntityDialog->setModal(true);
     this->nominalDialog.setModal(true);
     this->trafoParamDialog.setModal(true);
+    rtDataDialog.setModal(true);
 
     this->setConnects();
 
@@ -1642,4 +1643,12 @@ void MainWindow::openStationGeomProperties(FeatureWrapper *fw)
 {
     //fDataDialog.getActiveFeature(fw);
     fDataDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_actionSensor_real_time_data_triggered opens the real time data dialog of the current sensor.
+ */
+void MainWindow::on_actionSensor_real_time_data_triggered()
+{
+    rtDataDialog.show();
 }

@@ -27,6 +27,7 @@
 #include "edittrafoparamdialog.h"
 #include "oiprojectexchanger.h"
 #include "stationinfodialog.h"
+#include "realtimedatadialog.h"
 
 #include "featureoverviewdelegate.h"
 #include "trafoparamdelegate.h"
@@ -88,6 +89,7 @@ public:
     NominalDataDialog nominalDialog;
 
     StationInfoDialog stationDialog;
+    RealTimeDataDialog rtDataDialog;
 
     WatchWindow *watchWindow;
 
@@ -276,6 +278,8 @@ private slots:
 
     void on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1);
     void openStationGeomProperties(FeatureWrapper *fw);
+
+    void on_actionSensor_real_time_data_triggered();
 
 private:
     Ui::MainWindow *ui;
