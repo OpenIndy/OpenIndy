@@ -195,8 +195,10 @@ public slots:
 
     //void sortFeatures();
 
-private:
+private slots:
     void changeFunctionTreeViewModel();
+
+private:
     void changeUsedElementsModel(int functionIndex, int elementIndex);
     bool checkCircleWarning(Feature *activeFeature, Feature *usedForActiveFeature);
 

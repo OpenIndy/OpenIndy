@@ -31,6 +31,7 @@ INCLUDEPATH += ../../../src
 INCLUDEPATH += ../../../src/geometry
 INCLUDEPATH += ../../../src/plugin
 INCLUDEPATH += ../../../lib/openIndyLib/include/
+INCLUDEPATH += ../
 
 CONFIG(debug, debug|release) {
     DESTDIR = $$PWD/bin/debug
@@ -56,27 +57,6 @@ DEPENDPATH += $$PWD/../../../lib/openIndyLib/bin/release
 
 SOURCES += \
     main.cpp \
-    ../functions/construct/p_spherefrompoints.cpp \
-    ../functions/construct/p_pointfrompoints.cpp \
-    ../functions/construct/p_pointbetweentwopoints.cpp \
-    ../functions/construct/p_planefrompoints.cpp \
-    ../functions/construct/p_linefrompoints.cpp \
-    ../functions/construct/p_intersectplaneplane.cpp \
-    ../functions/construct/p_intersectlineplane.cpp \
-    ../functions/fit/p_bestfitsphere.cpp \
-    ../functions/fit/p_bestfitpoint.cpp \
-    ../functions/fit/p_bestfitplane2.cpp \
-    ../functions/fit/p_bestfitplane.cpp \
-    ../functions/fit/p_bestfitline.cpp \
-    ../functions/fit/p_bestfitcircle.cpp \
-    ../functions/objectTransformation/p_translateByPlane.cpp \
-    ../functions/objectTransformation/p_translateByLine.cpp \
-    ../functions/objectTransformation/p_projectInPlane.cpp \
-    ../functions/objectTransformation/p_changeradius.cpp \
-    ../functions/systemTransformation/p_helmert7Param.cpp \
-    ../sensors/laserTracker/pseudoTracker/p_pseudotracker.cpp \
-    ../sensors/tachymeter/LeicaGeoCom/p_leicatachymeter.cpp \
-    ../sensors/undefinedSensor/pseudoSensor/p_pseudosensor.cpp \
     ../lib/fitting/cfitting_util.cpp \
     ../lib/fitting/cfitting_sphere.cpp \
     ../lib/fitting/cfitting_plane.cpp \
@@ -91,7 +71,9 @@ SOURCES += \
     ../lib/fitting/util/iskeyword.cpp \
     ../lib/fitting/util/Getopt.cpp \
     oitestcircle.cpp \
-    ../functions/systemTransformation/p_simpletemperaturecompensation.cpp \
+    oitesttempcomp.cpp \
+    oitestpluginloader.cpp \
+    ../p_factory.cpp \
     ../../../src/unitconverter.cpp \
     ../../../src/trafoparam.cpp \
     ../../../src/statistic.cpp \
@@ -112,6 +94,7 @@ SOURCES += \
     ../../../src/featurewrapper.cpp \
     ../../../src/feature.cpp \
     ../../../src/elementdependencies.cpp \
+    ../../../src/element.cpp \
     ../../../src/coordinatesystem.cpp \
     ../../../src/connectionconfig.cpp \
     ../../../src/configuration.cpp \
@@ -131,32 +114,33 @@ SOURCES += \
     ../../../src/geometry/cylinder.cpp \
     ../../../src/geometry/cone.cpp \
     ../../../src/geometry/circle.cpp \
-    oitesttempcomp.cpp
+    ../functions/construct/p_spherefrompoints.cpp \
+    ../functions/construct/p_pointfrompoints.cpp \
+    ../functions/construct/p_pointbetweentwopoints.cpp \
+    ../functions/construct/p_planefrompoints.cpp \
+    ../functions/construct/p_linefrompoints.cpp \
+    ../functions/construct/p_intersectplaneplane.cpp \
+    ../functions/construct/p_intersectlineplane.cpp \
+    ../functions/fit/p_bestfitsphere.cpp \
+    ../functions/fit/p_bestfitpoint.cpp \
+    ../functions/fit/p_bestfitplane2.cpp \
+    ../functions/fit/p_bestfitplane.cpp \
+    ../functions/fit/p_bestfitline.cpp \
+    ../functions/fit/p_bestfitcircle.cpp \
+    ../functions/objectTransformation/p_translateByPlane.cpp \
+    ../functions/objectTransformation/p_translateByLine.cpp \
+    ../functions/objectTransformation/p_shiftplane.cpp \
+    ../functions/objectTransformation/p_projectInPlane.cpp \
+    ../functions/objectTransformation/p_changeradius.cpp \
+    ../functions/systemTransformation/p_simpletemperaturecompensation.cpp \
+    ../functions/systemTransformation/p_helmert7Param.cpp \
+    ../sensors/laserTracker/pseudoTracker/p_pseudotracker.cpp \
+    ../sensors/tachymeter/LeicaGeoCom/p_leicatachymeter.cpp \
+    ../sensors/undefinedSensor/pseudoSensor/p_pseudosensor.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
     AutoTest.h \
-    ../functions/construct/p_spherefrompoints.h \
-    ../functions/construct/p_pointfrompoints.h \
-    ../functions/construct/p_pointbetweentwopoints.h \
-    ../functions/construct/p_planefrompoints.h \
-    ../functions/construct/p_linefrompoints.h \
-    ../functions/construct/p_intersectplaneplane.h \
-    ../functions/construct/p_intersectlineplane.h \
-    ../functions/fit/p_bestfitsphere.h \
-    ../functions/fit/p_bestfitpoint.h \
-    ../functions/fit/p_bestfitplane2.h \
-    ../functions/fit/p_bestfitplane.h \
-    ../functions/fit/p_bestfitline.h \
-    ../functions/fit/p_bestfitcircle.h \
-    ../functions/objectTransformation/p_translateByPlane.h \
-    ../functions/objectTransformation/p_translateByLine.h \
-    ../functions/objectTransformation/p_projectInPlane.h \
-    ../functions/objectTransformation/p_changeradius.h \
-    ../functions/systemTransformation/p_helmert7Param.h \
-    ../sensors/laserTracker/pseudoTracker/p_pseudotracker.h \
-    ../sensors/tachymeter/LeicaGeoCom/p_leicatachymeter.h \
-    ../sensors/undefinedSensor/pseudoSensor/p_pseudosensor.h \
     ../lib/fitting/cfitting_util.h \
     ../lib/fitting/cfitting_sphere.h \
     ../lib/fitting/cfitting_plane.h \
@@ -177,6 +161,9 @@ HEADERS += \
     ../../../lib/openIndyLib/include/global.h \
     ../../../lib/openIndyLib/include/chooselalib.h \
     ../functions/systemTransformation/p_simpletemperaturecompensation.h \
+    oitesttempcomp.h \
+    oitestpluginloader.h \
+    ../p_factory.h \
     ../../../src/unitconverter.h \
     ../../../src/trafoparam.h \
     ../../../src/statistic.h \
@@ -202,6 +189,15 @@ HEADERS += \
     ../../../src/coordinatesystem.h \
     ../../../src/connectionconfig.h \
     ../../../src/configuration.h \
+    ../../../src/plugin/pi_totalstation.h \
+    ../../../src/plugin/pi_systemtransformation.h \
+    ../../../src/plugin/pi_oiplugin.h \
+    ../../../src/plugin/pi_objecttransformation.h \
+    ../../../src/plugin/pi_networkadjustment.h \
+    ../../../src/plugin/pi_lasertracker.h \
+    ../../../src/plugin/pi_geodeticfunction.h \
+    ../../../src/plugin/pi_fitfunction.h \
+    ../../../src/plugin/pi_constructfunction.h \
     ../../../src/geometry/sphere.h \
     ../../../src/geometry/scalarentitytemperature.h \
     ../../../src/geometry/scalarentitymeasurementseries.h \
@@ -218,13 +214,25 @@ HEADERS += \
     ../../../src/geometry/cylinder.h \
     ../../../src/geometry/cone.h \
     ../../../src/geometry/circle.h \
-    ../../../src/plugin/pi_totalstation.h \
-    ../../../src/plugin/pi_systemtransformation.h \
-    ../../../src/plugin/pi_oiplugin.h \
-    ../../../src/plugin/pi_objecttransformation.h \
-    ../../../src/plugin/pi_networkadjustment.h \
-    ../../../src/plugin/pi_lasertracker.h \
-    ../../../src/plugin/pi_geodeticfunction.h \
-    ../../../src/plugin/pi_fitfunction.h \
-    ../../../src/plugin/pi_constructfunction.h \
-    oitesttempcomp.h
+    ../functions/construct/p_spherefrompoints.h \
+    ../functions/construct/p_pointfrompoints.h \
+    ../functions/construct/p_pointbetweentwopoints.h \
+    ../functions/construct/p_planefrompoints.h \
+    ../functions/construct/p_linefrompoints.h \
+    ../functions/construct/p_intersectplaneplane.h \
+    ../functions/construct/p_intersectlineplane.h \
+    ../functions/fit/p_bestfitsphere.h \
+    ../functions/fit/p_bestfitpoint.h \
+    ../functions/fit/p_bestfitplane2.h \
+    ../functions/fit/p_bestfitplane.h \
+    ../functions/fit/p_bestfitline.h \
+    ../functions/fit/p_bestfitcircle.h \
+    ../functions/objectTransformation/p_translateByPlane.h \
+    ../functions/objectTransformation/p_translateByLine.h \
+    ../functions/objectTransformation/p_shiftplane.h \
+    ../functions/objectTransformation/p_projectInPlane.h \
+    ../functions/objectTransformation/p_changeradius.h \
+    ../functions/systemTransformation/p_helmert7Param.h \
+    ../sensors/laserTracker/pseudoTracker/p_pseudotracker.h \
+    ../sensors/tachymeter/LeicaGeoCom/p_leicatachymeter.h \
+    ../sensors/undefinedSensor/pseudoSensor/p_pseudosensor.h

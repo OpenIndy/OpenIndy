@@ -11,11 +11,10 @@ void OiTestTempComp::testTempComp()
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
     qDebug() << "test temp comp";
 
-    ScalarEntityTemperature *s = new ScalarEntityTemperature();
-    s->name ="testtemp";
-    s->isCommon = false;
-    s->isNominal = true;
-    s->isSolved = true;
+    ScalarEntityTemperature *s = new ScalarEntityTemperature(false);
+    s->setFeatureName("testtemp");
+    s->setCommonState(false);
+    s->setIsSolved(true);
     s->setTemperature(23.0);
 
     Function *function = new SimpleTemperatureCompensation();

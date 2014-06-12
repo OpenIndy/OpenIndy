@@ -263,7 +263,10 @@ void FeatureTreeViewModel::appendGeometries(FeatureTreeItem *root, QList<Feature
     FeatureTreeItem *item = new FeatureTreeItem(geomType);
     root->appendChild(item);
     for(int i = 0; i < geometries.size(); i++){
-        FeatureTreeItem *geom = new FeatureTreeItem(geometries.at(i)->getGeometry()->getFeatureName());
+        QString geomHeader = QString("%1 - %2").arg(geometries.at(i)->getGeometry()->getFeatureName())
+                .arg(geometries.at(i)->getGeometry()->getIsNominal()?QString("nominal (%1)")
+                                                                   .arg(geometries.at(i)->getGeometry()->getNominalSystem()->getFeatureName()):"actual");
+        FeatureTreeItem *geom = new FeatureTreeItem(geomHeader);
         item->appendChild(geom);
         FeatureTreeItem *geom_observations = new FeatureTreeItem("observations:");
         FeatureTreeItem *geom_readings = new FeatureTreeItem("readings:");
@@ -359,8 +362,9 @@ void FeatureTreeViewModel::appendTrafoParams(FeatureTreeItem *root, QList<Featur
  * \param obs
  */
 void FeatureTreeViewModel::appendObservation(FeatureTreeItem *root, Observation *obs){
-    FeatureTreeItem *geom_observation = new FeatureTreeItem(obs->myReading->measuredAt.toString());
+    FeatureTreeItem *geom_observation = new FeatureTreeItem(QString::number(obs->myReading->id));
     root->appendChild(geom_observation);
+    geom_observation->appendChild( new FeatureTreeItem(obs->myReading->measuredAt.toString()) );
     geom_observation->appendChild( new FeatureTreeItem(obs->myStation->getFeatureName()) );
     geom_observation->appendChild( new FeatureTreeItem(obs->isValid?"valid: true":"valid: false") );
     if(obs->isValid){
@@ -386,8 +390,9 @@ void FeatureTreeViewModel::appendObservation(FeatureTreeItem *root, Observation 
  * \param obs
  */
 void FeatureTreeViewModel::appendReading(FeatureTreeItem *root, Observation *obs){
-    FeatureTreeItem *geom_reading = new FeatureTreeItem(obs->myReading->measuredAt.toString());
+    FeatureTreeItem *geom_reading = new FeatureTreeItem(QString::number(obs->myReading->id));
     root->appendChild(geom_reading);
+    geom_reading->appendChild( new FeatureTreeItem(obs->myReading->measuredAt.toString()) );
     geom_reading->appendChild( new FeatureTreeItem(obs->myStation->getFeatureName()) );
     geom_reading->appendChild( new FeatureTreeItem(obs->isValid?"valid: true":"valid: false") );
     if(obs->isValid){

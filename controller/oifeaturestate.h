@@ -42,6 +42,8 @@ public:
     static QString getActiveGroup();
     static void setActiveGroup(QString group);
 
+    static void sortFeatures();
+
 signals:
     void activeFeatureChanged(); //emitted when active feature has changed
     void activeStationChanged(); //emitted when active station has changed
@@ -52,7 +54,9 @@ signals:
 
     void availableGroupsChanged(); //emitted when the set of groups which features belong to has changed
 
-    void featureAttributesChanged(); //emitted when feature's attributes like name, comment etc. have changed
+    void featureAttributesChanged(); //emitted when a feature's attributes like name, comment etc. have changed
+
+    void featureFunctionsChanged(); //emitted when a features's functions have changed
 
 private slots:
     void setActiveFeature(int featureId); //is called when a feature becomes the active feature
@@ -66,6 +70,7 @@ private slots:
 
     void setGeometryActual(int featureId); //is called when the actual geometry of a nominal is set
     void setGeometryNominals(int featureId); //is called when a nominal was added or removed from an actual geometry
+    void setGeometryObservations(int featureId); //is called when an observations was added or removed from a geometry
 
 private:
     static OiFeatureState *myFeatureState;
@@ -99,7 +104,9 @@ private:
         eFeatureSetChanged,
         eCoordSysSetChanged,
         eAvailableGroupsChanged,
-        eFeatureAttributesChanged
+        eFeatureAttributesChanged,
+        eFeatureFunctionsChanged,
+        eGeomObservationsChanged
     };
 
     void emitSignal(SignalType mySignalType);

@@ -99,14 +99,16 @@ const QList<TrafoParam *> &CoordinateSystem::getTransformationParameters() const
  * \param to
  * \return
  */
-const QList<TrafoParam *> &CoordinateSystem::getTransformationParameters(CoordinateSystem * const to) const{
+const QList<TrafoParam *> CoordinateSystem::getTransformationParameters(CoordinateSystem * const to) const{
     try{
 
         QList<TrafoParam *> result;
 
         foreach(TrafoParam *trafo, this->trafoParams){
-            if(trafo != NULL && to != NULL && trafo->getDestinationSystem()->getId() == to->getId()){
-                result.append(trafo);
+            if(trafo != NULL && to != NULL){
+                if(trafo->getDestinationSystem()->getId() == to->getId() || trafo->getStartSystem()->getId() == to->getId()){
+                   result.append(trafo);
+                }
             }
         }
 
@@ -175,6 +177,12 @@ bool CoordinateSystem::removeTransformationParameter(TrafoParam * const trafoPar
  */
 const QList<Geometry *> &CoordinateSystem::getNominals() const{
     return this->nominals;
+}
+
+bool CoordinateSystem::addNominal(Geometry * const nominal)
+{
+    this->nominals.append(nominal);
+    return true;
 }
 
 /*!

@@ -104,6 +104,13 @@ QVariant UsedElementsModel::data(const QModelIndex &index, int role) const{
 
     if(item != NULL){
         if(role == Qt::DisplayRole){ //return display text for tree view item
+            FeatureWrapper *myFeature = item->getFeature();
+            if(myFeature != NULL && myFeature->getGeometry() != NULL){
+                QString geomHeader = QString("%1 - %2").arg(myFeature->getGeometry()->getFeatureName())
+                        .arg(myFeature->getGeometry()->getIsNominal()?QString("nominal (%1)")
+                                                                           .arg(myFeature->getGeometry()->getNominalSystem()->getFeatureName()):"actual");
+                return geomHeader;
+            }
             return item->getDisplayValue();
         }else if(role == Qt::DecorationRole){ //return icon for tree view item
             if(item->getIsFeature() && item->getFeature()->getPoint() != NULL){

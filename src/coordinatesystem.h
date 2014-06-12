@@ -29,12 +29,12 @@ public:
     bool addObservation(Observation * const observation);
 
     const QList<TrafoParam *> &getTransformationParameters() const;
-    const QList<TrafoParam *> &getTransformationParameters(CoordinateSystem * const to) const;
+    const QList<TrafoParam *> getTransformationParameters(CoordinateSystem * const to) const;
     bool addTransformationParameter(TrafoParam * const trafoParam);
     bool removeTransformationParameter(TrafoParam * const trafoParam);
 
     const QList<Geometry *> &getNominals() const;
-    //bool addNominal(Geometry * const nominal);
+    bool addNominal(Geometry * const nominal);
     bool removeNominal(Geometry * const nominal);
 
     bool getIsActiveCoordinateSystem() const;

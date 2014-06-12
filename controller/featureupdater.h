@@ -28,7 +28,7 @@ public:
     static bool validateFeatureName(QString featureName,FeatureAttributesExchange fae);
     static int addFeature(FeatureAttributesExchange fae, MeasurementConfig mConfig);
     static QStringList ConstructFeatureName(QString name, int count);
-    static void sortFeatures();
+    //static void sortFeatures();
     static void checkForNominals(FeatureWrapper *fw);
     static void addNominalToActual(FeatureWrapper *fw);
 signals:

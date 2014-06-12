@@ -18,6 +18,7 @@
 #include "reading.h"
 #include "usedelementsmodel.h"
 #include "customparameterwidget.h"
+#include "oifeaturestate.h"
 
 namespace Ui {
 class FunctionPluginLoader;

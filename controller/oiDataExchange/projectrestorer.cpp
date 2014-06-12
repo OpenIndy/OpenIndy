@@ -449,7 +449,11 @@ void ProjectRestorer::resolveFeature(FeatureWrapper *fw, ElementDependencies &d)
         }
     }
 
-    //fw->getFeature()->getFunctions() = this->resolveFunctions(d);
+    foreach(Function* f, this->resolveFunctions(d)){
+        fw->getFeature()->addFunction(f);
+    }
+
+
 
 
 }
@@ -570,7 +574,7 @@ void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, ElementDepende
     for(int i = 0;i<neededObs.size();i++){
         Observation* obs = this->findObservation(neededObs.at(i));
         if(obs != NULL){
-            //fw->getCoordinateSystem()->observations.append(obs);
+            fw->getCoordinateSystem()->addObservation(obs);
         }
     }
 
@@ -578,7 +582,7 @@ void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, ElementDepende
         for(int i = 0;i<nominalGeom->size();i++){
             FeatureWrapper* nominalGeometry = this->findGeometry(nominalGeom->at(i));
             if(nominalGeometry != NULL){
-                //fw->getCoordinateSystem()->nominals.append(nominalGeometry->getGeometry());
+                fw->getCoordinateSystem()->addNominal(nominalGeometry->getGeometry());
             }
         }
     }

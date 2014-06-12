@@ -153,7 +153,7 @@ int FeatureUpdater::addFeature(FeatureAttributesExchange fae, MeasurementConfig 
         }
 
     }
-    sortFeatures();
+    OiFeatureState::sortFeatures();
 
     //if a function was selected save it as new default function for the specified feature type
     if(fae.function.compare("") != 0){
@@ -208,12 +208,12 @@ QStringList FeatureUpdater::ConstructFeatureName(QString name, int count)
  * \brief sortFeatures sorts nominal features next to their actual feature.
  * \param features
  */
-void FeatureUpdater::sortFeatures()
+/*void FeatureUpdater::sortFeatures()
 {
-    /*for(int i=0; i<OiFeatureState::getFeatureCount();i++){
-        if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->isNominal == false){
-            for(int k=0;k<features->size();k++){
-                if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->isNominal == true){
+    for(int i=0; i<OiFeatureState::getFeatureCount();i++){
+        if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->getIsNominal() == false){
+            for(int k=0;k<OiFeatureState::getFeatures().size();k++){
+                if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->getIsNominal() == true){
                     if(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName().compare(OiFeatureState::getFeatures().at(k)->getFeature()->getFeatureName(),Qt::CaseSensitive)==0){
                         if(!(i ==k-1)){
                             features->insert(i+1,features->at(k));
@@ -246,8 +246,8 @@ void FeatureUpdater::sortFeatures()
                 }
             }
         }
-    }*/
-}
+    }
+}*/
 
 /*!
  * \brief checkForNominals searches for existing nominals that have been created before the actual feature was created
@@ -1266,8 +1266,10 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
 
     if(actualSystem != NULL && nominalSystem != NULL){
 
+        //TODO switch immer auslösen
+
         //if coord sys needs to be switched
-        if(actualSystem->getIsActiveCoordinateSystem()){
+        if(!actualSystem->getIsActiveCoordinateSystem()){
             this->switchCoordinateSystemWithoutTransformation(actualSystem);
         }
 

@@ -145,6 +145,50 @@ void OiFeatureState::setActiveGroup(QString group){
 }
 
 /*!
+ * \brief OiFeatureState::sortFeatures
+ */
+void OiFeatureState::sortFeatures()
+{
+    for(int i=0; i<OiFeatureState::getFeatureCount();i++){
+        if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->getIsNominal() == false){
+            for(int k=0;k<OiFeatureState::getFeatures().size();k++){
+                if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->getIsNominal() == true){
+                    if(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName().compare(OiFeatureState::getFeatures().at(k)->getFeature()->getFeatureName(),Qt::CaseSensitive)==0){
+                        if(!(i ==k-1)){
+                            myFeatures.insert(i+1,myFeatures.at(k));
+                            if(i<k){
+                                myFeatures.removeAt(k+1);
+                            }else{
+                                i -= 1;
+                                myFeatures.removeAt(k);
+                            }
+                            k -= 1;
+                        }
+                    }
+                }
+            }
+        }else if(myFeatures.at(i)->getStation() != NULL){
+            for(int j=0;j<myFeatures.size();j++){
+                if(myFeatures.at(j)->getPoint() != NULL && myFeatures.at(j)->getPoint()->getIsNominal() == true){
+                    if(myFeatures.at(i)->getStation()->getFeatureName().compare(myFeatures.at(j)->getPoint()->getFeatureName(),Qt::CaseSensitive)==0){
+                        if(!(i ==j-1)){
+                            myFeatures.insert(i+1,myFeatures.at(j));
+                            if(i<j){
+                                myFeatures.removeAt(j+1);
+                            }else{
+                                i -= 1;
+                                myFeatures.removeAt(j);
+                            }
+                            j -= 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*!
  * \brief OiFeatureState::addFeature
  * Creates a new feature and adds it to the list of features. A pointer to that new feature is returned
  * \param myFeatureType
@@ -260,6 +304,12 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
                 }
                 myFeature->getFeature()->setFeatureName(name);
             }
+
+            //add nominal to nominal list of coordinate system
+            if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getNominalSystem() != NULL){
+                myFeature->getGeometry()->getNominalSystem()->addNominal(myFeature->getGeometry());
+            }
+
 
             //add the feature to the list of features, stations and coordinate systems
             OiFeatureState::myFeatures.append(myFeature);
@@ -801,7 +851,7 @@ void OiFeatureState::setFeatureFunctions(int featureId){
         int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
         if(featureIndex >= 0){
 
-            OiFeatureState::myFeatureState->emitSignal(eFeatureAttributesChanged);
+            OiFeatureState::myFeatureState->emitSignal(eFeatureFunctionsChanged);
 
         }
 
@@ -840,6 +890,25 @@ void OiFeatureState::setGeometryNominals(int featureId){
         if(featureIndex >= 0){
 
             OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
+
+        }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief OiFeatureState::setGeometryObservations
+ * \param featureId
+ */
+void OiFeatureState::setGeometryObservations(int featureId){
+    try{
+
+        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
+        if(featureIndex >= 0){
+
+            OiFeatureState::myFeatureState->emitSignal(eGeomObservationsChanged);
 
         }
 

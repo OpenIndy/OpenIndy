@@ -90,7 +90,6 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                 if(currentFeature->getFeature()->getFunctions().size() == 0){
                     return "no function set";
                 }else{
-                    return QVariant();
                     functions += currentFeature->getFeature()->getFunctions().at(0)->getMetaData()->name;
                     for(int i=1;i<currentFeature->getFeature()->getFunctions().size();i++){
                         functions += "," + currentFeature->getFeature()->getFunctions().at(i)->getMetaData()->name;
@@ -128,7 +127,6 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                     return QVariant();
                 }
             case 17:
-                return QVariant();
                 if(currentFeature->getFeature()->getIsSolved()){
                     return currentFeature->getFeature()->getDisplayScalarDistanceValue();
                 }else{
@@ -190,7 +188,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
 
         if (role == Qt::BackgroundRole){
 
-            if(currentFeature->getGeometry() != NULL && currentFeature->getGeometry()->getMeasurementConfig().typeOfReading == -1){
+            /*if(currentFeature->getGeometry() != NULL && currentFeature->getGeometry()->getMeasurementConfig().typeOfReading == -1){
                 if(index.column() == 8){
                     return QColor(Qt::red);
                 }
@@ -200,7 +198,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                 if(index.column() == 8){
                     return QColor(Qt::red);
                 }
-            }
+            }*/
 
             if (OiFeatureState::getActiveFeature() != NULL && currentFeature->getFeature() == OiFeatureState::getActiveFeature()->getFeature()){
                 return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
@@ -224,6 +222,10 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                     && !currentFeature->getFeature()->getIsSolved()){
                 return QColor(Qt::yellow);
             }
+            if(OiFeatureState::getFeatures().at(index.row())->getGeometry() != NULL &&
+                    OiFeatureState::getFeatures().at(index.row())->getGeometry()->getIsNominal()){
+                return QColor(QColor::fromRgb(230,230,180));
+            }
 
         }
 
@@ -235,9 +237,6 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
         }
 
     }
-
-
-
     return QVariant();
 }
 
@@ -331,7 +330,7 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
                 FeatureUpdater::checkForNominals(OiFeatureState::getActiveFeature());
                 FeatureUpdater::addNominalToActual(OiFeatureState::getActiveFeature());
 				
-                FeatureUpdater::sortFeatures();
+                OiFeatureState::sortFeatures();
 
             }
 

@@ -34,7 +34,7 @@ Controller::Controller(QObject *parent) :
 
 
     //set up filter mechanism for available elements treeview
-    //connect(this, SIGNAL(sendAvailableElementsFilter(Configuration::ElementTypes,bool)), this->availableElementsModel, SLOT(setFilter(Configuration::ElementTypes,bool)));
+    connect(this, SIGNAL(sendAvailableElementsFilter(Configuration::ElementTypes,bool)), this->availableElementsModel, SLOT(setFilter(Configuration::ElementTypes,bool)));
 
 
     connect(PluginLoader::myMetaInfo,SIGNAL(sendMe(PluginMetaData*)),this,SLOT(savePluginData(PluginMetaData*)));
@@ -109,6 +109,7 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
+        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
 
         //update feature groups model when a group is added or removed
         connect(this->myFeatureState, SIGNAL(availableGroupsChanged()), this, SLOT(setUpFeatureGroupsModel()));
@@ -118,6 +119,10 @@ void Controller::connectModels(){
 
         //update coordinate systems model
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this, SLOT(setUpCoordinateSystemsModel()));
+
+        //update function treeview model for active feature
+        connect(this->myFeatureState, SIGNAL(featureFunctionsChanged()), this, SLOT(changeFunctionTreeViewModel()));
+        connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this, SLOT(changeFunctionTreeViewModel()));
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -238,7 +243,12 @@ void Controller::startAim(){
             QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveCoordinateSystem()->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
             TrafoParam *tp = NULL;
             if(myTrafoParams.size() > 0){
-                tp = myTrafoParams.at(0);
+                for(int i=0;i<myTrafoParams.size();i++){
+                    if(!myTrafoParams.at(i)->getIsMovement() && myTrafoParams.at(i)->getIsUsed()){
+                        tp = myTrafoParams.at(i);
+                        break;
+                    }
+                }
             }
             if(tp != NULL){
                 OiMat t;
@@ -716,8 +726,7 @@ void Controller::deleteFunctionFromFeature(int index){
 
 bool Controller::checkFeatureValid(){
     if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
-        if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry() != OiFeatureState::getActiveStation()->position &&
-                OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal() == false){
+        if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry() != OiFeatureState::getActiveStation()->position){
             return true;
         }else{
             Console::addLine("you cannot measure this feature");
