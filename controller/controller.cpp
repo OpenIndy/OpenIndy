@@ -110,6 +110,9 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
+        connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()));
+        connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
+        //connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this->tblModel, SLOT(updateModel()));
 
         //update feature groups model when a group is added or removed
         connect(this->myFeatureState, SIGNAL(availableGroupsChanged()), this, SLOT(setUpFeatureGroupsModel()));
@@ -259,10 +262,6 @@ void Controller::startAim(){
                 }
                 OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
                 xyz = t * xyz;
-                Console::addLine("x ", xyz.getAt(0));
-                Console::addLine("y ",xyz.getAt(1));
-                Console::addLine("z ",xyz.getAt(2));
-                Console::addLine("homoFaktor ",xyz.getAt(3));
                 polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
             }
         }

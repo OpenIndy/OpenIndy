@@ -58,6 +58,8 @@ signals:
 
     void featureFunctionsChanged(); //emitted when a features's functions have changed
 
+    void geometryObservationsChanged(); //emitted when observations were added or removed
+
 private slots:
     void setActiveFeature(int featureId); //is called when a feature becomes the active feature
     void setActiveStation(int featureId); //is called when a station becomes the active station

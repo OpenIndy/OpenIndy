@@ -457,6 +457,9 @@ void OiFeatureState::emitSignal(OiFeatureState::SignalType mySignalType){
     case eFeatureAttributesChanged:
         emit this->featureAttributesChanged();
         break;
+    case eGeomObservationsChanged:
+        emit this->geometryObservationsChanged();
+        break;
     }
 }
 
@@ -512,6 +515,14 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
                 OiFeatureState::myFeatureState, SLOT(setFeatureGroup(int)));
         connect(myFeature->getFeature(), SIGNAL(featureNameChanged(int,QString)),
                 OiFeatureState::myFeatureState, SLOT(setFeatureName(int,QString)));
+
+        //geometry specific connects
+        if(myFeature->getGeometry() != NULL){
+
+            connect(myFeature->getGeometry(), SIGNAL(geomMyObservationsChanged(int)),
+                    OiFeatureState::myFeatureState, SLOT(setGeometryObservations(int)));
+
+        }
 
         //station specific connects
         if(myFeature->getStation() != NULL){

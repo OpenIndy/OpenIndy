@@ -36,7 +36,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         QVariant qvalue = j.value();
         double dvalue = qvalue.toDouble();
 
-        if(OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+        if(!OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
 
             TrafoParam *tp = NULL;
             QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveStation()->coordSys->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
@@ -68,7 +68,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             }
         }
 
-        if(OiFeatureState::getActiveCoordinateSystem() == OiFeatureState::getActiveStation()->coordSys && OiFeatureState::getActiveFeature() != NULL){
+        if(OiFeatureState::getActiveFeature() != NULL){
             if(name == "x"){
 
                 double featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(0);

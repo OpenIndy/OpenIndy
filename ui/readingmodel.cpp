@@ -1,6 +1,6 @@
 #include "readingmodel.h"
 
-ReadingModel::ReadingModel(FeatureWrapper &activeFeature,QObject *parent) :
+ReadingModel::ReadingModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
     /*

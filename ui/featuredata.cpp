@@ -78,6 +78,19 @@ void FeatureData::showEvent(QShowEvent *event)
  */
 void FeatureData::initGUI(){
 
+    this->setWindowTitle(QString("information abaout " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
+    rModel = new ReadingModel(0);
+    oModel = new ObservationModel(0);
+
+    ui->tableView_observation->setModel(oModel);
+    ui->tableView_readings->setModel(rModel);
+
+    ui->tableView_displayedfunctionStatistic->setModel(NULL);
+    ui->tableView_qxxAposteriori->setModel(NULL);
+    ui->tableView_sxxApriori->setModel(NULL);
+    ui->label_s0aposterioriValue->setText("");
+    ui->label_s0aprioriValue->setText("");
+
     ui->comboBox_displayedFunction->clear();
 
     for(int i=0; i<OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size();i++){
