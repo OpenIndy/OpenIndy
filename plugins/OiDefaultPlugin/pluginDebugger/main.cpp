@@ -17,12 +17,12 @@
 #define FITTINGTYPE_SPHERE  2
 #define FITTINGTYPE_ELLIPSE 3
 
-int    gDebugLevel=0;
+//int    gDebugLevel=0;
 char   gOutFileName[513];
 bool   isOutFileName=false;
 
 int    gFittingType = FITTINGTYPE_PLANE;
-TReal  gConvergence=1e-9;
+//TReal  gConvergence=1e-9;
 char   gName[513]="(unknown)";
 
 bool isFormat[2]={false,false};

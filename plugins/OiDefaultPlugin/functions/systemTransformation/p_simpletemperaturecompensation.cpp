@@ -106,7 +106,7 @@ QMap<QString, QStringList> SimpleTemperatureCompensation::getStringParameter()
 QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter()
 {
     QMap<QString,double> result;
-    QString key = "reference Temperature";
+    QString key = "referenceTemperature";
     double value = 20.0;
     result.insert(key,value);
     key = "temperatureAccuracy";
@@ -152,7 +152,7 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
 
         double expansion = (actualTemp-refTemp)*expansionCoefficient;
         protExpansion = QString::number(expansion,'f',4);
-        double scale = (1+ (expansion/1000000));
+        double scale = (1+ (expansion));
         tp.setScale(scale,scale,scale);
         tp.setTranslation(0.0,0.0,0.0);
         tp.setRotation(0.0,0.0,0.0);
@@ -170,7 +170,7 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
  */
 void SimpleTemperatureCompensation::calcAccuracy(TrafoParam &tp, double tempAccuracy, double expansion)
 {
-    double stddev = tempAccuracy*(expansion/1000000);
+    double stddev = tempAccuracy*(expansion);
     protSTDDEV = QString::number(stddev,'f',6);
     Statistic *myStats = new Statistic();
 

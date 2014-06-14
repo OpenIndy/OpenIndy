@@ -298,7 +298,8 @@ Statistic *TrafoParam::getStatistic() const{
 void TrafoParam::setStatistic(Statistic *myStatistic){
     if(myStatistic != NULL){
         if(this->myStatistic != NULL){
-            delete this->myStatistic;
+            //delete this->myStatistic;
+            this->myStatistic = NULL;
         }
         this->myStatistic = myStatistic;
     }
