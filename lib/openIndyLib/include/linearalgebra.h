@@ -126,6 +126,14 @@ public:
      * \return
      */
     virtual double dot(OiVec a, OiVec b) = 0;
+
+    /*!
+     * \brief det
+     * Calculate the determinant of the matrix
+     * \param a
+     * \return
+     */
+    virtual double det(OiMat a) = 0;
 };
 
 #endif // LINEARALGEBRA_H

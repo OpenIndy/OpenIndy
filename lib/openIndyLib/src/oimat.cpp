@@ -316,6 +316,20 @@ OiMat OiMat::inv(){
 }
 
 /*!
+ * \brief OiMat::det
+ * Calculate the determinant of the matrix
+ * \return
+ */
+double OiMat::det() const{
+    if( this->getRowCount() == this->getColCount() && this->getRowCount() > 0 ){
+        return OiMat::myLinearAlgebra->det(*this);
+    }else{
+        throw logic_error("Cannot calculate determinant of non-square matrix");
+        return 0.0;
+    }
+}
+
+/*!
  * \brief OiMat::svd
  * Calculate singular value decomposition
  * \param u

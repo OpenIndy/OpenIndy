@@ -96,6 +96,8 @@ public:
     OiMat t();
     OiMat inv();
 
+    double det() const;
+
     void svd(OiMat &u, OiVec &d, OiMat &v);
 
     static OiMat getRotationMatrix(double angle, OiVec axis);

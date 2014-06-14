@@ -123,10 +123,8 @@ OiMat LAArmadillo::invert(OiMat m){
         result = arma::inv(ma); //try to calc the standard inverse
     }catch(runtime_error e){
         try{
-            //Console::addLine("Matrix is singular, so trying to calc Moore-Penrose pseudo-inverse");
             result = arma::pinv(ma);
         }catch(runtime_error e){
-            //Console::addLine("Cannot calculate inverse matrix");
             return OiMat();
         }
     }
@@ -153,15 +151,11 @@ OiMat LAArmadillo::transpose(OiMat m){
  * \param x
  */
 void LAArmadillo::svd(OiMat &u, OiVec &d, OiMat &v, OiMat x){
-    qDebug() << "in svd";
     arma::mat ua;
     arma::vec da;
     arma::mat va;
-    qDebug() << "vor trafo";
     arma::mat xa = this->oiMat2Arma(x);
-    qDebug() << "nach trafo";
     arma::svd(ua, da, va, xa);
-    qDebug() << "nach svd";
     u = arma2OiMat(ua);
     d = arma2OiVec(da);
     v = arma2OiMat(va);
@@ -192,6 +186,18 @@ double LAArmadillo::dot(OiVec a, OiVec b){
     arma::vec aa = this->oiVec2Arma(a);
     arma::vec ba = this->oiVec2Arma(b);
     double c = arma::dot(aa, ba);
+    return c;
+}
+
+/*!
+ * \brief LAArmadillo::det
+ * Calculate the determinant of the matrix
+ * \param a
+ * \return
+ */
+double LAArmadillo::det(OiMat a){
+    arma::vec aa = this->oiMat2Arma(a);
+    double c = arma::det(aa);
     return c;
 }
 
