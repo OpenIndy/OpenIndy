@@ -54,6 +54,7 @@ QList<Function*> OiTemplatePlugin::createFunctions(){
     resultSet.append(new ShiftPlane());
     resultSet.append(new BestFitCircle());
     resultSet.append(new SimpleTemperatureCompensation());
+    resultSet.append(new ExtendedTemperatureCompensation());
 
     return resultSet;
 }
@@ -132,6 +133,8 @@ Function* OiTemplatePlugin::createFunction(QString name){
         result = new BestFitCircle();
     }else if(name.compare("SimpleTempComp") == 0){
         result = new SimpleTemperatureCompensation();
+    }else if(name.compare("ExtendedTempComp") == 0){
+        result = new ExtendedTemperatureCompensation();
     }
     return result;
 }

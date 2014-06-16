@@ -136,7 +136,8 @@ SOURCES += \
     ../functions/systemTransformation/p_helmert7Param.cpp \
     ../sensors/laserTracker/pseudoTracker/p_pseudotracker.cpp \
     ../sensors/tachymeter/LeicaGeoCom/p_leicatachymeter.cpp \
-    ../sensors/undefinedSensor/pseudoSensor/p_pseudosensor.cpp
+    ../sensors/undefinedSensor/pseudoSensor/p_pseudosensor.cpp \
+    ../functions/systemTransformation/p_extendedtemperaturecompensation.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
@@ -235,4 +236,5 @@ HEADERS += \
     ../functions/systemTransformation/p_helmert7Param.h \
     ../sensors/laserTracker/pseudoTracker/p_pseudotracker.h \
     ../sensors/tachymeter/LeicaGeoCom/p_leicatachymeter.h \
-    ../sensors/undefinedSensor/pseudoSensor/p_pseudosensor.h
+    ../sensors/undefinedSensor/pseudoSensor/p_pseudosensor.h \
+    ../functions/systemTransformation/p_extendedtemperaturecompensation.h

@@ -6,6 +6,7 @@
 #include "AutoTest.h"
 
 #include "p_simpletemperaturecompensation.h"
+#include "p_extendedtemperaturecompensation.h"
 
 class OiTestTempComp : public QObject
 {

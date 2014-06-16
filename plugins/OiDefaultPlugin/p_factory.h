@@ -44,6 +44,7 @@
 
 #include "p_helmert7Param.h"
 #include "p_simpletemperaturecompensation.h"
+#include "p_extendedtemperaturecompensation.h"
 
 #include "p_pseudotracker.h"
 #include "p_leicatachymeter.h"
