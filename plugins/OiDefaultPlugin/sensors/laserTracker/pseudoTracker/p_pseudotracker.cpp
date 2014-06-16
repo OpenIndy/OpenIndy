@@ -389,28 +389,81 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
     double x = 0.0;
     double y = 0.0;
     double z = 0.0;
+    double distance = 0.0;
 
     QVariantMap m;
 
         Reading r;
 
-        r.rPolar.azimuth = myAzimuth;
-        r.rPolar.zenith = myZenith;
-        r.rPolar.distance = myDistance;
-        r.rPolar.isValid = true;
+        switch (streamFormat) {
+        case Configuration::ePolar:
 
-        r.typeofReading = Configuration::ePolar;
-        this->noisyPolarReading(&r);
+            r.rPolar.azimuth = myAzimuth;
+            r.rPolar.zenith = myZenith;
+            r.rPolar.distance = myDistance;
+            r.rPolar.isValid = true;
 
-        r.toCartesian();
+            r.typeofReading = Configuration::ePolar;
+            this->noisyPolarReading(&r);
 
-        x =r.rCartesian.xyz.getAt(0);
-        y =r.rCartesian.xyz.getAt(1);
-        z =r.rCartesian.xyz.getAt(2);
+            r.toCartesian();
 
-        m.insert("x",x);
-        m.insert("y",y);
-        m.insert("z",z);
+            x =r.rCartesian.xyz.getAt(0);
+            y =r.rCartesian.xyz.getAt(1);
+            z =r.rCartesian.xyz.getAt(2);
+
+            m.insert("x",x);
+            m.insert("y",y);
+            m.insert("z",z);
+
+            break;
+        case Configuration::eCartesian:
+
+            r.rPolar.azimuth = myAzimuth;
+            r.rPolar.zenith = myZenith;
+            r.rPolar.distance = myDistance;
+            r.rPolar.isValid = true;
+
+            r.typeofReading = Configuration::eCartesian;
+            this->noisyPolarReading(&r);
+
+            r.toCartesian();
+
+            x =r.rCartesian.xyz.getAt(0);
+            y =r.rCartesian.xyz.getAt(1);
+            z =r.rCartesian.xyz.getAt(2);
+
+            m.insert("x",x);
+            m.insert("y",y);
+            m.insert("z",z);
+
+            break;
+        case Configuration::eDistance:
+
+            r.rDistance.distance = myDistance;
+            r.rDistance.isValid = true;
+
+            r.typeofReading = Configuration::eDistance;
+            this->noisyPolarReading(&r);
+
+            distance = r.rDistance.distance;
+
+            m.insert("distance",distance);
+
+            break;
+        case Configuration::eDirection:
+            break;
+        case Configuration::eTemperatur:
+            break;
+        case Configuration::eLevel:
+            break;
+        case Configuration::eUndefined:
+            break;
+        default:
+            break;
+        }
+
+
 
     QThread::msleep(300);
 
