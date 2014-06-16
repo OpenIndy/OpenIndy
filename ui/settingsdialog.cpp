@@ -8,6 +8,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
 
     QGridLayout *pluginInfoLayout = new QGridLayout();
+    pluginInfoLayout->setContentsMargins(0,0,0,0);
     this->ui->widget_pluginInfo->setLayout(pluginInfoLayout);
     this->myPluginInformation = new PluginInfoWidget();
     pluginInfoLayout->addWidget(this->myPluginInformation);

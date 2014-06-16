@@ -85,9 +85,6 @@ public:
     OiMat operator*(const OiMat &m) const;
     OiMat operator*(const double value) const;
     OiVec operator*(const OiVec &v) const;
-    friend OiMat operator*(const OiMat &m, const double value){
-        return OiMat::mult(value, m);
-    }
     friend OiMat operator*(const double value, const OiMat &m){
         return OiMat::mult(value, m);
     }
