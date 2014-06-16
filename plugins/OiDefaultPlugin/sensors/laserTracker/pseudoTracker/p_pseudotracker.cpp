@@ -390,83 +390,94 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
     double y = 0.0;
     double z = 0.0;
     double distance = 0.0;
+    double azimuth = 0.0;
+    double zenith = 0.0;
 
     QVariantMap m;
 
-        Reading r;
+    Reading r;
 
-        switch (streamFormat) {
-        case Configuration::ePolar:
+    switch (streamFormat) {
+    case Configuration::ePolar:
 
-            r.rPolar.azimuth = myAzimuth;
-            r.rPolar.zenith = myZenith;
-            r.rPolar.distance = myDistance;
-            r.rPolar.isValid = true;
+        r.rPolar.azimuth = myAzimuth;
+        r.rPolar.zenith = myZenith;
+        r.rPolar.distance = myDistance;
+        r.rPolar.isValid = true;
 
-            r.typeofReading = Configuration::ePolar;
-            this->noisyPolarReading(&r);
+        r.typeofReading = Configuration::ePolar;
+        this->noisyPolarReading(&r);
 
-            r.toCartesian();
+        azimuth = r.rPolar.azimuth;
+        zenith = r.rPolar.zenith;
+        distance = r.rPolar.distance;
 
-            x =r.rCartesian.xyz.getAt(0);
-            y =r.rCartesian.xyz.getAt(1);
-            z =r.rCartesian.xyz.getAt(2);
+        m.insert("azimuth",azimuth);
+        m.insert("zenith",zenith);
+        m.insert("distance",distance);
 
-            m.insert("x",x);
-            m.insert("y",y);
-            m.insert("z",z);
+        break;
+    case Configuration::eCartesian:
 
-            break;
-        case Configuration::eCartesian:
+        r.rPolar.azimuth = myAzimuth;
+        r.rPolar.zenith = myZenith;
+        r.rPolar.distance = myDistance;
+        r.rPolar.isValid = true;
 
-            r.rPolar.azimuth = myAzimuth;
-            r.rPolar.zenith = myZenith;
-            r.rPolar.distance = myDistance;
-            r.rPolar.isValid = true;
+        r.typeofReading = Configuration::eCartesian;
+        this->noisyPolarReading(&r);
 
-            r.typeofReading = Configuration::eCartesian;
-            this->noisyPolarReading(&r);
+        r.toCartesian();
 
-            r.toCartesian();
+        x =r.rCartesian.xyz.getAt(0);
+        y =r.rCartesian.xyz.getAt(1);
+        z =r.rCartesian.xyz.getAt(2);
 
-            x =r.rCartesian.xyz.getAt(0);
-            y =r.rCartesian.xyz.getAt(1);
-            z =r.rCartesian.xyz.getAt(2);
+        m.insert("x",x);
+        m.insert("y",y);
+        m.insert("z",z);
 
-            m.insert("x",x);
-            m.insert("y",y);
-            m.insert("z",z);
+        break;
+    case Configuration::eDistance:
 
-            break;
-        case Configuration::eDistance:
+        r.rDistance.distance = myDistance;
+        r.rDistance.isValid = true;
 
-            r.rDistance.distance = myDistance;
-            r.rDistance.isValid = true;
+        r.typeofReading = Configuration::eDistance;
+        this->noisyPolarReading(&r);
 
-            r.typeofReading = Configuration::eDistance;
-            this->noisyPolarReading(&r);
+        distance = r.rDistance.distance;
 
-            distance = r.rDistance.distance;
+        m.insert("distance",distance);
 
-            m.insert("distance",distance);
+        break;
+    case Configuration::eDirection:
 
-            break;
-        case Configuration::eDirection:
-            break;
-        case Configuration::eTemperatur:
-            break;
-        case Configuration::eLevel:
-            break;
-        case Configuration::eUndefined:
-            break;
-        default:
-            break;
-        }
+        r.rDirection.azimuth = myAzimuth;
+        r.rDirection.zenith = myZenith;
+        r.rDirection.isValid = true;
 
+        r.typeofReading = Configuration::eDirection;
+        this->noisyPolarReading(&r);
 
+        azimuth = r.rDirection.azimuth;
+        zenith = r.rDirection.zenith;
+
+        m.insert("azimuth",azimuth);
+        m.insert("zenith",zenith);
+
+        break;
+    case Configuration::eTemperatur:
+        break;
+    case Configuration::eLevel:
+        break;
+    case Configuration::eUndefined:
+        break;
+    default:
+        break;
+    }
 
     QThread::msleep(300);
-
 
     return m;
 
