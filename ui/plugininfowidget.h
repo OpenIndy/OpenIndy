@@ -24,7 +24,7 @@ public slots:
     void displaySensor(SensorPlugin mySensor);
 
 private:
-    QFormLayout *myLayout;
+    QVBoxLayout *myLayout;
 
     QLabel *label_description;
     QTextBrowser *txt_description;
@@ -32,7 +32,7 @@ private:
     QHBoxLayout *layout_neededElements;
 
     void setUpGui();
-    void clearGuiElements();
+    void clearLayout(QLayout *layout);
     
 };
 

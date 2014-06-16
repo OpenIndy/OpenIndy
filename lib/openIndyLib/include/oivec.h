@@ -37,8 +37,8 @@ public:
     void replace(const OiVec&);
 
     OiVec& operator=(const OiVec&);
-    OiVec operator+(const OiVec&);
-    OiVec operator-(const OiVec&);
+    OiVec operator+(const OiVec&) const;
+    OiVec operator-(const OiVec&) const;
     OiVec& operator+=(const OiVec&);
     OiVec& operator-=(const OiVec&);
     friend OiVec operator*(const OiVec &v, const double value){
@@ -51,8 +51,8 @@ public:
         return OiVec::mult((1.0 / value), v);
     }
 
-    OiVec normalize();
-    OiMat t();
+    OiVec normalize() const;
+    OiMat t() const;
 
     static OiVec cross(OiVec a, OiVec b);
     static double dot(OiVec a, OiVec b);

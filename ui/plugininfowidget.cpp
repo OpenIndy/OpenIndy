@@ -4,6 +4,14 @@ PluginInfoWidget::PluginInfoWidget(QWidget *parent) :
     QWidget(parent), myLayout(NULL), label_description(NULL), txt_description(NULL),
     layout_applicableFor(NULL), layout_neededElements(NULL)
 {
+    //set up layout
+    this->myLayout = new QVBoxLayout();
+    this->myLayout->setContentsMargins(0,0,0,0);
+    this->setLayout(this->myLayout);
+
+    //set up items
+    this->label_description = new QLabel();
+    this->txt_description = new QTextBrowser();
 }
 
 /*!
@@ -12,21 +20,19 @@ PluginInfoWidget::PluginInfoWidget(QWidget *parent) :
  * \param myFunction
  */
 void PluginInfoWidget::displayFunction(FunctionPlugin myFunction){
-    //delete old GUI elements
-    this->clearGuiElements();
 
-    //create Gui elements
-    this->myLayout = new QFormLayout();
-    this->label_description = new QLabel("description:");
-    this->txt_description = new QTextBrowser();
+    //delete old GUI elements
+    this->clearLayout(this->myLayout);
+
+    //set up GUI for the selected function
+    this->label_description->setText("function description:");
     this->txt_description->setText(myFunction.description);
 
     //add Gui elements
-    //this->myLayout->insertWidget(0, label_description);
-    //this->myLayout->insertWidget(1, txt_description);
-    this->myLayout->insertRow(0, label_description, txt_description);
+    this->myLayout->addSpacing(20);
+    this->myLayout->addWidget(this->label_description);
+    this->myLayout->addWidget(this->txt_description);
 
-    this->setLayout(this->myLayout);
 }
 
 /*!
@@ -36,7 +42,7 @@ void PluginInfoWidget::displayFunction(FunctionPlugin myFunction){
  */
 void PluginInfoWidget::displaySensor(SensorPlugin mySensor){
     //delete old GUI elements
-    this->clearGuiElements();
+    this->clearLayout(this->myLayout);
 }
 
 void PluginInfoWidget::setUpGui(){
@@ -106,7 +112,22 @@ void PluginInfoWidget::setUpGui(){
     this->setLayout(this->myLayout);*/
 }
 
-void PluginInfoWidget::clearGuiElements(){
+void PluginInfoWidget::clearLayout(QLayout *layout){
+
+    /*QLayoutItem *item;
+    while((item = layout->takeAt(0))) {
+        if(item->layout()) {
+            clearLayout(item->layout());
+            delete item->layout();
+        }
+        if(item->widget()) {
+            delete item->widget();
+        }
+        if(item->spacerItem()){
+            delete item->spacerItem();
+        }
+    }*/
+
     /*//get iterator for maps with GUI elements
     QMapIterator<QString, QLineEdit*> intIterator(this->intParameterLineEdit);
     QMapIterator<QString, QLineEdit*> doubleIterator(this->doubleParameterLineEdit);
