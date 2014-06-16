@@ -3,13 +3,6 @@
 #include "oivec.h"
 #include "linearalgebra.h"
 
-/*#ifdef OI_MAIN_PROGRAM
-    #include "types.h"
-    LinearAlgebra* OiMat::myLinearAlgebra = new LAAlgorithm();
-#else
-    LinearAlgebra* OiMat::myLinearAlgebra = NULL;
-#endif*/
-
 LinearAlgebra* OiMat::myLinearAlgebra = NULL;
 
 OiMat::OiMat()
@@ -155,6 +148,59 @@ void OiMat::diag(vector<double> diagVec){
 }
 
 /*!
+ * \brief OiMat::setRow
+ * Replace the row at index by the given row
+ * \param index
+ * \param row
+ */
+void OiMat::setRow(const int index, const OiVec &row){
+    if(this->getRowCount() > index){ //if there is a row at index
+
+        if(this->getColCount() == row.getSize()){ //if the given row has the right number of elements
+
+            //fill vector with the given values...
+            vector<double> rowVec;
+            for(unsigned int i = 0; i < row.getSize(); i++){
+                rowVec.push_back(row.getAt(i));
+            }
+
+            //...and replace the row of the matrix at index
+            this->values.at(index) = rowVec;
+
+        }else{
+            throw logic_error("Cannot replace a row of a matrix by a given row with incompatible size");
+        }
+
+    }else{
+        throw logic_error("Cannot replace a row of a matrix by a given row because of an invalid index");
+    }
+}
+
+/*!
+ * \brief OiMat::setCol
+ * Replace the column at index by the given column
+ * \param index
+ * \param col
+ */
+void OiMat::setCol(const int index, const OiVec &col){
+    if(this->getColCount() > index){ //if there is a column at index
+
+        if(this->getRowCount() == col.getSize()){ //if the given column has the right number of elements
+
+            for(unsigned int i = 0; i < col.getSize(); i++){
+                this->values.at(i).at(index) = col.getAt(i);
+            }
+
+        }else{
+            throw logic_error("Cannot replace a column of a matrix by a given column with incompatible size");
+        }
+
+    }else{
+        throw logic_error("Cannot replace a column of a matrix by a given column because of an invalid index");
+    }
+}
+
+/*!
  * \brief OiMat::operator =
  * Assign a matrix to another
  * \param m
@@ -183,7 +229,7 @@ OiMat& OiMat::operator =(const OiMat &m){
  * \param v
  * \return
  */
-OiMat OiMat::operator+(const OiMat &m){
+OiMat OiMat::operator+(const OiMat &m) const{
     if(this->getRowCount() == m.getRowCount() && this->getColCount() == m.getColCount()
             && this->getRowCount() > 0 && this->getColCount() > 0 ){
         return OiMat::myLinearAlgebra->addIn(*this, m);
@@ -199,7 +245,7 @@ OiMat OiMat::operator+(const OiMat &m){
  * \param v
  * \return
  */
-OiMat OiMat::operator-(const OiMat &m){
+OiMat OiMat::operator-(const OiMat &m) const{
     if( this->getRowCount() == m.getRowCount() && this->getColCount() == m.getColCount()
             && this->getRowCount() > 0 && this->getColCount() > 0 ){
         return OiMat::myLinearAlgebra->substract(*this, m);
@@ -251,7 +297,7 @@ OiMat& OiMat::operator-=(const OiMat &m){
  * \param v
  * \return
  */
-OiMat OiMat::operator*(const OiMat &m){
+OiMat OiMat::operator*(const OiMat &m) const{
     if( this->getColCount() == m.getRowCount() && this->getColCount() > 0 ){
         return OiMat::myLinearAlgebra->multiply(*this, m);
     }else{
@@ -266,7 +312,7 @@ OiMat OiMat::operator*(const OiMat &m){
  * \param v
  * \return
  */
-OiVec OiMat::operator*(const OiVec &v){
+OiVec OiMat::operator*(const OiVec &v) const{
     if( this->getColCount() == v.getSize() && v.getSize() > 0 ){
         return OiMat::myLinearAlgebra->multiply(*this, v);
     }else{
@@ -275,7 +321,7 @@ OiVec OiMat::operator*(const OiVec &v){
     }
 }
 
-OiMat OiMat::operator*(const double value){
+OiMat OiMat::operator*(const double value) const{
     return OiMat::myLinearAlgebra->multiply(value, *this);;
 }
 
@@ -295,7 +341,7 @@ OiMat OiMat::mult(const double value, const OiMat &m){
  * Calculate the transposed matrix
  * \return
  */
-OiMat OiMat::t(){
+OiMat OiMat::t() const{
     if( this->getRowCount() > 0 && this->getColCount() > 0 ){
         return OiMat::myLinearAlgebra->transpose(*this);
     }
@@ -306,7 +352,7 @@ OiMat OiMat::t(){
  * Calculate the inverse matrix
  * \return
  */
-OiMat OiMat::inv(){
+OiMat OiMat::inv() const{
     if( this->getRowCount() == this->getColCount() && this->getRowCount() > 0 ){
         return OiMat::myLinearAlgebra->invert(*this);
     }else{
@@ -336,7 +382,7 @@ double OiMat::det() const{
  * \param d
  * \param v
  */
-void OiMat::svd(OiMat &u, OiVec &d, OiMat &v){
+void OiMat::svd(OiMat &u, OiVec &d, OiMat &v) const{
     OiMat::myLinearAlgebra->svd(u, d, v, *this);
 }
 

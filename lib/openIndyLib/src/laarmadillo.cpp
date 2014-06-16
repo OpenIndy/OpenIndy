@@ -196,7 +196,7 @@ double LAArmadillo::dot(OiVec a, OiVec b){
  * \return
  */
 double LAArmadillo::det(OiMat a){
-    arma::vec aa = this->oiMat2Arma(a);
+    arma::mat aa = this->oiMat2Arma(a);
     double c = arma::det(aa);
     return c;
 }
