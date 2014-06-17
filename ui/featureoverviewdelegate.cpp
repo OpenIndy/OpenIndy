@@ -14,7 +14,7 @@ FeatureOverviewDelegate::FeatureOverviewDelegate(QObject * parent)
  */
 QWidget* FeatureOverviewDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
     QLineEdit* myEditor = new QLineEdit(parent);
-    const FeatureOvserviewProxyModel *myModel = static_cast<const FeatureOvserviewProxyModel*>(index.model());
+    const FeatureOverviewProxyModel *myModel = static_cast<const FeatureOverviewProxyModel*>(index.model());
     if(myModel != NULL && (myModel->mapToSource(index).column() == 1 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 32)){ //column feature name or comment
         return myEditor;
     }
@@ -28,7 +28,7 @@ QWidget* FeatureOverviewDelegate::createEditor(QWidget *parent, const QStyleOpti
  * \param index
  */
 void FeatureOverviewDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
-    const FeatureOvserviewProxyModel *myModel = static_cast<const FeatureOvserviewProxyModel*>(index.model());
+    const FeatureOverviewProxyModel *myModel = static_cast<const FeatureOverviewProxyModel*>(index.model());
     if(myModel != NULL && (myModel->mapToSource(index).column() == 1 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 32)){ //column feature name or comment
          QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
          if(myEditor != NULL){
@@ -45,7 +45,7 @@ void FeatureOverviewDelegate::setEditorData(QWidget *editor, const QModelIndex &
  * \param index
  */
 void FeatureOverviewDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const{
-    const FeatureOvserviewProxyModel *myModel = static_cast<const FeatureOvserviewProxyModel*>(index.model());
+    const FeatureOverviewProxyModel *myModel = static_cast<const FeatureOverviewProxyModel*>(index.model());
     if(myModel != NULL && (myModel->mapToSource(index).column() == 1 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 32)){ //column feature name or comment
         QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
         if(myEditor != NULL){

@@ -17,35 +17,6 @@ FeatureAttributesExchange::FeatureAttributesExchange()
     this->startSystem = NULL;
     this->destSystem = NULL;
     this->function = "";
-}
-
-FeatureAttributesExchange::FeatureAttributesExchange(int count, Configuration::FeatureTypes featureType, QString name, QString group, QString function, bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem)
-{
-    this->count = count;
-    this->featureType = featureType;
-    this->name = name;
-    this->group = group;
-    this->actual = actual;
-    this->nominal = nominal;
-    this->common = common;
-    this->nominalSystem = nominalSystem;
-    this->startSystem = NULL;
-    this->destSystem = NULL;
-    this->function = function;
-}
-
-FeatureAttributesExchange::FeatureAttributesExchange(int count, Configuration::FeatureTypes featureType, QString name, QString group, QString function, bool actual, bool nominal, bool common, CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem)
-{
-    this->count = count;
-    this->featureType = featureType;
-    this->name = name;
-    this->group = group;
-    this->actual = actual;
-    this->nominal = nominal;
-    this->common = common;
-    this->nominalSystem = nominalSystem;
-    this->startSystem = startSystem;
-    this->destSystem = destSystem;
-    this->function = function;
+    this->isMovement = false;
 }
 

@@ -2,12 +2,16 @@
 #define IMPORTNOMINALGEOMETRYDIALOG_H
 
 #include <QDialog>
+#include <QStringListModel>
 #include "oidataexchanger.h"
 #include "oidataimporter.h"
 #include <QFileDialog>
 #include "configuration.h"
 #include <QShowEvent>
 #include <QDesktopWidget>
+#include "oifeaturestate.h"
+#include <QStringListModel>
+#include <QMessageBox>
 
 namespace Ui {
 class importNominalGeometryDialog;
@@ -32,20 +36,22 @@ private slots:
 
     void initGUI();
 
-
     void on_comboBox_format_currentIndexChanged(const QString &arg1);
 
+    void on_comboBox_typeOfElement_currentIndexChanged(const QString &arg1);
+
 public slots:
-    void setUpCoordinateSystems(QList<CoordinateSystem*> coordSystems);
+    void setUpCoordinateSystems();
 
     void showEvent(QShowEvent *event);
 
 private:
     Ui::importNominalGeometryDialog *ui;
     oiExchangeObject ExchangeData;
-    QList<CoordinateSystem*> availableCoordSys;
 
     void setUpSupportedElements(QString format);
+    void setUpSupportedUnits(QString format);
+    void setUpDescription();
 };
 
 #endif // IMPORTNOMINALGEOMETRYDIALOG_H

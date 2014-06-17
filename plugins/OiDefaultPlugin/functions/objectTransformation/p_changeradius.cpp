@@ -68,11 +68,11 @@ bool ChangeRadius::exec(Sphere &targetSphere){
 ScalarEntityDistance* ChangeRadius::getDistance(){
     ScalarEntityDistance *result = NULL;
     foreach(ScalarEntityDistance *sed, this->scalarEntityDistances){
-        if(result == NULL && sed->isSolved){
+        if(result == NULL && sed->getIsSolved()){
             result = sed;
-            this->setUseState(result->id, true);
+            this->setUseState(result->getId(), true);
         }else{
-            this->setUseState(sed->id, false);
+            this->setUseState(sed->getId(), false);
         }
     }
     return result;
@@ -84,8 +84,8 @@ ScalarEntityDistance* ChangeRadius::getDistance(){
  * \param distance
  */
 void ChangeRadius::attachOffsetToSphere(Sphere &targetSphere, ScalarEntityDistance *distance){
-    if(targetSphere.isSolved && distance->isSolved){ //if all elements are solved
-        if(targetSphere.isUpdated && distance->isUpdated){ //if all elements are in the same coordinate system
+    if(targetSphere.getIsSolved() && distance->getIsSolved()){ //if all elements are solved
+        if(targetSphere.getIsUpdated() && distance->getIsUpdated()){ //if all elements are in the same coordinate system
             targetSphere.radius = targetSphere.radius + distance->getDistance();
         }
     }

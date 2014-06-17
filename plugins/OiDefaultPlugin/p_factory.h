@@ -3,6 +3,7 @@
 
 #include <QtGlobal>
 #include <QObject>
+#include <QString>
 
 #include "pi_oiplugin.h"
 
@@ -42,6 +43,7 @@
 #include "p_shiftplane.h"
 
 #include "p_helmert7Param.h"
+#include "p_simpletemperaturecompensation.h"
 
 #include "p_pseudotracker.h"
 #include "p_leicatachymeter.h"

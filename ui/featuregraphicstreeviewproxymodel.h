@@ -6,6 +6,7 @@
 
 #include "featuretreeitem.h"
 #include "featurewrapper.h"
+#include "oifeaturestate.h"
 
 class FeatureGraphicsTreeViewProxyModel : public QSortFilterProxyModel
 {
@@ -17,7 +18,6 @@ public:
     void setHeader(QString header);
 
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
-    void setActiveFeature(FeatureWrapper *feature);
 
 protected:
     bool filterAcceptsColumn ( int source_column, const QModelIndex & source_parent ) const;
@@ -25,7 +25,7 @@ protected:
 
 private:
     QString header;
-    FeatureWrapper *activeFeature;
+
 };
 
 #endif // FEATUREGRAPHICSTREEVIEWPROXYMODEL_H

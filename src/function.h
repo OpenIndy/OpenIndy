@@ -23,6 +23,8 @@
 #include "statistic.h"
 #include "scalarentitydistance.h"
 #include "scalarentityangle.h"
+#include "scalarentitytemperature.h"
+#include "scalarentitymeasurementseries.h"
 #include "reading.h"
 #include "functionconfiguration.h"
 #include "oiemitter.h"
@@ -79,6 +81,8 @@ public:
     virtual bool exec(PointCloud&);
     virtual bool exec(ScalarEntityAngle&);
     virtual bool exec(ScalarEntityDistance&);
+    virtual bool exec(ScalarEntityTemperature&);
+    virtual bool exec(ScalarEntityMeasurementSeries&);
 
     virtual QList<InputParams> getNeededElements() = 0;
     virtual QList<Configuration::FeatureTypes> applicableFor() = 0;
@@ -125,6 +129,7 @@ protected:
     QList<Reading*> distanceReadings;
     QList<Reading*> directionReadings;
     QList<Reading*> cartesianReadings;
+    QList<ScalarEntityTemperature*> scalarEntityTemperatures;
 
     Statistic myStatistic;
 
@@ -250,6 +255,11 @@ public:
     void removeReadingCartesian(int id);
     Reading* getReadingCartesian(int id);
     QList<Reading*> getCartesianReadings();
+
+    void addScalarEntityTemperature(ScalarEntityTemperature *SET, int position);
+    void removeScalarEntityTemperature(int id);
+    ScalarEntityTemperature* getScalarEntityTemperature(int id);
+    QList<ScalarEntityTemperature*> getScalarEntityTemperatures();
 
     void removeFeature(int id);
 

@@ -6,8 +6,9 @@
 
 class ScalarEntityMeasurementSeries : public Geometry
 {
+    Q_OBJECT
 public:
-    ScalarEntityMeasurementSeries();
+    ScalarEntityMeasurementSeries(bool isNominal, QObject *parent = 0);
     ScalarEntityMeasurementSeries(const ScalarEntityMeasurementSeries &copy);
 
     void recalc();
@@ -20,7 +21,7 @@ public:
 
     QString getDisplayIsCommon() const;
     QString getDisplayIsNominal() const;
-    QString getDisplayObs() const;
+    //QString getDisplayObs() const;
     QString getDisplaySolved() const;
     QString getDisplayMConfig() const;
     QString getDisplayStdDev() const;

@@ -188,11 +188,11 @@ bool TranslateByLine::exec(Sphere &targetSphere){
 Line* TranslateByLine::getLine(){
     Line *result = NULL;
     foreach(Line *l, this->lines){
-        if(result == NULL && l->isSolved){
+        if(result == NULL && l->getIsSolved()){
             result = l;
-            this->setUseState(result->id, true);
+            this->setUseState(result->getId(), true);
         }else{
-            this->setUseState(l->id, false);
+            this->setUseState(l->getId(), false);
         }
     }
     return result;
@@ -205,11 +205,11 @@ Line* TranslateByLine::getLine(){
 ScalarEntityDistance* TranslateByLine::getDistance(){
     ScalarEntityDistance *result = NULL;
     foreach(ScalarEntityDistance *sed, this->scalarEntityDistances){
-        if(result == NULL && sed->isSolved){
+        if(result == NULL && sed->getIsSolved()){
             result = sed;
-            this->setUseState(result->id, true);
+            this->setUseState(result->getId(), true);
         }else{
-            this->setUseState(sed->id, false);
+            this->setUseState(sed->getId(), false);
         }
     }
     return result;
@@ -222,8 +222,8 @@ ScalarEntityDistance* TranslateByLine::getDistance(){
  * \param distance
  */
 void TranslateByLine::shiftPoint(Point &targetPoint, Line *line, ScalarEntityDistance *distance){
-    if(targetPoint.isSolved && line->isSolved && distance->isSolved){ //if all elements are solved
-        if(targetPoint.isUpdated && line->isUpdated && distance->isUpdated){ //if all elements are in the same coordinate system
+    if(targetPoint.getIsSolved() && line->getIsSolved() && distance->getIsSolved()){ //if all elements are solved
+        if(targetPoint.getIsUpdated() && line->getIsUpdated() && distance->getIsUpdated()){ //if all elements are in the same coordinate system
             FunctionConfiguration myConfig = this->getFunctionConfiguration();
             QMap<QString, QString> stringParameter = myConfig.stringParameter;
             bool invert = false;
@@ -253,10 +253,10 @@ void TranslateByLine::shiftPoint(Point &targetPoint, Line *line, ScalarEntityDis
  * \param distance
  */
 void TranslateByLine::variancePropagationPoint(Point &targetPoint, Line *line, ScalarEntityDistance *distance, bool invert){
-    OiMat sll_apost_point = targetPoint.myStatistic.qxx * targetPoint.myStatistic.s0_aposteriori * targetPoint.myStatistic.s0_aposteriori;
-    OiMat sll_apost_line = line->myStatistic.qxx * (line->myStatistic.s0_aposteriori * line->myStatistic.s0_aposteriori);
-    OiMat sll_apriori_point = targetPoint.myStatistic.qxx * (targetPoint.myStatistic.s0_apriori * targetPoint.myStatistic.s0_apriori);
-    OiMat sll_apriori_line = line->myStatistic.qxx * (line->myStatistic.s0_apriori * line->myStatistic.s0_apriori);
+    OiMat sll_apost_point = targetPoint.getStatistic().qxx * targetPoint.getStatistic().s0_aposteriori * targetPoint.getStatistic().s0_aposteriori;
+    OiMat sll_apost_line = line->getStatistic().qxx * (line->getStatistic().s0_aposteriori * line->getStatistic().s0_aposteriori);
+    OiMat sll_apriori_point = targetPoint.getStatistic().qxx * (targetPoint.getStatistic().s0_apriori * targetPoint.getStatistic().s0_apriori);
+    OiMat sll_apriori_line = line->getStatistic().qxx * (line->getStatistic().s0_apriori * line->getStatistic().s0_apriori);
     double dist = distance->getDistance();
     OiMat f(3, 6);
     f.setAt(0, 0, 1.0);
@@ -283,8 +283,10 @@ void TranslateByLine::variancePropagationPoint(Point &targetPoint, Line *line, S
     }
     OiMat sll_apost_f = f * sll_apost_all * f.t();
     OiMat sll_apriori_f = f * sll_apriori_all * f.t();
-    targetPoint.myStatistic.qxx = sll_apriori_f / (targetPoint.myStatistic.s0_aposteriori * targetPoint.myStatistic.s0_aposteriori);
-    this->myStatistic.qxx = targetPoint.myStatistic.qxx;
+    Statistic myStats;
+    myStats.qxx = sll_apriori_f / (targetPoint.getStatistic().s0_aposteriori * targetPoint.getStatistic().s0_aposteriori);
+    targetPoint.setStatistic(myStats);
+    this->myStatistic.qxx = targetPoint.getStatistic().qxx;
     this->myStatistic.isValid = true;
 }
 
@@ -295,8 +297,8 @@ void TranslateByLine::variancePropagationPoint(Point &targetPoint, Line *line, S
  * \param distance
  */
 void TranslateByLine::shiftLine(Line &targetLine, Line *line, ScalarEntityDistance *distance){
-    if(targetLine.isSolved && line->isSolved && distance->isSolved){ //if all elements are solved
-        if(targetLine.isUpdated && line->isUpdated && distance->isUpdated){ //if all elements are in the same coordinate system
+    if(targetLine.getIsSolved() && line->getIsSolved() && distance->getIsSolved()){ //if all elements are solved
+        if(targetLine.getIsUpdated() && line->getIsUpdated() && distance->getIsUpdated()){ //if all elements are in the same coordinate system
             FunctionConfiguration myConfig = this->getFunctionConfiguration();
             QMap<QString, QString> stringParameter = myConfig.stringParameter;
             bool invert = false;
@@ -323,8 +325,8 @@ void TranslateByLine::shiftLine(Line &targetLine, Line *line, ScalarEntityDistan
  * \param distance
  */
 void TranslateByLine::shiftPlane(Plane &targetPlane, Line *line, ScalarEntityDistance *distance){
-    if(targetPlane.isSolved && line->isSolved && distance->isSolved){ //if all elements are solved
-        if(targetPlane.isUpdated && line->isUpdated && distance->isUpdated){ //if all elements are in the same coordinate system
+    if(targetPlane.getIsSolved() && line->getIsSolved() && distance->getIsSolved()){ //if all elements are solved
+        if(targetPlane.getIsUpdated() && line->getIsUpdated() && distance->getIsUpdated()){ //if all elements are in the same coordinate system
             FunctionConfiguration myConfig = this->getFunctionConfiguration();
             QMap<QString, QString> stringParameter = myConfig.stringParameter;
             bool invert = false;
@@ -351,8 +353,8 @@ void TranslateByLine::shiftPlane(Plane &targetPlane, Line *line, ScalarEntityDis
  * \param distance
  */
 void TranslateByLine::shiftSphere(Sphere &targetSphere, Line *line, ScalarEntityDistance *distance){
-    if(targetSphere.isSolved && line->isSolved && distance->isSolved){ //if all elements are solved
-        if(targetSphere.isUpdated && line->isUpdated && distance->isUpdated){ //if all elements are in the same coordinate system
+    if(targetSphere.getIsSolved() && line->getIsSolved() && distance->getIsSolved()){ //if all elements are solved
+        if(targetSphere.getIsUpdated() && line->getIsUpdated() && distance->getIsUpdated()){ //if all elements are in the same coordinate system
             FunctionConfiguration myConfig = this->getFunctionConfiguration();
             QMap<QString, QString> stringParameter = myConfig.stringParameter;
             bool invert = false;

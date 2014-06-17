@@ -65,7 +65,7 @@ bool LineFromPoints::setUpResult(Line &line){
     OiVec centroid(4);
     int n = 0;
     foreach(Point *p, this->points){
-        if(p->isSolved){
+        if(p->getIsSolved()){
             centroid = centroid + p->xyz;
             n++;
         }
@@ -110,8 +110,10 @@ bool LineFromPoints::setUpResult(Line &line){
         //set result
         line.ijk = r;
         line.xyz = centroid;
-        line.myStatistic.isValid = true;
-        line.myStatistic.stdev = qSqrt( vtv / (n - 3) );
+        Statistic myStats;
+        myStats.isValid = true;
+        myStats.stdev = qSqrt( vtv / (n - 3) );
+        line.setStatistic(myStats);
         return true;
     }
     return false;
@@ -126,7 +128,7 @@ OiMat LineFromPoints::preCalc(OiVec centroid){
     //calc centroid reduced coordinates
     vector<OiVec> crCoord;
     foreach(Point *p, this->points){
-        if(p->isSolved){
+        if(p->getIsSolved()){
             crCoord.push_back( (p->xyz - centroid) );
         }
     }
@@ -148,11 +150,11 @@ OiMat LineFromPoints::preCalc(OiVec centroid){
 bool LineFromPoints::checkPointCount(){
     int count = 0;
     foreach(Point *p, this->points){
-        if(p->isSolved){
-            this->setUseState(p->id, true);
+        if(p->getIsSolved()){
+            this->setUseState(p->getId(), true);
             count++;
         }else{
-            this->setUseState(p->id, false);
+            this->setUseState(p->getId(), false);
         }
     }
     if(count >= 2){

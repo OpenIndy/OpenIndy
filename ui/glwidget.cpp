@@ -93,11 +93,10 @@ void GLWidget::draw(){
 
 
     qglColor(Qt::red);
-    if(features->size() > 0){
+    if(OiFeatureState::getFeatures().size() > 0){
 
-        for(int i =0; i< features->size(); i++){
-            OiGraphix::drawFeature(features->at(i));
-
+        for(int i =0; i< OiFeatureState::getFeatures().size(); i++){
+            OiGraphix::drawFeature(OiFeatureState::getFeatures().at(i));
         }
 
 

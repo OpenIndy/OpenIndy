@@ -2,6 +2,7 @@
 #define OIEXCHANGEINTERFACE_H
 
 #include "oiexchangeobject.h"
+#include <QStringList>
 
 /*!
  * \brief The oiExchange Interface must be implemented for a new kind of data import/export.
@@ -39,7 +40,33 @@ public:
      */
     virtual QList<Configuration::ElementTypes> getSupportedElements() = 0;
 
+    /*!
+     * \brief getElementDescription
+     * \return
+     */
+    virtual QStringList getElementDescription(Configuration::ElementTypes) = 0;
+
+    /*!
+     * \brief getSupportedDistanceUnits
+     * \param format
+     * \return
+     */
+    virtual QList<UnitConverter::unitType> getSupportedDistanceUnits() = 0;
+
+    /*!
+     * \brief getSupportedAngleUnits
+     * \return
+     */
+    virtual QList<UnitConverter::unitType> getSupportedAngleUnits() = 0;
+
+    /*!
+     * \brief getSupportedTemperatureUnits
+     * \return
+     */
+    virtual QList<UnitConverter::unitType> getSupportedTemperatureUnits() = 0;
+
 };
 
 
 #endif // OIEXCHANGEINTERFACE_H
+

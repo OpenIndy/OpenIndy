@@ -44,6 +44,29 @@ QString Configuration::sLevel = "level";
 
 QString Configuration::sObservation = "observation";
 
+QString Configuration::sSteel = "steel";
+QString Configuration::sAluminum = "aluminum";
+QString Configuration::sPlumb = "plumb";
+QString Configuration::sIron = "iron";
+QString Configuration::sGrayCastIron = "gray cast iron";
+QString Configuration::sCopper = "copper";
+QString Configuration::sBrass = "brass";
+QString Configuration::sZinc = "zinc";
+QString Configuration::sPlatinum = "platinum";
+
+/*!
+ * \brief expansion coefficients in meter unit.
+ */
+double Configuration::dSteel = 0.000016;
+double Configuration::dAluminum = 0.000024;
+double Configuration::dPlumb = 0.000030;
+double Configuration::dIron = 0.000012;
+double Configuration::dGrayCastIron = 0.000009;
+double Configuration::dCopper = 0.000017;
+double Configuration::dBrass = 0.000018;
+double Configuration::dZinc = 0.000027;
+double Configuration::dPlatinum = 0.000009;
+
 int Configuration::idCount = 0;
 
 int Configuration::generateID(){
@@ -89,6 +112,8 @@ Configuration::ElementTypes Configuration::getElementTypeEnum(QString s){
         return Configuration::ePointCloudElement;
     }else if(s == Configuration::sObservation){
         return Configuration::eObservationElement;
+    }else if(s == Configuration::sEntityTemperature){
+        return Configuration::eScalarEntityTemperatureElement;
     }
 }
 
@@ -148,8 +173,86 @@ QString Configuration::getElementTypeString(Configuration::ElementTypes e){
     case Configuration::eObservationElement:
         return Configuration::sObservation;
         break;
+    case Configuration::eScalarEntityTemperatureElement:
+        return Configuration::sEntityTemperature;
+        break;
     default:
         return "";
+        break;
+    }
+}
+
+/*!
+ * \brief getExpansionCoefficient returns the expansion coefficient of the material.
+ * \param material
+ * \return
+ */
+double Configuration::getExpansionCoefficient(QString material)
+{
+    if(material.compare(Configuration::sSteel) == 0){
+        return Configuration::dSteel;
+    }
+    if(material.compare(Configuration::sAluminum) == 0){
+        return Configuration::dAluminum;
+    }
+    if(material.compare(Configuration::sPlumb) == 0){
+        return Configuration::dPlumb;
+    }
+    if(material.compare(Configuration::sIron) == 0){
+        return Configuration::dIron;
+    }
+    if(material.compare(Configuration::sGrayCastIron) == 0){
+        return Configuration::dGrayCastIron;
+    }
+    if(material.compare(Configuration::sCopper) == 0){
+        return Configuration::dCopper;
+    }
+    if(material.compare(Configuration::sBrass) == 0){
+        return Configuration::dBrass;
+    }
+    if(material.compare(Configuration::sZinc) == 0){
+        return Configuration::dZinc;
+    }
+    if(material.compare(Configuration::sPlatinum) == 0){
+        return Configuration::dPlatinum;
+    }
+}
+
+/*!
+ * \brief getExpansionCoefficient returns the expansion coefficient of the material.
+ * \return
+ */
+double Configuration::getExpansionCoefficient(Configuration::Materials material)
+{
+    switch (material) {
+    case Configuration::eSteel:
+        return Configuration::dSteel;
+        break;
+    case Configuration::eAluminum:
+        return Configuration::dAluminum;
+        break;
+    case Configuration::ePlumb:
+        return Configuration::dPlumb;
+        break;
+    case Configuration::eIron:
+        return Configuration::dIron;
+        break;
+    case Configuration::eGrayCastIron:
+        return Configuration::dGrayCastIron;
+        break;
+    case Configuration::eCopper:
+        return Configuration::dCopper;
+        break;
+    case Configuration::eBrass:
+        return Configuration::dBrass;
+        break;
+    case Configuration::eZinc:
+        return Configuration::dZinc;
+        break;
+    case Configuration::ePlatinum:
+        return Configuration::dPlatinum;
+        break;
+    default:
         break;
     }
 }

@@ -12,7 +12,7 @@
 #include <QLCDNumber>
 #include <QVBoxLayout>
 #include "unitconverter.h"
-
+#include "oifeaturestate.h"
 
 namespace Ui {
 class WatchWindow;
@@ -26,12 +26,7 @@ public:
     explicit WatchWindow(QWidget *parent = 0);
     ~WatchWindow();
 
-    Station *myStation;
-    FeatureWrapper *activeFeature;
-    CoordinateSystem *activeCoordinateSystem;
-
     double az;
-
 
 signals:
     void startMeasure();

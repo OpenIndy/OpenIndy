@@ -34,40 +34,70 @@ void WatchWindow::setLCDNumber(QVariantMap m){
 
         QString name = j.key();
         QVariant qvalue = j.value();
-        double dvalue = qvalue.toDouble()*UnitConverter::getDistanceMultiplier();
-        QString value =  QString::number(dvalue);
+        double dvalue = qvalue.toDouble();
 
-        if(activeCoordinateSystem == myStation->coordSys && activeFeature != NULL){
+        if(!OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+
+            TrafoParam *tp = NULL;
+            QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveStation()->coordSys->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
+            if(myTrafoParams.size() > 0){
+                tp = myTrafoParams.at(0);
+            }
+            if(tp != NULL){
+                OiMat t;
+                if(tp->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
+                    t = tp->getHomogenMatrix();
+                }else{
+                    t = tp->getHomogenMatrix().inv();
+                }
+
+                OiVec trackerXYZ(4);
+                trackerXYZ.setAt(0,m.value("x").toDouble());
+                trackerXYZ.setAt(1,m.value("y").toDouble());
+                trackerXYZ.setAt(2,m.value("z").toDouble());
+                trackerXYZ.setAt(3,1.0);
+                trackerXYZ = t*trackerXYZ;
+
+                if(name == "x"){
+                    dvalue =trackerXYZ.getAt(0);
+                }else if (name == "y"){
+                    dvalue = trackerXYZ.getAt(1);
+                }else if (name == "z"){
+                    dvalue =trackerXYZ.getAt(2);
+                }
+            }
+        }
+
+        if(OiFeatureState::getActiveFeature() != NULL){
             if(name == "x"){
 
-                double featureX = activeFeature->getFeature()->getDisplayX().toDouble();
-                double dx = featureX - value.toDouble();
-                streamData.value(name)->display(QString::number(dx,'f',UnitConverter::distanceDigits));
+                double featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(0);
+                double dx = featureX - dvalue;
+                streamData.value(name)->display(QString::number(dx*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 
             }else if(name == "y"){
 
-                double featureY = activeFeature->getFeature()->getDisplayY().toDouble();
-                double dy = featureY - value.toDouble();
-                streamData.value(name)->display(QString::number(dy,'f',UnitConverter::distanceDigits));
+                double featureY = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
+                double dy = featureY - dvalue;
+                streamData.value(name)->display(QString::number(dy*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 
             }else if(name == "z"){
 
-                double featureZ = activeFeature->getFeature()->getDisplayZ().toDouble();
-                double dz = featureZ - value.toDouble();
-                streamData.value(name)->display(QString::number(dz,'f',UnitConverter::distanceDigits));
-
+                double featureZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(2);
+                double dz = featureZ - dvalue;
+                streamData.value(name)->display(QString::number(dz*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+				
             }else{
-                streamData.value(name)->display(value);
+                streamData.value(name)->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
             }
         }else{
-            streamData.value(name)->display(value);
+            streamData.value(name)->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
         }
 
 
 
 
     }
-
 }
 
 void WatchWindow::iniGUI(QVariantMap m)
@@ -76,11 +106,11 @@ void WatchWindow::iniGUI(QVariantMap m)
         masterLayout = new QVBoxLayout();
     }
 
-    if(activeFeature != NULL){
+    if(OiFeatureState::getActiveFeature() != NULL){
         QLabel *featureName = new QLabel();
         QFont f( "Arial", 30, QFont::Bold);
         featureName->setFont(f);
-        featureName->setText(activeFeature->getFeature()->name);
+        featureName->setText(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
         masterLayout->addWidget(featureName);
     }
 
@@ -134,11 +164,11 @@ void WatchWindow::keyPressEvent(QKeyEvent *e)
 
 void WatchWindow::closeEvent(QCloseEvent *e)
 {
-    myStation->emitStopReadingStream();
+    OiFeatureState::getActiveStation()->emitStopReadingStream();
     isGUIReady = false;
     streamData.clear();
 
-    disconnect(myStation->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
+    disconnect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
 
     delete masterLayout;
     masterLayout = NULL;
@@ -153,12 +183,12 @@ void WatchWindow::closeEvent(QCloseEvent *e)
 
 void WatchWindow::showEvent(QShowEvent *event)
 {
-    if(myStation != NULL && myStation->sensorPad->instrument != NULL){
-        connect(myStation->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
+    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+        connect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
 
         int r = Configuration::ePolar;
 
-        myStation->emitStartReadingStream(r);
+        OiFeatureState::getActiveStation()->emitStartReadingStream(r);
 
         event->accept();
     }

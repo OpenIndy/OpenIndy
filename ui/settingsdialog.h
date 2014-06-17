@@ -36,6 +36,7 @@ public:
     QStringListModel *m_displayedTrafoParamAttributes;
 
     void setPluginsModel(PluginTreeViewModel *model);
+
 signals:
     void modelChanged();
 

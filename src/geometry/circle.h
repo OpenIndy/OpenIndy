@@ -5,6 +5,7 @@
 
 class Circle : public Geometry
 {
+    Q_OBJECT
 public:
     enum CircleUnknowns{
         unknownX,
@@ -17,13 +18,15 @@ public:
         unknownD
     };
 
-    Circle();
+    Circle(bool isNominal, QObject *parent = 0);
     Circle(const Circle &copy);
 
     OiVec xyz;
     OiVec ijk;
     double radius;
     double dist2origin;
+    OiVec getXYZ() const;
+    OiVec getIJK() const;
 
     void recalc();
 
@@ -36,7 +39,7 @@ public:
     QString getDisplayRadius() const;
     QString getDisplayIsCommon() const;
     QString getDisplayIsNominal() const;
-    QString getDisplayObs() const;
+    //QString getDisplayObs() const;
     QString getDisplaySolved() const;
     QString getDisplayMConfig() const;
     QString getDisplayStdDev() const;

@@ -2,7 +2,7 @@
 
 #include "function.h"
 
-ScalarEntityAngle::ScalarEntityAngle()
+ScalarEntityAngle::ScalarEntityAngle(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
@@ -15,7 +15,7 @@ ScalarEntityAngle::ScalarEntityAngle()
  * \brief ScalarEntityAngle::ScalarEntityAngle
  * \param copy
  */
-ScalarEntityAngle::ScalarEntityAngle(const ScalarEntityAngle &copy){
+ScalarEntityAngle::ScalarEntityAngle(const ScalarEntityAngle &copy) : Geometry(copy.isNominal){
     this->id = copy.id;
     this->name = copy.name;
     this->angle = copy.getAngle();
@@ -27,19 +27,27 @@ ScalarEntityAngle::ScalarEntityAngle(const ScalarEntityAngle &copy){
  * Execute alls functions in the specified order
  */
 void ScalarEntityAngle::recalc(){
-    /*
-     * isDefined -> becomes true as soon as the first function of a feature has been executed, which defines the feature
-     * isSolved -> is true as long as there isn't any function which cannot be successfully executed
-     */
-    bool isDefined = false;
-    foreach(Function *f, this->functionList){
-        if(!isDefined){
-            //this->isSolved = f->exec(*this);
-            isDefined = true;
-        }else if(this->isSolved){
-            //this->isSolved = f->exec(*this);
+
+    if(this->functionList.size() > 0){
+
+        bool solved = true;
+        foreach(Function *f, this->functionList){
+
+            //execute the function if it exists and if the last function was executed successfully
+            if(f != NULL && solved == true){
+                solved = f->exec(*this);
+            }
+
         }
+        this->setIsSolved(solved);
+
+    }else if(this->isNominal == false){
+
+        this->angle = 0.0;
+        this->setIsSolved(false);
+
     }
+
 }
 
 bool ScalarEntityAngle::toOpenIndyXML(QXmlStreamWriter &stream){
@@ -168,9 +176,9 @@ QString ScalarEntityAngle::getDisplayIsCommon() const{
 QString ScalarEntityAngle::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
-QString ScalarEntityAngle::getDisplayObs() const{
+/*QString ScalarEntityAngle::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString ScalarEntityAngle::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");
@@ -190,5 +198,5 @@ QString ScalarEntityAngle::getDisplayStdDev() const{
 }
 
 QString ScalarEntityAngle::getDisplayScalarAngleValue() const{
-    return QString::number(this->angle*180.0/3.141592653589793,'f',UnitConverter::angleDigits);
+    return QString::number(this->angle*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
 }

@@ -1,9 +1,8 @@
 #include "scalarentitydialog.h"
 #include "ui_scalarentitydialog.h"
 
-ScalarEntityDialog::ScalarEntityDialog(QList<FeatureWrapper*> &features, QWidget *parent) :
-    QDialog(parent),featureList(features),
-    ui(new Ui::ScalarEntityDialog)
+ScalarEntityDialog::ScalarEntityDialog(QWidget *parent) :
+    QDialog(parent), ui(new Ui::ScalarEntityDialog)
 {
     ui->setupUi(this);
     initGUI();
@@ -32,10 +31,10 @@ void ScalarEntityDialog::initGUI(){
 
     ui->comboBox_nominalSystem->clear();
 
-    if(featureList.size() !=0){
-        for(int i=0; i<featureList.size();i++){
-            if(featureList.at(i)->getCoordinateSystem() != NULL){
-                ui->comboBox_nominalSystem->addItem(featureList.at(i)->getCoordinateSystem()->name);
+    if(OiFeatureState::getFeatureCount() !=0){
+        for(int i=0; i<OiFeatureState::getFeatures().size();i++){
+            if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL){
+                ui->comboBox_nominalSystem->addItem(OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
             }
 
         }
@@ -61,19 +60,28 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
         QString function = this->ui->comboBox_function->currentText();
 
         if(nominal){
-            for(int k=0; k<this->featureList.size();k++){
-                if(this->featureList.at(k)->getCoordinateSystem() != NULL &&
-                        ui->comboBox_nominalSystem->currentText() == this->featureList.at(k)->getCoordinateSystem()->name){
-                    nominalSystem = this->featureList.at(k)->getCoordinateSystem();
+            for(int k=0; k<OiFeatureState::getFeatureCount();k++){
+                if(OiFeatureState::getFeatures().at(k)->getCoordinateSystem() != NULL &&
+                        ui->comboBox_nominalSystem->currentText() == OiFeatureState::getFeatures().at(k)->getCoordinateSystem()->getFeatureName()){
+                    nominalSystem = OiFeatureState::getFeatures().at(k)->getCoordinateSystem();
                 }
-                if(this->featureList.at(k)->getStation() != NULL &&
-                        ui->comboBox_nominalSystem->currentText() == this->featureList.at(k)->getStation()->name){
-                    nominalSystem = this->featureList.at(k)->getStation()->coordSys;
+                if(OiFeatureState::getFeatures().at(k)->getStation() != NULL &&
+                        ui->comboBox_nominalSystem->currentText() == OiFeatureState::getFeatures().at(k)->getStation()->getFeatureName()){
+                    nominalSystem = OiFeatureState::getFeatures().at(k)->getStation()->coordSys;
                 }
             }
         }
 
-        FeatureAttributesExchange featureAttributes(count,featureType,name,group,function,actual,nominal,comPoint,nominalSystem);
+        FeatureAttributesExchange featureAttributes;
+        featureAttributes.count = count;
+        featureAttributes.featureType = featureType;
+        featureAttributes.name = name;
+        featureAttributes.group = group;
+        featureAttributes.function = function;
+        featureAttributes.actual = actual;
+        featureAttributes.nominal = nominal;
+        featureAttributes.common = comPoint;
+        featureAttributes.nominalSystem = nominalSystem;
 
         emit createFeature(featureAttributes);
 

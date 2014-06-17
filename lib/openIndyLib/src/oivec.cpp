@@ -116,7 +116,7 @@ OiVec& OiVec::operator =(const OiVec &v){
  * \param v
  * \return
  */
-OiVec OiVec::operator+(const OiVec &v){
+OiVec OiVec::operator+(const OiVec &v) const{
     if(this->getSize() == v.getSize()){
         return OiVec::myLinearAlgebra->addIn(*this, v);
     }else{
@@ -131,7 +131,7 @@ OiVec OiVec::operator+(const OiVec &v){
  * \param v
  * \return
  */
-OiVec OiVec::operator-(const OiVec &v){
+OiVec OiVec::operator-(const OiVec &v) const{
     if(this->getSize() == v.getSize()){
         return OiVec::myLinearAlgebra->substract(*this, v);
     }else{
@@ -176,7 +176,7 @@ OiVec& OiVec::operator -=(const OiVec &v){
  * \brief OiVec::normalize
  * \return
  */
-OiVec OiVec::normalize(){
+OiVec OiVec::normalize() const{
     OiVec n0(this->getSize());
     double l = 0.0;
     for(int i = 0; i < this->getSize(); i++){
@@ -196,7 +196,7 @@ OiVec OiVec::normalize(){
  * Calculate the transposed of this vector which is a matrix
  * \return
  */
-OiMat OiVec::t(){
+OiMat OiVec::t() const{
     if(this->getSize() > 0){
         OiMat result(1, this->getSize());
         for(int i = 0; i < this->getSize(); i++){

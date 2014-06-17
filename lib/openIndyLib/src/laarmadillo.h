@@ -29,6 +29,7 @@ public:
     void svd(OiMat &u, OiVec &d, OiMat &v, OiMat x);
     OiVec cross(OiVec a, OiVec b);
     double dot(OiVec a, OiVec b);
+    double det(OiMat a);
 
 private:
     arma::vec oiVec2Arma(OiVec);

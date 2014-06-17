@@ -1,6 +1,7 @@
 #ifndef FEATURE_H
 #define FEATURE_H
 
+#include <QObject>
 #include <QList>
 #include <QMap>
 #include <QString>
@@ -17,121 +18,103 @@ class Function;
  */
 class Feature : public Element
 {
-
+    Q_OBJECT
 public:
+    explicit Feature(QObject *parent = 0);
     virtual ~Feature();
 
-    QString name;
-    QString group;
-    QString comment;
-    bool isUpdated;
-    bool isSolved;
-    QList<Function*> functionList;
+    QString getFeatureName() const;
+    bool setFeatureName(QString name);
+
+    QString getGroupName() const;
+    void setGroupName(QString group);
+
+    QString getComment() const;
+    void setComment(QString comment);
+
+    bool getIsUpdated() const;
+    void setIsUpdated(bool isUpdated);
+
+    bool getIsSolved() const;
+    void setIsSolved(bool isSolved);
+
+    Configuration::eColor getDisplayColor() const;
+    void setDisplayColor(Configuration::eColor displayColor);
+
+    bool getIsDrawn() const;
+    void setIsDrawn(bool isDrawn);
+
+    const QList<Function *> getFunctions() const;
+    void addFunction(Function *f);
+    bool removeFunction(int index);
+
+    bool getIsActiveFeature() const;
+    void setActiveFeatureState(bool isActiveFeature);
+
     QList<FeatureWrapper*> usedFor; //features which need this feature to recalc
     QList<FeatureWrapper*> previouslyNeeded; //features which are needed to recalc this feature
-    Configuration::eColor displayColor;
-
-    bool isDrawn;
-
-    void addFunction(Function *f);
 
     virtual void recalc() = 0;
 
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
-    virtual QString getDisplayX() const{
-        return "-/-";
-    }
-    virtual QString getDisplayY() const{
-        return "-/-";
-    }
-    virtual QString getDisplayZ() const{
-        return "-/-";
-    }
-    virtual QString getDisplayI() const{
-        return "-/-";
-    }
-    virtual QString getDisplayJ() const{
-        return "-/-";
-    }
-    virtual QString getDisplayK() const{
-        return "-/-";
-    }
-    virtual QString getDisplayRadius() const{
-        return "-/-";
-    }
-    Configuration::eColor getDisplayColor() const{
-        return displayColor;
-    }
-    virtual QString getDisplayIsCommon() const{
-        return "-/-";
-    }
-    virtual QString getDisplayIsNominal() const{
-        return "-/-";
-    }
-    void setColor(Configuration::eColor c){
-        this->displayColor = c;
-    }
-    virtual QString getDisplayObs() const{
-        return "-/-";
-    }
-    virtual QString getDisplaySolved() const{
-        return "-/-";
-    }
-    virtual QString getDisplayMConfig() const{
-        return "-/-";
-    }
-    virtual QString getDisplayStdDev() const{
-        return "-/-";
-    }
-    virtual QString getDisplayScalarDistanceValue() const{
-        return "-/-";
-    }
-    virtual QString getDisplayScalarAngleValue() const{
-        return "-/-";
-    }
-    virtual QString getDisplayStartSystem() const{
-        return "-/-";
-    }
-    virtual QString getDisplayDestinationSystem() const{
-        return "-/-";
-    }
-    virtual QString getDisplayTranslationX() const{
-        return "-/-";
-    }
-    virtual QString getDisplayTranslationY() const{
-        return "-/-";
-    }
-    virtual QString getDisplayTranslationZ() const{
-        return "-/-";
-    }
-    virtual QString getDisplayScaleX() const{
-        return "-/-";
-    }
-    virtual QString getDisplayScaleY() const{
-        return "-/-";
-    }
-    virtual QString getDisplayScaleZ() const{
-        return "-/-";
-    }
-    virtual QString getDisplayRotationX() const{
-        return "-/-";
-    }
-    virtual QString getDisplayRotationY() const{
-        return "-/-";
-    }
-    virtual QString getDisplayRotationZ() const{
-        return "-/-";
-    }
-    virtual QString getDisplayScalarTemperatureValue() const{
-        return "-/-";
-    }
-    virtual QString getDisplayScalarMeasurementSeriesValue() const{
-        return "-/-";
-    }
+    virtual QString getDisplayX() const;
+    virtual QString getDisplayY() const;
+    virtual QString getDisplayZ() const;
+    virtual QString getDisplayI() const;
+    virtual QString getDisplayJ() const;
+    virtual QString getDisplayK() const;
+    virtual QString getDisplayRadius() const;
+    virtual QString getDisplayIsCommon() const;
+    virtual QString getDisplayIsNominal() const;
+    virtual QString getDisplayObs() const;
+    virtual QString getDisplaySolved() const;
+    virtual QString getDisplayMConfig() const;
+    virtual QString getDisplayStdDev() const;
+    virtual QString getDisplayScalarDistanceValue() const;
+    virtual QString getDisplayScalarAngleValue() const;
+    virtual QString getDisplayStartSystem() const;
+    virtual QString getDisplayDestinationSystem() const;
+    virtual QString getDisplayTranslationX() const;
+    virtual QString getDisplayTranslationY() const;
+    virtual QString getDisplayTranslationZ() const;
+    virtual QString getDisplayScaleX() const;
+    virtual QString getDisplayScaleY() const;
+    virtual QString getDisplayScaleZ() const;
+    virtual QString getDisplayRotationX() const;
+    virtual QString getDisplayRotationY() const;
+    virtual QString getDisplayRotationZ() const;
+    virtual QString getDisplayScalarTemperatureValue() const;
+    virtual QString getDisplayScalarMeasurementSeriesValue() const;
+    virtual QString getDisplayUse() const;
+    virtual QString getDisplayTime() const;
+
+signals:
+    void featureNameChanged(int featureId, QString oldName);
+    void featureGroupChanged(int featureId);
+    void featureCommentChanged(int featureId);
+    void featureIsUpdatedChanged(int featureId);
+    void featureIsSolvedChanged(int featureId);
+    void featureFunctionListChanged(int featureId);
+    void featureUsedForChanged(int featureId);
+    void featurePreviouslyNeededChanged(int featureId);
+    void featureDisplayColorChanged(int featureId);
+    void featureIsDrawnChanged(int featureId);
+    void featureIsActiveChanged(int featureId);
 
 protected:
+    QString name;
+    QString group;
+    QString comment;
+    bool isUpdated;
+    bool isSolved;
+    bool isActiveFeature;
+    QList<Function*> functionList;
+
+    Configuration::eColor displayColor;
+    bool isDrawn;
+
     bool writeFeatureAttributes(QXmlStreamWriter& stream);
     bool readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies);
     bool readFunction(QXmlStreamReader &xml ,ElementDependencies &d);

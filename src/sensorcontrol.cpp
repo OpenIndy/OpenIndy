@@ -57,7 +57,7 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
     }
 
 
-    QList<Reading*> readings = instrument->measure(&(geom->mConfig));
+    QList<Reading*> readings = instrument->measure(&(geom->getMeasurementConfig()));
 
     qDebug() << "count readings" << readings.size();
     if(readings.size() == 0){
@@ -353,6 +353,12 @@ void SensorControl::stopStatStream()
     this->myEmitter.sendString("stat stream stopped");
 }
 
+void SensorControl::copyMe(SensorControl *sc)
+{
+    sc->instrument = this->instrument;
+    sc->InstrumentConfig = this->InstrumentConfig;
+}
+
 
 /*!
  * \brief SensorControl::connect
@@ -437,6 +443,7 @@ void SensorControl::disconnectSensor(){
         checkSensor();
 
         if(this->t != eNoStream){
+
            instrumentListener->isStreamActive = true;
 
            switch (t) {
@@ -465,7 +472,7 @@ void SensorControl::disconnectSensor(){
 
         instrumentListener->isStreamActive = false;
 
-        QTime timer;
+        /*QTime timer;
 
         timer.start();
 
@@ -478,8 +485,16 @@ void SensorControl::disconnectSensor(){
                 this->myEmitter.sendString("timeout - stream failed");
                 return false;
             }
+        }*/
+
+        listenerThread.quit();
+
+        if(!listenerThread.wait()){
+           this->myEmitter.sendString("timeout - stream failed");
+            return false;
         }
 
+        listenerThread.start();
 
         return true;
     }
@@ -532,7 +547,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
     r->id = Configuration::generateID();
     r->measuredAt = QDateTime::currentDateTime();
 
-    switch(geom->mConfig.typeOfReading){
+    switch(geom->getMeasurementConfig().typeOfReading){
         case(Configuration::ePolar) :{
             //set type
             r->typeofReading = Configuration::ePolar;
@@ -558,15 +573,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //save geometry in observation
             obs->myTargetGeometries.append(geom);
             //add observation to fit function of geom
-            if(geom->functionList.size() > 0 && geom->functionList.at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                geom->functionList.at(0)->addObservation(obs, 0);
+            if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
+                geom->getFunctions().at(0)->addObservation(obs, 0);
             }
 
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::ePolar,Configuration::sPolar);
             //save observation in station
-            this->myStation->coordSys->observations.append(obs);
+            this->myStation->coordSys->addObservation(obs);
 
             break;
         }
@@ -584,14 +599,14 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //save geometry in observation
             obs->myTargetGeometries.append(geom);
             //add observation to fit function of geom
-            if(geom->functionList.size() > 0 && geom->functionList.at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                geom->functionList.at(0)->addObservation(obs, 0);
+            if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
+                geom->getFunctions().at(0)->addObservation(obs, 0);
             }
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::eDistance,Configuration::sDistance);
             //save observation in station
-            this->myStation->coordSys->observations.append(obs);
+            this->myStation->coordSys->addObservation(obs);
 
             break;
         }
@@ -610,14 +625,14 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //save geometry in observation
             obs->myTargetGeometries.append(geom);
             //add observation to fit function of geom
-            if(geom->functionList.size() > 0 && geom->functionList.at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                geom->functionList.at(0)->addObservation(obs, 0);
+            if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
+                geom->getFunctions().at(0)->addObservation(obs, 0);
             }
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::eDirection,Configuration::sDirection);
             //save observation in station
-            this->myStation->coordSys->observations.append(obs);
+            this->myStation->coordSys->addObservation(obs);
 
             break;
         }
@@ -638,15 +653,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             }
             //save geometry in observation
             //add observation to fit function of geom
-            if(geom->functionList.size() > 0 && geom->functionList.at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                geom->functionList.at(0)->addObservation(obs, 0);
+            if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
+                geom->getFunctions().at(0)->addObservation(obs, 0);
             }
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::eCartesian,Configuration::sCartesian);
             //save observation in station
-            this->myStation->coordSys->observations.append(obs);
+            this->myStation->coordSys->addObservation(obs);
 
             break;
         }
@@ -661,15 +676,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             obs->isValid = false;
             //save geometry in observation
             //add observation to fit function of geom
-            if(geom->functionList.size() > 0 && geom->functionList.at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                geom->functionList.at(0)->addObservation(obs, 0);
+            if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
+                geom->getFunctions().at(0)->addObservation(obs, 0);
             }
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::eLevel,Configuration::sLevel);
             //save observation in station
-            this->myStation->coordSys->observations.append(obs);
+            this->myStation->coordSys->addObservation(obs);
 
         break;
     }
@@ -684,15 +699,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             obs->isValid = false;
             //save geometry in observation
             //add observation to fit function of geom
-            if(geom->functionList.size() > 0 && geom->functionList.at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                geom->functionList.at(0)->addObservation(obs, 0);
+            if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
+                geom->getFunctions().at(0)->addObservation(obs, 0);
             }
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
-            geom->myObservations.append(obs);
+            geom->addObservation(obs);
             geom->insertReadingType(Configuration::eTemperatur,Configuration::sTemperatur);
             //save observation in station
-            this->myStation->coordSys->observations.append(obs);
+            this->myStation->coordSys->addObservation(obs);
 
         break;
         }
@@ -707,15 +722,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
                 obs->isValid = false;
                 //save geometry in observation
                 //add observation to fit function of geom
-                if(geom->functionList.size() > 0 && geom->functionList.at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                    geom->functionList.at(0)->addObservation(obs, 0);
+                if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
+                    geom->getFunctions().at(0)->addObservation(obs, 0);
                 }
                 obs->myTargetGeometries.append(geom);
                 //save observation in geometry
-                geom->myObservations.append(obs);
+                geom->addObservation(obs);
                 geom->insertReadingType(Configuration::eUndefined, instrument->getUndefinedReadingName());
                 //save observation in station
-                this->myStation->coordSys->observations.append(obs);
+                this->myStation->coordSys->addObservation(obs);
 
         break;
         }

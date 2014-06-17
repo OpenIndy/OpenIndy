@@ -26,6 +26,8 @@
 #include "nominaldatadialog.h"
 #include "edittrafoparamdialog.h"
 #include "oiprojectexchanger.h"
+#include "stationinfodialog.h"
+#include "realtimedatadialog.h"
 
 #include "featureoverviewdelegate.h"
 #include "trafoparamdelegate.h"
@@ -47,6 +49,8 @@
 #include "tablemodel.h"
 #include "featureattributesexchange.h"
 #include "guiconfiguration.h"
+
+#include "oifeaturestate.h"
 
 namespace Ui {
 class MainWindow;
@@ -87,6 +91,9 @@ public:
     importNominalGeometryDialog importNominalDialog;
     NominalDataDialog nominalDialog;
 
+    StationInfoDialog stationDialog;
+    RealTimeDataDialog rtDataDialog;
+
     WatchWindow *watchWindow;
 
     //actions
@@ -120,7 +127,6 @@ public:
     QAction *actionCompensation;
     QLabel *labelSensorControlName;
 
-
     //seperators create feature
     QAction *cFsep;
     QAction *cFsep1;
@@ -147,10 +153,10 @@ public:
 
 signals:
 
-    void sendActiveNominalfeature(FeatureWrapper *anf);
+    //void sendActiveNominalfeature(FeatureWrapper *anf);
     void sendConfig(MeasurementConfig*);
     void sendFeatureType(Configuration::FeatureTypes);
-    void sendSelectedFeature(int);
+    void sendSelectedFeature(int featureIndex); //is emitted when a new active feature was selected by the user
     void sendCommandString(QString);
     void getAvailableFunctions();
     //TODO create a signal which will be emit every time if a new coordinate system was created and connect it to fillCoordSysComboBox()
@@ -163,7 +169,9 @@ public slots:
     void resetFeatureSelection();
     void availableGroupsChanged(QMap<QString, int>);
     void updateGeometryIcons(QStringList availableGeometries);
-    void updateModel();
+    //void updateModel();
+
+    //void updateCoordSys();
 
 private slots:
     void featureContextMenu(const QPoint &point);
@@ -175,7 +183,7 @@ private slots:
 
     void changedStation();
 
-    void getActiveCoordSystem(QString coordSys);
+    //void getActiveCoordSystem(QString coordSys);
     void handleTableViewClicked(const QModelIndex &);
     void handleTrafoParamClicked(const QModelIndex &);
 
@@ -188,7 +196,7 @@ private slots:
     void receiveConfig(FeatureWrapper*,MeasurementConfig*);
     void createFeature();
 
-    void fillCoordSysComboBox();
+    //void fillCoordSysComboBox();
 
     void on_actionControl_pad_triggered();
 
@@ -271,6 +279,11 @@ private slots:
 
     void clearCustomWidgets();
 
+    void on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1);
+    void openStationGeomProperties(FeatureWrapper *fw);
+
+    void on_actionSensor_real_time_data_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -278,6 +291,9 @@ private:
 
     QModelIndexList featuresToDelete;
     bool isTrafoParamSelected;
+
+    void setConnects();
+    void setModels();
 };
 
 #endif // MAINWINDOW_H

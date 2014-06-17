@@ -4,7 +4,7 @@
 #include <QItemDelegate>
 #include <QLineEdit>
 
-#include "featureovserviewproxymodel.h"
+#include "featureoverviewproxymodel.h"
 
 class FeatureOverviewDelegate : public QItemDelegate
 {

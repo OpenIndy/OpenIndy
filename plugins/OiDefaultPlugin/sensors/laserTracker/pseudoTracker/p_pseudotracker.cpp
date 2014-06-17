@@ -454,6 +454,8 @@ QMap<QString, QString> PseudoTracker::getSensorStats()
     stats.insert("myInit", QString::number(myInit));
     stats.insert("myCompIt", QString::number(myCompIt));
 
+    QThread::msleep(300);
+
     return stats;
 
 }

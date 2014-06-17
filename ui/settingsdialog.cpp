@@ -8,6 +8,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
 
     QGridLayout *pluginInfoLayout = new QGridLayout();
+    pluginInfoLayout->setContentsMargins(0,0,0,0);
     this->ui->widget_pluginInfo->setLayout(pluginInfoLayout);
     this->myPluginInformation = new PluginInfoWidget();
     pluginInfoLayout->addWidget(this->myPluginInformation);
@@ -61,11 +62,16 @@ void SettingsDialog::initGUI(){
     ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"decimal degree",UnitConverter::eDECIMALDEGREE);
     ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"gon",UnitConverter::eGON);
     ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"radiant",UnitConverter::eRADIANT);
+    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"arc seconds",UnitConverter::eArcSeconds);
+    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"mrad",UnitConverter::eMilliRadians);
 
     ui->comboBox_distanceType->insertItem(ui->comboBox_distanceType->count(),"meter",UnitConverter::eMETER);
     ui->comboBox_distanceType->insertItem(ui->comboBox_distanceType->count(),"millimeter",UnitConverter::eMILLIMETER);
+    ui->comboBox_distanceType->insertItem(ui->comboBox_distanceType->count(),"inch",UnitConverter::eInch);
 
     ui->comboBox_temperatureType->insertItem(ui->comboBox_temperatureType->count(),"degree",UnitConverter::eGRAD);
+    ui->comboBox_temperatureType->insertItem(ui->comboBox_temperatureType->count(),"Kelvin",UnitConverter::eKelvin);
+    ui->comboBox_temperatureType->insertItem(ui->comboBox_temperatureType->count(),"Fahrenheit",UnitConverter::eFahrenheit);
 
     ui->lineEdit_angleDigits->setText(QString::number(UnitConverter::angleDigits));
     ui->lineEdit_distanceDigits->setText(QString::number(UnitConverter::distanceDigits));

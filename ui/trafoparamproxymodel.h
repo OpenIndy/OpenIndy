@@ -1,17 +1,17 @@
 #ifndef TRAFOPARAMPROXYMODEL_H
 #define TRAFOPARAMPROXYMODEL_H
 
-#include "featurewrapper.h"
 #include <QSortFilterProxyModel>
+
+#include "featurewrapper.h"
 #include "guiconfiguration.h"
+#include "oifeaturestate.h"
 
 class TrafoParamProxyModel : public QSortFilterProxyModel
 {
 public:
 
-    QList<FeatureWrapper*> &features;
-
-    explicit TrafoParamProxyModel(QList<FeatureWrapper*> &features,QObject *parent = 0);
+    explicit TrafoParamProxyModel(QObject *parent = 0);
 
     QList<FeatureWrapper*> getFeaturesAtIndices(QModelIndexList &indices);
 

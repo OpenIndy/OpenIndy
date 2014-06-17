@@ -6,8 +6,9 @@
 
 class ScalarEntityTemperature : public Geometry
 {
+    Q_OBJECT
 public:
-    ScalarEntityTemperature();
+    ScalarEntityTemperature(bool isNominal, QObject *parent = 0);
     ScalarEntityTemperature(const ScalarEntityTemperature &copy);
 
     void recalc();
@@ -20,7 +21,7 @@ public:
 
     QString getDisplayIsCommon() const;
     QString getDisplayIsNominal() const;
-    QString getDisplayObs() const;
+    //QString getDisplayObs() const;
     QString getDisplaySolved() const;
     QString getDisplayMConfig() const;
     QString getDisplayStdDev() const;

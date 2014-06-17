@@ -1,13 +1,13 @@
 #include "trafoparamproxymodel.h"
 
-TrafoParamProxyModel::TrafoParamProxyModel(QList<FeatureWrapper*> &features,QObject *parent) :
-    QSortFilterProxyModel(parent),features(features)
+TrafoParamProxyModel::TrafoParamProxyModel(QObject *parent) :
+    QSortFilterProxyModel(parent)
 {
 }
 
 bool TrafoParamProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
     //return true;
-    if(this->features.at(source_row)->getTrafoParam() != NULL){
+    if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL){
         return true;
     }else{
         return false;
@@ -46,8 +46,8 @@ QList<FeatureWrapper*> TrafoParamProxyModel::getFeaturesAtIndices(QModelIndexLis
         if(sourceModelIndex.row() >= 0){
             position = sourceModelIndex.row();
         }
-        if(this->features.size() > position && position >= 0){
-            FeatureWrapper *myFeature = this->features.at(position);
+        if(OiFeatureState::getFeatures().size() > position && position >= 0){
+            FeatureWrapper *myFeature = OiFeatureState::getFeatures().at(position);
             result.append(myFeature);
         }
     }

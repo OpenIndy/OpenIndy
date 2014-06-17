@@ -37,6 +37,7 @@ private:
     bool filterAcceptSphere(int source_row, const QModelIndex & source_parent) const;
     bool filterAcceptScalarEntityDistance(int source_row, const QModelIndex & source_parent) const;
     bool filterAcceptScalarEntityAngle(int source_row, const QModelIndex & source_parent) const;
+    bool filterAcceptScalarEntityTemperature(int source_row, const QModelIndex & source_parent) const;
     bool filterAcceptStation(int source_row, const QModelIndex & source_parent) const;
     bool filterAcceptCoordinateSystem(int source_row, const QModelIndex & source_parent) const;
     bool filterAcceptTrafoParam(int source_row, const QModelIndex & source_parent) const;

@@ -9,7 +9,7 @@
  */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow), watchWindow(NULL)
 {
     ui->setupUi(this);
 
@@ -19,162 +19,66 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initializeActions();
 
-    this->ui->comboBox_groups->addItem("All Groups");
+    this->ui->toolBar_ControlPad->addWidget(labelSensorControlName);
+    this->ui->toolBar_ControlPad->addAction(cPsep9);
 
-    ui->toolBar_ControlPad->addWidget(labelSensorControlName);
-    ui->toolBar_ControlPad->addAction(cPsep9);
-
-    ui->listView_Console->setModel(control.c->output);
-
-    ui->widget_graphics->features = &control.features;
+    this->setModels();
 
     FeatureOverviewDelegate *myFeatureDelegate = new FeatureOverviewDelegate();
     this->ui->tableView_data->setItemDelegate(myFeatureDelegate);
-    this->ui->tableView_data->setModel(this->control.featureOverviewModel);
-    ui->tableView_data->horizontalHeader()->setSectionsMovable(true);
-    ui->tableView_data->verticalHeader()->setSectionsMovable(true);
+
+    this->ui->tableView_data->horizontalHeader()->setSectionsMovable(true);
+    this->ui->tableView_data->verticalHeader()->setSectionsMovable(true);
 
     TrafoParamDelegate *myTrafoParamDelegate = new TrafoParamDelegate();
     this->ui->tableView_trafoParam->setItemDelegate(myTrafoParamDelegate);
-    this->ui->tableView_trafoParam->setModel(this->control.trafoParamModel);
-    ui->tableView_trafoParam->horizontalHeader()->setSectionsMovable(true);
-    ui->tableView_trafoParam->verticalHeader()->setSectionsMovable(true);
 
-    ui->treeView_featureOverview->setModel(this->control.featureGraphicsModel);
-    fPluginDialog.receiveAvailableElementsModel(this->control.availableElementsModel);
-    fPluginDialog.receiveUsedElementsModel(this->control.usedElementsModel);
+    this->ui->tableView_trafoParam->horizontalHeader()->setSectionsMovable(true);
+    this->ui->tableView_trafoParam->verticalHeader()->setSectionsMovable(true);
 
-    this->setUpDialog.setPluginsModel(this->control.myPluginTreeViewModel);
-
-    cFeatureDialog = new CreateFeature(this->control.features);
-    sEntityDialog = new ScalarEntityDialog(this->control.features);
-    watchWindow = NULL;
+    this->cFeatureDialog = new CreateFeature();
+    this->sEntityDialog = new ScalarEntityDialog();
 
     //settings for other widgets
-    mConfigDialog.setModal(true);
-    pLoadDialog.setModal(true);
-    moveDialog.setModal(true);
-    cFeatureDialog->setModal(true);
-    sPluginDialog.setModal(true);
-    fPluginDialog.setModal(true);
-    sInfoDialog.setModal(true);
-    setUpDialog.setModal(true);
-    sEntityDialog->setModal(true);
-    nominalDialog.setModal(true);
-    trafoParamDialog.setModal(true);
+    this->mConfigDialog.setModal(true);
+    this->pLoadDialog.setModal(true);
+    this->moveDialog.setModal(true);
+    this->cFeatureDialog->setModal(true);
+    this->sPluginDialog.setModal(true);
+    this->fPluginDialog.setModal(true);
+    this->sInfoDialog.setModal(true);
+    this->setUpDialog.setModal(true);
+    this->sEntityDialog->setModal(true);
+    this->nominalDialog.setModal(true);
+    this->trafoParamDialog.setModal(true);
+    rtDataDialog.setModal(true);
+
+    this->setConnects();
 
     //delete feature
     this->ui->tableView_data->setContextMenuPolicy(Qt::CustomContextMenu);
     this->ui->tableView_trafoParam->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this, SIGNAL(sendDeleteFeatures(QList<FeatureWrapper*>)), &control, SLOT(deleteFeatures(QList<FeatureWrapper*>)));
-    connect(&control, SIGNAL(resetFeatureSelection()), this, SLOT(resetFeatureSelection()));
 
-    //measurement config settings
-    connect(&mConfigDialog,SIGNAL(sendConfig(FeatureWrapper*,MeasurementConfig*)),this,SLOT(receiveConfig(FeatureWrapper*,MeasurementConfig*)));
-    connect(this,SIGNAL(sendConfig(MeasurementConfig*)),&mConfigDialog,SLOT(receiveConfig(MeasurementConfig*)));
-
-    //sensor function
-    connect(this->actionMeasure,SIGNAL(triggered()),&control,SLOT(startMeasurement()));
-    connect(this->actionAim,SIGNAL(triggered()),&control,SLOT(startAim()));
-    connect(this->actionConnect,SIGNAL(triggered()),&control,SLOT(startConnect()));
-    connect(this->actionDisconnect,SIGNAL(triggered()),&control,SLOT(startDisconnect()));
-    connect(this->actionToggleSightOrientation,SIGNAL(triggered()),&control,SLOT(startToggleSight()));
-    connect(this->actionInitialize,SIGNAL(triggered()),&control,SLOT(startInitialize()));
-    connect(this->actionHome,SIGNAL(triggered()),&control,SLOT(startHome()));
-    connect(this->actionChangeMotorState,SIGNAL(triggered()),&control,SLOT(startChangeMotorState()));
-    connect(this->actionCompensation,SIGNAL(triggered()),&control,SLOT(startCompensation()));
-    connect(control.activeStation->sensorPad, SIGNAL(recalcFeature(Feature*)), &control, SLOT(recalcFeature(Feature*)));
-
-    //sensor info
-    connect(&control,SIGNAL(sensorWorks(QString)),&sInfoDialog,SLOT(showInfo(QString)));
-    connect(control.activeStation,SIGNAL(actionFinished(bool)),&sInfoDialog,SLOT(hideInfo(bool)));
-    connect(&control, SIGNAL(changedStation()),this,SLOT(changedStation()));
-
-    //mainwindow actions
-    connect(this->actionMConfig,SIGNAL(triggered()),this,SLOT(openCreateFeatureMConfig()));
-    connect(ui->actionClose,SIGNAL(triggered()),this,SLOT(close()));
-    connect(ui->tableView_data,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTableViewClicked(QModelIndex)));
-    connect(this->actionCreate,SIGNAL(triggered()),this,SLOT(createFeature()));
-    connect(this->actionMove,SIGNAL(triggered()),&moveDialog,SLOT(show()));
-    connect(&moveDialog,SIGNAL(sendReading(Reading*)),&control,SLOT(startMove(Reading*)));
-    //connect(ui->actionActivate_station,SIGNAL(triggered()),&control,SLOT(changeActiveStation()));
-    connect(ui->tableView_trafoParam,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTrafoParamClicked(QModelIndex)));
-    connect(this->comboBoxFeatureType,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeCreateFeatureToolbar(int)));
-    connect(this->checkBoxNominal,SIGNAL(toggled(bool)),this,SLOT(CheckBoxNominalToggled(bool)));
-
-    connect(this,SIGNAL(sendSelectedFeature(int)),&control,SLOT(getSelectedFeature(int)));
-    connect(this,SIGNAL(sendFeatureType(Configuration::FeatureTypes)),cFeatureDialog,SLOT(receiveFeatureType(Configuration::FeatureTypes)));
-    connect(control.c,SIGNAL(changedList()),this->ui->listView_Console,SLOT(scrollToBottom()));
-
-    connect(&control,SIGNAL(CoordSystemAdded()),this,SLOT(fillCoordSysComboBox()));
-    connect(ui->comboBox_activeCoordSystem,SIGNAL(currentIndexChanged(QString)),this,SLOT(getActiveCoordSystem(QString)));
-    connect(this,SIGNAL(sendActiveCoordSystem(QString)),&control,SLOT(setActiveCoordSystem(QString)));
-
-    //openGl view connects
-    connect(&control,SIGNAL(sendPositionOfActiveFeature(double,double,double)),ui->widget_graphics,SLOT(focusOnFeature(double,double,double)));
+    //connect(OiFeatureState::getActiveStation()->sensorPad, SIGNAL(recalcFeature(Feature*)), &control, SLOT(recalcFeature(Feature*)));
+    //connect(&control,SIGNAL(CoordSystemAdded()),this,SLOT(fillCoordSysComboBox()));
     //connect(&control,SIGNAL(featureAdded()),this,SLOT(setupCreateFeature()));
-
-    //TODO Loesung finden, da statusbar Text verschwindet
-    connect(&setUpDialog,SIGNAL(accepted()),this,SLOT(setUpStatusBar()));
-    connect(&setUpDialog,SIGNAL(rejected()),this,SLOT(setUpStatusBar()));
-    connect(&setUpDialog,SIGNAL(modelChanged()),this,SLOT(updateModel()));
-
-    //feature dialog
-    connect(cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&control,SLOT(addFeature(FeatureAttributesExchange)));
-    connect(cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
     //connect(cFeatureDialog,SIGNAL(createTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)),&control,SLOT(addTrafoParam(int,int,QString,CoordinateSystem*,CoordinateSystem*)));
-    connect(&nominalDialog, SIGNAL(sendNominalValues(NominalAttributeExchange)),&control,SLOT(getNominalValues(NominalAttributeExchange)));
-    connect(this,SIGNAL(sendActiveNominalfeature(FeatureWrapper*)),&nominalDialog,SLOT(getActiveFeature(FeatureWrapper*)));
-
-    //Scalar entity dialog
-    connect(sEntityDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&control,SLOT(addFeature(FeatureAttributesExchange)));
-    connect(sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
-
-    //sensor plugin dialog
-    connect(&sPluginDialog,SIGNAL(sendSensorType(Configuration::SensorTypes)),&control,SLOT(setSensorModel(Configuration::SensorTypes)));
-    connect(&sPluginDialog,SIGNAL(selectedPlugin(int)),&control,SLOT(getSelectedPlugin(int)));
-    connect(&sPluginDialog,SIGNAL(sendSensorConfig(SensorConfiguration*,bool)),&control,SLOT(receiveSensorConfiguration(SensorConfiguration*,bool)));
-    connect(&control,SIGNAL(sendSQLModel(QSqlQueryModel*)),&sPluginDialog,SLOT(receiveModel(QSqlQueryModel*)));
-    connect(&sPluginDialog,SIGNAL(selectedTempPlugin(int)),&control,SLOT(getTempSensor(int)));
-    connect(&control,SIGNAL(sendTempSensor(Sensor*)),&sPluginDialog,SLOT(receiveTempSensor(Sensor*)));
-
-    //function plugin dialog
-    connect(&fPluginDialog, SIGNAL(sendPluginID(int)),&control,SLOT(receiveFunctionId(int)));
-    connect(&fPluginDialog, SIGNAL(createFunction(int)), &control, SLOT(createFunction(int)));
-    connect(&fPluginDialog, SIGNAL(setSelectedFunction(int,int)), &control, SLOT(setSelectedFunction(int,int)));
-    connect(&control, SIGNAL(sendFunctionDescription(QString)), &fPluginDialog, SLOT(receiveFunctionDescription(QString)));
-    connect(&fPluginDialog, SIGNAL(deleteFunction(int)), &control, SLOT(deleteFunctionFromFeature(int)));
-    connect(&fPluginDialog, SIGNAL(addElement(FeatureTreeItem*,int,int)), &control, SLOT(addElement2Function(FeatureTreeItem*,int,int)));
-    connect(&fPluginDialog, SIGNAL(removeElement(FeatureTreeItem*,int,int)), &control, SLOT(removeElementFromFunction(FeatureTreeItem*,int,int)));
-    connect(&fPluginDialog, SIGNAL(recalcActiveFeature()), &control, SLOT(recalcActiveFeature()));
-    connect(&control, SIGNAL(sendExtraParameterForFunction(QMap<QString,int>,QMap<QString,double>,QMap<QString,QStringList>,FunctionConfiguration)),
-            &fPluginDialog, SLOT(receiveExtraParameterForFunction(QMap<QString,int>,QMap<QString,double>,QMap<QString,QStringList>,FunctionConfiguration)));
-    connect(&fPluginDialog, SIGNAL(sendFunctionConfiguration(int,FunctionConfiguration)),
-            &control, SLOT(setFunctionConfiguration(int,FunctionConfiguration)));
-
-    connect(&control, SIGNAL(showMessageBox(QString,QString)), this, SLOT(showMessageBox(QString,QString)));
-    connect(&control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
-
+    //connect(this,SIGNAL(sendActiveNominalfeature(FeatureWrapper*)),&nominalDialog,SLOT(getActiveFeature(FeatureWrapper*)));
     //group combo boxes
-    connect(&control, SIGNAL(availableGroupsChanged(QMap<QString,int>)), this, SLOT(availableGroupsChanged(QMap<QString,int>)));
-    connect(control.tblModel, SIGNAL(groupNameChanged(QString,QString)), &control, SLOT(groupNameChanged(QString,QString)));
-
-    //simluation
-    connect(ui->actionSimulation,SIGNAL(triggered()),&simulationWidget,SLOT(show()));
-
-    //setup create feature toolbar
-    setupCreateFeature();
+    //connect(&control, SIGNAL(availableGroupsChanged(QMap<QString,int>)), this, SLOT(availableGroupsChanged(QMap<QString,int>)));
+    //connect(control.tblModel, SIGNAL(groupNameChanged(QString,QString)), &control, SLOT(groupNameChanged(QString,QString)));
     //connect(&control, SIGNAL(updateGeometryIcons(QStringList)), this, SLOT(updateGeometryIcons(QStringList)));
     //this->control.checkAvailablePlugins();
 
-    //dataimport
-    connect(&importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&control,SLOT(importFeatures(QList<FeatureWrapper*>)));
+    //setup create feature toolbar
+    setupCreateFeature();
 
-    ui->toolBar_ControlPad->hide();
-    ui->toolbarCreateFeature->hide();
+    //hide sensor control pad and create features toolbar
+    this->ui->toolBar_ControlPad->hide();
+    this->ui->toolbarCreateFeature->hide();
 
     //fill coordinatesystem comboBox
-    fillCoordSysComboBox();
+    //fillCoordSysComboBox();
 
     setUpStatusBar();
 
@@ -186,6 +90,140 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+/*!
+ * \brief MainWindow::setConnects
+ * Connect Controller and View
+ */
+void MainWindow::setConnects(){
+
+    //inform the controller when active feature changes
+    connect(this, SIGNAL(sendSelectedFeature(int)), &this->control, SLOT(setSelectedFeature(int)));
+
+    //connect to controller to delete one or more features
+    connect(this, SIGNAL(sendDeleteFeatures(QList<FeatureWrapper*>)), &this->control, SLOT(deleteFeatures(QList<FeatureWrapper*>)));
+    connect(&this->control, SIGNAL(resetFeatureSelection()), this, SLOT(resetFeatureSelection()));
+
+    //measurement config settings
+    connect(&this->mConfigDialog,SIGNAL(sendConfig(FeatureWrapper*,MeasurementConfig*)),this,SLOT(receiveConfig(FeatureWrapper*,MeasurementConfig*)));
+    connect(this,SIGNAL(sendConfig(MeasurementConfig*)),&this->mConfigDialog,SLOT(receiveConfig(MeasurementConfig*)));
+
+    //sensor function
+    connect(this->actionMeasure,SIGNAL(triggered()),&this->control,SLOT(startMeasurement()));
+    connect(this->actionAim,SIGNAL(triggered()),&this->control,SLOT(startAim()));
+    connect(this->actionConnect,SIGNAL(triggered()),&this->control,SLOT(startConnect()));
+    connect(this->actionDisconnect,SIGNAL(triggered()),&this->control,SLOT(startDisconnect()));
+    connect(this->actionToggleSightOrientation,SIGNAL(triggered()),&this->control,SLOT(startToggleSight()));
+    connect(this->actionInitialize,SIGNAL(triggered()),&this->control,SLOT(startInitialize()));
+    connect(this->actionHome,SIGNAL(triggered()),&this->control,SLOT(startHome()));
+    connect(this->actionChangeMotorState,SIGNAL(triggered()),&this->control,SLOT(startChangeMotorState()));
+    connect(this->actionCompensation,SIGNAL(triggered()),&this->control,SLOT(startCompensation()));
+
+    //sensor info
+    connect(&this->control,SIGNAL(sensorWorks(QString)),&this->sInfoDialog,SLOT(showInfo(QString)));
+    connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),&this->sInfoDialog,SLOT(hideInfo(bool)));
+    connect(this->control.myFeatureState, SIGNAL(activeStationChanged()), this, SLOT(changedStation()));
+
+    //station and sensor setting
+    connect(&stationDialog,SIGNAL(disconnectSensor()),&control,SLOT(startDisconnect()));
+    connect(&stationDialog,SIGNAL(connectSensor()),&control,SLOT(startConnect()));
+    connect(&stationDialog,SIGNAL(showStationGeomProperties(FeatureWrapper*)),this,SLOT(openStationGeomProperties(FeatureWrapper*)));
+
+    //mainwindow actions
+    connect(this->actionMConfig,SIGNAL(triggered()),this,SLOT(openCreateFeatureMConfig()));
+    connect(this->ui->actionClose,SIGNAL(triggered()),this,SLOT(close()));
+    connect(this->ui->tableView_data,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTableViewClicked(QModelIndex)));
+    connect(this->actionCreate,SIGNAL(triggered()),this,SLOT(createFeature()));
+    connect(this->actionMove,SIGNAL(triggered()),&moveDialog,SLOT(show()));
+    connect(&this->moveDialog,SIGNAL(sendReading(Reading*)),&this->control,SLOT(startMove(Reading*)));
+    connect(this->ui->tableView_trafoParam,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTrafoParamClicked(QModelIndex)));
+    connect(this->comboBoxFeatureType,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeCreateFeatureToolbar(int)));
+    connect(this->checkBoxNominal,SIGNAL(toggled(bool)),this,SLOT(CheckBoxNominalToggled(bool)));
+
+    //always scroll to bottom in Console
+    connect(this->control.c, SIGNAL(changedList()), this->ui->listView_Console, SLOT(scrollToBottom()));
+
+    //enable or disable GUI elements in create feature dialog depending on the active feature's feature type
+    connect(this, SIGNAL(sendFeatureType(Configuration::FeatureTypes)), this->cFeatureDialog, SLOT(receiveFeatureType(Configuration::FeatureTypes)));
+
+    //inform the Controller when the user has changed the display coordinate system
+    //connect(this->ui->comboBox_activeCoordSystem, SIGNAL(currentIndexChanged(QString)), &this->control, SLOT(setActiveCoordSystem(QString)));
+    //connect(&this->control, SIGNAL(CoordSystemsModelChanged()), this, SLOT(updateCoordSys()));
+
+    //openGl view connects
+    connect(&this->control, SIGNAL(sendPositionOfActiveFeature(double,double,double)), this->ui->widget_graphics, SLOT(focusOnFeature(double,double,double)));
+
+    //TODO Loesung finden, da statusbar Text verschwindet
+    //update GUI when the settings are changed
+    connect(&this->setUpDialog,SIGNAL(accepted()),this,SLOT(setUpStatusBar()));
+    connect(&this->setUpDialog,SIGNAL(rejected()),this,SLOT(setUpStatusBar()));
+    connect(&this->setUpDialog,SIGNAL(modelChanged()),this->control.tblModel,SLOT(updateModel()));
+
+    //create feature connects
+    connect(this->cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
+    connect(this->cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
+    connect(this->sEntityDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
+    connect(this->sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
+
+    //sensor plugin dialog
+    connect(&this->sPluginDialog,SIGNAL(sendSensorType(Configuration::SensorTypes)),&this->control,SLOT(setSensorModel(Configuration::SensorTypes)));
+    connect(&this->sPluginDialog,SIGNAL(selectedPlugin(int)),&this->control,SLOT(getSelectedPlugin(int)));
+    connect(&this->sPluginDialog,SIGNAL(sendSensorConfig(SensorConfiguration*,bool)),&this->control,SLOT(receiveSensorConfiguration(SensorConfiguration*,bool)));
+    connect(&this->control,SIGNAL(sendSQLModel(QSqlQueryModel*)),&this->sPluginDialog,SLOT(receiveModel(QSqlQueryModel*)));
+    connect(&this->sPluginDialog,SIGNAL(selectedTempPlugin(int)),&this->control,SLOT(getTempSensor(int)));
+    connect(&this->control,SIGNAL(sendTempSensor(Sensor*)),&this->sPluginDialog,SLOT(receiveTempSensor(Sensor*)));
+
+    //function plugin dialog
+    connect(&this->fPluginDialog, SIGNAL(sendPluginID(int)),&this->control,SLOT(receiveFunctionId(int)));
+    connect(&this->fPluginDialog, SIGNAL(createFunction(int)), &this->control, SLOT(createFunction(int)));
+    connect(&this->fPluginDialog, SIGNAL(setSelectedFunction(int,int)), &this->control, SLOT(setSelectedFunction(int,int)));
+    connect(&this->control, SIGNAL(sendFunctionDescription(QString)), &this->fPluginDialog, SLOT(receiveFunctionDescription(QString)));
+    connect(&this->fPluginDialog, SIGNAL(deleteFunction(int)), &this->control, SLOT(deleteFunctionFromFeature(int)));
+    connect(&this->fPluginDialog, SIGNAL(addElement(FeatureTreeItem*,int,int)), &this->control, SLOT(addElement2Function(FeatureTreeItem*,int,int)));
+    connect(&this->fPluginDialog, SIGNAL(removeElement(FeatureTreeItem*,int,int)), &this->control, SLOT(removeElementFromFunction(FeatureTreeItem*,int,int)));
+    connect(&this->fPluginDialog, SIGNAL(recalcActiveFeature()), &this->control, SLOT(recalcActiveFeature()));
+    connect(&this->control, SIGNAL(sendExtraParameterForFunction(QMap<QString,int>,QMap<QString,double>,QMap<QString,QStringList>,FunctionConfiguration)),
+            &this->fPluginDialog, SLOT(receiveExtraParameterForFunction(QMap<QString,int>,QMap<QString,double>,QMap<QString,QStringList>,FunctionConfiguration)));
+    connect(&this->fPluginDialog, SIGNAL(sendFunctionConfiguration(int,FunctionConfiguration)),
+            &this->control, SLOT(setFunctionConfiguration(int,FunctionConfiguration)));
+
+    //show a message box when Controller emits the corresponding signal
+    connect(&this->control, SIGNAL(showMessageBox(QString,QString)), this, SLOT(showMessageBox(QString,QString)));
+    connect(&this->control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
+
+    connect(ui->actionSimulation,SIGNAL(triggered()),&simulationWidget,SLOT(show()));
+
+    //dataimport
+    connect(&this->importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&this->control,SLOT(importFeatures(QList<FeatureWrapper*>)));
+
+    //when user edits some nominal values of the active feature then tell the Controller to update the feature
+    connect(&this->nominalDialog, SIGNAL(sendNominalValues(NominalAttributeExchange)),&this->control,SLOT(getNominalValues(NominalAttributeExchange)));
+
+}
+
+/*!
+ * \brief MainWindow::setModels
+ * Assign the models in the controller to UI-components
+ */
+void MainWindow::setModels(){
+
+    this->ui->listView_Console->setModel(control.c->output);
+
+    this->ui->tableView_data->setModel(this->control.featureOverviewModel);
+    this->ui->tableView_trafoParam->setModel(this->control.trafoParamModel);
+
+    this->ui->treeView_featureOverview->setModel(this->control.featureGraphicsModel);
+
+    this->ui->comboBox_groups->setModel(this->control.myFeatureGroupsModel);
+
+    this->ui->comboBox_activeCoordSystem->setModel(this->control.myCoordinateSystemsModel);
+
+    this->fPluginDialog.receiveAvailableElementsModel(this->control.availableElementsModel);
+    this->fPluginDialog.receiveUsedElementsModel(this->control.usedElementsModel);
+
+    this->setUpDialog.setPluginsModel(this->control.myPluginTreeViewModel);
+
 }
 
 /*!
@@ -404,8 +442,8 @@ void MainWindow::setupCreateFeature(){
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"pointcloud",Configuration::ePointCloudFeature);
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"circle",Configuration::eCircleFeature);
 
-    for(int i=0; i<this->control.coordSys.size();i++){
-        this->comboBoxNominalSystem->addItem(this->control.coordSys.at(i)->name);
+    for(int i=0; i<OiFeatureState::getCoordinateSystems().size();i++){
+        this->comboBoxNominalSystem->addItem(OiFeatureState::getCoordinateSystems().at(i)->getFeatureName());
     }
 
     this->defaultCreateFeatureSettings();
@@ -479,20 +517,20 @@ void MainWindow::on_actionControl_pad_triggered()
     }else{
         ui->toolBar_ControlPad->show();
 
-        if(control.activeStation->getInstrumentConfig() !=NULL){
-            if(control.activeStation->getInstrumentConfig()->instrumentType==Configuration::eLaserTracker){
+        if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
+            if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eLaserTracker){
                 labelSensorControlName->setText("sensor control laser tracker");
                 setupLaserTrackerPad();
-            }else if(control.activeStation->getInstrumentConfig()->instrumentType==Configuration::eTotalStation){
+            }else if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eTotalStation){
                 labelSensorControlName->setText("sensor control total station");
                 setupTotalStationPad();
             }
-            if(control.activeStation->sensorPad->instrument != NULL){
+            if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
                 //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
                 signalMapper = new QSignalMapper();
                 connect(signalMapper,SIGNAL(mapped(QString)),&control,SLOT(startCustomAction(QString)));
                 //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
-                QStringList customActionStrings = control.activeStation->sensorPad->instrument->selfDefinedActions();
+                QStringList customActionStrings = OiFeatureState::getActiveStation()->sensorPad->instrument->selfDefinedActions();
                 this->clearCustomWidgets();
                 for(int i=0; i<customActionStrings.size();i++){
                     QAction *sep = new QAction(0);
@@ -523,10 +561,10 @@ void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig *mC){
     if(af == NULL){
         this->control.lastmConfig = mC;
     }else{
-        if(this->control.activeFeature->getStation() != NULL){
-            this->control.activeFeature->getStation()->position->mConfig = *mC;
+        if(OiFeatureState::getActiveFeature()->getStation() != NULL){
+            OiFeatureState::getActiveFeature()->getStation()->position->setMeasurementConfig(*mC);
         }else{
-            this->control.activeFeature->getGeometry()->mConfig = *mC;
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(*mC);
         }
     }
 }
@@ -538,15 +576,13 @@ void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig *mC){
  */
 void MainWindow::on_actionMeasurement_Configuration_triggered()
 {
-    if(this->control.activeFeature != NULL && (this->control.activeFeature->getGeometry() != NULL || this->control.activeFeature->getStation() != NULL)){
-        mConfigDialog.activeFeature = this->control.activeFeature;
-        mConfigDialog.setStation(this->control.activeStation);
+    if(OiFeatureState::getActiveFeature() != NULL && (OiFeatureState::getActiveFeature()->getGeometry() != NULL || OiFeatureState::getActiveFeature()->getStation() != NULL)){
 
-        if(this->control.activeFeature->getGeometry() != NULL){
-            emit sendConfig(&this->control.activeFeature->getGeometry()->mConfig);
+        if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+            emit sendConfig(&OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig());
         }
-        if(this->control.activeFeature->getStation() != NULL){
-            emit sendConfig(&this->control.activeFeature->getStation()->position->mConfig);
+        if(OiFeatureState::getActiveFeature()->getStation() != NULL){
+            emit sendConfig(&OiFeatureState::getActiveFeature()->getStation()->position->getMeasurementConfig());
         }
 
         mConfigDialog.show();
@@ -576,9 +612,9 @@ void MainWindow::on_actionWatch_window_triggered()
 
     connect(watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
 
-    watchWindow->myStation = control.activeStation;
-    watchWindow->activeCoordinateSystem = control.activeCoordinateSystem;
-    watchWindow->activeFeature = control.activeFeature;
+    /*watchWindow.myStation = OiFeatureState::getActiveStation();
+    watchWindow.activeCoordinateSystem = control.activeCoordinateSystem;
+    watchWindow.activeFeature = control.activeFeature;*/
 
     watchWindow->show();
 
@@ -709,14 +745,24 @@ void MainWindow::createFeature(){
             //TODO nominal hinzufügen
 
             if(nominal){
-                for(int i=0;i<this->control.coordSys.size();i++){
-                    if(this->comboBoxNominalSystem->currentText() == this->control.coordSys.at(i)->name){
-                        nominalSystem = this->control.coordSys.at(i);
+                for(int i=0;i<OiFeatureState::getCoordinateSystems().size();i++){
+                    if(this->comboBoxNominalSystem->currentText() == OiFeatureState::getCoordinateSystems().at(i)->getFeatureName()){
+                        nominalSystem = OiFeatureState::getCoordinateSystems().at(i);
+                        break;
                     }
                 }
             }
 
-            FeatureAttributesExchange featureAttributes(count,featureType,name,group,"",actual,nominal,comPoint,nominalSystem);
+            FeatureAttributesExchange featureAttributes;
+            featureAttributes.count = count;
+            featureAttributes.featureType = featureType;
+            featureAttributes.name = name;
+            featureAttributes.group = group;
+            featureAttributes.function = "";
+            featureAttributes.actual = actual;
+            featureAttributes.nominal = nominal;
+            featureAttributes.common = comPoint;
+            featureAttributes.nominalSystem = nominalSystem;
 
             control.addFeature(featureAttributes);
 
@@ -904,7 +950,7 @@ void MainWindow::on_actionSet_instrument_triggered()
  * \param const QModelIndex &idx
  */
 void MainWindow::handleTableViewClicked(const QModelIndex &idx){
-    FeatureOvserviewProxyModel *model = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+    FeatureOverviewProxyModel *model = static_cast<FeatureOverviewProxyModel*>(this->ui->tableView_data->model());
 
     QModelIndex source_idx = model->mapToSource(idx);
 
@@ -955,14 +1001,14 @@ void MainWindow::handleTrafoParamClicked(const QModelIndex &idx)
  * Sets the plugins model and the function treeview model to the class.
  */
 void MainWindow::on_actionSet_function_triggered(){
-    if(this->control.activeFeature != NULL && this->control.activeFeature->getFeature() != NULL){
+    if(OiFeatureState::getActiveFeature() != NULL){
         //get models from database
         this->control.setFunction();
         //send models to function plugin loader
         fPluginDialog.receivePluginsModel(this->control.pluginsModel);
         fPluginDialog.receiveFunctionsModel(this->control.functionTreeViewModel);
         //set title and show dialog
-        fPluginDialog.setActiveFeatureTitle(this->control.activeFeature->getFeature()->name);
+        fPluginDialog.setActiveFeatureTitle(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
         fPluginDialog.show();
     }
 }
@@ -974,34 +1020,33 @@ void MainWindow::on_actionSet_function_triggered(){
  */
 void MainWindow::openCreateFeatureMConfig(){
     emit sendConfig(this->control.lastmConfig);
-    mConfigDialog.setStation(this->control.activeStation);
     mConfigDialog.show();
 }
 
 /*!
  * \brief adds all coordinate systems to the coordinate system combobox.
  */
-void MainWindow::fillCoordSysComboBox(){
+/*void MainWindow::fillCoordSysComboBox(){
 //TODO saubere lösung wäre vllt ein Model für die Combobox
     ui->comboBox_activeCoordSystem->clear();
-    for (int i = 0; i < control.features.size();i++){
-        if(control.features.at(i)->getCoordinateSystem() != NULL){
-            ui->comboBox_activeCoordSystem->insertItem(i,control.features.at(i)->getCoordinateSystem()->name);
+    for (int i = 0; i < OiFeatureState::getFeatureCount();i++){
+        if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL){
+            ui->comboBox_activeCoordSystem->insertItem(i,OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
 
-            if(control.features.at(i)->getCoordinateSystem() == control.activeCoordinateSystem){
+            if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() == OiFeatureState::getActiveCoordinateSystem()){
                 ui->comboBox_activeCoordSystem->setCurrentIndex(i);
             }
         }
 
-        if(control.features.at(i)->getStation()!= NULL){
-             ui->comboBox_activeCoordSystem->insertItem(i,control.features.at(i)->getStation()->name);
+        if(OiFeatureState::getFeatures().at(i)->getStation()!= NULL){
+             ui->comboBox_activeCoordSystem->insertItem(i,OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName());
 
-             if(control.features.at(i)->getStation()->coordSys == control.activeCoordinateSystem){
+             if(OiFeatureState::getFeatures().at(i)->getStation()->coordSys == OiFeatureState::getActiveCoordinateSystem()){
                  ui->comboBox_activeCoordSystem->setCurrentIndex(i);
              }
         }
     }
-}
+}*/
 
 /*!
  * \brief setUpStatusBar displays the current unit settings in the mainwindow status bar.
@@ -1067,8 +1112,6 @@ void MainWindow::on_actionCreate_scalar_entity_triggered()
  */
 void MainWindow::on_actionNominal_geometry_triggered()
 {
-    importNominalDialog.setUpCoordinateSystems(control.coordSys);
-
     importNominalDialog.show();
 }
 
@@ -1076,9 +1119,9 @@ void MainWindow::on_actionNominal_geometry_triggered()
  * \brief getActiveCoordSystem
  * \param coordSys
  */
-void MainWindow::getActiveCoordSystem(QString coordSys){
+/*void MainWindow::getActiveCoordSystem(QString coordSys){
     emit sendActiveCoordSystem(ui->comboBox_activeCoordSystem->currentText());
-}
+}*/
 
 /*!
  * \brief saves the current job
@@ -1101,8 +1144,8 @@ void MainWindow::on_actionSave_as_triggered()
     QFileInfo info(filename);
 
     data.projectName = info.fileName();
-    data.features = control.features;
-    data.activeCoordSystem = control.activeCoordinateSystem;
+    data.features = OiFeatureState::getFeatures();
+    data.activeCoordSystem = OiFeatureState::getActiveCoordinateSystem();
 
     //bool isSuccessfull = OiDataImporter::saveToXML(control.features,file,control.activeCoordinateSystem->id);
     bool isSuccessfull = oiProjectExchanger::saveProject(data);
@@ -1118,8 +1161,8 @@ void MainWindow::on_actionSave_as_triggered()
  * \brief changedStation makes some new connects after changing a station
  */
 void MainWindow::changedStation(){
-    connect(control.activeStation->sensorPad, SIGNAL(recalcFeature(Feature*)), &control, SLOT(recalcFeature(Feature*)));
-    connect(control.activeStation,SIGNAL(actionFinished(bool)),&sInfoDialog,SLOT(hideInfo(bool)));
+    connect(OiFeatureState::getActiveStation()->sensorPad, SIGNAL(recalcFeature(Feature*)), &control, SLOT(recalcFeature(Feature*)));
+    connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),&sInfoDialog,SLOT(hideInfo(bool)));
 }
 
 /*!
@@ -1196,16 +1239,33 @@ void MainWindow::on_actionActivate_station_triggered()
 {
     QMessageBox msgBox;
     msgBox.setText("Selected station will be activated and current station will be deactivated!");
-    msgBox.setInformativeText("Want to continue?");
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Ok);
     int ret = msgBox.exec();
 
+    int ret2;
+
     switch (ret) {
     case QMessageBox::Ok:
-        this->control.changeActiveStation();
+
+        msgBox.setText("Want to move sensor to new station");
+        msgBox.setInformativeText("Sensor will be connected to the new station.");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        ret2 = msgBox.exec();
         break;
     case QMessageBox::Cancel:
+        break;
+    default:
+        break;
+    }
+
+    switch (ret2) {
+    case QMessageBox::Yes:
+        this->control.changeActiveStation(true);
+        break;
+    case QMessageBox::No:
+        this->control.changeActiveStation(false);
         break;
     default:
         break;
@@ -1251,18 +1311,18 @@ void MainWindow::featureContextMenu(const QPoint &point){
         }
     }else{
         QModelIndex selectedIndex = this->ui->tableView_data->indexAt(point);
-        FeatureOvserviewProxyModel *tableModel = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+        FeatureOverviewProxyModel *tableModel = static_cast<FeatureOverviewProxyModel*>(this->ui->tableView_data->model());
         if(tableModel != NULL){
             QModelIndexList myIndexList;
             myIndexList.append(selectedIndex);
             myFeatures = tableModel->getFeaturesAtIndices(myIndexList);
         }
     }
-    if(this->control.activeFeature != NULL && this->control.activeFeature->getFeature() != NULL
-            && this->control.activeFeature->getTypeOfFeature() != Configuration::eCoordinateSystemFeature
+    if(OiFeatureState::getActiveFeature() != NULL
+            && OiFeatureState::getActiveFeature()->getTypeOfFeature() != Configuration::eCoordinateSystemFeature
             && myFeatures.size() == 1 && myFeatures.at(0) != NULL && myFeatures.at(0)->getFeature() != NULL
-            && myFeatures.at(0)->getFeature()->id == this->control.activeFeature->getFeature()->id){
-        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(control.activeFeature->getFeature()->name), this, SLOT(showProperties(bool)));
+            && myFeatures.at(0)->getFeature()->getId() == OiFeatureState::getActiveFeature()->getFeature()->getId()){
+        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()), this, SLOT(showProperties(bool)));
     }
 
     menu->exec(this->ui->tableView_data->mapToGlobal(point));
@@ -1292,7 +1352,7 @@ void MainWindow::deleteFeatures(bool checked){
             QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(myIndices);
             emit this->sendDeleteFeatures(myFeatures);
         }else{
-            FeatureOvserviewProxyModel *tableModel = static_cast<FeatureOvserviewProxyModel*>(this->ui->tableView_data->model());
+            FeatureOverviewProxyModel *tableModel = static_cast<FeatureOverviewProxyModel*>(this->ui->tableView_data->model());
             QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(myIndices);
             emit this->sendDeleteFeatures(myFeatures);
         }
@@ -1307,15 +1367,17 @@ void MainWindow::deleteFeatures(bool checked){
  */
 void MainWindow::showProperties(bool checked){
     //show dialog dependent on which type of feature was clicked
-    if(this->control.activeFeature != NULL){
-        if(this->control.activeFeature->getTypeOfFeature() == Configuration::eTrafoParamFeature){
-            trafoParamDialog.getSelectedTrafoParam(this->control.activeFeature);
+    if(OiFeatureState::getActiveFeature() != NULL){
+        if(OiFeatureState::getActiveFeature()->getTypeOfFeature() == Configuration::eTrafoParamFeature){
             trafoParamDialog.show();
-        }else if(this->control.activeFeature->getGeometry() != NULL && this->control.activeFeature->getGeometry()->isNominal){
-            emit sendActiveNominalfeature(this->control.activeFeature);
+        }else if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
+            //emit sendActiveNominalfeature(OiFeatureState::getActiveFeature());
             nominalDialog.show();
-        }else if(this->control.activeFeature->getCoordinateSystem() == NULL){
-            fDataDialog.getActiveFeature(this->control.activeFeature);
+        }else if(OiFeatureState::getActiveFeature()->getStation() != NULL){
+            //stationDialog.getActiveFeature(this->control.activeFeature);
+            stationDialog.show();
+        }else if(OiFeatureState::getActiveFeature()->getCoordinateSystem() == NULL){
+            //fDataDialog.getActiveFeature(this->control.activeFeature);
             fDataDialog.show();
         }
     }
@@ -1377,7 +1439,7 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
         this->ui->comboBox_groups->addItem("All Groups");
         this->ui->comboBox_groups->addItems(groups);
         this->ui->comboBox_groups->setCurrentText("All Groups");
-        this->control.tblModel->updateModel(this->control.activeFeature, this->control.activeStation);
+        this->control.tblModel->updateModel();
     }
 }
 
@@ -1387,9 +1449,15 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
  */
 void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
 {
-    FeatureOvserviewProxyModel *model = this->control.featureOverviewModel;
+    FeatureOverviewProxyModel *model = this->control.featureOverviewModel;
     if(model != NULL){
-        model->activeGroupChanged(arg1);
+        if(arg1.compare("") != 0){
+            OiFeatureState::setActiveGroup(arg1);
+        }
+        if(this->ui->comboBox_groups->currentText().compare(OiFeatureState::getActiveGroup()) != 0){
+            this->ui->comboBox_groups->setCurrentText(OiFeatureState::getActiveGroup());
+        }
+        model->activeGroupChanged();
     }
 }
 
@@ -1478,10 +1546,20 @@ void MainWindow::updateGeometryIcons(QStringList availableGeometries){
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
 }
 
-void MainWindow::updateModel()
+/*!
+ * \brief MainWindow::updateCoordSys
+ * Set the active coordinate system name as selected item in the combo box
+ */
+/*void MainWindow::updateCoordSys(){
+    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
+        this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());
+    }
+}*/
+
+/*void MainWindow::updateModel()
 {
-    emit control.tblModel->updateModel(control.activeFeature,control.activeStation);
-}
+    emit this->control.tblModel->updateModel();
+}*/
 
 /*!
  * \brief on_actionShow_help_triggered opens the local help document with the user guide.
@@ -1541,4 +1619,38 @@ void MainWindow::clearCustomWidgets()
         delete this->customActions.at(i);
     }
     this->customActions.clear();
+}
+
+/*!
+ * \brief MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged
+ * \param arg1
+ */
+void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1){
+    if(arg1.compare("") != 0){
+        if(OiFeatureState::getActiveCoordinateSystem() != NULL && arg1.compare(OiFeatureState::getActiveCoordinateSystem()->getFeatureName()) != 0){
+            this->control.setActiveCoordSystem(arg1);
+        }else if(OiFeatureState::getActiveCoordinateSystem() == NULL){
+            this->control.setActiveCoordSystem(arg1);
+        }
+    }else{
+        this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());
+    }
+}
+
+/*!
+ * \brief MainWindow::openStationGeomProperties shows properties and functions of the station geometrie point.
+ * \param fw
+ */
+void MainWindow::openStationGeomProperties(FeatureWrapper *fw)
+{
+    //fDataDialog.getActiveFeature(fw);
+    fDataDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_actionSensor_real_time_data_triggered opens the real time data dialog of the current sensor.
+ */
+void MainWindow::on_actionSensor_real_time_data_triggered()
+{
+    rtDataDialog.show();
 }

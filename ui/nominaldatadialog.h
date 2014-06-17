@@ -7,6 +7,7 @@
 #include "featurewrapper.h"
 #include "configuration.h"
 #include "nominalattributeexchange.h"
+#include "oifeaturestate.h"
 
 namespace Ui {
 class NominalDataDialog;
@@ -25,8 +26,6 @@ signals:
 
 public slots:
 
-    void getActiveFeature(FeatureWrapper *aF);
-
 private slots:
 
     void fillGUI();
@@ -40,7 +39,6 @@ private slots:
     void showEvent(QShowEvent *event);
 
 private:
-    FeatureWrapper *selectedFeature;
     Ui::NominalDataDialog *ui;
 };
 

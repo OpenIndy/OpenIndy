@@ -11,6 +11,7 @@
 
 class Line : public Geometry
 {
+    Q_OBJECT
 public:
     enum LineUnknowns{
         unknownX,
@@ -21,12 +22,15 @@ public:
         unknownK
     };
 
-    Line();
+    Line(bool isNominal, QObject *parent = 0);
     Line(const Line &copy);
     ~Line();
 
     OiVec xyz;
     OiVec ijk;
+
+    OiVec getXYZ() const;
+    OiVec getIJK() const;
 
     bool toOpenIndyXML(QXmlStreamWriter& stream);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
@@ -41,7 +45,7 @@ public:
     QString getDisplayK() const;
     QString getDisplayIsCommon() const;
     QString getDisplayIsNominal() const;
-    QString getDisplayObs() const;
+    //QString getDisplayObs() const;
     QString getDisplaySolved() const;
     QString getDisplayMConfig() const;
     QString getDisplayStdDev() const;

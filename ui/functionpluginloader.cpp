@@ -13,12 +13,11 @@ FunctionPluginLoader::FunctionPluginLoader(QWidget *parent) :
     this->pluginsModel = new QSqlQueryModel();
     //neededElementsModel = new QSqlQueryModel();
 
-    ui->tableView_functionPlugins->setModel(pluginsModel);
+    this->ui->tableView_functionPlugins->setModel(pluginsModel);
 
-    ui->treeView_functions->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->ui->treeView_functions->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(this->ui->treeView_functions, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteFunctionContextMenu(QPoint)));
-
 
     QGridLayout *extraParameterLayout = new QGridLayout();
     this->ui->widget_customParameter->setLayout(extraParameterLayout);
@@ -42,7 +41,7 @@ FunctionPluginLoader::~FunctionPluginLoader()
  * \param sqlModel
  */
 void FunctionPluginLoader::receivePluginsModel(QSqlQueryModel *sqlModel){
-    ui->tableView_functionPlugins->setModel(sqlModel);
+    this->ui->tableView_functionPlugins->setModel(sqlModel);
 }
 
 /*!
@@ -207,7 +206,7 @@ void FunctionPluginLoader::deleteFunctionFromFeature(bool checked){
  * \param activeFeature
  */
 void FunctionPluginLoader::setActiveFeatureTitle(QString activeFeature){
-    this->setWindowTitle(QString("function plugin loader - active feature: %1").arg(activeFeature));
+    //this->setWindowTitle(QString("function plugin loader - active feature: %1").arg(activeFeature));
 }
 
 void FunctionPluginLoader::showEvent(QShowEvent *event)
@@ -215,7 +214,16 @@ void FunctionPluginLoader::showEvent(QShowEvent *event)
     //Put the dialog in the screen center
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
-    event->accept();
+
+    //if there is an active feature
+    if(OiFeatureState::getActiveFeature() != NULL){
+        this->setWindowTitle(QString("function plugin loader - active feature: %1")
+                             .arg(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
+
+        event->accept();
+    }
+
+    event->ignore();
 }
 
 /*!
@@ -272,6 +280,9 @@ void FunctionPluginLoader::on_treeView_availableElements_clicked(const QModelInd
                     break;
                 case Configuration::eReadingPolarElement:
                     enable = (item->getReading() != NULL && item->getReading()->typeofReading == Configuration::ePolar);
+                    break;
+                case Configuration::eScalarEntityTemperatureElement:
+                    enable = (item->getFeature() != NULL && item->getFeature()->getScalarEntityTemperature() != NULL);
                     break;
             }
             this->selectedAvailableElement = item;

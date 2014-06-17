@@ -59,6 +59,26 @@ public:
 
     static QString sObservation;
 
+    static QString sSteel;
+    static QString sAluminum;
+    static QString sPlumb;
+    static QString sIron;
+    static QString sGrayCastIron;
+    static QString sCopper;
+    static QString sBrass;
+    static QString sZinc;
+    static QString sPlatinum;
+
+    static double dSteel;
+    static double dAluminum;
+    static double dPlumb;
+    static double dIron;
+    static double dGrayCastIron;
+    static double dCopper;
+    static double dBrass;
+    static double dZinc;
+    static double dPlatinum;
+
     enum eColor{
         red,
         yellow,
@@ -110,6 +130,7 @@ public:
         eSphereElement,
         eScalarEntityAngleElement,
         eScalarEntityDistanceElement,
+        eScalarEntityTemperatureElement,
         eStationElement,
         eCoordinateSystemElement,
         eTrafoParamElement,
@@ -149,13 +170,26 @@ public:
         eSerial
     };
 
+    enum Materials{
+        eSteel,
+        eAluminum,
+        ePlumb,
+        eIron,
+        eGrayCastIron,
+        eCopper,
+        eBrass,
+        eZinc,
+        ePlatinum
+    };
+
     static int idCount;
 
     static int generateID();
 
     static Configuration::ElementTypes getElementTypeEnum(QString s);
     static QString getElementTypeString(Configuration::ElementTypes e);
-
+    static double getExpansionCoefficient(QString material);
+    static double getExpansionCoefficient(Configuration::Materials material);
 };
 
 #endif // CONFIGURATION_H

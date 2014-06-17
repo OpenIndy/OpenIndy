@@ -51,9 +51,9 @@ bool BestFitPlane2::exec(Plane &p){
                 y[k] = obs->myXyz.getAt(1);
                 z[k] = obs->myXyz.getAt(2);
                 k++;
-                this->setUseState(obs->id, true);
+                this->setUseState(obs->getId(), true);
             }else{
-                this->setUseState(obs->id, false);
+                this->setUseState(obs->getId(), false);
             }
         }
 
@@ -133,8 +133,10 @@ void BestFitPlane2::setUpResult(Plane &p, double *x, double *y, double *z, int c
     //set result
     p.xyz = d * n0;
     p.ijk = n0;
-    p.myStatistic.isValid = true;
-    p.myStatistic.stdev = vv / (count - 1);
+    Statistic myStats;
+    myStats.isValid = true;
+    myStats.stdev = vv / (count - 1);
+    p.setStatistic(myStats);
 }
 
 /*!

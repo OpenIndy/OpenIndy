@@ -132,6 +132,8 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
                 return this->filterAcceptReadingDistance(source_row, source_parent);
             case Configuration::eReadingPolarElement:
                 return this->filterAcceptReadingPolar(source_row, source_parent);
+            case Configuration::eScalarEntityTemperatureElement:
+                return this->filterAcceptScalarEntityTemperature(source_row, source_parent);
         }
     }
 
@@ -320,6 +322,30 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptScalarEntityAngle(int sour
         }
     }else{
         //TODO do not display the scalar entity angles that were already chosen
+    }
+    return true;
+}
+
+bool AvailableElementsTreeViewProxyModel::filterAcceptScalarEntityTemperature(int source_row, const QModelIndex &source_parent) const
+{
+    if(!source_parent.isValid()){ //root item
+        FeatureTreeViewModel *model = dynamic_cast<FeatureTreeViewModel*>(this->sourceModel());
+        if(model != NULL){
+            FeatureTreeItem *root = model->getRootItem();
+            if(root != NULL){
+                FeatureTreeItem *item = root->getChild(source_row);
+                if(item != NULL && item->getChildCount() > 0){
+                    FeatureTreeItem *possibleScalarEntityTemperature = item->getChild(0);
+                    //if child is not a scalar entity distance
+                    if(possibleScalarEntityTemperature != NULL && possibleScalarEntityTemperature->getFeature() != NULL
+                            && possibleScalarEntityTemperature->getFeature()->getScalarEntityTemperature() == NULL){
+                        return false;
+                    }
+                }
+            }
+        }
+    }else{
+        //TODO do not display the scalar entity distances that were already chosen
     }
     return true;
 }

@@ -56,6 +56,9 @@ void GUIConfiguration::generateAllAttributes()
     GUIConfiguration::allAttributes.append(QString("temperature" + UnitConverter::getTemperatureUnitString()));
     GUIConfiguration::allAttributes.append("measurement series");
     GUIConfiguration::allAttributes.append("comment");
+    GUIConfiguration::allAttributes.append("use");
+    GUIConfiguration::allAttributes.append("time");
+    GUIConfiguration::allAttributes.append("datumTransformation");
 }
 
 /*!
@@ -154,6 +157,12 @@ void GUIConfiguration::generateTrafoParamAttributes()
     GUIConfiguration::trafoParamAttributes.append(fScaleZ);
     DisplayAttribute *fcomment = new DisplayAttribute("comment",true);
     GUIConfiguration::trafoParamAttributes.append(fcomment);
+    DisplayAttribute *fuse = new DisplayAttribute("use",true);
+    GUIConfiguration::trafoParamAttributes.append(fuse);
+    DisplayAttribute *ftime = new DisplayAttribute("time",true);
+    GUIConfiguration::trafoParamAttributes.append(ftime);
+    DisplayAttribute *fdatumTrafo = new DisplayAttribute("datumTransformation",true);
+    GUIConfiguration::trafoParamAttributes.append(fdatumTrafo);
 }
 
 /*!
