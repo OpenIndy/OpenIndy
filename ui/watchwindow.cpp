@@ -25,6 +25,7 @@ WatchWindow::~WatchWindow()
 void WatchWindow::setLCDNumber(QVariantMap m){
 
     if(!isGUIReady){
+        getAttributes(m);
         this->iniGUI(m);
     }
 
@@ -186,15 +187,123 @@ void WatchWindow::showEvent(QShowEvent *event)
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
         connect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this,SLOT(setLCDNumber(QVariantMap)));
 
-        int r = Configuration::ePolar;
-
-        OiFeatureState::getActiveStation()->emitStartReadingStream(r);
+        initSuppReadings();
 
         event->accept();
     }
 }
 
+/*!
+ * \brief WatchWindow::initSuppReadings adds the supported reading types of the sensor in the combobox
+ */
+void WatchWindow::initSuppReadings()
+{
+    ui->comboBox_suppReadings->clear();
+
+    QList<Configuration::ReadingTypes> *rTypes = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
+
+    if(rTypes == NULL){
+        return;
+    }
+
+    for(int i=0; i<rTypes->size();i++){
+        switch (rTypes->at(i)) {
+        case Configuration::ePolar:
+            ui->comboBox_suppReadings->addItem(Configuration::sPolar);
+            break;
+        case Configuration::eCartesian:
+            ui->comboBox_suppReadings->addItem(Configuration::sCartesian);
+            break;
+        case Configuration::eDistance:
+            ui->comboBox_suppReadings->addItem(Configuration::sDistance);
+            break;
+        case Configuration::eDirection:
+            ui->comboBox_suppReadings->addItem(Configuration::sDirection);
+            break;
+        case Configuration::eTemperatur:
+            ui->comboBox_suppReadings->addItem(Configuration::sTemperatur);
+            break;
+        case Configuration::eLevel:
+            ui->comboBox_suppReadings->addItem(Configuration::sLevel);
+            break;
+        case Configuration::eUndefined:
+            ui->comboBox_suppReadings->addItem("undefined");
+            break;
+        default:
+            break;
+        }
+    }
+    if(ui->comboBox_suppReadings->findText(Configuration::sCartesian) != -1){
+        ui->comboBox_suppReadings->setCurrentText(Configuration::sCartesian);
+    }
+}
+
+void WatchWindow::getAttributes(QVariantMap m)
+{
+    foreach (QCheckBox *cb, checkboxes) {
+        delete cb;
+    }
+    checkboxes.clear();
+
+    if(masterLayout == NULL){
+        masterLayout = new QVBoxLayout();
+    }
+
+    if(OiFeatureState::getActiveFeature() != NULL){
+        QLabel *featureName = new QLabel();
+        QFont f( "Arial", 30, QFont::Bold);
+        featureName->setFont(f);
+        featureName->setText(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
+        masterLayout->addWidget(featureName);
+    }
+
+    QVBoxLayout *layout = new QVBoxLayout();
+
+    QMapIterator<QString, QVariant> j(m);
+    while(j.hasNext()){
+        j.next();
+
+        QCheckBox *cb = new QCheckBox();
+        cb->setText(j.key());
+        cb->setChecked(true);
+
+        layout->addWidget(cb);
+
+        this->checkboxes.append(cb);
+    }
+    ui->groupBox_displayValues->setLayout(layout);
+
+}
 
 
+/*!
+ * \brief WatchWindow::on_comboBox_suppReadings_currentIndexChanged
+ * \param arg1
+ */
+void WatchWindow::on_comboBox_suppReadings_currentIndexChanged(const QString &arg1)
+{
+    isGUIReady = false;
 
+    int r;
 
+    if(arg1.compare(Configuration::sCartesian)){
+        r = Configuration::eCartesian;
+    }else if(arg1.compare(Configuration::sPolar)){
+        r = Configuration::ePolar;
+    }else if(arg1.compare(Configuration::sDistance)){
+        r = Configuration::eDistance;
+    }else if(arg1.compare(Configuration::sDirection)){
+        r = Configuration::eDirection;
+    }else if(arg1.compare(Configuration::sLevel)){
+        r = Configuration::eLevel;
+    }else if(arg1.compare(Configuration::sTemperatur)){
+        r = Configuration::eTemperatur;
+    }else if(arg1.compare("undefined")){
+        r = Configuration::eUndefined;
+    }
+
+    OiFeatureState::getActiveStation()->emitStopReadingStream();
+
+    OiFeatureState::getActiveStation()->emitStartReadingStream(r);;
+
+}

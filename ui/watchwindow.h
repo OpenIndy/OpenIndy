@@ -13,6 +13,7 @@
 #include <QVBoxLayout>
 #include "unitconverter.h"
 #include "oifeaturestate.h"
+#include <QCheckBox>
 
 namespace Ui {
 class WatchWindow;
@@ -40,6 +41,11 @@ private slots:
     void closeEvent(QCloseEvent * e);
     void showEvent(QShowEvent * event);
 
+    void initSuppReadings();
+
+    void getAttributes(QVariantMap m);
+
+    void on_comboBox_suppReadings_currentIndexChanged(const QString &arg1);
 
 private:
     Ui::WatchWindow *ui;
@@ -49,6 +55,8 @@ private:
     int digitCount;
 
     QMap<QString,QLCDNumber*> streamData;
+
+    QList<QCheckBox*> checkboxes;
 
 };
 
