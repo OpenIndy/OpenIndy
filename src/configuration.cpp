@@ -76,44 +76,89 @@ int Configuration::generateID(){
 }
 
 Configuration::ElementTypes Configuration::getElementTypeEnum(QString s){
-    if(s == Configuration::sPlane){
+    if(s.compare(Configuration::sPlane) == 0){
         return Configuration::ePlaneElement;
-    }else if(s == Configuration::sPoint){
+    }else if(s.compare(Configuration::sPoint) == 0){
         return Configuration::ePointElement;
-    }else if(s == Configuration::sLine){
+    }else if(s.compare(Configuration::sLine) == 0){
         return Configuration::eLineElement;
-    }else if(s == Configuration::sStation){
+    }else if(s.compare(Configuration::sStation) == 0){
         return Configuration::eStationElement;
-    }else if(s == Configuration::sCoordinatesystem){
+    }else if(s.compare(Configuration::sCoordinatesystem) == 0){
         return Configuration::eCoordinateSystemElement;
-    }else if(s == Configuration::sSphere){
+    }else if(s.compare(Configuration::sSphere) == 0){
         return Configuration::eSphereElement;
-    }else if(s == Configuration::sEntitiyAngle){
+    }else if(s.compare(Configuration::sEntitiyAngle) == 0){
         return Configuration::eScalarEntityAngleElement;
-    }else if(s == Configuration::sEntityDistance){
+    }else if(s.compare(Configuration::sEntityDistance) == 0){
         return Configuration::eScalarEntityDistanceElement;
-    }else if(s == Configuration::sTrafoParam){
+    }else if(s.compare(Configuration::sTrafoParam) == 0){
         return Configuration::eTrafoParamElement;
-    }else if(s == Configuration::sCircle){
+    }else if(s.compare(Configuration::sCircle) == 0){
         return Configuration::eCircleElement;
-    }else if(s == Configuration::sCone){
+    }else if(s.compare(Configuration::sCone) == 0){
         return Configuration::eConeElement;
-    }else if(s == Configuration::sCylinder){
+    }else if(s.compare(Configuration::sCylinder) == 0){
         return Configuration::eCylinderElement;
-    }else if(s == Configuration::sEllipsoid){
+    }else if(s.compare(Configuration::sEllipsoid) == 0){
         return Configuration::eEllipsoidElement;
-    }else if(s == Configuration::sHyperboloid){
+    }else if(s.compare(Configuration::sHyperboloid) == 0){
         return Configuration::eHyperboloidElement;
-    }else if(s == Configuration::sParaboloid){
+    }else if(s.compare(Configuration::sParaboloid) == 0){
         return Configuration::eParaboloidElement;
-    }else if(s == Configuration::sNurbs){
+    }else if(s.compare(Configuration::sNurbs) == 0){
         return Configuration::eNurbsElement;
-    }else if(s == Configuration::sPointCloud){
+    }else if(s.compare(Configuration::sPointCloud) == 0){
         return Configuration::ePointCloudElement;
-    }else if(s == Configuration::sObservation){
+    }else if(s.compare(Configuration::sObservation) == 0){
         return Configuration::eObservationElement;
-    }else if(s == Configuration::sEntityTemperature){
+    }else if(s.compare(Configuration::sEntityTemperature) == 0){
         return Configuration::eScalarEntityTemperatureElement;
+    }
+}
+
+/*!
+ * \brief Configuration::getFeatureTypeEnum
+ * \param s
+ * \return
+ */
+Configuration::FeatureTypes Configuration::getFeatureTypeEnum(QString s){
+    if(s.compare(Configuration::sPlane) == 0){
+        return Configuration::ePlaneFeature;
+    }else if(s.compare(Configuration::sPoint) == 0){
+        return Configuration::ePointFeature;
+    }else if(s.compare(Configuration::sLine) == 0){
+        return Configuration::eLineFeature;
+    }else if(s.compare(Configuration::sStation) == 0){
+        return Configuration::eStationFeature;
+    }else if(s.compare(Configuration::sCoordinatesystem) == 0){
+        return Configuration::eCoordinateSystemFeature;
+    }else if(s.compare(Configuration::sSphere) == 0){
+        return Configuration::eSphereFeature;
+    }else if(s.compare(Configuration::sEntitiyAngle) == 0){
+        return Configuration::eScalarentityAngleFeature;
+    }else if(s.compare(Configuration::sEntityDistance) == 0){
+        return Configuration::eScalarEntityDistanceFeature;
+    }else if(s.compare(Configuration::sTrafoParam) == 0){
+        return Configuration::eTrafoParamFeature;
+    }else if(s.compare(Configuration::sCircle) == 0){
+        return Configuration::eCircleFeature;
+    }else if(s.compare(Configuration::sCone) == 0){
+        return Configuration::eConeFeature;
+    }else if(s.compare(Configuration::sCylinder) == 0){
+        return Configuration::eCylinderFeature;
+    }else if(s.compare(Configuration::sEllipsoid) == 0){
+        return Configuration::eEllipsoidFeature;
+    }else if(s.compare(Configuration::sHyperboloid) == 0){
+        return Configuration::eHyperboloidFeature;
+    }else if(s.compare(Configuration::sParaboloid) == 0){
+        return Configuration::eParaboloidFeature;
+    }else if(s.compare(Configuration::sNurbs) == 0){
+        return Configuration::eNurbsFeature;
+    }else if(s.compare(Configuration::sPointCloud) == 0){
+        return Configuration::ePointCloudFeature;
+    }else if(s.compare(Configuration::sEntityTemperature) == 0){
+        return Configuration::eScalarEntityTemperatureFeature;
     }
 }
 
@@ -255,4 +300,118 @@ double Configuration::getExpansionCoefficient(Configuration::Materials material)
     default:
         break;
     }
+}
+
+/*!
+ * \brief Configuration::getFeatureIcon
+ * \param featureType
+ * \return
+ */
+QPixmap Configuration::getFeatureIcon(Configuration::FeatureTypes featureType){
+
+    switch(featureType){
+    case Configuration::ePointFeature:
+        return QPixmap(":/Images/icons/point_5e8acf.png");
+    case Configuration::ePlaneFeature:
+        return QPixmap(":/Images/icons/plane_5e8acf.png");
+    case Configuration::eLineFeature:
+        return QPixmap(":/Images/icons/line_5e8acf.png");
+    case Configuration::eSphereFeature:
+        return QPixmap(":/Images/icons/sphere_5e8acf.png");
+    case Configuration::eHyperboloidFeature:
+        return QPixmap(":/Images/icons/hyperboloid_5e8acf.png");
+    case Configuration::eParaboloidFeature:
+        return QPixmap(":/Images/icons/paraboloid_5e8acf.png");
+    case Configuration::eEllipsoidFeature:
+        return QPixmap(":/Images/icons/ellipse_5e8acf.png");
+    case Configuration::ePointCloudFeature:
+        return QPixmap(":/Images/icons/pointCloud_5e8acf.png");
+    case Configuration::eStationFeature:
+        return QPixmap(":/Images/icons/station.png");
+    case Configuration::eTrafoParamFeature:
+        return QPixmap(":/Images/icons/trafoParam.png");
+    case Configuration::eCoordinateSystemFeature:
+        return QPixmap(":/Images/icons/coordinateSystem.png");
+    case Configuration::eCircleFeature:
+        return QPixmap(":/Images/icons/circle_5e8acf.png");
+    case Configuration::eCylinderFeature:
+        return QPixmap(":/Images/icons/cylinder_5e8acf.png");
+    case Configuration::eConeFeature:
+        return QPixmap(":/Images/icons/cone_5e8acf.png");
+    case Configuration::eScalarentityAngleFeature:
+        return QPixmap(":/Images/icons/scalarEntities_5e8acf.png");
+    case Configuration::eScalarEntityDistanceFeature:
+        return QPixmap(":/Images/icons/scalarEntities_5e8acf.png");
+    case Configuration::eScalarEntityMeasurementSeriesFeature:
+        return QPixmap(":/Images/icons/scalarEntities_5e8acf.png");
+    case Configuration::eScalarEntityTemperatureFeature:
+        return QPixmap(":/Images/icons/scalarEntities_5e8acf.png");
+    case Configuration::eNurbsFeature:
+        return QPixmap(":/Images/icons/nurbs_5e8acf.png");
+    }
+
+    return QPixmap("");
+
+}
+
+/*!
+ * \brief Configuration::getElementIcon
+ * \param elementType
+ * \return
+ */
+QPixmap Configuration::getElementIcon(Configuration::ElementTypes elementType){
+
+    QPixmap result;
+
+    switch(elementType){
+    case Configuration::ePointElement:
+        return QPixmap(":/Images/icons/point_5e8acf.png");
+    case Configuration::ePlaneElement:
+        return QPixmap(":/Images/icons/plane_5e8acf.png");
+    case Configuration::eLineElement:
+        return QPixmap(":/Images/icons/line_5e8acf.png");
+    case Configuration::eSphereElement:
+        return QPixmap(":/Images/icons/sphere_5e8acf.png");
+    case Configuration::eHyperboloidElement:
+        return QPixmap(":/Images/icons/hyperboloid_5e8acf.png");
+    case Configuration::eParaboloidElement:
+        return QPixmap(":/Images/icons/paraboloid_5e8acf.png");
+    case Configuration::eEllipsoidElement:
+        return QPixmap(":/Images/icons/ellipse_5e8acf.png");
+    case Configuration::ePointCloudElement:
+        return QPixmap(":/Images/icons/pointCloud_5e8acf.png");
+    case Configuration::eStationElement:
+        return QPixmap(":/Images/icons/station.png");
+    case Configuration::eTrafoParamElement:
+        return QPixmap(":/Images/icons/trafoParam.png");
+    case Configuration::eCoordinateSystemElement:
+        return QPixmap(":/Images/icons/coordinateSystem.png");
+    case Configuration::eCircleElement:
+        return QPixmap(":/Images/icons/circle_5e8acf.png");
+    case Configuration::eCylinderElement:
+        return QPixmap(":/Images/icons/cylinder_5e8acf.png");
+    case Configuration::eConeElement:
+        return QPixmap(":/Images/icons/cone_5e8acf.png");
+    case Configuration::eScalarEntityAngleElement:
+        return QPixmap(":/Images/icons/scalarEntities_5e8acf.png");
+    case Configuration::eScalarEntityDistanceElement:
+        return QPixmap(":/Images/icons/scalarEntities_5e8acf.png");
+    case Configuration::eScalarEntityTemperatureElement:
+        return QPixmap(":/Images/icons/scalarEntities_5e8acf.png");
+    case Configuration::eNurbsElement:
+        return QPixmap(":/Images/icons/nurbs_5e8acf.png");
+    case Configuration::eObservationElement:
+        return QPixmap("");
+    case Configuration::eReadingCartesianElement:
+        return QPixmap("");
+    case Configuration::eReadingDirectionElement:
+        return QPixmap("");
+    case Configuration::eReadingDistanceElement:
+        return QPixmap("");
+    case Configuration::eReadingPolarElement:
+        return QPixmap("");
+    }
+
+    return QPixmap("");
+
 }

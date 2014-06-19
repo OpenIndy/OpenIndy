@@ -4,7 +4,13 @@
 #include <QString>
 #include <QStringList>
 #include <QRegExp>
+
 #include "oiexchangeinterface.h"
+#include "console.h"
+
+#include <time.h>
+
+using namespace std;
 
 class oiExchangePTS: public oiExchangeInterface
 {

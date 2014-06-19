@@ -8,7 +8,9 @@
 #include <QLineEdit>
 #include <QTextBrowser>
 #include <QLabel>
+#include <QPixmap>
 
+#include "configuration.h"
 #include "systemdbmanager.h"
 
 class PluginInfoWidget : public QWidget
@@ -22,16 +24,22 @@ signals:
 public slots:
     void displayFunction(FunctionPlugin myFunction);
     void displaySensor(SensorPlugin mySensor);
+    void reset();
 
 private:
     QVBoxLayout *myLayout;
 
     QLabel *label_description;
     QTextBrowser *txt_description;
+    QLabel *label_applicableFor;
     QHBoxLayout *layout_applicableFor;
+    QLabel *label_neededElements;
     QHBoxLayout *layout_neededElements;
 
-    void setUpGui();
+    QList<QLabel*> applicableFor; //labels with icons of features
+    QList<QLabel*> neededElements; //labels with icons of elements
+
+    void initGUI();
     void clearLayout(QLayout *layout);
     
 };

@@ -67,22 +67,14 @@ ElementDependencies PointCloud::fromOpenIndyXML(QXmlStreamReader &xml){
 
 //TODO change functions with unitconverter and String format
 
-QString PointCloud::getX(){
-    return QString::number(this->xyz.getAt(0));
+QString PointCloud::getDisplayX() const{
+    return QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }
 
-QString PointCloud::getY(){
-    return QString::number(this->xyz.getAt(1));
+QString PointCloud::getDisplayY() const{
+    return QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }
 
-QString PointCloud::getZ(){
-    return QString::number(this->xyz.getAt(2));
-}
-
-QString PointCloud::getIsCommon(){
-    return QString(isCommon?"true":"false");
-}
-
-QString PointCloud::getIsNominal(){
-    return QString(isNominal?"true":"false");
+QString PointCloud::getDisplayZ() const{
+    return QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }

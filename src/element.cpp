@@ -4,6 +4,15 @@ Element::Element(QObject *parent) : QObject(parent), id(-1){
 
 }
 
+Element::Element(const Element &copy, QObject *parent) : QObject(parent){
+    this->id = copy.id;
+}
+
+Element &Element::operator=(const Element &copy){
+    this->id = copy.id;
+    return *this;
+}
+
 Element::~Element(){
 
 }
