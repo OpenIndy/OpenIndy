@@ -31,6 +31,9 @@ void OiGraphix::drawFeature(FeatureWrapper* feature){
     case Configuration::eSphereFeature:
         OiGraphix::drawSphere(feature->getSphere());
         break;
+    case Configuration::ePointCloudFeature:
+        OiGraphix::drawPointCloud(feature->getPointCloud());
+        break;
     default:{
         break;
     }
@@ -79,6 +82,18 @@ void OiGraphix::drawStation(Station* s){
     OiGraphixStation station;
 
     station.draw(s->position->xyz.getAt(0),s->position->xyz.getAt(1),s->position->xyz.getAt(2));
+
+    drawResiduals();
+}
+
+/*!
+ * \brief OiGraphix::drawPointCloud
+ * \param p
+ */
+void OiGraphix::drawPointCloud(PointCloud *p){
+    OiGraphixPointCloud pointCloud(p->points);
+
+    pointCloud.draw(p->xyz.getAt(0), p->xyz.getAt(1), p->xyz.getAt(2));
 
     drawResiduals();
 }

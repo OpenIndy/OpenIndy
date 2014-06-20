@@ -4,14 +4,7 @@ PluginInfoWidget::PluginInfoWidget(QWidget *parent) :
     QWidget(parent), myLayout(NULL), label_description(NULL), txt_description(NULL),
     layout_applicableFor(NULL), layout_neededElements(NULL)
 {
-    //set up layout
-    this->myLayout = new QVBoxLayout();
-    this->myLayout->setContentsMargins(0,0,0,0);
-    this->setLayout(this->myLayout);
-
-    //set up items
-    this->label_description = new QLabel();
-    this->txt_description = new QTextBrowser();
+    this->initGUI();
 }
 
 /*!
@@ -22,16 +15,25 @@ PluginInfoWidget::PluginInfoWidget(QWidget *parent) :
 void PluginInfoWidget::displayFunction(FunctionPlugin myFunction){
 
     //delete old GUI elements
-    this->clearLayout(this->myLayout);
+    this->reset();
 
-    //set up GUI for the selected function
+    //fill GUI elements for the selected function
     this->label_description->setText("function description:");
     this->txt_description->setText(myFunction.description);
+    this->label_applicableFor->setText("applicable for:");
+    this->label_neededElements->setText("needed elements:");
 
-    //add Gui elements
-    this->myLayout->addSpacing(20);
-    this->myLayout->addWidget(this->label_description);
-    this->myLayout->addWidget(this->txt_description);
+    //enable needed GUI elements
+    this->label_description->setVisible(true);
+    this->txt_description->setVisible(true);
+    this->label_applicableFor->setVisible(true);
+    this->label_neededElements->setVisible(true);
+    foreach(Configuration::FeatureTypes featureType, myFunction.applicableFor){
+        this->applicableFor.at(featureType)->setVisible(true);
+    }
+    foreach(Configuration::ElementTypes elementType, myFunction.neededElements){
+        this->neededElements.at(elementType)->setVisible(true);
+    }
 
 }
 
@@ -41,113 +43,132 @@ void PluginInfoWidget::displayFunction(FunctionPlugin myFunction){
  * \param mySensor
  */
 void PluginInfoWidget::displaySensor(SensorPlugin mySensor){
+
     //delete old GUI elements
     this->clearLayout(this->myLayout);
+
+    //fill GUI elements for the selected sensor
+    this->label_description->setText("sensor description:");
+    this->txt_description->setText(mySensor.description);
+
+    //enable needed GUI elements
+    this->label_description->setVisible(true);
+    this->txt_description->setVisible(true);
+
 }
 
-void PluginInfoWidget::setUpGui(){
-    /*//delete old GUI elements
-    this->clearGuiElements();
-    //get iterators for parameter maps
-    QMapIterator<QString, int> intIterator(this->intParameter);
-    QMapIterator<QString, double> doubleIterator(this->doubleParameter);
-    QMapIterator<QString, QStringList> stringIterator(this->stringParameter);
+/*!
+ * \brief PluginInfoWidget::reset
+ * Reset GUI elements when a tree item other than sensor or function was selected
+ */
+void PluginInfoWidget::reset(){
+
+    this->label_description->setVisible(false);
+    this->txt_description->setVisible(false);
+    this->label_applicableFor->setVisible(false);
+    this->label_neededElements->setVisible(false);
+    for(int i = 0; i < 19; i++){
+        this->applicableFor.at(i)->setVisible(false);
+    }
+    for(int i = 0; i < 24; i++){
+        this->neededElements.at(i)->setVisible(false);
+    }
+
+}
+
+/*!
+ * \brief PluginInfoWidget::init
+ */
+void PluginInfoWidget::initGUI(){
+
     //set up layout
-    if(this->myLayout != NULL){
-        delete this->myLayout;
+    this->myLayout = new QVBoxLayout();
+    this->myLayout->setContentsMargins(0,0,0,0);
+    this->setLayout(this->myLayout);
+
+    //set up items
+    this->label_description = new QLabel();
+    this->txt_description = new QTextBrowser();
+    this->label_applicableFor = new QLabel();
+    this->label_neededElements = new QLabel();
+    this->layout_applicableFor = new QHBoxLayout();
+    this->layout_neededElements = new QHBoxLayout();
+
+    //disable by default
+    this->label_description->setVisible(false);
+    this->txt_description->setVisible(false);
+    this->label_applicableFor->setVisible(false);
+    this->label_neededElements->setVisible(false);
+
+    QFont bold;
+    bold.setBold(true);
+    this->label_description->setFont(bold);
+    this->label_applicableFor->setFont(bold);
+    this->label_neededElements->setFont(bold);
+
+    this->txt_description->setMinimumHeight(70);
+    this->txt_description->setMaximumHeight(70);
+
+    QSpacerItem *bottomSpacer = new QSpacerItem(20,20,QSizePolicy::Expanding);
+    QSpacerItem *featureSpacer = new QSpacerItem(20,20,QSizePolicy::Expanding);
+    QSpacerItem *elementSpacer = new QSpacerItem(20,20,QSizePolicy::Expanding);
+
+    //add items to layout
+    this->myLayout->addSpacing(20);
+    this->myLayout->addWidget(this->label_description);
+    this->myLayout->addWidget(this->txt_description);
+    this->myLayout->addWidget(this->label_applicableFor);
+    this->myLayout->addLayout(this->layout_applicableFor);
+    this->myLayout->addWidget(this->label_neededElements);
+    this->myLayout->addLayout(this->layout_neededElements);
+    this->myLayout->addSpacerItem(bottomSpacer);
+
+    //streatch GUI elements so the left space is at the bottom
+    this->myLayout->setStretch(0, 0);
+    this->myLayout->setStretch(1, 0);
+    this->myLayout->setStretch(2, 0);
+    this->myLayout->setStretch(3, 0);
+    this->myLayout->setStretch(4, 0);
+    this->myLayout->setStretch(5, 0);
+    this->myLayout->setStretch(6, 0);
+    this->myLayout->setStretch(7, 1);
+
+    //add labels with icons of all elements / features
+    for(int i = 0; i < 19; i++){
+        QLabel *myFeature = new QLabel();
+        myFeature->setPixmap(Configuration::getFeatureIcon((Configuration::FeatureTypes)i));
+        myFeature->setFixedHeight(20);
+        myFeature->setFixedWidth(20);
+        myFeature->setScaledContents(true);
+        myFeature->setVisible(false);
+        this->layout_applicableFor->addWidget(myFeature);
+        this->applicableFor.append(myFeature);
     }
-    this->myLayout = new QFormLayout();
-    //create GUI elements for each parameter
-    QFont boldFont;
-    boldFont.setBold(true);
-    int rowIndex = 0;
-    while(intIterator.hasNext()){
-        intIterator.next();
-        QString intKey = static_cast<QString>(intIterator.key());
-        int intValue = static_cast<int>(intIterator.value());
-        QLabel *intLabel = new QLabel(intKey);
-        intLabel->setMinimumWidth(300);
-        intLabel->setWordWrap(true);
-        intLabel->setFont(boldFont);
-        QLineEdit *intLineEdit = new QLineEdit(QString::number(intValue));
-        intLineEdit->setValidator(this->intValidator);
-        this->parameterLabel.append(intLabel);
-        this->intParameterLineEdit.insert(intKey, intLineEdit);
-        this->myLayout->insertRow(rowIndex, intLabel, intLineEdit);
-        connect(intLineEdit, SIGNAL(textChanged(QString)), this, SLOT(emitFunctionConfigurationChanged()));
-        rowIndex++;
+    for(int i = 0; i < 24; i++){
+        QLabel *myElement = new QLabel();
+        myElement->setPixmap(Configuration::getElementIcon((Configuration::ElementTypes)i));
+        myElement->setFixedHeight(20);
+        myElement->setFixedWidth(20);
+        myElement->setScaledContents(true);
+        myElement->setVisible(false);
+        this->layout_neededElements->addWidget(myElement);
+        this->neededElements.append(myElement);
     }
-    while(doubleIterator.hasNext()){
-        doubleIterator.next();
-        QString doubleKey = static_cast<QString>(doubleIterator.key());
-        double doubleValue = static_cast<double>(doubleIterator.value());
-        QLabel *doubleLabel = new QLabel(doubleKey);
-        doubleLabel->setMinimumWidth(300);
-        doubleLabel->setWordWrap(true);
-        doubleLabel->setFont(boldFont);
-        QLineEdit *doubleLineEdit = new QLineEdit(QString::number(doubleValue));
-        doubleLineEdit->setValidator(this->doubleValidator);
-        this->parameterLabel.append(doubleLabel);
-        this->doubleParameterLineEdit.insert(doubleKey, doubleLineEdit);
-        this->myLayout->insertRow(rowIndex, doubleLabel, doubleLineEdit);
-        connect(doubleLineEdit, SIGNAL(textChanged(QString)), this, SLOT(emitFunctionConfigurationChanged()));
-        rowIndex++;
+    this->layout_applicableFor->addSpacerItem(featureSpacer);
+    this->layout_neededElements->addSpacerItem(elementSpacer);
+
+    //stretch applicableFor and neededElements
+    for(int i = 0; i < 19; i++){
+        this->layout_applicableFor->setStretch(i, 0);
     }
-    while(stringIterator.hasNext()){
-        stringIterator.next();
-        QString stringKey = static_cast<QString>(stringIterator.key());
-        QStringList stringValue = static_cast<QStringList>(stringIterator.value());
-        QLabel *stringLabel = new QLabel(stringKey);
-        stringLabel->setMinimumWidth(300);
-        stringLabel->setWordWrap(true);
-        stringLabel->setFont(boldFont);
-        QComboBox *stringComboBox = new QComboBox();
-        stringComboBox->addItems(stringValue);
-        this->parameterLabel.append(stringLabel);
-        this->stringParameterComboBox.insert(stringKey, stringComboBox);
-        this->myLayout->insertRow(rowIndex, stringLabel, stringComboBox);
-        connect(stringComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(emitFunctionConfigurationChanged(QString)));
-        rowIndex++;
+    this->layout_applicableFor->setStretch(19, 1);
+    for(int i = 0; i < 24; i++){
+        this->layout_neededElements->setStretch(i, 0);
     }
-    this->setLayout(this->myLayout);*/
+    this->layout_neededElements->setStretch(24, 1);
+
 }
 
 void PluginInfoWidget::clearLayout(QLayout *layout){
 
-    /*QLayoutItem *item;
-    while((item = layout->takeAt(0))) {
-        if(item->layout()) {
-            clearLayout(item->layout());
-            delete item->layout();
-        }
-        if(item->widget()) {
-            delete item->widget();
-        }
-        if(item->spacerItem()){
-            delete item->spacerItem();
-        }
-    }*/
-
-    /*//get iterator for maps with GUI elements
-    QMapIterator<QString, QLineEdit*> intIterator(this->intParameterLineEdit);
-    QMapIterator<QString, QLineEdit*> doubleIterator(this->doubleParameterLineEdit);
-    QMapIterator<QString, QComboBox*> stringIterator(this->stringParameterComboBox);
-    //delete GUI elements
-    while(intIterator.hasNext()){
-        delete static_cast<QLineEdit*>(intIterator.next().value());
-    }
-    while(doubleIterator.hasNext()){
-        delete static_cast<QLineEdit*>(doubleIterator.next().value());
-    }
-    while(stringIterator.hasNext()){
-        delete static_cast<QComboBox*>(stringIterator.next().value());
-    }
-    foreach(QLabel *label, this->parameterLabel){
-        delete label;
-    }
-    //clear containers
-    this->parameterLabel.clear();
-    this->intParameterLineEdit.clear();
-    this->doubleParameterLineEdit.clear();
-    this->stringParameterComboBox.clear();*/
 }

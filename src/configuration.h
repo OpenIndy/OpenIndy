@@ -6,6 +6,8 @@
 #include <QMetaObject>
 #include <QStringList>
 #include <QDebug>
+#include <QPixmap>
+
 #include "unitconverter.h"
 
 /*!
@@ -187,9 +189,14 @@ public:
     static int generateID();
 
     static Configuration::ElementTypes getElementTypeEnum(QString s);
+    static Configuration::FeatureTypes getFeatureTypeEnum(QString s);
     static QString getElementTypeString(Configuration::ElementTypes e);
+
     static double getExpansionCoefficient(QString material);
     static double getExpansionCoefficient(Configuration::Materials material);
+
+    static QPixmap getFeatureIcon(Configuration::FeatureTypes featureType);
+    static QPixmap getElementIcon(Configuration::ElementTypes elementType);
 };
 
 #endif // CONFIGURATION_H
