@@ -577,10 +577,12 @@ void MainWindow::on_actionMeasurement_Configuration_triggered()
     if(OiFeatureState::getActiveFeature() != NULL && (OiFeatureState::getActiveFeature()->getGeometry() != NULL || OiFeatureState::getActiveFeature()->getStation() != NULL)){
 
         if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-            //emit sendConfig(&OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig());
+            MeasurementConfig mConfig = OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig();
+            emit sendConfig(&mConfig);
         }
         if(OiFeatureState::getActiveFeature()->getStation() != NULL){
-            //emit sendConfig(&OiFeatureState::getActiveFeature()->getStation()->position->getMeasurementConfig());
+            MeasurementConfig mConfig = OiFeatureState::getActiveFeature()->getStation()->position->getMeasurementConfig();
+            emit sendConfig(&mConfig);
         }
 
         mConfigDialog.show();

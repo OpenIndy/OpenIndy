@@ -5,8 +5,8 @@
     "pluginVersion" : "0.0.1",
     "author"  : "OpenIndyOrg",
 
-    "compiler" : "minGW",
-    "operatingSystem" : "windows",
+    "compiler" : "clang 64bit",
+    "operatingSystem" : "mac os",
 
     "description" : "Plugin with many functions and sensors available as standard",
 
