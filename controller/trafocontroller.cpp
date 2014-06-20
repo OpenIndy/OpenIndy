@@ -49,26 +49,26 @@ void TrafoController::applyMovements(Observation *obs)
         if(movements.size() == 1){
             if(movements.at(0)->getValidTime() < obs->myReading->measuredAt){
                 OiMat t= movements.at(0)->getHomogenMatrix();
-                obs->myXyz = t * obs->myOriginalXyz;
-                obs->myStatistic.qxx = t * obs->myOriginalStatistic.qxx;
+                obs->myXyz = t * obs->myXyz;
+                obs->myStatistic.qxx = t * obs->myStatistic.qxx;
             }
         }else{
             for(int i=0;i<movements.size();i++){
                 if(movements.at(i)->getValidTime() < obs->myReading->measuredAt){
                     if((i+1)<movements.size() && movements.at(i+1)->getValidTime() > obs->myReading->measuredAt){
                         OiMat t= movements.at(i)->getHomogenMatrix();
-                        obs->myXyz = t * obs->myOriginalXyz;
-                        obs->myStatistic.qxx = t * obs->myOriginalStatistic.qxx;
+                        obs->myXyz = t * obs->myXyz;
+                        obs->myStatistic.qxx = t * obs->myStatistic.qxx;
                     }else if(i = movements.size()-1){
                         OiMat t= movements.at(i)->getHomogenMatrix();
-                        obs->myXyz = t * obs->myOriginalXyz;
-                        obs->myStatistic.qxx = t * obs->myOriginalStatistic.qxx;
+                        obs->myXyz = t * obs->myXyz;
+                        obs->myStatistic.qxx = t * obs->myStatistic.qxx;
                     }
                 }
             }
         }
     }else{
-        obs->myXyz = obs->myOriginalXyz;
+        obs->myXyz = obs->myXyz;
         obs->myStatistic = obs->myOriginalStatistic;
     }
     obs->isValid = true;
@@ -80,6 +80,8 @@ void TrafoController::applyMovements(Observation *obs)
  */
 void TrafoController::transformNewObservations(Observation *obs)
 {
+
+    //not used yet!!!
     if(obs->myStation->coordSys != OiFeatureState::getActiveCoordinateSystem()){
         TrafoParam *tp = findTrafoParam(obs->myStation->coordSys,OiFeatureState::getActiveCoordinateSystem());
         if(tp != NULL){
@@ -103,14 +105,12 @@ void TrafoController::transformNewObservations(Observation *obs)
 bool TrafoController::transformObservations(CoordinateSystem *from)
 {
     if(from != NULL){
-        //first apply movements
-        foreach (Observation *obs, from->getObservations()) {
-            applyMovements(obs);
-        }
+
         if(from == OiFeatureState::getActiveCoordinateSystem()){
             return true;
         }
-        //then transform
+
+        //first transform
         TrafoParam *tp = findTrafoParam(from,OiFeatureState::getActiveCoordinateSystem());
         if(tp != NULL){
             OiMat t;
@@ -124,6 +124,15 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                 obs->myStatistic.qxx = t*obs->myStatistic.qxx;
                 obs->isValid = true;
             }
+
+            //then apply movements if active system is a part system
+            //if active system is a station => do nothing
+            if(OiFeatureState::getCoordinateSystems().contains(from)){
+                foreach (Observation *obs, from->getObservations()) {
+                    applyMovements(obs);
+                }
+            }
+
             return true;
         }else{ //no trafo params available from this coordsys to active coord sys.
                //search for datumstransformation of other station
@@ -142,6 +151,13 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                             obs->myStatistic.qxx = ttp * (tt * obs->myStatistic.qxx);
                             obs->isValid = true;
                         }
+                        //then apply movements if active system is a part system
+                        //if active system is a station => do nothing
+                        if(OiFeatureState::getCoordinateSystems().contains(from)){
+                            foreach (Observation *obs, from->getObservations()) {
+                                applyMovements(obs);
+                            }
+                        }
                         return true;
                     }else if(t->getisDatumTrafo() && t->getIsUsed() && t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
                         OiMat tt = t->getHomogenMatrix();
@@ -155,6 +171,13 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                             obs->myXyz = ttp * (tt * obs->myXyz);
                             obs->myStatistic.qxx = ttp * (tt * obs->myStatistic.qxx);
                             obs->isValid = true;
+                        }
+                        //then apply movements if active system is a part system
+                        //if active system is a station => do nothing
+                        if(OiFeatureState::getCoordinateSystems().contains(from)){
+                            foreach (Observation *obs, from->getObservations()) {
+                                applyMovements(obs);
+                            }
                         }
                         return true;
                     }
@@ -173,6 +196,13 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                             obs->myStatistic.qxx = ttp * (tt * obs->myStatistic.qxx);
                             obs->isValid = true;
                         }
+                        //then apply movements if active system is a part system
+                        //if active system is a station => do nothing
+                        if(OiFeatureState::getCoordinateSystems().contains(from)){
+                            foreach (Observation *obs, from->getObservations()) {
+                                applyMovements(obs);
+                            }
+                        }
                         return true;
                     }else if(t->getisDatumTrafo() && t->getIsUsed() && t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
                         OiMat tt = t->getHomogenMatrix();
@@ -186,6 +216,13 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                             obs->myXyz = ttp * (tt * obs->myXyz);
                             obs->myStatistic.qxx = ttp * (tt * obs->myStatistic.qxx);
                             obs->isValid = true;
+                        }
+                        //then apply movements if active system is a part system
+                        //if active system is a station => do nothing
+                        if(OiFeatureState::getCoordinateSystems().contains(from)){
+                            foreach (Observation *obs, from->getObservations()) {
+                                applyMovements(obs);
+                            }
                         }
                         return true;
                     }
@@ -210,8 +247,8 @@ void TrafoController::setObservationState(CoordinateSystem *cs, bool valid)
 {
     foreach(Observation *obs, cs->getObservations()){
         if(valid == true){
-            applyMovements(obs);
-            //obs->myXyz = obs->myOriginalXyz;
+            //applyMovements(obs);
+            obs->myXyz = obs->myOriginalXyz;
         }
         obs->isValid = valid;
     }
