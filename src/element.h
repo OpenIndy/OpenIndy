@@ -15,6 +15,9 @@ class Element : public QObject
     Q_OBJECT
 public:
     explicit Element(QObject *parent = 0);
+    Element(const Element &copy, QObject *parent = 0);
+    Element &operator=(const Element &copy);
+
     virtual ~Element();
 
     int getId() const;

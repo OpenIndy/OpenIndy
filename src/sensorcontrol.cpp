@@ -56,8 +56,8 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
        return;
     }
 
-
-    QList<Reading*> readings = instrument->measure(&(geom->getMeasurementConfig()));
+    MeasurementConfig mconfig = geom->getMeasurementConfig();
+    QList<Reading*> readings = instrument->measure(&mconfig);
 
     qDebug() << "count readings" << readings.size();
     if(readings.size() == 0){

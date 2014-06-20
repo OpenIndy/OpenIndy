@@ -304,8 +304,13 @@ void SettingsDialog::on_treeView_plugins_clicked(const QModelIndex &index){
     this->ui->txt_pluginVersion->setText(selectedPlugin.version);
     this->ui->txt_pluginFilePath->setText(selectedPlugin.file_path);
 
+    //display special sensor or function information
     if(item->getIsFunction()){
         this->myPluginInformation->displayFunction(item->getFunction());
+    }else if(item->getIsSensor()){
+        this->myPluginInformation->displaySensor(item->getSensor());
+    }else{
+        this->myPluginInformation->reset();
     }
 
 }

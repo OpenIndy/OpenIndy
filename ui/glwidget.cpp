@@ -21,7 +21,7 @@ GLWidget::GLWidget(QWidget *parent) :
 
     oiBackgroundColor = QColor::fromCmykF(0.59,0.40,0.10,0.10);
 
-     QTimer::singleShot(20, this, SLOT(update()));
+    //QTimer::singleShot(20, this, SLOT(update()));
 }
 
 
@@ -35,6 +35,8 @@ void GLWidget::initializeGL(){
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_CULL_FACE);
     glEnable(GL_SMOOTH);
+
+
 
     static GLfloat lightPosition[4] = {0.0,0.0,0.0,1.0};
     GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -80,6 +82,10 @@ void GLWidget::resizeGL(int w, int h){
 
 }
 
+/*!
+ * \brief GLWidget::draw
+ * Redraw all features
+ */
 void GLWidget::draw(){
 
     glMatrixMode(GL_MODELVIEW);

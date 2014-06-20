@@ -15,9 +15,6 @@
 #include "pi_objecttransformation.h"
 #include "pi_systemtransformation.h"
 
-
-
-
 /*!
  * \brief The OiMetaData class
  */
