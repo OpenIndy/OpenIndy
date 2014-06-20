@@ -33,6 +33,8 @@ public:
 
 private:
 
+    bool svdError;
+
     QList<OiVec> locSystem;
     QList<OiVec> refSystem;
 
@@ -50,17 +52,25 @@ private:
     bool calc(TrafoParam &tp);
     void init();
     void getExtraParameter();
-    OiVec approxTranslation();
+    OiVec approxTranslation(OiVec scale, OiVec rot);
     //OiVec approxRotation();
-    OiVec approxRotation(OiVec t);
+    OiVec approxRotation();
     OiVec approxScale();
     OiVec calcCentroidPoint(QList<OiVec> points);
     OiVec fillLVector();
     OiMat fillAMatrix(OiVec x0);
-    OiMat rotationMatrix();
+    OiMat getRotationMatrix(OiVec rot);
     void preliminaryTransformation();
-    OiMat scaleMatrix();
+    OiMat scaleMatrix(OiVec s);
     OiVec fillL0Vector(OiVec x0);
+
+    //for approx of rotation
+    vector<OiVec> centroidReducedCoord(QList<OiVec> input, OiVec centroid);
+    vector<OiMat> modelMatrix(vector<OiVec> locC, vector<OiVec> refC);
+    OiMat normalEquationMatrix(vector<OiMat>vecA);
+    OiVec quaternion(OiMat n);
+    OiMat rotationMatrix(OiVec q);
+    OiVec getRotationAngles(OiMat r);
 };
 
 #endif // P_EXTENDEDTEMPERATURECOMPENSATION_H

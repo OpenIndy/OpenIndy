@@ -152,7 +152,7 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
 
         double expansion = (actualTemp-refTemp)*expansionCoefficient;
         protExpansion = QString::number(expansion,'f',4);
-        double scale = (1+ (expansion));
+        double scale = 1.0/(1+ (expansion));
         tp.setScale(scale,scale,scale);
         tp.setTranslation(0.0,0.0,0.0);
         tp.setRotation(0.0,0.0,0.0);

@@ -74,18 +74,17 @@ public:
     void replace(const OiMat &m);
     void setAt(const int row, const int col, const double value);
     void diag(vector<double> diagVec);
+    void setRow(const int index, const OiVec &row);
+    void setCol(const int index, const OiVec &col);
 
     OiMat& operator=(const OiMat &m);
-    OiMat operator+(const OiMat &m);
-    OiMat operator-(const OiMat &m);
+    OiMat operator+(const OiMat &m) const;
+    OiMat operator-(const OiMat &m) const;
     OiMat& operator+=(const OiMat &m);
     OiMat& operator-=(const OiMat &m);
-    OiMat operator*(const OiMat &m);
-    OiMat operator*(const double value);
-    OiVec operator*(const OiVec &v);
-    friend OiMat operator*(const OiMat &m, const double value){
-        return OiMat::mult(value, m);
-    }
+    OiMat operator*(const OiMat &m) const;
+    OiMat operator*(const double value) const;
+    OiVec operator*(const OiVec &v) const;
     friend OiMat operator*(const double value, const OiMat &m){
         return OiMat::mult(value, m);
     }
@@ -93,10 +92,12 @@ public:
         return OiMat::mult((1.0 / value), m);
     }
 
-    OiMat t();
-    OiMat inv();
+    OiMat t() const;
+    OiMat inv() const;
 
-    void svd(OiMat &u, OiVec &d, OiMat &v);
+    double det() const;
+
+    void svd(OiMat &u, OiVec &d, OiMat &v) const;
 
     static OiMat getRotationMatrix(double angle, OiVec axis);
     static OiMat getRotationMatrix(double angle, Rotation::RotationAxis axis);
