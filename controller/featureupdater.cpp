@@ -366,12 +366,15 @@ void FeatureUpdater::recalcTrafoParam(TrafoParam *tp){
             if(tp->getStartSystem()->getNominals().size() > 0 && tp->getDestinationSystem()->getNominals().size() > 0){ //if both nominals
                 this->fillTrafoParamFunctionNN(tpFunction, tp);
             }else if(tp->getStartSystem()->getNominals().size() == 0 && tp->getDestinationSystem()->getNominals().size() == 0){ //if both actual
-                this->fillTrafoParamFunctionAA(tpFunction, tp);
+                if(tp->getIsMovement()){
+                    this->fillTrafoParamFunctionMovement(tpFunction,tp);
+                }else{
+                    this->fillTrafoParamFunctionAA(tpFunction, tp);
+                }
             }else if( (tp->getStartSystem()->getNominals().size() == 0 && tp->getDestinationSystem()->getNominals().size() > 0)
                       || (tp->getStartSystem()->getNominals().size() > 0 && tp->getDestinationSystem()->getNominals().size() == 0) ){ //if one actual one nominal
                 this->fillTrafoParamFunctionAN(tpFunction, tp);
             }
-
         }
 
         tp->recalc();
@@ -1460,6 +1463,101 @@ void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, Tr
         if(!s->getIsNominal() && s->getIsSolved()){
             mySorter.addRefScalarEntityAngle(ScalarEntityAngle(*s));
         }
+    }
+
+    //add sorted lists to the function
+    function->points_startSystem = mySorter.getLocPoints();
+    function->points_targetSystem = mySorter.getRefPoints();
+    function->lines_startSystem = mySorter.getLocLines();
+    function->lines_targetSystem = mySorter.getRefLines();
+    function->planes_startSystem = mySorter.getLocPlanes();
+    function->planes_targetSystem = mySorter.getRefPlanes();
+    function->spheres_startSystem = mySorter.getLocSpheres();
+    function->spheres_targetSystem = mySorter.getRefSpheres();
+    function->scalarEntityAngles_startSystem = mySorter.getLocScalarEntityAngles();
+    function->scalarEntityAngles_targetSystem = mySorter.getRefScalarEntityAngles();
+    function->scalarEntityDistances_startSystem = mySorter.getLocScalarEntityDistances();
+    function->scalarEntityDistances_targetSystem = mySorter.getRefScalarEntityDistances();
+
+    //if coord sys needs to be re-switched
+    if(!tp->getDestinationSystem()->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
+    }
+}
+
+/*!
+ * \brief fillTrafoParamFunctionMovement fill TrafoParam function start and destination lists.
+ * The points have observations from different times. The first time is reference, and a point with obs of this time gets
+ * in to the reference list. Another points created from observations with "valid time" of trafo param gets created for the
+ * actual system. So the trafo param calculates the transformation from now "valid time" to the first situation.
+ * \param function
+ * \param tp
+ */
+void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *function, TrafoParam *tp)
+{
+    //sort helper class which compares and sorts the list of start and target points
+    SortListByName mySorter;
+
+    //if coord sys needs to be switched to "from" system
+    if(!tp->getStartSystem()->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystemWithoutTransformation(tp->getStartSystem());
+    }
+    QDateTime startTime;
+
+    //get smallest QDateTime from first point as reference time
+    if(function->getPoints().size()>0){
+        if(function->getPoints().at(0)->getObservations().size()>0) {
+            startTime = function->getPoints().at(0)->getObservations().at(0)->myReading->measuredAt;
+        }else{
+            return;
+        }
+    }else{
+        return;
+    }
+
+    //add all points
+    foreach(Point *p, function->getPoints()){
+
+        //Point cpyPRef(*p);
+        //cpyPRef.setIsSolved(true);
+        //Point cpyPStart(*p);
+        //cpyPStart.setIsSolved(true);
+
+        foreach (Observation *obs, p->getObservations()) {
+            if(obs->myStation->coordSys == tp->getStartSystem()){
+                if(obs->myReading->measuredAt.time() > startTime.time().addSecs(-60) &&
+                        obs->myReading->measuredAt.time() < startTime.time().addSecs(60)){
+                    obs->isValid = true;
+                }else{
+                    obs->isValid = false;
+                }
+            }else{
+                obs->isValid = false;
+            }
+
+        }
+        p->recalc();
+        Point cpyPRef(*p);
+        cpyPRef.setIsSolved(true);
+        mySorter.addRefPoint(cpyPRef);
+
+        foreach (Observation *obs, p->getObservations()) {
+            if(obs->myStation->coordSys == tp->getStartSystem()){
+                if(obs->myReading->measuredAt.time() > tp->getValidTime().time().addSecs(-60) &&
+                        obs->myReading->measuredAt.time() < tp->getValidTime().time().addSecs(60)){
+                    obs->isValid = true;
+                }else{
+                    obs->isValid = false;
+                }
+            }else{
+                obs->isValid = false;
+            }
+
+        }
+        p->recalc();
+        Point cpyPStart(*p);
+        cpyPStart.setIsSolved(true);
+        mySorter.addLocPoint(cpyPStart);
     }
 
     //add sorted lists to the function

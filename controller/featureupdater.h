@@ -46,6 +46,7 @@ private:
     void fillTrafoParamFunctionNN(SystemTransformation *function, TrafoParam *tp);
     void fillTrafoParamFunctionAN(SystemTransformation *function, TrafoParam *tp);
     void fillTrafoParamFunctionAA(SystemTransformation *function, TrafoParam *tp);
+    void fillTrafoParamFunctionMovement(SystemTransformation *function, TrafoParam *tp);
     void switchCoordinateSystemWithoutTransformation(CoordinateSystem *to);
 
     static void createFeature(MeasurementConfig mConfig, QString name, bool nominal, FeatureAttributesExchange fae);
