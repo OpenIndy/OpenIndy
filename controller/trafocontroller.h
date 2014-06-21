@@ -42,6 +42,9 @@ public slots:
 
 private:
     TrafoParam* findTrafoParam(CoordinateSystem *from, CoordinateSystem *to);
+    QList<TrafoParam*> findMovements(Observation *obs);
+    QList<TrafoParam*> sortMovements(QList<TrafoParam*> movements);
+    void CheckToApplyMovements(CoordinateSystem *from);
     
 };
 

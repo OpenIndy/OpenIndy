@@ -14,8 +14,8 @@ void OiTestTempComp::testTempComp()
     Point *p1 = new Point(false);
     p1->setIsSolved(true);
     p1->setFeatureName("1");
-    p1->xyz.setAt(0,50.0);
-    p1->xyz.setAt(1,40.0);
+    p1->xyz.setAt(0,50.0001);
+    p1->xyz.setAt(1,40.0002);
     p1->xyz.setAt(2,3.0);
     Point *p2 = new Point(true);
     p2->setIsSolved(true);
@@ -27,8 +27,8 @@ void OiTestTempComp::testTempComp()
     p3->setIsSolved(true);
     p3->setFeatureName("2");
     p3->xyz.setAt(0,50.0);
-    p3->xyz.setAt(1,70.0);
-    p3->xyz.setAt(2,3.0);
+    p3->xyz.setAt(1,50.0);
+    p3->xyz.setAt(2,2.99997);
     Point *p4 = new Point(true);
     p4->setIsSolved(true);
     p4->setFeatureName("2");
@@ -38,9 +38,9 @@ void OiTestTempComp::testTempComp()
     Point *p5 = new Point(false);
     p5->setIsSolved(true);
     p5->setFeatureName("3");
-    p5->xyz.setAt(0,45.0);
-    p5->xyz.setAt(1,70.0);
-    p5->xyz.setAt(2,3.0);
+    p5->xyz.setAt(0,40.0);
+    p5->xyz.setAt(1,50.0001);
+    p5->xyz.setAt(2,3.00015);
     Point *p6 = new Point(true);
     p6->setIsSolved(true);
     p6->setFeatureName("3");
@@ -50,7 +50,7 @@ void OiTestTempComp::testTempComp()
     Point *p7 = new Point(false);
     p7->setIsSolved(true);
     p7->setFeatureName("4");
-    p7->xyz.setAt(0,45.0);
+    p7->xyz.setAt(0,39.9999);
     p7->xyz.setAt(1,40.0);
     p7->xyz.setAt(2,3.0);
     Point *p8 = new Point(true);

@@ -8,6 +8,7 @@ QT += testlib
 QT += core
 QT -= gui
 QT += serialport
+QT += opengl
 CONFIG += testcase
 
 TARGET = tst_plugindebuggertest

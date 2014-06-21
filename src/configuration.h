@@ -6,7 +6,7 @@
 #include <QMetaObject>
 #include <QStringList>
 #include <QDebug>
-#include <QPixmap>
+#include <QtGui/QPixmap>
 
 #include "unitconverter.h"
 

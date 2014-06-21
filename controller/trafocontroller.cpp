@@ -26,21 +26,11 @@ void TrafoController::applyMovements(Observation *obs)
 {
     //find movements for that observation
     QList<TrafoParam*> movements;
-    for(int i=0;i<OiFeatureState::getFeatureCount();i++){
-        if(OiFeatureState::getFeatures().at(i)->getTrafoParam() != NULL && OiFeatureState::getFeatures().at(i)->getTrafoParam()->getIsMovement()){
-            if(OiFeatureState::getFeatures().at(i)->getTrafoParam()->getDestinationSystem() == obs->myStation->coordSys){
-                movements.append(OiFeatureState::getFeatures().at(i)->getTrafoParam());
-            }
-        }
-    }
+    movements = this->findMovements(obs);
+
     if(movements.size()>0){
         //sort list on valid time attributes (ascending)
-        QMap<QDateTime,TrafoParam*> map;
-        for(int k=0;k<movements.size();k++){
-            map.insert(movements.at(k)->getValidTime(),movements.at(k));
-        }
-        movements.clear();
-        movements = map.values();
+        movements = this->sortMovements(movements);
 
         //apply movement
         /*find the last movement that has a smaller timestamp than the observation and apply it.
@@ -107,6 +97,8 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
     if(from != NULL){
 
         if(from == OiFeatureState::getActiveCoordinateSystem()){
+            //set observations valid, because start system is also target system. So you don´t need to transform
+            setObservationState(from,true);
             return true;
         }
 
@@ -127,14 +119,11 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
 
             //then apply movements if active system is a part system
             //if active system is a station => do nothing
-            if(OiFeatureState::getCoordinateSystems().contains(from)){
-                foreach (Observation *obs, from->getObservations()) {
-                    applyMovements(obs);
-                }
-            }
+            this->CheckToApplyMovements(from);
 
             return true;
-        }else{ //no trafo params available from this coordsys to active coord sys.
+
+        }else{ //no trafo params available from this coordsystem to active coord system.
                //search for datumstransformation of other station
             foreach(TrafoParam *tp, from->getTransformationParameters()){
                 foreach (TrafoParam *t, tp->getStartSystem()->getTransformationParameters()) {
@@ -153,11 +142,8 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                         }
                         //then apply movements if active system is a part system
                         //if active system is a station => do nothing
-                        if(OiFeatureState::getCoordinateSystems().contains(from)){
-                            foreach (Observation *obs, from->getObservations()) {
-                                applyMovements(obs);
-                            }
-                        }
+                        this->CheckToApplyMovements(from);
+
                         return true;
                     }else if(t->getisDatumTrafo() && t->getIsUsed() && t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
                         OiMat tt = t->getHomogenMatrix();
@@ -174,11 +160,8 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                         }
                         //then apply movements if active system is a part system
                         //if active system is a station => do nothing
-                        if(OiFeatureState::getCoordinateSystems().contains(from)){
-                            foreach (Observation *obs, from->getObservations()) {
-                                applyMovements(obs);
-                            }
-                        }
+                        this->CheckToApplyMovements(from);
+
                         return true;
                     }
                 }
@@ -198,11 +181,8 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                         }
                         //then apply movements if active system is a part system
                         //if active system is a station => do nothing
-                        if(OiFeatureState::getCoordinateSystems().contains(from)){
-                            foreach (Observation *obs, from->getObservations()) {
-                                applyMovements(obs);
-                            }
-                        }
+                        this->CheckToApplyMovements(from);
+
                         return true;
                     }else if(t->getisDatumTrafo() && t->getIsUsed() && t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
                         OiMat tt = t->getHomogenMatrix();
@@ -219,11 +199,8 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                         }
                         //then apply movements if active system is a part system
                         //if active system is a station => do nothing
-                        if(OiFeatureState::getCoordinateSystems().contains(from)){
-                            foreach (Observation *obs, from->getObservations()) {
-                                applyMovements(obs);
-                            }
-                        }
+                        this->CheckToApplyMovements(from);
+
                         return true;
                     }
                 }
@@ -247,7 +224,6 @@ void TrafoController::setObservationState(CoordinateSystem *cs, bool valid)
 {
     foreach(Observation *obs, cs->getObservations()){
         if(valid == true){
-            //applyMovements(obs);
             obs->myXyz = obs->myOriginalXyz;
         }
         obs->isValid = valid;
@@ -310,4 +286,67 @@ TrafoParam *TrafoController::findTrafoParam(CoordinateSystem *from, CoordinateSy
         }
     }
     return NULL;
+}
+
+/*!
+ * \brief findMovements for the coordinate system of the observation
+ * \param obs
+ * \return
+ */
+QList<TrafoParam *> TrafoController::findMovements(Observation *obs)
+{
+    QList<TrafoParam*> movements;
+    for(int i=0;i<OiFeatureState::getFeatureCount();i++){
+        if(OiFeatureState::getFeatures().at(i)->getTrafoParam() != NULL && OiFeatureState::getFeatures().at(i)->getTrafoParam()->getIsMovement()){
+            if(OiFeatureState::getFeatures().at(i)->getTrafoParam()->getDestinationSystem() == obs->myStation->coordSys){
+                if(OiFeatureState::getFeatures().at(i)->getTrafoParam()->getIsUsed()){
+                    movements.append(OiFeatureState::getFeatures().at(i)->getTrafoParam());
+                }
+            }
+        }
+    }
+
+    return movements;
+}
+
+/*!
+ * \brief sortMovements ascending on their valid time attributes using a QMap
+ * \param movements
+ * \return
+ */
+QList<TrafoParam *> TrafoController::sortMovements(QList<TrafoParam *> movements)
+{
+    QMap<QDateTime,TrafoParam*> map;
+    for(int k=0;k<movements.size();k++){
+        map.insert(movements.at(k)->getValidTime(),movements.at(k));
+    }
+    movements.clear();
+    movements = map.values();
+
+    return movements;
+}
+
+/*!
+ * \brief CheckToApplyMovements checks if a movement has to be applied or not.
+ * If you need to apply a movement, this function will apply it, else it won´t do anything.
+ * If active system is a PART system, movements can be applied.
+ * If active system is a station coord system, don´t apply movements !!!
+ * \param from
+ */
+void TrafoController::CheckToApplyMovements(CoordinateSystem *from)
+{
+    //check if active system is a PART
+    if(OiFeatureState::getCoordinateSystems().contains(OiFeatureState::getActiveCoordinateSystem())){
+        QList<Station*> stations = OiFeatureState::getStations();
+        for(int i=0;i<stations.size();i++){
+            //check if from is a station with observations
+            if(stations.at(i)->coordSys == from){
+                //apply movements on the part-transformed obs of the station
+                foreach (Observation *obs, from->getObservations()) {
+                    applyMovements(obs);
+                }
+                break; //exit, because from was found
+            }
+        }
+    }
 }

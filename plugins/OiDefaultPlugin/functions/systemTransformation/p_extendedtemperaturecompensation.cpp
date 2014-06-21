@@ -434,21 +434,21 @@ OiVec ExtendedTemperatureCompensation::approxScale()
 
         //locScale = this->locSystem.at(1) - this->locSystem.at(0);
         //refScale = this->refSystem.at(1) - this->refSystem.at(0);
-        if(refScale.getAt(0) == 0 && locScale.getAt(0) == 0){
+        if(refScale.getAt(0) == 0 || locScale.getAt(0) == 0){
             scaleX = 1.0;
         }else{
             scaleX = refScale.getAt(0) / locScale.getAt(0);
         }
         scaleX = qFabs(scaleX);
 
-        if(refScale.getAt(1) == 0 && locScale.getAt(1) == 0){
+        if(refScale.getAt(1) == 0 || locScale.getAt(1) == 0){
             scaleY = 1.0;
         }else{
             scaleY = refScale.getAt(1) / locScale.getAt(1);
         }
         scaleY = qFabs(scaleY);
 
-        if(refScale.getAt(2) == 0 && locScale.getAt(2) == 0){
+        if(refScale.getAt(2) == 0 || locScale.getAt(2) == 0){
             scaleZ = 1.0;
         }else{
            scaleZ = refScale.getAt(2) / locScale.getAt(2);
@@ -720,7 +720,8 @@ vector<OiVec> ExtendedTemperatureCompensation::centroidReducedCoord(QList<OiVec>
        c.add(coord.getAt(0));
        c.add(coord.getAt(1));
        c.add(coord.getAt(2));
-       OiVec rc = c - centroid;
+       OiVec rc;
+       rc = c-centroid;
        result.push_back(rc);
     }
 
