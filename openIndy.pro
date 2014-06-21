@@ -39,6 +39,7 @@ INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/src/geometry
 INCLUDEPATH += $$PWD/src/plugin
+INCLUDEPATH += $$PWD/src/simulation
 INCLUDEPATH += $$PWD/controller/oiDataExchange
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
 
@@ -158,7 +159,11 @@ SOURCES += \
     controller/oiDataExchange/oiexchangepts.cpp \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
-    ui/oiGraphixFactory/oigraphix_pointcloud.cpp
+    ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
+    src/simulation/uncertaintycomponent.cpp \
+    controller/simulationcontroller.cpp \
+    ui/histogram.cpp
+
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -282,7 +287,11 @@ HEADERS  += \
     controller/oiDataExchange/oiexchangepts.h \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
-    ui/oiGraphixFactory/oigraphix_pointcloud.h
+    ui/oiGraphixFactory/oigraphix_pointcloud.h \
+    src/simulation/simulationmodel.h \
+    src/simulation/uncertaintycomponent.h \
+    controller/simulationcontroller.h \
+    ui/histogram.h
 
 
 FORMS    += ui/mainwindow.ui \

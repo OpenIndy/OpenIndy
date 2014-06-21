@@ -1158,6 +1158,11 @@ TrafoParam* FeatureUpdater::findTrafoParam(CoordinateSystem *searchSystem, QList
     return NULL;
 }
 
+void FeatureUpdater::recalcAll()
+{
+    //TODO Recalc all features and trafoParams
+}
+
 /*!
  * \brief FeatureUpdater::fillTrafoParamFunctionNN
  * Fill Trafo Param function with start and target features where start and target system are nominal systems

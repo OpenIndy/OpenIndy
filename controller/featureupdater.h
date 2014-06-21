@@ -39,6 +39,7 @@ public slots:
     void recalcFeatureSet();
     void switchCoordinateSystem(CoordinateSystem *to);
     TrafoParam* findTrafoParam(CoordinateSystem *searchSystem, QList<TrafoParam *> trafoParams);
+    void recalcAll();
 
     //bool deleteFeature(FeatureWrapper *myFeatureWrapper);
 
