@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QPainter>
+#include <QToolTip>
+#include <QMouseEvent>
 
 class Histogram : public QWidget
 {
@@ -16,6 +18,7 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent* event);
+    void mouseMoveEvent(QMouseEvent * event);
 
 };
 

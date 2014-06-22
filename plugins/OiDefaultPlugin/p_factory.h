@@ -49,6 +49,8 @@
 #include "p_leicatachymeter.h"
 #include "p_pseudosensor.h"
 
+#include "simplepolarmeasurement.h"
+
 class OiTemplatePlugin : public QObject, OiPlugin
 {
     Q_OBJECT
@@ -61,9 +63,11 @@ public:
     QList<Sensor*> createSensors();
     QList<Function*> createFunctions();
     QList<NetworkAdjustment*> createNetworkAdjustments();
+    QList<SimulationModel*> createSimulations();
     Sensor* createSensor(QString name);
     Function* createFunction(QString name);
     NetworkAdjustment* createNetworkAdjustment(QString name);
+    SimulationModel* createSimulation(QString name);
 
 };
 

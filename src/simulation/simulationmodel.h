@@ -34,7 +34,7 @@ class SimulationModel
 
 public:
 
-    virtual ~SimulationModel();
+    virtual ~SimulationModel(){}
 
     /*!
      * \brief getMetaData

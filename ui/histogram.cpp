@@ -4,6 +4,8 @@
 Histogram::Histogram(QWidget *parent) :
     QWidget(parent)
 {
+
+    this->setMouseTracking(true);
 }
 
 void Histogram::paintEvent(QPaintEvent *event)
@@ -12,16 +14,16 @@ void Histogram::paintEvent(QPaintEvent *event)
     //#####testdata######
     QVector<double> _bins;
     int _heightMax = 1;
-    /*for(int i = 0; i<100;i++){
-        double U = (double) rand() / (double) RAND_MAX;
-           double F = (3 - 1) / (4 - 1);
+    for(int i = 0; i<10;i++){
+        double rv = (double) rand() / (double) RAND_MAX;
+           /*double F = (3 - 1) / (4 - 1);
            double rv;
            if (U <= F)
             rv =  1 + sqrt(U * (4 - 1) * (3 - 1));
            else
-            rv = 4 - sqrt((1 - U) * (4 - 1) * (4 - 3));
+            rv = 4 - sqrt((1 - U) * (4 - 1) * (4 - 3));*/
         _bins.append(rv);
-    }*/
+    }
     //#################
 
     QRect viewPort = rect();
@@ -36,7 +38,7 @@ void Histogram::paintEvent(QPaintEvent *event)
 
     QPen pen;
     pen.setColor(Qt::black);
-    pen.setWidth(1);
+    pen.setWidth(2);
     painter.setPen(pen);
 
     QBrush brush(Qt::SolidPattern);
@@ -46,29 +48,7 @@ void Histogram::paintEvent(QPaintEvent *event)
     // ---- Draw gray background ------------------------------------------------
     painter.drawRect(xLeft, yTop, xRight, yBottom);
 
-    // ---- Draw vertical lines -------------------------------------------------
-    pen.setColor("#AAAAAA");
-    pen.setStyle(Qt::DashDotLine);
-    painter.setPen(pen);
 
-    int stepsV = 1<< int(log(width/40.0f)/log(2.0f));
-    for(int i=1; i<stepsV; ++i)
-    {
-        painter.drawLine(width*float(i)/stepsV, yTop+1,
-                         width*float(i)/stepsV, yBottom-1);
-
-        painter.drawText(width*float(i)/stepsV,yBottom, QString::number(i));
-    }
-
-    // ---- Draw horizontal lines -----------------------------------------------
-    int stepsH = 1<< int(log(height/40.0f)/log(2.0f));
-    for(int i=1; i<stepsH; ++i)
-    {
-        painter.drawLine(xLeft+1, height*float(i)/stepsH,
-                         xRight-1,height*float(i)/stepsH);
-
-        painter.drawText(0,height*float(i)/stepsH, QString::number(i));
-    }
 
     // ---- Histogram itself ----------------------------------------------------
        int nbBins = _bins.size();
@@ -104,17 +84,18 @@ void Histogram::paintEvent(QPaintEvent *event)
 
            // log(bins)
            pen.setColor("#00aaee");   painter.setPen(pen);
-           linearGradient.setColorAt(0.2, Qt::white);
-           linearGradient.setColorAt(1.0, "#00aaee");
-           painter.setBrush(linearGradient);
+           //linearGradient.setColorAt(0.2, Qt::white);
+           //linearGradient.setColorAt(1.0, "#00aaee");
+           //painter.setBrush(linearGradient);
+
 
            //brush.setColor("#00aaee"); painter.setBrush(brush);
 
-           myPolygon.clear();
+           /*myPolygon.clear();
            myPolygon << QPoint(xRight, yBottom) << QPoint(xLeft, yBottom);
            for( int i=0; i<nbBins; ++i )
                myPolygon << QPoint(xLeft+wScale*i, yTop+hScaleLog*( _bins[i] ? log(_heightMax/float(_bins[i])) : _heightMax));
-           painter.drawPolygon(myPolygon);
+           painter.drawPolygon(myPolygon);*/
 
            // bins
            pen.setColor("#016790");
@@ -125,9 +106,12 @@ void Histogram::paintEvent(QPaintEvent *event)
 
            myPolygon.clear();
            myPolygon << QPoint(xRight, yBottom) << QPoint(xLeft, yBottom);
-           for( int i=0; i<nbBins; ++i )
+           for( int i=0; i<nbBins; ++i ){
                myPolygon << QPoint(xLeft+wScale*i, yTop+hScale*(_heightMax-_bins[i]));
+           }
            painter.drawPolygon(myPolygon);
+
+
        }
        else
        {
@@ -160,4 +144,52 @@ void Histogram::paintEvent(QPaintEvent *event)
                myPolygon << QPoint(xLeft+i, yTop+hScale*(_heightMax-_bins[wScale*i]));
            painter.drawPolygon(myPolygon);
        }
+
+       pen.setColor(Qt::red);
+       pen.setWidth(5);
+       painter.setPen(pen);
+       painter.drawPoints(myPolygon);
+
+       // ---- Draw vertical lines -------------------------------------------------
+       pen.setWidth(1);
+       pen.setColor("#AAAAAA");
+       pen.setStyle(Qt::DashDotLine);
+       painter.setPen(pen);
+
+       int stepsV = 1<< int(log(width/40.0f)/log(2.0f));
+       for(int i=1; i<stepsV; ++i)
+       {
+           pen.setColor("#AAAAAA");
+           painter.setPen(pen);
+           painter.drawLine(width*float(i)/stepsV, yTop+1,
+                            width*float(i)/stepsV, yBottom-1);
+
+
+           pen.setColor(Qt::black);
+           painter.setPen(pen);
+           painter.drawText(width*float(i)/stepsV,yBottom-2, QString::number(i));
+       }
+
+       // ---- Draw horizontal lines -----------------------------------------------
+       int stepsH = 1<< int(log(height/40.0f)/log(2.0f));
+       for(int i=1; i<stepsH; ++i)
+       {
+           pen.setColor("#AAAAAA");
+           painter.setPen(pen);
+           painter.drawLine(xLeft+1, height*float(i)/stepsH,
+                            xRight-1,height*float(i)/stepsH);
+
+           pen.setColor(Qt::black);
+           painter.setPen(pen);
+           painter.drawText(0,height*float(i)/stepsH, QString::number(i));
+       }
+}
+
+void Histogram::mouseMoveEvent(QMouseEvent *event)
+{
+
+    QString x = QString::number(event->x());
+    QString y = QString::number(event->y());
+
+    QToolTip::showText(event->globalPos(),QString("x:"+x+","+"y:"+y),this);
 }

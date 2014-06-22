@@ -11,6 +11,7 @@ TEMPLATE = lib
 TARGET = $$qtLibraryTarget(p_defaultPlugin)
 
 CONFIG += plugin
+CONFIG +=c++11
 
 DEFINES += DEFAULT_LIBRARY
 DEFINES += WITH_FITTING_UTILS
@@ -40,6 +41,7 @@ INCLUDEPATH += $$PWD
 INCLUDEPATH += ../../src
 INCLUDEPATH += ../../src/geometry
 INCLUDEPATH += ../../src/plugin
+INCLUDEPATH += ../../src/simulation
 INCLUDEPATH += ../../lib/openIndyLib/include
 
 INCLUDEPATH += $$PWD/sensors/laserTracker/pseudoTracker
@@ -49,6 +51,7 @@ INCLUDEPATH += $$PWD/functions/construct
 INCLUDEPATH += $$PWD/functions/fit
 INCLUDEPATH += $$PWD/functions/objectTransformation
 INCLUDEPATH += $$PWD/functions/systemTransformation
+INCLUDEPATH += $$PWD/simulations/simplePolarMeasurement
 
 INCLUDEPATH += $$PWD/lib/fitting
 INCLUDEPATH += $$PWD/lib/fitting/util
@@ -129,7 +132,9 @@ SOURCES += p_factory.cpp \
     ../../src/geometry/ellipsoid.cpp \
     ../../src/geometry/cylinder.cpp \
     ../../src/geometry/cone.cpp \
-    ../../src/geometry/circle.cpp
+    ../../src/geometry/circle.cpp \
+    ../../src/simulation/uncertaintycomponent.cpp \
+    simulations/simplePolarMeasurement/simplepolarmeasurement.cpp
 
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
@@ -221,7 +226,10 @@ HEADERS += p_factory.h \
     ../../src/geometry/ellipsoid.h \
     ../../src/geometry/cylinder.h \
     ../../src/geometry/cone.h \
-    ../../src/geometry/circle.h
+    ../../src/geometry/circle.h \
+    ../../src/simulation/simulationmodel.h \
+    ../../src/simulation/uncertaintycomponent.h \
+    simulations/simplePolarMeasurement/simplepolarmeasurement.h
 
 
 OTHER_FILES += metaInfo.json

@@ -17,8 +17,10 @@ public:
 
     double value; //magnitude of the error
     double uncertainty; // uncertainty of the error
-    UnitConverter::unitType errorUnit; // unit type of the error (metric, angular, ...)
-    UnitConverter::dimensionType errorDimension; // dimension of the unit (mm, m ,...)
+    UnitConverter::unitType errorUnit; // dimension of the unit (mm, m ,...)
+    UnitConverter::dimensionType errorDimension; // unit type of the error (metric, angular, ...)
+
+    QStringList description;
 
     QStringList distributions; //distributions in which the error could be determined at random
 
