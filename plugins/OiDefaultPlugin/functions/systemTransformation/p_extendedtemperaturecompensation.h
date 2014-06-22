@@ -33,6 +33,8 @@ public:
 
 private:
 
+    QStringList protocol;
+
     bool svdError;
 
     QList<OiVec> locSystem;

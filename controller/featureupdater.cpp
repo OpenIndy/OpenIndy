@@ -1515,18 +1515,13 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
         return;
     }
 
-    //add all points
+    //edit the points and assign them to the right list.
     foreach(Point *p, function->getPoints()){
 
-        //Point cpyPRef(*p);
-        //cpyPRef.setIsSolved(true);
-        //Point cpyPStart(*p);
-        //cpyPStart.setIsSolved(true);
-
         foreach (Observation *obs, p->getObservations()) {
-            if(obs->myStation->coordSys == tp->getStartSystem()){
-                if(obs->myReading->measuredAt.time() > startTime.time().addSecs(-60) &&
-                        obs->myReading->measuredAt.time() < startTime.time().addSecs(60)){
+            if(obs->myStation->coordSys == tp->getStartSystem()){ //only obs of the coord system of the movement
+                if(obs->myReading->measuredAt.time() > startTime.time().addSecs(-600) && //is obs in the time span
+                        obs->myReading->measuredAt.time() < startTime.time().addSecs(600)){ //for being a reference obs
                     obs->isValid = true;
                 }else{
                     obs->isValid = false;
@@ -1534,17 +1529,18 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
             }else{
                 obs->isValid = false;
             }
-
         }
-        p->recalc();
-        Point cpyPRef(*p);
-        cpyPRef.setIsSolved(true);
-        mySorter.addRefPoint(cpyPRef);
+        p->recalc(); //recalc points only with obs that are in the reference time span
+        if(p->getIsSolved()){ //if point can be recalced
+            Point cpyPRef(*p); //create a copy and assign to the reference list
+            cpyPRef.setIsSolved(true);
+            mySorter.addRefPoint(cpyPRef);
+        }
 
         foreach (Observation *obs, p->getObservations()) {
-            if(obs->myStation->coordSys == tp->getStartSystem()){
-                if(obs->myReading->measuredAt.time() > tp->getValidTime().time().addSecs(-60) &&
-                        obs->myReading->measuredAt.time() < tp->getValidTime().time().addSecs(60)){
+            if(obs->myStation->coordSys == tp->getStartSystem()){//only obs of the coord system of the movement
+                if(obs->myReading->measuredAt.time() > tp->getValidTime().time().addSecs(-600) && //is obs in the time span
+                        obs->myReading->measuredAt.time() < tp->getValidTime().time().addSecs(600)){ //for being a actual obs
                     obs->isValid = true;
                 }else{
                     obs->isValid = false;
@@ -1552,12 +1548,13 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
             }else{
                 obs->isValid = false;
             }
-
         }
-        p->recalc();
-        Point cpyPStart(*p);
-        cpyPStart.setIsSolved(true);
-        mySorter.addLocPoint(cpyPStart);
+        p->recalc(); //recalc points only with obs that are in the actual time span
+        if(p->getIsSolved()){ //if point can be recalced
+            Point cpyPStart(*p); //create a copy and assign to the actual list
+            cpyPStart.setIsSolved(true);
+            mySorter.addLocPoint(cpyPStart);
+        }
     }
 
     //add sorted lists to the function
@@ -1578,6 +1575,9 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
     if(!tp->getDestinationSystem()->getIsActiveCoordinateSystem()){
         this->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
     }
+
+    //recalc featureSet, because some observations are disabled. So the feature uses all its observations again now
+    this->recalcFeatureSet();
 }
 
 /*!

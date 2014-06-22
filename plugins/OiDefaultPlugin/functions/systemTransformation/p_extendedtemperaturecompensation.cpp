@@ -52,6 +52,7 @@ QList<Configuration::FeatureTypes> ExtendedTemperatureCompensation::applicableFo
  */
 bool ExtendedTemperatureCompensation::exec(TrafoParam &tp)
 {
+    this->protocol.clear();
     this->svdError = false;
 
     if(this->isValid()){
@@ -184,8 +185,11 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
 
             if(useTemp){
                 double sx = 1.0/(1.0+((x0.getAt(3)-refTemp)*expansionCoefficient));
+                this->protocol.append(QString("scale x representing an expansion of " + QString::number(sx,'f',2)+"[°C]"));
                 double sy = 1.0/(1.0+((x0.getAt(4)-refTemp)*expansionCoefficient));
+                this->protocol.append(QString("scale y representing an expansion of " + QString::number(sy,'f',2)+"[°C]"));
                 double sz = 1.0/(1.0+((x0.getAt(5)-refTemp)*expansionCoefficient));
+                this->protocol.append(QString("scale z representing an expansion of " + QString::number(sz,'f',2)+"[°C]"));
                 tp.setScale(sx,sy,sz);
             }else{
                 tp.setScale(this->scale.getAt(0)*x0.getAt(3),this->scale.getAt(1)*x0.getAt(4),this->scale.getAt(2)*x0.getAt(5));
@@ -249,9 +253,7 @@ QMap<QString, double> ExtendedTemperatureCompensation::getDoubleParameter()
  */
 QStringList ExtendedTemperatureCompensation::getResultProtocol()
 {
-    QStringList result;
-    result.append("no protocoll set");
-    return result;
+    return this->protocol;
 }
 
 /*!
@@ -296,27 +298,34 @@ void ExtendedTemperatureCompensation::getExtraParameter()
     if(stringParameter.contains("material")){
         QString mat = static_cast<QString>(stringParameter.find("material").value());
         expansionCoefficient = Configuration::getExpansionCoefficient(mat);
+        this->protocol.append(QString("material: " + mat));
+        this->protocol.append(QString("expansion coefficient: " + QString::number(expansionCoefficient,'f',6)));
     }
     //
     if(stringParameter.contains("useTemperature")){
         QString temp = static_cast<QString>(stringParameter.find("useTemperature").value());
         if(temp.compare("true")== 0){
             useTemp = true;
+            this->protocol.append("use temperature as scale: yes");
         }else{
             useTemp = false;
+            this->protocol.append("use temperature as scale: no");
         }
     }
     //get reference temperature from double parameter
     if(doubleParameter.contains("referenceTemperature")){
         refTemp = static_cast<double>(doubleParameter.find("referenceTemperature").value());
+        this->protocol.append(QString("reference temperature: " + QString::number(refTemp,'f',2)));
     }
     //get actual temperature from double parameter
     if(doubleParameter.contains("actualTemperature")){
         actTemp = static_cast<double>(doubleParameter.find("actualTemperature").value());
+        this->protocol.append(QString("actual temperature: " + QString::number(actTemp,'f',2)));
     }
     //get temperature accuracy from double parameter
     if(doubleParameter.contains("temperatureAccuracy")){
         tempAccuracy = static_cast<double>(doubleParameter.find("temperatureAccuracy").value());
+        this->protocol.append(QString("accuracy of temperature measurement: " + QString::number(tempAccuracy,'f',2)));
     }
 }
 
@@ -434,21 +443,21 @@ OiVec ExtendedTemperatureCompensation::approxScale()
 
         //locScale = this->locSystem.at(1) - this->locSystem.at(0);
         //refScale = this->refSystem.at(1) - this->refSystem.at(0);
-        if(refScale.getAt(0) == 0 || locScale.getAt(0) == 0){
+        if(refScale.getAt(0) <= 0.01 || locScale.getAt(0) <= 0.01){
             scaleX = 1.0;
         }else{
             scaleX = refScale.getAt(0) / locScale.getAt(0);
         }
         scaleX = qFabs(scaleX);
 
-        if(refScale.getAt(1) == 0 || locScale.getAt(1) == 0){
+        if(refScale.getAt(1) <= 0.01 || locScale.getAt(1) <= 0.01){
             scaleY = 1.0;
         }else{
             scaleY = refScale.getAt(1) / locScale.getAt(1);
         }
         scaleY = qFabs(scaleY);
 
-        if(refScale.getAt(2) == 0 || locScale.getAt(2) == 0){
+        if(refScale.getAt(2) <= 0.01 || locScale.getAt(2) <= 0.01){
             scaleZ = 1.0;
         }else{
            scaleZ = refScale.getAt(2) / locScale.getAt(2);
