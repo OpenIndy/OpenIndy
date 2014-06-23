@@ -42,7 +42,7 @@ bool oiProjectExchanger::saveSettings(QString name){
     return false;
 }
 
-
+//can be deleted... logic will be solved by the restorer
 bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
 
     foreach (FeatureWrapper *fg, oiProjectExchanger::geometries){
