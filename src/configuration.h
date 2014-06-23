@@ -148,7 +148,10 @@ public:
         eReadingCartesianElement,
         eReadingPolarElement,
         eReadingDistanceElement,
-        eReadingDirectionElement
+        eReadingDirectionElement,
+        eReadingTemperatureElement,
+        eReadingLevelElement,
+        eScalarEntityMeasurementSeriesElement
     };
 
     enum SensorFunctionalities{
@@ -188,9 +191,10 @@ public:
 
     static int generateID();
 
-    static Configuration::ElementTypes getElementTypeEnum(QString s);
-    static Configuration::FeatureTypes getFeatureTypeEnum(QString s);
-    static QString getElementTypeString(Configuration::ElementTypes e);
+    static Configuration::ElementTypes getElementTypeEnum(QString name);
+    static Configuration::FeatureTypes getFeatureTypeEnum(QString name);
+    static QString getElementTypeString(Configuration::ElementTypes type);
+    static QString getFeatureTypeString(Configuration::FeatureTypes type);
 
     static double getExpansionCoefficient(QString material);
     static double getExpansionCoefficient(Configuration::Materials material);

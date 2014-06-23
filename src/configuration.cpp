@@ -34,12 +34,11 @@ QString Configuration::sNurbs = "nurbs";
 QString Configuration::sEntityTemperature = "sEntity temperature";
 QString Configuration::sEntityMeasurementSeries = "sEntity measurement series";
 
-
 QString Configuration::sDistance = "distance";
 QString Configuration::sCartesian = "cartesian";
 QString Configuration::sPolar = "polar";
 QString Configuration::sDirection = "direction";
-QString Configuration::sTemperatur = "temperatur";
+QString Configuration::sTemperatur = "temperature";
 QString Configuration::sLevel = "level";
 
 QString Configuration::sObservation = "observation";
@@ -75,155 +74,229 @@ int Configuration::generateID(){
     return Configuration::idCount;
 }
 
-Configuration::ElementTypes Configuration::getElementTypeEnum(QString s){
-    if(s.compare(Configuration::sPlane) == 0){
+/*!
+ * \brief Configuration::getElementTypeEnum
+ * Get corresponding enum value from element type name
+ * \param name
+ * \return
+ */
+Configuration::ElementTypes Configuration::getElementTypeEnum(QString name){
+    if(name.compare(Configuration::sPlane) == 0){
         return Configuration::ePlaneElement;
-    }else if(s.compare(Configuration::sPoint) == 0){
+    }else if(name.compare(Configuration::sPoint) == 0){
         return Configuration::ePointElement;
-    }else if(s.compare(Configuration::sLine) == 0){
+    }else if(name.compare(Configuration::sLine) == 0){
         return Configuration::eLineElement;
-    }else if(s.compare(Configuration::sStation) == 0){
+    }else if(name.compare(Configuration::sStation) == 0){
         return Configuration::eStationElement;
-    }else if(s.compare(Configuration::sCoordinatesystem) == 0){
+    }else if(name.compare(Configuration::sCoordinatesystem) == 0){
         return Configuration::eCoordinateSystemElement;
-    }else if(s.compare(Configuration::sSphere) == 0){
+    }else if(name.compare(Configuration::sSphere) == 0){
         return Configuration::eSphereElement;
-    }else if(s.compare(Configuration::sEntitiyAngle) == 0){
+    }else if(name.compare(Configuration::sEntitiyAngle) == 0){
         return Configuration::eScalarEntityAngleElement;
-    }else if(s.compare(Configuration::sEntityDistance) == 0){
+    }else if(name.compare(Configuration::sEntityDistance) == 0){
         return Configuration::eScalarEntityDistanceElement;
-    }else if(s.compare(Configuration::sTrafoParam) == 0){
+    }else if(name.compare(Configuration::sTrafoParam) == 0){
         return Configuration::eTrafoParamElement;
-    }else if(s.compare(Configuration::sCircle) == 0){
+    }else if(name.compare(Configuration::sCircle) == 0){
         return Configuration::eCircleElement;
-    }else if(s.compare(Configuration::sCone) == 0){
+    }else if(name.compare(Configuration::sCone) == 0){
         return Configuration::eConeElement;
-    }else if(s.compare(Configuration::sCylinder) == 0){
+    }else if(name.compare(Configuration::sCylinder) == 0){
         return Configuration::eCylinderElement;
-    }else if(s.compare(Configuration::sEllipsoid) == 0){
+    }else if(name.compare(Configuration::sEllipsoid) == 0){
         return Configuration::eEllipsoidElement;
-    }else if(s.compare(Configuration::sHyperboloid) == 0){
+    }else if(name.compare(Configuration::sHyperboloid) == 0){
         return Configuration::eHyperboloidElement;
-    }else if(s.compare(Configuration::sParaboloid) == 0){
+    }else if(name.compare(Configuration::sParaboloid) == 0){
         return Configuration::eParaboloidElement;
-    }else if(s.compare(Configuration::sNurbs) == 0){
+    }else if(name.compare(Configuration::sNurbs) == 0){
         return Configuration::eNurbsElement;
-    }else if(s.compare(Configuration::sPointCloud) == 0){
+    }else if(name.compare(Configuration::sPointCloud) == 0){
         return Configuration::ePointCloudElement;
-    }else if(s.compare(Configuration::sObservation) == 0){
+    }else if(name.compare(Configuration::sObservation) == 0){
         return Configuration::eObservationElement;
-    }else if(s.compare(Configuration::sEntityTemperature) == 0){
+    }else if(name.compare(Configuration::sEntityTemperature) == 0){
         return Configuration::eScalarEntityTemperatureElement;
+    }else if(name.compare(Configuration::sDirection) == 0){
+        return Configuration::eReadingDirectionElement;
+    }else if(name.compare(Configuration::sDistance) == 0){
+        return Configuration::eReadingDistanceElement;
+    }else if(name.compare(Configuration::sCartesian) == 0){
+        return Configuration::eReadingCartesianElement;
+    }else if(name.compare(Configuration::sPolar) == 0){
+        return Configuration::eReadingPolarElement;
+    }else if(name.compare(Configuration::sTemperatur) == 0){
+        return Configuration::eReadingTemperatureElement;
+    }else if(name.compare(Configuration::sLevel) == 0){
+        return Configuration::eReadingLevelElement;
+    }else if(name.compare(Configuration::sEntityMeasurementSeries) == 0){
+        return Configuration::eScalarEntityMeasurementSeriesElement;
     }
 }
 
 /*!
  * \brief Configuration::getFeatureTypeEnum
+ * Get corresponding enum value from feature type name
  * \param s
  * \return
  */
-Configuration::FeatureTypes Configuration::getFeatureTypeEnum(QString s){
-    if(s.compare(Configuration::sPlane) == 0){
+Configuration::FeatureTypes Configuration::getFeatureTypeEnum(QString name){
+    if(name.compare(Configuration::sPlane) == 0){
         return Configuration::ePlaneFeature;
-    }else if(s.compare(Configuration::sPoint) == 0){
+    }else if(name.compare(Configuration::sPoint) == 0){
         return Configuration::ePointFeature;
-    }else if(s.compare(Configuration::sLine) == 0){
+    }else if(name.compare(Configuration::sLine) == 0){
         return Configuration::eLineFeature;
-    }else if(s.compare(Configuration::sStation) == 0){
+    }else if(name.compare(Configuration::sStation) == 0){
         return Configuration::eStationFeature;
-    }else if(s.compare(Configuration::sCoordinatesystem) == 0){
+    }else if(name.compare(Configuration::sCoordinatesystem) == 0){
         return Configuration::eCoordinateSystemFeature;
-    }else if(s.compare(Configuration::sSphere) == 0){
+    }else if(name.compare(Configuration::sSphere) == 0){
         return Configuration::eSphereFeature;
-    }else if(s.compare(Configuration::sEntitiyAngle) == 0){
+    }else if(name.compare(Configuration::sEntitiyAngle) == 0){
         return Configuration::eScalarentityAngleFeature;
-    }else if(s.compare(Configuration::sEntityDistance) == 0){
+    }else if(name.compare(Configuration::sEntityDistance) == 0){
         return Configuration::eScalarEntityDistanceFeature;
-    }else if(s.compare(Configuration::sTrafoParam) == 0){
+    }else if(name.compare(Configuration::sTrafoParam) == 0){
         return Configuration::eTrafoParamFeature;
-    }else if(s.compare(Configuration::sCircle) == 0){
+    }else if(name.compare(Configuration::sCircle) == 0){
         return Configuration::eCircleFeature;
-    }else if(s.compare(Configuration::sCone) == 0){
+    }else if(name.compare(Configuration::sCone) == 0){
         return Configuration::eConeFeature;
-    }else if(s.compare(Configuration::sCylinder) == 0){
+    }else if(name.compare(Configuration::sCylinder) == 0){
         return Configuration::eCylinderFeature;
-    }else if(s.compare(Configuration::sEllipsoid) == 0){
+    }else if(name.compare(Configuration::sEllipsoid) == 0){
         return Configuration::eEllipsoidFeature;
-    }else if(s.compare(Configuration::sHyperboloid) == 0){
+    }else if(name.compare(Configuration::sHyperboloid) == 0){
         return Configuration::eHyperboloidFeature;
-    }else if(s.compare(Configuration::sParaboloid) == 0){
+    }else if(name.compare(Configuration::sParaboloid) == 0){
         return Configuration::eParaboloidFeature;
-    }else if(s.compare(Configuration::sNurbs) == 0){
+    }else if(name.compare(Configuration::sNurbs) == 0){
         return Configuration::eNurbsFeature;
-    }else if(s.compare(Configuration::sPointCloud) == 0){
+    }else if(name.compare(Configuration::sPointCloud) == 0){
         return Configuration::ePointCloudFeature;
-    }else if(s.compare(Configuration::sEntityTemperature) == 0){
+    }else if(name.compare(Configuration::sEntityTemperature) == 0){
         return Configuration::eScalarEntityTemperatureFeature;
+    }else if(name.compare(Configuration::sEntityMeasurementSeries) == 0){
+        return Configuration::eScalarEntityMeasurementSeriesFeature;
     }
 }
 
-QString Configuration::getElementTypeString(Configuration::ElementTypes e){
-    switch (e) {
+/*!
+ * \brief Configuration::getElementTypeString
+ * Get element type name from corresponding enum value
+ * \param type
+ * \return
+ */
+QString Configuration::getElementTypeString(Configuration::ElementTypes type){
+    switch (type) {
     case Configuration::ePlaneElement:
         return Configuration::sPlane;
-        break;
     case Configuration::ePointElement:
         return Configuration::sPoint ;
-        break;
     case Configuration::eLineElement:
         return Configuration::sLine;
-        break;
     case Configuration::eStationElement:
         return Configuration::sStation;
-        break;
     case Configuration::eCoordinateSystemElement:
         return Configuration::sCoordinatesystem;
-        break;
     case Configuration::eSphereElement:
         return Configuration::sSphere;
-        break;
     case Configuration::eScalarEntityAngleElement:
         return Configuration::sEntitiyAngle;
-        break;
     case Configuration::eScalarEntityDistanceElement:
         return Configuration::sEntityDistance;
-         break;
     case Configuration::eTrafoParamElement:
         return Configuration::sTrafoParam;
-        break;
     case Configuration::eCircleElement:
         return Configuration::sCircle;
-        break;
     case Configuration::eConeElement:
         return Configuration::sCone;
-        break;
     case Configuration::eCylinderElement:
         return Configuration::sCylinder;
-        break;
     case Configuration::eEllipsoidElement:
         return Configuration::sEllipsoid;
-        break;
     case Configuration::eHyperboloidElement:
         return Configuration::sHyperboloid;
-        break;
     case Configuration::eParaboloidElement:
         return Configuration::sParaboloid;
-        break;
     case Configuration::eNurbsElement:
         return Configuration::sNurbs;
-        break;
     case Configuration::ePointCloudElement:
         return Configuration::sPointCloud;
-        break;
     case Configuration::eObservationElement:
         return Configuration::sObservation;
-        break;
     case Configuration::eScalarEntityTemperatureElement:
         return Configuration::sEntityTemperature;
-        break;
+    case Configuration::eReadingDistanceElement:
+        return Configuration::sDistance;
+    case Configuration::eReadingCartesianElement:
+        return Configuration::sCartesian;
+    case Configuration::eReadingPolarElement:
+        return Configuration::sPolar;
+    case Configuration::eReadingDirectionElement:
+        return Configuration::sDirection;
+    case Configuration::eReadingLevelElement:
+        return Configuration::sLevel;
+    case Configuration::eReadingTemperatureElement:
+        return Configuration::sTemperatur;
+    case Configuration::eScalarEntityMeasurementSeriesElement:
+        return Configuration::sEntityMeasurementSeries;
     default:
         return "";
-        break;
+    }
+}
+
+/*!
+ * \brief Configuration::getFeatureTypeString
+ * Get feature type name from corresponding enum value
+ * \param type
+ * \return
+ */
+QString Configuration::getFeatureTypeString(Configuration::FeatureTypes type){
+    switch (type) {
+    case Configuration::ePlaneFeature:
+        return Configuration::sPlane;
+    case Configuration::ePointFeature:
+        return Configuration::sPoint ;
+    case Configuration::eLineFeature:
+        return Configuration::sLine;
+    case Configuration::eStationFeature:
+        return Configuration::sStation;
+    case Configuration::eCoordinateSystemFeature:
+        return Configuration::sCoordinatesystem;
+    case Configuration::eSphereFeature:
+        return Configuration::sSphere;
+    case Configuration::eScalarentityAngleFeature:
+        return Configuration::sEntitiyAngle;
+    case Configuration::eScalarEntityDistanceFeature:
+        return Configuration::sEntityDistance;
+    case Configuration::eTrafoParamFeature:
+        return Configuration::sTrafoParam;
+    case Configuration::eCircleFeature:
+        return Configuration::sCircle;
+    case Configuration::eConeFeature:
+        return Configuration::sCone;
+    case Configuration::eCylinderFeature:
+        return Configuration::sCylinder;
+    case Configuration::eEllipsoidFeature:
+        return Configuration::sEllipsoid;
+    case Configuration::eHyperboloidFeature:
+        return Configuration::sHyperboloid;
+    case Configuration::eParaboloidFeature:
+        return Configuration::sParaboloid;
+    case Configuration::eNurbsFeature:
+        return Configuration::sNurbs;
+    case Configuration::ePointCloudFeature:
+        return Configuration::sPointCloud;
+    case Configuration::eScalarEntityTemperatureFeature:
+        return Configuration::sEntityTemperature;
+    case Configuration::eScalarEntityMeasurementSeriesFeature:
+        return Configuration::sEntityMeasurementSeries;
+    default:
+        return "";
     }
 }
 

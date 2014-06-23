@@ -806,10 +806,10 @@ void Controller::changeFunctionTreeViewModel(){
                 QStandardItem *function = new QStandardItem(f->getMetaData()->name);
                 foreach(InputParams param, f->getNeededElements()){
                     if(param.infinite){
-                        QStandardItem *element = new QStandardItem(QString("n %1s").arg(OiMetaData::findElement(param.typeOfElement)));
+                        QStandardItem *element = new QStandardItem(QString("n %1s").arg(Configuration::getElementTypeString(param.typeOfElement)));
                         function->appendRow(element);
                     }else{
-                        QStandardItem *element = new QStandardItem(QString("1 %1").arg(OiMetaData::findElement(param.typeOfElement)));
+                        QStandardItem *element = new QStandardItem(QString("1 %1").arg(Configuration::getElementTypeString(param.typeOfElement)));
                         function->appendRow(element);
                     }
                 }
@@ -1651,7 +1651,7 @@ void Controller::checkAvailablePlugins(){
  */
 bool Controller::checkPluginAvailability(Configuration::FeatureTypes typeOfFeature){
     QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
-    if(availableGeometries.contains(QString(OiMetaData::findFeature(typeOfFeature)))){
+    if(availableGeometries.contains(QString(Configuration::getFeatureTypeString(typeOfFeature)))){
         return true;
     }
     return false;
