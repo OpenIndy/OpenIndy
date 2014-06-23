@@ -5,6 +5,7 @@
 
 Reading::Reading()
 {
+    this->measuredAt = QDateTime::currentDateTime();
 }
 
 Reading::~Reading(){
