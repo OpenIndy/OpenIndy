@@ -8,7 +8,8 @@
 #include <QStandardItemModel>
 #include <QMenu>
 #include <QCloseEvent>
-
+#include <QShowEvent>
+#include <QDesktopWidget>
 #include <QGridLayout>
 
 #include "configuration.h"
@@ -17,6 +18,7 @@
 #include "reading.h"
 #include "usedelementsmodel.h"
 #include "customparameterwidget.h"
+#include "oifeaturestate.h"
 
 namespace Ui {
 class FunctionPluginLoader;
@@ -62,6 +64,8 @@ public slots:
     void disableFunctionInteractions();
     void deleteFunctionFromFeature(bool);
     void setActiveFeatureTitle(QString activeFeature);
+
+    void showEvent(QShowEvent *event);
 
 signals:
     void sendPluginID(int ID);

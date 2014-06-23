@@ -4,6 +4,11 @@
 #include <QObject>
 #include <QMetaEnum>
 #include <QMetaObject>
+#include <QStringList>
+#include <QDebug>
+#include <QPixmap>
+
+#include "unitconverter.h"
 
 /*!
  * \brief The Configuration class
@@ -56,6 +61,26 @@ public:
 
     static QString sObservation;
 
+    static QString sSteel;
+    static QString sAluminum;
+    static QString sPlumb;
+    static QString sIron;
+    static QString sGrayCastIron;
+    static QString sCopper;
+    static QString sBrass;
+    static QString sZinc;
+    static QString sPlatinum;
+
+    static double dSteel;
+    static double dAluminum;
+    static double dPlumb;
+    static double dIron;
+    static double dGrayCastIron;
+    static double dCopper;
+    static double dBrass;
+    static double dZinc;
+    static double dPlatinum;
+
     enum eColor{
         red,
         yellow,
@@ -107,6 +132,7 @@ public:
         eSphereElement,
         eScalarEntityAngleElement,
         eScalarEntityDistanceElement,
+        eScalarEntityTemperatureElement,
         eStationElement,
         eCoordinateSystemElement,
         eTrafoParamElement,
@@ -122,7 +148,10 @@ public:
         eReadingCartesianElement,
         eReadingPolarElement,
         eReadingDistanceElement,
-        eReadingDirectionElement
+        eReadingDirectionElement,
+        eReadingTemperatureElement,
+        eReadingLevelElement,
+        eScalarEntityMeasurementSeriesElement
     };
 
     enum SensorFunctionalities{
@@ -146,13 +175,32 @@ public:
         eSerial
     };
 
+    enum Materials{
+        eSteel,
+        eAluminum,
+        ePlumb,
+        eIron,
+        eGrayCastIron,
+        eCopper,
+        eBrass,
+        eZinc,
+        ePlatinum
+    };
+
     static int idCount;
 
     static int generateID();
 
-    static Configuration::ElementTypes getElementTypeEnum(QString s);
-    static QString getElementTypeString(Configuration::ElementTypes e);
+    static Configuration::ElementTypes getElementTypeEnum(QString name);
+    static Configuration::FeatureTypes getFeatureTypeEnum(QString name);
+    static QString getElementTypeString(Configuration::ElementTypes type);
+    static QString getFeatureTypeString(Configuration::FeatureTypes type);
 
+    static double getExpansionCoefficient(QString material);
+    static double getExpansionCoefficient(Configuration::Materials material);
+
+    static QPixmap getFeatureIcon(Configuration::FeatureTypes featureType);
+    static QPixmap getElementIcon(Configuration::ElementTypes elementType);
 };
 
 #endif // CONFIGURATION_H

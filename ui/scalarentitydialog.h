@@ -4,8 +4,10 @@
 #include <QDialog>
 #include "configuration.h"
 #include "featurewrapper.h"
-#include "QShowEvent"
+#include <QShowEvent>
+#include <QDesktopWidget>
 #include "featureattributesexchange.h"
+#include "oifeaturestate.h"
 
 namespace Ui {
 class ScalarEntityDialog;
@@ -16,12 +18,11 @@ class ScalarEntityDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ScalarEntityDialog(QList<FeatureWrapper*> &features, QWidget *parent = 0);
+    explicit ScalarEntityDialog(QWidget *parent = 0);
     ~ScalarEntityDialog();
 
-    QList<FeatureWrapper*> &featureList;
-
     void availableGroupsChanged(QStringList myGroups);
+    void setAvailableFunctions(QStringList functions, QString defaultFunction);
 
 signals:
 
@@ -43,6 +44,8 @@ private slots:
     void on_toolButton_mConfig_clicked();
 
     void showEvent(QShowEvent *event);
+
+    void on_checkBox_actual_toggled(bool checked);
 
 private:
     Ui::ScalarEntityDialog *ui;

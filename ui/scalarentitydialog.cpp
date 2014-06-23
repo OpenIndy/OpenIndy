@@ -1,9 +1,8 @@
 #include "scalarentitydialog.h"
 #include "ui_scalarentitydialog.h"
 
-ScalarEntityDialog::ScalarEntityDialog(QList<FeatureWrapper*> &features, QWidget *parent) :
-    QDialog(parent),featureList(features),
-    ui(new Ui::ScalarEntityDialog)
+ScalarEntityDialog::ScalarEntityDialog(QWidget *parent) :
+    QDialog(parent), ui(new Ui::ScalarEntityDialog)
 {
     ui->setupUi(this);
     initGUI();
@@ -32,10 +31,10 @@ void ScalarEntityDialog::initGUI(){
 
     ui->comboBox_nominalSystem->clear();
 
-    if(featureList.size() !=0){
-        for(int i=0; i<featureList.size();i++){
-            if(featureList.at(i)->getCoordinateSystem() != NULL){
-                ui->comboBox_nominalSystem->addItem(featureList.at(i)->getCoordinateSystem()->name);
+    if(OiFeatureState::getFeatureCount() !=0){
+        for(int i=0; i<OiFeatureState::getFeatures().size();i++){
+            if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL){
+                ui->comboBox_nominalSystem->addItem(OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
             }
 
         }
@@ -53,26 +52,36 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
         QString name = ui->lineEdit_name->text();
         QString group = this->ui->comboBox_group->currentText();
         int count = ui->spinBox_count->value();
-        int featureType = static_cast<Configuration::FeatureTypes>(ui->comboBox_scalarEntityType->itemData(ui->comboBox_scalarEntityType->currentIndex()).toInt());
+        Configuration::FeatureTypes featureType = static_cast<Configuration::FeatureTypes>(ui->comboBox_scalarEntityType->itemData(ui->comboBox_scalarEntityType->currentIndex()).toInt());
         bool actual = ui->checkBox_actual->isChecked();
         bool nominal = ui->checkBox_nominal->isChecked();
         bool comPoint = ui->checkBox_commonPoint->isChecked();
         CoordinateSystem *nominalSystem = NULL;
+        QString function = this->ui->comboBox_function->currentText();
 
-        if(actual){
-            for(int k=0; k<this->featureList.size();k++){
-                if(this->featureList.at(k)->getCoordinateSystem() != NULL &&
-                        ui->comboBox_nominalSystem->currentText() == this->featureList.at(k)->getCoordinateSystem()->name){
-                    nominalSystem = this->featureList.at(k)->getCoordinateSystem();
+        if(nominal){
+            for(int k=0; k<OiFeatureState::getFeatureCount();k++){
+                if(OiFeatureState::getFeatures().at(k)->getCoordinateSystem() != NULL &&
+                        ui->comboBox_nominalSystem->currentText() == OiFeatureState::getFeatures().at(k)->getCoordinateSystem()->getFeatureName()){
+                    nominalSystem = OiFeatureState::getFeatures().at(k)->getCoordinateSystem();
                 }
-                if(this->featureList.at(k)->getStation() != NULL &&
-                        ui->comboBox_nominalSystem->currentText() == this->featureList.at(k)->getStation()->name){
-                    nominalSystem = this->featureList.at(k)->getStation()->coordSys;
+                if(OiFeatureState::getFeatures().at(k)->getStation() != NULL &&
+                        ui->comboBox_nominalSystem->currentText() == OiFeatureState::getFeatures().at(k)->getStation()->getFeatureName()){
+                    nominalSystem = OiFeatureState::getFeatures().at(k)->getStation()->coordSys;
                 }
             }
         }
 
-        FeatureAttributesExchange featureAttributes(count,featureType,name,group,actual,nominal,comPoint,nominalSystem);
+        FeatureAttributesExchange featureAttributes;
+        featureAttributes.count = count;
+        featureAttributes.featureType = featureType;
+        featureAttributes.name = name;
+        featureAttributes.group = group;
+        featureAttributes.function = function;
+        featureAttributes.actual = actual;
+        featureAttributes.nominal = nominal;
+        featureAttributes.common = comPoint;
+        featureAttributes.nominalSystem = nominalSystem;
 
         emit createFeature(featureAttributes);
 
@@ -122,6 +131,9 @@ void ScalarEntityDialog::on_toolButton_mConfig_clicked()
 
 void ScalarEntityDialog::showEvent(QShowEvent *event)
 {
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
     initGUI();
     event->accept();
 }
@@ -135,4 +147,29 @@ void ScalarEntityDialog::availableGroupsChanged(QStringList myGroups){
     this->ui->comboBox_group->clear();
     this->ui->comboBox_group->clearEditText();
     this->ui->comboBox_group->addItems(myGroups);
+}
+
+/*!
+ * \brief ScalarEntityDialog::on_checkBox_actual_toggled
+ * \param checked
+ */
+void ScalarEntityDialog::on_checkBox_actual_toggled(bool checked)
+{
+    if(checked){
+        this->ui->comboBox_function->setEnabled(true);
+    }else{
+        this->ui->comboBox_function->setEnabled(false);
+    }
+}
+
+/*!
+ * \brief ScalarEntityDialog::setAvailableFunctions
+ * Assign all available create functions to the function combo box and select default value
+ * \param functions
+ * \param defaultFunction
+ */
+void ScalarEntityDialog::setAvailableFunctions(QStringList functions, QString defaultFunction){
+    this->ui->comboBox_function->clear();
+    this->ui->comboBox_function->addItems(functions);
+    this->ui->comboBox_function->setCurrentText(defaultFunction);
 }

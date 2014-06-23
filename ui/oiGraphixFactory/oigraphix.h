@@ -7,6 +7,7 @@
 #include "oigraphix_line.h"
 #include "oigraphix_plane.h"
 #include "oigraphix_station.h"
+#include "oigraphix_pointcloud.h"
 
 class OiGraphix
 {
@@ -24,6 +25,7 @@ private:
     static void drawPlane(Plane* p);
     static void drawSphere(Sphere* s);
     static void drawStation(Station* s);
+    static void drawPointCloud(PointCloud* p);
 
     static void drawResiduals(/*verbesserungen?statsticobj?*/);
 };

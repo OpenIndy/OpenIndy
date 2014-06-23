@@ -113,12 +113,14 @@ bool BestFitLine::setUpResult(Line &line){
         //set result
         line.ijk = r;
         line.xyz = centroid;
-        line.myStatistic.stdev = qSqrt( vtv / (n - 3) );
-        line.myStatistic.s0_apriori = 1.0;
-        line.myStatistic.s0_aposteriori = line.myStatistic.stdev;
-        line.myStatistic.qxx = qxx;
-        line.myStatistic.isValid = true;
-        this->myStatistic = line.myStatistic;
+        Statistic myStats;
+        myStats.stdev = qSqrt( vtv / (n - 3) );
+        myStats.s0_apriori = 1.0;
+        myStats.s0_aposteriori = myStats.stdev;
+        myStats.qxx = qxx;
+        myStats.isValid = true;
+        line.setStatistic(myStats);
+        this->myStatistic = line.getStatistic();
         return true;
     }
     return false;
@@ -156,10 +158,10 @@ bool BestFitLine::checkObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
         if(obs->isValid){
-            this->setUseState(obs->id, true);
+            this->setUseState(obs->getId(), true);
             count++;
         }else{
-            this->setUseState(obs->id, false);
+            this->setUseState(obs->getId(), false);
         }
     }
     if(count >= 2){

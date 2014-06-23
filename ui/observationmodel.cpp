@@ -1,7 +1,7 @@
 #include "observationmodel.h"
 
-ObservationModel::ObservationModel(FeatureWrapper &activeFeature,QObject *parent ) :
-    QAbstractTableModel(parent),selectedFeature(activeFeature)
+ObservationModel::ObservationModel(QObject *parent ) :
+    QAbstractTableModel(parent)
 {
     /*
     m_columns.append("id");
@@ -19,11 +19,11 @@ ObservationModel::ObservationModel(FeatureWrapper &activeFeature,QObject *parent
 
 int ObservationModel::rowCount(const QModelIndex& ) const{
 
-    if(this->selectedFeature.getGeometry() != NULL && this->selectedFeature.getGeometry()->myObservations.size() > 0){
-        return this->selectedFeature.getGeometry()->myObservations.size();
+    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size() > 0){
+        return OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size();
     }
-    if(this->selectedFeature.getStation() != NULL && this->selectedFeature.getStation()->position->myObservations.size() >0){
-        return this->selectedFeature.getStation()->position->myObservations.size();
+    if(OiFeatureState::getActiveFeature()->getStation() != NULL && OiFeatureState::getActiveFeature()->getStation()->position->getObservations().size() >0){
+        return OiFeatureState::getActiveFeature()->getStation()->position->getObservations().size();
     }
     return 0;
 }
@@ -38,92 +38,92 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
     if(!index.isValid())
         return QVariant();
 
-    if(this->selectedFeature.getGeometry() != NULL){
-        Geometry *geom = this->selectedFeature.getGeometry();
+    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+        Geometry *geom = OiFeatureState::getActiveFeature()->getGeometry();
         QString targetgeoms;
 
         if(Qt::DisplayRole == role){
 
             switch (index.column()) {
             case 0:
-                return QString::number(geom->myObservations.at(index.row())->id,'f',0);
+                return QString::number(geom->getObservations().at(index.row())->getId(),'f',0);
                 break;
             case 1:
-                return geom->myObservations.at(index.row())->myStation->name;
+                return geom->getObservations().at(index.row())->myStation->getFeatureName();
                 break;
             case 2:
-                targetgeoms = geom->myObservations.at(index.row())->myTargetGeometries.at(0)->name;
-                for(int i=1; i<geom->myObservations.at(index.row())->myTargetGeometries.size();i++){
-                    targetgeoms += ", " + geom->myObservations.at(index.row())->myTargetGeometries.at(i)->name;
+                targetgeoms = geom->getObservations().at(index.row())->myTargetGeometries.at(0)->getFeatureName();
+                for(int i=1; i<geom->getObservations().at(index.row())->myTargetGeometries.size();i++){
+                    targetgeoms += ", " + geom->getObservations().at(index.row())->myTargetGeometries.at(i)->getFeatureName();
                 }
                 return targetgeoms;
                 break;
             case 3:
-                return QString::number((geom->myObservations.at(index.row())->myXyz.getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number((geom->getObservations().at(index.row())->myXyz.getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 4:
-                return QString::number(geom->myObservations.at(index.row())->myXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number(geom->getObservations().at(index.row())->myXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 5:
-                return QString::number(geom->myObservations.at(index.row())->myXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number(geom->getObservations().at(index.row())->myXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 6:
-                return QString(geom->myObservations.at(index.row())->isValid?"true":"false");
+                return QString(geom->getObservations().at(index.row())->isValid?"true":"false");
                 break;
             case 7:
-                return QString::number(geom->myObservations.at(index.row())->sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 8:
-                return QString::number(geom->myObservations.at(index.row())->sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 9:
-                return QString::number(geom->myObservations.at(index.row())->sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             default:
                 break;
             }
         }
     }
-    if(this->selectedFeature.getStation() != NULL){
-        Geometry *geom = this->selectedFeature.getStation()->position;
+    if(OiFeatureState::getActiveFeature()->getStation() != NULL){
+        Geometry *geom = OiFeatureState::getActiveFeature()->getStation()->position;
         QString targetgeoms;
 
         if(Qt::DisplayRole == role){
 
             switch (index.column()) {
             case 0:
-                return QString::number(geom->myObservations.at(index.row())->id,'f',0);
+                return QString::number(geom->getObservations().at(index.row())->getId(),'f',0);
                 break;
             case 1:
-                return geom->myObservations.at(index.row())->myStation->name;
+                return geom->getObservations().at(index.row())->myStation->getFeatureName();
                 break;
             case 2:
-                targetgeoms = geom->myObservations.at(index.row())->myTargetGeometries.at(0)->name;
-                for(int i=1; i<geom->myObservations.at(index.row())->myTargetGeometries.size();i++){
-                    targetgeoms += ", " + geom->myObservations.at(index.row())->myTargetGeometries.at(i)->name;
+                targetgeoms = geom->getObservations().at(index.row())->myTargetGeometries.at(0)->getFeatureName();
+                for(int i=1; i<geom->getObservations().at(index.row())->myTargetGeometries.size();i++){
+                    targetgeoms += ", " + geom->getObservations().at(index.row())->myTargetGeometries.at(i)->getFeatureName();
                 }
                 return targetgeoms;
                 break;
             case 3:
-                return QString::number((geom->myObservations.at(index.row())->myXyz.getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number((geom->getObservations().at(index.row())->myXyz.getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 4:
-                return QString::number(geom->myObservations.at(index.row())->myXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number(geom->getObservations().at(index.row())->myXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 5:
-                return QString::number(geom->myObservations.at(index.row())->myXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number(geom->getObservations().at(index.row())->myXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 6:
-                return QString(geom->myObservations.at(index.row())->isValid?"true":"false");
+                return QString(geom->getObservations().at(index.row())->isValid?"true":"false");
                 break;
             case 7:
-                return QString::number(geom->myObservations.at(index.row())->sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 8:
-                return QString::number(geom->myObservations.at(index.row())->sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 9:
-                return QString::number(geom->myObservations.at(index.row())->sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             default:
                 break;

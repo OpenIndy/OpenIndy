@@ -9,6 +9,10 @@
 #include <QComboBox>
 #include <QCloseEvent>
 #include <QMessageBox>
+#include <QShowEvent>
+#include <QDesktopWidget>
+
+#include "oifeaturestate.h"
 
 namespace Ui {
 class MeasurementConfigDialog;
@@ -25,28 +29,21 @@ public:
     explicit MeasurementConfigDialog(QWidget *parent = 0);
     ~MeasurementConfigDialog();
 
-    Station *myStation;
-
-    MeasurementConfig *mConfig;
-
-    FeatureWrapper *activeFeature;
+    MeasurementConfig mConfig;
 
 signals:
-    void sendConfig(FeatureWrapper*, MeasurementConfig*);
+    void sendConfig(FeatureWrapper*, MeasurementConfig);
 
 public slots:
+    void showEvent(QShowEvent *event);
 
-    void setStation(Station *s);
-    
 private slots:
 
     void closeEvent(QCloseEvent *event);
 
-    void resetActiveFeature();
-
     void initGUI();
 
-    void receiveConfig(MeasurementConfig*);
+    void receiveConfig(MeasurementConfig);
 
     void on_pushButton_ok_clicked();
 

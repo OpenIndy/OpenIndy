@@ -5,12 +5,14 @@
 
 class Ellipsoid : public Geometry
 {
+    Q_OBJECT
 public:
-    Ellipsoid();
+    Ellipsoid(bool isNominal, QObject *parent = 0);
     Ellipsoid(const Ellipsoid &copy);
 
     OiVec xyz;
     double a,b,c;
+    OiVec getXYZ() const;
 
     void recalc();
 

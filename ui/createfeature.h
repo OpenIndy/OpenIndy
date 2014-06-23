@@ -2,9 +2,12 @@
 #define CREATEFEATURE_H
 
 #include <QDialog>
+#include <QShowEvent>
+#include <QDesktopWidget>
 #include "configuration.h"
 #include "featurewrapper.h"
 #include "featureattributesexchange.h"
+#include "oifeaturestate.h"
 
 namespace Ui {
 class CreateFeature;
@@ -17,15 +20,15 @@ class CreateFeature : public QDialog
     Q_OBJECT
 
 public:
-    explicit CreateFeature(QList<FeatureWrapper*> &features, QWidget *parent = 0);
+    explicit CreateFeature(QWidget *parent = 0);
     ~CreateFeature();
 
     Configuration::FeatureTypes typeOfFeature;
 
-    //used for creating trafoparams and filling comboboxes
-    QList<FeatureWrapper*> &featureList;
-
     void availableGroupsChanged(QStringList myGroups);
+    void setAvailableFunctions(QStringList functions, QString defaultFunction);
+
+    void showEvent(QShowEvent *event);
 
 signals:
 
@@ -46,6 +49,12 @@ private slots:
     void on_checkBox_Nominal_toggled(bool checked);
 
     void on_toolButton_mConfig_clicked();
+
+    void on_checkBox_Actual_toggled(bool checked);
+
+    void on_checkBox_movement_toggled(bool checked);
+
+    void on_comboBox_destinationSystem_currentIndexChanged(const QString &arg1);
 
 private:
     Ui::CreateFeature *ui;

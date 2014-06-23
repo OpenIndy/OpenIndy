@@ -52,28 +52,28 @@ bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
             //TODO error handling
         }
 
-        for(int i = 0; i< fg->getGeometry()->myObservations.size();i++){
-            Observation* proxyObs = oiProjectExchanger::findObservation(fg->getGeometry()->myObservations.at(i)->id);
+        for(int i = 0; i< fg->getGeometry()->getObservations().size();i++){
+            Observation* proxyObs = oiProjectExchanger::findObservation(fg->getGeometry()->getObservations().at(i)->getId());
             if(proxyObs != NULL){
-               fg->getGeometry()->myObservations.replace(i,proxyObs);
+               fg->getGeometry()->getObservations().replace(i,proxyObs);
             }
         }
 
-        for(int i = 0; i< fg->getGeometry()->nominals.size();i++){
-            Geometry* proxyGeom = oiProjectExchanger::findGeometrie(fg->getGeometry()->nominals.at(i)->id);
+        for(int i = 0; i< fg->getGeometry()->getMyNominals().size();i++){
+            Geometry* proxyGeom = oiProjectExchanger::findGeometrie(fg->getGeometry()->getMyNominals().at(i)->getId());
             if(proxyGeom != NULL){
-               fg->getGeometry()->nominals.replace(i,proxyGeom);
+               fg->getGeometry()->getMyNominals().replace(i,proxyGeom);
             }
         }
 
-        if(fg->getGeometry()->myNominalCoordSys != NULL){
-            CoordinateSystem* proxyCoord= oiProjectExchanger::findCoordSys(fg->getGeometry()->myNominalCoordSys->id);
+        if(fg->getGeometry()->getNominalSystem() != NULL){
+            CoordinateSystem* proxyCoord= oiProjectExchanger::findCoordSys(fg->getGeometry()->getNominalSystem()->getId());
             if(proxyCoord != NULL){
-               fg->getGeometry()->myNominalCoordSys = proxyCoord;
+               fg->getGeometry()->setNominalSystem(proxyCoord);
             }
         }
 
-        if(!oiProjectExchanger::stationElements.contains(fg->getGeometry()->id)){
+        if(!oiProjectExchanger::stationElements.contains(fg->getGeometry()->getId())){
             data.features.append(fg);
         }
 
@@ -88,13 +88,13 @@ bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
             //TODO error handling
         }
 
-        FeatureWrapper* proxyPoint= oiProjectExchanger::findFeature(fs->getStation()->position->id);
+        FeatureWrapper* proxyPoint= oiProjectExchanger::findFeature(fs->getStation()->position->getId());
         if(proxyPoint != NULL){
            fs->getStation()->position = proxyPoint->getPoint();
         }
 
         if(fs->getStation()->coordSys!=NULL){
-            CoordinateSystem* proxyCoord= oiProjectExchanger::findCoordSys(fs->getStation()->coordSys->id);
+            CoordinateSystem* proxyCoord= oiProjectExchanger::findCoordSys(fs->getStation()->coordSys->getId());
             if(proxyCoord != NULL){
                fs->getStation()->coordSys = proxyCoord;
             }
@@ -108,10 +108,10 @@ bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
 
     foreach (Observation *obs, oiProjectExchanger::observations){
 
-        Station* proxyStation= oiProjectExchanger::findStation(obs->myStation->id);
+        Station* proxyStation= oiProjectExchanger::findStation(obs->myStation->getId());
         if(proxyStation != NULL){
            obs->myStation = proxyStation;
-           obs->myReading->instrument = proxyStation->instrument;
+           obs->myReading->instrument = proxyStation->sensorPad->instrument;
         }
 
     }
@@ -123,29 +123,29 @@ bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
             //TODO error handling
         }
 
-        for(int i = 0; i< fc->getCoordinateSystem()->observations.size();i++){
-            Observation* proxyObs = oiProjectExchanger::findObservation(fc->getCoordinateSystem()->observations.at(i)->id);
+        for(int i = 0; i< fc->getCoordinateSystem()->getObservations().size();i++){
+            Observation* proxyObs = oiProjectExchanger::findObservation(fc->getCoordinateSystem()->getObservations().at(i)->getId());
             if(proxyObs != NULL){
-               fc->getCoordinateSystem()->observations.replace(i,proxyObs);
+               //fc->getCoordinateSystem()->getObservations().replace(i,proxyObs);
             }
         }
 
-        for(int i = 0; i< fc->getCoordinateSystem()->nominals.size();i++){
-            Geometry* proxyGeom = oiProjectExchanger::findGeometrie(fc->getCoordinateSystem()->nominals.at(i)->id);
+        for(int i = 0; i< fc->getCoordinateSystem()->getNominals().size();i++){
+            Geometry* proxyGeom = oiProjectExchanger::findGeometrie(fc->getCoordinateSystem()->getNominals().at(i)->getId());
             if(proxyGeom != NULL){
-               fc->getCoordinateSystem()->nominals.replace(i,proxyGeom);
+               //fc->getCoordinateSystem()->getNominals().replace(i,proxyGeom);
             }
         }
 
-        for(int i = 0; i< fc->getCoordinateSystem()->trafoParams.size();i++){
-            TrafoParam* proxyTrafoParam = oiProjectExchanger::findTrafoParam(fc->getCoordinateSystem()->trafoParams.at(i)->id);
+        for(int i = 0; i< fc->getCoordinateSystem()->getTransformationParameters().size();i++){
+            TrafoParam* proxyTrafoParam = oiProjectExchanger::findTrafoParam(fc->getCoordinateSystem()->getTransformationParameters().at(i)->getId());
             if(proxyTrafoParam != NULL){
-               fc->getCoordinateSystem()->trafoParams.replace(i,proxyTrafoParam);
+               //fc->getCoordinateSystem()->getTransformationParameters(.replace(i,proxyTrafoParam);
             }
         }
 
 
-        if(!oiProjectExchanger::stationElements.contains(fc->getCoordinateSystem()->id)){
+        if(!oiProjectExchanger::stationElements.contains(fc->getCoordinateSystem()->getId())){
             data.features.append(fc);
             data.coordSystems.append(fc->getCoordinateSystem());
         }
@@ -162,17 +162,17 @@ bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
         }
 
 
-        if(ft->getTrafoParam()->from !=NULL){
-            CoordinateSystem* proxyCoord= oiProjectExchanger::findCoordSys(ft->getTrafoParam()->from->id);
+        if(ft->getTrafoParam()->getStartSystem() !=NULL){
+            CoordinateSystem* proxyCoord= oiProjectExchanger::findCoordSys(ft->getTrafoParam()->getStartSystem()->getId());
             if(proxyCoord != NULL){
-               ft->getTrafoParam()->from = proxyCoord;
+               //ft->getTrafoParam()->from = proxyCoord;
             }
         }
 
-        if(ft->getTrafoParam()->to !=NULL){
-            CoordinateSystem* proxyCoord= oiProjectExchanger::findCoordSys(ft->getTrafoParam()->to->id);
+        if(ft->getTrafoParam()->getDestinationSystem() !=NULL){
+            CoordinateSystem* proxyCoord= oiProjectExchanger::findCoordSys(ft->getTrafoParam()->getDestinationSystem()->getId());
             if(proxyCoord != NULL){
-               ft->getTrafoParam()->to = proxyCoord;
+               //ft->getTrafoParam()->to = proxyCoord;
             }
         }
 
@@ -190,7 +190,7 @@ bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
 Observation* oiProjectExchanger::findObservation(int id){
 
     foreach(Observation *obs, oiProjectExchanger::observations){
-        if (obs->id == id){
+        if (obs->getId() == id){
             return obs;
         }
     }
@@ -200,7 +200,7 @@ Observation* oiProjectExchanger::findObservation(int id){
 Geometry* oiProjectExchanger::findGeometrie(int id){
 
     foreach(FeatureWrapper *g, oiProjectExchanger::geometries){
-        if (g->getGeometry()->id == id){
+        if (g->getGeometry()->getId() == id){
             return g->getGeometry();
         }
     }
@@ -209,7 +209,7 @@ Geometry* oiProjectExchanger::findGeometrie(int id){
 
 CoordinateSystem* oiProjectExchanger::findCoordSys(int id){
     foreach(FeatureWrapper *g, oiProjectExchanger::coordSystems){
-        if (g->getCoordinateSystem()->id == id){
+        if (g->getCoordinateSystem()->getId() == id){
             return g->getCoordinateSystem();
         }
     }
@@ -218,7 +218,7 @@ CoordinateSystem* oiProjectExchanger::findCoordSys(int id){
 
 TrafoParam* oiProjectExchanger::findTrafoParam(int id){
     foreach(FeatureWrapper *g, oiProjectExchanger::trafoParams){
-        if (g->getTrafoParam()->id == id){
+        if (g->getTrafoParam()->getId() == id){
             return g->getTrafoParam();
         }
     }
@@ -228,7 +228,7 @@ TrafoParam* oiProjectExchanger::findTrafoParam(int id){
 FeatureWrapper* oiProjectExchanger::findFeature(int id){
 
     foreach(FeatureWrapper *f, oiProjectExchanger::features){
-        if (f->getFeature()->id == id){
+        if (f->getFeature()->getId() == id){
             return f;
         }
     }
@@ -238,7 +238,7 @@ FeatureWrapper* oiProjectExchanger::findFeature(int id){
 Station* oiProjectExchanger::findStation(int id){
 
     foreach(FeatureWrapper *f, oiProjectExchanger::stations){
-        if (f->getStation()->id == id){
+        if (f->getStation()->getId() == id){
             return f->getStation();
         }
     }
@@ -249,14 +249,14 @@ Station* oiProjectExchanger::findStation(int id){
 bool oiProjectExchanger::regenerateFeature(Feature *f){
 
     for(int i = 0;i<f->usedFor.size();i++){
-        FeatureWrapper *proxyFw = oiProjectExchanger::findFeature(f->usedFor.at(i)->getFeature()->id);
+        FeatureWrapper *proxyFw = oiProjectExchanger::findFeature(f->usedFor.at(i)->getFeature()->getId());
         if(proxyFw != NULL){
             f->usedFor.replace(i, proxyFw);
         }
     }
 
     for(int i = 0;i<f->previouslyNeeded.size();i++){
-        FeatureWrapper *proxyFw = oiProjectExchanger::findFeature(f->previouslyNeeded.at(i)->getFeature()->id);
+        FeatureWrapper *proxyFw = oiProjectExchanger::findFeature(f->previouslyNeeded.at(i)->getFeature()->getId());
         if(proxyFw != NULL){
             f->previouslyNeeded.replace(i,proxyFw);
         }

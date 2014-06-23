@@ -3,6 +3,9 @@
 
 #include <QItemDelegate>
 #include <QLineEdit>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDateTimeEdit>
 
 #include "trafoparamproxymodel.h"
 

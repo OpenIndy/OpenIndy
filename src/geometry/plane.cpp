@@ -2,7 +2,7 @@
 
 #include "function.h"
 
-Plane::Plane() : xyz(4), ijk(4)
+Plane::Plane(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4)
 {
     this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
@@ -15,7 +15,7 @@ Plane::Plane() : xyz(4), ijk(4)
  * \brief Plane::Plane
  * \param copy
  */
-Plane::Plane(const Plane &copy){
+Plane::Plane(const Plane &copy) : Geometry(copy.isNominal){
     this->id = copy.id;
     this->name = copy.name;
     this->xyz = copy.xyz;
@@ -28,29 +28,50 @@ Plane::~Plane(){
 }
 
 /*!
+ * \brief Plane::getXYZ returns xyz vector
+ * \return
+ */
+OiVec Plane::getXYZ() const
+{
+    return this->xyz;
+}
+
+/*!
+ * \brief Plane::getIJK returns ijk vector
+ * \return
+ */
+OiVec Plane::getIJK() const
+{
+    return this->ijk;
+}
+
+/*!
  * \brief Plane::recalc
  * Execute all functions in the specified order
  */
 void Plane::recalc(){
-    /*
-     * isDefined -> becomes true as soon as the first function of a feature has been executed, which defines the feature
-     * isSolved -> is true as long as there isn't any function which cannot be successfully executed
-     */
-    bool isDefined = false;
-    foreach(Function *f, this->functionList){
-        if(!isDefined){
-            this->isSolved = f->exec(*this);
-            isDefined = true;
-        }else if(this->isSolved){
-            this->isSolved = f->exec(*this);
+
+    if(this->functionList.size() > 0){
+
+        bool solved = true;
+        foreach(Function *f, this->functionList){
+
+            //execute the function if it exists and if the last function was executed successfully
+            if(f != NULL && solved == true){
+                solved = f->exec(*this);
+            }
+
         }
-    }
-    //if no function is set this feature cannot be solved and its coordinates are reset
-    if(this->functionList.size() == 0 && this->isNominal == false){
-        this->isSolved = false;
+        this->setIsSolved(solved);
+
+    }else if(this->isNominal == false){
+
         this->xyz = OiVec(4);
         this->ijk = OiVec(4);
+        this->setIsSolved(false);
+
     }
+
 }
 
 bool Plane::toOpenIndyXML(QXmlStreamWriter &stream){
@@ -183,15 +204,15 @@ QString Plane::getDisplayZ() const{
 }
 
 QString Plane::getDisplayI() const{
-    return QString::number(this->ijk.getAt(0),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(0),'f',6);
 }
 
 QString Plane::getDisplayJ() const{
-    return QString::number(this->ijk.getAt(1),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(1),'f',6);
 }
 
 QString Plane::getDisplayK() const{
-    return QString::number(this->ijk.getAt(2),'f',UnitConverter::distanceDigits);
+    return QString::number(this->ijk.getAt(2),'f',6);
 }
 
 QString Plane::getDisplayIsCommon() const{
@@ -202,9 +223,9 @@ QString Plane::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
 
-QString Plane::getDisplayObs() const{
+/*QString Plane::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString Plane::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");

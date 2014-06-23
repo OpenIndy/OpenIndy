@@ -2,16 +2,17 @@
 
 #include "function.h"
 
-ScalarEntityTemperature::ScalarEntityTemperature()
+ScalarEntityTemperature::ScalarEntityTemperature(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
     this->isDrawn = false;
+    this->setTemperature(20.0);
 }
 
-ScalarEntityTemperature::ScalarEntityTemperature(const ScalarEntityTemperature &copy){
+ScalarEntityTemperature::ScalarEntityTemperature(const ScalarEntityTemperature &copy) : Geometry(copy.isNominal){
     this->id = copy.id;
     this->name = copy.name;
     this->temperature = copy.getTemperature();
@@ -20,15 +21,25 @@ ScalarEntityTemperature::ScalarEntityTemperature(const ScalarEntityTemperature &
 
 void ScalarEntityTemperature::recalc(){
 
-    bool isDefined = false;
-    foreach(Function *f, this->functionList){
-        if(!isDefined){
-            //this->isSolved = f->exec(*this);
-            isDefined = true;
-        }else if(this->isSolved){
-            //this->isSolved = f->exec(*this);
+    if(this->functionList.size() > 0){
+
+        bool solved = true;
+        foreach(Function *f, this->functionList){
+
+            //execute the function if it exists and if the last function was executed successfully
+            if(f != NULL && solved == true){
+                solved = f->exec(*this);
+            }
+
         }
+        this->setIsSolved(solved);
+
+    }else if(this->isNominal == false){
+
+        this->setIsSolved(false);
+
     }
+
 }
 
 bool ScalarEntityTemperature::toOpenIndyXML(QXmlStreamWriter &stream){
@@ -57,9 +68,9 @@ QString ScalarEntityTemperature::getDisplayIsCommon() const{
 QString ScalarEntityTemperature::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
 }
-QString ScalarEntityTemperature::getDisplayObs() const{
+/*QString ScalarEntityTemperature::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}
+}*/
 
 QString ScalarEntityTemperature::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");
@@ -79,5 +90,5 @@ QString ScalarEntityTemperature::getDisplayStdDev() const{
 }
 
 QString ScalarEntityTemperature::getDisplayScalarTemperatureValue() const{
-    return QString::number(this->temperature,'f',UnitConverter::temperatureDigits);
+    return QString::number(UnitConverter::getTemperature(this->temperature),'f',UnitConverter::temperatureDigits);
 }

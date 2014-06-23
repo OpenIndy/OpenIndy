@@ -6,7 +6,12 @@ OiGraphixSphere::OiGraphixSphere(float radius, unsigned int rings, unsigned int 
         float const S = 1./(float)(sectors-1);
         int r, s;
 
-        vertices.resize(rings * sectors * 3);
+        this->radius = radius;
+
+        /*GLUquadric *quadratic = gluNewQuadric();
+        gluSphere(quadratic, radius, 32, 32);*/
+
+        /*vertices.resize(rings * sectors * 3);
         normals.resize(rings * sectors * 3);
         texcoords.resize(rings * sectors * 2);
         std::vector<GLfloat>::iterator v = vertices.begin();
@@ -36,22 +41,25 @@ OiGraphixSphere::OiGraphixSphere(float radius, unsigned int rings, unsigned int 
                 *i++ = r * sectors + (s+1);
                 *i++ = (r+1) * sectors + (s+1);
                 *i++ = (r+1) * sectors + s;
-        }
+        }*/
     }
 
-    void OiGraphixSphere::draw(GLfloat x, GLfloat y, GLfloat z)
-    {
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glTranslatef(x,y,z);
+void OiGraphixSphere::draw(GLfloat x, GLfloat y, GLfloat z)
+{
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glTranslatef(x,y,z);
 
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    GLUquadric *quadratic = gluNewQuadric();
+    gluSphere(quadratic, radius, 32, 32);
 
-        glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
-        glNormalPointer(GL_FLOAT, 0, &normals[0]);
-        glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
-        glDrawElements(GL_QUADS, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
-        glPopMatrix();
-    }
+    /*glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
+    glNormalPointer(GL_FLOAT, 0, &normals[0]);
+    glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
+    glDrawElements(GL_QUADS, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);*/
+    glPopMatrix();
+}

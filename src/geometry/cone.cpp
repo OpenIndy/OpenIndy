@@ -2,7 +2,7 @@
 
 #include "function.h"
 
-Cone::Cone() : xyz(4), ijk(4),alpha(0.0)
+Cone::Cone(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4), alpha(0.0)
 {
     this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
@@ -15,33 +15,54 @@ Cone::Cone() : xyz(4), ijk(4),alpha(0.0)
  * \brief Cone::Cone
  * \param copy
  */
-Cone::Cone(const Cone &copy){
+Cone::Cone(const Cone &copy) : Geometry(copy.isNominal){
     this->id = copy.id;
     this->name = copy.name;
     this->isSolved = copy.isSolved;
 }
 
+/*!
+ * \brief Cone::getXYZ returns xyz as double values in vector
+ * \return
+ */
+OiVec Cone::getXYZ() const
+{
+    return this->xyz;
+}
+
+/*!
+ * \brief Cone::getIJK returns ijk vector
+ * \return
+ */
+OiVec Cone::getIJK() const
+{
+    return this->ijk;
+}
+
 void Cone::recalc(){
-    /*
-     * isDefined -> becomes true as soon as the first function of a feature has been executed, which defines the feature
-     * isSolved -> is true as long as there isn't any function which cannot be successfully executed
-     */
-    bool isDefined = false;
-    foreach(Function *f, this->functionList){
-        if(!isDefined){
-            this->isSolved = f->exec(*this);
-            isDefined = true;
-        }else if(this->isSolved){
-            this->isSolved = f->exec(*this);
+
+    if(this->functionList.size() > 0){
+
+        bool solved = true;
+        foreach(Function *f, this->functionList){
+
+            //execute the function if it exists and if the last function was executed successfully
+            if(f != NULL && solved == true){
+                solved = f->exec(*this);
+            }
+
         }
-    }
-    //if no function is set this feature cannot be solved and its coordinates are reset
-    if(this->functionList.size() == 0 && this->isNominal == false){
-        this->isSolved = false;
+        this->setIsSolved(solved);
+
+    }else if(this->isNominal == false){
+
         this->xyz = OiVec(4);
         this->ijk = OiVec(4);
         this->alpha = 0.0;
+        this->setIsSolved(false);
+
     }
+
 }
 
 bool Cone::toOpenIndyXML(QXmlStreamWriter &stream){

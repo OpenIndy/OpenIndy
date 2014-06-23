@@ -59,8 +59,7 @@ private:
     Configuration::FeatureTypes typeOfFeature;
 
 public:
-
-    QString returnFeatureType();
+    QString returnFeatureType() const;
 
 //getter
     Configuration::FeatureTypes getTypeOfFeature();

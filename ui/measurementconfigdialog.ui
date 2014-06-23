@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>measurement configuration</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,15,1">
+  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,9,1">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1">
      <item>
@@ -33,7 +33,7 @@
      <property name="title">
       <string>generally configuration</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
         <item>
@@ -57,6 +57,20 @@
          <widget class="QLabel" name="label_count">
           <property name="text">
            <string>number of measurements</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
+        <item>
+         <widget class="QLineEdit" name="lineEdit_iterations"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_iterations">
+          <property name="text">
+           <string>iterations</string>
           </property>
          </widget>
         </item>

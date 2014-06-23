@@ -6,19 +6,15 @@ Station::Station(QString name)
     this->name = name;
 
     this->id = Configuration::generateID();
-    position = new Point();
-    position->name = name;
+    position = new Point(false);
+    position->setFeatureName(name);
 
     //ini member
     coordSys = new CoordinateSystem();
-    coordSys->name = this->name;
+    coordSys->setFeatureName(this->name);
 
-    instrument = NULL;
     sensorPad = new SensorControl(this);
     connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
-
-    //InstrumentConfig = new SensorConfiguration; //TODO null pointer??
-    InstrumentConfig = NULL;
 
     //move controller to the station thread
     sensorPad->moveToThread(&stationThread);
@@ -27,17 +23,20 @@ Station::Station(QString name)
     connect(this->sensorPad,SIGNAL(commandFinished(bool)),this,SLOT(emitActionFinished(bool)));
 
     connect(this,SIGNAL(startMeasure(Geometry*,bool)),this->sensorPad,SLOT(measure(Geometry*,bool)));
-    connect(this,SIGNAL(startStream()),this->sensorPad,SLOT(stream()));
     connect(this,SIGNAL(startMove(double,double,double,bool)),this->sensorPad,SLOT(move(double,double,double,bool)));
     connect(this,SIGNAL(startMove(double,double,double)),this->sensorPad,SLOT(move(double,double,double)));
     connect(this,SIGNAL(startInitialize()),this->sensorPad,SLOT(initialize()));
-    connect(this,SIGNAL(startMotorState(bool)),this->sensorPad,SLOT(motorState(bool)));
+    connect(this,SIGNAL(startMotorState()),this->sensorPad,SLOT(motorState()));
     connect(this,SIGNAL(startHome()),this->sensorPad,SLOT(home()));
     connect(this,SIGNAL(startToggleSight()),this->sensorPad,SLOT(toggleSight()));
     connect(this,SIGNAL(startCompensation()),this->sensorPad,SLOT(compensation()));
-    connect(this,SIGNAL(startSendCommand(QString)),this->sensorPad,SLOT(sendCommandString(QString)));
     connect(this,SIGNAL(startConnect(ConnectionConfig*)),this->sensorPad,SLOT(connectSensor(ConnectionConfig*)));
     connect(this,SIGNAL(startDisconnect()),this->sensorPad,SLOT(disconnectSensor()));
+    connect(this,SIGNAL(startReadingStream(int)),this->sensorPad,SLOT(readingStream(int)));
+    connect(this,SIGNAL(startSensorStatsStream()),this->sensorPad,SLOT(sensorStatsStream()));
+    connect(this,SIGNAL(startSelfDefinedAction(QString)),this->sensorPad,SLOT(doSelfDefinedAction(QString)));
+    connect(this,SIGNAL(stopReadingStream()),this->sensorPad,SLOT(stopReadingStream()));
+    connect(this,SIGNAL(stopSensorStatsStream()),this->sensorPad,SLOT(stopStatStream()));
 
     //start the station thread
     stationThread.start();
@@ -63,6 +62,28 @@ Station::~Station(){
 
 }
 
+/*!
+ * \brief Station::getIsActiveStation
+ * \return
+ */
+bool Station::getIsActiveStation(){
+    return this->isActiveStation;
+}
+
+/*!
+ * \brief Station::setAciteStationState
+ * \param isActiveStation
+ * \return
+ */
+bool Station::setActiveStationState(bool isActiveStation){
+    if(this->isActiveStation != isActiveStation){
+        this->isActiveStation = isActiveStation;
+        emit this->activeStationChanged(this->id);
+        return true;
+    }
+    return false;
+}
+
 void Station::stopThread(){
     stationThread.quit();
     stationThread.wait();
@@ -74,13 +95,13 @@ void Station::startThread(){
 
 void Station::setInstrumentConfig(SensorConfiguration *sensorConfig){
 
-    InstrumentConfig = sensorConfig;
-    instrument->setSensorConfiguration(sensorConfig);
+    sensorPad->InstrumentConfig = sensorConfig;
+    sensorPad->instrument->setSensorConfiguration(sensorConfig);
 
 }
 
 SensorConfiguration* Station::getInstrumentConfig(){
-    return InstrumentConfig;
+    return sensorPad->InstrumentConfig;
 }
 
 /*!
@@ -97,18 +118,18 @@ bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
         stream.writeAttribute("id", QString::number(this->id));
         stream.writeAttribute("name", this->name);
 
-        if(this->instrument != NULL){
+        if(this->sensorPad->instrument != NULL){
             stream.writeStartElement("activeSensor");
-            stream.writeAttribute("name",this->instrument->getMetaData()->name);
-            stream.writeAttribute("plugin", this->instrument->getMetaData()->pluginName);
+            stream.writeAttribute("name",this->sensorPad->instrument->getMetaData()->name);
+            stream.writeAttribute("plugin", this->sensorPad->instrument->getMetaData()->pluginName);
             stream.writeEndElement();
         }
 
-        if(this->usedSensors.size()>0){
-            for(int i = 0; i<usedSensors.size();i++){
+        if(this->sensorPad->usedSensors.size()>0){
+            for(int i = 0; i<this->sensorPad->usedSensors.size();i++){
                 stream.writeStartElement("sensor");
-                stream.writeAttribute("name",this->usedSensors.at(i)->getMetaData()->name);
-                stream.writeAttribute("plugin", this->usedSensors.at(i)->getMetaData()->pluginName);
+                stream.writeAttribute("name",this->sensorPad->usedSensors.at(i)->getMetaData()->name);
+                stream.writeAttribute("plugin", this->sensorPad->usedSensors.at(i)->getMetaData()->pluginName);
                 stream.writeEndElement();
             }
         }
@@ -117,7 +138,7 @@ bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
 
             stream.writeStartElement("member");
             stream.writeAttribute("type", "position");
-            stream.writeAttribute("ref", QString::number(this->position->id));
+            stream.writeAttribute("ref", QString::number(this->position->getId()));
             stream.writeEndElement();
 
         }
@@ -125,7 +146,7 @@ bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
         if(this->coordSys != NULL){
             stream.writeStartElement("member");
             stream.writeAttribute("type", "coordinatesystem");
-            stream.writeAttribute("ref", QString::number(this->coordSys->id));
+            stream.writeAttribute("ref", QString::number(this->coordSys->getId()));
             stream.writeEndElement();
         }
 
@@ -227,7 +248,7 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
                     sInfo.plugin = sensorPlugin;
                     dependencies.addActiveSensor(sInfo);
 
-                    this->InstrumentConfig = sc;
+                    this->sensorPad->InstrumentConfig = sc;
                     /* ...and next... */
                     xml.readNext();
                 }
@@ -248,13 +269,13 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
                             if (memberAttributes.value("type") == "position"){
 
                                 if(memberAttributes.hasAttribute("ref")){
-                                    this->position->id = memberAttributes.value("ref").toInt();
+                                    this->position->setId(memberAttributes.value("ref").toInt());
                                 }
 
                             }else if (memberAttributes.value("type") == "coordinatesystem"){
 
                                 if(memberAttributes.hasAttribute("ref")){
-                                    this->coordSys->id = memberAttributes.value("ref").toInt();
+                                    this->coordSys->setId(memberAttributes.value("ref").toInt());
                                 }
                             }else{
                                 readFeatureAttributes(xml,dependencies);
@@ -294,22 +315,27 @@ void Station::emitActionFinished(bool wasSuccesful){
 /*!
  * \brief emitStartStream
  */
-void Station::emitStartStream(){
-    emit startStream();
+void Station::emitStartReadingStream(int readingType){
+    emit startReadingStream(readingType);
 }
 
 /*!
  * \brief Station::stopStream
  */
-void Station::stopStream(){
-    QThread::msleep(1);
-    this->instrument->dataStreamIsActive = false;
-    emit actionFinished(true);
+void Station::emitStopReadingStream(){
+    emit stopReadingStream();
 }
 
-void Station::emitStartCommand(QString cmd){
-    emit startSendCommand(cmd);
+void Station::emitStartSensorStatsStream()
+{
+    emit startSensorStatsStream();
 }
+
+void Station::emitStopSensorStatsStream()
+{
+    emit stopSensorStatsStream();
+}
+
 
 /*!
  * \brief Station::emitStartMeasure
@@ -354,13 +380,18 @@ void Station::emitStartInitialize(){
 /*!
  * \brief Station::emitStartMotorState
  */
-void Station::emitStartMotorState(bool b){
-    emit startMotorState(b);
+void Station::emitStartMotorState(){
+    emit startMotorState();
 }
 
 
 void Station::emitStartCompensation(){
     emit startCompensation();
+}
+
+void Station::emitSelfDefinedAction(QString s)
+{
+    emit startSelfDefinedAction(s);
 }
 
 /*!
@@ -404,15 +435,11 @@ QString Station::getDisplayZ() const{
 }
 
 QString Station::getDisplayIsCommon() const{
-    return QString(position->isCommon?"true":"false");
+    return QString(position->getIsCommon()?"true":"false");
 }
 
 QString Station::getDisplayIsNominal() const{
-    return QString(position->isNominal?"true":"false");
-}
-
-QString Station::getDisplayObs() const{
-    return QString::number(this->position->myObservations.size());
+    return QString(position->getIsNominal()?"true":"false");
 }
 
 QString Station::getDisplaySolved() const{
@@ -420,13 +447,13 @@ QString Station::getDisplaySolved() const{
 }
 
 QString Station::getDisplayMConfig() const{
-    return this->position->mConfig.name;
+    return this->position->getMeasurementConfig().name;
 }
 
 QString Station::getDisplayStdDev() const{
 
-    if(this->position->myStatistic.isValid){
-        return QString::number(this->position->myStatistic.stdev * UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    if(this->position->getStatistic().isValid){
+        return QString::number(this->position->getStatistic().stdev * UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
     }else{
         return "-/-";
     }

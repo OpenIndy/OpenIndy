@@ -5,8 +5,10 @@
 #include <QtOpenGL>
 #include <QMouseEvent>
 #include <QPoint>
+
 #include "featurewrapper.h"
 #include "oiGraphixFactory/oigraphix.h"
+#include "oifeaturestate.h"
 
 #ifdef Q_OS_MAC
     #include <OpenGL/glu.h>
@@ -21,7 +23,6 @@ class GLWidget : public QGLWidget
 public:
     explicit GLWidget(QWidget *parent = 0);
 
-
     void initializeGL();
     void paintGL();
     void resizeGL(int w, int h);
@@ -29,10 +30,6 @@ public:
     void mouseMoveEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
-
-    QList<FeatureWrapper*> *features; //TODO zur Referenz machen
-
-
 
 private:
     void draw();

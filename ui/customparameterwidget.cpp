@@ -131,6 +131,8 @@ void CustomParameterWidget::setUpGui(){
     }
     this->myLayout = new QFormLayout();
     //create GUI elements for each parameter
+    QFont boldFont;
+    boldFont.setBold(true);
     int rowIndex = 0;
     while(intIterator.hasNext()){
         intIterator.next();
@@ -139,6 +141,7 @@ void CustomParameterWidget::setUpGui(){
         QLabel *intLabel = new QLabel(intKey);
         intLabel->setMinimumWidth(300);
         intLabel->setWordWrap(true);
+        intLabel->setFont(boldFont);
         QLineEdit *intLineEdit = new QLineEdit(QString::number(intValue));
         intLineEdit->setValidator(this->intValidator);
         this->parameterLabel.append(intLabel);
@@ -154,6 +157,7 @@ void CustomParameterWidget::setUpGui(){
         QLabel *doubleLabel = new QLabel(doubleKey);
         doubleLabel->setMinimumWidth(300);
         doubleLabel->setWordWrap(true);
+        doubleLabel->setFont(boldFont);
         QLineEdit *doubleLineEdit = new QLineEdit(QString::number(doubleValue));
         doubleLineEdit->setValidator(this->doubleValidator);
         this->parameterLabel.append(doubleLabel);
@@ -169,6 +173,7 @@ void CustomParameterWidget::setUpGui(){
         QLabel *stringLabel = new QLabel(stringKey);
         stringLabel->setMinimumWidth(300);
         stringLabel->setWordWrap(true);
+        stringLabel->setFont(boldFont);
         QComboBox *stringComboBox = new QComboBox();
         stringComboBox->addItems(stringValue);
         this->parameterLabel.append(stringLabel);

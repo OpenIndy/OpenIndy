@@ -11,6 +11,7 @@
 
 class Plane : public Geometry
 {
+    Q_OBJECT
 public:
     enum PlaneUnknowns{
         unknownX,
@@ -21,12 +22,15 @@ public:
         unknownK
     };
 
-    Plane();
+    Plane(bool isNominal, QObject *parent = 0);
     Plane(const Plane &copy);
     ~Plane();
 
     OiVec xyz;
     OiVec ijk;
+
+    OiVec getXYZ() const;
+    OiVec getIJK() const;
 
     void recalc();
 
@@ -41,7 +45,7 @@ public:
     QString getDisplayK() const;
     QString getDisplayIsCommon() const;
     QString getDisplayIsNominal() const;
-    QString getDisplayObs() const;
+    //QString getDisplayObs() const;
     QString getDisplaySolved() const;
     QString getDisplayMConfig() const;
     QString getDisplayStdDev() const;

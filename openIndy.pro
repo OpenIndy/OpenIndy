@@ -79,6 +79,7 @@ SOURCES += \
     src/coordinatesystem.cpp \
     controller/console.cpp \
     src/configuration.cpp \
+    src/element.cpp \
     src/geometry/sphere.cpp \
     src/geometry/pointcloud.cpp \
     src/geometry/point.cpp \
@@ -116,7 +117,6 @@ SOURCES += \
     ui/importnominalgeometrydialog.cpp \
     ui/featuretreeviewmodel.cpp \
     ui/featuretreeitem.cpp \
-    ui/featureovserviewproxymodel.cpp \
     ui/availableelementstreeviewproxymodel.cpp \
     ui/trafoparamproxymodel.cpp \
     ui/nominaldatadialog.cpp \
@@ -146,7 +146,18 @@ SOURCES += \
     ui/plugintreeviewmodel.cpp \
     ui/plugintreeitem.cpp \
     controller/featureattributesexchange.cpp \
-    controller/nominalattributeexchange.cpp
+    controller/nominalattributeexchange.cpp \
+    controller/displayattribute.cpp \
+    src/sensorlistener.cpp \
+    controller/guiconfiguration.cpp \
+    ui/plugininfowidget.cpp \
+    controller/oifeaturestate.cpp \
+    controller/trafocontroller.cpp \
+    ui/featureoverviewproxymodel.cpp \
+    controller/oiDataExchange/oiexchangepts.cpp \
+    ui/stationinfodialog.cpp \
+    ui/realtimedatadialog.cpp \
+    ui/oiGraphixFactory/oigraphix_pointcloud.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -228,7 +239,6 @@ HEADERS  += \
     ui/importnominalgeometrydialog.h \
     ui/featuretreeviewmodel.h \
     ui/featuretreeitem.h \
-    ui/featureovserviewproxymodel.h \
     ui/availableelementstreeviewproxymodel.h \
     ui/trafoparamproxymodel.h \
     ui/nominaldatadialog.h \
@@ -259,7 +269,18 @@ HEADERS  += \
     ui/plugintreeviewmodel.h \
     ui/plugintreeitem.h \
     controller/featureattributesexchange.h \
-    controller/nominalattributeexchange.h
+    controller/nominalattributeexchange.h \
+    controller/displayattribute.h \
+    src/sensorlistener.h \
+    controller/guiconfiguration.h \
+    ui/plugininfowidget.h \
+    controller/oifeaturestate.h \
+    controller/trafocontroller.h \
+    ui/featureoverviewproxymodel.h \
+    controller/oiDataExchange/oiexchangepts.h \
+    ui/stationinfodialog.h \
+    ui/realtimedatadialog.h \
+    ui/oiGraphixFactory/oigraphix_pointcloud.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
@@ -275,6 +296,8 @@ FORMS    += ui/mainwindow.ui \
     ui/scalarentitydialog.ui \
     ui/importnominalgeometrydialog.ui \
     ui/nominaldatadialog.ui \
-    ui/edittrafoparamdialog.ui
+    ui/edittrafoparamdialog.ui \
+    ui/stationinfodialog.ui \
+    ui/realtimedatadialog.ui
 
 

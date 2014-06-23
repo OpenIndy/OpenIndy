@@ -15,9 +15,6 @@
 #include "pi_objecttransformation.h"
 #include "pi_systemtransformation.h"
 
-
-
-
 /*!
  * \brief The OiMetaData class
  */
@@ -48,8 +45,6 @@ private:
     static QString getCompiler();
     static QString getOperatingSys();
     static bool findIID(QString iid);
-    static QString findFeature(Configuration::FeatureTypes f);
-    static QString findElement(Configuration::ElementTypes e);
     static int generateId();
 
 };

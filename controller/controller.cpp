@@ -15,74 +15,23 @@ Controller::Controller(QObject *parent) :
     c = new Console(0);
     Console::c = c;
 
+    this->myFeatureState = OiFeatureState::getInstance();
+
     this->myDeleteFeaturesCallback = new DeleteFeaturesFunctor();
     this->myDeleteFeaturesCallback->c = this;
 
-    pluginsModel = new QSqlQueryModel();
-    neededElementsModel = new QSqlQueryModel();
-
-    this->activeStation = NULL;
-    this->activeFeature = NULL;
-    this->activeCoordinateSystem = NULL;
-
-    lastmConfig = new MeasurementConfig();
+    lastmConfig;
     this->defaultLastmConfig();
 
-    this->activeFeature = NULL;
+    //set up models
+    this->initModels();
+    this->connectModels();
 
-    if(this->features.size()==0){
-        CoordinateSystem *cs = new CoordinateSystem();
-        cs->name ="PART";
-        FeatureWrapper *fwPart = new FeatureWrapper();
-        fwPart->setCoordinateSystem(cs);
-        this->features.append(fwPart);
-        this->coordSys.append(fwPart->getCoordinateSystem());
+    this->createDefaultFeatures();
 
-        Station *firstStation = new Station("STATION01");
-        firstStation->position->mConfig = *this->lastmConfig;
-        firstStation->position->isCommon = false;
-        firstStation->position->isNominal = false;
-        this->activeStation = firstStation;
-        //TODO station solved Problem. siehe unten
-        //this->activeStation->isSolved = true;
-        FeatureWrapper *fwFirstStation = new FeatureWrapper();
-        fwFirstStation->setStation(firstStation);
 
-        this->features.append(fwFirstStation);
 
-        this->stations.append(fwFirstStation->getStation());
 
-        this->activeCoordinateSystem = activeStation->coordSys;
-
-    }else{
-        this->activeStation = NULL;
-        this->activeCoordinateSystem  = NULL;
-    }
-
-    tblModel = new TableModel(features,activeStation,activeFeature);
-
-    this->featureOverviewModel = new FeatureOvserviewProxyModel(this->features);
-    this->featureOverviewModel->setSourceModel(this->tblModel);
-
-    this->trafoParamModel = new TrafoParamProxyModel(this->features);
-    this->trafoParamModel->setSourceModel(this->tblModel);
-
-    this->functionTreeViewModel = new QStandardItemModel();
-    this->functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
-
-    this->usedElementsModel = new UsedElementsModel();
-
-    this->myPluginTreeViewModel = new PluginTreeViewModel();
-
-    //set up feature treeview models
-    this->featureTreeViewModel = new FeatureTreeViewModel(this->features);
-    this->featureTreeViewModel->refreshModel();
-    this->availableElementsModel = new AvailableElementsTreeViewProxyModel();
-    this->availableElementsModel->setHeader("available elements");
-    this->availableElementsModel->setSourceModel(this->featureTreeViewModel);
-    this->featureGraphicsModel = new FeatureGraphicsTreeViewProxyModel();
-    this->featureGraphicsModel->setHeader("feature overview");
-    this->featureGraphicsModel->setSourceModel(this->featureTreeViewModel);
 
     //set up filter mechanism for available elements treeview
     connect(this, SIGNAL(sendAvailableElementsFilter(Configuration::ElementTypes,bool)), this->availableElementsModel, SLOT(setFilter(Configuration::ElementTypes,bool)));
@@ -91,10 +40,122 @@ Controller::Controller(QObject *parent) :
     connect(PluginLoader::myMetaInfo,SIGNAL(sendMe(PluginMetaData*)),this,SLOT(savePluginData(PluginMetaData*)));
 
 
-    connect(this->activeStation,SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
-    connect(this,SIGNAL(refreshGUI(FeatureWrapper*,Station*)),this->tblModel,SLOT(updateModel(FeatureWrapper*,Station*)));
+    //connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
+    //connect(&OiFeatureState::getActiveStation()->sensorPad->getOiEmitter(),SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
+    //connect(&this->activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
+    //connect(this,SIGNAL(refreshGUI()),this->tblModel,SLOT(updateModel()));
 
-    emit refreshGUI(this->activeFeature,this->activeStation);
+    //emit refreshGUI();
+
+
+}
+
+/*!
+ * \brief Controller::initModels
+ * Create and initialize models
+ */
+void Controller::initModels(){
+    try{
+
+        //models for tableviews
+        this->tblModel = new TableModel();
+        this->featureOverviewModel = new FeatureOverviewProxyModel();
+        this->featureOverviewModel->setSourceModel(this->tblModel);
+        this->trafoParamModel = new TrafoParamProxyModel();
+        this->trafoParamModel->setSourceModel(this->tblModel);
+
+        //models for function plugin dialog
+        this->functionTreeViewModel = new QStandardItemModel();
+        this->functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
+        this->neededElementsModel = new QSqlQueryModel();
+        this->usedElementsModel = new UsedElementsModel();
+
+        this->pluginsModel = new QSqlQueryModel();
+
+        //model for plugin overview
+        this->myPluginTreeViewModel = new PluginTreeViewModel();
+        this->myPluginTreeViewModel->refreshModel();
+
+        //feature treeview models
+        this->featureTreeViewModel = new FeatureTreeViewModel();
+        this->featureTreeViewModel->refreshModel();
+        this->availableElementsModel = new AvailableElementsTreeViewProxyModel();
+        this->availableElementsModel->setHeader("available elements");
+        this->availableElementsModel->setSourceModel(this->featureTreeViewModel);
+        this->featureGraphicsModel = new FeatureGraphicsTreeViewProxyModel();
+        this->featureGraphicsModel->setHeader("feature overview");
+        this->featureGraphicsModel->setSourceModel(this->featureTreeViewModel);
+
+        //feature groups model
+        this->myFeatureGroupsModel = new QStringListModel();
+        this->setUpFeatureGroupsModel();
+
+        //coordinate systems model
+        this->myCoordinateSystemsModel = new QStringListModel();
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief Controller::connectModels
+ * Update models when a corresponding signal is emittet from OiFeatureState
+ */
+void Controller::connectModels(){
+    try{
+
+        //update table model when one or more features change
+        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
+        connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
+        connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
+        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
+        connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()));
+        connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
+        //connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this->tblModel, SLOT(updateModel()));
+
+        //update feature groups model when a group is added or removed
+        connect(this->myFeatureState, SIGNAL(availableGroupsChanged()), this, SLOT(setUpFeatureGroupsModel()));
+
+        //update feature tree view model which is used in function plugin loader
+        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->featureTreeViewModel, SLOT(refreshModel()));
+
+        //update coordinate systems model
+        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this, SLOT(setUpCoordinateSystemsModel()));
+
+        //update function treeview model for active feature
+        connect(this->myFeatureState, SIGNAL(featureFunctionsChanged()), this, SLOT(changeFunctionTreeViewModel()));
+        connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this, SLOT(changeFunctionTreeViewModel()));
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief Controller::createDefaultFeatures
+ * Create a station and the PART system as default features when starting OpenIndy
+ */
+void Controller::createDefaultFeatures(){
+
+    if(OiFeatureState::getFeatureCount() == 0){
+
+        //create PART and STATION01 as default
+        FeatureWrapper *part = OiFeatureState::addFeature(Configuration::eCoordinateSystemFeature, false, "PART");
+        FeatureWrapper *station01 = OiFeatureState::addFeature(Configuration::eStationFeature, false, "STATION01");
+
+        //set position parameter for STATION01
+        station01->getStation()->position->setMeasurementConfig(this->lastmConfig);
+        station01->getStation()->position->setCommonState(false);
+
+        //set STATION01's station system as active station
+        station01->getStation()->setActiveStationState(true);
+
+        //set PART as active coordinate system
+        part->getCoordinateSystem()->setActiveCoordinateSystemState(true);
+
+    }
+
 }
 
 /*!
@@ -109,34 +170,20 @@ Controller::Controller(QObject *parent) :
  */
 void Controller::addFeature(FeatureAttributesExchange fae){
 
-        int fType = FeatureUpdater::addFeature(this->stations,this->coordSys,this->features,
-                                                                       fae,*this->lastmConfig);
-        if(fType == Configuration::eStationFeature && fType == Configuration::eCoordinateSystemFeature){
-            emit CoordSystemAdded();
-        }
-
-        //refresh feature tree view models
-        this->featureTreeViewModel->refreshModel();
-
-
-        emit refreshGUI(this->activeFeature, this->activeStation);
-        emit featureAdded();
-	
-	//update available group names
-    if(fae.group.compare("") != 0){
-        int currentCount = 0;
-        if(this->availableGroups.contains(fae.group)){
-            currentCount = this->availableGroups.find(fae.group).value();
-            currentCount += fae.count;
-        }else{
-            currentCount += fae.count;
-        }
-        this->availableGroups.insert(fae.group, currentCount);
-        emit this->availableGroupsChanged(this->availableGroups);
+    int fType = FeatureUpdater::addFeature(fae,this->lastmConfig);
+    if(fType == Configuration::eStationFeature && fType == Configuration::eCoordinateSystemFeature){
+        emit CoordSystemsModelChanged();
     }
 
     //refresh feature tree view models
-    this->featureTreeViewModel->refreshModel();
+    //this->featureTreeViewModel->refreshModel();
+
+
+    //emit refreshGUI();
+    //emit featureAdded();
+
+    //refresh feature tree view models
+    //this->featureTreeViewModel->refreshModel();
 }
 
 /*!
@@ -147,12 +194,18 @@ void Controller::startMeasurement(){
 
     bool checkActiveCoordSys = false;
 
-    if (activeStation->coordSys == activeCoordinateSystem){
+    if (OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
         checkActiveCoordSys = true;
     }
 
     if(checkSensorValid() && checkFeatureValid()){
-        this->activeStation->emitStartMeasure(this->activeFeature->getGeometry(),checkActiveCoordSys);
+
+        if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
+            Console::addLine("can not measure nominal feature");
+            return;
+        }
+        OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
+
         emit sensorWorks("measuring...");
     }
 }
@@ -165,10 +218,10 @@ void Controller::startMove(Reading *parameter){
 
     //TODO check function
     if (parameter->typeofReading == Configuration::ePolar){
-        activeStation->startMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
+        OiFeatureState::getActiveStation()->startMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
         emit sensorWorks("moving...");
     }else if (parameter->typeofReading == Configuration::eCartesian){
-        activeStation->startMove(parameter->rCartesian.xyz.getAt(0),parameter->rCartesian.xyz.getAt(1),parameter->rCartesian.xyz.getAt(2));
+        OiFeatureState::getActiveStation()->startMove(parameter->rCartesian.xyz.getAt(0),parameter->rCartesian.xyz.getAt(1),parameter->rCartesian.xyz.getAt(2));
         emit sensorWorks("moving...");
     }
 
@@ -177,13 +230,43 @@ void Controller::startMove(Reading *parameter){
 
 void Controller::startAim(){
 
+    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && !OiFeatureState::getActiveFeature()->getGeometry()->getIsSolved()){
+        Console::addLine("Cannot aim a unsolved feature.");
+        return;
+    }
     if(checkFeatureValid() && checkSensorValid()){
-        OiVec polarElements = Reading::toPolar(activeFeature->getGeometry()->getDisplayX().toDouble(),
-                                                                 activeFeature->getGeometry()->getDisplayY().toDouble(),
-                                                                 activeFeature->getGeometry()->getDisplayZ().toDouble());
 
+        OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+        if(xyz.getSize() < 3){
+            return;
+        }
+        OiVec polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+        if(OiFeatureState::getActiveStation()->coordSys != OiFeatureState::getActiveCoordinateSystem()){
 
-        this->activeStation->emitStartMove(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2),false);
+            QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveCoordinateSystem()->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
+            TrafoParam *tp = NULL;
+            if(myTrafoParams.size() > 0){
+                for(int i=0;i<myTrafoParams.size();i++){
+                    if(!myTrafoParams.at(i)->getIsMovement() && myTrafoParams.at(i)->getIsUsed()){
+                        tp = myTrafoParams.at(i);
+                        break;
+                    }
+                }
+            }
+            if(tp != NULL){
+                OiMat t;
+                if(tp->getDestinationSystem() == OiFeatureState::getActiveStation()->coordSys){
+                    t = tp->getHomogenMatrix();
+                }else{
+                    t = tp->getHomogenMatrix().inv();
+                }
+                OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
+                xyz = t * xyz;
+                polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+            }
+        }
+
+        OiFeatureState::getActiveStation()->emitStartMove(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2),false);
         emit sensorWorks("moving...");
     }
 
@@ -195,9 +278,9 @@ void Controller::startAim(){
  */
 void Controller::startConnect(){
 
-    if(this->activeStation != NULL){
-        if(this->activeStation->instrument != NULL){
-            this->activeStation->emitStartConnect(this->activeStation->getInstrumentConfig()->connConfig);
+    if(OiFeatureState::getActiveStation() != NULL){
+        if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+            OiFeatureState::getActiveStation()->emitStartConnect(OiFeatureState::getActiveStation()->getInstrumentConfig()->connConfig);
             emit sensorWorks("connecting...");
         }else{
             Console::addLine("sensor not connected");
@@ -213,7 +296,7 @@ void Controller::startConnect(){
 void Controller::startDisconnect(){
 
     if(checkSensorValid()){
-        this->activeStation->emitStartDisconnect();
+        OiFeatureState::getActiveStation()->emitStartDisconnect();
         emit sensorWorks("disconnecting...");
     }
 }
@@ -225,21 +308,8 @@ void Controller::startDisconnect(){
 void Controller::startToggleSight(){
 
     if(checkSensorValid()){
-        this->activeStation->emitStartToggleSight();
+        OiFeatureState::getActiveStation()->emitStartToggleSight();
         emit sensorWorks("toggle sight...");
-    }
-}
-
-/*!
- * \brief Controller::sendCmdString
- * After checking some conditions, it calls the command function of the active sensor with the given parameter.
- * \param cmd
- */
-void Controller::sendCmdString(QString cmd){
-
-    if(checkSensorValid()){
-        this->activeStation->emitStartCommand(cmd);
-        emit sensorWorks(QString("sending command..."+ cmd));
     }
 }
 
@@ -250,7 +320,7 @@ void Controller::sendCmdString(QString cmd){
 void Controller::startInitialize(){
 
     if(checkSensorValid()){
-        this->activeStation->emitStartInitialize();
+        OiFeatureState::getActiveStation()->emitStartInitialize();
         emit sensorWorks("initialize...");
     }
 }
@@ -262,7 +332,7 @@ void Controller::startInitialize(){
 void Controller::startHome(){
 
     if(checkSensorValid()){
-        this->activeStation->emitStartHome();
+        OiFeatureState::getActiveStation()->emitStartHome();
         emit sensorWorks("home...");
     }
 }
@@ -274,7 +344,7 @@ void Controller::startHome(){
 void Controller::startCompensation(){
 
     if(checkSensorValid()){
-        this->activeStation->emitStartCompensation();
+        OiFeatureState::getActiveStation()->emitStartCompensation();
         emit sensorWorks("compensation...");
     }
 }
@@ -286,9 +356,19 @@ void Controller::startCompensation(){
 void Controller::startChangeMotorState(){
 
     if(checkSensorValid()){
-        //this->activeStation->emitStartMotorState();
-        //emit sensorWorks("change motor state...");
+        OiFeatureState::getActiveStation()->emitStartMotorState();
+        emit sensorWorks("change motor state...");
     }
+}
+
+/*!
+ * \brief Controller::startCustomAction calls the custom action of the sensor.
+ * \param s
+ */
+void Controller::startCustomAction(QString s)
+{
+    emit sensorWorks(s);
+    OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
 }
 
 /*!
@@ -296,10 +376,10 @@ void Controller::startChangeMotorState(){
  * Call recalcFeature function for active feature
  */
 void Controller::recalcActiveFeature(){
-    if(this->activeFeature != NULL && this->activeFeature->getTrafoParam() != NULL){
-        this->recalcTrafoParam(this->activeFeature->getTrafoParam());
-    }else if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
-        this->recalcFeature(this->activeFeature->getFeature());
+    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getTrafoParam() != NULL){
+        this->recalcTrafoParam(OiFeatureState::getActiveFeature()->getTrafoParam());
+    }else if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
+        this->recalcFeature(OiFeatureState::getActiveFeature()->getFeature());
     }
 }
 
@@ -322,33 +402,37 @@ void Controller::recalcFeature(Feature *f){
  */
 void Controller::recalcTrafoParam(TrafoParam *tp){
     //start recalcing
-    this->myFeatureUpdater.recalcTrafoParam(tp, this->features, this->coordSys, this->stations, this->activeCoordinateSystem);
+    this->myFeatureUpdater.recalcTrafoParam(tp);
     //refresh feature tree view models
     this->featureTreeViewModel->refreshModel();
 }
 
 /*!
  * \brief Controller::changeActiveStation
- * this function changes the active station to the given one.
- * \param s
+ * this function changes the active station to the given one and set the sensor object to the new one.
+ * \param setSensor
  */
-void Controller::changeActiveStation(){
+void Controller::changeActiveStation(bool setSensor){
 
-    if(this->activeFeature->getStation() != NULL){
+    if(OiFeatureState::getActiveFeature()->getStation() != NULL){
 
-            if(this->activeStation->instrument != NULL && this->activeStation->instrument->isConnected){
-                this->activeStation->startDisconnect();
-            }
-            //this->activeStation->isSolved = false;
-            //TODO solved für station setzen !
+        /*if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+            this->startDisconnect();
+        }*/
 
-            this->activeStation = NULL;
-            this->activeStation = this->activeFeature->getStation();
-            //this->activeStation->isSolved = true;
+        if(setSensor){
+            OiFeatureState::getActiveStation()->sensorPad->copyMe(OiFeatureState::getActiveFeature()->getStation()->sensorPad);
+            //OiFeatureState::getActiveFeature()->getStation()->sensorPad = OiFeatureState::getActiveStation()->sensorPad;
+            //OiFeatureState::getActiveFeature()->getStation()->setInstrumentConfig(OiFeatureState::getActiveStation()->getInstrumentConfig());
+            OiFeatureState::getActiveFeature()->getStation()->setActiveStationState(true);
+            //this->startConnect();
+        }else{
+            OiFeatureState::getActiveFeature()->getStation()->setActiveStationState(true);
+        }
 
-            connect(this->activeStation,SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
-            emit changedStation();
-            emit refreshGUI(this->activeFeature,this->activeStation);
+    connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
+    emit changedStation();
+    emit refreshGUI();
     }
 }
 
@@ -360,7 +444,7 @@ void Controller::changeActiveStation(){
 void Controller::showResults(bool b){
     if(b){
         Console::addLine("sensor action completed");
-        Console::addLine("count observation: ", activeStation->coordSys->observations.size());
+        Console::addLine("count observation: ", OiFeatureState::getActiveStation()->coordSys->getObservations().size());
     }
 }
 
@@ -370,18 +454,19 @@ void Controller::showResults(bool b){
  * It can be changed at runtime.
  */
 void Controller::defaultLastmConfig(){
-    lastmConfig->name = "default configuration";
-    lastmConfig->count = 1;
-    lastmConfig->measureTwoSides = false;
-    if(this->activeStation != NULL && this->activeStation->instrument != NULL){
-        lastmConfig->typeOfReading = this->activeStation->instrument->getSupportedReadingTypes()->at(0);
+    lastmConfig.name = "default configuration";
+    lastmConfig.count = 1;
+    lastmConfig.iterations = 1;
+    lastmConfig.measureTwoSides = false;
+    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+        lastmConfig.typeOfReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->at(0);
     }else{
-        lastmConfig->typeOfReading = Configuration::ePolar;
+        lastmConfig.typeOfReading = Configuration::ePolar;
     }
-    lastmConfig->timeDependent = false;
-    lastmConfig->distanceDependent = false;
-    lastmConfig->timeInterval = 0.0;
-    lastmConfig->distanceInterval = 0.0;
+    lastmConfig.timeDependent = false;
+    lastmConfig.distanceDependent = false;
+    lastmConfig.timeInterval = 0.0;
+    lastmConfig.distanceInterval = 0.0;
 }
 
 /*!
@@ -399,7 +484,7 @@ if (!metaInfo->alreadyExists){
     QList<Function*> functionList = PluginLoader::loadFunctionPlugins(metaInfo->path);
     QList<NetworkAdjustment*> networkAdjustmentList = PluginLoader::loadNetworkAdjustmentPlugins(metaInfo->path);
 
-    SystemDbManager::savePlugin(metaInfo,functionList,sensorList,networkAdjustmentList);
+    SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList);
 
     /*for (int i = 0;i<sensorList.size();i++){
         SystemDbManager::savePlugin(sensorList.at(i)->getMetaData(),functionList,sensorList,networkAdjustmentList);
@@ -487,7 +572,8 @@ void Controller::getSelectedPlugin(int index){
     if(path != NULL){
 
         //this->activeStation->InstrumentConfig = new SensorConfiguration();
-        this->activeStation->instrument = PluginLoader::loadSensorPlugin(path, name);
+        OiFeatureState::getActiveStation()->sensorPad->instrument = PluginLoader::loadSensorPlugin(path, name);
+        connect(&OiFeatureState::getActiveStation()->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
         defaultLastmConfig();
         updateFeatureMConfig();
     }
@@ -511,24 +597,34 @@ void Controller::getTempSensor(int index)
  * So it can be used for measuring and other actions.
  * \param index
  */
-void Controller::getSelectedFeature(int index){
-    //if a new feature was selected
-    if(this->activeFeature != this->features.at(getActiveFeatureIndex(index))){
-        this->changeUsedElementsModel(-1, -1);
-    }
-    this->activeFeature = this->features.at(getActiveFeatureIndex(index));
-    if(this->activeFeature->getGeometry()!= NULL){
-        double x  = this->activeFeature->getGeometry()->getDisplayX().toDouble();
-        double y = this->activeFeature->getGeometry()->getDisplayY().toDouble();
-        double z = this->activeFeature->getGeometry()->getDisplayZ().toDouble();
+void Controller::setSelectedFeature(int featureIndex){
+    try{
 
-        emit sendPositionOfActiveFeature(x,  y,  z);
+        //if a new feature was selected
+        if(OiFeatureState::getFeatures().at(featureIndex) != NULL && OiFeatureState::getFeatures().at(featureIndex)->getFeature() != NULL
+                && !OiFeatureState::getFeatures().at(featureIndex)->getFeature()->getIsActiveFeature()){
+            //this->changeUsedElementsModel(-1, -1);
+
+            //set the selected feature as active feature
+            OiFeatureState::getFeatures().at(featureIndex)->getFeature()->setActiveFeatureState(true);
+
+            //send the actual position of the active feature
+            if(OiFeatureState::getActiveFeature()->getGeometry()!= NULL){
+                double x  = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayX().toDouble();
+                double y = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayY().toDouble();
+                double z = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayZ().toDouble();
+
+                emit sendPositionOfActiveFeature(x,  y,  z);
+            }
+
+        }
+        //emit refreshGUI();
+        //set up tree view model with all functions of selected feature
+        //this->changeFunctionTreeViewModel();
+
+    }catch(exception &e){
+        Console::addLine(e.what());
     }
-    emit refreshGUI(this->activeFeature, this->activeStation);
-    //set up tree view model with all functions of selected feature
-    this->changeFunctionTreeViewModel();
-    //give activeFeature to graphicsmodel
-    this->featureGraphicsModel->setActiveFeature(this->activeFeature);
 }
 
 /*!
@@ -538,10 +634,11 @@ void Controller::getSelectedFeature(int index){
 void Controller::receiveSensorConfiguration(SensorConfiguration *sc, bool connect){
 
     if(connect){
-        this->activeStation->setInstrumentConfig(sc);
-        this->activeStation->emitStartConnect(sc->connConfig);
+        OiFeatureState::getActiveStation()->setInstrumentConfig(sc);
+        //this->activeStation->emitStartConnect(sc->connConfig);
+        this->startConnect();
     }else{
-        this->activeStation->setInstrumentConfig(sc);
+        OiFeatureState::getActiveStation()->setInstrumentConfig(sc);
     }
 
 }
@@ -551,12 +648,12 @@ void Controller::receiveSensorConfiguration(SensorConfiguration *sc, bool connec
  * Opens the menu to set a function for the active feature. The dialog shows all available functions for the selected feature.
  */
 void Controller::setFunction(){
-    if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
-        if(this->activeFeature->getFeature()->functionList.size() == 0
-                && (this->activeFeature->getGeometry() == NULL || !this->activeFeature->getGeometry()->isNominal)){
-            SystemDbManager::getCreateFunctionModel(this->pluginsModel,this->activeFeature->getTypeOfFeature());
+    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
+        if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() == 0
+                && (OiFeatureState::getActiveFeature()->getGeometry() == NULL || !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal())){
+            SystemDbManager::getCreateFunctionModel(this->pluginsModel,OiFeatureState::getActiveFeature()->getTypeOfFeature());
         }else{
-            SystemDbManager::getChangeFunctionModel(this->pluginsModel,this->activeFeature->getTypeOfFeature());
+            SystemDbManager::getChangeFunctionModel(this->pluginsModel,OiFeatureState::getActiveFeature()->getTypeOfFeature());
         }
     }else{
         Console::addLine("no feature selected");
@@ -583,15 +680,15 @@ void Controller::createFunction(int index){
     qDebug() << this->pluginsModel->record(index).value("file_path").toString();
     QString path = pluginsModel->record(index).value("file_path").toString();
     QString name = pluginsModel->record(index).value("name").toString();
-    if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
+    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         //if the active feature is not a nominal geometry
-        if(this->activeFeature->getGeometry() == NULL
-                || !this->activeFeature->getGeometry()->isNominal){
+        if(OiFeatureState::getActiveFeature()->getGeometry() == NULL
+                || !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
             //create function and connect oiemitter to console
             Function *newFunction = PluginLoader::loadFunctionPlugin(path,name);
             if(newFunction != NULL){
                 connect(&newFunction->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(printToConsole(QString)));
-                this->activeFeature->getFeature()->addFunction(newFunction);
+                OiFeatureState::getActiveFeature()->getFeature()->addFunction(newFunction);
             }
             //set up tree view model with all functions of selected feature
             this->changeFunctionTreeViewModel();
@@ -609,15 +706,14 @@ void Controller::createFunction(int index){
  * \param index
  */
 void Controller::deleteFunctionFromFeature(int index){
-    if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
-        Feature *activeFeature = this->activeFeature->getFeature();
-        if(activeFeature->functionList.size() > index){
+    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
+        Feature *activeFeature = OiFeatureState::getActiveFeature()->getFeature();
+        if(activeFeature->getFunctions().size() > index){
             //the first function of a feature can only be deleted if it is the only function
-            if(activeFeature->functionList.size() > 1 && index == 0){
+            if(activeFeature->getFunctions().size() > 1 && index == 0){
                 Console::addLine("Cannot delete the function of a feature that defines it!");
             }else{
-                delete activeFeature->functionList.at(index);
-                activeFeature->functionList.removeAt(index);
+                activeFeature->removeFunction(index);
                 //set up tree view model with all functions of selected feature
                 this->changeFunctionTreeViewModel();
                 //set up available functions for the active feature
@@ -628,9 +724,8 @@ void Controller::deleteFunctionFromFeature(int index){
 }
 
 bool Controller::checkFeatureValid(){
-    if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
-        if(this->activeFeature->getGeometry() != NULL && this->activeFeature->getGeometry() != this->activeStation->position &&
-                this->activeFeature->getGeometry()->isNominal == false){
+    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
+        if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry() != OiFeatureState::getActiveStation()->position){
             return true;
         }else{
             Console::addLine("you cannot measure this feature");
@@ -644,8 +739,8 @@ bool Controller::checkFeatureValid(){
 
 bool Controller::checkSensorValid(){
 
-    if(this->activeStation != NULL){
-        if(this->activeStation->instrument != NULL && this->activeStation->instrument->isConnected){
+    if(OiFeatureState::getActiveStation() != NULL){
+        if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
             return true;
         }else{
             Console::addLine("sensor not connected");
@@ -660,36 +755,41 @@ bool Controller::checkSensorValid(){
 void Controller::importFeatures(QList<FeatureWrapper*> f){
     for(int i = 0;i<f.size();i++){
 
-        this->features.append(f.at(i));
+        OiFeatureState::addFeature(f.at(i));
 
     }
 
     //refresh feature tree view models
     this->featureTreeViewModel->refreshModel();
 
-    refreshGUI(this->activeFeature, this->activeStation);
+    refreshGUI();
 }
 
 void Controller::setActiveCoordSystem(QString CoordSysName){
 
     qDebug() << CoordSysName;
-    for(int i=0; i<this->features.size();i++){
-        if(this->features.at(i)->getCoordinateSystem() != NULL && this->features.at(i)->getCoordinateSystem()->name == CoordSysName){
-            this->activeCoordinateSystem = this->features.at(i)->getCoordinateSystem();
-        }
-        if(this->features.at(i)->getStation() != NULL &&
-                this->features.at(i)->getStation()->coordSys != NULL &&
-                this->features.at(i)->getStation()->name == CoordSysName){
-            this->activeCoordinateSystem = this->features.at(i)->getStation()->coordSys;
+    for(int i=0; i<OiFeatureState::getFeatures().size();i++){
 
+        FeatureWrapper *fw = OiFeatureState::getFeatures().at(i);
+
+        if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL && OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName() == CoordSysName){
+            OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->setActiveCoordinateSystemState(true);
+            break;
         }
+        if(OiFeatureState::getFeatures().at(i)->getStation() != NULL &&
+                OiFeatureState::getFeatures().at(i)->getStation()->coordSys != NULL &&
+                OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName() == CoordSysName){
+            OiFeatureState::getFeatures().at(i)->getStation()->coordSys->setActiveCoordinateSystemState(true);
+            break;
+        }
+
     }
 
     //transform observations to current system and recalc all features
-    this->myFeatureUpdater.switchCoordinateSystem(this->coordSys, this->stations, this->features, this->activeCoordinateSystem);
+    this->myFeatureUpdater.switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
 
     //update table view for all features
-    emit this->refreshGUI(this->activeFeature, this->activeStation);
+    emit this->refreshGUI();
 }
 
 /*!
@@ -700,16 +800,16 @@ void Controller::changeFunctionTreeViewModel(){
     this->functionTreeViewModel->clear();
     this->functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
     QStandardItem *rootItem = this->functionTreeViewModel->invisibleRootItem();
-    if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
-        foreach(Function *f, this->activeFeature->getFeature()->functionList){
+    if(OiFeatureState::getActiveFeature() != NULL){
+        foreach(Function *f, OiFeatureState::getActiveFeature()->getFeature()->getFunctions()){
             if(f != NULL){
                 QStandardItem *function = new QStandardItem(f->getMetaData()->name);
                 foreach(InputParams param, f->getNeededElements()){
                     if(param.infinite){
-                        QStandardItem *element = new QStandardItem(QString("n %1s").arg(OiMetaData::findElement(param.typeOfElement)));
+                        QStandardItem *element = new QStandardItem(QString("n %1s").arg(Configuration::getElementTypeString(param.typeOfElement)));
                         function->appendRow(element);
                     }else{
-                        QStandardItem *element = new QStandardItem(QString("1 %1").arg(OiMetaData::findElement(param.typeOfElement)));
+                        QStandardItem *element = new QStandardItem(QString("1 %1").arg(Configuration::getElementTypeString(param.typeOfElement)));
                         function->appendRow(element);
                     }
                 }
@@ -728,23 +828,23 @@ void Controller::changeFunctionTreeViewModel(){
 void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
     this->usedElementsModel->removeAllElements();
 
-    if(functionIndex >= 0 && elementIndex >= 0 && this->activeFeature != NULL && this->activeFeature->getFeature() != NULL
-            && this->activeFeature->getFeature()->functionList.size() > functionIndex
-            && this->activeFeature->getFeature()->functionList.at(functionIndex)->getNeededElements().size() > elementIndex){
+    if(functionIndex >= 0 && elementIndex >= 0 && OiFeatureState::getActiveFeature() != NULL
+            && OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex
+            && OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().size() > elementIndex){
         //get function at functionIndex of active feature
-        Function *func = this->activeFeature->getFeature()->functionList.at(functionIndex);
+        Function *func = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex);
         QMap<int, QList<InputFeature> > featureOrder = func->getFeatureOrder();
         QMap<int, QList<InputFeature> >::iterator idx = featureOrder.find(elementIndex);
         if(idx != featureOrder.end() && idx.value().size() > 0){ //if the list with elements is not empty
             QList<InputFeature> featurePosition = idx.value(); //elements of function at elementIndex
-            switch(this->activeFeature->getFeature()->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement){
+            switch(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement){
                 case Configuration::ePointElement:
                     for(int i = 0; i < featurePosition.size(); i++){
                         Point *p = func->getPoint(featurePosition.at(i).id);
                         if(p != NULL){
                             FeatureWrapper *pointWrapper = new FeatureWrapper();
                             pointWrapper->setPoint(p);
-                            FeatureTreeItem *point = new FeatureTreeItem(p->name);
+                            FeatureTreeItem *point = new FeatureTreeItem(p->getFeatureName());
                             point->setFeature(pointWrapper);
                             this->usedElementsModel->addElement(point);
                         }
@@ -756,7 +856,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         if(l != NULL){
                             FeatureWrapper *lineWrapper = new FeatureWrapper();
                             lineWrapper->setLine(l);
-                            FeatureTreeItem *line = new FeatureTreeItem(l->name);
+                            FeatureTreeItem *line = new FeatureTreeItem(l->getFeatureName());
                             line->setFeature(lineWrapper);
                             this->usedElementsModel->addElement(line);
                         }
@@ -768,7 +868,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         if(p != NULL){
                             FeatureWrapper *planeWrapper = new FeatureWrapper();
                             planeWrapper->setPlane(p);
-                            FeatureTreeItem *plane = new FeatureTreeItem(p->name);
+                            FeatureTreeItem *plane = new FeatureTreeItem(p->getFeatureName());
                             plane->setFeature(planeWrapper);
                             this->usedElementsModel->addElement(plane);
                         }
@@ -780,7 +880,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         if(s != NULL){
                             FeatureWrapper *sphereWrapper = new FeatureWrapper();
                             sphereWrapper->setSphere(s);
-                            FeatureTreeItem *sphere = new FeatureTreeItem(s->name);
+                            FeatureTreeItem *sphere = new FeatureTreeItem(s->getFeatureName());
                             sphere->setFeature(sphereWrapper);
                             this->usedElementsModel->addElement(sphere);
                         }
@@ -792,7 +892,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         if(s != NULL){
                             FeatureWrapper *angleWrapper = new FeatureWrapper();
                             angleWrapper->setScalarEntityAngle(s);
-                            FeatureTreeItem *angle = new FeatureTreeItem(s->name);
+                            FeatureTreeItem *angle = new FeatureTreeItem(s->getFeatureName());
                             angle->setFeature(angleWrapper);
                             this->usedElementsModel->addElement(angle);
                         }
@@ -804,7 +904,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         if(s != NULL){
                             FeatureWrapper *distanceWrapper = new FeatureWrapper();
                             distanceWrapper->setScalarEntityDistance(s);
-                            FeatureTreeItem *distance = new FeatureTreeItem(s->name);
+                            FeatureTreeItem *distance = new FeatureTreeItem(s->getFeatureName());
                             distance->setFeature(distanceWrapper);
                             this->usedElementsModel->addElement(distance);
                         }
@@ -816,7 +916,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         if(tp != NULL){
                             FeatureWrapper *trafoParamWrapper = new FeatureWrapper();
                             trafoParamWrapper->setTrafoParam(tp);
-                            FeatureTreeItem *trafoParam = new FeatureTreeItem(tp->name);
+                            FeatureTreeItem *trafoParam = new FeatureTreeItem(tp->getFeatureName());
                             trafoParam->setFeature(trafoParamWrapper);
                             this->usedElementsModel->addElement(trafoParam);
                         }
@@ -828,7 +928,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         if(cs != NULL){
                             FeatureWrapper *coordinateSystemWrapper = new FeatureWrapper();
                             coordinateSystemWrapper->setCoordinateSystem(cs);
-                            FeatureTreeItem *coordinateSystem = new FeatureTreeItem(cs->name);
+                            FeatureTreeItem *coordinateSystem = new FeatureTreeItem(cs->getFeatureName());
                             coordinateSystem->setFeature(coordinateSystemWrapper);
                             this->usedElementsModel->addElement(coordinateSystem);
                         }
@@ -840,7 +940,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         if(s != NULL){
                             FeatureWrapper *stationWrapper = new FeatureWrapper();
                             stationWrapper->setStation(s);
-                            FeatureTreeItem *station = new FeatureTreeItem(s->name);
+                            FeatureTreeItem *station = new FeatureTreeItem(s->getFeatureName());
                             station->setFeature(stationWrapper);
                             this->usedElementsModel->addElement(station);
                         }
@@ -896,6 +996,18 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                         }
                     }
                     break;
+                case Configuration::eScalarEntityTemperatureElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        ScalarEntityTemperature *s = func->getScalarEntityTemperature(featurePosition.at(i).id);
+                        if(s != NULL){
+                            FeatureWrapper *temperatureWrapper = new FeatureWrapper();
+                            temperatureWrapper->setScalarEntityTemperature(s);
+                            FeatureTreeItem *temperature = new FeatureTreeItem(s->getFeatureName());
+                            temperature->setFeature(temperatureWrapper);
+                            this->usedElementsModel->addElement(temperature);
+                        }
+                    }
+                    break;
             }
         }
     }
@@ -910,15 +1022,15 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
  * \param neededElement
  */
 void Controller::setSelectedFunction(int functionIndex, int neededElementIndex){
-    if(this->activeFeature->getFeature()->functionList.size() > functionIndex && functionIndex >= 0){ //if function index is valid
-        if(this->activeFeature->getFeature()->functionList.at(functionIndex)->getNeededElements().size() > neededElementIndex
+    if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex && functionIndex >= 0){ //if function index is valid
+        if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().size() > neededElementIndex
                 && neededElementIndex >= 0){ //if needed element index is valid
-            emit this->sendFunctionDescription(this->activeFeature->getFeature()->functionList.at(functionIndex)->getNeededElements()
+            emit this->sendFunctionDescription(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements()
                                                .at(neededElementIndex).description);
-            emit this->sendAvailableElementsFilter(this->activeFeature->getFeature()->functionList.at(functionIndex)->getNeededElements()
+            emit this->sendAvailableElementsFilter(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements()
                                                    .at(neededElementIndex).typeOfElement, false);
         }else{ //if function itself was clicked
-            Function *func = this->activeFeature->getFeature()->functionList.at(functionIndex);
+            Function *func = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex);
             emit this->sendFunctionDescription(func->getMetaData()->description);
             emit this->sendAvailableElementsFilter(Configuration::eUndefinedElement, true);
             emit this->sendExtraParameterForFunction(func->getIntegerParameter(), func->getDoubleParameter(), func->getStringParameter(), func->getFunctionConfiguration());
@@ -938,10 +1050,10 @@ void Controller::setSelectedFunction(int functionIndex, int neededElementIndex){
  * \param elementIndex
  */
 void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex, int elementIndex){
-    if(element != NULL && functionIndex >= 0 && elementIndex >= 0 && this->activeFeature != NULL && this->activeFeature->getFeature() != NULL){
+    if(element != NULL && functionIndex >= 0 && elementIndex >= 0 && OiFeatureState::getActiveFeature() != NULL){
         //check circle warning recursively
         if(element->getIsFeature() && element->getFeature() != NULL && element->getFeature()->getFeature() != NULL
-                && this->checkCircleWarning(this->activeFeature->getFeature(), element->getFeature()->getFeature())){
+                && this->checkCircleWarning(OiFeatureState::getActiveFeature()->getFeature(), element->getFeature()->getFeature())){
             Console::addLine(QString("%1 %2")
                              .arg("You cannot use a feature for the calculation, which itself is directly or indirectly")
                              .arg("dependent on the feature to be calculated."));
@@ -951,94 +1063,106 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
             return;
         }
         //get pointer to active feature and add used element
-        Feature *feature = this->activeFeature->getFeature();
-        if(feature->functionList.size() > functionIndex && feature->functionList.at(functionIndex)->getNeededElements().size() > elementIndex){
+        Feature *feature = OiFeatureState::getActiveFeature()->getFeature();
+        if(feature->getFunctions().size() > functionIndex && feature->getFunctions().at(functionIndex)->getNeededElements().size() > elementIndex){
             if(element->getIsFeature() && element->getFeature() != NULL && element->getFeature()->getFeature() != NULL){
                 switch(element->getFeature()->getTypeOfFeature()){
                     case Configuration::ePointFeature:
                         if(element->getFeature()->getPoint() != NULL
-                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::ePointElement){
-                            feature->functionList.at(functionIndex)->addPoint(element->getFeature()->getPoint(), elementIndex);
+                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::ePointElement){
+                            feature->getFunctions().at(functionIndex)->addPoint(element->getFeature()->getPoint(), elementIndex);
                         }
                         break;
                     case Configuration::eLineFeature:
                         if(element->getFeature()->getLine() != NULL
-                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eLineElement){
-                            feature->functionList.at(functionIndex)->addLine(element->getFeature()->getLine(), elementIndex);
+                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eLineElement){
+                            feature->getFunctions().at(functionIndex)->addLine(element->getFeature()->getLine(), elementIndex);
                         }
                         break;
                     case Configuration::ePlaneFeature:
                         if(element->getFeature()->getPlane() != NULL
-                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::ePlaneElement){
-                            feature->functionList.at(functionIndex)->addPlane(element->getFeature()->getPlane(), elementIndex);
+                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::ePlaneElement){
+                            feature->getFunctions().at(functionIndex)->addPlane(element->getFeature()->getPlane(), elementIndex);
                         }
                         break;
                     case Configuration::eSphereFeature:
                         if(element->getFeature()->getSphere() != NULL
-                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eSphereElement){
-                            feature->functionList.at(functionIndex)->addSphere(element->getFeature()->getSphere(), elementIndex);
+                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eSphereElement){
+                            feature->getFunctions().at(functionIndex)->addSphere(element->getFeature()->getSphere(), elementIndex);
                         }
                         break;
                     case Configuration::eStationFeature:
                         if(element->getFeature()->getStation() != NULL
-                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eStationElement){
-                            feature->functionList.at(functionIndex)->addStation(element->getFeature()->getStation(), elementIndex);
+                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eStationElement){
+                            feature->getFunctions().at(functionIndex)->addStation(element->getFeature()->getStation(), elementIndex);
                         }
                         break;
                     case Configuration::eCoordinateSystemFeature:
                         if(element->getFeature()->getCoordinateSystem() != NULL
-                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eCoordinateSystemElement){
-                            feature->functionList.at(functionIndex)->addCoordSystem(element->getFeature()->getCoordinateSystem(), elementIndex);
+                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eCoordinateSystemElement){
+                            feature->getFunctions().at(functionIndex)->addCoordSystem(element->getFeature()->getCoordinateSystem(), elementIndex);
                         }
                         break;
                     case Configuration::eTrafoParamFeature:
                         if(element->getFeature()->getTrafoParam() != NULL
-                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eTrafoParamElement){
-                            feature->functionList.at(functionIndex)->addTrafoParam(element->getFeature()->getTrafoParam(), elementIndex);
+                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eTrafoParamElement){
+                            feature->getFunctions().at(functionIndex)->addTrafoParam(element->getFeature()->getTrafoParam(), elementIndex);
                         }
                         break;
                     case Configuration::eScalarentityAngleFeature:
                         if(element->getFeature()->getScalarEntityAngle() != NULL
-                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityAngleElement){
-                            feature->functionList.at(functionIndex)->addScalarEntityAngle(element->getFeature()->getScalarEntityAngle(), elementIndex);
+                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityAngleElement){
+                            feature->getFunctions().at(functionIndex)->addScalarEntityAngle(element->getFeature()->getScalarEntityAngle(), elementIndex);
                         }
                         break;
                     case Configuration::eScalarEntityDistanceFeature:
                         if(element->getFeature()->getScalarEntityDistance() != NULL
-                                && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityDistanceElement){
-                            feature->functionList.at(functionIndex)->addScalarEntityDistance(element->getFeature()->getScalarEntityDistance(), elementIndex);
+                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityDistanceElement){
+                            feature->getFunctions().at(functionIndex)->addScalarEntityDistance(element->getFeature()->getScalarEntityDistance(), elementIndex);
+                        }
+                        break;
+                    case Configuration::eScalarEntityTemperatureFeature:
+                        if(element->getFeature()->getScalarEntityTemperature() != NULL
+                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityTemperatureElement){
+                            feature->getFunctions().at(functionIndex)->addScalarEntityTemperature(element->getFeature()->getScalarEntityTemperature(), elementIndex);
                         }
                         break;
                 }
                 //set usedFor and previouslyNeeded for active feature and used element
                 feature->previouslyNeeded.append(element->getFeature());
-                element->getFeature()->getFeature()->usedFor.append(this->activeFeature);
+                element->getFeature()->getFeature()->usedFor.append(OiFeatureState::getActiveFeature());
             }else if(element->getIsReading() && element->getReading() != NULL){
                 switch(element->getReading()->typeofReading){
                     case Configuration::eCartesian:
-                        if(feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingCartesianElement){
-                            feature->functionList.at(functionIndex)->addReadingCartesian(element->getReading(), elementIndex);
+                        if(feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingCartesianElement){
+                            feature->getFunctions().at(functionIndex)->addReadingCartesian(element->getReading(), elementIndex);
                         }
                         break;
                     case Configuration::ePolar:
-                        if(feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingPolarElement){
-                            feature->functionList.at(functionIndex)->addReadingPolar(element->getReading(), elementIndex);
+                        if(feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingPolarElement){
+                            feature->getFunctions().at(functionIndex)->addReadingPolar(element->getReading(), elementIndex);
                         }
                         break;
                     case Configuration::eDistance:
-                        if(feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingDistanceElement){
-                            feature->functionList.at(functionIndex)->addReadingDistance(element->getReading(), elementIndex);
+                        if(feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingDistanceElement){
+                            feature->getFunctions().at(functionIndex)->addReadingDistance(element->getReading(), elementIndex);
                         }
                         break;
                     case Configuration::eDirection:
-                        if(feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingDirectionElement){
-                            feature->functionList.at(functionIndex)->addReadingDirection(element->getReading(), elementIndex);
+                        if(feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingDirectionElement){
+                            feature->getFunctions().at(functionIndex)->addReadingDirection(element->getReading(), elementIndex);
                         }
                         break;
                 }
             }else if(element->getIsObservation() && element->getObservation() != NULL
-                     && feature->functionList.at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eObservationElement){
-                feature->functionList.at(functionIndex)->addObservation(element->getObservation(), elementIndex);
+                     && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eObservationElement){
+                feature->getFunctions().at(functionIndex)->addObservation(element->getObservation(), elementIndex);
+
+                //if feature is a geometry add the observation to the list of observations in class geometry
+                Geometry *geom = OiFeatureState::getActiveFeature()->getGeometry();
+                if(geom != NULL){
+                    geom->getObservations().append(element->getObservation());
+                }
             }
         }
         this->changeUsedElementsModel(functionIndex, elementIndex);
@@ -1053,72 +1177,77 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
  * \param elementIndex
  */
 void Controller::removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex){
-    if(element != NULL && functionIndex >= 0 && this->activeFeature != NULL && this->activeFeature && this->activeFeature->getFeature() != NULL){
-        Feature *feature = this->activeFeature->getFeature();
-        if(feature->functionList.size() > functionIndex && feature->functionList.at(functionIndex) != NULL){
+    if(element != NULL && functionIndex >= 0 && OiFeatureState::getActiveFeature() != NULL){
+        Feature *feature = OiFeatureState::getActiveFeature()->getFeature();
+        if(feature->getFunctions().size() > functionIndex && feature->getFunctions().at(functionIndex) != NULL){
             if(element->getIsFeature() && element->getFeature() != NULL && element->getFeature()->getFeature() != NULL){
                 switch(element->getFeature()->getTypeOfFeature()){
                     case Configuration::ePointFeature:
                         if(element->getFeature()->getPoint() != NULL){
-                            feature->functionList.at(functionIndex)->removePoint(element->getFeature()->getFeature()->id);
+                            feature->getFunctions().at(functionIndex)->removePoint(element->getFeature()->getFeature()->getId());
                         }
                         break;
                     case Configuration::eLineFeature:
                         if(element->getFeature()->getLine() != NULL){
-                            feature->functionList.at(functionIndex)->removeLine(element->getFeature()->getFeature()->id);
+                            feature->getFunctions().at(functionIndex)->removeLine(element->getFeature()->getFeature()->getId());
                         }
                         break;
                     case Configuration::ePlaneFeature:
                         if(element->getFeature()->getPlane() != NULL){
-                            feature->functionList.at(functionIndex)->removePlane(element->getFeature()->getFeature()->id);
+                            feature->getFunctions().at(functionIndex)->removePlane(element->getFeature()->getFeature()->getId());
                         }
                         break;
                     case Configuration::eSphereFeature:
                         if(element->getFeature()->getSphere() != NULL){
-                            feature->functionList.at(functionIndex)->removeSphere(element->getFeature()->getFeature()->id);
+                            feature->getFunctions().at(functionIndex)->removeSphere(element->getFeature()->getFeature()->getId());
                         }
                         break;
                     case Configuration::eStationFeature:
                         if(element->getFeature()->getStation() != NULL){
-                            feature->functionList.at(functionIndex)->removeStation(element->getFeature()->getFeature()->id);
+                            feature->getFunctions().at(functionIndex)->removeStation(element->getFeature()->getFeature()->getId());
                         }
                         break;
                     case Configuration::eCoordinateSystemFeature:
                         if(element->getFeature()->getCoordinateSystem() != NULL){
-                            feature->functionList.at(functionIndex)->removeCoordSystem(element->getFeature()->getFeature()->id);
+                            feature->getFunctions().at(functionIndex)->removeCoordSystem(element->getFeature()->getFeature()->getId());
                         }
                         break;
                     case Configuration::eTrafoParamFeature:
                         if(element->getFeature()->getTrafoParam() != NULL){
-                            feature->functionList.at(functionIndex)->removeTrafoParam(element->getFeature()->getFeature()->id);
+                            feature->getFunctions().at(functionIndex)->removeTrafoParam(element->getFeature()->getFeature()->getId());
                         }
                         break;
                     case Configuration::eScalarentityAngleFeature:
                         if(element->getFeature()->getScalarEntityAngle() != NULL){
-                            feature->functionList.at(functionIndex)->removeScalarEntityAngle(element->getFeature()->getFeature()->id);
+                            feature->getFunctions().at(functionIndex)->removeScalarEntityAngle(element->getFeature()->getFeature()->getId());
                         }
                         break;
                     case Configuration::eScalarEntityDistanceFeature:
-                    if(element->getFeature()->getScalarEntityDistance() != NULL){
-                        feature->functionList.at(functionIndex)->removeScalarEntityDistance(element->getFeature()->getFeature()->id);
-                    }
-                    break;
+                        if(element->getFeature()->getScalarEntityDistance() != NULL){
+                            feature->getFunctions().at(functionIndex)->removeScalarEntityDistance(element->getFeature()->getFeature()->getId());
+                        }
+                        break;
+                    case Configuration::eScalarEntityTemperatureFeature:
+                        if(element->getFeature()->getScalarEntityTemperature() != NULL){
+                            feature->getFunctions().at(functionIndex)->removeScalarEntityTemperature(element->getFeature()->getFeature()->getId());
+                        }
+                        break;
                 }
                 //set usedFor and previouslyNeeded for active feature and used element
                 feature->previouslyNeeded.removeOne(element->getFeature());
-                element->getFeature()->getFeature()->usedFor.removeOne(this->activeFeature);
+                element->getFeature()->getFeature()->usedFor.removeOne(OiFeatureState::getActiveFeature());
             }else if(element->getIsObservation() && element->getObservation() != NULL){
-                feature->functionList.at(functionIndex)->removeObservation(element->getObservation()->id);
+                feature->getFunctions().at(functionIndex)->removeObservation(element->getObservation()->getId());
             }else if(element->getIsReading() && element->getReading() != NULL){
                 switch(element->getReading()->typeofReading){
                     case Configuration::eCartesian:
-                        feature->functionList.at(functionIndex)->removeReadingCartesian(element->getReading()->id);
+                        feature->getFunctions().at(functionIndex)->removeReadingCartesian(element->getReading()->id);
                     case Configuration::eDirection:
-                        feature->functionList.at(functionIndex)->removeReadingDirection(element->getReading()->id);
+                        feature->getFunctions().at(functionIndex)->removeReadingDirection(element->getReading()->id);
                     case Configuration::eDistance:
-                        feature->functionList.at(functionIndex)->removeReadingDistance(element->getReading()->id);
+                        feature->getFunctions().at(functionIndex)->removeReadingDistance(element->getReading()->id);
                     case Configuration::ePolar:
-                        feature->functionList.at(functionIndex)->removeReadingPolar(element->getReading()->id);
+                        feature->getFunctions().at(functionIndex)->removeReadingPolar(element->getReading()->id);
                 }
             }
             this->changeUsedElementsModel(functionIndex, elementIndex);
@@ -1136,13 +1265,13 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
 bool Controller::checkCircleWarning(Feature *activeFeature, Feature *usedForActiveFeature){
     if(activeFeature != NULL && usedForActiveFeature != NULL){
         //if activeFeature and usedForActiveFeature are equal
-        if(activeFeature->id == usedForActiveFeature->id){
+        if(activeFeature->getId() == usedForActiveFeature->getId()){
             return true;
         }
         //if active feature is in list of previously needed features of usedForActiveFeature
         foreach(FeatureWrapper *f, usedForActiveFeature->previouslyNeeded){
             if(f != NULL && f->getFeature() != NULL){
-                if(f->getFeature()->id == activeFeature->id){
+                if(f->getFeature()->getId() == activeFeature->getId()){
                     return true;
                 }else if(f->getFeature()->previouslyNeeded.size() > 0 && this->checkCircleWarning(activeFeature, f->getFeature())){
                     return true;
@@ -1154,23 +1283,6 @@ bool Controller::checkCircleWarning(Feature *activeFeature, Feature *usedForActi
     return true;
 }
 
-/*!
- * \brief Controller::getActiveFeatureIndex
- * searches the active feature in the features list. transformation parameters cannot be selected as active feature.
- * So they donot get marked in the tableview.
- * \param index
- * \return
- */
-int Controller::getActiveFeatureIndex(int index){
-
-    int tmpINdex = index;
-
-    int result = checkActiveFeatureIndex(0, index);
-    result += tmpINdex;
-
-    return result;
-}
-
 int Controller::checkActiveFeatureIndex(int current, int index){
 
     //int tmpIndex = index;
@@ -1178,7 +1290,7 @@ int Controller::checkActiveFeatureIndex(int current, int index){
     int featureIndex = 0;
 
     for (current; current <= index; current++){
-        if(this->features.at(current)->getTrafoParam() != NULL){
+        if(OiFeatureState::getFeatures().at(current)->getTrafoParam() != NULL){
             trafoParamCount += 1;
         }
     }
@@ -1190,27 +1302,6 @@ int Controller::checkActiveFeatureIndex(int current, int index){
     return featureIndex;
 }
 
-void Controller::handleTrafoParamClicked(const QModelIndex &idx){
-    int index = idx.row();
-    int tmpCount = 0;
-
-    for(int i=0;i<this->features.size();i++){
-        if(this->features.at(i)->getTrafoParam() != NULL){
-            tmpCount += 1;
-
-            if(tmpCount-1 == index){
-                this->activeFeature = this->features.at(i);
-
-                emit refreshGUI(this->activeFeature, this->activeStation);
-                //set up tree view model with all functions of selected feature
-                this->changeFunctionTreeViewModel();
-
-                break;
-            }
-        }
-    }
-}
-
 /*!
  * \brief getNominalValues sets the attributes of the selected feature to the specified values.
  * It uses the exchange object for nominal data
@@ -1218,45 +1309,45 @@ void Controller::handleTrafoParamClicked(const QModelIndex &idx){
  */
 void Controller::getNominalValues(NominalAttributeExchange nominalValue){
 
-    switch (this->activeFeature->getTypeOfFeature()) {
+    switch (OiFeatureState::getActiveFeature()->getTypeOfFeature()) {
     case Configuration::ePointFeature:
-        this->activeFeature->getPoint()->xyz.setAt(0,nominalValue.nomX);
-        this->activeFeature->getPoint()->xyz.setAt(1,nominalValue.nomY);
-        this->activeFeature->getPoint()->xyz.setAt(2,nominalValue.nomZ);
+        OiFeatureState::getActiveFeature()->getPoint()->xyz.setAt(0,nominalValue.nomX);
+        OiFeatureState::getActiveFeature()->getPoint()->xyz.setAt(1,nominalValue.nomY);
+        OiFeatureState::getActiveFeature()->getPoint()->xyz.setAt(2,nominalValue.nomZ);
         break;
     case Configuration::ePlaneFeature:
-        this->activeFeature->getPlane()->xyz.setAt(0,nominalValue.nomX);
-        this->activeFeature->getPlane()->xyz.setAt(1,nominalValue.nomY);
-        this->activeFeature->getPlane()->xyz.setAt(2,nominalValue.nomZ);
-        this->activeFeature->getPlane()->ijk.setAt(0,nominalValue.nomI);
-        this->activeFeature->getPlane()->ijk.setAt(1,nominalValue.nomJ);
-        this->activeFeature->getPlane()->ijk.setAt(2,nominalValue.nomK);
+        OiFeatureState::getActiveFeature()->getPlane()->xyz.setAt(0,nominalValue.nomX);
+        OiFeatureState::getActiveFeature()->getPlane()->xyz.setAt(1,nominalValue.nomY);
+        OiFeatureState::getActiveFeature()->getPlane()->xyz.setAt(2,nominalValue.nomZ);
+        OiFeatureState::getActiveFeature()->getPlane()->ijk.setAt(0,nominalValue.nomI);
+        OiFeatureState::getActiveFeature()->getPlane()->ijk.setAt(1,nominalValue.nomJ);
+        OiFeatureState::getActiveFeature()->getPlane()->ijk.setAt(2,nominalValue.nomK);
         break;
     case Configuration::eLineFeature:
-        this->activeFeature->getLine()->xyz.setAt(0,nominalValue.nomX);
-        this->activeFeature->getLine()->xyz.setAt(1,nominalValue.nomY);
-        this->activeFeature->getLine()->xyz.setAt(2,nominalValue.nomZ);
-        this->activeFeature->getLine()->ijk.setAt(0,nominalValue.nomI);
-        this->activeFeature->getLine()->ijk.setAt(1,nominalValue.nomJ);
-        this->activeFeature->getLine()->ijk.setAt(2,nominalValue.nomK);
+        OiFeatureState::getActiveFeature()->getLine()->xyz.setAt(0,nominalValue.nomX);
+        OiFeatureState::getActiveFeature()->getLine()->xyz.setAt(1,nominalValue.nomY);
+        OiFeatureState::getActiveFeature()->getLine()->xyz.setAt(2,nominalValue.nomZ);
+        OiFeatureState::getActiveFeature()->getLine()->ijk.setAt(0,nominalValue.nomI);
+        OiFeatureState::getActiveFeature()->getLine()->ijk.setAt(1,nominalValue.nomJ);
+        OiFeatureState::getActiveFeature()->getLine()->ijk.setAt(2,nominalValue.nomK);
         break;
     case Configuration::eSphereFeature:
-        this->activeFeature->getSphere()->xyz.setAt(0,nominalValue.nomX);
-        this->activeFeature->getSphere()->xyz.setAt(1,nominalValue.nomY);
-        this->activeFeature->getSphere()->xyz.setAt(2,nominalValue.nomZ);
-        this->activeFeature->getSphere()->radius = nominalValue.nomR;
+        OiFeatureState::getActiveFeature()->getSphere()->xyz.setAt(0,nominalValue.nomX);
+        OiFeatureState::getActiveFeature()->getSphere()->xyz.setAt(1,nominalValue.nomY);
+        OiFeatureState::getActiveFeature()->getSphere()->xyz.setAt(2,nominalValue.nomZ);
+        OiFeatureState::getActiveFeature()->getSphere()->radius = nominalValue.nomR;
         break;
     case Configuration::eScalarentityAngleFeature:
-        this->activeFeature->getScalarEntityAngle()->setAngle(nominalValue.nomSAE);
+        OiFeatureState::getActiveFeature()->getScalarEntityAngle()->setAngle(nominalValue.nomSAE);
         break;
     case Configuration::eScalarEntityDistanceFeature:
-        this->activeFeature->getScalarEntityDistance()->setDistance(nominalValue.nomSDE);
+        OiFeatureState::getActiveFeature()->getScalarEntityDistance()->setDistance(nominalValue.nomSDE);
         break;
     case Configuration::eScalarEntityTemperatureFeature:
-        this->activeFeature->getScalarEntityTemperature()->setTemperature(nominalValue.nomSTE);
+        OiFeatureState::getActiveFeature()->getScalarEntityTemperature()->setTemperature(nominalValue.nomSTE);
         break;
     case Configuration::eScalarEntityMeasurementSeriesFeature:
-        this->activeFeature->getScalarEntityMeasurementSeries()->setSeriesValue(nominalValue.nomSMSE);
+        OiFeatureState::getActiveFeature()->getScalarEntityMeasurementSeries()->setSeriesValue(nominalValue.nomSMSE);
         break;
     default:
         break;
@@ -1270,14 +1361,19 @@ void Controller::getNominalValues(NominalAttributeExchange nominalValue){
  * \param config
  */
 void Controller::setFunctionConfiguration(int functionIndex, FunctionConfiguration config){
-    if(this->activeFeature != NULL && this->activeFeature->getFeature() != NULL
-            && functionIndex >= 0 && this->activeFeature->getFeature()->functionList.size() > functionIndex){
-        this->activeFeature->getFeature()->functionList.at(functionIndex)->setFunctionConfiguration(config);
+    if(OiFeatureState::getActiveFeature() != NULL && functionIndex >= 0 &&
+            OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex){
+        OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->setFunctionConfiguration(config);
     }
 }
+
+/*!
+ * \brief Controller::loadProjectData
+ * \param data
+ */
 void Controller::loadProjectData(oiProjectData &data){
 
-    features.clear();
+    /*features.clear();
     stations.clear();
     coordSys.clear();
 
@@ -1286,8 +1382,8 @@ void Controller::loadProjectData(oiProjectData &data){
     coordSys = data.coordSystems;
 
     if(features.size() > 0 && stations.size() > 0){
-        refreshGUI(features.at(0),stations.at(0));
-    }
+        refreshGUI();
+    }*/
 
 }
 
@@ -1305,44 +1401,48 @@ void Controller::printToConsole(QString message){
  */
 void Controller::updateFeatureMConfig()
 {
-    if(this->activeStation != NULL && this->activeStation->instrument != NULL &&
-            this->activeStation->instrument->getSupportedReadingTypes() != NULL &&
-            this->activeStation->instrument->getSupportedReadingTypes()->size() >0){
+    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL &&
+            OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL &&
+            OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->size() >0){
 
-        QList<Configuration::ReadingTypes> readingTypes = *this->activeStation->instrument->getSupportedReadingTypes();
+        QList<Configuration::ReadingTypes> readingTypes = *OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
 
         //Check and edit lastMConfig
         bool contains = false;
         for(int i=0; i< readingTypes.size();i++){
-            if(this->lastmConfig->typeOfReading == readingTypes.at(i)){
+            if(this->lastmConfig.typeOfReading == readingTypes.at(i)){
                 contains = true;
             }
         }
         if(!contains){
-            this->lastmConfig->typeOfReading = readingTypes.at(0);
+            this->lastmConfig.typeOfReading = readingTypes.at(0);
         }
 
         //check and edit previous mconfigs
-        for(int k=0; k<this->features.size();k++){
+        for(int k=0; k<OiFeatureState::getFeatures().size();k++){
             contains = false;
-            if(this->features.at(k)->getGeometry() != NULL){
+            if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL){
                 for(int m=0;m<readingTypes.size();m++){
-                    if(this->features.at(k)->getGeometry()->mConfig.typeOfReading == readingTypes.at(m)){
+                    if(OiFeatureState::getFeatures().at(k)->getGeometry()->getMeasurementConfig().typeOfReading == readingTypes.at(m)){
                         contains = true;
                     }
                 }
                 if(!contains){
-                    this->features.at(k)->getGeometry()->mConfig.typeOfReading = this->lastmConfig->typeOfReading;
+                    MeasurementConfig myConfig = OiFeatureState::getFeatures().at(k)->getGeometry()->getMeasurementConfig();
+                    myConfig.typeOfReading = this->lastmConfig.typeOfReading;
+                    OiFeatureState::getFeatures().at(k)->getGeometry()->setMeasurementConfig(myConfig);
                 }
             }
-            if(this->features.at(k)->getStation() != NULL){
+            if(OiFeatureState::getFeatures().at(k)->getStation() != NULL){
                 for(int n=0; n<readingTypes.size();n++){
-                    if(this->features.at(k)->getStation()->position->mConfig.typeOfReading == readingTypes.at(n)){
+                    if(OiFeatureState::getFeatures().at(k)->getStation()->position->getMeasurementConfig().typeOfReading == readingTypes.at(n)){
                         contains = true;
                     }
                 }
                 if(!contains){
-                    this->features.at(k)->getStation()->position->mConfig.typeOfReading = this->lastmConfig->typeOfReading;
+                    MeasurementConfig myConfig = OiFeatureState::getFeatures().at(k)->getStation()->position->getMeasurementConfig();
+                    myConfig.typeOfReading = this->lastmConfig.typeOfReading;
+                    OiFeatureState::getFeatures().at(k)->getStation()->position->setMeasurementConfig(myConfig);
                 }
             }
         }
@@ -1363,17 +1463,17 @@ void Controller::deleteFeatures(QList<FeatureWrapper*> myFeatures){
     bool activeCheck = true; //the active station cannot be deleted
     bool displayCheck = true; //the display coordinate system cannot be deleted
     foreach(FeatureWrapper *f, this->featuresToDelete){
-        if(f->getStation() != NULL && f->getStation() == this->activeStation){ //do not delete active station
+        if(f->getStation() != NULL && f->getStation() == OiFeatureState::getActiveStation()){ //do not delete active station
             activeCheck = false;
             break;
-        }else if(f->getCoordinateSystem() != NULL && f->getCoordinateSystem() == this->activeCoordinateSystem){ //do not delete display coordinate system
+        }else if(f->getCoordinateSystem() != NULL && f->getCoordinateSystem() == OiFeatureState::getActiveCoordinateSystem()){ //do not delete display coordinate system
             displayCheck = false;
             break;
         }else if(f->getStation() != NULL || f->getCoordinateSystem() != NULL){
             countCoordSys++;
         }
     }
-    if(countCoordSys >= (this->stations.size() + this->coordSys.size())){
+    if(countCoordSys >= (OiFeatureState::getStations().size() + OiFeatureState::getCoordinateSystems().size())){
         countCheck = false;
     }
 
@@ -1413,20 +1513,23 @@ void Controller::deleteFeaturesCallback(bool command){
     if(command){ //if user decided to delete the selected features
 
         foreach(FeatureWrapper *delFeature, this->featuresToDelete){
-            if(delFeature != NULL){
+            if(delFeature != NULL && delFeature->getFeature() != NULL){
 
                 //clear active feature and set it to active station
-                if(this->activeFeature == delFeature){
-                    this->activeFeature = NULL;
-                    foreach(FeatureWrapper *f, this->features){
-                        if(f->getStation() != NULL && f->getStation() == this->activeStation){
-                            this->activeFeature = f;
+                if(delFeature->getFeature()->getIsActiveFeature()){
+                    foreach(Station *myStation, OiFeatureState::getStations()){
+                        if(myStation != NULL && myStation->getIsActiveStation()){
+                            myStation->setActiveFeatureState(true);
                             break;
                         }
                     }
                 }
 
+                //remove the feature and all dependencies
+                OiFeatureState::removeFeature(delFeature);
+
                 //remove feature from lists
+                /*OiFeatureState::
                 this->features.removeOne(delFeature);
                 if(delFeature->getStation() != NULL){
                     this->stations.removeOne(delFeature->getStation());
@@ -1466,10 +1569,10 @@ void Controller::deleteFeaturesCallback(bool command){
                             }
                         }
                     }
-                }
+                }*/
 
                 //update group name map for combo boxes
-                QString group = delFeature->getFeature()->group;
+                /*QString group = delFeature->getFeature()->group;
                 if(this->availableGroups.contains(group)){
                     int count = this->availableGroups.find(group).value();
                     if(count <= 1){
@@ -1477,22 +1580,23 @@ void Controller::deleteFeaturesCallback(bool command){
                     }else{
                         this->availableGroups.insert(group, count-1);
                     }
-                }
+                }*/
 
                 //delete feature
-                this->myFeatureUpdater.deleteFeature(delFeature, this->features);
+                //this->myFeatureUpdater.deleteFeature(delFeature);
 
             }
         }
 
-        this->myFeatureUpdater.recalcFeatureSet(this->features);
+        //recalc all features because some of the features maybe depent on the deleted features
+        this->myFeatureUpdater.recalcFeatureSet();
 
         //refresh feature tree view models
-        this->featureTreeViewModel->refreshModel();
+        //this->featureTreeViewModel->refreshModel();
 
-        emit this->refreshGUI(this->activeFeature, this->activeStation);
-        emit this->availableGroupsChanged(this->availableGroups);
-        emit this->resetFeatureSelection();
+        //emit this->refreshGUI();
+        //emit this->availableGroupsChanged(this->availableGroups);
+        //emit this->resetFeatureSelection();
 
     }
 }
@@ -1503,7 +1607,7 @@ void Controller::deleteFeaturesCallback(bool command){
  * \param oldValue
  * \param newValue
  */
-void Controller::groupNameChanged(QString oldValue, QString newValue){
+/*void Controller::groupNameChanged(QString oldValue, QString newValue){
 
     if(oldValue.compare(newValue) != 0){
         //count down by 1 the number of occurences of oldValue as group name
@@ -1528,7 +1632,7 @@ void Controller::groupNameChanged(QString oldValue, QString newValue){
         emit this->availableGroupsChanged(this->availableGroups);
     }
 
-}
+}*/
 
 /*!
  * \brief Controller::checkAvailablePlugins
@@ -1547,8 +1651,111 @@ void Controller::checkAvailablePlugins(){
  */
 bool Controller::checkPluginAvailability(Configuration::FeatureTypes typeOfFeature){
     QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
-    if(availableGeometries.contains(QString(OiMetaData::findFeature(typeOfFeature)))){
+    if(availableGeometries.contains(QString(Configuration::getFeatureTypeString(typeOfFeature)))){
         return true;
     }
     return false;
+}
+
+/*!
+ * \brief Controller::getAvailableCreateFunctions
+ * Returns a list of all available fit and create functions of the specified feature type
+ * \param featureType
+ * \return
+ */
+QStringList Controller::getAvailableCreateFunctions(Configuration::FeatureTypes featureType){
+    QStringList result;
+
+    //query database for all available fit and construct functions of featureType
+    QList<FunctionPlugin> fitFunctions = SystemDbManager::getAvailableFitFunctions(featureType);
+    QList<FunctionPlugin> createFunctions = SystemDbManager::getAvailableConstructFunctions(featureType);
+
+    //add the function names to the result list
+    result.append("");
+    foreach(FunctionPlugin plugin, fitFunctions){
+        result.append(QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName));
+    }
+    foreach(FunctionPlugin plugin, createFunctions){
+        result.append(QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName));
+    }
+
+    return result;
+}
+
+/*!
+ * \brief Controller::getDefaultFunction
+ * Returns the default function of the specified feature type or an empty string if no default function is available
+ * \param featureType
+ * \return
+ */
+QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
+    QString result;
+
+    FunctionPlugin plugin = SystemDbManager::getDefaultFunction(featureType);
+    if(plugin.name.compare("") != 0){
+        result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
+    }
+
+    return result;
+}
+
+/*!
+ * \brief Controller::setUpFeatureGroupsModel
+ */
+void Controller::setUpFeatureGroupsModel(){
+    try{
+
+        QStringList myFeatureGroups;
+
+        QList<QString> myGroups = OiFeatureState::getAvailableGroups().keys();
+
+        myFeatureGroups.append("All Groups");
+        foreach(QString group, myGroups){
+            myFeatureGroups.append(group);
+        }
+
+        this->myFeatureGroupsModel->setStringList(myFeatureGroups);
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief Controller::setUpCoordinateSystemsModel
+ */
+void Controller::setUpCoordinateSystemsModel(){
+    try{
+
+        QStringList myCoordSys;
+
+        //append coordinate system names
+        foreach(CoordinateSystem *mySystem, OiFeatureState::getCoordinateSystems()){
+            if(mySystem != NULL){
+                myCoordSys.append(mySystem->getFeatureName());
+            }
+        }
+
+        //append station system names
+        foreach(Station *myStation, OiFeatureState::getStations()){
+            if(myStation != NULL){
+                myCoordSys.append(myStation->getFeatureName());
+            }
+        }
+
+        this->myCoordinateSystemsModel->setStringList(myCoordSys);
+
+        //emit this->CoordSystemsModelChanged();
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief Controller::setActiveGroup
+ * \param group
+ */
+void Controller::setActiveGroup(QString group){
+    OiFeatureState::setActiveGroup(group);
 }

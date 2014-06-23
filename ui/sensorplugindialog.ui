@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget_options">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_configs">
       <attribute name="title">
@@ -138,7 +138,7 @@
       <attribute name="title">
        <string>connection</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_22" stretch="1,1">
          <item>
@@ -163,7 +163,21 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBox_ip"/>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QComboBox" name="comboBox_ip"/>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEdit_ip">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="placeholderText">
+              <string>type in ip adress if not included in combobox</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>
@@ -282,8 +296,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>140</width>
-            <height>105</height>
+            <width>146</width>
+            <height>96</height>
            </rect>
           </property>
           <attribute name="label">
@@ -339,8 +353,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>105</height>
+            <width>112</width>
+            <height>96</height>
            </rect>
           </property>
           <attribute name="label">
@@ -396,8 +410,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>165</width>
-            <height>43</height>
+            <width>166</width>
+            <height>40</height>
            </rect>
           </property>
           <attribute name="label">
@@ -425,8 +439,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>460</width>
-            <height>209</height>
+            <width>458</width>
+            <height>222</height>
            </rect>
           </property>
           <attribute name="label">
@@ -472,8 +486,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>100</width>
+            <height>30</height>
            </rect>
           </property>
           <attribute name="label">

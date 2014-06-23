@@ -10,13 +10,16 @@
  */
 class Sphere : public Geometry
 {
+    Q_OBJECT
 public:
-    Sphere();
+    Sphere(bool isNominal, QObject *parent = 0);
     Sphere(const Sphere &copy);
     ~Sphere();
 
     OiVec xyz;
     double radius;
+
+    OiVec getXYZ() const;
 
     void recalc();
 
@@ -29,7 +32,7 @@ public:
     QString getDisplayRadius() const;
     QString getDisplayIsCommon() const;
     QString getDisplayIsNominal() const;
-    QString getDisplayObs() const;
+    //QString getDisplayObs() const;
     QString getDisplaySolved() const;
     QString getDisplayMConfig() const;
     QString getDisplayStdDev() const;

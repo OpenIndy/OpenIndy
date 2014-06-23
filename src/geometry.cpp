@@ -3,8 +3,11 @@
 #include "coordinatesystem.h"
 #include "observation.h"
 #include "station.h"
+#include "function.h"
 
-Geometry::Geometry() : myActual(NULL){
+Geometry::Geometry(bool isNominal, QObject *parent) : Feature(parent),
+    myActual(NULL), myNominalCoordSys(NULL), isNominal(isNominal)
+{
 
 }
 
@@ -29,7 +32,7 @@ Geometry::~Geometry(){
 
         //delete this geometry from list of nominals in myNominalCoordSys
         if(this->myNominalCoordSys != NULL){
-            this->myNominalCoordSys->nominals.removeOne(this);
+            this->myNominalCoordSys->removeNominal(this);
         }
     }else{
         //delete observations that only belong to this geometry
@@ -38,7 +41,7 @@ Geometry::~Geometry(){
             if(myObs->myTargetGeometries.size() == 1){
                 Station *myStation = myObs->myStation;
                 if(myStation != NULL && myStation->coordSys != NULL){
-                    myStation->coordSys->observations.removeOne(myObs);
+                    //myStation->coordSys->getObservations().removeOne(myObs);
                 }
             }
             delete myObs;
@@ -54,6 +57,193 @@ Geometry::~Geometry(){
 
 }
 
+/*!
+ * \brief Geometry::getIsCommon
+ * \return
+ */
+bool Geometry::getIsCommon() const{
+    return this->isCommon;
+}
+
+/*!
+ * \brief Geometry::setCommonState
+ * \param isCommon
+ */
+void Geometry::setCommonState(bool isCommon){
+    if(this->isCommon != isCommon){
+        this->isCommon = isCommon;
+        emit this->geomIsCommonChanged(this->id);
+    }
+}
+
+/*!
+ * \brief Geometry::getIsNominal
+ * \return
+ */
+bool Geometry::getIsNominal() const{
+    return this->isNominal;
+}
+
+/*!
+ * \brief Geometry::getMyNominals
+ * \return
+ */
+QList<Geometry *> Geometry::getMyNominals() const{
+    return this->nominals;
+}
+
+/*!
+ * \brief Geometry::addNominal
+ * \param myNominal
+ * \return
+ */
+bool Geometry::addNominal(Geometry *myNominal){
+    if(!this->isNominal && myNominal != NULL && myNominal->getIsNominal()){
+        this->nominals.append(myNominal);
+        emit this->geomMyNominalsChanged(this->id);
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief Geometry::removeNominal
+ * \param myNominal
+ * \return
+ */
+bool Geometry::removeNominal(Geometry *myNominal){
+    if(!this->isNominal && myNominal != NULL && myNominal->getIsNominal()){
+        for(unsigned int i = 0; i < this->nominals.size(); i++){
+            if(this->nominals.at(i) != NULL && this->nominals.at(i)->getId() == myNominal->getId()){
+                this->nominals.removeAt(i);
+                emit this->geomMyNominalsChanged(this->id);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/*!
+ * \brief Geometry::getMyActual
+ * \return
+ */
+Geometry *Geometry::getMyActual() const{
+    return this->myActual;
+}
+
+/*!
+ * \brief Geometry::setMyActual
+ * \param myActual
+ * \return
+ */
+bool Geometry::setMyActual(Geometry *myActual){
+    if(this->isNominal && myActual != NULL && !myActual->getIsNominal()){
+        if(this->myActual != NULL && this->myActual->getId() == myActual->getId()){
+            return false;
+        }else{
+            this->myActual = myActual;
+            emit this->geomMyActualChanged(this->id);
+            return true;
+        }
+    }else if(myActual == NULL && this->myActual != NULL){
+        this->myActual = NULL;
+        emit this->geomMyActualChanged(this->id);
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief Geometry::getObservations
+ * \return
+ */
+QList<Observation *> Geometry::getObservations() const{
+    return this->myObservations;
+}
+
+/*!
+ * \brief Geometry::addObservation
+ * \param obs
+ * \return
+ */
+bool Geometry::addObservation(Observation *obs){
+    if(!this->isNominal && obs != NULL){
+        this->myObservations.append(obs);
+        emit this->geomMyObservationsChanged(this->id);
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief Geometry::removeObservation
+ * \param obs
+ * \return
+ */
+bool Geometry::removeObservation(Observation *obs){
+    if(!this->isNominal && obs != NULL){
+        for(int i = 0; i < this->myObservations.size(); i++){
+            if(this->myObservations.at(i)->getId() == obs->getId()){
+
+                this->myObservations.removeAt(i);
+
+                foreach(Function *myFunc, this->getFunctions()){
+                    if(myFunc != NULL){
+                        myFunc->removeObservation(this->id);
+                    }
+                }
+
+                emit this->geomMyObservationsChanged(this->id);
+                return true;
+
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief Geometry::getNominalSystem
+ * \return
+ */
+CoordinateSystem *Geometry::getNominalSystem() const{
+    return this->myNominalCoordSys;
+}
+
+/*!
+ * \brief Geometry::setNominalSystem
+ * \param nomSys
+ * \return
+ */
+bool Geometry::setNominalSystem(CoordinateSystem *nomSys){
+    if(this->isNominal && nomSys != NULL){
+        this->myNominalCoordSys = nomSys;
+        emit this->geomMyNominalSystemChanged(this->id);
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief getDisplayObs displays the number of current valid observations and total observations in the gui.
+ * Display style x/y where x is current valid and y is total observation count.
+ * \return
+ */
+QString Geometry::getDisplayObs() const
+{
+    int validObs = 0;
+    int totalObs = this->myObservations.size();
+    for(int i=0;i<totalObs;i++){
+        if(this->myObservations.at(i)->isValid){
+            validObs += 1;
+        }
+    }
+    return QString(QString::number(validObs)+"/"+QString::number(totalObs));
+	
+}
+
 void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QString displayName){
 
     QMap<Configuration::ReadingTypes,QString>::const_iterator i = usedReadingTypes.find(readingType);
@@ -61,6 +251,25 @@ void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QStrin
     if (i != usedReadingTypes.end() && i.key() != readingType) {
         usedReadingTypes.insert(readingType,displayName);
     }
+
+    emit this->geomUsedReadingTypesChanged(this->id);
+}
+
+/*!
+ * \brief Geometry::getMeasurementConfig
+ * \return
+ */
+MeasurementConfig Geometry::getMeasurementConfig() const{
+    return this->mConfig;
+}
+
+/*!
+ * \brief Geometry::setMeasurementConfig
+ * \param myConfig
+ */
+void Geometry::setMeasurementConfig(MeasurementConfig myConfig){
+    this->mConfig = myConfig;
+    emit this->geomMyMeasurementConfigChanged(this->id);
 }
 
 bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
@@ -83,7 +292,7 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
     if(this->myNominalCoordSys != NULL){
         stream.writeStartElement("member");
         stream.writeAttribute("type", "coordinatesystem");
-        stream.writeAttribute("ref", QString::number(this->myNominalCoordSys->id));
+        stream.writeAttribute("ref", QString::number(this->myNominalCoordSys->getId()));
         stream.writeEndElement();
     }
 
@@ -184,9 +393,35 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
     return true;
 }
 
+OiVec Geometry::getXYZ() const{
+    return OiVec();
+}
 
+OiVec Geometry::getIJK() const{
+    return OiVec();
+}
 
+/*!
+ * \brief Geometry::getUsedReadingTypes
+ * \return
+ */
+QMap<Configuration::ReadingTypes, QString> Geometry::getUsedReadingTypes() const{
+    return this->usedReadingTypes;
+}
 
+/*!
+ * \brief Geometry::getStatistic
+ * \return
+ */
+Statistic Geometry::getStatistic() const{
+    return this->myStatistic;
+}
 
-
-
+/*!
+ * \brief Geometry::setStatistic
+ * \param myStatistic
+ */
+void Geometry::setStatistic(Statistic myStatistic){
+    this->myStatistic = myStatistic;
+    emit this->geomMyStatisticChanged(this->id);
+}

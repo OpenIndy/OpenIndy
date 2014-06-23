@@ -1,16 +1,28 @@
 #include "plugintreeitem.h"
 
-PluginTreeItem::PluginTreeItem() : myParent(NULL)
+PluginTreeItem::PluginTreeItem(QVariant val) : myParent(NULL), displayValue(val), isPlugin(false), isFunction(false),
+    isSensor(false)
 {
 }
 
+PluginTreeItem::~PluginTreeItem(){
+    if(this->myParent != NULL){
+        this->myParent->deleteChild(this);
+    }
+    this->deleteChildren();
+}
+
+/*!
+ * \brief PluginTreeItem::getDisplayValue
+ * \return
+ */
 QVariant PluginTreeItem::getDisplayValue(){
     return this->displayValue;
 }
 
 /*!
  * \brief PluginTreeItem::getIsPlugin
- * Returns true if this represents the name of a plugin
+ * Returns true if this represents a plugin
  * \return
  */
 bool PluginTreeItem::getIsPlugin(){
@@ -18,74 +30,82 @@ bool PluginTreeItem::getIsPlugin(){
 }
 
 /*!
- * \brief PluginTreeItem::getIsPluginType
- * Returns true if this represents the plugin type (function, sensor)
+ * \brief PluginTreeItem::getIsFunction
+ * Returns true if this represents a function plugin (fit, construct, ...)
  * \return
  */
-bool PluginTreeItem::getIsPluginType(){
-    return this->isPluginType;
+bool PluginTreeItem::getIsFunction(){
+    return this->isFunction;
 }
 
 /*!
  * \brief PluginTreeItem::getIsSensorType
- * Returns true if this represents the sensor type of a sensor plugin (lasertracker, tachymeter, ...)
+ * Returns true if this represents a sensor plugin (lasertracker, tachymeter, ...)
  * \return
  */
-bool PluginTreeItem::getIsSensorType(){
-    return this->isSensorType;
+bool PluginTreeItem::getIsSensor(){
+    return this->isSensor;
 }
 
 /*!
- * \brief PluginTreeItem::getIsFeatureType
- * Returns true if this represents the feature type of a function plugin (point, line , plane, ...)
+ * \brief PluginTreeItem::getPlugin
+ * Returns the plugin this treeitem belongs to
  * \return
  */
-bool PluginTreeItem::getIsFeatureType(){
-    return this->isFeatureType;
+Plugin PluginTreeItem::getPlugin(){
+    if(!this->isPlugin && this->myParent != NULL){
+        return this->myParent->getPlugin();
+    }
+    return this->myPlugin;
 }
 
 /*!
- * \brief PluginTreeItem::setIsFeatureType
- * \param state
+ * \brief PluginTreeItem::getFunction
+ * \return
  */
-void PluginTreeItem::setIsFeatureType(bool state){
-    this->isFeatureType = state;
-    this->isPlugin = !state;
-    this->isPluginType = !state;
-    this->isSensorType = !state;
+FunctionPlugin PluginTreeItem::getFunction(){
+    return this->myFunction;
 }
 
 /*!
- * \brief PluginTreeItem::setIsPlugin
- * \param state
+ * \brief PluginTreeItem::getSensor
+ * \return
  */
-void PluginTreeItem::setIsPlugin(bool state){
-    this->isFeatureType = !state;
-    this->isPlugin = state;
-    this->isPluginType = !state;
-    this->isSensorType = !state;
+SensorPlugin PluginTreeItem::getSensor(){
+    return this->mySensor;
 }
 
 /*!
- * \brief PluginTreeItem::setIsPluginType
- * \param state
+ * \brief PluginTreeItem::setPlugin
+ * \param myPlugin
  */
-void PluginTreeItem::setIsPluginType(bool state){
-    this->isFeatureType = !state;
-    this->isPlugin = !state;
-    this->isPluginType = state;
-    this->isSensorType = !state;
+void PluginTreeItem::setPlugin(Plugin myPlugin){
+    this->myPlugin = myPlugin;
+    this->isPlugin = true;
+    this->isFunction = false;
+    this->isSensor = false;
 }
 
 /*!
- * \brief PluginTreeItem::setIsSensorType
- * \param state
+ * \brief PluginTreeItem::setFunction
+ * \param myFunction
  */
-void PluginTreeItem::setIsSensorType(bool state){
-    this->isFeatureType = !state;
-    this->isPlugin = !state;
-    this->isPluginType = !state;
-    this->isSensorType = state;
+void PluginTreeItem::setFunction(FunctionPlugin myFunction){
+    this->myFunction = myFunction;
+    this->isPlugin = false;
+    this->isFunction = true;
+    this->isSensor = false;
+}
+
+/*!
+ * \brief PluginTreeItem::setSensor
+ * \param mySensor
+ */
+void PluginTreeItem::setSensor(SensorPlugin mySensor){
+    this->mySensor = mySensor;
+    this->isPlugin = false;
+    this->isFunction = false;
+    this->isSensor = true;
 }
 
 /*!
@@ -109,6 +129,17 @@ PluginTreeItem* PluginTreeItem::getChild(int row){
 }
 
 /*!
+ * \brief PluginTreeItem::hasParent
+ * \return
+ */
+bool PluginTreeItem::hasParent(){
+    if(this->myParent != NULL){
+        return true;
+    }
+    return false;
+}
+
+/*!
  * \brief PluginTreeItem::getParent
  * \return
  */
@@ -129,4 +160,47 @@ int PluginTreeItem::getIndex(){
         }
     }
     return 0;
+}
+
+/*!
+ * \brief PluginTreeItem::deleteChildren
+ */
+void PluginTreeItem::deleteChildren(){
+    qDeleteAll(this->myChildren);
+    this->myChildren.clear();
+}
+
+/*!
+ * \brief PluginTreeItem::deleteChild
+ * \param child
+ */
+void PluginTreeItem::deleteChild(PluginTreeItem *child){
+    int index = -1;
+    for(int i = 0; i < this->myChildren.size(); i++){
+        if(this->myChildren.at(i) == child){
+            index = i;
+        }
+    }
+    if(index > -1){
+        this->myChildren.removeAt(index);
+    }
+}
+
+/*!
+ * \brief PluginTreeItem::addChild
+ * \param child
+ */
+void PluginTreeItem::addChild(PluginTreeItem *child){
+    if(child != NULL){
+        this->myChildren.append(child);
+        child->setParent(this);
+    }
+}
+
+/*!
+ * \brief PluginTreeItem::setParent
+ * \param parent
+ */
+void PluginTreeItem::setParent(PluginTreeItem *parent){
+    this->myParent = parent;
 }

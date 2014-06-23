@@ -5,8 +5,9 @@
 
 class Hyperboloid : public Geometry
 {
+    Q_OBJECT
 public:
-    Hyperboloid();
+    Hyperboloid(bool isNominal, QObject *parent = 0);
     Hyperboloid(const Hyperboloid &copy);
     void recalc();
 

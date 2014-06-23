@@ -59,13 +59,13 @@ bool SphereFromPoints::exec(Sphere &s){
         double *z = new double[poiCount];
         int k = 0;
         foreach(Point *p, this->points){
-            if(p->isSolved){
+            if(p->getIsSolved()){
                 x[k] = p->xyz.getAt(0);
                 y[k] = p->xyz.getAt(1);
                 z[k] = p->xyz.getAt(2);
                 k++;
             }else{
-                this->setUseState(p->id, false);
+                this->setUseState(p->getId(), false);
             }
         }
 
@@ -119,11 +119,11 @@ void SphereFromPoints::setUpResult(Sphere &s, double *x, double *y, double *z, i
 int SphereFromPoints::getPointCount(){
     int count = 0;
     foreach(Point *p, this->points){
-        if(p->isSolved){
-            this->setUseState(p->id, true);
+        if(p->getIsSolved()){
+            this->setUseState(p->getId(), true);
             count++;
         }else{
-            this->setUseState(p->id, false);
+            this->setUseState(p->getId(), false);
         }
     }
     return count;

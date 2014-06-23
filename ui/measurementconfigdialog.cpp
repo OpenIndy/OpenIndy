@@ -10,10 +10,6 @@ MeasurementConfigDialog::MeasurementConfigDialog(QWidget *parent) :
     ui(new Ui::MeasurementConfigDialog)
 {
     ui->setupUi(this);
-    mConfig = new MeasurementConfig();
-    myStation = NULL;
-
-    resetActiveFeature();
 
     initGUI();
 }
@@ -33,17 +29,17 @@ MeasurementConfigDialog::~MeasurementConfigDialog()
 void MeasurementConfigDialog::on_pushButton_ok_clicked()
 {
 
-    mConfig->name = ui->lineEdit_configName->text();
-    mConfig->count = ui->lineEdit_count->text().toInt();
-    mConfig->measureTwoSides = ui->checkBox_fsbs->isChecked();
-    mConfig->typeOfReading = static_cast<Configuration::ReadingTypes>(ui->comboBox_typeOfReading->itemData(ui->comboBox_typeOfReading->currentIndex()).toInt());
-    mConfig->distanceDependent = ui->checkBox_distanceDependent->isChecked();
-    mConfig->timeDependent = ui->checkBox_timeDependent->isChecked();
-    mConfig->distanceInterval = ui->lineEdit_distanceInterval->text().toDouble();
-    mConfig->timeInterval = ui->lineEdit_timeInterval->text().toLong();
+    mConfig.name = ui->lineEdit_configName->text();
+    mConfig.count = ui->lineEdit_count->text().toInt();
+    mConfig.iterations = ui->lineEdit_iterations->text().toInt();
+    mConfig.measureTwoSides = ui->checkBox_fsbs->isChecked();
+    mConfig.typeOfReading = static_cast<Configuration::ReadingTypes>(ui->comboBox_typeOfReading->itemData(ui->comboBox_typeOfReading->currentIndex()).toInt());
+    mConfig.distanceDependent = ui->checkBox_distanceDependent->isChecked();
+    mConfig.timeDependent = ui->checkBox_timeDependent->isChecked();
+    mConfig.distanceInterval = ui->lineEdit_distanceInterval->text().toDouble();
+    mConfig.timeInterval = ui->lineEdit_timeInterval->text().toLong();
 
-
-    if(mConfig->timeDependent == true && mConfig->distanceDependent == true){
+    if(mConfig.timeDependent == true && mConfig.distanceDependent == true){
 
         QMessageBox msgBox;
         msgBox.setText("You can only select time dependent or distance dependent. If you choose nothing, a normal measurement will be done");
@@ -55,8 +51,7 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked()
         return;
     }
 
-    emit sendConfig(activeFeature,mConfig);
-    resetActiveFeature();
+    emit sendConfig(OiFeatureState::getActiveFeature(), mConfig);
     this->close();
 }
 
@@ -65,7 +60,6 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked()
  */
 void MeasurementConfigDialog::on_pushButton_cancel_clicked()
 {
-    resetActiveFeature();
     this->close();
 }
 
@@ -74,29 +68,19 @@ void MeasurementConfigDialog::on_pushButton_cancel_clicked()
  * Receives the last measurement configuration setup from the controller, and sets the values to the GUI elements.
  *\param mC
  */
-void MeasurementConfigDialog::receiveConfig(MeasurementConfig *mC){
+void MeasurementConfigDialog::receiveConfig(MeasurementConfig mC){
     //TODO mit sensor funktionswerten abgleichen
     this->mConfig = mC;
 
-    if(this->mConfig != NULL){
-        ui->lineEdit_configName->setText(mConfig->name);
-        ui->lineEdit_count->setText(QString::number(mConfig->count));
-        ui->checkBox_fsbs->setChecked(this->mConfig->measureTwoSides);
-        initGUI();
-        ui->checkBox_distanceDependent->setChecked(this->mConfig->distanceDependent);
-        ui->checkBox_timeDependent->setChecked(this->mConfig->timeDependent);
-        ui->lineEdit_distanceInterval->setText(QString::number(this->mConfig->distanceInterval));
-        ui->lineEdit_timeInterval->setText(QString::number(this->mConfig->timeInterval));
-    }else{
-        ui->lineEdit_configName->setText("default");
-        ui->lineEdit_count->setText(QString::number(1));
-        ui->checkBox_fsbs->setChecked(false);
-        initGUI();
-        ui->checkBox_distanceDependent->setChecked(false);
-        ui->checkBox_timeDependent->setChecked(false);
-        ui->lineEdit_distanceInterval->setText("");
-        ui->lineEdit_timeInterval->setText("");
-    }
+    ui->lineEdit_configName->setText(mConfig.name);
+    ui->lineEdit_count->setText(QString::number(mConfig.count));
+    ui->lineEdit_iterations->setText(QString::number(mConfig.iterations));
+    ui->checkBox_fsbs->setChecked(this->mConfig.measureTwoSides);
+    initGUI();
+    ui->checkBox_distanceDependent->setChecked(this->mConfig.distanceDependent);
+    ui->checkBox_timeDependent->setChecked(this->mConfig.timeDependent);
+    ui->lineEdit_distanceInterval->setText(QString::number(this->mConfig.distanceInterval));
+    ui->lineEdit_timeInterval->setText(QString::number(this->mConfig.timeInterval));
 }
 
 /*!
@@ -104,12 +88,12 @@ void MeasurementConfigDialog::receiveConfig(MeasurementConfig *mC){
  */
 void MeasurementConfigDialog::initGUI(){
 
-    if(this->myStation != NULL && this->myStation->instrument != NULL){
-        if(this->myStation->instrument->getSupportedReadingTypes() != NULL){
+    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+        if(OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
 
             ui->comboBox_typeOfReading->clear();
 
-            QList<Configuration::ReadingTypes> readingTypes = *this->myStation->instrument->getSupportedReadingTypes();
+            QList<Configuration::ReadingTypes> readingTypes = *OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
             for(int i=0; i< readingTypes.size();i++){
                 switch (readingTypes.at(i)) {
                 case Configuration::ePolar:
@@ -131,21 +115,22 @@ void MeasurementConfigDialog::initGUI(){
                     ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sLevel,Configuration::eLevel);
                     break;
                 case Configuration::eUndefined:
-                    ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),this->myStation->instrument->getUndefinedReadingName(),Configuration::eUndefined);
+                    ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),OiFeatureState::getActiveStation()->sensorPad->instrument->getUndefinedReadingName(),Configuration::eUndefined);
                     break;
                 default:
                     break;
                 }
             }
-            if(this->mConfig->typeOfReading == -1){
+            if(this->mConfig.typeOfReading == -1){
                 ui->comboBox_typeOfReading->setCurrentIndex(0);
             }else{
-                ui->comboBox_typeOfReading->setCurrentIndex(ui->comboBox_typeOfReading->findData(mConfig->typeOfReading));
+                ui->comboBox_typeOfReading->setCurrentIndex(ui->comboBox_typeOfReading->findData(mConfig.typeOfReading));
             }
         }else{
             Console::addLine("Sensor does not support any reading types.");
         }
     }else{
+        QString currentText = ui->comboBox_typeOfReading->currentText();
         ui->comboBox_typeOfReading->clear();
         ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sPolar,Configuration::ePolar);
         ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sCartesian,Configuration::eCartesian);
@@ -153,6 +138,10 @@ void MeasurementConfigDialog::initGUI(){
         ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sDistance,Configuration::eDistance);
         ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sTemperatur,Configuration::eTemperatur);
         ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sLevel,Configuration::eLevel);
+        int idx = ui->comboBox_typeOfReading->findText(currentText);
+        if(idx != -1){
+            ui->comboBox_typeOfReading->setCurrentIndex(idx);
+        }
     }
 }
 
@@ -178,25 +167,12 @@ QString MeasurementConfigDialog::getLabel(QComboBox *cb, int code){
     return cb->itemText(cb->findData(code));
 }
 
-/*!
- * \brief setStation receives the current active station and sensor for displaying supported reading types etc.
- * \param s
- */
-void MeasurementConfigDialog::setStation(Station *s)
+void MeasurementConfigDialog::showEvent(QShowEvent *event)
 {
-    if(s != NULL){
-        this->myStation = s;
-        if(this->activeFeature == NULL){
-            initGUI();
-        }
-    }
-}
-
-/*!
- * \brief resetActiveFeature
- */
-void MeasurementConfigDialog::resetActiveFeature(){
-    this->activeFeature = NULL;
+    //Put the dialog in the screen center
+    const QRect screen = QApplication::desktop()->screenGeometry();
+    this->move( screen.center() - this->rect().center() );
+    event->accept();
 }
 
 /*!
@@ -204,7 +180,5 @@ void MeasurementConfigDialog::resetActiveFeature(){
  * \param event
  */
 void MeasurementConfigDialog::closeEvent(QCloseEvent *event){
-    resetActiveFeature();
-    myStation = NULL;
     event->accept();
 }
