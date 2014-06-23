@@ -151,7 +151,7 @@ public:
 signals:
 
     //void sendActiveNominalfeature(FeatureWrapper *anf);
-    void sendConfig(MeasurementConfig*);
+    void sendConfig(MeasurementConfig);
     void sendFeatureType(Configuration::FeatureTypes);
     void sendSelectedFeature(int featureIndex); //is emitted when a new active feature was selected by the user
     void sendCommandString(QString);
@@ -190,7 +190,7 @@ private slots:
     void setupCreateFeature();
     void setupLaserTrackerPad();
     void setupTotalStationPad();
-    void receiveConfig(FeatureWrapper*,MeasurementConfig*);
+    void receiveConfig(FeatureWrapper*,MeasurementConfig);
     void createFeature();
 
     //void fillCoordSysComboBox();

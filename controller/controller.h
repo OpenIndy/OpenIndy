@@ -76,7 +76,7 @@ public:
 
     OiFeatureState *myFeatureState;
 
-    MeasurementConfig *lastmConfig;
+    MeasurementConfig lastmConfig;
     TableModel *tblModel;
     Console *c;
     Configuration conf;
