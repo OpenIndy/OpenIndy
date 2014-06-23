@@ -1368,10 +1368,19 @@ void Controller::setFunctionConfiguration(int functionIndex, FunctionConfigurati
 }
 
 /*!
+ * \brief Controller::saveProject
+ * Save the current project
+ */
+void Controller::saveProject(OiProjectData *projectData){
+
+}
+
+/*!
  * \brief Controller::loadProjectData
+ * Load
  * \param data
  */
-void Controller::loadProjectData(oiProjectData &data){
+void Controller::loadProject(OiProjectData &data){
 
     /*features.clear();
     stations.clear();

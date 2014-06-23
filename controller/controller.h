@@ -172,7 +172,10 @@ public slots:
     void addElement2Function(FeatureTreeItem *element, int functionIndex, int elementIndex); //add element to the active function
     void removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex); //remove element from the active function
 
-    void loadProjectData(oiProjectData &data);
+    //save & load an OpenIndy project
+    void saveProject(OiProjectData *projectData);
+    void loadProject(OiProjectData &data);
+
     void setFunctionConfiguration(int functionIndex, FunctionConfiguration config);
 
     void printToConsole(QString message);

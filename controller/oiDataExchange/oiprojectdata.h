@@ -2,8 +2,10 @@
 #define OIPROJECTDATA_H
 
 #include <QObject>
-#include "featurewrapper.h"
 #include <QIODevice>
+
+#include "featurewrapper.h"
+#include "console.h"
 
 /*!
  * \brief The oiProjectData class
@@ -11,16 +13,17 @@
  * Used by oiprojectexchanger for generating a openindyXML
  * or generating a oiProjectData Object form a openindyXML
  */
-class oiProjectData : public QObject
+class OiProjectData : public QObject
 {
     Q_OBJECT
 public:
-    explicit oiProjectData(QObject *parent = 0);
+    explicit OiProjectData(QObject *parent = 0);
+    ~OiProjectData();
 
-
+    QIODevice *getDevice();
+    bool setDevice(QIODevice *device);
 
     QString projectName;
-    QIODevice *device;
 
     CoordinateSystem *activeCoordSystem;
     Station *activeStation;
@@ -29,7 +32,8 @@ public:
     QList<CoordinateSystem*> coordSystems;
     QList<Station*> stations;
 
-
+private:
+    QIODevice *device;
 
 signals:
 

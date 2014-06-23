@@ -24,13 +24,13 @@ oiProjectExchanger::oiProjectExchanger()
 }
 
 
-bool oiProjectExchanger::saveProject(oiProjectData &data){
+bool oiProjectExchanger::saveProject(OiProjectData &data){
 
     return restorer->saveProject(data);
 
 }
 
-bool oiProjectExchanger::loadProject(oiProjectData &data){
+bool oiProjectExchanger::loadProject(OiProjectData &data){
 
     return restorer->loadProject(data);
 }
@@ -43,7 +43,7 @@ bool oiProjectExchanger::saveSettings(QString name){
 }
 
 //can be deleted... logic will be solved by the restorer
-bool oiProjectExchanger::regenerateRelations(oiProjectData &data){
+bool oiProjectExchanger::regenerateRelations(OiProjectData &data){
 
     foreach (FeatureWrapper *fg, oiProjectExchanger::geometries){
 

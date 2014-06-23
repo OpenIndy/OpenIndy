@@ -1126,19 +1126,45 @@ void MainWindow::on_actionNominal_geometry_triggered()
 /*!
  * \brief saves the current job
  */
-void MainWindow::on_actionSave_as_triggered()
-{
+void MainWindow::on_actionSave_as_triggered(){
+    try{
 
-    QString filename = QFileDialog::getSaveFileName(
-                       this,
-                       "Choose a filename to save under",
-                       "oiProject",
-                       "xml (*.xml)");
+        /*QFileDialog dialog;
+        dialog.setFileMode(QFileDialog::Directory);
+        dialog.setOption(QFileDialog::ShowDirsOnly);
+        dialog.show();*/
+
+        QString projectFolderPath = QFileDialog::getSaveFileName(
+                           this,
+                           "Choose a filename to save under",
+                           "oiProject");
+
+        //QString projectFolderPath = dialog.getOpenFileName();
+
+        QDir projectFolder(projectFolderPath);
+        projectFolder.mkpath(projectFolder.absolutePath());
+
+        QFileInfo info(projectFolderPath);
+
+        QString projectName = info.fileName();
+
+        QString fileName = projectFolder.absolutePath().append(QString("/%1").arg(projectName));
+
+        QFile *projectFile = new QFile(fileName);
+
+        OiProjectData *projectData = new OiProjectData();
+        projectData->setDevice(projectFile);
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
 
 
 
 
-    oiProjectData data;
+
+
+    /*OiProjectData data;
     data.device = new QFile(filename);
 
     QFileInfo info(filename);
@@ -1154,7 +1180,7 @@ void MainWindow::on_actionSave_as_triggered()
         QMessageBox::information(this,"save data", "Saving the data was successful.");
     }else{
         QMessageBox::information(this,"save data", "Saving the data was not successful.");
-    }
+    }*/
 }
 
 /*!
@@ -1177,8 +1203,8 @@ void MainWindow::on_actionOpen_triggered()
                        "xml (*.xml)");
 
 
-    oiProjectData data;
-    data.device = new QFile(filename);
+    OiProjectData data;
+    data.setDevice(new QFile(filename));
 
     QFileInfo info(filename);
 
@@ -1193,7 +1219,7 @@ void MainWindow::on_actionOpen_triggered()
         QMessageBox::information(this,"load project", "load "+info.fileName()+ "  was not successful.");
     }
 
-    control.loadProjectData(data);
+    control.loadProject(data);
 
 }
 

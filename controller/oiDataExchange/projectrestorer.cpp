@@ -5,9 +5,9 @@ ProjectRestorer::ProjectRestorer(QObject *parent) :
 {
 }
 
-bool ProjectRestorer::saveProject(oiProjectData &data){
+bool ProjectRestorer::saveProject(OiProjectData &data){
 
-    if (!data.device->open(QIODevice::WriteOnly | QIODevice::Text))
+    if (!data.getDevice()->open(QIODevice::WriteOnly | QIODevice::Text))
     {
         Console::addLine("can't open  device");
         return false;
@@ -21,7 +21,7 @@ bool ProjectRestorer::saveProject(oiProjectData &data){
     QString dateTimeString = dateTime.toString(Qt::ISODate);
 
 
-    QXmlStreamWriter stream(data.device);
+    QXmlStreamWriter stream(data.getDevice());
 
     stream.setAutoFormatting(true);
     stream.writeStartDocument();
@@ -106,7 +106,7 @@ bool ProjectRestorer::saveProject(oiProjectData &data){
     stream.writeEndElement();
     stream.writeEndDocument();
 
-    data.device->close();
+    data.getDevice()->close();
 
     Console::addLine("saving completed");
 
@@ -114,16 +114,16 @@ bool ProjectRestorer::saveProject(oiProjectData &data){
 
 }
 
-bool ProjectRestorer::loadProject(oiProjectData &data){
+bool ProjectRestorer::loadProject(OiProjectData &data){
 
-    if (!data.device->open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (!data.getDevice()->open(QIODevice::ReadOnly | QIODevice::Text)) {
 
       return false;
     }
 
         this->clearAllLists();
 
-        QXmlStreamReader xml(data.device);
+        QXmlStreamReader xml(data.getDevice());
 
         Console::addLine("load project from xml");
         while(!xml.atEnd() &&
@@ -200,11 +200,11 @@ bool ProjectRestorer::loadProject(oiProjectData &data){
         if(xml.hasError()) {
 
             Console::addLine(QString("xml not valid: " + xml.errorString()));
-            data.device->close();
+            data.getDevice()->close();
             return false;
         }
 
-         data.device->close();
+         data.getDevice()->close();
          Console::addLine("resolve dependencies");
 
          foreach(Station* s, this->stations){
@@ -370,7 +370,7 @@ bool sortID(FeatureWrapper *f1, FeatureWrapper *f2){
    return f1->getFeature()->getId() < f2->getFeature()->getId();
 }
 
-void ProjectRestorer::resolveDependencies(oiProjectData &data){
+void ProjectRestorer::resolveDependencies(OiProjectData &data){
 
     foreach(ElementDependencies d, this->dependencies){
 
