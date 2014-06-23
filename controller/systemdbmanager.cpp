@@ -630,6 +630,27 @@ QList<Plugin> SystemDbManager::getAvailablePlugins(){
                 myFunction.name = command.value("name").toString();
                 myFunction.description = command.value("description").toString();
                 myFunction.pluginName = myPlugin.name;
+
+                QSqlQuery command2(SystemDbManager::db);
+
+                //query applicableFor features
+                QString queryApplicableFor = QString("SELECT e.element_type FROM elementPlugin AS ep INNER JOIN element AS e %1")
+                        .arg(QString("ON ep.element_id = e.id WHERE ep.functionPlugin_id = %1")
+                             .arg(myFunction.id));
+                command2.exec(queryApplicableFor);
+                while(command2.next()){
+                    myFunction.applicableFor.append(Configuration::getFeatureTypeEnum(command2.value("element_type").toString()));
+                }
+
+                //query neededElements elements
+                QString queryNeededElements = QString("SELECT e.element_type FROM pluginElement AS pe INNER JOIN element AS e %1")
+                        .arg(QString("ON pe.element_id = e.id WHERE pe.functionPlugin_id = %1")
+                             .arg(myFunction.id));
+                command2.exec(queryNeededElements);
+                while(command2.next()){
+                    myFunction.neededElements.append(Configuration::getElementTypeEnum(command2.value("element_type").toString()));
+                }
+
                 myPlugin.myFunctions.append(myFunction);
 
             }
@@ -691,6 +712,27 @@ QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::F
             myPlugin.name = command.value("name").toString();
             myPlugin.description = command.value("description").toString();
             myPlugin.pluginName = command.value("pluginName").toString();
+
+            QSqlQuery command2(SystemDbManager::db);
+
+            //query applicableFor features
+            QString queryApplicableFor = QString("SELECT e.element_type FROM elementPlugin AS ep INNER JOIN element AS e %1")
+                    .arg(QString("ON ep.element_id = e.id WHERE ep.functionPlugin_id = %1")
+                         .arg(myPlugin.id));
+            command2.exec(queryApplicableFor);
+            while(command2.next()){
+                myPlugin.applicableFor.append(Configuration::getFeatureTypeEnum(command2.value("element_type").toString()));
+            }
+
+            //query neededElements elements
+            QString queryNeededElements = QString("SELECT e.element_type FROM pluginElement AS pe INNER JOIN element AS e %1")
+                    .arg(QString("ON pe.element_id = e.id WHERE pe.functionPlugin_id = %1")
+                         .arg(myPlugin.id));
+            command2.exec(queryNeededElements);
+            while(command2.next()){
+                myPlugin.neededElements.append(Configuration::getElementTypeEnum(command2.value("element_type").toString()));
+            }
+
             result.append(myPlugin);
 
         }
@@ -732,6 +774,27 @@ QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(Configurat
             myPlugin.name = command.value("name").toString();
             myPlugin.description = command.value("description").toString();
             myPlugin.pluginName = command.value("pluginName").toString();
+
+            QSqlQuery command2(SystemDbManager::db);
+
+            //query applicableFor features
+            QString queryApplicableFor = QString("SELECT e.element_type FROM elementPlugin AS ep INNER JOIN element AS e %1")
+                    .arg(QString("ON ep.element_id = e.id WHERE ep.functionPlugin_id = %1")
+                         .arg(myPlugin.id));
+            command2.exec(queryApplicableFor);
+            while(command2.next()){
+                myPlugin.applicableFor.append(Configuration::getFeatureTypeEnum(command2.value("element_type").toString()));
+            }
+
+            //query neededElements elements
+            QString queryNeededElements = QString("SELECT e.element_type FROM pluginElement AS pe INNER JOIN element AS e %1")
+                    .arg(QString("ON pe.element_id = e.id WHERE pe.functionPlugin_id = %1")
+                         .arg(myPlugin.id));
+            command2.exec(queryNeededElements);
+            while(command2.next()){
+                myPlugin.neededElements.append(Configuration::getElementTypeEnum(command2.value("element_type").toString()));
+            }
+
             result.append(myPlugin);
 
         }
@@ -772,6 +835,27 @@ FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes f
             myPlugin.name = command.value("name").toString();
             myPlugin.description = command.value("description").toString();
             myPlugin.pluginName = command.value("pluginName").toString();
+
+            QSqlQuery command2(SystemDbManager::db);
+
+            //query applicableFor features
+            QString queryApplicableFor = QString("SELECT e.element_type FROM elementPlugin AS ep INNER JOIN element AS e %1")
+                    .arg(QString("ON ep.element_id = e.id WHERE ep.functionPlugin_id = %1")
+                         .arg(myPlugin.id));
+            command2.exec(queryApplicableFor);
+            while(command2.next()){
+                myPlugin.applicableFor.append(Configuration::getFeatureTypeEnum(command2.value("element_type").toString()));
+            }
+
+            //query neededElements elements
+            QString queryNeededElements = QString("SELECT e.element_type FROM pluginElement AS pe INNER JOIN element AS e %1")
+                    .arg(QString("ON pe.element_id = e.id WHERE pe.functionPlugin_id = %1")
+                         .arg(myPlugin.id));
+            command2.exec(queryNeededElements);
+            while(command2.next()){
+                myPlugin.neededElements.append(Configuration::getElementTypeEnum(command2.value("element_type").toString()));
+            }
+
             result = myPlugin;
             break;
 

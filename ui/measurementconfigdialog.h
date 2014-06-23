@@ -29,10 +29,10 @@ public:
     explicit MeasurementConfigDialog(QWidget *parent = 0);
     ~MeasurementConfigDialog();
 
-    MeasurementConfig *mConfig;
+    MeasurementConfig mConfig;
 
 signals:
-    void sendConfig(FeatureWrapper*, MeasurementConfig*);
+    void sendConfig(FeatureWrapper*, MeasurementConfig);
 
 public slots:
     void showEvent(QShowEvent *event);
@@ -43,7 +43,7 @@ private slots:
 
     void initGUI();
 
-    void receiveConfig(MeasurementConfig*);
+    void receiveConfig(MeasurementConfig);
 
     void on_pushButton_ok_clicked();
 

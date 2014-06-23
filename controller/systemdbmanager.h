@@ -6,6 +6,7 @@
 #include <QString>
 #include <QList>
 #include <QDir>
+
 #include "pluginmetadata.h"
 #include "oimetadata.h"
 #include "console.h"
@@ -17,6 +18,8 @@ struct FunctionPlugin{
     QString name;
     QString description;
     QString pluginName;
+    QList<Configuration::FeatureTypes> applicableFor;
+    QList<Configuration::ElementTypes> neededElements;
 };
 
 struct SensorPlugin{

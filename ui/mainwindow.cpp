@@ -106,8 +106,8 @@ void MainWindow::setConnects(){
     connect(&this->control, SIGNAL(resetFeatureSelection()), this, SLOT(resetFeatureSelection()));
 
     //measurement config settings
-    connect(&this->mConfigDialog,SIGNAL(sendConfig(FeatureWrapper*,MeasurementConfig*)),this,SLOT(receiveConfig(FeatureWrapper*,MeasurementConfig*)));
-    connect(this,SIGNAL(sendConfig(MeasurementConfig*)),&this->mConfigDialog,SLOT(receiveConfig(MeasurementConfig*)));
+    connect(&this->mConfigDialog,SIGNAL(sendConfig(FeatureWrapper*,MeasurementConfig)),this,SLOT(receiveConfig(FeatureWrapper*,MeasurementConfig)));
+    connect(this,SIGNAL(sendConfig(MeasurementConfig)),&this->mConfigDialog,SLOT(receiveConfig(MeasurementConfig)));
 
     //sensor function
     connect(this->actionMeasure,SIGNAL(triggered()),&this->control,SLOT(startMeasurement()));
@@ -554,15 +554,15 @@ void MainWindow::on_actionControl_pad_triggered()
  * \param FeatureWrapper *af
  * \param MeasurementConfig *mC
  */
-void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig *mC){
+void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig mC){
 
     if(af == NULL){
         this->control.lastmConfig = mC;
     }else{
         if(OiFeatureState::getActiveFeature()->getStation() != NULL){
-            OiFeatureState::getActiveFeature()->getStation()->position->setMeasurementConfig(*mC);
+            OiFeatureState::getActiveFeature()->getStation()->position->setMeasurementConfig(mC);
         }else{
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(*mC);
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(mC);
         }
     }
 }
@@ -577,10 +577,12 @@ void MainWindow::on_actionMeasurement_Configuration_triggered()
     if(OiFeatureState::getActiveFeature() != NULL && (OiFeatureState::getActiveFeature()->getGeometry() != NULL || OiFeatureState::getActiveFeature()->getStation() != NULL)){
 
         if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-            emit sendConfig(&OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig());
+            MeasurementConfig mConfig = OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig();
+            emit sendConfig(mConfig);
         }
         if(OiFeatureState::getActiveFeature()->getStation() != NULL){
-            emit sendConfig(&OiFeatureState::getActiveFeature()->getStation()->position->getMeasurementConfig());
+            MeasurementConfig mConfig = OiFeatureState::getActiveFeature()->getStation()->position->getMeasurementConfig();
+            emit sendConfig(mConfig);
         }
 
         mConfigDialog.show();
