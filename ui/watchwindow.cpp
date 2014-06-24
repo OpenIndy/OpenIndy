@@ -11,7 +11,7 @@ WatchWindow::WatchWindow(QWidget *parent) :
     digitCount = 4;
 
     masterLayout = new QVBoxLayout();
-
+    settingsLayout = new QVBoxLayout();
 
 }
 
@@ -24,10 +24,7 @@ WatchWindow::~WatchWindow()
 
 void WatchWindow::setLCDNumber(QVariantMap m){
 
-    if(!isGUIReady){
-        getAttributes(m);
-        this->iniGUI(m);
-    }
+    this->iniGUI(m);
 
     QMapIterator<QString,QVariant> j(m);
     while (j.hasNext()) {
@@ -92,17 +89,20 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                 streamData.value(name)->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
             }
         }else{
-            streamData.value(name)->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+            QLCDNumber *lcdn = streamData.value(name);
+            if(lcdn != NULL){
+                lcdn->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+            }
         }
-
-
-
-
     }
 }
 
 void WatchWindow::iniGUI(QVariantMap m)
 {
+    streamData.clear();
+
+    getAttributes(m);
+
     if(masterLayout == NULL){
         masterLayout = new QVBoxLayout();
     }
@@ -174,7 +174,8 @@ void WatchWindow::closeEvent(QCloseEvent *e)
     delete masterLayout;
     masterLayout = NULL;
 
-    this->close();
+    delete settingsLayout;
+    settingsLayout = NULL;
 
     delete this;
 
@@ -198,6 +199,8 @@ void WatchWindow::showEvent(QShowEvent *event)
  */
 void WatchWindow::initSuppReadings()
 {
+    isSettingsReady = false;
+
     ui->comboBox_suppReadings->clear();
 
     QList<Configuration::ReadingTypes> *rTypes = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
@@ -236,43 +239,42 @@ void WatchWindow::initSuppReadings()
     if(ui->comboBox_suppReadings->findText(Configuration::sCartesian) != -1){
         ui->comboBox_suppReadings->setCurrentText(Configuration::sCartesian);
     }
+    isSettingsReady = true;
+
+    on_comboBox_suppReadings_currentIndexChanged(ui->comboBox_suppReadings->currentText());
+
 }
 
 void WatchWindow::getAttributes(QVariantMap m)
 {
-    foreach (QCheckBox *cb, checkboxes) {
-        delete cb;
+    if(isCheckboxReady){
+
+    }else{
+        if(settingsLayout == NULL){
+            settingsLayout = new QVBoxLayout();
+        }
+
+        foreach (QCheckBox *cb, checkboxes) {
+            delete cb;
+        }
+        checkboxes.clear();
+
+        QMapIterator<QString, QVariant> j(m);
+        while(j.hasNext()){
+            j.next();
+
+            QCheckBox *cb = new QCheckBox();
+            cb->setText(j.key());
+            cb->setChecked(true);
+
+            settingsLayout->addWidget(cb);
+
+            this->checkboxes.append(cb);
+        }
+        ui->groupBox_displayValues->setLayout(settingsLayout);
+
+        isCheckboxReady = true;
     }
-    checkboxes.clear();
-
-    if(masterLayout == NULL){
-        masterLayout = new QVBoxLayout();
-    }
-
-    if(OiFeatureState::getActiveFeature() != NULL){
-        QLabel *featureName = new QLabel();
-        QFont f( "Arial", 30, QFont::Bold);
-        featureName->setFont(f);
-        featureName->setText(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
-        masterLayout->addWidget(featureName);
-    }
-
-    QVBoxLayout *layout = new QVBoxLayout();
-
-    QMapIterator<QString, QVariant> j(m);
-    while(j.hasNext()){
-        j.next();
-
-        QCheckBox *cb = new QCheckBox();
-        cb->setText(j.key());
-        cb->setChecked(true);
-
-        layout->addWidget(cb);
-
-        this->checkboxes.append(cb);
-    }
-    ui->groupBox_displayValues->setLayout(layout);
-
 }
 
 
@@ -282,28 +284,32 @@ void WatchWindow::getAttributes(QVariantMap m)
  */
 void WatchWindow::on_comboBox_suppReadings_currentIndexChanged(const QString &arg1)
 {
-    isGUIReady = false;
-
-    int r;
-
-    if(arg1.compare(Configuration::sCartesian)){
-        r = Configuration::eCartesian;
-    }else if(arg1.compare(Configuration::sPolar)){
-        r = Configuration::ePolar;
-    }else if(arg1.compare(Configuration::sDistance)){
-        r = Configuration::eDistance;
-    }else if(arg1.compare(Configuration::sDirection)){
-        r = Configuration::eDirection;
-    }else if(arg1.compare(Configuration::sLevel)){
-        r = Configuration::eLevel;
-    }else if(arg1.compare(Configuration::sTemperatur)){
-        r = Configuration::eTemperatur;
-    }else if(arg1.compare("undefined")){
-        r = Configuration::eUndefined;
+    isCheckboxReady = false;
+    if(!isSettingsReady){
+        return;
     }
 
     OiFeatureState::getActiveStation()->emitStopReadingStream();
 
-    OiFeatureState::getActiveStation()->emitStartReadingStream(r);;
+    int r;
 
+    if(arg1.compare(Configuration::sCartesian) == 0){
+        r = Configuration::eCartesian;
+    }else if(arg1.compare(Configuration::sPolar) == 0){
+        r = Configuration::ePolar;
+    }else if(arg1.compare(Configuration::sDistance) == 0){
+        r = Configuration::eDistance;
+    }else if(arg1.compare(Configuration::sDirection) == 0){
+        r = Configuration::eDirection;
+    }else if(arg1.compare(Configuration::sLevel) == 0){
+        r = Configuration::eLevel;
+    }else if(arg1.compare(Configuration::sTemperatur) == 0){
+        r = Configuration::eTemperatur;
+    }else if(arg1.compare("undefined") == 0){
+        r = Configuration::eUndefined;
+    }
+
+    isGUIReady = false;
+
+    OiFeatureState::getActiveStation()->emitStartReadingStream(r);
 }

@@ -50,9 +50,12 @@ private slots:
 private:
     Ui::WatchWindow *ui;
     QVBoxLayout* masterLayout;
+    QVBoxLayout* settingsLayout;
 
     bool isGUIReady;
     int digitCount;
+    bool isSettingsReady;
+    bool isCheckboxReady;
 
     QMap<QString,QLCDNumber*> streamData;
 
