@@ -20,7 +20,7 @@ Controller::Controller(QObject *parent) :
     this->myDeleteFeaturesCallback = new DeleteFeaturesFunctor();
     this->myDeleteFeaturesCallback->c = this;
 
-    lastmConfig = new MeasurementConfig();
+    lastmConfig;
     this->defaultLastmConfig();
 
     //set up models
@@ -145,7 +145,7 @@ void Controller::createDefaultFeatures(){
         FeatureWrapper *station01 = OiFeatureState::addFeature(Configuration::eStationFeature, false, "STATION01");
 
         //set position parameter for STATION01
-        station01->getStation()->position->setMeasurementConfig(*this->lastmConfig);
+        station01->getStation()->position->setMeasurementConfig(this->lastmConfig);
         station01->getStation()->position->setCommonState(false);
 
         //set STATION01's station system as active station
@@ -170,7 +170,7 @@ void Controller::createDefaultFeatures(){
  */
 void Controller::addFeature(FeatureAttributesExchange fae){
 
-    int fType = FeatureUpdater::addFeature(fae,*this->lastmConfig);
+    int fType = FeatureUpdater::addFeature(fae,this->lastmConfig);
     if(fType == Configuration::eStationFeature && fType == Configuration::eCoordinateSystemFeature){
         emit CoordSystemsModelChanged();
     }
@@ -454,19 +454,19 @@ void Controller::showResults(bool b){
  * It can be changed at runtime.
  */
 void Controller::defaultLastmConfig(){
-    lastmConfig->name = "default configuration";
-    lastmConfig->count = 1;
-    lastmConfig->iterations = 1;
-    lastmConfig->measureTwoSides = false;
+    lastmConfig.name = "default configuration";
+    lastmConfig.count = 1;
+    lastmConfig.iterations = 1;
+    lastmConfig.measureTwoSides = false;
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-        lastmConfig->typeOfReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->at(0);
+        lastmConfig.typeOfReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->at(0);
     }else{
-        lastmConfig->typeOfReading = Configuration::ePolar;
+        lastmConfig.typeOfReading = Configuration::ePolar;
     }
-    lastmConfig->timeDependent = false;
-    lastmConfig->distanceDependent = false;
-    lastmConfig->timeInterval = 0.0;
-    lastmConfig->distanceInterval = 0.0;
+    lastmConfig.timeDependent = false;
+    lastmConfig.distanceDependent = false;
+    lastmConfig.timeInterval = 0.0;
+    lastmConfig.distanceInterval = 0.0;
 }
 
 /*!
@@ -806,10 +806,10 @@ void Controller::changeFunctionTreeViewModel(){
                 QStandardItem *function = new QStandardItem(f->getMetaData()->name);
                 foreach(InputParams param, f->getNeededElements()){
                     if(param.infinite){
-                        QStandardItem *element = new QStandardItem(QString("n %1s").arg(OiMetaData::findElement(param.typeOfElement)));
+                        QStandardItem *element = new QStandardItem(QString("n %1s").arg(Configuration::getElementTypeString(param.typeOfElement)));
                         function->appendRow(element);
                     }else{
-                        QStandardItem *element = new QStandardItem(QString("1 %1").arg(OiMetaData::findElement(param.typeOfElement)));
+                        QStandardItem *element = new QStandardItem(QString("1 %1").arg(Configuration::getElementTypeString(param.typeOfElement)));
                         function->appendRow(element);
                     }
                 }
@@ -1410,12 +1410,12 @@ void Controller::updateFeatureMConfig()
         //Check and edit lastMConfig
         bool contains = false;
         for(int i=0; i< readingTypes.size();i++){
-            if(this->lastmConfig->typeOfReading == readingTypes.at(i)){
+            if(this->lastmConfig.typeOfReading == readingTypes.at(i)){
                 contains = true;
             }
         }
         if(!contains){
-            this->lastmConfig->typeOfReading = readingTypes.at(0);
+            this->lastmConfig.typeOfReading = readingTypes.at(0);
         }
 
         //check and edit previous mconfigs
@@ -1429,7 +1429,7 @@ void Controller::updateFeatureMConfig()
                 }
                 if(!contains){
                     MeasurementConfig myConfig = OiFeatureState::getFeatures().at(k)->getGeometry()->getMeasurementConfig();
-                    myConfig.typeOfReading = this->lastmConfig->typeOfReading;
+                    myConfig.typeOfReading = this->lastmConfig.typeOfReading;
                     OiFeatureState::getFeatures().at(k)->getGeometry()->setMeasurementConfig(myConfig);
                 }
             }
@@ -1441,7 +1441,7 @@ void Controller::updateFeatureMConfig()
                 }
                 if(!contains){
                     MeasurementConfig myConfig = OiFeatureState::getFeatures().at(k)->getStation()->position->getMeasurementConfig();
-                    myConfig.typeOfReading = this->lastmConfig->typeOfReading;
+                    myConfig.typeOfReading = this->lastmConfig.typeOfReading;
                     OiFeatureState::getFeatures().at(k)->getStation()->position->setMeasurementConfig(myConfig);
                 }
             }
@@ -1651,7 +1651,7 @@ void Controller::checkAvailablePlugins(){
  */
 bool Controller::checkPluginAvailability(Configuration::FeatureTypes typeOfFeature){
     QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
-    if(availableGeometries.contains(QString(OiMetaData::findFeature(typeOfFeature)))){
+    if(availableGeometries.contains(QString(Configuration::getFeatureTypeString(typeOfFeature)))){
         return true;
     }
     return false;

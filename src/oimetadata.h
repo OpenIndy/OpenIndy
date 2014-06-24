@@ -45,8 +45,6 @@ private:
     static QString getCompiler();
     static QString getOperatingSys();
     static bool findIID(QString iid);
-    static QString findFeature(Configuration::FeatureTypes f);
-    static QString findElement(Configuration::ElementTypes e);
     static int generateId();
 
 };
