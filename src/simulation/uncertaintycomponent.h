@@ -15,8 +15,12 @@ class UncertaintyComponent
 public:
     UncertaintyComponent();
 
+    QString name;
+
     double value; //magnitude of the error
     double uncertainty; // uncertainty of the error
+    QString distribution;
+
     UnitConverter::unitType errorUnit; // dimension of the unit (mm, m ,...)
     UnitConverter::dimensionType errorDimension; // unit type of the error (metric, angular, ...)
 

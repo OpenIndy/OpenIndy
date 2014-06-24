@@ -4,6 +4,15 @@
 #include "simulationmodel.h"
 #include <random>
 
+/*!
+ * \brief The SimplePolarMeasurement class
+ *
+ *  implementation of a simple simulation of a
+ *  polar measurement system such as a Laser Tracker
+ *  or Total Station. The Sensor model is described by
+ *  Ben Hughes(Laser tracker error determination using
+ *  a network measurement)
+ */
 class SimplePolarMeasurement : public SimulationModel
 {
 public:
@@ -59,19 +68,28 @@ public:
     /*!
      * \brief distort
      * \param r
+     * \param objectRelation
      * \return
      *
-     *  here you have to distort a reading with the given uncertainties
+     *  here you have to distort a reading with the given uncertainties.
+     *  objectRelation is a homogenous matrix (4x4) which describes the
+     *  relation between Station and Object
      */
-    bool distort(Reading *r);
+    bool distort(Reading *r, OiMat objectRelation);
 
 private:
 
-    std::default_random_engine *generator;
+    //all supported distributions;
+    QStringList distributions;
 
-    std::uniform_real_distribution<double> *dist_Uniform;
-    std::normal_distribution<double> *dist_Normal;
 
+    double distortComponent(UncertaintyComponent u);
+
+
+    bool distortionBySensor(Reading * r);
+    bool distortionByEnviroment(Reading *r);
+    bool distortionByHuman(Reading *r);
+    bool distortionByObject(Reading *r, OiMat objectRelation);
 
 
 };

@@ -24,19 +24,22 @@ public:
         eArcSeconds,
         eMilliRadians,
         eKelvin,
-        eFahrenheit
+        eFahrenheit,
+        eNoUnit
     };
 
     enum dimensionType{
         eMetric,
         eAngular,
         eTemperature,
-        eUndefined
+        eUndefined,
+        eDimensionless
     };
 
     static int angleDigits;
     static int distanceDigits;
     static int temperatureDigits;
+    static int dimensionLessDigits;
 
     static unitType angleType;
     static unitType distanceType;

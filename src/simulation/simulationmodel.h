@@ -5,6 +5,7 @@
 #include "pluginmetadata.h"
 #include "uncertaintycomponent.h"
 #include "reading.h"
+#include "trafoparam.h"
 
 /*!
  * \brief The Uncertainties struct
@@ -86,11 +87,14 @@ public:
     /*!
      * \brief distort
      * \param r
+     * \param objectRelation
      * \return
      *
-     *  here you have to distort a reading with the given uncertainties
+     *  here you have to distort a reading with the given uncertainties.
+     *  objectRelation is a homogenous matrix (4x4) which describes the
+     *  relation between Station and Object
      */
-    virtual bool distort(Reading *r) = 0;
+    virtual bool distort(Reading *r, OiMat objectRelation) = 0;
 
     //getter & setter
     Uncertainties getGivenUncertainties(){return givenUncertainties;}
