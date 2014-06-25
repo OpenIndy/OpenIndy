@@ -79,6 +79,9 @@ public:
     static QList<FunctionPlugin> getAvailableFitFunctions(Configuration::FeatureTypes featureType);
     static QList<FunctionPlugin> getAvailableConstructFunctions(Configuration::FeatureTypes featureType);
 
+    static QList<SimulationPlugin> getAvailableSimulationPlugins();
+
+
     static void saveDefaultFunction(Configuration::FeatureTypes featureType, QString function, QString plugin);
 
 private:

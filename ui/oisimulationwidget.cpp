@@ -6,6 +6,13 @@ OiSimulationWidget::OiSimulationWidget(QWidget *parent) :
     ui(new Ui::OiSimulationWidget)
 {
     ui->setupUi(this);
+
+    actualSimulation = NULL;
+
+    this->ui->listView_simulations->setModel(this->control.availableSimulations);
+
+    this->ui->tableView_sensor->setModel(control.errorTableModel);
+
 }
 
 OiSimulationWidget::~OiSimulationWidget()
@@ -43,4 +50,21 @@ void OiSimulationWidget::recalcAll()
 void OiSimulationWidget::on_pushButton_startSimulation_clicked()
 {
     recalcAll();
+}
+
+void OiSimulationWidget::showEvent(QShowEvent *event)
+{
+    control.setUpSimulations();
+
+    event->accept();
+}
+
+
+
+void OiSimulationWidget::on_listView_simulations_clicked(const QModelIndex &index)
+{
+    if(index.isValid()){
+        actualSimulation = control.getSimulationAt(index.row());
+        Console::addLine(actualSimulation->getMetaData()->name);
+    }
 }

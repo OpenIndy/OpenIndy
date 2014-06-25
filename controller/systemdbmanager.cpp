@@ -848,6 +848,40 @@ QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(Configurat
     return result;
 }
 
+QList<SimulationPlugin> SystemDbManager::getAvailableSimulationPlugins()
+{
+    QList<SimulationPlugin> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT sp.id, sp.iid, sp.name, sp.description, p.name AS pluginName, p.file_path FROM simulationPlugin AS sp INNER JOIN plugin AS p "
+                                "ON sp.plugin_id = p.id;");
+
+
+        command.exec(query);
+        while(command.next()){
+
+            SimulationPlugin myPlugin;
+            myPlugin.id = command.value("id").toInt();
+            myPlugin.iid = command.value("iid").toString();
+            myPlugin.name = command.value("name").toString();
+            myPlugin.description = command.value("description").toString();
+            myPlugin.pluginName = command.value("pluginName").toString();
+
+
+            result.append(myPlugin);
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}
+
 /*!
  * \brief SystemDbManager::getDefaultFunction
  * Returns the default function for the specified feature type

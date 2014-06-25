@@ -159,8 +159,8 @@ SimulationModel *OiTemplatePlugin::createSimulation(QString name)
 {
     SimulationModel *result;
 
-    if(name.compare("SimplePolarMeasurement_Simulation") == 0){
+    if(name.compare("SimplePolarMeasurement") == 0){
         result = new SimplePolarMeasurement();
     }
-    return NULL;
+    return result;
 }

@@ -11,7 +11,7 @@ PluginMetaData *SimplePolarMeasurement::getMetaData()
 {
     PluginMetaData* metaData = new PluginMetaData();
 
-    metaData->name = "SimplePolarMeasurement_Simulation";
+    metaData->name = "SimplePolarMeasurement";
     metaData->pluginName = "OpenIndy Default Plugin";
     metaData->author = "mlux";
     metaData->description = "simulation of a simple polar measurement system";

@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <featureupdater.h>
 #include <oifeaturestate.h>
+#include <simulationcontroller.h>
 
 namespace Ui {
 class OiSimulationWidget;
@@ -20,10 +21,16 @@ public:
 
 private slots:
     void on_pushButton_startSimulation_clicked();
+    void showEvent(QShowEvent * event);
+
+    void on_listView_simulations_clicked(const QModelIndex &index);
 
 private:
     Ui::OiSimulationWidget *ui;
     void recalcAll();
+
+    SimulationModel* actualSimulation;
+    SimulationController control;
 };
 
 #endif // OISIMULATIONWIDGET_H

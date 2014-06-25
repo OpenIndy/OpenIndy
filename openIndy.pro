@@ -162,7 +162,8 @@ SOURCES += \
     ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
     src/simulation/uncertaintycomponent.cpp \
     controller/simulationcontroller.cpp \
-    ui/histogram.cpp
+    ui/histogram.cpp \
+    ui/simulationerrortablemodel.cpp
 
 
 HEADERS  += \
@@ -291,7 +292,8 @@ HEADERS  += \
     src/simulation/simulationmodel.h \
     src/simulation/uncertaintycomponent.h \
     controller/simulationcontroller.h \
-    ui/histogram.h
+    ui/histogram.h \
+    ui/simulationerrortablemodel.h
 
 
 FORMS    += ui/mainwindow.ui \
