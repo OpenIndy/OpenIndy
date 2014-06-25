@@ -30,6 +30,14 @@ struct SensorPlugin{
     QString pluginName;
 };
 
+struct SimulationPlugin{
+    int id;
+    QString iid;
+    QString name;
+    QString description;
+    QString pluginName;
+};
+
 struct Plugin{
     int id;
     QString iid;
@@ -44,13 +52,14 @@ struct Plugin{
     bool is_active;
 
     QList<FunctionPlugin> myFunctions;
+    QList<SimulationPlugin> mySimulations;
     QList<SensorPlugin> mySensors;
 };
 
 class SystemDbManager
 {
 public:
-    static int savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments);
+    static int savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments,QList<SimulationModel*> simulationList );
     static bool deletePlugin(int id);
 
     static bool getCreateFunctionModel(QSqlQueryModel *sqlModel, Configuration::FeatureTypes ft);
@@ -86,6 +95,7 @@ private:
     static int savePluginHelper(PluginMetaData *metaInfo);
     static void saveFunctionPlugin(int pluginId, Function* f);
     static void saveSensorPlugin(int pluginId, Sensor* s);
+    static void saveSimulationPlugin(int pluginId, SimulationModel* s);
     static void saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustment* n);
 
 };

@@ -54,6 +54,28 @@ OiVec Reading::toPolar(double x, double y, double z){
     return g;
 }
 
+void Reading::makeBackup()
+{
+    this->backupPolar = this->rPolar;
+    this->backupCartesian = this->rCartesian;
+    this->backupDirection = this->rDirection;
+    this->backupDistance = this->rDistance;
+    this->backupTemperature = this->rTemperature;
+    this->backupUndefined = this->rUndefined;
+    this->backupLevel = this->rLevel;
+}
+
+void Reading::restoreBackup()
+{
+    this->rPolar = this->backupPolar;
+    this->rCartesian = this->backupCartesian;
+    this->rDirection = this->backupDirection;
+    this->rDistance = this->backupDistance;
+    this->rTemperature = this->backupTemperature;
+    this->rUndefined = this->backupUndefined;
+    this->rLevel = this->backupLevel;
+}
+
 /*!
  * \brief Reading::errorPropagationPolarToCart
  * Variance propagation to get sigma values for cartesian coordinates

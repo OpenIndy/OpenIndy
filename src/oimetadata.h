@@ -39,6 +39,7 @@ private:
     static QString iid_ObjectTransformation;
     static QString iid_SystemTransformation;
     static QString iid_Sensor;
+    static QString iid_Simulation;
 
 
     static QString getVersion();

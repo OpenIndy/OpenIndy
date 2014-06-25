@@ -378,9 +378,39 @@ bool PluginLoader::copyDir(QString sourcePath, QString destinationPath){
        }
    }else{
         Console::addLine("meta data not valid");
-    }
+   }
 
-}
+ }
+
+ QList<SimulationModel *> PluginLoader::loadSimulationPlugins(QString path)
+ {
+     QList<SimulationModel*> simulationList;
+
+     QPluginLoader pluginLoader(path);
+
+     if(PluginLoader::getMetaData(path)){
+
+        Console::addLine("load plugin: " + path);
+
+        QObject *plugin = pluginLoader.instance();
+
+
+        if (plugin) {
+
+            OiPlugin *SimulationFactory = qobject_cast<OiPlugin *>(plugin);
+
+             simulationList = SimulationFactory->createSimulations();
+
+             Console::addLine(QString(myMetaInfo->name + " successfully created."));
+             return simulationList;
+        }else{
+            Console::addLine(QString("create" + myMetaInfo->name + "failed"));
+            return simulationList;
+        }
+    }else{
+         Console::addLine("meta data not valid");
+    }
+ }
 
 QList<NetworkAdjustment*> PluginLoader::loadNetworkAdjustmentPlugins(QString path){
 
@@ -456,6 +486,22 @@ Function* PluginLoader::loadFunctionPlugin(QString path, QString name){
     }
 
     return f;
+}
+
+SimulationModel *PluginLoader::loadSimulationPlugin(QString path, QString name)
+{
+    SimulationModel* s = NULL;
+
+    QPluginLoader pluginLoader(path);
+    QObject *plugin = pluginLoader.instance();
+    if (plugin) {
+        OiPlugin *simulationFactory = qobject_cast<OiPlugin *>(plugin);
+        s = simulationFactory->createSimulation(name);
+    }else{
+        Console::addLine(QString("Cannot load selected function"));
+    }
+
+    return s;
 }
 
 /*!

@@ -218,7 +218,7 @@ QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
                 }
             }else{
                 query = QString("%1 %2 %3")
-                        .arg("SELECT file_path FROM plugin AS p INNER JOIN networkAdjustmentPlugin AS nap ON p.id = sp.plugin_id")
+                        .arg("SELECT file_path FROM plugin AS p INNER JOIN networkAdjustmentPlugin AS nap ON p.id = nap.plugin_id")
                         .arg(QString("WHERE p.name = '%1'").arg(plugin))
                         .arg(QString("AND nap.name = '%1';").arg(name));
                 command.finish();
@@ -227,6 +227,19 @@ QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
                     QVariant val = command.value(0);
                     if(val.isValid()){
                         path = val.toString();
+                    }
+                }else{
+                    query = QString("%1 %2 %3")
+                            .arg("SELECT file_path FROM plugin AS p INNER JOIN simulationPlugin AS s ON p.id = s.plugin_id")
+                            .arg(QString("WHERE p.name = '%1'").arg(plugin))
+                            .arg(QString("AND s.name = '%1';").arg(name));
+                    command.finish();
+                    command.exec(query);
+                    if(command.next()){
+                        QVariant val = command.value(0);
+                        if(val.isValid()){
+                            path = val.toString();
+                        }
                     }
                 }
             }
@@ -242,7 +255,7 @@ QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
  * \param f
  * \return
  */
-int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments){
+int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments,QList<SimulationModel*> simulationList ){
     int pluginId = -1;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
@@ -264,6 +277,9 @@ int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> funct
                 }
                 foreach(NetworkAdjustment* n, networkAdjustments){
                     SystemDbManager::saveNetworkAdjustmentPlugin(pluginId, n);
+                }
+                foreach(SimulationModel *s, simulationList){
+                    SystemDbManager::saveSimulationPlugin(pluginId,s);
                 }
 
             }
@@ -535,6 +551,15 @@ void SystemDbManager::saveSensorPlugin(int pluginId, Sensor* s){
     command.exec(query);
 }
 
+void SystemDbManager::saveSimulationPlugin(int pluginId, SimulationModel *s)
+{
+    //insert sensor plugin
+    QString query = QString("INSERT INTO simulationPlugin (plugin_id, iid, name, description) VALUES (%1, '%2', '%3', '%4')")
+            .arg(pluginId).arg(s->getMetaData()->iid).arg(s->getMetaData()->name).arg(s->getMetaData()->description);
+    QSqlQuery command(SystemDbManager::db);
+    command.exec(query);
+}
+
 /*!
  * \brief SystemDbManager::saveNetworkAdjustmentPlugin
  * \param pluginId
@@ -670,6 +695,24 @@ QList<Plugin> SystemDbManager::getAvailablePlugins(){
                 mySensor.description = command.value("description").toString();
                 mySensor.pluginName = myPlugin.name;
                 myPlugin.mySensors.append(mySensor);
+
+            }
+
+            //query simulations
+            query = QString("SELECT %1 FROM simulationPlugin WHERE plugin_id = %2")
+                    .arg("id, iid, name, description")
+                    .arg(myPlugin.id);
+
+            command.exec(query);
+            while(command.next()){
+
+                SimulationPlugin mySimulation;
+                mySimulation.id = command.value("id").toInt();
+                mySimulation.iid = command.value("iid").toString();
+                mySimulation.name = command.value("name").toString();
+                mySimulation.description = command.value("description").toString();
+                mySimulation.pluginName = myPlugin.name;
+                myPlugin.mySimulations.append(mySimulation);
 
             }
 

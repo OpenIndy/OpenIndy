@@ -106,4 +106,6 @@ protected:
 
 };
 
+#define Simulation_iidd "de.openIndy.Plugin.Simulation.v001"
+
 #endif // SIMULATIONMODEL_H

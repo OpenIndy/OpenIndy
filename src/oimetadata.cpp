@@ -15,7 +15,7 @@ QString OiMetaData::iid_GeodeticFunction = GeodeticFunction_iidd;
 QString OiMetaData::iid_NetworkAdjustment = NetworkAdjustment_iidd;
 QString OiMetaData::iid_ObjectTransformation = ObjectTransformation_iidd;
 QString OiMetaData::iid_SystemTransformation = SystemTransformation_iidd;
-
+QString OiMetaData::iid_Simulation = Simulation_iidd;
 
 
 /*!
@@ -141,6 +141,8 @@ bool OiMetaData::findIID(QString iid){
     }else if(iid==OiMetaData::iid_TotalStation){
         return true;
     }else if(iid == OiMetaData::iid_OiPlugin){
+        return true;
+    }else if(iid == OiMetaData::iid_Simulation){
         return true;
     }
 
