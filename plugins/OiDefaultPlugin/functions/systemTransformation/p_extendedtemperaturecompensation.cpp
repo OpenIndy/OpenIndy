@@ -59,9 +59,10 @@ bool ExtendedTemperatureCompensation::exec(TrafoParam &tp)
         this->init();
         if(locSystem.count() == refSystem.count() && locSystem.count()>2){
 
+            //get translation and rotation from loc to ref system, so you can transform later
             this->rotation = this->approxRotation();
-            this->scale = this->approxScale();
-            this->translation = this->approxTranslation(this->scale,this->rotation);
+            this->scale = this->approxScale(this->rotation);
+            this->translation = this->approxTranslation(this->rotation,this->scale);
 
             if(locSystem.count()>3){
                 return this->calc(tp);
@@ -90,47 +91,31 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
 {
     bool result = false;
 
-    this->preliminaryTransformation();
+    //transform loc (start system) to "pseudo"-loc system
+    //transformation with previosly approximated translation and rotation. No scale
+    this->preliminaryTransformation(); 
 
-
+    //get rotation between pseudo loc and ref system
     OiVec tmpRotation = this->approxRotation();
-    OiVec tmpScale = this->approxScale();
-    OiVec tmpTranslation = this->approxTranslation(tmpScale,tmpRotation);
 
-    this->translation = this->translation + tmpTranslation;
-    this->translation.setAt(3,1.0);
-    this->rotation = this->rotation + tmpRotation;
-    this->rotation.setAt(3,1.0);
-    this->scale.setAt(0,this->scale.getAt(0)*tmpScale.getAt(0));
-    this->scale.setAt(1,this->scale.getAt(1)*tmpScale.getAt(1));
-    this->scale.setAt(2,this->scale.getAt(2)*tmpScale.getAt(2));
-    //this->scale = this->scale * tmpScale;
-    this->scale.setAt(3,1.0);
+    //get scale between pseudo loc and ref system (using temperature or distance)
+    OiVec tmpScale = this->approxScale(tmpRotation);
+
+    //get translation between pseudo loc and ref system
+    OiVec tmpTranslation = this->approxTranslation(tmpRotation,tmpScale);
 
     //approximation
     OiVec x0(9);
-    if(useTemp){
-        x0.setAt(0,tmpRotation.getAt(0));
-        x0.setAt(1,tmpRotation.getAt(1));
-        x0.setAt(2,tmpRotation.getAt(2));
-        x0.setAt(3,this->actTemp);
-        x0.setAt(4,this->actTemp);
-        x0.setAt(5,this->actTemp);
-        x0.setAt(6,tmpTranslation.getAt(0));
-        x0.setAt(7,tmpTranslation.getAt(1));
-        x0.setAt(8,tmpTranslation.getAt(2));
-    }else{
-        x0.setAt(0,tmpRotation.getAt(0));
-        x0.setAt(1,tmpRotation.getAt(1));
-        x0.setAt(2,tmpRotation.getAt(2));
-        x0.setAt(3,tmpScale.getAt(0));
-        x0.setAt(4,tmpScale.getAt(1));
-        x0.setAt(5,tmpScale.getAt(2));
-        x0.setAt(6,tmpTranslation.getAt(0));
-        x0.setAt(7,tmpTranslation.getAt(1));
-        x0.setAt(8,tmpTranslation.getAt(2));
-    }
 
+    x0.setAt(0,tmpRotation.getAt(0));
+    x0.setAt(1,tmpRotation.getAt(1));
+    x0.setAt(2,tmpRotation.getAt(2));
+    x0.setAt(3,tmpScale.getAt(0));
+    x0.setAt(4,tmpScale.getAt(1));
+    x0.setAt(5,tmpScale.getAt(2));
+    x0.setAt(6,tmpTranslation.getAt(0));
+    x0.setAt(7,tmpTranslation.getAt(1));
+    x0.setAt(8,tmpTranslation.getAt(2));
 
     //observations
     OiVec l = this->fillLVector();
@@ -140,63 +125,57 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
     OiVec x;
     OiMat qxx;
 
-    //iterate until solution is ok
-    int iterations =0;
-    OiVec stop;
-    do{
-        //A matrix
-        a = this->fillAMatrix(x0);
-        //normal equation
-        OiMat n = a.t()*a;
+    //A matrix
+    a = this->fillAMatrix(x0);
+    //normal equation
+    OiMat n = a.t()*a;
 
-        try{
-            qxx = n.inv(); // try to calc the inverse
-        }catch(runtime_error e){
-           return false;
-        }catch(logic_error e){
-            return false;
-        }
+    try{
+        qxx = n.inv(); // try to calc the inverse
+    }catch(runtime_error e){
+       return false;
+    }catch(logic_error e){
+        return false;
+    }
 
-        //differential l vector
-        OiVec l0 = this->fillL0Vector(x0);
-        l_diff = l -l0;
+    //differential l vector
+    OiVec l0 = this->fillL0Vector(x0);
+    l_diff = l -l0;
 
-        //right side
-        OiVec c = a.t()*l_diff;
+    //right side
+    OiVec c = a.t()*l_diff;
 
-        //calc x
-        x = qxx*c;
-        x0 = x0+x;
+    //calc x
+    x = qxx*c;
+    x0 = x0+x;
 
-        //get stop criteria
-        stop = x.t()*x;
-        iterations++;
+    OiVec v = a * x - l_diff;
+    OiVec vtv = v.t() * v;
+    double s0_post = sqrt(vtv.getAt(0) / (3 * this->locSystem.length() - 7));
+    OiMat sxx = s0_post * s0_post * qxx;
 
-    }while(stop.getAt(0) > (1.0/10000000000.0) && iterations < 100);
 
-    if( stop.getAt(0) <= (1.0/10000000000.0) ){ //adjustment successful
-            OiVec v = a * x - l_diff;
-            OiVec vtv = v.t() * v;
-            double s0_post = sqrt(vtv.getAt(0) / (3 * this->locSystem.length() - 7));
-            OiMat sxx = s0_post * s0_post * qxx;
+    //scales
+    double sx = this->scale.getAt(0);
+    double sy = this->scale.getAt(1);
+    double sz = this->scale.getAt(2);
 
-            tp.setTranslation(this->translation.getAt(0)+x0.getAt(6),this->translation.getAt(1)+x0.getAt(7),this->translation.getAt(2)+x0.getAt(8));
-            tp.setRotation(this->rotation.getAt(0)+x0.getAt(0),this->rotation.getAt(1)+x0.getAt(1),this->rotation.getAt(2)+x0.getAt(2));
+    //set the trafo parameters with the previously calulated values and the additional values from adjustment
+    tp.setTranslation(this->translation.getAt(0)+x0.getAt(6),this->translation.getAt(1)+x0.getAt(7),this->translation.getAt(2)+x0.getAt(8));
+    tp.setRotation(this->rotation.getAt(0)+x0.getAt(0),this->rotation.getAt(1)+x0.getAt(1),this->rotation.getAt(2)+x0.getAt(2));
+    tp.setScale(sx*x0.getAt(3),sy*x0.getAt(4),sz*x0.getAt(5));
 
-            if(useTemp){
-                double sx = 1.0/(1.0+((x0.getAt(3)-refTemp)*expansionCoefficient));
-                this->protocol.append(QString("scale x representing an expansion of " + QString::number(sx,'f',2)+"[°C]"));
-                double sy = 1.0/(1.0+((x0.getAt(4)-refTemp)*expansionCoefficient));
-                this->protocol.append(QString("scale y representing an expansion of " + QString::number(sy,'f',2)+"[°C]"));
-                double sz = 1.0/(1.0+((x0.getAt(5)-refTemp)*expansionCoefficient));
-                this->protocol.append(QString("scale z representing an expansion of " + QString::number(sz,'f',2)+"[°C]"));
-                tp.setScale(sx,sy,sz);
-            }else{
-                tp.setScale(this->scale.getAt(0)*x0.getAt(3),this->scale.getAt(1)*x0.getAt(4),this->scale.getAt(2)*x0.getAt(5));
-            }
-            tp.generateHomogenMatrix();
-            result = true;
-        }
+    //calculate the representing temperature out of each scale
+    if(useTemp){
+        double tx = (((sx*x0.getAt(3))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
+        this->protocol.append(QString("scale x representing an expansion of " + QString::number(tx,'f',2)+"[°C]"));
+        double ty = (((sy*x0.getAt(4))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
+        this->protocol.append(QString("scale y representing an expansion of " + QString::number(ty,'f',2)+"[°C]"));
+        double tz = (((sz*x0.getAt(5))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
+        this->protocol.append(QString("scale z representing an expansion of " + QString::number(tz,'f',2)+"[°C]"));
+    }
+    tp.generateHomogenMatrix();
+    result = true;
 
     return result;
 }
@@ -210,21 +189,14 @@ QMap<QString, QStringList> ExtendedTemperatureCompensation::getStringParameter()
     QMap<QString, QStringList> result;
         QString key ="material";
         QStringList value;
-        value.append(Configuration::sSteel);
-        value.append(Configuration::sAluminum);
-        value.append(Configuration::sPlumb);
-        value.append(Configuration::sIron);
-        value.append(Configuration::sGrayCastIron);
-        value.append(Configuration::sCopper);
-        value.append(Configuration::sBrass);
-        value.append(Configuration::sZinc);
-        value.append(Configuration::sPlatinum);
+        value = Materials::getMaterials();
         result.insert(key,value);
         key = "useTemperature";
         value.clear();
         value.append("false");
         value.append("true");
         result.insert(key,value);
+
         return result;
 }
 
@@ -244,6 +216,7 @@ QMap<QString, double> ExtendedTemperatureCompensation::getDoubleParameter()
         key = "temperatureAccuracy";
         value = 0.1;
         result.insert(key, value);
+
         return result;
 }
 
@@ -297,11 +270,11 @@ void ExtendedTemperatureCompensation::getExtraParameter()
     //get material from string parameter
     if(stringParameter.contains("material")){
         QString mat = static_cast<QString>(stringParameter.find("material").value());
-        expansionCoefficient = Configuration::getExpansionCoefficient(mat);
+        expansionCoefficient = Materials::getExpansionCoefficient(mat);
         this->protocol.append(QString("material: " + mat));
         this->protocol.append(QString("expansion coefficient: " + QString::number(expansionCoefficient,'f',6)));
     }
-    //
+    //get parameter that decides if scale should be calculated from distances or temperature difference
     if(stringParameter.contains("useTemperature")){
         QString temp = static_cast<QString>(stringParameter.find("useTemperature").value());
         if(temp.compare("true")== 0){
@@ -336,11 +309,13 @@ void ExtendedTemperatureCompensation::getExtraParameter()
  * \param points
  * \return
  */
-OiVec ExtendedTemperatureCompensation::approxTranslation(OiVec scale, OiVec rot)
+OiVec ExtendedTemperatureCompensation::approxTranslation(OiVec rot, OiVec s)
 {
-    //get scale matrix and rotation matrix of approxx values
-    OiMat s = this->scaleMatrix(scale);
+    //get rotation matrix of approxx values
     OiMat r = this->getRotationMatrix(rot);
+
+    //get scale matrix
+    OiMat scaleMat = this->scaleMatrix(s);
 
     //centroid point of reference system
     OiVec centroidPref = this->calcCentroidPoint(this->refSystem);
@@ -351,9 +326,10 @@ OiVec ExtendedTemperatureCompensation::approxTranslation(OiVec scale, OiVec rot)
     centroidPloc.add(1.0);
 
     //calc translation
-    OiVec tmp = s*centroidPloc;
-    OiVec t = r*tmp;
-    OiVec trans = centroidPref - t;
+    OiVec tmp = centroidPloc;
+    OiVec st = scaleMat*tmp;
+    OiVec rst = r *st;
+    OiVec trans = centroidPref - rst;
     trans.setAt(3,1.0);
 
     return trans;
@@ -400,14 +376,76 @@ OiVec ExtendedTemperatureCompensation::approxRotation()
 /*!
  * \brief ExtendedTemperatureCompensation::approxScale calculates the scale depending on temperature
  */
-OiVec ExtendedTemperatureCompensation::approxScale()
+OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
 {
     OiVec s(4);
-    double scaleX = 0.0;
-    double scaleY = 0.0;
-    double scaleZ = 0.0;
+
     OiVec locScale;
     OiVec refScale;
+    double sLoc = 0.0;
+    double sRef = 0.0;
+/*
+    if(useTemp){
+        //get approx of scale from temperature and expansion coefficient
+        s.setAt(0,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
+        s.setAt(1,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
+        s.setAt(2,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
+        s.setAt(3,1.0);
+    }else{
+        locScale.add(0.0);
+        locScale.add(0.0);
+        locScale.add(0.0);
+        locScale.add(0.0);
+
+        refScale.add(0.0);
+        refScale.add(0.0);
+        refScale.add(0.0);
+        refScale.add(0.0);
+
+        //scale from distance between two points in each system
+        int count = this->locSystem.count();
+        for(int i=0; i<count; i++){
+            //sum of distances in loc system
+            double x0 = this->locSystem.at(0).getAt(0);
+            double y0 = this->locSystem.at(0).getAt(1);
+            double z0 = this->locSystem.at(0).getAt(2);
+            double x1 = this->locSystem.at(i).getAt(0);
+            double y1 = this->locSystem.at(i).getAt(1);
+            double z1 = this->locSystem.at(i).getAt(2);
+
+            sLoc += qSqrt((x0-x1)*(x0-x1)+(y0-y1)*(y0-y1)+(z0-z1)*(z0-z1));
+
+            //sum of distances in ref system
+            x0 = this->refSystem.at(0).getAt(0);
+            y0 = this->refSystem.at(0).getAt(1);
+            z0 = this->refSystem.at(0).getAt(2);
+            x1 = this->refSystem.at(i).getAt(0);
+            y1 = this->refSystem.at(i).getAt(1);
+            z1 = this->refSystem.at(i).getAt(2);
+
+            sRef += qSqrt((x0-x1)*(x0-x1)+(y0-y1)*(y0-y1)+(z0-z1)*(z0-z1));
+        }
+        s.setAt(0,sRef/sLoc);
+        s.setAt(1,sRef/sLoc);
+        s.setAt(2,sRef/sLoc);
+        s.setAt(3,1.0);
+    }
+    return s;*/
+    OiMat rotMat;
+    try{
+       rotMat = this->getRotationMatrix(rot).inv(); // try to calc the inverse
+    }catch(runtime_error e){
+       return false;
+    }catch(logic_error e){
+        return false;
+    }
+    QList<OiVec> tmpRefList;
+
+    for(int i=0; i<this->refSystem.size(); i++){
+        OiVec tmpRef = rotMat*this->refSystem.at(i);
+        tmpRefList.append(tmpRef);
+    }
+
 
     if(useTemp){
         //get approx of scale from temperature and expansion coefficient
@@ -416,59 +454,49 @@ OiVec ExtendedTemperatureCompensation::approxScale()
         s.setAt(2,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
         s.setAt(3,1.0);
     }else{
-        //get scale from distance between two points
-        /*scaleLoc = qSqrt(qPow(this->locSystem.at(1).getAt(0)-this->locSystem.at(0).getAt(0),2)+qPow(this->locSystem.at(1).getAt(1)-this->locSystem.at(0).getAt(1),2)+qPow(this->locSystem.at(1).getAt(2)-this->locSystem.at(0).getAt(2),2));
-        scaleRef = qSqrt(qPow(this->refSystem.at(1).getAt(0)-this->refSystem.at(0).getAt(0),2)+qPow(this->refSystem.at(1).getAt(1)-this->refSystem.at(0).getAt(1),2)+qPow(this->refSystem.at(1).getAt(2)-this->refSystem.at(0).getAt(2),2));
-        scale = scaleRef/scaleLoc;
-        s.setAt(0,scale);
-        s.setAt(1,scale);
-        s.setAt(2,scale);
-        s.add(1.0);*/
+        double sx = 0.0;
+        double sy = 0.0;
+        double sz = 0.0;
 
-        locScale.add(0.0);
-        locScale.add(0.0);
-        locScale.add(0.0);
-        locScale.add(0.0);
+        for(int i=1; i<this->locSystem.size(); i++){
+            double sxLoc = qFabs(locSystem.at(0).getAt(0)-locSystem.at(i).getAt(0));
+            double syLoc = qFabs(locSystem.at(0).getAt(1)-locSystem.at(i).getAt(1));
+            double szLoc = qFabs(locSystem.at(0).getAt(2)-locSystem.at(i).getAt(2));
 
-        refScale.add(0.0);
-        refScale.add(0.0);
-        refScale.add(0.0);
-        refScale.add(0.0);
-        //scale from distance between two points in each system
-        int count = this->locSystem.count();
-        for(int i=0; i<count; i++){
-            locScale = locScale + (this->locSystem.at(i) - this->locSystem.at(0));
-            refScale = refScale + (this->refSystem.at(i) - this->refSystem.at(0));
+            double sxRef = qFabs(tmpRefList.at(0).getAt(0)-tmpRefList.at(i).getAt(0));
+            double syRef = qFabs(tmpRefList.at(0).getAt(1)-tmpRefList.at(i).getAt(1));
+            double szRef = qFabs(tmpRefList.at(0).getAt(2)-tmpRefList.at(i).getAt(2));
+
+            if(sxLoc == 0.0 || sxRef == 0.0){
+                sx += 1.0;
+            }else if(sxRef/sxLoc == 0.0){
+                sx += 1.0;
+            }else{
+                sx += (sxRef/sxLoc);
+            }
+
+            if(syLoc == 0.0 || syRef == 0.0){
+                sy += 1.0;
+            }else if(syRef/syLoc == 0.0){
+                sy += 1.0;
+            }else{
+                sy += (syRef/syLoc);
+            }
+
+            if(szLoc == 0.0 || szRef == 0.0){
+                sz += 1.0;
+            }else if(szRef/szLoc == 0.0){
+                sz += 1.0;
+            }else{
+                sz +=(sxRef/sxLoc);
+            }
         }
-
-        //locScale = this->locSystem.at(1) - this->locSystem.at(0);
-        //refScale = this->refSystem.at(1) - this->refSystem.at(0);
-        if(refScale.getAt(0) <= 0.01 || locScale.getAt(0) <= 0.01){
-            scaleX = 1.0;
-        }else{
-            scaleX = refScale.getAt(0) / locScale.getAt(0);
-        }
-        scaleX = qFabs(scaleX);
-
-        if(refScale.getAt(1) <= 0.01 || locScale.getAt(1) <= 0.01){
-            scaleY = 1.0;
-        }else{
-            scaleY = refScale.getAt(1) / locScale.getAt(1);
-        }
-        scaleY = qFabs(scaleY);
-
-        if(refScale.getAt(2) <= 0.01 || locScale.getAt(2) <= 0.01){
-            scaleZ = 1.0;
-        }else{
-           scaleZ = refScale.getAt(2) / locScale.getAt(2);
-        }
-        scaleZ = qFabs(scaleZ);
-
-        s.setAt(0,scaleX);
-        s.setAt(1,scaleY);
-        s.setAt(2,scaleZ);
+        s.setAt(0,sx/(this->locSystem.size()-1));
+        s.setAt(1,sy/(this->locSystem.size()-1));
+        s.setAt(2,sz/(this->locSystem.size()-1));
         s.setAt(3,1.0);
     }
+
     return s;
 }
 
@@ -531,75 +559,40 @@ OiMat ExtendedTemperatureCompensation::fillAMatrix(OiVec x0)
 {
     OiMat a(locSystem.length()*3,9);
 
-    //loc system is transformed with approx values, so I use the rotation matrix for smale angles.
-
-    if(useTemp){//use temperature and expansion coefficient as scale
-        for(int row=0; row<locSystem.length()*3; row++){
-            if((row+1) % 3 == 1){ // x
-                a.setAt(row,0,0.0);
-                a.setAt(row,1,-locSystem.at(row/3).getAt(2)*(1+(x0.getAt(3)-refTemp)*expansionCoefficient));
-                a.setAt(row,2,locSystem.at(row/3).getAt(1)*(1+(x0.getAt(3)-refTemp)*expansionCoefficient));
-                a.setAt(row,3,((1-refTemp)*expansionCoefficient)*(locSystem.at(row/3).getAt(0)+x0.getAt(2)*locSystem.at(row/3).getAt(1)-x0.getAt(1)*locSystem.at(row/3).getAt(2)));
-                a.setAt(row,4,0.0);
-                a.setAt(row,5,0.0);
-                a.setAt(row,6,1.0);
-                a.setAt(row,7,0.0);
-                a.setAt(row,8,0.0);
-            }else if((row+1) % 3 == 2){ //y
-                a.setAt(row,0,locSystem.at(row/3).getAt(2)*(1+(x0.getAt(4)-refTemp)*expansionCoefficient));
-                a.setAt(row,1,0.0);
-                a.setAt(row,2,-locSystem.at(row/3).getAt(0)*(1+(x0.getAt(4)-refTemp)*expansionCoefficient));
-                a.setAt(row,3,0.0);
-                a.setAt(row,4,((1-refTemp)*expansionCoefficient)*(-x0.getAt(2)*locSystem.at(row/3).getAt(0)+locSystem.at(row/3).getAt(1)+x0.getAt(0)*locSystem.at(row/3).getAt(2)));
-                a.setAt(row,5,0.0);
-                a.setAt(row,6,0.0);
-                a.setAt(row,7,1.0);
-                a.setAt(row,8,0.0);
-            }else if((row+1) % 3 == 0){ //z
-                a.setAt(row,0,-locSystem.at(row/3).getAt(1)*(1+(x0.getAt(5)-refTemp)*expansionCoefficient));
-                a.setAt(row,1,locSystem.at(row/3).getAt(0)*(1+(x0.getAt(5)-refTemp)*expansionCoefficient));
-                a.setAt(row,2,0.0);
-                a.setAt(row,3,0.0);
-                a.setAt(row,4,0.0);
-                a.setAt(row,5,((1-refTemp)*expansionCoefficient)*(x0.getAt(1)*locSystem.at(row/3).getAt(0)-x0.getAt(0)*locSystem.at(row/3).getAt(1)+locSystem.at(row/3).getAt(2)));
-                a.setAt(row,6,0.0);
-                a.setAt(row,7,0.0);
-                a.setAt(row,8,1.0);
-            }
-        }
-    }else{ // use scale from distance differences
-        for(int row=0; row<locSystem.length()*3; row++){
-            if((row+1) % 3 == 1){ // x
-                a.setAt(row,0,0.0);
-                a.setAt(row,1,-locSystem.at(row/3).getAt(2)*(x0.getAt(3)));
-                a.setAt(row,2,locSystem.at(row/3).getAt(1)*(x0.getAt(3)));
-                a.setAt(row,3,(locSystem.at(row/3).getAt(0)+x0.getAt(2)*locSystem.at(row/3).getAt(1)-x0.getAt(1)*locSystem.at(row/3).getAt(2)));
-                a.setAt(row,4,0.0);
-                a.setAt(row,5,0.0);
-                a.setAt(row,6,1.0);
-                a.setAt(row,7,0.0);
-                a.setAt(row,8,0.0);
-            }else if((row+1) % 3 == 2){ //y
-                a.setAt(row,0,locSystem.at(row/3).getAt(2)*(x0.getAt(4)));
-                a.setAt(row,1,0.0);
-                a.setAt(row,2,-locSystem.at(row/3).getAt(0)*(x0.getAt(4)));
-                a.setAt(row,3,0.0);
-                a.setAt(row,4,(-x0.getAt(2)*locSystem.at(row/3).getAt(0)+locSystem.at(row/3).getAt(1)+x0.getAt(0)*locSystem.at(row/3).getAt(2)));
-                a.setAt(row,5,0.0);
-                a.setAt(row,6,0.0);
-                a.setAt(row,7,1.0);
-                a.setAt(row,8,0.0);
-            }else if((row+1) % 3 == 0){ //z
-                a.setAt(row,0,-locSystem.at(row/3).getAt(1)*(x0.getAt(5)));
-                a.setAt(row,1,locSystem.at(row/3).getAt(0)*(x0.getAt(5)));
-                a.setAt(row,2,0.0);
-                a.setAt(row,3,0.0);
-                a.setAt(row,4,0.0);
-                a.setAt(row,5,(x0.getAt(1)*locSystem.at(row/3).getAt(0)-x0.getAt(0)*locSystem.at(row/3).getAt(1)+locSystem.at(row/3).getAt(2)));
-                a.setAt(row,6,0.0);
-                a.setAt(row,7,0.0);
-                a.setAt(row,8,1.0);
-            }
+    //loc system is transformed with approx values of translation and rotation. Scale is always near 1.00000, so
+    //this should be approxes eanough for the pre transformation.
+    //That´s why I can use the rotation matrix for small angles.
+    for(int row=0; row<locSystem.length()*3; row++){
+        if((row+1) % 3 == 1){ // x
+            a.setAt(row,0,0.0);
+            a.setAt(row,1,-locSystem.at(row/3).getAt(2)*(x0.getAt(3)));
+            a.setAt(row,2,locSystem.at(row/3).getAt(1)*(x0.getAt(3)));
+            a.setAt(row,3,(locSystem.at(row/3).getAt(0)+x0.getAt(2)*locSystem.at(row/3).getAt(1)-x0.getAt(1)*locSystem.at(row/3).getAt(2)));
+            a.setAt(row,4,0.0);
+            a.setAt(row,5,0.0);
+            a.setAt(row,6,1.0);
+            a.setAt(row,7,0.0);
+            a.setAt(row,8,0.0);
+        }else if((row+1) % 3 == 2){ //y
+            a.setAt(row,0,locSystem.at(row/3).getAt(2)*(x0.getAt(4)));
+            a.setAt(row,1,0.0);
+            a.setAt(row,2,-locSystem.at(row/3).getAt(0)*(x0.getAt(4)));
+            a.setAt(row,3,0.0);
+            a.setAt(row,4,(-x0.getAt(2)*locSystem.at(row/3).getAt(0)+locSystem.at(row/3).getAt(1)+x0.getAt(0)*locSystem.at(row/3).getAt(2)));
+            a.setAt(row,5,0.0);
+            a.setAt(row,6,0.0);
+            a.setAt(row,7,1.0);
+            a.setAt(row,8,0.0);
+        }else if((row+1) % 3 == 0){ //z
+            a.setAt(row,0,-locSystem.at(row/3).getAt(1)*(x0.getAt(5)));
+            a.setAt(row,1,locSystem.at(row/3).getAt(0)*(x0.getAt(5)));
+            a.setAt(row,2,0.0);
+            a.setAt(row,3,0.0);
+            a.setAt(row,4,0.0);
+            a.setAt(row,5,(x0.getAt(1)*locSystem.at(row/3).getAt(0)-x0.getAt(0)*locSystem.at(row/3).getAt(1)+locSystem.at(row/3).getAt(2)));
+            a.setAt(row,6,0.0);
+            a.setAt(row,7,0.0);
+            a.setAt(row,8,1.0);
         }
     }
     return a;
@@ -640,14 +633,22 @@ OiMat ExtendedTemperatureCompensation::getRotationMatrix(OiVec rot)
  */
 void ExtendedTemperatureCompensation::preliminaryTransformation()
 {
+    //get rotation matrix of current rotation angles
+    OiMat rot = this->getRotationMatrix(this->rotation);
+    OiMat s = this->scaleMatrix(this->scale);
+
     QList<OiVec> tmpLoc;
     for(int i=0; i<this->locSystem.size();i++){
+        //get vector point i
         OiVec tmp = this->locSystem.at(i);
         tmp.setAt(3,1.0);
-        OiMat tmpScale = this->scaleMatrix(this->scale);
-        OiMat rot = this->getRotationMatrix(this->rotation);
-        OiVec st = tmpScale*tmp;
+
+        //scale the point
+        OiVec st = s*tmp;
+        //rotate the point
         OiVec rst = rot*st;
+
+        //add translation
         OiVec tmptrafo = this->translation + rst;
         tmptrafo.setAt(3,1.0);
         tmpLoc.append(tmptrafo);
@@ -691,17 +692,11 @@ OiVec ExtendedTemperatureCompensation::fillL0Vector(OiVec x0)
 {
     OiVec l0(this->locSystem.length() * 3);
 
-    double sx, sy,sz;
+    double sx, sy, sz;
 
-    if(useTemp){
-        sx = (1+(x0.getAt(3)-refTemp)*expansionCoefficient);
-        sy = (1+(x0.getAt(4)-refTemp)*expansionCoefficient);
-        sz = (1+(x0.getAt(5)-refTemp)*expansionCoefficient);
-    }else{
-        sx = x0.getAt(3);
-        sy = x0.getAt(4);
-        sz = x0.getAt(5);
-    }
+    sx = x0.getAt(3);
+    sy = x0.getAt(4);
+    sz = x0.getAt(5);
 
     for(int row = 0; row < this->locSystem.length() * 3; row++){
         if( (row+1) % 3 == 1 ){ //observation of x
@@ -818,6 +813,7 @@ OiMat ExtendedTemperatureCompensation::rotationMatrix(OiVec q)
     result.setAt(2, 0, 2*(q.getAt(3)*q.getAt(1) - q.getAt(0)*q.getAt(2)));
     result.setAt(2, 1, 2*(q.getAt(3)*q.getAt(2) + q.getAt(0)*q.getAt(1)));
     result.setAt(2, 2, q.getAt(0)*q.getAt(0) - q.getAt(1)*q.getAt(1) - q.getAt(2)*q.getAt(2) + q.getAt(3)*q.getAt(3));
+
     return result;
 }
 
@@ -836,6 +832,7 @@ OiVec ExtendedTemperatureCompensation::getRotationAngles(OiMat r)
         rot.setAt(1, PI - rot.getAt(1));
     }
     rot.add(1.0);
+
     return rot;
 }
 

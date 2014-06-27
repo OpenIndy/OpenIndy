@@ -5,6 +5,7 @@
 #include "configuration.h"
 #include "pluginmetadata.h"
 #include <QtCore/qmath.h>
+#include "materials.h"
 
 
 /*!
@@ -47,17 +48,16 @@ private:
     double actTemp;
     double refTemp;
     double tempAccuracy;
-    Configuration::Materials material;
+    Materials::supportedMaterials material;
     double expansionCoefficient;
     bool useTemp;
 
     bool calc(TrafoParam &tp);
     void init();
     void getExtraParameter();
-    OiVec approxTranslation(OiVec scale, OiVec rot);
-    //OiVec approxRotation();
+    OiVec approxTranslation(OiVec rot, OiVec s);
     OiVec approxRotation();
-    OiVec approxScale();
+    OiVec approxScale(OiVec rot);
     OiVec calcCentroidPoint(QList<OiVec> points);
     OiVec fillLVector();
     OiMat fillAMatrix(OiVec x0);

@@ -17,7 +17,7 @@ bool SystemDbManager::getCreateFunctionModel(QSqlQueryModel *sqlModel, Configura
     bool check = false;
     if(SystemDbManager::connect()){
 
-        QString feature = OiMetaData::findFeature(ft);
+        QString feature = Configuration::getFeatureTypeString(ft);
 
         QString query;
         if(ft == Configuration::eTrafoParamFeature){ //trafo param is defined by system transformation
@@ -61,7 +61,7 @@ bool SystemDbManager::getChangeFunctionModel(QSqlQueryModel *sqlModel, Configura
     bool check = false;
     if(SystemDbManager::connect()){
 
-        QString feature = OiMetaData::findFeature(ft);
+        QString feature = Configuration::getFeatureTypeString(ft);
 
         QString query = QString("SELECT fp.name, fp.description, fp.iid, p.file_path FROM elementPlugin AS ep "
                                 "INNER JOIN functionPlugin AS fp ON fp.id = ep.functionPlugin_id "
@@ -477,7 +477,7 @@ void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
     //get id's of features for which this plugin is applicable
     QList<Configuration::FeatureTypes> lf = f->applicableFor();
     for(int i=0; i<lf.size(); i++){
-        elements.append( OiMetaData::findFeature(lf.at(i)) );
+        elements.append( Configuration::getFeatureTypeString(lf.at(i)) );
     }
     QList<int> applicableFor = SystemDbManager::getElementIds(elements);
 
@@ -486,7 +486,7 @@ void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
     //get id's of elements which this plugin needs to be able to execute
     QList<InputParams> le = f->getNeededElements();
     for(int i=0; i<le.size(); i++){
-        elements.append( OiMetaData::findElement(le.at(i).typeOfElement) );
+        elements.append( Configuration::getElementTypeString(le.at(i).typeOfElement) );
     }
     QList<int> neededElements = SystemDbManager::getElementIds(elements);
 
@@ -701,7 +701,7 @@ QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::F
                 .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
                 .arg("INNER JOIN element AS e ON e.id = ep.element_id")
                 .arg(QString("e.element_type = \'%1\' AND fp.iid = \'%2\'")
-                     .arg(OiMetaData::findFeature(featureType)).arg(FitFunction_iidd));
+                     .arg(Configuration::getFeatureTypeString(featureType)).arg(FitFunction_iidd));
 
         command.exec(query);
         while(command.next()){
@@ -763,7 +763,7 @@ QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(Configurat
                 .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
                 .arg("INNER JOIN element AS e ON e.id = ep.element_id")
                 .arg(QString("e.element_type = \'%1\' AND fp.iid = \'%2\'")
-                     .arg(OiMetaData::findFeature(featureType)).arg(ConstructFunction_iidd));
+                     .arg(Configuration::getFeatureTypeString(featureType)).arg(ConstructFunction_iidd));
 
         command.exec(query);
         while(command.next()){
@@ -824,7 +824,7 @@ FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes f
                 .arg("INNER JOIN elementPlugin AS ep ON fp.id = ep.functionPlugin_id")
                 .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
                 .arg("INNER JOIN element AS e ON e.id = ep.element_id")
-                .arg(QString("e.element_type = \'%1\' AND ep.use_as_default = 1").arg(OiMetaData::findFeature(featureType)));
+                .arg(QString("e.element_type = \'%1\' AND ep.use_as_default = 1").arg(Configuration::getFeatureTypeString(featureType)));
 
         command.exec(query);
         while(command.next()){
@@ -887,7 +887,7 @@ void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureTyp
             QString query = QString("UPDATE elementPlugin SET use_as_default = 0 WHERE id IN %1")
                     .arg(QString("(SELECT ep.id FROM elementPlugin AS ep %1 %2")
                          .arg("INNER JOIN element AS e ON ep.element_id = e.id")
-                         .arg(QString("WHERE e.element_type = \'%1\')").arg(OiMetaData::findFeature(featureType))));
+                         .arg(QString("WHERE e.element_type = \'%1\')").arg(Configuration::getFeatureTypeString(featureType))));
 
             if(command.exec(query)){
 
@@ -898,7 +898,7 @@ void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureTyp
                              .arg("INNER JOIN functionPlugin AS fp ON ep.functionPlugin_id = fp.id")
                              .arg("INNER JOIN plugin AS p ON fp.plugin_id = p.id")
                              .arg(QString("WHERE e.element_type = \'%1\' AND fp.name = \'%2\' AND p.name = \'%3\')")
-                                  .arg(OiMetaData::findFeature(featureType))
+                                  .arg(Configuration::getFeatureTypeString(featureType))
                                   .arg(function)
                                   .arg(plugin)));
                 command.exec(query);

@@ -4,6 +4,7 @@
 #include "pi_systemtransformation.h"
 #include "configuration.h"
 #include "pluginmetadata.h"
+#include "materials.h"
 
 /*!
  * \brief The SimpleTemperatureCompensation class is a system transformation for temperature compensation.

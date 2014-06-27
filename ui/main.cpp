@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
                                       + "main window starts up ...";
       splash->showMessage(tmp,Qt::AlignBottom | Qt::AlignHCenter);
 
-      mySleep(0.1); // nur so, damit der SplashScreen etwas länger angezeigt wird
+      mySleep(0.5); // nur so, damit der SplashScreen etwas länger angezeigt wird
     }
     MainWindow w;
 

@@ -130,7 +130,8 @@ SOURCES += p_factory.cpp \
     ../../src/geometry/cylinder.cpp \
     ../../src/geometry/cone.cpp \
     ../../src/geometry/circle.cpp \
-    functions/systemTransformation/p_extendedtemperaturecompensation.cpp
+    functions/systemTransformation/p_extendedtemperaturecompensation.cpp \
+    functions/systemTransformation/materials.cpp
 
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
@@ -223,7 +224,8 @@ HEADERS += p_factory.h \
     ../../src/geometry/cylinder.h \
     ../../src/geometry/cone.h \
     ../../src/geometry/circle.h \
-    functions/systemTransformation/p_extendedtemperaturecompensation.h
+    functions/systemTransformation/p_extendedtemperaturecompensation.h \
+    functions/systemTransformation/materials.h
 
 
 OTHER_FILES += metaInfo.json

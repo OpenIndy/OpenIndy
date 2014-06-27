@@ -86,15 +86,7 @@ QMap<QString, QStringList> SimpleTemperatureCompensation::getStringParameter()
     QMap<QString, QStringList> result;
     QString key ="material";
     QStringList value;
-    value.append(Configuration::sSteel);
-    value.append(Configuration::sAluminum);
-    value.append(Configuration::sPlumb);
-    value.append(Configuration::sIron);
-    value.append(Configuration::sGrayCastIron);
-    value.append(Configuration::sCopper);
-    value.append(Configuration::sBrass);
-    value.append(Configuration::sZinc);
-    value.append(Configuration::sPlatinum);
+    value = Materials::getMaterials();
     result.insert(key,value);
     return result;
 }
@@ -138,7 +130,7 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
         if(stringParameter.contains("material")){
             material = static_cast<QString>(stringParameter.find("material").value());
             protMaterial = material;
-            expansionCoefficient = Configuration::getExpansionCoefficient(material);
+            expansionCoefficient = Materials::getExpansionCoefficient(material);
             protExpansionCoeff = QString::number(expansionCoefficient,'f',6);
         }
         if(doubleParameter.contains("referenceTemperature")){
