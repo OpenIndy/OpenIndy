@@ -24,7 +24,7 @@ public:
     UnitConverter::unitType errorUnit; // dimension of the unit (mm, m ,...)
     UnitConverter::dimensionType errorDimension; // unit type of the error (metric, angular, ...)
 
-    QStringList description;
+    QString description;
 
     QStringList distributions; //distributions in which the error could be determined at random
 

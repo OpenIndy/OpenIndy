@@ -5,10 +5,12 @@
 #include <QList>
 #include <QStringList>
 #include <QStringListModel>
-#include <simulationmodel.h>
-#include <systemdbmanager.h>
-#include <pluginloader.h>
-#include <simulationerrortablemodel.h>
+#include "simulationmodel.h"
+#include "systemdbmanager.h"
+#include "pluginloader.h"
+#include "simulationerrortablemodel.h"
+#include "oifeaturestate.h"
+#include "featureupdater.h"
 
 class SimulationController : public QObject
 {
@@ -16,16 +18,24 @@ class SimulationController : public QObject
 public:
     explicit SimulationController(QObject *parent = 0);
 
+    SimulationModel* actualSimulation;
+    
     QList<SimulationPlugin> simulations;
     QStringListModel* availableSimulations;
     SimulationErrorTableModel *errorTableModel;
 
 
+
+
 signals:
+    void recalcAllFeature();
 
 public slots:
     void setUpSimulations();
-    SimulationModel* getSimulationAt(int i);
+    void setSimulationAt(int i);
+    void recalcAll();
+    
+    
 
 
 

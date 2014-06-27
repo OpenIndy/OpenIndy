@@ -145,6 +145,7 @@ public slots:
     void startChangeMotorState();
     void startCustomAction(QString s);
 
+    void recalcAll();
     void recalcActiveFeature();
     void recalcFeature(Feature *f);
     void recalcTrafoParam(TrafoParam *tp);

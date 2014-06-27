@@ -371,6 +371,12 @@ void Controller::startCustomAction(QString s)
     OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
 }
 
+void Controller::recalcAll()
+{
+   myFeatureUpdater.recalcAll();
+   emit refreshGUI();
+}
+
 /*!
  * \brief Controller::recalcActiveFeature
  * Call recalcFeature function for active feature

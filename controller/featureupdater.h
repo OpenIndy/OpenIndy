@@ -31,15 +31,17 @@ public:
     //static void sortFeatures();
     static void checkForNominals(FeatureWrapper *fw);
     static void addNominalToActual(FeatureWrapper *fw);
+
 signals:
     
 public slots:
+    void recalcAll();
     void recalcFeature(Feature *f);
     void recalcTrafoParam(TrafoParam *tp);
     void recalcFeatureSet();
     void switchCoordinateSystem(CoordinateSystem *to);
     TrafoParam* findTrafoParam(CoordinateSystem *searchSystem, QList<TrafoParam *> trafoParams);
-    void recalcAll();
+
 
     //bool deleteFeature(FeatureWrapper *myFeatureWrapper);
 

@@ -163,7 +163,8 @@ SOURCES += \
     src/simulation/uncertaintycomponent.cpp \
     controller/simulationcontroller.cpp \
     ui/histogram.cpp \
-    ui/simulationerrortablemodel.cpp
+    ui/simulationerrortablemodel.cpp \
+    ui/simulationdelegate.cpp
 
 
 HEADERS  += \
@@ -293,7 +294,8 @@ HEADERS  += \
     src/simulation/uncertaintycomponent.h \
     controller/simulationcontroller.h \
     ui/histogram.h \
-    ui/simulationerrortablemodel.h
+    ui/simulationerrortablemodel.h \
+    ui/simulationdelegate.h
 
 
 FORMS    += ui/mainwindow.ui \

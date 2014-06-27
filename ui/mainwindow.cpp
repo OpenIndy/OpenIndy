@@ -200,6 +200,9 @@ void MainWindow::setConnects(){
     //when user edits some nominal values of the active feature then tell the Controller to update the feature
     connect(&this->nominalDialog, SIGNAL(sendNominalValues(NominalAttributeExchange)),&this->control,SLOT(getNominalValues(NominalAttributeExchange)));
 
+    //simulations
+    connect(&this->simulationWidget.control,SIGNAL(recalcAllFeature()),&this->control,SLOT(recalcAll()));
+
 }
 
 /*!
