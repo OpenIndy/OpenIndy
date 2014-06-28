@@ -7,6 +7,7 @@
 
 #include "p_simpletemperaturecompensation.h"
 #include "p_extendedtemperaturecompensation.h"
+#include "p_helmert6param.h"
 
 class OiTestTempComp : public QObject
 {

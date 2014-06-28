@@ -25,12 +25,10 @@ public:
     QMap<QString, QStringList> getStringParameter();
     QMap<QString, double> getDoubleParameter();
 
-    void calcExpansion(TrafoParam &tp, ScalarEntityTemperature* SET);
+    void calcExpansion(TrafoParam &tp);
     void calcAccuracy(TrafoParam &tp, double tempAccuracy, double expansion);
 
     QStringList getResultProtocol();
-
-    ScalarEntityTemperature* getScalarEntityTemperature();
 
 private:
     QString protActTemp;

@@ -11,11 +11,12 @@ ExtendedTemperatureCompensation::ExtendedTemperatureCompensation()
 PluginMetaData *ExtendedTemperatureCompensation::getMetaData()
 {
     PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "ExtendedTempComp";
+    metaData->name = "9ParameterHelmertTransformation";
     metaData->pluginName = "OpenIndy Default Plugin";
     metaData->author = "jw";
-    metaData->description = QString("%1 %2").arg("This function is a helmert transformation with temperature compensation.")
-            .arg("it calculates 3 scales, translation and rotation. You need at least 3 common points to calculate.");
+    metaData->description = QString("%1 %2 %3").arg("This is a 9 parameter helmert transformation. You can claculate the")
+            .arg("parameters by the given points (at least 3) or by the given points and an additional temperature input.")
+            .arg("So in the second case the scale gets approximated by the input actual and reference temperature and the material.");
     metaData->iid = "de.openIndy.Plugin.Function.SystemTransformation.v001";
     return metaData;
 }
@@ -92,7 +93,7 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
     bool result = false;
 
     //transform loc (start system) to "pseudo"-loc system
-    //transformation with previosly approximated translation and rotation. No scale
+    //transformation with previosly approximated translation, rotation and scale
     this->preliminaryTransformation(); 
 
     //get rotation between pseudo loc and ref system
@@ -155,7 +156,7 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
     OiMat sxx = s0_post * s0_post * qxx;
 
 
-    //scales
+    //get previously calculated scales
     double sx = this->scale.getAt(0);
     double sy = this->scale.getAt(1);
     double sz = this->scale.getAt(2);
@@ -165,7 +166,7 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
     tp.setRotation(this->rotation.getAt(0)+x0.getAt(0),this->rotation.getAt(1)+x0.getAt(1),this->rotation.getAt(2)+x0.getAt(2));
     tp.setScale(sx*x0.getAt(3),sy*x0.getAt(4),sz*x0.getAt(5));
 
-    //calculate the representing temperature out of each scale
+    //calculate the representing temperature out of each scale to show in the protocoll
     if(useTemp){
         double tx = (((sx*x0.getAt(3))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
         this->protocol.append(QString("scale x representing an expansion of " + QString::number(tx,'f',2)+"[°C]"));
@@ -177,47 +178,48 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
     tp.generateHomogenMatrix();
     result = true;
 
+
     return result;
 }
 
 /*!
- * \brief getStringParameter gets all additionally needed string parameters for the function
- * \return
- */
+* \brief getStringParameter gets all additionally needed string parameters for the function
+* \return
+*/
 QMap<QString, QStringList> ExtendedTemperatureCompensation::getStringParameter()
 {
-    QMap<QString, QStringList> result;
-        QString key ="material";
-        QStringList value;
-        value = Materials::getMaterials();
-        result.insert(key,value);
-        key = "useTemperature";
-        value.clear();
-        value.append("false");
-        value.append("true");
-        result.insert(key,value);
+QMap<QString, QStringList> result;
+    QString key ="material";
+    QStringList value;
+    value = Materials::getMaterials();
+    result.insert(key,value);
+    key = "useTemperature";
+    value.clear();
+    value.append("false");
+    value.append("true");
+    result.insert(key,value);
 
-        return result;
+    return result;
 }
 
 /*!
- * \brief getDoubleParameter gets all additionally needed double parameters for the function
- * \return
- */
+* \brief getDoubleParameter gets all additionally needed double parameters for the function
+* \return
+*/
 QMap<QString, double> ExtendedTemperatureCompensation::getDoubleParameter()
 {
-    QMap<QString,double> result;
-        QString key = "referenceTemperature";
-        double value = 20.0;
-        result.insert(key,value);
-        key = "actualTemperature";
-        value = 20.0;
-        result.insert(key,value);
-        key = "temperatureAccuracy";
-        value = 0.1;
-        result.insert(key, value);
+QMap<QString,double> result;
+    QString key = "referenceTemperature";
+    double value = 20.0;
+    result.insert(key,value);
+    key = "actualTemperature";
+    value = 20.0;
+    result.insert(key,value);
+    key = "temperatureAccuracy";
+    value = 0.1;
+    result.insert(key, value);
 
-        return result;
+    return result;
 }
 
 /*!
@@ -302,8 +304,6 @@ void ExtendedTemperatureCompensation::getExtraParameter()
     }
 }
 
-
-
 /*!
  * \brief approxTranslation calculates approximated translation of given local and reference system.
  * \param points
@@ -311,10 +311,10 @@ void ExtendedTemperatureCompensation::getExtraParameter()
  */
 OiVec ExtendedTemperatureCompensation::approxTranslation(OiVec rot, OiVec s)
 {
-    //get rotation matrix of approxx values
+    //get rotation matrix of approx values
     OiMat r = this->getRotationMatrix(rot);
 
-    //get scale matrix
+    //get scale matrix of approx valies
     OiMat scaleMat = this->scaleMatrix(s);
 
     //centroid point of reference system
@@ -325,7 +325,7 @@ OiVec ExtendedTemperatureCompensation::approxTranslation(OiVec rot, OiVec s)
     OiVec centroidPloc = this->calcCentroidPoint(this->locSystem);
     centroidPloc.add(1.0);
 
-    //calc translation
+    //rotate and scale local centroid point to reference system
     OiVec tmp = centroidPloc;
     OiVec st = scaleMat*tmp;
     OiVec rst = r *st;
@@ -336,20 +336,22 @@ OiVec ExtendedTemperatureCompensation::approxTranslation(OiVec rot, OiVec s)
 }
 
 /*!
- * \brief ExtendedTemperatureCompensation::approxRotation calculates the rotation between the given local and reference system
+ * \brief approxRotation calculates the rotation between the given local and reference system
  * \param Translation t
  * \return
  */
 OiVec ExtendedTemperatureCompensation::approxRotation()
 {
-    //calculate approximated rotation angles with Drixxler algorithm
+    //calculate approximated rotation angles with Drixler algorithm
     //=> good approximation of preliminary transformation, so a rotation matrix with small angles can be used later at
-    // adjusting the parameters iterativ
+    //adjusting the parameters iterativ
 
     vector<OiVec> centroidCoords;
+    //get centroid coords
     centroidCoords.push_back(this->calcCentroidPoint(this->locSystem));
     centroidCoords.push_back(this->calcCentroidPoint(this->refSystem));
     if(centroidCoords.size() == 2){
+        //centroid reduced coords
         vector<OiVec> locC = this->centroidReducedCoord(locSystem, centroidCoords.at(0));
         vector<OiVec> refC = this->centroidReducedCoord(refSystem, centroidCoords.at(1));
         vector<OiMat> modelMatrices = this->modelMatrix(locC, refC);
@@ -374,63 +376,13 @@ OiVec ExtendedTemperatureCompensation::approxRotation()
 }
 
 /*!
- * \brief ExtendedTemperatureCompensation::approxScale calculates the scale depending on temperature
+ * \brief approxScale calculates the scale depending on temperature
  */
 OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
 {
     OiVec s(4);
 
-    OiVec locScale;
-    OiVec refScale;
-    double sLoc = 0.0;
-    double sRef = 0.0;
-/*
-    if(useTemp){
-        //get approx of scale from temperature and expansion coefficient
-        s.setAt(0,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
-        s.setAt(1,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
-        s.setAt(2,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
-        s.setAt(3,1.0);
-    }else{
-        locScale.add(0.0);
-        locScale.add(0.0);
-        locScale.add(0.0);
-        locScale.add(0.0);
-
-        refScale.add(0.0);
-        refScale.add(0.0);
-        refScale.add(0.0);
-        refScale.add(0.0);
-
-        //scale from distance between two points in each system
-        int count = this->locSystem.count();
-        for(int i=0; i<count; i++){
-            //sum of distances in loc system
-            double x0 = this->locSystem.at(0).getAt(0);
-            double y0 = this->locSystem.at(0).getAt(1);
-            double z0 = this->locSystem.at(0).getAt(2);
-            double x1 = this->locSystem.at(i).getAt(0);
-            double y1 = this->locSystem.at(i).getAt(1);
-            double z1 = this->locSystem.at(i).getAt(2);
-
-            sLoc += qSqrt((x0-x1)*(x0-x1)+(y0-y1)*(y0-y1)+(z0-z1)*(z0-z1));
-
-            //sum of distances in ref system
-            x0 = this->refSystem.at(0).getAt(0);
-            y0 = this->refSystem.at(0).getAt(1);
-            z0 = this->refSystem.at(0).getAt(2);
-            x1 = this->refSystem.at(i).getAt(0);
-            y1 = this->refSystem.at(i).getAt(1);
-            z1 = this->refSystem.at(i).getAt(2);
-
-            sRef += qSqrt((x0-x1)*(x0-x1)+(y0-y1)*(y0-y1)+(z0-z1)*(z0-z1));
-        }
-        s.setAt(0,sRef/sLoc);
-        s.setAt(1,sRef/sLoc);
-        s.setAt(2,sRef/sLoc);
-        s.setAt(3,1.0);
-    }
-    return s;*/
+    //get the current rotation matrix
     OiMat rotMat;
     try{
        rotMat = this->getRotationMatrix(rot).inv(); // try to calc the inverse
@@ -441,11 +393,11 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
     }
     QList<OiVec> tmpRefList;
 
+    //rotate the reference system to local system
     for(int i=0; i<this->refSystem.size(); i++){
         OiVec tmpRef = rotMat*this->refSystem.at(i);
         tmpRefList.append(tmpRef);
     }
-
 
     if(useTemp){
         //get approx of scale from temperature and expansion coefficient
@@ -453,47 +405,55 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
         s.setAt(1,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
         s.setAt(2,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
         s.setAt(3,1.0);
-    }else{
+    }else{  //get scale from differces in distance components (x, y, z)
+            //between two points in each system
         double sx = 0.0;
         double sy = 0.0;
         double sz = 0.0;
 
         for(int i=1; i<this->locSystem.size(); i++){
+            //get x y and z component of vector from point 0 to i in loc system
             double sxLoc = qFabs(locSystem.at(0).getAt(0)-locSystem.at(i).getAt(0));
             double syLoc = qFabs(locSystem.at(0).getAt(1)-locSystem.at(i).getAt(1));
             double szLoc = qFabs(locSystem.at(0).getAt(2)-locSystem.at(i).getAt(2));
 
+            //get x y and z component of vector from point 0 to i in ref system
             double sxRef = qFabs(tmpRefList.at(0).getAt(0)-tmpRefList.at(i).getAt(0));
             double syRef = qFabs(tmpRefList.at(0).getAt(1)-tmpRefList.at(i).getAt(1));
             double szRef = qFabs(tmpRefList.at(0).getAt(2)-tmpRefList.at(i).getAt(2));
 
-            if(sxLoc == 0.0 || sxRef == 0.0){
-                sx += 1.0;
-            }else if(sxRef/sxLoc == 0.0){
-                sx += 1.0;
+
+            //check if the scale from current two points is bigger than the scale from last points
+            //if yes, set current scale as actual scale for the coordinate component
+
+            //0.005 is criteria, because of noisy measurements
+            if(sxLoc <= 0.0005 || sxRef <= 0.0005){
+
             }else{
-                sx += (sxRef/sxLoc);
+                if(sxRef/sxLoc > sx){sx = (sxRef/sxLoc);}
             }
 
-            if(syLoc == 0.0 || syRef == 0.0){
-                sy += 1.0;
-            }else if(syRef/syLoc == 0.0){
-                sy += 1.0;
+            if(syLoc <= 0.0005 || syRef <=0.0005){
+
             }else{
-                sy += (syRef/syLoc);
+                if(syRef/syLoc > sy){sy = (syRef/syLoc);}
             }
 
-            if(szLoc == 0.0 || szRef == 0.0){
-                sz += 1.0;
-            }else if(szRef/szLoc == 0.0){
-                sz += 1.0;
+            if(szLoc <= 0.0005 || szRef <= 0.0005){
+
             }else{
-                sz +=(sxRef/sxLoc);
+                if(szRef/szLoc > sz){sz = (szRef/szLoc);}
             }
         }
-        s.setAt(0,sx/(this->locSystem.size()-1));
-        s.setAt(1,sy/(this->locSystem.size()-1));
-        s.setAt(2,sz/(this->locSystem.size()-1));
+        //if no scale could be calculated (noisy measurements),
+        //set this scale component to 1.000000
+        if(sx == 0.0){sx = 1.0;}
+        if(sy == 0.0){sy = 1.0;}
+        if(sz == 0.0){sz = 1.0;}
+
+        s.setAt(0,sx);
+        s.setAt(1,sy);
+        s.setAt(2,sz);
         s.setAt(3,1.0);
     }
 
@@ -551,7 +511,7 @@ OiVec ExtendedTemperatureCompensation::fillLVector()
 
 /*!
  * \brief fillAMatrix fills the A matrix
- * rotation x, rotationy, rotation z, temp x, temp y, temp z, tx, ty, tz
+ * rotation x, rotationy, rotation z, scale x, scale y, scale z, tx, ty, tz
  * \param x0
  * \return
  */
@@ -560,7 +520,7 @@ OiMat ExtendedTemperatureCompensation::fillAMatrix(OiVec x0)
     OiMat a(locSystem.length()*3,9);
 
     //loc system is transformed with approx values of translation and rotation. Scale is always near 1.00000, so
-    //this should be approxes eanough for the pre transformation.
+    //this should be approxed enough for the pre transformation.
     //That´s why I can use the rotation matrix for small angles.
     for(int row=0; row<locSystem.length()*3; row++){
         if((row+1) % 3 == 1){ // x
@@ -599,7 +559,7 @@ OiMat ExtendedTemperatureCompensation::fillAMatrix(OiVec x0)
 }
 
 /*!
- * \brief ExtendedTemperatureCompensation::rotationMatrix sets up the rotation matrix
+ * \brief rotationMatrix sets up the rotation matrix
  * \return
  */
 OiMat ExtendedTemperatureCompensation::getRotationMatrix(OiVec rot)
@@ -635,6 +595,8 @@ void ExtendedTemperatureCompensation::preliminaryTransformation()
 {
     //get rotation matrix of current rotation angles
     OiMat rot = this->getRotationMatrix(this->rotation);
+
+    //get scale matrix of current scales
     OiMat s = this->scaleMatrix(this->scale);
 
     QList<OiVec> tmpLoc;
@@ -657,7 +619,7 @@ void ExtendedTemperatureCompensation::preliminaryTransformation()
 }
 
 /*!
- * \brief ExtendedTemperatureCompensation::scaleMatrix generates a matrix with the 3 scales on the main diagonal
+ * \brief scaleMatrix generates a matrix with the 3 scales on the main diagonal
  * \return
  */
 OiMat ExtendedTemperatureCompensation::scaleMatrix(OiVec s)
@@ -684,7 +646,7 @@ OiMat ExtendedTemperatureCompensation::scaleMatrix(OiVec s)
 }
 
 /*!
- * \brief ExtendedTemperatureCompensation::fillL0Vector fills the l0 vector
+ * \brief fillL0Vector fills the l0 vector
  * \param x0
  * \return
  */
