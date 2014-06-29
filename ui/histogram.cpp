@@ -14,16 +14,29 @@ void Histogram::paintEvent(QPaintEvent *event)
     //#####testdata######
     QVector<double> _bins;
     int _heightMax = 1;
-    for(int i = 0; i<10;i++){
+    /*for(int i = 0; i<10;i++){
         double rv = (double) rand() / (double) RAND_MAX;
-           /*double F = (3 - 1) / (4 - 1);
-           double rv;
-           if (U <= F)
-            rv =  1 + sqrt(U * (4 - 1) * (3 - 1));
-           else
-            rv = 4 - sqrt((1 - U) * (4 - 1) * (4 - 3));*/
         _bins.append(rv);
+    }*/
+
+
+    Geometry* g = NULL;
+
+    foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
+            if(f->getGeometry() != NULL){
+                g = f->getGeometry();
+                break;
+            }
     }
+
+    if(g != NULL){
+        Statistic s = g->getStatistic();
+
+        foreach(OiVec v,s.simulationData.xyz){
+            _bins.append(v.getAt(0));
+        }
+    }
+
     //#################
 
     QRect viewPort = rect();

@@ -8,7 +8,12 @@ SimulationController::SimulationController(QObject *parent) :
 
     errorTableModel = new SimulationErrorTableModel();
 
+    myUpdater = NULL;
+}
 
+void SimulationController::setFeatureUpdater(FeatureUpdater *f)
+{
+    this->myUpdater = f;
 }
 
 void SimulationController::setUpSimulations()
@@ -33,18 +38,41 @@ void SimulationController::recalcAll()
     actualSimulation->setGivenUncertainties(u);
 
 
+
+    for(int i = 0; i <101; i++){
+
     foreach(Station *s, OiFeatureState::getStations()){
         foreach(Observation *o, s->coordSys->getObservations()){
             OiMat A;
             o->myReading->restoreBackup();
+
+            if(i < 100){
             actualSimulation->distort(o->myReading,A);
+            }
+
             o->myOriginalXyz = Reading::toCartesian(o->myReading->rPolar.azimuth,o->myReading->rPolar.zenith,o->myReading->rPolar.distance);
             o->myXyz = Reading::toCartesian(o->myReading->rPolar.azimuth,o->myReading->rPolar.zenith,o->myReading->rPolar.distance);
+
+            Console::addLine("x", o->myXyz.getAt(0));
         }
+      }
+
+
+
+        myUpdater->recalcAll();
+
+        if(i < 100){
+            foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
+                if(f->getGeometry() != NULL){
+                    f->getGeometry()->saveSimulationData();
+                }
+            }
+        }
+
+        emit counter(i);
     }
 
 
-    emit recalcAllFeature();
 
     /*// safe readings/obs in a QMap
     //logic for shuffling the observations

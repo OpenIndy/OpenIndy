@@ -6,6 +6,13 @@
 #include "oimat.h"
 #include "residual.h"
 
+struct SimulationData{
+    QList<OiVec> xyz;
+    QList<OiVec> ijk;
+    QList<double> radius;
+    QList<double> scalar;
+};
+
 /*!
  * \brief The Statistic class
  * Class that calculates and contains all the statistics of some elements.
@@ -27,6 +34,8 @@ public:
     OiVec v;
 
     QList<Residual> displayResiduals;
+
+    SimulationData simulationData;
 
     bool isValid;
 

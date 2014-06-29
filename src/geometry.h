@@ -54,6 +54,8 @@ public:
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
+    virtual bool saveSimulationData() = 0;
+
 signals:
     void geomIsCommonChanged(int featureId);
     void geomMyNominalsChanged(int featureId);

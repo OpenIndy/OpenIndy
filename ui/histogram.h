@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QToolTip>
 #include <QMouseEvent>
+#include "oifeaturestate.h"
 
 class Histogram : public QWidget
 {

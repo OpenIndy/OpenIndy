@@ -65,6 +65,11 @@ ElementDependencies PointCloud::fromOpenIndyXML(QXmlStreamReader &xml){
     return dependencies;
 }
 
+bool PointCloud::saveSimulationData()
+{
+    return false;
+}
+
 //TODO change functions with unitconverter and String format
 
 QString PointCloud::getDisplayX() const{

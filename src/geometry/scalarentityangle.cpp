@@ -132,6 +132,12 @@ ElementDependencies ScalarEntityAngle::fromOpenIndyXML(QXmlStreamReader &xml){
     return dependencies;
 }
 
+bool ScalarEntityAngle::saveSimulationData()
+{
+    this->myStatistic.simulationData.scalar.append(this->angle);
+    return true;
+}
+
 /*!
  * \brief ScalarEntityAngle::getAngle
  */

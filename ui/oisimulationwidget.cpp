@@ -15,7 +15,15 @@ OiSimulationWidget::OiSimulationWidget(QWidget *parent) :
     SimulationDelegate *errorDelegate = new SimulationDelegate();
     this->ui->tableView_sensor->setItemDelegate(errorDelegate);
 
+    this->ui->progressBar->setMaximum(100);
+    this->ui->progressBar->setMinimum(0);
 
+    connect(this,SIGNAL(startSimulation()),&this->control,SLOT(recalcAll()));
+    connect(&this->control,SIGNAL(counter(int)),this->ui->progressBar,SLOT(setValue(int)));
+
+    control.moveToThread(&workerThread);
+
+    workerThread.start();
 
 }
 
@@ -24,11 +32,17 @@ OiSimulationWidget::~OiSimulationWidget()
     delete ui;
 }
 
+void OiSimulationWidget::setFeatureUpdater(FeatureUpdater *f)
+{
+    control.setFeatureUpdater(f);
+}
+
 
 void OiSimulationWidget::on_pushButton_startSimulation_clicked()
 {
 
-    control.recalcAll();
+    emit startSimulation();
+    //control.recalcAll();
 }
 
 void OiSimulationWidget::showEvent(QShowEvent *event)

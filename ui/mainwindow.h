@@ -284,6 +284,8 @@ private slots:
 
     void on_actionSensor_real_time_data_triggered();
 
+    void on_actionSimulation_triggered();
+
 private:
     Ui::MainWindow *ui;
 

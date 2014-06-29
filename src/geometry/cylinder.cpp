@@ -76,3 +76,8 @@ ElementDependencies Cylinder::fromOpenIndyXML(QXmlStreamReader &xml){
 
     return dependencies;
 }
+
+bool Cylinder::saveSimulationData()
+{
+    return false;
+}

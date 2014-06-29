@@ -53,6 +53,12 @@ ElementDependencies ScalarEntityMeasurementSeries::fromOpenIndyXML(QXmlStreamRea
     return dependencies;
 }
 
+bool ScalarEntityMeasurementSeries::saveSimulationData()
+{
+    this->myStatistic.simulationData.scalar.append(this->seriesValue);
+    return true;
+}
+
 double ScalarEntityMeasurementSeries::getSeriesValue() const{
     return this->seriesValue;
 }

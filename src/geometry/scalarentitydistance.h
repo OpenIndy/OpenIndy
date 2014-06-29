@@ -16,6 +16,8 @@ public:
     bool toOpenIndyXML(QXmlStreamWriter& stream);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
+    bool saveSimulationData();
+
     double getDistance() const;
     void setDistance(double distance);
 

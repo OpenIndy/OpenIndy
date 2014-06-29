@@ -12,6 +12,7 @@
 #include "oifeaturestate.h"
 #include "featureupdater.h"
 
+
 class SimulationController : public QObject
 {
     Q_OBJECT
@@ -28,14 +29,16 @@ public:
 
 
 signals:
-    void recalcAllFeature();
+    void counter(int i);
 
 public slots:
+    void setFeatureUpdater(FeatureUpdater* f);
     void setUpSimulations();
     void setSimulationAt(int i);
     void recalcAll();
     
-    
+private:
+    FeatureUpdater* myUpdater;
 
 
 

@@ -135,3 +135,25 @@ QString Circle::getDisplayJ() const{
 QString Circle::getDisplayK() const{
     return QString::number(this->ijk.getAt(2),'f',6);
 }
+
+bool Circle::saveSimulationData()
+{
+    OiVec tmpXyz(3);
+
+    tmpXyz.setAt(0,this->xyz.getAt(0));
+    tmpXyz.setAt(1,this->xyz.getAt(1));
+    tmpXyz.setAt(2,this->xyz.getAt(2));
+
+    OiVec tmpIjk(3);
+
+    tmpIjk.setAt(0,this->ijk.getAt(0));
+    tmpIjk.setAt(1,this->ijk.getAt(1));
+    tmpIjk.setAt(2,this->ijk.getAt(2));
+
+    this->myStatistic.simulationData.xyz.append(tmpXyz);
+    this->myStatistic.simulationData.ijk.append(tmpIjk);
+
+    this->myStatistic.simulationData.radius.append(this->radius);
+
+    return true;
+}

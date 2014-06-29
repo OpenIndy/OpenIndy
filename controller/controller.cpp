@@ -1706,6 +1706,11 @@ QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
     return result;
 }
 
+FeatureUpdater *Controller::getFeatureUpdater()
+{
+    return &myFeatureUpdater;
+}
+
 /*!
  * \brief Controller::setUpFeatureGroupsModel
  */

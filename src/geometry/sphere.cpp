@@ -171,6 +171,21 @@ ElementDependencies Sphere::fromOpenIndyXML(QXmlStreamReader &xml){
     return dependencies;
 }
 
+bool Sphere::saveSimulationData()
+{
+    OiVec tmpXyz(3);
+
+    tmpXyz.setAt(0,this->xyz.getAt(0));
+    tmpXyz.setAt(1,this->xyz.getAt(1));
+    tmpXyz.setAt(2,this->xyz.getAt(2));
+
+    this->myStatistic.simulationData.xyz.append(tmpXyz);
+
+    this->myStatistic.simulationData.radius.append(this->radius);
+
+    return true;
+}
+
 QString Sphere::getDisplayX() const{
     return QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }

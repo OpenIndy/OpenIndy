@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QDebug>
+#include <QThread>
 #include "featureupdater.h"
 #include "oifeaturestate.h"
 #include "simulationcontroller.h"
@@ -21,12 +22,18 @@ public:
     ~OiSimulationWidget();
 
     SimulationController control;
+    QThread workerThread;
+
+    void setFeatureUpdater(FeatureUpdater *f);
 
 private slots:
     void on_pushButton_startSimulation_clicked();
     void showEvent(QShowEvent * event);
 
     void on_listView_simulations_clicked(const QModelIndex &index);
+
+signals:
+    void startSimulation();
 
 private:
     Ui::OiSimulationWidget *ui;

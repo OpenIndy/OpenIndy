@@ -191,6 +191,26 @@ ElementDependencies Plane::fromOpenIndyXML(QXmlStreamReader &xml){
     return dependencies;
 }
 
+bool Plane::saveSimulationData()
+{
+    OiVec tmpXyz(3);
+
+    tmpXyz.setAt(0,this->xyz.getAt(0));
+    tmpXyz.setAt(1,this->xyz.getAt(1));
+    tmpXyz.setAt(2,this->xyz.getAt(2));
+
+    OiVec tmpIjk(3);
+
+    tmpIjk.setAt(0,this->ijk.getAt(0));
+    tmpIjk.setAt(1,this->ijk.getAt(1));
+    tmpIjk.setAt(2,this->ijk.getAt(2));
+
+    this->myStatistic.simulationData.xyz.append(tmpXyz);
+    this->myStatistic.simulationData.ijk.append(tmpIjk);
+
+    return true;
+}
+
 QString Plane::getDisplayX() const{
     return QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }

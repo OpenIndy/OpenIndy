@@ -53,6 +53,12 @@ ElementDependencies ScalarEntityTemperature::fromOpenIndyXML(QXmlStreamReader &x
     return dependencies;
 }
 
+bool ScalarEntityTemperature::saveSimulationData()
+{
+    this->myStatistic.simulationData.scalar.append(this->temperature);
+    return true;
+}
+
 void ScalarEntityTemperature::setTemperature(double temperature){
     this->temperature = temperature;
 }
