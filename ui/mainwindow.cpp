@@ -1129,31 +1129,46 @@ void MainWindow::on_actionNominal_geometry_triggered()
 void MainWindow::on_actionSave_as_triggered(){
     try{
 
-        /*QFileDialog dialog;
+        QFileDialog dialog;
         dialog.setFileMode(QFileDialog::Directory);
         dialog.setOption(QFileDialog::ShowDirsOnly);
-        dialog.show();*/
+        if(dialog.exec()){
 
-        QString projectFolderPath = QFileDialog::getSaveFileName(
-                           this,
-                           "Choose a filename to save under",
-                           "oiProject");
+            QStringList selectedFolders = dialog.selectedFiles();
+            if(selectedFolders.size() == 1){ //if the user selected a folder
 
-        //QString projectFolderPath = dialog.getOpenFileName();
+                //TODO change OiProject to the name of the currently opened project
 
-        QDir projectFolder(projectFolderPath);
-        projectFolder.mkpath(projectFolder.absolutePath());
+                //get the selected file path and create a new folder
+                QString selectedFolder = selectedFolders.at(0);
+                QString projectFolderPath = selectedFolder.append(QString("/%1").arg("OiProject"));
+                QDir projectFolder(projectFolderPath);
+                projectFolder.mkpath(projectFolder.absolutePath());
 
-        QFileInfo info(projectFolderPath);
+                QFileInfo info(projectFolderPath);
 
-        QString projectName = info.fileName();
+                QString projectName = "OiProject";//info.fileName();
 
-        QString fileName = projectFolder.absolutePath().append(QString("/%1").arg(projectName));
+                QString filePath = projectFolder.absolutePath().append(QString("/%1.xml").arg(projectName));
 
-        QFile *projectFile = new QFile(fileName);
+                QFile *projectFile = new QFile(filePath);
 
-        OiProjectData *projectData = new OiProjectData();
-        projectData->setDevice(projectFile);
+                OiProjectData projectData;
+                projectData.setDevice(projectFile);
+
+                bool isSuccessfull = this->control.saveProject(projectData);
+
+                if(isSuccessfull){
+                    QMessageBox::information(this,"save data", "Saving the data was successful.");
+                }else{
+                    QMessageBox::information(this,"save data", "Saving the data was not successful.");
+                }
+
+            }else{
+                Console::addLine("No folder selected");
+            }
+
+        }
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -1211,7 +1226,7 @@ void MainWindow::on_actionOpen_triggered()
     data.projectName = info.fileName();
 
     //OiDataImporter::loadFromXML(control.features,file);
-    bool isSuccessfull = oiProjectExchanger::loadProject(data);
+    bool isSuccessfull = OiProjectExchanger::loadProject(data);
 
     if(isSuccessfull){
         QMessageBox::information(this,"load project", "load "+info.fileName()+ " was successful.");

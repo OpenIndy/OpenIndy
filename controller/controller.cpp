@@ -1369,18 +1369,28 @@ void Controller::setFunctionConfiguration(int functionIndex, FunctionConfigurati
 
 /*!
  * \brief Controller::saveProject
- * Save the current project
+ * \param projectData
+ * \return
  */
-void Controller::saveProject(OiProjectData *projectData){
+bool Controller::saveProject(OiProjectData &projectData){
+    try{
 
+        bool isSuccessfull = false;
+        isSuccessfull = OiProjectExchanger::saveProject(projectData);
+        return isSuccessfull;
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+        return false;
+    }
 }
 
 /*!
- * \brief Controller::loadProjectData
- * Load
+ * \brief Controller::loadProject
  * \param data
+ * \return
  */
-void Controller::loadProject(OiProjectData &data){
+bool Controller::loadProject(OiProjectData &projectData){
 
     /*features.clear();
     stations.clear();
@@ -1393,6 +1403,8 @@ void Controller::loadProject(OiProjectData &data){
     if(features.size() > 0 && stations.size() > 0){
         refreshGUI();
     }*/
+
+    return false;
 
 }
 

@@ -56,6 +56,7 @@
 #include "nominalattributeexchange.h"
 
 #include "oifeaturestate.h"
+#include "oiprojectexchanger.h"
 
 class Feature;
 class CoordinateSystem;
@@ -173,8 +174,8 @@ public slots:
     void removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex); //remove element from the active function
 
     //save & load an OpenIndy project
-    void saveProject(OiProjectData *projectData);
-    void loadProject(OiProjectData &data);
+    bool saveProject(OiProjectData &projectData);
+    bool loadProject(OiProjectData &projectData);
 
     void setFunctionConfiguration(int functionIndex, FunctionConfiguration config);
 

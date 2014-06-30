@@ -20,10 +20,10 @@
  * a project from a openindyXML.
  */
 
-class oiProjectExchanger
+class OiProjectExchanger
 {
 public:
-    oiProjectExchanger();
+    OiProjectExchanger();
 
     static bool saveProject(OiProjectData &data);
     static bool loadProject(OiProjectData &data);

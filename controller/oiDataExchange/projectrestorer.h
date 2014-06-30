@@ -7,11 +7,13 @@
 #include <QFile>
 #include <QDateTime>
 #include <QtAlgorithms>
+
 #include "oiprojectdata.h"
 #include "function.h"
 #include "systemdbmanager.h"
 #include "pluginloader.h"
 #include "console.h"
+#include "oifeaturestate.h"
 
 class ProjectRestorer : public QObject
 {

@@ -5,78 +5,92 @@ ProjectRestorer::ProjectRestorer(QObject *parent) :
 {
 }
 
+/*!
+ * \brief ProjectRestorer::saveProject
+ * \param data
+ * \return
+ */
 bool ProjectRestorer::saveProject(OiProjectData &data){
 
-    if (!data.getDevice()->open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        Console::addLine("can't open  device");
+    if (!data.getDevice()->open(QIODevice::WriteOnly | QIODevice::Text)){
+        Console::addLine("Cannot open the device");
         return false;
     }
 
-    Console::addLine("saving project");
+    Console::addLine("saving project...");
+
     this->clearAllLists();
 
     //get current date and time
     QDateTime dateTime = QDateTime::currentDateTime();
     QString dateTimeString = dateTime.toString(Qt::ISODate);
 
-
     QXmlStreamWriter stream(data.getDevice());
 
     stream.setAutoFormatting(true);
     stream.writeStartDocument();
 
+    //write general project information
     stream.writeStartElement("oiProjectData");
     stream.writeAttribute("name", data.projectName);
     stream.writeAttribute("date", dateTimeString);
     stream.writeAttribute("idcount", QString::number(Configuration::idCount));
 
+    //write active coordinate system
     stream.writeStartElement("member");
     stream.writeAttribute("type", "activeCoordinatesystem");
-    stream.writeAttribute("ref", QString::number(data.activeCoordSystem->getId()));
+    int activeSystem = -1;
+    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
+        activeSystem = OiFeatureState::getActiveCoordinateSystem()->getId();
+    }
+    stream.writeAttribute("ref", QString::number(activeSystem));
     stream.writeEndElement();
 
-    //sort and seperate features
     Console::addLine("sort and seperate features");
 
-    for(int i = 0; i<data.features.size();i++){
+    //Helper to save the stations's positions as a point feature (delete later)
+    QList<FeatureWrapper *> stationPositions;
 
-     if(data.features.at(i)->getGeometry() != NULL ){
+    //iterate through all features of the current project and save them into lists
+    //so that the features in the XML are ordered by feature type
+    const QList<FeatureWrapper *> myFeatures = OiFeatureState::getFeatures();
+    for(int i = 0; i < myFeatures.size();i++){
 
-        this->geometries.append(data.features.at(i));
+        if(myFeatures.at(i)->getGeometry() != NULL ){ //geometries
 
-     }else if(data.features.at(i)->getCoordinateSystem() != NULL){
+            this->geometries.append(myFeatures.at(i));
 
-        this->coordSystems.append(data.features.at(i)->getCoordinateSystem());
+        }else if(myFeatures.at(i)->getCoordinateSystem() != NULL){ //coordinate systems
 
-      }else if (data.features.at(i)->getStation() != NULL){
+            this->coordSystems.append(myFeatures.at(i)->getCoordinateSystem());
 
-         this->stations.append(data.features.at(i)->getStation());
+        }else if (myFeatures.at(i)->getStation() != NULL){ //stations
 
-         this->coordSystems.append(data.features.at(i)->getStation()->coordSys);
+            this->stations.append(myFeatures.at(i)->getStation());
+            this->coordSystems.append(myFeatures.at(i)->getStation()->coordSys);
 
-         FeatureWrapper *fwStationPosition = new FeatureWrapper();
-         fwStationPosition->setPoint(data.features.at(i)->getStation()->position);
+            FeatureWrapper *fwStationPosition = new FeatureWrapper();
+            fwStationPosition->setPoint(myFeatures.at(i)->getStation()->position);
+            stationPositions.append(fwStationPosition);
+            this->geometries.append(fwStationPosition);
 
-         this->geometries.append(fwStationPosition);
+        }else if(myFeatures.at(i)->getTrafoParam() != NULL){ //trafo params
 
-      }else if(data.features.at(i)->getTrafoParam() != NULL){
+            this->trafoParams.append(myFeatures.at(i)->getTrafoParam());
 
-         this->trafoParams.append(data.features.at(i)->getTrafoParam());
+        }
 
-       }
     }
 
     //write stations to xml
-    Console::addLine("write stations to xml");
+    Console::addLine("write stations to xml...");
     foreach(Station* s, this->stations){
         s->toOpenIndyXML(stream);
     }
 
     //write coordnatesystem to xml
-     Console::addLine("write coordinatesystems to xml");
+    Console::addLine("write coordinatesystems to xml...");
     foreach(CoordinateSystem* c, this->coordSystems){
-
         c->toOpenIndyXML(stream);
 
         //harvest all observations
@@ -86,19 +100,19 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
     }
 
     //write all trafoParam to xml
-     Console::addLine("write transformationparamters to xml");
+    Console::addLine("write transformationparamters to xml...");
     foreach(TrafoParam* t, this->trafoParams){
         t->toOpenIndyXML(stream);
     }
 
     //write all geometries to xml
-     Console::addLine("write geometries to xml");
+     Console::addLine("write geometries to xml...");
     foreach(FeatureWrapper* fw, this->geometries){
         fw->getGeometry()->toOpenIndyXML(stream);
     }
 
     //write all observations to xml
-     Console::addLine("write observations to xml");
+    Console::addLine("write observations to xml...");
     foreach(Observation* o, this->observations){
         o->toOpenIndyXML(stream);
     }
@@ -107,6 +121,11 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
     stream.writeEndDocument();
 
     data.getDevice()->close();
+
+    //delete station position helpers
+    foreach(FeatureWrapper *stationPosition, stationPositions){
+        delete stationPosition;
+    }
 
     Console::addLine("saving completed");
 
