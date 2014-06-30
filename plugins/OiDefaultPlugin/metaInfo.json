@@ -5,8 +5,8 @@
     "pluginVersion" : "0.0.1",
     "author"  : "OpenIndyOrg",
 
-    "compiler" : "clang 64bit",
-    "operatingSystem" : "mac os",
+    "compiler" : "MVSC 64bit",
+    "operatingSystem" : "windows",
 
     "description" : "Plugin with many functions and sensors available as standard",
 
