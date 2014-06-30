@@ -427,19 +427,19 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
             //if yes, set current scale as actual scale for the coordinate component
 
             //0.005 is criteria, because of noisy measurements
-            if(sxLoc <= 0.0005 || sxRef <= 0.0005){
+            if(sxLoc <= 0.005 || sxRef <= 0.005){
 
             }else{
                 if(sxRef/sxLoc > sx){sx = (sxRef/sxLoc);}
             }
 
-            if(syLoc <= 0.0005 || syRef <=0.0005){
+            if(syLoc <= 0.005 || syRef <=0.005){
 
             }else{
                 if(syRef/syLoc > sy){sy = (syRef/syLoc);}
             }
 
-            if(szLoc <= 0.0005 || szRef <= 0.0005){
+            if(szLoc <= 0.005 || szRef <= 0.005){
 
             }else{
                 if(szRef/szLoc > sz){sz = (szRef/szLoc);}

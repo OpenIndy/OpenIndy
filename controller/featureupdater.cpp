@@ -1498,9 +1498,11 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
     //sort helper class which compares and sorts the list of start and target points
     SortListByName mySorter;
 
+    CoordinateSystem *oldCoordSys = NULL;
     //if coord sys needs to be switched to "from" system
     if(!tp->getStartSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystemWithoutTransformation(tp->getStartSystem());
+        oldCoordSys =  OiFeatureState::getActiveCoordinateSystem();
+        this->switchCoordinateSystem(tp->getStartSystem());
     }
     QDateTime startTime;
 
@@ -1519,9 +1521,10 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
     foreach(Point *p, function->getPoints()){
 
         foreach (Observation *obs, p->getObservations()) {
-            if(obs->myStation->coordSys == tp->getStartSystem()){ //only obs of the coord system of the movement
-                if(obs->myReading->measuredAt.time() > startTime.time().addSecs(-600) && //is obs in the time span
-                        obs->myReading->measuredAt.time() < startTime.time().addSecs(600)){ //for being a reference obs
+            if(obs->isValid){ //only obs that are valid in the coord system of the movement
+                //also transformed obs from an other station are ok to use
+                if(obs->myReading->measuredAt.time() > startTime.time().addSecs(-180) && //is obs in the time span
+                        obs->myReading->measuredAt.time() < startTime.time().addSecs(180)){ //for being a reference obs
                     obs->isValid = true;
                 }else{
                     obs->isValid = false;
@@ -1538,9 +1541,9 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
         }
 
         foreach (Observation *obs, p->getObservations()) {
-            if(obs->myStation->coordSys == tp->getStartSystem()){//only obs of the coord system of the movement
-                if(obs->myReading->measuredAt.time() > tp->getValidTime().time().addSecs(-600) && //is obs in the time span
-                        obs->myReading->measuredAt.time() < tp->getValidTime().time().addSecs(600)){ //for being a actual obs
+            if(obs->myStation->coordSys == tp->getStartSystem()){//as actual state use only obs from the current station
+                if(obs->myReading->measuredAt.time() > tp->getValidTime().time().addSecs(-180) && //is obs in the time span
+                        obs->myReading->measuredAt.time() < tp->getValidTime().time().addSecs(180)){ //for being a actual obs
                     obs->isValid = true;
                 }else{
                     obs->isValid = false;
@@ -1572,8 +1575,8 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
     function->scalarEntityDistances_targetSystem = mySorter.getRefScalarEntityDistances();
 
     //if coord sys needs to be re-switched
-    if(!tp->getDestinationSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
+    if(oldCoordSys != NULL && !oldCoordSys->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystem(oldCoordSys);
     }
 
     //recalc featureSet, because some observations are disabled. So the feature uses all its observations again now
