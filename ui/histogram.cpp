@@ -8,19 +8,24 @@ Histogram::Histogram(QWidget *parent) :
     this->setMouseTracking(true);
 }
 
+void Histogram::paintData(FeatureWrapper* f, QString attributeToDraw)
+{
+    this->repaint();
+}
+
 void Histogram::paintEvent(QPaintEvent *event)
 {
 
     //#####testdata######
     QVector<double> _bins;
     int _heightMax = 1;
-    /*for(int i = 0; i<10;i++){
+    for(int i = 0; i<10;i++){
         double rv = (double) rand() / (double) RAND_MAX;
         _bins.append(rv);
-    }*/
+    }
 
 
-    Geometry* g = NULL;
+    /*Geometry* g = NULL;
 
     foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
             if(f->getGeometry() != NULL){
@@ -35,7 +40,7 @@ void Histogram::paintEvent(QPaintEvent *event)
         foreach(OiVec v,s.simulationData.xyz){
             _bins.append(v.getAt(0));
         }
-    }
+    }*/
 
     //#################
 

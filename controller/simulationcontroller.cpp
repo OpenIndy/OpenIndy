@@ -6,7 +6,13 @@ SimulationController::SimulationController(QObject *parent) :
 
     this->availableSimulations = new QStringListModel();
 
-    errorTableModel = new SimulationErrorTableModel();
+    sensorErrorModel = new SimulationErrorTableModel();
+    objectErrorModel = new SimulationErrorTableModel();
+    humanErrorModel = new SimulationErrorTableModel();
+    environmentErrorModel = new SimulationErrorTableModel();
+
+    resultModel = new SimulationTreeViewModel();
+
 
     myUpdater = NULL;
 }
@@ -34,26 +40,24 @@ void SimulationController::recalcAll()
 
     Uncertainties u;
 
-    u.sensorUncertainties = errorTableModel->getErrors();
+    u.sensorUncertainties = sensorErrorModel->getErrors();
     actualSimulation->setGivenUncertainties(u);
 
 
 
-    for(int i = 0; i <101; i++){
+    for(int i = 0; i <1001; i++){
 
     foreach(Station *s, OiFeatureState::getStations()){
         foreach(Observation *o, s->coordSys->getObservations()){
             OiMat A;
             o->myReading->restoreBackup();
 
-            if(i < 100){
+            if(i < 1000){
             actualSimulation->distort(o->myReading,A);
             }
 
             o->myOriginalXyz = Reading::toCartesian(o->myReading->rPolar.azimuth,o->myReading->rPolar.zenith,o->myReading->rPolar.distance);
             o->myXyz = Reading::toCartesian(o->myReading->rPolar.azimuth,o->myReading->rPolar.zenith,o->myReading->rPolar.distance);
-
-            Console::addLine("x", o->myXyz.getAt(0));
         }
       }
 
@@ -61,7 +65,7 @@ void SimulationController::recalcAll()
 
         myUpdater->recalcAll();
 
-        if(i < 100){
+        if(i < 1000){
             foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
                 if(f->getGeometry() != NULL){
                     f->getGeometry()->saveSimulationData();

@@ -11,6 +11,7 @@
 #include "simulationerrortablemodel.h"
 #include "oifeaturestate.h"
 #include "featureupdater.h"
+#include "simulationtreeviewmodel.h"
 
 
 class SimulationController : public QObject
@@ -23,8 +24,14 @@ public:
     
     QList<SimulationPlugin> simulations;
     QStringListModel* availableSimulations;
-    SimulationErrorTableModel *errorTableModel;
 
+
+    SimulationErrorTableModel *sensorErrorModel;
+    SimulationErrorTableModel *objectErrorModel;
+    SimulationErrorTableModel *humanErrorModel;
+    SimulationErrorTableModel *environmentErrorModel;
+
+    SimulationTreeViewModel *resultModel;
 
 
 

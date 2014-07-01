@@ -4,10 +4,12 @@
 #include <QWidget>
 #include <QDebug>
 #include <QThread>
+#include <QMessageBox>
 #include "featureupdater.h"
 #include "oifeaturestate.h"
 #include "simulationcontroller.h"
 #include "simulationdelegate.h"
+
 
 namespace Ui {
 class OiSimulationWidget;
@@ -31,6 +33,8 @@ private slots:
     void showEvent(QShowEvent * event);
 
     void on_listView_simulations_clicked(const QModelIndex &index);
+
+    void on_treeView_feature_clicked(const QModelIndex &index);
 
 signals:
     void startSimulation();

@@ -17,6 +17,7 @@ Statistic::Statistic(const Statistic &stat){
     this->p.replace(stat.p);
     this->qxx.replace(stat.qxx);
     this->v.replace(stat.v);
+    this->simulationData = stat.simulationData;
 }
 
 Statistic& Statistic::operator =(const Statistic &stat){
@@ -28,5 +29,6 @@ Statistic& Statistic::operator =(const Statistic &stat){
     this->p.replace(stat.p);
     this->qxx.replace(stat.qxx);
     this->v.replace(stat.v);
+    this->simulationData = stat.simulationData;
     return *this;
 }

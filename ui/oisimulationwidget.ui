@@ -62,16 +62,31 @@
             <attribute name="title">
              <string>object</string>
             </attribute>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="0" column="0">
+              <widget class="QTableView" name="tableView_object"/>
+             </item>
+            </layout>
            </widget>
            <widget class="QWidget" name="tab_enviroment">
             <attribute name="title">
              <string>environment</string>
             </attribute>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="0">
+              <widget class="QTableView" name="tableView_environmet"/>
+             </item>
+            </layout>
            </widget>
            <widget class="QWidget" name="tab_human">
             <attribute name="title">
              <string>human influence</string>
             </attribute>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="0">
+              <widget class="QTableView" name="tableView_humanInfluence"/>
+             </item>
+            </layout>
            </widget>
            <widget class="QWidget" name="tab_settings">
             <attribute name="title">

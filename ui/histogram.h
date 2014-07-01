@@ -16,10 +16,13 @@ public:
 signals:
 
 public slots:
+    void paintData(FeatureWrapper* f, QString attributeToDraw);
 
 protected:
     void paintEvent(QPaintEvent* event);
     void mouseMoveEvent(QMouseEvent * event);
+
+
 
 };
 
