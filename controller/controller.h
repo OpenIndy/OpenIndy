@@ -56,6 +56,7 @@
 #include "nominalattributeexchange.h"
 
 #include "oifeaturestate.h"
+#include "oiprojectdata.h"
 #include "oiprojectexchanger.h"
 
 class Feature;
@@ -74,6 +75,8 @@ class Controller : public QObject
     Q_OBJECT
 public:
     explicit Controller(QObject *parent = 0);
+
+    OiProjectData currentProject; //holds the currently opened OpenIndy-project
 
     OiFeatureState *myFeatureState;
 
@@ -174,8 +177,9 @@ public slots:
     void removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex); //remove element from the active function
 
     //save & load an OpenIndy project
-    bool saveProject(OiProjectData &projectData);
+    bool saveProject();
     bool loadProject(OiProjectData &projectData);
+    bool createProject(OiProjectData &projectData);
 
     void setFunctionConfiguration(int functionIndex, FunctionConfiguration config);
 
@@ -209,7 +213,7 @@ private:
 
     void initModels();
     void connectModels();
-    void createDefaultFeatures();
+    //void createDefaultFeatures();
 
     FeatureUpdater myFeatureUpdater;
 

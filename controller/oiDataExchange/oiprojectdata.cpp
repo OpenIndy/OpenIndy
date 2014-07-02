@@ -5,8 +5,7 @@ OiProjectData::OiProjectData(QObject *parent) :
 {
 
     device = NULL;
-    activeCoordSystem = NULL;
-    activeStation = NULL;
+    this->isSaved = true;
 
 }
 
@@ -61,4 +60,57 @@ bool OiProjectData::setDevice(QIODevice *device){
 
     return false;
 
+}
+
+/*!
+ * \brief OiProjectData::getProjectName
+ * \return
+ */
+QString OiProjectData::getProjectName(){
+    return this->projectName;
+}
+
+/*!
+ * \brief OiProjectData::setProjectName
+ * \param name
+ */
+void OiProjectData::setProjectName(QString name){
+    this->projectName = name;
+}
+
+/*!
+ * \brief OiProjectData::getIsValid
+ * Returns true if the project has a name and a device
+ * \return
+ */
+bool OiProjectData::getIsValid(){
+    if(this->projectName.compare("") != 0 && this->device != NULL){
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief OiProjectData::save
+ * \return
+ */
+bool OiProjectData::save(){
+    if(this->device != NULL){
+
+        bool isSuccessful = false;
+        isSuccessful = OiProjectExchanger::saveProject(*this);
+        return isSuccessful;
+
+    }else{
+        Console::addLine("No device selected");
+        return false;
+    }
+}
+
+/*!
+ * \brief OiProjectData::getIsSaved
+ * \return
+ */
+bool OiProjectData::getIsSaved(){
+    return this->isSaved;
 }

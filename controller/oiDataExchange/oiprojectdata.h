@@ -6,6 +6,8 @@
 
 #include "featurewrapper.h"
 #include "console.h"
+#include "oifeaturestate.h"
+#include "oiprojectexchanger.h"
 
 /*!
  * \brief The oiProjectData class
@@ -23,19 +25,32 @@ public:
     QIODevice *getDevice();
     bool setDevice(QIODevice *device);
 
-    QString projectName;
+    QString getProjectName();
+    void setProjectName(QString name);
 
-    CoordinateSystem *activeCoordSystem;
+    bool getIsValid();
+
+    void activate(OiFeatureState *myState);
+    void deactivate();
+
+    bool save();
+    bool getIsSaved();
+
+    /*CoordinateSystem *activeCoordSystem;
     Station *activeStation;
 
     QList<FeatureWrapper*> features;
     QList<CoordinateSystem*> coordSystems;
-    QList<Station*> stations;
+    QList<Station*> stations;*/
 
 private:
-    QIODevice *device;
+    QString projectName; //name of the project
+    QIODevice *device; //device where the project is saved
+    bool isSaved; //state of the project: true iv it was saved; false if there are unsaved changes
 
 signals:
+    void unsavedChangesAvailable(); //is emitted when there were changes made to the project
+    void projectSaved(); //emitted when the project was saved successfully
 
 public slots:
 

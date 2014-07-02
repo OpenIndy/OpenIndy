@@ -27,7 +27,7 @@ Controller::Controller(QObject *parent) :
     this->initModels();
     this->connectModels();
 
-    this->createDefaultFeatures();
+    this->createProject(currentProject);
 
 
 
@@ -136,7 +136,7 @@ void Controller::connectModels(){
  * \brief Controller::createDefaultFeatures
  * Create a station and the PART system as default features when starting OpenIndy
  */
-void Controller::createDefaultFeatures(){
+bool Controller::createProject(OiProjectData &projectData){
 
     if(OiFeatureState::getFeatureCount() == 0){
 
@@ -1369,15 +1369,24 @@ void Controller::setFunctionConfiguration(int functionIndex, FunctionConfigurati
 
 /*!
  * \brief Controller::saveProject
+ * Save the current project
  * \param projectData
  * \return
  */
-bool Controller::saveProject(OiProjectData &projectData){
+bool Controller::saveProject(){
     try{
 
-        bool isSuccessfull = false;
-        isSuccessfull = OiProjectExchanger::saveProject(projectData);
-        return isSuccessfull;
+        if(this->currentProject.getIsValid()){
+            if(this->currentProject.getIsSaved()){
+                return this->currentProject.save();
+            }else{
+                Console::addLine("The project has already been saved");
+                return false;
+            }
+        }else{
+            Console::addLine("The project has no name or no device is selected");
+            return false;
+        }
 
     }catch(exception &e){
         Console::addLine(e.what());
