@@ -161,32 +161,32 @@ bool PluginLoader::copyPlugin(QString filename){
     }
 
 #ifdef Q_OS_MAC
-QDir pluginsDir(qApp->applicationDirPath());
-pluginsDir.cdUp();
+    QDir pluginsDir(qApp->applicationDirPath());
+    pluginsDir.cdUp();
 #endif
 
 
 #ifdef Q_OS_WIN
-QDir pluginsDir(qApp->applicationDirPath());
+    QDir pluginsDir(qApp->applicationDirPath());
 #endif
 
 #ifdef Q_OS_LINUX
-QDir pluginsDir(qApp->applicationDirPath());
+    QDir pluginsDir(qApp->applicationDirPath());
 #endif
 
-myMetaInfo->alreadyExists = false;
+    myMetaInfo->alreadyExists = false;
 
-QFile plugin(filename);
+    QFile plugin(filename);
 
-QFileInfo fileInfo(filename);
-QString pluginName(fileInfo.fileName());
+    QFileInfo fileInfo(filename);
+    QString pluginName(fileInfo.fileName());
 
-QString copyString = NULL;
+    QString copyString = NULL;
 
-QDir desti(pluginsDir.absolutePath()+"/plugins/");
-desti.mkpath(desti.absolutePath());
+    QDir desti(pluginsDir.absolutePath()+"/plugins/");
+    desti.mkpath(desti.absolutePath());
 
-copyString = QString(desti.absolutePath()+"/"+pluginName);
+    copyString = QString(desti.absolutePath()+"/"+pluginName);
 
 
     if (QFile::exists(copyString)){
