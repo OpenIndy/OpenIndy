@@ -6,7 +6,8 @@
 using namespace std;
 
 /*!
- * \brief The Helmert6Param class
+ * \brief The Helmert6Param class is a helmert 6 parameter transformation without scale.
+ * Angles and Translation are approximated with Drixler algorithm.
  */
 class Helmert6Param : public SystemTransformation
 {
@@ -17,6 +18,8 @@ public:
     bool exec(TrafoParam&);
     QList<InputParams> getNeededElements();
     QList<Configuration::FeatureTypes> applicableFor();
+
+    QStringList getResultProtocol();
 
 private:
     bool svdError;

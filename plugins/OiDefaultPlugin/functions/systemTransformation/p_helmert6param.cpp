@@ -89,6 +89,19 @@ QList<Configuration::FeatureTypes> Helmert6Param::applicableFor()
 }
 
 /*!
+ * \brief getResultProtocol returns the result protocol set by the function
+ * \return
+ */
+QStringList Helmert6Param::getResultProtocol()
+{
+    QStringList result;
+
+    result.append("no protocol set.");
+
+    return result;
+}
+
+/*!
  * \brief init
  */
 void Helmert6Param::init()

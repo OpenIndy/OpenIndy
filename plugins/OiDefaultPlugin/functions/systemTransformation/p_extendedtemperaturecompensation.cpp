@@ -169,11 +169,11 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
     //calculate the representing temperature out of each scale to show in the protocoll
     if(useTemp){
         double tx = (((sx*x0.getAt(3))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
-        this->protocol.append(QString("scale x representing an expansion of " + QString::number(tx,'f',2)+"[°C]"));
+        this->protocol.append(QString("scale x representing an expansion of " + QString::number(1.0/tx,'f',2)+"[°C]"));
         double ty = (((sy*x0.getAt(4))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
-        this->protocol.append(QString("scale y representing an expansion of " + QString::number(ty,'f',2)+"[°C]"));
+        this->protocol.append(QString("scale y representing an expansion of " + QString::number(1.0/ty,'f',2)+"[°C]"));
         double tz = (((sz*x0.getAt(5))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
-        this->protocol.append(QString("scale z representing an expansion of " + QString::number(tz,'f',2)+"[°C]"));
+        this->protocol.append(QString("scale z representing an expansion of " + QString::number(1.0/tz,'f',2)+"[°C]"));
     }
     tp.generateHomogenMatrix();
     result = true;

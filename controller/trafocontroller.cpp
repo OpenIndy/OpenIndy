@@ -11,32 +11,25 @@ TrafoController::TrafoController(QObject *parent) :
  */
 void TrafoController::addObservation(Observation *obs)
 {
-    if(obs->myReading->typeofReading == Configuration::ePolar || obs->myReading->typeofReading == Configuration::eCartesian){
-        applyMovements(obs);
-        transformNewObservations(obs);
-        OiFeatureState::getActiveStation()->coordSys->addObservation(obs);
-    }
 }
 
 /*!
  * \brief applyMovements applys the valid movement transformation on the observation, if one exists.
  * \param obs
  */
-void TrafoController::applyMovements(Observation *obs)
+/*void TrafoController::applyMovements(Observation *obs)
 {
     //find movements for that observation
     QList<TrafoParam*> movements;
     movements = this->findMovements(obs);
 
     if(movements.size()>0){
-        //sort list on valid time attributes (ascending)
-        movements = this->sortMovements(movements);
 
         //apply movement
         /*find the last movement that has a smaller timestamp than the observation and apply it.
          *if there is no movement with a a smaller timestamp, there is nothing to apply to the observation
         */
-        if(movements.size() == 1){
+/*        if(movements.size() == 1){
             if(movements.at(0)->getValidTime() < obs->myReading->measuredAt){
                 OiMat t= movements.at(0)->getHomogenMatrix();
                 obs->myXyz = t * obs->myXyz;
@@ -62,7 +55,7 @@ void TrafoController::applyMovements(Observation *obs)
         obs->myStatistic = obs->myOriginalStatistic;
     }
     obs->isValid = true;
-}
+}*/
 
 /*!
  * \brief transformNewObservations transforms new observations directly into the active coordinate system if possible.
@@ -235,9 +228,6 @@ void TrafoController::setObservationState(CoordinateSystem *cs, bool valid)
  */
 void TrafoController::MovementsChanged()
 {
-    recalcObservations();
-    recalcAllMovements();
-    recalcObservations();
 }
 
 /*!
@@ -245,11 +235,6 @@ void TrafoController::MovementsChanged()
  */
 void TrafoController::recalcAllMovements()
 {
-    for(int i=0;i<OiFeatureState::getFeatures().size();i++){
-        if(OiFeatureState::getFeatures().at(i)->getTrafoParam() != NULL){
-            OiFeatureState::getFeatures().at(i)->getTrafoParam()->recalc();
-        }
-    }
 }
 
 /*!
@@ -257,15 +242,6 @@ void TrafoController::recalcAllMovements()
  */
 void TrafoController::recalcObservations()
 {
-    for(int i=0;i<OiFeatureState::getStations().size();i++){
-        foreach (Observation *obs, OiFeatureState::getStations().at(i)->coordSys->getObservations()) {
-            applyMovements(obs);
-        }
-    }for(int i=0;i<OiFeatureState::getCoordinateSystems().size();i++){
-        foreach (Observation *obs, OiFeatureState::getCoordinateSystems().at(i)->getObservations()) {
-            applyMovements(obs);
-        }
-    }
 }
 
 /*!
@@ -289,11 +265,11 @@ TrafoParam *TrafoController::findTrafoParam(CoordinateSystem *from, CoordinateSy
 }
 
 /*!
- * \brief findMovements for the coordinate system of the observation
+ * \brief findMovements for the coordinate system of the observation and sort them by time
  * \param obs
  * \return
  */
-QList<TrafoParam *> TrafoController::findMovements(Observation *obs)
+/*QList<TrafoParam *> TrafoController::findMovements(Observation *obs)
 {
     QList<TrafoParam*> movements;
     for(int i=0;i<OiFeatureState::getFeatureCount();i++){
@@ -306,8 +282,11 @@ QList<TrafoParam *> TrafoController::findMovements(Observation *obs)
         }
     }
 
+    //sort list on valid time attributes (ascending)
+    movements = this->sortMovements(movements);
+
     return movements;
-}
+}*/
 
 /*!
  * \brief sortMovements ascending on their valid time attributes using a QMap
@@ -334,7 +313,7 @@ QList<TrafoParam *> TrafoController::sortMovements(QList<TrafoParam *> movements
  * \param from
  */
 void TrafoController::CheckToApplyMovements(CoordinateSystem *from)
-{
+{/*
     //check if active system is a PART
     if(OiFeatureState::getCoordinateSystems().contains(OiFeatureState::getActiveCoordinateSystem())){
         QList<Station*> stations = OiFeatureState::getStations();
@@ -342,11 +321,148 @@ void TrafoController::CheckToApplyMovements(CoordinateSystem *from)
             //check if from is a station with observations
             if(stations.at(i)->coordSys == from){
                 //apply movements on the part-transformed obs of the station
+                //get centroid point of old obs
+                OiVec centroidRef(4);
+                OiVec centroidLoc(4);
                 foreach (Observation *obs, from->getObservations()) {
+                    centroidRef = centroidRef + obs->myXyz; //get centroid of all obs from this station
                     applyMovements(obs);
                 }
+                centroidRef = centroidRef / from->getObservations().size();
+
+                //now get centroid point of current obs state
+                foreach (Observation *obs, from->getObservations()) {
+                    centroidLoc = centroidLoc + obs->myXyz;
+                }
+                centroidLoc = centroidLoc / from->getObservations().size();
+
+                //get translation between pre-movement state and movement state
+                OiVec translation = centroidRef-centroidLoc;
+
+                //now move the transformed observations
+                foreach (Observation *obs, from->getObservations()) {
+                    obs->myXyz = obs->myXyz + translation;
+                }
+
                 break; //exit, because from was found
             }
         }
+    }*/
+    //check if active system is a PART
+    if(OiFeatureState::getCoordinateSystems().contains(OiFeatureState::getActiveCoordinateSystem())){
+        QList<Station*> stations = OiFeatureState::getStations();
+        for(int i=0;i<stations.size();i++){
+            //check if from is a station with observations
+            if(stations.at(i)->coordSys == from){
+                //find movements for this station
+                QList<TrafoParam*> movements;
+                movements = this->findMovements(from);
+
+                //apply movements on the part-transformed obs of the station
+                this->applyMovements(movements,from);
+            }
+        }
+    }
+}
+
+/*!
+ * \brief findMovements find all movements for this coordinate system
+ * \param from
+ * \return
+ */
+QList<TrafoParam *> TrafoController::findMovements(CoordinateSystem *from)
+{
+    QList<TrafoParam*> movements;
+
+    for(int i=0; i<from->getTransformationParameters().size();i++){
+        if(from->getTransformationParameters().at(i)->getIsMovement() &&
+                from->getTransformationParameters().at(i)->getIsUsed()){
+            movements.append(from->getTransformationParameters().at(i));
+        }
+    }
+    //sort list on valid time attributes (ascending)
+    movements = this->sortMovements(movements);
+
+    return movements;
+}
+
+/*!
+ * \brief applyMovements checks each observation of the station and applys a movement transformation on it, if necessary
+ * \param movements
+ * \param from
+ */
+void TrafoController::applyMovements(QList<TrafoParam*> movements, CoordinateSystem *from)
+{
+    for(int i=0; i< movements.size();i++){ //iterate through all movements for this station
+
+        QList<Observation*> movedObservations;
+        OiVec centroidBefore(4);
+        OiVec centroidAfter(4);
+
+        for(int k=0; k<from->getObservations().size();k++){ // iterate through all observations of this station
+
+            Observation *obs = from->getObservations().at(k);
+
+            if(movements.size() == 1){
+                if(movements.at(0)->getValidTime() < obs->myReading->measuredAt){
+                    OiMat t= movements.at(0)->getHomogenMatrix();
+
+                    centroidBefore = centroidBefore + obs->myXyz;
+                    movedObservations.append(obs);
+
+                    obs->myXyz = t*obs->myXyz;
+                    obs->myStatistic.qxx = t* obs->myStatistic.qxx;
+
+                    centroidAfter = centroidAfter + obs->myXyz;
+                }
+            }else{
+                if(movements.at(i)->getValidTime() < obs->myReading->measuredAt){
+                    if((i+1)<movements.size() && movements.at(i+1)->getValidTime() > obs->myReading->measuredAt){
+                        OiMat t = movements.at(i)->getHomogenMatrix();
+
+                        centroidBefore = centroidBefore + obs->myXyz;
+                        movedObservations.append(obs);
+
+                        obs->myXyz = t* obs->myXyz;
+                        obs->myStatistic.qxx = t* obs->myStatistic.qxx;
+
+                        centroidAfter = centroidAfter + obs->myXyz;
+                    }else{
+                        OiMat t = movements.at(i)->getHomogenMatrix();
+
+                        centroidBefore = centroidBefore + obs->myXyz;
+                        movedObservations.append(obs);
+
+                        obs->myXyz = t* obs->myXyz;
+                        obs->myStatistic.qxx = obs->myStatistic.qxx;
+
+                        centroidAfter = centroidAfter + obs->myXyz;
+                    }
+                }
+            }
+        }
+        //translate all obs to which this movement was applied.
+        //must be done for every movement to its own
+        centroidAfter = centroidAfter / movedObservations.size();
+        centroidBefore = centroidBefore / movedObservations.size();
+        this->applyTranslations(centroidBefore,centroidAfter,movedObservations);
+    }
+}
+
+/*!
+ * \brief applyTranslations
+ * After observations were moved because of temperature change, they have to be translated, because applying the scale
+ * calculated in the movement, translates all points.
+ * \param centroidBefore
+ * \param centroidAfter
+ * \param observations
+ */
+void TrafoController::applyTranslations(OiVec centroidBefore, OiVec centroidAfter, QList<Observation *> observations)
+{
+    OiVec translation;
+    translation = centroidBefore - centroidAfter;
+    //apply the translation on each of the "moved" observations
+    foreach (Observation *obs, observations) {
+        obs->myXyz = obs->myXyz + translation;
     }
 }

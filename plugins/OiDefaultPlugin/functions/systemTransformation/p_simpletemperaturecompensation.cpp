@@ -133,7 +133,7 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp)
     }
 
     double expansion = (actTemp-refTemp)*expansionCoefficient;
-    protExpansion = QString::number(expansion,'f',4);
+    protExpansion = QString::number(expansion,'f',6);
     double scale = 1.0/(1+ (expansion));
     tp.setScale(scale,scale,scale);
     tp.setTranslation(0.0,0.0,0.0);
@@ -177,7 +177,7 @@ QStringList SimpleTemperatureCompensation::getResultProtocol()
     protocoll.append(QString("reference temperature [°C]: " + this->protRefTemp));
     protocoll.append(QString("accuracy of temperature measurement [°C]: " + this->protTempAccuracy));
     protocoll.append(QString("material: " + this->protMaterial));
-    protocoll.append(QString("expansion coefficient [µm]: " + this->protExpansionCoeff));
+    protocoll.append(QString("expansion coefficient [m]: " + this->protExpansionCoeff));
     protocoll.append(QString("expansion [m]/[m]: " + this->protExpansion));
     protocoll.append(QString("accuracy for expansion [m]: " + this->protSTDDEV));
     return protocoll;

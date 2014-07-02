@@ -132,11 +132,11 @@ Function* OiTemplatePlugin::createFunction(QString name){
         result = new ShiftPlane();
     }else if(name.compare("BestFitCircle") == 0){
         result = new BestFitCircle();
-    }else if(name.compare("SimpleTempComp") == 0){
+    }else if(name.compare("StandardTempComp") == 0){
         result = new SimpleTemperatureCompensation();
     }else if(name.compare("9ParameterHelmertTransformation") == 0){
         result = new ExtendedTemperatureCompensation();
-    }else if(name.compare("6ParameterHelmertTransformation")){
+    }else if(name.compare("6ParameterHelmertTransformation") == 0){
         result = new Helmert6Param();
     }
     return result;
