@@ -31,60 +31,58 @@ void PluginLoaderDialog::on_toolButton_Path_clicked()
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
 
-
-
     QString filename = PluginLoader::findOiPlugin(pluginDir);
 
     if (filename != NULL){
 
-    this->pluginPath = filename;
+        this->pluginPath = filename;
 
-    ui->lineEdit_Path->setText(filename);
+        this->ui->lineEdit_Path->setText(filename);
 
-    ui->lineEdit_Name->setText(PluginLoader::myMetaInfo->name);
+        this->ui->lineEdit_Name->setText(PluginLoader::myMetaInfo->name);
 
-    ui->lineEdit_pluginType->setText(PluginLoader::myMetaInfo->iid);
+        this->ui->lineEdit_pluginType->setText(PluginLoader::myMetaInfo->iid);
 
-    ui->textBrowser_description->append("#######################");
-    ui->textBrowser_description->append("name: " + PluginLoader::myMetaInfo->name);
-    ui->textBrowser_description->append("author: " + PluginLoader::myMetaInfo->author);
-    ui->textBrowser_description->append("#######################");
-    ui->textBrowser_description->append("version: " + PluginLoader::myMetaInfo->pluginVersion);
-    ui->textBrowser_description->append("#######################");
-    ui->textBrowser_description->append("operating system: " + PluginLoader::myMetaInfo->operatingSystem);
-    ui->textBrowser_description->append("compiler: " + PluginLoader::myMetaInfo->compiler);
-    ui->textBrowser_description->append("#######################");
+        this->ui->textBrowser_description->append("#######################");
+        this->ui->textBrowser_description->append("name: " + PluginLoader::myMetaInfo->name);
+        this->ui->textBrowser_description->append("author: " + PluginLoader::myMetaInfo->author);
+        this->ui->textBrowser_description->append("#######################");
+        this->ui->textBrowser_description->append("version: " + PluginLoader::myMetaInfo->pluginVersion);
+        this->ui->textBrowser_description->append("#######################");
+        this->ui->textBrowser_description->append("operating system: " + PluginLoader::myMetaInfo->operatingSystem);
+        this->ui->textBrowser_description->append("compiler: " + PluginLoader::myMetaInfo->compiler);
+        this->ui->textBrowser_description->append("#######################");
 
-    if (PluginLoader::myMetaInfo->dependencies){
-      ui->textBrowser_description->append("dependencies: " + PluginLoader::myMetaInfo->dependeciesPath.size());
-    }else{
-      ui->textBrowser_description->append("dependencies: none");
-    }
+        if (PluginLoader::myMetaInfo->dependencies){
+            this->ui->textBrowser_description->append("dependencies: " + PluginLoader::myMetaInfo->dependeciesPath.size());
+        }else{
+            this->ui->textBrowser_description->append("dependencies: none");
+        }
 
-    for(int i = 0; i<PluginLoader::myMetaInfo->dependeciesPath.size();i++){
+        for(int i = 0; i<PluginLoader::myMetaInfo->dependeciesPath.size();i++){
 
-        QJsonObject v = PluginLoader::myMetaInfo->dependeciesPath.at(i).toObject();
+            QJsonObject v = PluginLoader::myMetaInfo->dependeciesPath.at(i).toObject();
 
-        QString depName = v.value("name").toString() ;
-         QString depPath = v.value("path").toString() ;
+            QString depName = v.value("name").toString() ;
+            QString depPath = v.value("path").toString() ;
 
-         QString tmpText(depName + ": " + depPath);
+            QString tmpText(depName + ": " + depPath);
 
-        ui->textBrowser_description->append(tmpText);
+            this->ui->textBrowser_description->append(tmpText);
 
-    }
+        }
 
-    ui->textBrowser_description->append("#######################");
-    ui->textBrowser_description->append("description: ");
-    ui->textBrowser_description->append(PluginLoader::myMetaInfo->description);
+        this->ui->textBrowser_description->append("#######################");
+        this->ui->textBrowser_description->append("description: ");
+        this->ui->textBrowser_description->append(PluginLoader::myMetaInfo->description);
 
 
-    QMessageBox::information(this,"valid", "plugin valid");
-    this->pluginPath = filename;
+        QMessageBox::information(this,"valid", "plugin valid");
+        this->pluginPath = filename;
 
-     ui->progressBar->setMaximum(PluginLoader::myMetaInfo->dependeciesPath.size()+1);
+        this->ui->progressBar->setMaximum(PluginLoader::myMetaInfo->dependeciesPath.size()+1);
 
-     ui->pushButton_Ok->setEnabled(true);
+        this->ui->pushButton_Ok->setEnabled(true);
 
     }else{
         QMessageBox::critical(this,"error", "plugin not valid");
@@ -100,7 +98,7 @@ void PluginLoaderDialog::on_pushButton_Cancel_clicked()
 
 void PluginLoaderDialog::on_pushButton_Ok_clicked()
 {
-    bool check = PluginLoader::copyPlugin(pluginPath);
+    bool check = PluginLoader::copyPlugin(this->pluginPath);
 
     if (check){
         QMessageBox::information(this,"success", "plugin has been copied successfully.");

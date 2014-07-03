@@ -444,11 +444,14 @@ int SystemDbManager::getLastId(QString table){
 int SystemDbManager::savePluginHelper(PluginMetaData *metaInfo){
     int pluginId = -1;
 
+    QDir pluginDir(qApp->applicationDirPath()); //get application path
+    QString relativePath = pluginDir.relativeFilePath(metaInfo->path); //get relative path to plugin with application path as basis
+
     QString query = QString("INSERT INTO plugin (iid, name, description, version, author, compiler, operating_sys, "
                             "has_dependencies, file_path, is_active) VALUES ('%1', '%2', '%3', '%4', '%5', '%6', '%7', %8, '%9', %10);")
         .arg(metaInfo->iid).arg(metaInfo->name).arg(metaInfo->description).arg(metaInfo->pluginVersion)
         .arg(metaInfo->author).arg(metaInfo->compiler).arg(metaInfo->operatingSystem).arg(QString(metaInfo->dependencies?"1":"0"))
-        .arg(metaInfo->path).arg("1");
+        .arg(relativePath).arg("1");
 
     QSqlQuery command(SystemDbManager::db);
     bool check = command.exec(query);
