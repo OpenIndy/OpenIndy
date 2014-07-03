@@ -232,35 +232,138 @@ QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
 
 QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFormat)
 {
-    QVariantMap tmpMap;
+    QVariantMap m;
 
-    if( this->serial->isOpen()){
+    Reading r;
+    QString command;
+    if(this->serial->isOpen()){
 
-                QString command = "%R1Q,2107:1\r\n";
-
+        switch (streamFormat) {
+        case Configuration::ePolar:
+            if(this->executeEDM()){
+                command = "%R1Q,2108:5000,1\r\n";
                 if(executeCommand(command)){
+                    QString measuredData = this->receive();
+                    QStringList polarElements = measuredData.split(",");
 
-                 QString measureData = this->receive();
+                    r.rPolar.azimuth = polarElements.at(polarElements.size()-3).toDouble();
+                    r.rPolar.zenith = polarElements.at(polarElements.size()-2).toDouble();
+                    r.rPolar.distance = polarElements.at(polarElements.size()-1).toDouble();
+                    r.typeofReading = Configuration::ePolar;
+                    r.rPolar.isValid = true;
 
-                 QStringList polarElements = measureData.split(",");
+                    if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                        QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                        if(sense.compare("mathematical") == 0){
+                            r.rPolar.azimuth = 2 * PI - r.rPolar.azimuth;
+                        }
+                    }
 
-                 double azimuth = polarElements.at(polarElements.size()-2).toDouble();
-                 double zenith = polarElements.at(polarElements.size()-1).toDouble();
-
-                 if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-                     QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
-                     if(sense.compare("mathematical") == 0){
-                         azimuth = 2 * PI - azimuth;
-                     }
-                 }
-
-                 tmpMap.insert("azimuth",azimuth);
-                 tmpMap.insert("zenith",zenith);
+                    m.insert("azimuth",r.rPolar.azimuth);
+                    m.insert("zenith",r.rPolar.zenith);
+                    m.insert("distance",r.rPolar.distance);
 
                 }
-        return tmpMap;
+            }
 
+            break;
+        case Configuration::eCartesian:
+            if(this->executeEDM()){
+                command = "%R1Q,2108:5000,1\r\n";
+                if(executeCommand(command)){
+                    QString measuredData = this->receive();
+                    QStringList polarElements = measuredData.split(",");
+
+                    r.rPolar.azimuth = polarElements.at(polarElements.size()-3).toDouble();
+                    r.rPolar.zenith = polarElements.at(polarElements.size()-2).toDouble();
+                    r.rPolar.distance = polarElements.at(polarElements.size()-1).toDouble();
+                    r.typeofReading = Configuration::eCartesian;
+                    r.rPolar.isValid = true;
+
+                    if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                        QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                        if(sense.compare("mathematical") == 0){
+                            r.rPolar.azimuth = 2 * PI - r.rPolar.azimuth;
+                        }
+                    }
+                    r.toCartesian();
+                    m.insert("x",r.rCartesian.xyz.getAt(0));
+                    m.insert("y",r.rCartesian.xyz.getAt(1));
+                    m.insert("z",r.rCartesian.xyz.getAt(2));
+                }
+            }
+            break;
+        case Configuration::eDirection:
+            command = "%R1Q,2107:1\r\n";
+            if(executeCommand(command)){
+                QString measuredData = this->receive();
+                QStringList polarElements = measuredData.split(",");
+
+                r.rDirection.azimuth = polarElements.at(polarElements.size()-2).toDouble();
+                r.rDirection.zenith = polarElements.at(polarElements.size()-1).toDouble();
+                r.rDirection.isValid = true;
+
+                if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                    QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                    if(sense.compare("mathematical") == 0){
+                        r.rDirection.azimuth = 2 * PI - r.rDirection.azimuth;
+                    }
+                }
+
+                m.insert("azimuth",r.rDirection.azimuth);
+                m.insert("zenith",r.rDirection.zenith);
+            }
+            break;
+        case Configuration::eDistance:
+            if(this->executeEDM()){
+                command = "%R1Q,2108:5000,1\r\n";
+                if(executeCommand(command)){
+                    QString measuredData = this->receive();
+                    QStringList polarElements = measuredData.split(",");
+                    r.rDistance.distance = polarElements.at(polarElements.size()-1).toDouble();
+                    r.rDistance.isValid = true;
+
+                    m.insert("distance", r.rDistance.distance);
+                }
+            }
+            break;
+        default:
+            break;
+        }
     }
+
+    return m;
+
+
+
+    /*QVariantMap tmpMap;
+
+    if(this->serial->isOpen()){
+
+        QString command = "%R1Q,2107:1\r\n";
+
+        if(executeCommand(command)){
+
+             QString measureData = this->receive();
+
+             QStringList polarElements = measureData.split(",");
+
+             double azimuth = polarElements.at(polarElements.size()-2).toDouble();
+             double zenith = polarElements.at(polarElements.size()-1).toDouble();
+
+             if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                 QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                 if(sense.compare("mathematical") == 0){
+                     azimuth = 2 * PI - azimuth;
+                 }
+             }
+
+             tmpMap.insert("azimuth",azimuth);
+             tmpMap.insert("zenith",zenith);
+
+        }
+        return tmpMap;
+    }*/
 }
 
 bool LeicaTachymeter::getConnectionState()
@@ -270,7 +373,7 @@ bool LeicaTachymeter::getConnectionState()
 
 bool LeicaTachymeter::isReadyForMeasurement()
 {
-    return true;
+    return this->getConnectionState();
 }
 
 QMap<QString, QString> LeicaTachymeter::getSensorStats()
@@ -303,7 +406,7 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
 
     if( this->serial->isOpen()){
 
-        for(int i=0;i<m->count;i++){
+        for(int i=0;i<m->iterations;i++){
             for(int k = 0; k<faceCount;k++){
                 if (this->executeEDM()){
 
@@ -313,37 +416,35 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
 
                     if(executeCommand(command)){
 
-                    QString measureData = this->receive();
+                        QString measureData = this->receive();
 
-                    myEmitter.emitSendString(measureData);
+                        myEmitter.emitSendString(measureData);
 
-                    QStringList polarElements = measureData.split(",");
+                        QStringList polarElements = measureData.split(",");
 
-                    r->rPolar.azimuth = polarElements.at(polarElements.size()-3).toDouble();
-                    r->rPolar.zenith= polarElements.at(polarElements.size()-2).toDouble();
-                    r->rPolar.distance = polarElements.at(polarElements.size()-1).toDouble();
+                        r->rPolar.azimuth = polarElements.at(polarElements.size()-3).toDouble();
+                        r->rPolar.zenith = polarElements.at(polarElements.size()-2).toDouble();
+                        r->rPolar.distance = polarElements.at(polarElements.size()-1).toDouble();
+                        r->typeofReading = Configuration::ePolar;
 
-                    if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-                        QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
-                        if(sense.compare("mathematical") == 0){
-                            r->rPolar.azimuth = 2 * PI - r->rPolar.azimuth;
+                        if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                            QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                            if(sense.compare("mathematical") == 0){
+                                r->rPolar.azimuth = 2 * PI - r->rPolar.azimuth;
+                            }
+                        }
+                        r->rPolar.isValid = true;
+                        readings.append(r);
+
+                        if(faceCount == 2){
+                            this->toggleSightOrientation();
                         }
                     }
-
-                    readings.append(r);
-
-                    if(faceCount == 2){
-                        this->toggleSightOrientation();
-                    }
-
                 }
-             }
             }
         }
     }
-
     return readings;
-
 }
 
 QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
@@ -352,33 +453,33 @@ QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
     QList<Reading*> readings;
 
     if( this->serial->isOpen()){
-     for(int i=0;i<m->count;i++){
-        if (this->executeEDM()){
+        for(int i=0;i<m->iterations;i++){
+            if (this->executeEDM()){
 
-            Reading *r = new Reading();
+                Reading *r = new Reading();
 
-            QString command = "%R1Q,2108:5000,1\r\n";
+                QString command = "%R1Q,2108:5000,1\r\n";
 
-            myEmitter.emitSendString("edm succesful");
+                myEmitter.emitSendString("edm succesful");
 
-            if(executeCommand(command)){
+                if(executeCommand(command)){
 
-             QString measureData = this->receive();
+                     QString measureData = this->receive();
 
-             myEmitter.emitSendString(measureData);
+                     myEmitter.emitSendString(measureData);
 
-             QStringList polarElements = measureData.split(",");
+                     QStringList polarElements = measureData.split(",");
 
-             r->rDistance.distance = polarElements.at(polarElements.size()-1).toDouble();
+                     r->rDistance.distance = polarElements.at(polarElements.size()-1).toDouble();
+                     r->typeofReading = Configuration::eDistance;
+                     r->rDistance.isValid = true;
 
-             readings.append(r);
+                     readings.append(r);
 
+                }
             }
-          }
         }
     }
-
-
     return readings;
 }
 
@@ -396,7 +497,7 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
 
     if( this->serial->isOpen()){
 
-        for(int i=0;i<m->count;i++){
+        for(int i=0;i<m->iterations;i++){
             for(int k = 0; k<faceCount;k++){
 
                 Reading *r = new Reading();
@@ -405,30 +506,32 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
 
                 if(executeCommand(command)){
 
-                QString measureData = this->receive();
+                    QString measureData = this->receive();
 
-                myEmitter.emitSendString(measureData);
+                    myEmitter.emitSendString(measureData);
 
-                QStringList polarElements = measureData.split(",");
+                    QStringList polarElements = measureData.split(",");
 
-                r->rDirection.azimuth = polarElements.at(polarElements.size()-2).toDouble();
-                r->rDirection.zenith = polarElements.at(polarElements.size()-1).toDouble();
+                    r->rDirection.azimuth = polarElements.at(polarElements.size()-2).toDouble();
+                    r->rDirection.zenith = polarElements.at(polarElements.size()-1).toDouble();
+                    r->typeofReading = Configuration::eDirection;
 
-                if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-                    QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
-                    if(sense.compare("mathematical") == 0){
-                        r->rDirection.azimuth = 2 * PI - r->rDirection.azimuth;
+                    if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                        QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                        if(sense.compare("mathematical") == 0){
+                            r->rDirection.azimuth = 2 * PI - r->rDirection.azimuth;
+                        }
+                    }
+                    r->rDirection.isValid = true;
+                    readings.append(r);
+
+                    if(faceCount == 2){
+                        this->toggleSightOrientation();
                     }
                 }
-
-                readings.append(r);
-
-                }
-           }
+            }
         }
     }
-
-
     return readings;
 }
 
@@ -439,6 +542,8 @@ QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
 
     for(int i = 0; i<readings.size();i++){
         readings.at(i)->toCartesian();
+        readings.at(i)->rCartesian.isValid = true;
+        readings.at(i)->typeofReading = Configuration::eCartesian;
     }
 
     return readings;
@@ -449,7 +554,7 @@ QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
 
 QString LeicaTachymeter::receive(){
     QByteArray responseData = this->serial->readAll();
-    while (this->serial->waitForReadyRead(10))
+    while (this->serial->waitForReadyRead(100))
         responseData += this->serial->readAll();
     QString response = QString(responseData);
     return response;
@@ -483,11 +588,10 @@ bool LeicaTachymeter::executeEDM(){
     QString edmCommand = "%R1Q,2008:1,1\r\n";
 
     if(this->executeCommand(edmCommand)){
-
-       if(this->receive()=="%R1P,0,0:0\r\n"){
+        QString receive = this->receive();
+        if(receive.compare("%R1P,0,0:0\r\n") == 0){
             return true;
-            }
         }
-
+    }
     return false;
 }

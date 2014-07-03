@@ -442,9 +442,9 @@ void TrafoController::applyMovements(QList<TrafoParam*> movements, CoordinateSys
             }
         }
         //translate all obs to which this movement was applied.
-        //must be done for every movement to its own
-        centroidAfter = centroidAfter / movedObservations.size();
-        centroidBefore = centroidBefore / movedObservations.size();
+        //do this again for every movement
+        centroidAfter = centroidAfter / movedObservations.size(); //centroid point after applying movement
+        centroidBefore = centroidBefore / movedObservations.size(); //centroid point before applying movement
         this->applyTranslations(centroidBefore,centroidAfter,movedObservations);
     }
 }
@@ -461,8 +461,66 @@ void TrafoController::applyTranslations(OiVec centroidBefore, OiVec centroidAfte
 {
     OiVec translation;
     translation = centroidBefore - centroidAfter;
+
+    //check translation vector, if every component should be translated
+    translation = this->checkTopApplyTranslation(observations,translation);
+
     //apply the translation on each of the "moved" observations
     foreach (Observation *obs, observations) {
         obs->myXyz = obs->myXyz + translation;
     }
+}
+
+OiVec TrafoController::checkTopApplyTranslation(QList<Observation *> observations, OiVec translation)
+{
+    //initialize boundary variables
+    double lowerBoundX = 0.0;
+    double upperBoundX = 0.0;
+    double lowerBoundY = 0.0;
+    double upperBoundY = 0.0;
+    double lowerBoundZ = 0.0;
+    double upperBoundZ = 0.0;
+    bool inXBound = true;
+    bool inYBound = true;
+    bool inZBound = true;
+
+    //get boundaries
+    //use first observation to initialize boundaries.
+    //boundary size 0.3mm
+    if(observations.size()>0){
+        lowerBoundX = observations.at(0)->myXyz.getAt(0)-0.00015;
+        upperBoundX = observations.at(0)->myXyz.getAt(0)+0.00015;
+        lowerBoundY = observations.at(0)->myXyz.getAt(1)-0.00015;
+        upperBoundY = observations.at(0)->myXyz.getAt(1)+0.00015;
+        lowerBoundZ = observations.at(0)->myXyz.getAt(2)-0.00015;
+        upperBoundZ = observations.at(0)->myXyz.getAt(2)+0.00015;
+
+        //check if observation components are in the boundary
+        foreach (Observation *obs, observations) {
+            if(obs->myXyz.getAt(0) > upperBoundX || obs->myXyz.getAt(0) < lowerBoundX){
+                inXBound = false;
+            }
+
+            if(obs->myXyz.getAt(1) > upperBoundY || obs->myXyz.getAt(1) < lowerBoundY){
+                inYBound = false;
+            }
+
+            if(obs->myXyz.getAt(2) > upperBoundZ || obs->myXyz.getAt(2) < lowerBoundZ){
+                inZBound = false;
+            }
+        }
+        //check if all observation components are within the boundary
+        //if yes; don´t translate this component
+        if(inXBound){
+           translation.setAt(0,0.0);
+        }
+        if(inYBound){
+           translation.setAt(1,0.0);
+        }
+        if(inZBound){
+           translation.setAt(2,0.0);
+        }
+    }
+    //return the edited translation
+    return translation;
 }
