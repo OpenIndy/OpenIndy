@@ -22,6 +22,12 @@ protected:
     void paintEvent(QPaintEvent* event);
     void mouseMoveEvent(QMouseEvent * event);
 
+private:
+    QVector<double> _bins;
+    double maxError;
+    double minError;
+    double errorScale;
+
 
 
 };

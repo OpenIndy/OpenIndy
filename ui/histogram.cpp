@@ -10,37 +10,34 @@ Histogram::Histogram(QWidget *parent) :
 
 void Histogram::paintData(FeatureWrapper* f, QString attributeToDraw)
 {
+
+    maxError = f->getGeometry()->getStatistic().simulationData.xyz.at(0).getAt(0);
+    minError = f->getGeometry()->getStatistic().simulationData.xyz.at(0).getAt(0);
+
+    foreach(OiVec v, f->getGeometry()->getStatistic().simulationData.xyz){
+       if(v.getAt(0) > maxError){
+           maxError = v.getAt(0);
+       }
+       if(v.getAt(0) < minError){
+           minError = v.getAt(0);
+       }
+    }
+
+    errorScale = 1/(maxError-minError);
+
+    foreach(OiVec v, f->getGeometry()->getStatistic().simulationData.xyz){
+         _bins.append(errorScale*(maxError-v.getAt(0)));
+    }
+
+
     this->repaint();
 }
 
 void Histogram::paintEvent(QPaintEvent *event)
 {
 
-    //#####testdata######
-    QVector<double> _bins;
-    int _heightMax = 1;
-    for(int i = 0; i<10;i++){
-        double rv = (double) rand() / (double) RAND_MAX;
-        _bins.append(rv);
-    }
 
-
-    /*Geometry* g = NULL;
-
-    foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
-            if(f->getGeometry() != NULL){
-                g = f->getGeometry();
-                break;
-            }
-    }
-
-    if(g != NULL){
-        Statistic s = g->getStatistic();
-
-        foreach(OiVec v,s.simulationData.xyz){
-            _bins.append(v.getAt(0));
-        }
-    }*/
+    double _heightMax = 1.0;
 
     //#################
 
@@ -80,11 +77,11 @@ void Histogram::paintEvent(QPaintEvent *event)
        }
 
        // Find maximum height in bins unit
-       int heightMax=1;
+       double heightMax=1.0;
        for( int i=0; i<nbBins; ++i )
            if( _bins[i]>heightMax ) heightMax = _bins[i];
 
-       // Avoid giggling graph: do not update heightmax if variation <5%
+       //Avoid giggling graph: do not update heightmax if variation <5%
        if( abs(_heightMax-heightMax)/float(_heightMax) > 0.05f )
            _heightMax = heightMax;
 
@@ -96,9 +93,9 @@ void Histogram::paintEvent(QPaintEvent *event)
 
        if( nbBins < width )
        {
-           float wScale = width/float(nbBins);
-           float hScale = height/float(_heightMax);
-           float hScaleLog = height/log(float(_heightMax));
+           float wScale =  width/float(nbBins);
+           float hScale =  height/float(_heightMax);
+           float hScaleLog =  height/log(float(_heightMax));
 
            // log(bins)
            pen.setColor("#00aaee");   painter.setPen(pen);
@@ -119,7 +116,7 @@ void Histogram::paintEvent(QPaintEvent *event)
            pen.setColor("#016790");
            painter.setPen(pen);
            linearGradient.setColorAt(0.2, Qt::white);
-           linearGradient.setColorAt(1.0, "#016790");
+           //linearGradient.setColorAt(1.0, "#016790");
            painter.setBrush(linearGradient);
 
            myPolygon.clear();
@@ -133,9 +130,9 @@ void Histogram::paintEvent(QPaintEvent *event)
        }
        else
        {
-           float wScale = float(nbBins-1)/(width-1);
-           float hScale = height/float(_heightMax);
-           float hScaleLog = height/log(float(_heightMax));
+           float wScale =  float(nbBins-1)/(width-1);
+           float hScale =  height/float(_heightMax);
+           float hScaleLog =  height/log(float(_heightMax));
 
            // log(bins)
            pen.setColor("#00aaee");   painter.setPen(pen);
