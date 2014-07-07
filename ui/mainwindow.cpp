@@ -491,7 +491,7 @@ void MainWindow::setupTotalStationPad(){
     ui->toolBar_ControlPad->addAction(cPsep3);
     ui->toolBar_ControlPad->addAction(actionToggleSightOrientation);
     ui->toolBar_ControlPad->addAction(cPsep4);
-    ui->toolBar_ControlPad->addAction(actionAim);
+    ui->toolBar_ControlPad->addAction(actionMove);
 
 }
 
@@ -564,6 +564,7 @@ void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig mC){
         }else{
             OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(mC);
         }
+        this->control.lastmConfig = mC;
     }
 }
 

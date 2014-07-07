@@ -12,6 +12,7 @@
 #include <QApplication>
 #include <QStringListModel>
 
+#include "configuration.h"
 #include "console.h"
 #include "tablemodel.h"
 #include "measurementconfig.h"
