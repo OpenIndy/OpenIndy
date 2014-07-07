@@ -382,23 +382,6 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
 {
     OiVec s(4);
 
-    //get the current rotation matrix
-    OiMat rotMat;
-    try{
-       rotMat = this->getRotationMatrix(rot).inv(); // try to calc the inverse
-    }catch(runtime_error e){
-       return false;
-    }catch(logic_error e){
-        return false;
-    }
-    QList<OiVec> tmpRefList;
-
-    //rotate the reference system to local system
-    for(int i=0; i<this->refSystem.size(); i++){
-        OiVec tmpRef = rotMat*this->refSystem.at(i);
-        tmpRefList.append(tmpRef);
-    }
-
     if(useTemp){
         //get approx of scale from temperature and expansion coefficient
         s.setAt(0,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
@@ -410,6 +393,23 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
         double sx = 0.0;
         double sy = 0.0;
         double sz = 0.0;
+
+        //get the current rotation matrix
+        OiMat rotMat;
+        try{
+           rotMat = this->getRotationMatrix(rot).inv(); // try to calc the inverse
+        }catch(runtime_error e){
+           return false;
+        }catch(logic_error e){
+            return false;
+        }
+        QList<OiVec> tmpRefList;
+
+        //rotate the reference system to local system
+        for(int i=0; i<this->refSystem.size(); i++){
+            OiVec tmpRef = rotMat*this->refSystem.at(i);
+            tmpRefList.append(tmpRef);
+        }
 
         for(int i=1; i<this->locSystem.size(); i++){
             //get x y and z component of vector from point 0 to i in loc system
@@ -426,20 +426,21 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
             //check if the scale from current two points is bigger than the scale from last points
             //if yes, set current scale as actual scale for the coordinate component
 
-            //0.005 is criteria, because of noisy measurements
-            if(sxLoc <= 0.005 || sxRef <= 0.005){
+            //0.050m is criteria, because of noisy measurements
+            //and no representative distances.
+            if(sxLoc <= 0.050 || sxRef <= 0.050){
 
             }else{
                 if(sxRef/sxLoc > sx){sx = (sxRef/sxLoc);}
             }
 
-            if(syLoc <= 0.005 || syRef <=0.005){
+            if(syLoc <= 0.050 || syRef <=0.050){
 
             }else{
                 if(syRef/syLoc > sy){sy = (syRef/syLoc);}
             }
 
-            if(szLoc <= 0.005 || szRef <= 0.005){
+            if(szLoc <= 0.050 || szRef <= 0.050){
 
             }else{
                 if(szRef/szLoc > sz){sz = (szRef/szLoc);}
