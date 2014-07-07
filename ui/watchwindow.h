@@ -14,6 +14,7 @@
 #include "unitconverter.h"
 #include "oifeaturestate.h"
 #include <QCheckBox>
+#include "watchwindowlistener.h"
 
 namespace Ui {
 class WatchWindow;
@@ -27,14 +28,22 @@ public:
     explicit WatchWindow(QWidget *parent = 0);
     ~WatchWindow();
 
+    WatchWindowListener *listener;
+
+    QThread listenerThread;
+
     double az;
 
 signals:
     void startMeasure();
 
+    void sendSettingsReady(bool);
+    void sendCheckBoxReady(bool);
+    void sendGUIReady(bool);
+
 private slots:
     void setLCDNumber(QVariantMap);
-    void iniGUI(QVariantMap m);
+    void iniGUI();
 
     //reimplemented
     void keyPressEvent(QKeyEvent * e);
@@ -43,7 +52,7 @@ private slots:
 
     void initSuppReadings();
 
-    void getAttributes(QVariantMap m);
+    void getAttributes(QStringList l);
 
     void on_comboBox_suppReadings_currentIndexChanged(const QString &arg1);
 
@@ -52,14 +61,17 @@ private:
     QVBoxLayout* masterLayout;
     QVBoxLayout* settingsLayout;
 
-    bool isGUIReady;
+    //bool isGUIReady;
     int digitCount;
-    bool isSettingsReady;
-    bool isCheckboxReady;
+    //bool isSettingsReady;
+    //bool isCheckboxReady;
 
     QMap<QString,QLCDNumber*> streamData;
 
     QList<QCheckBox*> checkboxes;
+
+    QList<QWidget*> widgets;
+    QList<QLayout*> layouts;
 
 };
 

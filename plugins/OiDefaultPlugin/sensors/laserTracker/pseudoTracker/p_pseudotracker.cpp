@@ -423,10 +423,11 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
         r.rPolar.zenith = myZenith;
         r.rPolar.distance = myDistance;
         r.rPolar.isValid = true;
+        r.typeofReading = Configuration::ePolar;
 
-        r.typeofReading = Configuration::eCartesian;
         this->noisyPolarReading(&r);
 
+        r.typeofReading = Configuration::eCartesian;
         r.toCartesian();
 
         x =r.rCartesian.xyz.getAt(0);
@@ -444,7 +445,6 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
         r.rDistance.isValid = true;
 
         r.typeofReading = Configuration::eDistance;
-        this->noisyPolarReading(&r);
 
         distance = r.rDistance.distance;
 
@@ -458,7 +458,6 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
         r.rDirection.isValid = true;
 
         r.typeofReading = Configuration::eDirection;
-        this->noisyPolarReading(&r);
 
         azimuth = r.rDirection.azimuth;
         zenith = r.rDirection.zenith;

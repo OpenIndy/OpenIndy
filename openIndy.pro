@@ -157,7 +157,8 @@ SOURCES += \
     controller/oiDataExchange/oiexchangepts.cpp \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
-    ui/oiGraphixFactory/oigraphix_pointcloud.cpp
+    ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
+    ui/watchwindowlistener.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -280,7 +281,8 @@ HEADERS  += \
     controller/oiDataExchange/oiexchangepts.h \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
-    ui/oiGraphixFactory/oigraphix_pointcloud.h
+    ui/oiGraphixFactory/oigraphix_pointcloud.h \
+    ui/watchwindowlistener.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
