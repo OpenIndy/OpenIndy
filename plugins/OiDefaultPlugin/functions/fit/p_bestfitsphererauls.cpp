@@ -51,6 +51,7 @@ QList<Configuration::FeatureTypes> BestFitSphereRauls::applicableFor(){
  * \return
  */
 int BestFitSphereRauls::setUpObservations(){
+    this->myValidObservations.clear();
     int count = 0;
     foreach(Observation *obs, this->observations){
         if(obs->isValid){
