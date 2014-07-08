@@ -70,13 +70,43 @@ bool BestFitSphere::exec(Sphere &s){
             }
         }
 
+        //calculate centroid of given observations
+        double centroid[3];
+        centroid[0] = 0.0;
+        centroid[1] = 0.0;
+        centroid[2] = 0.0;
+        for(int i = 0; i < obsCount; i++){
+            centroid[0] += x[i];
+            centroid[1] += y[i];
+            centroid[2] += z[i];
+        }
+        centroid[0] = centroid[0] / (float)obsCount;
+        centroid[1] = centroid[1] / (float)obsCount;
+        centroid[2] = centroid[2] / (float)obsCount;
+
+        //reduce observations by centroid
+        for(int i = 0; i < obsCount; i++){
+            x[i] = x[i] - centroid[0];
+            y[i] = y[i] - centroid[1];
+            z[i] = z[i] - centroid[2];
+        }
+
         //adjust
         double r;
         double xm[3];
         double qxx[4*4];
         if( fitting_sphere(x, y, z, obsCount , xm, &r, qxx) ){
+
+            //add centroid coordinates to the center of the sphere
+            xm[0] += centroid[0];
+            xm[1] += centroid[1];
+            xm[2] += centroid[2];
+
             this->setUpResult(s, x, y, z, obsCount, xm, r, qxx);
+
+
             check = true;
+
         }else{
             this->writeToConsole("Unknown error while fitting sphere");
         }
