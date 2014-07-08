@@ -299,8 +299,8 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
         }
     }
     rotation.setAt(3, 3, 1.0);
-    //tp translation * scale * rotation;
-    tp.generateHomogenMatrix();
+    tp.setHomogenMatrix(translation * scale * rotation);
+    //tp.generateHomogenMatrix();
 }
 
 /*!

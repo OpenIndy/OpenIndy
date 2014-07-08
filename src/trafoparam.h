@@ -23,7 +23,7 @@ public:
     ~TrafoParam();
 
     OiMat getHomogenMatrix() const;
-    void generateHomogenMatrix();
+    void setHomogenMatrix(OiMat hm);
     OiVec getTranslation() const;
     bool setTranslation(double tx, double ty, double tz);
     OiVec getRotation() const;
