@@ -156,7 +156,14 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
         tp.setScale(scale,scale,scale);
         tp.setTranslation(0.0,0.0,0.0);
         tp.setRotation(0.0,0.0,0.0);
-        tp.generateHomogenMatrix();
+
+        OiMat hm(4,4);
+        hm.setAt(0,0,scale);
+        hm.setAt(1,1,scale);
+        hm.setAt(2,2,scale);
+        hm.setAt(3,3,1.0);
+
+        tp.setHomogenMatrix(hm);
 
         this->calcAccuracy(tp,tempAccuracy,expansion);
     }

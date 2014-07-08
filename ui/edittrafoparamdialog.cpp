@@ -126,7 +126,7 @@ void EditTrafoparamDialog::getValues()
     OiFeatureState::getActiveFeature()->getTrafoParam()->setTranslation(tx,ty,tz);
     OiFeatureState::getActiveFeature()->getTrafoParam()->setRotation(rx,ry,rz);
     OiFeatureState::getActiveFeature()->getTrafoParam()->setScale(sx,sy,sz);
-    OiFeatureState::getActiveFeature()->getTrafoParam()->generateHomogenMatrix();
+    //OiFeatureState::getActiveFeature()->getTrafoParam()->setHomogenMatrix();
 }
 
 /*!

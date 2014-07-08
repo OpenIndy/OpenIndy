@@ -59,9 +59,11 @@ void TrafoParam::recalc(){
  * This function is called, if the user sets some values for transformation by hand via the transformation parameter
  * input dialog.
  */
-void TrafoParam::generateHomogenMatrix()
+void TrafoParam::setHomogenMatrix(OiMat hm)
 {
-    OiMat tmpTranslation(4,4);
+    this->homogenMatrix = hm;
+
+    /*OiMat tmpTranslation(4,4);
     OiMat tmpRotation(4,4);
     OiMat tmpScale(4,4);
 
@@ -116,7 +118,7 @@ void TrafoParam::generateHomogenMatrix()
     tmpRotation.setAt(3,2,0.0);
     tmpRotation.setAt(3,3,1.0);
 
-    this->homogenMatrix = tmpTranslation*tmpScale*tmpRotation;
+    this->homogenMatrix = tmpTranslation*tmpScale*tmpRotation;*/
 
     emit this->transformationParameterChanged(this->id);
 }
