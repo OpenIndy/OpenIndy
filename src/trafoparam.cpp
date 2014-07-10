@@ -12,6 +12,9 @@ TrafoParam::TrafoParam(QObject *parent) : Feature(parent), homogenMatrix(4, 4), 
     this->validTime = QDateTime::currentDateTime();
     this->isMovement = false;
     this->isDatumTrafo = false;
+    this->scale.setAt(0, 1.0);
+    this->scale.setAt(1, 1.0);
+    this->scale.setAt(2, 1.0);
 }
 
 TrafoParam::~TrafoParam(){
@@ -56,12 +59,40 @@ void TrafoParam::recalc(){
 }
 /*!
  * \brief set up the homogenious matrix for transformation.
- * This function is called, if the user sets some values for transformation by hand via the transformation parameter
- * input dialog.
+ * Sets the transformation parameters. Input are 3 4x4 homogeneous matrices
  */
-void TrafoParam::setHomogenMatrix(OiMat hm)
-{
-    this->homogenMatrix = hm;
+bool TrafoParam::setHomogenMatrix(OiMat rotation, OiMat translation, OiMat scale){
+
+    if(rotation.getColCount() == 4 && rotation.getRowCount() == 4
+            && translation.getColCount() == 4 && translation.getRowCount() == 4
+            && scale.getColCount() == 4 && scale.getRowCount() == 4){
+
+        OiVec t(3);
+        OiVec r(3);
+        OiVec s(3);
+        for(int i = 0; i < 3; i++){
+            t.setAt(i, translation.getAt(i, 3));
+            s.setAt(i, scale.getAt(i, i));
+        }
+
+        r.setAt(0, qAtan2(-rotation.getAt(2,1), rotation.getAt(2,2))); //alpha
+        r.setAt(1, qAsin(rotation.getAt(2,0))); //beta
+        r.setAt(2, qAtan2(-rotation.getAt(1,0), rotation.getAt(0,0))); //gamma
+        if( qFabs(qCos(r.getAt(1)) * qCos(r.getAt(2))) - qFabs(rotation.getAt(0,0)) > 0.01 ){
+            r.setAt(1, PI - r.getAt(1));
+        }
+
+        this->translation = t;
+        this->scale = s;
+        this->rotation = r;
+
+        this->homogenMatrix = translation * scale * rotation;
+
+    }else{
+        return false;
+    }
+
+
 
     /*OiMat tmpTranslation(4,4);
     OiMat tmpRotation(4,4);
@@ -110,7 +141,7 @@ void TrafoParam::setHomogenMatrix(OiMat hm)
     tmpRotation.setAt(1,2,qSin(this->rotation.getAt(0))*qCos(this->rotation.getAt(2))+qCos(this->rotation.getAt(0))*qSin(this->rotation.getAt(1))*qSin(this->rotation.getAt(2)));
     tmpRotation.setAt(1,3,0.0);
     tmpRotation.setAt(2,0,qSin(this->rotation.getAt(1)));
-    tmpRotation.setAt(2,1,-qSin(this->rotation.getAt(0))*qCos(this->rotation.getAt(2)));
+    tmpRotation.setAt(2,1,-qSin(this->rotation.getAt(0))*qCos(this->rotation.getAt(1)));
     tmpRotation.setAt(2,2,qCos(this->rotation.getAt(0))*qCos(this->rotation.getAt(1)));
     tmpRotation.setAt(2,3,0.0);
     tmpRotation.setAt(3,0,0.0);
@@ -121,6 +152,7 @@ void TrafoParam::setHomogenMatrix(OiMat hm)
     this->homogenMatrix = tmpTranslation*tmpScale*tmpRotation;*/
 
     emit this->transformationParameterChanged(this->id);
+    return true;
 }
 
 /*!
@@ -132,17 +164,6 @@ OiVec TrafoParam::getTranslation() const{
 }
 
 /*!
- * \brief TrafoParam::setTranslation
- * \param translation
- */
-bool TrafoParam::setTranslation(double tx, double ty, double tz){
-    this->translation.setAt(0, tx);
-    this->translation.setAt(1, ty);
-    this->translation.setAt(2, tz);
-    return true;
-}
-
-/*!
  * \brief TrafoParam::getRotation
  * \return
  */
@@ -151,34 +172,11 @@ OiVec TrafoParam::getRotation() const{
 }
 
 /*!
- * \brief TrafoParam::setRotation
- * \param rotation
- */
-bool TrafoParam::setRotation(double rx, double ry, double rz){
-    this->rotation.setAt(0, rx);
-    this->rotation.setAt(1, ry);
-    this->rotation.setAt(2, rz);
-    return true;
-}
-
-/*!
  * \brief TrafoParam::getScale
  * \return
  */
 OiVec TrafoParam::getScale() const{
     return this->scale;
-}
-
-/*!
- * \brief TrafoParam::setScale
- * \param scale
- * \return
- */
-bool TrafoParam::setScale(double mx, double my, double mz){
-    this->scale.setAt(0, mx);
-    this->scale.setAt(1, my);
-    this->scale.setAt(2, mz);
-    return true;
 }
 
 /*!

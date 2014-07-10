@@ -165,6 +165,7 @@ void MainWindow::setConnects(){
     connect(this->cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
     connect(this->sEntityDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
     connect(this->sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
+    connect(this->cFeatureDialog,SIGNAL(trafoParamCreated()),this,SLOT(trafoParamAdded()));
 
     //sensor plugin dialog
     connect(&this->sPluginDialog,SIGNAL(sendSensorType(Configuration::SensorTypes)),&this->control,SLOT(setSensorModel(Configuration::SensorTypes)));
@@ -1545,6 +1546,14 @@ void MainWindow::updateGeometryIcons(QStringList availableGeometries){
 
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"station",Configuration::eStationFeature);
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
+}
+
+/*!
+ * \brief trafoParamAdded switches to the trafoParam view
+ */
+void MainWindow::trafoParamAdded()
+{
+    ui->tabWidget_views->setCurrentIndex(2);
 }
 
 /*!

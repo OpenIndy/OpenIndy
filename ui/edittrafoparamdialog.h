@@ -49,6 +49,10 @@ private slots:
 
 private:
     Ui::EditTrafoparamDialog *ui;
+
+    OiMat getTranslationMatrix(double tx, double ty, double tz);
+    OiMat getScaleMatrix(double sx, double sy, double sz);
+    OiMat getRotationMatrix(double rx, double ry, double rz);
 };
 
 #endif // EDITTRAFOPARAMDIALOG_H

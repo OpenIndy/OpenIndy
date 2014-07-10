@@ -123,10 +123,11 @@ void EditTrafoparamDialog::getValues()
         sz = ui->lineEdit_scaleZ->text().toDouble();
     }
 
-    OiFeatureState::getActiveFeature()->getTrafoParam()->setTranslation(tx,ty,tz);
-    OiFeatureState::getActiveFeature()->getTrafoParam()->setRotation(rx,ry,rz);
-    OiFeatureState::getActiveFeature()->getTrafoParam()->setScale(sx,sy,sz);
-    //OiFeatureState::getActiveFeature()->getTrafoParam()->setHomogenMatrix();
+    OiMat r = this->getRotationMatrix(rx,ry,rz);
+    OiMat t = this->getTranslationMatrix(tx,ty,tz);
+    OiMat s = this->getScaleMatrix(sx,sy,sz);
+
+    OiFeatureState::getActiveFeature()->getTrafoParam()->setHomogenMatrix(r, t, s);
 }
 
 /*!
@@ -185,4 +186,76 @@ void EditTrafoparamDialog::on_comboBox_displayedFunction_currentIndexChanged(con
         }
 
     }
+}
+
+OiMat EditTrafoparamDialog::getTranslationMatrix(double tx, double ty, double tz)
+{
+    OiMat tmpTranslation(4,4);
+
+    tmpTranslation.setAt(0,0,1.0);
+    tmpTranslation.setAt(0,1,0.0);
+    tmpTranslation.setAt(0,2,0.0);
+    tmpTranslation.setAt(0,3,tx);
+    tmpTranslation.setAt(1,0,0.0);
+    tmpTranslation.setAt(1,1,1.0);
+    tmpTranslation.setAt(1,2,0.0);
+    tmpTranslation.setAt(1,3,ty);
+    tmpTranslation.setAt(2,0,0.0);
+    tmpTranslation.setAt(2,1,0.0);
+    tmpTranslation.setAt(2,2,1.0);
+    tmpTranslation.setAt(2,3,tz);
+    tmpTranslation.setAt(3,0,0.0);
+    tmpTranslation.setAt(3,1,0.0);
+    tmpTranslation.setAt(3,2,0.0);
+    tmpTranslation.setAt(3,3,1.0);
+
+    return tmpTranslation;
+}
+
+OiMat EditTrafoparamDialog::getScaleMatrix(double sx, double sy, double sz)
+{
+    OiMat tmpScale(4,4);
+
+    tmpScale.setAt(0,0,sx);
+    tmpScale.setAt(0,1,0.0);
+    tmpScale.setAt(0,2,0.0);
+    tmpScale.setAt(0,3,0.0);
+    tmpScale.setAt(1,0,0.0);
+    tmpScale.setAt(1,1,sy);
+    tmpScale.setAt(1,2,0.0);
+    tmpScale.setAt(1,3,0.0);
+    tmpScale.setAt(2,0,0.0);
+    tmpScale.setAt(2,1,0.0);
+    tmpScale.setAt(2,2,sz);
+    tmpScale.setAt(2,3,0.0);
+    tmpScale.setAt(3,0,0.0);
+    tmpScale.setAt(3,1,0.0);
+    tmpScale.setAt(3,2,0.0);
+    tmpScale.setAt(3,3,1.0);
+
+    return tmpScale;
+}
+
+OiMat EditTrafoparamDialog::getRotationMatrix(double rx, double ry, double rz)
+{
+    OiMat tmpRotation(4,4);
+
+    tmpRotation.setAt(0,0,qCos(ry)*qCos(rz));
+    tmpRotation.setAt(0,1,qCos(rx)*qSin(rz)+qSin(rx)*qSin(ry)*qCos(rz));
+    tmpRotation.setAt(0,2,qSin(rx)*qSin(rz)-qCos(rx)*qSin(ry)*qCos(rz));
+    tmpRotation.setAt(0,3,0.0);
+    tmpRotation.setAt(1,0,-qCos(ry)*qSin(rz));
+    tmpRotation.setAt(1,1,qCos(rx)*qCos(rz)-qSin(rx)*qSin(ry)*qSin(rz));
+    tmpRotation.setAt(1,2,qSin(rx)*qCos(rz)+qCos(rx)*qSin(ry)*qSin(rz));
+    tmpRotation.setAt(1,3,0.0);
+    tmpRotation.setAt(2,0,qSin(ry));
+    tmpRotation.setAt(2,1,-qSin(rx)*qCos(ry));
+    tmpRotation.setAt(2,2,qCos(rx)*qCos(ry));
+    tmpRotation.setAt(2,3,0.0);
+    tmpRotation.setAt(3,0,0.0);
+    tmpRotation.setAt(3,1,0.0);
+    tmpRotation.setAt(3,2,0.0);
+    tmpRotation.setAt(3,3,1.0);
+
+    return tmpRotation;
 }

@@ -152,18 +152,23 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
 
         double expansion = (actualTemp-refTemp)*expansionCoefficient;
         protExpansion = QString::number(expansion,'f',4);
-        double scale = (1+ (expansion));
-        tp.setScale(scale,scale,scale);
-        tp.setTranslation(0.0,0.0,0.0);
-        tp.setRotation(0.0,0.0,0.0);
+        double m = (1+ (expansion));
+        //tp.setScale(scale,scale,scale);
+        //tp.setTranslation(0.0,0.0,0.0);
+        //tp.setRotation(0.0,0.0,0.0);
 
-        OiMat hm(4,4);
-        hm.setAt(0,0,scale);
-        hm.setAt(1,1,scale);
-        hm.setAt(2,2,scale);
-        hm.setAt(3,3,1.0);
+        OiMat eMat(4,4);
+        for(int i = 0; i < 4; i++){
+            eMat.setAt(i,i, 1.0);
+        }
 
-        tp.setHomogenMatrix(hm);
+        OiMat scale(4,4);
+        scale.setAt(0,0,m);
+        scale.setAt(1,1,m);
+        scale.setAt(2,2,m);
+        scale.setAt(3,3,1.0);
+
+        tp.setHomogenMatrix(eMat, eMat, scale);
 
         this->calcAccuracy(tp,tempAccuracy,expansion);
     }
