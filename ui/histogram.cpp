@@ -11,6 +11,8 @@ Histogram::Histogram(QWidget *parent) :
 void Histogram::paintData(FeatureWrapper* f, QString attributeToDraw)
 {
 
+    //_bins.clear();
+
     maxError = f->getGeometry()->getStatistic().simulationData.xyz.at(0).getAt(0);
     minError = f->getGeometry()->getStatistic().simulationData.xyz.at(0).getAt(0);
 

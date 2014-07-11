@@ -7,17 +7,19 @@ OiSimulationWidget::OiSimulationWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    masterLayout = NULL;
+
 
     this->ui->listView_simulations->setModel(this->control.availableSimulations);
 
     this->ui->tableView_sensor->setModel(control.sensorErrorModel);
+    this->ui->tableView_object->setModel(control.objectErrorModel);
+    this->ui->tableView_humanInfluence->setModel(control.humanErrorModel);
+    this->ui->tableView_environmet->setModel(control.environmentErrorModel);
     this->ui->treeView_feature->setModel(control.resultModel);
 
     SimulationDelegate *errorDelegate = new SimulationDelegate();
     this->ui->tableView_sensor->setItemDelegate(errorDelegate);
-
-    this->ui->progressBar->setMaximum(1000);
-    this->ui->progressBar->setMinimum(0);
 
     connect(this,SIGNAL(startSimulation()),&this->control,SLOT(recalcAll()));
     connect(&this->control,SIGNAL(counter(int)),this->ui->progressBar,SLOT(setValue(int)));
@@ -41,7 +43,14 @@ void OiSimulationWidget::setFeatureUpdater(FeatureUpdater *f)
 
 void OiSimulationWidget::on_pushButton_startSimulation_clicked()
 {
+
+    this->ui->progressBar->setMaximum(ui->spinBox_iteration->value());
+    this->ui->progressBar->setMinimum(0);
     ui->progressBar->setValue(0);
+
+    control.setIterations(ui->spinBox_iteration->value());
+
+    this->setSettings();
 
     if(control.actualSimulation == NULL){
 
@@ -71,6 +80,16 @@ void OiSimulationWidget::on_listView_simulations_clicked(const QModelIndex &inde
         control.setSimulationAt(index.row());
 
         control.sensorErrorModel->setErrors(control.actualSimulation->getSensorUncertainties());
+        control.objectErrorModel->setErrors(control.actualSimulation->getObjectUncertainties());
+        control.humanErrorModel->setErrors(control.actualSimulation->getHumanInfluence());
+        control.environmentErrorModel->setErrors(control.actualSimulation->getEnviromentUncertainties());
+
+
+        this->makeSettingsGui();
+
+        ui->tableView_sensor->resizeColumnsToContents();
+        ui->tableView_sensor->resizeRowsToContents();
+
         Console::addLine(control.actualSimulation->getMetaData()->name);
     }
 }
@@ -94,5 +113,163 @@ void OiSimulationWidget::on_treeView_feature_clicked(const QModelIndex &index)
 
         }
     }
+
+}
+
+void OiSimulationWidget::makeSettingsGui()
+{
+
+    foreach(QComboBox *c, comboBoxes.values()){
+        delete c;
+    }
+    comboBoxes.clear();
+
+    foreach(QLineEdit *e, doubleLineEdits.values()){
+        delete e;
+    }
+    doubleLineEdits.clear();
+
+    foreach(QLineEdit *e, intLineEdits.values()){
+        delete e;
+    }
+    intLineEdits.clear();
+
+    foreach(QLabel *la, labels){
+        delete la;
+    }
+    labels.clear();
+
+    foreach(QLayout *ly, layouts){
+        delete ly;
+    }
+    layouts.clear();
+
+    if(masterLayout != NULL){
+      delete masterLayout;
+    }
+    masterLayout = new QVBoxLayout();
+
+
+    control.getDefaultSettings();
+
+    if(control.getIntegerParamter() != NULL){
+       QMapIterator<QString,int> j(*control.getIntegerParamter());
+       while (j.hasNext()) {
+           j.next();
+
+           QLabel* l = new QLabel();
+           l->setText(j.key());
+
+           QLineEdit *le = new QLineEdit();
+           le->setText(QString::number(j.value()));
+
+           QHBoxLayout *hLayout = new QHBoxLayout();
+           hLayout->addWidget(l);
+           hLayout->addWidget(le);
+
+           hLayout->setStretch(0,1);
+           hLayout->setStretch(1,1);
+
+           labels.append(l);
+           intLineEdits.insert(j.key(),le);
+
+           layouts.append(hLayout);
+
+           masterLayout->addLayout(hLayout);
+       }
+    }
+
+    if(control.getDoubleParamter() != NULL){
+       QMapIterator<QString,double> j(*control.getDoubleParamter());
+       while (j.hasNext()) {
+           j.next();
+
+           QLabel* l = new QLabel();
+           l->setText(j.key());
+
+           QLineEdit *le = new QLineEdit();
+           le->setText(QString::number(j.value()));
+
+           QHBoxLayout *hLayout = new QHBoxLayout();
+           hLayout->addWidget(l);
+           hLayout->addWidget(le);
+
+           hLayout->setStretch(0,1);
+           hLayout->setStretch(1,1);
+
+           labels.append(l);
+           doubleLineEdits.insert(j.key(),le);
+
+           layouts.append(hLayout);
+
+           masterLayout->addLayout(hLayout);
+       }
+    }
+
+    if(control.getStringParamter() != NULL){
+       QMapIterator<QString,QStringList> j(*control.getStringParamter());
+       while (j.hasNext()) {
+           j.next();
+
+           QLabel* l = new QLabel();
+           l->setText(j.key());
+
+           QComboBox *cb = new QComboBox();
+           cb->addItems(j.value());
+
+           QHBoxLayout *hLayout = new QHBoxLayout();
+           hLayout->addWidget(l);
+           hLayout->addWidget(cb);
+
+           hLayout->setStretch(0,1);
+           hLayout->setStretch(1,1);
+
+           labels.append(l);
+           comboBoxes.insert(j.key(),cb);
+
+           layouts.append(hLayout);
+
+           masterLayout->addLayout(hLayout);
+       }
+    }
+
+
+    ui->groupBox_customSettings->setLayout(masterLayout);
+}
+
+void OiSimulationWidget::setSettings()
+{
+
+    if(intLineEdits.size() > 0){
+       QMapIterator<QString,QLineEdit*> j(intLineEdits);
+       while (j.hasNext()) {
+           j.next();
+
+           control.setSettingItem(j.key(),j.value()->text().toInt());
+
+        }
+    }
+
+    if(doubleLineEdits.size() > 0){
+       QMapIterator<QString,QLineEdit*> j(doubleLineEdits);
+       while (j.hasNext()) {
+           j.next();
+
+           control.setSettingItem(j.key(),j.value()->text().toDouble());
+
+        }
+    }
+
+    if(comboBoxes.size() > 0){
+       QMapIterator<QString,QComboBox*> j(comboBoxes);
+       while (j.hasNext()) {
+           j.next();
+
+           control.setSettingItem(j.key(),j.value()->currentText());
+
+        }
+    }
+
+    control.setSettings();
 
 }

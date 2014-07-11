@@ -295,17 +295,34 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getHumanInfluence()
 
 QMap<QString, int> *SimplePolarMeasurement::getIntegerParameter()
 {
-    return NULL;
+    QMap<QString,int>*  intParam = new QMap<QString,int>;
+
+    intParam->insert("level of uncertainty",1.0);
+
+    return intParam;
 }
 
 QMap<QString, double> *SimplePolarMeasurement::getDoubleParameter()
 {
-    return NULL;
+    QMap<QString,double>* doubleParam = new QMap<QString,double>;
+
+    doubleParam->insert("part size [m]",5.0);
+
+    return doubleParam;
 }
 
 QMap<QString, QStringList> *SimplePolarMeasurement::getStringParameter()
 {
-    return NULL;
+    QMap <QString, QStringList>* stringParameter = new QMap<QString, QStringList>;
+
+    QStringList dice;
+
+    dice.append("no");
+    dice.append("yes");
+
+    stringParameter->insert("dice error for every reading",dice);
+
+    return stringParameter;
 }
 
 bool SimplePolarMeasurement::distort(Reading *r,OiMat objectRelation)

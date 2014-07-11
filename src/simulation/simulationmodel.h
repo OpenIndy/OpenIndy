@@ -100,9 +100,20 @@ public:
     Uncertainties getGivenUncertainties(){return givenUncertainties;}
     void setGivenUncertainties(Uncertainties u){givenUncertainties = u;}
 
+    void setIntegerParameter(QMap<QString,int>* m){this->integerParameter = m;}
+    void setDoubleParameter(QMap<QString,double>* m) {this->doubleParameter = m;}
+    void setStringParameter(QMap <QString, QString>* m) {this->stringParameter = m;}
+
+
 protected:
 
     Uncertainties givenUncertainties;
+
+    QMap<QString,int>* integerParameter;
+    QMap<QString,double>* doubleParameter;
+    QMap <QString, QString>* stringParameter;
+
+
 
 };
 

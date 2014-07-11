@@ -5,6 +5,9 @@
 #include <QDebug>
 #include <QThread>
 #include <QMessageBox>
+#include <QLayout>
+#include <QVBoxLayout>
+#include <QSpinBox>
 #include "featureupdater.h"
 #include "oifeaturestate.h"
 #include "simulationcontroller.h"
@@ -41,6 +44,16 @@ signals:
 
 private:
     Ui::OiSimulationWidget *ui;
+    QList<QLayout*> layouts;
+    QList<QLabel*> labels;
+    QMap<QString,QLineEdit*> intLineEdits;
+    QMap<QString,QLineEdit*> doubleLineEdits;
+    QMap<QString,QComboBox*> comboBoxes;
+
+    QVBoxLayout* masterLayout;
+
+    void makeSettingsGui();
+    void setSettings();
 
 
 };

@@ -46,7 +46,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidget_parameter">
            <property name="currentIndex">
-            <number>0</number>
+            <number>4</number>
            </property>
            <widget class="QWidget" name="tab_sensor">
             <attribute name="title">
@@ -92,6 +92,36 @@
             <attribute name="title">
              <string>settings</string>
             </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout" stretch="1,9">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item>
+                <widget class="QLabel" name="label_iteration">
+                 <property name="text">
+                  <string>iteration</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="spinBox_iteration">
+                 <property name="minimum">
+                  <number>10</number>
+                 </property>
+                 <property name="maximum">
+                  <number>100000</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_customSettings">
+               <property name="title">
+                <string>custom settings</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </widget>
          </item>

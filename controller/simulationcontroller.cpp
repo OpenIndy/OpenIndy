@@ -3,6 +3,7 @@
 SimulationController::SimulationController(QObject *parent) :
     QObject(parent)
 {
+    this->actualSimulation = NULL;
 
     this->availableSimulations = new QStringListModel();
 
@@ -45,14 +46,14 @@ void SimulationController::recalcAll()
 
 
 
-    for(int i = 0; i <1001; i++){
+    for(int i = 0; i <(this->iterations+1); i++){
 
     foreach(Station *s, OiFeatureState::getStations()){
         foreach(Observation *o, s->coordSys->getObservations()){
             OiMat A;
             o->myReading->restoreBackup();
 
-            if(i < 1000){
+            if(i < this->iterations){
             actualSimulation->distort(o->myReading,A);
             }
 
@@ -65,7 +66,7 @@ void SimulationController::recalcAll()
 
         myUpdater->recalcAll();
 
-        if(i < 1000){
+        if(i < this->iterations){
             foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
                 if(f->getGeometry() != NULL){
                     f->getGeometry()->saveSimulationData();
@@ -77,19 +78,60 @@ void SimulationController::recalcAll()
     }
 
 
+}
 
-    /*// safe readings/obs in a QMap
-    //logic for shuffling the observations
-    //overwrite observations/readings
+void SimulationController::setIterations(int i)
+{
+    this->iterations = i;
+}
 
-    for(int i = 0; i <1000; i++){
+int SimulationController::getIterations()
+{
+    return this->iterations;
+}
 
+void SimulationController::getDefaultSettings()
+{
+    this->simulationSettings.defaultIntegerParameter = this->actualSimulation->getIntegerParameter();
+    this->simulationSettings.defaultDoubleParameter = this->actualSimulation->getDoubleParameter();
+    this->simulationSettings.defaultStringParameter = this->actualSimulation->getStringParameter();
+}
 
-    //FeatureUpdater::recalcAll();
+void SimulationController::setSettings()
+{
+    this->actualSimulation->setIntegerParameter(&this->simulationSettings.integerParameter);
+    this->actualSimulation->setDoubleParameter(&this->simulationSettings.doubleParameter);
+    this->actualSimulation->setStringParameter(&this->simulationSettings.stringParameter);
+}
 
+void SimulationController::setSettingItem(QString key, double value)
+{
+    this->simulationSettings.doubleParameter.insert(key,value);
+}
 
-    //reset obs/readings to orignal
-    //recalc all*/
+void SimulationController::setSettingItem(QString key, int value)
+{
+    this->simulationSettings.integerParameter.insert(key,value);
+}
+
+void SimulationController::setSettingItem(QString key, QString value)
+{
+    this->simulationSettings.stringParameter.insert(key,value);
+}
+
+QMap<QString, int>* SimulationController::getIntegerParamter()
+{
+    return this->simulationSettings.defaultIntegerParameter;
+}
+
+QMap<QString, double>* SimulationController::getDoubleParamter()
+{
+    return this->simulationSettings.defaultDoubleParameter;
+}
+
+QMap<QString, QStringList>* SimulationController::getStringParamter()
+{
+    return this->simulationSettings.defaultStringParameter;
 }
 
 void SimulationController::setSimulationAt(int i)
