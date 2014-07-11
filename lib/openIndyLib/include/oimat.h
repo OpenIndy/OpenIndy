@@ -66,8 +66,8 @@ private:
 public:
 
     double getAt(const int row, const int col) const;
-    int getRowCount() const;
-    int getColCount() const;
+    unsigned int getRowCount() const;
+    unsigned int getColCount() const;
     OiVec getRow(const int row) const;
     OiVec getCol(const int col) const;
 
