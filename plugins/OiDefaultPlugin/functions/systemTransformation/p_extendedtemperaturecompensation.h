@@ -73,6 +73,12 @@ private:
     OiVec quaternion(OiMat n);
     OiMat rotationMatrix(OiVec q);
     OiVec getRotationAngles(OiMat r);
+
+
+    //to save the values in the transformation parameter
+    //rotation matrix see functions above "getRoationMatrix(OiVec rot)"
+    OiMat getTranslationMatrix(OiVec trans);
+    OiMat getScaleMatrix(OiVec s);
 };
 
 #endif // P_EXTENDEDTEMPERATURECOMPENSATION_H

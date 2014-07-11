@@ -45,9 +45,17 @@ bool Helmert6Param::exec(TrafoParam &tp)
             }else if(locSystem.count() == 3){
 
                 //fill trafo parameter
-                tp.setScale(1.0,1.0,1.0);
-                tp.setRotation(this->rotation.getAt(0),this->rotation.getAt(1),this->rotation.getAt(2));
-                tp.setTranslation(this->translation.getAt(0),this->translation.getAt(1),this->translation.getAt(2));
+                OiVec scale(4);
+                scale.setAt(0,1.0);
+                scale.setAt(1,1.0);
+                scale.setAt(2,1.0);
+                scale.setAt(3,1.0);
+
+                OiMat s = this->getScaleMatrix(scale);
+                OiMat t = this->getTranslationMatrix(this->translation);
+                OiMat r = this->getRotationMatrix(this->rotation);
+
+                tp.setHomogenMatrix(r,t,s);
                 return true;
             }
 
@@ -328,10 +336,27 @@ bool Helmert6Param::adjust(TrafoParam &tp)
     OiMat sxx = s0_post * s0_post * qxx;
 
     //set the trafo parameters with the previously calulated values and the additional values from adjustment
-    tp.setTranslation(this->translation.getAt(0)+x0.getAt(3),this->translation.getAt(1)+x0.getAt(4),this->translation.getAt(2)+x0.getAt(5));
-    tp.setRotation(this->rotation.getAt(0)+x0.getAt(0),this->rotation.getAt(1)+x0.getAt(1),this->rotation.getAt(2)+x0.getAt(2));
-    tp.setScale(1.0,1.0,1.0);
-    tp.generateHomogenMatrix();
+
+    OiVec scale(4);
+    scale.setAt(0,1.0);
+    scale.setAt(1,1.0);
+    scale.setAt(2,1.0);
+    scale.setAt(3,1.0);
+
+    this->translation.setAt(0,this->translation.getAt(0)+x0.getAt(3));
+    this->translation.setAt(1,this->translation.getAt(1)+x0.getAt(4));
+    this->translation.setAt(2,this->translation.getAt(2)+x0.getAt(5));
+
+    this->rotation.setAt(0,this->rotation.getAt(0)+x0.getAt(0));
+    this->rotation.setAt(1,this->rotation.getAt(1)+x0.getAt(1));
+    this->rotation.setAt(2,this->rotation.getAt(2)+x0.getAt(2));
+
+    OiMat r = this->getRotationMatrix(this->rotation);
+    OiMat t = this->getTranslationMatrix(this->translation);
+    OiMat s = this->getScaleMatrix(scale);
+
+    tp.setHomogenMatrix(r,t,s);
+
     result = true;
 
     return result;
@@ -552,4 +577,62 @@ OiVec Helmert6Param::getRotationAngles(OiMat r)
     rot.add(1.0);
 
     return rot;
+}
+
+/*!
+ * \brief getTranslationMatrix
+ * \param trans
+ * \return
+ */
+OiMat Helmert6Param::getTranslationMatrix(OiVec trans)
+{
+    OiMat tmpTranslation(4,4);
+
+    tmpTranslation.setAt(0,0,1.0);
+    tmpTranslation.setAt(0,1,0.0);
+    tmpTranslation.setAt(0,2,0.0);
+    tmpTranslation.setAt(0,3,trans.getAt(0));
+    tmpTranslation.setAt(1,0,0.0);
+    tmpTranslation.setAt(1,1,1.0);
+    tmpTranslation.setAt(1,2,0.0);
+    tmpTranslation.setAt(1,3,trans.getAt(1));
+    tmpTranslation.setAt(2,0,0.0);
+    tmpTranslation.setAt(2,1,0.0);
+    tmpTranslation.setAt(2,2,1.0);
+    tmpTranslation.setAt(2,3,trans.getAt(2));
+    tmpTranslation.setAt(3,0,0.0);
+    tmpTranslation.setAt(3,1,0.0);
+    tmpTranslation.setAt(3,2,0.0);
+    tmpTranslation.setAt(3,3,1.0);
+
+    return tmpTranslation;
+}
+
+/*!
+ * \brief getScaleMatrix
+ * \param s
+ * \return
+ */
+OiMat Helmert6Param::getScaleMatrix(OiVec s)
+{
+    OiMat tmpScale(4,4);
+
+    tmpScale.setAt(0,0,s.getAt(0));
+    tmpScale.setAt(0,1,0.0);
+    tmpScale.setAt(0,2,0.0);
+    tmpScale.setAt(0,3,0.0);
+    tmpScale.setAt(1,0,0.0);
+    tmpScale.setAt(1,1,s.getAt(1));
+    tmpScale.setAt(1,2,0.0);
+    tmpScale.setAt(1,3,0.0);
+    tmpScale.setAt(2,0,0.0);
+    tmpScale.setAt(2,1,0.0);
+    tmpScale.setAt(2,2,s.getAt(2));
+    tmpScale.setAt(2,3,0.0);
+    tmpScale.setAt(3,0,0.0);
+    tmpScale.setAt(3,1,0.0);
+    tmpScale.setAt(3,2,0.0);
+    tmpScale.setAt(3,3,1.0);
+
+    return tmpScale;
 }

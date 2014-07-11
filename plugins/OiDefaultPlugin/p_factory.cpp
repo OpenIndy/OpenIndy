@@ -56,6 +56,7 @@ QList<Function*> OiTemplatePlugin::createFunctions(){
     resultSet.append(new SimpleTemperatureCompensation());
     resultSet.append(new ExtendedTemperatureCompensation());
     resultSet.append(new Helmert6Param());
+    resultSet.append(new BestFitSphereRauls());
 
     return resultSet;
 }
@@ -138,6 +139,8 @@ Function* OiTemplatePlugin::createFunction(QString name){
         result = new ExtendedTemperatureCompensation();
     }else if(name.compare("6ParameterHelmertTransformation") == 0){
         result = new Helmert6Param();
+    }else if(name.compare("BestFitSphereRauls") == 0){
+        result = new BestFitSphereRauls();
     }
     return result;
 }

@@ -118,8 +118,8 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp)
         protMaterial = material;
         expansionCoefficient = Materials::getExpansionCoefficient(material);
         protExpansionCoeff = QString::number(expansionCoefficient,'f',6);
-    }
-    if(doubleParameter.contains("actualTemperature")){
+	}
+	if(doubleParameter.contains("actualTemperature")){
         actTemp = static_cast<double>(doubleParameter.find("actualTemperature").value());
         protActTemp = QString::number(actTemp,'f',2);
     }
@@ -131,14 +131,25 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp)
         tempAccuracy = static_cast<double>(doubleParameter.find("temperatureAccuracy").value());
         protTempAccuracy = QString::number(tempAccuracy,'f',2);
     }
-
-    double expansion = (actTemp-refTemp)*expansionCoefficient;
+	
+	double expansion = (actTemp-refTemp)*expansionCoefficient;
     protExpansion = QString::number(expansion,'f',6);
-    double scale = 1.0/(1+ (expansion));
-    tp.setScale(scale,scale,scale);
-    tp.setTranslation(0.0,0.0,0.0);
-    tp.setRotation(0.0,0.0,0.0);
-    tp.generateHomogenMatrix();
+    double m = 1.0/(1+ (expansion));
+	
+	OiMat eMat(4,4);
+        for(int i = 0; i < 4; i++){
+            eMat.setAt(i,i, 1.0);
+        }
+
+        OiMat scale(4,4);
+        scale.setAt(0,0,m);
+        scale.setAt(1,1,m);
+        scale.setAt(2,2,m);
+        scale.setAt(3,3,1.0);
+
+        tp.setHomogenMatrix(eMat, eMat, scale);
+
+        this->calcAccuracy(tp,tempAccuracy,expansion);
 
     this->calcAccuracy(tp,tempAccuracy,expansion);
 

@@ -67,10 +67,13 @@ bool ExtendedTemperatureCompensation::exec(TrafoParam &tp)
 
             if(locSystem.count()>3){
                 return this->calc(tp);
-            }else{
-                tp.setRotation(this->rotation.getAt(0),this->rotation.getAt(1),this->rotation.getAt(2));
-                tp.setTranslation(this->translation.getAt(0),this->translation.getAt(1),this->translation.getAt(2));
-                tp.setScale(this->scale.getAt(0),this->scale.getAt(1),this->scale.getAt(2));
+
+            }else{  
+                OiMat rot = this->getRotationMatrix(this->rotation);
+                OiMat s = this->getScaleMatrix(this->scale);
+                OiMat t = this->getTranslationMatrix(this->translation);
+
+                tp.setHomogenMatrix(rot,t,s);
                 return true;
             }
         }else{
@@ -156,29 +159,36 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
     OiMat sxx = s0_post * s0_post * qxx;
 
 
-    //get previously calculated scales
-    double sx = this->scale.getAt(0);
-    double sy = this->scale.getAt(1);
-    double sz = this->scale.getAt(2);
-
     //set the trafo parameters with the previously calulated values and the additional values from adjustment
-    tp.setTranslation(this->translation.getAt(0)+x0.getAt(6),this->translation.getAt(1)+x0.getAt(7),this->translation.getAt(2)+x0.getAt(8));
-    tp.setRotation(this->rotation.getAt(0)+x0.getAt(0),this->rotation.getAt(1)+x0.getAt(1),this->rotation.getAt(2)+x0.getAt(2));
-    tp.setScale(sx*x0.getAt(3),sy*x0.getAt(4),sz*x0.getAt(5));
+
+    this->translation.setAt(0,this->translation.getAt(0)+x0.getAt(6));
+    this->translation.setAt(1,this->translation.getAt(1)+x0.getAt(7));
+    this->translation.setAt(2,this->translation.getAt(2)+x0.getAt(8));
+
+    this->rotation.setAt(0,this->rotation.getAt(0)+x0.getAt(0));
+    this->rotation.setAt(1,this->rotation.getAt(1)+x0.getAt(1));
+    this->rotation.setAt(2,this->rotation.getAt(2)+x0.getAt(2));
+
+    this->scale.setAt(0,this->scale.getAt(0)*x0.getAt(3));
+    this->scale.setAt(1,this->scale.getAt(1)*x0.getAt(4));
+    this->scale.setAt(2,this->scale.getAt(2)*x0.getAt(5));
+
+    OiMat s = this->getScaleMatrix(this->scale);
+    OiMat r = this->getRotationMatrix(this->rotation);
+    OiMat t = this->getTranslationMatrix(this->translation);
+
+    tp.setHomogenMatrix(r,t,s);
 
     //calculate the representing temperature out of each scale to show in the protocoll
     if(useTemp){
-        double tx = (((sx*x0.getAt(3))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
+        double tx = (((this->scale.getAt(0))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
         this->protocol.append(QString("scale x representing an expansion of " + QString::number(1.0/tx,'f',2)+"[°C]"));
-        double ty = (((sy*x0.getAt(4))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
+        double ty = (((this->scale.getAt(1))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
         this->protocol.append(QString("scale y representing an expansion of " + QString::number(1.0/ty,'f',2)+"[°C]"));
-        double tz = (((sz*x0.getAt(5))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
+        double tz = (((this->scale.getAt(2))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
         this->protocol.append(QString("scale z representing an expansion of " + QString::number(1.0/tz,'f',2)+"[°C]"));
     }
-    tp.generateHomogenMatrix();
     result = true;
-
-
     return result;
 }
 
@@ -797,6 +807,64 @@ OiVec ExtendedTemperatureCompensation::getRotationAngles(OiMat r)
     rot.add(1.0);
 
     return rot;
+}
+
+/*!
+ * \brief getTranslationMatrix generates the homogeneous translation matrix
+ * \param trans
+ * \return
+ */
+OiMat ExtendedTemperatureCompensation::getTranslationMatrix(OiVec trans)
+{
+    OiMat tmpTranslation(4,4);
+
+    tmpTranslation.setAt(0,0,1.0);
+    tmpTranslation.setAt(0,1,0.0);
+    tmpTranslation.setAt(0,2,0.0);
+    tmpTranslation.setAt(0,3,trans.getAt(0));
+    tmpTranslation.setAt(1,0,0.0);
+    tmpTranslation.setAt(1,1,1.0);
+    tmpTranslation.setAt(1,2,0.0);
+    tmpTranslation.setAt(1,3,trans.getAt(1));
+    tmpTranslation.setAt(2,0,0.0);
+    tmpTranslation.setAt(2,1,0.0);
+    tmpTranslation.setAt(2,2,1.0);
+    tmpTranslation.setAt(2,3,trans.getAt(2));
+    tmpTranslation.setAt(3,0,0.0);
+    tmpTranslation.setAt(3,1,0.0);
+    tmpTranslation.setAt(3,2,0.0);
+    tmpTranslation.setAt(3,3,1.0);
+
+    return tmpTranslation;
+}
+
+/*!
+ * \brief getScaleMatrix generates the homogeneous scale matrix
+ * \param s
+ * \return
+ */
+OiMat ExtendedTemperatureCompensation::getScaleMatrix(OiVec s)
+{
+    OiMat tmpScale(4,4);
+
+    tmpScale.setAt(0,0,s.getAt(0));
+    tmpScale.setAt(0,1,0.0);
+    tmpScale.setAt(0,2,0.0);
+    tmpScale.setAt(0,3,0.0);
+    tmpScale.setAt(1,0,0.0);
+    tmpScale.setAt(1,1,s.getAt(1));
+    tmpScale.setAt(1,2,0.0);
+    tmpScale.setAt(1,3,0.0);
+    tmpScale.setAt(2,0,0.0);
+    tmpScale.setAt(2,1,0.0);
+    tmpScale.setAt(2,2,s.getAt(2));
+    tmpScale.setAt(2,3,0.0);
+    tmpScale.setAt(3,0,0.0);
+    tmpScale.setAt(3,1,0.0);
+    tmpScale.setAt(3,2,0.0);
+    tmpScale.setAt(3,3,1.0);
+
+    return tmpScale;
 }
 
 

@@ -132,8 +132,8 @@ SOURCES += p_factory.cpp \
     ../../src/geometry/circle.cpp \
     functions/systemTransformation/p_extendedtemperaturecompensation.cpp \
     functions/systemTransformation/materials.cpp \
-    functions/systemTransformation/p_helmert6param.cpp
-
+    functions/systemTransformation/p_helmert6param.cpp \
+    functions/fit/p_bestfitsphererauls.cpp
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
     ../../lib/openIndyLib/include/linearalgebra.h \
@@ -227,7 +227,8 @@ HEADERS += p_factory.h \
     ../../src/geometry/circle.h \
     functions/systemTransformation/p_extendedtemperaturecompensation.h \
     functions/systemTransformation/materials.h \
-    functions/systemTransformation/p_helmert6param.h
+    functions/systemTransformation/p_helmert6param.h \
+    functions/fit/p_bestfitsphererauls.h
 
 
 OTHER_FILES += metaInfo.json

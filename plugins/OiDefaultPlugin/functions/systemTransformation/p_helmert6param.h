@@ -46,6 +46,8 @@ private:
 
     OiMat getRotationMatrix(OiVec rot);
     OiVec getRotationAngles(OiMat r);
+    OiMat getTranslationMatrix(OiVec trans);
+    OiMat getScaleMatrix(OiVec s);
 };
 
 #endif // P_HELMERT6PARAM_H

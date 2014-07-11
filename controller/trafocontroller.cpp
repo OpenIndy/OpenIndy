@@ -105,7 +105,8 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
                 t = tp->getHomogenMatrix().inv();
             }
             foreach (Observation *obs, from->getObservations()) {
-                obs->myXyz = t*obs->myXyz;
+                //obs->myXyz = t*obs->myXyz;
+                obs->myXyz = t*obs->myOriginalXyz;
                 obs->myStatistic.qxx = t*obs->myStatistic.qxx;
                 obs->isValid = true;
             }

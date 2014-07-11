@@ -265,10 +265,10 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
     }
     double m = 1.0;
     if(u > 0){ m = o / u; }
-    tp.setScale(m, m, m);
+    //tp.setScale(m, m, m);
     //calc translation
     OiVec t = centroidCoords.at(1) - m * r * centroidCoords.at(0);
-    tp.setTranslation(t.getAt(0), t.getAt(1), t.getAt(2));
+    //tp.setTranslation(t.getAt(0), t.getAt(1), t.getAt(2));
     //calc rotation
     OiVec rot(3);
     rot.setAt(0, qAtan2(-r.getAt(2,1), r.getAt(2,2))); //alpha
@@ -277,7 +277,7 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
     if( qFabs(qCos(rot.getAt(1)) * qCos(rot.getAt(2))) - qFabs(r.getAt(0,0)) > 0.01 ){
         rot.setAt(1, PI - rot.getAt(1));
     }
-    tp.setRotation(rot.getAt(0), rot.getAt(1), rot.getAt(2));
+    //tp.setRotation(rot.getAt(0), rot.getAt(1), rot.getAt(2));
     //fill transformation matrix
     OiMat translation(4, 4);
     translation.setAt(0, 0, 1.0);
@@ -299,8 +299,8 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
         }
     }
     rotation.setAt(3, 3, 1.0);
-    //tp translation * scale * rotation;
-    tp.generateHomogenMatrix();
+    tp.setHomogenMatrix(rotation, translation, scale);
+    //tp.generateHomogenMatrix();
 }
 
 /*!
