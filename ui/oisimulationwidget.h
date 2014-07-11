@@ -51,9 +51,11 @@ private:
     QMap<QString,QComboBox*> comboBoxes;
 
     QVBoxLayout* masterLayout;
+    QStringListModel *resultModel;
 
     void makeSettingsGui();
     void setSettings();
+    void setResultList(FeatureWrapper* f, QString attributeToDraw);
 
 
 };

@@ -134,7 +134,7 @@ ElementDependencies ScalarEntityAngle::fromOpenIndyXML(QXmlStreamReader &xml){
 
 bool ScalarEntityAngle::saveSimulationData()
 {
-    this->myStatistic.simulationData.scalar.append(this->angle);
+    this->myStatistic.addSimulationScalar(this->angle);
     return true;
 }
 

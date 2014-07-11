@@ -7,8 +7,12 @@
 #include "residual.h"
 
 struct SimulationData{
-    QList<OiVec> xyz;
-    QList<OiVec> ijk;
+    QList<double> x;
+    QList<double> y;
+    QList<double> z;
+    QList<double> i;
+    QList<double> j;
+    QList<double> k;
     QList<double> radius;
     QList<double> scalar;
 };
@@ -35,9 +39,27 @@ public:
 
     QList<Residual> displayResiduals;
 
-    SimulationData simulationData;
-
     bool isValid;
+
+    void addSimulationXYZ(double x, double y, double z);
+    void addSimulationIJK(double i, double j, double k);
+    void addSimulationScalar(double s);
+    void addSimulationRadius(double r);
+
+    QList<double> getSimulationX();
+    QList<double> getSimulationY();
+    QList<double> getSimulationZ();
+    QList<double> getSimulationI();
+    QList<double> getSimulationJ();
+    QList<double> getSimulationK();
+    QList<double> getSimulationScalar();
+    QList<double> getSimulationRadius();
+
+    SimulationData getSimulationData() const;
+    void setSimulationData(SimulationData d);
+
+private:
+    SimulationData simulationData;
 
 };
 

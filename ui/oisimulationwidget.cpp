@@ -8,6 +8,7 @@ OiSimulationWidget::OiSimulationWidget(QWidget *parent) :
     ui->setupUi(this);
 
     masterLayout = NULL;
+    resultModel = new QStringListModel();
 
 
     this->ui->listView_simulations->setModel(this->control.availableSimulations);
@@ -105,10 +106,12 @@ void OiSimulationWidget::on_treeView_feature_clicked(const QModelIndex &index)
             if(item->getParent() != NULL && item->getParent()->getIsFeature()){ //if an attribute of a feature was clicked
 
                 ui->widgetHistogram->paintData(item->getParent()->getFeature(),"all");
+                this->setResultList(item->getParent()->getFeature(),"all");
 
             }else if(item->getIsFeature()){
 
                 ui->widgetHistogram->paintData(item->getFeature(),"all");
+                this->setResultList(item->getFeature(),"all");
             }
 
         }
@@ -272,4 +275,18 @@ void OiSimulationWidget::setSettings()
 
     control.setSettings();
 
+}
+
+void OiSimulationWidget::setResultList(FeatureWrapper *f,QString attributeToDraw)
+{
+
+    QStringList result;
+
+    foreach(double d, f->getGeometry()->getStatistic().getSimulationX()){
+        result.append(QString::number(d));
+    }
+
+    resultModel->setStringList(result);
+
+    ui->listView_result->setModel(resultModel);
 }

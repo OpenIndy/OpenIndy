@@ -134,7 +134,7 @@ ElementDependencies ScalarEntityDistance::fromOpenIndyXML(QXmlStreamReader &xml)
 
 bool ScalarEntityDistance::saveSimulationData()
 {
-    this->myStatistic.simulationData.scalar.append(this->distance);
+    this->myStatistic.addSimulationScalar(this->distance);
     return true;
 }
 

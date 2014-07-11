@@ -165,13 +165,8 @@ ElementDependencies Point::fromOpenIndyXML(QXmlStreamReader &xml){
 
 bool Point::saveSimulationData()
 {
-    OiVec tmpXyz(3);
 
-    tmpXyz.setAt(0,this->xyz.getAt(0));
-    tmpXyz.setAt(1,this->xyz.getAt(1));
-    tmpXyz.setAt(2,this->xyz.getAt(2));
-
-    this->myStatistic.simulationData.xyz.append(tmpXyz);
+    this->myStatistic.addSimulationXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
 
     return true;
 }

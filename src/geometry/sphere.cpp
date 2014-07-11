@@ -173,15 +173,11 @@ ElementDependencies Sphere::fromOpenIndyXML(QXmlStreamReader &xml){
 
 bool Sphere::saveSimulationData()
 {
-    OiVec tmpXyz(3);
 
-    tmpXyz.setAt(0,this->xyz.getAt(0));
-    tmpXyz.setAt(1,this->xyz.getAt(1));
-    tmpXyz.setAt(2,this->xyz.getAt(2));
 
-    this->myStatistic.simulationData.xyz.append(tmpXyz);
+    this->myStatistic.addSimulationXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
 
-    this->myStatistic.simulationData.radius.append(this->radius);
+    this->myStatistic.addSimulationRadius(this->radius);
 
     return true;
 }

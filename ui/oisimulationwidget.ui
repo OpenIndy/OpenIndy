@@ -159,16 +159,36 @@
       <attribute name="label">
        <string>result</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,3">
-         <item>
-          <widget class="QTreeView" name="treeView_feature"/>
-         </item>
-         <item>
-          <widget class="Histogram" name="widgetHistogram" native="true"/>
-         </item>
-        </layout>
+      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,3">
+       <item>
+        <widget class="QTreeView" name="treeView_feature"/>
+       </item>
+       <item>
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="tab_histogram">
+          <attribute name="title">
+           <string>histogram</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="Histogram" name="widgetHistogram" native="true"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_resultList">
+          <attribute name="title">
+           <string>list</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="0" column="0">
+            <widget class="QListView" name="listView_result"/>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </item>
       </layout>
      </widget>

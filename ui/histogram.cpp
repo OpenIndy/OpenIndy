@@ -11,28 +11,32 @@ Histogram::Histogram(QWidget *parent) :
 void Histogram::paintData(FeatureWrapper* f, QString attributeToDraw)
 {
 
-    //_bins.clear();
+    _bins.clear();
 
-    maxError = f->getGeometry()->getStatistic().simulationData.xyz.at(0).getAt(0);
-    minError = f->getGeometry()->getStatistic().simulationData.xyz.at(0).getAt(0);
+    QList<double> tmpX = f->getGeometry()->getStatistic().getSimulationX();
 
-    foreach(OiVec v, f->getGeometry()->getStatistic().simulationData.xyz){
-       if(v.getAt(0) > maxError){
-           maxError = v.getAt(0);
+    if(tmpX.size() != 0){
+    maxError = tmpX.at(0);
+    minError = tmpX.at(0);
+
+    foreach(double d, tmpX){
+       if(d > maxError){
+           maxError = d;
        }
-       if(v.getAt(0) < minError){
-           minError = v.getAt(0);
+       if(d < minError){
+           minError = d;
        }
     }
 
     errorScale = 1/(maxError-minError);
 
-    foreach(OiVec v, f->getGeometry()->getStatistic().simulationData.xyz){
-         _bins.append(errorScale*(maxError-v.getAt(0)));
+    foreach(double d, tmpX){
+         _bins.append(errorScale*(maxError-d));
     }
 
 
     this->repaint();
+    }
 }
 
 void Histogram::paintEvent(QPaintEvent *event)
