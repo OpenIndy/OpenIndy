@@ -48,21 +48,19 @@ void SimulationController::recalcAll()
 
     for(int i = 0; i <(this->iterations+1); i++){
 
-    foreach(Station *s, OiFeatureState::getStations()){
-        foreach(Observation *o, s->coordSys->getObservations()){
-            OiMat A;
-            o->myReading->restoreBackup();
+        foreach(Station *s, OiFeatureState::getStations()){
+            foreach(Observation *o, s->coordSys->getObservations()){
+                OiMat A;
+                o->myReading->restoreBackup();
 
-            if(i < this->iterations){
-            actualSimulation->distort(o->myReading,A);
+                if(i < this->iterations){
+                    actualSimulation->distort(o->myReading,A);
+                }
+
+                o->myOriginalXyz = Reading::toCartesian(o->myReading->rPolar.azimuth,o->myReading->rPolar.zenith,o->myReading->rPolar.distance);
+                o->myXyz = Reading::toCartesian(o->myReading->rPolar.azimuth,o->myReading->rPolar.zenith,o->myReading->rPolar.distance);
             }
-
-            o->myOriginalXyz = Reading::toCartesian(o->myReading->rPolar.azimuth,o->myReading->rPolar.zenith,o->myReading->rPolar.distance);
-            o->myXyz = Reading::toCartesian(o->myReading->rPolar.azimuth,o->myReading->rPolar.zenith,o->myReading->rPolar.distance);
         }
-      }
-
-
 
         myUpdater->recalcAll();
 
