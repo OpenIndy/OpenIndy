@@ -15,6 +15,13 @@ TrafoParam::TrafoParam(QObject *parent) : Feature(parent), homogenMatrix(4, 4), 
     this->scale.setAt(0, 1.0);
     this->scale.setAt(1, 1.0);
     this->scale.setAt(2, 1.0);
+
+    OiMat e(4,4);
+
+    for(int i=0; i<4; i++){
+        e.setAt(i,i,1.0);
+    }
+    this->setHomogenMatrix(e,e,e);
 }
 
 TrafoParam::~TrafoParam(){
