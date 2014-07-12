@@ -134,7 +134,9 @@ SOURCES += p_factory.cpp \
     ../../src/geometry/cone.cpp \
     ../../src/geometry/circle.cpp \
     ../../src/simulation/uncertaintycomponent.cpp \
-    simulations/simplePolarMeasurement/simplepolarmeasurement.cpp
+    simulations/simplePolarMeasurement/simplepolarmeasurement.cpp \
+    functions/fit/p_bestfitsphererauls.cpp
+
 
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
@@ -229,7 +231,8 @@ HEADERS += p_factory.h \
     ../../src/geometry/circle.h \
     ../../src/simulation/simulationmodel.h \
     ../../src/simulation/uncertaintycomponent.h \
-    simulations/simplePolarMeasurement/simplepolarmeasurement.h
+    simulations/simplePolarMeasurement/simplepolarmeasurement.h \
+    functions/fit/p_bestfitsphererauls.h
 
 
 OTHER_FILES += metaInfo.json

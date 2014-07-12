@@ -81,6 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //fillCoordSysComboBox();
 
     setUpStatusBar();
+    control.tblModel->updateModel();
 
 }
 
@@ -165,6 +166,7 @@ void MainWindow::setConnects(){
     connect(this->cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
     connect(this->sEntityDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
     connect(this->sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
+    connect(this->cFeatureDialog,SIGNAL(trafoParamCreated()),this,SLOT(trafoParamAdded()));
 
     //sensor plugin dialog
     connect(&this->sPluginDialog,SIGNAL(sendSensorType(Configuration::SensorTypes)),&this->control,SLOT(setSensorModel(Configuration::SensorTypes)));
@@ -199,8 +201,9 @@ void MainWindow::setConnects(){
     //when user edits some nominal values of the active feature then tell the Controller to update the feature
     connect(&this->nominalDialog, SIGNAL(sendNominalValues(NominalAttributeExchange)),&this->control,SLOT(getNominalValues(NominalAttributeExchange)));
 
-    //simulations
-
+    //tableview
+    connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
+    connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
 
 }
 
@@ -495,7 +498,7 @@ void MainWindow::setupTotalStationPad(){
     ui->toolBar_ControlPad->addAction(cPsep3);
     ui->toolBar_ControlPad->addAction(actionToggleSightOrientation);
     ui->toolBar_ControlPad->addAction(cPsep4);
-    ui->toolBar_ControlPad->addAction(actionAim);
+    ui->toolBar_ControlPad->addAction(actionMove);
 
 }
 
@@ -568,6 +571,7 @@ void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig mC){
         }else{
             OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(mC);
         }
+        this->control.lastmConfig = mC;
     }
 }
 
@@ -1548,6 +1552,23 @@ void MainWindow::updateGeometryIcons(QStringList availableGeometries){
 
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"station",Configuration::eStationFeature);
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
+}
+
+/*!
+ * \brief trafoParamAdded switches to the trafoParam view
+ */
+void MainWindow::trafoParamAdded()
+{
+    ui->tabWidget_views->setCurrentIndex(2);
+}
+
+void MainWindow::resizeTableView()
+{
+    ui->tableView_data->resizeColumnsToContents();
+    ui->tableView_data->resizeRowsToContents();
+
+    ui->tableView_trafoParam->resizeColumnsToContents();
+    ui->tableView_trafoParam->resizeRowsToContents();
 }
 
 /*!
