@@ -4,6 +4,7 @@
 #include "feature.h"
 #include "measurementconfig.h"
 #include "statistic.h"
+#include "simulationdata.h"
 
 class Observation;
 class CoordinateSystem;
@@ -51,6 +52,9 @@ public:
     Statistic getStatistic() const;
     void setStatistic(Statistic myStatistic);
 
+    SimulationData getSimulationData() const;
+    void setSimulationData(SimulationData s);
+
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
@@ -76,6 +80,7 @@ protected:
 
     MeasurementConfig mConfig;
     Statistic myStatistic;
+    SimulationData mySimulationData;
     QMap<Configuration::ReadingTypes, QString> usedReadingTypes;
 
     bool writeGeometryAttributes(QXmlStreamWriter& stream);

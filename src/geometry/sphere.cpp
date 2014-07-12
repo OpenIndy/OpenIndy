@@ -175,9 +175,9 @@ bool Sphere::saveSimulationData()
 {
 
 
-    this->myStatistic.addSimulationXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
+    this->mySimulationData.addXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
 
-    this->myStatistic.addSimulationRadius(this->radius);
+    this->mySimulationData.addRadius(this->radius);
 
     return true;
 }

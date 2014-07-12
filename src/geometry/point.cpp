@@ -166,7 +166,7 @@ ElementDependencies Point::fromOpenIndyXML(QXmlStreamReader &xml){
 bool Point::saveSimulationData()
 {
 
-    this->myStatistic.addSimulationXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
+    this->mySimulationData.addXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
 
     return true;
 }

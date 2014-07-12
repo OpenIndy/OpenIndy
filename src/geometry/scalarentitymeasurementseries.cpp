@@ -55,7 +55,7 @@ ElementDependencies ScalarEntityMeasurementSeries::fromOpenIndyXML(QXmlStreamRea
 
 bool ScalarEntityMeasurementSeries::saveSimulationData()
 {
-    this->myStatistic.addSimulationScalar(this->seriesValue);
+    this->mySimulationData.addScalar(this->seriesValue);
     return true;
 }
 

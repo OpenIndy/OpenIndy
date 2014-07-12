@@ -282,7 +282,7 @@ void OiSimulationWidget::setResultList(FeatureWrapper *f,QString attributeToDraw
 
     QStringList result;
 
-    foreach(double d, f->getGeometry()->getStatistic().getSimulationX()){
+    foreach(double d, f->getGeometry()->getSimulationData().uncertaintyX.values){
         result.append(QString::number(d));
     }
 

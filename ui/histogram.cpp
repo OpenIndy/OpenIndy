@@ -13,7 +13,7 @@ void Histogram::paintData(FeatureWrapper* f, QString attributeToDraw)
 
     _bins.clear();
 
-    QList<double> tmpX = f->getGeometry()->getStatistic().getSimulationX();
+    QList<double> tmpX = f->getGeometry()->getSimulationData().uncertaintyX.values;
 
     if(tmpX.size() != 0){
     maxError = tmpX.at(0);

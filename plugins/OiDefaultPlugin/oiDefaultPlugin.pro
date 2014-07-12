@@ -135,7 +135,8 @@ SOURCES += p_factory.cpp \
     ../../src/geometry/circle.cpp \
     ../../src/simulation/uncertaintycomponent.cpp \
     simulations/simplePolarMeasurement/simplepolarmeasurement.cpp \
-    functions/fit/p_bestfitsphererauls.cpp
+    functions/fit/p_bestfitsphererauls.cpp \
+    ../../src/simulation/simulationdata.cpp
 
 
 HEADERS += p_factory.h \
@@ -232,7 +233,8 @@ HEADERS += p_factory.h \
     ../../src/simulation/simulationmodel.h \
     ../../src/simulation/uncertaintycomponent.h \
     simulations/simplePolarMeasurement/simplepolarmeasurement.h \
-    functions/fit/p_bestfitsphererauls.h
+    functions/fit/p_bestfitsphererauls.h \
+    ../../src/simulation/simulationdata.h
 
 
 OTHER_FILES += metaInfo.json

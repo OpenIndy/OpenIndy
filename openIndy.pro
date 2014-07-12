@@ -165,7 +165,8 @@ SOURCES += \
     ui/histogram.cpp \
     ui/simulationerrortablemodel.cpp \
     ui/simulationdelegate.cpp \
-    ui/simulationtreeviewmodel.cpp
+    ui/simulationtreeviewmodel.cpp \
+    src/simulation/simulationdata.cpp
 
 
 HEADERS  += \
@@ -297,7 +298,8 @@ HEADERS  += \
     ui/histogram.h \
     ui/simulationerrortablemodel.h \
     ui/simulationdelegate.h \
-    ui/simulationtreeviewmodel.h
+    ui/simulationtreeviewmodel.h \
+    src/simulation/simulationdata.h
 
 
 FORMS    += ui/mainwindow.ui \

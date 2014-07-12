@@ -138,11 +138,11 @@ QString Circle::getDisplayK() const{
 
 bool Circle::saveSimulationData()
 {
-    this->myStatistic.addSimulationXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
+    this->mySimulationData.addXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
 
-    this->myStatistic.addSimulationIJK(this->ijk.getAt(0),this->ijk.getAt(1),this->ijk.getAt(2));
+    this->mySimulationData.addIJK(this->ijk.getAt(0),this->ijk.getAt(1),this->ijk.getAt(2));
 
-    this->myStatistic.addSimulationRadius(this->radius);
+    this->mySimulationData.addRadius(this->radius);
 
     return true;
 }
