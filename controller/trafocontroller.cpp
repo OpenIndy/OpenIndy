@@ -87,7 +87,7 @@ void TrafoController::transformNewObservations(Observation *obs)
  */
 bool TrafoController::transformObservations(CoordinateSystem *from)
 {
-    if(from != NULL){
+/*    if(from != NULL){
 
         if(from == OiFeatureState::getActiveCoordinateSystem()){
             //set observations valid, because start system is also target system. So you don´t need to transform
@@ -201,6 +201,44 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
             }
             //no trafo params available
             foreach(Observation *obs, from->getObservations()){
+                obs->isValid = false;
+            }
+            return false;
+        }
+    }
+    return false;*/
+
+    if(from != NULL){
+
+        if(from == OiFeatureState::getActiveCoordinateSystem()){
+            //set observations valid, because start system is also destination system.
+            //No transformation required
+            setObservationState(from,true);
+            return true;
+        }
+
+        //get homogeneous transformation matrix to transform observations with
+        OiMat trafoMat = this->getTransformationMatrix(from);
+
+        //if trafo matrix is valid
+        //check if matrix is 4x4 = homogeneous matrix
+        if(trafoMat.getRowCount() == 4 && trafoMat.getColCount() == 4){
+            //transform observations
+            foreach (Observation *obs, from->getObservations()) {
+                obs->myXyz = trafoMat * obs->myOriginalXyz;
+                obs->myStatistic.qxx = trafoMat * obs->myOriginalStatistic.qxx;
+                obs->isValid = true;
+            }
+
+            //then apply movements if active system is a part system
+            //if active system is a station => do nothing
+            this->CheckToApplyMovements(from);
+
+            return true;
+
+        }else{
+            //no trafo param available
+            foreach (Observation *obs, from->getObservations()) {
                 obs->isValid = false;
             }
             return false;
@@ -524,4 +562,95 @@ OiVec TrafoController::checkTopApplyTranslation(QList<Observation *> observation
     }
     //return the edited translation
     return translation;
+}
+
+/*!
+ * \brief getTransformationMatrix searches and combines a homogeneous transformation matrix for the given coord sys to the active coord sys.
+ * This homogeneous transformation matrix also includes datums transformations.
+ * \param from
+ * \return
+ */
+OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
+{
+    OiMat trafoMat;
+
+   //get transformation parameters to transform
+   TrafoParam *tp = findTrafoParam(from, OiFeatureState::getActiveCoordinateSystem());
+   if(tp != NULL){
+       if(tp->getStartSystem() == from){
+           trafoMat = tp->getHomogenMatrix();
+       }else{
+           trafoMat = tp->getHomogenMatrix().inv();
+       }
+       return trafoMat;
+   }else{
+       // no trafo params available from this coordinate system to active coord system.
+       //search for datumstransformation of other station
+
+       //search a transformation "chain".
+       //watch each trafo param of the from system and check if it has a connection to another trafo param
+       //that has the active coord sys as start or destination system
+
+       foreach (TrafoParam *tp, from->getTransformationParameters()) {
+
+           foreach (TrafoParam *t, tp->getStartSystem()->getTransformationParameters()) {
+               if(t->getisDatumTrafo() && t->getIsUsed()){ //watch if the trafo param is active and can  be used in the chain
+                   if(t->getStartSystem() == OiFeatureState::getActiveCoordinateSystem()){//check if the start system is the active system
+                       OiMat tt = t->getHomogenMatrix().inv();
+                       OiMat ttp;
+                       if(tp->getStartSystem() == from){
+                           ttp = tp->getHomogenMatrix();
+                       }else{
+                           ttp = tp->getHomogenMatrix().inv();
+                       }
+
+                       trafoMat = ttp*tt;
+                       return trafoMat;
+
+                   }else if(t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){//check if the destination system is the active system
+                       OiMat tt = t->getHomogenMatrix();
+                       OiMat ttp;
+                       if(tp->getStartSystem() == from){
+                           ttp = tp->getHomogenMatrix();
+                       }else{
+                           ttp = tp->getHomogenMatrix().inv();
+                       }
+
+                       trafoMat = ttp*tt;
+                       return trafoMat;
+                   }
+               }
+           }
+           foreach (TrafoParam *t, tp->getDestinationSystem()->getTransformationParameters()) {
+               if(t->getisDatumTrafo() && t->getIsUsed()){ // watch if trafo param is active and can be used in the chain
+                   if(t->getStartSystem() == OiFeatureState::getActiveCoordinateSystem()){//check if start system is the active system
+                       OiMat tt = t->getHomogenMatrix().inv();
+                       OiMat ttp;
+                       if(tp->getStartSystem() == from){
+                           ttp = tp->getHomogenMatrix();
+                       }else{
+                           ttp = tp->getHomogenMatrix().inv();
+                       }
+
+                       trafoMat = ttp*tt;
+                       return trafoMat;
+
+                   }else if(t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){//check if destination system is the active system
+                       OiMat tt = t->getHomogenMatrix();
+                       OiMat ttp;
+                       if(tp->getStartSystem() == from){
+                           ttp = tp->getHomogenMatrix();
+                       }else{
+                           ttp = tp->getHomogenMatrix().inv();
+                       }
+
+                       trafoMat = ttp*tt;
+                       return trafoMat;
+
+                   }
+               }
+           }
+       }
+   }
+   return trafoMat;
 }

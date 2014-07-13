@@ -50,6 +50,8 @@ private:
     void applyMovements(QList<TrafoParam*> movements, CoordinateSystem *from);
     void applyTranslations(OiVec centroidBefore, OiVec centroidAfter, QList<Observation*>observations);
     OiVec checkTopApplyTranslation(QList<Observation*>observations,OiVec translation);
+
+    OiMat getTransformationMatrix(CoordinateSystem *from);
     
 };
 
