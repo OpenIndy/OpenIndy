@@ -16,26 +16,26 @@ public:
     LAArmadillo();
     ~LAArmadillo();
 
-    OiVec addIn(OiVec v1, OiVec v2);
-    OiMat addIn(OiMat m1, OiMat m2);
-    OiVec substract(OiVec v1, OiVec v2);
-    OiMat substract(OiMat m1, OiMat m2);
-    OiMat multiply(OiMat m1, OiMat m2);
-    OiVec multiply(OiMat m, OiVec v);
-    OiMat multiply(double s, OiMat m);
-    OiVec multiply(double s, OiVec v);
-    OiMat invert(OiMat m);
-    OiMat transpose(OiMat m);
-    void svd(OiMat &u, OiVec &d, OiMat &v, OiMat x);
-    OiVec cross(OiVec a, OiVec b);
-    double dot(OiVec a, OiVec b);
-    double det(OiMat a);
+    void addIn(OiVec &result, const OiVec &v1, const OiVec &v2);
+    void addIn(OiMat &result, const OiMat &m1, const OiMat &m2);
+    void substract(OiVec &result, const OiVec &v1, const OiVec &v2);
+    void substract(OiMat &result, const OiMat &m1, const OiMat &m2);
+    void multiply(OiMat &result, const OiMat &m1, const OiMat &m2);
+    void multiply(OiVec &result, const OiMat &m, const OiVec &v);
+    void multiply(OiMat &result, const double &s, const OiMat &m);
+    void multiply(OiVec &result, const double &s, const OiVec &v);
+    bool invert(OiMat &result, const OiMat &m);
+    void transpose(OiMat &result, const OiMat &m);
+    bool svd(OiMat &u, OiVec &d, OiMat &v, const OiMat &x);
+    void cross(OiVec &result, const OiVec &a, const OiVec &b);
+    void dot(double &result, const OiVec &a, const OiVec &b);
+    void det(double &result, const OiMat &a);
 
 private:
-    arma::vec oiVec2Arma(OiVec);
-    arma::mat oiMat2Arma(OiMat);
-    OiVec arma2OiVec(arma::vec);
-    OiMat arma2OiMat(arma::mat);
+    void oiVec2Arma(arma::vec &result, const OiVec &v);
+    void oiMat2Arma(arma::mat &result, const OiMat &m);
+    void arma2OiVec(OiVec &result, const arma::vec &v);
+    void arma2OiMat(OiMat &result, const arma::mat &m);
 
 };
 

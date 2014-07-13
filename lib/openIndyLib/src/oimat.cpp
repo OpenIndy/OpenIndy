@@ -232,7 +232,9 @@ OiMat& OiMat::operator =(const OiMat &m){
 OiMat OiMat::operator+(const OiMat &m) const{
     if(this->getRowCount() == m.getRowCount() && this->getColCount() == m.getColCount()
             && this->getRowCount() > 0 && this->getColCount() > 0 ){
-        return OiMat::myLinearAlgebra->addIn(*this, m);
+        OiMat result(m.getRowCount(), m.getColCount());
+        OiMat::myLinearAlgebra->addIn(result, *this, m);
+        return result;
     }else{
         throw logic_error("Cannot add two matrices of different size");
         return OiMat();
@@ -248,7 +250,9 @@ OiMat OiMat::operator+(const OiMat &m) const{
 OiMat OiMat::operator-(const OiMat &m) const{
     if( this->getRowCount() == m.getRowCount() && this->getColCount() == m.getColCount()
             && this->getRowCount() > 0 && this->getColCount() > 0 ){
-        return OiMat::myLinearAlgebra->substract(*this, m);
+        OiMat result(m.getRowCount(), m.getColCount());
+        OiMat::myLinearAlgebra->substract(result, *this, m);
+        return result;
     }else{
         throw logic_error("Cannot substract two matrices of different size");
         return OiMat();
@@ -264,8 +268,7 @@ OiMat OiMat::operator-(const OiMat &m) const{
 OiMat& OiMat::operator+=(const OiMat &m){
     if(this->getRowCount() == m.getRowCount() && this->getColCount() == m.getColCount()
             && this->getRowCount() > 0 && this->getColCount() > 0 ){
-        OiMat result = OiMat::myLinearAlgebra->addIn(*this, m);
-        *this = result;
+        OiMat::myLinearAlgebra->addIn(*this, *this, m);
         return *this;
     }else{
         throw logic_error("Cannot add two matrices of different size");
@@ -282,8 +285,7 @@ OiMat& OiMat::operator+=(const OiMat &m){
 OiMat& OiMat::operator-=(const OiMat &m){
     if( this->getRowCount() == m.getRowCount() && this->getColCount() == m.getColCount()
             && this->getRowCount() > 0 && this->getColCount() > 0 ){
-        OiMat result = OiMat::myLinearAlgebra->substract(*this, m);
-        *this = result;
+        OiMat::myLinearAlgebra->substract(*this, *this, m);
         return *this;
     }else{
         throw logic_error("Cannot substract two matrices of different size");
@@ -299,7 +301,9 @@ OiMat& OiMat::operator-=(const OiMat &m){
  */
 OiMat OiMat::operator*(const OiMat &m) const{
     if( this->getColCount() == m.getRowCount() && this->getColCount() > 0 ){
-        return OiMat::myLinearAlgebra->multiply(*this, m);
+        OiMat result(this->getRowCount(), m.getColCount());
+        OiMat::myLinearAlgebra->multiply(result, *this, m);
+        return result;
     }else{
         throw logic_error("Cannot multiply two matrices of incompatible size");
         return OiMat();
@@ -314,7 +318,9 @@ OiMat OiMat::operator*(const OiMat &m) const{
  */
 OiVec OiMat::operator*(const OiVec &v) const{
     if( this->getColCount() == v.getSize() && v.getSize() > 0 ){
-        return OiMat::myLinearAlgebra->multiply(*this, v);
+        OiVec result(this->getRowCount());
+        OiVec::myLinearAlgebra->multiply(result, *this, v);
+        return result;
     }else{
         throw logic_error("Cannot multiply a vector by a matrix with incompatible size");
         return OiVec();
@@ -322,7 +328,9 @@ OiVec OiMat::operator*(const OiVec &v) const{
 }
 
 OiMat OiMat::operator*(const double value) const{
-    return OiMat::myLinearAlgebra->multiply(value, *this);;
+    OiMat result(this->getRowCount(), this->getColCount());
+    OiMat::myLinearAlgebra->multiply(result, value, *this);
+    return result;
 }
 
 /*!
@@ -333,7 +341,9 @@ OiMat OiMat::operator*(const double value) const{
  * \return
  */
 OiMat OiMat::mult(const double value, const OiMat &m){
-    return OiMat::myLinearAlgebra->multiply(value, m);
+    OiMat result(m.getRowCount(), m.getColCount());
+    OiMat::myLinearAlgebra->multiply(result, value, m);
+    return result;
 }
 
 /*!
@@ -343,7 +353,9 @@ OiMat OiMat::mult(const double value, const OiMat &m){
  */
 OiMat OiMat::t() const{
     if( this->getRowCount() > 0 && this->getColCount() > 0 ){
-        return OiMat::myLinearAlgebra->transpose(*this);
+        OiMat result(this->getColCount(), this->getRowCount());
+        OiMat::myLinearAlgebra->transpose(result, *this);
+        return result;
     }else{
         return OiMat();
     }
@@ -356,7 +368,9 @@ OiMat OiMat::t() const{
  */
 OiMat OiMat::inv() const{
     if( this->getRowCount() == this->getColCount() && this->getRowCount() > 0 ){
-        return OiMat::myLinearAlgebra->invert(*this);
+        OiMat result(this->getRowCount(), this->getRowCount());
+        OiMat::myLinearAlgebra->invert(result, *this);
+        return result;
     }else{
         throw logic_error("Cannot calculate inverse of non-square matrix");
         return OiMat();
@@ -370,7 +384,9 @@ OiMat OiMat::inv() const{
  */
 double OiMat::det() const{
     if( this->getRowCount() == this->getColCount() && this->getRowCount() > 0 ){
-        return OiMat::myLinearAlgebra->det(*this);
+        double result = 0.0;
+        OiMat::myLinearAlgebra->det(result, *this);
+        return result;
     }else{
         throw logic_error("Cannot calculate determinant of non-square matrix");
         return 0.0;

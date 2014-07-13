@@ -10,245 +10,297 @@ LAArmadillo::~LAArmadillo(){
 
 /*!
  * \brief LAArmadillo::addIn
- * Add the second vector to the first
+ * Add v2 to v1
+ * \param result
  * \param v1
  * \param v2
- * \return
  */
-OiVec LAArmadillo::addIn(OiVec v1, OiVec v2){
-    arma::vec v1a = this->oiVec2Arma(v1);
-    arma::vec v2a = this->oiVec2Arma(v2);
-    return this->arma2OiVec( (v1a + v2a) );
+void LAArmadillo::addIn(OiVec &result, const OiVec &v1, const OiVec &v2){
+    int vecSize = v1.getSize();
+    arma::vec v1a(vecSize), v2a(vecSize);
+
+    this->oiVec2Arma(v1a, v1);
+    this->oiVec2Arma(v2a, v2);
+
+    this->arma2OiVec(result, (v1a + v2a));
 }
 
 /*!
  * \brief LAArmadillo::addIn
- * Add the second matrix to the first
+ * Add m2 to m1
+ * \param result
  * \param m1
  * \param m2
- * \return
  */
-OiMat LAArmadillo::addIn(OiMat m1, OiMat m2){
-    arma::mat m1a = this->oiMat2Arma(m1);
-    arma::mat m2a = this->oiMat2Arma(m2);
-    return this->arma2OiMat( (m1a + m2a) );
+void LAArmadillo::addIn(OiMat &result, const OiMat &m1, const OiMat &m2){
+    int matRows = m1.getRowCount();
+    int matCols = m1.getColCount();
+    arma::mat m1a(matRows, matCols), m2a(matRows, matCols);
+
+    this->oiMat2Arma(m1a, m1);
+    this->oiMat2Arma(m2a, m2);
+
+    this->arma2OiMat(result, (m1a + m2a));
 }
 
 /*!
  * \brief LAArmadillo::substract
- * Substract the second vector from the first
+ * Substract v2 from v1
+ * \param result
  * \param v1
  * \param v2
- * \return
  */
-OiVec LAArmadillo::substract(OiVec v1, OiVec v2){
-    arma::vec v1a = this->oiVec2Arma(v1);
-    arma::vec v2a = this->oiVec2Arma(v2);
-    return this->arma2OiVec( (v1a - v2a) );
+void LAArmadillo::substract(OiVec &result, const OiVec &v1, const OiVec &v2){
+    int vecSize = v1.getSize();
+    arma::vec v1a(vecSize), v2a(vecSize);
+
+    this->oiVec2Arma(v1a, v1);
+    this->oiVec2Arma(v2a, v2);
+
+    this->arma2OiVec(result, (v1a - v2a));
 }
 
 /*!
  * \brief LAArmadillo::substract
- * Substract the second matrix from the first
+ * Substract m2 from m1
+ * \param result
  * \param m1
  * \param m2
- * \return
  */
-OiMat LAArmadillo::substract(OiMat m1, OiMat m2){
-    arma::mat m1a = this->oiMat2Arma(m1);
-    arma::mat m2a = this->oiMat2Arma(m2);
-    return this->arma2OiMat( (m1a - m2a) );
+void LAArmadillo::substract(OiMat &result, const OiMat &m1, const OiMat &m2){
+    int matRows = m1.getRowCount();
+    int matCols = m1.getColCount();
+    arma::mat m1a(matRows, matCols), m2a(matRows, matCols);
+
+    this->oiMat2Arma(m1a, m1);
+    this->oiMat2Arma(m2a, m2);
+
+    this->arma2OiMat(result, (m1a - m2a));
 }
 
 /*!
  * \brief LAArmadillo::multiply
- * Multiply the second matrix by the first
+ * Multiply m2 by m1
+ * \param result
  * \param m1
  * \param m2
- * \return
  */
-OiMat LAArmadillo::multiply(OiMat m1, OiMat m2){
-    arma::mat m1a = this->oiMat2Arma(m1);
-    arma::mat m2a = this->oiMat2Arma(m2);
-    return this->arma2OiMat( (m1a * m2a) );
+void LAArmadillo::multiply(OiMat &result, const OiMat &m1, const OiMat &m2){
+    int matRowCol = m1.getColCount();
+    arma::mat m1a(m1.getRowCount(), matRowCol), m2a(matRowCol, m2.getColCount());
+
+    this->oiMat2Arma(m1a, m1);
+    this->oiMat2Arma(m2a, m2);
+
+    this->arma2OiMat(result, (m1a * m2a));
 }
 
 /*!
  * \brief LAArmadillo::multiply
- * Multiply the vector by the matrix
+ * Multiply v by m
+ * \param result
  * \param m
  * \param v
- * \return
  */
-OiVec LAArmadillo::multiply(OiMat m, OiVec v){
-    arma::mat ma = this->oiMat2Arma(m);
-    arma::vec va = this->oiVec2Arma(v);
-    return this->arma2OiVec( (ma * va) );
+void LAArmadillo::multiply(OiVec &result, const OiMat &m, const OiVec &v){
+    int vecSize = v.getSize();
+    arma::vec va(vecSize);
+    arma::mat ma(m.getRowCount(), vecSize);
+
+    this->oiVec2Arma(va, v);
+    this->oiMat2Arma(ma, m);
+
+    this->arma2OiVec(result, (ma * va));
 }
 
 /*!
  * \brief LAArmadillo::multiply
- * Multiply the matrix by the scalar
+ * Multiply m by s
+ * \param result
  * \param s
  * \param m
- * \return
  */
-OiMat LAArmadillo::multiply(double s, OiMat m){
-    arma::mat ma = this->oiMat2Arma(m);
-    return this->arma2OiMat( (s * ma) );
+void LAArmadillo::multiply(OiMat &result, const double &s, const OiMat &m){
+    arma::mat ma(m.getRowCount(), m.getColCount());
+
+    this->oiMat2Arma(ma, m);
+
+    this->arma2OiMat(result, (s * ma));
 }
 
 /*!
  * \brief LAArmadillo::multiply
- * Multiply the vector by the scalar
+ * Multiply v by s
+ * \param result
  * \param s
  * \param v
- * \return
  */
-OiVec LAArmadillo::multiply(double s, OiVec v){
-    arma::vec va = this->oiVec2Arma(v);
-    return this->arma2OiVec( (s * va) );
+void LAArmadillo::multiply(OiVec &result, const double &s, const OiVec &v){
+    arma::vec va(v.getSize());
+
+    this->oiVec2Arma(va, v);
+
+    this->arma2OiVec(result, (s * va));
 }
 
 /*!
  * \brief LAArmadillo::invert
- * Invert the matrix
+ * Invert m
+ * \param result
  * \param m
  * \return
  */
-OiMat LAArmadillo::invert(OiMat m){
-    arma::mat ma = this->oiMat2Arma(m);
-    arma::mat result;
+bool LAArmadillo::invert(OiMat &result, const OiMat &m){
+    int matSize = m.getRowCount();
+    arma::mat ma(matSize, matSize);
+
+    this->oiMat2Arma(ma, m);
+
     try{
-        result = arma::inv(ma); //try to calc the standard inverse
-    }catch(runtime_error e){
+        this->arma2OiMat(result, arma::inv(ma)); //try to calc the standard inverse
+    }catch(const runtime_error &e1){
         try{
-            result = arma::pinv(ma);
-        }catch(runtime_error e){
-            return OiMat();
+            this->arma2OiMat(result, arma::pinv(ma));
+        }catch(const runtime_error &e2){
+            return false;
         }
     }
-    return this->arma2OiMat( result );
+
+    return true;
 }
 
 /*!
  * \brief LAArmadillo::transpose
- * Transpose the matrix
+ * Transpose m
+ * \param result
  * \param m
- * \return
  */
-OiMat LAArmadillo::transpose(OiMat m){
-    arma::mat ma = this->oiMat2Arma(m);
-    return this->arma2OiMat( ma.t() );
+void LAArmadillo::transpose(OiMat &result, const OiMat &m){
+    arma::mat ma(m.getRowCount(), m.getColCount());
+
+    this->oiMat2Arma(ma, m);
+
+    this->arma2OiMat(result, ma.t());
 }
 
 /*!
  * \brief LAArmadillo::svd
- * Compute singular value decomposition
+ * Compute singular value decomposition of x
  * \param u
  * \param d
  * \param v
  * \param x
+ * \return
  */
-void LAArmadillo::svd(OiMat &u, OiVec &d, OiMat &v, OiMat x){
-    arma::mat ua;
-    arma::vec da;
-    arma::mat va;
-    arma::mat xa = this->oiMat2Arma(x);
+bool LAArmadillo::svd(OiMat &u, OiVec &d, OiMat &v, const OiMat &x){
+    int matSize = x.getRowCount();
+    arma::mat ua(matSize, matSize), va(matSize, matSize), xa(matSize, matSize);
+    arma::vec da(matSize);
+
+    this->oiMat2Arma(xa, x);
+
     arma::svd(ua, da, va, xa);
-    u = arma2OiMat(ua);
-    d = arma2OiVec(da);
-    v = arma2OiMat(va);
+
+    this->arma2OiMat(u, ua);
+    this->arma2OiMat(v, va);
+    this->arma2OiVec(d, da);
+
+    return true;
 }
 
 /*!
  * \brief LAArmadillo::cross
- * Calculate cross product of 2 vectors
+ * Calculate cross product of a and b
+ * \param result
  * \param a
  * \param b
- * \return
  */
-OiVec LAArmadillo::cross(OiVec a, OiVec b){
-    arma::vec aa = this->oiVec2Arma(a);
-    arma::vec ba = this->oiVec2Arma(b);
-    arma::vec ca = arma::cross(aa, ba);
-    return this->arma2OiVec(ca);
+void LAArmadillo::cross(OiVec &result, const OiVec &a, const OiVec &b){
+    int vecSize = b.getSize();
+    arma::vec aa(vecSize), ba(vecSize);
+
+    this->oiVec2Arma(aa, a);
+    this->oiVec2Arma(ba, b);
+
+    this->arma2OiVec(result, arma::cross(aa, ba));
 }
 
 /*!
  * \brief LAArmadillo::dot
- * Calculate scalar product of 2 vectors
+ * Calculate scalar product of a and b
+ * \param result
  * \param a
  * \param b
- * \return
  */
-double LAArmadillo::dot(OiVec a, OiVec b){
-    arma::vec aa = this->oiVec2Arma(a);
-    arma::vec ba = this->oiVec2Arma(b);
-    double c = arma::dot(aa, ba);
-    return c;
+void LAArmadillo::dot(double &result, const OiVec &a, const OiVec &b){
+    int vecSize = b.getSize();
+    arma::vec aa(vecSize), ba(vecSize);
+
+    this->oiVec2Arma(aa, a);
+    this->oiVec2Arma(ba, b);
+
+    result = arma::dot(aa, ba);
 }
 
 /*!
  * \brief LAArmadillo::det
- * Calculate the determinant of the matrix
+ * Calculate the determinant of a
+ * \param result
  * \param a
- * \return
  */
-double LAArmadillo::det(OiMat a){
-    arma::mat aa = this->oiMat2Arma(a);
-    double c = arma::det(aa);
-    return c;
+void LAArmadillo::det(double &result, const OiMat &a){
+    int matSize = a.getRowCount();
+    arma::mat aa(matSize, matSize);
+
+    this->oiMat2Arma(aa, a);
+
+    result = arma::det(aa);
 }
 
 /*!
  * \brief LAArmadillo::oiVec2Arma
- * \return
+ * \param result
+ * \param v
  */
-arma::vec LAArmadillo::oiVec2Arma(OiVec v){
-    arma::vec result(v.getSize());
+void LAArmadillo::oiVec2Arma(arma::vec &result, const OiVec &v){
     for(int i = 0; i < v.getSize(); i++){
-        result(i) = v.getAt(i);
+        result[i] = v.getAt(i);
     }
-    return result;
 }
 
 /*!
  * \brief LAArmadillo::oiMat2Arma
- * \return
+ * \param result
+ * \param m
  */
-arma::mat LAArmadillo::oiMat2Arma(OiMat m){
-    arma::mat result(m.getRowCount(), m.getColCount());
-    for(int i = 0; i < m.getRowCount(); i++){
-        for(int j = 0; j < m.getColCount(); j++){
-            result(i, j) = m.getAt(i, j);
+void LAArmadillo::oiMat2Arma(arma::mat &result, const OiMat &m){
+    for(int row = 0; row < m.getRowCount(); row++){
+        for(int col = 0; col < m.getColCount(); col++){
+            result.at(row, col) = m.getAt(row, col);
         }
     }
-    return result;
 }
 
 /*!
  * \brief LAArmadillo::arma2OiVec
- * \return
+ * \param result
+ * \param v
  */
-OiVec LAArmadillo::arma2OiVec(arma::vec v){
-    OiVec result(v.n_rows);
+void LAArmadillo::arma2OiVec(OiVec &result, const arma::vec &v){
     for(int i = 0; i < v.n_rows; i++){
-        result.setAt(i, v(i));
+        result.setAt(i, v[i]);
     }
-    return result;
 }
 
 /*!
  * \brief LAArmadillo::arma2OiMat
- * \return
+ * \param result
+ * \param m
  */
-OiMat LAArmadillo::arma2OiMat(arma::mat m){
-    OiMat result(m.n_rows, m.n_cols);
+void LAArmadillo::arma2OiMat(OiMat &result, const arma::mat &m){
     for(int i = 0; i < m.n_rows; i++){
         for(int j = 0; j < m.n_cols; j++){
-            result.setAt(i, j, m(i, j));
+            result.setAt(i, j, m.at(i, j));
         }
     }
-    return result;
 }
