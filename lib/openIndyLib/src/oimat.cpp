@@ -41,7 +41,7 @@ double OiMat::getAt(const int row, const int col) const{
  * \brief OiMat::getRowCount
  * \return
  */
-int OiMat::getRowCount() const{
+unsigned int OiMat::getRowCount() const{
     return this->values.size();
 }
 
@@ -49,7 +49,7 @@ int OiMat::getRowCount() const{
  * \brief OiMat::getColCount
  * \return
  */
-int OiMat::getColCount() const{
+unsigned int OiMat::getColCount() const{
     if(this->values.size() > 0){
         return this->values.at(0).size();
     }else{
@@ -344,6 +344,8 @@ OiMat OiMat::mult(const double value, const OiMat &m){
 OiMat OiMat::t() const{
     if( this->getRowCount() > 0 && this->getColCount() > 0 ){
         return OiMat::myLinearAlgebra->transpose(*this);
+    }else{
+        return OiMat();
     }
 }
 
