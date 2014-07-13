@@ -6,6 +6,7 @@
 #include "uncertaintycomponent.h"
 #include "reading.h"
 #include "trafoparam.h"
+#include "simulationdata.h"
 
 /*!
  * \brief The Uncertainties struct
@@ -94,7 +95,24 @@ public:
      *  objectRelation is a homogenous matrix (4x4) which describes the
      *  relation between Station and Object
      */
-    virtual bool distort(Reading *r, OiMat objectRelation) = 0;
+    virtual bool distort(Reading *r, OiMat objectRelation, bool newIterationStart) = 0;
+
+    /*!
+     * \brief analyseSimulationData
+     * \param d
+     * \return
+     *
+     * analyse the simulation values saved in d.values. store your results
+     * in:
+     *  d.maxValues = Maximum
+     *  d.minValue = Minimum
+     *  d.uncertainty = Uncertainty of the data series
+     *  d.distribution = name of the distribution of the data series
+     *  d.densityFunction = set the pointer to a density function (double densityFunction(double x))
+     *  d.distributionFunction =  set the pointer to a distribution function (double distributionFunction(double x))
+     *  d.info = a map to define custom information of your analysis
+     */
+    virtual bool analyseSimulationData(UncertaintyData &d) = 0;
 
     //getter & setter
     Uncertainties getGivenUncertainties(){return givenUncertainties;}

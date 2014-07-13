@@ -28,6 +28,10 @@ private:
     double minError;
     double errorScale;
 
+    QList<double> densityValues;
+
+    SimulationData simData;
+
 
 
 };

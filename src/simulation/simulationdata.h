@@ -12,11 +12,13 @@ struct UncertaintyData{
     double maxValue;
     double minValue;
 
+    double expectation;
+
     double uncertainty;
     QString distribution;
 
-    double (*densityFunction)(double x);
-    double (*distributionFunction)(double x);
+    double (*densityFunction)(double x, double expectation,double uncertainty);
+    double (*distributionFunction)(double x,double expectation,double uncertainty);
 
     QMap<QString, QString> info;
 

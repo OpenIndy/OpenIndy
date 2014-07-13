@@ -52,7 +52,7 @@ public:
     Statistic getStatistic() const;
     void setStatistic(Statistic myStatistic);
 
-    SimulationData getSimulationData() const;
+    SimulationData& getSimulationData();
     void setSimulationData(SimulationData s);
 
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;

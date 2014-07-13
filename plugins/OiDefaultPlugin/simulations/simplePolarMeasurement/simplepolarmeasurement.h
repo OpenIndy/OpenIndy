@@ -3,6 +3,7 @@
 
 #include "simulationmodel.h"
 #include <random>
+#include <math.h>
 
 /*!
  * \brief The SimplePolarMeasurement class
@@ -75,13 +76,32 @@ public:
      *  objectRelation is a homogenous matrix (4x4) which describes the
      *  relation between Station and Object
      */
-    bool distort(Reading *r, OiMat objectRelation);
+    bool distort(Reading *r, OiMat objectRelation,bool newIterationStart);
+
+    /*!
+     * \brief analyseSimulationData
+     * \param d
+     * \return
+     *
+     * analyse the simulation values saved in d.values. store your results
+     * in:
+     *  d.maxValues = Maximum
+     *  d.minValue = Minimum
+     *  d.uncertainty = Uncertainty of the data series
+     *  d.distribution = name of the distribution of the data series
+     *  d.densityFunction = set the pointer to a density function (double densityFunction(double x))
+     *  d.distributionFunction =  set the pointer to a distribution function (double distributionFunction(double x))
+     *  d.info = a map to define custom information of your analysis
+     */
+    bool analyseSimulationData(UncertaintyData &d);
+
 
 private:
 
     //all supported distributions;
     QStringList distributions;
-
+    double variance;
+    double expectation;
 
     double distortComponent(UncertaintyComponent u);
 
@@ -90,6 +110,11 @@ private:
     bool distortionByEnviroment(Reading *r);
     bool distortionByHuman(Reading *r);
     bool distortionByObject(Reading *r, OiMat objectRelation);
+
+    void checkDistribution(UncertaintyData &d);
+    void calcUncertainty(UncertaintyData &d);
+
+
 
 
 };

@@ -13,24 +13,26 @@ void Histogram::paintData(FeatureWrapper* f, QString attributeToDraw)
 
     _bins.clear();
 
-    QList<double> tmpX = f->getGeometry()->getSimulationData().uncertaintyX.values;
+     simData = f->getGeometry()->getSimulationData();
+     QList<double> tmpList =simData.uncertaintyX.values;
 
-    if(tmpX.size() != 0){
-    maxError = tmpX.at(0);
-    minError = tmpX.at(0);
 
-    foreach(double d, tmpX){
-       if(d > maxError){
-           maxError = d;
-       }
-       if(d < minError){
-           minError = d;
-       }
-    }
+
+    if(tmpList.size() != 0){
+
+     maxError = simData.uncertaintyX.maxValue;
+     minError = simData.uncertaintyX.minValue;
 
     errorScale = 1/(maxError-minError);
 
-    foreach(double d, tmpX){
+    foreach(double d, tmpList){
+
+        double u = simData.uncertaintyX.uncertainty;
+        double e = simData.uncertaintyX.expectation;
+        double w = simData.uncertaintyX.densityFunction(d,e,u);
+
+        densityValues.append(w);
+
          _bins.append(errorScale*(maxError-d));
     }
 
@@ -94,8 +96,10 @@ void Histogram::paintEvent(QPaintEvent *event)
        // Scale histogram from bins unit to pixels unit
        // handle upscaling and downscaling in a different way
        QPolygon myPolygon;
+       QPolygon densityGraph;
        QLinearGradient linearGradient(0, 0, 0, height);
        pen.setStyle(Qt::SolidLine);
+
 
        if( nbBins < width )
        {
@@ -105,18 +109,12 @@ void Histogram::paintEvent(QPaintEvent *event)
 
            // log(bins)
            pen.setColor("#00aaee");   painter.setPen(pen);
-           //linearGradient.setColorAt(0.2, Qt::white);
-           //linearGradient.setColorAt(1.0, "#00aaee");
-           //painter.setBrush(linearGradient);
 
+           for(int i = 0;i<densityValues.size(); i++){
+               densityGraph << QPoint(xLeft+wScale*i, yTop+hScale*(_heightMax-densityValues.at(i)));
+           }
+           painter.drawPolygon(densityGraph);
 
-           //brush.setColor("#00aaee"); painter.setBrush(brush);
-
-           /*myPolygon.clear();
-           myPolygon << QPoint(xRight, yBottom) << QPoint(xLeft, yBottom);
-           for( int i=0; i<nbBins; ++i )
-               myPolygon << QPoint(xLeft+wScale*i, yTop+hScaleLog*( _bins[i] ? log(_heightMax/float(_bins[i])) : _heightMax));
-           painter.drawPolygon(myPolygon);*/
 
            // bins
            pen.setColor("#016790");
@@ -202,15 +200,30 @@ void Histogram::paintEvent(QPaintEvent *event)
 
            pen.setColor(Qt::black);
            painter.setPen(pen);
-           painter.drawText(0,height*float(i)/stepsH, QString::number(i));
+           painter.drawText(0,height*float(i)/stepsH, QString::number(maxError-i/errorScale));
        }
+
+       // ---- Draw SimulationData-----------------------------------------------
+       QString expectation = QString::number(simData.uncertaintyX.expectation,'f',6);
+       QString uncertainty = QString::number(simData.uncertaintyX.uncertainty,'f',6);
+       QString maxV = QString::number(simData.uncertaintyX.maxValue,'f',6);
+       QString minV = QString::number(simData.uncertaintyX.minValue,'f',6);
+
+       painter.drawText(xRight-200, yTop+10, simData.uncertaintyX.distribution);
+       painter.drawText(xRight-200, yTop+20, QString("expectation: " + expectation));
+       painter.drawText(xRight-200, yTop+30, QString("uncertainty: " + uncertainty));
+       painter.drawText(xRight-200, yTop+40, QString("max: " + maxV));
+       painter.drawText(xRight-200, yTop+50, QString("min: " + minV));
 }
 
 void Histogram::mouseMoveEvent(QMouseEvent *event)
 {
 
-    QString x = QString::number(event->x());
-    QString y = QString::number(event->y());
+    double X = maxError-event->x()/errorScale;
+    double Y = maxError-event->y()/errorScale;
+
+    QString x = QString::number(X);
+    QString y = QString::number(Y);
 
     QToolTip::showText(event->globalPos(),QString("x:"+x+","+"y:"+y),this);
 }

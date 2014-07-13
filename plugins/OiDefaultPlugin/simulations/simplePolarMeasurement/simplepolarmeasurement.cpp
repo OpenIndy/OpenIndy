@@ -21,6 +21,16 @@ PluginMetaData *SimplePolarMeasurement::getMetaData()
     return metaData;
 }
 
+double densityNormal(double x, double expectation, double uncertainty)
+{
+    return 1.0/sqrt(2.0*M_PI*uncertainty*uncertainty)*exp(-1.0*(((x-expectation)*(x-expectation))/(2.0*uncertainty*uncertainty)));
+}
+
+double distributionNormal(double x, double expectation, double uncertainty)
+{
+    return 0.5*(1.0+erf((x-expectation)/(sqrt(2.0*uncertainty*uncertainty))));
+}
+
 QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainties()
 {
     QMap<QString, UncertaintyComponent> sensorUncertainties;
@@ -325,7 +335,45 @@ QMap<QString, QStringList> *SimplePolarMeasurement::getStringParameter()
     return stringParameter;
 }
 
-bool SimplePolarMeasurement::distort(Reading *r,OiMat objectRelation)
+bool SimplePolarMeasurement::analyseSimulationData(UncertaintyData &d)
+{
+
+
+   if(d.values.size() != 0){
+
+       double sumDD = 0.0;
+
+       d.maxValue = d.values.at(0);
+       d.minValue = d.values.at(0);
+
+       for(int i = 0; i<d.values.size();i++){
+           if(d.values.at(i) > d.maxValue){
+               d.maxValue = d.values.at(i) ;
+           }
+           if(d.values.at(i)  < d.minValue){
+               d.minValue = d.values.at(i) ;
+           }
+           sumDD += d.values.at(i);
+       }
+
+       d.expectation = sumDD/d.values.size();
+
+      this->checkDistribution(d);
+      this->calcUncertainty(d);
+
+       d.densityFunction = densityNormal;
+       d.distributionFunction = distributionNormal;
+
+   }else{
+    return false;
+   }
+
+
+
+    return true;
+}
+
+bool SimplePolarMeasurement::distort(Reading *r,OiMat objectRelation,bool newIterationStart)
 {
     distortionBySensor(r);
 
@@ -471,3 +519,30 @@ bool SimplePolarMeasurement::distortionByObject(Reading *r, OiMat objectRelation
 {
     return false;
 }
+
+void SimplePolarMeasurement::checkDistribution(UncertaintyData &d)
+{
+    d.distribution = "normal";
+}
+
+void SimplePolarMeasurement::calcUncertainty(UncertaintyData &d)
+{
+
+    if(d.distribution == "normal"){
+
+        double sumVV;
+
+
+        foreach(double v, d.values){
+
+            sumVV += (d.expectation-v)*(d.expectation-v);
+
+        }
+        d.uncertainty = sqrt(sumVV/(d.values.size()));
+    }
+
+}
+
+
+
+
