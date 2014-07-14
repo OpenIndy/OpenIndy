@@ -166,6 +166,8 @@ public slots:
     void resetFeatureSelection();
     void availableGroupsChanged(QMap<QString, int>);
     void updateGeometryIcons(QStringList availableGeometries);
+    void trafoParamAdded();
+    void resizeTableView();
     //void updateModel();
 
     //void updateCoordSys();

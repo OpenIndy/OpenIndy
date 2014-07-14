@@ -13,6 +13,8 @@ WatchWindow::WatchWindow(QWidget *parent) :
     masterLayout = new QVBoxLayout();
     settingsLayout = new QVBoxLayout();
 
+    ui->groupBox_displayValues->setLayout(settingsLayout);
+
     listener = new WatchWindowListener();
 
     connect(this,SIGNAL(sendCheckBoxReady(bool)),this->listener,SLOT(setCheckBoxReady(bool)));
@@ -34,11 +36,18 @@ WatchWindow::~WatchWindow()
 
 void WatchWindow::setLCDNumber(QVariantMap m){
 
-    this->iniGUI();
+    /*if(!listener->isGUIReady){
+       this->iniGUI();
+    }*/
+
+    //change display, depending on checked setting checkboxes.
+    iniGUI();
+
 
     QMapIterator<QString,QVariant> j(m);
     while (j.hasNext()) {
         j.next();
+        qDebug() << j.key();
 
         for(int i=0;i<this->checkboxes.size();i++){
             if(this->checkboxes.at(i)->text() == j.key() && this->checkboxes.at(i)->isChecked()){
@@ -177,7 +186,8 @@ void WatchWindow::iniGUI()
 
     ui->pageWatchWindow->setLayout(masterLayout);
 
-    emit sendGUIReady(true);
+    //emit sendGUIReady(true);
+    listener->isGUIReady = true;
 }
 
 void WatchWindow::keyPressEvent(QKeyEvent *e)
@@ -234,6 +244,7 @@ void WatchWindow::initSuppReadings()
     if(rTypes == NULL){
         return;
     }
+    listener->isSettingsReady = true;
 
     for(int i=0; i<rTypes->size();i++){
         switch (rTypes->at(i)) {
@@ -262,42 +273,56 @@ void WatchWindow::initSuppReadings()
             break;
         }
     }
-    if(ui->comboBox_suppReadings->findText(Configuration::sCartesian) != -1){
+    /*if(ui->comboBox_suppReadings->findText(Configuration::sCartesian) != -1){
         ui->comboBox_suppReadings->setCurrentText(Configuration::sCartesian);
-    }
-    emit sendSettingsReady(true);
+    }*/
+    //emit sendSettingsReady(true);
+    //listener->isSettingsReady = true;
 
-    on_comboBox_suppReadings_currentIndexChanged(ui->comboBox_suppReadings->currentText());
+    //on_comboBox_suppReadings_currentIndexChanged(ui->comboBox_suppReadings->currentText());
 }
 
 void WatchWindow::getAttributes(QStringList l)
 {
-    if(listener->isCheckBoxReady){
+    stopStream();
 
-    }else{
-        if(settingsLayout == NULL){
-            settingsLayout = new QVBoxLayout();
+
+        if(listener->isCheckBoxReady){
+
+        }else{
+            if(settingsLayout == NULL){
+                settingsLayout = new QVBoxLayout();
+            }
+
+            foreach (QCheckBox *cb, checkboxes) {
+                ui->groupBox_displayValues->layout()->removeWidget(cb);
+                delete cb;
+            }
+            checkboxes.clear();
+
+            if(l.size() > 0){
+
+                for(int i=0; i<l.size();i++){
+                    QCheckBox *cb = new QCheckBox();
+                    cb->setText(l.at(i));
+                    cb->setChecked(true);
+                    qDebug() << cb->text();
+
+                    settingsLayout->addWidget(cb);
+
+                    this->checkboxes.append(cb);
+                }
+
+                //emit sendCheckBoxReady(true);
+                listener->isCheckBoxReady = true;
+            }
+
         }
 
-        foreach (QCheckBox *cb, checkboxes) {
-            delete cb;
-        }
-        checkboxes.clear();
+        iniGUI();
 
-        for(int i=0; i<l.size();i++){
-            QCheckBox *cb = new QCheckBox();
-            cb->setText(l.at(i));
-            cb->setChecked(true);
 
-            settingsLayout->addWidget(cb);
-
-            this->checkboxes.append(cb);
-        }
-
-        ui->groupBox_displayValues->setLayout(settingsLayout);
-
-        emit sendCheckBoxReady(true);
-    }
+     startStream();
 }
 
 
@@ -307,35 +332,57 @@ void WatchWindow::getAttributes(QStringList l)
  */
 void WatchWindow::on_comboBox_suppReadings_currentIndexChanged(const QString &arg1)
 {
+    qDebug() << "reading " << arg1;
+
+    stopStream();
+
+    listener->isCheckBoxReady = false;
 
 
     if(!listener->isSettingsReady){
         return;
     }
 
-    OiFeatureState::getActiveStation()->emitStopReadingStream();
-    emit sendCheckBoxReady(false);
-
-    int r;
 
     if(arg1.compare(Configuration::sCartesian) == 0){
-        r = Configuration::eCartesian;
+        activeReadingType = Configuration::eCartesian;
     }else if(arg1.compare(Configuration::sPolar) == 0){
-        r = Configuration::ePolar;
+        activeReadingType = Configuration::ePolar;
     }else if(arg1.compare(Configuration::sDistance) == 0){
-        r = Configuration::eDistance;
+        activeReadingType = Configuration::eDistance;
     }else if(arg1.compare(Configuration::sDirection) == 0){
-        r = Configuration::eDirection;
+        activeReadingType = Configuration::eDirection;
     }else if(arg1.compare(Configuration::sLevel) == 0){
-        r = Configuration::eLevel;
+        activeReadingType = Configuration::eLevel;
     }else if(arg1.compare(Configuration::sTemperatur) == 0){
-        r = Configuration::eTemperatur;
+        activeReadingType = Configuration::eTemperatur;
     }else if(arg1.compare("undefined") == 0){
-        r = Configuration::eUndefined;
+        activeReadingType = Configuration::eUndefined;
     }
 
-    emit sendGUIReady(false);
+    //emit sendGUIReady(false);
+    listener->isGUIReady = false;
 
-    OiFeatureState::getActiveStation()->emitStartReadingStream(r);
-    emit sendCheckBoxReady(false);
+    startStream();
+
+    //emit sendCheckBoxReady(false);
+
+}
+
+void WatchWindow::stopStream()
+{
+    OiFeatureState::getActiveStation()->emitStopReadingStream();
+
+    listenerThread.quit();
+
+    if(!listenerThread.wait()){
+
+    }
+}
+
+void WatchWindow::startStream()
+{
+    OiFeatureState::getActiveStation()->emitStartReadingStream(activeReadingType);
+
+    listenerThread.start();
 }

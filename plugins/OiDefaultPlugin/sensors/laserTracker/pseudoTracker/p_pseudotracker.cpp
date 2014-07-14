@@ -42,10 +42,10 @@ QList<Configuration::ReadingTypes>* PseudoTracker::getSupportedReadingTypes(){
 
     QList<Configuration::ReadingTypes> *readingTypes = new QList<Configuration::ReadingTypes>;
 
+    readingTypes->append(Configuration::eCartesian);
     readingTypes->append(Configuration::ePolar);
     readingTypes->append(Configuration::eDirection);
     readingTypes->append(Configuration::eDistance);
-    readingTypes->append(Configuration::eCartesian);
     readingTypes->append(Configuration::eTemperatur);
     readingTypes->append(Configuration::eLevel);
 

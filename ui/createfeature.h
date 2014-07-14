@@ -36,6 +36,8 @@ signals:
 
     void createFeatureMConfig();
 
+    void trafoParamCreated();
+
 private slots:
 
     void initGUI();

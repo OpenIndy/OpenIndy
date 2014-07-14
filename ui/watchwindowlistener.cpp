@@ -34,6 +34,8 @@ void WatchWindowListener::setLCDNumber(QVariantMap m)
     if(!isSettingsReady){
         return;
     }
+
+
     QStringList attributeNames;
 
     QMapIterator<QString, QVariant> j(m);
@@ -42,10 +44,48 @@ void WatchWindowListener::setLCDNumber(QVariantMap m)
 
         attributeNames.append(j.key());
     }
-    if(!isCheckBoxReady){
+
+    /*if(!isCheckBoxReady){
+
         emit sendAttributeNames(attributeNames);
     }else{
         emit sendData(m);
+    }*/
+
+    if(!compareMaps(m)){
+        this->lastMap = m;
+        isGUIReady = false;
+        emit sendAttributeNames(attributeNames);
+    }else{
+        emit sendData(m);
+    }
+
+}
+
+bool WatchWindowListener::compareMaps(QVariantMap m)
+{
+    QList<QString> keys = m.keys();
+
+    int keyCount = lastMap.size();
+    int keyFound = 0;
+
+    if(keyCount == 0){
+        return false;
+    }
+
+    QMapIterator<QString, QVariant> j(this->lastMap);
+    while(j.hasNext()){
+        j.next();
+
+        if(keys.contains(j.key())){
+            keyFound++;
+        }
+    }
+
+    if(keyCount == keyFound){
+        return true;
+    }else{
+        return false;
     }
 }
 

@@ -267,6 +267,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 void TableModel::updateModel(){
     emit layoutAboutToBeChanged();
     emit layoutChanged();
+    emit resizeTable();
 }
 
 /*!

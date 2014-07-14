@@ -28,6 +28,7 @@ public:
 
 signals:
     void groupNameChanged(QString oldValue, QString nweValue);
+    void resizeTable();
     
 public slots:
     void updateModel();

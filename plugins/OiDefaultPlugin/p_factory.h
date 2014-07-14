@@ -28,6 +28,7 @@
 #include "p_bestfitplane2.h"
 #include "p_bestfitsphere.h"
 #include "p_bestfitcircle.h"
+#include "p_bestfitsphererauls.h"
 
 #include "p_pointfrompoints.h"
 #include "p_linefrompoints.h"

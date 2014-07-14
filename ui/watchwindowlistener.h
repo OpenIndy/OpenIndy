@@ -7,6 +7,7 @@
 #include <QVariantMap>
 #include <QVariant>
 #include <QThread>
+#include "oifeaturestate.h"
 
 class WatchWindowListener : public QObject
 {
@@ -31,6 +32,11 @@ public slots:
     void setDigitCount(int count);
 
     void setLCDNumber(QVariantMap);
+
+private:
+    QVariantMap lastMap;
+
+    bool compareMaps(QVariantMap m);
 
     
 };

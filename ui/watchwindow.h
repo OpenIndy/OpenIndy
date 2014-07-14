@@ -66,12 +66,17 @@ private:
     //bool isSettingsReady;
     //bool isCheckboxReady;
 
+    void stopStream();
+    void startStream();
+
     QMap<QString,QLCDNumber*> streamData;
 
     QList<QCheckBox*> checkboxes;
 
     QList<QWidget*> widgets;
     QList<QLayout*> layouts;
+
+    int activeReadingType;
 
 };
 
