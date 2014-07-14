@@ -205,9 +205,9 @@ void FunctionPluginLoader::deleteFunctionFromFeature(bool checked){
  * Adds the name of the active feature to the title of the function plugin loader dialog
  * \param activeFeature
  */
-void FunctionPluginLoader::setActiveFeatureTitle(QString activeFeature){
+/*void FunctionPluginLoader::setActiveFeatureTitle(QString activeFeature){
     //this->setWindowTitle(QString("function plugin loader - active feature: %1").arg(activeFeature));
-}
+}*/
 
 void FunctionPluginLoader::showEvent(QShowEvent *event)
 {

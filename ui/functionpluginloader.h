@@ -63,7 +63,7 @@ public slots:
 
     void disableFunctionInteractions();
     void deleteFunctionFromFeature(bool);
-    void setActiveFeatureTitle(QString activeFeature);
+    //void setActiveFeatureTitle(QString activeFeature);
 
     void showEvent(QShowEvent *event);
 

@@ -1015,8 +1015,7 @@ void MainWindow::on_actionSet_function_triggered(){
         //send models to function plugin loader
         fPluginDialog.receivePluginsModel(this->control.pluginsModel);
         fPluginDialog.receiveFunctionsModel(this->control.functionTreeViewModel);
-        //set title and show dialog
-        fPluginDialog.setActiveFeatureTitle(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
+        //show the dialog
         fPluginDialog.show();
     }
 }
