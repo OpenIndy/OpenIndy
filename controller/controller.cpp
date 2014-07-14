@@ -684,7 +684,7 @@ void Controller::createFunction(int index){
         //if the active feature is not a nominal geometry
         if(OiFeatureState::getActiveFeature()->getGeometry() == NULL
                 || !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
-            //create function and connect oiemitter to console
+            //create function and connect OiFunctionEmitter to console
             Function *newFunction = PluginLoader::loadFunctionPlugin(path,name);
             if(newFunction != NULL){
                 connect(&newFunction->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(printToConsole(QString)));

@@ -38,6 +38,7 @@ INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/src/geometry
+INCLUDEPATH += $$PWD/src/oiemitter
 INCLUDEPATH += $$PWD/src/plugin
 INCLUDEPATH += $$PWD/controller/oiDataExchange
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
@@ -71,7 +72,7 @@ SOURCES += \
     src/reading.cpp \
     src/pluginmetadata.cpp \
     src/oimetadata.cpp \
-    src/oiemitter.cpp \
+    src/oiemitter/oiemitter.cpp \
     src/observation.cpp \
     src/measurementconfig.cpp \
     src/geometry.cpp \
@@ -157,7 +158,11 @@ SOURCES += \
     controller/oiDataExchange/oiexchangepts.cpp \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
-    ui/oiGraphixFactory/oigraphix_pointcloud.cpp
+    ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
+    src/oiemitter/oifunctionemitter.cpp \
+    src/oiemitter/oisensoremitter.cpp \
+    src/oiemitter/oisimulationemitter.cpp \
+    src/oiemitter/oinetworkadjustmentemitter.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -177,7 +182,7 @@ HEADERS  += \
     src/reading.h \
     src/pluginmetadata.h \
     src/oimetadata.h \
-    src/oiemitter.h \
+    src/oiemitter/oiemitter.h \
     src/observation.h \
     src/measurementconfig.h \
     src/geometry.h \
@@ -280,7 +285,11 @@ HEADERS  += \
     controller/oiDataExchange/oiexchangepts.h \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
-    ui/oiGraphixFactory/oigraphix_pointcloud.h
+    ui/oiGraphixFactory/oigraphix_pointcloud.h \
+    src/oiemitter/oifunctionemitter.h \
+    src/oiemitter/oisensoremitter.h \
+    src/oiemitter/oisimulationemitter.h \
+    src/oiemitter/oinetworkadjustmentemitter.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
