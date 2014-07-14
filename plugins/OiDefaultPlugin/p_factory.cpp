@@ -71,6 +71,13 @@ QList<NetworkAdjustment*> OiTemplatePlugin::createNetworkAdjustments(){
     return resultSet;
 }
 
+QList<SimulationModel *> OiTemplatePlugin::createSimulations()
+{
+    QList<SimulationModel*> resultSet;
+    resultSet.append(new SimplePolarMeasurement());
+    return resultSet;
+}
+
 /*!
  * \brief OiTemplatePlugin::createSensor
  * Returns the sensor with the specified name
@@ -153,5 +160,16 @@ Function* OiTemplatePlugin::createFunction(QString name){
  */
 NetworkAdjustment* OiTemplatePlugin::createNetworkAdjustment(QString name){
     NetworkAdjustment *result = NULL;
+
+    return result;
+}
+
+SimulationModel *OiTemplatePlugin::createSimulation(QString name)
+{
+    SimulationModel *result;
+
+    if(name.compare("SimplePolarMeasurement") == 0){
+        result = new SimplePolarMeasurement();
+    }
     return result;
 }

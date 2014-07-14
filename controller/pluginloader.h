@@ -13,6 +13,7 @@
 #include "pi_totalstation.h"
 #include "pi_fitfunction.h"
 #include "sensor.h"
+#include "simulationmodel.h"
 #include "sensorcontrol.h"
 #include "station.h"
 #include "coordinatesystem.h"
@@ -50,10 +51,12 @@ public slots:
     //! load a laser tracker plugin
     static Sensor* loadSensorPlugin(QString path, QString name);
     static Function* loadFunctionPlugin(QString path, QString name);
+    static SimulationModel* loadSimulationPlugin(QString path, QString name);
     static NetworkAdjustment* loadNetworkAdjustmentPlugin(QString path, QString name);
 
     static QList<Sensor*> loadSensorPlugins(QString path);
     static QList<Function*> loadFunctionPlugins(QString path);
+    static QList<SimulationModel*> loadSimulationPlugins(QString path);
     static QList<NetworkAdjustment*> loadNetworkAdjustmentPlugins(QString path);
 
 

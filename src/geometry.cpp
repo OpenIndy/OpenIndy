@@ -425,3 +425,13 @@ void Geometry::setStatistic(Statistic myStatistic){
     this->myStatistic = myStatistic;
     emit this->geomMyStatisticChanged(this->id);
 }
+
+SimulationData& Geometry::getSimulationData()
+{
+    return this->mySimulationData;
+}
+
+void Geometry::setSimulationData(SimulationData s)
+{
+    this->mySimulationData = s;
+}

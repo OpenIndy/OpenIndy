@@ -113,7 +113,7 @@ bool BestFitLine::setUpResult(Line &line){
         //set result
         line.ijk = r;
         line.xyz = centroid;
-        Statistic myStats;
+        Statistic myStats = line.getStatistic();
         myStats.stdev = qSqrt( vtv / (n - 3) );
         myStats.s0_apriori = 1.0;
         myStats.s0_aposteriori = myStats.stdev;

@@ -1161,6 +1161,32 @@ TrafoParam* FeatureUpdater::findTrafoParam(CoordinateSystem *searchSystem, QList
     return NULL;
 }
 
+void FeatureUpdater::recalcAll()
+{
+    QMap<int,bool> solvedSystems;
+
+    foreach(CoordinateSystem *c, OiFeatureState::getCoordinateSystems()){
+        foreach(TrafoParam *t, c->getTransformationParameters()){
+            if(!solvedSystems.contains(t->getId())){
+               FeatureUpdater::recalcTrafoParam(t);
+               solvedSystems.insert(t->getId(),true);
+            }
+        }
+    }
+
+    foreach(Station *s, OiFeatureState::getStations()){
+        foreach(TrafoParam *t, s->coordSys->getTransformationParameters()){
+            if(!solvedSystems.contains(t->getId())){
+               FeatureUpdater::recalcTrafoParam(t);
+               solvedSystems.insert(t->getId(),true);
+            }
+        }
+    }
+
+    FeatureUpdater::recalcFeatureSet();
+
+}
+
 /*!
  * \brief FeatureUpdater::fillTrafoParamFunctionNN
  * Fill Trafo Param function with start and target features where start and target system are nominal systems

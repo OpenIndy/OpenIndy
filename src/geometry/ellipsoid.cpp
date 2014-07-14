@@ -68,3 +68,8 @@ ElementDependencies Ellipsoid::fromOpenIndyXML(QXmlStreamReader &xml){
 
     return dependencies;
 }
+
+bool Ellipsoid::saveSimulationData()
+{
+    return false;
+}

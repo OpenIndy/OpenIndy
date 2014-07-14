@@ -215,7 +215,7 @@ bool BestFitCircle::exec(Circle &circle) {
         qDebug() << QString::number(nx) + ", " + QString::number(ny) + ", " + QString::number(nz) + ", "  + QString::number(d);
 
         // Statistik
-        Statistic myStats;
+        Statistic myStats = circle.getStatistic();
         myStats.s0_apriori     = 1.0;
         myStats.s0_aposteriori = (obsCount-6) > 0 ? sqrt(OiVec::dot(v,v)/(obsCount-6)) : 1.0;
 

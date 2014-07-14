@@ -39,6 +39,7 @@ INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/src/geometry
 INCLUDEPATH += $$PWD/src/plugin
+INCLUDEPATH += $$PWD/src/simulation
 INCLUDEPATH += $$PWD/controller/oiDataExchange
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
 
@@ -151,13 +152,22 @@ SOURCES += \
     src/sensorlistener.cpp \
     controller/guiconfiguration.cpp \
     ui/plugininfowidget.cpp \
+    ui/oisimulationwidget.cpp \
     controller/oifeaturestate.cpp \
     controller/trafocontroller.cpp \
     ui/featureoverviewproxymodel.cpp \
     controller/oiDataExchange/oiexchangepts.cpp \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
-    ui/oiGraphixFactory/oigraphix_pointcloud.cpp
+    ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
+    src/simulation/uncertaintycomponent.cpp \
+    controller/simulationcontroller.cpp \
+    ui/histogram.cpp \
+    ui/simulationerrortablemodel.cpp \
+    ui/simulationdelegate.cpp \
+    ui/simulationtreeviewmodel.cpp \
+    src/simulation/simulationdata.cpp
+
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -274,13 +284,23 @@ HEADERS  += \
     src/sensorlistener.h \
     controller/guiconfiguration.h \
     ui/plugininfowidget.h \
+    ui/oisimulationwidget.h \
     controller/oifeaturestate.h \
     controller/trafocontroller.h \
     ui/featureoverviewproxymodel.h \
     controller/oiDataExchange/oiexchangepts.h \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
-    ui/oiGraphixFactory/oigraphix_pointcloud.h
+    ui/oiGraphixFactory/oigraphix_pointcloud.h \
+    src/simulation/simulationmodel.h \
+    src/simulation/uncertaintycomponent.h \
+    controller/simulationcontroller.h \
+    ui/histogram.h \
+    ui/simulationerrortablemodel.h \
+    ui/simulationdelegate.h \
+    ui/simulationtreeviewmodel.h \
+    src/simulation/simulationdata.h
+
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
@@ -297,6 +317,7 @@ FORMS    += ui/mainwindow.ui \
     ui/importnominalgeometrydialog.ui \
     ui/nominaldatadialog.ui \
     ui/edittrafoparamdialog.ui \
+    ui/oisimulationwidget.ui \
     ui/stationinfodialog.ui \
     ui/realtimedatadialog.ui
 

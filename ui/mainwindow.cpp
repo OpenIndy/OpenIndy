@@ -194,6 +194,7 @@ void MainWindow::setConnects(){
     connect(&this->control, SIGNAL(showMessageBox(QString,QString)), this, SLOT(showMessageBox(QString,QString)));
     connect(&this->control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
 
+
     //dataimport
     connect(&this->importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&this->control,SLOT(importFeatures(QList<FeatureWrapper*>)));
 
@@ -1677,4 +1678,10 @@ void MainWindow::openStationGeomProperties(FeatureWrapper *fw)
 void MainWindow::on_actionSensor_real_time_data_triggered()
 {
     rtDataDialog.show();
+}
+
+void MainWindow::on_actionSimulation_triggered()
+{
+    simulationWidget.setFeatureUpdater(control.getFeatureUpdater());
+    simulationWidget.show();
 }
