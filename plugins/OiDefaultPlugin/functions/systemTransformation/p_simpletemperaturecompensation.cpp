@@ -14,12 +14,12 @@ SimpleTemperatureCompensation::SimpleTemperatureCompensation()
 PluginMetaData *SimpleTemperatureCompensation::getMetaData()
 {
     PluginMetaData* metaData = new PluginMetaData();
-        metaData->name = "SimpleTempComp";
+        metaData->name = "StandardTempComp";
         metaData->pluginName = "OpenIndy Default Plugin";
         metaData->author = "jw";
         metaData->description = QString("%1 %2")
                 .arg("This functions calculates an equal temperature compensation value for x,y and z component.")
-                .arg("You need to put in one scalar entity temperature, that is used to calculate the values.");
+                .arg("Type in the actual and reference temperature and chose a material and get the three scales.");
         metaData->iid = "de.openIndy.Plugin.Function.SystemTransformation.v001";
         return metaData;
 }
@@ -31,13 +31,7 @@ PluginMetaData *SimpleTemperatureCompensation::getMetaData()
 QList<InputParams> SimpleTemperatureCompensation::getNeededElements()
 {
     QList<InputParams> result;
-        InputParams param;
-        param.index = 0;
-        param.description = "Select scalar entity temperature for calculating the compensation.";
-        param.infinite = false;
-        param.typeOfElement = Configuration::eScalarEntityTemperatureElement;
-        result.append(param);
-        return result;
+    return result;
 }
 
 /*!
@@ -61,17 +55,10 @@ bool SimpleTemperatureCompensation::exec(TrafoParam &tp)
         FunctionConfiguration myConfig = this->getFunctionConfiguration();
         QMap<QString,QString> stringParameter = myConfig.stringParameter;
 
-        ScalarEntityTemperature *myScalarEntityTemperature = this->getScalarEntityTemperature();
-
-        if(myScalarEntityTemperature != NULL){
-            this->calcExpansion(tp,myScalarEntityTemperature);
-        }else{
-            this->writeToConsole("No valid scalar entity temperature available.");
-            return false;
-        }
+        this->calcExpansion(tp);
 
     }else{
-        this->writeToConsole("No valid scalar entity temperature available.");
+        this->writeToConsole("An error occured at calculating the function.");
         return false;
     }
     return true;
@@ -86,15 +73,7 @@ QMap<QString, QStringList> SimpleTemperatureCompensation::getStringParameter()
     QMap<QString, QStringList> result;
     QString key ="material";
     QStringList value;
-    value.append(Configuration::sSteel);
-    value.append(Configuration::sAluminum);
-    value.append(Configuration::sPlumb);
-    value.append(Configuration::sIron);
-    value.append(Configuration::sGrayCastIron);
-    value.append(Configuration::sCopper);
-    value.append(Configuration::sBrass);
-    value.append(Configuration::sZinc);
-    value.append(Configuration::sPlatinum);
+    value = Materials::getMaterials();
     result.insert(key,value);
     return result;
 }
@@ -109,6 +88,9 @@ QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter()
     QString key = "referenceTemperature";
     double value = 20.0;
     result.insert(key,value);
+    key = "actualTemperature";
+    value = 20.0;
+    result.insert(key,value);
     key = "temperatureAccuracy";
     value = 0.1;
     result.insert(key, value);
@@ -120,44 +102,41 @@ QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter()
  * \param tp
  * \param SET
  */
-void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTemperature *SET)
+void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp)
 {
-    double actualTemp = 0.0;
-
     FunctionConfiguration myConfig = this->getFunctionConfiguration();
     QMap<QString,QString> stringParameter = myConfig.stringParameter;
     QMap<QString,double> doubleParameter = myConfig.doubleParameter;
 
-    if(SET->getIsSolved()){
-        actualTemp = SET->getTemperature();
-
-        QString material = "";
-        double refTemp = 0.0;
-        double tempAccuracy = 0.0;
-        double expansionCoefficient = 0.0;
-        if(stringParameter.contains("material")){
-            material = static_cast<QString>(stringParameter.find("material").value());
-            protMaterial = material;
-            expansionCoefficient = Configuration::getExpansionCoefficient(material);
-            protExpansionCoeff = QString::number(expansionCoefficient,'f',6);
-        }
-        if(doubleParameter.contains("referenceTemperature")){
-            refTemp = static_cast<double>(doubleParameter.find("referenceTemperature").value());
-            protRefTemp = QString::number(refTemp,'f',2);
-        }
-        if(doubleParameter.contains("temperatureAccuracy")){
-            tempAccuracy = static_cast<double>(doubleParameter.find("temperatureAccuracy").value());
-            protTempAccuracy = QString::number(tempAccuracy,'f',2);
-        }
-
-        double expansion = (actualTemp-refTemp)*expansionCoefficient;
-        protExpansion = QString::number(expansion,'f',4);
-        double m = (1+ (expansion));
-        //tp.setScale(scale,scale,scale);
-        //tp.setTranslation(0.0,0.0,0.0);
-        //tp.setRotation(0.0,0.0,0.0);
-
-        OiMat eMat(4,4);
+    QString material = "";
+    double actTemp = 20.0;
+    double refTemp = 20.0;
+    double tempAccuracy = 0.0;
+    double expansionCoefficient = 0.0;
+    if(stringParameter.contains("material")){
+        material = static_cast<QString>(stringParameter.find("material").value());
+        protMaterial = material;
+        expansionCoefficient = Materials::getExpansionCoefficient(material);
+        protExpansionCoeff = QString::number(expansionCoefficient,'f',6);
+	}
+	if(doubleParameter.contains("actualTemperature")){
+        actTemp = static_cast<double>(doubleParameter.find("actualTemperature").value());
+        protActTemp = QString::number(actTemp,'f',2);
+    }
+    if(doubleParameter.contains("referenceTemperature")){
+        refTemp = static_cast<double>(doubleParameter.find("referenceTemperature").value());
+        protRefTemp = QString::number(refTemp,'f',2);
+    }
+    if(doubleParameter.contains("temperatureAccuracy")){
+        tempAccuracy = static_cast<double>(doubleParameter.find("temperatureAccuracy").value());
+        protTempAccuracy = QString::number(tempAccuracy,'f',2);
+    }
+	
+	double expansion = (actTemp-refTemp)*expansionCoefficient;
+    protExpansion = QString::number(expansion,'f',6);
+    double m = 1.0/(1+ (expansion));
+	
+	OiMat eMat(4,4);
         for(int i = 0; i < 4; i++){
             eMat.setAt(i,i, 1.0);
         }
@@ -171,7 +150,9 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp, ScalarEntityTe
         tp.setHomogenMatrix(eMat, eMat, scale);
 
         this->calcAccuracy(tp,tempAccuracy,expansion);
-    }
+
+    this->calcAccuracy(tp,tempAccuracy,expansion);
+
 }
 
 /*!
@@ -207,26 +188,8 @@ QStringList SimpleTemperatureCompensation::getResultProtocol()
     protocoll.append(QString("reference temperature [°C]: " + this->protRefTemp));
     protocoll.append(QString("accuracy of temperature measurement [°C]: " + this->protTempAccuracy));
     protocoll.append(QString("material: " + this->protMaterial));
-    protocoll.append(QString("expansion coefficient [µm]: " + this->protExpansionCoeff));
+    protocoll.append(QString("expansion coefficient [m]: " + this->protExpansionCoeff));
     protocoll.append(QString("expansion [m]/[m]: " + this->protExpansion));
     protocoll.append(QString("accuracy for expansion [m]: " + this->protSTDDEV));
     return protocoll;
-}
-
-/*!
- * \brief getScalarEntityTemperature gets the scalar entity temperature from the input feautre list.
- * \return
- */
-ScalarEntityTemperature *SimpleTemperatureCompensation::getScalarEntityTemperature()
-{
-    ScalarEntityTemperature *result = NULL;
-    foreach(ScalarEntityTemperature *set, this->scalarEntityTemperatures){
-        if(result == NULL && set->getIsSolved()){
-            result = set;
-            this->setUseState(result->getId(), true);
-        }else{
-            this->setUseState(set->getId(), false);
-        }
-    }
-    return result;
 }

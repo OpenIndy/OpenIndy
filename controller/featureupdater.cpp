@@ -366,12 +366,15 @@ void FeatureUpdater::recalcTrafoParam(TrafoParam *tp){
             if(tp->getStartSystem()->getNominals().size() > 0 && tp->getDestinationSystem()->getNominals().size() > 0){ //if both nominals
                 this->fillTrafoParamFunctionNN(tpFunction, tp);
             }else if(tp->getStartSystem()->getNominals().size() == 0 && tp->getDestinationSystem()->getNominals().size() == 0){ //if both actual
-                this->fillTrafoParamFunctionAA(tpFunction, tp);
+                if(tp->getIsMovement()){
+                    this->fillTrafoParamFunctionMovement(tpFunction,tp);
+                }else{
+                    this->fillTrafoParamFunctionAA(tpFunction, tp);
+                }
             }else if( (tp->getStartSystem()->getNominals().size() == 0 && tp->getDestinationSystem()->getNominals().size() > 0)
                       || (tp->getStartSystem()->getNominals().size() > 0 && tp->getDestinationSystem()->getNominals().size() == 0) ){ //if one actual one nominal
                 this->fillTrafoParamFunctionAN(tpFunction, tp);
             }
-
         }
 
         tp->recalc();
@@ -1480,6 +1483,104 @@ void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, Tr
     if(!tp->getDestinationSystem()->getIsActiveCoordinateSystem()){
         this->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
     }
+}
+
+/*!
+ * \brief fillTrafoParamFunctionMovement fill TrafoParam function start and destination lists.
+ * The points have observations from different times. The first time is reference, and a point with obs of this time gets
+ * in to the reference list. Another points created from observations with "valid time" of trafo param gets created for the
+ * actual system. So the trafo param calculates the transformation from now "valid time" to the first situation.
+ * \param function
+ * \param tp
+ */
+void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *function, TrafoParam *tp)
+{
+    //sort helper class which compares and sorts the list of start and target points
+    SortListByName mySorter;
+
+    CoordinateSystem *oldCoordSys = NULL;
+    //if coord sys needs to be switched to "from" system
+    if(!tp->getStartSystem()->getIsActiveCoordinateSystem()){
+        oldCoordSys =  OiFeatureState::getActiveCoordinateSystem();
+        this->switchCoordinateSystem(tp->getStartSystem());
+    }
+    QDateTime startTime;
+
+    //get smallest QDateTime from first point as reference time
+    if(function->getPoints().size()>0){
+        if(function->getPoints().at(0)->getObservations().size()>0) {
+            startTime = function->getPoints().at(0)->getObservations().at(0)->myReading->measuredAt;
+        }else{
+            return;
+        }
+    }else{
+        return;
+    }
+
+    //edit the points and assign them to the right list.
+    foreach(Point *p, function->getPoints()){
+
+        foreach (Observation *obs, p->getObservations()) {
+            if(obs->isValid){ //only obs that are valid in the coord system of the movement
+                //also transformed obs from an other station are ok to use
+                if(obs->myReading->measuredAt.time() > startTime.time().addSecs(-180) && //is obs in the time span
+                        obs->myReading->measuredAt.time() < startTime.time().addSecs(180)){ //for being a reference obs
+                    obs->isValid = true;
+                }else{
+                    obs->isValid = false;
+                }
+            }else{
+                obs->isValid = false;
+            }
+        }
+        p->recalc(); //recalc points only with obs that are in the reference time span
+        if(p->getIsSolved()){ //if point can be recalced
+            Point cpyPRef(*p); //create a copy and assign to the reference list
+            cpyPRef.setIsSolved(true);
+            mySorter.addRefPoint(cpyPRef);
+        }
+
+        foreach (Observation *obs, p->getObservations()) {
+            if(obs->myStation->coordSys == tp->getStartSystem()){//as actual state use only obs from the current station
+                if(obs->myReading->measuredAt.time() > tp->getValidTime().time().addSecs(-180) && //is obs in the time span
+                        obs->myReading->measuredAt.time() < tp->getValidTime().time().addSecs(180)){ //for being a actual obs
+                    obs->isValid = true;
+                }else{
+                    obs->isValid = false;
+                }
+            }else{
+                obs->isValid = false;
+            }
+        }
+        p->recalc(); //recalc points only with obs that are in the actual time span
+        if(p->getIsSolved()){ //if point can be recalced
+            Point cpyPStart(*p); //create a copy and assign to the actual list
+            cpyPStart.setIsSolved(true);
+            mySorter.addLocPoint(cpyPStart);
+        }
+    }
+
+    //add sorted lists to the function
+    function->points_startSystem = mySorter.getLocPoints();
+    function->points_targetSystem = mySorter.getRefPoints();
+    function->lines_startSystem = mySorter.getLocLines();
+    function->lines_targetSystem = mySorter.getRefLines();
+    function->planes_startSystem = mySorter.getLocPlanes();
+    function->planes_targetSystem = mySorter.getRefPlanes();
+    function->spheres_startSystem = mySorter.getLocSpheres();
+    function->spheres_targetSystem = mySorter.getRefSpheres();
+    function->scalarEntityAngles_startSystem = mySorter.getLocScalarEntityAngles();
+    function->scalarEntityAngles_targetSystem = mySorter.getRefScalarEntityAngles();
+    function->scalarEntityDistances_startSystem = mySorter.getLocScalarEntityDistances();
+    function->scalarEntityDistances_targetSystem = mySorter.getRefScalarEntityDistances();
+
+    //if coord sys needs to be re-switched
+    if(oldCoordSys != NULL && !oldCoordSys->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystem(oldCoordSys);
+    }
+
+    //recalc featureSet, because some observations are disabled. So the feature uses all its observations again now
+    this->recalcFeatureSet();
 }
 
 /*!

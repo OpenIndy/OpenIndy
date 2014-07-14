@@ -4,11 +4,12 @@
 #include "pi_systemtransformation.h"
 #include "configuration.h"
 #include "pluginmetadata.h"
+#include "materials.h"
 
 /*!
  * \brief The SimpleTemperatureCompensation class is a system transformation for temperature compensation.
  * By giving it a reference temperature, a actual temperature and a material it will calculate the compensation values.
- * They are equal for x,y and z component.
+ * They are equal for x, y and z component.
  */
 class SimpleTemperatureCompensation : public SystemTransformation
 {
@@ -24,12 +25,10 @@ public:
     QMap<QString, QStringList> getStringParameter();
     QMap<QString, double> getDoubleParameter();
 
-    void calcExpansion(TrafoParam &tp, ScalarEntityTemperature* SET);
+    void calcExpansion(TrafoParam &tp);
     void calcAccuracy(TrafoParam &tp, double tempAccuracy, double expansion);
 
     QStringList getResultProtocol();
-
-    ScalarEntityTemperature* getScalarEntityTemperature();
 
 private:
     QString protActTemp;
