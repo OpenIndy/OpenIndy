@@ -2217,7 +2217,7 @@ void Function::setUseState(int id, bool state){
  * \brief Function::getOiEmitter
  * \return
  */
-OiEmitter& Function::getOiEmitter(){
+OiFunctionEmitter& Function::getOiEmitter(){
     return this->myEmitter;
 }
 
