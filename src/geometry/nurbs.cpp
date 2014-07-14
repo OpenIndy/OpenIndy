@@ -54,3 +54,8 @@ ElementDependencies Nurbs::fromOpenIndyXML(QXmlStreamReader &xml){
 
     return dependencies;
 }
+
+bool Nurbs::saveSimulationData()
+{
+    return false;
+}

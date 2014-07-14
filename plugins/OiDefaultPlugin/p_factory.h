@@ -28,6 +28,7 @@
 #include "p_bestfitplane2.h"
 #include "p_bestfitsphere.h"
 #include "p_bestfitcircle.h"
+#include "p_bestfitsphererauls.h"
 
 #include "p_pointfrompoints.h"
 #include "p_linefrompoints.h"
@@ -44,10 +45,14 @@
 
 #include "p_helmert7Param.h"
 #include "p_simpletemperaturecompensation.h"
+#include "p_extendedtemperaturecompensation.h"
+#include "p_helmert6param.h"
 
 #include "p_pseudotracker.h"
 #include "p_leicatachymeter.h"
 #include "p_pseudosensor.h"
+
+#include "simplepolarmeasurement.h"
 
 class OiTemplatePlugin : public QObject, OiPlugin
 {
@@ -61,9 +66,11 @@ public:
     QList<Sensor*> createSensors();
     QList<Function*> createFunctions();
     QList<NetworkAdjustment*> createNetworkAdjustments();
+    QList<SimulationModel*> createSimulations();
     Sensor* createSensor(QString name);
     Function* createFunction(QString name);
     NetworkAdjustment* createNetworkAdjustment(QString name);
+    SimulationModel* createSimulation(QString name);
 
 };
 

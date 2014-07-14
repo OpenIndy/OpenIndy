@@ -18,6 +18,8 @@ public:
     bool toOpenIndyXML(QXmlStreamWriter& stream);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
+    bool saveSimulationData();
+
     double getAngle() const;
     void setAngle(double angle);
     void setAngle(OiVec direction1, OiVec direction2);

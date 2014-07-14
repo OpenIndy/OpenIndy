@@ -392,6 +392,7 @@ void CreateFeature::on_toolButton_create_clicked()
                 featureAttributes.isMovement = isMovement;
 
                 emit createFeature(featureAttributes);
+                emit trafoParamCreated();
             //}else{
             //    return;
             //}

@@ -55,3 +55,8 @@ ElementDependencies Hyperboloid::fromOpenIndyXML(QXmlStreamReader &xml){
 
     return dependencies;
 }
+
+bool Hyperboloid::saveSimulationData()
+{
+    return false;
+}

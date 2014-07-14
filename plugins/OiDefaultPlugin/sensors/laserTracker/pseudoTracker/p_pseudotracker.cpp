@@ -511,7 +511,7 @@ QList<Reading*> PseudoTracker::measureDistance(MeasurementConfig *m){
 
     Reading *p = new Reading();
 
-    double dd = ((double) std::rand()/RAND_MAX)*(20.0-1.0)+1.0;
+    double dd = ((double) rand()/RAND_MAX)*(20.0-1.0)+1.0;
 
     dd = dd/10000;
 
@@ -536,8 +536,8 @@ QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
 
     Reading *p = new Reading();
 
-    double daz = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
-    double dze = ((double) std::rand()/RAND_MAX)*(10.0-1.0)+1.0;
+    double daz = ((double) rand()/RAND_MAX)*(10.0-1.0)+1.0;
+    double dze = ((double) rand()/RAND_MAX)*(10.0-1.0)+1.0;
 
     daz = daz/1000;
     dze = dze/1000;
@@ -567,9 +567,9 @@ QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
 
     Reading *p = new Reading();
 
-    double dx = ((double) std::rand()/RAND_MAX)*(30.0-1.0)+1.0;
-    double dy = ((double) std::rand()/RAND_MAX)*(30.0-1.0)+1.0;
-    double dz = ((double) std::rand()/RAND_MAX)*(30.0-1.0)+1.0;
+    double dx = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;
+    double dy = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;
+    double dz = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;
 
     dx = dx/10000;
     dy = dy/10000;

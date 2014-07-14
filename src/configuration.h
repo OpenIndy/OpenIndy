@@ -6,7 +6,7 @@
 #include <QMetaObject>
 #include <QStringList>
 #include <QDebug>
-#include <QPixmap>
+#include <QtGui/QPixmap>
 
 #include "unitconverter.h"
 
@@ -60,7 +60,7 @@ public:
     static QString sLevel;
 
     static QString sObservation;
-
+/*
     static QString sSteel;
     static QString sAluminum;
     static QString sPlumb;
@@ -80,6 +80,7 @@ public:
     static double dBrass;
     static double dZinc;
     static double dPlatinum;
+    */
 
     enum eColor{
         red,
@@ -175,18 +176,6 @@ public:
         eSerial
     };
 
-    enum Materials{
-        eSteel,
-        eAluminum,
-        ePlumb,
-        eIron,
-        eGrayCastIron,
-        eCopper,
-        eBrass,
-        eZinc,
-        ePlatinum
-    };
-
     static int idCount;
 
     static int generateID();
@@ -195,9 +184,6 @@ public:
     static Configuration::FeatureTypes getFeatureTypeEnum(QString name);
     static QString getElementTypeString(Configuration::ElementTypes type);
     static QString getFeatureTypeString(Configuration::FeatureTypes type);
-
-    static double getExpansionCoefficient(QString material);
-    static double getExpansionCoefficient(Configuration::Materials material);
 
     static QPixmap getFeatureIcon(Configuration::FeatureTypes featureType);
     static QPixmap getElementIcon(Configuration::ElementTypes elementType);

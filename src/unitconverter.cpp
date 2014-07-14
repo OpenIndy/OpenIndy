@@ -7,6 +7,7 @@ double UnitConverter::temperatureMultiplier = 1.0;
 int UnitConverter::angleDigits = 5;
 int UnitConverter::distanceDigits = 4;
 int UnitConverter::temperatureDigits = 4;
+int UnitConverter::dimensionLessDigits = 6;
 
 UnitConverter::unitType UnitConverter::angleType = UnitConverter::eDECIMALDEGREE;
 UnitConverter::unitType UnitConverter::distanceType = UnitConverter::eMETER;

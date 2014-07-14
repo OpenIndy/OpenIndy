@@ -16,6 +16,8 @@ public:
     bool toOpenIndyXML(QXmlStreamWriter& stream);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
+    bool saveSimulationData();
+
     double getTemperature() const;
     void setTemperature(double temperature);
 

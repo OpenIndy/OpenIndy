@@ -117,7 +117,7 @@ void BestFitPoint::setUpPointResult(Point &point){
             }else{
                 stdv = 0.0;
             }
-            Statistic myStats;
+            Statistic myStats = point.getStatistic();
             myStats.s0_apriori = 1.0;
             myStats.s0_aposteriori = stdv;
 

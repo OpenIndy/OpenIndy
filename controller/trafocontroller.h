@@ -20,7 +20,7 @@ signals:
 public slots:
 
     void addObservation(Observation *obs);
-    void applyMovements(Observation *obs);
+    //void applyMovements(Observation *obs);
     void transformNewObservations(Observation *obs);
 
     bool transformObservations(CoordinateSystem *from);
@@ -42,6 +42,16 @@ public slots:
 
 private:
     TrafoParam* findTrafoParam(CoordinateSystem *from, CoordinateSystem *to);
+    //QList<TrafoParam*> findMovements(Observation *obs);
+    QList<TrafoParam*> sortMovements(QList<TrafoParam*> movements);
+    void CheckToApplyMovements(CoordinateSystem *from);
+
+    QList<TrafoParam*> findMovements(CoordinateSystem *from);
+    void applyMovements(QList<TrafoParam*> movements, CoordinateSystem *from);
+    void applyTranslations(OiVec centroidBefore, OiVec centroidAfter, QList<Observation*>observations);
+    OiVec checkTopApplyTranslation(QList<Observation*>observations,OiVec translation);
+
+    OiMat getTransformationMatrix(CoordinateSystem *from);
     
 };
 

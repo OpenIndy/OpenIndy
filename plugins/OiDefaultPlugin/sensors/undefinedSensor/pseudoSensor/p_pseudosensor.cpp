@@ -101,7 +101,7 @@ QList<Reading*> PseudoSensor::measure(MeasurementConfig *mc){
 
         Reading *r = new Reading();
 
-        double randomValue = ((double) std::rand()/RAND_MAX)*(6.283185-0.0001)+1.0;
+        double randomValue = ((double) rand()/RAND_MAX)*(6.283185-0.0001)+1.0;
 
         r->rUndefined.values.insert("pseudoMeasurement_1",randomValue);
         r->rUndefined.values.insert("pseudoMeasurement_2",randomValue);
@@ -121,7 +121,7 @@ QVariantMap PseudoSensor::readingStream(Configuration::ReadingTypes streamFormat
 {
     QVariantMap r;
 
-    double randomValue = ((double) std::rand()/RAND_MAX)*(6.283185-0.0001)+1.0;
+    double randomValue = ((double) rand()/RAND_MAX)*(6.283185-0.0001)+1.0;
 
     r.insert("pseudoMeasurement_1",randomValue);
     r.insert("pseudoMeasurement_2",randomValue);

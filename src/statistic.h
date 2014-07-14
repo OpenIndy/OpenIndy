@@ -6,6 +6,7 @@
 #include "oimat.h"
 #include "residual.h"
 
+
 /*!
  * \brief The Statistic class
  * Class that calculates and contains all the statistics of some elements.
@@ -29,6 +30,9 @@ public:
     QList<Residual> displayResiduals;
 
     bool isValid;
+
+
+
 
 };
 

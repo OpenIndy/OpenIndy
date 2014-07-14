@@ -88,13 +88,27 @@ public:
     sReadingUndefined rUndefined;
     sReadingLevel rLevel;
 
+
     void toCartesian();
     static OiVec toCartesian(double, double, double);
     void toPolar();
     static OiVec toPolar(double, double, double);
 
+    void makeBackup();
+    void restoreBackup();
+
     //error propagation
     OiVec errorPropagationPolarToCart();
+
+private:
+
+    sReadingPolar backupPolar;
+    sReadingCartesian backupCartesian;
+    sReadingDirection backupDirection;
+    sReadingDistance backupDistance;
+    sReadingTemperature backupTemperature;
+    sReadingUndefined backupUndefined;
+    sReadingLevel backupLevel;
 };
 
 #endif // READING_H

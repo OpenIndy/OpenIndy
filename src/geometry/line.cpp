@@ -192,6 +192,14 @@ ElementDependencies Line::fromOpenIndyXML(QXmlStreamReader &xml){
     return dependencies;
 }
 
+bool Line::saveSimulationData()
+{
+    this->mySimulationData.addXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
+
+    this->mySimulationData.addIJK(this->ijk.getAt(0),this->ijk.getAt(1),this->ijk.getAt(2));
+    return true;
+}
+
 QString Line::getDisplayX() const{
     return QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f', UnitConverter::distanceDigits);
 }
