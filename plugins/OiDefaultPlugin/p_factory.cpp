@@ -71,8 +71,12 @@ QList<NetworkAdjustment*> OiTemplatePlugin::createNetworkAdjustments(){
     return resultSet;
 }
 
-QList<SimulationModel *> OiTemplatePlugin::createSimulations()
-{
+/*!
+ * \brief OiTemplatePlugin::createSimulations
+ * Returns a list with all simulations
+ * \return
+ */
+QList<SimulationModel *> OiTemplatePlugin::createSimulations(){
     QList<SimulationModel*> resultSet;
     resultSet.append(new SimplePolarMeasurement());
     return resultSet;
@@ -164,12 +168,18 @@ NetworkAdjustment* OiTemplatePlugin::createNetworkAdjustment(QString name){
     return result;
 }
 
-SimulationModel *OiTemplatePlugin::createSimulation(QString name)
-{
-    SimulationModel *result;
+/*!
+ * \brief OiTemplatePlugin::createSimulation
+ * Returns the simulation with the specified name
+ * \param name
+ * \return
+ */
+SimulationModel *OiTemplatePlugin::createSimulation(QString name){
+    SimulationModel *result = NULL;
 
     if(name.compare("SimplePolarMeasurement") == 0){
         result = new SimplePolarMeasurement();
     }
+
     return result;
 }

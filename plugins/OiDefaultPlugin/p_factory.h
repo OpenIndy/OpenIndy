@@ -52,6 +52,8 @@
 #include "p_leicatachymeter.h"
 #include "p_pseudosensor.h"
 
+#include "simulationmodel.h"
+
 #include "simplepolarmeasurement.h"
 
 class OiTemplatePlugin : public QObject, OiPlugin
