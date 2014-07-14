@@ -242,9 +242,9 @@ OiVec Helmert6Param::quaternion(OiMat n)
 {
     OiVec q(4);
     try{
-        OiMat u;
-        OiMat v;
-        OiVec s;
+        OiMat u(4,4);
+        OiMat v(4,4);
+        OiVec s(4);
         n.svd(u, s, v);
         q = u.getCol(3);
     }catch(runtime_error& e){
