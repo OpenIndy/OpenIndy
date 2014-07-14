@@ -38,6 +38,7 @@ INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/src/geometry
+INCLUDEPATH += $$PWD/src/oiemitter
 INCLUDEPATH += $$PWD/src/plugin
 INCLUDEPATH += $$PWD/src/simulation
 INCLUDEPATH += $$PWD/controller/oiDataExchange
@@ -72,7 +73,7 @@ SOURCES += \
     src/reading.cpp \
     src/pluginmetadata.cpp \
     src/oimetadata.cpp \
-    src/oiemitter.cpp \
+    src/oiemitter/oiemitter.cpp \
     src/observation.cpp \
     src/measurementconfig.cpp \
     src/geometry.cpp \
@@ -166,8 +167,12 @@ SOURCES += \
     ui/simulationerrortablemodel.cpp \
     ui/simulationdelegate.cpp \
     ui/simulationtreeviewmodel.cpp \
-    src/simulation/simulationdata.cpp
-
+    src/simulation/simulationdata.cpp \
+    ui/watchwindowlistener.cpp \
+    src/oiemitter/oifunctionemitter.cpp \
+    src/oiemitter/oisensoremitter.cpp \
+    src/oiemitter/oisimulationemitter.cpp \
+    src/oiemitter/oinetworkadjustmentemitter.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -187,7 +192,7 @@ HEADERS  += \
     src/reading.h \
     src/pluginmetadata.h \
     src/oimetadata.h \
-    src/oiemitter.h \
+    src/oiemitter/oiemitter.h \
     src/observation.h \
     src/measurementconfig.h \
     src/geometry.h \
@@ -299,8 +304,12 @@ HEADERS  += \
     ui/simulationerrortablemodel.h \
     ui/simulationdelegate.h \
     ui/simulationtreeviewmodel.h \
-    src/simulation/simulationdata.h
-
+    src/simulation/simulationdata.h \
+    ui/watchwindowlistener.h \
+    src/oiemitter/oifunctionemitter.h \
+    src/oiemitter/oisensoremitter.h \
+    src/oiemitter/oisimulationemitter.h \
+    src/oiemitter/oinetworkadjustmentemitter.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

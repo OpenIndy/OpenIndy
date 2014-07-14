@@ -40,6 +40,7 @@ DEPENDPATH += -L$$PWD/../../lib/openIndyLib/bin/release
 INCLUDEPATH += $$PWD
 INCLUDEPATH += ../../src
 INCLUDEPATH += ../../src/geometry
+INCLUDEPATH += ../../src/oiemitter
 INCLUDEPATH += ../../src/plugin
 INCLUDEPATH += ../../src/simulation
 INCLUDEPATH += ../../lib/openIndyLib/include
@@ -104,7 +105,7 @@ SOURCES += p_factory.cpp \
     ../../src/reading.cpp \
     ../../src/pluginmetadata.cpp \
     ../../src/oimetadata.cpp \
-    ../../src/oiemitter.cpp \
+    ../../src/oiemitter/oiemitter.cpp \
     ../../src/observation.cpp \
     ../../src/measurementconfig.cpp \
     ../../src/geometry.cpp \
@@ -139,10 +140,12 @@ SOURCES += p_factory.cpp \
     functions/fit/p_bestfitsphererauls.cpp \
     ../../src/simulation/uncertaintycomponent.cpp \
     simulations/simplePolarMeasurement/simplepolarmeasurement.cpp \
-    ../../src/simulation/simulationdata.cpp
+    ../../src/simulation/simulationdata.cpp \
+    ../../src/oiemitter/oifunctionemitter.cpp \
+    ../../src/oiemitter/oinetworkadjustmentemitter.cpp \
+    ../../src/oiemitter/oisensoremitter.cpp \
+    ../../src/oiemitter/oisimulationemitter.cpp
 
-
->>>>>>> simulation
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
     ../../lib/openIndyLib/include/linearalgebra.h \
@@ -196,7 +199,7 @@ HEADERS += p_factory.h \
     ../../src/reading.h \
     ../../src/pluginmetadata.h \
     ../../src/oimetadata.h \
-    ../../src/oiemitter.h \
+    ../../src/oiemitter/oiemitter.h \
     ../../src/observation.h \
     ../../src/measurementconfig.h \
     ../../src/geometry.h \
@@ -241,6 +244,10 @@ HEADERS += p_factory.h \
     ../../src/simulation/simulationmodel.h \
     ../../src/simulation/uncertaintycomponent.h \
     simulations/simplePolarMeasurement/simplepolarmeasurement.h \
-    ../../src/simulation/simulationdata.h
+    ../../src/simulation/simulationdata.h \
+    ../../src/oiemitter/oifunctionemitter.h \
+    ../../src/oiemitter/oinetworkadjustmentemitter.h \
+    ../../src/oiemitter/oisensoremitter.h \
+    ../../src/oiemitter/oisimulationemitter.h
 
 OTHER_FILES += metaInfo.json
