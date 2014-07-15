@@ -31,6 +31,7 @@ void WatchWindowListener::setDigitCount(int count)
 
 void WatchWindowListener::setLCDNumber(QVariantMap m)
 {
+
     if(!isSettingsReady){
         return;
     }
@@ -60,10 +61,14 @@ void WatchWindowListener::setLCDNumber(QVariantMap m)
         emit sendData(m);
     }
 
+
 }
 
 bool WatchWindowListener::compareMaps(QVariantMap m)
 {
+    if(m.size() != lastMap.size()){
+        return false;
+    }
     QList<QString> keys = m.keys();
 
     int keyCount = lastMap.size();

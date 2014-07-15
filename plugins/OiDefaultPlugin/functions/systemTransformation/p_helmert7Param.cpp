@@ -363,13 +363,14 @@ bool Helmert7Param::adjust(TrafoParam &tp){
         stop = x.t() * x;
         iterations++;
 
-    }while( stop.getAt(0) > (1/10000000000) && iterations < 100 ); //termination criterion
+    }while( stop.getAt(0) > (1.0/10000000.0) && iterations < 100 ); //termination criterion
 
-    if( stop.getAt(0) > (1/10000000000) ){ //adjustment successful
+    if( stop.getAt(0) > (1.0/10000000.0) ){ //adjustment successful
         OiVec v = a * x - l_diff;
         OiVec vtv = v.t() * v;
         double s0_post = sqrt(vtv.getAt(0) / (3 * this->locSystem.length() - 7));
         OiMat sxx = s0_post * s0_post * qxx;
+        tp.getStatistic()->stdev = s0_post;
         result = true;
     }
 

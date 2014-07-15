@@ -108,7 +108,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                         streamData.value(name)->display(QString::number(dz*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
 
                     }else{
-                        streamData.value(name)->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+                        streamData.value(name)->display(QString::number(dvalue,'f',6));
                     }
                 }else{
                     QLCDNumber *lcdn = streamData.value(name);
@@ -306,7 +306,6 @@ void WatchWindow::getAttributes(QStringList l)
                     QCheckBox *cb = new QCheckBox();
                     cb->setText(l.at(i));
                     cb->setChecked(true);
-                    qDebug() << cb->text();
 
                     settingsLayout->addWidget(cb);
 
@@ -332,7 +331,6 @@ void WatchWindow::getAttributes(QStringList l)
  */
 void WatchWindow::on_comboBox_suppReadings_currentIndexChanged(const QString &arg1)
 {
-    qDebug() << "reading " << arg1;
 
     stopStream();
 

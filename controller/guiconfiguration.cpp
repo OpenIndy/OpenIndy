@@ -163,6 +163,8 @@ void GUIConfiguration::generateTrafoParamAttributes()
     GUIConfiguration::trafoParamAttributes.append(ftime);
     DisplayAttribute *fdatumTrafo = new DisplayAttribute("datumTransformation",true);
     GUIConfiguration::trafoParamAttributes.append(fdatumTrafo);
+    DisplayAttribute *fSTD = new DisplayAttribute(QString("stddev" + UnitConverter::getDistanceUnitString()),true);
+    GUIConfiguration::trafoParamAttributes.append(fSTD);
 }
 
 /*!
