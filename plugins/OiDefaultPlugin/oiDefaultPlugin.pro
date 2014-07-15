@@ -11,6 +11,7 @@ TEMPLATE = lib
 TARGET = $$qtLibraryTarget(p_defaultPlugin)
 
 CONFIG += plugin
+CONFIG +=c++11
 
 DEFINES += DEFAULT_LIBRARY
 DEFINES += WITH_FITTING_UTILS
@@ -41,6 +42,7 @@ INCLUDEPATH += ../../src
 INCLUDEPATH += ../../src/geometry
 INCLUDEPATH += ../../src/oiemitter
 INCLUDEPATH += ../../src/plugin
+INCLUDEPATH += ../../src/simulation
 INCLUDEPATH += ../../lib/openIndyLib/include
 
 INCLUDEPATH += $$PWD/sensors/laserTracker/pseudoTracker
@@ -50,6 +52,7 @@ INCLUDEPATH += $$PWD/functions/construct
 INCLUDEPATH += $$PWD/functions/fit
 INCLUDEPATH += $$PWD/functions/objectTransformation
 INCLUDEPATH += $$PWD/functions/systemTransformation
+INCLUDEPATH += $$PWD/simulations/simplePolarMeasurement
 
 INCLUDEPATH += $$PWD/lib/fitting
 INCLUDEPATH += $$PWD/lib/fitting/util
@@ -131,11 +134,17 @@ SOURCES += p_factory.cpp \
     ../../src/geometry/cylinder.cpp \
     ../../src/geometry/cone.cpp \
     ../../src/geometry/circle.cpp \
-    functions/fit/p_bestfitsphererauls.cpp \
     ../../src/oiemitter/oifunctionemitter.cpp \
     ../../src/oiemitter/oinetworkadjustmentemitter.cpp \
     ../../src/oiemitter/oisensoremitter.cpp \
-    ../../src/oiemitter/oisimulationemitter.cpp
+    ../../src/oiemitter/oisimulationemitter.cpp \
+    functions/systemTransformation/p_extendedtemperaturecompensation.cpp \
+    functions/systemTransformation/materials.cpp \
+    functions/systemTransformation/p_helmert6param.cpp \
+    functions/fit/p_bestfitsphererauls.cpp \
+    ../../src/simulation/uncertaintycomponent.cpp \
+    simulations/simplePolarMeasurement/simplepolarmeasurement.cpp \
+    ../../src/simulation/simulationdata.cpp
 
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
@@ -228,11 +237,16 @@ HEADERS += p_factory.h \
     ../../src/geometry/cylinder.h \
     ../../src/geometry/cone.h \
     ../../src/geometry/circle.h \
-    functions/fit/p_bestfitsphererauls.h \
     ../../src/oiemitter/oifunctionemitter.h \
     ../../src/oiemitter/oinetworkadjustmentemitter.h \
     ../../src/oiemitter/oisensoremitter.h \
-    ../../src/oiemitter/oisimulationemitter.h
-
-
+    ../../src/oiemitter/oisimulationemitter.h \
+    functions/systemTransformation/p_extendedtemperaturecompensation.h \
+    functions/systemTransformation/materials.h \
+    functions/systemTransformation/p_helmert6param.h \
+    functions/fit/p_bestfitsphererauls.h \
+    ../../src/simulation/simulationmodel.h \
+    ../../src/simulation/uncertaintycomponent.h \
+    simulations/simplePolarMeasurement/simplepolarmeasurement.h \
+    ../../src/simulation/simulationdata.h
 OTHER_FILES += metaInfo.json

@@ -32,6 +32,8 @@
 #include "featureoverviewdelegate.h"
 #include "trafoparamdelegate.h"
 
+#include "oisimulationwidget.h"
+
 #include <QComboBox>
 #include <QCheckBox>
 #include <QLabel>
@@ -74,6 +76,7 @@ public:
     MeasurementConfigDialog mConfigDialog;
     MovementDialog moveDialog;
     PluginLoaderDialog pLoadDialog;
+    OiSimulationWidget simulationWidget;
 
     CreateFeature *cFeatureDialog;
     ScalarEntityDialog *sEntityDialog;
@@ -282,6 +285,8 @@ private slots:
     void openStationGeomProperties(FeatureWrapper *fw);
 
     void on_actionSensor_real_time_data_triggered();
+
+    void on_actionSimulation_triggered();
 
 private:
     Ui::MainWindow *ui;

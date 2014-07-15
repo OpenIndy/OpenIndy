@@ -47,6 +47,8 @@ public:
     QString getDisplayJ() const;
     QString getDisplayK() const;
 
+    bool saveSimulationData();
+
 };
 
 #endif // CIRCLE_H

@@ -3,6 +3,7 @@
 
 #include "function.h"
 #include "sensor.h"
+#include "simulationmodel.h"
 #include "pi_networkadjustment.h"
 
 class OiPlugin
@@ -14,9 +15,11 @@ public:
     virtual QList<Sensor*> createSensors() = 0;
     virtual QList<Function*> createFunctions() = 0;
     virtual QList<NetworkAdjustment*> createNetworkAdjustments() = 0;
+    virtual QList<SimulationModel*> createSimulations() = 0;
     virtual Sensor* createSensor(QString name) = 0;
     virtual Function* createFunction(QString name) = 0;
     virtual NetworkAdjustment* createNetworkAdjustment(QString name) = 0;
+    virtual SimulationModel* createSimulation(QString name) = 0;
 
 };
 

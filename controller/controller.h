@@ -96,6 +96,7 @@ public:
 
     QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
+    FeatureUpdater* getFeatureUpdater();
 
 signals:
     void changedStation();
@@ -145,6 +146,7 @@ public slots:
     void startChangeMotorState();
     void startCustomAction(QString s);
 
+    void recalcAll();
     void recalcActiveFeature();
     void recalcFeature(Feature *f);
     void recalcTrafoParam(TrafoParam *tp);

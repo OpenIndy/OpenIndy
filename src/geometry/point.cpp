@@ -163,6 +163,14 @@ ElementDependencies Point::fromOpenIndyXML(QXmlStreamReader &xml){
     return dependencies;
 }
 
+bool Point::saveSimulationData()
+{
+
+    this->mySimulationData.addXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
+
+    return true;
+}
+
 QString Point::getDisplayX() const{
 
     QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);

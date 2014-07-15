@@ -372,6 +372,12 @@ void Controller::startCustomAction(QString s)
     OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
 }
 
+void Controller::recalcAll()
+{
+   myFeatureUpdater.recalcAll();
+   emit refreshGUI();
+}
+
 /*!
  * \brief Controller::recalcActiveFeature
  * Call recalcFeature function for active feature
@@ -489,8 +495,9 @@ if (!metaInfo->alreadyExists){
     QList<Sensor*> sensorList = PluginLoader::loadSensorPlugins(metaInfo->path);
     QList<Function*> functionList = PluginLoader::loadFunctionPlugins(metaInfo->path);
     QList<NetworkAdjustment*> networkAdjustmentList = PluginLoader::loadNetworkAdjustmentPlugins(metaInfo->path);
+    QList<SimulationModel*> simulationList = PluginLoader::loadSimulationPlugins(metaInfo->path);
 
-    SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList);
+    SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList);
 
     /*for (int i = 0;i<sensorList.size();i++){
         SystemDbManager::savePlugin(sensorList.at(i)->getMetaData(),functionList,sensorList,networkAdjustmentList);
@@ -1703,6 +1710,11 @@ QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
     }
 
     return result;
+}
+
+FeatureUpdater *Controller::getFeatureUpdater()
+{
+    return &myFeatureUpdater;
 }
 
 /*!

@@ -721,6 +721,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
         }
     }
 
+    r->makeBackup();
 
 }
 

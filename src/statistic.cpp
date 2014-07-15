@@ -30,3 +30,5 @@ Statistic& Statistic::operator =(const Statistic &stat){
     this->v.replace(stat.v);
     return *this;
 }
+
+

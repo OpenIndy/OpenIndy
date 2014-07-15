@@ -54,6 +54,8 @@ QList<Function*> OiTemplatePlugin::createFunctions(){
     resultSet.append(new ShiftPlane());
     resultSet.append(new BestFitCircle());
     resultSet.append(new SimpleTemperatureCompensation());
+    resultSet.append(new ExtendedTemperatureCompensation());
+    resultSet.append(new Helmert6Param());
     resultSet.append(new BestFitSphereRauls());
 
     return resultSet;
@@ -66,6 +68,17 @@ QList<Function*> OiTemplatePlugin::createFunctions(){
  */
 QList<NetworkAdjustment*> OiTemplatePlugin::createNetworkAdjustments(){
     QList<NetworkAdjustment*> resultSet;
+    return resultSet;
+}
+
+/*!
+ * \brief OiTemplatePlugin::createSimulations
+ * Returns a list with all simulations
+ * \return
+ */
+QList<SimulationModel *> OiTemplatePlugin::createSimulations(){
+    QList<SimulationModel*> resultSet;
+    resultSet.append(new SimplePolarMeasurement());
     return resultSet;
 }
 
@@ -131,8 +144,12 @@ Function* OiTemplatePlugin::createFunction(QString name){
         result = new ShiftPlane();
     }else if(name.compare("BestFitCircle") == 0){
         result = new BestFitCircle();
-    }else if(name.compare("SimpleTempComp") == 0){
+    }else if(name.compare("StandardTempComp") == 0){
         result = new SimpleTemperatureCompensation();
+    }else if(name.compare("9ParameterHelmertTransformation") == 0){
+        result = new ExtendedTemperatureCompensation();
+    }else if(name.compare("6ParameterHelmertTransformation") == 0){
+        result = new Helmert6Param();
     }else if(name.compare("BestFitSphereRauls") == 0){
         result = new BestFitSphereRauls();
     }
@@ -147,5 +164,22 @@ Function* OiTemplatePlugin::createFunction(QString name){
  */
 NetworkAdjustment* OiTemplatePlugin::createNetworkAdjustment(QString name){
     NetworkAdjustment *result = NULL;
+
+    return result;
+}
+
+/*!
+ * \brief OiTemplatePlugin::createSimulation
+ * Returns the simulation with the specified name
+ * \param name
+ * \return
+ */
+SimulationModel *OiTemplatePlugin::createSimulation(QString name){
+    SimulationModel *result = NULL;
+
+    if(name.compare("SimplePolarMeasurement") == 0){
+        result = new SimplePolarMeasurement();
+    }
+
     return result;
 }

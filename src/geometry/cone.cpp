@@ -76,3 +76,8 @@ ElementDependencies Cone::fromOpenIndyXML(QXmlStreamReader &xml){
 
     return dependencies;
 }
+
+bool Cone::saveSimulationData()
+{
+    return false;
+}

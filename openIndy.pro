@@ -40,6 +40,7 @@ INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/src/geometry
 INCLUDEPATH += $$PWD/src/oiemitter
 INCLUDEPATH += $$PWD/src/plugin
+INCLUDEPATH += $$PWD/src/simulation
 INCLUDEPATH += $$PWD/controller/oiDataExchange
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
 
@@ -152,6 +153,7 @@ SOURCES += \
     src/sensorlistener.cpp \
     controller/guiconfiguration.cpp \
     ui/plugininfowidget.cpp \
+    ui/oisimulationwidget.cpp \
     controller/oifeaturestate.cpp \
     controller/trafocontroller.cpp \
     ui/featureoverviewproxymodel.cpp \
@@ -163,7 +165,14 @@ SOURCES += \
     src/oiemitter/oifunctionemitter.cpp \
     src/oiemitter/oisensoremitter.cpp \
     src/oiemitter/oisimulationemitter.cpp \
-    src/oiemitter/oinetworkadjustmentemitter.cpp
+    src/oiemitter/oinetworkadjustmentemitter.cpp \
+    src/simulation/uncertaintycomponent.cpp \
+    controller/simulationcontroller.cpp \
+    ui/histogram.cpp \
+    ui/simulationerrortablemodel.cpp \
+    ui/simulationdelegate.cpp \
+    ui/simulationtreeviewmodel.cpp \
+    src/simulation/simulationdata.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -280,6 +289,7 @@ HEADERS  += \
     src/sensorlistener.h \
     controller/guiconfiguration.h \
     ui/plugininfowidget.h \
+    ui/oisimulationwidget.h \
     controller/oifeaturestate.h \
     controller/trafocontroller.h \
     ui/featureoverviewproxymodel.h \
@@ -291,7 +301,15 @@ HEADERS  += \
     src/oiemitter/oifunctionemitter.h \
     src/oiemitter/oisensoremitter.h \
     src/oiemitter/oisimulationemitter.h \
-    src/oiemitter/oinetworkadjustmentemitter.h
+    src/oiemitter/oinetworkadjustmentemitter.h \
+    src/simulation/simulationmodel.h \
+    src/simulation/uncertaintycomponent.h \
+    controller/simulationcontroller.h \
+    ui/histogram.h \
+    ui/simulationerrortablemodel.h \
+    ui/simulationdelegate.h \
+    ui/simulationtreeviewmodel.h \
+    src/simulation/simulationdata.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
@@ -308,6 +326,7 @@ FORMS    += ui/mainwindow.ui \
     ui/importnominalgeometrydialog.ui \
     ui/nominaldatadialog.ui \
     ui/edittrafoparamdialog.ui \
+    ui/oisimulationwidget.ui \
     ui/stationinfodialog.ui \
     ui/realtimedatadialog.ui
 

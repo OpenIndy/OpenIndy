@@ -26,6 +26,8 @@ public:
     bool toOpenIndyXML(QXmlStreamWriter& stream);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
+    bool saveSimulationData();
+
     QString getDisplayX() const;
     QString getDisplayY() const;
     QString getDisplayZ() const;

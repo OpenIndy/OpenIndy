@@ -107,7 +107,7 @@ bool BestFitPlane::setUpResult(Plane &plane){
         n.add(1.0);
         plane.ijk = n;
         plane.xyz = d * n;
-        Statistic myStats;
+        Statistic myStats = plane.getStatistic();
         myStats.stdev = qSqrt( eVal / (count - 3) );
         myStats.isValid = true;
         plane.setStatistic(myStats);
