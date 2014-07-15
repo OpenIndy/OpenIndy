@@ -28,7 +28,8 @@ double densityNormal(double x, double expectation, double uncertainty)
 
 double distributionNormal(double x, double expectation, double uncertainty)
 {
-    return 0.5*(1.0+erf((x-expectation)/(sqrt(2.0*uncertainty*uncertainty))));
+    //return 0.5*(1.0+erf((x-expectation)/(sqrt(2.0*uncertainty*uncertainty))));
+    return 0.0;
 }
 
 QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainties()

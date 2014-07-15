@@ -37,6 +37,7 @@ private:
     QStringList protocol;
 
     bool svdError;
+    bool isPreTransformed;
 
     QList<OiVec> locSystem;
     QList<OiVec> refSystem;

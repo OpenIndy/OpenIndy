@@ -55,6 +55,7 @@ bool ExtendedTemperatureCompensation::exec(TrafoParam &tp)
 {
     this->protocol.clear();
     this->svdError = false;
+    this->isPreTransformed = false;
 
     if(this->isValid()){
         this->init();
@@ -205,8 +206,8 @@ QMap<QString, QStringList> result;
     result.insert(key,value);
     key = "useTemperature";
     value.clear();
-    value.append("false");
     value.append("true");
+    value.append("false");
     result.insert(key,value);
 
     return result;
@@ -223,7 +224,7 @@ QMap<QString,double> result;
     double value = 20.0;
     result.insert(key,value);
     key = "actualTemperature";
-    value = 20.0;
+    value = 21.5;
     result.insert(key,value);
     key = "temperatureAccuracy";
     value = 0.1;
@@ -392,12 +393,13 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
 {
     OiVec s(4);
 
-    if(useTemp){
+    if(useTemp && !this->isPreTransformed){
         //get approx of scale from temperature and expansion coefficient
         s.setAt(0,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
         s.setAt(1,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
         s.setAt(2,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
         s.setAt(3,1.0);
+
     }else{  //get scale from differces in distance components (x, y, z)
             //between two points in each system
         double sx = 0.0;
@@ -421,6 +423,10 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
             tmpRefList.append(tmpRef);
         }
 
+        int countX = 0;
+        int countY = 0;
+        int countZ = 0;
+
         for(int i=1; i<this->locSystem.size(); i++){
             //get x y and z component of vector from point 0 to i in loc system
             double sxLoc = qFabs(locSystem.at(0).getAt(0)-locSystem.at(i).getAt(0));
@@ -441,26 +447,46 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
             if(sxLoc <= 0.050 || sxRef <= 0.050){
 
             }else{
-                if(sxRef/sxLoc > sx){sx = (sxRef/sxLoc);}
+                //if(sxRef/sxLoc > sx){sx = (sxRef/sxLoc);}
+                sx += (sxRef/sxLoc);
+                countX ++;
             }
 
             if(syLoc <= 0.050 || syRef <=0.050){
 
             }else{
-                if(syRef/syLoc > sy){sy = (syRef/syLoc);}
+                //if(syRef/syLoc > sy){sy = (syRef/syLoc);}
+                sy += (syRef/syLoc);
+                countY++;
             }
 
             if(szLoc <= 0.050 || szRef <= 0.050){
 
             }else{
-                if(szRef/szLoc > sz){sz = (szRef/szLoc);}
+                //if(szRef/szLoc > sz){sz = (szRef/szLoc);}
+                sz += (szRef/szLoc);
+                countZ++;
             }
         }
         //if no scale could be calculated (noisy measurements),
         //set this scale component to 1.000000
-        if(sx == 0.0){sx = 1.0;}
-        if(sy == 0.0){sy = 1.0;}
-        if(sz == 0.0){sz = 1.0;}
+        if(sx == 0.0){
+            sx = 1.0;
+        }else{
+            sx = sx/(double)countX;
+        }
+
+        if(sy == 0.0){
+            sy = 1.0;
+        }else{
+            sy = sy/(double)countY;
+        }
+
+        if(sz == 0.0){
+            sz = 1.0;
+        }else{
+            sz = sz/(double)countZ;
+        }
 
         s.setAt(0,sx);
         s.setAt(1,sy);
@@ -627,6 +653,8 @@ void ExtendedTemperatureCompensation::preliminaryTransformation()
         tmpLoc.append(tmptrafo);
     }
     this->locSystem = tmpLoc;
+
+    this->isPreTransformed = true;
 }
 
 /*!
