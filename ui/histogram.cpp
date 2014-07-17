@@ -11,34 +11,12 @@ Histogram::Histogram(QWidget *parent) :
 void Histogram::paintData(FeatureWrapper* f, QString attributeToDraw)
 {
 
-    _bins.clear();
 
-     simData = f->getGeometry()->getSimulationData();
-     QList<double> tmpList =simData.uncertaintyX.values;
-
-
-
-    if(tmpList.size() != 0){
-
-     maxError = simData.uncertaintyX.maxValue;
-     minError = simData.uncertaintyX.minValue;
-
-    errorScale = 1/(maxError-minError);
-
-    foreach(double d, tmpList){
-
-        double u = simData.uncertaintyX.uncertainty;
-        double e = simData.uncertaintyX.expectation;
-        double w = simData.uncertaintyX.densityFunction(d,e,u);
-
-        densityValues.append(w);
-
-         _bins.append(errorScale*(maxError-d));
-    }
+    this->generateDataToDraw(f,attributeToDraw);
 
 
     this->repaint();
-    }
+
 }
 
 void Histogram::paintEvent(QPaintEvent *event)
@@ -113,7 +91,7 @@ void Histogram::paintEvent(QPaintEvent *event)
            for(int i = 0;i<densityValues.size(); i++){
                densityGraph << QPoint(xLeft+wScale*i, yTop+hScale*(_heightMax-densityValues.at(i)));
            }
-           painter.drawPolygon(densityGraph);
+           //painter.drawPolygon(densityGraph);
 
 
            // bins
@@ -128,7 +106,7 @@ void Histogram::paintEvent(QPaintEvent *event)
            for( int i=0; i<nbBins; ++i ){
                myPolygon << QPoint(xLeft+wScale*i, yTop+hScale*(_heightMax-_bins[i]));
            }
-           painter.drawPolygon(myPolygon);
+          // painter.drawPolygon(myPolygon);
 
 
        }
@@ -148,7 +126,7 @@ void Histogram::paintEvent(QPaintEvent *event)
            myPolygon << QPoint(xRight, yBottom) << QPoint(xLeft, yBottom);
            for( int i=0; i<width; ++i )
                myPolygon << QPoint(xLeft+i, yTop+hScaleLog*( _bins[wScale*i] ? log(_heightMax/float(_bins[wScale*i])) : _heightMax));
-           painter.drawPolygon(myPolygon);
+           //painter.drawPolygon(myPolygon);
 
            // bins
            pen.setColor("#016790");
@@ -161,13 +139,14 @@ void Histogram::paintEvent(QPaintEvent *event)
            myPolygon << QPoint(xRight, yBottom) << QPoint(xLeft, yBottom);
            for( int i=0; i<width; ++i )
                myPolygon << QPoint(xLeft+i, yTop+hScale*(_heightMax-_bins[wScale*i]));
-           painter.drawPolygon(myPolygon);
+           //painter.drawPolygon(myPolygon);
        }
 
        pen.setColor(Qt::red);
        pen.setWidth(5);
        painter.setPen(pen);
-       painter.drawPoints(myPolygon);
+       painter.drawPoints(densityGraph);
+
 
        // ---- Draw vertical lines -------------------------------------------------
        pen.setWidth(1);
@@ -204,16 +183,18 @@ void Histogram::paintEvent(QPaintEvent *event)
        }
 
        // ---- Draw SimulationData-----------------------------------------------
-       QString expectation = QString::number(simData.uncertaintyX.expectation,'f',6);
-       QString uncertainty = QString::number(simData.uncertaintyX.uncertainty,'f',6);
-       QString maxV = QString::number(simData.uncertaintyX.maxValue,'f',6);
-       QString minV = QString::number(simData.uncertaintyX.minValue,'f',6);
+       QString a = QString::number(actualValue*UnitConverter::getDistanceMultiplier(),'f',6);
+       QString e = QString::number(expectation*UnitConverter::getDistanceMultiplier(),'f',6);
+       QString u = QString::number(uncertainty*UnitConverter::getDistanceMultiplier(),'f',6);
+       QString maxV = QString::number((maxError-expectation)*UnitConverter::getDistanceMultiplier(),'f',6);
+       QString minV = QString::number((minError-expectation)*UnitConverter::getDistanceMultiplier(),'f',6);
 
-       painter.drawText(xRight-200, yTop+10, simData.uncertaintyX.distribution);
-       painter.drawText(xRight-200, yTop+20, QString("expectation: " + expectation));
-       painter.drawText(xRight-200, yTop+30, QString("uncertainty: " + uncertainty));
-       painter.drawText(xRight-200, yTop+40, QString("max: " + maxV));
-       painter.drawText(xRight-200, yTop+50, QString("min: " + minV));
+       painter.drawText(xRight-200, yTop+10, distribution);
+       painter.drawText(xRight-200, yTop+20, QString("actual "+ featureAttribute +": " + a));
+       painter.drawText(xRight-200, yTop+30, QString("expectation: " + e));
+       painter.drawText(xRight-200, yTop+40, QString("uncertainty: " + u));
+       painter.drawText(xRight-200, yTop+50, QString("max diff: " + maxV));
+       painter.drawText(xRight-200, yTop+60, QString("min diff: " + minV));
 }
 
 void Histogram::mouseMoveEvent(QMouseEvent *event)
@@ -226,4 +207,127 @@ void Histogram::mouseMoveEvent(QMouseEvent *event)
     QString y = QString::number(Y);
 
     QToolTip::showText(event->globalPos(),QString("x:"+x+","+"y:"+y),this);
+}
+
+void Histogram::generateDataToDraw(FeatureWrapper* f, QString attributeToDraw)
+{
+    _bins.clear();
+    densityValues.clear();
+
+    simData = f->getGeometry()->getSimulationData();
+
+    if(attributeToDraw.compare("X") == 0){
+
+        featureAttribute = "X";
+        actualValue = f->getGeometry()->getXYZ().getAt(0);
+        distribution = simData.uncertaintyX.distribution;
+        maxError = simData.uncertaintyX.maxValue;
+        minError = simData.uncertaintyX.minValue;
+        uncertainty = simData.uncertaintyX.uncertainty;
+        expectation = simData.uncertaintyX.expectation;
+
+        errorScale = 1/(maxError-minError);
+
+        QList<double> tmpList =simData.uncertaintyX.values;
+
+        qSort(tmpList);
+
+        QList<double> tmpDensity;
+
+        foreach(double d, tmpList){
+
+            double w = simData.uncertaintyX.densityFunction(d,expectation,uncertainty);
+
+            tmpDensity.append(w);
+
+             _bins.append(errorScale*(maxError-d));
+        }
+
+        qSort(tmpDensity);
+        minFrequency = tmpDensity.first();
+        maxFrequency = tmpDensity.last();
+        frequencyScale = 1/(maxFrequency-minFrequency);
+
+        for(int i = 0;i<tmpDensity.size();i++){
+            densityValues.append(frequencyScale*(maxFrequency-tmpDensity.at(i)));
+        }
+
+    }else if(attributeToDraw.compare("Y") == 0){
+
+        featureAttribute = "Y";
+        actualValue = f->getGeometry()->getXYZ().getAt(1);
+        distribution = simData.uncertaintyY.distribution;
+        maxError = simData.uncertaintyY.maxValue;
+        minError = simData.uncertaintyY.minValue;
+        uncertainty = simData.uncertaintyY.uncertainty;
+        expectation = simData.uncertaintyY.expectation;
+
+        errorScale = 1/(maxError-minError);
+
+        QList<double> tmpList =simData.uncertaintyY.values;
+
+        qSort(tmpList);
+
+        QList<double> tmpDensity;
+
+        foreach(double d, tmpList){
+
+            double w = simData.uncertaintyY.densityFunction(d,expectation,uncertainty);
+
+            tmpDensity.append(w);
+
+             _bins.append(errorScale*(maxError-d));
+        }
+
+        qSort(tmpDensity);
+        minFrequency = tmpDensity.first();
+        maxFrequency = tmpDensity.last();
+        frequencyScale = 1/(maxFrequency-minFrequency);
+
+        for(int i = 0;i<tmpDensity.size();i++){
+            densityValues.append(frequencyScale*(maxFrequency-tmpDensity.at(i)));
+        }
+
+    }else if(attributeToDraw.compare("Z") == 0){
+
+        featureAttribute = "Z";
+        actualValue = f->getGeometry()->getXYZ().getAt(2);
+        distribution = simData.uncertaintyY.distribution;
+        maxError = simData.uncertaintyZ.maxValue;
+        minError = simData.uncertaintyZ.minValue;
+        uncertainty = simData.uncertaintyZ.uncertainty;
+        expectation = simData.uncertaintyZ.expectation;
+
+        errorScale = 1/(maxError-minError);
+
+        QList<double> tmpList =simData.uncertaintyZ.values;
+
+        qSort(tmpList);
+
+        QList<double> tmpDensity;
+
+        foreach(double d, tmpList){
+
+            double w = simData.uncertaintyZ.densityFunction(d,expectation,uncertainty);
+
+            tmpDensity.append(w);
+
+             _bins.append(errorScale*(maxError-d));
+        }
+
+        qSort(tmpDensity);
+        minFrequency = tmpDensity.first();
+        maxFrequency = tmpDensity.last();
+        frequencyScale = 1/(maxFrequency-minFrequency);
+
+        for(int i = 0;i<tmpDensity.size();i++){
+            densityValues.append(frequencyScale*(maxFrequency-tmpDensity.at(i)));
+        }
+
+    }
+}
+
+void Histogram::generateDensityList(QList<double> d)
+{
+
 }

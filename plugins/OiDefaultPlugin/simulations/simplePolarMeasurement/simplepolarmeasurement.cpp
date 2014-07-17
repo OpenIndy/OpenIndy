@@ -23,7 +23,11 @@ PluginMetaData *SimplePolarMeasurement::getMetaData()
 
 double densityNormal(double x, double expectation, double uncertainty)
 {
-    return 1.0/sqrt(2.0*M_PI*uncertainty*uncertainty)*exp(-1.0*(((x-expectation)*(x-expectation))/(2.0*uncertainty*uncertainty)));
+    double e = -0.5*(((x-expectation)/(uncertainty))*((x-expectation)/(uncertainty)));
+
+    double result = (1.0/(uncertainty*sqrt(2.0*M_PI)))*qExp(e);
+
+    return result;
 }
 
 double distributionNormal(double x, double expectation, double uncertainty)
@@ -531,7 +535,7 @@ void SimplePolarMeasurement::calcUncertainty(UncertaintyData &d)
 
     if(d.distribution == "normal"){
 
-        double sumVV;
+        double sumVV = 0.0;
 
 
         foreach(double v, d.values){
@@ -539,7 +543,8 @@ void SimplePolarMeasurement::calcUncertainty(UncertaintyData &d)
             sumVV += (d.expectation-v)*(d.expectation-v);
 
         }
-        d.uncertainty = sqrt(sumVV/(d.values.size()));
+
+        d.uncertainty = sqrt(sumVV/(d.values.size()-1.0));
     }
 
 }

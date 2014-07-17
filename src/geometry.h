@@ -59,6 +59,7 @@ public:
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
     virtual bool saveSimulationData() = 0;
+    void resetSimulationData();
 
 signals:
     void geomIsCommonChanged(int featureId);

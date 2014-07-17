@@ -44,6 +44,12 @@ void SimulationController::recalcAll()
     u.sensorUncertainties = sensorErrorModel->getErrors();
     actualSimulation->setGivenUncertainties(u);
 
+    foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
+        if(f->getGeometry() != NULL){
+            f->getGeometry()->resetSimulationData();
+        }
+    }
+
     bool newIteration = true;
 
     for(int i = 0; i <(this->iterations+1); i++){

@@ -4,6 +4,7 @@
 #include "simulationmodel.h"
 #include <random>
 #include <math.h>
+#include <QDebug>
 
 /*!
  * \brief The SimplePolarMeasurement class

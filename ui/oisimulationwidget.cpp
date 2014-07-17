@@ -105,7 +105,8 @@ void OiSimulationWidget::on_treeView_feature_clicked(const QModelIndex &index)
 
             if(item->getParent() != NULL && item->getParent()->getIsFeature()){ //if an attribute of a feature was clicked
 
-                ui->widgetHistogram->paintData(item->getParent()->getFeature(),"all");
+                QString attributeToDraw = item->getDisplayValue().toString();
+                ui->widgetHistogram->paintData(item->getParent()->getFeature(),attributeToDraw);
                 this->setResultList(item->getParent()->getFeature(),"all");
 
             }else if(item->getIsFeature()){

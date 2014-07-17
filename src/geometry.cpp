@@ -435,3 +435,10 @@ void Geometry::setSimulationData(SimulationData s)
 {
     this->mySimulationData = s;
 }
+
+void Geometry::resetSimulationData()
+{
+    SimulationData d;
+    this->mySimulationData = d;
+
+}

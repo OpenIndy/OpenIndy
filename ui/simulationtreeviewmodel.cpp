@@ -320,7 +320,7 @@ void SimulationTreeViewModel::appendGeometries(FeatureTreeItem *root, QList<Feat
             x = new FeatureTreeItem(QString("X"));
             y = new FeatureTreeItem(QString("Y"));
             z = new FeatureTreeItem(QString("Z"));
-            r = new FeatureTreeItem(QString("Z"));
+            r = new FeatureTreeItem(QString("Radius"));
             geom->appendChild(x);
             geom->appendChild(y);
             geom->appendChild(z);
