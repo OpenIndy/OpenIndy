@@ -287,11 +287,19 @@ void OiSimulationWidget::setResultList(FeatureWrapper *f,QString attributeToDraw
         result.append(QString::number(d));
     }*/
 
-    for(int i = 0; i<f->getGeometry()->getSimulationData().uncertaintyX.values.size();i++){
+    QList<double> tmpXList = f->getGeometry()->getSimulationData().uncertaintyX.values;
+    QList<double> tmpYList = f->getGeometry()->getSimulationData().uncertaintyY.values;
+    QList<double> tmpZList = f->getGeometry()->getSimulationData().uncertaintyZ.values;
 
-        double x = f->getGeometry()->getSimulationData().uncertaintyX.values.at(i);
-        double y = f->getGeometry()->getSimulationData().uncertaintyY.values.at(i);
-        double z = f->getGeometry()->getSimulationData().uncertaintyZ.values.at(i);
+    qSort(tmpXList);
+    qSort(tmpYList);
+    qSort(tmpZList);
+
+    for(int i = 0; i<tmpXList.size();i++){
+
+        double x = tmpXList.at(i);
+        double y = tmpYList.at(i);
+        double z = tmpZList.at(i);
 
         QString X = QString::number(x*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
         QString Y = QString::number(y*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);

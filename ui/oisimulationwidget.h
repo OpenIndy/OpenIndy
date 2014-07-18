@@ -8,6 +8,7 @@
 #include <QLayout>
 #include <QVBoxLayout>
 #include <QSpinBox>
+#include <QtAlgorithms>
 #include "featureupdater.h"
 #include "oifeaturestate.h"
 #include "simulationcontroller.h"

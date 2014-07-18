@@ -67,5 +67,6 @@
         <file>icons/scalarEntities_5e8acf.png</file>
         <file>icons/featureToolBar.png</file>
         <file>icons/simulation.png</file>
+        <file>icons/streamingLogo.png</file>
     </qresource>
 </RCC>

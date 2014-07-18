@@ -24,11 +24,15 @@ protected:
     void mouseMoveEvent(QMouseEvent * event);
 
 private:
+
     QVector<double> _bins;
 
     double actualValue;
     double uncertainty;
     double expectation;
+
+    QPoint actualPoint;
+    QPoint expectationPoint;
 
     double maxError;
     double minError;
@@ -37,6 +41,14 @@ private:
     double maxFrequency;
     double minFrequency;
     double frequencyScale;
+
+    double scale;
+    int xLeft;
+    int xRight;
+    int yTop;
+    int yBottom;
+    int width;
+    int height;
 
     QString distribution;
     QString featureAttribute;
@@ -47,6 +59,8 @@ private:
 
     void generateDataToDraw(FeatureWrapper* f, QString attributeToDraw);
     void generateDensityList(QList<double> d);
+    void drawGrid();
+    void drawResultSet();
 
 
 
