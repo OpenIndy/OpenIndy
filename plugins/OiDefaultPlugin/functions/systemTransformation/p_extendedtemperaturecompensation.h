@@ -37,7 +37,6 @@ private:
     QStringList protocol;
 
     bool svdError;
-    bool isPreTransformed;
 
     QList<OiVec> locSystem;
     QList<OiVec> refSystem;
@@ -45,13 +44,6 @@ private:
     OiVec translation;
     OiVec rotation;
     OiVec scale;
-
-    double actTemp;
-    double refTemp;
-    double tempAccuracy;
-    Materials::supportedMaterials material;
-    double expansionCoefficient;
-    bool useTemp;
 
     bool calc(TrafoParam &tp);
     void init();

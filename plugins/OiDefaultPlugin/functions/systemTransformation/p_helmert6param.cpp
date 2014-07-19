@@ -332,8 +332,10 @@ bool Helmert6Param::adjust(TrafoParam &tp)
 
     OiVec v = a * x - l_diff;
     OiVec vtv = v.t() * v;
-    double s0_post = sqrt(vtv.getAt(0) / (3 * this->locSystem.length() - 7));
+    double s0_post = sqrt(vtv.getAt(0) / (3 * this->locSystem.length() - 6));
     OiMat sxx = s0_post * s0_post * qxx;
+
+    tp.getStatistic()->stdev = s0_post;
 
     //set the trafo parameters with the previously calulated values and the additional values from adjustment
 

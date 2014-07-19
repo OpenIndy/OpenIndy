@@ -42,10 +42,10 @@ QList<Configuration::ReadingTypes>* PseudoTracker::getSupportedReadingTypes(){
 
     QList<Configuration::ReadingTypes> *readingTypes = new QList<Configuration::ReadingTypes>;
 
+    readingTypes->append(Configuration::eCartesian);
     readingTypes->append(Configuration::ePolar);
     readingTypes->append(Configuration::eDirection);
     readingTypes->append(Configuration::eDistance);
-    readingTypes->append(Configuration::eCartesian);
     readingTypes->append(Configuration::eTemperatur);
     readingTypes->append(Configuration::eLevel);
 
@@ -389,10 +389,16 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
     double x = 0.0;
     double y = 0.0;
     double z = 0.0;
+    double distance = 0.0;
+    double azimuth = 0.0;
+    double zenith = 0.0;
 
     QVariantMap m;
 
-        Reading r;
+    Reading r;
+
+    switch (streamFormat) {
+    case Configuration::ePolar:
 
         r.rPolar.azimuth = myAzimuth;
         r.rPolar.zenith = myZenith;
@@ -402,6 +408,26 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
         r.typeofReading = Configuration::ePolar;
         this->noisyPolarReading(&r);
 
+        azimuth = r.rPolar.azimuth;
+        zenith = r.rPolar.zenith;
+        distance = r.rPolar.distance;
+
+        m.insert("azimuth",azimuth);
+        m.insert("zenith",zenith);
+        m.insert("distance",distance);
+
+        break;
+    case Configuration::eCartesian:
+
+        r.rPolar.azimuth = myAzimuth;
+        r.rPolar.zenith = myZenith;
+        r.rPolar.distance = myDistance;
+        r.rPolar.isValid = true;
+        r.typeofReading = Configuration::ePolar;
+
+        this->noisyPolarReading(&r);
+
+        r.typeofReading = Configuration::eCartesian;
         r.toCartesian();
 
         x =r.rCartesian.xyz.getAt(0);
@@ -412,8 +438,45 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
         m.insert("y",y);
         m.insert("z",z);
 
-    QThread::msleep(300);
+        break;
+    case Configuration::eDistance:
 
+        r.rDistance.distance = myDistance;
+        r.rDistance.isValid = true;
+
+        r.typeofReading = Configuration::eDistance;
+
+        distance = r.rDistance.distance;
+
+        m.insert("distance",distance);
+
+        break;
+    case Configuration::eDirection:
+
+        r.rDirection.azimuth = myAzimuth;
+        r.rDirection.zenith = myZenith;
+        r.rDirection.isValid = true;
+
+        r.typeofReading = Configuration::eDirection;
+
+        azimuth = r.rDirection.azimuth;
+        zenith = r.rDirection.zenith;
+
+        m.insert("azimuth",azimuth);
+        m.insert("zenith",zenith);
+
+        break;
+    case Configuration::eTemperatur:
+        break;
+    case Configuration::eLevel:
+        break;
+    case Configuration::eUndefined:
+        break;
+    default:
+        break;
+    }
+
+    QThread::msleep(300);
 
     return m;
 

@@ -61,6 +61,7 @@ public:
     QString getDisplayScaleZ() const;
     QString getDisplayUse() const;
     QString getDisplayTime() const;
+    QString getDisplayStdDev() const;
 
 signals:
     void transformationParameterChanged(int tpId);

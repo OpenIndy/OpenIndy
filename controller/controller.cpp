@@ -466,7 +466,12 @@ void Controller::defaultLastmConfig(){
     lastmConfig.iterations = 1;
     lastmConfig.measureTwoSides = false;
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-        lastmConfig.typeOfReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->at(0);
+        QList<Configuration::ReadingTypes> *suppRTypes = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
+        if(suppRTypes != NULL && suppRTypes->contains(Configuration::ePolar)){
+            lastmConfig.typeOfReading = Configuration::ePolar;
+        }else{
+            lastmConfig.typeOfReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->at(0);
+        }
     }else{
         lastmConfig.typeOfReading = Configuration::ePolar;
     }

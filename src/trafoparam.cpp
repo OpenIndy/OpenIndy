@@ -15,6 +15,8 @@ TrafoParam::TrafoParam(QObject *parent) : Feature(parent), homogenMatrix(4, 4), 
     this->scale.setAt(0, 1.0);
     this->scale.setAt(1, 1.0);
     this->scale.setAt(2, 1.0);
+    this->myStatistic = new Statistic;
+    this->myStatistic->isValid = true;
 
     OiMat e(4,4);
 
@@ -577,4 +579,12 @@ QString TrafoParam::getDisplayUse() const
 QString TrafoParam::getDisplayTime() const
 {
     return this->validTime.toLocalTime().toString();
+}
+
+QString TrafoParam::getDisplayStdDev() const
+{
+    if(this->myStatistic != NULL && this->myStatistic->isValid){
+        return QString::number(this->myStatistic->stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    }
+    return "statistic not valid";
 }

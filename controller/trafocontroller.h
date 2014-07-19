@@ -26,21 +26,11 @@ public slots:
     bool transformObservations(CoordinateSystem *from);
     void setObservationState(CoordinateSystem *cs, bool valid);
 
-    void MovementsChanged();
-    void recalcAllMovements();
-    void recalcObservations();
-
-    /*
-     //TODO
-    movement added
-    recalc movements
-    movement deleted
-    recalc movements
-    time changed
-*/
+    OiMat getTransformationMatrix(CoordinateSystem *from);
 
 
 private:
+
     TrafoParam* findTrafoParam(CoordinateSystem *from, CoordinateSystem *to);
     //QList<TrafoParam*> findMovements(Observation *obs);
     QList<TrafoParam*> sortMovements(QList<TrafoParam*> movements);
@@ -48,10 +38,10 @@ private:
 
     QList<TrafoParam*> findMovements(CoordinateSystem *from);
     void applyMovements(QList<TrafoParam*> movements, CoordinateSystem *from);
-    void applyTranslations(OiVec centroidBefore, OiVec centroidAfter, QList<Observation*>observations);
-    OiVec checkTopApplyTranslation(QList<Observation*>observations,OiVec translation);
 
-    OiMat getTransformationMatrix(CoordinateSystem *from);
+    OiVec getNominalCentroid();
+    OiVec getScaledNominalCentroid(OiMat homogenMat);
+    OiVec getTranslation(OiVec nomCen, OiVec ScaledNomCen, OiMat homogenMat);
     
 };
 
