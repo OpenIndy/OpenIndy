@@ -6,6 +6,7 @@
 #include <QToolTip>
 #include <QMouseEvent>
 #include <QtAlgorithms>
+#include <QFont>
 #include "oifeaturestate.h"
 
 class Histogram : public QWidget
@@ -31,8 +32,8 @@ private:
     double uncertainty;
     double expectation;
 
-    QPoint actualPoint;
-    QPoint expectationPoint;
+    QPointF actualPoint;
+    QPointF expectationPoint;
 
     double maxError;
     double minError;
@@ -43,12 +44,14 @@ private:
     double frequencyScale;
 
     double scale;
-    int xLeft;
-    int xRight;
-    int yTop;
-    int yBottom;
-    int width;
-    int height;
+    float xLeft;
+    float xRight;
+    float yTop;
+    float yBottom;
+    float width;
+    float height;
+
+    float resolution;
 
     QString distribution;
     QString featureAttribute;
