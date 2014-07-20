@@ -220,7 +220,7 @@ void TrafoController::applyMovements(QList<TrafoParam*> movements, CoordinateSys
         OiVec nominalCentroid = this->getNominalCentroid();
         OiVec ScaledNominalCentroid = this->getScaledNominalCentroid(movements.at(i)->getHomogenMatrix());
 
-        OiVec translation = this->getTranslation(nominalCentroid, ScaledNominalCentroid, movements.at(i)->getHomogenMatrix());
+        OiVec translation = this->getTranslation(nominalCentroid, ScaledNominalCentroid,movements.at(i)->getHomogenMatrix());
 
         for(int k=0; k<from->getObservations().size();k++){ //iterate through all observations of this station
 
@@ -292,7 +292,7 @@ OiVec TrafoController::getScaledNominalCentroid(OiMat homogenMat)
                     OiFeatureState::getFeatures().at(i)->getPoint()->getNominalSystem() ==
                     OiFeatureState::getActiveCoordinateSystem()){
 
-                centroid = centroid + homogenMat*OiFeatureState::getFeatures().at(i)->getPoint()->getXYZ();
+                centroid = centroid + homogenMat.inv()*OiFeatureState::getFeatures().at(i)->getPoint()->getXYZ();
                 count++;
             }
         }
@@ -305,12 +305,11 @@ OiVec TrafoController::getScaledNominalCentroid(OiMat homogenMat)
 
 OiVec TrafoController::getTranslation(OiVec nomCen, OiVec ScaledNomCen, OiMat homogenMat)
 {
-    OiVec translation = nomCen - ScaledNomCen;
+    OiVec tmpScaledNC = homogenMat*ScaledNomCen;
 
-    //TODO
-    //cause not working good and as i want it. but it helps
+    OiVec translation = nomCen - tmpScaledNC;
 
-    translation.setAt(2,0.0);
+    translation.setAt(3,1.0);
 
     return translation;
 }

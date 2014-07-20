@@ -284,6 +284,19 @@ bool Helmert6Param::adjust(TrafoParam &tp)
     //transformation with previosly approximated translation and rotation
     this->preliminaryTransformation();
 
+    //get standard deviation
+    double sumVV = 0.0;
+
+    for (int i = 0;i<this->locSystem.size();i++) {
+        OiVec diffVec = this->refSystem.at(i)-this->locSystem.at(i);
+        sumVV += diffVec.getAt(0)*diffVec.getAt(0);
+        sumVV += diffVec.getAt(1)*diffVec.getAt(1);
+        sumVV += diffVec.getAt(2)*diffVec.getAt(2);
+
+    }
+
+    tp.getStatistic()->stdev = sqrt(sumVV/(3.0*this->locSystem.size()-6.0));
+
     //get new rotation and translation between pseudo-loc system and ref system
     OiVec tmpRotation = this->approxRotation();
     OiVec tmpTranslation = this->approxTranslation(tmpRotation);
@@ -335,7 +348,7 @@ bool Helmert6Param::adjust(TrafoParam &tp)
     double s0_post = sqrt(vtv.getAt(0) / (3 * this->locSystem.length() - 6));
     OiMat sxx = s0_post * s0_post * qxx;
 
-    tp.getStatistic()->stdev = s0_post;
+    //tp.getStatistic()->stdev = s0_post;
 
     //set the trafo parameters with the previously calulated values and the additional values from adjustment
 
