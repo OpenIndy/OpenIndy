@@ -26,6 +26,10 @@ WatchWindow::WatchWindow(QWidget *parent) :
     listener->moveToThread(&listenerThread);
     listenerThread.start();
 
+    ui->lineEdit_decimalDigits->setText("3");
+    ui->lineEdit_fNameFontSize->setText("30");
+    ui->lineEdit_fAttributeFontSize->setText("60");
+
 }
 
 WatchWindow::~WatchWindow()
@@ -36,93 +40,10 @@ WatchWindow::~WatchWindow()
 
 void WatchWindow::setLCDNumber(QVariantMap m){
 
-    /*if(!listener->isGUIReady){
-       this->iniGUI();
-    }*/
-/*
     //change display, depending on checked setting checkboxes.
     iniGUI();
 
-
-    QMapIterator<QString,QVariant> j(m);
-    while (j.hasNext()) {
-        j.next();
-
-        for(int i=0;i<this->checkboxes.size();i++){
-            if(this->checkboxes.at(i)->text() == j.key() && this->checkboxes.at(i)->isChecked()){
-
-                QString name = j.key();
-                QVariant qvalue = j.value();
-                double dvalue = qvalue.toDouble();
-
-                if(!OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
-
-                    TrafoParam *tp = NULL;
-                    QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveStation()->coordSys->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
-                    if(myTrafoParams.size() > 0){
-                        tp = myTrafoParams.at(0);
-                    }
-                    if(tp != NULL){
-                        OiMat t;
-                        if(tp->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
-                            t = tp->getHomogenMatrix();
-                        }else{
-                            t = tp->getHomogenMatrix().inv();
-                        }
-
-                        OiVec trackerXYZ(4);
-                        trackerXYZ.setAt(0,m.value("x").toDouble());
-                        trackerXYZ.setAt(1,m.value("y").toDouble());
-                        trackerXYZ.setAt(2,m.value("z").toDouble());
-                        trackerXYZ.setAt(3,1.0);
-                        trackerXYZ = t*trackerXYZ;
-
-                        if(name == "x"){
-                            dvalue =trackerXYZ.getAt(0);
-                        }else if (name == "y"){
-                            dvalue = trackerXYZ.getAt(1);
-                        }else if (name == "z"){
-                            dvalue =trackerXYZ.getAt(2);
-                        }
-                    }
-                }
-
-                if(OiFeatureState::getActiveFeature() != NULL){
-                    if(name == "x"){
-
-                        double featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(0);
-                        double dx = featureX - dvalue;
-                        streamData.value(name)->display(QString::number(dx*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-
-                    }else if(name == "y"){
-
-                        double featureY = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
-                        double dy = featureY - dvalue;
-                        streamData.value(name)->display(QString::number(dy*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-
-                    }else if(name == "z"){
-
-                        double featureZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(2);
-                        double dz = featureZ - dvalue;
-                        streamData.value(name)->display(QString::number(dz*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-
-                    }else{
-                        streamData.value(name)->display(QString::number(dvalue,'f',6));
-                    }
-                }else{
-                    QLCDNumber *lcdn = streamData.value(name);
-                    if(lcdn != NULL){
-                        lcdn->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-                    }
-                }
-            }
-        }
-    }
-*/
-    //new implementation
-
-    //change display, depending on checked setting checkboxes.
-    iniGUI();
+    int numberOfDigits = ui->lineEdit_decimalDigits->text().toInt();
 
     QMapIterator<QString,QVariant> j(m);
     while (j.hasNext()) {
@@ -161,7 +82,16 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(0);
                         }
                         double dX = featureX - trackerXYZ.getAt(0);
-                        streamData.value("x")->display(QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+
+                        double tolerance = this->attributeTolerance.value("x")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+
+                        if(qFabs(dX) >= qFabs(tolerance)){
+                            streamData.value("x")->setPalette(Qt::red);
+                        }else{
+                            streamData.value("x")->setPalette(Qt::green);
+                        }
+
+                        streamData.value("x")->display(QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
 
                     }else if(j.key() == "y"){
                         double featureY = 0.0;
@@ -170,7 +100,16 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             featureY = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
                         }
                         double dY = featureY - trackerXYZ.getAt(1);
-                        streamData.value("y")->display(QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+
+                        double tolerance = this->attributeTolerance.value("y")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+
+                        if(qFabs(dY) >= qFabs(tolerance)){
+                            streamData.value("y")->setPalette(Qt::red);
+                        }else{
+                            streamData.value("y")->setPalette(Qt::green);
+                        }
+
+                        streamData.value("y")->display(QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
 
                     }else if(j.key() == "z"){
                         double featureZ = 0.0;
@@ -179,10 +118,26 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             featureZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
                         }
                         double dZ = featureZ - trackerXYZ.getAt(2);
-                        streamData.value("z")->display(QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+
+                        double tolerance = this->attributeTolerance.value("z")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+
+                        if(qFabs(dZ) >= qFabs(tolerance)){
+                            streamData.value("z")->setPalette(Qt::red);
+                        }else{
+                            streamData.value("z")->setPalette(Qt::green);
+                        }
+
+                        streamData.value("z")->display(QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
 
                     }else{
-                        streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',6));
+                        double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
+
+                        if(qFabs(j.value().toDouble()) >= qFabs(tolerance)){
+                            streamData.value(j.key())->setPalette(Qt::red);
+                        }else{
+                            streamData.value(j.key())->setPalette(Qt::green);
+                        }
+                        streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',numberOfDigits));
                     }
 
                     break;
@@ -211,7 +166,16 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             FeatureAZ = featurePolar.getAt(0);
                         }
                         double dAZ = FeatureAZ - trackerValues.getAt(0);
-                        streamData.value("azimuth")->display(QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
+
+                        double tolerance = this->attributeTolerance.value("azimuth")->text().toDouble()/UnitConverter::getAngleMultiplier();
+
+                        if(qFabs(dAZ) >= qFabs(tolerance)){
+                            streamData.value("azimuth")->setPalette(Qt::red);
+                        }else{
+                            streamData.value("azimuth")->setPalette(Qt::green);
+                        }
+
+                        streamData.value("azimuth")->display(QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
 
                     }else if(j.key() == "zenith"){
                         double FeatureZE = 0.0;
@@ -222,7 +186,17 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             FeatureZE = featurePolar.getAt(1);
                         }
                         double dZE = FeatureZE - trackerValues.getAt(1);
-                        streamData.value("zenith")->display(QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
+
+                        double tolerance = this->attributeTolerance.value("zenith")->text().toDouble()/UnitConverter::getAngleMultiplier();
+
+                        if(qFabs(dZE) >= qFabs(tolerance)){
+                            streamData.value("zenith")->setPalette(Qt::red);
+                        }else{
+                            streamData.value("zenith")->setPalette(Qt::green);
+                        }
+
+                        streamData.value("zenith")->display(QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
+
                     }else if(j.key() == "distance"){
                         double FeatureDIS = 0.0;
 
@@ -232,9 +206,27 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             FeatureDIS = featurePolar.getAt(2);
                         }
                         double dDIS = FeatureDIS - trackerValues.getAt(2);
-                        streamData.value("distance")->display(QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+
+                        double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+
+                        if(qFabs(dDIS) >= qFabs(tolerance)){
+                            streamData.value("distance")->setPalette(Qt::red);
+                        }else{
+                            streamData.value("distance")->setPalette(Qt::green);
+                        }
+
+                        streamData.value("distance")->display(QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+
                     }else{
-                        streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',6));
+                        double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
+
+                        if(qFabs(j.value().toDouble()) >= qFabs(tolerance)){
+                            streamData.value(j.key())->setPalette(Qt::red);
+                        }else{
+                            streamData.value(j.key())->setPalette(Qt::green);
+                        }
+
+                        streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',numberOfDigits));
                     }
 
                     break;
@@ -252,6 +244,9 @@ void WatchWindow::setLCDNumber(QVariantMap m){
 
 void WatchWindow::iniGUI()
 {
+    int nameSize = ui->lineEdit_fNameFontSize->text().toInt();
+    int attributeSize = ui->lineEdit_fAttributeFontSize->text().toInt();
+
     streamData.clear();
 
     for(int i=0; i<widgets.size();i++){
@@ -272,7 +267,7 @@ void WatchWindow::iniGUI()
 
     if(OiFeatureState::getActiveFeature() != NULL){
         QLabel *featureName = new QLabel();
-        QFont f( "Arial", 30, QFont::Bold);
+        QFont f( "Arial", nameSize, QFont::Bold);
         featureName->setFont(f);
         featureName->setText(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
         masterLayout->addWidget(featureName);
@@ -284,7 +279,7 @@ void WatchWindow::iniGUI()
         if(this->checkboxes.at(i)->isChecked()){
             QString name = this->checkboxes.at(i)->text();
             QString value = "0.0";
-            QFont f( "Arial", 60, QFont::Bold);
+            QFont f( "Arial", attributeSize, QFont::Bold);
 
             QLabel *l = new QLabel();
             l->setText(name);
@@ -294,6 +289,7 @@ void WatchWindow::iniGUI()
             QLCDNumber *n = new QLCDNumber();
             n->display(value);
             n->setFont(f);
+            n->setAutoFillBackground(true);
             widgets.append(n);
 
             n->setMode(QLCDNumber::Dec);
@@ -429,16 +425,54 @@ void WatchWindow::getAttributes(QStringList l)
             }
             checkboxes.clear();
 
+            foreach (QLabel *l, attributeLabels) {
+                ui->groupBox_displayValues->layout()->removeWidget(l);
+                delete l;
+            }
+            attributeLabels.clear();
+
+            foreach (QLineEdit *le, attributeTolerance.values()) {
+                ui->groupBox_displayValues->layout()->removeWidget(le);
+                delete le;
+            }
+            attributeTolerance.clear();
+
+            foreach (QLayout *l, attributeLayout) {
+                ui->groupBox_displayValues->layout()->removeItem(l);
+                delete l;
+            }
+            attributeLayout.clear();
+
             if(l.size() > 0){
 
                 for(int i=0; i<l.size();i++){
+
+                    QHBoxLayout *layout = new QHBoxLayout();
+                    attributeLayout.append(layout);
+
                     QCheckBox *cb = new QCheckBox();
                     cb->setText(l.at(i));
                     cb->setChecked(true);
-
-                    settingsLayout->addWidget(cb);
-
                     this->checkboxes.append(cb);
+
+                    QLabel *lab = new QLabel();
+                    lab->setText(QString("tolerance " + l.at(i) + " " + this->getUnitString(l.at(i))));
+                    attributeLabels.append(lab);
+
+                    QLineEdit *le = new QLineEdit();
+                    le->setText("0.0");
+                    attributeTolerance.insert(l.at(i),le);
+
+                    layout->addWidget(cb);
+                    layout->addWidget(lab);
+                    layout->addWidget(le);
+
+                    //set streching equal for all 3 elements
+                    layout->setStretch(0,1);
+                    layout->setStretch(1,1);
+                    layout->setStretch(2,1);
+
+                    settingsLayout->addLayout(layout);
                 }
 
                 //emit sendCheckBoxReady(true);
@@ -524,4 +558,24 @@ bool WatchWindow::checkFeatureValid()
         }
     }
     return false;
+}
+
+QString WatchWindow::getUnitString(QString attribute)
+{
+    if(attribute == "x"){
+        return UnitConverter::getDistanceUnitString();
+    }else if(attribute == "y"){
+        return UnitConverter::getDistanceUnitString();
+    }else if(attribute == "z"){
+        return UnitConverter::getDistanceUnitString();
+    }else if(attribute == "azimuth"){
+        return UnitConverter::getAngleUnitString();
+    }else if(attribute == "zenith"){
+        return UnitConverter::getAngleUnitString();
+    }else if(attribute == "distance"){
+        return UnitConverter::getDistanceUnitString();
+    }else if(attribute == "temperature"){
+        return UnitConverter::getTemperatureUnitString();
+    }
+    return "";
 }

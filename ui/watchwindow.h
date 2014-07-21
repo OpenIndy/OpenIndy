@@ -73,6 +73,9 @@ private:
     QMap<QString,QLCDNumber*> streamData;
 
     QList<QCheckBox*> checkboxes;
+    QList<QLabel*> attributeLabels;
+    QMap<QString, QLineEdit*> attributeTolerance;
+    QList<QLayout*> attributeLayout;
 
     QList<QWidget*> widgets;
     QList<QLayout*> layouts;
@@ -80,6 +83,8 @@ private:
     int activeReadingType;
 
     bool checkFeatureValid();
+
+    QString getUnitString(QString attribute);
 
 };
 
