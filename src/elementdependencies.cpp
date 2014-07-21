@@ -59,6 +59,40 @@ bool ElementDependencies::addActiveSensor(sensorInfo info)
     return true;
 }
 
+bool ElementDependencies::setStationPosition(int id)
+{
+    if(id<0){
+       return false;
+    }else{
+      this->stationPosition = id;
+    }
+
+
+    return true;
+}
+
+bool ElementDependencies::setStationCoordSystem(int id)
+{
+
+    if(id<0){
+       return false;
+    }else{
+      this->stationCoordSystem = id;
+    }
+
+    return true;
+}
+
+int ElementDependencies::getStationPosition()
+{
+    return this->stationPosition;
+}
+
+int ElementDependencies::getStationCoordSystem()
+{
+    return this->stationCoordSystem;
+}
+
 bool ElementDependencies::hasPluginSensor()
 {
     return this->hasSensorPlugin;

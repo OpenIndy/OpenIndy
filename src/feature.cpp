@@ -584,6 +584,11 @@ bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &
                     }
                 }
 
+
+                if(memberAttributes.hasAttribute("id")){
+                    this->id = memberAttributes.value("ref").toInt();
+                }
+
             }
 
     return true;

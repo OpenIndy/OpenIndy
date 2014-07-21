@@ -1129,73 +1129,33 @@ void MainWindow::on_actionNominal_geometry_triggered()
 void MainWindow::on_actionSave_as_triggered(){
     try{
 
-        QFileDialog dialog;
-        dialog.setFileMode(QFileDialog::Directory);
-        dialog.setOption(QFileDialog::ShowDirsOnly);
-        if(dialog.exec()){
+        QString filename = QFileDialog::getSaveFileName(
+                             this,
+                             "Choose a filename to save under",
+                             "oiProject",
+                             "xml (*.xml)");
 
-            QStringList selectedFolders = dialog.selectedFiles();
-            if(selectedFolders.size() == 1){ //if the user selected a folder
 
-                //TODO change OiProject to the name of the currently opened project
 
-                //get the selected file path and create a new folder
-                QString selectedFolder = selectedFolders.at(0);
-                QString projectFolderPath = selectedFolder.append(QString("/%1").arg("OiProject"));
-                QDir projectFolder(projectFolderPath);
-                projectFolder.mkpath(projectFolder.absolutePath());
+          control.currentProject.setDevice(new QFile(filename));
 
-                QFileInfo info(projectFolderPath);
+          QFileInfo info(filename);
 
-                QString projectName = "OiProject";//info.fileName();
+          control.currentProject.setProjectName(info.fileName());
 
-                QString filePath = projectFolder.absolutePath().append(QString("/%1.xml").arg(projectName));
+          //bool isSuccessfull = OiDataImporter::saveToXML(control.features,file,control.activeCoordinateSystem->id);
+          bool isSuccessfull = this->control.saveProject();
 
-                QFile *projectFile = new QFile(filePath);
-
-                OiProjectData projectData;
-                projectData.setDevice(projectFile);
-
-                bool isSuccessfull = this->control.saveProject(projectData);
-
-                if(isSuccessfull){
-                    QMessageBox::information(this,"save data", "Saving the data was successful.");
-                }else{
-                    QMessageBox::information(this,"save data", "Saving the data was not successful.");
-                }
-
-            }else{
-                Console::addLine("No folder selected");
-            }
-
-        }
+          if(isSuccessfull){
+              QMessageBox::information(this,"save data", "Saving the data was successful.");
+          }else{
+              QMessageBox::information(this,"save data", "Saving the data was not successful.");
+          }
 
     }catch(exception &e){
         Console::addLine(e.what());
     }
 
-
-
-
-
-
-    /*OiProjectData data;
-    data.device = new QFile(filename);
-
-    QFileInfo info(filename);
-
-    data.projectName = info.fileName();
-    data.features = OiFeatureState::getFeatures();
-    data.activeCoordSystem = OiFeatureState::getActiveCoordinateSystem();
-
-    //bool isSuccessfull = OiDataImporter::saveToXML(control.features,file,control.activeCoordinateSystem->id);
-    bool isSuccessfull = oiProjectExchanger::saveProject(data);
-
-    if(isSuccessfull){
-        QMessageBox::information(this,"save data", "Saving the data was successful.");
-    }else{
-        QMessageBox::information(this,"save data", "Saving the data was not successful.");
-    }*/
 }
 
 /*!
@@ -1223,10 +1183,9 @@ void MainWindow::on_actionOpen_triggered()
 
     QFileInfo info(filename);
 
-    data.projectName = info.fileName();
+    data.setProjectName(info.fileName());
 
-    //OiDataImporter::loadFromXML(control.features,file);
-    bool isSuccessfull = OiProjectExchanger::loadProject(data);
+    bool isSuccessfull = this->control.loadProject(data);
 
     if(isSuccessfull){
         QMessageBox::information(this,"load project", "load "+info.fileName()+ " was successful.");
@@ -1234,7 +1193,6 @@ void MainWindow::on_actionOpen_triggered()
         QMessageBox::information(this,"load project", "load "+info.fileName()+ "  was not successful.");
     }
 
-    control.loadProject(data);
 
 }
 

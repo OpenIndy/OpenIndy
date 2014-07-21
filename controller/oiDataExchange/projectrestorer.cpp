@@ -32,7 +32,7 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
 
     //write general project information
     stream.writeStartElement("oiProjectData");
-    stream.writeAttribute("name", data.projectName);
+    stream.writeAttribute("name", data.getProjectName());
     stream.writeAttribute("date", dateTimeString);
     stream.writeAttribute("idcount", QString::number(Configuration::idCount));
 
@@ -173,8 +173,8 @@ bool ProjectRestorer::loadProject(OiProjectData &data){
                     Station *s = new Station("");
                     ElementDependencies d = s->fromOpenIndyXML(xml);
 
-                    stationElements.append(s->coordSys->getId());
-                    stationElements.append(s->position->getId());
+                    stationElements.append(d.getStationCoordSystem());
+                    stationElements.append(d.getStationPosition());
 
                     this->stations.append(s);
                     this->dependencies.append(d);
@@ -379,15 +379,7 @@ Station* ProjectRestorer::findStation(int id){
 
 }
 
-/* \brief sortID
-* \param f1
-* \param f2
-* \return
-* comperator function for sorting FeatureWrapper* by id
-*/
-bool sortID(FeatureWrapper *f1, FeatureWrapper *f2){
-   return f1->getFeature()->getId() < f2->getFeature()->getId();
-}
+
 
 void ProjectRestorer::resolveDependencies(OiProjectData &data){
 
@@ -404,14 +396,10 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
 
             this->resolveStation(resolvedFeature,d);
 
-            data.stations.append(resolvedFeature->getStation());
-
             break;}
         case (Configuration::eCoordinateSystemElement):{
 
                 this->resolveCoordinateSystem(resolvedFeature,d);
-
-
 
             break;}
         case (Configuration::eTrafoParamElement):{
@@ -434,11 +422,11 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
 
 
         if(d.typeOfElement != Configuration::eObservationElement && !this->stationElements.contains(d.elementID)){
-            data.features.append(resolvedFeature);
+           OiFeatureState::addFeature(resolvedFeature);
         }
     }
 
-    qSort(data.features.begin(), data.features.end(), sortID);
+    OiFeatureState::sortFeaturesById();
 
 }
 
@@ -617,8 +605,12 @@ void ProjectRestorer::resolveObservation(ElementDependencies &d)
     if(obsStations != NULL){
         for(int i = 0;i<obsStations->size();i++){
             obs->myStation = this->findStation(obsStations->at(i));
+            obs->myStation->coordSys->addObservation(obs);
+            break;
         }
     }
+
+
 
 }
 

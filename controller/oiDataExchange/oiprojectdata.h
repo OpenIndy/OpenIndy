@@ -7,7 +7,7 @@
 #include "featurewrapper.h"
 #include "console.h"
 #include "oifeaturestate.h"
-#include "oiprojectexchanger.h"
+//#include "oiprojectexchanger.h"
 
 /*!
  * \brief The oiProjectData class
@@ -33,7 +33,6 @@ public:
     void activate(OiFeatureState *myState);
     void deactivate();
 
-    bool save();
     bool getIsSaved();
 
     /*CoordinateSystem *activeCoordSystem;

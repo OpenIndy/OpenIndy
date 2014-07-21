@@ -16,6 +16,16 @@ OiFeatureState::OiFeatureState(QObject *parent) : QObject(parent){
 
 }
 
+/* \brief sortID
+* \param f1
+* \param f2
+* \return
+* comperator function for sorting FeatureWrapper* by id
+*/
+bool sortID(FeatureWrapper *f1, FeatureWrapper *f2){
+   return f1->getFeature()->getId() < f2->getFeature()->getId();
+}
+
 /*!
  * \brief OiFeatureState::getInstance
  * Returns a new or the previously created instance of this class
@@ -186,6 +196,31 @@ void OiFeatureState::sortFeatures()
             }
         }
     }
+}
+
+void OiFeatureState::sortFeaturesById()
+{
+    qSort(myFeatures.begin(), myFeatures.end(), sortID);
+}
+
+void OiFeatureState::resetFeatureLists()
+{
+    foreach(FeatureWrapper *f,myFeatures){
+        delete f->getFeature();
+        delete f;
+    }
+
+    myFeatures.clear();
+    myStations.clear();
+    myCoordinateSystems.clear();
+    myAvailableGroups.clear();
+
+    myActiveFeature = NULL;
+    myActiveStation = NULL;
+    myActiveCoordinateSystem = NULL;
+    myActiveGroup = "All Groups";
+
+    OiFeatureState::myFeatureState->emitSignal(OiFeatureState::eFeatureSetChanged);
 }
 
 /*!

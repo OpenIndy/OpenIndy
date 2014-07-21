@@ -154,7 +154,11 @@ bool Controller::createProject(OiProjectData &projectData){
         //set PART as active coordinate system
         part->getCoordinateSystem()->setActiveCoordinateSystemState(true);
 
+    }else{
+        return false;
     }
+
+    return true;
 
 }
 
@@ -1378,7 +1382,7 @@ bool Controller::saveProject(){
 
         if(this->currentProject.getIsValid()){
             if(this->currentProject.getIsSaved()){
-                return this->currentProject.save();
+                return OiProjectExchanger::saveProject(this->currentProject);
             }else{
                 Console::addLine("The project has already been saved");
                 return false;
@@ -1401,19 +1405,13 @@ bool Controller::saveProject(){
  */
 bool Controller::loadProject(OiProjectData &projectData){
 
-    /*features.clear();
-    stations.clear();
-    coordSys.clear();
+    //TODO check if a active project is set
 
-    features = data.features;
-    stations = data.stations;
-    coordSys = data.coordSystems;
+    //delete all features
+    //OiFeatureState::resetFeatureLists();
 
-    if(features.size() > 0 && stations.size() > 0){
-        refreshGUI();
-    }*/
+    return OiProjectExchanger::loadProject(projectData);
 
-    return false;
 
 }
 

@@ -1,4 +1,5 @@
 #include "oiprojectdata.h"
+#include "oiprojectexchanger.h"
 
 OiProjectData::OiProjectData(QObject *parent) :
     QObject(parent)
@@ -90,22 +91,7 @@ bool OiProjectData::getIsValid(){
     return false;
 }
 
-/*!
- * \brief OiProjectData::save
- * \return
- */
-bool OiProjectData::save(){
-    if(this->device != NULL){
 
-        bool isSuccessful = false;
-        isSuccessful = OiProjectExchanger::saveProject(*this);
-        return isSuccessful;
-
-    }else{
-        Console::addLine("No device selected");
-        return false;
-    }
-}
 
 /*!
  * \brief OiProjectData::getIsSaved

@@ -43,6 +43,8 @@ public:
     static void setActiveGroup(QString group);
 
     static void sortFeatures();
+    static void sortFeaturesById();
+    static void resetFeatureLists();
 
 signals:
     void activeFeatureChanged(); //emitted when active feature has changed
