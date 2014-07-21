@@ -22,16 +22,13 @@ public:
     explicit TrafoParam(QObject *parent = 0);
     ~TrafoParam();
 
+    bool setHomogenMatrix(OiMat rotation, OiMat translation, OiMat scale);
     OiMat getHomogenMatrix() const;
-    void generateHomogenMatrix();
     OiVec getTranslation() const;
-    bool setTranslation(double tx, double ty, double tz);
     OiVec getRotation() const;
-    bool setRotation(double rx, double ry, double rz);
     OiVec getScale() const;
-    bool setScale(double mx, double my, double mz);
     OiVec getQuaternion() const;
-    bool setQuaternion(OiVec quaternion);
+
     CoordinateSystem * const getStartSystem() const;
     CoordinateSystem * const getDestinationSystem() const;
     bool setCoordinateSystems(CoordinateSystem * const from, CoordinateSystem * const to);
@@ -64,6 +61,7 @@ public:
     QString getDisplayScaleZ() const;
     QString getDisplayUse() const;
     QString getDisplayTime() const;
+    QString getDisplayStdDev() const;
 
 signals:
     void transformationParameterChanged(int tpId);
@@ -85,6 +83,8 @@ protected:
     QDateTime validTime;
     bool isMovement;
     bool isDatumTrafo;
+
+    bool setQuaternion(OiVec quaternion);
 };
 
 #endif // TRAFOPARAM_H

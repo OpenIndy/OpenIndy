@@ -38,7 +38,9 @@ INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/src/geometry
+INCLUDEPATH += $$PWD/src/oiemitter
 INCLUDEPATH += $$PWD/src/plugin
+INCLUDEPATH += $$PWD/src/simulation
 INCLUDEPATH += $$PWD/controller/oiDataExchange
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
 
@@ -71,7 +73,7 @@ SOURCES += \
     src/reading.cpp \
     src/pluginmetadata.cpp \
     src/oimetadata.cpp \
-    src/oiemitter.cpp \
+    src/oiemitter/oiemitter.cpp \
     src/observation.cpp \
     src/measurementconfig.cpp \
     src/geometry.cpp \
@@ -151,13 +153,26 @@ SOURCES += \
     src/sensorlistener.cpp \
     controller/guiconfiguration.cpp \
     ui/plugininfowidget.cpp \
+    ui/oisimulationwidget.cpp \
     controller/oifeaturestate.cpp \
     controller/trafocontroller.cpp \
     ui/featureoverviewproxymodel.cpp \
     controller/oiDataExchange/oiexchangepts.cpp \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
-    ui/oiGraphixFactory/oigraphix_pointcloud.cpp
+    ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
+    ui/watchwindowlistener.cpp \
+    src/oiemitter/oifunctionemitter.cpp \
+    src/oiemitter/oisensoremitter.cpp \
+    src/oiemitter/oisimulationemitter.cpp \
+    src/oiemitter/oinetworkadjustmentemitter.cpp \
+    src/simulation/uncertaintycomponent.cpp \
+    controller/simulationcontroller.cpp \
+    ui/histogram.cpp \
+    ui/simulationerrortablemodel.cpp \
+    ui/simulationdelegate.cpp \
+    ui/simulationtreeviewmodel.cpp \
+    src/simulation/simulationdata.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -177,7 +192,7 @@ HEADERS  += \
     src/reading.h \
     src/pluginmetadata.h \
     src/oimetadata.h \
-    src/oiemitter.h \
+    src/oiemitter/oiemitter.h \
     src/observation.h \
     src/measurementconfig.h \
     src/geometry.h \
@@ -274,13 +289,27 @@ HEADERS  += \
     src/sensorlistener.h \
     controller/guiconfiguration.h \
     ui/plugininfowidget.h \
+    ui/oisimulationwidget.h \
     controller/oifeaturestate.h \
     controller/trafocontroller.h \
     ui/featureoverviewproxymodel.h \
     controller/oiDataExchange/oiexchangepts.h \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
-    ui/oiGraphixFactory/oigraphix_pointcloud.h
+    ui/oiGraphixFactory/oigraphix_pointcloud.h \
+    ui/watchwindowlistener.h \
+    src/oiemitter/oifunctionemitter.h \
+    src/oiemitter/oisensoremitter.h \
+    src/oiemitter/oisimulationemitter.h \
+    src/oiemitter/oinetworkadjustmentemitter.h \
+    src/simulation/simulationmodel.h \
+    src/simulation/uncertaintycomponent.h \
+    controller/simulationcontroller.h \
+    ui/histogram.h \
+    ui/simulationerrortablemodel.h \
+    ui/simulationdelegate.h \
+    ui/simulationtreeviewmodel.h \
+    src/simulation/simulationdata.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
@@ -297,6 +326,7 @@ FORMS    += ui/mainwindow.ui \
     ui/importnominalgeometrydialog.ui \
     ui/nominaldatadialog.ui \
     ui/edittrafoparamdialog.ui \
+    ui/oisimulationwidget.ui \
     ui/stationinfodialog.ui \
     ui/realtimedatadialog.ui
 

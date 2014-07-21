@@ -48,6 +48,7 @@ Controller::Controller(QObject *parent) :
     //emit refreshGUI();
 
 
+
 }
 
 /*!
@@ -196,6 +197,14 @@ void Controller::addFeature(FeatureAttributesExchange fae){
  */
 void Controller::startMeasurement(){
 
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }else if(OiFeatureState::getActiveFeature() == NULL){
+        Console::addLine("no active feature");
+        return;
+    }
+
     bool checkActiveCoordSys = false;
 
     if (OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
@@ -220,6 +229,11 @@ void Controller::startMeasurement(){
  */
 void Controller::startMove(Reading *parameter){
 
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     //TODO check function
     if (parameter->typeofReading == Configuration::ePolar){
         OiFeatureState::getActiveStation()->startMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
@@ -233,6 +247,14 @@ void Controller::startMove(Reading *parameter){
 
 
 void Controller::startAim(){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }else if(OiFeatureState::getActiveFeature() == NULL){
+        Console::addLine("no active feature");
+        return;
+    }
 
     if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && !OiFeatureState::getActiveFeature()->getGeometry()->getIsSolved()){
         Console::addLine("Cannot aim a unsolved feature.");
@@ -299,6 +321,11 @@ void Controller::startConnect(){
  */
 void Controller::startDisconnect(){
 
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartDisconnect();
         emit sensorWorks("disconnecting...");
@@ -310,6 +337,11 @@ void Controller::startDisconnect(){
  * After checking some conditions, it calls the toggle sight function of the active sensor.
  */
 void Controller::startToggleSight(){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
 
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartToggleSight();
@@ -323,6 +355,11 @@ void Controller::startToggleSight(){
  */
 void Controller::startInitialize(){
 
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartInitialize();
         emit sensorWorks("initialize...");
@@ -334,6 +371,11 @@ void Controller::startInitialize(){
  * After checking some conditions, it calls the home function of the active sensor.
  */
 void Controller::startHome(){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
 
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartHome();
@@ -347,6 +389,11 @@ void Controller::startHome(){
  */
 void Controller::startCompensation(){
 
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartCompensation();
         emit sensorWorks("compensation...");
@@ -358,6 +405,11 @@ void Controller::startCompensation(){
  * After checking some conditions, it calls the change motor state function of the active sensor.
  */
 void Controller::startChangeMotorState(){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
 
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartMotorState();
@@ -371,8 +423,19 @@ void Controller::startChangeMotorState(){
  */
 void Controller::startCustomAction(QString s)
 {
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     emit sensorWorks(s);
     OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
+}
+
+void Controller::recalcAll()
+{
+   myFeatureUpdater.recalcAll();
+   emit refreshGUI();
 }
 
 /*!
@@ -417,6 +480,14 @@ void Controller::recalcTrafoParam(TrafoParam *tp){
  * \param setSensor
  */
 void Controller::changeActiveStation(bool setSensor){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }else if(OiFeatureState::getActiveFeature() == NULL){
+        Console::addLine("no active feature");
+        return;
+    }
 
     if(OiFeatureState::getActiveFeature()->getStation() != NULL){
 
@@ -463,7 +534,12 @@ void Controller::defaultLastmConfig(){
     lastmConfig.iterations = 1;
     lastmConfig.measureTwoSides = false;
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-        lastmConfig.typeOfReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->at(0);
+        QList<Configuration::ReadingTypes> *suppRTypes = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
+        if(suppRTypes != NULL && suppRTypes->contains(Configuration::ePolar)){
+            lastmConfig.typeOfReading = Configuration::ePolar;
+        }else{
+            lastmConfig.typeOfReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->at(0);
+        }
     }else{
         lastmConfig.typeOfReading = Configuration::ePolar;
     }
@@ -487,8 +563,9 @@ if (!metaInfo->alreadyExists){
     QList<Sensor*> sensorList = PluginLoader::loadSensorPlugins(metaInfo->path);
     QList<Function*> functionList = PluginLoader::loadFunctionPlugins(metaInfo->path);
     QList<NetworkAdjustment*> networkAdjustmentList = PluginLoader::loadNetworkAdjustmentPlugins(metaInfo->path);
+    QList<SimulationModel*> simulationList = PluginLoader::loadSimulationPlugins(metaInfo->path);
 
-    SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList);
+    SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList);
 
     /*for (int i = 0;i<sensorList.size();i++){
         SystemDbManager::savePlugin(sensorList.at(i)->getMetaData(),functionList,sensorList,networkAdjustmentList);
@@ -567,6 +644,12 @@ void Controller::setSensorModel(Configuration::SensorTypes sT){
  * \param sT
  */
 void Controller::getSelectedPlugin(int index){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     Console::addLine("index: ", index);
 
     QString path = pluginsModel->record(index).value("file_path").toString();
@@ -688,7 +771,7 @@ void Controller::createFunction(int index){
         //if the active feature is not a nominal geometry
         if(OiFeatureState::getActiveFeature()->getGeometry() == NULL
                 || !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
-            //create function and connect oiemitter to console
+            //create function and connect OiFunctionEmitter to console
             Function *newFunction = PluginLoader::loadFunctionPlugin(path,name);
             if(newFunction != NULL){
                 connect(&newFunction->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(printToConsole(QString)));
@@ -789,8 +872,12 @@ void Controller::setActiveCoordSystem(QString CoordSysName){
 
     }
 
-    //transform observations to current system and recalc all features
-    this->myFeatureUpdater.switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
+    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
+
+        //transform observations to current system and recalc all features
+        this->myFeatureUpdater.switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
+
+    }
 
     //update table view for all features
     emit this->refreshGUI();
@@ -1408,7 +1495,7 @@ bool Controller::loadProject(OiProjectData &projectData){
     //TODO check if a active project is set
 
     //delete all features
-    //OiFeatureState::resetFeatureLists();
+    OiFeatureState::resetFeatureLists();
 
     return OiProjectExchanger::loadProject(projectData);
 
@@ -1725,6 +1812,11 @@ QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
     }
 
     return result;
+}
+
+FeatureUpdater *Controller::getFeatureUpdater()
+{
+    return &myFeatureUpdater;
 }
 
 /*!

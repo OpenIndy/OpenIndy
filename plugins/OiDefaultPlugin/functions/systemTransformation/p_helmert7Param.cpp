@@ -216,9 +216,9 @@ OiMat Helmert7Param::normalEquationMatrix(vector<OiMat> vecA){
 OiVec Helmert7Param::quaternion(OiMat n){
     OiVec q(4);
     try{
-        OiMat u;
-        OiMat v;
-        OiVec s;
+        OiMat u(4,4);
+        OiMat v(4,4);
+        OiVec s(4);
         n.svd(u, s, v);
         q = u.getCol(3);
     }catch(runtime_error& e){
@@ -265,10 +265,10 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
     }
     double m = 1.0;
     if(u > 0){ m = o / u; }
-    tp.setScale(m, m, m);
+    //tp.setScale(m, m, m);
     //calc translation
     OiVec t = centroidCoords.at(1) - m * r * centroidCoords.at(0);
-    tp.setTranslation(t.getAt(0), t.getAt(1), t.getAt(2));
+    //tp.setTranslation(t.getAt(0), t.getAt(1), t.getAt(2));
     //calc rotation
     OiVec rot(3);
     rot.setAt(0, qAtan2(-r.getAt(2,1), r.getAt(2,2))); //alpha
@@ -277,7 +277,7 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
     if( qFabs(qCos(rot.getAt(1)) * qCos(rot.getAt(2))) - qFabs(r.getAt(0,0)) > 0.01 ){
         rot.setAt(1, PI - rot.getAt(1));
     }
-    tp.setRotation(rot.getAt(0), rot.getAt(1), rot.getAt(2));
+    //tp.setRotation(rot.getAt(0), rot.getAt(1), rot.getAt(2));
     //fill transformation matrix
     OiMat translation(4, 4);
     translation.setAt(0, 0, 1.0);
@@ -299,8 +299,20 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
         }
     }
     rotation.setAt(3, 3, 1.0);
-    //tp translation * scale * rotation;
-    tp.generateHomogenMatrix();
+    tp.setHomogenMatrix(rotation, translation, scale);
+
+    double sumVV = 0.0;
+
+    for (int i = 0;i<this->locSystem.size();i++) {
+        OiVec diffVec = this->refSystem.at(i)-(tp.getHomogenMatrix()*this->locSystem.at(i));
+        sumVV += diffVec.getAt(0)*diffVec.getAt(0);
+        sumVV += diffVec.getAt(1)*diffVec.getAt(1);
+        sumVV += diffVec.getAt(2)*diffVec.getAt(2);
+
+    }
+
+    tp.getStatistic()->stdev = sqrt(sumVV/(3.0*this->locSystem.size()-7.0));
+    //tp.generateHomogenMatrix();
 }
 
 /*!
@@ -363,15 +375,19 @@ bool Helmert7Param::adjust(TrafoParam &tp){
         stop = x.t() * x;
         iterations++;
 
-    }while( stop.getAt(0) > (1/10000000000) && iterations < 100 ); //termination criterion
+    }while( stop.getAt(0) > (0.000001) || iterations < 100 ); //termination criterion
 
-    if( stop.getAt(0) > (1/10000000000) ){ //adjustment successful
+    //if(iterations < 100){ //adjustment successful
         OiVec v = a * x - l_diff;
         OiVec vtv = v.t() * v;
-        double s0_post = sqrt(vtv.getAt(0) / (3 * this->locSystem.length() - 7));
+        qDebug() << "vtv " << vtv.getAt(0);
+        double s0_post = sqrt(vtv.getAt(0) / (3.0 * this->locSystem.length() - 7.0));
         OiMat sxx = s0_post * s0_post * qxx;
+        //tp.getStatistic()->stdev = s0_post;
+        qDebug() << "so_post "<< s0_post;
+        qDebug() << "trafo std" << tp.getStatistic()->stdev;
         result = true;
-    }
+    //}
 
     return result;
 }

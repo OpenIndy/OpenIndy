@@ -161,32 +161,32 @@ bool PluginLoader::copyPlugin(QString filename){
     }
 
 #ifdef Q_OS_MAC
-QDir pluginsDir(qApp->applicationDirPath());
-pluginsDir.cdUp();
+    QDir pluginsDir(qApp->applicationDirPath());
+    pluginsDir.cdUp();
 #endif
 
 
 #ifdef Q_OS_WIN
-QDir pluginsDir(qApp->applicationDirPath());
+    QDir pluginsDir(qApp->applicationDirPath());
 #endif
 
 #ifdef Q_OS_LINUX
-QDir pluginsDir(qApp->applicationDirPath());
+    QDir pluginsDir(qApp->applicationDirPath());
 #endif
 
-myMetaInfo->alreadyExists = false;
+    myMetaInfo->alreadyExists = false;
 
-QFile plugin(filename);
+    QFile plugin(filename);
 
-QFileInfo fileInfo(filename);
-QString pluginName(fileInfo.fileName());
+    QFileInfo fileInfo(filename);
+    QString pluginName(fileInfo.fileName());
 
-QString copyString = NULL;
+    QString copyString = NULL;
 
-QDir desti(pluginsDir.absolutePath()+"/plugins/");
-desti.mkpath(desti.absolutePath());
+    QDir desti(pluginsDir.absolutePath()+"/plugins/");
+    desti.mkpath(desti.absolutePath());
 
-copyString = QString(desti.absolutePath()+"/"+pluginName);
+    copyString = QString(desti.absolutePath()+"/"+pluginName);
 
 
     if (QFile::exists(copyString)){
@@ -378,9 +378,39 @@ bool PluginLoader::copyDir(QString sourcePath, QString destinationPath){
        }
    }else{
         Console::addLine("meta data not valid");
-    }
+   }
 
-}
+ }
+
+ QList<SimulationModel *> PluginLoader::loadSimulationPlugins(QString path)
+ {
+     QList<SimulationModel*> simulationList;
+
+     QPluginLoader pluginLoader(path);
+
+     if(PluginLoader::getMetaData(path)){
+
+        Console::addLine("load plugin: " + path);
+
+        QObject *plugin = pluginLoader.instance();
+
+
+        if (plugin) {
+
+            OiPlugin *SimulationFactory = qobject_cast<OiPlugin *>(plugin);
+
+             simulationList = SimulationFactory->createSimulations();
+
+             Console::addLine(QString(myMetaInfo->name + " successfully created."));
+             return simulationList;
+        }else{
+            Console::addLine(QString("create" + myMetaInfo->name + "failed"));
+            return simulationList;
+        }
+    }else{
+         Console::addLine("meta data not valid");
+    }
+ }
 
 QList<NetworkAdjustment*> PluginLoader::loadNetworkAdjustmentPlugins(QString path){
 
@@ -456,6 +486,22 @@ Function* PluginLoader::loadFunctionPlugin(QString path, QString name){
     }
 
     return f;
+}
+
+SimulationModel *PluginLoader::loadSimulationPlugin(QString path, QString name)
+{
+    SimulationModel* s = NULL;
+
+    QPluginLoader pluginLoader(path);
+    QObject *plugin = pluginLoader.instance();
+    if (plugin) {
+        OiPlugin *simulationFactory = qobject_cast<OiPlugin *>(plugin);
+        s = simulationFactory->createSimulation(name);
+    }else{
+        Console::addLine(QString("Cannot load selected function"));
+    }
+
+    return s;
 }
 
 /*!

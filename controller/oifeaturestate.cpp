@@ -205,6 +205,12 @@ void OiFeatureState::sortFeaturesById()
 
 void OiFeatureState::resetFeatureLists()
 {
+
+    myActiveFeature = NULL;
+    myActiveStation = NULL;
+    myActiveCoordinateSystem = NULL;
+    myActiveGroup = "All Groups";
+
     foreach(FeatureWrapper *f,myFeatures){
         delete f->getFeature();
         delete f;
@@ -214,11 +220,6 @@ void OiFeatureState::resetFeatureLists()
     myStations.clear();
     myCoordinateSystems.clear();
     myAvailableGroups.clear();
-
-    myActiveFeature = NULL;
-    myActiveStation = NULL;
-    myActiveCoordinateSystem = NULL;
-    myActiveGroup = "All Groups";
 
     OiFeatureState::myFeatureState->emitSignal(OiFeatureState::eFeatureSetChanged);
 }

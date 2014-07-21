@@ -24,19 +24,22 @@ public:
         eArcSeconds,
         eMilliRadians,
         eKelvin,
-        eFahrenheit
+        eFahrenheit,
+        eNoUnit
     };
 
     enum dimensionType{
         eMetric,
         eAngular,
         eTemperature,
-        eUndefined
+        eUndefined,
+        eDimensionless
     };
 
     static int angleDigits;
     static int distanceDigits;
     static int temperatureDigits;
+    static int dimensionLessDigits;
 
     static unitType angleType;
     static unitType distanceType;
@@ -64,6 +67,7 @@ public:
     static QString getAngleUnitString();
     static QString getDistanceUnitString();
     static QString getTemperatureUnitString();
+
 
     static QString getUnitString(UnitConverter::unitType u);
     static UnitConverter::unitType getUnitType(QString s);

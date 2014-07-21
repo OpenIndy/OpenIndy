@@ -38,6 +38,8 @@ private:
     QList<ElementDependencies> dependencies;
 
     QList<int> stationElements;
+    int activeStationId;
+    int activeCoordSystemId;
 
     void clearAllLists();
     void addGeometryToList(Configuration::ElementTypes typeOfElement,QXmlStreamReader &xml);
@@ -60,6 +62,7 @@ private:
 
 
     QList<Function*> resolveFunctions(ElementDependencies &d);
+    void readOiProjectData(QXmlStreamReader &xml);
 
 
 };

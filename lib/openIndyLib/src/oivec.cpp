@@ -118,7 +118,9 @@ OiVec& OiVec::operator =(const OiVec &v){
  */
 OiVec OiVec::operator+(const OiVec &v) const{
     if(this->getSize() == v.getSize()){
-        return OiVec::myLinearAlgebra->addIn(*this, v);
+        OiVec result(v.getSize());
+        OiVec::myLinearAlgebra->addIn(result, *this, v);
+        return result;
     }else{
         throw logic_error("Cannot add two vectors of different size");
         return OiVec();
@@ -133,7 +135,9 @@ OiVec OiVec::operator+(const OiVec &v) const{
  */
 OiVec OiVec::operator-(const OiVec &v) const{
     if(this->getSize() == v.getSize()){
-        return OiVec::myLinearAlgebra->substract(*this, v);
+        OiVec result(v.getSize());
+        OiVec::myLinearAlgebra->substract(result, *this, v);
+        return result;
     }else{
         throw logic_error("Cannot substract two vectors of different size");
         return OiVec();
@@ -147,8 +151,7 @@ OiVec OiVec::operator-(const OiVec &v) const{
  */
 OiVec& OiVec::operator +=(const OiVec &v){
     if(this->getSize() == v.getSize()){
-        OiVec result = OiVec::myLinearAlgebra->addIn(*this, v);
-        *this = result;
+        OiVec::myLinearAlgebra->addIn(*this, *this, v);
         return *this;
     }else{
         throw logic_error("Cannot add two vectors of different size");
@@ -163,8 +166,7 @@ OiVec& OiVec::operator +=(const OiVec &v){
  */
 OiVec& OiVec::operator -=(const OiVec &v){
     if(this->getSize() == v.getSize()){
-        OiVec result = OiVec::myLinearAlgebra->substract(*this, v);
-        *this = result;
+        OiVec::myLinearAlgebra->substract(*this, *this, v);
         return *this;
     }else{
         throw logic_error("Cannot substract two vectors of different size");
@@ -205,7 +207,6 @@ OiMat OiVec::t() const{
         return result;
     }
     return OiMat();
-
 }
 
 /*!
@@ -217,7 +218,9 @@ OiMat OiVec::t() const{
  */
 OiVec OiVec::cross(OiVec a, OiVec b){
     if(a.getSize() == b.getSize() && a.getSize() == 3){
-        return OiVec::myLinearAlgebra->cross(a, b);
+        OiVec result(a.getSize());
+        OiVec::myLinearAlgebra->cross(result, a, b);
+        return result;
     }else{
         throw logic_error("Cannot calculate cross product of non - 3 dimesnional vectors");
         return OiVec();
@@ -233,7 +236,9 @@ OiVec OiVec::cross(OiVec a, OiVec b){
  */
 double OiVec::dot(OiVec a, OiVec b){
     if(a.getSize() == b.getSize() && a.getSize() > 0){
-        return OiVec::myLinearAlgebra->dot(a, b);
+        double result = 0.0;
+        OiVec::myLinearAlgebra->dot(result, a, b);
+        return result;
     }else{
         throw logic_error("Cannot calculate scalar product of vectors with incompatible size");
         return -1.0;
@@ -248,5 +253,7 @@ double OiVec::dot(OiVec a, OiVec b){
  * \return
  */
 OiVec OiVec::mult(const double value, const OiVec &v){
-    return OiVec::myLinearAlgebra->multiply(value, v);
+    OiVec result(v.getSize());
+    OiVec::myLinearAlgebra->multiply(result, value, v);
+    return result;
 }

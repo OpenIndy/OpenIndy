@@ -46,6 +46,16 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
     stream.writeAttribute("ref", QString::number(activeSystem));
     stream.writeEndElement();
 
+    //write active coordinate system
+    stream.writeStartElement("member");
+    stream.writeAttribute("type", "activeStation");
+    int activeStation = -1;
+    if(OiFeatureState::getActiveStation() != NULL){
+        activeStation = OiFeatureState::getActiveStation()->getId();
+    }
+    stream.writeAttribute("ref", QString::number(activeStation));
+    stream.writeEndElement();
+
     Console::addLine("sort and seperate features");
 
     //Helper to save the stations's positions as a point feature (delete later)
@@ -165,7 +175,7 @@ bool ProjectRestorer::loadProject(OiProjectData &data){
                 }
 
                 if(xml.name() == "oiProjectData"){
-
+                    this->readOiProjectData(xml);
                 }
 
                 if(xml.name() == "station"){
@@ -396,6 +406,7 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
 
             this->resolveStation(resolvedFeature,d);
 
+
             break;}
         case (Configuration::eCoordinateSystemElement):{
 
@@ -423,8 +434,21 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
 
         if(d.typeOfElement != Configuration::eObservationElement && !this->stationElements.contains(d.elementID)){
            OiFeatureState::addFeature(resolvedFeature);
+
+           if(resolvedFeature->getStation()!=NULL || resolvedFeature->getFeature()->getId() == activeStationId){
+               resolvedFeature->getStation()->setActiveStationState(true);
+
+               if(resolvedFeature->getStation()->coordSys !=NULL || resolvedFeature->getStation()->coordSys->getId() == activeCoordSystemId){
+                   resolvedFeature->getStation()->coordSys->setActiveCoordinateSystemState(true);
+               }
+           }
+
+           if(resolvedFeature->getCoordinateSystem()!=NULL || resolvedFeature->getFeature()->getId() == activeCoordSystemId){
+               resolvedFeature->getCoordinateSystem()->setActiveCoordinateSystemState(true);
+           }
         }
     }
+
 
     OiFeatureState::sortFeaturesById();
 
@@ -690,6 +714,37 @@ QList<Function *> ProjectRestorer::resolveFunctions(ElementDependencies &d)
   }
 
   return featureFunctions;
+
+}
+
+void ProjectRestorer::readOiProjectData(QXmlStreamReader &xml)
+{
+    if(xml.name() == "member"){
+
+            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                if(memberAttributes.hasAttribute("type")){
+
+                    if (memberAttributes.value("type") == "activeCoordinatesystem"){
+
+                        if(memberAttributes.hasAttribute("ref")){
+                            activeCoordSystemId = memberAttributes.value("ref").toInt();
+                        }
+                    }
+
+                    if (memberAttributes.value("type") == "activeStation"){
+
+                        if(memberAttributes.hasAttribute("ref")){
+                            activeStationId = memberAttributes.value("ref").toInt();
+                        }
+                    }
+                }
+
+            }
+    }
+
 
 }
 

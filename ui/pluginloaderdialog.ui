@@ -27,8 +27,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>971</width>
-        <height>587</height>
+        <width>977</width>
+        <height>613</height>
        </rect>
       </property>
       <attribute name="label">
@@ -122,7 +122,7 @@
        <item>
         <widget class="QProgressBar" name="progressBar">
          <property name="value">
-          <number>24</number>
+          <number>0</number>
          </property>
         </widget>
        </item>
@@ -167,8 +167,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>971</width>
-        <height>587</height>
+        <width>977</width>
+        <height>613</height>
        </rect>
       </property>
       <attribute name="label">

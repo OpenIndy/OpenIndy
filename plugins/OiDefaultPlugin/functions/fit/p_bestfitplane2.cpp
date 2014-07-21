@@ -133,7 +133,7 @@ void BestFitPlane2::setUpResult(Plane &p, double *x, double *y, double *z, int c
     //set result
     p.xyz = d * n0;
     p.ijk = n0;
-    Statistic myStats;
+    Statistic myStats = p.getStatistic();
     myStats.isValid = true;
     myStats.stdev = vv / (count - 1);
     p.setStatistic(myStats);

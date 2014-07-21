@@ -52,11 +52,13 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
     }
 
     if(this->myReading != NULL){
+
+        QString measuredAtTime = this->myReading->measuredAt.toString(Qt::ISODate);
+
         stream.writeStartElement("reading");
         stream.writeAttribute("id",QString::number(this->myReading->id));
         stream.writeAttribute("type",QString::number(this->myReading->typeofReading));
-
-        QString measuredAtTime = this->myReading->measuredAt.toString(Qt::ISODate);
+        stream.writeAttribute("time",measuredAtTime);
 
         switch(this->myReading->typeofReading){
             case(Configuration::ePolar) :{
@@ -65,21 +67,18 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
 
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","azimuth");
                 stream.writeAttribute("value",QString::number(this->myReading->rPolar.azimuth));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rPolar.sigmaAzimuth));
                 stream.writeEndElement();
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","zenith");
                 stream.writeAttribute("value",QString::number(this->myReading->rPolar.zenith));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rPolar.sigmaZenith));
                 stream.writeEndElement();
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","distance");
                 stream.writeAttribute("value",QString::number(this->myReading->rPolar.distance));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rPolar.sigmaDistance));
@@ -91,7 +90,6 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
             case(Configuration::eDistance) :{
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","distance");
                 stream.writeAttribute("value",QString::number(this->myReading->rDistance.distance));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rDistance.sigmaDistance));
@@ -102,14 +100,12 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
             case(Configuration::eDirection) :{
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","azimuth");
                 stream.writeAttribute("value",QString::number(this->myReading->rDirection.azimuth));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rDirection.sigmaAzimuth));
                 stream.writeEndElement();
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","zenith");
                 stream.writeAttribute("value",QString::number(this->myReading->rDirection.zenith));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rDirection.sigmaZenith));
@@ -120,21 +116,18 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
             case(Configuration::eCartesian) :{
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","x");
                 stream.writeAttribute("value",QString::number(this->myReading->rCartesian.xyz.getAt(0)));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rCartesian.sigmaXyz.getAt(0)));
                 stream.writeEndElement();
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","y");
                 stream.writeAttribute("value",QString::number(this->myReading->rCartesian.xyz.getAt(1)));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rCartesian.sigmaXyz.getAt(1)));
                 stream.writeEndElement();
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","z");
                 stream.writeAttribute("value",QString::number(this->myReading->rCartesian.xyz.getAt(2)));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rCartesian.sigmaXyz.getAt(2)));
@@ -146,21 +139,18 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
             case(Configuration::eLevel) :{
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","RX");
                 stream.writeAttribute("value",QString::number(this->myReading->rLevel.RX));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaRX));
                 stream.writeEndElement();
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","RY");
                 stream.writeAttribute("value",QString::number(this->myReading->rLevel.RY));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaRY));
                 stream.writeEndElement();
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type","RZ");
                 stream.writeAttribute("value",QString::number(this->myReading->rLevel.RZ));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaRZ));
@@ -176,7 +166,6 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
                 j.next();
 
                 stream.writeStartElement("measurement");
-                stream.writeAttribute("time",measuredAtTime);
                 stream.writeAttribute("type",j.key());
                 stream.writeAttribute("value",QString::number(j.value()));
                 stream.writeAttribute("sigma",QString::number(this->myReading->rUndefined.sigmaValues.value(j.key())));
@@ -246,6 +235,12 @@ ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
                 Reading *r = this->readReading(xml);
                 r->obs = this;
                 this->myReading = r;
+
+
+                if(xml.attributes().hasAttribute("time")){
+                    r->measuredAt = QDateTime(QDate::fromString(xml.attributes().value("time").toString(),Qt::ISODate));
+
+                }
             }
 
             if(xml.name() == "member"){

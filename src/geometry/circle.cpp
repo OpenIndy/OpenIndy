@@ -135,3 +135,14 @@ QString Circle::getDisplayJ() const{
 QString Circle::getDisplayK() const{
     return QString::number(this->ijk.getAt(2),'f',6);
 }
+
+bool Circle::saveSimulationData()
+{
+    this->mySimulationData.addXYZ(this->xyz.getAt(0),this->xyz.getAt(1),this->xyz.getAt(2));
+
+    this->mySimulationData.addIJK(this->ijk.getAt(0),this->ijk.getAt(1),this->ijk.getAt(2));
+
+    this->mySimulationData.addRadius(this->radius);
+
+    return true;
+}

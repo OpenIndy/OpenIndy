@@ -65,5 +65,7 @@
         <file>icons/openIndy.png</file>
         <file>icons/openIndy_bg.png</file>
         <file>icons/scalarEntities_5e8acf.png</file>
+        <file>icons/featureToolBar.png</file>
+        <file>icons/simulation.png</file>
     </qresource>
 </RCC>

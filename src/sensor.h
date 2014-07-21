@@ -6,7 +6,7 @@
 #include <QMap>
 #include <QVariant>
 #include "sensorcontrol.h"
-#include "oiemitter.h"
+#include "oisensoremitter.h"
 #include "pluginmetadata.h"
 #include "sensorconfiguration.h"
 
@@ -29,7 +29,7 @@ public:
     virtual ~Sensor(){}
 
 //attributes
-    OiEmitter myEmitter;
+    OiSensorEmitter myEmitter;
     SensorConfiguration* myConfiguration;
 
 //methods

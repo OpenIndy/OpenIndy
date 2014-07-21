@@ -27,8 +27,7 @@
 #include "scalarentitymeasurementseries.h"
 #include "reading.h"
 #include "functionconfiguration.h"
-#include "oiemitter.h"
-
+#include "oifunctionemitter.h"
 
 /*
  * TODO funktion virtual QMap <QString, QStringList>* getStringParameter() = 0;
@@ -95,7 +94,7 @@ public:
     virtual QStringList getResultProtocol();
 
 private:
-    OiEmitter myEmitter;
+    OiFunctionEmitter myEmitter;
 
 protected:
     int id;
@@ -134,7 +133,7 @@ protected:
     Statistic myStatistic;
 
 public:
-    OiEmitter& getOiEmitter();
+    OiFunctionEmitter& getOiEmitter();
 
     void setFunctionConfiguration(FunctionConfiguration config);
     FunctionConfiguration getFunctionConfiguration();

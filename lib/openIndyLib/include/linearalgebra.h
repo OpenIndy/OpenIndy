@@ -13,127 +13,129 @@ public:
 
     /*!
      * \brief addIn
-     * Add the second vector to the first
+     * Add v2 to v1
+     * \param result
      * \param v1
      * \param v2
-     * \return
      */
-    virtual OiVec addIn(OiVec v1, OiVec v2) = 0;
+    virtual void addIn(OiVec &result, const OiVec &v1, const OiVec &v2) = 0;
 
     /*!
      * \brief addIn
-     * Add the second matrix to the first
+     * Add m2 to m1
+     * \param result
      * \param m1
      * \param m2
-     * \return
      */
-    virtual OiMat addIn(OiMat m1, OiMat m2) = 0;
+    virtual void addIn(OiMat &result, const OiMat &m1, const OiMat &m2) = 0;
 
     /*!
      * \brief substract
-     * Substract the second vector from the first
+     * Substract v2 from v1
+     * \param result
      * \param v1
      * \param v2
-     * \return
      */
-    virtual OiVec substract(OiVec v1, OiVec v2) = 0;
+    virtual void substract(OiVec &result, const OiVec &v1, const OiVec &v2) = 0;
 
     /*!
      * \brief substract
-     * Substract the second matrix from the first
+     * Substract m2 from m1
+     * \param result
      * \param m1
      * \param m2
-     * \return
      */
-    virtual OiMat substract(OiMat m1, OiMat m2) = 0;
+    virtual void substract(OiMat &result, const OiMat &m1, const OiMat &m2) = 0;
 
     /*!
      * \brief multiply
-     * Multiply the second matrix by the first
+     * Multiply m2 by m1
+     * \param result
      * \param m1
      * \param m2
-     * \return
      */
-    virtual OiMat multiply(OiMat m1, OiMat m2) = 0;
+    virtual void multiply(OiMat &result, const OiMat &m1, const OiMat &m2) = 0;
 
     /*!
      * \brief multiply
-     * Multiply the vector by the matrix
+     * Multiply v by m
+     * \param result
      * \param m
      * \param v
-     * \return
      */
-    virtual OiVec multiply(OiMat m, OiVec v) = 0;
+    virtual void multiply(OiVec &result, const OiMat &m, const OiVec &v) = 0;
 
     /*!
      * \brief multiply
-     * Multiply the matrix by the scalar
+     * Multiply m by s
+     * \param result
      * \param s
      * \param m
-     * \return
      */
-    virtual OiMat multiply(double s, OiMat m) = 0;
+    virtual void multiply(OiMat &result, const double &s, const OiMat &m) = 0;
 
     /*!
      * \brief multiply
-     * Multiply the vector by the scalar
+     * Multiply v by s
+     * \param result
      * \param s
      * \param v
-     * \return
      */
-    virtual OiVec multiply(double s, OiVec v) = 0;
+    virtual void multiply(OiVec &result, const double &s, const OiVec &v) = 0;
 
     /*!
      * \brief invert
-     * Invert the matrix
+     * Invert m
+     * \param result
      * \param m
      * \return
      */
-    virtual OiMat invert(OiMat m) = 0;
+    virtual bool invert(OiMat &result, const OiMat &m) = 0;
 
     /*!
      * \brief transpose
-     * Transpose the matrix
+     * Transpose m
+     * \param result
      * \param m
-     * \return
      */
-    virtual OiMat transpose(OiMat m) = 0;
+    virtual void transpose(OiMat &result, const OiMat &m) = 0;
 
     /*!
      * \brief svd
-     * Compute singular value decomposition
+     * Compute singular value decomposition of x
      * \param u
      * \param d
      * \param v
      * \param x
+     * \return
      */
-    virtual void svd(OiMat &u, OiVec &d, OiMat &v, OiMat x) = 0;
+    virtual bool svd(OiMat &u, OiVec &d, OiMat &v, const OiMat &x) = 0;
 
     /*!
      * \brief cross
-     * Calculate cross product of 2 vectors
+     * Calculate cross product of a and b
+     * \param result
      * \param a
      * \param b
-     * \return
      */
-    virtual OiVec cross(OiVec a, OiVec b) = 0;
+    virtual void cross(OiVec &result, const OiVec &a, const OiVec &b) = 0;
 
     /*!
      * \brief dot
-     * Calculate scalar product of 2 vectors
+     * Calculate scalar product of a and b
+     * \param result
      * \param a
      * \param b
-     * \return
      */
-    virtual double dot(OiVec a, OiVec b) = 0;
+    virtual void dot(double &result, const OiVec &a, const OiVec &b) = 0;
 
     /*!
      * \brief det
-     * Calculate the determinant of the matrix
+     * Calculate the determinant of a
+     * \param result
      * \param a
-     * \return
      */
-    virtual double det(OiMat a) = 0;
+    virtual void det(double &result, const OiMat &a) = 0;
 };
 
 #endif // LINEARALGEBRA_H
