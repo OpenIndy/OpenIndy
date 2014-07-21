@@ -15,6 +15,7 @@
 #include "oifeaturestate.h"
 #include <QCheckBox>
 #include "watchwindowlistener.h"
+#include "featureupdater.h"
 
 namespace Ui {
 class WatchWindow;
@@ -77,6 +78,8 @@ private:
     QList<QLayout*> layouts;
 
     int activeReadingType;
+
+    bool checkFeatureValid();
 
 };
 

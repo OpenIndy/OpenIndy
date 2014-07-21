@@ -39,7 +39,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
     /*if(!listener->isGUIReady){
        this->iniGUI();
     }*/
-
+/*
     //change display, depending on checked setting checkboxes.
     iniGUI();
 
@@ -47,7 +47,6 @@ void WatchWindow::setLCDNumber(QVariantMap m){
     QMapIterator<QString,QVariant> j(m);
     while (j.hasNext()) {
         j.next();
-        qDebug() << j.key();
 
         for(int i=0;i<this->checkboxes.size();i++){
             if(this->checkboxes.at(i)->text() == j.key() && this->checkboxes.at(i)->isChecked()){
@@ -115,6 +114,136 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                     if(lcdn != NULL){
                         lcdn->display(QString::number(dvalue*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
                     }
+                }
+            }
+        }
+    }
+*/
+    //new implementation
+
+    //change display, depending on checked setting checkboxes.
+    iniGUI();
+
+    QMapIterator<QString,QVariant> j(m);
+    while (j.hasNext()) {
+        j.next();
+
+        OiMat trafo;
+
+        for(int i=0;i<this->checkboxes.size();i++){
+
+            if(this->checkboxes.at(i)->text() == j.key() && this->checkboxes.at(i)->isChecked()){
+
+                if(!OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+
+                    trafo = FeatureUpdater::trafoControl.getTransformationMatrix(OiFeatureState::getActiveStation()->coordSys);
+                }
+
+                OiVec trackerXYZ(4);
+                OiVec trackerValues(4);
+
+                switch (activeReadingType) {
+                case Configuration::eCartesian:
+
+                    trackerXYZ.setAt(0,m.value("x").toDouble());
+                    trackerXYZ.setAt(1,m.value("y").toDouble());
+                    trackerXYZ.setAt(2,m.value("z").toDouble());
+                    trackerXYZ.setAt(3,1.0);
+
+                    if(trafo.getRowCount() == 4 && trafo.getColCount() == 4){
+                        trackerXYZ = trafo*trackerXYZ;
+                    }
+
+                    if(j.key() == "x"){
+                        double featureX = 0.0;
+
+                        if(this->checkFeatureValid()){
+                            featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(0);
+                        }
+                        double dX = featureX - trackerXYZ.getAt(0);
+                        streamData.value("x")->display(QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+
+                    }else if(j.key() == "y"){
+                        double featureY = 0.0;
+
+                        if(this->checkFeatureValid()){
+                            featureY = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
+                        }
+                        double dY = featureY - trackerXYZ.getAt(1);
+                        streamData.value("y")->display(QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+
+                    }else if(j.key() == "z"){
+                        double featureZ = 0.0;
+
+                        if(this->checkFeatureValid()){
+                            featureZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
+                        }
+                        double dZ = featureZ - trackerXYZ.getAt(2);
+                        streamData.value("z")->display(QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+
+                    }else{
+                        streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',6));
+                    }
+
+                    break;
+                case Configuration::ePolar:
+
+                    trackerValues.setAt(0,m.value("azimuth").toDouble());
+                    trackerValues.setAt(1,m.value("zenith").toDouble());
+                    trackerValues.setAt(2,m.value("distance").toDouble());
+                    trackerValues.setAt(3,1.0);
+
+                    trackerValues = Reading::toCartesian(trackerValues.getAt(0),trackerValues.getAt(1),trackerValues.getAt(2));
+
+
+                    if(trafo.getRowCount() == 4 && trafo.getColCount() == 4){
+                        trackerValues = trafo*trackerValues;
+                    }
+
+                    trackerValues = Reading::toPolar(trackerValues.getAt(0),trackerValues.getAt(1),trackerValues.getAt(2));
+
+                    if(j.key() == "azimuth"){
+                        double FeatureAZ = 0.0;
+
+                        if(this->checkFeatureValid()){
+                            OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+                            OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+                            FeatureAZ = featurePolar.getAt(0);
+                        }
+                        double dAZ = FeatureAZ - trackerValues.getAt(0);
+                        streamData.value("azimuth")->display(QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
+
+                    }else if(j.key() == "zenith"){
+                        double FeatureZE = 0.0;
+
+                        if(this->checkFeatureValid()){
+                            OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+                            OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+                            FeatureZE = featurePolar.getAt(1);
+                        }
+                        double dZE = FeatureZE - trackerValues.getAt(1);
+                        streamData.value("zenith")->display(QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
+                    }else if(j.key() == "distance"){
+                        double FeatureDIS = 0.0;
+
+                        if(this->checkFeatureValid()){
+                            OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+                            OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+                            FeatureDIS = featurePolar.getAt(2);
+                        }
+                        double dDIS = FeatureDIS - trackerValues.getAt(2);
+                        streamData.value("distance")->display(QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+                    }else{
+                        streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',6));
+                    }
+
+                    break;
+                case Configuration::eDirection:
+                    break;
+                case Configuration::eDistance:
+                    break;
+                default:
+                    break;
                 }
             }
         }
@@ -383,4 +512,16 @@ void WatchWindow::startStream()
     OiFeatureState::getActiveStation()->emitStartReadingStream(activeReadingType);
 
     listenerThread.start();
+}
+
+bool WatchWindow::checkFeatureValid()
+{
+    if(OiFeatureState::getActiveFeature() != NULL){
+        if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    return false;
 }
