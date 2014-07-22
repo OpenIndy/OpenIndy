@@ -326,6 +326,22 @@ void SimulationTreeViewModel::appendGeometries(FeatureTreeItem *root, QList<Feat
             geom->appendChild(z);
             geom->appendChild(r);
             break;
+        case(Configuration::eCircleFeature):
+            x = new FeatureTreeItem(QString("X"));
+            y = new FeatureTreeItem(QString("Y"));
+            z = new FeatureTreeItem(QString("Z"));
+            i = new FeatureTreeItem(QString("I"));
+            j = new FeatureTreeItem(QString("J"));
+            k = new FeatureTreeItem(QString("K"));
+            r = new FeatureTreeItem(QString("Radius"));
+            geom->appendChild(x);
+            geom->appendChild(y);
+            geom->appendChild(z);
+            geom->appendChild(i);
+            geom->appendChild(j);
+            geom->appendChild(k);
+            geom->appendChild(r);
+            break;
         case(Configuration::eConeFeature):
             break;
         case(Configuration::eCylinderFeature):

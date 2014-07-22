@@ -110,177 +110,28 @@ void Histogram::generateDataToDraw(FeatureWrapper* f, QString attributeToDraw)
     densityValues.clear();
 
     simData = f->getGeometry()->getSimulationData();
+    actualFeature = f;
 
     if(attributeToDraw.compare("X") == 0){
-
-        featureAttribute = "X";
-        actualValue = f->getGeometry()->getXYZ().getAt(0);
-        distribution = simData.uncertaintyX.distribution;
-        maxError = simData.uncertaintyX.maxValue;
-        minError = simData.uncertaintyX.minValue;
-        uncertainty = simData.uncertaintyX.uncertainty;
-        expectation = simData.uncertaintyX.expectation;
-
-        errorScale = 1/(maxError-minError);
-
-        QList<double> tmpList =simData.uncertaintyX.values;
-
-        qSort(tmpList);
-
-        QList<double> tmpDensity;
-        QList<double> tmpDensitySorted;
-
-        foreach(double d, tmpList){
-
-            double w = simData.uncertaintyX.densityFunction(d,expectation,uncertainty);
-
-            tmpDensity.append(w);
-            tmpDensitySorted.append(w);
-
-             _bins.append(errorScale*(d-minError));
-        }
-
-        qSort(tmpDensitySorted);
-        minFrequency = tmpDensitySorted.first();
-        maxFrequency = tmpDensitySorted.last();
-        frequencyScale = 1/(maxFrequency-minFrequency);
-
-        for(int i = 0;i<tmpDensity.size();i++){
-            densityValues.append(frequencyScale*(tmpDensity.at(i)-minFrequency));
-        }
-
-        //resolution
-        if((expectation-minError)>(maxError-expectation)){
-            resolution = (errorScale*(expectation-minError));
-        }else{
-            resolution = (1-(errorScale*(expectation-minError)));
-        }
-
-        //draw point
-        double h = simData.uncertaintyX.densityFunction(actualValue,expectation,uncertainty);
-
-        actualPoint.setX(errorScale*(actualValue-minError));
-        actualPoint.setY(frequencyScale*(h-minFrequency));
-
-        expectationPoint.setX(errorScale*(expectation-minError));
-        expectationPoint.setY(1);
-
-
+        this->prepareX();
     }else if(attributeToDraw.compare("Y") == 0){
-
-        featureAttribute = "Y";
-        actualValue = f->getGeometry()->getXYZ().getAt(1);
-        distribution = simData.uncertaintyY.distribution;
-        maxError = simData.uncertaintyY.maxValue;
-        minError = simData.uncertaintyY.minValue;
-        uncertainty = simData.uncertaintyY.uncertainty;
-        expectation = simData.uncertaintyY.expectation;
-
-        errorScale = 1/(maxError-minError);
-
-        QList<double> tmpList =simData.uncertaintyY.values;
-
-        qSort(tmpList);
-
-        QList<double> tmpDensity;
-        QList<double> tmpDensitySorted;
-
-        foreach(double d, tmpList){
-
-            double w = simData.uncertaintyY.densityFunction(d,expectation,uncertainty);
-
-            tmpDensity.append(w);
-            tmpDensitySorted.append(w);
-
-             _bins.append(errorScale*(d-minError));
-        }
-
-        qSort(tmpDensitySorted);
-        minFrequency = tmpDensitySorted.first();
-        maxFrequency = tmpDensitySorted.last();
-        frequencyScale = 1/(maxFrequency-minFrequency);
-
-        for(int i = 0;i<tmpDensity.size();i++){
-            densityValues.append(frequencyScale*(tmpDensity.at(i)-minFrequency));
-        }
-
-        //resolution
-        if((expectation-minError)>(maxError-expectation)){
-            resolution = (errorScale*(expectation-minError));
-        }else{
-            resolution = (1-(errorScale*(expectation-minError)));
-        }
-
-        //draw point
-        double h = simData.uncertaintyY.densityFunction(actualValue,expectation,uncertainty);
-
-        actualPoint.setX(errorScale*(actualValue-minError));
-        actualPoint.setY(frequencyScale*(h-minFrequency));
-
-        expectationPoint.setX(errorScale*(expectation-minError));
-        expectationPoint.setY(1);
-
+        this->prepareY();
     }else if(attributeToDraw.compare("Z") == 0){
-
-        featureAttribute = "Y";
-        actualValue = f->getGeometry()->getXYZ().getAt(2);
-        distribution = simData.uncertaintyZ.distribution;
-        maxError = simData.uncertaintyZ.maxValue;
-        minError = simData.uncertaintyZ.minValue;
-        uncertainty = simData.uncertaintyZ.uncertainty;
-        expectation = simData.uncertaintyZ.expectation;
-
-        errorScale = 1/(maxError-minError);
-
-        QList<double> tmpList =simData.uncertaintyZ.values;
-
-        qSort(tmpList);
-
-        QList<double> tmpDensity;
-        QList<double> tmpDensitySorted;
-
-        foreach(double d, tmpList){
-
-            double w = simData.uncertaintyZ.densityFunction(d,expectation,uncertainty);
-
-            tmpDensity.append(w);
-            tmpDensitySorted.append(w);
-
-             _bins.append(errorScale*(d-minError));
-        }
-
-        qSort(tmpDensitySorted);
-        minFrequency = tmpDensitySorted.first();
-        maxFrequency = tmpDensitySorted.last();
-        frequencyScale = 1/(maxFrequency-minFrequency);
-
-        for(int i = 0;i<tmpDensity.size();i++){
-            densityValues.append(frequencyScale*(tmpDensity.at(i)-minFrequency));
-        }
-
-        //resolution
-        if((expectation-minError)>(maxError-expectation)){
-            resolution = (errorScale*(expectation-minError));
-        }else{
-            resolution = (1-(errorScale*(expectation-minError)));
-        }
-
-        //draw point
-        double h = simData.uncertaintyZ.densityFunction(actualValue,expectation,uncertainty);
-
-        actualPoint.setX(errorScale*(actualValue-minError));
-        actualPoint.setY(frequencyScale*(h-minFrequency));
-
-        expectationPoint.setX(errorScale*(expectation-minError));
-        expectationPoint.setY(1);
-
+        this->prepareZ();
+    }else if(attributeToDraw.compare("I") == 0){
+        this->prepareI();
+    }else if(attributeToDraw.compare("J") == 0){
+        this->prepareJ();
+    }else if(attributeToDraw.compare("K") == 0){
+        this->prepareK();
+    }else if(attributeToDraw.compare("Radius") == 0){
+        this->prepareRadius();
+    }else if(attributeToDraw.compare("Scalar") == 0){
+        this->prepareScalar();
     }
 }
 
-void Histogram::generateDensityList(QList<double> d)
-{
 
-}
 
 void Histogram::drawGrid()
 {
@@ -310,8 +161,15 @@ void Histogram::drawGrid()
     float stepsV = (resolution/10)*scale;
     float stepsH = (resolution/10)*scale;
 
+
     for(int i=1; stepsV<(resolution)*scale; i++)
     {
+
+        float xRight = (xCenter+stepsV)/scale;
+        float xLeft= (xCenter-stepsV)/scale;
+
+        xRight = minError+(xRight/errorScale);
+        xLeft = minError+(xLeft/errorScale);
 
         if (i%3 == 0) {
 
@@ -321,18 +179,14 @@ void Histogram::drawGrid()
             painter.setPen(pen);
             painter.setFont(f);
 
-            float xRight = (xCenter+stepsV)/scale;
-            float xLeft= (xCenter-stepsV)/scale;
-
-            xRight = minError+(xRight/errorScale);
-            xLeft = minError+(xLeft/errorScale);
-
-
             QString stringRX = QString::number(xRight*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
             QString stringLX = QString::number(xLeft*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 
-            painter.drawText(xCenter+stepsV, yBottom-1, stringRX);
-            painter.drawText(xCenter-stepsV, yBottom-1, stringLX);
+            if(xRight<maxError){
+                painter.drawText(xCenter+stepsV, yBottom-2, stringRX);
+            }
+
+            painter.drawText(xCenter-stepsV, yBottom-2, stringLX);
 
             pen.setWidth(1);
             pen.setColor(Qt::black);
@@ -341,12 +195,17 @@ void Histogram::drawGrid()
 
         }
 
+        if(xRight<maxError){
+          painter.drawLine(xCenter+stepsV,yTop+1,
+                           xCenter+stepsV, yBottom-1);
 
-        painter.drawLine(xCenter+stepsV,yTop+1,
-                         xCenter+stepsV, yBottom-1);
+        }
 
         painter.drawLine(xCenter-stepsV,yTop+1,
                          xCenter-stepsV, yBottom-1);
+
+
+
 
 
         pen.setColor("#AAAAAA");
@@ -371,8 +230,8 @@ void Histogram::drawGrid()
             painter.setPen(pen);
             painter.setFont(f);
 
-            float yDown = 1-((yCenter+stepsH)/scale);
-            float yUp= 1-((yCenter-stepsH)/scale);
+            float yDown = ((yBottom-(yCenter+stepsH))/scale);
+            float yUp= ((yCenter-stepsH)/scale);
 
             QString stringYUp = QString::number(yUp,'f',2);
             QString stringYDown = QString::number(yDown,'f',2);
@@ -430,4 +289,230 @@ void Histogram::drawResultSet()
     painter.drawText((1*scale)+10, yTop+75, QString("max diff: " + maxV));
     painter.drawText((1*scale)+10, yTop+90, QString("min diff: " + minV));
 
+}
+
+
+
+void Histogram::generateDensityList(QList<double> tmpList)
+{
+    qSort(tmpList);
+
+    QList<double> tmpDensity;
+    QList<double> tmpDensitySorted;
+
+    foreach(double d, tmpList){
+
+        double w = simData.uncertaintyX.densityFunction(d,expectation,uncertainty);
+
+        tmpDensity.append(w);
+        tmpDensitySorted.append(w);
+
+         _bins.append(errorScale*(d-minError));
+    }
+
+    qSort(tmpDensitySorted);
+    minFrequency = tmpDensitySorted.first();
+    maxFrequency = tmpDensitySorted.last();
+    frequencyScale = 1/(maxFrequency-minFrequency);
+
+    for(int i = 0;i<tmpDensity.size();i++){
+        densityValues.append(frequencyScale*(tmpDensity.at(i)-minFrequency));
+    }
+
+    //resolution
+    if((expectation-minError)>(maxError-expectation)){
+        resolution = (errorScale*(expectation-minError));
+    }else{
+        resolution = (1-(errorScale*(expectation-minError)));
+    }
+}
+
+void Histogram::setUpExpectationPoints(double h)
+{
+    actualPoint.setX(errorScale*(actualValue-minError));
+    actualPoint.setY(frequencyScale*(h-minFrequency));
+
+    expectationPoint.setX(errorScale*(expectation-minError));
+    expectationPoint.setY(1);
+}
+
+void Histogram::prepareAll()
+{
+
+}
+
+void Histogram::prepareX()
+{
+    featureAttribute = "X";
+    actualValue = actualFeature->getGeometry()->getXYZ().getAt(0);
+    distribution = simData.uncertaintyX.distribution;
+    maxError = simData.uncertaintyX.maxValue;
+    minError = simData.uncertaintyX.minValue;
+    uncertainty = simData.uncertaintyX.uncertainty;
+    expectation = simData.uncertaintyX.expectation;
+
+    errorScale = 1/(maxError-minError);
+
+    QList<double> tmpList =simData.uncertaintyX.values;
+
+    this->generateDensityList(tmpList);
+
+    //draw point
+    double h = simData.uncertaintyX.densityFunction(actualValue,expectation,uncertainty);
+
+    this->setUpExpectationPoints(h);
+}
+
+void Histogram::prepareY()
+{
+    featureAttribute = "Y";
+    actualValue = actualFeature->getGeometry()->getXYZ().getAt(1);
+    distribution = simData.uncertaintyY.distribution;
+    maxError = simData.uncertaintyY.maxValue;
+    minError = simData.uncertaintyY.minValue;
+    uncertainty = simData.uncertaintyY.uncertainty;
+    expectation = simData.uncertaintyY.expectation;
+
+    errorScale = 1/(maxError-minError);
+
+    QList<double> tmpList =simData.uncertaintyY.values;
+
+    this->generateDensityList(tmpList);
+
+    //draw point
+    double h = simData.uncertaintyY.densityFunction(actualValue,expectation,uncertainty);
+
+    this->setUpExpectationPoints(h);
+}
+
+void Histogram::prepareZ()
+{
+    featureAttribute = "Z";
+    actualValue = actualFeature->getGeometry()->getXYZ().getAt(2);
+    distribution = simData.uncertaintyZ.distribution;
+    maxError = simData.uncertaintyZ.maxValue;
+    minError = simData.uncertaintyZ.minValue;
+    uncertainty = simData.uncertaintyZ.uncertainty;
+    expectation = simData.uncertaintyZ.expectation;
+
+    errorScale = 1/(maxError-minError);
+
+    QList<double> tmpList =simData.uncertaintyZ.values;
+
+    this->generateDensityList(tmpList);
+
+    //draw point
+    double h = simData.uncertaintyZ.densityFunction(actualValue,expectation,uncertainty);
+
+    this->setUpExpectationPoints(h);
+}
+
+void Histogram::prepareI()
+{
+    featureAttribute = "I";
+    actualValue = actualFeature->getGeometry()->getIJK().getAt(0);
+    distribution = simData.uncertaintyI.distribution;
+    maxError = simData.uncertaintyI.maxValue;
+    minError = simData.uncertaintyI.minValue;
+    uncertainty = simData.uncertaintyI.uncertainty;
+    expectation = simData.uncertaintyI.expectation;
+
+    errorScale = 1/(maxError-minError);
+
+    QList<double> tmpList =simData.uncertaintyI.values;
+
+    this->generateDensityList(tmpList);
+
+    //draw point
+    double h = simData.uncertaintyI.densityFunction(actualValue,expectation,uncertainty);
+
+    this->setUpExpectationPoints(h);
+}
+
+void Histogram::prepareJ()
+{
+    featureAttribute = "J";
+    actualValue = actualFeature->getGeometry()->getIJK().getAt(1);
+    distribution = simData.uncertaintyJ.distribution;
+    maxError = simData.uncertaintyJ.maxValue;
+    minError = simData.uncertaintyJ.minValue;
+    uncertainty = simData.uncertaintyJ.uncertainty;
+    expectation = simData.uncertaintyJ.expectation;
+
+    errorScale = 1/(maxError-minError);
+
+    QList<double> tmpList =simData.uncertaintyJ.values;
+
+    this->generateDensityList(tmpList);
+
+    //draw point
+    double h = simData.uncertaintyJ.densityFunction(actualValue,expectation,uncertainty);
+
+    this->setUpExpectationPoints(h);
+}
+
+void Histogram::prepareK()
+{
+    featureAttribute = "K";
+    actualValue = actualFeature->getGeometry()->getIJK().getAt(2);
+    distribution = simData.uncertaintyK.distribution;
+    maxError = simData.uncertaintyK.maxValue;
+    minError = simData.uncertaintyK.minValue;
+    uncertainty = simData.uncertaintyK.uncertainty;
+    expectation = simData.uncertaintyK.expectation;
+
+    errorScale = 1/(maxError-minError);
+
+    QList<double> tmpList =simData.uncertaintyK.values;
+
+    this->generateDensityList(tmpList);
+
+    //draw point
+    double h = simData.uncertaintyK.densityFunction(actualValue,expectation,uncertainty);
+
+    this->setUpExpectationPoints(h);
+}
+
+void Histogram::prepareRadius()
+{
+    featureAttribute = "Radius";
+    actualValue = 0.0;
+    distribution = simData.uncertaintyRadius.distribution;
+    maxError = simData.uncertaintyRadius.maxValue;
+    minError = simData.uncertaintyRadius.minValue;
+    uncertainty = simData.uncertaintyRadius.uncertainty;
+    expectation = simData.uncertaintyRadius.expectation;
+
+    errorScale = 1/(maxError-minError);
+
+    QList<double> tmpList =simData.uncertaintyRadius.values;
+
+    this->generateDensityList(tmpList);
+
+    //draw point
+    double h = simData.uncertaintyRadius.densityFunction(actualValue,expectation,uncertainty);
+
+    this->setUpExpectationPoints(h);
+}
+
+void Histogram::prepareScalar()
+{
+    featureAttribute = "Scalar";
+    actualValue = 0.0;
+    distribution = simData.uncertaintyScalar.distribution;
+    maxError = simData.uncertaintyScalar.maxValue;
+    minError = simData.uncertaintyScalar.minValue;
+    uncertainty = simData.uncertaintyScalar.uncertainty;
+    expectation = simData.uncertaintyScalar.expectation;
+
+    errorScale = 1/(maxError-minError);
+
+    QList<double> tmpList =simData.uncertaintyScalar.values;
+
+    this->generateDensityList(tmpList);
+
+    //draw point
+    double h = simData.uncertaintyScalar.densityFunction(actualValue,expectation,uncertainty);
+
+    this->setUpExpectationPoints(h);
 }

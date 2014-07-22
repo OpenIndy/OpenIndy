@@ -59,11 +59,24 @@ private:
     QList<double> densityValues;
 
     SimulationData simData;
+    FeatureWrapper *actualFeature;
 
     void generateDataToDraw(FeatureWrapper* f, QString attributeToDraw);
-    void generateDensityList(QList<double> d);
     void drawGrid();
     void drawResultSet();
+    void generateDensityList(QList<double> tmpList);
+    void setUpExpectationPoints(double h);
+
+
+    void prepareAll();
+    void prepareX();
+    void prepareY();
+    void prepareZ();
+    void prepareI();
+    void prepareJ();
+    void prepareK();
+    void prepareRadius();
+    void prepareScalar();
 
 
 

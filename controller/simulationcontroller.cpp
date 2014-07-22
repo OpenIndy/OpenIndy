@@ -85,10 +85,37 @@ void SimulationController::recalcAll()
     }
 
     foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
-        if(f->getGeometry() != NULL){
+        if(f->getPoint() != NULL){
             actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyX);
             actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyY);
             actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyZ);
+        }else if(f->getPlane() != NULL){
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyX);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyY);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyZ);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyI);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyJ);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyK);
+        }else if(f->getLine() != NULL){
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyX);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyY);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyZ);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyI);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyJ);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyK);
+        }else if(f->getCircle() != NULL){
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyX);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyY);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyZ);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyI);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyJ);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyK);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyRadius);
+        }else if(f->getSphere() != NULL){
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyX);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyY);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyZ);
+            actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyRadius);
         }
     }
 
