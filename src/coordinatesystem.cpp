@@ -5,10 +5,11 @@
 #include "geometry.h"
 #include "point.h"
 
-CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), origin(4){
+CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), origin(4),expansionOrigin(4){
     this->id = Configuration::generateID();
     this->isUpdated = false;
     this->isDrawn = true;
+    this->expansionOrigin.setAt(3,1.0);
 }
 
 CoordinateSystem::~CoordinateSystem(){
@@ -254,6 +255,51 @@ void CoordinateSystem::setActiveCoordinateSystemState(bool isActiveCoordinateSys
     }
 }
 
+/*!
+ * \brief getExpansionOrigin returns the vector of the origiin of expansion
+ * \return
+ */
+OiVec CoordinateSystem::getExpansionOrigin()
+{
+    return this->expansionOrigin;
+}
+
+/*!
+ * \brief setExpansionOrigin
+ * \param expOri
+ */
+void CoordinateSystem::setExpansionOrigin(OiVec expOri)
+{
+    this->expansionOrigin = expOri;
+}
+
+/*!
+ * \brief setExpansionOriginX
+ * \param x
+ */
+void CoordinateSystem::setExpansionOriginX(double x)
+{
+    this->expansionOrigin.setAt(0,x);
+}
+
+/*!
+ * \brief setExpansionOriginY
+ * \param y
+ */
+void CoordinateSystem::setExpansionOriginY(double y)
+{
+    this->expansionOrigin.setAt(1,y);
+}
+
+/*!
+ * \brief setExpansionOriginZ
+ * \param z
+ */
+void CoordinateSystem::setExpansionOriginZ(double z)
+{
+    this->expansionOrigin.setAt(2,z);
+}
+
 void CoordinateSystem::recalc(){
 
 }
@@ -272,6 +318,21 @@ QString CoordinateSystem::getDisplayZ() const{
 
 QString CoordinateSystem::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");
+}
+
+QString CoordinateSystem::getDisplayExpansionOriginX() const
+{
+    return QString::number(this->expansionOrigin.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+}
+
+QString CoordinateSystem::getDisplayExpansionOriginY() const
+{
+    return QString::number(this->expansionOrigin.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+}
+
+QString CoordinateSystem::getDisplayExpansionOriginZ() const
+{
+    return QString::number(this->expansionOrigin.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }
 
 bool CoordinateSystem::toOpenIndyXML(QXmlStreamWriter &stream){

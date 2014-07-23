@@ -507,6 +507,21 @@ QString Feature::getDisplayTime() const{
     return "-/-";
 }
 
+QString Feature::getDisplayExpansionOriginX() const
+{
+    return "-/-";
+}
+
+QString Feature::getDisplayExpansionOriginY() const
+{
+    return "-/-";
+}
+
+QString Feature::getDisplayExpansionOriginZ() const
+{
+    return "-/-";
+}
+
 /*!
  * \brief Feature::writeFeatureAttributes
  * \param stream
