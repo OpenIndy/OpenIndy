@@ -21,6 +21,8 @@ public:
     double getDistance() const;
     void setDistance(double distance);
 
+    double getScalar() const;
+
     QString getDisplayIsCommon() const;
     QString getDisplayIsNominal() const;
     //QString getDisplayObs() const;

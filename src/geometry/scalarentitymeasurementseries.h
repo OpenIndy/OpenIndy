@@ -21,6 +21,8 @@ public:
     double getSeriesValue() const;
     void setSeriesValue(double value);
 
+    double getScalar() const;
+
     QString getDisplayIsCommon() const;
     QString getDisplayIsNominal() const;
     //QString getDisplayObs() const;

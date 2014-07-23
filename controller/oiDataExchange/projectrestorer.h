@@ -7,11 +7,13 @@
 #include <QFile>
 #include <QDateTime>
 #include <QtAlgorithms>
+
 #include "oiprojectdata.h"
 #include "function.h"
 #include "systemdbmanager.h"
 #include "pluginloader.h"
 #include "console.h"
+#include "oifeaturestate.h"
 
 class ProjectRestorer : public QObject
 {
@@ -22,8 +24,8 @@ public:
 signals:
 
 public slots:
-    bool saveProject(oiProjectData &data);
-    bool loadProject(oiProjectData &data);
+    bool saveProject(OiProjectData &data);
+    bool loadProject(OiProjectData &data);
 
 private:
 
@@ -36,6 +38,8 @@ private:
     QList<ElementDependencies> dependencies;
 
     QList<int> stationElements;
+    int activeStationId;
+    int activeCoordSystemId;
 
     void clearAllLists();
     void addGeometryToList(Configuration::ElementTypes typeOfElement,QXmlStreamReader &xml);
@@ -47,7 +51,7 @@ private:
     FeatureWrapper *findGeometry(int id);
     Observation *findObservation(int id);
 
-    void resolveDependencies(oiProjectData &data);
+    void resolveDependencies(OiProjectData &data);
     void resolveFeature(FeatureWrapper *fw, ElementDependencies &d);
     void resolveGeometry(FeatureWrapper *fw, ElementDependencies &d);
     void resolveStation(FeatureWrapper *fw, ElementDependencies &d);
@@ -58,6 +62,7 @@ private:
 
 
     QList<Function*> resolveFunctions(ElementDependencies &d);
+    void readOiProjectData(QXmlStreamReader &xml);
 
 
 };

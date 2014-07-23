@@ -13,6 +13,9 @@ OiSimulationWidget::OiSimulationWidget(QWidget *parent) :
 
     this->ui->listView_simulations->setModel(this->control.availableSimulations);
 
+    this->ui->comboBox_typeOfUnit->addItem("position");
+    this->ui->comboBox_typeOfUnit->addItem("direction");
+
     this->ui->tableView_sensor->setModel(control.sensorErrorModel);
     this->ui->tableView_object->setModel(control.objectErrorModel);
     this->ui->tableView_humanInfluence->setModel(control.humanErrorModel);
@@ -67,6 +70,7 @@ void OiSimulationWidget::on_pushButton_startSimulation_clicked()
 
 void OiSimulationWidget::showEvent(QShowEvent *event)
 {
+    this->ui->comboBox_typeOfUnit->setVisible(false);
     control.setUpSimulations();
     control.resultModel->refreshModel();
 
@@ -104,12 +108,19 @@ void OiSimulationWidget::on_treeView_feature_clicked(const QModelIndex &index)
         if(model != NULL){
 
             if(item->getParent() != NULL && item->getParent()->getIsFeature()){ //if an attribute of a feature was clicked
-
+                this->ui->comboBox_typeOfUnit->setVisible(false);
                 QString attributeToDraw = item->getDisplayValue().toString();
                 ui->widgetHistogram->paintData(item->getParent()->getFeature(),attributeToDraw);
                 this->setResultList(item->getParent()->getFeature(),"all");
 
             }else if(item->getIsFeature()){
+                this->ui->comboBox_typeOfUnit->setVisible(true);
+
+                if(item->getFeature()->getPoint() != NULL || item->getFeature()->getSphere() != NULL){
+                    this->ui->comboBox_typeOfUnit->setEnabled(false);
+                }else{
+                    this->ui->comboBox_typeOfUnit->setEnabled(true);
+                }
 
                 ui->widgetHistogram->paintData(item->getFeature(),"all");
                 this->setResultList(item->getFeature(),"all");
@@ -311,4 +322,9 @@ void OiSimulationWidget::setResultList(FeatureWrapper *f,QString attributeToDraw
     resultModel->setStringList(result);
 
     ui->listView_result->setModel(resultModel);
+}
+
+void OiSimulationWidget::on_comboBox_typeOfUnit_currentTextChanged(const QString &arg1)
+{
+    ui->widgetHistogram->setTypeOfUnit(arg1);
 }

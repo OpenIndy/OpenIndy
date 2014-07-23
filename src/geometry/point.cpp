@@ -82,24 +82,21 @@ bool Point::toOpenIndyXML(QXmlStreamWriter &stream){
     stream.writeAttribute("common",QString::number(this->isCommon));
     stream.writeAttribute("solved", QString::number(this->isSolved));
 
-
     //---------------specific geometry attributes--------------
     if(this->isSolved || this->isNominal){
-            stream.writeStartElement("coordinates");
-            stream.writeAttribute("x", QString::number(this->xyz.getAt(0)));
-            stream.writeAttribute("y", QString::number(this->xyz.getAt(1)));
-            stream.writeAttribute("z", QString::number(this->xyz.getAt(2)));
-            stream.writeEndElement();
+        stream.writeStartElement("coordinates");
+        stream.writeAttribute("x", QString::number(this->xyz.getAt(0)));
+        stream.writeAttribute("y", QString::number(this->xyz.getAt(1)));
+        stream.writeAttribute("z", QString::number(this->xyz.getAt(2)));
+        stream.writeEndElement();
 
-            stream.writeStartElement("standardDeviation");
-            stream.writeAttribute("value", QString::number(this->myStatistic.stdev));
-            stream.writeEndElement();
+        stream.writeStartElement("standardDeviation");
+        stream.writeAttribute("value", QString::number(this->myStatistic.stdev));
+        stream.writeEndElement();
     }
+    this->writeGeometryAttributes(stream);
 
-
-   this->writeGeometryAttributes(stream);
-
-   stream.writeEndElement();
+    stream.writeEndElement();
 
     return true;
 }

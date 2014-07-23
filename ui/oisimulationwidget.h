@@ -40,6 +40,8 @@ private slots:
 
     void on_treeView_feature_clicked(const QModelIndex &index);
 
+    void on_comboBox_typeOfUnit_currentTextChanged(const QString &arg1);
+
 signals:
     void startSimulation();
 

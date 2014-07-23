@@ -154,6 +154,11 @@ void ScalarEntityDistance::setDistance(double distance){
     this->distance = distance;
 }
 
+double ScalarEntityDistance::getScalar() const
+{
+    return this->distance;
+}
+
 QString ScalarEntityDistance::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }

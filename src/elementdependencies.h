@@ -41,6 +41,11 @@ public:
     bool addSensorInfo(sensorInfo info);
     bool addActiveSensor(sensorInfo info);
 
+    bool setStationPosition(int id);
+    bool setStationCoordSystem(int id);
+    int getStationPosition();
+    int getStationCoordSystem();
+
     bool hasPluginSensor();
     bool hasPluginFunction();
     bool hasObservation();
@@ -68,6 +73,9 @@ private:
     QList<functionInfo> neededFunctions;
     QList<sensorInfo> neededSensors;
     sensorInfo activeSensor;
+
+    int stationCoordSystem;
+    int stationPosition;
 
 };
 

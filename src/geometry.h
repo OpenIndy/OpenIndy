@@ -42,6 +42,8 @@ public:
 
     virtual OiVec getXYZ() const;
     virtual OiVec getIJK() const;
+    virtual double getRadius() const;
+    virtual double getScalar() const;
 	
     QMap<Configuration::ReadingTypes, QString> getUsedReadingTypes() const;
     void insertReadingType(Configuration::ReadingTypes readingType, QString displayName);
