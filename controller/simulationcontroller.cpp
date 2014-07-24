@@ -50,6 +50,14 @@ void SimulationController::recalcAll()
         }
     }
 
+    QMap<Station*,OiMat> matrices;
+    foreach(Station *s, OiFeatureState::getStations()){
+       OiMat A = myUpdater->trafoControl.getTransformationMatrix(s->coordSys);
+       if(A.getRowCount()==4 && A.getColCount() == 4){
+           matrices.insert(s,A);
+       }
+    }
+
     bool newIteration = true;
 
     for(int i = 0; i <(this->iterations+1); i++){
@@ -58,11 +66,11 @@ void SimulationController::recalcAll()
 
         foreach(Station *s, OiFeatureState::getStations()){
             foreach(Observation *o, s->coordSys->getObservations()){
-                OiMat A;
+
                 o->myReading->restoreBackup();
 
                 if(i < this->iterations){
-                    actualSimulation->distort(o->myReading,A, newIteration);
+                    actualSimulation->distort(o->myReading,matrices.value(s), newIteration);
                     newIteration = false;
                 }
 

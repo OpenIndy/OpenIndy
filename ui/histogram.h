@@ -85,6 +85,7 @@ private:
 
     void generateDataToDraw(FeatureWrapper* f, QString attributeToDraw);
     void drawGrid();
+    void drawGridAll(double scaleWidth, double scaleHeight);
     void drawResultSet();
     void generateDensityList(QList<double> tmpList);
     void addErrorAttribute(AttributeStats a, QList<double> v);
