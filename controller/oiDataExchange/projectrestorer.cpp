@@ -5,78 +5,102 @@ ProjectRestorer::ProjectRestorer(QObject *parent) :
 {
 }
 
-bool ProjectRestorer::saveProject(oiProjectData &data){
+/*!
+ * \brief ProjectRestorer::saveProject
+ * \param data
+ * \return
+ */
+bool ProjectRestorer::saveProject(OiProjectData &data){
 
-    if (!data.device->open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        Console::addLine("can't open  device");
+    if (!data.getDevice()->open(QIODevice::WriteOnly | QIODevice::Text)){
+        Console::addLine("Cannot open the device");
         return false;
     }
 
-    Console::addLine("saving project");
+    Console::addLine("saving project...");
+
     this->clearAllLists();
 
     //get current date and time
     QDateTime dateTime = QDateTime::currentDateTime();
     QString dateTimeString = dateTime.toString(Qt::ISODate);
 
-
-    QXmlStreamWriter stream(data.device);
+    QXmlStreamWriter stream(data.getDevice());
 
     stream.setAutoFormatting(true);
     stream.writeStartDocument();
 
+    //write general project information
     stream.writeStartElement("oiProjectData");
-    stream.writeAttribute("name", data.projectName);
+    stream.writeAttribute("name", data.getProjectName());
     stream.writeAttribute("date", dateTimeString);
     stream.writeAttribute("idcount", QString::number(Configuration::idCount));
 
+    //write active coordinate system
     stream.writeStartElement("member");
     stream.writeAttribute("type", "activeCoordinatesystem");
-    stream.writeAttribute("ref", QString::number(data.activeCoordSystem->getId()));
+    int activeSystem = -1;
+    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
+        activeSystem = OiFeatureState::getActiveCoordinateSystem()->getId();
+    }
+    stream.writeAttribute("ref", QString::number(activeSystem));
     stream.writeEndElement();
 
-    //sort and seperate features
+    //write active coordinate system
+    stream.writeStartElement("member");
+    stream.writeAttribute("type", "activeStation");
+    int activeStation = -1;
+    if(OiFeatureState::getActiveStation() != NULL){
+        activeStation = OiFeatureState::getActiveStation()->getId();
+    }
+    stream.writeAttribute("ref", QString::number(activeStation));
+    stream.writeEndElement();
+
     Console::addLine("sort and seperate features");
 
-    for(int i = 0; i<data.features.size();i++){
+    //Helper to save the stations's positions as a point feature (delete later)
+    QList<FeatureWrapper *> stationPositions;
 
-     if(data.features.at(i)->getGeometry() != NULL ){
+    //iterate through all features of the current project and save them into lists
+    //so that the features in the XML are ordered by feature type
+    const QList<FeatureWrapper *> myFeatures = OiFeatureState::getFeatures();
+    for(int i = 0; i < myFeatures.size();i++){
 
-        this->geometries.append(data.features.at(i));
+        if(myFeatures.at(i)->getGeometry() != NULL ){ //geometries
 
-     }else if(data.features.at(i)->getCoordinateSystem() != NULL){
+            this->geometries.append(myFeatures.at(i));
 
-        this->coordSystems.append(data.features.at(i)->getCoordinateSystem());
+        }else if(myFeatures.at(i)->getCoordinateSystem() != NULL){ //coordinate systems
 
-      }else if (data.features.at(i)->getStation() != NULL){
+            this->coordSystems.append(myFeatures.at(i)->getCoordinateSystem());
 
-         this->stations.append(data.features.at(i)->getStation());
+        }else if (myFeatures.at(i)->getStation() != NULL){ //stations
 
-         this->coordSystems.append(data.features.at(i)->getStation()->coordSys);
+            this->stations.append(myFeatures.at(i)->getStation());
+            this->coordSystems.append(myFeatures.at(i)->getStation()->coordSys);
 
-         FeatureWrapper *fwStationPosition = new FeatureWrapper();
-         fwStationPosition->setPoint(data.features.at(i)->getStation()->position);
+            FeatureWrapper *fwStationPosition = new FeatureWrapper();
+            fwStationPosition->setPoint(myFeatures.at(i)->getStation()->position);
+            stationPositions.append(fwStationPosition);
+            this->geometries.append(fwStationPosition);
 
-         this->geometries.append(fwStationPosition);
+        }else if(myFeatures.at(i)->getTrafoParam() != NULL){ //trafo params
 
-      }else if(data.features.at(i)->getTrafoParam() != NULL){
+            this->trafoParams.append(myFeatures.at(i)->getTrafoParam());
 
-         this->trafoParams.append(data.features.at(i)->getTrafoParam());
+        }
 
-       }
     }
 
     //write stations to xml
-    Console::addLine("write stations to xml");
+    Console::addLine("write stations to xml...");
     foreach(Station* s, this->stations){
         s->toOpenIndyXML(stream);
     }
 
     //write coordnatesystem to xml
-     Console::addLine("write coordinatesystems to xml");
+    Console::addLine("write coordinatesystems to xml...");
     foreach(CoordinateSystem* c, this->coordSystems){
-
         c->toOpenIndyXML(stream);
 
         //harvest all observations
@@ -86,19 +110,19 @@ bool ProjectRestorer::saveProject(oiProjectData &data){
     }
 
     //write all trafoParam to xml
-     Console::addLine("write transformationparamters to xml");
+    Console::addLine("write transformationparamters to xml...");
     foreach(TrafoParam* t, this->trafoParams){
         t->toOpenIndyXML(stream);
     }
 
     //write all geometries to xml
-     Console::addLine("write geometries to xml");
+     Console::addLine("write geometries to xml...");
     foreach(FeatureWrapper* fw, this->geometries){
         fw->getGeometry()->toOpenIndyXML(stream);
     }
 
     //write all observations to xml
-     Console::addLine("write observations to xml");
+    Console::addLine("write observations to xml...");
     foreach(Observation* o, this->observations){
         o->toOpenIndyXML(stream);
     }
@@ -106,7 +130,12 @@ bool ProjectRestorer::saveProject(oiProjectData &data){
     stream.writeEndElement();
     stream.writeEndDocument();
 
-    data.device->close();
+    data.getDevice()->close();
+
+    //delete station position helpers
+    foreach(FeatureWrapper *stationPosition, stationPositions){
+        delete stationPosition;
+    }
 
     Console::addLine("saving completed");
 
@@ -114,16 +143,16 @@ bool ProjectRestorer::saveProject(oiProjectData &data){
 
 }
 
-bool ProjectRestorer::loadProject(oiProjectData &data){
+bool ProjectRestorer::loadProject(OiProjectData &data){
 
-    if (!data.device->open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (!data.getDevice()->open(QIODevice::ReadOnly | QIODevice::Text)) {
 
       return false;
     }
 
         this->clearAllLists();
 
-        QXmlStreamReader xml(data.device);
+        QXmlStreamReader xml(data.getDevice());
 
         Console::addLine("load project from xml");
         while(!xml.atEnd() &&
@@ -146,7 +175,7 @@ bool ProjectRestorer::loadProject(oiProjectData &data){
                 }
 
                 if(xml.name() == "oiProjectData"){
-
+                    this->readOiProjectData(xml);
                 }
 
                 if(xml.name() == "station"){
@@ -154,8 +183,8 @@ bool ProjectRestorer::loadProject(oiProjectData &data){
                     Station *s = new Station("");
                     ElementDependencies d = s->fromOpenIndyXML(xml);
 
-                    stationElements.append(s->coordSys->getId());
-                    stationElements.append(s->position->getId());
+                    stationElements.append(d.getStationCoordSystem());
+                    stationElements.append(d.getStationPosition());
 
                     this->stations.append(s);
                     this->dependencies.append(d);
@@ -200,11 +229,11 @@ bool ProjectRestorer::loadProject(oiProjectData &data){
         if(xml.hasError()) {
 
             Console::addLine(QString("xml not valid: " + xml.errorString()));
-            data.device->close();
+            data.getDevice()->close();
             return false;
         }
 
-         data.device->close();
+         data.getDevice()->close();
          Console::addLine("resolve dependencies");
 
          foreach(Station* s, this->stations){
@@ -360,17 +389,9 @@ Station* ProjectRestorer::findStation(int id){
 
 }
 
-/* \brief sortID
-* \param f1
-* \param f2
-* \return
-* comperator function for sorting FeatureWrapper* by id
-*/
-bool sortID(FeatureWrapper *f1, FeatureWrapper *f2){
-   return f1->getFeature()->getId() < f2->getFeature()->getId();
-}
 
-void ProjectRestorer::resolveDependencies(oiProjectData &data){
+
+void ProjectRestorer::resolveDependencies(OiProjectData &data){
 
     foreach(ElementDependencies d, this->dependencies){
 
@@ -385,14 +406,11 @@ void ProjectRestorer::resolveDependencies(oiProjectData &data){
 
             this->resolveStation(resolvedFeature,d);
 
-            data.stations.append(resolvedFeature->getStation());
 
             break;}
         case (Configuration::eCoordinateSystemElement):{
 
                 this->resolveCoordinateSystem(resolvedFeature,d);
-
-
 
             break;}
         case (Configuration::eTrafoParamElement):{
@@ -415,11 +433,24 @@ void ProjectRestorer::resolveDependencies(oiProjectData &data){
 
 
         if(d.typeOfElement != Configuration::eObservationElement && !this->stationElements.contains(d.elementID)){
-            data.features.append(resolvedFeature);
+           OiFeatureState::addFeature(resolvedFeature);
+
+           if(resolvedFeature->getStation()!=NULL || resolvedFeature->getFeature()->getId() == activeStationId){
+               resolvedFeature->getStation()->setActiveStationState(true);
+
+               if(resolvedFeature->getStation()->coordSys !=NULL || resolvedFeature->getStation()->coordSys->getId() == activeCoordSystemId){
+                   resolvedFeature->getStation()->coordSys->setActiveCoordinateSystemState(true);
+               }
+           }
+
+           if(resolvedFeature->getCoordinateSystem()!=NULL || resolvedFeature->getFeature()->getId() == activeCoordSystemId){
+               resolvedFeature->getCoordinateSystem()->setActiveCoordinateSystemState(true);
+           }
         }
     }
 
-    qSort(data.features.begin(), data.features.end(), sortID);
+
+    OiFeatureState::sortFeaturesById();
 
 }
 
@@ -598,8 +629,12 @@ void ProjectRestorer::resolveObservation(ElementDependencies &d)
     if(obsStations != NULL){
         for(int i = 0;i<obsStations->size();i++){
             obs->myStation = this->findStation(obsStations->at(i));
+            obs->myStation->coordSys->addObservation(obs);
+            break;
         }
     }
+
+
 
 }
 
@@ -679,6 +714,37 @@ QList<Function *> ProjectRestorer::resolveFunctions(ElementDependencies &d)
   }
 
   return featureFunctions;
+
+}
+
+void ProjectRestorer::readOiProjectData(QXmlStreamReader &xml)
+{
+    if(xml.name() == "member"){
+
+            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                if(memberAttributes.hasAttribute("type")){
+
+                    if (memberAttributes.value("type") == "activeCoordinatesystem"){
+
+                        if(memberAttributes.hasAttribute("ref")){
+                            activeCoordSystemId = memberAttributes.value("ref").toInt();
+                        }
+                    }
+
+                    if (memberAttributes.value("type") == "activeStation"){
+
+                        if(memberAttributes.hasAttribute("ref")){
+                            activeStationId = memberAttributes.value("ref").toInt();
+                        }
+                    }
+                }
+
+            }
+    }
+
 
 }
 

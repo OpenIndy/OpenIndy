@@ -81,11 +81,6 @@ protected:
     QList<Geometry*> nominals;
 
     bool isActiveCoordinateSystem;
-
-    //bool transformObservations(CoordinateSystem *to);
-    //void setObservationState(bool valid);
-
-    //TrafoParam* findTrafoParam(CoordinateSystem *searchToSystem);
 };
 
 #endif // COORDINATESYSTEM_H

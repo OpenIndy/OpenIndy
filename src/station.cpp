@@ -269,13 +269,13 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
                             if (memberAttributes.value("type") == "position"){
 
                                 if(memberAttributes.hasAttribute("ref")){
-                                    this->position->setId(memberAttributes.value("ref").toInt());
+                                    dependencies.setStationPosition(memberAttributes.value("ref").toInt());
                                 }
 
                             }else if (memberAttributes.value("type") == "coordinatesystem"){
 
                                 if(memberAttributes.hasAttribute("ref")){
-                                    this->coordSys->setId(memberAttributes.value("ref").toInt());
+                                    dependencies.setStationCoordSystem(memberAttributes.value("ref").toInt());
                                 }
                             }else{
                                 readFeatureAttributes(xml,dependencies);

@@ -20,13 +20,13 @@
  * a project from a openindyXML.
  */
 
-class oiProjectExchanger
+class OiProjectExchanger
 {
 public:
-    oiProjectExchanger();
+    OiProjectExchanger();
 
-    static bool saveProject(oiProjectData &data);
-    static bool loadProject(oiProjectData &data);
+    static bool saveProject(OiProjectData &data);
+    static bool loadProject(OiProjectData &data);
 
     static bool saveSensorConfig(QString name);
     static SensorConfiguration* loadSensorConfig(QString name);
@@ -52,7 +52,7 @@ private:
 
     static QList<int> stationElements;
 
-    static bool regenerateRelations(oiProjectData &data);
+    static bool regenerateRelations(OiProjectData &data);
     static bool regenerateFeature(Feature* f);
 
     static Observation* findObservation(int id);

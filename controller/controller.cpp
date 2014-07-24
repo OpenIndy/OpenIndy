@@ -27,7 +27,7 @@ Controller::Controller(QObject *parent) :
     this->initModels();
     this->connectModels();
 
-    this->createDefaultFeatures();
+    this->createProject(currentProject);
 
 
 
@@ -137,7 +137,7 @@ void Controller::connectModels(){
  * \brief Controller::createDefaultFeatures
  * Create a station and the PART system as default features when starting OpenIndy
  */
-void Controller::createDefaultFeatures(){
+bool Controller::createProject(OiProjectData &projectData){
 
     if(OiFeatureState::getFeatureCount() == 0){
 
@@ -155,7 +155,11 @@ void Controller::createDefaultFeatures(){
         //set PART as active coordinate system
         part->getCoordinateSystem()->setActiveCoordinateSystemState(true);
 
+    }else{
+        return false;
     }
+
+    return true;
 
 }
 
@@ -193,6 +197,14 @@ void Controller::addFeature(FeatureAttributesExchange fae){
  */
 void Controller::startMeasurement(){
 
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }else if(OiFeatureState::getActiveFeature() == NULL){
+        Console::addLine("no active feature");
+        return;
+    }
+
     bool checkActiveCoordSys = false;
 
     if (OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
@@ -217,6 +229,11 @@ void Controller::startMeasurement(){
  */
 void Controller::startMove(Reading *parameter){
 
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     //TODO check function
     if (parameter->typeofReading == Configuration::ePolar){
         OiFeatureState::getActiveStation()->startMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
@@ -230,6 +247,14 @@ void Controller::startMove(Reading *parameter){
 
 
 void Controller::startAim(){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }else if(OiFeatureState::getActiveFeature() == NULL){
+        Console::addLine("no active feature");
+        return;
+    }
 
     if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && !OiFeatureState::getActiveFeature()->getGeometry()->getIsSolved()){
         Console::addLine("Cannot aim a unsolved feature.");
@@ -296,6 +321,11 @@ void Controller::startConnect(){
  */
 void Controller::startDisconnect(){
 
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartDisconnect();
         emit sensorWorks("disconnecting...");
@@ -307,6 +337,11 @@ void Controller::startDisconnect(){
  * After checking some conditions, it calls the toggle sight function of the active sensor.
  */
 void Controller::startToggleSight(){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
 
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartToggleSight();
@@ -320,6 +355,11 @@ void Controller::startToggleSight(){
  */
 void Controller::startInitialize(){
 
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartInitialize();
         emit sensorWorks("initialize...");
@@ -331,6 +371,11 @@ void Controller::startInitialize(){
  * After checking some conditions, it calls the home function of the active sensor.
  */
 void Controller::startHome(){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
 
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartHome();
@@ -344,6 +389,11 @@ void Controller::startHome(){
  */
 void Controller::startCompensation(){
 
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartCompensation();
         emit sensorWorks("compensation...");
@@ -355,6 +405,11 @@ void Controller::startCompensation(){
  * After checking some conditions, it calls the change motor state function of the active sensor.
  */
 void Controller::startChangeMotorState(){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
 
     if(checkSensorValid()){
         OiFeatureState::getActiveStation()->emitStartMotorState();
@@ -368,6 +423,11 @@ void Controller::startChangeMotorState(){
  */
 void Controller::startCustomAction(QString s)
 {
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     emit sensorWorks(s);
     OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
 }
@@ -420,6 +480,14 @@ void Controller::recalcTrafoParam(TrafoParam *tp){
  * \param setSensor
  */
 void Controller::changeActiveStation(bool setSensor){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }else if(OiFeatureState::getActiveFeature() == NULL){
+        Console::addLine("no active feature");
+        return;
+    }
 
     if(OiFeatureState::getActiveFeature()->getStation() != NULL){
 
@@ -576,6 +644,12 @@ void Controller::setSensorModel(Configuration::SensorTypes sT){
  * \param sT
  */
 void Controller::getSelectedPlugin(int index){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
     Console::addLine("index: ", index);
 
     QString path = pluginsModel->record(index).value("file_path").toString();
@@ -798,8 +872,12 @@ void Controller::setActiveCoordSystem(QString CoordSysName){
 
     }
 
-    //transform observations to current system and recalc all features
-    this->myFeatureUpdater.switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
+    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
+
+        //transform observations to current system and recalc all features
+        this->myFeatureUpdater.switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
+
+    }
 
     //update table view for all features
     emit this->refreshGUI();
@@ -1381,22 +1459,46 @@ void Controller::setFunctionConfiguration(int functionIndex, FunctionConfigurati
 }
 
 /*!
- * \brief Controller::loadProjectData
- * \param data
+ * \brief Controller::saveProject
+ * Save the current project
+ * \param projectData
+ * \return
  */
-void Controller::loadProjectData(oiProjectData &data){
+bool Controller::saveProject(){
+    try{
 
-    /*features.clear();
-    stations.clear();
-    coordSys.clear();
+        if(this->currentProject.getIsValid()){
+            if(this->currentProject.getIsSaved()){
+                return OiProjectExchanger::saveProject(this->currentProject);
+            }else{
+                Console::addLine("The project has already been saved");
+                return false;
+            }
+        }else{
+            Console::addLine("The project has no name or no device is selected");
+            return false;
+        }
 
-    features = data.features;
-    stations = data.stations;
-    coordSys = data.coordSystems;
+    }catch(exception &e){
+        Console::addLine(e.what());
+        return false;
+    }
+}
 
-    if(features.size() > 0 && stations.size() > 0){
-        refreshGUI();
-    }*/
+/*!
+ * \brief Controller::loadProject
+ * \param data
+ * \return
+ */
+bool Controller::loadProject(OiProjectData &projectData){
+
+    //TODO check if a active project is set
+
+    //delete all features
+    OiFeatureState::resetFeatureLists();
+
+    return OiProjectExchanger::loadProject(projectData);
+
 
 }
 

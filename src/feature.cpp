@@ -529,26 +529,30 @@ QString Feature::getDisplayExpansionOriginZ() const
  */
 bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
 
-    for(int k =0;k<this ->usedFor.size();k++){
+    //references to all features which need this feature to be recalculated
+    for(int k = 0; k < this->usedFor.size(); k++){
         stream.writeStartElement("member");
         stream.writeAttribute("type", "usedForFeature");
         stream.writeAttribute("ref", QString::number(this->usedFor.at(k)->getFeature()->id));
         stream.writeEndElement();
     }
 
-    for(int k =0;k<this->previouslyNeeded.size();k++){
+    //references to all features which this feature needs to be recalculated
+    for(int k = 0; k < this->previouslyNeeded.size(); k++){
         stream.writeStartElement("member");
         stream.writeAttribute("type", "previouslyNeeded");
         stream.writeAttribute("ref", QString::number(this->previouslyNeeded.at(k)->getFeature()->id));
         stream.writeEndElement();
     }
 
+    //all functions that are assigned to this feature
     for(int k =0;k<this->functionList.size();k++){
         stream.writeStartElement("function");
         stream.writeAttribute("name", this->functionList.at(k)->getMetaData()->name);
         stream.writeAttribute("plugin", this->functionList.at(k)->getMetaData()->pluginName);
         stream.writeAttribute("executionIndex", QString::number(k));
 
+        //all input elements which were assigned to a function
         QMapIterator<int, QList<InputFeature> > j(this->functionList.at(k)->getFeatureOrder());
         while (j.hasNext()) {
             j.next();
@@ -561,8 +565,6 @@ bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
                 stream.writeAttribute("ref", QString::number(neededFeatureId));
                 stream.writeEndElement();
             }
-
-
         }
 
         stream.writeEndElement();
@@ -595,6 +597,11 @@ bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &
                             dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"previouslyNeeded");
                         }
                     }
+                }
+
+
+                if(memberAttributes.hasAttribute("id")){
+                    this->id = memberAttributes.value("ref").toInt();
                 }
 
             }

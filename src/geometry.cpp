@@ -272,23 +272,29 @@ void Geometry::setMeasurementConfig(MeasurementConfig myConfig){
     emit this->geomMyMeasurementConfigChanged(this->id);
 }
 
+/*!
+ * \brief Geometry::writeGeometryAttributes
+ * \param stream
+ * \return
+ */
 bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
 
-    this->mConfig.toOpenIndyXML(stream);
+    //this->mConfig.toOpenIndyXML(stream);
 
+    //references to all observations which belong to this geometry
     foreach (Observation *obs, myObservations) {
         obs->writeProxyObservations(stream);
     }
 
+    //references to nominal geometries which belong to this geometry
     foreach (Geometry *geom, this->nominals) {
-
-            stream.writeStartElement("member");
-            stream.writeAttribute("type", "nominalGeometry");
-            stream.writeAttribute("ref", QString::number(geom->id));
-            stream.writeEndElement();
-
+        stream.writeStartElement("member");
+        stream.writeAttribute("type", "nominalGeometry");
+        stream.writeAttribute("ref", QString::number(geom->id));
+        stream.writeEndElement();
     }
 
+    //reference to the nominal coordinate system which this geometry belongs to
     if(this->myNominalCoordSys != NULL){
         stream.writeStartElement("member");
         stream.writeAttribute("type", "coordinatesystem");
@@ -296,6 +302,7 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
         stream.writeEndElement();
     }
 
+    //reference to measurement config with which this geometry was measured the last time
     if(!this->isNominal){
         stream.writeStartElement("measurementconfig");
         stream.writeAttribute("name", this->mConfig.name);
@@ -303,7 +310,9 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
         stream.writeEndElement();
     }
 
+    //write attributes that every feature contains
     this->writeFeatureAttributes(stream);
+
     return true;
 }
 
