@@ -492,6 +492,46 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(CoordinateSyste
 }
 
 /*!
+ * \brief switchCoordinateSystemWithoutMovement
+ * \param from
+ * \param to
+ */
+void FeatureUpdater::switchCoordinateSystemWithoutMovement(CoordinateSystem *to)
+{
+    foreach (CoordinateSystem *cs, OiFeatureState::getCoordinateSystems()) {
+        if(cs != NULL){
+            if(cs == to){
+                trafoControl.setObservationState(cs,true);
+            }else{
+                trafoControl.transformObsForMovementCalculation(cs,to);
+            }
+        }
+    }
+
+    foreach (Station *s, OiFeatureState::getStations()) {
+        if(s != NULL && s->coordSys != NULL){
+            if(s->coordSys == to){
+                trafoControl.setObservationState(s->coordSys,true);
+            }else{
+                trafoControl.transformObsForMovementCalculation(s->coordSys,to);
+            }
+        }
+    }
+
+    //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
+    foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
+        if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()
+                && feature->getGeometry()->getNominalSystem() != to){
+            feature->getGeometry()->setIsSolved(false);
+        }else if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()){
+            feature->getGeometry()->setIsSolved(true);
+        }
+    }
+    //recalc all features
+    this->recalcFeatureSet();
+}
+
+/*!
  * \brief createFeature creates the feature with its attributes and adds it to the referenced lists of the controller class.
  * \param stations
  * \param coordSys
@@ -1524,21 +1564,22 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
     //sort helper class which compares and sorts the list of start and target points
     SortListByName mySorter;
 
-    CoordinateSystem *oldCoordSys = NULL;
-    //if coord sys needs to be switched to "from" system
-    if(!tp->getStartSystem()->getIsActiveCoordinateSystem()){
-        oldCoordSys =  OiFeatureState::getActiveCoordinateSystem();
-        this->switchCoordinateSystem(tp->getStartSystem());
+    if(function->getPoints().size()>0){
+        if(function->getPoints().at(0)->getObservations().size()>0){
+            if(function->getPoints().at(0)->getObservations().at(0)->myStation->coordSys != tp->getStartSystem()){
+                CoordinateSystem *cs = function->getPoints().at(0)->getObservations().at(0)->myStation->coordSys;
+                this->switchCoordinateSystemWithoutMovement(cs);
+            }else{
+                this->switchCoordinateSystemWithoutTransformation(tp->getStartSystem());
+            }
+        }
     }
+
     QDateTime startTime;
 
     //get smallest QDateTime from first point as reference time
     if(function->getPoints().size()>0){
-        if(function->getPoints().at(0)->getObservations().size()>0) {
-            startTime = function->getPoints().at(0)->getObservations().at(0)->myReading->measuredAt;
-        }else{
-            return;
-        }
+        startTime = function->getPoints().at(0)->getObservations().at(0)->myReading->measuredAt;
     }else{
         return;
     }
@@ -1547,8 +1588,10 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
     foreach(Point *p, function->getPoints()){
 
         foreach (Observation *obs, p->getObservations()) {
-            if(obs->isValid){ //only obs that are valid in the coord system of the movement
-                //also transformed obs from an other station are ok to use
+            //only obs that are valid in the coord system of the movement
+            //and transformed obs to the coord system of the movement
+            if(obs->isValid){
+
                 if(obs->myReading->measuredAt.time() > startTime.time().addSecs(-180) && //is obs in the time span
                         obs->myReading->measuredAt.time() < startTime.time().addSecs(180)){ //for being a reference obs
                     obs->isValid = true;
@@ -1601,8 +1644,8 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
     function->scalarEntityDistances_targetSystem = mySorter.getRefScalarEntityDistances();
 
     //if coord sys needs to be re-switched
-    if(oldCoordSys != NULL && !oldCoordSys->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystem(oldCoordSys);
+    if(!tp->getStartSystem()->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
     }
 
     //recalc featureSet, because some observations are disabled. So the feature uses all its observations again now

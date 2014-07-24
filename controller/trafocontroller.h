@@ -28,6 +28,9 @@ public slots:
     OiMat getTransformationMatrix(CoordinateSystem *from);
 
 
+    //to calc movement transformations
+    void transformObsForMovementCalculation(CoordinateSystem *from, CoordinateSystem *to);
+
 private:
 
     TrafoParam* findTrafoParam(CoordinateSystem *from, CoordinateSystem *to);

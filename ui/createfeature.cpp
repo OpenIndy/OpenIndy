@@ -512,8 +512,28 @@ void CreateFeature::on_checkBox_movement_toggled(bool checked)
 {
     if(checked){
         ui->comboBox_startSystem->setEnabled(false);
+        ui->comboBox_startSystem->clear();
+        ui->comboBox_destinationSystem->clear();
+
+        foreach (Station *s, OiFeatureState::getStations()) {
+            ui->comboBox_destinationSystem->addItem(s->getFeatureName());
+            ui->comboBox_startSystem->addItem(s->getFeatureName());
+        }
+
     }else{
         ui->comboBox_startSystem->setEnabled(true);
+        ui->comboBox_startSystem->clear();
+        ui->comboBox_destinationSystem->clear();
+
+        foreach (CoordinateSystem *cs, OiFeatureState::getCoordinateSystems()) {
+            ui->comboBox_destinationSystem->addItem(cs->getFeatureName());
+            ui->comboBox_startSystem->addItem(cs->getFeatureName());
+        }
+
+        foreach (Station *s, OiFeatureState::getStations()) {
+            ui->comboBox_destinationSystem->addItem(s->getFeatureName());
+            ui->comboBox_startSystem->addItem(s->getFeatureName());
+        }
     }
 }
 
