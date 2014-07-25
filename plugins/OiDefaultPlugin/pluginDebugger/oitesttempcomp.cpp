@@ -126,7 +126,7 @@ void OiTestTempComp::testTempComp()
     function->addPoint(p7,0);
     function->addPoint(p8,0);*/
 
-    ExtendedTemperatureCompensation *f = new ExtendedTemperatureCompensation();
+    Helmert6Param *f = new Helmert6Param();
     f->addPoint(p1,0);
     f->addPoint(p2,0);
     f->addPoint(p3,0);
@@ -166,6 +166,23 @@ void OiTestTempComp::testTempComp()
 
 
     TrafoParam *tp = new TrafoParam();
+    tp->setFeatureName("testparam");
+
+    CoordinateSystem *cs1 = new CoordinateSystem();
+    CoordinateSystem *cs2 = new CoordinateSystem();
+
+    cs1->setFeatureName("cs1");
+    cs2->setFeatureName("cs2");
+
+    TrafoParam *t = new TrafoParam();
+    t->setFeatureName("movement");
+    t->setCoordinateSystems(cs1,cs1);
+    t->setIsMovement(true);
+    t->setIsUsed(true);
+
+    tp->setCoordinateSystems(cs1,cs2);
+
+    cs1->addTransformationParameter(t);
 
     QVERIFY2(f->exec(*tp),"failed");
 }

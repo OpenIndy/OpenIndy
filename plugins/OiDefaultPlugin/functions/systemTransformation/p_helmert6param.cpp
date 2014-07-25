@@ -14,9 +14,12 @@ PluginMetaData *Helmert6Param::getMetaData()
     metaData->name = "6ParameterHelmertTransformation";
     metaData->pluginName = "OpenIndy Default Plugin";
     metaData->author = "jw";
-    metaData->description = QString("%1 %2")
+    metaData->description = QString("%1 %2 %3 %4 %5")
             .arg("This function calculates a 6 parameter helmert transformation.")
-            .arg("That transformation is based on identical points in start and target system.");
+            .arg("That transformation is based on identical points in start and target system.")
+            .arg("If you measure a expanded part object then create the movement first.")
+            .arg("If the movement is valid the nominals get expanded with the scale to get a correct translation.")
+            .arg("If no movement is set, the translation can be wrong.");
     metaData->iid = "de.openIndy.Plugin.Function.SystemTransformation.v001";
     return metaData;
 }
@@ -32,6 +35,10 @@ bool Helmert6Param::exec(TrafoParam &tp)
     if(this->isValid()){ //check wether all parameters for calculation are available
         this->init(); //fills the locSystem and refSystem vectors based on the given common points.
         if(locSystem.count() == refSystem.count() && locSystem.count() > 1){ //if enough common points available
+
+            //apply movement if necessary
+
+            this->applyMovements(tp);
 
             //get rotation and translation
             this->rotation = this->approxRotation();
@@ -93,6 +100,18 @@ QList<Configuration::FeatureTypes> Helmert6Param::applicableFor()
 {
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eTrafoParamFeature);
+    return result;
+}
+
+QMap<QString, QStringList> Helmert6Param::getStringParameter()
+{
+    QMap<QString,QStringList> result;
+    QString key = "useTempComp";
+    QStringList value;
+    value.append("true");
+    value.append("false");
+    result.insert(key,value);
+
     return result;
 }
 
@@ -545,6 +564,58 @@ OiVec Helmert6Param::approxTranslation(OiVec rot)
 }
 
 /*!
+ * \brief applyMovements applys the first movement of to the nominal values to have a homogeneous system
+ * Otherwise the expanded measured points will result in incorrect translation values to the nominal data
+ * \param tp
+ */
+void Helmert6Param::applyMovements(TrafoParam &tp)
+{
+    FunctionConfiguration myConfig = this->getFunctionConfiguration();
+    QString use = "";
+
+    QMap<QString, QString> stringParameter = myConfig.stringParameter;
+
+    if(stringParameter.contains("useTempComp")){
+        use = static_cast<QString>(stringParameter.find("useTempComp").value());
+    }
+
+    if(use.compare("true") == 0){
+        bool stationStart = false;
+        bool stationDest = false;
+
+        stationStart = this->getCoordSysWithMovements(tp.getStartSystem());
+        stationDest = this->getCoordSysWithMovements(tp.getDestinationSystem());
+
+        TrafoParam *t = NULL;
+        OiVec expansionOrigin(4);
+
+        if(stationStart && !stationDest){
+             t = this->getMovement(tp.getStartSystem());
+             expansionOrigin = tp.getDestinationSystem()->getExpansionOrigin();
+        }else if(!stationStart && stationDest){
+            t = this->getMovement(tp.getDestinationSystem());
+            expansionOrigin = tp.getStartSystem()->getExpansionOrigin();
+        }
+
+        if(t != NULL){
+
+            for(int i=0; i<this->refSystem.size();i++){
+                OiVec refP = this->refSystem.at(i);
+
+                refP = refP - expansionOrigin;
+                refP = t->getHomogenMatrix().inv()*refP;
+                refP = refP + expansionOrigin;
+                refP.setAt(3,1.0);
+
+                this->refSystem.replace(i,refP);
+            }
+            this->protocol.append("reference points where expanded with inverse of");
+            this->protocol.append(" movement transformation to get correct translation values.");
+        }
+    }
+}
+
+/*!
  * \brief getRotationMatrix from rotation angles
  * \param rot
  * \return
@@ -650,4 +721,45 @@ OiMat Helmert6Param::getScaleMatrix(OiVec s)
     tmpScale.setAt(3,3,1.0);
 
     return tmpScale;
+}
+
+/*!
+ * \brief getCoordSysWithMovements checks if the given coordinate systen has movement transformations
+ * \param cs
+ * \return
+ */
+bool Helmert6Param::getCoordSysWithMovements(CoordinateSystem *cs)
+{
+    bool result = false;
+
+    for(int i=0; i<cs->getTransformationParameters().size();i++){
+        if(cs->getTransformationParameters().at(i)->getIsMovement() &&
+                cs->getTransformationParameters().at(i)->getIsUsed()){
+            //if has movements and they are on "use" state
+            result = true;
+        }
+    }
+
+    return result;
+}
+
+TrafoParam *Helmert6Param::getMovement(CoordinateSystem *cs)
+{
+    TrafoParam *tp = NULL;
+    QMap<QDateTime,TrafoParam*> movements;
+
+    for(int i=0; i<cs->getTransformationParameters().size();i++){
+        if(cs->getTransformationParameters().at(i)->getIsMovement() &&
+                cs->getTransformationParameters().at(i)->getIsUsed()){
+
+            movements.insert(cs->getTransformationParameters().at(i)->getValidTime(),cs->getTransformationParameters().at(i));
+        }
+    }
+
+    if(movements.size() > 0){
+        tp = movements.values().at(0);
+    }
+
+
+    return tp;
 }

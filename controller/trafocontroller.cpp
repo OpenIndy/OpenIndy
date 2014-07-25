@@ -244,18 +244,32 @@ void TrafoController::applyMovements(QList<TrafoParam*> movements, CoordinateSys
                         obs->myXyz.setAt(3,1.0);
                         obs->myStatistic.qxx = t* obs->myStatistic.qxx;
                     }else{
+                    //check if there is another valid movement for this observation
+                        int count = 0;
 
-                        OiMat t = movements.at(i)->getHomogenMatrix();
+                        for(int k =i+1;k<movements.size();k++){
+                            //if the next movement is no more valid for this observation
+                            if((k+1)<movements.size() && movements.at(k+1)->getValidTime() > obs->myReading->measuredAt){
+                                count = k;
+                            }else{
+                                //if it is the last movement in the list
+                                count = k;
+                            }
+                        }
 
-                        //recude part transformed observation to expansion origin and apply movement.
-                        OiVec tmp = obs->myXyz - expansionOrigin;
-                        tmp.setAt(3,1.0);
+                        if(count != 0){
+                            OiMat t = movements.at(count)->getHomogenMatrix();
 
-                        tmp = t*tmp;
-                        //move back to original position
-                        obs->myXyz = tmp + expansionOrigin;
-                        obs->myXyz.setAt(3,1.0);
-                        obs->myStatistic.qxx = t* obs->myStatistic.qxx;
+                            //recude part transformed observation to expansion origin and apply movement.
+                            OiVec tmp = obs->myXyz - expansionOrigin;
+                            tmp.setAt(3,1.0);
+
+                            tmp = t*tmp;
+                            //move back to original position
+                            obs->myXyz = tmp + expansionOrigin;
+                            obs->myXyz.setAt(3,1.0);
+                            obs->myStatistic.qxx = t* obs->myStatistic.qxx;
+                        }
                     }
                 }
             }
