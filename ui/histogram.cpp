@@ -23,10 +23,10 @@ void Histogram::setTypeOfUnit(QString t)
 {
   this->typeOfUnit = t;
 
-  if(this->drawAll){
+ if(this->drawAll){
      this->prepareAll();
       this->repaint();
-  }
+ }
 
 
 }
@@ -67,6 +67,25 @@ void Histogram::paintEvent(QPaintEvent *event)
         return;
     }
 
+    if(this->drawAll == true && yValues.size() == 0){
+        pen.setColor("#016790");
+        painter.setPen(pen);
+        painter.drawText(xLeft+3, yBottom-5, tr("Histogram off"));
+        return;
+    }
+
+    if(maxError == -numeric_limits<double>::max() ){
+        pen.setColor("#016790");
+        painter.setPen(pen);
+        painter.drawText(xLeft+3, yBottom-5, tr("no data to draw"));
+        return;
+    }else if(minError ==  numeric_limits<double>::max()){
+        pen.setColor("#016790");
+        painter.setPen(pen);
+        painter.drawText(xLeft+3, yBottom-5, tr("no data to draw"));
+        return;
+    }
+
     //scale
     if(width < height){
         scale = width;
@@ -81,17 +100,20 @@ void Histogram::paintEvent(QPaintEvent *event)
         double scaleWidth = width/1.5;
         double scaleHeight = height/2;
 
-        QMapIterator<QString,AttributeStats > j(this->yValues);
+        scaleH = scaleHeight;
+        scaleW = scaleWidth;
 
+        QFont f("Arial", 10, QFont::Bold);
+        painter.setFont(f);
+
+        QMapIterator<QString,AttributeStats > j(this->yValues);
+        float yText = 35;
 
         while (j.hasNext()) {
             j.next();
 
             pen.setWidth(5);
-            int r = rand() % 200+ 1;
-            int g = rand() % 200 + 1;
-            int b = rand() % 200 + 1;
-            pen.setColor(QColor(r,g,b));
+            pen.setColor(j.value().color);
             painter.setPen(pen);
 
             int xCounter = 1;
@@ -105,9 +127,14 @@ void Histogram::paintEvent(QPaintEvent *event)
                 xCounter += 1;
             }
 
+            QString text = QString(j.value().name+": "+QString::number(j.value().expectation*j.value().unitMultiplier,'f',j.value().unitDigits));
+
+           painter.drawText((scaleWidth)+70, yText, text);
+           yText += 15;
+
         }
 
-       this->drawGridAll(scaleWidth,scaleHeight);
+       this->drawGridAll();
 
 
     }else{
@@ -162,17 +189,35 @@ void Histogram::paintEvent(QPaintEvent *event)
 void Histogram::mouseMoveEvent(QMouseEvent *event)
 {
 
-    double X = event->x()/scale;
-    double Y = (yBottom-event->y())/scale;
+    if(maxError == -numeric_limits<double>::max() ){
+        return;
+    }else if(minError ==  numeric_limits<double>::max()){
+        return;
+    }
 
-    X = minError+(X/errorScale);
-    //Y = maxFrequency-(Y/frequencyScale);
+    if(!this->drawAll){
+        double X = event->x()/scale;
+        double Y = (yBottom-event->y())/scale;
 
+        X = minError+(X/errorScale);
+        //Y = maxFrequency-(Y/frequencyScale);
 
-    QString x = QString::number(X*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    QString y = QString::number(Y,'f',2);
+        QString x = QString::number(X*unitMultiplier,'f',unitDigits);
+        QString y = QString::number(Y,'f',2);
 
-    QToolTip::showText(event->globalPos(),QString("x:"+x+","+"y:"+y),this);
+        QToolTip::showText(event->globalPos(),QString("x:"+x+","+"y:"+y),this);
+    }else{
+        double X = event->x()/scaleW;
+        double Y = yBottom/(2*scaleH)-event->y()/scaleH;
+
+        X = minFrequency+(X/frequencyScale);
+        Y = Y/errorScale;
+
+        QString x = QString::number(X,'f',1);
+        QString y = QString::number(Y*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+        QToolTip::showText(event->globalPos(),QString("x:"+x+","+"y:"+y),this);
+    }
 }
 
 void Histogram::generateDataToDraw(FeatureWrapper* f, QString attributeToDraw)
@@ -339,7 +384,7 @@ void Histogram::drawGrid()
 
 }
 
-void Histogram::drawGridAll(double scaleWidth, double scaleHeight)
+void Histogram::drawGridAll()
 {
     QPainter painter(this);
     QPen pen;
@@ -350,7 +395,7 @@ void Histogram::drawGridAll(double scaleWidth, double scaleHeight)
     painter.setPen(pen);
     painter.setFont(f);
 
-    QPointF nullPoint(scaleWidth *  frequencyScale*(iterationCount-minFrequency),yBottom/2);
+    QPointF nullPoint(scaleW *  frequencyScale*(iterationCount-minFrequency),yBottom/2);
 
     painter.drawLine(0,nullPoint.y(),
                      xLeft+5+nullPoint.x(), nullPoint.y());
@@ -364,7 +409,7 @@ void Histogram::drawGridAll(double scaleWidth, double scaleHeight)
 
     for(int i = 1; stepsV <width;i++){
 
-        float xRight = (xLeft+stepsV)/scaleWidth;
+        float xRight = (xLeft+stepsV)/scaleW;
 
         xRight = minFrequency+(xRight/frequencyScale);
 
@@ -389,8 +434,8 @@ void Histogram::drawGridAll(double scaleWidth, double scaleHeight)
 
     for(int i = 1; stepsH <height;i++){
 
-        float yUp = (stepsH)/scaleHeight;
-        float yDown = -(stepsH)/scaleHeight;
+        float yUp = (stepsH)/scaleH;
+        float yDown = -(stepsH)/scaleH;
 
         yUp = yUp/errorScale;
         yDown = yDown/errorScale;
@@ -494,7 +539,7 @@ void Histogram::addErrorAttribute(AttributeStats a, QList<double> v)
     if(maxError < a.maxError){
         maxError = a.maxError;
     }
-    if(minError > a.maxError){
+    if(minError > a.minError){
         minError = a.minError;
     }
 
@@ -572,14 +617,13 @@ void Histogram::prepareX()
 
         this->setUpExpectationPoints(h);
 
-        unitMultiplier = UnitConverter::getDistanceMultiplier();
-        unitDigits = UnitConverter::distanceDigits;
     }else{
 
         if(this->typeOfUnit == "position"){
 
             AttributeStats a;
             a.name = "X";
+            a.color = QColor(1,88,201);
             a.expectation = simData.uncertaintyX.expectation;
             a.uncertainty = simData.uncertaintyX.uncertainty;
             a.actual = actualFeature->getGeometry()->getXYZ().getAt(0);
@@ -588,10 +632,14 @@ void Histogram::prepareX()
             a.unitMultiplier= UnitConverter::getDistanceMultiplier();
             a.unitDigits = UnitConverter::distanceDigits;    
 
+
             this->addErrorAttribute(a,simData.uncertaintyX.values);
         }
 
     }
+
+    unitMultiplier = UnitConverter::getDistanceMultiplier();
+    unitDigits = UnitConverter::distanceDigits;
 
 
 }
@@ -630,6 +678,7 @@ void Histogram::prepareY()
 
             AttributeStats a;
             a.name = "Y";
+            a.color = QColor(183,135,23);
             a.expectation = simData.uncertaintyY.expectation;
             a.uncertainty = simData.uncertaintyY.uncertainty;
             a.actual = actualFeature->getGeometry()->getXYZ().getAt(1);
@@ -642,6 +691,9 @@ void Histogram::prepareY()
         }
 
     }
+
+    unitMultiplier = UnitConverter::getDistanceMultiplier();
+    unitDigits = UnitConverter::distanceDigits;
 }
 
 void Histogram::prepareZ()
@@ -676,6 +728,7 @@ void Histogram::prepareZ()
 
             AttributeStats a;
             a.name = "Z";
+            a.color = QColor(125,23,183);
             a.expectation = simData.uncertaintyZ.expectation;
             a.uncertainty = simData.uncertaintyZ.uncertainty;
             a.actual = actualFeature->getGeometry()->getXYZ().getAt(2);
@@ -688,6 +741,9 @@ void Histogram::prepareZ()
         }
 
     }
+
+    unitMultiplier = UnitConverter::getDistanceMultiplier();
+    unitDigits = UnitConverter::distanceDigits;
 }
 
 void Histogram::prepareI()
@@ -722,6 +778,7 @@ void Histogram::prepareI()
 
             AttributeStats a;
             a.name = "I";
+            a.color = QColor(1,88,201);
             a.expectation = simData.uncertaintyI.expectation;
             a.uncertainty = simData.uncertaintyI.uncertainty;
             a.actual = actualFeature->getGeometry()->getIJK().getAt(0);
@@ -734,6 +791,9 @@ void Histogram::prepareI()
         }
 
     }
+
+    unitMultiplier = 1.0;
+    unitDigits = 8;
 }
 
 void Histogram::prepareJ()
@@ -767,6 +827,7 @@ void Histogram::prepareJ()
 
             AttributeStats a;
             a.name = "J";
+            a.color = QColor(183,135,23);
             a.expectation = simData.uncertaintyJ.expectation;
             a.uncertainty = simData.uncertaintyJ.uncertainty;
             a.actual = actualFeature->getGeometry()->getIJK().getAt(1);
@@ -779,6 +840,9 @@ void Histogram::prepareJ()
         }
 
     }
+
+    unitMultiplier = 1.0;
+    unitDigits = 8;
 }
 
 void Histogram::prepareK()
@@ -812,6 +876,7 @@ void Histogram::prepareK()
 
             AttributeStats a;
             a.name = "K";
+            a.color = QColor(125,23,183);
             a.expectation = simData.uncertaintyK.expectation;
             a.uncertainty = simData.uncertaintyK.uncertainty;
             a.actual = actualFeature->getGeometry()->getIJK().getAt(2);
@@ -824,6 +889,9 @@ void Histogram::prepareK()
         }
 
     }
+
+    unitMultiplier = 1.0;
+    unitDigits = 8;
 }
 
 void Histogram::prepareRadius()
@@ -858,6 +926,7 @@ void Histogram::prepareRadius()
 
             AttributeStats a;
             a.name = "Radius";
+            a.color = QColor(60,255,0);
             a.expectation = simData.uncertaintyRadius.expectation;
             a.uncertainty = simData.uncertaintyRadius.uncertainty;
             a.actual = actualFeature->getGeometry()->getRadius();
@@ -870,6 +939,9 @@ void Histogram::prepareRadius()
         }
 
     }
+
+    unitMultiplier = UnitConverter::getDistanceMultiplier();
+    unitDigits = UnitConverter::distanceDigits;
 }
 
 void Histogram::prepareScalar()
@@ -901,4 +973,7 @@ void Histogram::prepareScalar()
         }
 
     }
+
+    unitMultiplier = UnitConverter::getDistanceMultiplier();
+    unitDigits = UnitConverter::distanceDigits;
 }

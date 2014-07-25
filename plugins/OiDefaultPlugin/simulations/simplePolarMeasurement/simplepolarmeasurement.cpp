@@ -48,8 +48,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     lambda.uncertainty = 0.000403;
     lambda.distribution = this->distributions.at(0);
     lambda.distributions = this->distributions;
-    lambda.errorUnit = UnitConverter::eMILLIMETER;
-    lambda.errorDimension = UnitConverter::eMetric;
+    lambda.errorUnit = "[mm]";
 
     lambda.description="lambda - Range offset in millimeter";
 
@@ -63,8 +62,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     mu.uncertainty = 0.000005;
     mu.distribution = this->distributions.at(0);
     mu.distributions = this->distributions;
-    mu.errorUnit = UnitConverter::eNoUnit;
-    mu.errorDimension = UnitConverter::eDimensionless;
+    mu.errorUnit = "[-]";
 
     mu.description="mu - Scale factor for range";
 
@@ -78,8 +76,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     ex.uncertainty = 0.0000122;
     ex.distribution = this->distributions.at(0);
     ex.distributions = this->distributions;
-    ex.errorUnit = UnitConverter::eMILLIMETER;
-    ex.errorDimension = UnitConverter::eMetric;
+    ex.errorUnit = "[mm]";
 
     ex.description="ex - Transit axis offset from the standing axis";
 
@@ -93,8 +90,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     by.uncertainty = 0.0000654;
     by.distribution = this->distributions.at(0);
     by.distributions = this->distributions;
-    by.errorUnit = UnitConverter::eMILLIMETER;
-    by.errorDimension = UnitConverter::eMetric;
+    by.errorUnit =  "[mm]";
 
     by.description="by - Beam offset (y-direction) from the origin";
 
@@ -108,8 +104,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     bz.uncertainty = 0.0000974;
     bz.distribution = this->distributions.at(0);
     bz.distributions = this->distributions;
-    bz.errorUnit = UnitConverter::eMILLIMETER;
-    bz.errorDimension = UnitConverter::eMetric;
+    bz.errorUnit =  "[mm]";
 
     bz.description="bz - Beam offset (z-direction) from the origin";
 
@@ -123,8 +118,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     alpha.uncertainty = 0.128;
     alpha.distribution = this->distributions.at(0);
     alpha.distributions = this->distributions;
-    alpha.errorUnit = UnitConverter::eArcSeconds;
-    alpha.errorDimension = UnitConverter::eAngular;
+    alpha.errorUnit =  "[arcsec]";
 
     alpha.description="alpha - Transit axis angle in the yz-plane";
 
@@ -138,8 +132,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     gamma.uncertainty = 0.079;
     gamma.distribution = this->distributions.at(0);
     gamma.distributions = this->distributions;
-    gamma.errorUnit = UnitConverter::eArcSeconds;
-    gamma.errorDimension = UnitConverter::eAngular;
+    gamma.errorUnit = "[arcsec]";
 
     gamma.description="gamma - Beam axis angle in the xy-plane";
 
@@ -153,8 +146,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Aa1.uncertainty = 0.064;
     Aa1.distribution = this->distributions.at(0);
     Aa1.distributions = this->distributions;
-    Aa1.errorUnit = UnitConverter::eArcSeconds;
-    Aa1.errorDimension = UnitConverter::eAngular;
+    Aa1.errorUnit = "[arcsec]";
 
     Aa1.description="Aa1 - Azimuth scale error, first order";
 
@@ -168,8 +160,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Ba1.uncertainty = 0.080;
     Ba1.distribution = this->distributions.at(0);
     Ba1.distributions = this->distributions;
-    Ba1.errorUnit = UnitConverter::eArcSeconds;
-    Ba1.errorDimension = UnitConverter::eAngular;
+    Ba1.errorUnit = "[arcsec]";
 
     Ba1.description="Ba1 - Azimuth scale error, first order";
 
@@ -183,8 +174,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Aa2.uncertainty = 0.073;
     Aa2.distribution = this->distributions.at(0);
     Aa2.distributions = this->distributions;
-    Aa2.errorUnit = UnitConverter::eArcSeconds;
-    Aa2.errorDimension = UnitConverter::eAngular;
+    Aa2.errorUnit = "[arcsec]";
 
     Aa2.description="Aa2 - Azimuth scale error, second order";
 
@@ -198,8 +188,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Ba2.uncertainty = 0.090;
     Ba2.distribution = this->distributions.at(0);
     Ba2.distributions = this->distributions;
-    Ba2.errorUnit = UnitConverter::eArcSeconds;
-    Ba2.errorDimension = UnitConverter::eAngular;
+    Ba2.errorUnit = "[arcsec]";
 
     Ba2.description="Ba2 - Azimuth scale error, second order";
 
@@ -213,8 +202,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Ae0.uncertainty = 0.223;
     Ae0.distribution = this->distributions.at(0);
     Ae0.distributions = this->distributions;
-    Ae0.errorUnit = UnitConverter::eArcSeconds;
-    Ae0.errorDimension = UnitConverter::eAngular;
+    Ae0.errorUnit = "[arcsec]";
 
     Ae0.description="Ae0 - Elevation angle offset";
 
@@ -228,8 +216,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Ae1.uncertainty = 0.152;
     Ae1.distribution = this->distributions.at(0);
     Ae1.distributions = this->distributions;
-    Ae1.errorUnit = UnitConverter::eArcSeconds;
-    Ae1.errorDimension = UnitConverter::eAngular;
+    Ae1.errorUnit = "[arcsec]";
 
     Ae1.description="Ae1 - Elevation scale error, first order";
 
@@ -243,8 +230,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Be1.uncertainty = 0.183;
     Be1.distribution = this->distributions.at(0);
     Be1.distributions = this->distributions;
-    Be1.errorUnit = UnitConverter::eArcSeconds;
-    Be1.errorDimension = UnitConverter::eAngular;
+    Be1.errorUnit = "[arcsec]";
 
     Be1.description="Be1 - Elevation scale error, first order";
 
@@ -258,8 +244,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Ae2.uncertainty = 0.214;
     Ae2.distribution = this->distributions.at(0);
     Ae2.distributions = this->distributions;
-    Ae2.errorUnit = UnitConverter::eArcSeconds;
-    Ae2.errorDimension = UnitConverter::eAngular;
+    Ae2.errorUnit = "[arcsec]";
 
     Ae2.description="Ae2 - Elevation scale error, second order";
 
@@ -273,8 +258,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Be2.uncertainty = 0.214;
     Be2.distribution = this->distributions.at(0);
     Be2.distributions = this->distributions;
-    Be2.errorUnit = UnitConverter::eArcSeconds;
-    Be2.errorDimension = UnitConverter::eAngular;
+    Be2.errorUnit = "[arcsec]";
 
     Be2.description="Be2 - Elevation scale error, second order";
 
@@ -288,6 +272,20 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getObjectUncertainti
 {
     QMap<QString, UncertaintyComponent> objectUncertainties;
 
+    //######################### coefficient of thermal expansion #########################
+    UncertaintyComponent cOfE;
+
+    cOfE.name = "coefficient of thermal expansion";
+    cOfE.value = 11,8;
+    cOfE.uncertainty = 1;
+    cOfE.distribution = this->distributions.at(0);
+    cOfE.distributions = this->distributions;
+    cOfE.errorUnit = "1/K";
+
+    cOfE.description="The degree of expansion divided by the change in temperaturer";
+
+    objectUncertainties.insert("coefficientOfExpansion",cOfE);
+
 
     return objectUncertainties;
 }
@@ -296,6 +294,47 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getEnviromentUncerta
 {
     QMap<QString, UncertaintyComponent> enviromentUncertainties;
 
+    //######################### temperature #########################
+    UncertaintyComponent t;
+
+    t.name = "temperature";
+    t.value = 20;
+    t.uncertainty = 0.5;
+    t.distribution = this->distributions.at(0);
+    t.distributions = this->distributions;
+    t.errorUnit = "[celsius]";
+
+    t.description="influence of temperaturer on the object and sensor";
+
+    enviromentUncertainties.insert("temperature",t);
+
+    //######################### pressure #########################
+    UncertaintyComponent p;
+
+    p.name = "pressure";
+    p.value = 101325 ;
+    p.uncertainty = 10;
+    p.distribution = this->distributions.at(0);
+    p.distributions = this->distributions;
+    p.errorUnit = "[pascal]";
+
+    p.description="influence of pressure(air)  on the sensor";
+
+    enviromentUncertainties.insert("pressures ",p);
+
+    //######################### humidity #########################
+    UncertaintyComponent h;
+
+    h.name = "humidity";
+    h.value = 50 ;
+    h.uncertainty = 5;
+    h.distribution = this->distributions.at(0);
+    h.distributions = this->distributions;
+    h.errorUnit = "[percent %]";
+
+    h.description="influence of humidity(air)  on the sensor";
+
+    enviromentUncertainties.insert("humidity ",h);
 
     return enviromentUncertainties;
 }
@@ -310,20 +349,16 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getHumanInfluence()
 
 QMap<QString, int> *SimplePolarMeasurement::getIntegerParameter()
 {
-    QMap<QString,int>*  intParam = new QMap<QString,int>;
+    QMap<QString,int>* intParam = new QMap<QString,int>;
 
-    intParam->insert("level of uncertainty",1.0);
+    intParam->insert("wavelength [nm]",633);
 
     return intParam;
 }
 
 QMap<QString, double> *SimplePolarMeasurement::getDoubleParameter()
 {
-    QMap<QString,double>* doubleParam = new QMap<QString,double>;
-
-    doubleParam->insert("part size [m]",5.0);
-
-    return doubleParam;
+    return NULL;
 }
 
 QMap<QString, QStringList> *SimplePolarMeasurement::getStringParameter()
@@ -331,11 +366,19 @@ QMap<QString, QStringList> *SimplePolarMeasurement::getStringParameter()
     QMap <QString, QStringList>* stringParameter = new QMap<QString, QStringList>;
 
     QStringList dice;
+    QStringList diceDefaultNo;
 
-    dice.append("no");
     dice.append("yes");
+    dice.append("no");
 
-    stringParameter->insert("dice error for every reading",dice);
+    diceDefaultNo.append("no");
+    diceDefaultNo.append("yes");
+
+    stringParameter->insert("use sensor errors",dice);
+    stringParameter->insert("use environment errors", dice);
+    stringParameter->insert("use object errors", diceDefaultNo);
+    stringParameter->insert("use human errors", diceDefaultNo);
+
 
     return stringParameter;
 }

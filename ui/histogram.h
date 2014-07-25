@@ -20,6 +20,7 @@ struct AttributeStats{
     double actual;
     double unitMultiplier;
     int unitDigits;
+    QColor color;
 };
 
 class Histogram : public QWidget
@@ -65,6 +66,8 @@ private:
     double frequencyScale;
 
     double scale;
+    double scaleH;
+    double scaleW;
     float xLeft;
     float xRight;
     float yTop;
@@ -85,7 +88,7 @@ private:
 
     void generateDataToDraw(FeatureWrapper* f, QString attributeToDraw);
     void drawGrid();
-    void drawGridAll(double scaleWidth, double scaleHeight);
+    void drawGridAll();
     void drawResultSet();
     void generateDensityList(QList<double> tmpList);
     void addErrorAttribute(AttributeStats a, QList<double> v);
