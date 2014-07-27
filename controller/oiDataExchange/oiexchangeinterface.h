@@ -1,8 +1,10 @@
 #ifndef OIEXCHANGEINTERFACE_H
 #define OIEXCHANGEINTERFACE_H
 
-#include "oiexchangeobject.h"
 #include <QStringList>
+#include <QObject>
+
+#include "oiexchangeobject.h"
 
 /*!
  * \brief The oiExchange Interface must be implemented for a new kind of data import/export.
@@ -10,10 +12,12 @@
  * implemented your import/export class you have to add it to the static class oidataexchanger.
  * For an example you can take a look at the oiexchangeascii class.
  */
-class oiExchangeInterface
+class oiExchangeInterface : public QObject
 {
+    Q_OBJECT
 
 public:
+    explicit oiExchangeInterface(QObject *parent = 0){}
     virtual ~oiExchangeInterface(){}
 
     /*!
@@ -64,6 +68,9 @@ public:
      * \return
      */
     virtual QList<UnitConverter::unitType> getSupportedTemperatureUnits() = 0;
+
+signals:
+    void updateProgress(int progress, QString msg); //progress (0-100)
 
 };
 

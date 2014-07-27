@@ -12,9 +12,10 @@
  */
 class oiExchangeASCII: public oiExchangeInterface
 {
+    Q_OBJECT
 
 public:
-    oiExchangeASCII();
+    explicit oiExchangeASCII(QObject *parent = 0);
 
     bool importOiData(oiExchangeObject& data);
     bool exportOiData(oiExchangeObject& data);

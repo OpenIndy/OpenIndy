@@ -1,6 +1,6 @@
 #include "oiexchangeascii.h"
 
-oiExchangeASCII::oiExchangeASCII()
+oiExchangeASCII::oiExchangeASCII(QObject *parent) : oiExchangeInterface(parent)
 {
 }
 

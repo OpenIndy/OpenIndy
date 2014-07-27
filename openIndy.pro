@@ -172,7 +172,8 @@ SOURCES += \
     ui/simulationerrortablemodel.cpp \
     ui/simulationdelegate.cpp \
     ui/simulationtreeviewmodel.cpp \
-    src/simulation/simulationdata.cpp
+    src/simulation/simulationdata.cpp \
+    ui/oiloadingdialog.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -309,7 +310,8 @@ HEADERS  += \
     ui/simulationerrortablemodel.h \
     ui/simulationdelegate.h \
     ui/simulationtreeviewmodel.h \
-    src/simulation/simulationdata.h
+    src/simulation/simulationdata.h \
+    ui/oiloadingdialog.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
@@ -328,6 +330,7 @@ FORMS    += ui/mainwindow.ui \
     ui/edittrafoparamdialog.ui \
     ui/oisimulationwidget.ui \
     ui/stationinfodialog.ui \
-    ui/realtimedatadialog.ui
+    ui/realtimedatadialog.ui \
+    ui/oiloadingdialog.ui
 
 

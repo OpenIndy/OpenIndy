@@ -5,7 +5,10 @@
 #include "oivec.h"
 
 struct Point_PC{
+    Point_PC(){ this->isUsed = false; }
+
     float xyz[3];
+    bool isUsed;
 };
 
 struct BoundingBox_PC{
@@ -22,9 +25,9 @@ public:
     ~PointCloud();
 
     OiVec xyz; //centroid of pointcloud
-    QList<Point_PC*> points; //all points of the pointcloud
+    QList<Point_PC*> myPoints; //all points of the pointcloud
     BoundingBox_PC bbox; //bounding box of the pointcloud
-    int pointCount; //number of pointcloud points
+    unsigned long pointCount; //number of pointcloud points
 
     void recalc();
 

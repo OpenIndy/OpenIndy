@@ -1,27 +1,82 @@
 #include "oidataexchanger.h"
 
- oiDataExchanger::oiDataExchanger(){
+oiDataExchanger oiDataExchanger::myInstance;
+QString oiDataExchanger::format;
+bool oiDataExchanger::import;
+oiExchangeObject oiDataExchanger::myExchangeData;
 
+oiDataExchanger::oiDataExchanger(QObject *parent) : QObject(parent){
 
- }
+}
 
+oiDataExchanger::~oiDataExchanger(){
 
- bool oiDataExchanger::importData(oiExchangeObject &exchangeData,QString format){
+    if(this->myExchangeThread.isRunning()){
+        this->myExchangeThread.quit();
+        this->myExchangeThread.wait();
+    }
 
-   exchangeData.features.clear();
+}
 
-   oiDataExchanger::exchangeData(exchangeData,format,true);
+/*!
+ * \brief oiDataExchanger::getInstance
+ * Get an instance of oiDataExchanger class
+ * \return
+ */
+oiDataExchanger &oiDataExchanger::getInstance(){
+    return oiDataExchanger::myInstance;
+}
 
-   return false;
- }
+/*!
+ * \brief oiDataExchanger::importData
+ * \param exchangeData
+ * \param format
+ */
+void oiDataExchanger::importData(oiExchangeObject exchangeData, QString format){
 
-bool oiDataExchanger::exportData(oiExchangeObject &exchangeData,QString format){
+    exchangeData.features.clear();
+    oiDataExchanger::myExchangeData = exchangeData;
+    oiDataExchanger::format = format;
+    oiDataExchanger::import = true;
 
-    oiDataExchanger::exchangeData(exchangeData,format,false);
+    if(this->myExchangeThread.isRunning()){
+        this->myExchangeThread.quit();
+        this->myExchangeThread.wait();
+    }
 
-    return false;
- }
+    moveToThread(&this->myExchangeThread);
+    connect(&this->myExchangeThread, SIGNAL(started()), this, SLOT(exchangeData()));
+    this->myExchangeThread.start();
 
+}
+
+/*!
+ * \brief oiDataExchanger::exportData
+ * \param exchangeData
+ * \param format
+ */
+void oiDataExchanger::exportData(oiExchangeObject exchangeData, QString format){
+
+    oiDataExchanger::myExchangeData = exchangeData;
+    oiDataExchanger::format = format;
+    oiDataExchanger::import = false;
+
+    if(this->myExchangeThread.isRunning()){
+        this->myExchangeThread.quit();
+        this->myExchangeThread.wait();
+    }
+
+    moveToThread(&this->myExchangeThread);
+    connect(&this->myExchangeThread, SIGNAL(started()), this, SLOT(exchangeData()));
+    this->myExchangeThread.start();
+
+}
+
+/*!
+ * \brief oiDataExchanger::getOutputFormats
+ * add a string tag for your oiexchange class here
+ * \return
+ */
 QStringList oiDataExchanger::getOutputFormats(){
 
     QStringList  formats;
@@ -33,6 +88,12 @@ QStringList oiDataExchanger::getOutputFormats(){
     return formats;
 }
 
+/*!
+ * \brief oiDataExchanger::getSupportedElements
+ * add the supported element types of your oiexchange class here
+ * \param format
+ * \return
+ */
 QList<Configuration::ElementTypes> oiDataExchanger::getSupportedElements(QString format){
 
     //first check for your tag then call your supported elements function here
@@ -108,24 +169,49 @@ QList<UnitConverter::unitType> oiDataExchanger::getTemperatureUnits(QString form
 
 }
 
- bool oiDataExchanger::exchangeData(oiExchangeObject &exchangeData,QString format, bool import){
+/*!
+  * \brief oiDataExchanger::exchangeData
+  * \param exchangeData
+  * \param format
+  * \param import
+  */
+void oiDataExchanger::exchangeData(){
 
-     //first check for your tag then call your import or export function here
-     if(format == "simple ascii oiFeature (oif)"){
-         oiExchangeASCII asciiExchange;
-         if (import){
-             asciiExchange.importOiData(exchangeData);
-         }else{
-             asciiExchange.exportOiData(exchangeData);
-         }
-     }else if(format == "pts"){
-         oiExchangePTS ptsExchange;
-         if (import){
-             ptsExchange.importOiData(exchangeData);
-         }else{
-             ptsExchange.exportOiData(exchangeData);
-         }
-     }
+    disconnect(&this->myExchangeThread, SIGNAL(started()), this, SLOT(exchangeData()));
 
-     return false;
- }
+    bool success = false;
+
+    //first check for your tag then call your import or export function here
+    if(oiDataExchanger::format == "simple ascii oiFeature (oif)"){
+
+        oiExchangeASCII asciiExchange;
+        if (oiDataExchanger::import){
+            success = asciiExchange.importOiData(oiDataExchanger::myExchangeData);
+        }else{
+            success = asciiExchange.exportOiData(oiDataExchanger::myExchangeData);
+        }
+
+    }else if(oiDataExchanger::format == "pts"){
+
+        oiExchangePTS ptsExchange;
+        connect(&ptsExchange, SIGNAL(updateProgress(int, QString)), this, SLOT(emitUpdateProgress(int, QString)));
+        if (oiDataExchanger::import){
+            success = ptsExchange.importOiData(oiDataExchanger::myExchangeData);
+        }else{
+            success = ptsExchange.exportOiData(oiDataExchanger::myExchangeData);
+        }
+
+    }
+
+    emit this->exchangeFinished(success, oiDataExchanger::myExchangeData);
+
+}
+
+/*!
+ * \brief oiDataExchanger::emitUpdateProgress
+ * \param progress
+ * \param msg
+ */
+void oiDataExchanger::emitUpdateProgress(int progress, QString msg){
+    emit this->updateProgress(progress, msg);
+}

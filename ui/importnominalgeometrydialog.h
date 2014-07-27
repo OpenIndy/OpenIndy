@@ -3,15 +3,18 @@
 
 #include <QDialog>
 #include <QStringListModel>
-#include "oidataexchanger.h"
-#include "oidataimporter.h"
 #include <QFileDialog>
-#include "configuration.h"
 #include <QShowEvent>
 #include <QDesktopWidget>
-#include "oifeaturestate.h"
 #include <QStringListModel>
 #include <QMessageBox>
+
+#include "configuration.h"
+#include "oidataexchanger.h"
+#include "oidataimporter.h"
+#include "oiexchangeobject.h"
+#include "oifeaturestate.h"
+#include "oiloadingdialog.h"
 
 namespace Ui {
 class importNominalGeometryDialog;
@@ -45,9 +48,17 @@ public slots:
 
     void showEvent(QShowEvent *event);
 
+private slots:
+    void updateProgress(int progress, QString msg); //progress (0-100)
+    void exchangeFinished(bool success, oiExchangeObject exchangeData);
+
 private:
     Ui::importNominalGeometryDialog *ui;
     oiExchangeObject ExchangeData;
+
+    oiDataExchanger &myExchanger;
+
+    const OiLoadingDialog *myLoadingDialog;
 
     void setUpSupportedElements(QString format);
     void setUpSupportedUnits(QString format);
