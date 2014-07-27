@@ -357,6 +357,15 @@ void SensorControl::copyMe(SensorControl *sc)
 {
     sc->instrument = this->instrument;
     sc->InstrumentConfig = this->InstrumentConfig;
+
+    sc->instrumentListener = this->instrumentListener;
+    connect(sc,SIGNAL(activateStatStream()),sc->instrumentListener,SLOT(sensorStatStream()));
+    connect(sc,SIGNAL(activateReadingStream(int)),sc->instrumentListener,SLOT(sensorReadingStream(int)));
+    connect(sc->instrumentListener,SIGNAL(connectionLost()),sc,SLOT(streamLostSignal()));
+
+    sc->instrumentListener->moveToThread(&sc->listenerThread);
+
+    sc->listenerThread.start();
 }
 
 

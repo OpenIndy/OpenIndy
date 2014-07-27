@@ -19,6 +19,8 @@ signals:
     
 public slots:
 
+    OiMat getTransformationMatrix(CoordinateSystem *from);
+
     void addObservation(Observation *obs);
     //void applyMovements(Observation *obs);
     void transformNewObservations(Observation *obs);
@@ -51,8 +53,6 @@ private:
     void applyTranslations(OiVec centroidBefore, OiVec centroidAfter, QList<Observation*>observations);
     OiVec checkTopApplyTranslation(QList<Observation*>observations,OiVec translation);
 
-    OiMat getTransformationMatrix(CoordinateSystem *from);
-    
 };
 
 #endif // TRAFOCONTROLLER_H
