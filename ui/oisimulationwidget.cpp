@@ -25,6 +25,15 @@ OiSimulationWidget::OiSimulationWidget(QWidget *parent) :
     SimulationDelegate *errorDelegate = new SimulationDelegate();
     this->ui->tableView_sensor->setItemDelegate(errorDelegate);
 
+    SimulationDelegate *objectErrorDelegate = new SimulationDelegate();
+    this->ui->tableView_object->setItemDelegate(objectErrorDelegate);
+
+    SimulationDelegate *environmetErrorDelegate = new SimulationDelegate();
+    this->ui->tableView_environmet->setItemDelegate(environmetErrorDelegate);
+
+    SimulationDelegate *humanErrorDelegate = new SimulationDelegate();
+    this->ui->tableView_humanInfluence->setItemDelegate(humanErrorDelegate);
+
     connect(this,SIGNAL(startSimulation()),&this->control,SLOT(recalcAll()));
     connect(&this->control,SIGNAL(counter(int)),this->ui->progressBar,SLOT(setValue(int)));
 
@@ -94,6 +103,15 @@ void OiSimulationWidget::on_listView_simulations_clicked(const QModelIndex &inde
 
         ui->tableView_sensor->resizeColumnsToContents();
         ui->tableView_sensor->resizeRowsToContents();
+
+        ui->tableView_environmet->resizeColumnsToContents();
+        ui->tableView_environmet->resizeRowsToContents();
+
+        ui->tableView_object->resizeColumnsToContents();
+        ui->tableView_object->resizeRowsToContents();
+
+        ui->tableView_humanInfluence->resizeColumnsToContents();
+        ui->tableView_humanInfluence->resizeRowsToContents();
 
         Console::addLine(control.actualSimulation->getMetaData()->name);
     }

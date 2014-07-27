@@ -42,6 +42,9 @@ void SimulationController::recalcAll()
     Uncertainties u;
 
     u.sensorUncertainties = sensorErrorModel->getErrors();
+    u.enviromentUncertainties =environmentErrorModel->getErrors();
+    u.objectUncertainties = objectErrorModel->getErrors();
+    u.humanUncertainties = humanErrorModel->getErrors();
     actualSimulation->setGivenUncertainties(u);
 
     foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){

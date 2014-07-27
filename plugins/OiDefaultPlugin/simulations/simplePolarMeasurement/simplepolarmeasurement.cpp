@@ -5,6 +5,8 @@ SimplePolarMeasurement::SimplePolarMeasurement()
     this->distributions.append("normal");
     this->distributions.append("uniform");
     this->distributions.append("triangular");
+
+    newIteration = true;
 }
 
 PluginMetaData *SimplePolarMeasurement::getMetaData()
@@ -276,8 +278,8 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getObjectUncertainti
     UncertaintyComponent cOfE;
 
     cOfE.name = "coefficient of thermal expansion";
-    cOfE.value = 11,8;
-    cOfE.uncertainty = 1;
+    cOfE.value = 11.8;
+    cOfE.uncertainty = 2;
     cOfE.distribution = this->distributions.at(0);
     cOfE.distributions = this->distributions;
     cOfE.errorUnit = "1/K";
@@ -285,6 +287,20 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getObjectUncertainti
     cOfE.description="The degree of expansion divided by the change in temperaturer";
 
     objectUncertainties.insert("coefficientOfExpansion",cOfE);
+
+    //######################### materialTemperature #########################
+    UncertaintyComponent t;
+
+    t.name = "material temperature";
+    t.value = 20;
+    t.uncertainty = 1;
+    t.distribution = this->distributions.at(0);
+    t.distributions = this->distributions;
+    t.errorUnit = "[celsius]";
+
+    t.description="influence of temperaturer on the object and sensor";
+
+    objectUncertainties.insert("materialTemperature",t);
 
 
     return objectUncertainties;
@@ -308,6 +324,34 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getEnviromentUncerta
 
     enviromentUncertainties.insert("temperature",t);
 
+    //######################### vertical temperature gradient#########################
+    UncertaintyComponent vtg;
+
+    vtg.name = "vertical temperature gradient";
+    vtg.value = 0.4;
+    vtg.uncertainty = 0.1;
+    vtg.distribution = this->distributions.at(0);
+    vtg.distributions = this->distributions;
+    vtg.errorUnit = "[celsius/m]";
+
+    vtg.description="gradient to calculate the vertical beam refraction";
+
+    enviromentUncertainties.insert("verticalTemperatureGradient",vtg);
+
+    //######################### horizontal temperature gradient#########################
+    UncertaintyComponent htg;
+
+    htg.name = "horizontal temperature gradient";
+    htg.value = 0.1;
+    htg.uncertainty = 0.1;
+    htg.distribution = this->distributions.at(0);
+    htg.distributions = this->distributions;
+    htg.errorUnit = "[celsius/m]";
+
+    htg.description="gradient to calculate the horizontal beam refraction";
+
+    enviromentUncertainties.insert("horizontalTemperatureGradient",htg);
+
     //######################### pressure #########################
     UncertaintyComponent p;
 
@@ -320,21 +364,35 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getEnviromentUncerta
 
     p.description="influence of pressure(air)  on the sensor";
 
-    enviromentUncertainties.insert("pressures ",p);
+    enviromentUncertainties.insert("pressures",p);
+
+    //######################### vertical pressure Gradient#########################
+    UncertaintyComponent hpg;
+
+    hpg.name = "vertical pressure gradient";
+    hpg.value = -0.8;
+    hpg.uncertainty = 0.1;
+    hpg.distribution = this->distributions.at(0);
+    hpg.distributions = this->distributions;
+    hpg.errorUnit = "[pascal/m]";
+
+    hpg.description="gradient to calculate the vertical beam refraction";
+
+    enviromentUncertainties.insert("verticalPressureGradient",hpg);
 
     //######################### humidity #########################
     UncertaintyComponent h;
 
     h.name = "humidity";
     h.value = 50 ;
-    h.uncertainty = 5;
+    h.uncertainty = 1;
     h.distribution = this->distributions.at(0);
     h.distributions = this->distributions;
     h.errorUnit = "[percent %]";
 
     h.description="influence of humidity(air)  on the sensor";
 
-    enviromentUncertainties.insert("humidity ",h);
+    enviromentUncertainties.insert("humidity",h);
 
     return enviromentUncertainties;
 }
@@ -343,22 +401,65 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getHumanInfluence()
 {
     QMap<QString, UncertaintyComponent> humanInfluence;
 
+    //######################### azimuth #########################
+    UncertaintyComponent a;
+
+    a.name = "delta_azimuth";
+    a.value = 0.0;
+    a.uncertainty = 0.0001;
+    a.distribution = this->distributions.at(0);
+    a.distributions = this->distributions;
+    a.errorUnit = "[milliGrad]";
+
+    a.description="influence of the user on the azimuth measurement";
+
+    humanInfluence.insert("delta_azimuth",a);
+
+    //######################### zenith #########################
+    UncertaintyComponent z;
+
+    z.name = "delta_zenith";
+    z.value = 0.0;
+    z.uncertainty = 0.0001;
+    z.distribution = this->distributions.at(0);
+    z.distributions = this->distributions;
+    z.errorUnit = "[milliGrad]";
+
+    z.description="influence of the user on the zenith measurement";
+
+    humanInfluence.insert("delta_zenith",z);
+
+    //######################### distance #########################
+    UncertaintyComponent d;
+
+    d.name = "delta_distance";
+    d.value = 0.0;
+    d.uncertainty = 0.0001;
+    d.distribution = this->distributions.at(0);
+    d.distributions = this->distributions;
+    d.errorUnit = "[mm]";
+
+    d.description="influence of the user on the distance measurement";
+
+    humanInfluence.insert("delta_distance",d);
+
 
     return humanInfluence;
 }
 
 QMap<QString, int> *SimplePolarMeasurement::getIntegerParameter()
 {
-    QMap<QString,int>* intParam = new QMap<QString,int>;
-
-    intParam->insert("wavelength [nm]",633);
-
-    return intParam;
+    return NULL;
 }
 
 QMap<QString, double> *SimplePolarMeasurement::getDoubleParameter()
 {
-    return NULL;
+    QMap<QString,double>* doubleParam = new QMap<QString,double>;
+
+    doubleParam->insert("wavelength [micrometer]",0.633);
+
+    return doubleParam;
+
 }
 
 QMap<QString, QStringList> *SimplePolarMeasurement::getStringParameter()
@@ -423,7 +524,24 @@ bool SimplePolarMeasurement::analyseSimulationData(UncertaintyData &d)
 
 bool SimplePolarMeasurement::distort(Reading *r,OiMat objectRelation,bool newIterationStart)
 {
-    distortionBySensor(r);
+
+    newIteration = newIterationStart;
+
+    if(stringParameter->value("use sensor errors").compare("yes")==0){
+       distortionBySensor(r);
+    }
+
+    if(stringParameter->value("use environment errors").compare("yes")==0){
+        distortionByEnviroment(r);
+    }
+
+    if(stringParameter->value("use object errors").compare("yes")==0){
+        distortionByObject(r,objectRelation);
+    }
+
+    if(stringParameter->value("use human errors").compare("yes")==0){
+       distortionByHuman(r);
+    }
 
     return true;
 }
@@ -555,17 +673,86 @@ bool SimplePolarMeasurement::distortionBySensor(Reading *r)
 
 bool SimplePolarMeasurement::distortionByEnviroment(Reading *r)
 {
-    return false;
+
+    if(newIteration){
+
+        double refTemperature = givenUncertainties.enviromentUncertainties.value("temperature").value;
+        double temperature = distortComponent(givenUncertainties.enviromentUncertainties.value("temperature"));
+
+        double verticalTempGradient =  distortComponent(givenUncertainties.enviromentUncertainties.value("verticalTemperatureGradient"));
+        double horizontalTempGradient =  distortComponent(givenUncertainties.enviromentUncertainties.value("horizontalTemperatureGradient"));
+        double verticalPreGradient =  distortComponent(givenUncertainties.enviromentUncertainties.value("verticalPressureGradient"));
+
+        double refPressure = givenUncertainties.enviromentUncertainties.value("pressure").value;
+        double pressure = distortComponent(givenUncertainties.enviromentUncertainties.value("pressure"));
+
+        double refHumidity = givenUncertainties.enviromentUncertainties.value("humidity").value;
+        double humidity = distortComponent(givenUncertainties.enviromentUncertainties.value("humidity"));
+
+        double wavelength = doubleParameter->value("wavelength [micrometer]");
+
+        refraction = this->edlenRefractionCalculation(refTemperature,refPressure,refHumidity,wavelength);
+        distortedRefraction = this->edlenRefractionCalculation(temperature,pressure,humidity,wavelength);
+
+        verticalDn = this->edlenRefractionCalculation(refTemperature+verticalTempGradient,refPressure+verticalPreGradient,refHumidity,wavelength);
+        verticalDn = verticalDn-refraction;
+
+        horizontalDn = this->edlenRefractionCalculation(refTemperature+horizontalTempGradient,refPressure,refHumidity,wavelength);
+        horizontalDn = horizontalDn-refraction;
+   }
+
+    r->rPolar.distance = r->rPolar.distance+((refraction-distortedRefraction)*r->rPolar.distance);
+
+    double refractionZenith = (1/(2*refraction))*verticalDn*r->rPolar.distance;
+    double refractionAzimuth = (1/(2*refraction))*horizontalDn*r->rPolar.distance;
+
+    r->rPolar.azimuth = r->rPolar.azimuth+refractionAzimuth;
+    r->rPolar.zenith = r->rPolar.zenith+refractionZenith;
+
+    return true;
 }
 
 bool SimplePolarMeasurement::distortionByHuman(Reading *r)
 {
-    return false;
+    double deltaAzimuth = distortComponent(givenUncertainties.humanUncertainties.value("delta_azimuth"))/1000;
+    deltaAzimuth = deltaAzimuth*M_PI/180;
+    double deltaZenith = distortComponent(givenUncertainties.humanUncertainties.value("delta_zenith"))/1000;
+    deltaZenith = deltaZenith*M_PI/180;
+    double deltaDistance = distortComponent(givenUncertainties.humanUncertainties.value("delta_distance"))/1000;
+
+    r->rPolar.azimuth = r->rPolar.azimuth + deltaAzimuth;
+    r->rPolar.zenith = r->rPolar.zenith + deltaZenith;
+    r->rPolar.distance = r->rPolar.distance + deltaDistance;
+
+    return true;
 }
 
 bool SimplePolarMeasurement::distortionByObject(Reading *r, OiMat objectRelation)
 {
-    return false;
+    if(objectRelation.getRowCount() !=4 && objectRelation.getColCount() != 4){
+        return false;
+    }
+
+    if(newIteration){
+        ref_coefficientOfExpansion = givenUncertainties.objectUncertainties.value("coefficientOfExpansion").value;
+        coefficientOfExpansion = distortComponent(givenUncertainties.objectUncertainties.value("coefficientOfExpansion"));
+
+        ref_materialTemperature = givenUncertainties.objectUncertainties.value("materialTemperature").value;
+        materialTemperature = distortComponent(givenUncertainties.objectUncertainties.value("materialTemperature"));
+    }
+
+    double scale = 1+((materialTemperature-ref_materialTemperature)*(coefficientOfExpansion-ref_coefficientOfExpansion)/1000000);
+
+    OiVec xyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
+    xyz = objectRelation * xyz;
+    xyz = xyz * scale;
+    OiVec polar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+
+    r->rPolar.azimuth = polar.getAt(0);
+    r->rPolar.zenith = polar.getAt(1);
+    r->rPolar.distance = polar.getAt(2);
+
+    return true;
 }
 
 void SimplePolarMeasurement::checkDistribution(UncertaintyData &d)
@@ -590,6 +777,36 @@ void SimplePolarMeasurement::calcUncertainty(UncertaintyData &d)
         d.uncertainty = sqrt(sumVV/(d.values.size()-1.0));
     }
 
+}
+
+double SimplePolarMeasurement::edlenRefractionCalculation(double temperature, double pressure, double humidity, double wavelength)
+{
+    double A1 = -13.928169;
+    double A2 = 34.7078238;
+
+    double T = temperature+273.15;
+    double Phi = T/273.16;
+    double Y = A1*(1- pow(Phi,-15))+A2*(1-pow(Phi,-1.25));
+
+    double Psv = 611.657*exp(Y);
+    double pv = humidity/100 * Psv;
+
+    double A = 8342.54;
+    double B = 2406147;
+    double C = 15998;
+    double D = 96095.43;
+    double E = 0.601;
+    double F = 0.00972;
+    double G = 0.003661;
+
+    double S = 1/(wavelength*wavelength);
+
+    double Ns = 1+pow(10,-8)*(A+B/(130-S)+C/(38.9-S));
+    double X = (1+pow(10,-8)*(E-F*temperature))/(1+G*temperature);
+
+    double Ntp = 1+pressure*(Ns-1.0)*X/D;
+
+    return Ntp-pow(-10,-10)*((292.75)/(temperature+273.15))*(3.7345-0.0401*S)*pv;
 }
 
 
