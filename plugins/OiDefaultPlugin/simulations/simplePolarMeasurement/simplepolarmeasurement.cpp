@@ -314,7 +314,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getEnviromentUncerta
     UncertaintyComponent t;
 
     t.name = "temperature";
-    t.value = 20;
+    t.value = 20.0;
     t.uncertainty = 0.5;
     t.distribution = this->distributions.at(0);
     t.distributions = this->distributions;
@@ -356,15 +356,15 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getEnviromentUncerta
     UncertaintyComponent p;
 
     p.name = "pressure";
-    p.value = 101325 ;
-    p.uncertainty = 10;
+    p.value = 101325.0 ;
+    p.uncertainty = 10.0;
     p.distribution = this->distributions.at(0);
     p.distributions = this->distributions;
     p.errorUnit = "[pascal]";
 
     p.description="influence of pressure(air)  on the sensor";
 
-    enviromentUncertainties.insert("pressures",p);
+    enviromentUncertainties.insert("pressure",p);
 
     //######################### vertical pressure Gradient#########################
     UncertaintyComponent hpg;
@@ -384,8 +384,8 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getEnviromentUncerta
     UncertaintyComponent h;
 
     h.name = "humidity";
-    h.value = 50 ;
-    h.uncertainty = 1;
+    h.value = 50.0 ;
+    h.uncertainty = 1.0;
     h.distribution = this->distributions.at(0);
     h.distributions = this->distributions;
     h.errorUnit = "[percent %]";
@@ -549,6 +549,9 @@ bool SimplePolarMeasurement::distort(Reading *r,OiMat objectRelation,bool newIte
 double SimplePolarMeasurement::distortComponent(UncertaintyComponent u)
 {
 
+    if(u.uncertainty==0.0){
+        return u.value;
+    }
 
     if(u.distribution.compare("normal")==0){
         std::normal_distribution<double> dist_Normal(u.value,u.uncertainty);
