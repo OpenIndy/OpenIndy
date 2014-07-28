@@ -47,7 +47,7 @@
       <attribute name="label">
        <string>settings</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,1,1,10">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1">
          <item>
@@ -91,18 +91,36 @@
         </layout>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout" stretch="1,9">
+        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,5">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
+          <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QLabel" name="label_suppReadings">
-             <property name="text">
-              <string>supported reading types</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QLabel" name="label_suppReadings">
+               <property name="text">
+                <string>supported reading types</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_suppReadings"/>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox_suppReadings"/>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QLabel" name="label_polarMode">
+               <property name="text">
+                <string>polar mode</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_polarMode"/>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
