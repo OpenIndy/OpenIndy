@@ -19,6 +19,8 @@ public:
     QList<InputParams> getNeededElements();
     QList<Configuration::FeatureTypes> applicableFor();
 
+    QMap<QString, QStringList> getStringParameter();
+
     QStringList getResultProtocol();
 
 private:
@@ -44,10 +46,15 @@ private:
     OiVec approxRotation();
     OiVec approxTranslation(OiVec rot);
 
+    void applyMovements(TrafoParam &tp);
+
     OiMat getRotationMatrix(OiVec rot);
     OiVec getRotationAngles(OiMat r);
     OiMat getTranslationMatrix(OiVec trans);
     OiMat getScaleMatrix(OiVec s);
+
+    bool getCoordSysWithMovements(CoordinateSystem *cs);
+    TrafoParam* getMovement(CoordinateSystem *cs);
 };
 
 #endif // P_HELMERT6PARAM_H

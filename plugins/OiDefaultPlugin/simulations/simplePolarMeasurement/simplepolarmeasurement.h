@@ -3,6 +3,7 @@
 
 #include "simulationmodel.h"
 #include <random>
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <QDebug>
 

@@ -3,8 +3,11 @@
 
 #include <QItemDelegate>
 #include <QLineEdit>
+#include <QModelIndex>
+#include <QAbstractTableModel>
 
 #include "featureoverviewproxymodel.h"
+#include "tablemodel.h"
 
 class FeatureOverviewDelegate : public QItemDelegate
 {

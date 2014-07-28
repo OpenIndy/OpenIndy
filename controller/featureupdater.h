@@ -52,6 +52,8 @@ private:
     void fillTrafoParamFunctionMovement(SystemTransformation *function, TrafoParam *tp);
     void switchCoordinateSystemWithoutTransformation(CoordinateSystem *to);
 
+    void switchCoordinateSystemWithoutMovement(CoordinateSystem *to);
+
     static void createFeature(MeasurementConfig mConfig, QString name, bool nominal, FeatureAttributesExchange fae);
 
     static Function* getFunctionFromComboValue(QString functionValue, QString &functionName, QString &pluginName);

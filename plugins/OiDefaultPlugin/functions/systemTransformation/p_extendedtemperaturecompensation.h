@@ -45,13 +45,6 @@ private:
     OiVec rotation;
     OiVec scale;
 
-    double actTemp;
-    double refTemp;
-    double tempAccuracy;
-    Materials::supportedMaterials material;
-    double expansionCoefficient;
-    bool useTemp;
-
     bool calc(TrafoParam &tp);
     void init();
     void getExtraParameter();
