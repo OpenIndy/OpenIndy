@@ -33,9 +33,11 @@ public:
     QList<Sensor*> createSensors();
     QList<Function*> createFunctions();
     QList<NetworkAdjustment*> createNetworkAdjustments();
+    QList<SimulationModel*> createSimulations();
     Sensor* createSensor(QString name);
     Function* createFunction(QString name);
     NetworkAdjustment* createNetworkAdjustment(QString name);
+    SimulationModel* createSimulation(QString name);
 
 };
 
