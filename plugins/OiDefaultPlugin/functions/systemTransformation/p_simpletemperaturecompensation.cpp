@@ -190,6 +190,7 @@ QStringList SimpleTemperatureCompensation::getResultProtocol()
     protocoll.append(QString("material: " + this->protMaterial));
     protocoll.append(QString("expansion coefficient [m]: " + this->protExpansionCoeff));
     protocoll.append(QString("expansion [m]/[m]: " + this->protExpansion));
+    protocoll.append("accuracy calculated by temperature measurement accuracy * expansion");
     protocoll.append(QString("accuracy for expansion [m]: " + this->protSTDDEV));
     return protocoll;
 }

@@ -8,6 +8,7 @@
 #include <QLayout>
 #include <QVBoxLayout>
 #include <QSpinBox>
+#include <QtAlgorithms>
 #include "featureupdater.h"
 #include "oifeaturestate.h"
 #include "simulationcontroller.h"
@@ -38,6 +39,8 @@ private slots:
     void on_listView_simulations_clicked(const QModelIndex &index);
 
     void on_treeView_feature_clicked(const QModelIndex &index);
+
+    void on_comboBox_typeOfUnit_currentTextChanged(const QString &arg1);
 
 signals:
     void startSimulation();

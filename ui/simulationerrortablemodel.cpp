@@ -51,7 +51,7 @@ QVariant SimulationErrorTableModel::data(const QModelIndex &index, int role) con
         case 0:
             return u.name;
         case 1:
-            return UnitConverter::getUnitString(u.errorUnit);
+            return u.errorUnit;
         case 2:
             return u.value;
         case 3:

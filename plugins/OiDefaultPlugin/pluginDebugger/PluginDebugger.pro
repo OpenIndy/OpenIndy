@@ -26,11 +26,14 @@ INCLUDEPATH += ../functions/systemTransformation
 INCLUDEPATH += ../sensors/laserTracker/pseudoTracker
 INCLUDEPATH += ../sensors/tachymeter/LeicaGeoCom
 INCLUDEPATH += ../sensors/undefinedSensor/pseudoSensor
+INCLUDEPATH += ../simulations/simplePolarMeasurement
 INCLUDEPATH += ../lib/fitting
 INCLUDEPATH += ../lib/fitting/util
 INCLUDEPATH += ../../../src
 INCLUDEPATH += ../../../src/geometry
 INCLUDEPATH += ../../../src/plugin
+INCLUDEPATH += ../../../src/simulation
+INCLUDEPATH += ../../../src/oiemitter
 INCLUDEPATH += ../../../lib/openIndyLib/include/
 INCLUDEPATH += ../
 
@@ -86,7 +89,6 @@ SOURCES += \
     ../../../src/reading.cpp \
     ../../../src/pluginmetadata.cpp \
     ../../../src/oimetadata.cpp \
-    ../../../src/oiemitter.cpp \
     ../../../src/observation.cpp \
     ../../../src/measurementconfig.cpp \
     ../../../src/geometry.cpp \
@@ -140,7 +142,16 @@ SOURCES += \
     ../sensors/undefinedSensor/pseudoSensor/p_pseudosensor.cpp \
     ../functions/systemTransformation/p_extendedtemperaturecompensation.cpp \
     ../functions/systemTransformation/materials.cpp \
-    ../functions/systemTransformation/p_helmert6param.cpp
+    ../functions/systemTransformation/p_helmert6param.cpp \
+    ../../../src/simulation/uncertaintycomponent.cpp \
+    ../../../src/simulation/simulationdata.cpp \
+    ../../../src/oiemitter/oisimulationemitter.cpp \
+    ../../../src/oiemitter/oisensoremitter.cpp \
+    ../../../src/oiemitter/oinetworkadjustmentemitter.cpp \
+    ../../../src/oiemitter/oifunctionemitter.cpp \
+    ../../../src/oiemitter/oiemitter.cpp \
+    ../simulations/simplePolarMeasurement/simplepolarmeasurement.cpp \
+    ../functions/fit/p_bestfitsphererauls.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
@@ -180,7 +191,6 @@ HEADERS += \
     ../../../src/reading.h \
     ../../../src/pluginmetadata.h \
     ../../../src/oimetadata.h \
-    ../../../src/oiemitter.h \
     ../../../src/observation.h \
     ../../../src/measurementconfig.h \
     ../../../src/geometry.h \
@@ -242,4 +252,14 @@ HEADERS += \
     ../sensors/undefinedSensor/pseudoSensor/p_pseudosensor.h \
     ../functions/systemTransformation/p_extendedtemperaturecompensation.h \
     ../functions/systemTransformation/materials.h \
-    ../functions/systemTransformation/p_helmert6param.h
+    ../functions/systemTransformation/p_helmert6param.h \
+    ../../../src/simulation/uncertaintycomponent.h \
+    ../../../src/simulation/simulationmodel.h \
+    ../../../src/simulation/simulationdata.h \
+    ../../../src/oiemitter/oisimulationemitter.h \
+    ../../../src/oiemitter/oisensoremitter.h \
+    ../../../src/oiemitter/oinetworkadjustmentemitter.h \
+    ../../../src/oiemitter/oifunctionemitter.h \
+    ../../../src/oiemitter/oiemitter.h \
+    ../simulations/simplePolarMeasurement/simplepolarmeasurement.h \
+    ../functions/fit/p_bestfitsphererauls.h

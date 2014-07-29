@@ -36,6 +36,11 @@ OiVec Sphere::getXYZ() const
     return this->xyz;
 }
 
+double Sphere::getRadius() const
+{
+    return this->radius;
+}
+
 /*!
  * \brief Sphere::recalc
  * Execute alls functions in the specified order

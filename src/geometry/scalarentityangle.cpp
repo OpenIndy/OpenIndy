@@ -175,6 +175,11 @@ void ScalarEntityAngle::setAngle(OiVec direction1, OiVec direction2){
     }
 }
 
+double ScalarEntityAngle::getScalar() const
+{
+    return this->angle;
+}
+
 QString ScalarEntityAngle::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }

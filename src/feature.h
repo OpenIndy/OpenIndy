@@ -89,6 +89,9 @@ public:
     virtual QString getDisplayScalarMeasurementSeriesValue() const;
     virtual QString getDisplayUse() const;
     virtual QString getDisplayTime() const;
+    virtual QString getDisplayExpansionOriginX() const;
+    virtual QString getDisplayExpansionOriginY() const;
+    virtual QString getDisplayExpansionOriginZ() const;
 
 signals:
     void featureNameChanged(int featureId, QString oldName);

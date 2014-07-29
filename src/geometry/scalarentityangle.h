@@ -24,6 +24,8 @@ public:
     void setAngle(double angle);
     void setAngle(OiVec direction1, OiVec direction2);
 
+    double getScalar() const;
+
     QString getDisplayIsCommon() const;
     QString getDisplayIsNominal() const;
     //QString getDisplayObs() const;

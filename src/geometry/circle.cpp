@@ -38,6 +38,11 @@ OiVec Circle::getIJK() const
     return this->ijk;
 }
 
+double Circle::getRadius() const
+{
+    return this->radius;
+}
+
 /*!
  * \brief Circle::recalc
  */

@@ -14,9 +14,8 @@ PluginMetaData *ExtendedTemperatureCompensation::getMetaData()
     metaData->name = "9ParameterHelmertTransformation";
     metaData->pluginName = "OpenIndy Default Plugin";
     metaData->author = "jw";
-    metaData->description = QString("%1 %2 %3").arg("This is a 9 parameter helmert transformation. You can claculate the")
-            .arg("parameters by the given points (at least 3) or by the given points and an additional temperature input.")
-            .arg("So in the second case the scale gets approximated by the input actual and reference temperature and the material.");
+    metaData->description = QString("%1 %2").arg("This is a 9 parameter helmert transformation. You can claculate the")
+            .arg("parameters by the given points (at least 3).");
     metaData->iid = "de.openIndy.Plugin.Function.SystemTransformation.v001";
     return metaData;
 }
@@ -93,11 +92,23 @@ bool ExtendedTemperatureCompensation::exec(TrafoParam &tp)
  */
 bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
 {
-    bool result = false;
 
     //transform loc (start system) to "pseudo"-loc system
     //transformation with previosly approximated translation, rotation and scale
     this->preliminaryTransformation(); 
+
+    //get standard deviation
+    double sumVV = 0.0;
+
+    for (int i = 0;i<this->locSystem.size();i++) {
+        OiVec diffVec = this->refSystem.at(i)-this->locSystem.at(i);
+        sumVV += diffVec.getAt(0)*diffVec.getAt(0);
+        sumVV += diffVec.getAt(1)*diffVec.getAt(1);
+        sumVV += diffVec.getAt(2)*diffVec.getAt(2);
+
+    }
+
+    tp.getStatistic()->stdev = sqrt(sumVV/(3.0*this->locSystem.size()-9.0));
 
     //get rotation between pseudo loc and ref system
     OiVec tmpRotation = this->approxRotation();
@@ -155,8 +166,10 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
 
     OiVec v = a * x - l_diff;
     OiVec vtv = v.t() * v;
-    double s0_post = sqrt(vtv.getAt(0) / (3 * this->locSystem.length() - 7));
+    double s0_post = sqrt(vtv.getAt(0) / (3 * this->locSystem.length() - 9));
     OiMat sxx = s0_post * s0_post * qxx;
+
+    //tp.getStatistic()->stdev = s0_post;
 
 
     //set the trafo parameters with the previously calulated values and the additional values from adjustment
@@ -179,17 +192,7 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
 
     tp.setHomogenMatrix(r,t,s);
 
-    //calculate the representing temperature out of each scale to show in the protocoll
-    if(useTemp){
-        double tx = (((this->scale.getAt(0))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
-        this->protocol.append(QString("scale x representing an expansion of " + QString::number(1.0/tx,'f',2)+"[°C]"));
-        double ty = (((this->scale.getAt(1))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
-        this->protocol.append(QString("scale y representing an expansion of " + QString::number(1.0/ty,'f',2)+"[°C]"));
-        double tz = (((this->scale.getAt(2))-1.0)+(this->refTemp*this->expansionCoefficient))/this->expansionCoefficient;
-        this->protocol.append(QString("scale z representing an expansion of " + QString::number(1.0/tz,'f',2)+"[°C]"));
-    }
-    result = true;
-    return result;
+    return true;
 }
 
 /*!
@@ -198,16 +201,7 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
 */
 QMap<QString, QStringList> ExtendedTemperatureCompensation::getStringParameter()
 {
-QMap<QString, QStringList> result;
-    QString key ="material";
-    QStringList value;
-    value = Materials::getMaterials();
-    result.insert(key,value);
-    key = "useTemperature";
-    value.clear();
-    value.append("false");
-    value.append("true");
-    result.insert(key,value);
+    QMap<QString, QStringList> result;
 
     return result;
 }
@@ -218,16 +212,7 @@ QMap<QString, QStringList> result;
 */
 QMap<QString, double> ExtendedTemperatureCompensation::getDoubleParameter()
 {
-QMap<QString,double> result;
-    QString key = "referenceTemperature";
-    double value = 20.0;
-    result.insert(key,value);
-    key = "actualTemperature";
-    value = 20.0;
-    result.insert(key,value);
-    key = "temperatureAccuracy";
-    value = 0.1;
-    result.insert(key, value);
+    QMap<QString,double> result;
 
     return result;
 }
@@ -260,57 +245,6 @@ void ExtendedTemperatureCompensation::init()
                     this->setUseState(this->points_targetSystem.at(i).getId(), false);
                 }
             }
-    }
-
-    this->getExtraParameter();
-}
-
-/*!
- * \brief getExtraParameter from input dialog of function dialog.
- */
-void ExtendedTemperatureCompensation::getExtraParameter()
-{
-    FunctionConfiguration myConfig = this->getFunctionConfiguration();
-    QMap<QString, QString> stringParameter = myConfig.stringParameter;
-    QMap<QString, double> doubleParameter = myConfig.doubleParameter;
-
-    refTemp = 0.0;
-    actTemp = 0.0;
-    expansionCoefficient = 0.0;
-    tempAccuracy = 0.0;
-
-    //get material from string parameter
-    if(stringParameter.contains("material")){
-        QString mat = static_cast<QString>(stringParameter.find("material").value());
-        expansionCoefficient = Materials::getExpansionCoefficient(mat);
-        this->protocol.append(QString("material: " + mat));
-        this->protocol.append(QString("expansion coefficient: " + QString::number(expansionCoefficient,'f',6)));
-    }
-    //get parameter that decides if scale should be calculated from distances or temperature difference
-    if(stringParameter.contains("useTemperature")){
-        QString temp = static_cast<QString>(stringParameter.find("useTemperature").value());
-        if(temp.compare("true")== 0){
-            useTemp = true;
-            this->protocol.append("use temperature as scale: yes");
-        }else{
-            useTemp = false;
-            this->protocol.append("use temperature as scale: no");
-        }
-    }
-    //get reference temperature from double parameter
-    if(doubleParameter.contains("referenceTemperature")){
-        refTemp = static_cast<double>(doubleParameter.find("referenceTemperature").value());
-        this->protocol.append(QString("reference temperature: " + QString::number(refTemp,'f',2)));
-    }
-    //get actual temperature from double parameter
-    if(doubleParameter.contains("actualTemperature")){
-        actTemp = static_cast<double>(doubleParameter.find("actualTemperature").value());
-        this->protocol.append(QString("actual temperature: " + QString::number(actTemp,'f',2)));
-    }
-    //get temperature accuracy from double parameter
-    if(doubleParameter.contains("temperatureAccuracy")){
-        tempAccuracy = static_cast<double>(doubleParameter.find("temperatureAccuracy").value());
-        this->protocol.append(QString("accuracy of temperature measurement: " + QString::number(tempAccuracy,'f',2)));
     }
 }
 
@@ -392,81 +326,102 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
 {
     OiVec s(4);
 
-    if(useTemp){
-        //get approx of scale from temperature and expansion coefficient
-        s.setAt(0,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
-        s.setAt(1,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
-        s.setAt(2,1.0/(1.0+((actTemp-refTemp)*expansionCoefficient)));
-        s.setAt(3,1.0);
-    }else{  //get scale from differces in distance components (x, y, z)
-            //between two points in each system
-        double sx = 0.0;
-        double sy = 0.0;
-        double sz = 0.0;
+    //get scale from differces in distance components (x, y, z)
+    //between two points in each system
+    double sx = 0.0;
+    double sy = 0.0;
+    double sz = 0.0;
 
-        //get the current rotation matrix
-        OiMat rotMat;
-        try{
-           rotMat = this->getRotationMatrix(rot).inv(); // try to calc the inverse
-        }catch(runtime_error e){
-           return false;
-        }catch(logic_error e){
-            return false;
-        }
-        QList<OiVec> tmpRefList;
+    //get the current rotation matrix
+    OiMat rotMat;
 
-        //rotate the reference system to local system
-        for(int i=0; i<this->refSystem.size(); i++){
-            OiVec tmpRef = rotMat*this->refSystem.at(i);
-            tmpRefList.append(tmpRef);
-        }
-
-        for(int i=1; i<this->locSystem.size(); i++){
-            //get x y and z component of vector from point 0 to i in loc system
-            double sxLoc = qFabs(locSystem.at(0).getAt(0)-locSystem.at(i).getAt(0));
-            double syLoc = qFabs(locSystem.at(0).getAt(1)-locSystem.at(i).getAt(1));
-            double szLoc = qFabs(locSystem.at(0).getAt(2)-locSystem.at(i).getAt(2));
-
-            //get x y and z component of vector from point 0 to i in ref system
-            double sxRef = qFabs(tmpRefList.at(0).getAt(0)-tmpRefList.at(i).getAt(0));
-            double syRef = qFabs(tmpRefList.at(0).getAt(1)-tmpRefList.at(i).getAt(1));
-            double szRef = qFabs(tmpRefList.at(0).getAt(2)-tmpRefList.at(i).getAt(2));
-
-
-            //check if the scale from current two points is bigger than the scale from last points
-            //if yes, set current scale as actual scale for the coordinate component
-
-            //0.050m is criteria, because of noisy measurements
-            //and no representative distances.
-            if(sxLoc <= 0.050 || sxRef <= 0.050){
-
-            }else{
-                if(sxRef/sxLoc > sx){sx = (sxRef/sxLoc);}
-            }
-
-            if(syLoc <= 0.050 || syRef <=0.050){
-
-            }else{
-                if(syRef/syLoc > sy){sy = (syRef/syLoc);}
-            }
-
-            if(szLoc <= 0.050 || szRef <= 0.050){
-
-            }else{
-                if(szRef/szLoc > sz){sz = (szRef/szLoc);}
-            }
-        }
-        //if no scale could be calculated (noisy measurements),
-        //set this scale component to 1.000000
-        if(sx == 0.0){sx = 1.0;}
-        if(sy == 0.0){sy = 1.0;}
-        if(sz == 0.0){sz = 1.0;}
-
-        s.setAt(0,sx);
-        s.setAt(1,sy);
-        s.setAt(2,sz);
-        s.setAt(3,1.0);
+    try{
+       rotMat = this->getRotationMatrix(rot).inv(); // try to calc the inverse
+    }catch(runtime_error e){
+       return false;
+    }catch(logic_error e){
+        return false;
     }
+
+    QList<OiVec> tmpRefList;
+
+    //rotate the reference system to local system
+    for(int i=0; i<this->refSystem.size(); i++){
+        OiVec tmpRef = rotMat*this->refSystem.at(i);
+        tmpRefList.append(tmpRef);
+    }
+
+    int countX = 0;
+    int countY = 0;
+    int countZ = 0;
+
+    for(int i=1; i<this->locSystem.size(); i++){
+
+        //get x y and z component of vector from point 0 to i in loc system
+        double sxLoc = qFabs(locSystem.at(0).getAt(0)-locSystem.at(i).getAt(0));
+        double syLoc = qFabs(locSystem.at(0).getAt(1)-locSystem.at(i).getAt(1));
+        double szLoc = qFabs(locSystem.at(0).getAt(2)-locSystem.at(i).getAt(2));
+
+        //get x y and z component of vector from point 0 to i in ref system
+        double sxRef = qFabs(tmpRefList.at(0).getAt(0)-tmpRefList.at(i).getAt(0));
+        double syRef = qFabs(tmpRefList.at(0).getAt(1)-tmpRefList.at(i).getAt(1));
+        double szRef = qFabs(tmpRefList.at(0).getAt(2)-tmpRefList.at(i).getAt(2));
+
+
+        //check if the scale from current two points is bigger than the scale from last points
+        //if yes, set current scale as actual scale for the coordinate component
+
+        //0.050m is criteria, because of noisy measurements
+        //and no representative distances.
+        if(sxLoc <= 0.050 || sxRef <= 0.050){
+
+        }else{
+            //if(sxRef/sxLoc > sx){sx = (sxRef/sxLoc);}
+            sx += (sxRef/sxLoc);
+            countX ++;
+        }
+
+        if(syLoc <= 0.050 || syRef <=0.050){
+
+        }else{
+            //if(syRef/syLoc > sy){sy = (syRef/syLoc);}
+            sy += (syRef/syLoc);
+            countY++;
+        }
+
+        if(szLoc <= 0.050 || szRef <= 0.050){
+
+        }else{
+            //if(szRef/szLoc > sz){sz = (szRef/szLoc);}
+            sz += (szRef/szLoc);
+            countZ++;
+        }
+    }
+
+    //if no scale could be calculated (noisy measurements),
+    //set this scale component to 1.000000
+    if(sx == 0.0){
+        sx = 1.0;
+    }else{
+        sx = sx/(double)countX;
+    }
+
+    if(sy == 0.0){
+        sy = 1.0;
+    }else{
+        sy = sy/(double)countY;
+    }
+
+    if(sz == 0.0){
+        sz = 1.0;
+    }else{
+        sz = sz/(double)countZ;
+    }
+
+    s.setAt(0,sx);
+    s.setAt(1,sy);
+    s.setAt(2,sz);
+    s.setAt(3,1.0);
 
     return s;
 }

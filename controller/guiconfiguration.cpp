@@ -59,6 +59,9 @@ void GUIConfiguration::generateAllAttributes()
     GUIConfiguration::allAttributes.append("use");
     GUIConfiguration::allAttributes.append("time");
     GUIConfiguration::allAttributes.append("datumTransformation");
+    GUIConfiguration::allAttributes.append(QString("expansion origin x" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allAttributes.append(QString("expansion origin y" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allAttributes.append(QString("expansion origin z" + UnitConverter::getDistanceUnitString()));
 }
 
 /*!
@@ -113,6 +116,12 @@ void GUIConfiguration::generateFeatureAttributes()
     GUIConfiguration::featureAttributes.append(fMeasSeries);
     DisplayAttribute *fcomment = new DisplayAttribute("comment",true);
     GUIConfiguration::featureAttributes.append(fcomment);
+    DisplayAttribute *fExpOriX = new DisplayAttribute(QString("expansion origin x" + UnitConverter::getDistanceUnitString()),true);
+    GUIConfiguration::featureAttributes.append(fExpOriX);
+    DisplayAttribute *fExpOriY = new DisplayAttribute(QString("expansion origin y" + UnitConverter::getDistanceUnitString()),true);
+    GUIConfiguration::featureAttributes.append(fExpOriY);
+    DisplayAttribute *fExpOriZ = new DisplayAttribute(QString("expansion origin z" + UnitConverter::getDistanceUnitString()),true);
+    GUIConfiguration::featureAttributes.append(fExpOriZ);
 }
 
 /*!

@@ -410,6 +410,16 @@ OiVec Geometry::getIJK() const{
     return OiVec();
 }
 
+double Geometry::getRadius() const
+{
+    return 0.0;
+}
+
+double Geometry::getScalar() const
+{
+    return 0.0;
+}
+
 /*!
  * \brief Geometry::getUsedReadingTypes
  * \return
@@ -443,4 +453,11 @@ SimulationData& Geometry::getSimulationData()
 void Geometry::setSimulationData(SimulationData s)
 {
     this->mySimulationData = s;
+}
+
+void Geometry::resetSimulationData()
+{
+    SimulationData d;
+    this->mySimulationData = d;
+
 }
