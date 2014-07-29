@@ -134,6 +134,22 @@ void CustomParameterWidget::setUpGui(){
     QFont boldFont;
     boldFont.setBold(true);
     int rowIndex = 0;
+    while(stringIterator.hasNext()){
+        stringIterator.next();
+        QString stringKey = static_cast<QString>(stringIterator.key());
+        QStringList stringValue = static_cast<QStringList>(stringIterator.value());
+        QLabel *stringLabel = new QLabel(stringKey);
+        stringLabel->setMinimumWidth(300);
+        stringLabel->setWordWrap(true);
+        stringLabel->setFont(boldFont);
+        QComboBox *stringComboBox = new QComboBox();
+        stringComboBox->addItems(stringValue);
+        this->parameterLabel.append(stringLabel);
+        this->stringParameterComboBox.insert(stringKey, stringComboBox);
+        this->myLayout->insertRow(rowIndex, stringLabel, stringComboBox);
+        connect(stringComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(emitFunctionConfigurationChanged(QString)));
+        rowIndex++;
+    }
     while(intIterator.hasNext()){
         intIterator.next();
         QString intKey = static_cast<QString>(intIterator.key());
@@ -164,22 +180,6 @@ void CustomParameterWidget::setUpGui(){
         this->doubleParameterLineEdit.insert(doubleKey, doubleLineEdit);
         this->myLayout->insertRow(rowIndex, doubleLabel, doubleLineEdit);
         connect(doubleLineEdit, SIGNAL(textChanged(QString)), this, SLOT(emitFunctionConfigurationChanged()));
-        rowIndex++;
-    }
-    while(stringIterator.hasNext()){
-        stringIterator.next();
-        QString stringKey = static_cast<QString>(stringIterator.key());
-        QStringList stringValue = static_cast<QStringList>(stringIterator.value());
-        QLabel *stringLabel = new QLabel(stringKey);
-        stringLabel->setMinimumWidth(300);
-        stringLabel->setWordWrap(true);
-        stringLabel->setFont(boldFont);
-        QComboBox *stringComboBox = new QComboBox();
-        stringComboBox->addItems(stringValue);
-        this->parameterLabel.append(stringLabel);
-        this->stringParameterComboBox.insert(stringKey, stringComboBox);
-        this->myLayout->insertRow(rowIndex, stringLabel, stringComboBox);
-        connect(stringComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(emitFunctionConfigurationChanged(QString)));
         rowIndex++;
     }
     this->setLayout(this->myLayout);

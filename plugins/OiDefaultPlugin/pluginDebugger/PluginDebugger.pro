@@ -23,6 +23,8 @@ INCLUDEPATH += ../functions/construct
 INCLUDEPATH += ../functions/fit
 INCLUDEPATH += ../functions/objectTransformation
 INCLUDEPATH += ../functions/systemTransformation
+INCLUDEPATH += ../functions/generateFeature
+INCLUDEPATH += ../functions/generateFeature/pointcloud_segmentation
 INCLUDEPATH += ../sensors/laserTracker/pseudoTracker
 INCLUDEPATH += ../sensors/tachymeter/LeicaGeoCom
 INCLUDEPATH += ../sensors/undefinedSensor/pseudoSensor
@@ -151,7 +153,18 @@ SOURCES += \
     ../../../src/oiemitter/oifunctionemitter.cpp \
     ../../../src/oiemitter/oiemitter.cpp \
     ../simulations/simplePolarMeasurement/simplepolarmeasurement.cpp \
-    ../functions/fit/p_bestfitsphererauls.cpp
+    ../functions/fit/p_bestfitsphererauls.cpp \
+    ../functions/generateFeature/p_pointcloudsegmentation.cpp \
+    ../functions/generateFeature/pointcloud_segmentation/ps_cylindersegment.cpp \
+    ../functions/generateFeature/pointcloud_segmentation/ps_generalmath.cpp \
+    ../functions/generateFeature/pointcloud_segmentation/ps_node.cpp \
+    ../functions/generateFeature/pointcloud_segmentation/ps_octree.cpp \
+    ../functions/generateFeature/pointcloud_segmentation/ps_planesegment.cpp \
+    ../functions/generateFeature/pointcloud_segmentation/ps_pointcloud.cpp \
+    ../functions/generateFeature/pointcloud_segmentation/ps_shapesegment.cpp \
+    ../functions/generateFeature/pointcloud_segmentation/ps_spheresegment.cpp
+
+
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
@@ -262,4 +275,13 @@ HEADERS += \
     ../../../src/oiemitter/oifunctionemitter.h \
     ../../../src/oiemitter/oiemitter.h \
     ../simulations/simplePolarMeasurement/simplepolarmeasurement.h \
-    ../functions/fit/p_bestfitsphererauls.h
+    ../functions/fit/p_bestfitsphererauls.h \
+    ../functions/generateFeature/p_pointcloudsegmentation.h \
+    ../functions/generateFeature/pointcloud_segmentation/ps_cylindersegment.h \
+    ../functions/generateFeature/pointcloud_segmentation/ps_generalmath.h \
+    ../functions/generateFeature/pointcloud_segmentation/ps_node.h \
+    ../functions/generateFeature/pointcloud_segmentation/ps_octree.h \
+    ../functions/generateFeature/pointcloud_segmentation/ps_planesegment.h \
+    ../functions/generateFeature/pointcloud_segmentation/ps_pointcloud.h \
+    ../functions/generateFeature/pointcloud_segmentation/ps_shapesegment.h \
+    ../functions/generateFeature/pointcloud_segmentation/ps_spheresegment.h

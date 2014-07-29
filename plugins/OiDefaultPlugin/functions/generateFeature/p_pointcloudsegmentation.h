@@ -6,19 +6,20 @@
 #include <QObject>
 #include <QDebug>
 #include <QThread>
-#include <vector>
+#include <QString>
+#include <QMap>
 #include <QStringList>
+
 #include "pi_generatefeaturefunction.h"
-#include "point.h"
+
 #include "plane.h"
+#include "sphere.h"
+#include "cylinder.h"
+
+#include "pluginmetadata.h"
 #include "configuration.h"
 #include "oivec.h"
 #include "oimat.h"
-#include "pluginmetadata.h"
-
-#include <QtMath>
-
-using namespace std;
 
 class PointCloudSegmentation : public GenerateFeatureFunction
 {
@@ -29,6 +30,10 @@ public:
 
     QList<InputParams> getNeededElements();
     QList<Configuration::FeatureTypes> applicableFor();
+
+    QMap<QString, int> getIntegerParameter();
+    QMap<QString, double> getDoubleParameter();
+    QMap<QString, QStringList> getStringParameter();
 
     QStringList getResultProtocol();
 

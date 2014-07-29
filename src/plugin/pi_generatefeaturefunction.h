@@ -4,7 +4,7 @@
 #include <QString>
 
 #include "function.h"
-#include "oifunctionemitter.h"
+//#include "oifunctionemitter.h"
 
 /*!
  * \brief The FitFunction class
@@ -20,10 +20,10 @@ public:
     virtual QList<Configuration::FeatureTypes> applicableFor() = 0;
     virtual PluginMetaData* getMetaData() = 0;
 
-protected:
+/*protected:
     void addFeature(FeatureWrapper *myFeature){ //add a feature to OpenIndy
         this->getOiEmitter().addFeature(myFeature);
-    }
+    }*/
 
 };
 
