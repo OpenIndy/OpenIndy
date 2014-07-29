@@ -99,6 +99,9 @@ public:
 
     void svd(OiMat &u, OiVec &d, OiMat &v) const;
 
+    static bool solve(OiVec &x, const OiMat &A, const OiVec &b);
+    static bool solve(OiMat &X, const OiMat &A, const OiMat &B);
+
     static OiMat getRotationMatrix(double angle, OiVec axis);
     static OiMat getRotationMatrix(double angle, Rotation::RotationAxis axis);
     static OiMat getRotationMatrix(RotationChain rotationChain);

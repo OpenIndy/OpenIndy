@@ -405,6 +405,43 @@ void OiMat::svd(OiMat &u, OiVec &d, OiMat &v) const{
 }
 
 /*!
+ * \brief OiMat::solve
+ * Solves a linear equation of the form A*x = b (x = inv(A)*b)
+ * \param x
+ * \param A
+ * \param b
+ * \return
+ */
+bool OiMat::solve(OiVec &x, const OiMat &A, const OiVec &b){
+    if(x.getSize() == A.getRowCount() && x.getSize() == A.getColCount()
+            && x.getSize() == b.getSize() && x.getSize() > 0){
+        return OiMat::myLinearAlgebra->solve(x, A, b);
+    }else{
+        throw logic_error("No valid linear equation system");
+        return false;
+    }
+}
+
+/*!
+ * \brief OiMat::solve
+ * Solves a linear equation of the form A*X = B (X = inv(A)*B)
+ * \param X
+ * \param A
+ * \param B
+ * \return
+ */
+bool OiMat::solve(OiMat &X, const OiMat &A, const OiMat &B){
+    if(X.getRowCount() == X.getColCount() && X.getRowCount() == A.getRowCount()
+            && X.getRowCount() == A.getColCount() && X.getRowCount() == B.getRowCount()
+            && X.getRowCount() == B.getColCount()){
+        return OiMat::myLinearAlgebra->solve(X, A, B);
+    }else{
+        throw logic_error("No valid linear equation system");
+        return false;
+    }
+}
+
+/*!
  * \brief OiMat::getRotationMatrix
  * Get the rotation matrix corresponding to a rotation around an arbitrary rotation axis by the given amount
  * \param angle

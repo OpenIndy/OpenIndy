@@ -136,6 +136,27 @@ public:
      * \param a
      */
     virtual void det(double &result, const OiMat &a) = 0;
+
+    /*!
+     * \brief solve
+     * Solves a linear equation of the form A*x = b (x = inv(A)*b)
+     * \param x
+     * \param A
+     * \param b
+     * \return
+     */
+    virtual bool solve(OiVec &x, const OiMat &A, const OiVec &b) = 0;
+
+    /*!
+     * \brief solve
+     * Solves a linear equation of the form A*X = B (X = inv(A)*B)
+     * \param X
+     * \param A
+     * \param B
+     * \return
+     */
+    virtual bool solve(OiMat &X, const OiMat &A, const OiMat &B) = 0;
+
 };
 
 #endif // LINEARALGEBRA_H

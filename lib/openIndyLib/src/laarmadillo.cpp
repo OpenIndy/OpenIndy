@@ -258,6 +258,56 @@ void LAArmadillo::det(double &result, const OiMat &a){
 }
 
 /*!
+ * \brief LAArmadillo::solve
+ * Solves a linear equation of the form A*x = b (x = inv(A)*b)
+ * \param x
+ * \param A
+ * \param b
+ * \return
+ */
+bool LAArmadillo::solve(OiVec &x, const OiMat &A, const OiVec &b){
+    int xSize = x.getSize();
+    arma::mat Aa(xSize, xSize);
+    arma::vec ba(xSize);
+
+    this->oiMat2Arma(Aa, A);
+    this->oiVec2Arma(ba, b);
+
+    try{
+        arma::vec xa = arma::solve(Aa, ba);
+        this->arma2OiVec(x, xa);
+        return true;
+    }catch(const runtime_error &e){
+        return false;
+    }
+}
+
+/*!
+ * \brief LAArmadillo::solve
+ * Solves a linear equation of the form A*X = B (X = inv(A)*B)
+ * \param X
+ * \param A
+ * \param B
+ * \return
+ */
+bool LAArmadillo::solve(OiMat &X, const OiMat &A, const OiMat &B){
+    int XSize = X.getRowCount();
+    arma::mat Aa(XSize, XSize);
+    arma::mat Ba(XSize, XSize);
+
+    this->oiMat2Arma(Aa, A);
+    this->oiMat2Arma(Ba, B);
+
+    try{
+        arma::mat Xa = arma::solve(Aa, Ba);
+        this->arma2OiMat(X, Xa);
+        return true;
+    }catch(const runtime_error &e){
+        return false;
+    }
+}
+
+/*!
  * \brief LAArmadillo::oiVec2Arma
  * \param result
  * \param v
