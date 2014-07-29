@@ -10,6 +10,7 @@
 #include "pi_totalstation.h"
 #include "pi_constructfunction.h"
 #include "pi_fitfunction.h"
+#include "pi_generatefeaturefunction.h"
 #include "pi_geodeticfunction.h"
 #include "pi_networkadjustment.h"
 #include "pi_objecttransformation.h"
@@ -34,6 +35,7 @@ private:
     static QString iid_TotalStation;
     static QString iid_ConstructFunction;
     static QString iid_FitFunction;
+    static QString iid_GenerateFeatureFunction;
     static QString iid_GeodeticFunction;
     static QString iid_NetworkAdjustment;
     static QString iid_ObjectTransformation;

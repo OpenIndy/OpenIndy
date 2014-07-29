@@ -4,6 +4,7 @@
 #include <QString>
 #include <QStringList>
 #include <QRegExp>
+#include <limits>
 
 #include "oiexchangeinterface.h"
 #include "console.h"

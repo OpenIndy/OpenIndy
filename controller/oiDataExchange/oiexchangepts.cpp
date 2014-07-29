@@ -94,6 +94,14 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data){
 
         double x=0.0, y=0.0, z=0.0; //centroid of pointcloud
         unsigned long pointCount = 0; //number of points in the pointcloud
+        BoundingBox_PC bbox; //pointclouds's bounding box
+        bbox.min[0] = numeric_limits<float>::max();
+        bbox.min[1] = numeric_limits<float>::max();
+        bbox.min[2] = numeric_limits<float>::max();
+        bbox.max[0] = -numeric_limits<float>::max();
+        bbox.max[1] = -numeric_limits<float>::max();
+        bbox.max[2] = -numeric_limits<float>::max();
+        OiVec xyz(4); //main focus of the pointcloud
 
         //QRegExp splitPattern("\\s+");
 
@@ -120,7 +128,7 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data){
                     myPoint->xyz[2] = myPoint->xyz[2] / 1000.0;
                 }
 
-                pc->myPoints.append(myPoint);
+                pc->addPointCloudPoint(myPoint);
 
                 pointCount++;
 
@@ -130,23 +138,23 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data){
                 z += myPoint->xyz[2];
 
                 //update bounding box
-                if(myPoint->xyz[0] < pc->bbox.min[0]){
-                    pc->bbox.min[0] = myPoint->xyz[0];
+                if(myPoint->xyz[0] < bbox.min[0]){
+                    bbox.min[0] = myPoint->xyz[0];
                 }
-                if(myPoint->xyz[0] > pc->bbox.max[0]){
-                    pc->bbox.max[0] = myPoint->xyz[0];
+                if(myPoint->xyz[0] > bbox.max[0]){
+                    bbox.max[0] = myPoint->xyz[0];
                 }
-                if(myPoint->xyz[1] < pc->bbox.min[1]){
-                    pc->bbox.min[1] = myPoint->xyz[1];
+                if(myPoint->xyz[1] < bbox.min[1]){
+                    bbox.min[1] = myPoint->xyz[1];
                 }
-                if(myPoint->xyz[1] > pc->bbox.max[1]){
-                    pc->bbox.max[1] = myPoint->xyz[1];
+                if(myPoint->xyz[1] > bbox.max[1]){
+                    bbox.max[1] = myPoint->xyz[1];
                 }
-                if(myPoint->xyz[2] < pc->bbox.min[2]){
-                    pc->bbox.min[2] = myPoint->xyz[2];
+                if(myPoint->xyz[2] < bbox.min[2]){
+                    bbox.min[2] = myPoint->xyz[2];
                 }
-                if(myPoint->xyz[2] > pc->bbox.max[2]){
-                    pc->bbox.max[2] = myPoint->xyz[2];
+                if(myPoint->xyz[2] > bbox.max[2]){
+                    bbox.max[2] = myPoint->xyz[2];
                 }
 
             }
@@ -164,12 +172,13 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data){
         pc->setNominalSystem(data.nominalCoordSys);
         pc->setIsSolved(true);
 
-        pc->xyz.setAt(0, x / (double)pointCount);
-        pc->xyz.setAt(1, y / (double)pointCount);
-        pc->xyz.setAt(2, z / (double)pointCount);
-        pc->xyz.setAt(3, 1.0);
+        xyz.setAt(0, x / (double)pointCount);
+        xyz.setAt(1, y / (double)pointCount);
+        xyz.setAt(2, z / (double)pointCount);
+        xyz.setAt(3, 1.0);
+        pc->setMainFocus(xyz);
 
-        pc->pointCount = pointCount;
+        pc->setBoundingBox(bbox);
 
         FeatureWrapper *f = new FeatureWrapper();
 

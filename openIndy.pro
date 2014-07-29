@@ -311,7 +311,8 @@ HEADERS  += \
     ui/simulationdelegate.h \
     ui/simulationtreeviewmodel.h \
     src/simulation/simulationdata.h \
-    ui/oiloadingdialog.h
+    ui/oiloadingdialog.h \
+    src/plugin/pi_generatefeaturefunction.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

@@ -81,7 +81,6 @@ public:
 
     static QList<SimulationPlugin> getAvailableSimulationPlugins();
 
-
     static void saveDefaultFunction(Configuration::FeatureTypes featureType, QString function, QString plugin);
 
 private:

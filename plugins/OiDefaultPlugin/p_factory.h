@@ -48,6 +48,8 @@
 #include "p_extendedtemperaturecompensation.h"
 #include "p_helmert6param.h"
 
+#include "p_pointcloudsegmentation.h"
+
 #include "p_pseudotracker.h"
 #include "p_leicatachymeter.h"
 #include "p_pseudosensor.h"

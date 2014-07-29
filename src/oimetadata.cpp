@@ -11,6 +11,7 @@ QString OiMetaData::iid_LaserTracker=LaserTracker_iidd ;
 QString OiMetaData::iid_TotalStation = TotalStation_iidd;
 QString OiMetaData::iid_ConstructFunction = ConstructFunction_iidd;
 QString OiMetaData::iid_FitFunction = FitFunction_iidd;
+QString OiMetaData::iid_GenerateFeatureFunction = GenerateFeatureFunction_iidd;
 QString OiMetaData::iid_GeodeticFunction = GeodeticFunction_iidd;
 QString OiMetaData::iid_NetworkAdjustment = NetworkAdjustment_iidd;
 QString OiMetaData::iid_ObjectTransformation = ObjectTransformation_iidd;
@@ -124,25 +125,27 @@ QString OiMetaData::getOperatingSys(){
 
 bool OiMetaData::findIID(QString iid){
 
-    if(iid==OiMetaData::iid_LaserTracker){
+    if(iid.compare(OiMetaData::iid_LaserTracker) == 0){
         return true;
-    }else if(iid==OiMetaData::iid_ConstructFunction){
+    }else if(iid.compare(OiMetaData::iid_ConstructFunction) == 0){
         return true;
-    }else if(iid==OiMetaData::iid_FitFunction){
+    }else if(iid.compare(OiMetaData::iid_FitFunction) == 0){
         return true;
-    }else if(iid==OiMetaData::iid_GeodeticFunction){
+    }else if(iid.compare(OiMetaData::iid_GenerateFeatureFunction) == 0){
         return true;
-    }else if(iid==OiMetaData::iid_NetworkAdjustment){
+    }else if(iid.compare(OiMetaData::iid_GeodeticFunction) == 0){
         return true;
-    }else if(iid==OiMetaData::iid_ObjectTransformation){
+    }else if(iid.compare(OiMetaData::iid_NetworkAdjustment) == 0){
         return true;
-    }else if(iid==OiMetaData::iid_SystemTransformation){
+    }else if(iid.compare(OiMetaData::iid_ObjectTransformation) == 0){
         return true;
-    }else if(iid==OiMetaData::iid_TotalStation){
+    }else if(iid.compare(OiMetaData::iid_SystemTransformation) == 0){
         return true;
-    }else if(iid == OiMetaData::iid_OiPlugin){
+    }else if(iid.compare(OiMetaData::iid_TotalStation) == 0){
         return true;
-    }else if(iid == OiMetaData::iid_Simulation){
+    }else if(iid.compare(OiMetaData::iid_OiPlugin) == 0){
+        return true;
+    }else if(iid.compare(OiMetaData::iid_Simulation) == 0){
         return true;
     }
 

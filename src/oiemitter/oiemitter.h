@@ -16,11 +16,8 @@ public:
 signals:
     void sendString(QString);
 
-
 public slots:
     void emitSendString(QString);
-
-
 
 };
 

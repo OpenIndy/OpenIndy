@@ -52,6 +52,7 @@ INCLUDEPATH += $$PWD/functions/construct
 INCLUDEPATH += $$PWD/functions/fit
 INCLUDEPATH += $$PWD/functions/objectTransformation
 INCLUDEPATH += $$PWD/functions/systemTransformation
+INCLUDEPATH += $$PWD/functions/generateFeature
 INCLUDEPATH += $$PWD/simulations/simplePolarMeasurement
 
 INCLUDEPATH += $$PWD/lib/fitting
@@ -144,7 +145,8 @@ SOURCES += p_factory.cpp \
     functions/fit/p_bestfitsphererauls.cpp \
     ../../src/simulation/uncertaintycomponent.cpp \
     simulations/simplePolarMeasurement/simplepolarmeasurement.cpp \
-    ../../src/simulation/simulationdata.cpp
+    ../../src/simulation/simulationdata.cpp \
+    functions/generateFeature/p_pointcloudsegmentation.cpp
 
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
@@ -248,5 +250,6 @@ HEADERS += p_factory.h \
     ../../src/simulation/simulationmodel.h \
     ../../src/simulation/uncertaintycomponent.h \
     simulations/simplePolarMeasurement/simplepolarmeasurement.h \
-    ../../src/simulation/simulationdata.h
+    ../../src/simulation/simulationdata.h \
+    functions/generateFeature/p_pointcloudsegmentation.h
 OTHER_FILES += metaInfo.json

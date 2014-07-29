@@ -1,5 +1,7 @@
 #include "pointcloud.h"
+
 #include "function.h"
+#include "featurewrapper.h"
 
 PointCloud::PointCloud(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4)
 {
@@ -23,6 +25,94 @@ PointCloud::PointCloud(const PointCloud &copy) : Geometry(copy.isNominal){
 
 PointCloud::~PointCloud()
 {
+}
+
+/*!
+ * \brief PointCloud::getPointCloudPoints
+ * \return
+ */
+const QList<Point_PC *> &PointCloud::getPointCloudPoints() const{
+    return this->myPoints;
+}
+
+/*!
+ * \brief PointCloud::addPointCloudPoint
+ * \param myPoint
+ */
+void PointCloud::addPointCloudPoint(Point_PC *myPoint){
+    this->myPoints.append(myPoint);
+}
+
+/*!
+ * \brief PointCloud::getMainFocus
+ * \return
+ */
+const OiVec &PointCloud::getMainFocus() const{
+    return this->xyz;
+}
+
+/*!
+ * \brief PointCloud::setMainFocus
+ * \param mainFocus
+ */
+void PointCloud::setMainFocus(OiVec mainFocus){
+    this->xyz = mainFocus;
+}
+
+/*!
+ * \brief PointCloud::getBoundingBox
+ * \return
+ */
+const BoundingBox_PC &PointCloud::getBoundingBox() const{
+    return this->bbox;
+}
+
+/*!
+ * \brief PointCloud::setBoundingBox
+ * \param bbox
+ */
+void PointCloud::setBoundingBox(BoundingBox_PC bbox){
+    this->bbox = bbox;
+}
+
+/*!
+ * \brief PointCloud::getPointCount
+ * \return
+ */
+unsigned long PointCloud::getPointCount() const{
+    return this->myPoints.size();
+}
+
+/*!
+ * \brief PointCloud::addSegment
+ * Adds a new segment to the pointcloud and sends it to OiFeatureState
+ * \param segment
+ * \return
+ */
+bool PointCloud::addSegment(FeatureWrapper *segment){
+
+    if(segment == NULL || segment->getGeometry() == NULL){
+        return false;
+    }
+
+    foreach(FeatureWrapper *detectedSegment, this->detectedSegments){
+        if(detectedSegment != NULL && detectedSegment->getFeature() != NULL
+                && detectedSegment->getFeature()->getFeatureName().compare(segment->getFeature()->getFeatureName()) == 0){
+            return false;
+        }
+    }
+
+    this->detectedSegments.append(segment);
+
+    emit this->pcSegmentAdded(segment);
+
+}
+
+/*!
+ * \brief PointCloud::clearSegmentation
+ */
+void PointCloud::clearSegmentation(){
+   this->detectedSegments.clear();
 }
 
 //TODO pointcloud bei function adden

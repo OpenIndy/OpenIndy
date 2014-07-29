@@ -28,6 +28,7 @@ void PluginTreeViewModel::refreshModel(){
         PluginTreeItem *objectTrafo = new PluginTreeItem("object transformations:");
         PluginTreeItem *systemTrafo = new PluginTreeItem("system transformations:");
         PluginTreeItem *geodetic = new PluginTreeItem("geodetic functions:");
+        PluginTreeItem *generateFeature = new PluginTreeItem("generate feature functions");
         foreach(FunctionPlugin myFunction, myPlugin.myFunctions){
             PluginTreeItem *function = new PluginTreeItem(myFunction.name);
             function->setFunction(myFunction);
@@ -36,12 +37,14 @@ void PluginTreeViewModel::refreshModel(){
             else if(myFunction.iid.compare(ObjectTransformation_iidd) == 0){ objectTrafo->addChild(function); }
             else if(myFunction.iid.compare(SystemTransformation_iidd) == 0){ systemTrafo->addChild(function); }
             else if(myFunction.iid.compare(GeodeticFunction_iidd) == 0){ geodetic->addChild(function); }
+            else if(myFunction.iid.compare(GenerateFeatureFunction_iidd) == 0){ generateFeature->addChild(function); }
         }
         functionHeader->addChild(fit);
         functionHeader->addChild(construct);
         functionHeader->addChild(objectTrafo);
         functionHeader->addChild(systemTrafo);
         functionHeader->addChild(geodetic);
+        functionHeader->addChild(generateFeature);
 
         //sensor hierarchy
         PluginTreeItem *sensorHeader = new PluginTreeItem("sensors:");
