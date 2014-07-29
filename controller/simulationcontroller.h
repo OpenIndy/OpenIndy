@@ -76,6 +76,8 @@ private:
 
     SimulationSetting simulationSettings;
 
+    void setUpCorrelations(FeatureWrapper* f);
+
 
 
 

@@ -5,6 +5,7 @@
 #include <random>
 #include <math.h>
 #include <QDebug>
+#include <QtAlgorithms>
 
 /*!
  * \brief The SimplePolarMeasurement class
@@ -96,6 +97,16 @@ public:
      */
     bool analyseSimulationData(UncertaintyData &d);
 
+    /*!
+     * \brief getCorrelationCoefficient
+     * \param x
+     * \param y
+     * \return
+     *
+     * determine the correlation coefficient of the two quantities x and y.
+     */
+    double getCorrelationCoefficient(QList<double>x,QList<double>y);
+
 
 private:
 
@@ -129,7 +140,6 @@ private:
     void calcUncertainty(UncertaintyData &d);
 
     double edlenRefractionCalculation(double temperature,double pressure, double humidity, double wavelength);
-
 
 
 

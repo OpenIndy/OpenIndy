@@ -114,6 +114,16 @@ public:
      */
     virtual bool analyseSimulationData(UncertaintyData &d) = 0;
 
+    /*!
+     * \brief getCorrelationCoefficient
+     * \param x
+     * \param y
+     * \return
+     *
+     * determine the correlation coefficient of the two quantities x and y.
+     */
+    virtual double getCorrelationCoefficient(QList<double>x,QList<double>y) = 0;
+
     //getter & setter
     Uncertainties getGivenUncertainties(){return givenUncertainties;}
     void setGivenUncertainties(Uncertainties u){givenUncertainties = u;}

@@ -23,7 +23,30 @@ PluginMetaData *SimplePolarMeasurement::getMetaData()
     return metaData;
 }
 
-double densityNormal(double x, double expectation, double uncertainty)
+double erfFunc(double x)
+{
+    // constants
+    double a1 =  0.254829592;
+    double a2 = -0.284496736;
+    double a3 =  1.421413741;
+    double a4 = -1.453152027;
+    double a5 =  1.061405429;
+    double p  =  0.3275911;
+
+    // Save the sign of x
+    int sign = 1;
+    if (x < 0)
+        sign = -1;
+    x = fabs(x);
+
+    // A&S formula 7.1.26
+    double t = 1.0/(1.0 + p*x);
+    double y = 1.0 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t*exp(-x*x);
+
+    return sign*y;
+}
+
+double densityNormal(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
 {
     double e = -0.5*(((x-expectation)/(uncertainty))*((x-expectation)/(uncertainty)));
 
@@ -32,11 +55,55 @@ double densityNormal(double x, double expectation, double uncertainty)
     return result;
 }
 
-double distributionNormal(double x, double expectation, double uncertainty)
+double distributionNormal(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
 {
-    //return 0.5*(1.0+erf((x-expectation)/(sqrt(2.0*uncertainty*uncertainty))));
-    return 0.0;
+    return 0.5*(1.0+erfFunc((x-expectation)/(sqrt(2.0*uncertainty*uncertainty))));
+
 }
+
+double densityUniform(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
+{
+
+    double result = 1/(upperLimit-lowerLimit);
+
+    return result;
+}
+
+double distributionUniform(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
+{
+    double result = (x-lowerLimit)/(upperLimit-lowerLimit);
+
+    return result;
+}
+
+
+double densityTriangular(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
+{
+
+    double result = 0.0;
+
+    if(lowerLimit <= x && x <= expectation){
+         result = (2*(x-lowerLimit))/((upperLimit-lowerLimit)*(expectation-lowerLimit));
+    }else if(expectation < x && x <= upperLimit) {
+         result = (2*(upperLimit-x))/((upperLimit-lowerLimit)*(upperLimit-expectation));
+    }
+
+    return result;
+}
+
+double distributionTriangular(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
+{
+    double result = 0.0;
+
+    if(lowerLimit <= x && x <= expectation){
+         result = ((x-lowerLimit)*(x-lowerLimit))/((upperLimit-lowerLimit)*(expectation-lowerLimit));
+    }else if(expectation < x && x <= upperLimit) {
+         result =1.0- (((upperLimit-x)*(upperLimit-x))/((upperLimit-lowerLimit)*(upperLimit-expectation)));
+    }
+
+    return result;
+}
+
 
 QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainties()
 {
@@ -449,7 +516,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getHumanInfluence()
 
 QMap<QString, int> *SimplePolarMeasurement::getIntegerParameter()
 {
-    return NULL;
+        return NULL;
 }
 
 QMap<QString, double> *SimplePolarMeasurement::getDoubleParameter()
@@ -507,19 +574,62 @@ bool SimplePolarMeasurement::analyseSimulationData(UncertaintyData &d)
 
        d.expectation = sumDD/d.values.size();
 
-      this->checkDistribution(d);
-      this->calcUncertainty(d);
 
-       d.densityFunction = densityNormal;
-       d.distributionFunction = distributionNormal;
+      this->calcUncertainty(d);
+      this->checkDistribution(d);
+
+       if(d.distribution.compare("normal")==0){
+           d.densityFunction = densityNormal;
+           d.distributionFunction = distributionNormal;
+       }else if(d.distribution.compare("uniform")==0){
+           d.densityFunction = densityUniform;
+           d.distributionFunction = distributionUniform;
+       }else if(d.distribution.compare("triangular")==0){
+           d.densityFunction = densityTriangular;
+           d.distributionFunction = distributionTriangular;
+       }
+
 
    }else{
-    return false;
+        return false;
    }
 
 
 
-    return true;
+   return true;
+}
+
+double SimplePolarMeasurement::getCorrelationCoefficient(QList<double> x, QList<double> y)
+{
+
+    if(x.size() != y.size()){
+        return 0.0;
+    }
+
+    double sumXX = 0.0;
+    double sumYY = 0.0;
+
+    for(int i = 0; i<x.size();i++){
+        sumXX += x.at(i);
+        sumYY += y.at(i);
+    }
+
+    double mX = sumXX/x.size();
+    double mY = sumYY/y.size();
+
+    double sumXi2 =0.0;
+    double sumYi2 =0.0;
+    double sumXY = 0.0;
+
+    for(int i = 0; i<x.size();i++){
+       sumXi2 += (x.at(i)-mX)*(x.at(i)-mX);
+       sumYi2 += (y.at(i)-mY)*(y.at(i)-mY);
+       sumXY += (x.at(i)-mX)*(y.at(i)-mY);
+    }
+
+    double r = sumXY/(sqrt(sumXi2*sumYi2));
+
+    return r;
 }
 
 bool SimplePolarMeasurement::distort(Reading *r,OiMat objectRelation,bool newIterationStart)
@@ -760,13 +870,54 @@ bool SimplePolarMeasurement::distortionByObject(Reading *r, OiMat objectRelation
 
 void SimplePolarMeasurement::checkDistribution(UncertaintyData &d)
 {
-    d.distribution = "normal";
+    double chi95 = 16.919;
+    double chi2Normal = 0.0;
+    double chi2Uniform = 0.0;
+
+    QList<double> tmpList = d.values;
+    double n = tmpList.size();
+    qSort(tmpList);
+
+
+    double classification = (d.maxValue-d.minValue)/10;
+    double startClass = tmpList.first();
+    double endClass = tmpList.first()+classification;
+    double hi = 0.0;
+
+
+    for(int i=0;i<n;i++){
+
+        if(tmpList.at(i)>=endClass || i == n-1){
+
+            double startNormal = distributionNormal(startClass,d.expectation,d.uncertainty,d.minValue,d.maxValue);
+            double endNormal =distributionNormal(endClass,d.expectation,d.uncertainty,d.minValue,d.maxValue);
+            double startUniform= distributionUniform(startClass,d.expectation,d.uncertainty,d.minValue,d.maxValue);
+            double endUniform = distributionUniform(endClass,d.expectation,d.uncertainty,d.minValue,d.maxValue);
+
+            chi2Normal += ((hi-n*(endNormal-startNormal))*(hi-n*(endNormal-startNormal)))/(n*(endNormal-startNormal));
+            chi2Uniform+= ((hi-n*(endUniform-startUniform))*(hi-n*(endUniform-startUniform)))/(n*(endUniform-startUniform));
+
+            startClass = tmpList.at(i);
+            endClass = tmpList.at(i)+classification;
+            hi = 1.0;
+
+        }else{
+            hi += 1.0;
+        }
+
+    }
+
+    if(chi95>chi2Normal){
+        d.distribution = "normal";
+    }else if(chi95>chi2Uniform){
+        d.distribution = "uniform";
+    }else{
+        d.distribution = "triangular";
+    }
 }
 
 void SimplePolarMeasurement::calcUncertainty(UncertaintyData &d)
 {
-
-    if(d.distribution == "normal"){
 
         double sumVV = 0.0;
 
@@ -778,7 +929,6 @@ void SimplePolarMeasurement::calcUncertainty(UncertaintyData &d)
         }
 
         d.uncertainty = sqrt(sumVV/(d.values.size()-1.0));
-    }
 
 }
 
@@ -811,7 +961,6 @@ double SimplePolarMeasurement::edlenRefractionCalculation(double temperature, do
 
     return Ntp-pow(-10,-10)*((292.75)/(temperature+273.15))*(3.7345-0.0401*S)*pv;
 }
-
 
 
 

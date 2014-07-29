@@ -90,7 +90,7 @@ private:
     void drawGrid();
     void drawGridAll();
     void drawResultSet();
-    void generateDensityList(QList<double> tmpList);
+    void generateDensityList(QList<double> tmpList,UncertaintyData uData);
     void addErrorAttribute(AttributeStats a, QList<double> v);
     void setUpExpectationPoints(double h);
 
