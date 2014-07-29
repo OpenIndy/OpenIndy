@@ -90,9 +90,9 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data){
 
         QTextStream in(data.device);
 
-        PointCloud *pc = new PointCloud(false);
+        PointCloud *pc = new PointCloud(true);
 
-        OiVec focalPoint(4); //centroid of pointcloud
+        double x=0.0, y=0.0, z=0.0; //centroid of pointcloud
         unsigned long pointCount = 0; //number of points in the pointcloud
 
         //QRegExp splitPattern("\\s+");
@@ -114,20 +114,20 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data){
                 myPoint->xyz[1] = fields.at(1).toFloat();
                 myPoint->xyz[2] = fields.at(2).toFloat();
 
-                /*if(data.unit.value(UnitConverter::eMetric) == UnitConverter::eMILLIMETER){
+                if(data.unit.value(UnitConverter::eMetric) == UnitConverter::eMILLIMETER){
                     myPoint->xyz[0] = myPoint->xyz[0] / 1000.0;
                     myPoint->xyz[1] = myPoint->xyz[1] / 1000.0;
                     myPoint->xyz[2] = myPoint->xyz[2] / 1000.0;
-                }*/
+                }
 
                 pc->myPoints.append(myPoint);
 
                 pointCount++;
 
                 //update centroid
-                /*focalPoint.setAt(0, myPoint->xyz[0]+focalPoint.getAt(0));
-                focalPoint.setAt(1, myPoint->xyz[1]+focalPoint.getAt(1));
-                focalPoint.setAt(2, myPoint->xyz[2]+focalPoint.getAt(2));*/
+                x += myPoint->xyz[0];
+                y += myPoint->xyz[1];
+                z += myPoint->xyz[2];
 
                 //update bounding box
                 if(myPoint->xyz[0] < pc->bbox.min[0]){
@@ -161,9 +161,12 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data){
         }
 
         pc->setFeatureName(QString::number(pc->getId()));
+        pc->setNominalSystem(data.nominalCoordSys);
         pc->setIsSolved(true);
 
-        pc->xyz = focalPoint / (double)pointCount;
+        pc->xyz.setAt(0, x / (double)pointCount);
+        pc->xyz.setAt(1, y / (double)pointCount);
+        pc->xyz.setAt(2, z / (double)pointCount);
         pc->xyz.setAt(3, 1.0);
 
         pc->pointCount = pointCount;
