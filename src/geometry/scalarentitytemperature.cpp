@@ -63,6 +63,11 @@ void ScalarEntityTemperature::setTemperature(double temperature){
     this->temperature = temperature;
 }
 
+double ScalarEntityTemperature::getScalar() const
+{
+    return this->temperature;
+}
+
 double ScalarEntityTemperature::getTemperature() const{
     return this->temperature;
 }

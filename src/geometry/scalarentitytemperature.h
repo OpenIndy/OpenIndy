@@ -21,6 +21,8 @@ public:
     double getTemperature() const;
     void setTemperature(double temperature);
 
+    double getScalar() const;
+
     QString getDisplayIsCommon() const;
     QString getDisplayIsNominal() const;
     //QString getDisplayObs() const;

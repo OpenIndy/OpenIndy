@@ -20,6 +20,7 @@ public:
     double radius;
 
     OiVec getXYZ() const;
+    double getRadius() const;
 
     void recalc();
 

@@ -249,5 +249,4 @@ HEADERS += p_factory.h \
     ../../src/simulation/uncertaintycomponent.h \
     simulations/simplePolarMeasurement/simplepolarmeasurement.h \
     ../../src/simulation/simulationdata.h
-
 OTHER_FILES += metaInfo.json

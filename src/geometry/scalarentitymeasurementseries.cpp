@@ -67,6 +67,11 @@ void ScalarEntityMeasurementSeries::setSeriesValue(double value){
     this->seriesValue = value;
 }
 
+double ScalarEntityMeasurementSeries::getScalar() const
+{
+    return this->seriesValue;
+}
+
 QString ScalarEntityMeasurementSeries::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }

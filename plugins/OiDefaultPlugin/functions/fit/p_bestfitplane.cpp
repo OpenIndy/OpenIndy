@@ -81,12 +81,20 @@ bool BestFitPlane::setUpResult(Plane &plane){
         double sumXN = 0.0;
         double sumYN = 0.0;
         double sumZN = 0.0;
+        double sumX = 0.0;
+        double sumY = 0.0;
+        double sumZ = 0.0;
         int count = 0;
         foreach(Observation *obs, this->observations){
             if(obs->isValid){
                 sumXN += obs->myXyz.getAt(0) * n.getAt(0);
-                sumXN += obs->myXyz.getAt(1) * n.getAt(1);
-                sumXN += obs->myXyz.getAt(2) * n.getAt(2);
+                sumYN += obs->myXyz.getAt(1) * n.getAt(1);
+                sumZN += obs->myXyz.getAt(2) * n.getAt(2);
+
+                sumX += obs->myXyz.getAt(0);
+                sumY += obs->myXyz.getAt(1);
+                sumZ += obs->myXyz.getAt(2);
+
                 count++;
             }
         }
@@ -106,7 +114,11 @@ bool BestFitPlane::setUpResult(Plane &plane){
         }
         n.add(1.0);
         plane.ijk = n;
-        plane.xyz = d * n;
+        plane.xyz.setAt(0, sumX/(double)count);
+        plane.xyz.setAt(1, sumY/(double)count);
+        plane.xyz.setAt(2, sumZ/(double)count);
+        plane.xyz.setAt(3, 1.0);
+        //plane.xyz = d * n;
         Statistic myStats = plane.getStatistic();
         myStats.stdev = qSqrt( eVal / (count - 3) );
         myStats.isValid = true;

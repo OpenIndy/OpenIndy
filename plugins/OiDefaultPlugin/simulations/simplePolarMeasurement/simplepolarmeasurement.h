@@ -3,7 +3,9 @@
 
 #include "simulationmodel.h"
 #include <random>
+#define _USE_MATH_DEFINES
 #include <math.h>
+#include <QDebug>
 
 /*!
  * \brief The SimplePolarMeasurement class
@@ -100,8 +102,21 @@ private:
 
     //all supported distributions;
     QStringList distributions;
+
     double variance;
     double expectation;
+
+    bool newIteration;
+
+    double refraction;
+    double distortedRefraction;
+    double verticalDn;
+    double horizontalDn;
+
+    double ref_coefficientOfExpansion;
+    double ref_materialTemperature;
+    double coefficientOfExpansion;
+    double materialTemperature;
 
     double distortComponent(UncertaintyComponent u);
 
@@ -113,6 +128,8 @@ private:
 
     void checkDistribution(UncertaintyData &d);
     void calcUncertainty(UncertaintyData &d);
+
+    double edlenRefractionCalculation(double temperature,double pressure, double humidity, double wavelength);
 
 
 

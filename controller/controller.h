@@ -56,6 +56,8 @@
 #include "nominalattributeexchange.h"
 
 #include "oifeaturestate.h"
+#include "oiprojectdata.h"
+#include "oiprojectexchanger.h"
 
 class Feature;
 class CoordinateSystem;
@@ -73,6 +75,8 @@ class Controller : public QObject
     Q_OBJECT
 public:
     explicit Controller(QObject *parent = 0);
+
+    OiProjectData currentProject; //holds the currently opened OpenIndy-project
 
     OiFeatureState *myFeatureState;
 
@@ -174,7 +178,11 @@ public slots:
     void addElement2Function(FeatureTreeItem *element, int functionIndex, int elementIndex); //add element to the active function
     void removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex); //remove element from the active function
 
-    void loadProjectData(oiProjectData &data);
+    //save & load an OpenIndy project
+    bool saveProject();
+    bool loadProject(OiProjectData &projectData);
+    bool createProject(OiProjectData &projectData);
+
     void setFunctionConfiguration(int functionIndex, FunctionConfiguration config);
 
     void printToConsole(QString message);
@@ -207,7 +215,7 @@ private:
 
     void initModels();
     void connectModels();
-    void createDefaultFeatures();
+    //void createDefaultFeatures();
 
     FeatureUpdater myFeatureUpdater;
 

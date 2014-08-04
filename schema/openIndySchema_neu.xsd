@@ -1,0 +1,1055 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:as="http://www.oasis-open.org/committees/cam"
+ xmlns:camed="http://jcam.org.uk/editor"
+ xmlns:dblook="http://jcam.org.uk/DbLookupLists"
+ xmlns:look="http://jcam.org.uk/LookupLists"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema" version="0.1" elementFormDefault="qualified">
+  <xsd:annotation>
+    <xsd:documentation>NOTICE: Generated from CAM template by XSLT
+                    NOTICE:  This schema is designed to maximize software interoperability and uses basic XSD Schema constructs only.
+                     
+                    CAM Template Header information: 
+                    
+                    Description: No Description 
+                    Owner: Not Set 
+                    Date: 2014-08-04T11:10:33 
+                    Version: 0.1 
+                    XSD generator: v1.65 
+                    NS Mode: true 
+                    XSDOutput Mode: default
+                    NOTICE: Please refer to the original source owner schema, dictionary, and/or CAM template for updates and changes.
+                    NOTICE: For copyright, licensing and use criteria please refer to owner authority.</xsd:documentation>
+    <xsd:appinfo source="CAM">oiProjectData</xsd:appinfo>
+  </xsd:annotation>
+  <xsd:element name="oiProjectData" id="d2e47">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="stations" minOccurs="1" maxOccurs="1" id="d2e77">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="station" minOccurs="1" maxOccurs="unbounded" id="d2e84">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="activeSensor" minOccurs="1" maxOccurs="1" id="d2e105">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="name" type="xsd:string" id="d2e112" use="required" />
+                            <xsd:attribute name="plugin" type="xsd:string" id="d2e119" use="required" />
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="position" minOccurs="1" maxOccurs="1" id="d2e127">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="ref" id="d2e134" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:int">
+                                  <xsd:totalDigits value="7" />
+                                  <xsd:fractionDigits value="0" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="coordinatesystem" minOccurs="1" maxOccurs="1" id="d2e143">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="ref" id="d2e150" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:int">
+                                  <xsd:totalDigits value="7" />
+                                  <xsd:fractionDigits value="0" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="usedFor" minOccurs="0" maxOccurs="1" id="d2e160">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="unbounded" id="d2e166">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e172" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                  <xsd:attribute name="id" id="d2e90" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:int">
+                        <xsd:totalDigits value="7" />
+                        <xsd:fractionDigits value="0" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="name" type="xsd:string" id="d2e98" use="required" />
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="coordinatesystems" minOccurs="1" maxOccurs="1" id="d2e185">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="coordinatesystem" minOccurs="1" maxOccurs="unbounded" id="d2e192">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="expansionOrigin" minOccurs="0" maxOccurs="1" id="d2e221">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="x" id="d2e227" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                            <xsd:attribute name="y" id="d2e235" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                            <xsd:attribute name="z" id="d2e243" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="observations" minOccurs="0" maxOccurs="1" id="d2e252">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="unbounded" id="d2e258">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e264" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="nominalGeometries" minOccurs="0" maxOccurs="1" id="d2e275">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="unbounded" id="d2e281">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e287" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="functions" minOccurs="0" maxOccurs="1" id="d2e297">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="function" minOccurs="1" maxOccurs="unbounded" id="d2e303">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="inputElements" minOccurs="0" maxOccurs="1" id="d2e331">
+                                  <xsd:complexType>
+                                    <xsd:sequence>
+                                      <xsd:element name="inputElement" minOccurs="1" maxOccurs="unbounded" id="d2e337">
+                                        <xsd:complexType>
+                                          <xsd:simpleContent>
+                                            <xsd:extension base="xsd:string">
+                                              <xsd:attribute name="index" id="d2e343" use="required">
+                                                <xsd:simpleType>
+                                                  <xsd:restriction base="xsd:int">
+                                                    <xsd:totalDigits value="7" />
+                                                    <xsd:fractionDigits value="0" />
+                                                  </xsd:restriction>
+                                                </xsd:simpleType>
+                                              </xsd:attribute>
+                                              <xsd:attribute name="type" type="xsd:string" id="d2e351" use="required" />
+                                              <xsd:attribute name="ref" id="d2e358" use="required">
+                                                <xsd:simpleType>
+                                                  <xsd:restriction base="xsd:int">
+                                                    <xsd:totalDigits value="7" />
+                                                    <xsd:fractionDigits value="0" />
+                                                  </xsd:restriction>
+                                                </xsd:simpleType>
+                                              </xsd:attribute>
+                                            </xsd:extension>
+                                          </xsd:simpleContent>
+                                        </xsd:complexType>
+                                      </xsd:element>
+                                    </xsd:sequence>
+                                  </xsd:complexType>
+                                </xsd:element>
+                              </xsd:sequence>
+                              <xsd:attribute name="name" type="xsd:string" id="d2e309" use="required" />
+                              <xsd:attribute name="plugin" type="xsd:string" id="d2e316" use="required" />
+                              <xsd:attribute name="executionIndex" id="d2e323" use="required">
+                                <xsd:simpleType>
+                                  <xsd:restriction base="xsd:int">
+                                    <xsd:totalDigits value="7" />
+                                    <xsd:fractionDigits value="0" />
+                                  </xsd:restriction>
+                                </xsd:simpleType>
+                              </xsd:attribute>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="usedFor" minOccurs="0" maxOccurs="1" id="d2e370">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="unbounded" id="d2e376">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e382" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="previouslyNeeded" minOccurs="0" maxOccurs="1" id="d2e392">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="unbounded" id="d2e398">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e404" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                  <xsd:attribute name="id" id="d2e198" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:int">
+                        <xsd:totalDigits value="7" />
+                        <xsd:fractionDigits value="0" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="name" type="xsd:string" id="d2e206" use="required" />
+                  <xsd:attribute name="solved" type="xsd:boolean" id="d2e213" use="required" />
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="transformationparameters" minOccurs="0" maxOccurs="1" id="d2e416">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="transformationparameter" minOccurs="1" maxOccurs="unbounded" id="d2e422">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="from" minOccurs="1" maxOccurs="1" id="d2e557">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="ref" id="d2e564" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:int">
+                                  <xsd:totalDigits value="7" />
+                                  <xsd:fractionDigits value="0" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="to" minOccurs="1" maxOccurs="1" id="d2e574">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="ref" id="d2e581" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:int">
+                                  <xsd:totalDigits value="7" />
+                                  <xsd:fractionDigits value="0" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="functions" minOccurs="0" maxOccurs="1" id="d2e590">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="function" minOccurs="1" maxOccurs="unbounded" id="d2e596">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="inputElements" minOccurs="0" maxOccurs="1" id="d2e624">
+                                  <xsd:complexType>
+                                    <xsd:sequence>
+                                      <xsd:element name="inputElement" minOccurs="1" maxOccurs="unbounded" id="d2e630">
+                                        <xsd:complexType>
+                                          <xsd:simpleContent>
+                                            <xsd:extension base="xsd:string">
+                                              <xsd:attribute name="index" id="d2e636" use="required">
+                                                <xsd:simpleType>
+                                                  <xsd:restriction base="xsd:int">
+                                                    <xsd:totalDigits value="7" />
+                                                    <xsd:fractionDigits value="0" />
+                                                  </xsd:restriction>
+                                                </xsd:simpleType>
+                                              </xsd:attribute>
+                                              <xsd:attribute name="type" type="xsd:string" id="d2e644" use="required" />
+                                              <xsd:attribute name="ref" id="d2e651" use="required">
+                                                <xsd:simpleType>
+                                                  <xsd:restriction base="xsd:int">
+                                                    <xsd:totalDigits value="7" />
+                                                    <xsd:fractionDigits value="0" />
+                                                  </xsd:restriction>
+                                                </xsd:simpleType>
+                                              </xsd:attribute>
+                                            </xsd:extension>
+                                          </xsd:simpleContent>
+                                        </xsd:complexType>
+                                      </xsd:element>
+                                    </xsd:sequence>
+                                  </xsd:complexType>
+                                </xsd:element>
+                              </xsd:sequence>
+                              <xsd:attribute name="name" type="xsd:string" id="d2e602" use="required" />
+                              <xsd:attribute name="plugin" type="xsd:string" id="d2e609" use="required" />
+                              <xsd:attribute name="executionIndex" id="d2e616" use="required">
+                                <xsd:simpleType>
+                                  <xsd:restriction base="xsd:int">
+                                    <xsd:totalDigits value="7" />
+                                    <xsd:fractionDigits value="0" />
+                                  </xsd:restriction>
+                                </xsd:simpleType>
+                              </xsd:attribute>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="usedFor" minOccurs="0" maxOccurs="1" id="d2e663">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="unbounded" id="d2e669">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e675" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="previouslyNeeded" minOccurs="0" maxOccurs="1" id="d2e685">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="unbounded" id="d2e691">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e697" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                  <xsd:attribute name="id" id="d2e428" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:int">
+                        <xsd:totalDigits value="7" />
+                        <xsd:fractionDigits value="0" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="name" type="xsd:string" id="d2e436" use="required" />
+                  <xsd:attribute name="solved" type="xsd:boolean" id="d2e443" use="required" />
+                  <xsd:attribute name="tx" id="d2e451" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="ty" id="d2e459" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="tz" id="d2e468" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="rx" id="d2e476" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="ry" id="d2e484" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="rz" id="d2e492" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="mx" id="d2e500" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="my" id="d2e508" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="mz" id="d2e517" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="use" type="xsd:boolean" id="d2e525" use="required" />
+                  <xsd:attribute name="time" type="xsd:string" id="d2e533" use="required" />
+                  <xsd:attribute name="movement" type="xsd:boolean" id="d2e541" use="required" />
+                  <xsd:attribute name="datumtrafo" type="xsd:boolean" id="d2e549" use="required" />
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="geometries" minOccurs="1" maxOccurs="1" id="d2e709">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="geometry" minOccurs="1" maxOccurs="unbounded" id="d2e716">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="coordinates" minOccurs="1" maxOccurs="1" id="d2e769">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="x" id="d2e776" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                            <xsd:attribute name="y" id="d2e784" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                            <xsd:attribute name="z" id="d2e792" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                            <xsd:attribute name="sigmaX" id="d2e800" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                            <xsd:attribute name="sigmaY" id="d2e809" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                            <xsd:attribute name="sigmaZ" id="d2e817" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="spatialDirection" minOccurs="0" maxOccurs="1" id="d2e826">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="i" id="d2e832" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                            <xsd:attribute name="j" id="d2e840" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                            <xsd:attribute name="k" id="d2e848" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="radius" minOccurs="0" maxOccurs="1" id="d2e857">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="r" id="d2e863" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                            <xsd:attribute name="sr" id="d2e871" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="standardDeviation" minOccurs="1" maxOccurs="1" id="d2e880">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="value" id="d2e887" use="required">
+                              <xsd:simpleType>
+                                <xsd:restriction base="xsd:decimal">
+                                  <xsd:totalDigits value="8" />
+                                  <xsd:fractionDigits value="2" />
+                                </xsd:restriction>
+                              </xsd:simpleType>
+                            </xsd:attribute>
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="observations" minOccurs="0" maxOccurs="1" id="d2e896">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="unbounded" id="d2e902">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e908" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="functions" minOccurs="0" maxOccurs="1" id="d2e919">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="function" minOccurs="1" maxOccurs="unbounded" id="d2e925">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="inputElements" minOccurs="0" maxOccurs="1" id="d2e953">
+                                  <xsd:complexType>
+                                    <xsd:sequence>
+                                      <xsd:element name="inputElement" minOccurs="1" maxOccurs="unbounded" id="d2e959">
+                                        <xsd:complexType>
+                                          <xsd:simpleContent>
+                                            <xsd:extension base="xsd:string">
+                                              <xsd:attribute name="index" id="d2e965" use="required">
+                                                <xsd:simpleType>
+                                                  <xsd:restriction base="xsd:int">
+                                                    <xsd:totalDigits value="7" />
+                                                    <xsd:fractionDigits value="0" />
+                                                  </xsd:restriction>
+                                                </xsd:simpleType>
+                                              </xsd:attribute>
+                                              <xsd:attribute name="type" type="xsd:string" id="d2e973" use="required" />
+                                              <xsd:attribute name="ref" id="d2e980" use="required">
+                                                <xsd:simpleType>
+                                                  <xsd:restriction base="xsd:int">
+                                                    <xsd:totalDigits value="7" />
+                                                    <xsd:fractionDigits value="0" />
+                                                  </xsd:restriction>
+                                                </xsd:simpleType>
+                                              </xsd:attribute>
+                                            </xsd:extension>
+                                          </xsd:simpleContent>
+                                        </xsd:complexType>
+                                      </xsd:element>
+                                    </xsd:sequence>
+                                  </xsd:complexType>
+                                </xsd:element>
+                              </xsd:sequence>
+                              <xsd:attribute name="name" type="xsd:string" id="d2e931" use="required" />
+                              <xsd:attribute name="plugin" type="xsd:string" id="d2e938" use="required" />
+                              <xsd:attribute name="executionIndex" id="d2e945" use="required">
+                                <xsd:simpleType>
+                                  <xsd:restriction base="xsd:int">
+                                    <xsd:totalDigits value="7" />
+                                    <xsd:fractionDigits value="0" />
+                                  </xsd:restriction>
+                                </xsd:simpleType>
+                              </xsd:attribute>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="measurementconfig" minOccurs="0" maxOccurs="1" id="d2e992">
+                      <xsd:complexType>
+                        <xsd:simpleContent>
+                          <xsd:extension base="xsd:string">
+                            <xsd:attribute name="name" type="xsd:string" id="d2e998" use="required" />
+                          </xsd:extension>
+                        </xsd:simpleContent>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="usedFor" minOccurs="0" maxOccurs="1" id="d2e1006">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="unbounded" id="d2e1012">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e1018" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="previouslyNeeded" minOccurs="0" maxOccurs="1" id="d2e1028">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="unbounded" id="d2e1034">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e1040" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                  <xsd:attribute name="id" id="d2e722" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:int">
+                        <xsd:totalDigits value="7" />
+                        <xsd:fractionDigits value="0" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="name" type="xsd:string" id="d2e730" use="required" />
+                  <xsd:attribute name="type" type="xsd:string" id="d2e737" use="required" />
+                  <xsd:attribute name="nominal" type="xsd:boolean" id="d2e744" use="required" />
+                  <xsd:attribute name="common" type="xsd:boolean" id="d2e752" use="required" />
+                  <xsd:attribute name="solved" type="xsd:boolean" id="d2e761" use="required" />
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="observations" minOccurs="0" maxOccurs="1" id="d2e1052">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="observation" minOccurs="1" maxOccurs="unbounded" id="d2e1058">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="station" minOccurs="1" maxOccurs="1" id="d2e1129">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="member" minOccurs="1" maxOccurs="1" id="d2e1136">
+                            <xsd:complexType>
+                              <xsd:simpleContent>
+                                <xsd:extension base="xsd:string">
+                                  <xsd:attribute name="ref" id="d2e1143" use="required">
+                                    <xsd:simpleType>
+                                      <xsd:restriction base="xsd:int">
+                                        <xsd:totalDigits value="7" />
+                                        <xsd:fractionDigits value="0" />
+                                      </xsd:restriction>
+                                    </xsd:simpleType>
+                                  </xsd:attribute>
+                                </xsd:extension>
+                              </xsd:simpleContent>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="reading" minOccurs="1" maxOccurs="1" id="d2e1153">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="measurements" minOccurs="1" maxOccurs="1" id="d2e1183">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="measurement" minOccurs="1" maxOccurs="unbounded" id="d2e1190">
+                                  <xsd:complexType>
+                                    <xsd:simpleContent>
+                                      <xsd:extension base="xsd:string">
+                                        <xsd:attribute name="type" type="xsd:string" id="d2e1196" use="required" />
+                                        <xsd:attribute name="value" id="d2e1203" use="required">
+                                          <xsd:simpleType>
+                                            <xsd:restriction base="xsd:decimal">
+                                              <xsd:totalDigits value="8" />
+                                              <xsd:fractionDigits value="2" />
+                                            </xsd:restriction>
+                                          </xsd:simpleType>
+                                        </xsd:attribute>
+                                        <xsd:attribute name="sigma" id="d2e1211" use="required">
+                                          <xsd:simpleType>
+                                            <xsd:restriction base="xsd:decimal">
+                                              <xsd:totalDigits value="8" />
+                                              <xsd:fractionDigits value="2" />
+                                            </xsd:restriction>
+                                          </xsd:simpleType>
+                                        </xsd:attribute>
+                                      </xsd:extension>
+                                    </xsd:simpleContent>
+                                  </xsd:complexType>
+                                </xsd:element>
+                              </xsd:sequence>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                        <xsd:attribute name="id" id="d2e1160" use="required">
+                          <xsd:simpleType>
+                            <xsd:restriction base="xsd:int">
+                              <xsd:totalDigits value="7" />
+                              <xsd:fractionDigits value="0" />
+                            </xsd:restriction>
+                          </xsd:simpleType>
+                        </xsd:attribute>
+                        <xsd:attribute name="time" type="xsd:string" id="d2e1168" use="required" />
+                        <xsd:attribute name="type" type="xsd:string" id="d2e1176" use="required" />
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                  <xsd:attribute name="id" id="d2e1064" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:int">
+                        <xsd:totalDigits value="7" />
+                        <xsd:fractionDigits value="0" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="isValid" type="xsd:boolean" id="d2e1072" use="required" />
+                  <xsd:attribute name="x" id="d2e1080" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="y" id="d2e1088" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="z" id="d2e1096" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="sigmaX" id="d2e1105" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="sigmaY" id="d2e1113" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="sigmaZ" id="d2e1121" use="required">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:decimal">
+                        <xsd:totalDigits value="8" />
+                        <xsd:fractionDigits value="2" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" id="d2e54" use="required" />
+      <xsd:attribute name="date" type="xsd:string" id="d2e61" use="required" />
+      <xsd:attribute name="iscount" id="d2e69" use="required">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:totalDigits value="7" />
+            <xsd:fractionDigits value="0" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- Parent complexTypes  -->
+  <!-- Local simpleTypes (default namespace)  -->
+  <xsd:simpleType name="activeSensorDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for activeSensor.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="positionDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for position.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="coordinatesystemDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for coordinatesystem.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="memberDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for member.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="expansionOriginDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for expansionOrigin.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="inputElementDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for inputElement.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="fromDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for from.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="toDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for to.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="coordinatesDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for coordinates.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="spatialDirectionDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for spatialDirection.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="radiusDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for radius.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="standardDeviationDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for standardDeviation.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="measurementconfigDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for measurementconfig.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+  <xsd:simpleType name="measurementDefinition">
+    <xsd:annotation>
+      <xsd:documentation>The type for measurement.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+</xsd:schema>
+

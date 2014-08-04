@@ -21,8 +21,7 @@ public:
     double uncertainty; // uncertainty of the error
     QString distribution;
 
-    UnitConverter::unitType errorUnit; // dimension of the unit (mm, m ,...)
-    UnitConverter::dimensionType errorDimension; // unit type of the error (metric, angular, ...)
+    QString errorUnit; // dimension of the unit (mm, m ,...)
 
     QString description;
 

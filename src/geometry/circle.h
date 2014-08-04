@@ -27,6 +27,7 @@ public:
     double dist2origin;
     OiVec getXYZ() const;
     OiVec getIJK() const;
+    double getRadius() const;
 
     void recalc();
 

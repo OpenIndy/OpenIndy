@@ -221,7 +221,7 @@ background-position: center center;</string>
      <x>0</x>
      <y>0</y>
      <width>1057</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -711,6 +711,10 @@ color: rgb(255, 255, 255);
    </property>
   </action>
   <action name="actionView_settings">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/settings.png</normaloff>:/Images/icons/settings.png</iconset>
+   </property>
    <property name="text">
     <string>view settings</string>
    </property>
@@ -863,6 +867,10 @@ color: rgb(255, 255, 255);
    </property>
   </action>
   <action name="actionSensor_real_time_data">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/streamingLogo.png</normaloff>:/Images/icons/streamingLogo.png</iconset>
+   </property>
    <property name="text">
     <string>sensor real time data</string>
    </property>

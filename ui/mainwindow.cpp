@@ -1133,35 +1133,36 @@ void MainWindow::on_actionNominal_geometry_triggered()
 /*!
  * \brief saves the current job
  */
-void MainWindow::on_actionSave_as_triggered()
-{
+void MainWindow::on_actionSave_as_triggered(){
+    try{
 
-    QString filename = QFileDialog::getSaveFileName(
-                       this,
-                       "Choose a filename to save under",
-                       "oiProject",
-                       "xml (*.xml)");
-
-
+        QString filename = QFileDialog::getSaveFileName(
+                             this,
+                             "Choose a filename to save under",
+                             "oiProject",
+                             "xml (*.xml)");
 
 
-    oiProjectData data;
-    data.device = new QFile(filename);
 
-    QFileInfo info(filename);
+          control.currentProject.setDevice(new QFile(filename));
 
-    data.projectName = info.fileName();
-    data.features = OiFeatureState::getFeatures();
-    data.activeCoordSystem = OiFeatureState::getActiveCoordinateSystem();
+          QFileInfo info(filename);
 
-    //bool isSuccessfull = OiDataImporter::saveToXML(control.features,file,control.activeCoordinateSystem->id);
-    bool isSuccessfull = oiProjectExchanger::saveProject(data);
+          control.currentProject.setProjectName(info.fileName());
 
-    if(isSuccessfull){
-        QMessageBox::information(this,"save data", "Saving the data was successful.");
-    }else{
-        QMessageBox::information(this,"save data", "Saving the data was not successful.");
+          //bool isSuccessfull = OiDataImporter::saveToXML(control.features,file,control.activeCoordinateSystem->id);
+          bool isSuccessfull = this->control.saveProject();
+
+          if(isSuccessfull){
+              QMessageBox::information(this,"save data", "Saving the data was successful.");
+          }else{
+              QMessageBox::information(this,"save data", "Saving the data was not successful.");
+          }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
     }
+
 }
 
 /*!
@@ -1184,15 +1185,14 @@ void MainWindow::on_actionOpen_triggered()
                        "xml (*.xml)");
 
 
-    oiProjectData data;
-    data.device = new QFile(filename);
+    OiProjectData data;
+    data.setDevice(new QFile(filename));
 
     QFileInfo info(filename);
 
-    data.projectName = info.fileName();
+    data.setProjectName(info.fileName());
 
-    //OiDataImporter::loadFromXML(control.features,file);
-    bool isSuccessfull = oiProjectExchanger::loadProject(data);
+    bool isSuccessfull = this->control.loadProject(data);
 
     if(isSuccessfull){
         QMessageBox::information(this,"load project", "load "+info.fileName()+ " was successful.");
@@ -1200,7 +1200,9 @@ void MainWindow::on_actionOpen_triggered()
         QMessageBox::information(this,"load project", "load "+info.fileName()+ "  was not successful.");
     }
 
-    control.loadProjectData(data);
+    //TODO set up sensorpad
+    //this->setupLaserTrackerPad();
+
 
 }
 
@@ -1656,8 +1658,10 @@ void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString
         }else if(OiFeatureState::getActiveCoordinateSystem() == NULL){
             this->control.setActiveCoordSystem(arg1);
         }
-    }else{
+    }else if(OiFeatureState::getActiveCoordinateSystem() != NULL){
         this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());
+    }else{
+        this->ui->comboBox_activeCoordSystem->setCurrentText("");
     }
 }
 

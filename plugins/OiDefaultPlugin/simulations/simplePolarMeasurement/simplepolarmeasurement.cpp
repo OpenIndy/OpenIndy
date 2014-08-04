@@ -5,6 +5,8 @@ SimplePolarMeasurement::SimplePolarMeasurement()
     this->distributions.append("normal");
     this->distributions.append("uniform");
     this->distributions.append("triangular");
+
+    newIteration = true;
 }
 
 PluginMetaData *SimplePolarMeasurement::getMetaData()
@@ -23,12 +25,17 @@ PluginMetaData *SimplePolarMeasurement::getMetaData()
 
 double densityNormal(double x, double expectation, double uncertainty)
 {
-    return 1.0/sqrt(2.0*M_PI*uncertainty*uncertainty)*exp(-1.0*(((x-expectation)*(x-expectation))/(2.0*uncertainty*uncertainty)));
+    double e = -0.5*(((x-expectation)/(uncertainty))*((x-expectation)/(uncertainty)));
+
+    double result = (1.0/(uncertainty*sqrt(2.0*M_PI)))*qExp(e);
+
+    return result;
 }
 
 double distributionNormal(double x, double expectation, double uncertainty)
 {
-    return 0.5*(1.0+erf((x-expectation)/(sqrt(2.0*uncertainty*uncertainty))));
+    //return 0.5*(1.0+erf((x-expectation)/(sqrt(2.0*uncertainty*uncertainty))));
+    return 0.0;
 }
 
 QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainties()
@@ -43,8 +50,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     lambda.uncertainty = 0.000403;
     lambda.distribution = this->distributions.at(0);
     lambda.distributions = this->distributions;
-    lambda.errorUnit = UnitConverter::eMILLIMETER;
-    lambda.errorDimension = UnitConverter::eMetric;
+    lambda.errorUnit = "[mm]";
 
     lambda.description="lambda - Range offset in millimeter";
 
@@ -58,8 +64,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     mu.uncertainty = 0.000005;
     mu.distribution = this->distributions.at(0);
     mu.distributions = this->distributions;
-    mu.errorUnit = UnitConverter::eNoUnit;
-    mu.errorDimension = UnitConverter::eDimensionless;
+    mu.errorUnit = "[-]";
 
     mu.description="mu - Scale factor for range";
 
@@ -73,8 +78,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     ex.uncertainty = 0.0000122;
     ex.distribution = this->distributions.at(0);
     ex.distributions = this->distributions;
-    ex.errorUnit = UnitConverter::eMILLIMETER;
-    ex.errorDimension = UnitConverter::eMetric;
+    ex.errorUnit = "[mm]";
 
     ex.description="ex - Transit axis offset from the standing axis";
 
@@ -88,8 +92,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     by.uncertainty = 0.0000654;
     by.distribution = this->distributions.at(0);
     by.distributions = this->distributions;
-    by.errorUnit = UnitConverter::eMILLIMETER;
-    by.errorDimension = UnitConverter::eMetric;
+    by.errorUnit =  "[mm]";
 
     by.description="by - Beam offset (y-direction) from the origin";
 
@@ -103,8 +106,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     bz.uncertainty = 0.0000974;
     bz.distribution = this->distributions.at(0);
     bz.distributions = this->distributions;
-    bz.errorUnit = UnitConverter::eMILLIMETER;
-    bz.errorDimension = UnitConverter::eMetric;
+    bz.errorUnit =  "[mm]";
 
     bz.description="bz - Beam offset (z-direction) from the origin";
 
@@ -118,8 +120,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     alpha.uncertainty = 0.128;
     alpha.distribution = this->distributions.at(0);
     alpha.distributions = this->distributions;
-    alpha.errorUnit = UnitConverter::eArcSeconds;
-    alpha.errorDimension = UnitConverter::eAngular;
+    alpha.errorUnit =  "[arcsec]";
 
     alpha.description="alpha - Transit axis angle in the yz-plane";
 
@@ -133,8 +134,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     gamma.uncertainty = 0.079;
     gamma.distribution = this->distributions.at(0);
     gamma.distributions = this->distributions;
-    gamma.errorUnit = UnitConverter::eArcSeconds;
-    gamma.errorDimension = UnitConverter::eAngular;
+    gamma.errorUnit = "[arcsec]";
 
     gamma.description="gamma - Beam axis angle in the xy-plane";
 
@@ -148,8 +148,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Aa1.uncertainty = 0.064;
     Aa1.distribution = this->distributions.at(0);
     Aa1.distributions = this->distributions;
-    Aa1.errorUnit = UnitConverter::eArcSeconds;
-    Aa1.errorDimension = UnitConverter::eAngular;
+    Aa1.errorUnit = "[arcsec]";
 
     Aa1.description="Aa1 - Azimuth scale error, first order";
 
@@ -163,8 +162,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Ba1.uncertainty = 0.080;
     Ba1.distribution = this->distributions.at(0);
     Ba1.distributions = this->distributions;
-    Ba1.errorUnit = UnitConverter::eArcSeconds;
-    Ba1.errorDimension = UnitConverter::eAngular;
+    Ba1.errorUnit = "[arcsec]";
 
     Ba1.description="Ba1 - Azimuth scale error, first order";
 
@@ -178,8 +176,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Aa2.uncertainty = 0.073;
     Aa2.distribution = this->distributions.at(0);
     Aa2.distributions = this->distributions;
-    Aa2.errorUnit = UnitConverter::eArcSeconds;
-    Aa2.errorDimension = UnitConverter::eAngular;
+    Aa2.errorUnit = "[arcsec]";
 
     Aa2.description="Aa2 - Azimuth scale error, second order";
 
@@ -193,8 +190,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Ba2.uncertainty = 0.090;
     Ba2.distribution = this->distributions.at(0);
     Ba2.distributions = this->distributions;
-    Ba2.errorUnit = UnitConverter::eArcSeconds;
-    Ba2.errorDimension = UnitConverter::eAngular;
+    Ba2.errorUnit = "[arcsec]";
 
     Ba2.description="Ba2 - Azimuth scale error, second order";
 
@@ -208,8 +204,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Ae0.uncertainty = 0.223;
     Ae0.distribution = this->distributions.at(0);
     Ae0.distributions = this->distributions;
-    Ae0.errorUnit = UnitConverter::eArcSeconds;
-    Ae0.errorDimension = UnitConverter::eAngular;
+    Ae0.errorUnit = "[arcsec]";
 
     Ae0.description="Ae0 - Elevation angle offset";
 
@@ -223,8 +218,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Ae1.uncertainty = 0.152;
     Ae1.distribution = this->distributions.at(0);
     Ae1.distributions = this->distributions;
-    Ae1.errorUnit = UnitConverter::eArcSeconds;
-    Ae1.errorDimension = UnitConverter::eAngular;
+    Ae1.errorUnit = "[arcsec]";
 
     Ae1.description="Ae1 - Elevation scale error, first order";
 
@@ -238,8 +232,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Be1.uncertainty = 0.183;
     Be1.distribution = this->distributions.at(0);
     Be1.distributions = this->distributions;
-    Be1.errorUnit = UnitConverter::eArcSeconds;
-    Be1.errorDimension = UnitConverter::eAngular;
+    Be1.errorUnit = "[arcsec]";
 
     Be1.description="Be1 - Elevation scale error, first order";
 
@@ -253,8 +246,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Ae2.uncertainty = 0.214;
     Ae2.distribution = this->distributions.at(0);
     Ae2.distributions = this->distributions;
-    Ae2.errorUnit = UnitConverter::eArcSeconds;
-    Ae2.errorDimension = UnitConverter::eAngular;
+    Ae2.errorUnit = "[arcsec]";
 
     Ae2.description="Ae2 - Elevation scale error, second order";
 
@@ -268,8 +260,7 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainti
     Be2.uncertainty = 0.214;
     Be2.distribution = this->distributions.at(0);
     Be2.distributions = this->distributions;
-    Be2.errorUnit = UnitConverter::eArcSeconds;
-    Be2.errorDimension = UnitConverter::eAngular;
+    Be2.errorUnit = "[arcsec]";
 
     Be2.description="Be2 - Elevation scale error, second order";
 
@@ -283,6 +274,34 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getObjectUncertainti
 {
     QMap<QString, UncertaintyComponent> objectUncertainties;
 
+    //######################### coefficient of thermal expansion #########################
+    UncertaintyComponent cOfE;
+
+    cOfE.name = "coefficient of thermal expansion";
+    cOfE.value = 11.8;
+    cOfE.uncertainty = 2;
+    cOfE.distribution = this->distributions.at(0);
+    cOfE.distributions = this->distributions;
+    cOfE.errorUnit = "1/K";
+
+    cOfE.description="The degree of expansion divided by the change in temperaturer";
+
+    objectUncertainties.insert("coefficientOfExpansion",cOfE);
+
+    //######################### materialTemperature #########################
+    UncertaintyComponent t;
+
+    t.name = "material temperature";
+    t.value = 20;
+    t.uncertainty = 1;
+    t.distribution = this->distributions.at(0);
+    t.distributions = this->distributions;
+    t.errorUnit = "[celsius]";
+
+    t.description="influence of temperaturer on the object and sensor";
+
+    objectUncertainties.insert("materialTemperature",t);
+
 
     return objectUncertainties;
 }
@@ -291,6 +310,89 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getEnviromentUncerta
 {
     QMap<QString, UncertaintyComponent> enviromentUncertainties;
 
+    //######################### temperature #########################
+    UncertaintyComponent t;
+
+    t.name = "temperature";
+    t.value = 20.0;
+    t.uncertainty = 0.5;
+    t.distribution = this->distributions.at(0);
+    t.distributions = this->distributions;
+    t.errorUnit = "[celsius]";
+
+    t.description="influence of temperaturer on the object and sensor";
+
+    enviromentUncertainties.insert("temperature",t);
+
+    //######################### vertical temperature gradient#########################
+    UncertaintyComponent vtg;
+
+    vtg.name = "vertical temperature gradient";
+    vtg.value = 0.4;
+    vtg.uncertainty = 0.1;
+    vtg.distribution = this->distributions.at(0);
+    vtg.distributions = this->distributions;
+    vtg.errorUnit = "[celsius/m]";
+
+    vtg.description="gradient to calculate the vertical beam refraction";
+
+    enviromentUncertainties.insert("verticalTemperatureGradient",vtg);
+
+    //######################### horizontal temperature gradient#########################
+    UncertaintyComponent htg;
+
+    htg.name = "horizontal temperature gradient";
+    htg.value = 0.1;
+    htg.uncertainty = 0.1;
+    htg.distribution = this->distributions.at(0);
+    htg.distributions = this->distributions;
+    htg.errorUnit = "[celsius/m]";
+
+    htg.description="gradient to calculate the horizontal beam refraction";
+
+    enviromentUncertainties.insert("horizontalTemperatureGradient",htg);
+
+    //######################### pressure #########################
+    UncertaintyComponent p;
+
+    p.name = "pressure";
+    p.value = 101325.0 ;
+    p.uncertainty = 10.0;
+    p.distribution = this->distributions.at(0);
+    p.distributions = this->distributions;
+    p.errorUnit = "[pascal]";
+
+    p.description="influence of pressure(air)  on the sensor";
+
+    enviromentUncertainties.insert("pressure",p);
+
+    //######################### vertical pressure Gradient#########################
+    UncertaintyComponent hpg;
+
+    hpg.name = "vertical pressure gradient";
+    hpg.value = -0.8;
+    hpg.uncertainty = 0.1;
+    hpg.distribution = this->distributions.at(0);
+    hpg.distributions = this->distributions;
+    hpg.errorUnit = "[pascal/m]";
+
+    hpg.description="gradient to calculate the vertical beam refraction";
+
+    enviromentUncertainties.insert("verticalPressureGradient",hpg);
+
+    //######################### humidity #########################
+    UncertaintyComponent h;
+
+    h.name = "humidity";
+    h.value = 50.0 ;
+    h.uncertainty = 1.0;
+    h.distribution = this->distributions.at(0);
+    h.distributions = this->distributions;
+    h.errorUnit = "[percent %]";
+
+    h.description="influence of humidity(air)  on the sensor";
+
+    enviromentUncertainties.insert("humidity",h);
 
     return enviromentUncertainties;
 }
@@ -299,26 +401,65 @@ QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getHumanInfluence()
 {
     QMap<QString, UncertaintyComponent> humanInfluence;
 
+    //######################### azimuth #########################
+    UncertaintyComponent a;
+
+    a.name = "delta_azimuth";
+    a.value = 0.0;
+    a.uncertainty = 0.0001;
+    a.distribution = this->distributions.at(0);
+    a.distributions = this->distributions;
+    a.errorUnit = "[milliGrad]";
+
+    a.description="influence of the user on the azimuth measurement";
+
+    humanInfluence.insert("delta_azimuth",a);
+
+    //######################### zenith #########################
+    UncertaintyComponent z;
+
+    z.name = "delta_zenith";
+    z.value = 0.0;
+    z.uncertainty = 0.0001;
+    z.distribution = this->distributions.at(0);
+    z.distributions = this->distributions;
+    z.errorUnit = "[milliGrad]";
+
+    z.description="influence of the user on the zenith measurement";
+
+    humanInfluence.insert("delta_zenith",z);
+
+    //######################### distance #########################
+    UncertaintyComponent d;
+
+    d.name = "delta_distance";
+    d.value = 0.0;
+    d.uncertainty = 0.0001;
+    d.distribution = this->distributions.at(0);
+    d.distributions = this->distributions;
+    d.errorUnit = "[mm]";
+
+    d.description="influence of the user on the distance measurement";
+
+    humanInfluence.insert("delta_distance",d);
+
 
     return humanInfluence;
 }
 
 QMap<QString, int> *SimplePolarMeasurement::getIntegerParameter()
 {
-    QMap<QString,int>*  intParam = new QMap<QString,int>;
-
-    intParam->insert("level of uncertainty",1.0);
-
-    return intParam;
+    return NULL;
 }
 
 QMap<QString, double> *SimplePolarMeasurement::getDoubleParameter()
 {
     QMap<QString,double>* doubleParam = new QMap<QString,double>;
 
-    doubleParam->insert("part size [m]",5.0);
+    doubleParam->insert("wavelength [micrometer]",0.633);
 
     return doubleParam;
+
 }
 
 QMap<QString, QStringList> *SimplePolarMeasurement::getStringParameter()
@@ -326,11 +467,19 @@ QMap<QString, QStringList> *SimplePolarMeasurement::getStringParameter()
     QMap <QString, QStringList>* stringParameter = new QMap<QString, QStringList>;
 
     QStringList dice;
+    QStringList diceDefaultNo;
 
-    dice.append("no");
     dice.append("yes");
+    dice.append("no");
 
-    stringParameter->insert("dice error for every reading",dice);
+    diceDefaultNo.append("no");
+    diceDefaultNo.append("yes");
+
+    stringParameter->insert("use sensor errors",dice);
+    stringParameter->insert("use environment errors", dice);
+    stringParameter->insert("use object errors", diceDefaultNo);
+    stringParameter->insert("use human errors", diceDefaultNo);
+
 
     return stringParameter;
 }
@@ -375,7 +524,24 @@ bool SimplePolarMeasurement::analyseSimulationData(UncertaintyData &d)
 
 bool SimplePolarMeasurement::distort(Reading *r,OiMat objectRelation,bool newIterationStart)
 {
-    distortionBySensor(r);
+
+    newIteration = newIterationStart;
+
+    if(stringParameter->value("use sensor errors").compare("yes")==0){
+       distortionBySensor(r);
+    }
+
+    if(stringParameter->value("use environment errors").compare("yes")==0){
+        distortionByEnviroment(r);
+    }
+
+    if(stringParameter->value("use object errors").compare("yes")==0){
+        distortionByObject(r,objectRelation);
+    }
+
+    if(stringParameter->value("use human errors").compare("yes")==0){
+       distortionByHuman(r);
+    }
 
     return true;
 }
@@ -383,6 +549,9 @@ bool SimplePolarMeasurement::distort(Reading *r,OiMat objectRelation,bool newIte
 double SimplePolarMeasurement::distortComponent(UncertaintyComponent u)
 {
 
+    if(u.uncertainty==0.0){
+        return u.value;
+    }
 
     if(u.distribution.compare("normal")==0){
         std::normal_distribution<double> dist_Normal(u.value,u.uncertainty);
@@ -507,17 +676,86 @@ bool SimplePolarMeasurement::distortionBySensor(Reading *r)
 
 bool SimplePolarMeasurement::distortionByEnviroment(Reading *r)
 {
-    return false;
+
+    if(newIteration){
+
+        double refTemperature = givenUncertainties.enviromentUncertainties.value("temperature").value;
+        double temperature = distortComponent(givenUncertainties.enviromentUncertainties.value("temperature"));
+
+        double verticalTempGradient =  distortComponent(givenUncertainties.enviromentUncertainties.value("verticalTemperatureGradient"));
+        double horizontalTempGradient =  distortComponent(givenUncertainties.enviromentUncertainties.value("horizontalTemperatureGradient"));
+        double verticalPreGradient =  distortComponent(givenUncertainties.enviromentUncertainties.value("verticalPressureGradient"));
+
+        double refPressure = givenUncertainties.enviromentUncertainties.value("pressure").value;
+        double pressure = distortComponent(givenUncertainties.enviromentUncertainties.value("pressure"));
+
+        double refHumidity = givenUncertainties.enviromentUncertainties.value("humidity").value;
+        double humidity = distortComponent(givenUncertainties.enviromentUncertainties.value("humidity"));
+
+        double wavelength = doubleParameter->value("wavelength [micrometer]");
+
+        refraction = this->edlenRefractionCalculation(refTemperature,refPressure,refHumidity,wavelength);
+        distortedRefraction = this->edlenRefractionCalculation(temperature,pressure,humidity,wavelength);
+
+        verticalDn = this->edlenRefractionCalculation(refTemperature+verticalTempGradient,refPressure+verticalPreGradient,refHumidity,wavelength);
+        verticalDn = verticalDn-refraction;
+
+        horizontalDn = this->edlenRefractionCalculation(refTemperature+horizontalTempGradient,refPressure,refHumidity,wavelength);
+        horizontalDn = horizontalDn-refraction;
+   }
+
+    r->rPolar.distance = r->rPolar.distance+((refraction-distortedRefraction)*r->rPolar.distance);
+
+    double refractionZenith = (1/(2*refraction))*verticalDn*r->rPolar.distance;
+    double refractionAzimuth = (1/(2*refraction))*horizontalDn*r->rPolar.distance;
+
+    r->rPolar.azimuth = r->rPolar.azimuth+refractionAzimuth;
+    r->rPolar.zenith = r->rPolar.zenith+refractionZenith;
+
+    return true;
 }
 
 bool SimplePolarMeasurement::distortionByHuman(Reading *r)
 {
-    return false;
+    double deltaAzimuth = distortComponent(givenUncertainties.humanUncertainties.value("delta_azimuth"))/1000;
+    deltaAzimuth = deltaAzimuth*M_PI/180;
+    double deltaZenith = distortComponent(givenUncertainties.humanUncertainties.value("delta_zenith"))/1000;
+    deltaZenith = deltaZenith*M_PI/180;
+    double deltaDistance = distortComponent(givenUncertainties.humanUncertainties.value("delta_distance"))/1000;
+
+    r->rPolar.azimuth = r->rPolar.azimuth + deltaAzimuth;
+    r->rPolar.zenith = r->rPolar.zenith + deltaZenith;
+    r->rPolar.distance = r->rPolar.distance + deltaDistance;
+
+    return true;
 }
 
 bool SimplePolarMeasurement::distortionByObject(Reading *r, OiMat objectRelation)
 {
-    return false;
+    if(objectRelation.getRowCount() !=4 && objectRelation.getColCount() != 4){
+        return false;
+    }
+
+    if(newIteration){
+        ref_coefficientOfExpansion = givenUncertainties.objectUncertainties.value("coefficientOfExpansion").value;
+        coefficientOfExpansion = distortComponent(givenUncertainties.objectUncertainties.value("coefficientOfExpansion"));
+
+        ref_materialTemperature = givenUncertainties.objectUncertainties.value("materialTemperature").value;
+        materialTemperature = distortComponent(givenUncertainties.objectUncertainties.value("materialTemperature"));
+    }
+
+    double scale = 1+((materialTemperature-ref_materialTemperature)*(coefficientOfExpansion-ref_coefficientOfExpansion)/1000000);
+
+    OiVec xyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
+    xyz = objectRelation * xyz;
+    xyz = xyz * scale;
+    OiVec polar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+
+    r->rPolar.azimuth = polar.getAt(0);
+    r->rPolar.zenith = polar.getAt(1);
+    r->rPolar.distance = polar.getAt(2);
+
+    return true;
 }
 
 void SimplePolarMeasurement::checkDistribution(UncertaintyData &d)
@@ -530,7 +768,7 @@ void SimplePolarMeasurement::calcUncertainty(UncertaintyData &d)
 
     if(d.distribution == "normal"){
 
-        double sumVV;
+        double sumVV = 0.0;
 
 
         foreach(double v, d.values){
@@ -538,9 +776,40 @@ void SimplePolarMeasurement::calcUncertainty(UncertaintyData &d)
             sumVV += (d.expectation-v)*(d.expectation-v);
 
         }
-        d.uncertainty = sqrt(sumVV/(d.values.size()));
+
+        d.uncertainty = sqrt(sumVV/(d.values.size()-1.0));
     }
 
+}
+
+double SimplePolarMeasurement::edlenRefractionCalculation(double temperature, double pressure, double humidity, double wavelength)
+{
+    double A1 = -13.928169;
+    double A2 = 34.7078238;
+
+    double T = temperature+273.15;
+    double Phi = T/273.16;
+    double Y = A1*(1- pow(Phi,-15))+A2*(1-pow(Phi,-1.25));
+
+    double Psv = 611.657*exp(Y);
+    double pv = humidity/100 * Psv;
+
+    double A = 8342.54;
+    double B = 2406147;
+    double C = 15998;
+    double D = 96095.43;
+    double E = 0.601;
+    double F = 0.00972;
+    double G = 0.003661;
+
+    double S = 1/(wavelength*wavelength);
+
+    double Ns = 1+pow(10,-8)*(A+B/(130-S)+C/(38.9-S));
+    double X = (1+pow(10,-8)*(E-F*temperature))/(1+G*temperature);
+
+    double Ntp = 1+pressure*(Ns-1.0)*X/D;
+
+    return Ntp-pow(-10,-10)*((292.75)/(temperature+273.15))*(3.7345-0.0401*S)*pv;
 }
 
 

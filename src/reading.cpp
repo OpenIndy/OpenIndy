@@ -32,7 +32,6 @@ OiVec Reading::toCartesian(double az, double ze, double dist){
     g.setAt( 1, dist * qSin(ze) * qSin(az) );
     g.setAt( 2, dist * qCos(ze) );
     g.setAt( 3, 1.0 );
-    qDebug() << "distance: " << dist;
     return g;
 }
 

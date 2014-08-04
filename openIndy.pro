@@ -161,6 +161,7 @@ SOURCES += \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
     ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
+    ui/watchwindowlistener.cpp \
     src/oiemitter/oifunctionemitter.cpp \
     src/oiemitter/oisensoremitter.cpp \
     src/oiemitter/oisimulationemitter.cpp \
@@ -296,6 +297,7 @@ HEADERS  += \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
     ui/oiGraphixFactory/oigraphix_pointcloud.h \
+    ui/watchwindowlistener.h \
     src/oiemitter/oifunctionemitter.h \
     src/oiemitter/oisensoremitter.h \
     src/oiemitter/oisimulationemitter.h \

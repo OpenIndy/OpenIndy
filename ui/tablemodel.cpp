@@ -181,6 +181,12 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                     return currentFeature->getTrafoParam()->getisDatumTrafo();
                 }
                 return QVariant();
+            case 36:
+                return currentFeature->getFeature()->getDisplayExpansionOriginX();
+            case 37:
+                return currentFeature->getFeature()->getDisplayExpansionOriginY();
+            case 38:
+                return currentFeature->getFeature()->getDisplayExpansionOriginZ();
             default:
                 break;
             }
@@ -347,7 +353,14 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
             OiFeatureState::getActiveFeature()->getTrafoParam()->setValidTime(value.toDateTime());
         }else if(index.column() == 35){//trafo param datum transformation
             OiFeatureState::getActiveFeature()->getTrafoParam()->setisDatumTrafo(value.toBool());
+        }else if(index.column() == 36){
+            OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginX(value.toDouble()/UnitConverter::getDistanceMultiplier());
+        }else if(index.column() == 37){
+            OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginY(value.toDouble()/UnitConverter::getDistanceMultiplier());
+        }else if(index.column() == 38){
+            OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginZ(value.toDouble()/UnitConverter::getDistanceMultiplier());
         }
+
 
         this->updateModel();
 

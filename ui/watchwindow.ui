@@ -16,11 +16,11 @@
   <property name="windowTitle">
    <string>watch window</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <widget class="QToolBox" name="toolBox">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pageWatchWindow">
       <property name="geometry">
@@ -47,6 +47,75 @@
       <attribute name="label">
        <string>settings</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_decimalDigits">
+           <property name="text">
+            <string>decimal digits</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_decimalDigits"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_fNameFontSize">
+           <property name="text">
+            <string>feature name font size</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_fNameFontSize"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
+         <item>
+          <widget class="QLabel" name="label_fAttributeFontSize">
+           <property name="text">
+            <string>feature attribute font size</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_fAttributeFontSize"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout" stretch="1,9">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLabel" name="label_suppReadings">
+             <property name="text">
+              <string>supported reading types</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="comboBox_suppReadings"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_displayValues">
+           <property name="title">
+            <string>display values</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

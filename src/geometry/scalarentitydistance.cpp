@@ -56,7 +56,7 @@ bool ScalarEntityDistance::toOpenIndyXML(QXmlStreamWriter &stream){
     stream.writeStartElement("geometry");
     stream.writeAttribute("id", QString::number(this->id));
     stream.writeAttribute("name", this->name);
-    stream.writeAttribute("type", Configuration::sPoint);
+    stream.writeAttribute("type", Configuration::sEntityDistance);
     stream.writeAttribute("nominal",QString::number(this->isNominal));
     stream.writeAttribute("common",QString::number(this->isCommon));
     stream.writeAttribute("solved", QString::number(this->isSolved));
@@ -152,6 +152,11 @@ double ScalarEntityDistance::getDistance() const{
  */
 void ScalarEntityDistance::setDistance(double distance){
     this->distance = distance;
+}
+
+double ScalarEntityDistance::getScalar() const
+{
+    return this->distance;
 }
 
 QString ScalarEntityDistance::getDisplayIsCommon() const{
