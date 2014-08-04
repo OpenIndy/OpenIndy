@@ -197,7 +197,7 @@ void NominalDataDialog::showEvent(QShowEvent *event)
         ui->lineEdit_nominalTemperature->setEnabled(false);
         ui->label_nominalTemperature->setEnabled(false);
         break;
-    case Configuration::eScalarentityAngleFeature:
+    case Configuration::eScalarEntityAngleFeature:
         ui->label_nominalI->setEnabled(false);
         ui->label_nominalJ->setEnabled(false);
         ui->label_nominalK->setEnabled(false);
@@ -382,7 +382,7 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalJ->setText("");
         ui->lineEdit_nominalK->setText("");
         break;
-    case Configuration::eScalarentityAngleFeature:
+    case Configuration::eScalarEntityAngleFeature:
         ui->lineEdit_nominalSAE->setText(QString::number(OiFeatureState::getActiveFeature()->getScalarEntityAngle()->getAngle()*UnitConverter::getAngleMultiplier(),'f',6));
         ui->lineEdit_nominalI->setText("");
         ui->lineEdit_nominalJ->setText("");

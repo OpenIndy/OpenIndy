@@ -13,9 +13,11 @@ public:
     ~OiMultiSelectionModel();
 
 public slots:
-    //void select(const QItemSelection &selection, SelectionFlags command);
+    void select(const QItemSelection &selection, SelectionFlags command);
+    void select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command);
 
-    void updateSelection(QItemSelection,QItemSelection);
+private:
+    bool checkIndex(const QModelIndex &index, const QItemSelection &selection);
 };
 
 #endif // OIMULTISELECTIONMODEL_H

@@ -6,7 +6,7 @@
  * \param parent
  */
 FunctionPluginLoader::FunctionPluginLoader(QWidget *parent) :
-    QDialog(parent), ui(new Ui::FunctionPluginLoader), selectedAvailableElement(NULL), selectedUsedElement(NULL), openCloseHelper(false)
+    QDialog(parent), ui(new Ui::FunctionPluginLoader), selectedUsedElement(NULL), openCloseHelper(false)
 {
     ui->setupUi(this);
 
@@ -25,6 +25,7 @@ FunctionPluginLoader::FunctionPluginLoader(QWidget *parent) :
     connect(this->extraParameterWidget, SIGNAL(functionConfigurationChanged()), this, SLOT(functionConfigurationChanged()));
 
     extraParameterLayout->addWidget(this->extraParameterWidget);
+
 }
 
 /*!
@@ -70,6 +71,11 @@ void FunctionPluginLoader::receiveFunctionDescription(QString description){
  */
 void FunctionPluginLoader::receiveAvailableElementsModel(AvailableElementsTreeViewProxyModel *model){
     ui->treeView_availableElements->setModel(model);
+
+    //TODO delete selection model here ?
+    QItemSelectionModel *mySelectionModel = new OiMultiSelectionModel(model);
+    this->ui->treeView_availableElements->setSelectionModel(mySelectionModel);
+
     ui->treeView_availableElements->collapseAll();
 }
 
@@ -79,7 +85,7 @@ void FunctionPluginLoader::receiveAvailableElementsModel(AvailableElementsTreeVi
  */
 void FunctionPluginLoader::receiveUsedElementsModel(UsedElementsModel *model){
     ui->treeView_usedElements->setModel(model);
-    connect(this->ui->treeView_usedElements, SIGNAL(clicked(QModelIndex)), model, SLOT(selectionChanged(QModelIndex)));
+    connect(this->ui->treeView_usedElements->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), model, SLOT(selectionChanged(QModelIndex)));
 }
 
 /*!
@@ -227,13 +233,103 @@ void FunctionPluginLoader::showEvent(QShowEvent *event)
 }
 
 /*!
+ * \brief FunctionPluginLoader::validateAvailableElements
+ * Checks wether the selected items match the needed elements of the current function
+ * \param selectedItems
+ * \param model
+ * \return
+ */
+bool FunctionPluginLoader::validateAvailableElements(QList<FeatureTreeItem*> selectedItems, AvailableElementsTreeViewProxyModel *model){
+
+    foreach(FeatureTreeItem *item, selectedItems){
+
+        //if the selected item matches the needed element-type
+        if(model->getNeededElement() != item->getElementType()){
+
+            //if the selected item is a parent of the needed element-type
+            if(!this->checkChildren(item, model->getNeededElement())){
+                return false;
+            }
+
+        }
+
+    }
+
+    return true;
+
+}
+
+/*!
+ * \brief FunctionPluginLoader::checkChildren
+ * Returns false if no child of item matches the needed type, otherwise true
+ * \param item
+ * \param neededType
+ * \return
+ */
+bool FunctionPluginLoader::checkChildren(FeatureTreeItem *item, Configuration::ElementTypes neededType){
+
+    if(item->getElementType() == neededType){
+        return true;
+    }else{
+        for(int i = 0; i < item->getChildCount(); i++){
+            if(item->getChild(i)->getElementType() == neededType || checkChildren(item->getChild(i), neededType)){
+                return true;
+            }
+        }
+    }
+
+    return false;
+
+}
+
+/*!
+ * \brief FunctionPluginLoader::setUpSelectedElements
+ * Sets up the list of selected elements by checking the element types of the selected items and their children
+ * \param result
+ * \param item
+ * \param neededType
+ */
+void FunctionPluginLoader::setUpSelectedElements(QList<FeatureTreeItem *> &result, FeatureTreeItem *item, Configuration::ElementTypes neededType){
+
+    if(item->getElementType() == neededType){
+        result.append(item);
+    }else{
+        for(int i = 0; i < item->getChildCount(); i++){
+            setUpSelectedElements(result, item->getChild(i), neededType);
+        }
+    }
+
+}
+
+/*!
  * \brief FunctionPluginLoader::on_treeView_availableElements_clicked
- * Is called when an available element was selected
+ * Is called when available elements were selected
  * \param index
  */
-void FunctionPluginLoader::on_treeView_availableElements_clicked(const QModelIndex &index)
-{
+void FunctionPluginLoader::on_treeView_availableElements_clicked(const QModelIndex &index){
+
     AvailableElementsTreeViewProxyModel *model = dynamic_cast<AvailableElementsTreeViewProxyModel*>(this->ui->treeView_availableElements->model());
+    if(model != NULL){
+
+        //get the selected items
+        QList<FeatureTreeItem*> selectedItems;
+        QModelIndexList selectedIndexes = this->ui->treeView_availableElements->selectionModel()->selectedIndexes();
+        foreach(QModelIndex index, selectedIndexes){
+            selectedItems.append(model->getSelectedItem(index));
+        }
+
+        //validate the items if they match the needed element
+        if(this->validateAvailableElements(selectedItems, model)){
+            this->selectedAvailableElements = selectedItems;
+            this->ui->cmd_addElement->setEnabled(true);
+        }else{
+            this->selectedAvailableElements.clear();
+            this->ui->cmd_addElement->setEnabled(false);
+        }
+
+    }
+
+    /*
     FeatureTreeItem *item = model->getSelectedItem(index);
     if(item != NULL && index.isValid()){
         if(model != NULL){
@@ -288,19 +384,70 @@ void FunctionPluginLoader::on_treeView_availableElements_clicked(const QModelInd
             this->selectedAvailableElement = item;
             this->ui->cmd_addElement->setEnabled(enable);
         }
+    }*/
+}
+
+/*!
+ * \brief FunctionPluginLoader::on_treeView_availableElements_entered
+ * Is called when available elements were selected
+ * \param index
+ */
+void FunctionPluginLoader::on_treeView_availableElements_entered(const QModelIndex &index){
+
+    AvailableElementsTreeViewProxyModel *model = dynamic_cast<AvailableElementsTreeViewProxyModel*>(this->ui->treeView_availableElements->model());
+    if(model != NULL){
+
+        //get the selected items
+        QList<FeatureTreeItem*> selectedItems;
+        QModelIndexList selectedIndexes = this->ui->treeView_availableElements->selectionModel()->selectedIndexes();
+        foreach(QModelIndex index, selectedIndexes){
+            selectedItems.append(model->getSelectedItem(index));
+        }
+
+        //validate the items if they match the needed element
+        if(this->validateAvailableElements(selectedItems, model)){
+            this->selectedAvailableElements = selectedItems;
+            this->ui->cmd_addElement->setEnabled(true);
+        }else{
+            this->selectedAvailableElements.clear();
+            this->ui->cmd_addElement->setEnabled(false);
+        }
+
     }
+
 }
 
 /*!
  * \brief FunctionPluginLoader::on_cmd_addElement_clicked
  * Add an element to the active function of the active feature
  */
-void FunctionPluginLoader::on_cmd_addElement_clicked()
-{
-    if(this->selectedFunctionIndex.parent().isValid()){
-        emit this->addElement(this->selectedAvailableElement, this->selectedFunctionIndex.parent().row(), this->selectedFunctionIndex.row());
-        this->ui->treeView_usedElements->setEnabled(true);
+void FunctionPluginLoader::on_cmd_addElement_clicked(){
+
+    //get the model to be able to check against the needed element
+    AvailableElementsTreeViewProxyModel *model = dynamic_cast<AvailableElementsTreeViewProxyModel*>(this->ui->treeView_availableElements->model());
+    if(model != NULL){
+
+        if(this->selectedFunctionIndex.parent().isValid()){
+
+            QList<FeatureTreeItem *> selectedElements; //list with selected elements to use
+
+            //fill the list of selected elements
+            foreach(FeatureTreeItem *item, this->selectedAvailableElements){
+                this->setUpSelectedElements(selectedElements, item, model->getNeededElement());
+            }
+
+            //add each of the selected elements to the function
+            foreach(FeatureTreeItem *item, selectedElements){
+                emit this->addElement(item, this->selectedFunctionIndex.parent().row(), this->selectedFunctionIndex.row());
+            }
+
+            //enable used elements treeview
+            this->ui->treeView_usedElements->setEnabled(true);
+
+        }
+
     }
+
 }
 
 /*!
@@ -342,19 +489,36 @@ void FunctionPluginLoader::on_cmd_ok_clicked(){
  * Remove an element from the active function of the active feature
  */
 void FunctionPluginLoader::on_cmd_removeElement_clicked(){
+
     UsedElementsModel *model = static_cast<UsedElementsModel*>(this->ui->treeView_usedElements->model());
-    if(model != NULL && model->getSelectedItem() != NULL && this->selectedFunctionIndex.parent().isValid()){
-        emit this->removeElement(model->getSelectedItem(), this->selectedFunctionIndex.parent().row(), this->selectedFunctionIndex.row());
+
+    if(model != NULL && this->selectedFunctionIndex.parent().isValid()){
+
+        foreach(QModelIndex index, this->ui->treeView_usedElements->selectionModel()->selectedIndexes()){
+            emit this->removeElement(model->getSelectedItem(index), this->selectedFunctionIndex.parent().row(),
+                                     this->selectedFunctionIndex.row());
+        }
         this->ui->cmd_removeElement->setEnabled(false);
+
     }
+
 }
 
 /*!
  * \brief FunctionPluginLoader::on_treeView_usedElements_clicked
- * Is called when an used element was selected
+ * Is called when used elements were selected
  * \param index
  */
 void FunctionPluginLoader::on_treeView_usedElements_clicked(const QModelIndex &index){
+    this->ui->cmd_removeElement->setEnabled(true);
+}
+
+/*!
+ * \brief FunctionPluginLoader::on_treeView_usedElements_activated
+ * Is called when used elements were selected
+ * \param index
+ */
+void FunctionPluginLoader::on_treeView_usedElements_activated(const QModelIndex &index){
     this->ui->cmd_removeElement->setEnabled(true);
 }
 

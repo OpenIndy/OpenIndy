@@ -26,10 +26,7 @@ public:
     void removeElement(FeatureTreeItem *item);
     void removeAllElements();
 
-    FeatureTreeItem* getSelectedItem();
-
-public slots:
-    void selectionChanged(QModelIndex);
+    FeatureTreeItem *getSelectedItem(const QModelIndex &index);
 
 private:
     QList<FeatureTreeItem*> items;

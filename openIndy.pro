@@ -172,7 +172,8 @@ SOURCES += \
     ui/simulationerrortablemodel.cpp \
     ui/simulationdelegate.cpp \
     ui/simulationtreeviewmodel.cpp \
-    src/simulation/simulationdata.cpp
+    src/simulation/simulationdata.cpp \
+    ui/oimultiselectionmodel.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -309,7 +310,8 @@ HEADERS  += \
     ui/simulationerrortablemodel.h \
     ui/simulationdelegate.h \
     ui/simulationtreeviewmodel.h \
-    src/simulation/simulationdata.h
+    src/simulation/simulationdata.h \
+    ui/oimultiselectionmodel.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

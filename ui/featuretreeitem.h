@@ -4,6 +4,7 @@
 #include "featurewrapper.h"
 #include "observation.h"
 #include "reading.h"
+#include "configuration.h"
 
 class FeatureTreeItem
 {
@@ -21,6 +22,7 @@ public:
     bool getIsReading();
     void setReading(Reading *reading);
     Reading *getReading();
+    Configuration::ElementTypes getElementType();
 
     void setHasObservation(bool hasObservation);
     bool getHasObservation();

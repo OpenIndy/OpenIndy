@@ -119,7 +119,7 @@ public:
         eHyperboloidFeature,
         eNurbsFeature,
         eParaboloidFeature,
-        eScalarentityAngleFeature,
+        eScalarEntityAngleFeature,
         eScalarEntityDistanceFeature,
         eScalarEntityTemperatureFeature,
         eScalarEntityMeasurementSeriesFeature

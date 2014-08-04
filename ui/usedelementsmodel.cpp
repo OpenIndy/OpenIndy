@@ -279,19 +279,8 @@ void UsedElementsModel::removeAllElements(){
     this->selectedItem = NULL;
 }
 
-/*!
- * \brief UsedElementsModel::getSelectedItem
- * Get the currently selected item or NULL
- * \return
- */
-FeatureTreeItem* UsedElementsModel::getSelectedItem(){
-    return this->selectedItem;
-}
-
-/*!
- * \brief UsedElementsModel::selectionChanged
- * Is called when a tree view item was selected
- */
-void UsedElementsModel::selectionChanged(QModelIndex idx){
-    this->selectedItem = static_cast<FeatureTreeItem*>(idx.internalPointer());
+FeatureTreeItem *UsedElementsModel::getSelectedItem(const QModelIndex &index){
+    FeatureTreeItem *item = NULL;
+    item = static_cast<FeatureTreeItem*>(index.internalPointer());
+    return item;
 }

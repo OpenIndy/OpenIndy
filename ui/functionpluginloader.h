@@ -20,6 +20,8 @@
 #include "customparameterwidget.h"
 #include "oifeaturestate.h"
 
+#include "oimultiselectionmodel.h"
+
 namespace Ui {
 class FunctionPluginLoader;
 }
@@ -37,18 +39,19 @@ private slots:
     void deleteFunctionContextMenu(QPoint point);
 
     void on_treeView_availableElements_clicked(const QModelIndex &index);
+    void on_treeView_availableElements_entered(const QModelIndex &index);
+
+    void on_treeView_usedElements_clicked(const QModelIndex &index);
+    void on_treeView_usedElements_activated(const QModelIndex &index);
 
     void on_cmd_addElement_clicked();
+    void on_cmd_removeElement_clicked();
 
     void closeEvent(QCloseEvent *event);
 
     void on_tableView_functionPlugins_clicked(const QModelIndex &index);
 
     void on_cmd_ok_clicked();
-
-    void on_cmd_removeElement_clicked();
-
-    void on_treeView_usedElements_clicked(const QModelIndex &index);
 
 public slots:
     void receivePluginsModel(QSqlQueryModel *sqlModel);
@@ -83,12 +86,16 @@ private:
     bool openCloseHelper;
     QModelIndex selectedFunctionIndex;
     QModelIndex deleteSelectedFunctionIndex;
-    FeatureTreeItem *selectedAvailableElement;
+    QList<FeatureTreeItem *> selectedAvailableElements;
     FeatureTreeItem *selectedUsedElement;
 
     QSqlQueryModel *pluginsModel;
 
     CustomParameterWidget *extraParameterWidget;
+
+    bool validateAvailableElements(QList<FeatureTreeItem*> selectedItems, AvailableElementsTreeViewProxyModel *model);
+    bool checkChildren(FeatureTreeItem *item, Configuration::ElementTypes neededType);
+    void setUpSelectedElements(QList<FeatureTreeItem*> &result, FeatureTreeItem *item, Configuration::ElementTypes neededType);
 
 };
 

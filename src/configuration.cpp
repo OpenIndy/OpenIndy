@@ -133,7 +133,7 @@ Configuration::FeatureTypes Configuration::getFeatureTypeEnum(QString name){
     }else if(name.compare(Configuration::sSphere) == 0){
         return Configuration::eSphereFeature;
     }else if(name.compare(Configuration::sEntitiyAngle) == 0){
-        return Configuration::eScalarentityAngleFeature;
+        return Configuration::eScalarEntityAngleFeature;
     }else if(name.compare(Configuration::sEntityDistance) == 0){
         return Configuration::eScalarEntityDistanceFeature;
     }else if(name.compare(Configuration::sTrafoParam) == 0){
@@ -246,7 +246,7 @@ QString Configuration::getFeatureTypeString(Configuration::FeatureTypes type){
         return Configuration::sCoordinatesystem;
     case Configuration::eSphereFeature:
         return Configuration::sSphere;
-    case Configuration::eScalarentityAngleFeature:
+    case Configuration::eScalarEntityAngleFeature:
         return Configuration::sEntitiyAngle;
     case Configuration::eScalarEntityDistanceFeature:
         return Configuration::sEntityDistance;
@@ -313,7 +313,7 @@ QPixmap Configuration::getFeatureIcon(Configuration::FeatureTypes featureType){
         return QPixmap(":/Images/icons/cylinder_5e8acf.png");
     case Configuration::eConeFeature:
         return QPixmap(":/Images/icons/cone_5e8acf.png");
-    case Configuration::eScalarentityAngleFeature:
+    case Configuration::eScalarEntityAngleFeature:
         return QPixmap(":/Images/icons/scalarEntities_5e8acf.png");
     case Configuration::eScalarEntityDistanceFeature:
         return QPixmap(":/Images/icons/scalarEntities_5e8acf.png");
