@@ -95,7 +95,7 @@ bool TrafoParam::setHomogenMatrix(OiMat rotation, OiMat translation, OiMat scale
         this->scale = s;
         this->rotation = r;
 
-        this->homogenMatrix = translation * scale * rotation;
+        this->homogenMatrix = translation * rotation * scale;
 
     }else{
         return false;
