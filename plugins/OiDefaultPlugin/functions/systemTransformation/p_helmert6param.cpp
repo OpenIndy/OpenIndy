@@ -564,8 +564,15 @@ OiVec Helmert6Param::approxTranslation(OiVec rot)
 }
 
 /*!
- * \brief applyMovements applys the first movement of to the nominal values to have a homogeneous system
+ * \brief applyMovements applys the first inverse movement to the nominal values to have a homogeneous system
  * Otherwise the expanded measured points will result in incorrect translation values to the nominal data
+ * The thermal expansion of an part object should have no influence on this transformation, so it is necessary to
+ * apply the movement to the nominal values. This results in an homogeneous system that has no temperature
+ * influence. The expansion is compensated with another function.
+ * If you don´t eliminate the influence of the expansion in this transformation, you compensate it twice and get wrong
+ * correction values.
+ * You can only expand the nominal points, because the actual points that should be compensated are not in the PART system
+ * yet. So you need to go the inverse way.
  * \param tp
  */
 void Helmert6Param::applyMovements(TrafoParam &tp)
@@ -575,20 +582,24 @@ void Helmert6Param::applyMovements(TrafoParam &tp)
 
     QMap<QString, QString> stringParameter = myConfig.stringParameter;
 
+
     if(stringParameter.contains("useTempComp")){
         use = static_cast<QString>(stringParameter.find("useTempComp").value());
     }
-
+    //if temperature compensation should be used
     if(use.compare("true") == 0){
         bool stationStart = false;
         bool stationDest = false;
 
+        //find the coordsys that has movements
+        //parts don´t have movements
         stationStart = this->getCoordSysWithMovements(tp.getStartSystem());
         stationDest = this->getCoordSysWithMovements(tp.getDestinationSystem());
 
         TrafoParam *t = NULL;
         OiVec expansionOrigin(4);
 
+        //get movement parameters and expansion origin
         if(stationStart && !stationDest){
              t = this->getMovement(tp.getStartSystem());
              expansionOrigin = tp.getDestinationSystem()->getExpansionOrigin();
@@ -599,6 +610,7 @@ void Helmert6Param::applyMovements(TrafoParam &tp)
 
         if(t != NULL){
 
+            //expand nominals with inverse of movement parameters
             for(int i=0; i<this->refSystem.size();i++){
                 OiVec refP = this->refSystem.at(i);
 
@@ -609,7 +621,7 @@ void Helmert6Param::applyMovements(TrafoParam &tp)
 
                 this->refSystem.replace(i,refP);
             }
-            this->protocol.append("reference points where expanded with inverse of");
+            this->protocol.append("reference points were expanded with inverse of");
             this->protocol.append(" movement transformation to get correct translation values.");
         }
     }
@@ -743,6 +755,12 @@ bool Helmert6Param::getCoordSysWithMovements(CoordinateSystem *cs)
     return result;
 }
 
+/*!
+ * \brief getMovement returns the movement of the given coordinate system.
+ * If the coord. sys. has more than one movement it will return the movement with the lowest valid time
+ * \param cs
+ * \return
+ */
 TrafoParam *Helmert6Param::getMovement(CoordinateSystem *cs)
 {
     TrafoParam *tp = NULL;
