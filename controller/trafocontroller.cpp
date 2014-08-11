@@ -328,7 +328,7 @@ OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
                                ttp = tp->getHomogenMatrix().inv();
                            }
 
-                           trafoMat = ttp*tt;
+                           trafoMat = tt*ttp;
 
                            return trafoMat;
 
@@ -344,7 +344,7 @@ OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
                                ttp = tp->getHomogenMatrix().inv();
                            }
 
-                           trafoMat = ttp*tt;
+                           trafoMat = tt*ttp;
 
                            return trafoMat;
                        }
@@ -365,7 +365,7 @@ OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
                                ttp = tp->getHomogenMatrix().inv();
                            }
 
-                           trafoMat = ttp*tt;
+                           trafoMat = tt*ttp;
 
                            return trafoMat;
 
@@ -381,7 +381,7 @@ OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
                                ttp = tp->getHomogenMatrix().inv();
                            }
 
-                           trafoMat = ttp*tt;
+                           trafoMat = tt*ttp;
 
                            return trafoMat;
 
