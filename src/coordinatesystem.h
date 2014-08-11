@@ -42,15 +42,32 @@ public:
 
     OiVec origin;
 
+    OiVec getExpansionOrigin();
+    void setExpansionOrigin(OiVec expOri);
+    void setExpansionOriginX(double x);
+    void setExpansionOriginY(double y);
+    void setExpansionOriginZ(double z);
+
     void recalc();
 
     QString getDisplayX() const;
     QString getDisplayY() const;
     QString getDisplayZ() const;
     QString getDisplaySolved() const;
+    QString getDisplayExpansionOriginX() const;
+    QString getDisplayExpansionOriginY() const;
+    QString getDisplayExpansionOriginZ() const;
 
     virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+
+private:
+
+    /*
+    This point represents the point from which the Part object expans with temperature
+    Necessary for movement transformations (watch trafocontroller.h and trafocontroller.cpp)
+    */
+    OiVec expansionOrigin;
 
 signals:
     void observationsChanged(int coordId);
@@ -64,11 +81,6 @@ protected:
     QList<Geometry*> nominals;
 
     bool isActiveCoordinateSystem;
-
-    //bool transformObservations(CoordinateSystem *to);
-    //void setObservationState(bool valid);
-
-    //TrafoParam* findTrafoParam(CoordinateSystem *searchToSystem);
 };
 
 #endif // COORDINATESYSTEM_H

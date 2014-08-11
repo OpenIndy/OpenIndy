@@ -22,37 +22,23 @@ public slots:
     OiMat getTransformationMatrix(CoordinateSystem *from);
 
     void addObservation(Observation *obs);
-    //void applyMovements(Observation *obs);
     void transformNewObservations(Observation *obs);
 
     bool transformObservations(CoordinateSystem *from);
     void setObservationState(CoordinateSystem *cs, bool valid);
 
-    void MovementsChanged();
-    void recalcAllMovements();
-    void recalcObservations();
-
-    /*
-     //TODO
-    movement added
-    recalc movements
-    movement deleted
-    recalc movements
-    time changed
-*/
-
+    //to calc movement transformations
+    void transformObsForMovementCalculation(CoordinateSystem *from, CoordinateSystem *to);
 
 private:
+
     TrafoParam* findTrafoParam(CoordinateSystem *from, CoordinateSystem *to);
-    //QList<TrafoParam*> findMovements(Observation *obs);
     QList<TrafoParam*> sortMovements(QList<TrafoParam*> movements);
     void CheckToApplyMovements(CoordinateSystem *from);
 
     QList<TrafoParam*> findMovements(CoordinateSystem *from);
     void applyMovements(QList<TrafoParam*> movements, CoordinateSystem *from);
-    void applyTranslations(OiVec centroidBefore, OiVec centroidAfter, QList<Observation*>observations);
-    OiVec checkTopApplyTranslation(QList<Observation*>observations,OiVec translation);
-
+	
 };
 
 #endif // TRAFOCONTROLLER_H

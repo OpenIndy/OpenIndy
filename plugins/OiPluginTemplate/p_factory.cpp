@@ -39,6 +39,12 @@ QList<NetworkAdjustment*> OiTemplatePlugin::createNetworkAdjustments(){
     return resultSet;
 }
 
+QList<SimulationModel *> OiTemplatePlugin::createSimulations()
+{
+    QList<SimulationModel*> resultSet;
+    return resultSet;
+}
+
 /*!
  * \brief OiTemplatePlugin::createSensor
  * Returns the sensor with the specified name
@@ -69,5 +75,11 @@ Function* OiTemplatePlugin::createFunction(QString name){
  */
 NetworkAdjustment* OiTemplatePlugin::createNetworkAdjustment(QString name){
     NetworkAdjustment *result = NULL;
+    return result;
+}
+
+SimulationModel *OiTemplatePlugin::createSimulation(QString name)
+{
+    SimulationModel *result = NULL;
     return result;
 }

@@ -15,8 +15,20 @@ FeatureOverviewDelegate::FeatureOverviewDelegate(QObject * parent)
 QWidget* FeatureOverviewDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
     QLineEdit* myEditor = new QLineEdit(parent);
     const FeatureOverviewProxyModel *myModel = static_cast<const FeatureOverviewProxyModel*>(index.model());
+    const TableModel *myTblModel = static_cast<const TableModel*>(index.model());
     if(myModel != NULL && (myModel->mapToSource(index).column() == 1 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 32)){ //column feature name or comment
         return myEditor;
+
+    }else if(myTblModel != NULL && myModel->mapToSource(index).column() == 36 || myModel->mapToSource(index).column() == 37 || myModel->mapToSource(index).column() == 38){
+        //QModelIndex idx = createIndex(myModel->mapToSource(index).row(), 0, NULL);
+        QModelIndex idx = myTblModel->index(myModel->mapToSource(index).row(), 0);
+        QVariant q = myTblModel->data(idx,Qt::DisplayRole);
+        QString fType = q.toString();
+
+        if(Configuration::getFeatureTypeEnum(fType) == Configuration::eCoordinateSystemFeature){
+            return myEditor;
+        }
+
     }
     return NULL;
 }
@@ -34,6 +46,11 @@ void FeatureOverviewDelegate::setEditorData(QWidget *editor, const QModelIndex &
          if(myEditor != NULL){
              myEditor->setText(index.data().toString());
          }
+    }else if(myModel != NULL && (myModel->mapToSource(index).column() == 36 || myModel->mapToSource(index).column() == 37 || myModel->mapToSource(index).column() == 38)){
+        QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
+        if(myEditor != NULL){
+            myEditor->setText(index.data().toString());
+        }
     }
 }
 
@@ -50,6 +67,14 @@ void FeatureOverviewDelegate::setModelData(QWidget *editor, QAbstractItemModel *
         QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
         if(myEditor != NULL){
             model->setData(index, myEditor->text());
+            return;
+        }
+    }else if(myModel != NULL && (myModel->mapToSource(index).column() == 36 || myModel->mapToSource(index).column() == 37 || myModel->mapToSource(index).column() == 38)){
+
+        QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
+        if(myEditor != NULL){
+            model->setData(index, myEditor->text());
+            return;
         }
     }
 }
