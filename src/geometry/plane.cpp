@@ -200,27 +200,114 @@ bool Plane::saveSimulationData()
 }
 
 QString Plane::getDisplayX() const{
-    return QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!this->isNominal){
+        if(this->isSolved){
+           foreach(Geometry *g, this->nominals){
+               if(g != NULL && g->getIsSolved()){
+
+                   QString diff = QString::number((this->xyz.getAt(0)-g->getXYZ().getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   return QString(value + " (" + diff + ")");
+               }
+           }
+       }
+    }
+
+    return value;
+
 }
 
 QString Plane::getDisplayY() const{
-    return QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    QString value = QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!this->isNominal){
+        if(this->isSolved){
+           foreach(Geometry *g, this->nominals){
+               if(g != NULL && g->getIsSolved()){
+
+                   QString diff = QString::number((this->xyz.getAt(1)-g->getXYZ().getAt(1))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   return QString(value + " (" + diff + ")");
+               }
+           }
+       }
+    }
+
+    return value;
 }
 
 QString Plane::getDisplayZ() const{
-    return QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    QString value = QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!this->isNominal){
+        if(this->isSolved){
+           foreach(Geometry *g, this->nominals){
+               if(g != NULL && g->getIsSolved()){
+
+                   QString diff = QString::number((this->xyz.getAt(2)-g->getXYZ().getAt(2))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   return QString(value + " (" + diff + ")");
+               }
+           }
+       }
+    }
+
+    return value;
 }
 
 QString Plane::getDisplayI() const{
-    return QString::number(this->ijk.getAt(0),'f',6);
+    QString value = QString::number(this->ijk.getAt(0),'f',6);
+
+    if(!this->isNominal){
+        if(this->isSolved){
+            foreach (Geometry *g, this->nominals) {
+                if(g != NULL && g->getIsSolved()){
+
+                    QString diff = QString::number((this->ijk.getAt(0)-g->getIJK().getAt(0)),'f',6);
+                    return QString(value + " (" + diff + ")");
+                }
+            }
+        }
+    }
+
+    return value;
 }
 
 QString Plane::getDisplayJ() const{
-    return QString::number(this->ijk.getAt(1),'f',6);
+    QString value = QString::number(this->ijk.getAt(1),'f',6);
+
+    if(!this->isNominal){
+        if(this->isSolved){
+            foreach (Geometry *g, this->nominals) {
+                if(g != NULL && g->getIsSolved()){
+
+                    QString diff = QString::number((this->ijk.getAt(1)-g->getIJK().getAt(1)),'f',6);
+                    return QString(value + " (" + diff + ")");
+                }
+            }
+        }
+    }
+
+    return value;
 }
 
 QString Plane::getDisplayK() const{
-    return QString::number(this->ijk.getAt(2),'f',6);
+    QString value = QString::number(this->ijk.getAt(2),'f',6);
+
+    if(!this->isNominal){
+        if(this->isSolved){
+            foreach (Geometry *g, this->nominals) {
+                if(g != NULL && g->getIsSolved()){
+
+                    QString diff = QString::number((this->ijk.getAt(2)-g->getIJK().getAt(2)),'f',6);
+                    return QString(value + " (" + diff + ")");
+                }
+            }
+        }
+    }
+
+    return value;
 }
 
 QString Plane::getDisplayIsCommon() const{
