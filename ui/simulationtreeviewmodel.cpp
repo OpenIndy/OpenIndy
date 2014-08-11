@@ -352,7 +352,7 @@ void SimulationTreeViewModel::appendGeometries(FeatureTreeItem *root, QList<Feat
             break;
         case(Configuration::eEllipsoidFeature):
             break;
-        case(Configuration::eScalarentityAngleFeature):
+        case(Configuration::eScalarEntityAngleFeature):
             angle = new FeatureTreeItem(QString("angle"));
             geom->appendChild(angle);
             break;

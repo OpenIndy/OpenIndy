@@ -153,6 +153,75 @@ Reading* FeatureTreeItem::getReading(){
 }
 
 /*!
+ * \brief FeatureTreeItem::getElementType
+ * Returns the type of element of this item. If the item is no element it returns eUndefinedElement
+ * \return
+ */
+Configuration::ElementTypes FeatureTreeItem::getElementType(){
+
+    if(this->getIsObservation()){
+        return Configuration::eObservationElement;
+    }else if(this->getIsReading() && this->getReading() != NULL){
+        switch(this->getReading()->typeofReading){
+            case Configuration::eDistance:
+                return Configuration::eReadingDistanceElement;
+            case Configuration::eDirection:
+                return Configuration::eReadingDirectionElement;
+            case Configuration::ePolar:
+                return Configuration::eReadingPolarElement;
+            case Configuration::eCartesian:
+                return Configuration::eReadingCartesianElement;
+            case Configuration::eTemperatur:
+                return Configuration::eReadingTemperatureElement;
+            case Configuration::eLevel:
+                return Configuration::eReadingLevelElement;
+        }
+    }else if(this->getIsFeature() && this->getFeature() != NULL){
+        switch(this->getFeature()->getTypeOfFeature()){
+            case Configuration::ePointFeature:
+                return Configuration::ePointElement;
+            case Configuration::eLineFeature:
+                return Configuration::eLineElement;
+            case Configuration::ePlaneFeature:
+                return Configuration::ePlaneElement;
+            case Configuration::eSphereFeature:
+                return Configuration::eSphereElement;
+            case Configuration::eCircleFeature:
+                return Configuration::eCircleElement;
+            case Configuration::eConeFeature:
+                return Configuration::eConeElement;
+            case Configuration::eCylinderFeature:
+                return Configuration::eCylinderElement;
+            case Configuration::eEllipsoidFeature:
+                return Configuration::eEllipsoidElement;
+            case Configuration::eHyperboloidFeature:
+                return Configuration::eHyperboloidElement;
+            case Configuration::eParaboloidFeature:
+                return Configuration::eParaboloidElement;
+            case Configuration::ePointCloudFeature:
+                return Configuration::ePointCloudElement;
+            case Configuration::eScalarEntityMeasurementSeriesFeature:
+                return Configuration::eScalarEntityMeasurementSeriesElement;
+            case Configuration::eScalarEntityAngleFeature:
+                return Configuration::eScalarEntityAngleElement;
+            case Configuration::eScalarEntityDistanceFeature:
+                return Configuration::eScalarEntityDistanceElement;
+            case Configuration::eCoordinateSystemFeature:
+                return Configuration::eCoordinateSystemElement;
+            case Configuration::eStationFeature:
+                return Configuration::eStationElement;
+            case Configuration::eTrafoParamFeature:
+                return Configuration::eTrafoParamElement;
+            case Configuration::eScalarEntityTemperatureFeature:
+                return Configuration::eScalarEntityTemperatureElement;
+        }
+    }
+
+    return Configuration::eUndefinedElement;
+
+}
+
+/*!
  * \brief FeatureTreeItem::setHasObservation
  * \param hasObservation
  */

@@ -549,6 +549,7 @@ bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
     for(int k =0;k<this->functionList.size();k++){
         stream.writeStartElement("function");
         stream.writeAttribute("name", this->functionList.at(k)->getMetaData()->name);
+        stream.writeAttribute("type", this->functionList.at(k)->getMetaData()->iid);
         stream.writeAttribute("plugin", this->functionList.at(k)->getMetaData()->pluginName);
         stream.writeAttribute("executionIndex", QString::number(k));
 

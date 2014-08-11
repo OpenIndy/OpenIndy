@@ -405,7 +405,7 @@ void FeatureWrapper::setScalarEntityAngle(ScalarEntityAngle *sEA){
         this->myFeature = sEA;
         this->myGeometry = sEA;
         this->myScalarEntityAngle = sEA;
-        this->typeOfFeature = Configuration::eScalarentityAngleFeature;
+        this->typeOfFeature = Configuration::eScalarEntityAngleFeature;
     }
 }
 
@@ -472,7 +472,7 @@ QString FeatureWrapper::returnFeatureType() const{
     case Configuration::eSphereFeature:
         return Configuration::sSphere;
         break;
-    case Configuration::eScalarentityAngleFeature:
+    case Configuration::eScalarEntityAngleFeature:
         return Configuration::sEntitiyAngle;
         break;
     case Configuration::eScalarEntityDistanceFeature:

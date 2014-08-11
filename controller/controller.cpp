@@ -1212,7 +1212,7 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
                             feature->getFunctions().at(functionIndex)->addTrafoParam(element->getFeature()->getTrafoParam(), elementIndex);
                         }
                         break;
-                    case Configuration::eScalarentityAngleFeature:
+                    case Configuration::eScalarEntityAngleFeature:
                         if(element->getFeature()->getScalarEntityAngle() != NULL
                                 && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityAngleElement){
                             feature->getFunctions().at(functionIndex)->addScalarEntityAngle(element->getFeature()->getScalarEntityAngle(), elementIndex);
@@ -1320,7 +1320,7 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
                             feature->getFunctions().at(functionIndex)->removeTrafoParam(element->getFeature()->getFeature()->getId());
                         }
                         break;
-                    case Configuration::eScalarentityAngleFeature:
+                    case Configuration::eScalarEntityAngleFeature:
                         if(element->getFeature()->getScalarEntityAngle() != NULL){
                             feature->getFunctions().at(functionIndex)->removeScalarEntityAngle(element->getFeature()->getFeature()->getId());
                         }
@@ -1440,7 +1440,7 @@ void Controller::getNominalValues(NominalAttributeExchange nominalValue){
         OiFeatureState::getActiveFeature()->getSphere()->xyz.setAt(2,nominalValue.nomZ);
         OiFeatureState::getActiveFeature()->getSphere()->radius = nominalValue.nomR;
         break;
-    case Configuration::eScalarentityAngleFeature:
+    case Configuration::eScalarEntityAngleFeature:
         OiFeatureState::getActiveFeature()->getScalarEntityAngle()->setAngle(nominalValue.nomSAE);
         break;
     case Configuration::eScalarEntityDistanceFeature:
