@@ -269,7 +269,18 @@ void Controller::startAim(){
         OiVec polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
         if(OiFeatureState::getActiveStation()->coordSys != OiFeatureState::getActiveCoordinateSystem()){
 
-            QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveCoordinateSystem()->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
+            //get homogeneous matrix from "from- coordsys" to active coord system
+            OiMat t = FeatureUpdater::trafoControl.getTransformationMatrix(OiFeatureState::getActiveStation()->coordSys);
+            //if matrix is valid
+            if(t.getColCount() == 4 && t.getRowCount() == 4){
+                OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
+                //inverse because t is from "from" to active system, we need xyz in "from" system, that is the
+                //active station coord system
+                xyz = t.inv() * xyz;
+                polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+            }
+
+            /*QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveCoordinateSystem()->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
             TrafoParam *tp = NULL;
             if(myTrafoParams.size() > 0){
                 for(int i=0;i<myTrafoParams.size();i++){
@@ -289,7 +300,8 @@ void Controller::startAim(){
                 OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
                 xyz = t * xyz;
                 polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
-            }
+            }*/
+
         }
 
         OiFeatureState::getActiveStation()->emitStartMove(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2),false);
