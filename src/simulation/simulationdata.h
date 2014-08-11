@@ -17,8 +17,8 @@ struct UncertaintyData{
     double uncertainty;
     QString distribution;
 
-    double (*densityFunction)(double x, double expectation,double uncertainty);
-    double (*distributionFunction)(double x,double expectation,double uncertainty);
+    double (*densityFunction)(double x, double expectation,double uncertainty,double lowerLimit, double upperLimit);
+    double (*distributionFunction)(double x,double expectation,double uncertainty,double lowerLimit, double upperLimit);
 
     QMap<QString, QString> info;
 
@@ -37,6 +37,8 @@ public:
     UncertaintyData uncertaintyK;
     UncertaintyData uncertaintyRadius;
     UncertaintyData uncertaintyScalar;
+
+    QMap<QString,double> correlations;
 
     void addXYZ(double x, double y, double z);
     void addIJK(double i, double j, double k);

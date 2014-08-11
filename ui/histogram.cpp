@@ -134,6 +134,21 @@ void Histogram::paintEvent(QPaintEvent *event)
 
         }
 
+        yText += 15;
+        pen.setWidth(5);
+        pen.setColor(Qt::black);
+        painter.setPen(pen);
+
+        QMapIterator<QString, double > k(actualFeature->getGeometry()->getSimulationData().correlations);
+        while (k.hasNext()) {
+            k.next();
+
+            QString t = QString(k.key()+": "+ QString::number(k.value(),'f',2));
+
+            painter.drawText((scaleWidth)+70, yText, t);
+            yText += 15;
+        }
+
        this->drawGridAll();
 
 
@@ -497,7 +512,7 @@ void Histogram::drawResultSet()
 
 
 
-void Histogram::generateDensityList(QList<double> tmpList)
+void Histogram::generateDensityList(QList<double> tmpList, UncertaintyData uData)
 {
 
     errorScale = 1/(maxError-minError);
@@ -509,7 +524,7 @@ void Histogram::generateDensityList(QList<double> tmpList)
 
     foreach(double d, tmpList){
 
-        double w = simData.uncertaintyX.densityFunction(d,expectation,uncertainty);
+        double w = uData.densityFunction(d,expectation,uncertainty,minError,maxError);
 
         tmpDensity.append(w);
         tmpDensitySorted.append(w);
@@ -610,10 +625,10 @@ void Histogram::prepareX()
 
         QList<double> tmpList =simData.uncertaintyX.values;
 
-        this->generateDensityList(tmpList);
+        this->generateDensityList(tmpList,simData.uncertaintyX);
 
         //draw point
-        double h = simData.uncertaintyX.densityFunction(actualValue,expectation,uncertainty);
+        double h = simData.uncertaintyX.densityFunction(actualValue,expectation,uncertainty,minError,maxError);
 
         this->setUpExpectationPoints(h);
 
@@ -662,10 +677,10 @@ void Histogram::prepareY()
 
             QList<double> tmpList =simData.uncertaintyY.values;
 
-            this->generateDensityList(tmpList);
+            this->generateDensityList(tmpList,simData.uncertaintyY);
 
             //draw point
-            double h = simData.uncertaintyY.densityFunction(actualValue,expectation,uncertainty);
+            double h = simData.uncertaintyY.densityFunction(actualValue,expectation,uncertainty,minError,maxError);
 
             this->setUpExpectationPoints(h);
 
@@ -713,10 +728,10 @@ void Histogram::prepareZ()
 
             QList<double> tmpList =simData.uncertaintyZ.values;
 
-            this->generateDensityList(tmpList);
+            this->generateDensityList(tmpList,simData.uncertaintyZ);
 
             //draw point
-            double h = simData.uncertaintyZ.densityFunction(actualValue,expectation,uncertainty);
+            double h = simData.uncertaintyZ.densityFunction(actualValue,expectation,uncertainty,minError,maxError);
 
             this->setUpExpectationPoints(h);
 
@@ -763,10 +778,10 @@ void Histogram::prepareI()
 
             QList<double> tmpList =simData.uncertaintyI.values;
 
-            this->generateDensityList(tmpList);
+            this->generateDensityList(tmpList,simData.uncertaintyI);
 
             //draw point
-            double h = simData.uncertaintyI.densityFunction(actualValue,expectation,uncertainty);
+            double h = simData.uncertaintyI.densityFunction(actualValue,expectation,uncertainty,minError,maxError);
 
             this->setUpExpectationPoints(h);
 
@@ -788,12 +803,14 @@ void Histogram::prepareI()
             a.unitDigits = 8;
 
             this->addErrorAttribute(a,simData.uncertaintyI.values);
+
+            unitMultiplier = 1.0;
+            unitDigits = 8;
         }
 
     }
 
-    unitMultiplier = 1.0;
-    unitDigits = 8;
+
 }
 
 void Histogram::prepareJ()
@@ -812,10 +829,10 @@ void Histogram::prepareJ()
 
             QList<double> tmpList =simData.uncertaintyJ.values;
 
-            this->generateDensityList(tmpList);
+            this->generateDensityList(tmpList,simData.uncertaintyJ);
 
             //draw point
-            double h = simData.uncertaintyJ.densityFunction(actualValue,expectation,uncertainty);
+            double h = simData.uncertaintyJ.densityFunction(actualValue,expectation,uncertainty,minError,maxError);
 
             this->setUpExpectationPoints(h);
 
@@ -837,12 +854,13 @@ void Histogram::prepareJ()
             a.unitDigits = 8;
 
             this->addErrorAttribute(a,simData.uncertaintyJ.values);
+
+            unitMultiplier = 1.0;
+            unitDigits = 8;
         }
 
     }
 
-    unitMultiplier = 1.0;
-    unitDigits = 8;
 }
 
 void Histogram::prepareK()
@@ -861,10 +879,10 @@ void Histogram::prepareK()
 
             QList<double> tmpList =simData.uncertaintyK.values;
 
-            this->generateDensityList(tmpList);
+            this->generateDensityList(tmpList,simData.uncertaintyK);
 
             //draw point
-            double h = simData.uncertaintyK.densityFunction(actualValue,expectation,uncertainty);
+            double h = simData.uncertaintyK.densityFunction(actualValue,expectation,uncertainty,minError,maxError);
 
             this->setUpExpectationPoints(h);
 
@@ -886,12 +904,14 @@ void Histogram::prepareK()
             a.unitDigits = 8;
 
             this->addErrorAttribute(a,simData.uncertaintyK.values);
+
+            unitMultiplier = 1.0;
+            unitDigits = 8;
         }
 
     }
 
-    unitMultiplier = 1.0;
-    unitDigits = 8;
+
 }
 
 void Histogram::prepareRadius()
@@ -911,10 +931,10 @@ void Histogram::prepareRadius()
 
             QList<double> tmpList =simData.uncertaintyRadius.values;
 
-            this->generateDensityList(tmpList);
+            this->generateDensityList(tmpList,simData.uncertaintyRadius);
 
             //draw point
-            double h = simData.uncertaintyRadius.densityFunction(actualValue,expectation,uncertainty);
+            double h = simData.uncertaintyRadius.densityFunction(actualValue,expectation,uncertainty,minError,maxError);
 
             this->setUpExpectationPoints(h);
 
@@ -960,10 +980,10 @@ void Histogram::prepareScalar()
 
                 QList<double> tmpList =simData.uncertaintyScalar.values;
 
-                this->generateDensityList(tmpList);
+                this->generateDensityList(tmpList,simData.uncertaintyScalar);
 
                 //draw point
-                double h = simData.uncertaintyScalar.densityFunction(actualValue,expectation,uncertainty);
+                double h = simData.uncertaintyScalar.densityFunction(actualValue,expectation,uncertainty,minError,maxError);
 
                 this->setUpExpectationPoints(h);
     }else{
