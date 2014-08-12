@@ -1564,16 +1564,8 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
     //sort helper class which compares and sorts the list of start and target points
     SortListByName mySorter;
 
-    if(function->getPoints().size()>0){
-        if(function->getPoints().at(0)->getObservations().size()>0){
-            if(function->getPoints().at(0)->getObservations().at(0)->myStation->coordSys != tp->getStartSystem()){
-                CoordinateSystem *cs = function->getPoints().at(0)->getObservations().at(0)->myStation->coordSys;
-                this->switchCoordinateSystemWithoutMovement(cs);
-            }else{
-                this->switchCoordinateSystemWithoutTransformation(tp->getStartSystem());
-            }
-        }
-    }
+    //can only be calculated when active coord system is a PART
+    this->switchCoordinateSystemWithoutMovement(OiFeatureState::getActiveCoordinateSystem());
 
     QDateTime startTime;
 

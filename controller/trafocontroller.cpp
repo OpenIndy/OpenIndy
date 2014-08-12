@@ -401,31 +401,13 @@ OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
  */
 void TrafoController::transformObsForMovementCalculation(CoordinateSystem *from, CoordinateSystem *to)
 {
-    TrafoParam *tp = NULL;
+    OiMat m = this->getTransformationMatrix(from);
 
-    tp = this->findTrafoParam(from,to);
+    if(m.getRowCount() == 4 && m.getColCount() == 4){
 
-    if(tp != NULL){
-
-        if(tp->getStartSystem() == from){
-
-            OiMat t = tp->getHomogenMatrix();
-
-            foreach (Observation *obs, from->getObservations()) {
-
-                obs->myXyz = t*obs->myOriginalXyz;
-                obs->isValid = true;
-            }
-
-        }else{
-
-            OiMat t = tp->getHomogenMatrix().inv();
-
-            foreach (Observation *obs, from->getObservations()) {
-
-                obs->myXyz = t*obs->myOriginalXyz;
-                obs->isValid = true;
-            }
+        foreach (Observation *obs, from->getObservations()) {
+            obs->myXyz = m*obs->myOriginalXyz;
+            obs->isValid = true;
         }
     }else{
         this->setObservationState(from,false);
