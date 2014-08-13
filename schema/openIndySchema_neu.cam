@@ -1,0 +1,208 @@
+<as:CAM
+ xmlns:as="http://www.oasis-open.org/committees/cam"
+ xmlns:camed="http://jcam.org.uk/editor"
+ xmlns:xml="http://www.w3.org/XML/1998/namespace" CAMlevel="1" version="1.0" cameditor="3.2.0">
+  <as:Header>
+    <as:Description>Generated for oiProjectData  by XSD 2 CAM generator v2.31</as:Description>
+    <as:Owner>To be Completed</as:Owner>
+    <as:Version>0.1</as:Version>
+    <as:DateTime>2014-08-11T14:50:56</as:DateTime>
+  </as:Header>
+  <as:AssemblyStructure>
+    <as:Structure taxonomy="XML" ID="oiProjectData" reference="">
+      <oiProjectData name="" date="" idcount="">
+        <activeCoordinatesystem ref="" />
+        <activeStation ref="" />
+        <stations>
+          <station id="" name="">
+            <activeSensor name="" plugin="">
+              <readingTypes>
+                <type name="" />
+              </readingTypes>
+            </activeSensor>
+            <position ref="" />
+            <coordinatesystem ref="" />
+            <usedFor>
+              <feature ref="" />
+            </usedFor>
+          </station>
+        </stations>
+        <coordinatesystems>
+          <coordinatesystem id="" name="" solved="">
+            <expansionOrigin x="" y="" z="" />
+            <observations>
+              <observation ref="" />
+            </observations>
+            <nominalGeometries>
+              <geometry ref="" />
+            </nominalGeometries>
+            <functions>
+              <function name="" plugin="" executionIndex="">
+                <inputElements>
+                  <element index="" type="" ref="" />
+                </inputElements>
+              </function>
+            </functions>
+            <usedFor>
+              <feature ref="" />
+            </usedFor>
+            <previouslyNeeded>
+              <feature ref="" />
+            </previouslyNeeded>
+          </coordinatesystem>
+        </coordinatesystems>
+        <transformationparameters>
+          <transformationparameter id="%string%" name="%string%" solved="%string%" tx="%string%" ty="%string%" tz="%string%">
+            <rx>%string%</rx>
+            <ry>%string%</ry>
+            <rz>%string%</rz>
+          </transformationparameter>
+        </transformationparameters>
+        <geometries>
+          <geometry id="%xs:byte%" name="%string%" type="%string%" nominal="%xs:byte%" common="%xs:byte%" solved="%xs:byte%">
+            <coordinates x="%4321.000%" y="%4321.000%" z="%4321.000%" sigmaX="%xs:byte%" sigmaY="%xs:byte%" sigmaZ="%xs:byte%" />
+            <spatialDirection i="%4321.000%" j="%4321.000%" k="%4321.000%">%string%</spatialDirection>
+            <standardDeviation value="" />
+            <observations>
+              <observation ref="" />
+            </observations>
+            <measurementconfig name="" />
+            <usedFor>
+              <feature ref="%xs:byte%" />
+            </usedFor>
+            <previouslyNeeded>
+              <feature ref="" />
+            </previouslyNeeded>
+            <functions>
+              <function name="%string%" type="%string%" plugin="%string%" executionIndex="%xs:byte%">
+                <inputElements>
+                  <inputElement index="" type="" ref="">%string%</inputElement>
+                </inputElements>
+              </function>
+            </functions>
+          </geometry>
+        </geometries>
+        <observations>
+          <observation id="%xs:byte%" x="%4321.000%" y="%4321.000%" z="%4321.000%" isValid="%xs:byte%" sigmaX="%4321.000%" sigmaY="%4321.000%" sigmaZ="%4321.000%">
+            <station ref="" />
+            <reading id="%xs:byte%" type="%xs:byte%" time="%YYYY-MM-DD'T'HH:MI:SS.SZ%">
+              <measurements>
+                <measurement type="%string%" value="%4321.000%" sigma="%4321.000%" time="%HH:MI:SS.SZ%" />
+              </measurements>
+            </reading>
+          </observation>
+        </observations>
+      </oiProjectData>
+    </as:Structure>
+  </as:AssemblyStructure>
+  <as:BusinessUseContext>
+    <as:Rules>
+      <as:default>
+        <as:context>
+          <as:constraint action="datatype(//activeCoordinatesystem/@ref,int)" />
+          <as:constraint action="datatype(//activeSensor/@name,string)" />
+          <as:constraint action="datatype(//activeSensor/@plugin,string)" />
+          <as:constraint action="datatype(//activeStation/@ref,int)" />
+          <as:constraint action="datatype(//coordinates/@sigmaX,double)" />
+          <as:constraint action="datatype(//coordinates/@sigmaY,double)" />
+          <as:constraint action="datatype(//coordinates/@sigmaZ,double)" />
+          <as:constraint action="datatype(//coordinates/@x,double)" />
+          <as:constraint action="datatype(//coordinates/@y,double)" />
+          <as:constraint action="datatype(//coordinates/@z,double)" />
+          <as:constraint action="datatype(//coordinatesystem/@id,int)" />
+          <as:constraint action="datatype(//coordinatesystem/@name,string)" />
+          <as:constraint action="datatype(//coordinatesystem/@ref,int)" />
+          <as:constraint action="datatype(//coordinatesystem/@solved,boolean)" />
+          <as:constraint action="makeOptional(//coordinatesystem/expansionOrigin,)" />
+          <as:constraint action="makeOptional(//coordinatesystem/functions)" />
+          <as:constraint action="makeOptional(//coordinatesystem/nominalGeometries)" />
+          <as:constraint action="makeOptional(//coordinatesystem/observations,)" />
+          <as:constraint action="makeOptional(//coordinatesystem/previouslyNeeded)" />
+          <as:constraint action="makeOptional(//coordinatesystem/usedFor)" />
+          <as:constraint action="makeRepeatable(//coordinatesystems/coordinatesystem)" />
+          <as:constraint action="datatype(//element/@index,int)" />
+          <as:constraint action="datatype(//element/@ref,int)" />
+          <as:constraint action="datatype(//element/@type,string)" />
+          <as:constraint action="datatype(//expansionOrigin/@x,double)" />
+          <as:constraint action="datatype(//expansionOrigin/@y,double)" />
+          <as:constraint action="datatype(//expansionOrigin/@z,double)" />
+          <as:constraint action="datatype(//feature/@ref,int)" />
+          <as:constraint action="datatype(//function/@executionIndex,int)" />
+          <as:constraint action="datatype(//function/@name,string)" />
+          <as:constraint action="datatype(//function/@plugin,string)" />
+          <as:constraint action="datatype(//function/@type,string)" />
+          <as:constraint action="makeOptional(//function/inputElements)" />
+          <as:constraint action="makeRepeatable(//functions/function,)" />
+          <as:constraint action="makeRepeatable(//functions/function,)" />
+          <as:constraint action="makeRepeatable(//geometries/geometry)" />
+          <as:constraint action="datatype(//geometry/@common,boolean)" />
+          <as:constraint action="datatype(//geometry/@id,int)" />
+          <as:constraint action="datatype(//geometry/@name,string)" />
+          <as:constraint action="datatype(//geometry/@nominal,boolean)" />
+          <as:constraint action="datatype(//geometry/@ref,int)" />
+          <as:constraint action="datatype(//geometry/@solved,boolean)" />
+          <as:constraint action="datatype(//geometry/@type,string)" />
+          <as:constraint action="makeOptional(//geometry/functions)" />
+          <as:constraint action="makeOptional(//geometry/observations)" />
+          <as:constraint action="makeOptional(//geometry/previouslyNeeded)" />
+          <as:constraint action="makeOptional(//geometry/spatialDirection)" />
+          <as:constraint action="makeOptional(//geometry/usedFor)" />
+          <as:constraint action="datatype(//inputElement/@index,int)" />
+          <as:constraint action="datatype(//inputElement/@ref,int)" />
+          <as:constraint action="datatype(//inputElement/@type,int)" />
+          <as:constraint action="makeRepeatable(//inputElements/element)" />
+          <as:constraint action="makeRepeatable(//inputElements/inputElement)" />
+          <as:constraint action="datatype(//measurementconfig/@name,string)" />
+          <as:constraint action="makeRepeatable(//measurements/measurement)" />
+          <as:constraint action="makeOptional(//measurements/measurement/@sigma)" />
+          <as:constraint action="setNumberMask(//measurements/measurement/@sigma,######.####)" />
+          <as:constraint action="makeOptional(//measurements/measurement/@time)" />
+          <as:constraint condition="string-length(./@time) &lt;13" action="setDateMask(//measurements/measurement/@time,HH:MI:SS.SSS)" />
+          <as:constraint condition="string-length(./@time) &gt;12" action="setDateMask(//measurements/measurement/@time,HH:MI:SS.SSSZ)" />
+          <as:constraint action="makeOptional(//measurements/measurement/@type)" />
+          <as:constraint action="makeOptional(//measurements/measurement/@value)" />
+          <as:constraint action="setNumberMask(//measurements/measurement/@value,######.####)" />
+          <as:constraint action="makeRepeatable(//nominalGeometries/geometry)" />
+          <as:constraint action="datatype(//observation/@id,int)" />
+          <as:constraint action="datatype(//observation/@isValid,boolean)" />
+          <as:constraint action="datatype(//observation/@ref,int)" />
+          <as:constraint action="datatype(//observation/@sigmaX,double)" />
+          <as:constraint action="datatype(//observation/@sigmaY,double)" />
+          <as:constraint action="datatype(//observation/@sigmaZ,double)" />
+          <as:constraint action="datatype(//observation/@x,double)" />
+          <as:constraint action="datatype(//observation/@y,double)" />
+          <as:constraint action="datatype(//observation/@z,double)" />
+          <as:constraint condition="not(matches(./@time,'(\d\.\d)'))" action="setDateMask(//observation/reading/@time,YYYY-MM-DD'T'HH:MI:SSZ)" />
+          <as:constraint action="makeRepeatable(//observations/observation)" />
+          <as:constraint action="datatype(//oiProjectData/@date,dateTime)" />
+          <as:constraint action="datatype(//oiProjectData/@idcount,int)" />
+          <as:constraint action="datatype(//oiProjectData/@name,string)" />
+          <as:constraint action="makeOptional(//oiProjectData/observations,)" />
+          <as:constraint action="makeOptional(//oiProjectData/transformationparameters)" />
+          <as:constraint action="datatype(//position/@ref,int)" />
+          <as:constraint action="makeRepeatable(//previouslyNeeded/feature)" />
+          <as:constraint action="datatype(//reading/@id,int)" />
+          <as:constraint action="datatype(//reading/@type,int)" />
+          <as:constraint action="makeRepeatable(//readingTypes/type)" />
+          <as:constraint action="datatype(//spatialDirection/@i,double)" />
+          <as:constraint action="datatype(//spatialDirection/@j,double)" />
+          <as:constraint action="datatype(//spatialDirection/@k,double)" />
+          <as:constraint action="datatype(//standardDeviation/@value,double)" />
+          <as:constraint action="datatype(//station/@id,int)" />
+          <as:constraint action="datatype(//station/@name,string)" />
+          <as:constraint action="datatype(//station/@ref,int)" />
+          <as:constraint action="makeRepeatable(//stations/station,)" />
+          <as:constraint action="makeRepeatable(//transformationparameters/transformationparameter)" />
+          <as:constraint action="datatype(//type/@name,string)" />
+          <as:constraint action="makeRepeatable(//usedFor/feature,)" />
+          <as:constraint action="makeRepeatable(//usedFor/feature,)" />
+        </as:context>
+      </as:default>
+    </as:Rules>
+  </as:BusinessUseContext>
+  <as:Extension name="uk.org.jcam.camed.extensions.StructureAnnotations">
+    <camed:annotation item="//oiProjectData">
+      <camed:documentation type="Generated">Built by XSD 2 CAM - 2.31 - 2014-08-11T14:50:56.738+02:00</camed:documentation>
+    </camed:annotation>
+  </as:Extension>
+</as:CAM>

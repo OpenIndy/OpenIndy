@@ -7,305 +7,218 @@
     <as:Description>No Description</as:Description>
     <as:Owner>Not Set</as:Owner>
     <as:Version>0.1</as:Version>
-    <as:DateTime>2014-08-04T10:30:27</as:DateTime>
+    <as:DateTime>2014-08-04T11:10:33</as:DateTime>
+    <as:Parameters>
+      <as:Parameter name="oiProjectData" xpath="//oiProjectData" use="local" />
+    </as:Parameters>
   </as:Header>
   <as:AssemblyStructure>
     <as:Structure ID="NewFile" taxonomy="XML" reference="">
-      <oiProjectData name="%oiProject.xml%" date="%2014-08-04T10:02:58%" idcount="%45%">
-        <member type="%activeCoordinatesystem%" ref="%1%" />
-        <member type="%activeStation%" ref="%2%" />
-        <station id="%2%" name="%STATION01%">
-          <activeSensor name="%PseudoTracker%" plugin="%OpenIndy Default Plugin%" />
-          <member type="%position%" ref="%3%" />
-          <member type="%coordinatesystem%" ref="%4%" />
-        </station>
-        <coordinatesystem id="%1%" name="%PART%" solved="%0%">
-          <expansionOrigin x="%0%" y="%0%" z="%0%" />
-          <member type="%nominalGeometry%" ref="%5%" />
-          <member type="%nominalGeometry%" ref="%6%" />
-          <member type="%nominalGeometry%" ref="%7%" />
-          <member type="%nominalGeometry%" ref="%8%" />
-          <member type="%nominalGeometry%" ref="%9%" />
-          <member type="%nominalGeometry%" ref="%10%" />
-          <member type="%nominalGeometry%" ref="%11%" />
-          <member type="%nominalGeometry%" ref="%12%" />
-          <member type="%transformationParameter%" ref="%45%" />
-        </coordinatesystem>
-        <coordinatesystem id="%4%" name="%STATION01%" solved="%0%">
-          <expansionOrigin x="%0%" y="%0%" z="%0%" />
-          <member type="%observation%" ref="%18%" />
-          <member type="%observation%" ref="%20%" />
-          <member type="%observation%" ref="%22%" />
-          <member type="%observation%" ref="%24%" />
-          <member type="%observation%" ref="%26%" />
-          <member type="%observation%" ref="%30%" />
-          <member type="%observation%" ref="%32%" />
-          <member type="%observation%" ref="%34%" />
-          <member type="%observation%" ref="%36%" />
-          <member type="%observation%" ref="%38%" />
-          <member type="%observation%" ref="%40%" />
-          <member type="%observation%" ref="%42%" />
-          <member type="%observation%" ref="%44%" />
-          <member type="%transformationParameter%" ref="%45%" />
-        </coordinatesystem>
-        <transformationsparameter id="%45%" name="%trafo%" solved="%1%" tx="%-0.282411%" ty="%1.6014%" tz="%1.82919%" rx="%1.69664%" ry="%-0.397501%" rz="%0.189715%" mx="%0.106883%" my="%0.106883%" mz="%0.106883%" use="%1%" time="%Mo Aug 4 10:00:49 2014%" movement="%0%" datumtrafo="%0%">
-          <from type="%coordinatesystem%" ref="%4%" />
-          <to type="%coordinatesystem%" ref="%1%" />
-          <member type="%previouslyNeeded%" ref="%13%" />
-          <member type="%previouslyNeeded%" ref="%5%" />
-          <member type="%previouslyNeeded%" ref="%14%" />
-          <member type="%previouslyNeeded%" ref="%6%" />
-          <member type="%previouslyNeeded%" ref="%15%" />
-          <member type="%previouslyNeeded%" ref="%7%" />
-          <member type="%previouslyNeeded%" ref="%16%" />
-          <member type="%previouslyNeeded%" ref="%8%" />
-          <function name="%HelmertTransformation%" plugin="%OpenIndy Default Plugin%" executionIndex="%0%">
-            <inputElement index="%0%" type="%1%" ref="%13%" />
-            <inputElement index="%0%" type="%1%" ref="%5%" />
-            <inputElement index="%0%" type="%1%" ref="%14%" />
-            <inputElement index="%0%" type="%1%" ref="%6%" />
-            <inputElement index="%0%" type="%1%" ref="%15%" />
-            <inputElement index="%0%" type="%1%" ref="%7%" />
-            <inputElement index="%0%" type="%1%" ref="%16%" />
-            <inputElement index="%0%" type="%1%" ref="%8%" />
-          </function>
-        </transformationsparameter>
-        <geometry id="%3%" name="%STATION01%" type="%point%" nominal="%0%" common="%0%" solved="%0%">
-          <measurementconfig name="%default configuration%" />
-        </geometry>
-        <geometry id="%9%" name="%14%" type="%point%" nominal="%1%" common="%205%" solved="%1%">
-          <coordinates x="%0.024491%" y="%5.1589%" z="%1.51004%" />
-          <standardDeviation value="%0%" />
-          <member type="%coordinatesystem%" ref="%1%" />
-        </geometry>
-        <geometry id="%10%" name="%15%" type="%point%" nominal="%1%" common="%205%" solved="%1%">
-          <coordinates x="%0.020776%" y="%6.44673%" z="%2.13286%" />
-          <standardDeviation value="%0%" />
-          <member type="%coordinatesystem%" ref="%1%" />
-        </geometry>
-        <geometry id="%11%" name="%16%" type="%point%" nominal="%1%" common="%205%" solved="%1%">
-          <coordinates x="%0.02348%" y="%6.4385%" z="%1.49886%" />
-          <standardDeviation value="%0%" />
-          <member type="%coordinatesystem%" ref="%1%" />
-        </geometry>
-        <geometry id="%12%" name="%17%" type="%point%" nominal="%1%" common="%205%" solved="%1%">
-          <coordinates x="%0.027691%" y="%6.42539%" z="%0.766588%" />
-          <standardDeviation value="%0%" />
-          <member type="%coordinatesystem%" ref="%1%" />
-        </geometry>
-        <geometry id="%13%" name="%10%" type="%point%" nominal="%0%" common="%0%" solved="%1%">
-          <coordinates x="%0.00793303%" y="%1.54564%" z="%1.70506%" />
-          <standardDeviation value="%3.9945e-07%" />
-          <member type="%observation%" ref="%18%" />
-          <member type="%observation%" ref="%20%" />
-          <member type="%nominalGeometry%" ref="%5%" />
-          <measurementconfig name="%default configuration%" />
-          <member type="%usedForFeature%" ref="%45%" />
-          <function name="%BestFitPoint%" plugin="%OpenIndy Default Plugin%" executionIndex="%0%">
-            <inputElement index="%0%" type="%19%" ref="%18%" />
-            <inputElement index="%0%" type="%19%" ref="%20%" />
-          </function>
-        </geometry>
-        <geometry id="%5%" name="%10%" type="%point%" nominal="%1%" common="%205%" solved="%1%">
-          <coordinates x="%0.015845%" y="%1.43826%" z="%2.13013%" />
-          <standardDeviation value="%0%" />
-          <member type="%coordinatesystem%" ref="%1%" />
-          <member type="%usedForFeature%" ref="%45%" />
-        </geometry>
-        <geometry id="%14%" name="%11%" type="%point%" nominal="%0%" common="%0%" solved="%1%">
-          <coordinates x="%0.0129013%" y="%1.64999%" z="%1.14348%" />
-          <standardDeviation value="%0%" />
-          <member type="%observation%" ref="%22%" />
-          <member type="%nominalGeometry%" ref="%6%" />
-          <measurementconfig name="%default configuration%" />
-          <member type="%usedForFeature%" ref="%45%" />
-          <function name="%BestFitPoint%" plugin="%OpenIndy Default Plugin%" executionIndex="%0%">
-            <inputElement index="%0%" type="%19%" ref="%22%" />
-          </function>
-        </geometry>
-        <geometry id="%6%" name="%11%" type="%point%" nominal="%1%" common="%205%" solved="%1%">
-          <coordinates x="%0.025035%" y="%1.43067%" z="%0.771385%" />
-          <standardDeviation value="%0%" />
-          <member type="%coordinatesystem%" ref="%1%" />
-          <member type="%usedForFeature%" ref="%45%" />
-        </geometry>
-        <geometry id="%15%" name="%12%" type="%point%" nominal="%0%" common="%0%" solved="%1%">
-          <coordinates x="%0.0524696%" y="%1.78014%" z="%1.6325%" />
-          <standardDeviation value="%0%" />
-          <member type="%observation%" ref="%24%" />
-          <member type="%nominalGeometry%" ref="%7%" />
-          <measurementconfig name="%default configuration%" />
-          <member type="%usedForFeature%" ref="%45%" />
-          <function name="%BestFitPoint%" plugin="%OpenIndy Default Plugin%" executionIndex="%0%">
-            <inputElement index="%0%" type="%19%" ref="%24%" />
-          </function>
-        </geometry>
-        <geometry id="%7%" name="%12%" type="%point%" nominal="%1%" common="%205%" solved="%1%">
-          <coordinates x="%0.022824%" y="%2.21868%" z="%1.50151%" />
-          <standardDeviation value="%0%" />
-          <member type="%coordinatesystem%" ref="%1%" />
-          <member type="%usedForFeature%" ref="%45%" />
-        </geometry>
-        <geometry id="%16%" name="%13%" type="%point%" nominal="%0%" common="%0%" solved="%1%">
-          <coordinates x="%0.012266%" y="%4.00838%" z="%1.42575%" />
-          <standardDeviation value="%0%" />
-          <member type="%observation%" ref="%26%" />
-          <member type="%nominalGeometry%" ref="%8%" />
-          <measurementconfig name="%default configuration%" />
-          <member type="%usedForFeature%" ref="%45%" />
-          <function name="%BestFitPoint%" plugin="%OpenIndy Default Plugin%" executionIndex="%0%">
-            <inputElement index="%0%" type="%19%" ref="%26%" />
-          </function>
-        </geometry>
-        <geometry id="%8%" name="%13%" type="%point%" nominal="%1%" common="%205%" solved="%1%">
-          <coordinates x="%0.021866%" y="%3.89655%" z="%1.50377%" />
-          <standardDeviation value="%0%" />
-          <member type="%coordinatesystem%" ref="%1%" />
-          <member type="%usedForFeature%" ref="%45%" />
-        </geometry>
-        <geometry id="%27%" name="%test%" type="%point%" nominal="%0%" common="%0%" solved="%1%">
-          <coordinates x="%-0.282411%" y="%1.60139%" z="%1.82919%" />
-          <radius value="%0.534415%" />
-          <standardDeviation value="%3.23074e-06%" />
-          <member type="%observation%" ref="%30%" />
-          <member type="%observation%" ref="%32%" />
-          <member type="%observation%" ref="%34%" />
-          <member type="%observation%" ref="%36%" />
-          <member type="%observation%" ref="%38%" />
-          <measurementconfig name="%default configuration%" />
-          <function name="%BestFitSphereRauls%" plugin="%OpenIndy Default Plugin%" executionIndex="%0%">
-            <inputElement index="%0%" type="%19%" ref="%30%" />
-            <inputElement index="%0%" type="%19%" ref="%32%" />
-            <inputElement index="%0%" type="%19%" ref="%34%" />
-            <inputElement index="%0%" type="%19%" ref="%36%" />
-            <inputElement index="%0%" type="%19%" ref="%38%" />
-          </function>
-        </geometry>
-        <geometry id="%28%" name="%plne%" type="%point%" nominal="%0%" common="%0%" solved="%1%">
-          <coordinates x="%-0.383605%" y="%1.8784%" z="%-0.556675%" />
-          <spatialDirection i="%-0.139361%" j="%-0.983457%" k="%0.115715%" />
-          <standardDeviation value="%inf%" />
-          <member type="%observation%" ref="%40%" />
-          <member type="%observation%" ref="%42%" />
-          <member type="%observation%" ref="%44%" />
-          <measurementconfig name="%default configuration%" />
-          <function name="%BestFitPlane%" plugin="%OpenIndy Default Plugin%" executionIndex="%0%">
-            <inputElement index="%0%" type="%19%" ref="%40%" />
-            <inputElement index="%0%" type="%19%" ref="%42%" />
-            <inputElement index="%0%" type="%19%" ref="%44%" />
-          </function>
-        </geometry>
-        <observation id="%18%" x="%0.00793333%" y="%1.54564%" z="%1.70506%" isValid="%1%" sigmaX="%2.5e-05%" sigmaY="%8.22052e-08%" sigmaZ="%8.22052e-08%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%17%" type="%2%" time="%2014-08-04T09:57:14%">
-            <measurement type="%azimuth%" value="%5.27796e-07%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%1.5708%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%3.00001%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%20%" x="%0.00793273%" y="%1.54564%" z="%1.70506%" isValid="%1%" sigmaX="%2.5e-05%" sigmaY="%8.2205e-08%" sigmaZ="%8.2205e-08%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%19%" type="%2%" time="%2014-08-04T09:57:16%">
-            <measurement type="%azimuth%" value="%-8.97526e-07%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%1.5708%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%3%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%22%" x="%0.0129013%" y="%1.64999%" z="%1.14348%" isValid="%1%" sigmaX="%1.75231e-05%" sigmaY="%1.69219e-05%" sigmaZ="%5.62695e-06%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%21%" type="%2%" time="%2014-08-04T09:57:33%">
-            <measurement type="%azimuth%" value="%0.767946%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%1.3439%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%7.00001%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%24%" x="%0.0524696%" y="%1.78014%" z="%1.6325%" isValid="%1%" sigmaX="%2.03667e-05%" sigmaY="%2.14248e-06%" sigmaZ="%1.43397e-05%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%23%" type="%2%" time="%2014-08-04T09:57:44%">
-            <measurement type="%azimuth%" value="%0.104719%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%0.959931%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%3.99999%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%26%" x="%0.012266%" y="%4.00838%" z="%1.42575%" isValid="%1%" sigmaX="%6.04275e-08%" sigmaY="%1.45102e-06%" sigmaZ="%2.49658e-05%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%25%" type="%2%" time="%2014-08-04T09:57:59%">
-            <measurement type="%azimuth%" value="%1.53591%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%0.0523601%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%22.9998%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%30%" x="%-0.496621%" y="%1.57423%" z="%1.34034%" isValid="%1%" sigmaX="%1.37008e-07%" sigmaY="%2.5e-05%" sigmaZ="%1.37008e-07%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%29%" type="%2%" time="%2014-08-04T09:58:50%">
-            <measurement type="%azimuth%" value="%1.5708%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%1.5708%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%4.99998%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%32%" x="%-0.156065%" y="%1.84096%" z="%1.3685%" isValid="%1%" sigmaX="%1.17466e-05%" sigmaY="%1.67755e-05%" sigmaZ="%1.43399e-05%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%31%" type="%2%" time="%2014-08-04T09:59:02%">
-            <measurement type="%azimuth%" value="%0.959931%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%0.959931%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%4.99998%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%34%" x="%0.156698%" y="%1.82673%" z="%1.62426%" isValid="%1%" sigmaX="%2.04789e-05%" sigmaY="%1.12229e-07%" sigmaZ="%1.43399e-05%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%33%" type="%2%" time="%2014-08-04T09:59:09%">
-            <measurement type="%azimuth%" value="%1.84999e-06%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%0.959931%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%4.99994%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%36%" x="%-0.507505%" y="%2.08467%" z="%1.79214%" isValid="%1%" sigmaX="%1.27953e-05%" sigmaY="%4.65761e-06%" sigmaZ="%2.09669e-05%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%35%" type="%2%" time="%2014-08-04T09:59:21%">
-            <measurement type="%azimuth%" value="%2.79253%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%0.575958%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%4.99997%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%38%" x="%0.0883924%" y="%1.52346%" z="%1.45232%" isValid="%1%" sigmaX="%2.31655e-05%" sigmaY="%9.36031e-06%" sigmaZ="%8.83155e-07%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%37%" type="%2%" time="%2014-08-04T09:59:33%">
-            <measurement type="%azimuth%" value="%0.383972%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%1.53589%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%5.00004%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%40%" x="%0.0617648%" y="%2.00688%" z="%1.07162%" isValid="%1%" sigmaX="%1.44347e-05%" sigmaY="%1.44348e-05%" sigmaZ="%1.4435e-05%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%39%" type="%2%" time="%2014-08-04T09:59:51%">
-            <measurement type="%azimuth%" value="%0.7854%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%0.955318%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%8.66019%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%42%" x="%0.480639%" y="%1.96743%" z="%1.2408%" isValid="%1%" sigmaX="%2.07395e-05%" sigmaY="%5.1895e-06%" sigmaZ="%1.29639e-05%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%41%" type="%2%" time="%2014-08-04T10:00:00%">
-            <measurement type="%azimuth%" value="%0.244979%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%1.02573%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%9.64365%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
-        <observation id="%44%" x="%-1.69322%" y="%1.6609%" z="%-3.98245%" isValid="%1%" sigmaX="%4.29428e-06%" sigmaY="%2.45748e-05%" sigmaZ="%2.70604e-06%">
-          <member type="%station%" ref="%2%" />
-          <reading id="%43%" type="%2%" time="%2014-08-04T10:00:08%">
-            <measurement type="%azimuth%" value="%1.4086%" sigma="%2.74017e-08%" />
-            <measurement type="%zenith%" value="%1.48132%" sigma="%2.74017e-08%" />
-            <measurement type="%distance%" value="%55.9558%" sigma="%2.5e-05%" />
-          </reading>
-        </observation>
+      <oiProjectData name="%string%" date="%YYYY-MM-DD:HH:MM:SS%" idcount="%12345%">
+        <activeCoordinatesystem ref="%12345%" />
+        <activeStation ref="%12345%" />
+        <stations>
+          <station id="%12345%" name="%string%">
+            <activeSensor name="%string%" plugin="%string%">
+              <readingTypes>
+                <type name="%string%" />
+              </readingTypes>
+            </activeSensor>
+            <position ref="%12345%" />
+            <coordinatesystem ref="%12345%" />
+            <usedFor>
+              <feature ref="%12345%" />
+            </usedFor>
+          </station>
+        </stations>
+        <coordinatesystems>
+          <coordinatesystem id="%12345%" name="%string%" solved="%true%">
+            <expansionOrigin x="%1245.00%" y="%1245.00%" z="%1245.00%" />
+            <observations>
+              <observation ref="%12345%" />
+            </observations>
+            <nominalGeometries>
+              <geometry ref="%12345%" />
+            </nominalGeometries>
+            <functions>
+              <function name="%string%" plugin="%string%" executionIndex="%12345%">
+                <inputElements>
+                  <element index="%12345%" type="%string%" ref="%12345%" />
+                </inputElements>
+              </function>
+            </functions>
+            <usedFor>
+              <feature ref="%12345%" />
+            </usedFor>
+            <previouslyNeeded>
+              <feature ref="%12345%" />
+            </previouslyNeeded>
+          </coordinatesystem>
+        </coordinatesystems>
+        <transformationparameters>
+          <transformationparameter id="%12345%" name="%string%" solved="%true%" tx="%1245.00%" ty="%1245.00%" tz="%1245.00%" rx="%1245.00%" ry="%1245.00%" rz="%1245.00%" mx="%1245.00%" my="%1245.00%" mz="%1245.00%" use="%true%" movement="%true%" datumtrafo="%true%" time="%HH:MM:SS%">
+            <from ref="%12345%" />
+            <to ref="%12345%" />
+            <functions>
+              <function name="%string%" plugin="%string%" executionIndex="%12345%">
+                <inputElements>
+                  <element index="%12345%" type="%string%" ref="%12345%" />
+                </inputElements>
+              </function>
+            </functions>
+            <usedFor>
+              <feature ref="%12345%" />
+            </usedFor>
+            <previouslyNeeded>
+              <feature ref="%12345%" />
+            </previouslyNeeded>
+          </transformationparameter>
+        </transformationparameters>
+        <geometries>
+          <geometry id="%12345%" name="%string%" type="%string%" nominal="%true%" common="%true%" solved="%true%">
+            <coordinates x="%1245.00%" y="%1245.00%" z="%1245.00%" sigmaX="%1245.00%" sigmaY="%1245.00%" sigmaZ="%1245.00%" />
+            <spatialDirection i="%1245.00%" j="%1245.00%" k="%1245.00%" />
+            <radius r="%1245.00%" sr="%1245.00%" />
+            <standardDeviation value="%1245.00%" />
+            <observations>
+              <observations ref="%12345%" />
+            </observations>
+            <functions>
+              <function name="%string%" plugin="%string%" executionIndex="%12345%" type="%string%">
+                <inputElements>
+                  <inputElement index="%12345%" type="%string%" ref="%12345%" />
+                </inputElements>
+              </function>
+            </functions>
+            <measurementconfig name="%string%" />
+            <usedFor>
+              <feature ref="%12345%" />
+            </usedFor>
+            <previouslyNeeded>
+              <feature ref="%12345%" />
+            </previouslyNeeded>
+          </geometry>
+        </geometries>
+        <observations>
+          <observation id="%12345%" isValid="%true%" x="%1245.00%" y="%1245.00%" z="%1245.00%" sigmaX="%1245.00%" sigmaY="%1245.00%" sigmaZ="%1245.00%">
+            <station ref="%12345%" />
+            <reading id="%12345%" time="%YYYY-MM-DD:HH:MM:SS%" type="%string%">
+              <measurements>
+                <measurement type="%string%" value="%1245.00%" sigma="%1245.00%" time="%HH:MM:SS%" />
+              </measurements>
+            </reading>
+          </observation>
+        </observations>
       </oiProjectData>
     </as:Structure>
   </as:AssemblyStructure>
   <as:BusinessUseContext>
     <as:Rules>
       <as:default>
-        <as:context />
+        <as:context>
+          <as:constraint action="setNumberMask(//activeCoordinatesystem/@ref,#######)" />
+          <as:constraint action="setNumberMask(//activeStation/@ref,#######)" />
+          <as:constraint action="setNumberMask(//coordinates/@sigmaX,######.####)" />
+          <as:constraint action="setNumberMask(//coordinates/@sigmaY,######.####)" />
+          <as:constraint action="setNumberMask(//coordinates/@sigmaZ,######.####)" />
+          <as:constraint action="setNumberMask(//coordinates/@x,######.####)" />
+          <as:constraint action="setNumberMask(//coordinates/@y,######.####)" />
+          <as:constraint action="setNumberMask(//coordinates/@z,######.####)" />
+          <as:constraint action="setNumberMask(//coordinatesystem/@id,#######)" />
+          <as:constraint action="setNumberMask(//coordinatesystem/@ref,#######)" />
+          <as:constraint action="datatype(//coordinatesystem/@solved,boolean)" />
+          <as:constraint action="makeOptional(//coordinatesystem/expansionOrigin)" />
+          <as:constraint action="makeOptional(//coordinatesystem/functions)" />
+          <as:constraint action="makeOptional(//coordinatesystem/nominalGeometries)" />
+          <as:constraint action="makeOptional(//coordinatesystem/observations)" />
+          <as:constraint action="makeOptional(//coordinatesystem/previouslyNeeded)" />
+          <as:constraint action="makeOptional(//coordinatesystem/usedFor)" />
+          <as:constraint action="makeRepeatable(//coordinatesystems/coordinatesystem)" />
+          <as:constraint action="setNumberMask(//element/@index,#######)" />
+          <as:constraint action="setNumberMask(//element/@ref,#######)" />
+          <as:constraint action="makeRepeatable(//elements/element)" />
+          <as:constraint action="setNumberMask(//expansionOrigin/@x,######.##)" />
+          <as:constraint action="setNumberMask(//expansionOrigin/@y,######.##)" />
+          <as:constraint action="setNumberMask(//expansionOrigin/@z,######.##)" />
+          <as:constraint action="setNumberMask(//feature/@ref,#######)" />
+          <as:constraint action="setNumberMask(//from/@ref,#######)" />
+          <as:constraint action="setNumberMask(//function/@executionIndex,#######)" />
+          <as:constraint action="makeOptional(//function/inputElements)" />
+          <as:constraint action="makeRepeatable(//functions/function)" />
+          <as:constraint action="makeRepeatable(//geometries/geometry)" />
+          <as:constraint action="datatype(//geometry/@common,boolean)" />
+          <as:constraint action="setNumberMask(//geometry/@id,#######)" />
+          <as:constraint action="datatype(//geometry/@nominal,boolean)" />
+          <as:constraint action="setNumberMask(//geometry/@ref,#######)" />
+          <as:constraint action="datatype(//geometry/@solved,boolean)" />
+          <as:constraint action="makeOptional(//geometry/functions)" />
+          <as:constraint action="makeOptional(//geometry/measurementconfig)" />
+          <as:constraint action="makeOptional(//geometry/observations)" />
+          <as:constraint action="makeOptional(//geometry/previouslyNeeded)" />
+          <as:constraint action="makeOptional(//geometry/radius)" />
+          <as:constraint action="makeOptional(//geometry/spatialDirection)" />
+          <as:constraint action="makeOptional(//geometry/usedFor)" />
+          <as:constraint action="setNumberMask(//inputElement/@index,#######)" />
+          <as:constraint action="setNumberMask(//inputElement/@ref,#######)" />
+          <as:constraint action="makeRepeatable(//inputElements/inputElement)" />
+          <as:constraint action="setNumberMask(//measurement/@sigma,####.######)" />
+          <as:constraint action="setDateMask(//measurement/@time,hh:mm:ss)" />
+          <as:constraint action="setNumberMask(//measurement/@value,####.######)" />
+          <as:constraint action="makeRepeatable(//measurements/measurement)" />
+          <as:constraint action="makeRepeatable(//nominalGeometries/geometry)" />
+          <as:constraint action="setNumberMask(//observation/@id,#######)" />
+          <as:constraint action="datatype(//observation/@isValid,boolean)" />
+          <as:constraint action="setNumberMask(//observation/@ref,#######)" />
+          <as:constraint action="setNumberMask(//observation/@sigmaX,####.######)" />
+          <as:constraint action="setNumberMask(//observation/@sigmaY,####.######)" />
+          <as:constraint action="setNumberMask(//observation/@sigmaZ,####.######)" />
+          <as:constraint action="setNumberMask(//observation/@x,####.######)" />
+          <as:constraint action="setNumberMask(//observation/@y,####.######)" />
+          <as:constraint action="setNumberMask(//observation/@z,####.######)" />
+          <as:constraint action="setNumberMask(//observations/@ref,#######)" />
+          <as:constraint action="makeRepeatable(//observations/observation)" />
+          <as:constraint action="makeRepeatable(//observations/observations)" />
+          <as:constraint action="datatype(//oiProjectData/@date,dateTime)" />
+          <as:constraint action="setNumberMask(//oiProjectData/@idcount,#######)" />
+          <as:constraint action="makeOptional(//oiProjectData/observations)" />
+          <as:constraint action="makeOptional(//oiProjectData/transformationparameters)" />
+          <as:constraint action="setNumberMask(//position/@ref,#######)" />
+          <as:constraint action="makeRepeatable(//previouslyNeeded/feature)" />
+          <as:constraint action="setNumberMask(//radius/@r,####.######)" />
+          <as:constraint action="setNumberMask(//radius/@sr,####.######)" />
+          <as:constraint action="setNumberMask(//reading/@id,#######)" />
+          <as:constraint action="datatype(//reading/@time,dateTime)" />
+          <as:constraint action="makeRepeatable(//readingTypes/type)" />
+          <as:constraint action="setNumberMask(//spatialDirection/@i,######.####)" />
+          <as:constraint action="setNumberMask(//spatialDirection/@j,######.####)" />
+          <as:constraint action="setNumberMask(//spatialDirection/@k,####.######)" />
+          <as:constraint action="setNumberMask(//standardDeviation/@value,####.######)" />
+          <as:constraint action="setNumberMask(//station/@id,#######)" />
+          <as:constraint action="setNumberMask(//station/@ref,#######)" />
+          <as:constraint action="makeOptional(//station/usedFor)" />
+          <as:constraint action="makeRepeatable(//stations/station)" />
+          <as:constraint action="setNumberMask(//to/@ref,#######)" />
+          <as:constraint action="datatype(//transformationparameter/@datumtrafo,boolean)" />
+          <as:constraint action="setNumberMask(//transformationparameter/@id,#######)" />
+          <as:constraint action="datatype(//transformationparameter/@movement,boolean)" />
+          <as:constraint action="setNumberMask(//transformationparameter/@mx,######.##)" />
+          <as:constraint action="setNumberMask(//transformationparameter/@my,######.##)" />
+          <as:constraint action="setNumberMask(//transformationparameter/@mz,######.##)" />
+          <as:constraint action="setNumberMask(//transformationparameter/@rx,######.##)" />
+          <as:constraint action="setNumberMask(//transformationparameter/@ry,######.##)" />
+          <as:constraint action="setNumberMask(//transformationparameter/@rz,######.##)" />
+          <as:constraint action="datatype(//transformationparameter/@solved,boolean)" />
+          <as:constraint action="setDateMask(//transformationparameter/@time,hh:mm:ss)" />
+          <as:constraint action="setNumberMask(//transformationparameter/@tx,######.##)" />
+          <as:constraint action="setNumberMask(//transformationparameter/@ty,######.##)" />
+          <as:constraint action="setNumberMask(//transformationparameter/@tz,######.##)" />
+          <as:constraint action="datatype(//transformationparameter/@use,boolean)" />
+          <as:constraint action="makeOptional(//transformationparameter/functions)" />
+          <as:constraint action="makeOptional(//transformationparameter/previouslyNeeded)" />
+          <as:constraint action="makeOptional(//transformationparameter/usedFor)" />
+          <as:constraint action="makeRepeatable(//transformationparameters/transformationparameter)" />
+          <as:constraint action="makeRepeatable(//usedFor/feature)" />
+        </as:context>
       </as:default>
     </as:Rules>
   </as:BusinessUseContext>
