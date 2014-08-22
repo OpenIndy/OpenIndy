@@ -25,7 +25,7 @@ void ScalarEntityDialog::initGUI(){
     ui->comboBox_scalarEntityType->clear();
 
     ui->comboBox_scalarEntityType->insertItem(ui->comboBox_scalarEntityType->count(),"scalar entity distance",Configuration::eScalarEntityDistanceFeature);
-    ui->comboBox_scalarEntityType->insertItem(ui->comboBox_scalarEntityType->count(),"scalar entity angle",Configuration::eScalarentityAngleFeature);
+    ui->comboBox_scalarEntityType->insertItem(ui->comboBox_scalarEntityType->count(),"scalar entity angle",Configuration::eScalarEntityAngleFeature);
     ui->comboBox_scalarEntityType->insertItem(ui->comboBox_scalarEntityType->count(),"scalar entity temperature", Configuration::eScalarEntityTemperatureFeature);
     ui->comboBox_scalarEntityType->insertItem(ui->comboBox_scalarEntityType->count(),"scalar entity measurement series", Configuration::eScalarEntityMeasurementSeriesFeature);
 

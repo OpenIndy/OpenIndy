@@ -173,7 +173,8 @@ SOURCES += \
     ui/simulationdelegate.cpp \
     ui/simulationtreeviewmodel.cpp \
     src/simulation/simulationdata.cpp \
-    ui/oiloadingdialog.cpp
+    ui/oimultiselectionmodel.cpp \
+	ui/oiloadingdialog.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -311,8 +312,9 @@ HEADERS  += \
     ui/simulationdelegate.h \
     ui/simulationtreeviewmodel.h \
     src/simulation/simulationdata.h \
-    ui/oiloadingdialog.h \
-    src/plugin/pi_generatefeaturefunction.h
+    src/plugin/pi_generatefeaturefunction.h \
+    ui/oimultiselectionmodel.h \
+	ui/oiloadingdialog.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

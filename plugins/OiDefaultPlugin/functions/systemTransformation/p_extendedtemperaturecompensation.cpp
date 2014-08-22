@@ -367,16 +367,11 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
         double syRef = qFabs(tmpRefList.at(0).getAt(1)-tmpRefList.at(i).getAt(1));
         double szRef = qFabs(tmpRefList.at(0).getAt(2)-tmpRefList.at(i).getAt(2));
 
-
-        //check if the scale from current two points is bigger than the scale from last points
-        //if yes, set current scale as actual scale for the coordinate component
-
         //0.050m is criteria, because of noisy measurements
         //and no representative distances.
         if(sxLoc <= 0.050 || sxRef <= 0.050){
 
         }else{
-            //if(sxRef/sxLoc > sx){sx = (sxRef/sxLoc);}
             sx += (sxRef/sxLoc);
             countX ++;
         }
@@ -384,7 +379,6 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
         if(syLoc <= 0.050 || syRef <=0.050){
 
         }else{
-            //if(syRef/syLoc > sy){sy = (syRef/syLoc);}
             sy += (syRef/syLoc);
             countY++;
         }
@@ -392,7 +386,6 @@ OiVec ExtendedTemperatureCompensation::approxScale(OiVec rot)
         if(szLoc <= 0.050 || szRef <= 0.050){
 
         }else{
-            //if(szRef/szLoc > sz){sz = (szRef/szLoc);}
             sz += (szRef/szLoc);
             countZ++;
         }
@@ -477,7 +470,7 @@ OiVec ExtendedTemperatureCompensation::fillLVector()
 
 /*!
  * \brief fillAMatrix fills the A matrix
- * rotation x, rotationy, rotation z, scale x, scale y, scale z, tx, ty, tz
+ * rotation x, rotation y, rotation z, scale x, scale y, scale z, tx, ty, tz
  * \param x0
  * \return
  */

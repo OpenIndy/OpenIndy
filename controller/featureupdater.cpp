@@ -1046,7 +1046,7 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
         OiFeatureState::addFeature(fw);
         break;
     }
-    case Configuration::eScalarentityAngleFeature:{
+    case Configuration::eScalarEntityAngleFeature:{
         ScalarEntityAngle *tmpSEAngle = new ScalarEntityAngle(nominal);
 
         tmpSEAngle->setMeasurementConfig(mConfig);

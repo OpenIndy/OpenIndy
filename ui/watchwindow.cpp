@@ -45,197 +45,304 @@ void WatchWindow::setLCDNumber(QVariantMap m){
 
     int numberOfDigits = ui->lineEdit_decimalDigits->text().toInt();
 
-    QMapIterator<QString,QVariant> j(m);
-    while (j.hasNext()) {
-        j.next();
+    OiMat trafo;
 
-        OiMat trafo;
+    if(!OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
 
-        for(int i=0;i<this->checkboxes.size();i++){
+        trafo = FeatureUpdater::trafoControl.getTransformationMatrix(OiFeatureState::getActiveStation()->coordSys);
+    }
 
-            if(this->checkboxes.at(i)->text() == j.key() && this->checkboxes.at(i)->isChecked()){
-
-                if(!OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
-
-                    trafo = FeatureUpdater::trafoControl.getTransformationMatrix(OiFeatureState::getActiveStation()->coordSys);
-                }
+    if(activeReadingType == Configuration::eCartesian){
+        for(int i=0; i< this->checkboxes.size();i++){
+            if(checkboxes.at(i)->text() == "d3D" && checkboxes.at(i)->isChecked()){
 
                 OiVec trackerXYZ(4);
-                OiVec trackerValues(4);
 
-                switch (activeReadingType) {
-                case Configuration::eCartesian:
+                trackerXYZ.setAt(0,m.value("x").toDouble());
+                trackerXYZ.setAt(1,m.value("y").toDouble());
+                trackerXYZ.setAt(2,m.value("z").toDouble());
+                trackerXYZ.setAt(3,1.0);
 
-                    trackerXYZ.setAt(0,m.value("x").toDouble());
-                    trackerXYZ.setAt(1,m.value("y").toDouble());
-                    trackerXYZ.setAt(2,m.value("z").toDouble());
-                    trackerXYZ.setAt(3,1.0);
+                if(trafo.getRowCount() == 4 && trafo.getColCount() == 4){
+                    trackerXYZ = trafo*trackerXYZ;
+                }
 
-                    if(trafo.getRowCount() == 4 && trafo.getColCount() == 4){
-                        trackerXYZ = trafo*trackerXYZ;
+                OiVec featureXYZ(4);
+                if(this->checkFeatureValid()){
+                    featureXYZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+                }
+                OiVec d = featureXYZ - trackerXYZ;
+
+                double distR3 = qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2));
+
+                double tolerance = this->attributeTolerance.value("d3D")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+
+                if(qFabs(distR3) >= qFabs(tolerance)){
+                    streamData.value("d3D")->setPalette(Qt::red);
+                }else{
+                    streamData.value("d3D")->setPalette(Qt::green);
+                }
+
+                streamData.value("d3D")->display(QString::number(distR3*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+            }
+        }
+    }
+
+    if(activeReadingType == Configuration::ePolar && ui->comboBox_polarMode->currentText().compare("cross and distance") == 0){
+
+        OiVec trackerValues(4);
+        trackerValues.setAt(0,m.value("azimuth").toDouble());
+        trackerValues.setAt(1,m.value("zenith").toDouble());
+        trackerValues.setAt(2,m.value("distance").toDouble());
+        trackerValues.setAt(3,1.0);
+
+        OiVec featureValues(4);
+        if(this->checkFeatureValid()){
+            featureValues = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+        }
+        featureValues.setAt(3,1.0);
+
+        if(trafo.getRowCount() == 4 && trafo.getColCount() == 4){
+            featureValues = trafo.inv()*featureValues;
+        }
+
+        featureValues = Reading::toPolar(featureValues.getAt(0),featureValues.getAt(1),featureValues.getAt(2));
+
+        double dDist = featureValues.getAt(2) - trackerValues.getAt(2);
+
+        double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+
+        if(qFabs(dDist) >= qFabs(tolerance)){
+            streamData.value("distance")->setPalette(Qt::red);
+        }else{
+            streamData.value("distance")->setPalette(Qt::green);
+        }
+
+        streamData.value("distance")->display(QString::number(dDist*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+
+        double alpha = featureValues.getAt(0)-trackerValues.getAt(0);
+
+        double dAcross =  alpha * trackerValues.getAt(2);
+
+        if(qFabs(dAcross) >= qFabs(tolerance)){
+            streamData.value("across")->setPalette(Qt::red);
+        }else{
+            streamData.value("across")->setPalette(Qt::green);
+        }
+
+        streamData.value("across")->display(QString::number(dAcross*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+
+        //nominal
+        double h1 = qSin(((PI/2) - featureValues.getAt(1)))*featureValues.getAt(2);
+        //actual
+        double h2 = qSin(((PI/2) - trackerValues.getAt(1)))*trackerValues.getAt(2);
+
+        double dH = h1 - h2;
+
+        if(qFabs(dH) >= qFabs(tolerance)){
+            streamData.value("dH")->setPalette(Qt::red);
+        }else{
+            streamData.value("dH")->setPalette(Qt::green);
+        }
+
+        streamData.value("dH")->display(QString::number(dH*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+
+    }else{
+
+        QMapIterator<QString,QVariant> j(m);
+        while (j.hasNext()) {
+            j.next();
+
+            for(int i=0;i<this->checkboxes.size();i++){
+
+
+
+                if(this->checkboxes.at(i)->text() == j.key() && this->checkboxes.at(i)->isChecked()){
+
+                    OiVec trackerXYZ(4);
+                    OiVec trackerValues(4);
+
+                    switch (activeReadingType) {
+                    case Configuration::eCartesian:
+
+                        trackerXYZ.setAt(0,m.value("x").toDouble());
+                        trackerXYZ.setAt(1,m.value("y").toDouble());
+                        trackerXYZ.setAt(2,m.value("z").toDouble());
+                        trackerXYZ.setAt(3,1.0);
+
+                        if(trafo.getRowCount() == 4 && trafo.getColCount() == 4){
+                            trackerXYZ = trafo*trackerXYZ;
+                        }
+
+                        if(j.key() == "x"){
+                            double featureX = 0.0;
+
+                            if(this->checkFeatureValid()){
+                                featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(0);
+                            }
+                            double dX = featureX - trackerXYZ.getAt(0);
+
+                            double tolerance = this->attributeTolerance.value("x")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+
+                            if(qFabs(dX) >= qFabs(tolerance)){
+                                streamData.value("x")->setPalette(Qt::red);
+                            }else{
+                                streamData.value("x")->setPalette(Qt::green);
+                            }
+
+                            streamData.value("x")->display(QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+
+                        }else if(j.key() == "y"){
+                            double featureY = 0.0;
+
+                            if(this->checkFeatureValid()){
+                                featureY = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
+                            }
+                            double dY = featureY - trackerXYZ.getAt(1);
+
+                            double tolerance = this->attributeTolerance.value("y")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+
+                            if(qFabs(dY) >= qFabs(tolerance)){
+                                streamData.value("y")->setPalette(Qt::red);
+                            }else{
+                                streamData.value("y")->setPalette(Qt::green);
+                            }
+
+                            streamData.value("y")->display(QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+
+                        }else if(j.key() == "z"){
+                            double featureZ = 0.0;
+
+                            if(this->checkFeatureValid()){
+                                featureZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(2);
+                            }
+                            double dZ = featureZ - trackerXYZ.getAt(2);
+
+                            double tolerance = this->attributeTolerance.value("z")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+
+                            if(qFabs(dZ) >= qFabs(tolerance)){
+                                streamData.value("z")->setPalette(Qt::red);
+                            }else{
+                                streamData.value("z")->setPalette(Qt::green);
+                            }
+
+                            streamData.value("z")->display(QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+
+                        }else if(j.key() == "R3"){
+
+
+
+                        }else{
+                            double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
+
+                            if(qFabs(j.value().toDouble()) >= qFabs(tolerance)){
+                                streamData.value(j.key())->setPalette(Qt::red);
+                            }else{
+                                streamData.value(j.key())->setPalette(Qt::green);
+                            }
+                            streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',numberOfDigits));
+                        }
+
+                        break;
+                    case Configuration::ePolar:
+
+                        if(ui->comboBox_polarMode->currentText().compare("normale mode") == 0){
+                            //if normal mode show the differences in angles and distance
+
+                            trackerValues.setAt(0,m.value("azimuth").toDouble());
+                            trackerValues.setAt(1,m.value("zenith").toDouble());
+                            trackerValues.setAt(2,m.value("distance").toDouble());
+                            trackerValues.setAt(3,1.0);
+
+                            trackerValues = Reading::toCartesian(trackerValues.getAt(0),trackerValues.getAt(1),trackerValues.getAt(2));
+
+
+                            if(trafo.getRowCount() == 4 && trafo.getColCount() == 4){
+                                trackerValues = trafo*trackerValues;
+                            }
+
+                            trackerValues = Reading::toPolar(trackerValues.getAt(0),trackerValues.getAt(1),trackerValues.getAt(2));
+
+                            if(j.key() == "azimuth"){
+                                double FeatureAZ = 0.0;
+
+                                if(this->checkFeatureValid()){
+                                    OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+                                    OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+                                    FeatureAZ = featurePolar.getAt(0);
+                                }
+                                double dAZ = FeatureAZ - trackerValues.getAt(0);
+
+                                double tolerance = this->attributeTolerance.value("azimuth")->text().toDouble()/UnitConverter::getAngleMultiplier();
+
+                                if(qFabs(dAZ) >= qFabs(tolerance)){
+                                    streamData.value("azimuth")->setPalette(Qt::red);
+                                }else{
+                                    streamData.value("azimuth")->setPalette(Qt::green);
+                                }
+
+                                streamData.value("azimuth")->display(QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
+
+                            }else if(j.key() == "zenith"){
+                                double FeatureZE = 0.0;
+
+                                if(this->checkFeatureValid()){
+                                    OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+                                    OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+                                    FeatureZE = featurePolar.getAt(1);
+                                }
+                                double dZE = FeatureZE - trackerValues.getAt(1);
+
+                                double tolerance = this->attributeTolerance.value("zenith")->text().toDouble()/UnitConverter::getAngleMultiplier();
+
+                                if(qFabs(dZE) >= qFabs(tolerance)){
+                                    streamData.value("zenith")->setPalette(Qt::red);
+                                }else{
+                                    streamData.value("zenith")->setPalette(Qt::green);
+                                }
+
+                                streamData.value("zenith")->display(QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
+
+                            }else if(j.key() == "distance"){
+                                double FeatureDIS = 0.0;
+
+                                if(this->checkFeatureValid()){
+                                    OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+                                    OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+                                    FeatureDIS = featurePolar.getAt(2);
+                                }
+                                double dDIS = FeatureDIS - trackerValues.getAt(2);
+
+                                double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+
+                                if(qFabs(dDIS) >= qFabs(tolerance)){
+                                    streamData.value("distance")->setPalette(Qt::red);
+                                }else{
+                                    streamData.value("distance")->setPalette(Qt::green);
+                                }
+
+                                streamData.value("distance")->display(QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+
+                            }else{
+                                double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
+
+                                if(qFabs(j.value().toDouble()) >= qFabs(tolerance)){
+                                    streamData.value(j.key())->setPalette(Qt::red);
+                                }else{
+                                    streamData.value(j.key())->setPalette(Qt::green);
+                                }
+
+                                streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',numberOfDigits));
+                            }
+                        }
+                        break;
+                    case Configuration::eDirection:
+                        break;
+                    case Configuration::eDistance:
+                        break;
+                    default:
+                        break;
                     }
-
-                    if(j.key() == "x"){
-                        double featureX = 0.0;
-
-                        if(this->checkFeatureValid()){
-                            featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(0);
-                        }
-                        double dX = featureX - trackerXYZ.getAt(0);
-
-                        double tolerance = this->attributeTolerance.value("x")->text().toDouble()/UnitConverter::getDistanceMultiplier();
-
-                        if(qFabs(dX) >= qFabs(tolerance)){
-                            streamData.value("x")->setPalette(Qt::red);
-                        }else{
-                            streamData.value("x")->setPalette(Qt::green);
-                        }
-
-                        streamData.value("x")->display(QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
-
-                    }else if(j.key() == "y"){
-                        double featureY = 0.0;
-
-                        if(this->checkFeatureValid()){
-                            featureY = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
-                        }
-                        double dY = featureY - trackerXYZ.getAt(1);
-
-                        double tolerance = this->attributeTolerance.value("y")->text().toDouble()/UnitConverter::getDistanceMultiplier();
-
-                        if(qFabs(dY) >= qFabs(tolerance)){
-                            streamData.value("y")->setPalette(Qt::red);
-                        }else{
-                            streamData.value("y")->setPalette(Qt::green);
-                        }
-
-                        streamData.value("y")->display(QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
-
-                    }else if(j.key() == "z"){
-                        double featureZ = 0.0;
-
-                        if(this->checkFeatureValid()){
-                            featureZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
-                        }
-                        double dZ = featureZ - trackerXYZ.getAt(2);
-
-                        double tolerance = this->attributeTolerance.value("z")->text().toDouble()/UnitConverter::getDistanceMultiplier();
-
-                        if(qFabs(dZ) >= qFabs(tolerance)){
-                            streamData.value("z")->setPalette(Qt::red);
-                        }else{
-                            streamData.value("z")->setPalette(Qt::green);
-                        }
-
-                        streamData.value("z")->display(QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
-
-                    }else{
-                        double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
-
-                        if(qFabs(j.value().toDouble()) >= qFabs(tolerance)){
-                            streamData.value(j.key())->setPalette(Qt::red);
-                        }else{
-                            streamData.value(j.key())->setPalette(Qt::green);
-                        }
-                        streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',numberOfDigits));
-                    }
-
-                    break;
-                case Configuration::ePolar:
-
-                    trackerValues.setAt(0,m.value("azimuth").toDouble());
-                    trackerValues.setAt(1,m.value("zenith").toDouble());
-                    trackerValues.setAt(2,m.value("distance").toDouble());
-                    trackerValues.setAt(3,1.0);
-
-                    trackerValues = Reading::toCartesian(trackerValues.getAt(0),trackerValues.getAt(1),trackerValues.getAt(2));
-
-
-                    if(trafo.getRowCount() == 4 && trafo.getColCount() == 4){
-                        trackerValues = trafo*trackerValues;
-                    }
-
-                    trackerValues = Reading::toPolar(trackerValues.getAt(0),trackerValues.getAt(1),trackerValues.getAt(2));
-
-                    if(j.key() == "azimuth"){
-                        double FeatureAZ = 0.0;
-
-                        if(this->checkFeatureValid()){
-                            OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
-                            OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
-                            FeatureAZ = featurePolar.getAt(0);
-                        }
-                        double dAZ = FeatureAZ - trackerValues.getAt(0);
-
-                        double tolerance = this->attributeTolerance.value("azimuth")->text().toDouble()/UnitConverter::getAngleMultiplier();
-
-                        if(qFabs(dAZ) >= qFabs(tolerance)){
-                            streamData.value("azimuth")->setPalette(Qt::red);
-                        }else{
-                            streamData.value("azimuth")->setPalette(Qt::green);
-                        }
-
-                        streamData.value("azimuth")->display(QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
-
-                    }else if(j.key() == "zenith"){
-                        double FeatureZE = 0.0;
-
-                        if(this->checkFeatureValid()){
-                            OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
-                            OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
-                            FeatureZE = featurePolar.getAt(1);
-                        }
-                        double dZE = FeatureZE - trackerValues.getAt(1);
-
-                        double tolerance = this->attributeTolerance.value("zenith")->text().toDouble()/UnitConverter::getAngleMultiplier();
-
-                        if(qFabs(dZE) >= qFabs(tolerance)){
-                            streamData.value("zenith")->setPalette(Qt::red);
-                        }else{
-                            streamData.value("zenith")->setPalette(Qt::green);
-                        }
-
-                        streamData.value("zenith")->display(QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
-
-                    }else if(j.key() == "distance"){
-                        double FeatureDIS = 0.0;
-
-                        if(this->checkFeatureValid()){
-                            OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
-                            OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
-                            FeatureDIS = featurePolar.getAt(2);
-                        }
-                        double dDIS = FeatureDIS - trackerValues.getAt(2);
-
-                        double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/UnitConverter::getDistanceMultiplier();
-
-                        if(qFabs(dDIS) >= qFabs(tolerance)){
-                            streamData.value("distance")->setPalette(Qt::red);
-                        }else{
-                            streamData.value("distance")->setPalette(Qt::green);
-                        }
-
-                        streamData.value("distance")->display(QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
-
-                    }else{
-                        double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
-
-                        if(qFabs(j.value().toDouble()) >= qFabs(tolerance)){
-                            streamData.value(j.key())->setPalette(Qt::red);
-                        }else{
-                            streamData.value(j.key())->setPalette(Qt::green);
-                        }
-
-                        streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',numberOfDigits));
-                    }
-
-                    break;
-                case Configuration::eDirection:
-                    break;
-                case Configuration::eDistance:
-                    break;
-                default:
-                    break;
                 }
             }
         }
@@ -274,40 +381,136 @@ void WatchWindow::iniGUI()
         widgets.append(featureName);
     }
 
-    for(int i=0; i<this->checkboxes.size();i++){
+    if(activeReadingType == Configuration::ePolar && ui->comboBox_polarMode->currentText().compare("cross and distance") == 0){
+        //special gui for cross and distance view at actice polar reading
 
-        if(this->checkboxes.at(i)->isChecked()){
-            QString name = this->checkboxes.at(i)->text();
-            QString value = "0.0";
-            QFont f( "Arial", attributeSize, QFont::Bold);
+        //cross distance
+        QString name = "across";
+        QString value = "0.0";
+        QFont f( "Arial", attributeSize, QFont::Bold);
 
-            QLabel *l = new QLabel();
-            l->setText(name);
-            l->setFont(f);
-            widgets.append(l);
+        QLabel *l = new QLabel();
+        l->setText(name);
+        l->setFont(f);
+        widgets.append(l);
 
-            QLCDNumber *n = new QLCDNumber();
-            n->display(value);
-            n->setFont(f);
-            n->setAutoFillBackground(true);
-            widgets.append(n);
+        QLCDNumber *n = new QLCDNumber();
+        n->display(value);
+        n->setFont(f);
+        n->setAutoFillBackground(true);
+        widgets.append(n);
 
-            n->setMode(QLCDNumber::Dec);
-            n->setDigitCount(10);
-            n->setSmallDecimalPoint(true);
+        n->setMode(QLCDNumber::Dec);
+        n->setDigitCount(10);
+        n->setSmallDecimalPoint(true);
 
-            QHBoxLayout *layout = new QHBoxLayout();
-            layout->addWidget(l);
-            layout->addWidget(n);
-            layout->setStretch(0,1);
-            layout->setStretch(1,4);
-            layouts.append(layout);
+        QHBoxLayout *layout = new QHBoxLayout();
+        layout->addWidget(l);
+        layout->addWidget(n);
+        layout->setStretch(0,1);
+        layout->setStretch(1,4);
+        layouts.append(layout);
 
-            masterLayout->addLayout(layout);
+        masterLayout->addLayout(layout);
 
-            streamData.insert(name,n);
+        streamData.insert(name,n);
+
+
+        //distance
+        name = "distance";
+
+        QLabel *l2 = new QLabel();
+        l2->setText(name);
+        l2->setFont(f);
+        widgets.append(l2);
+
+        QLCDNumber *n2 = new QLCDNumber();
+        n2->display(value);
+        n2->setFont(f);
+        n2->setAutoFillBackground(true);
+        widgets.append(n2);
+
+        n2->setMode(QLCDNumber::Dec);
+        n2->setDigitCount(10);
+        n2->setSmallDecimalPoint(true);
+
+        QHBoxLayout *layout2 = new QHBoxLayout();
+        layout2->addWidget(l2);
+        layout2->addWidget(n2);
+        layout2->setStretch(0,1);
+        layout2->setStretch(1,4);
+        layouts.append(layout2);
+
+        masterLayout->addLayout(layout2);
+
+        streamData.insert(name,n2);
+
+        //delta height
+        name = "dH";
+
+        QLabel *l3 = new QLabel();
+        l3->setText(name);
+        l3->setFont(f);
+        widgets.append(l3);
+
+        QLCDNumber *n3 = new QLCDNumber();
+        n3->display(value);
+        n3->setFont(f);
+        n3->setAutoFillBackground(true);
+        widgets.append(n3);
+
+        n3->setMode(QLCDNumber::Dec);
+        n3->setDigitCount(10);
+        n3->setSmallDecimalPoint(true);
+
+        QHBoxLayout *layout3 = new QHBoxLayout();
+        layout3->addWidget(l3);
+        layout3->addWidget(n3);
+        layout3->setStretch(0,1);
+        layout3->setStretch(1,4);
+        layouts.append(layout3);
+
+        masterLayout->addLayout(layout3);
+
+        streamData.insert(name,n3);
+    }else{
+        for(int i=0; i<this->checkboxes.size();i++){
+
+            if(this->checkboxes.at(i)->isChecked()){
+                QString name = this->checkboxes.at(i)->text();
+                QString value = "0.0";
+                QFont f( "Arial", attributeSize, QFont::Bold);
+
+                QLabel *l = new QLabel();
+                l->setText(name);
+                l->setFont(f);
+                widgets.append(l);
+
+                QLCDNumber *n = new QLCDNumber();
+                n->display(value);
+                n->setFont(f);
+                n->setAutoFillBackground(true);
+                widgets.append(n);
+
+                n->setMode(QLCDNumber::Dec);
+                n->setDigitCount(10);
+                n->setSmallDecimalPoint(true);
+
+                QHBoxLayout *layout = new QHBoxLayout();
+                layout->addWidget(l);
+                layout->addWidget(n);
+                layout->setStretch(0,1);
+                layout->setStretch(1,4);
+                layouts.append(layout);
+
+                masterLayout->addLayout(layout);
+
+                streamData.insert(name,n);
+            }
         }
     }
+
+
 
     ui->pageWatchWindow->setLayout(masterLayout);
 
@@ -348,6 +551,11 @@ void WatchWindow::showEvent(QShowEvent *event)
 {
     listenerThread.start();
 
+    ui->comboBox_polarMode->clear();
+    ui->comboBox_polarMode->addItem("normale mode");
+    ui->comboBox_polarMode->addItem("cross and distance");
+    ui->comboBox_polarMode->setVisible(false);
+
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
         connect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this->listener,SLOT(setLCDNumber(QVariantMap)));
 
@@ -369,6 +577,14 @@ void WatchWindow::initSuppReadings()
     if(rTypes == NULL){
         return;
     }
+
+    bool containPolar = false;
+
+    //only add direction and distance if there is no polar available
+    if(rTypes->contains(Configuration::ePolar)){
+        containPolar = true;
+    }
+
     listener->isSettingsReady = true;
 
     for(int i=0; i<rTypes->size();i++){
@@ -380,10 +596,14 @@ void WatchWindow::initSuppReadings()
             ui->comboBox_suppReadings->addItem(Configuration::sCartesian);
             break;
         case Configuration::eDistance:
-            ui->comboBox_suppReadings->addItem(Configuration::sDistance);
+            if(!containPolar){
+                ui->comboBox_suppReadings->addItem(Configuration::sDistance);
+            }
             break;
         case Configuration::eDirection:
-            ui->comboBox_suppReadings->addItem(Configuration::sDirection);
+            if(!containPolar){
+                ui->comboBox_suppReadings->addItem(Configuration::sDirection);
+            }
             break;
         case Configuration::eTemperatur:
             ui->comboBox_suppReadings->addItem(Configuration::sTemperatur);
@@ -398,13 +618,6 @@ void WatchWindow::initSuppReadings()
             break;
         }
     }
-    /*if(ui->comboBox_suppReadings->findText(Configuration::sCartesian) != -1){
-        ui->comboBox_suppReadings->setCurrentText(Configuration::sCartesian);
-    }*/
-    //emit sendSettingsReady(true);
-    //listener->isSettingsReady = true;
-
-    //on_comboBox_suppReadings_currentIndexChanged(ui->comboBox_suppReadings->currentText());
 }
 
 void WatchWindow::getAttributes(QStringList l)
@@ -412,79 +625,107 @@ void WatchWindow::getAttributes(QStringList l)
     stopStream();
 
 
-        if(listener->isCheckBoxReady){
+    if(listener->isCheckBoxReady){
 
-        }else{
-            if(settingsLayout == NULL){
-                settingsLayout = new QVBoxLayout();
-            }
-
-            foreach (QCheckBox *cb, checkboxes) {
-                ui->groupBox_displayValues->layout()->removeWidget(cb);
-                delete cb;
-            }
-            checkboxes.clear();
-
-            foreach (QLabel *l, attributeLabels) {
-                ui->groupBox_displayValues->layout()->removeWidget(l);
-                delete l;
-            }
-            attributeLabels.clear();
-
-            foreach (QLineEdit *le, attributeTolerance.values()) {
-                ui->groupBox_displayValues->layout()->removeWidget(le);
-                delete le;
-            }
-            attributeTolerance.clear();
-
-            foreach (QLayout *l, attributeLayout) {
-                ui->groupBox_displayValues->layout()->removeItem(l);
-                delete l;
-            }
-            attributeLayout.clear();
-
-            if(l.size() > 0){
-
-                for(int i=0; i<l.size();i++){
-
-                    QHBoxLayout *layout = new QHBoxLayout();
-                    attributeLayout.append(layout);
-
-                    QCheckBox *cb = new QCheckBox();
-                    cb->setText(l.at(i));
-                    cb->setChecked(true);
-                    this->checkboxes.append(cb);
-
-                    QLabel *lab = new QLabel();
-                    lab->setText(QString("tolerance " + l.at(i) + " " + this->getUnitString(l.at(i))));
-                    attributeLabels.append(lab);
-
-                    QLineEdit *le = new QLineEdit();
-                    le->setText("0.0");
-                    attributeTolerance.insert(l.at(i),le);
-
-                    layout->addWidget(cb);
-                    layout->addWidget(lab);
-                    layout->addWidget(le);
-
-                    //set streching equal for all 3 elements
-                    layout->setStretch(0,1);
-                    layout->setStretch(1,1);
-                    layout->setStretch(2,1);
-
-                    settingsLayout->addLayout(layout);
-                }
-
-                //emit sendCheckBoxReady(true);
-                listener->isCheckBoxReady = true;
-            }
-
+    }else{
+        if(settingsLayout == NULL){
+            settingsLayout = new QVBoxLayout();
         }
 
-        iniGUI();
+        foreach (QCheckBox *cb, checkboxes) {
+            ui->groupBox_displayValues->layout()->removeWidget(cb);
+            delete cb;
+        }
+        checkboxes.clear();
 
+        foreach (QLabel *l, attributeLabels) {
+            ui->groupBox_displayValues->layout()->removeWidget(l);
+            delete l;
+        }
+        attributeLabels.clear();
 
-     startStream();
+        foreach (QLineEdit *le, attributeTolerance.values()) {
+            ui->groupBox_displayValues->layout()->removeWidget(le);
+            delete le;
+        }
+        attributeTolerance.clear();
+
+        foreach (QLayout *l, attributeLayout) {
+            ui->groupBox_displayValues->layout()->removeItem(l);
+            delete l;
+        }
+        attributeLayout.clear();
+
+        if(l.size() > 0){
+
+            for(int i=0; i<l.size();i++){
+
+                QHBoxLayout *layout = new QHBoxLayout();
+                attributeLayout.append(layout);
+
+                QCheckBox *cb = new QCheckBox();
+                cb->setText(l.at(i));
+                cb->setChecked(true);
+                this->checkboxes.append(cb);
+
+                QLabel *lab = new QLabel();
+                lab->setText(QString("tolerance " + l.at(i) + " " + this->getUnitString(l.at(i))));
+                attributeLabels.append(lab);
+
+                QLineEdit *le = new QLineEdit();
+                le->setText("1.0");
+                attributeTolerance.insert(l.at(i),le);
+
+                layout->addWidget(cb);
+                layout->addWidget(lab);
+                layout->addWidget(le);
+
+                //set streching equal for all 3 elements
+                layout->setStretch(0,1);
+                layout->setStretch(1,1);
+                layout->setStretch(2,1);
+
+                settingsLayout->addLayout(layout);
+            }
+
+            if(activeReadingType == Configuration::eCartesian){
+
+                QHBoxLayout *layout = new QHBoxLayout();
+                attributeLayout.append(layout);
+
+                QCheckBox *cb = new QCheckBox();
+                cb->setText("d3D");
+                cb->setChecked(true);
+                this->checkboxes.append(cb);
+
+                QLabel *lab = new QLabel();
+                lab->setText(QString("tolerance d3D"));
+                attributeLabels.append(lab);
+
+                QLineEdit *le = new QLineEdit();
+                le->setText("1.0");
+                attributeTolerance.insert("d3D",le);
+
+                layout->addWidget(cb);
+                layout->addWidget(lab);
+                layout->addWidget(le);
+
+                //set streching equal for all 3 elements
+                layout->setStretch(0,1);
+                layout->setStretch(1,1);
+                layout->setStretch(2,1);
+
+                settingsLayout->addLayout(layout);
+            }
+        }
+    }
+
+    //emit sendCheckBoxReady(true);
+    listener->isCheckBoxReady = true;
+
+    iniGUI();
+
+    startStream();
 }
 
 
@@ -502,6 +743,12 @@ void WatchWindow::on_comboBox_suppReadings_currentIndexChanged(const QString &ar
 
     if(!listener->isSettingsReady){
         return;
+    }
+
+    if(arg1.compare(Configuration::sPolar) == 0){
+        ui->comboBox_polarMode->setVisible(true);
+    }else{
+        ui->comboBox_polarMode->setVisible(false);
     }
 
 

@@ -174,7 +174,7 @@ bool ProjectRestorer::loadProject(OiProjectData &data){
                     this->observations.append(o);
                 }
 
-                if(xml.name() == "oiProjectData"){
+                if(xml.name() == "member"){
                     this->readOiProjectData(xml);
                 }
 
@@ -236,10 +236,10 @@ bool ProjectRestorer::loadProject(OiProjectData &data){
          data.getDevice()->close();
          Console::addLine("resolve dependencies");
 
-         foreach(Station* s, this->stations){
+         /*foreach(Station* s, this->stations){
              this->stationElements.append(s->position->getId());
              this->stationElements.append(s->coordSys->getId());
-         }
+         }*/
 
          this->resolveDependencies(data);
          return true;
@@ -435,15 +435,15 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
         if(d.typeOfElement != Configuration::eObservationElement && !this->stationElements.contains(d.elementID)){
            OiFeatureState::addFeature(resolvedFeature);
 
-           if(resolvedFeature->getStation()!=NULL || resolvedFeature->getFeature()->getId() == activeStationId){
+           if(resolvedFeature->getStation()!=NULL && resolvedFeature->getFeature()->getId() == activeStationId){
                resolvedFeature->getStation()->setActiveStationState(true);
 
-               if(resolvedFeature->getStation()->coordSys !=NULL || resolvedFeature->getStation()->coordSys->getId() == activeCoordSystemId){
+               if(resolvedFeature->getStation()->coordSys !=NULL && resolvedFeature->getStation()->coordSys->getId() == activeCoordSystemId){
                    resolvedFeature->getStation()->coordSys->setActiveCoordinateSystemState(true);
                }
            }
 
-           if(resolvedFeature->getCoordinateSystem()!=NULL || resolvedFeature->getFeature()->getId() == activeCoordSystemId){
+           if(resolvedFeature->getCoordinateSystem()!=NULL && resolvedFeature->getFeature()->getId() == activeCoordSystemId){
                resolvedFeature->getCoordinateSystem()->setActiveCoordinateSystemState(true);
            }
         }
@@ -547,13 +547,12 @@ void ProjectRestorer::resolveStation(FeatureWrapper *fw, ElementDependencies &d)
     this->resolveFeature(fw,d);
 
     //find Station coordsystem and postion
-    CoordinateSystem* stationCoordSys = this->findCoordSys(fw->getStation()->coordSys->getId());
-    FeatureWrapper* stationPosition = this->findGeometry(fw->getStation()->position->getId());
+    CoordinateSystem* stationCoordSys = this->findCoordSys(d.getStationCoordSystem());
+    FeatureWrapper* stationPosition = this->findGeometry(d.getStationPosition());
 
     if(stationCoordSys != NULL){
         fw->getStation()->coordSys = stationCoordSys;
     }
-
     if(stationPosition != NULL){
         fw->getStation()->position = stationPosition->getPoint();
     }
@@ -719,6 +718,7 @@ QList<Function *> ProjectRestorer::resolveFunctions(ElementDependencies &d)
 
 void ProjectRestorer::readOiProjectData(QXmlStreamReader &xml)
 {
+
     if(xml.name() == "member"){
 
             if(xml.tokenType() == QXmlStreamReader::StartElement) {
@@ -743,6 +743,7 @@ void ProjectRestorer::readOiProjectData(QXmlStreamReader &xml)
                 }
 
             }
+
     }
 
 

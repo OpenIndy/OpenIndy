@@ -56,7 +56,7 @@ bool ScalarEntityAngle::toOpenIndyXML(QXmlStreamWriter &stream){
     stream.writeStartElement("geometry");
     stream.writeAttribute("id", QString::number(this->id));
     stream.writeAttribute("name", this->name);
-    stream.writeAttribute("type", Configuration::sPoint);
+    stream.writeAttribute("type", Configuration::sEntitiyAngle);
     stream.writeAttribute("nominal",QString::number(this->isNominal));
     stream.writeAttribute("common",QString::number(this->isCommon));
     stream.writeAttribute("solved", QString::number(this->isSolved));
