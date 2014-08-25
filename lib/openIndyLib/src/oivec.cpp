@@ -10,7 +10,7 @@ OiVec::OiVec()
     this->values.clear();
 }
 
-OiVec::OiVec(const int size){
+OiVec::OiVec(const int &size){
     this->values.clear();
     for(int i = 0; i < size; i++){
         this->values.push_back(0.0);
@@ -47,7 +47,7 @@ int OiVec::getSize() const{
 
 /*!
  * \brief OiVec::set
- * Replace the vector by another
+ * Replace the list by another
  * \param v
  */
 void OiVec::set(vector<double> v){
@@ -60,7 +60,7 @@ void OiVec::set(vector<double> v){
  * \param pos
  * \param value
  */
-void OiVec::setAt(int pos, double value){
+void OiVec::setAt(const int &pos, const double &value){
     if(this->values.size() > pos){
         this->values.at(pos) = value;
     }else{
@@ -73,7 +73,7 @@ void OiVec::setAt(int pos, double value){
  * Add an element at the end of the vector
  * \param value
  */
-void OiVec::add(double value){
+void OiVec::add(const double &value){
     this->values.push_back(value);
 }
 
@@ -212,36 +212,35 @@ OiMat OiVec::t() const{
 /*!
  * \brief OiVec::cross
  * Calculate cross product (only if a and b are 3 dimensional vectors)
+ * \param result
  * \param a
  * \param b
- * \return
  */
-OiVec OiVec::cross(OiVec a, OiVec b){
-    if(a.getSize() == b.getSize() && a.getSize() == 3){
-        OiVec result(a.getSize());
+void OiVec::cross(OiVec &result, const OiVec &a, const OiVec &b){
+    if(a.getSize() == b.getSize() && a.getSize() == 3 && (result.getSize() == 0 || result.getSize() == a.getSize())){
+        if(result.getSize() == 0){
+            for(int i = 0; i < a.getSize(); i++){
+                result.add(0.0);
+            }
+        }
         OiVec::myLinearAlgebra->cross(result, a, b);
-        return result;
     }else{
         throw logic_error("Cannot calculate cross product of non - 3 dimesnional vectors");
-        return OiVec();
     }
 }
 
 /*!
  * \brief OiVec::dot
  * Calculate scalar product (only if a and b are of same size)
+ * \param result
  * \param a
  * \param b
- * \return
  */
-double OiVec::dot(OiVec a, OiVec b){
+void OiVec::dot(double &result, const OiVec &a, const OiVec &b){
     if(a.getSize() == b.getSize() && a.getSize() > 0){
-        double result = 0.0;
         OiVec::myLinearAlgebra->dot(result, a, b);
-        return result;
     }else{
         throw logic_error("Cannot calculate scalar product of vectors with incompatible size");
-        return -1.0;
     }
 }
 
@@ -252,7 +251,7 @@ double OiVec::dot(OiVec a, OiVec b){
  * \param v
  * \return
  */
-OiVec OiVec::mult(const double value, const OiVec &v){
+OiVec OiVec::mult(const double &value, const OiVec &v){
     OiVec result(v.getSize());
     OiVec::myLinearAlgebra->multiply(result, value, v);
     return result;

@@ -163,6 +163,7 @@ bool BestFitSphereRauls::fit(Sphere &s){
     double r = s.radius;
 
     OiVec xd(4);
+    double xdxd = 0.0;
     OiVec verb(numPoints*3);
     do{
 
@@ -246,7 +247,9 @@ bool BestFitSphereRauls::fit(Sphere &s){
 
         numIterations++;
 
-    }while( (OiVec::dot(xd,xd) > 0.000001) && (numIterations < 101) );
+        OiVec::dot(xdxd, xd,xd);
+
+    }while( (xdxd > 0.000001) && (numIterations < 101) );
 
     if(numIterations >= 101){
         this->writeToConsole("No solution found during 100 iterations");

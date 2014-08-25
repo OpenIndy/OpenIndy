@@ -15,7 +15,6 @@ OiVec PS_SphereSegment::fitting_x(3);
 OiMat PS_SphereSegment::verify_u(3,3);
 OiMat PS_SphereSegment::verify_v(3,3);
 OiVec PS_SphereSegment::verify_d(3);
-OiVec PS_SphereSegment::verify_xyz(3);
 
 PS_SphereSegment::PS_SphereSegment() : PS_ShapeSegment(){
 
@@ -31,13 +30,67 @@ PS_SphereSegment::~PS_SphereSegment()
 }
 
 /*!
+ * \brief PS_SphereSegment::writeToX3D
+ * Write an x3d - file with the calculated sphere
+ * \param filePath
+ * \return
+ */
+bool PS_SphereSegment::writeToX3D(const QString &filePath){
+
+    QDomDocument document;
+
+    QDomElement root = document.createElement("X3D");
+    document.appendChild(root);
+
+    QDomElement scene = document.createElement("Scene");
+    root.appendChild(scene);
+
+    QDomElement transformation = document.createElement("Transform");
+    transformation.setAttribute("translation", QString("%1 %2 %3")
+                                .arg(this->getXYZ()[0]).arg(this->getXYZ()[1]).arg(this->getXYZ()[2]));
+    scene.appendChild(transformation);
+
+    QDomElement shape = document.createElement("Shape");
+    transformation.appendChild(shape);
+
+    QDomElement sphere = document.createElement("Sphere");
+    sphere.setAttribute("radius", QString("%1").arg(this->getRadius()));
+    shape.appendChild(sphere);
+
+    QDomElement appearance = document.createElement("Appearance");
+    QDomElement material = document.createElement("Material");
+    material.setAttribute("diffuseColor", QString("0 1 1"));
+    appearance.appendChild(material);
+    shape.appendChild(appearance);
+
+    QFile file( filePath );
+    if(file.open(QIODevice::ReadWrite | QIODevice::Truncate)){
+
+        QTextStream stream(&file);
+        stream.setCodec("UTF-8");
+        stream << document.toString();
+        file.close();
+        return true;
+
+    }
+
+    return false;
+
+}
+
+/*!
  * \brief PS_SphereSegment::detectSphere
  * Tries to detect a single sphere in the given point material that contains maximum points that satisfy the distance criterion
  * \param points
  * \param param
  * \return
  */
-PS_SphereSegment *PS_SphereSegment::detectSphere(QList<Point_PC *> points, PS_InputParameter param){
+PS_SphereSegment *PS_SphereSegment::detectSphere(const QList<PS_Point_PC*> &points, const PS_InputParameter &param){
+
+    //TODO tolerance factor hier überdenken, da sonst grade bei kugeln mit vielen Ausreißern
+    //schlechte und falsche Sachen detektiert werden, die mehr Punkte als
+    //das rictige enthalten
+    //Stattdessen nach der Minimumsuche und fit nochmal checkpointsinShape um Punkte ggf. dazu zu holen
 
     PS_SphereSegment *result = new PS_SphereSegment();
 
@@ -54,13 +107,13 @@ PS_SphereSegment *PS_SphereSegment::detectSphere(QList<Point_PC *> points, PS_In
     }
 
     //calculate the number of necessary trials
-    numTrials = qLn(1.0f - s) / qLn(1.0f - phk);
+    numTrials = (int)ceil(qLn(1.0f - s) / qLn(1.0f - phk));
 
     //qDebug() << "Anzahl Durchgänge: " << numTrials;
 
     //get numTrials random samples
-    QMap<int, QList<Point_PC*> > randomSamples;
-    randomSamples = PS_GeneralMath::getRandomSubsets(numTrials, k, points);
+    QMap<int, QList<PS_Point_PC*> > randomSamples;
+    PS_GeneralMath::getRandomSubsets(randomSamples, numTrials, k, points);
 
     for(int i = 0; i < numTrials; i++){
 
@@ -77,7 +130,7 @@ PS_SphereSegment *PS_SphereSegment::detectSphere(QList<Point_PC *> points, PS_In
         }
 
         //if at least k+1 points are within the sphere...
-        if(PS_SphereSegment::checkPointsInSphere(possibleSolution, points, param, 3) >= k+1){
+        if(PS_SphereSegment::checkPointsInSphere(possibleSolution, points, param, 1) >= k+1){
 
             //...and the solution is better then the best one found before
             if(possibleSolution->getPoints().size() > result->getPoints().size()){
@@ -90,8 +143,8 @@ PS_SphereSegment *PS_SphereSegment::detectSphere(QList<Point_PC *> points, PS_In
                 //set the new sphere as result
                 result = possibleSolution;
 
-                //if the sphere contains all points of the voxel then break the search
-                if(result->myState->myPoints.size() == points.size()){
+                //if the sphere contains mostly all points of the voxel then break the search
+                if(result->myState->myPoints.size() >= points.size()-4){
                     break;
                 }
             }
@@ -114,7 +167,7 @@ PS_SphereSegment *PS_SphereSegment::detectSphere(QList<Point_PC *> points, PS_In
  * \param toleranceFactor
  * \return
  */
-int PS_SphereSegment::checkPointsInSphere(PS_SphereSegment *mySphere, QList<Point_PC *> myPoints, PS_InputParameter param, int toleranceFactor){
+int PS_SphereSegment::checkPointsInSphere(PS_SphereSegment *mySphere, const QList<PS_Point_PC*> &myPoints, const PS_InputParameter &param, const int &toleranceFactor){
 
     int result = 0; //number of points that were added to the sphere
 
@@ -123,7 +176,7 @@ int PS_SphereSegment::checkPointsInSphere(PS_SphereSegment *mySphere, QList<Poin
         //iterate through all points to check wether they lie in a small band around the sphere surface
         for(int i = 0; i < myPoints.size(); i++){
 
-            Point_PC *p = myPoints.at(i);
+            PS_Point_PC *p = myPoints.at(i);
 
             //if the point is not used for another shape
             if(!p->isUsed){
@@ -164,6 +217,8 @@ int PS_SphereSegment::checkPointsInSphere(PS_SphereSegment *mySphere, QList<Poin
  */
 void PS_SphereSegment::fit(){
 
+    //clock_t test = clock();
+
     if(this->myState->myPoints.size() < 5){
         this->myState->isValid = false;
         return;
@@ -177,12 +232,13 @@ void PS_SphereSegment::fit(){
     centroid[2] = 0.0;
 
     double x = 0.0, y = 0.0, z = 0.0;
+    double vx = 0.0, vy = 0.0, vz = 0.0;
     double r = 0.0, xm = 0.0, ym = 0.0, zm = 0.0;
 
     int numIterations = 0;
 
     //calc centroid of all sphere points
-    for(int i = 0; i < this->getPoints().size(); i++){
+    for(int i = 0; i < this->getPoints().size(); ++i){
         centroid[0] += this->myState->myPoints.at(i)->xyz[0];
         centroid[1] += this->myState->myPoints.at(i)->xyz[1];
         centroid[2] += this->myState->myPoints.at(i)->xyz[2];
@@ -200,61 +256,104 @@ void PS_SphereSegment::fit(){
     OiVec xd(4);
 
     OiVec verb(numPoints*3);
-    OiMat A(numPoints, 4);
-    OiMat B(numPoints, numPoints*3);
+    //OiVec vd(numPoints*3);
+
+    double a1 = 0.0, a2 = 0.0, a3 = 0.0;
+    //OiMat A(numPoints, 4);
+    //OiMat AT(4, numPoints);
+
+    //OiMat BBT(numPoints, numPoints);
+
+    //OiMat B(numPoints, numPoints*3);
     OiVec w(numPoints+4);
     OiMat N(numPoints+4, numPoints+4);
 
-    OiMat Q(numPoints+4, numPoints+4);
-    OiMat BBT;
-    OiMat AT;
-    OiVec res(numPoints+4);
-    OiVec k(numPoints);
-    OiVec vd;
+    //OiMat Q(numPoints+4, numPoints+4);
 
+
+    OiVec res(numPoints+4);
+    //OiVec k(numPoints);
+
+
+    //qDebug() << "vor iteration " << (clock() - test)/(double)CLOCKS_PER_SEC;
+
+    double stop = 0.0;
     do{
 
-        for(int i = 0; i < numPoints; i++){
+        //vector<double> bbt_diag;
+        for(int i = 0; i < numPoints; ++i){
 
             x = this->getPoints().at(i)->xyz[0];
             y = this->getPoints().at(i)->xyz[1];
             z = this->getPoints().at(i)->xyz[2];
 
-            double r0 = qSqrt( (x + verb.getAt(i*3) - xm) * (x + verb.getAt(i*3) - xm)
-                               + (y + verb.getAt(i*3+1) - ym) * (y + verb.getAt(i*3+1) - ym)
-                               + (z + verb.getAt(i*3+2) - zm) * (z + verb.getAt(i*3+2) - zm) );
+            vx = verb.getAt(i*3);
+            vy = verb.getAt(i*3+1);
+            vz = verb.getAt(i*3+2);
 
-            A.setAt(i, 0, -1.0 * (x + verb.getAt(i*3) - xm) / r0);
-            A.setAt(i, 1, -1.0 * (y + verb.getAt(i*3+1) - ym) / r0);
-            A.setAt(i, 2, -1.0 * (z + verb.getAt(i*3+2) - zm) / r0);
-            A.setAt(i, 3, -1.0);
+            double r0 = qSqrt( (x + vx - xm) * (x + vx - xm)
+                               + (y + vy - ym) * (y + vy - ym)
+                               + (z + vz - zm) * (z + vz - zm) );
 
-            B.setAt(i, i*3, (x + verb.getAt(i*3) - xm) / r0);
-            B.setAt(i, i*3+1, (y + verb.getAt(i*3+1) - ym) / r0);
-            B.setAt(i, i*3+2, (z + verb.getAt(i*3+2) - zm) / r0);
+            a1 = (x + vx - xm) / r0;
+            a2 = (y + vy - ym) / r0;
+            a3 = (z + vz - zm) / r0;
+
+            //A.setAt(i, 0, -1.0 * a1);
+            //A.setAt(i, 1, -1.0 * a2);
+            //A.setAt(i, 2, -1.0 * a3);
+            //A.setAt(i, 3, -1.0);
+
+            //AT.setAt(0, i, -1.0 * a1);
+            //AT.setAt(1, i, -1.0 * a2);
+            //AT.setAt(2, i, -1.0 * a3);
+            //AT.setAt(3, i, -1.0);
+
+            //B.setAt(i, i*3, (x + verb.getAt(i*3) - xm) / r0);
+            //B.setAt(i, i*3+1, (y + verb.getAt(i*3+1) - ym) / r0);
+            //B.setAt(i, i*3+2, (z + verb.getAt(i*3+2) - zm) / r0);
+
+            //bbt_diag.push_back(a1*a1 + a2*a2 + a3*a3);
+
+            //A
+            N.setAt(i, 0+numPoints, -1.0 * a1);
+            N.setAt(i, 1+numPoints, -1.0 * a2);
+            N.setAt(i, 2+numPoints, -1.0 * a3);
+            N.setAt(i, 3+numPoints, -1.0);
+
+            //AT
+            N.setAt(0+numPoints, i, -1.0 * a1);
+            N.setAt(1+numPoints, i, -1.0 * a2);
+            N.setAt(2+numPoints, i, -1.0 * a3);
+            N.setAt(3+numPoints, i, -1.0);
+
+            //BBT
+            N.setAt(i, i, a1*a1 + a2*a2 + a3*a3);
 
             w.setAt(i, r0 - r);
 
         }
+        //BBT.diag(bbt_diag);
 
-        BBT = B * B.t();
-        AT = A.t();
+        //qDebug() << "vor N " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
-        for(unsigned int i = 0; i < BBT.getRowCount(); i++){
+        /*for(unsigned int i = 0; i < BBT.getRowCount(); ++i){
             for(unsigned int j = 0; j < BBT.getColCount(); j++){
                 N.setAt(i,j, BBT.getAt(i,j));
             }
-        }
-        for(int i = 0; i < numPoints; i++){
+        }*/
+        /*for(int i = 0; i < numPoints; ++i){
             for(int j = 0; j < 4; j++){
                 N.setAt(i, j+numPoints, A.getAt(i,j));
             }
-        }
-        for(int i = 0; i < 4; i++){
-            for(int j = 0; j < numPoints; j++){
-                N.setAt(i+numPoints, j, AT.getAt(i,j));
+        }*/
+        /*for(int i = 0; i < 4; ++i){
+            for(int j = 0; j < numPoints; ++j){
+                N.setAt(i+numPoints, j, A.getAt(j,i));
             }
-        }
+        }*/
+
+        //qDebug() << "vor solve " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
         try{
             if(!OiMat::solve(res, N, -1.0*w)){
@@ -269,17 +368,43 @@ void PS_SphereSegment::fit(){
             return;
         }
 
-        for(int i = 0; i < numPoints; i++){
+        //qDebug() << "nach solve " << (clock() - test)/(double)CLOCKS_PER_SEC;
+
+        /*for(int i = 0; i < numPoints; ++i){
             k.setAt(i, res.getAt(i));
-        }
-        for(int i = 0; i < 4; i++){
+        }*/
+        for(int i = 0; i < 4; ++i){
             xd.setAt(i, res.getAt(i+numPoints));
         }
 
-        vd = B.t() * k;
+        for(int i = 0; i < numPoints; ++i){
+
+            x = this->getPoints().at(i)->xyz[0];
+            y = this->getPoints().at(i)->xyz[1];
+            z = this->getPoints().at(i)->xyz[2];
+
+            vx = verb.getAt(i*3);
+            vy = verb.getAt(i*3+1);
+            vz = verb.getAt(i*3+2);
+
+            double r0 = qSqrt( (x + vx - xm) * (x + vx - xm)
+                               + (y + vy - ym) * (y + vy - ym)
+                               + (z + vz - zm) * (z + vz - zm) );
+
+            a1 = (x + vx - xm) / r0;
+            a2 = (y + vy - ym) / r0;
+            a3 = (z + vz - zm) / r0;
+
+            verb.setAt(i*3, vx + res.getAt(i) * a1);
+            verb.setAt(i*3+1, vy + res.getAt(i) * a2);
+            verb.setAt(i*3+2, vz + res.getAt(i) * a3);
+
+        }
+
+        //vd = B.t() * k;
 
         //Unbekannte und Beobachtungen verbessern
-        verb = verb + vd;
+        //verb = verb + vd;
         xm += xd.getAt(0);
         ym += xd.getAt(1);
         zm += xd.getAt(2);
@@ -287,7 +412,13 @@ void PS_SphereSegment::fit(){
 
         numIterations++;
 
-    }while( (OiVec::dot(xd,xd) > 0.000001) && (numIterations < 100) );
+        OiVec::dot(stop, xd, xd);
+
+        //qDebug() << "next it " << (clock() - test)/(double)CLOCKS_PER_SEC;
+
+    }while( (stop > 0.000001) && (numIterations < 100) );
+
+    //qDebug() << numIterations;
 
     if(numIterations >= 100){
         this->myState->isValid = false;
@@ -295,7 +426,7 @@ void PS_SphereSegment::fit(){
     }
 
     double sumVV = 0.0;
-    for(int i = 0; i < this->myState->myPoints.size(); i++){
+    for(int i = 0; i < this->myState->myPoints.size(); ++i){
 
         x = this->myState->myPoints.at(i)->xyz[0];
         y = this->myState->myPoints.at(i)->xyz[1];
@@ -305,6 +436,8 @@ void PS_SphereSegment::fit(){
                 * (r - qSqrt( (xm-x)*(xm-x) + (ym-y)*(ym-y) + (zm-z)*(zm-z) ));
 
     }
+
+    //qDebug() << "fertig " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
     this->mySphereState->radius = r;
     this->mySphereState->xyz[0] = xm;
@@ -323,7 +456,9 @@ void PS_SphereSegment::fit(){
  * Fit the sphere using a random subset of points to increase the performance
  * \param numPoints
  */
-void PS_SphereSegment::fitBySample(unsigned int numPoints){
+void PS_SphereSegment::fitBySample(int numPoints){
+
+    //qDebug() << "fit sample";
 
     if(this->myState->myPoints.size() < 5 || numPoints < 5){
         this->myState->isValid = false;
@@ -331,11 +466,41 @@ void PS_SphereSegment::fitBySample(unsigned int numPoints){
     }
 
     //get random subset of numPoints points
+    /*QList<PS_Point_PC *> randomSample;
+    if(numPoints >= this->getPoints().size()){
+        randomSample = this->getPoints();
+        numPoints = this->getPointCount();
+    }else{
+        //qDebug() << "else";
+        QMap<int, QList<PS_Point_PC*> > randomSampleMap;
+        PS_GeneralMath::getRandomSubsets(randomSampleMap, 1, numPoints, this->myState->myPoints);
+        if(randomSampleMap.isEmpty()){
+            this->myState->isValid = false;
+            return;
+        }
+        //qDebug() << "ok";
+        randomSample = randomSampleMap.first();
+        //qDebug() << "t: " << randomSample.size();
+    }*/
+
+
     if(numPoints > this->getPoints().size()){
         numPoints = this->getPoints().size();
     }
-    QMap<int, QList<Point_PC*> > randomSampleMap = PS_GeneralMath::getRandomSubsets(1, numPoints, this->myState->myPoints);
-    QList<Point_PC*> randomSample = randomSampleMap.value(0);
+    QMap<int, QList<PS_Point_PC*> > randomSampleMap;
+    PS_GeneralMath::getRandomSubsets(randomSampleMap, 1, numPoints, this->myState->myPoints);
+    if(randomSampleMap.isEmpty()){
+        this->myState->isValid = false;
+        return;
+    }
+    QList<PS_Point_PC*> &randomSample = randomSampleMap.first();
+
+    if(randomSample.size() == 0){
+        this->myState->isValid = false;
+        return;
+    }
+
+    //qDebug() << "vor centroid";
 
     double centroid[3], centroidAll[3]; //centroids of numPoints and all points
     centroid[0] = 0.0;
@@ -348,6 +513,8 @@ void PS_SphereSegment::fitBySample(unsigned int numPoints){
     double x = 0.0, y = 0.0, z = 0.0;
     double r = 0.0, xm = 0.0, ym = 0.0, zm = 0.0;
 
+    //qDebug() << "calc centroid";
+
     //calc centroid of all sphere points
     for(int i = 0; i < this->getPoints().size(); i++){
         centroidAll[0] += this->myState->myPoints.at(i)->xyz[0];
@@ -357,6 +524,11 @@ void PS_SphereSegment::fitBySample(unsigned int numPoints){
     centroidAll[0] = centroidAll[0] / (double)this->getPoints().size();
     centroidAll[1] = centroidAll[1] / (double)this->getPoints().size();
     centroidAll[2] = centroidAll[2] / (double)this->getPoints().size();
+
+    //qDebug() << "zwischen centroid";
+
+    //qDebug() << numPoints;
+    //qDebug() << randomSample.size();
 
     //calc centroid of numPoints points
     for(int i = 0; i < numPoints; i++){
@@ -368,6 +540,8 @@ void PS_SphereSegment::fitBySample(unsigned int numPoints){
     centroid[1] = centroid[1] / (double)numPoints;
     centroid[2] = centroid[2] / (double)numPoints;
 
+    //qDebug() << "vor fit";
+
     //fit the sphere with Drixler
     for(int i = 0; i < 4; i++){
         PS_SphereSegment::fitting_n.setAt(i, 0.0);
@@ -375,6 +549,7 @@ void PS_SphereSegment::fitBySample(unsigned int numPoints){
             PS_SphereSegment::fitting_N.setAt(i, j, 0.0);
         }
     }
+    //qDebug() << "vor loop";
     for(unsigned int i = 0; i < numPoints; i++){
 
         x = randomSample.at(i)->xyz[0] - centroid[0];
@@ -413,6 +588,8 @@ void PS_SphereSegment::fitBySample(unsigned int numPoints){
 
     }
 
+    //qDebug() << "vor solve";
+
     OiVec a(4);
     try{
         if(!OiMat::solve(a, PS_SphereSegment::fitting_N, -1.0*PS_SphereSegment::fitting_n)){
@@ -433,7 +610,7 @@ void PS_SphereSegment::fitBySample(unsigned int numPoints){
     zm = -0.5 * a.getAt(2) + centroid[2];
 
     double sumVV = 0.0;
-    for(int i = 0; i < this->myState->myPoints.size(); i++){
+    /*for(int i = 0; i < this->myState->myPoints.size(); i++){
 
         x = this->myState->myPoints.at(i)->xyz[0];
         y = this->myState->myPoints.at(i)->xyz[1];
@@ -442,7 +619,22 @@ void PS_SphereSegment::fitBySample(unsigned int numPoints){
         sumVV += (r - qSqrt( (xm-x)*(xm-x) + (ym-y)*(ym-y) + (zm-z)*(zm-z) ))
                 * (r - qSqrt( (xm-x)*(xm-x) + (ym-y)*(ym-y) + (zm-z)*(zm-z) ));
 
+    }*/
+
+    //qDebug() << "vor sumvv";
+
+    for(int i = 0; i < numPoints; i++){
+
+        x = randomSample.at(i)->xyz[0];
+        y = randomSample.at(i)->xyz[1];
+        z = randomSample.at(i)->xyz[2];
+
+        sumVV += (r - qSqrt( (xm-x)*(xm-x) + (ym-y)*(ym-y) + (zm-z)*(zm-z) ))
+                * (r - qSqrt( (xm-x)*(xm-x) + (ym-y)*(ym-y) + (zm-z)*(zm-z) ));
+
     }
+
+    //qDebug() << "set results";
 
     //set results
     this->mySphereState->radius = r;
@@ -452,7 +644,8 @@ void PS_SphereSegment::fitBySample(unsigned int numPoints){
     this->myState->mainFocus[0] = centroidAll[0];
     this->myState->mainFocus[1] = centroidAll[1];
     this->myState->mainFocus[2] = centroidAll[2];
-    this->myState->sigma = qSqrt( sumVV / ((double)this->myState->myPoints.size() - 4.0) );
+    //this->myState->sigma = qSqrt( sumVV / ((double)this->myState->myPoints.size() - 4.0) );
+    this->myState->sigma = qSqrt( sumVV / ((double)numPoints - 4.0) );
     this->myState->isValid = true;
 
 }
@@ -462,7 +655,7 @@ void PS_SphereSegment::fitBySample(unsigned int numPoints){
  * Calculate sphere from 4 points
  * \param points
  */
-void PS_SphereSegment::minimumSolution(QList<Point_PC *> points){
+void PS_SphereSegment::minimumSolution(const QList<PS_Point_PC *> &points){
 
     if(points.size() != 4){
         this->myState->isValid = false;
@@ -505,12 +698,13 @@ void PS_SphereSegment::minimumSolution(QList<Point_PC *> points){
  * Only include points in the sphere that are within a distance around the sphere surface (specified by the user)
  * \param mySphere
  * \param param
+ * \param toleranceFactor
  */
-void PS_SphereSegment::sortOut(PS_SphereSegment *mySphere, PS_InputParameter param){
+void PS_SphereSegment::sortOut(PS_SphereSegment *mySphere, const PS_InputParameter &param, const int &toleranceFactor){
 
-    QList<Point_PC *> myPoints = mySphere->getPoints();
+    QList<PS_Point_PC *> myPoints = mySphere->getPoints();
     mySphere->removeAllPoints();
-    PS_SphereSegment::checkPointsInSphere(mySphere, myPoints, param, 1);
+    PS_SphereSegment::checkPointsInSphere(mySphere, myPoints, param, toleranceFactor);
 
 }
 
@@ -521,7 +715,9 @@ void PS_SphereSegment::sortOut(PS_SphereSegment *mySphere, PS_InputParameter par
  * \param mergedSpheres
  * \param param
  */
-void PS_SphereSegment::mergeSpheres(const QList<PS_SphereSegment *> &detectedSpheres, QList<PS_SphereSegment *> &mergedSpheres, PS_InputParameter param){
+void PS_SphereSegment::mergeSpheres(const QList<PS_SphereSegment *> &detectedSpheres, QList<PS_SphereSegment *> &mergedSpheres, const PS_InputParameter &param){
+
+    //qDebug() << "in merge";
 
     //distance of main focus of the points on one sphere to the centroid of the other sphere
     float dCentroid2FocusS1 = 0.0, dCentroid2FocusS2 = 0.0;
@@ -532,102 +728,151 @@ void PS_SphereSegment::mergeSpheres(const QList<PS_SphereSegment *> &detectedSph
 
     //for each sphere save its merged state
     QMap<int, bool> mergeMap;
-    for(int i = 0; i < detectedSpheres.size(); i++){
+    for(int i = 0; i < detectedSpheres.size(); ++i){
         mergeMap.insert(i, false);
     }
 
-    qDebug() << "numSpheres: " << detectedSpheres.size();
+    //qDebug() << "vor loop";
 
     //run through all detected spheres
-    for(int i = 0; i < detectedSpheres.size(); i++){
+    for(int i = 0; i < detectedSpheres.size(); ++i){
 
-        qDebug() << i;
+        //if the sphere at position i was merged before
+        if(mergeMap.value(i) == true){
+            continue;
+        }
+        mergeMap.insert(i, true); //set as merged
 
-        //if the sphere at position i was not merged before
-        if(mergeMap.value(i) == false){
+        PS_SphereSegment *s1 = detectedSpheres.at(i); //get the first sphere
 
-            mergeMap.insert(i, true); //set as merged
+        //qDebug() << "vor inner loop";
 
-            PS_SphereSegment *s1 = detectedSpheres.at(i); //get the first sphere
+        //compare all sphere's params and merge them if they fit together
+        for(int j = i+1; j < detectedSpheres.size(); ++j){
 
-            //compare all sphere's params and merge them if they fit together
-            for(int j = i+1; j < detectedSpheres.size(); j++){
+            //if the sphere at position j was merged before
+            if(mergeMap.value(j) == true){
+                continue;
+            }
 
-                //if the sphere at position j was not merged before
-                if(mergeMap.value(j) == false){
+            PS_SphereSegment *s2 = detectedSpheres.at(j); //get the second sphere
 
-                    PS_SphereSegment *s2 = detectedSpheres.at(j); //get the second sphere
+            dCentroid2FocusS1 = qSqrt( (s2->getXYZ()[0] - s1->getMainFocus()[0]) * (s2->getXYZ()[0] - s1->getMainFocus()[0])
+                    + (s2->getXYZ()[1] - s1->getMainFocus()[1]) * (s2->getXYZ()[1] - s1->getMainFocus()[1])
+                    + (s2->getXYZ()[2] - s1->getMainFocus()[2]) * (s2->getXYZ()[2] - s1->getMainFocus()[2]) );
+            dCentroid2FocusS2 = qSqrt( (s1->getXYZ()[0] - s2->getMainFocus()[0]) * (s1->getXYZ()[0] - s2->getMainFocus()[0])
+                    + (s1->getXYZ()[1] - s2->getMainFocus()[1]) * (s1->getXYZ()[1] - s2->getMainFocus()[1])
+                    + (s1->getXYZ()[2] - s2->getMainFocus()[2]) * (s1->getXYZ()[2] - s2->getMainFocus()[2]) );
 
-                    //TODO getXYZ etc. inline machen
+            //qDebug() << "vor condition";
 
-                    dCentroid2FocusS1 = qSqrt( (s2->getXYZ()[0] - s1->getMainFocus()[0]) * (s2->getXYZ()[0] - s1->getMainFocus()[0])
-                            + (s2->getXYZ()[1] - s1->getMainFocus()[1]) * (s2->getXYZ()[1] - s1->getMainFocus()[1])
-                            + (s2->getXYZ()[2] - s1->getMainFocus()[2]) * (s2->getXYZ()[2] - s1->getMainFocus()[2]) );
-                    dCentroid2FocusS2 = qSqrt( (s1->getXYZ()[0] - s2->getMainFocus()[0]) * (s1->getXYZ()[0] - s2->getMainFocus()[0])
-                            + (s1->getXYZ()[1] - s2->getMainFocus()[1]) * (s1->getXYZ()[1] - s2->getMainFocus()[1])
-                            + (s1->getXYZ()[2] - s2->getMainFocus()[2]) * (s1->getXYZ()[2] - s2->getMainFocus()[2]) );
+            //if the main focus of the points on one sphere is inside the other sphere
+            if(dCentroid2FocusS1 <= 2.0*s2->getRadius() || dCentroid2FocusS2 <= 2.0*s1->getRadius()){
 
-                    //if the main focus of the points on one sphere is inside the other sphere
-                    if(dCentroid2FocusS1 <= 2.0*s2->getRadius() || dCentroid2FocusS2 <= 2.0*s1->getRadius()){
+                PS_SphereSegment *mergedSphere = new PS_SphereSegment();
+                mergedSphere->setIsValid(true);
+                foreach(PS_Point_PC *myPoint, s1->getPoints()){
+                    myPoint->isUsed = false;
+                    mergedSphere->addPoint(myPoint);
+                }
+                foreach(PS_Point_PC *myPoint, s2->getPoints()){
+                    myPoint->isUsed = false;
+                    mergedSphere->addPoint(myPoint);
+                }
 
-                        PS_SphereSegment *mergedSphere = new PS_SphereSegment();
-                        mergedSphere->setIsValid(true);
-                        foreach(Point_PC *myPoint, s1->getPoints()){
-                            myPoint->isUsed = false;
-                            mergedSphere->addPoint(myPoint);
-                        }
-                        foreach(Point_PC *myPoint, s2->getPoints()){
-                            myPoint->isUsed = false;
-                            mergedSphere->addPoint(myPoint);
-                        }
+                if(dCentroid2FocusS1 < s2->getRadius()){
+                    mergedSphere->setApproximation(s2->getRadius(), s2->getXYZ()[0], s2->getXYZ()[1], s2->getXYZ()[2]);
+                }else{
+                    mergedSphere->setApproximation(s1->getRadius(), s1->getXYZ()[0], s1->getXYZ()[1], s1->getXYZ()[2]);
+                }
 
-                        if(dCentroid2FocusS1 < s2->getRadius()){
-                            mergedSphere->setApproximation(s2->getRadius(), s2->getXYZ()[0], s2->getXYZ()[1], s2->getXYZ()[2]);
-                        }else{
-                            mergedSphere->setApproximation(s1->getRadius(), s1->getXYZ()[0], s1->getXYZ()[1], s1->getXYZ()[2]);
-                        }
+                //qDebug() << "vor merge fit";
 
-                        //mergedSphere->fit();
-                        mergedSphere->fitBySample(param.fitSampleSize);
+                //fit sphere and sort out points that do not satisfy the distance criterion
+                mergedSphere->fitBySample(param.fitSampleSize * 10);
 
-                        //if the merged sphere's standard deviation is ok
-                        if(mergedSphere->getIsValid() && mergedSphere->getSigma() <= param.sphereParams.maxDistance
-                                && mergedSphere->getRadius() <= param.sphereParams.maxRadius
-                                && mergedSphere->getRadius() >= param.sphereParams.minRadius){
+                //qDebug() << "nach merge fit";
 
-                            //sort out points that do not satisfy the distance criterion and refit
-                            PS_SphereSegment::sortOut(mergedSphere, param);
-                            mergedSphere->fitBySample(param.fitSampleSize);
-                            //mergedSphere->fit();
+                PS_SphereSegment::sortOut(mergedSphere, param, 3);
+                //mergedSphere->fitBySample(param.fitSampleSize);
 
-                            if(mergedSphere->getIsValid() && mergedSphere->getPoints().size() >= param.sphereParams.minPoints){
+                //qDebug() << "vor final desision";
 
-                                //delete single spheres
-                                delete s1;
-                                delete s2;
+                //if the merged sphere's standard deviation is ok
+                if(mergedSphere->getIsValid() && mergedSphere->getSigma() <= param.sphereParams.maxDistance
+                        && mergedSphere->getRadius() <= param.sphereParams.maxRadius
+                        && mergedSphere->getRadius() >= param.sphereParams.minRadius
+                        && mergedSphere->getPoints().size() > s1->getPoints().size()
+                        && mergedSphere->getPoints().size() > s2->getPoints().size()){
 
-                                //set the sphere to be merged
-                                mergeMap.insert(j, true);
+                    //delete single spheres
+                    delete s1;
+                    delete s2;
 
-                                s1 = mergedSphere;
+                    //set the sphere to be merged
+                    mergeMap.insert(j, true);
 
-                            }else{
-                                delete mergedSphere;
-                            }
+                    s1 = mergedSphere;
 
-                        }else{
-                            delete mergedSphere;
-                        }
-
-                    }
-
+                }else{
+                    delete mergedSphere;
                 }
 
             }
 
-            //add the sphere to result list
-            mergedSpheres.append(s1);
+        }
 
+        //add the sphere to result list
+        mergedSpheres.append(s1);
+
+    }
+
+}
+
+/*!
+ * \brief PS_SphereSegment::reviewNodes
+ * Review all points of used nodes and try to add them to the sphere
+ * \param detectedSpheres
+ * \param param
+ */
+void PS_SphereSegment::reviewNodes(const QList<PS_SphereSegment *> &detectedSpheres, const PS_InputParameter &param){
+
+    bool pointsAdded = false;
+    int numAdded = 0; //number of added points
+
+    //list to save all unmerged points of each node
+    QList<PS_Point_PC *> unmergedPoints;
+
+    foreach(PS_SphereSegment *s, detectedSpheres){
+
+        //consider each node from which points were used for the sphere
+        foreach(PS_Node *n, s->getUsedNodes()){
+
+            //try to add points that were not added yet
+            n->getUnmergedPoints(unmergedPoints);
+            numAdded = PS_SphereSegment::checkPointsInSphere(s, unmergedPoints, param, 3);
+            QList<PS_Point_PC *> spherePoints = s->getPoints();
+            for(int i = 0; i < numAdded; ++i){
+                spherePoints.at(spherePoints.size()-1-i)->isUsed = true;
+            }
+
+            if(numAdded > 0){
+                pointsAdded = true;
+            }
+
+            //set node as merged
+            n->setWasConsideredInMerge(true);
+
+        }
+
+        if(pointsAdded){
+            //refit the sphere
+            //s->fitBySample(param.fitSampleSize);
+        }
+
+        //set all nodes as unconsidered in merge
+        foreach(PS_Node *n, s->getUsedNodes()){
+            n->setWasConsideredInMerge(false);
         }
 
     }
@@ -641,30 +886,28 @@ void PS_SphereSegment::mergeSpheres(const QList<PS_SphereSegment *> &detectedSph
  * \param mergedSpheres
  * \param param
  */
-void PS_SphereSegment::verifySpheres(const QList<PS_SphereSegment *> &detectedSpheres, QList<PS_SphereSegment *> &verifiedSpheres, PS_InputParameter param){
+void PS_SphereSegment::verifySpheres(const QList<PS_SphereSegment *> &detectedSpheres, QList<PS_SphereSegment *> &verifiedSpheres, const PS_InputParameter &param){
 
     //initialize variables
     double centroid[3]; //main focus of sphere points
-    vector<OiVec> crCoord; //centroid reduced coordinates
+    //vector<OiVec> crCoord; //centroid reduced coordinates
     int numPoints;
     double eVal; //smallest eigen-value
     double planeSigma; //sigma of a fitted plane
+    OiMat ata(3,3);
 
     foreach(PS_SphereSegment *sphere, detectedSpheres){
 
-        crCoord.clear();
+        //crCoord.clear();
 
-        numPoints = sphere->getPoints().size();
-
-        OiMat a(numPoints, 3); //a matrix
-        OiMat ata;
+        numPoints = sphere->getPointCount();
 
         //calc centroid of sphere points
         centroid[0] = 0.0;
         centroid[1] = 0.0;
         centroid[2] = 0.0;
-        for(unsigned int i = 0; i < numPoints; i++){
-            Point_PC *p = sphere->getPoints().at(i);
+        for(unsigned int i = 0; i < numPoints; ++i){
+            PS_Point_PC *p = sphere->getPoints().at(i);
             centroid[0] += p->xyz[0];
             centroid[1] += p->xyz[1];
             centroid[2] += p->xyz[2];
@@ -674,27 +917,30 @@ void PS_SphereSegment::verifySpheres(const QList<PS_SphereSegment *> &detectedSp
         centroid[2] = centroid[2] / (double)numPoints;
 
         //calc centroid reduced coordinates
-        for(unsigned int i = 0; i < numPoints; i++){
-            Point_PC *p = sphere->getPoints().at(i);
+        /*for(unsigned int i = 0; i < numPoints; ++i){
+            PS_Point_PC *p = sphere->getPoints().at(i);
             PS_SphereSegment::verify_xyz.setAt(0, p->xyz[0] - centroid[0]);
             PS_SphereSegment::verify_xyz.setAt(1, p->xyz[1] - centroid[1]);
             PS_SphereSegment::verify_xyz.setAt(2, p->xyz[2] - centroid[2]);
             crCoord.push_back( PS_SphereSegment::verify_xyz );
+        }*/
+
+        double value = 0.0;
+        for(int i = 0; i < 3; ++i){
+            for(int j = 0; j < 3; ++j){
+                value = 0.0;
+                for(unsigned int k = 0; k < numPoints; ++k){
+                    PS_Point_PC *p = sphere->getPoints().at(k);
+                    value += (p->xyz[i] - centroid[i]) * (p->xyz[j] - centroid[j]);
+                }
+                ata.setAt(i, j, value);
+            }
         }
 
-        //set up A matrix
-        for(int i = 0; i < numPoints; i++){
-            a.setAt(i, 0, crCoord.at(i).getAt(0));
-            a.setAt(i, 1, crCoord.at(i).getAt(1));
-            a.setAt(i, 2, crCoord.at(i).getAt(2));
-        }
-
-        //principal component analysis
-        ata = a.t() * a;
         ata.svd(PS_SphereSegment::verify_u, PS_SphereSegment::verify_d, PS_SphereSegment::verify_v);
 
         eVal = numeric_limits<double>::max();
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < 3; ++i){
             if(PS_SphereSegment::verify_d.getAt(i) < eVal){
                 eVal = PS_SphereSegment::verify_d.getAt(i);
             }
@@ -702,8 +948,9 @@ void PS_SphereSegment::verifySpheres(const QList<PS_SphereSegment *> &detectedSp
 
         planeSigma = qSqrt(eVal / (double)(numPoints - 3.0));
 
-        if( planeSigma > 3.0*param.sphereParams.maxDistance ){
+        if( 3.0 * planeSigma > sphere->getSigma()){//3.0*param.sphereParams.maxDistance ){
 
+            //qDebug() << "sigma plane " << planeSigma;
             verifiedSpheres.append(sphere);
 
         }else{
@@ -715,22 +962,6 @@ void PS_SphereSegment::verifySpheres(const QList<PS_SphereSegment *> &detectedSp
 }
 
 /*!
- * \brief SphereSegment::getRadius
- * \return
- */
-float PS_SphereSegment::getRadius(){
-    return this->mySphereState->radius;
-}
-
-/*!
- * \brief SphereSegment::getXYZ
- * \return
- */
-float *PS_SphereSegment::getXYZ(){
-    return this->mySphereState->xyz;
-}
-
-/*!
  * \brief SphereSegment::setApproximation
  * Set approximated sphere attributes manually to be able to fit the sphere
  * \param radius
@@ -738,7 +969,7 @@ float *PS_SphereSegment::getXYZ(){
  * \param y
  * \param z
  */
-void PS_SphereSegment::setApproximation(float radius, float x, float y, float z){
+void PS_SphereSegment::setApproximation(const float &radius, const float &x, const float &y, const float &z){
     this->mySphereState->radius = radius;
     this->mySphereState->xyz[0] = x;
     this->mySphereState->xyz[1] = y;

@@ -220,7 +220,7 @@ OiVec Helmert7Param::quaternion(OiMat n){
         OiMat v(4,4);
         OiVec s(4);
         n.svd(u, s, v);
-        q = u.getCol(3);
+        u.getCol(q, 3);
     }catch(runtime_error& e){
         svdError = true;
     }

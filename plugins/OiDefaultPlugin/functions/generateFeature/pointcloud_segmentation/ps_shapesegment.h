@@ -3,14 +3,15 @@
 
 #include <QList>
 #include <QtMath>
+#include <QtXml>
 
 #include "oivec.h"
 #include "oimat.h"
 
-#include "pointcloud.h"
-
 #include "ps_pointcloud.h"
 #include "ps_generalmath.h"
+#include "ps_point_pc.h"
+#include "ps_node.h"
 
 struct ShapeState{
 
@@ -35,7 +36,7 @@ struct ShapeState{
     bool isValid;
     float sigma; //variance factor
     float mainFocus[3]; //main focus of the points on the shape surface
-    QList<Point_PC *> myPoints; //points that define the shape
+    QList<PS_Point_PC *> myPoints; //points that define the shape
 
 };
 
@@ -47,31 +48,59 @@ public:
     virtual ~PS_ShapeSegment();
 
     virtual void fit() = 0;
-    virtual void fitBySample(unsigned int numPoints) = 0;
+    virtual void fitBySample(int numPoints) = 0;
 
-    virtual void minimumSolution(QList<Point_PC *> points) = 0;
+    virtual void minimumSolution(const QList<PS_Point_PC *> &points) = 0;
 
-    virtual bool writeToObj(QString filePath);
-    virtual bool writeToPts(QString filePath);
+    virtual bool writeToObj(const QString &filePath);
+    virtual bool writeToPts(const QString &filePath);
+    virtual bool writeToX3D(const QString &filePath) = 0;
 
-    QList<Point_PC *> getPoints();
-    void addPoint(Point_PC *p);
-    void removePoint(int index);
+    //! \brief Returns all points of the shape
+    inline const QList<PS_Point_PC *> &getPoints(){
+        return this->myState->myPoints;
+    }
+
+    //! \brief Returns the number of shape points
+    inline const unsigned int getPointCount(){
+        return this->myState->myPoints.size();
+    }
+
+    void addPoint(PS_Point_PC *p);
+    void removePoint(const int &index);
+    void removeUsedPoints();
     void removeAllPoints();
 
     void saveCurrentState();
     void fallBack();
 
-    bool getIsValid();
-    void setIsValid(bool isValid);
+    //! \brief Returns the current state of the shape
+    inline bool getIsValid(){
+        return this->myState->isValid;
+    }
+    void setIsValid(const bool &isValid);
 
-    float getSigma();
+    //! \brief Returns the sigma value of the shape
+    inline float getSigma() const{
+        return this->myState->sigma;
+    }
 
-    float *getMainFocus();
+    //! \brief Returns the main focus of the shape points
+    inline float *getMainFocus() const{
+        return this->myState->mainFocus;
+    }
+
+    //! \brief Returns all nodes used in merging step
+    inline const QList<PS_Node *> &getUsedNodes() const{
+        return this->usedNodes;
+    }
+    void addUsedNode(PS_Node *n);
 
 protected:
     ShapeState *myState; //current state of the plane
     ShapeState *myOldState; //old parameters of the plane to be able to reset the current solution to the last one
+
+    QList<PS_Node *> usedNodes; //nodes from which points were used for this shape
 
 };
 

@@ -5,7 +5,9 @@
 #-------------------------------------------------
 
 QT       += gui
+QT += widgets
 QT += serialport
+QT += xml
 
 TEMPLATE = lib
 TARGET = $$qtLibraryTarget(p_defaultPlugin)
@@ -155,7 +157,9 @@ SOURCES += p_factory.cpp \
     functions/generateFeature/pointcloud_segmentation/ps_planesegment.cpp \
     functions/generateFeature/pointcloud_segmentation/ps_pointcloud.cpp \
     functions/generateFeature/pointcloud_segmentation/ps_shapesegment.cpp \
-    functions/generateFeature/pointcloud_segmentation/ps_spheresegment.cpp
+    functions/generateFeature/pointcloud_segmentation/ps_spheresegment.cpp \
+    functions/generateFeature/pointcloud_segmentation/ps_point_pc.cpp \
+    functions/generateFeature/ps_loadingdialog.cpp
 
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
@@ -268,6 +272,11 @@ HEADERS += p_factory.h \
     functions/generateFeature/pointcloud_segmentation/ps_planesegment.h \
     functions/generateFeature/pointcloud_segmentation/ps_pointcloud.h \
     functions/generateFeature/pointcloud_segmentation/ps_shapesegment.h \
-    functions/generateFeature/pointcloud_segmentation/ps_spheresegment.h
+    functions/generateFeature/pointcloud_segmentation/ps_spheresegment.h \
+    functions/generateFeature/pointcloud_segmentation/ps_point_pc.h \
+    functions/generateFeature/ps_loadingdialog.h
 
 OTHER_FILES += metaInfo.json
+
+FORMS += \
+    functions/generateFeature/ps_loadingdialog.ui

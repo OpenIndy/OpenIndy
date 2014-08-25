@@ -4,17 +4,27 @@
 #include <QList>
 #include <vector>
 
-#include <ctime>
-
-#include "pointcloud.h"
-
 #include "ps_node.h"
+#include "ps_point_pc.h"
+
+struct PS_BoundingBox_PC;
 
 struct NodeSorter
 {
     inline bool operator() (const PS_Node* node1, const PS_Node* node2)
     {
-        return (node1->points.size() > node2->points.size());
+        int v1 = node1->points.size(), v2 = node2->points.size();
+        if(node1->depth - node2->depth > 0){
+            for(int i = 0; i < node1->depth - node2->depth; i++){
+                v1 = v1 * 8;
+            }
+        }else if(node1->depth - node2->depth < 0){
+            for(int i = 0; i < node2->depth - node1->depth; i++){
+                v2 = v2 * 8;
+            }
+        }
+        return (v1 > v2);
+        //return (node1->points.size() > node2->points.size());
     }
 };
 
@@ -25,7 +35,7 @@ class PS_Octree
 public:
     PS_Octree();
 
-    bool setUp(vector<Point_PC*> *points, BoundingBox_PC *boundingBox, unsigned int minPoints);
+    bool setUp(vector<PS_Point_PC*> *points, PS_BoundingBox_PC *boundingBox, unsigned int minPoints);
     bool clear();
     bool getIsValid();
 
@@ -41,9 +51,9 @@ private:
     bool isValid; //true if octree was set up successfully
 
     unsigned int minPoints;
-    BoundingBox_PC *myBoundingBox;
+    PS_BoundingBox_PC *myBoundingBox;
     double dx, dy, dz;
-    vector<Point_PC*> *myPoints;
+    vector<PS_Point_PC*> *myPoints;
 
     void computeNode(PS_Node *node);
     void computeOuterNeighbours(PS_Node *node);

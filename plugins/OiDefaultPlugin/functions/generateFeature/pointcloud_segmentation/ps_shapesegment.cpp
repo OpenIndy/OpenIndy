@@ -14,7 +14,7 @@ PS_ShapeSegment::~PS_ShapeSegment()
  * \param filePath
  * \return
  */
-bool PS_ShapeSegment::writeToObj(QString filePath){
+bool PS_ShapeSegment::writeToObj(const QString &filePath){
 
     QFile file( filePath );
     if ( file.open(QIODevice::ReadWrite | QIODevice::Truncate) ){
@@ -41,7 +41,7 @@ bool PS_ShapeSegment::writeToObj(QString filePath){
  * \param filePath
  * \return
  */
-bool PS_ShapeSegment::writeToPts(QString filePath){
+bool PS_ShapeSegment::writeToPts(const QString &filePath){
 
     int r = 0;
     int g = 0;
@@ -74,20 +74,11 @@ bool PS_ShapeSegment::writeToPts(QString filePath){
 }
 
 /*!
- * \brief ShapeSegment::getPoints
- * Returns all points of the shape
- * \return
- */
-QList<Point_PC *> PS_ShapeSegment::getPoints(){
-    return this->myState->myPoints;
-}
-
-/*!
  * \brief ShapeSegment::addPoint
  * Adds a point to the shape
  * \param p
  */
-void PS_ShapeSegment::addPoint(Point_PC *p){
+void PS_ShapeSegment::addPoint(PS_Point_PC *p){
     this->myState->myPoints.append(p);
 }
 
@@ -96,8 +87,22 @@ void PS_ShapeSegment::addPoint(Point_PC *p){
  * Removes the point at the specified index from the shape
  * \param index
  */
-void PS_ShapeSegment::removePoint(int index){
+void PS_ShapeSegment::removePoint(const int &index){
     this->myState->myPoints.removeAt(index);
+}
+
+/*!
+ * \brief PS_ShapeSegment::removeUsedPoints
+ * Remove all points which are already used by another shape
+ */
+void PS_ShapeSegment::removeUsedPoints(){
+    QList<PS_Point_PC *> unusedPoints;
+    foreach(PS_Point_PC *p, this->myState->myPoints){
+        if(!p->isUsed){
+            unusedPoints.append(p);
+        }
+    }
+    this->myState->myPoints = unusedPoints;
 }
 
 /*!
@@ -129,36 +134,18 @@ void PS_ShapeSegment::fallBack(){
 }
 
 /*!
- * \brief ShapeSegment::getIsValid
- * Returns true if the shape is valid, otherwise false
- * \return
- */
-bool PS_ShapeSegment::getIsValid(){
-    return this->myState->isValid;
-}
-
-/*!
  * \brief ShapeSegment::setIsValid
  * Sets the state of the shape to isValid
  * \param isValid
  */
-void PS_ShapeSegment::setIsValid(bool isValid){
+void PS_ShapeSegment::setIsValid(const bool &isValid){
     this->myState->isValid = isValid;
 }
 
 /*!
- * \brief ShapeSegment::getSigma
- * Returns the sigma value of the shape
- * \return
+ * \brief PS_ShapeSegment::addUsedNode
+ * \param n
  */
-float PS_ShapeSegment::getSigma(){
-    return this->myState->sigma;
-}
-
-/*!
- * \brief PS_ShapeSegment::getMainFocus
- * \return
- */
-float *PS_ShapeSegment::getMainFocus(){
-    return this->myState->mainFocus;
+void PS_ShapeSegment::addUsedNode(PS_Node *n){
+    this->usedNodes.append(n);
 }

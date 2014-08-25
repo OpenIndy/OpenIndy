@@ -13,19 +13,24 @@
 #include <QThread>
 #include <QObject>
 #include <vector>
+#include <QDateTime>
 
 #include <string>
 #include <sstream>
 
 #include <ctime>
 
-#include "pointcloud.h"
-
 #include "ps_octree.h"
+#include "ps_point_pc.h"
 
 class PS_PlaneSegment;
 class PS_SphereSegment;
 class PS_CylinderSegment;
+
+struct PS_BoundingBox_PC{
+    float min[3];
+    float max[3];
+};
 
 //! special input parameter only for plane detection
 struct PlaneParameter{
@@ -56,8 +61,8 @@ struct CylinderParameter{
 struct PS_InputParameter{
     unsigned int leafSize; //maximum number of points in one leaf-voxel
     float outlierPercentage; //estimated percentage of outlier points in a leaf voxel (between 0.0 and 1.0)
-    unsigned int fitSampleSize; //number of points used to fit a shape (fitBySample)
-    bool forceProximity; //true if only voxel of nearly the same size shall be merged, false if the size does not matter
+    float fitSampleSize; //percentage of points of a shape used to fit it by sample
+    bool finalFit; //true if all detected shapes shall be fit at the end using all points
     PlaneParameter planeParams; //special plane parameter
     SphereParameter sphereParams; //special sphere parameter
     CylinderParameter cylinderParams; //special cylinder parameter
@@ -65,25 +70,33 @@ struct PS_InputParameter{
 
 using namespace std;
 
-class PS_PointCloud // : public QObject
+class PS_PointCloud : public QObject
 {
 
-    //Q_OBJECT
+    Q_OBJECT
 public:
-    PS_PointCloud();
+    PS_PointCloud(QObject *parent = NULL);
+    PS_PointCloud (const PS_PointCloud &copy);
+    PS_PointCloud &operator=(const PS_PointCloud &copy);
 
     bool loadPointCloud(QString fileName);
+    bool setCloud(vector<PS_Point_PC *> *myPoints, PS_BoundingBox_PC bbox, unsigned long numPoints);
     bool setUpOctree(PS_InputParameter param);
     bool detectShapes(PS_InputParameter param);
 
-/*signals:
-    void parseLine(QString line);*/
+    const QList<PS_PlaneSegment *> &getDetectedPlanes();
+    const QList<PS_SphereSegment *> &getDetectedSpheres();
+    const QList<PS_CylinderSegment *> &getDetectedCylinders();
+
+signals:
+    void parseLine(QString line);
+    void updateStatus(QString msg, int status);
 
 private:
     clock_t c1;
+    vector<PS_Point_PC *> *myPoints;
 
-    vector<Point_PC *> *myPoints;
-    BoundingBox_PC myBoundingBox;
+    PS_BoundingBox_PC myBoundingBox;
     unsigned long num_points;
 
     PS_Octree *myOctree;
@@ -92,15 +105,21 @@ private:
     QList<PS_SphereSegment *> detectedSpheres;
     QList<PS_CylinderSegment *> detectedCylinders;
 
-    void considerNeighbourNodes(PS_Node *n, PS_InputParameter param, PS_PlaneSegment *p);
-    void considerNeighbourNodes(PS_Node *n, PS_InputParameter param, PS_SphereSegment *s);
-    void considerNeighbourNodes(PS_Node *n, PS_InputParameter param, PS_CylinderSegment *c);
+    void considerNeighbourNodes(PS_Node *n, const PS_InputParameter &param, PS_PlaneSegment *p, QList<PS_Point_PC *> &unmergedPoints);
+    void considerNeighbourNodes(PS_Node *n, const PS_InputParameter &param, PS_SphereSegment *s, QList<PS_Point_PC *> &unmergedPoints);
+    void considerNeighbourNodes(PS_Node *n, const PS_InputParameter &param, PS_CylinderSegment *c, QList<PS_Point_PC *> &unmergedPoints);
 
-    void mergeNode(PS_Node *n, PS_InputParameter param, PS_PlaneSegment *p);
-    void mergeNode(PS_Node *n, PS_InputParameter param, PS_SphereSegment *s);
-    void mergeNode(PS_Node *n, PS_InputParameter param, PS_CylinderSegment *c);
+    bool mergeNode(PS_Node *n, const PS_InputParameter &param, PS_PlaneSegment *p, QList<PS_Point_PC *> &unmergedPoints);
+    bool mergeNode(PS_Node *n, const PS_InputParameter &param, PS_SphereSegment *s, QList<PS_Point_PC *> &unmergedPoints);
+    bool mergeNode(PS_Node *n, const PS_InputParameter &param, PS_CylinderSegment *c, QList<PS_Point_PC *> &unmergedPoints);
+
+    void acceptShapeCandidates(PS_PlaneSegment *p, PS_SphereSegment *s, PS_CylinderSegment *c, unsigned long &numUsedPoints, const PS_InputParameter &param);
+
+    void printOutput(QString filePath, double processingTime, PS_InputParameter param);
 
     static QList<PS_Node *> mergedNodes; //save all merged nodes temporarily to be able to set them as unmerged in each iteration
+
+    QString filePath;
 
 };
 

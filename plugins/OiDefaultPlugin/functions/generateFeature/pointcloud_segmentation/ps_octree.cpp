@@ -16,7 +16,7 @@ PS_Octree::PS_Octree()
  * \param minPoints
  * \return
  */
-bool PS_Octree::setUp(vector<Point_PC *> *points, BoundingBox_PC *boundingBox, unsigned int minPoints){
+bool PS_Octree::setUp(vector<PS_Point_PC *> *points, PS_BoundingBox_PC *boundingBox, unsigned int minPoints){
     if(points != NULL && points->size() > 0){
 
         clock_t c1 = clock();
@@ -166,7 +166,7 @@ void PS_Octree::computeNode(PS_Node *node){
         mx = node->position[0];
         my = node->position[1];
         mz = node->position[2];
-        foreach(Point_PC *myPoint, node->points){
+        foreach(PS_Point_PC *myPoint, node->points){
             if(myPoint != NULL){
                 if(myPoint->xyz[0] <= mx && myPoint->xyz[1] <= my && myPoint->xyz[2] <= mz){
                     node->children[0]->points.push_back(myPoint);

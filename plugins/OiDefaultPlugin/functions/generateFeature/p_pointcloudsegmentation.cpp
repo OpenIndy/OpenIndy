@@ -9,9 +9,27 @@ PluginMetaData* PointCloudSegmentation::getMetaData(){
     metaData->name = "PointCloudSegmentation";
     metaData->pluginName = "OpenIndy Default Plugin";
     metaData->author = "Benedikt Rauls";
-    metaData->description = QString("%1 %2")
-            .arg("This function segments a pointcloud.")
-            .arg("It is able to detect planes, spheres and/or cylinders based on the given input parameters.");
+    metaData->description = QString("%1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20")
+    .arg("This function segments a pointcloud.")
+    .arg("It is able to detect planes, spheres and/or cylinders based on the given input parameters.")
+    .arg("<br><br> <u>parameter description:</u> <br>")
+    .arg("<b>leafSize:</b> Maximum number of points in a leaf voxel.")
+    .arg("<b>fitSampleSize:</b> Number of points to fit a geometry during region growing.")
+    .arg("<b>minPointsPlane:</b> Minimum number of points in a plane.")
+    .arg("<b>minPointsSphere:</b> Minimum number of points in a sphere.")
+    .arg("<b>minPointsCylinder:</b> Minimum number of points in a cylinder.")
+    .arg("<b>maxDistancePlane:</b> Maximum distance of a point from a plane.")
+    .arg("<b>maxDistanceSphere:</b> Maximum distance of a point from a sphere.")
+    .arg("<b>maxDistanceCylinder:</b> Maximum distance of a point from a cylinder.")
+    .arg("<b>minRadiusSphere:</b> Minimum radius of a sphere.")
+    .arg("<b>maxRadiusSphere:</b> Maximum radius of a sphere.")
+    .arg("<b>minRadiusCylinder:</b> Minimum radius of a cylinder.")
+    .arg("<b>maxRadiusCylinder:</b> Maximum radius of a cylinder.")
+    .arg("<b>detectPlanes:</b> Defines wether the algorithm shall detect planes.")
+    .arg("<b>detectPlanes:</b> Defines wether the algorithm shall detect spheres.")
+    .arg("<b>detectPlanes:</b> Defines wether the algorithm shall detect cylinders.")
+    .arg("<b>finalFit:</b> Defines wether the extracted geometries shall be fit using all points.")
+    .arg("<b>outlierPercentage:</b> Estimated proportion of outliers in a leaf voxel.");
     metaData->iid = "de.openIndy.Plugin.Function.GenerateFeatureFunction.v001";
     return metaData;
 }
@@ -48,7 +66,7 @@ QMap<QString, int> PointCloudSegmentation::getIntegerParameter(){
 
     /* number of pointcloud-points that will be used to fit a shape
     (has no influence on the final fit after all shapes were detected) */
-    intParams.insert("fitSampleSize", 20);
+    intParams.insert("fitSampleSize", 50);
 
     //minimum number of pointcloud-points a shape has to contain to be detected (differences possible for each shape-type)
     intParams.insert("minPointsPlane", 1000);
@@ -111,9 +129,8 @@ QMap<QString, QStringList> PointCloudSegmentation::getStringParameter(){
     stringParams.insert("detectSpheres", myBoolOptions);
     stringParams.insert("detectCylinders", myBoolOptions);
 
-    /* if true only voxel of similar size will be considered in region growing process, so that
-    the proximity of shape-points is guaranteed. False ignores voxel-sizes */
-    stringParams.insert("forceProximity", myBoolOptions);
+    //finally fit the detected geometries
+    stringParams.insert("finalFit", myBoolOptions);
 
     /*estimated percentage of outlier points in a leaf-voxel (between 0.1 and 0.9)
     0.1 means that most of the points in one leaf-voxel belong to the same shape and therefor nearly every
@@ -137,6 +154,86 @@ bool PointCloudSegmentation::exec(PointCloud &p){
         //check if there are some points so that segmentation does make sense
         if(p.getPointCount() > 10){
 
+            PS_PointCloud myCloud;
+
+            vector<PS_Point_PC*> *myPoints = new vector<PS_Point_PC*>;
+            foreach(Point_PC *poi, p.getPointCloudPoints()){
+                PS_Point_PC *nPoi = new PS_Point_PC();
+                nPoi->isUsed = false;
+                nPoi->xyz[0] = poi->xyz[0];
+                nPoi->xyz[1] = poi->xyz[1];
+                nPoi->xyz[2] = poi->xyz[2];
+                myPoints->push_back(nPoi);
+            }
+
+            PS_BoundingBox_PC bbox;
+            bbox.max[0] = p.getBoundingBox().max[0];
+            bbox.max[1] = p.getBoundingBox().max[1];
+            bbox.max[2] = p.getBoundingBox().max[2];
+            bbox.min[0] = p.getBoundingBox().min[0];
+            bbox.min[1] = p.getBoundingBox().min[1];
+            bbox.min[2] = p.getBoundingBox().min[2];
+
+            unsigned long numPoints = p.getPointCount();
+
+            bool checkLoad = myCloud.setCloud(myPoints, bbox, numPoints);
+
+            //if successfully retrieved the point cloud data
+            if(checkLoad){
+
+                /*
+                 * get the user defined parameters
+                 */
+
+                FunctionConfiguration userConfig = this->getFunctionConfiguration();
+                QMap<QString, QString> stringParams = userConfig.stringParameter;
+                QMap<QString, int> intParams = userConfig.intParameter;
+                QMap<QString, double> doubleParams = userConfig.doubleParameter;
+
+                //special plane, sphere and cylinder parameter
+                PlaneParameter pParam;
+                pParam.detectPlanes = stringParams.value("detectPlanes").compare("false");
+                pParam.maxDistance = doubleParams.value("maxDistancePlane");
+                pParam.minPoints = intParams.value("minPointsPlane");
+                SphereParameter sParam;
+                sParam.detectSpheres = stringParams.value("detectSpheres").compare("false");
+                sParam.maxDistance = doubleParams.value("maxDistanceSphere");
+                sParam.maxRadius = doubleParams.value("maxRadiusSphere");
+                sParam.minRadius = doubleParams.value("minRadiusSphere");
+                sParam.minPoints = intParams.value("minPointsSphere");
+                CylinderParameter cParam;
+                cParam.detectCylinders = stringParams.value("detectCylinders").compare("false");
+                cParam.maxDistance = doubleParams.value("maxDistanceCylinder");
+                cParam.maxRadius = doubleParams.value("maxRadiusCylinder");
+                cParam.minRadius = doubleParams.value("minRadiusCylinder");
+                cParam.minPoints = intParams.value("minPointsCylinder");
+
+                //set parameter for the segmentation algorithm
+                PS_InputParameter param;
+                param.leafSize = intParams.value("leafSize");
+                param.outlierPercentage = stringParams.value("outlierPercentage").toDouble();
+                qDebug() << "outlierper " << param.outlierPercentage;
+                param.fitSampleSize = 50; intParams.value("fitSampleSize");
+                param.finalFit = stringParams.value("finalFit").compare("false");
+                param.planeParams = pParam;
+                param.sphereParams = sParam;
+                param.cylinderParams = cParam;
+
+                this->myHandler = new SegmentationConsumer(p);
+                this->myHandler->startSegmentationTask(myCloud, param);
+
+                /*//set up the octree for the pointcloud
+                myCloud.setUpOctree(param);
+
+                //call method to detect shapes in the pointcloud
+                myCloud.detectShapes(param);*/
+
+            }else{
+                this->writeToConsole("Point cloud data cannot be retrieved");
+                return false;
+            }
+
+            this->writeToConsole("Point cloud segmentation successfully started");
             return true;
 
         }else{

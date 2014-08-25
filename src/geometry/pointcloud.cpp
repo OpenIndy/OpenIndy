@@ -102,6 +102,8 @@ bool PointCloud::addSegment(FeatureWrapper *segment){
         }
     }
 
+    segment->getGeometry()->setNominalSystem(this->myNominalCoordSys);
+
     this->detectedSegments.append(segment);
 
     emit this->pcSegmentAdded(segment);

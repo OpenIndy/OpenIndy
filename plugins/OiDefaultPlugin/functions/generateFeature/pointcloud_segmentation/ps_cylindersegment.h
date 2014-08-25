@@ -5,14 +5,14 @@
 #include <QtMath>
 #include <string>
 #include <limits>
+#include <math.h>
 
 #include "oivec.h"
 #include "oimat.h"
 
-#include "pointcloud.h"
-
 #include "ps_pointcloud.h"
 #include "ps_generalmath.h"
+#include "ps_point_pc.h"
 #include "ps_shapesegment.h"
 
 //! \brief cylinder specific attributes
@@ -67,22 +67,44 @@ public:
     PS_CylinderSegment();
     ~PS_CylinderSegment();
 
+    bool writeToX3D(const QString &filePath);
+
     void fit();
-    void fitBySample(unsigned int numPoints);
+    void fitBySample(int numPoints);
 
-    void minimumSolution(QList<Point_PC *> points);
+    void minimumSolution(const QList<PS_Point_PC *> &points);
 
-    float getRadius();
-    float *getXYZ();
-    float getAlpha();
-    float getBeta();
+    //! \brief Returns the radius of the cylinder
+    inline float getRadius() const{
+        return this->myCylinderState->radius;
+    }
 
-    void setApproximation(float alpha, float beta, float radius, float x, float y); //set values by hand
+    //! \brief Returns a point on the cylinder axis after rotation (z = 0)
+    inline float *getXYZ() const{
+        return this->myCylinderState->xyz;
+    }
 
-    static PS_CylinderSegment *detectCylinder(QList<Point_PC*> points, PS_InputParameter param);
-    static int checkPointsInCylinder(PS_CylinderSegment *myCylinder, QList<Point_PC*> myPoints, PS_InputParameter param, int toleranceFactor); //check wether a point is in the given cylinder
-    static void sortOut(PS_CylinderSegment *myCylinder, PS_InputParameter param);
-    static void mergeCylinders(const QList<PS_CylinderSegment *> &detectedCylinders, QList<PS_CylinderSegment *> &mergedCylinders, PS_InputParameter param);
+    //! \brief Returns the rotation angle around the x axis
+    inline float getAlpha() const{
+        return this->myCylinderState->alpha;
+    }
+
+    //! \brief Returns the rotation angle around the y axis
+    inline float getBeta() const{
+        return this->myCylinderState->beta;
+    }
+
+    void getX0(float *x0) const;
+    void getIJK(float *ijk) const;
+
+    void setApproximation(const float &alpha, const float &beta, const float &radius, const float &x, const float &y); //set values by hand
+
+    static PS_CylinderSegment *detectCylinder(const QList<PS_Point_PC*> &points, const PS_InputParameter &param);
+    static int checkPointsInCylinder(PS_CylinderSegment *myCylinder, const QList<PS_Point_PC*> &myPoints, const PS_InputParameter &param, const int &toleranceFactor); //check wether a point is in the given cylinder
+    static void sortOut(PS_CylinderSegment *myCylinder, const PS_InputParameter &param, const int &toleranceFactor);
+    static void mergeCylinders(const QList<PS_CylinderSegment *> &detectedCylinders, QList<PS_CylinderSegment *> &mergedCylinders, const PS_InputParameter &param);
+    static void reviewNodes(const QList<PS_CylinderSegment *> &detectedCylinders, const PS_InputParameter &param);
+    static void verifyCylinders(const QList<PS_CylinderSegment *> &detectedCylinders, QList<PS_CylinderSegment *> &verifiedCylinders, const PS_InputParameter &param);
 
 private:
 
@@ -104,6 +126,11 @@ private:
     static OiMat u;
     static OiVec d;
     static OiMat v;
+
+    //cylinder verification
+    static OiMat verify_u;
+    static OiMat verify_v;
+    static OiVec verify_d;
 
     //current cylinder state pointer to access special cylinder attributes
     CylinderState *myCylinderState;

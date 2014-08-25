@@ -95,12 +95,15 @@ void ProjectInPlane::projectPoint(Point &point, Plane *plane){
     x_point.setAt(0, point.xyz.getAt(0));
     x_point.setAt(1, point.xyz.getAt(1));
     x_point.setAt(2, point.xyz.getAt(2));
-    double d = OiVec::dot(x_plane, n0); //distance plane from origin
+    double d;
+    OiVec::dot(d, x_plane, n0); //distance plane from origin
     if(d < 0.0){
         n0 = -1.0 * n0;
         d = -d;
     }
-    double s = OiVec::dot(x_point, n0) - d; //distance point from plane
+    double s;
+    OiVec::dot(s, x_point, n0);
+    s = s- d; //distance point from plane
     //project point in plane
     x_point = x_point - s * n0;
     x_point.add(1.0);

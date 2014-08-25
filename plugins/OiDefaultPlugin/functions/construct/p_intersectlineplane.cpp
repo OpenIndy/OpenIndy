@@ -98,8 +98,12 @@ bool IntersectLinePlane::setUpResult(Point &point){
                 p_x0.setAt(i, plane->xyz.getAt(i));
             }
             OiVec p_n0 = p_n.normalize(); //normalized normal vector for plane
-            double d = OiVec::dot(p_x0, p_n0); //distance plane to origin
-            double lamda = (d - OiVec::dot(l_x0, p_n0)) / (OiVec::dot(l_v, p_n0));
+            double d = 0.0; //distance plane to origin
+            OiVec::dot(d, p_x0, p_n0);
+            double h1, h2;
+            OiVec::dot(h1, l_x0, p_n0);
+            OiVec::dot(h2, l_v, p_n0);
+            double lamda = (d - h1) / (h2);
             OiVec s = l_x0 + lamda * l_v;
             //set result
             s.add(1.0);
@@ -146,7 +150,8 @@ bool IntersectLinePlane::checkElementCount(){
  */
 bool IntersectLinePlane::isIntersection(Line *l, Plane *p){
     //scalar product of the lines's direction vector and the plane's normal vector
-    double sp = OiVec::dot(l->ijk, p->ijk);
+    double sp;
+    OiVec::dot(sp, l->ijk, p->ijk);
     if(sp > 0.0001 || sp < -0.0001){
         return true;
     }

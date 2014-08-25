@@ -10,8 +10,8 @@ PS_GeneralMath::PS_GeneralMath()
  * \param k
  * \return
  */
-unsigned long PS_GeneralMath::computeBinomialCoefficient(unsigned int n, unsigned int k){
-    unsigned long bc = 0.0;
+unsigned long long PS_GeneralMath::computeBinomialCoefficient(const unsigned int &n, const unsigned int &k){
+    unsigned long long bc = 0.0;
 
     if(k == 0){
         bc = 1;

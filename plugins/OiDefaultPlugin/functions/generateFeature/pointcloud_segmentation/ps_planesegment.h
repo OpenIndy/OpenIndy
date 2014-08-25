@@ -3,14 +3,14 @@
 
 #include <QList>
 #include <QtMath>
+#include <math.h>
 
 #include "oivec.h"
 #include "oimat.h"
 
-#include "pointcloud.h"
-
 #include "ps_pointcloud.h"
 #include "ps_generalmath.h"
+#include "ps_point_pc.h"
 #include "ps_shapesegment.h"
 
 //! \brief plane specific attributes
@@ -59,18 +59,28 @@ public:
     PS_PlaneSegment();
     ~PS_PlaneSegment();
 
+    bool writeToX3D(const QString &filePath);
+
     void fit();
-    void fitBySample(unsigned int numPoints);
+    void fitBySample(int numPoints);
 
-    void minimumSolution(QList<Point_PC *> points);
+    void minimumSolution(const QList<PS_Point_PC *> &points);
 
-    float getDistance();
-    float *getIJK();
+    //! \brief Returns the smallest normal distance of the plane from the origin
+    inline float getDistance() const{
+        return this->myPlaneState->d;
+    }
 
-    static PS_PlaneSegment *detectPlane(QList<Point_PC*> points, PS_InputParameter param);
-    static int checkPointsInPlane(PS_PlaneSegment *myPlane, QList<Point_PC*> myPoints, PS_InputParameter param, int toleranceFactor); //check wether a point is in the given plane
-    static void sortOut(PS_PlaneSegment *myPlane, PS_InputParameter param);
-    static void mergePlanes(const QList<PS_PlaneSegment *> &detectedPlanes, QList<PS_PlaneSegment *> &mergedPlanes, PS_InputParameter param);
+    //! \brief Returns the unit normal vector of the plane
+    inline float *getIJK() const{
+        return this->myPlaneState->n0;
+    }
+
+    static PS_PlaneSegment *detectPlane(const QList<PS_Point_PC*> &points, const PS_InputParameter &param);
+    static int checkPointsInPlane(PS_PlaneSegment *myPlane, const QList<PS_Point_PC*> &myPoints, const PS_InputParameter &param, const int &toleranceFactor); //check wether a point is in the given plane
+    static void sortOut(PS_PlaneSegment *myPlane, const PS_InputParameter &param, const int &toleranceFactor);
+    static void mergePlanes(const QList<PS_PlaneSegment *> &detectedPlanes, QList<PS_PlaneSegment *> &mergedPlanes, const PS_InputParameter &param);
+    static void reviewNodes(const QList<PS_PlaneSegment *> &detectedPlanes, const PS_InputParameter &param);
 
 private:
 
@@ -79,6 +89,8 @@ private:
     static OiMat v;
     static OiVec d;
     static OiVec n0;
+    static OiMat ata;
+    //static OiVec xyz;
 
     //current plane state pointer to access special plane attributes
     PlaneState *myPlaneState;

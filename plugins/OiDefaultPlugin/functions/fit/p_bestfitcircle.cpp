@@ -217,7 +217,9 @@ bool BestFitCircle::exec(Circle &circle) {
         // Statistik
         Statistic myStats = circle.getStatistic();
         myStats.s0_apriori     = 1.0;
-        myStats.s0_aposteriori = (obsCount-6) > 0 ? sqrt(OiVec::dot(v,v)/(obsCount-6)) : 1.0;
+        double vv;
+        OiVec::dot(vv, v,v);
+        myStats.s0_aposteriori = (obsCount-6) > 0 ? sqrt(vv/(obsCount-6)) : 1.0;
 
         circle.xyz.setAt(0, xc);
         circle.xyz.setAt(1, yc);

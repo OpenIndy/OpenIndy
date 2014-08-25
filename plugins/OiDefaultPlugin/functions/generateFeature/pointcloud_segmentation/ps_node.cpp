@@ -27,21 +27,14 @@ PS_Node::PS_Node()
  * Returns true if all points of this node were considered in current merging step otherwise false
  * \return
  */
-bool PS_Node::getWasConsideredInMerge(){
-    /*if(this->consideredInMerge){
-        return this->consideredInMerge;
-    }else{
-        if(this->isLeaf){
-
-        }
-    }*/
+/*bool PS_Node::getWasConsideredInMerge(){
     return this->consideredInMerge;
-}
+}*/
 
 /*!
  * \brief Node::setWasConsideredInMerge
  */
-void PS_Node::setWasConsideredInMerge(bool state){
+void PS_Node::setWasConsideredInMerge(const bool &state){
     this->consideredInMerge = state;
 
     if(state == true){ //set parent as considered in merge if all its subnodes were considered in merge
@@ -71,11 +64,6 @@ void PS_Node::setWasConsideredInMerge(bool state){
 
     }else{ //set all children of this node to not have been considered in merge
 
-
-        //TODO reset parent and children to not have been considered in merge so that by saving a list of merged
-        //node in the mergin step and afterwards setting all the nodes considerdInMerge(false) all nodes are false
-        //and the octree must not be traversed completely
-
         //set parent to not have been considered in merge
         if(this->parent != NULL && this->parent->getWasConsideredInMerge()){
             this->parent->setWasConsideredInMerge(false);
@@ -94,40 +82,111 @@ void PS_Node::setWasConsideredInMerge(bool state){
 }
 
 /*!
- * \brief Node::getWasConsideredAsSeed
- *  Returns true if this node has been considered as seed
- * \return
- */
-bool PS_Node::getWasConsideredAsSeed(){
-    return this->consideredAsSeed;
-}
-
-/*!
  * \brief Node::setWasConsideredAsSeed
  */
-void PS_Node::setWasConsideredAsSeed(bool state){
+void PS_Node::setWasConsideredAsSeed(const bool &state){
     this->consideredAsSeed = state;
 }
 
-QList<Point_PC *> PS_Node::getUnusedPoints(){
-    QList<Point_PC *> result;
+/*!
+ * \brief PS_Node::getUnusedPoints
+ * Returns a list of all points that are not used for another shape
+ * \param result
+ */
+void PS_Node::getUnusedPoints(QList<PS_Point_PC *> &result) const{
+    if(result.size() != 0){
+        result.clear();
+    }
     for(int i = 0; i < this->points.size(); i++){
-        Point_PC *p = this->points.at(i);
+        PS_Point_PC *p = this->points.at(i);
         if(!p->isUsed){
             result.append(p);
         }
     }
-    return result;
 }
 
-int PS_Node::getUnusedPointsCount()
-{
-    int result = 0;
-    for(int i = 0; i < this->points.size(); i++){
-        Point_PC *p = this->points.at(i);
+/*!
+ * \brief PS_Node::getUnusedPointsCount
+ * Returns the number of points that are not used for another shape
+ * \return
+ */
+unsigned long PS_Node::getUnusedPointsCount() const{
+    unsigned long result = 0;
+    for(unsigned long i = 0; i < this->points.size(); i++){
+        PS_Point_PC *p = this->points.at(i);
         if(!p->isUsed){
             result++;
         }
     }
     return result;
 }
+
+/*!
+ * \brief PS_Node::getUnmergedPoints
+ * Returns a list of all points that are not used for another shape and that have not been considered in merging step
+ * \param result
+ */
+void PS_Node::getUnmergedPoints(QList<PS_Point_PC *> &result) const{
+    if(result.size() != 0){
+        result.clear();
+    }
+    this->getUnmergedChildPoints(result);
+}
+
+/*!
+ * \brief PS_Node::getUnmergedChildPoints
+ * Returns the unused points of the children of a node
+ * \param unmergedPoints
+ */
+void PS_Node::getUnmergedChildPoints(QList<PS_Point_PC *> &unmergedPoints) const{
+
+    //if already considered in merge no points are added
+    if(this->consideredInMerge){
+        return;
+    }
+
+    //if this is a leaf node add the unused points
+    if(this->isLeaf){
+        foreach(PS_Point_PC *p, this->points){
+            if(!p->isUsed){
+                unmergedPoints.append(p);
+            }
+        }
+    }else{
+        for(int i = 0; i < 8; i++){
+            this->children[i]->getUnmergedChildPoints(unmergedPoints);
+        }
+    }
+
+}
+
+/*!
+ * \brief Node::getUnmergedPoints
+ * Returns a vector of unmerged, unused points
+ * \return
+ */
+/*QList<Point_PC *> Node::getUnmergedPoints(){
+    QList<Point_PC *> result;
+    for(int i = 0; i < this->points.size(); i++){
+        Point_PC *p = this->points.at(i);
+        if(!p->isMerged && !p->isUsed){
+            result.append(p);
+        }
+    }
+    return result;
+}*/
+
+/*!
+ * \brief Node::getUnmergedPointsCount
+ * \return
+ */
+/*int Node::getUnmergedPointsCount(){
+    int result = 0;
+    for(int i = 0; i < this->points.size(); i++){
+        Point_PC *p = this->points.at(i);
+        if(!p->isMerged && !p->isUsed){
+            result++;
+        }
+    }
+    return result;
+}*/

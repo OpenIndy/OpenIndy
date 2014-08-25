@@ -93,7 +93,8 @@ bool BestFitLine::setUpResult(Line &line){
     }
     if(eigenIndex > -1){
         //vector of direction (check that line always points in the same direction)
-        OiVec r = u.getCol(eigenIndex);
+        OiVec r(3);
+        u.getCol(r, eigenIndex);
         if(this->referenceDirection.getSize() == 0){ //if this function is executed the first time
             this->referenceDirection = r;
         }
@@ -101,7 +102,9 @@ bool BestFitLine::setUpResult(Line &line){
         double absRef = qSqrt(this->referenceDirection.getAt(0) * this->referenceDirection.getAt(0)
                               + this->referenceDirection.getAt(1) * this->referenceDirection.getAt(1)
                               + this->referenceDirection.getAt(2) * this->referenceDirection.getAt(2));
-        double angle = qAcos( OiVec::dot(r, this->referenceDirection) / (absR * absRef) );
+        double refH;
+        OiVec::dot(refH, r, this->referenceDirection);
+        double angle = qAcos( refH / (absR * absRef) );
         if(angle > PI || angle < -PI){ //switch direction
             r = r * -1.0;
         }

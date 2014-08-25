@@ -98,8 +98,11 @@ bool IntersectPlanePlane::setUpResult(Line &line){
             OiVec p1_n0 = p1_n.normalize(); //normalized normal vector for plane 1
             OiVec p2_n0 = p2_n.normalize(); //normalized normal vector for plane 2
             OiVec d(3); //distance vector with distances origin to plane 1, 2, 3 (plane 3 is normal to plane 1 and 2)
-            d.setAt(0, OiVec::dot(p1_x0, p1_n0));
-            d.setAt(1, OiVec::dot(p2_x0, p2_n0));
+            double h1, h2;
+            OiVec::dot(h1, p1_x0, p1_n0);
+            OiVec::dot(h2, p2_x0, p2_n0);
+            d.setAt(0, h1);
+            d.setAt(1, h2);
             d.setAt(2, 0.0);
             //perform intersection
             OiVec l_v = this->calcDirectionVector(p1_n0, p2_n0);
@@ -153,7 +156,8 @@ bool IntersectPlanePlane::isIntersection(Plane *p1, Plane *p2){
     }
     OiVec n01 = n1.normalize();
     OiVec n02 = n2.normalize();
-    double sp = OiVec::dot(n01, n02);
+    double sp;
+    OiVec::dot(sp, n01, n02);
     if(sp > -0.99990 && sp < 0.99990){
         return true;
     }
@@ -169,7 +173,9 @@ bool IntersectPlanePlane::isIntersection(Plane *p1, Plane *p2){
  * \return
  */
 OiVec IntersectPlanePlane::calcDirectionVector(OiVec n1, OiVec n2){
-    return OiVec::cross(n1, n2);
+    OiVec result;
+    OiVec::cross(result, n1, n2);
+    return result;
 }
 
 /*!

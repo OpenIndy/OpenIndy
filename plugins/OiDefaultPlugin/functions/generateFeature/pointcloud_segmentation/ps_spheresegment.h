@@ -3,14 +3,14 @@
 
 #include <QList>
 #include <QtMath>
+#include <math.h>
 
 #include "oivec.h"
 #include "oimat.h"
 
-#include "pointcloud.h"
-
 #include "ps_pointcloud.h"
 #include "ps_generalmath.h"
+#include "ps_point_pc.h"
 #include "ps_shapesegment.h"
 
 //! \brief sphere specific attributes
@@ -60,21 +60,31 @@ public:
     PS_SphereSegment();
     ~PS_SphereSegment();
 
+    bool writeToX3D(const QString &filePath);
+
     void fit();
-    void fitBySample(unsigned int numPoints);
+    void fitBySample(int numPoints);
 
-    void minimumSolution(QList<Point_PC *> points);
+    void minimumSolution(const QList<PS_Point_PC *> &points);
 
-    float getRadius();
-    float *getXYZ();
+    //! \brief Returns the radius of the sphere
+    inline float getRadius() const{
+        return this->mySphereState->radius;
+    }
 
-    void setApproximation(float radius, float x, float y, float z);
+    //! \brief Returns the center of the sphere
+    inline float *getXYZ() const{
+        return this->mySphereState->xyz;
+    }
 
-    static PS_SphereSegment *detectSphere(QList<Point_PC*> points, PS_InputParameter param);
-    static int checkPointsInSphere(PS_SphereSegment *mySphere, QList<Point_PC*> myPoints, PS_InputParameter param, int toleranceFactor); //check wether a point is in the given sphere
-    static void sortOut(PS_SphereSegment *mySphere, PS_InputParameter param);
-    static void mergeSpheres(const QList<PS_SphereSegment *> &detectedSpheres, QList<PS_SphereSegment *> &mergedSpheres, PS_InputParameter param);
-    static void verifySpheres(const QList<PS_SphereSegment *> &detectedSpheres, QList<PS_SphereSegment *> &verifiedSpheres, PS_InputParameter param);
+    void setApproximation(const float &radius, const float &x, const float &y, const float &z);
+
+    static PS_SphereSegment *detectSphere(const QList<PS_Point_PC*> &points, const PS_InputParameter &param);
+    static int checkPointsInSphere(PS_SphereSegment *mySphere, const QList<PS_Point_PC*> &myPoints, const PS_InputParameter &param, const int &toleranceFactor); //check wether a point is in the given sphere
+    static void sortOut(PS_SphereSegment *mySphere, const PS_InputParameter &param, const int &toleranceFactor);
+    static void mergeSpheres(const QList<PS_SphereSegment *> &detectedSpheres, QList<PS_SphereSegment *> &mergedSpheres, const PS_InputParameter &param);
+    static void reviewNodes(const QList<PS_SphereSegment *> &detectedSpheres, const PS_InputParameter &param);
+    static void verifySpheres(const QList<PS_SphereSegment *> &detectedSpheres, QList<PS_SphereSegment *> &verifiedSpheres, const PS_InputParameter &param);
 
 private:
     //fitting helpers (static to not have to instanciate every time)
@@ -96,7 +106,6 @@ private:
     static OiMat verify_u;
     static OiMat verify_v;
     static OiVec verify_d;
-    static OiVec verify_xyz;
 
     //current sphere state pointer to access special sphere attributes
     SphereState *mySphereState;
