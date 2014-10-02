@@ -781,8 +781,8 @@ void Controller::createFunction(int index){
     QString name = pluginsModel->record(index).value("name").toString();
     if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         //if the active feature is not a nominal geometry
-        if(OiFeatureState::getActiveFeature()->getGeometry() == NULL
-                || !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
+        /*if(OiFeatureState::getActiveFeature()->getGeometry() == NULL
+                || !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){*/
             //create function and connect OiFunctionEmitter to console
             Function *newFunction = PluginLoader::loadFunctionPlugin(path,name);
             if(newFunction != NULL){
@@ -793,9 +793,9 @@ void Controller::createFunction(int index){
             this->changeFunctionTreeViewModel();
             //set up available functions for the active feature
             this->setFunction();
-        }else{
+        /*}else{
             Console::addLine("A nominal geometry cannot have a function!");
-        }
+        }*/
     }
 }
 

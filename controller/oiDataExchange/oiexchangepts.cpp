@@ -1,6 +1,6 @@
 #include "oiexchangepts.h"
 
-oiExchangePTS::oiExchangePTS()
+oiExchangePTS::oiExchangePTS(QObject *parent) : oiExchangeInterface(parent)
 {
 }
 
@@ -70,87 +70,115 @@ QList<UnitConverter::unitType> oiExchangePTS::getSupportedTemperatureUnits()
     return t;
 }
 
-bool oiExchangePTS::importPointCloud(oiExchangeObject &data)
-{
+/*!
+ * \brief oiExchangePTS::importPointCloud
+ * \param data
+ * \return
+ */
+bool oiExchangePTS::importPointCloud(oiExchangeObject &data){
+
     clock_t c1 = clock();
 
-    if (!data.device->open(QIODevice::ReadOnly | QIODevice::Text))
-    {
+    if (!data.device->open(QIODevice::ReadOnly | QIODevice::Text)){
         return false;
     }
 
     try{
 
+        qint64 fileSize = data.device->size();
+        qint64 readSize = 0;
+
         QTextStream in(data.device);
 
-        PointCloud *pc = new PointCloud(false);
+        PointCloud *pc = new PointCloud(true);
 
-        OiVec focalPoint(4); //centroid of pointcloud
-        int pointCount = 0;
+        double x=0.0, y=0.0, z=0.0; //centroid of pointcloud
+        unsigned long pointCount = 0; //number of points in the pointcloud
+        BoundingBox_PC bbox; //pointclouds's bounding box
+        bbox.min[0] = numeric_limits<float>::max();
+        bbox.min[1] = numeric_limits<float>::max();
+        bbox.min[2] = numeric_limits<float>::max();
+        bbox.max[0] = -numeric_limits<float>::max();
+        bbox.max[1] = -numeric_limits<float>::max();
+        bbox.max[2] = -numeric_limits<float>::max();
+        OiVec xyz(4); //main focus of the pointcloud
 
-        QRegExp splitPattern("\\s+");
+        //QRegExp splitPattern("\\s+");
 
-        while(!in.atEnd())
-        {
+        while(!in.atEnd()){
 
             QString line = in.readLine();
 
-            //QStringList list = line.split(splitPattern);
-            QStringList list = line.split(' ');
+            readSize += line.size();
 
-            if(list.size() > 2){
+            //QStringList fields = line.split(splitPattern);
+            QStringList fields = line.split(' ');
 
-                Point_PC *p = new Point_PC();
+            if(fields.size() >= 3){
 
-                p->xyz[0] = list.at(0).toFloat();
-                p->xyz[1] = list.at(1).toFloat();
-                p->xyz[2] = list.at(2).toFloat();
+                //create a new point and add it to the point cloud
+                Point_PC *myPoint = new Point_PC();
+                myPoint->xyz[0] = fields.at(0).toFloat();
+                myPoint->xyz[1] = fields.at(1).toFloat();
+                myPoint->xyz[2] = fields.at(2).toFloat();
 
                 if(data.unit.value(UnitConverter::eMetric) == UnitConverter::eMILLIMETER){
-                    p->xyz[0] = p->xyz[0] / 1000.0;
-                    p->xyz[1] = p->xyz[1] / 1000.0;
-                    p->xyz[2] = p->xyz[2] / 1000.0;
+                    myPoint->xyz[0] = myPoint->xyz[0] / 1000.0;
+                    myPoint->xyz[1] = myPoint->xyz[1] / 1000.0;
+                    myPoint->xyz[2] = myPoint->xyz[2] / 1000.0;
                 }
 
-                pc->points.append(p);
+                pc->addPointCloudPoint(myPoint);
 
                 pointCount++;
 
                 //update centroid
-                focalPoint.setAt(0, p->xyz[0]+focalPoint.getAt(0));
-                focalPoint.setAt(1, p->xyz[1]+focalPoint.getAt(1));
-                focalPoint.setAt(2, p->xyz[2]+focalPoint.getAt(2));
+                x += myPoint->xyz[0];
+                y += myPoint->xyz[1];
+                z += myPoint->xyz[2];
 
                 //update bounding box
-                if(p->xyz[0] < pc->bbox.min[0]){
-                    pc->bbox.min[0] = p->xyz[0];
+                if(myPoint->xyz[0] < bbox.min[0]){
+                    bbox.min[0] = myPoint->xyz[0];
                 }
-                if(p->xyz[0] > pc->bbox.max[0]){
-                    pc->bbox.max[0] = p->xyz[0];
+                if(myPoint->xyz[0] > bbox.max[0]){
+                    bbox.max[0] = myPoint->xyz[0];
                 }
-                if(p->xyz[1] < pc->bbox.min[1]){
-                    pc->bbox.min[1] = p->xyz[1];
+                if(myPoint->xyz[1] < bbox.min[1]){
+                    bbox.min[1] = myPoint->xyz[1];
                 }
-                if(p->xyz[1] > pc->bbox.max[1]){
-                    pc->bbox.max[1] = p->xyz[1];
+                if(myPoint->xyz[1] > bbox.max[1]){
+                    bbox.max[1] = myPoint->xyz[1];
                 }
-                if(p->xyz[2] < pc->bbox.min[2]){
-                    pc->bbox.min[2] = p->xyz[2];
+                if(myPoint->xyz[2] < bbox.min[2]){
+                    bbox.min[2] = myPoint->xyz[2];
                 }
-                if(p->xyz[2] > pc->bbox.max[2]){
-                    pc->bbox.max[2] = p->xyz[2];
+                if(myPoint->xyz[2] > bbox.max[2]){
+                    bbox.max[2] = myPoint->xyz[2];
                 }
 
             }
+
+            int progress = (int)(((float)readSize / (float)fileSize) * 100.0);
+            if(progress == 100){
+                progress = 99;
+            }
+            emit this->updateProgress(progress, QString("%1 points loaded").arg(pointCount) );
+            readSize += 2;
+
         }
 
         pc->setFeatureName(QString::number(pc->getId()));
+        pc->setNominalSystem(data.nominalCoordSys);
         pc->setIsSolved(true);
 
-        pc->xyz = focalPoint / (double)pointCount;
-        pc->xyz.setAt(3,1.0);
+        xyz.setAt(0, x / (double)pointCount);
+        xyz.setAt(1, y / (double)pointCount);
+        xyz.setAt(2, z / (double)pointCount);
+        xyz.setAt(3, 1.0);
+        pc->setMainFocus(xyz);
 
-        pc->pointCount = pointCount;
+        pc->setBoundingBox(bbox);
 
         FeatureWrapper *f = new FeatureWrapper();
 
@@ -162,9 +190,10 @@ bool oiExchangePTS::importPointCloud(oiExchangeObject &data)
 
     }catch(exception &e){
         Console::addLine(e.what());
+        return false;
     }
 
-    Console::addLine("Punktwolke eingelesen: ", (clock() - c1)/(double)CLOCKS_PER_SEC);
+    Console::addLine(QString("pointcloud successfully loaded: %1 sec").arg((clock() - c1)/(double)CLOCKS_PER_SEC));
+    return true;
+
 }
-
-

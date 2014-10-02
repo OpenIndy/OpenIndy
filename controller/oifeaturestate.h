@@ -76,6 +76,8 @@ private slots:
     void setGeometryNominals(int featureId); //is called when a nominal was added or removed from an actual geometry
     void setGeometryObservations(int featureId); //is called when an observations was added or removed from a geometry
 
+    void addPCSegmentAsFeature(FeatureWrapper *segment);
+
 private:
     static OiFeatureState *myFeatureState;
 

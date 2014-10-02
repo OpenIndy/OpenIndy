@@ -173,7 +173,8 @@ SOURCES += \
     ui/simulationdelegate.cpp \
     ui/simulationtreeviewmodel.cpp \
     src/simulation/simulationdata.cpp \
-    ui/oimultiselectionmodel.cpp
+    ui/oimultiselectionmodel.cpp \
+	ui/oiloadingdialog.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -311,7 +312,9 @@ HEADERS  += \
     ui/simulationdelegate.h \
     ui/simulationtreeviewmodel.h \
     src/simulation/simulationdata.h \
-    ui/oimultiselectionmodel.h
+    src/plugin/pi_generatefeaturefunction.h \
+    ui/oimultiselectionmodel.h \
+	ui/oiloadingdialog.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
@@ -330,6 +333,7 @@ FORMS    += ui/mainwindow.ui \
     ui/edittrafoparamdialog.ui \
     ui/oisimulationwidget.ui \
     ui/stationinfodialog.ui \
-    ui/realtimedatadialog.ui
+    ui/realtimedatadialog.ui \
+    ui/oiloadingdialog.ui
 
 

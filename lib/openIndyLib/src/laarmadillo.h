@@ -30,6 +30,8 @@ public:
     void cross(OiVec &result, const OiVec &a, const OiVec &b);
     void dot(double &result, const OiVec &a, const OiVec &b);
     void det(double &result, const OiMat &a);
+    bool solve(OiVec &x, const OiMat &A, const OiVec &b);
+    bool solve(OiMat &X, const OiMat &A, const OiMat &B);
 
 private:
     void oiVec2Arma(arma::vec &result, const OiVec &v);

@@ -119,7 +119,9 @@ void BestFitPlane2::setUpResult(Plane &p, double *x, double *y, double *z, int c
     double absRef = qSqrt(this->referenceDirection.getAt(0) * this->referenceDirection.getAt(0)
                           + this->referenceDirection.getAt(1) * this->referenceDirection.getAt(1)
                           + this->referenceDirection.getAt(2) * this->referenceDirection.getAt(2));
-    double angle = qAcos( OiVec::dot(n_check, this->referenceDirection) / (absR * absRef) );
+    double refH;
+    OiVec::dot(refH, n_check, this->referenceDirection);
+    double angle = qAcos( refH / (absR * absRef) );
     if(angle > PI || angle < -PI){ //switch direction
         n0 = n0 * -1.0;
         n0.setAt(3, 1.0);

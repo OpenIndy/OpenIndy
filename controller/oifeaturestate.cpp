@@ -319,10 +319,14 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
 
         if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
 
+            qDebug() << "vor id check";
+
             //check if feature with this id already exists
             if(OiFeatureState::getFeatureListIndex(myFeature->getFeature()->getId()) >= 0){
-                return false;
+                myFeature->getFeature()->setId(Configuration::generateID());
             }
+
+            qDebug() << "nach id check";
 
             //check feature's name
             bool nameValid = false;
@@ -341,11 +345,14 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
                 myFeature->getFeature()->setFeatureName(name);
             }
 
+            qDebug() << "vor nominal add";
+
             //add nominal to nominal list of coordinate system
             if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getNominalSystem() != NULL){
                 myFeature->getGeometry()->getNominalSystem()->addNominal(myFeature->getGeometry());
             }
 
+            qDebug() << "nach nominal";
 
             //add the feature to the list of features, stations and coordinate systems
             OiFeatureState::myFeatures.append(myFeature);
@@ -354,6 +361,8 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
             }else if(myFeature->getStation() != NULL){
                 OiFeatureState::myStations.append(myFeature->getStation());
             }
+
+            qDebug() << "vor connects";
 
             //connect the feature's signals to slots in OiFeatureState
             OiFeatureState::connectFeature(myFeature);
@@ -369,6 +378,8 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
                 }
                 OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
             }
+
+            qDebug() << "vor emit";
 
             OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
 
@@ -557,6 +568,12 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
 
             connect(myFeature->getGeometry(), SIGNAL(geomMyObservationsChanged(int)),
                     OiFeatureState::myFeatureState, SLOT(setGeometryObservations(int)));
+
+            //only for point clouds
+            if(myFeature->getPointCloud() != NULL){
+                connect(myFeature->getPointCloud(), SIGNAL(pcSegmentAdded(FeatureWrapper*)),
+                        OiFeatureState::myFeatureState, SLOT(addPCSegmentAsFeature(FeatureWrapper*)));
+            }
 
         }
 
@@ -962,6 +979,19 @@ void OiFeatureState::setGeometryObservations(int featureId){
     }catch(exception &e){
         Console::addLine(e.what());
     }
+}
+
+/*!
+ * \brief OiFeatureState::addPCSegmentAsFeature
+ * Add a segment, detected from a point cloud to the list of features in OpenIndy
+ * \param segment
+ */
+void OiFeatureState::addPCSegmentAsFeature(FeatureWrapper *segment){
+
+    qDebug() << "pc segment as feature featurestate";
+
+    OiFeatureState::addFeature(segment);
+
 }
 
 /*!

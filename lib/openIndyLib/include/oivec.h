@@ -17,7 +17,7 @@ class OI_LIB_EXPORT OiVec
 {
 public:
     OiVec();
-    OiVec(const int size);
+    OiVec(const int &size);
     ~OiVec();
 
     static LinearAlgebra *myLinearAlgebra;
@@ -30,9 +30,9 @@ public:
     int getSize() const;
 
     void set(vector<double> v);
-    void setAt(int pos,double value);
+    void setAt(const int &pos, const double &value);
 
-    void add(double value);
+    void add(const double &value);
 
     void replace(const OiVec&);
 
@@ -54,11 +54,11 @@ public:
     OiVec normalize() const;
     OiMat t() const;
 
-    static OiVec cross(OiVec a, OiVec b);
-    static double dot(OiVec a, OiVec b);
+    static void cross(OiVec &result, const OiVec &a, const OiVec &b);
+    static void dot(double &result, const OiVec &a, const OiVec &b);
 
 private:
-    static OiVec mult(const double value, const OiVec &v);
+    static OiVec mult(const double &value, const OiVec &v);
 
 };
 

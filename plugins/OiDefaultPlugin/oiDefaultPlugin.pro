@@ -5,13 +5,15 @@
 #-------------------------------------------------
 
 QT       += gui
+QT += widgets
 QT += serialport
+QT += xml
 
 TEMPLATE = lib
 TARGET = $$qtLibraryTarget(p_defaultPlugin)
 
 CONFIG += plugin
-CONFIG +=c++11
+CONFIG += c++11
 
 DEFINES += DEFAULT_LIBRARY
 DEFINES += WITH_FITTING_UTILS
@@ -52,6 +54,8 @@ INCLUDEPATH += $$PWD/functions/construct
 INCLUDEPATH += $$PWD/functions/fit
 INCLUDEPATH += $$PWD/functions/objectTransformation
 INCLUDEPATH += $$PWD/functions/systemTransformation
+INCLUDEPATH += $$PWD/functions/generateFeature
+INCLUDEPATH += $$PWD/functions/generateFeature/pointcloud_segmentation
 INCLUDEPATH += $$PWD/simulations/simplePolarMeasurement
 
 INCLUDEPATH += $$PWD/lib/fitting
@@ -144,7 +148,18 @@ SOURCES += p_factory.cpp \
     functions/fit/p_bestfitsphererauls.cpp \
     ../../src/simulation/uncertaintycomponent.cpp \
     simulations/simplePolarMeasurement/simplepolarmeasurement.cpp \
-    ../../src/simulation/simulationdata.cpp
+    ../../src/simulation/simulationdata.cpp \
+    functions/generateFeature/p_pointcloudsegmentation.cpp \
+    functions/generateFeature/pointcloud_segmentation/ps_cylindersegment.cpp \
+    functions/generateFeature/pointcloud_segmentation/ps_generalmath.cpp \
+    functions/generateFeature/pointcloud_segmentation/ps_node.cpp \
+    functions/generateFeature/pointcloud_segmentation/ps_octree.cpp \
+    functions/generateFeature/pointcloud_segmentation/ps_planesegment.cpp \
+    functions/generateFeature/pointcloud_segmentation/ps_pointcloud.cpp \
+    functions/generateFeature/pointcloud_segmentation/ps_shapesegment.cpp \
+    functions/generateFeature/pointcloud_segmentation/ps_spheresegment.cpp \
+    functions/generateFeature/pointcloud_segmentation/ps_point_pc.cpp \
+    functions/generateFeature/ps_loadingdialog.cpp
 
 HEADERS += p_factory.h \
     ../../lib/openIndyLib/include/global.h \
@@ -248,5 +263,20 @@ HEADERS += p_factory.h \
     ../../src/simulation/simulationmodel.h \
     ../../src/simulation/uncertaintycomponent.h \
     simulations/simplePolarMeasurement/simplepolarmeasurement.h \
-    ../../src/simulation/simulationdata.h
+    ../../src/simulation/simulationdata.h \
+    functions/generateFeature/p_pointcloudsegmentation.h \
+    functions/generateFeature/pointcloud_segmentation/ps_cylindersegment.h \
+    functions/generateFeature/pointcloud_segmentation/ps_generalmath.h \
+    functions/generateFeature/pointcloud_segmentation/ps_node.h \
+    functions/generateFeature/pointcloud_segmentation/ps_octree.h \
+    functions/generateFeature/pointcloud_segmentation/ps_planesegment.h \
+    functions/generateFeature/pointcloud_segmentation/ps_pointcloud.h \
+    functions/generateFeature/pointcloud_segmentation/ps_shapesegment.h \
+    functions/generateFeature/pointcloud_segmentation/ps_spheresegment.h \
+    functions/generateFeature/pointcloud_segmentation/ps_point_pc.h \
+    functions/generateFeature/ps_loadingdialog.h
+
 OTHER_FILES += metaInfo.json
+
+FORMS += \
+    functions/generateFeature/ps_loadingdialog.ui

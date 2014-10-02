@@ -91,9 +91,9 @@ void OiGraphix::drawStation(Station* s){
  * \param p
  */
 void OiGraphix::drawPointCloud(PointCloud *p){
-    OiGraphixPointCloud pointCloud(p->points);
+    OiGraphixPointCloud pointCloud(p->getPointCloudPoints());
 
-    pointCloud.draw(p->xyz.getAt(0), p->xyz.getAt(1), p->xyz.getAt(2));
+    pointCloud.draw(p->getMainFocus().getAt(0), p->getMainFocus().getAt(1), p->getMainFocus().getAt(2));
 
     drawResiduals();
 }

@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QPluginLoader>
+
 #include "AutoTest.h"
 
 #include "p_factory.h"

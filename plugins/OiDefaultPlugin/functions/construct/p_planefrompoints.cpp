@@ -77,7 +77,8 @@ bool PlaneFromPoints::setUpResult(Plane &plane){
         }
     }
     if(eigenIndex > -1){
-        OiVec n = u.getCol(eigenIndex);
+        OiVec n(3);
+        u.getCol(n, eigenIndex);
         double sumXN = 0.0;
         double sumYN = 0.0;
         double sumZN = 0.0;
@@ -100,7 +101,9 @@ bool PlaneFromPoints::setUpResult(Plane &plane){
         double absRef = qSqrt(this->referenceDirection.getAt(0) * this->referenceDirection.getAt(0)
                               + this->referenceDirection.getAt(1) * this->referenceDirection.getAt(1)
                               + this->referenceDirection.getAt(2) * this->referenceDirection.getAt(2));
-        double angle = qAcos( OiVec::dot(n, this->referenceDirection) / (absR * absRef) );
+        double refH;
+        OiVec::dot(refH, n, this->referenceDirection);
+        double angle = qAcos( refH / (absR * absRef) );
         if(angle > PI || angle < -PI){ //switch direction
             n = n * -1.0;
         }

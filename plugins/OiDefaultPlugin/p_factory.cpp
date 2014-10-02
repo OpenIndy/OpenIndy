@@ -35,6 +35,7 @@ QList<Sensor*> OiTemplatePlugin::createSensors(){
  */
 QList<Function*> OiTemplatePlugin::createFunctions(){
     QList<Function*> resultSet;
+
     resultSet.append(new BestFitPoint());
     resultSet.append(new BestFitLine());
     resultSet.append(new BestFitPlane());
@@ -57,6 +58,7 @@ QList<Function*> OiTemplatePlugin::createFunctions(){
     resultSet.append(new ExtendedTemperatureCompensation());
     resultSet.append(new Helmert6Param());
     resultSet.append(new BestFitSphereRauls());
+    resultSet.append(new PointCloudSegmentation());
 
     return resultSet;
 }
@@ -152,6 +154,8 @@ Function* OiTemplatePlugin::createFunction(QString name){
         result = new Helmert6Param();
     }else if(name.compare("BestFitSphereRauls") == 0){
         result = new BestFitSphereRauls();
+    }else if(name.compare("PointCloudSegmentation") == 0){
+        result = new PointCloudSegmentation();
     }
     return result;
 }

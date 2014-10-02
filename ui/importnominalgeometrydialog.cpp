@@ -3,11 +3,15 @@
 
 importNominalGeometryDialog::importNominalGeometryDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::importNominalGeometryDialog)
+    ui(new Ui::importNominalGeometryDialog), myExchanger(oiDataExchanger::getInstance()), myLoadingDialog(NULL)
 {
     ui->setupUi(this);
 
     initGUI();
+
+    qRegisterMetaType<oiExchangeObject>("oiExchangeObject");
+    connect(&this->myExchanger, SIGNAL(exchangeFinished(bool,oiExchangeObject)), this, SLOT(exchangeFinished(bool,oiExchangeObject)));
+    connect(&this->myExchanger, SIGNAL(updateProgress(int, QString)), this, SLOT(updateProgress(int, QString)));
 }
 
 importNominalGeometryDialog::~importNominalGeometryDialog()
@@ -117,15 +121,12 @@ void importNominalGeometryDialog::on_pushButton_import_clicked()
         switch (ret) {
         case QMessageBox::Ok:
             return;
-            break;
         default:
             return;
-            break;
         }
     }
 
-    QString choosenCoordName = ui->comboBox_coordSys->currentText();
-
+    QString choosenCoordName = this->ui->comboBox_coordSys->currentText();
 
     foreach(CoordinateSystem* c, OiFeatureState::getCoordinateSystems()){
         if (c->getFeatureName() == choosenCoordName){
@@ -153,10 +154,10 @@ void importNominalGeometryDialog::on_pushButton_import_clicked()
 
     QString outputFormat = ui->comboBox_format->currentText();
 
-    oiDataExchanger::importData(ExchangeData,outputFormat);
-    //QList<FeatureWrapper*> geom;
+    this->myExchanger.importData(ExchangeData, outputFormat);
 
-    emit sendFeature(ExchangeData.features);
+    this->myLoadingDialog = OiLoadingDialog::showLoadingDialog();
+
 }
 
 void importNominalGeometryDialog::on_toolButton_open_clicked()
@@ -193,6 +194,40 @@ void importNominalGeometryDialog::showEvent(QShowEvent *event)
     this->move( screen.center() - this->rect().center() );
     setUpCoordinateSystems();
     event->accept();
+}
+
+/*!
+ * \brief importNominalGeometryDialog::updateProgress
+ * \param progress
+ */
+void importNominalGeometryDialog::updateProgress(int progress, QString msg){
+
+    //update progress in loading dialog
+    if(this->myLoadingDialog != NULL){
+        this->myLoadingDialog->updateProgress(progress, msg);
+    }
+
+}
+
+/*!
+ * \brief importNominalGeometryDialog::exchangeFinished
+ * Is calles when an exchange task was done
+ * \param success
+ * \param exchangeData
+ */
+void importNominalGeometryDialog::exchangeFinished(bool success, oiExchangeObject exchangeData){
+
+    //if successfully loaded create features
+    if(success){
+        emit sendFeature(exchangeData.features);
+    }
+
+    //close loading dialog
+    if(this->myLoadingDialog != NULL){
+        OiLoadingDialog::closeLoadingDialog();
+        this->myLoadingDialog = NULL;
+    }
+
 }
 
 void importNominalGeometryDialog::on_comboBox_format_currentIndexChanged(const QString &arg1)

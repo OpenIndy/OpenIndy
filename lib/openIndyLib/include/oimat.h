@@ -56,26 +56,27 @@ class OI_LIB_EXPORT OiMat
 {
 public:
     OiMat();
-    OiMat(const int rows, const int cols);
+    OiMat(const int &rows, const int &cols);
 
     static LinearAlgebra *myLinearAlgebra;
 
 private:
-    vector< vector<double> > values;
+    vector<double> values;
+    int rows, cols;
 
 public:
 
-    double getAt(const int row, const int col) const;
+    double getAt(const int &row, const int &col) const;
     unsigned int getRowCount() const;
     unsigned int getColCount() const;
-    OiVec getRow(const int row) const;
-    OiVec getCol(const int col) const;
+    void getRow(OiVec &result, const int &row) const;
+    void getCol(OiVec &result, const int &col) const;
 
     void replace(const OiMat &m);
-    void setAt(const int row, const int col, const double value);
+    void setAt(const int &row, const int &col, const double &value);
     void diag(vector<double> diagVec);
-    void setRow(const int index, const OiVec &row);
-    void setCol(const int index, const OiVec &col);
+    void setRow(const int &index, const OiVec &row);
+    void setCol(const int &index, const OiVec &col);
 
     OiMat& operator=(const OiMat &m);
     OiMat operator+(const OiMat &m) const;
@@ -83,13 +84,17 @@ public:
     OiMat& operator+=(const OiMat &m);
     OiMat& operator-=(const OiMat &m);
     OiMat operator*(const OiMat &m) const;
-    OiMat operator*(const double value) const;
+    OiMat operator*(const double &value) const;
     OiVec operator*(const OiVec &v) const;
-    friend OiMat operator*(const double value, const OiMat &m){
-        return OiMat::mult(value, m);
+    friend OiMat operator*(const double &value, const OiMat &m){
+        OiMat result(m.getRowCount(), m.getColCount());
+        OiMat::mult(result, value, m);
+        return result;
     }
-    friend OiMat operator/(const OiMat &m, const double value){
-        return OiMat::mult((1.0 / value), m);
+    friend OiMat operator/(const OiMat &m, const double &value){
+        OiMat result(m.getRowCount(), m.getColCount());
+        OiMat::mult(result, (1.0 / value), m);
+        return result;
     }
 
     OiMat t() const;
@@ -99,12 +104,15 @@ public:
 
     void svd(OiMat &u, OiVec &d, OiMat &v) const;
 
+    static bool solve(OiVec &x, const OiMat &A, const OiVec &b);
+    static bool solve(OiMat &X, const OiMat &A, const OiMat &B);
+
     static OiMat getRotationMatrix(double angle, OiVec axis);
     static OiMat getRotationMatrix(double angle, Rotation::RotationAxis axis);
     static OiMat getRotationMatrix(RotationChain rotationChain);
 
 private:
-    static OiMat mult(const double value, const OiMat &m);
+    static void mult(OiMat &result, const double &value, const OiMat &m);
 
 };
 

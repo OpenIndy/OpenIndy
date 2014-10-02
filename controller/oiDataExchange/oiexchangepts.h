@@ -4,6 +4,7 @@
 #include <QString>
 #include <QStringList>
 #include <QRegExp>
+#include <limits>
 
 #include "oiexchangeinterface.h"
 #include "console.h"
@@ -14,8 +15,10 @@ using namespace std;
 
 class oiExchangePTS: public oiExchangeInterface
 {
+    Q_OBJECT
+
 public:
-    oiExchangePTS();
+    explicit oiExchangePTS(QObject *parent = 0);
 
     bool importOiData(oiExchangeObject& data);
     bool exportOiData(oiExchangeObject& data);
