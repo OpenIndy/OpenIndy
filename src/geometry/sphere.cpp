@@ -188,19 +188,79 @@ bool Sphere::saveSimulationData()
 }
 
 QString Sphere::getDisplayX() const{
-    return QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!this->isNominal){
+        if(this->isSolved){
+           foreach(Geometry *g, this->nominals){
+               if(g != NULL && g->getIsSolved()){
+
+                   QString diff = QString::number((this->xyz.getAt(0)-g->getXYZ().getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   return QString(value + " (" + diff + ")");
+               }
+           }
+       }
+    }
+
+    return value;
+
 }
 
 QString Sphere::getDisplayY() const{
-    return QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    QString value = QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!this->isNominal){
+        if(this->isSolved){
+           foreach(Geometry *g, this->nominals){
+               if(g != NULL && g->getIsSolved()){
+
+                   QString diff = QString::number((this->xyz.getAt(1)-g->getXYZ().getAt(1))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   return QString(value + " (" + diff + ")");
+               }
+           }
+       }
+    }
+
+    return value;
 }
 
 QString Sphere::getDisplayZ() const{
-    return QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    QString value = QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!this->isNominal){
+        if(this->isSolved){
+           foreach(Geometry *g, this->nominals){
+               if(g != NULL && g->getIsSolved()){
+
+                   QString diff = QString::number((this->xyz.getAt(2)-g->getXYZ().getAt(2))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   return QString(value + " (" + diff + ")");
+               }
+           }
+       }
+    }
+
+    return value;
 }
 
 QString Sphere::getDisplayRadius() const{
-    return QString::number(this->radius*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    QString value = QString::number(this->radius*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!this->isNominal){
+        if(this->isSolved){
+            foreach (Geometry *g, this->nominals) {
+                if(g != NULL && g->getIsSolved()){
+
+                    QString diff = QString::number((this->radius - g->getRadius())*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                    return QString(value + " (" + diff + ")" );
+                }
+            }
+        }
+    }
+
+    return value;
 }
 
 QString Sphere::getDisplayIsCommon() const{

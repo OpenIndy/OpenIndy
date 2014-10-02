@@ -267,7 +267,7 @@ FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureTy
             TrafoParam *myTrafoParam = new TrafoParam();
             myFeature->setTrafoParam(myTrafoParam);
             break;
-        }case Configuration::eScalarentityAngleFeature:{
+        }case Configuration::eScalarEntityAngleFeature:{
             ScalarEntityAngle *myAngle = new ScalarEntityAngle(isNominal);
             myFeature->setScalarEntityAngle(myAngle);
             break;

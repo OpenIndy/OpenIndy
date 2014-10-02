@@ -269,7 +269,18 @@ void Controller::startAim(){
         OiVec polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
         if(OiFeatureState::getActiveStation()->coordSys != OiFeatureState::getActiveCoordinateSystem()){
 
-            QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveCoordinateSystem()->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
+            //get homogeneous matrix from "from- coordsys" to active coord system
+            OiMat t = FeatureUpdater::trafoControl.getTransformationMatrix(OiFeatureState::getActiveStation()->coordSys);
+            //if matrix is valid
+            if(t.getColCount() == 4 && t.getRowCount() == 4){
+                OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
+                //inverse because t is from "from" to active system, we need xyz in "from" system, that is the
+                //active station coord system
+                xyz = t.inv() * xyz;
+                polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+            }
+
+            /*QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveCoordinateSystem()->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
             TrafoParam *tp = NULL;
             if(myTrafoParams.size() > 0){
                 for(int i=0;i<myTrafoParams.size();i++){
@@ -289,7 +300,8 @@ void Controller::startAim(){
                 OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
                 xyz = t * xyz;
                 polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
-            }
+            }*/
+
         }
 
         OiFeatureState::getActiveStation()->emitStartMove(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2),false);
@@ -1200,7 +1212,7 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
                             feature->getFunctions().at(functionIndex)->addTrafoParam(element->getFeature()->getTrafoParam(), elementIndex);
                         }
                         break;
-                    case Configuration::eScalarentityAngleFeature:
+                    case Configuration::eScalarEntityAngleFeature:
                         if(element->getFeature()->getScalarEntityAngle() != NULL
                                 && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityAngleElement){
                             feature->getFunctions().at(functionIndex)->addScalarEntityAngle(element->getFeature()->getScalarEntityAngle(), elementIndex);
@@ -1308,7 +1320,7 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
                             feature->getFunctions().at(functionIndex)->removeTrafoParam(element->getFeature()->getFeature()->getId());
                         }
                         break;
-                    case Configuration::eScalarentityAngleFeature:
+                    case Configuration::eScalarEntityAngleFeature:
                         if(element->getFeature()->getScalarEntityAngle() != NULL){
                             feature->getFunctions().at(functionIndex)->removeScalarEntityAngle(element->getFeature()->getFeature()->getId());
                         }
@@ -1428,7 +1440,7 @@ void Controller::getNominalValues(NominalAttributeExchange nominalValue){
         OiFeatureState::getActiveFeature()->getSphere()->xyz.setAt(2,nominalValue.nomZ);
         OiFeatureState::getActiveFeature()->getSphere()->radius = nominalValue.nomR;
         break;
-    case Configuration::eScalarentityAngleFeature:
+    case Configuration::eScalarEntityAngleFeature:
         OiFeatureState::getActiveFeature()->getScalarEntityAngle()->setAngle(nominalValue.nomSAE);
         break;
     case Configuration::eScalarEntityDistanceFeature:
