@@ -62,7 +62,7 @@ private:
 
 
     QList<Function*> resolveFunctions(ElementDependencies &d);
-    void readOiProjectData(QXmlStreamReader &xml);
+    //void readOiProjectData(QXmlStreamReader &xml);
 
 
 };

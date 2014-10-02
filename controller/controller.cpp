@@ -1504,13 +1504,12 @@ bool Controller::saveProject(){
  */
 bool Controller::loadProject(OiProjectData &projectData){
 
-    //TODO check if a active project is set
+    //TODO check if an active project is set
 
     //delete all features
     OiFeatureState::resetFeatureLists();
 
     return OiProjectExchanger::loadProject(projectData);
-
 
 }
 

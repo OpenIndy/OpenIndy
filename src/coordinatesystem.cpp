@@ -335,6 +335,11 @@ QString CoordinateSystem::getDisplayExpansionOriginZ() const
     return QString::number(this->expansionOrigin.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }
 
+/*!
+ * \brief CoordinateSystem::toOpenIndyXML
+ * \param stream
+ * \return
+ */
 bool CoordinateSystem::toOpenIndyXML(QXmlStreamWriter &stream){
 
     stream.writeStartElement("coordinatesystem");
@@ -348,35 +353,45 @@ bool CoordinateSystem::toOpenIndyXML(QXmlStreamWriter &stream){
     stream.writeAttribute("z", QString::number(this->expansionOrigin.getAt(2)));
     stream.writeEndElement();
 
+    stream.writeStartElement("observations");
+    foreach (Observation *obs, this->observations) {
+        obs->writeProxyObservations(stream);
+    }
+    stream.writeEndElement();
 
-        foreach (Observation *obs, this->observations) {
-            obs->writeProxyObservations(stream);
-        }
-
+    if(this->nominals.size() > 0){
+        stream.writeStartElement("nominalGeometries");
         foreach (Geometry *geom, this->nominals) {
-
-                stream.writeStartElement("member");
-                stream.writeAttribute("type", "nominalGeometry");
-                stream.writeAttribute("ref", QString::number(geom->getId()));
-                stream.writeEndElement();
-
+            stream.writeStartElement("geometry");
+            stream.writeAttribute("ref", QString::number(geom->getId()));
+            stream.writeEndElement();
         }
+        stream.writeEndElement();
+    }
 
+    if(this->trafoParams.size() > 0){
+        stream.writeStartElement("transformationParameters");
         for(int k =0;k<this->trafoParams.size();k++){
-            stream.writeStartElement("member");
-            stream.writeAttribute("type", "transformationParameter");
+            stream.writeStartElement("transformationParameter");
             stream.writeAttribute("ref", QString::number(this->trafoParams.at(k)->getId()));
             stream.writeEndElement();
         }
-
-        this->writeFeatureAttributes(stream);
-
         stream.writeEndElement();
+    }
+
+    this->writeFeatureAttributes(stream);
+
+    stream.writeEndElement();
 
 
     return true;
 }
 
+/*!
+ * \brief CoordinateSystem::fromOpenIndyXML
+ * \param xml
+ * \return
+ */
 ElementDependencies CoordinateSystem::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;
@@ -392,15 +407,106 @@ ElementDependencies CoordinateSystem::fromOpenIndyXML(QXmlStreamReader &xml){
         dependencies.typeOfElement = Configuration::eCoordinateSystemElement;
     }
 
-    /* Next element... */
     xml.readNext();
-    /*
-     * We're going to loop over the things because the order might change.
-     * We'll continue the loop until we hit an EndElement named coordinatesystem.
-     */
-    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+
+    while( !xml.atEnd() && xml.name().compare("coordinatesystem") != 0 ){
+
+        if(xml.tokenType() == QXmlStreamReader::StartElement){
+
+            if(xml.name().compare("observations") == 0){
+
+                xml.readNext();
+
+                while(xml.name().compare("observation") == 0){
+                    if(xml.tokenType() == QXmlStreamReader::StartElement && xml.attributes().hasAttribute("ref")){
+                        dependencies.addObservationID(xml.attributes().value("ref").toInt());
+                    }
+                    xml.readNext();
+                }
+
+            }else if(xml.name().compare("nominalGeometries") == 0){
+
+                xml.readNext();
+
+                while(xml.name().compare("geometry") == 0){
+                    if(xml.tokenType() == QXmlStreamReader::StartElement && xml.attributes().hasAttribute("ref")){
+                        dependencies.addFeatureID(xml.attributes().value("ref").toInt(),"nominalGeometry");
+                    }
+                    xml.readNext();
+                }
+
+            }else if(xml.name().compare("expansionOrigin") == 0){
+
+                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                        xml.name() == "expansionOrigin")) {
+                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                        QXmlStreamAttributes memberAttributes = xml.attributes();
+                        if(memberAttributes.hasAttribute("x")){
+                            this->expansionOrigin.setAt(0,memberAttributes.value("x").toDouble());
+                        }
+                        if(memberAttributes.hasAttribute("y")){
+                            this->expansionOrigin.setAt(1,memberAttributes.value("y").toDouble());
+                        }
+                        if(memberAttributes.hasAttribute("z")){
+                            this->expansionOrigin.setAt(2,memberAttributes.value("z").toDouble());
+                        }
+                    }
+
+                    xml.readNext();
+                }
+
+            }else if(xml.name().compare("functions") == 0){
+
+                this->readFunction(xml, dependencies);
+                xml.readNext();
+
+            }else if(xml.name().compare("usedFor") == 0){
+
+                this->readFeatureAttributes(xml, dependencies);
+                xml.readNext();
+
+            }else if(xml.name().compare("previouslyNeeded") == 0){
+
+                this->readFeatureAttributes(xml, dependencies);
+                xml.readNext();
+
+            }else{
+                xml.readNext();
+            }
+
+        }else{
+            xml.readNext();
+        }
+
+    }
+
+    return dependencies;
+
+
+
+
+
+
+
+
+    /*while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
             xml.name() == "coordinatesystem")) {
         if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+
+
+            if(xml.name().compare("observation") == 0){
+                if(attributes.hasAttribute("ref")){
+                    dependencies.addObservationID(attributes.value("ref").toInt());
+                }
+            }else if(xml.name().compare("nominalGeometry") == 0){
+                if(attributes.hasAttribute("ref")){
+                    dependencies.addFeatureID(attributes.value("ref").toInt(),"nominalGeometry");
+                }
+            }else{
+                this->readFeatureAttributes(xml, dependencies);
+            }
 
             if(xml.name() == "member"){
 
@@ -430,7 +536,7 @@ ElementDependencies CoordinateSystem::fromOpenIndyXML(QXmlStreamReader &xml){
 
                         }
                     }
-                    /* ...and next... */
+
                     xml.readNext();
                 }
             }
@@ -452,7 +558,7 @@ ElementDependencies CoordinateSystem::fromOpenIndyXML(QXmlStreamReader &xml){
                             this->expansionOrigin.setAt(2,memberAttributes.value("z").toDouble());
                         }
                     }
-                    /* ...and next... */
+
                     xml.readNext();
                 }
             }
@@ -464,9 +570,9 @@ ElementDependencies CoordinateSystem::fromOpenIndyXML(QXmlStreamReader &xml){
             }
 
         }
-        /* ...and next... */
+
         xml.readNext();
     }
 
-    return dependencies;
+    return dependencies;*/
 }

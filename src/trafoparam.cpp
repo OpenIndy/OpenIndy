@@ -332,6 +332,11 @@ void TrafoParam::setisDatumTrafo(bool isDatumTrafo)
     this->isDatumTrafo =isDatumTrafo;
 }
 
+/*!
+ * \brief TrafoParam::toOpenIndyXML
+ * \param stream
+ * \return
+ */
 bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
 
     stream.writeStartElement("transformationsparameter");
@@ -353,12 +358,10 @@ bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
     stream.writeAttribute("datumtrafo", QString::number(this->isDatumTrafo));
 
     stream.writeStartElement("from");
-    stream.writeAttribute("type", "coordinatesystem");
     stream.writeAttribute("ref", QString::number(this->from->getId()));
     stream.writeEndElement();
 
     stream.writeStartElement("to");
-    stream.writeAttribute("type", "coordinatesystem");
     stream.writeAttribute("ref", QString::number(this->to->getId()));
     stream.writeEndElement();
 
@@ -374,7 +377,6 @@ bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
 ElementDependencies TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;
-
 
     QXmlStreamAttributes attributes = xml.attributes();
 

@@ -24,6 +24,13 @@
                 <type name="%string%" />
               </readingTypes>
             </activeSensor>
+            <usedSensors>
+              <sensor name="%string%" plugin="%string%">
+                <readingTypes>
+                  <type name="%string%" />
+                </readingTypes>
+              </sensor>
+            </usedSensors>
             <position ref="%12345%" />
             <coordinatesystem ref="%12345%" />
             <usedFor>
@@ -34,6 +41,9 @@
         <coordinatesystems>
           <coordinatesystem id="%12345%" name="%string%" solved="%true%">
             <expansionOrigin x="%1245.00%" y="%1245.00%" z="%1245.00%" />
+            <transformationParameters>
+              <transformationParameter ref="%string%" />
+            </transformationParameters>
             <observations>
               <observation ref="%12345%" />
             </observations>
@@ -83,6 +93,7 @@
             <observations>
               <observations ref="%12345%" />
             </observations>
+            <coordinatesystem ref="%string%" />
             <functions>
               <function name="%string%" plugin="%string%" executionIndex="%12345%" type="%string%">
                 <inputElements>
@@ -97,6 +108,9 @@
             <previouslyNeeded>
               <feature ref="%12345%" />
             </previouslyNeeded>
+            <nominalGeometries>
+              <geometry ref="%string%" />
+            </nominalGeometries>
           </geometry>
         </geometries>
         <observations>
@@ -195,9 +209,11 @@
           <as:constraint action="setNumberMask(//standardDeviation/@value,####.######)" />
           <as:constraint action="setNumberMask(//station/@id,#######)" />
           <as:constraint action="setNumberMask(//station/@ref,#######)" />
+          <as:constraint action="makeOptional(//station/activeSensor,)" />
           <as:constraint action="makeOptional(//station/usedFor)" />
           <as:constraint action="makeRepeatable(//stations/station)" />
           <as:constraint action="setNumberMask(//to/@ref,#######)" />
+          <as:constraint action="makeRepeatable(//transformationParameters/transformationParameter)" />
           <as:constraint action="datatype(//transformationparameter/@datumtrafo,boolean)" />
           <as:constraint action="setNumberMask(//transformationparameter/@id,#######)" />
           <as:constraint action="datatype(//transformationparameter/@movement,boolean)" />
@@ -218,6 +234,7 @@
           <as:constraint action="makeOptional(//transformationparameter/usedFor)" />
           <as:constraint action="makeRepeatable(//transformationparameters/transformationparameter)" />
           <as:constraint action="makeRepeatable(//usedFor/feature)" />
+          <as:constraint action="makeRepeatable(//usedSensors/sensor)" />
         </as:context>
       </as:default>
     </as:Rules>

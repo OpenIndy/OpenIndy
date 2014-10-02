@@ -82,6 +82,11 @@ bool ScalarEntityDistance::toOpenIndyXML(QXmlStreamWriter &stream){
 
 }
 
+/*!
+ * \brief ScalarEntityDistance::fromOpenIndyXML
+ * \param xml
+ * \return
+ */
 ElementDependencies ScalarEntityDistance::fromOpenIndyXML(QXmlStreamReader &xml){
     ElementDependencies dependencies;
 
@@ -106,10 +111,43 @@ ElementDependencies ScalarEntityDistance::fromOpenIndyXML(QXmlStreamReader &xml)
 
     xml.readNext();
 
-    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+    while( !xml.atEnd() && xml.name().compare("geometry") != 0 ){
+
+        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+            if(xml.name() == "distance") {
+
+                if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                    QXmlStreamAttributes distanceAttributes = xml.attributes();
+
+                    if(distanceAttributes.hasAttribute("value")){
+                      this->setDistance(distanceAttributes.value("value").toDouble());
+                    }
+
+                }
+            }else{
+                this->readGeometryAttributes(xml,dependencies);
+                xml.readNext();
+            }
+
+        }else{
+            xml.readNext();
+        }
+
+    }
+
+    return dependencies;
+
+
+
+
+
+
+    /*while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                 xml.name() == "geometry")) {
             if(xml.tokenType() == QXmlStreamReader::StartElement) {
-                /* We've found first name. */
+
                 if(xml.name() == "distance") {
 
                         if(xml.tokenType() == QXmlStreamReader::StartElement) {
@@ -129,7 +167,7 @@ ElementDependencies ScalarEntityDistance::fromOpenIndyXML(QXmlStreamReader &xml)
             xml.readNext();
         }
 
-    return dependencies;
+    return dependencies;*/
 }
 
 bool ScalarEntityDistance::saveSimulationData()

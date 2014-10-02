@@ -113,6 +113,11 @@ bool Plane::toOpenIndyXML(QXmlStreamWriter &stream){
 
 }
 
+/*!
+ * \brief Plane::fromOpenIndyXML
+ * \param xml
+ * \return
+ */
 ElementDependencies Plane::fromOpenIndyXML(QXmlStreamReader &xml){
     ElementDependencies dependencies;
 
@@ -137,10 +142,61 @@ ElementDependencies Plane::fromOpenIndyXML(QXmlStreamReader &xml){
 
     xml.readNext();
 
-    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+    while( !xml.atEnd() && xml.name().compare("geometry") != 0 ){
+
+        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+            if(xml.name() == "coordinates"){
+
+                QXmlStreamAttributes coordinatesAttributes = xml.attributes();
+
+                if(coordinatesAttributes.hasAttribute("x")){
+                  this->xyz.setAt(0,coordinatesAttributes.value("x").toDouble());
+                }
+                if(coordinatesAttributes.hasAttribute("y")){
+                  this->xyz.setAt(1,coordinatesAttributes.value("y").toDouble());
+                }
+                if(coordinatesAttributes.hasAttribute("z")){
+                  this->xyz.setAt(2,coordinatesAttributes.value("z").toDouble());
+                }
+
+                xml.readNext();
+
+            }else if(xml.name() == "spatialDirection"){
+
+                QXmlStreamAttributes spatialDirectionAttributes = xml.attributes();
+
+                if(spatialDirectionAttributes.hasAttribute("i")){
+                   this->ijk.setAt(0,spatialDirectionAttributes.value("i").toDouble());
+                }
+                if(spatialDirectionAttributes.hasAttribute("j")){
+                   this->ijk.setAt(1,spatialDirectionAttributes.value("j").toDouble());
+                }
+                if(spatialDirectionAttributes.hasAttribute("k")){
+                   this->ijk.setAt(2,spatialDirectionAttributes.value("k").toDouble());
+                }
+                xml.readNext();
+
+            }else{
+                this->readGeometryAttributes(xml,dependencies);
+                xml.readNext();
+            }
+
+        }else{
+            xml.readNext();
+        }
+
+    }
+
+    return dependencies;
+
+
+
+
+    /*while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                 xml.name() == "geometry")) {
             if(xml.tokenType() == QXmlStreamReader::StartElement) {
-                /* We've found first name. */
+
                 if(xml.name() == "coordinates") {
 
                         if(xml.tokenType() == QXmlStreamReader::StartElement) {
@@ -188,7 +244,7 @@ ElementDependencies Plane::fromOpenIndyXML(QXmlStreamReader &xml){
         }
 
 
-    return dependencies;
+    return dependencies;*/
 }
 
 bool Plane::saveSimulationData()

@@ -530,22 +530,25 @@ QString Feature::getDisplayExpansionOriginZ() const
 bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
 
     //references to all features which need this feature to be recalculated
+    stream.writeStartElement("usedFor");
     for(int k = 0; k < this->usedFor.size(); k++){
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "usedForFeature");
+        stream.writeStartElement("feature");
         stream.writeAttribute("ref", QString::number(this->usedFor.at(k)->getFeature()->id));
         stream.writeEndElement();
     }
+    stream.writeEndElement();
 
     //references to all features which this feature needs to be recalculated
+    stream.writeStartElement("previouslyNeeded");
     for(int k = 0; k < this->previouslyNeeded.size(); k++){
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "previouslyNeeded");
+        stream.writeStartElement("feature");
         stream.writeAttribute("ref", QString::number(this->previouslyNeeded.at(k)->getFeature()->id));
         stream.writeEndElement();
     }
+    stream.writeEndElement();
 
     //all functions that are assigned to this feature
+    stream.writeStartElement("functions");
     for(int k =0;k<this->functionList.size();k++){
         stream.writeStartElement("function");
         stream.writeAttribute("name", this->functionList.at(k)->getMetaData()->name);
@@ -554,6 +557,7 @@ bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
         stream.writeAttribute("executionIndex", QString::number(k));
 
         //all input elements which were assigned to a function
+        stream.writeStartElement("inputElements");
         QMapIterator<int, QList<InputFeature> > j(this->functionList.at(k)->getFeatureOrder());
         while (j.hasNext()) {
             j.next();
@@ -567,48 +571,104 @@ bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
                 stream.writeEndElement();
             }
         }
+        stream.writeEndElement();
 
         stream.writeEndElement();
     }
+    stream.writeEndElement();
 
     return true;
 
 }
 
+/*!
+ * \brief Feature::readFeatureAttributes
+ * \param xml
+ * \param dependencies
+ * \return
+ */
 bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies){
 
-    if(xml.name() == "member"){
+    QXmlStreamAttributes memberAttributes = xml.attributes();
 
-            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+    if(xml.name().compare("usedFor") == 0){
 
-                QXmlStreamAttributes memberAttributes = xml.attributes();
+        xml.readNext();
 
-                if(memberAttributes.hasAttribute("type")){
+        while( !xml.atEnd() && xml.name().compare("usedFor") != 0 ){
 
-                    if (memberAttributes.value("type") == "usedForFeature"){
-
-                        if(memberAttributes.hasAttribute("ref")){
-                            dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"usedForFeature");
-                        }
-                    }
-
-                    if (memberAttributes.value("type") == "previouslyNeeded"){
-
-                        if(memberAttributes.hasAttribute("ref")){
-                            dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"previouslyNeeded");
-                        }
-                    }
+            if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name().compare("feature")){
+                if(memberAttributes.hasAttribute("ref")){
+                    dependencies.addFeatureID(memberAttributes.value("ref").toInt(), "usedFor");
                 }
-
-
-                if(memberAttributes.hasAttribute("id")){
-                    this->id = memberAttributes.value("ref").toInt();
-                }
-
             }
+            xml.readNext();
+
+        }
+
+    }else if(xml.name().compare("previouslyNeeded") == 0){
+
+        xml.readNext();
+
+        while( !xml.atEnd() && xml.name().compare("previouslyNeeded") != 0 ){
+
+            if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name().compare("feature")){
+                if(memberAttributes.hasAttribute("ref")){
+                    dependencies.addFeatureID(memberAttributes.value("ref").toInt(), "previouslyNeeded");
+                }
+            }
+            xml.readNext();
+
+        }
+
+    }
 
     return true;
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*if(xml.name() == "member"){
+
+        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+            QXmlStreamAttributes memberAttributes = xml.attributes();
+
+            if(memberAttributes.hasAttribute("type")){
+
+                if (memberAttributes.value("type") == "usedForFeature"){
+
+                    if(memberAttributes.hasAttribute("ref")){
+                        dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"usedForFeature");
+                    }
+                }
+
+                if (memberAttributes.value("type") == "previouslyNeeded"){
+
+                    if(memberAttributes.hasAttribute("ref")){
+                        dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"previouslyNeeded");
+                    }
+                }
+            }
+
+
+            if(memberAttributes.hasAttribute("id")){
+                this->id = memberAttributes.value("ref").toInt();
+            }
+
+        }
+
+        return true;
+    }*/
 }
 
 bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies &d){

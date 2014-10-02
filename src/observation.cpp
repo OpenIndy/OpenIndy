@@ -30,8 +30,12 @@ Observation::~Observation(){
 
 }
 
+/*!
+ * \brief Observation::toOpenIndyXML
+ * \param stream
+ * \return
+ */
 bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
-
 
     stream.writeStartElement("observation");
     stream.writeAttribute("id", QString::number(this->id));
@@ -45,8 +49,7 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
 
 
     if(this->myStation != NULL){
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "station");
+        stream.writeStartElement("station");
         stream.writeAttribute("ref", QString::number(this->myStation->getId()));
         stream.writeEndElement();
     }
@@ -59,6 +62,8 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
         stream.writeAttribute("id",QString::number(this->myReading->id));
         stream.writeAttribute("type",QString::number(this->myReading->typeofReading));
         stream.writeAttribute("time",measuredAtTime);
+
+        stream.writeStartElement("measurements");
 
         switch(this->myReading->typeofReading){
             case(Configuration::ePolar) :{
@@ -178,6 +183,8 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
         }
 
         stream.writeEndElement();
+
+        stream.writeEndElement();
     }
 
 
@@ -185,6 +192,11 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
     return true;
 }
 
+/*!
+ * \brief Observation::fromOpenIndyXML
+ * \param xml
+ * \return
+ */
 ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;
@@ -236,16 +248,19 @@ ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
                 r->obs = this;
                 this->myReading = r;
 
-
                 if(xml.attributes().hasAttribute("time")){
                     r->measuredAt = QDateTime(QDate::fromString(xml.attributes().value("time").toString(),Qt::ISODate));
 
                 }
-            }
+            }else if(xml.name() == "station"){
 
-            if(xml.name() == "member"){
+                if(xml.attributes().hasAttribute("ref")){
 
-                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+                    dependencies.addFeatureID(xml.attributes().value("ref").toInt(), "station");
+
+                }
+
+                /*while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                         xml.name() == "member")) {
                     if(xml.tokenType() == QXmlStreamReader::StartElement) {
 
@@ -266,9 +281,9 @@ ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
                         }
 
                     }
-                    /* ...and next... */
+
                     xml.readNext();
-                }
+                }*/
 
             }
 
@@ -280,12 +295,16 @@ ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
     return dependencies;
 }
 
+/*!
+ * \brief Observation::writeProxyObservations
+ * \param stream
+ * \return
+ */
 bool Observation::writeProxyObservations(QXmlStreamWriter &stream){
 
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "observation");
-        stream.writeAttribute("ref", QString::number(this->id));
-        stream.writeEndElement();
+    stream.writeStartElement("observation");
+    stream.writeAttribute("ref", QString::number(this->id));
+    stream.writeEndElement();
 
     return true;
 

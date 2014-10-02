@@ -37,8 +37,7 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
     stream.writeAttribute("idcount", QString::number(Configuration::idCount));
 
     //write active coordinate system
-    stream.writeStartElement("member");
-    stream.writeAttribute("type", "activeCoordinatesystem");
+    stream.writeStartElement("activeCoordinatesystem");
     int activeSystem = -1;
     if(OiFeatureState::getActiveCoordinateSystem() != NULL){
         activeSystem = OiFeatureState::getActiveCoordinateSystem()->getId();
@@ -47,8 +46,7 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
     stream.writeEndElement();
 
     //write active coordinate system
-    stream.writeStartElement("member");
-    stream.writeAttribute("type", "activeStation");
+    stream.writeStartElement("activeStation");
     int activeStation = -1;
     if(OiFeatureState::getActiveStation() != NULL){
         activeStation = OiFeatureState::getActiveStation()->getId();
@@ -94,12 +92,15 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
 
     //write stations to xml
     Console::addLine("write stations to xml...");
+    stream.writeStartElement("stations");
     foreach(Station* s, this->stations){
         s->toOpenIndyXML(stream);
     }
+    stream.writeEndElement();
 
-    //write coordnatesystem to xml
+    //write coordinatesystems to xml
     Console::addLine("write coordinatesystems to xml...");
+    stream.writeStartElement("coordinatesystems");
     foreach(CoordinateSystem* c, this->coordSystems){
         c->toOpenIndyXML(stream);
 
@@ -108,24 +109,31 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
             this->observations.append(obs);
         }
     }
+    stream.writeEndElement();
 
     //write all trafoParam to xml
     Console::addLine("write transformationparamters to xml...");
+    stream.writeStartElement("transformationParameters");
     foreach(TrafoParam* t, this->trafoParams){
         t->toOpenIndyXML(stream);
     }
+    stream.writeEndElement();
 
     //write all geometries to xml
-     Console::addLine("write geometries to xml...");
+    Console::addLine("write geometries to xml...");
+    stream.writeStartElement("geometries");
     foreach(FeatureWrapper* fw, this->geometries){
         fw->getGeometry()->toOpenIndyXML(stream);
     }
+    stream.writeEndElement();
 
     //write all observations to xml
     Console::addLine("write observations to xml...");
+    stream.writeStartElement("observations");
     foreach(Observation* o, this->observations){
         o->toOpenIndyXML(stream);
     }
+    stream.writeEndElement();
 
     stream.writeEndElement();
     stream.writeEndDocument();
@@ -143,106 +151,121 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
 
 }
 
+/*!
+ * \brief ProjectRestorer::loadProject
+ * \param data
+ * \return
+ */
 bool ProjectRestorer::loadProject(OiProjectData &data){
 
     if (!data.getDevice()->open(QIODevice::ReadOnly | QIODevice::Text)) {
-
-      return false;
+        return false;
     }
 
-        this->clearAllLists();
+    this->clearAllLists();
 
-        QXmlStreamReader xml(data.getDevice());
+    QXmlStreamReader xml(data.getDevice());
 
-        Console::addLine("load project from xml");
-        while(!xml.atEnd() &&
-                !xml.hasError()) {
+    Console::addLine("load project from xml");
+    while(!xml.atEnd() && !xml.hasError()) {
 
-            QXmlStreamReader::TokenType token = xml.readNext();
+        QXmlStreamReader::TokenType token = xml.readNext();
 
-            if(token == QXmlStreamReader::StartDocument) {
-                continue;
-            }
-
-            if(token == QXmlStreamReader::StartElement) {
-
-                if(xml.name() == "observation") {
-                    Observation *o = new Observation(NULL,NULL);
-                    ElementDependencies d =  o->fromOpenIndyXML(xml);
-
-                    this->dependencies.append(d);
-                    this->observations.append(o);
-                }
-
-                if(xml.name() == "member"){
-                    this->readOiProjectData(xml);
-                }
-
-                if(xml.name() == "station"){
-
-                    Station *s = new Station("");
-                    ElementDependencies d = s->fromOpenIndyXML(xml);
-
-                    stationElements.append(d.getStationCoordSystem());
-                    stationElements.append(d.getStationPosition());
-
-                    this->stations.append(s);
-                    this->dependencies.append(d);
-
-                }
-
-                if(xml.name() == "coordinatesystem"){
-
-                    CoordinateSystem *cs = new CoordinateSystem();
-                    ElementDependencies d = cs->fromOpenIndyXML(xml);
-
-                    this->coordSystems.append(cs);
-                    this->dependencies.append(d);
-
-                }
-
-                if(xml.name() == "geometry"){
-
-                    QXmlStreamAttributes attributes = xml.attributes();
-
-                     QString geometryType;
-
-                    if(attributes.hasAttribute("type")){
-                       geometryType = attributes.value("type").toString();
-                    }
-
-                    this->addGeometryToList(Configuration::getElementTypeEnum(geometryType),xml);
-
-                }
-
-                if(xml.name() == "transformationparameter"){
-
-                    TrafoParam* t = new TrafoParam();
-                    ElementDependencies d = t->fromOpenIndyXML(xml);
-
-                    this->trafoParams.append(t);
-                    this->dependencies.append(d);
-                }
-            }
+        if(token == QXmlStreamReader::StartDocument) {
+            continue;
         }
 
-        if(xml.hasError()) {
+        if(token == QXmlStreamReader::StartElement) {
 
-            Console::addLine(QString("xml not valid: " + xml.errorString()));
-            data.getDevice()->close();
-            return false;
+            if(xml.name().compare("observation") == 0) {
+                Observation *o = new Observation(NULL,NULL);
+                ElementDependencies d =  o->fromOpenIndyXML(xml);
+
+                this->dependencies.append(d);
+                this->observations.append(o);
+            }
+
+            if(xml.name().compare("activeCoordinatesystem") == 0){
+                if(xml.attributes().hasAttribute("ref")){
+                    activeCoordSystemId = xml.attributes().value("ref").toInt();
+                }
+            }
+
+            if(xml.name().compare("activeStation") == 0){
+                if(xml.attributes().hasAttribute("ref")){
+                    activeStationId = xml.attributes().value("ref").toInt();
+                }
+            }
+
+            /*if(xml.name().compare("member") == 0){
+                this->readOiProjectData(xml);
+            }*/
+
+            if(xml.name().compare("station") == 0){
+
+                Station *s = new Station("");
+                ElementDependencies d = s->fromOpenIndyXML(xml);
+
+                stationElements.append(d.getStationCoordSystem());
+                stationElements.append(d.getStationPosition());
+
+                this->stations.append(s);
+                this->dependencies.append(d);
+
+            }
+
+            if(xml.name().compare("coordinatesystem") == 0){
+
+                CoordinateSystem *cs = new CoordinateSystem();
+                ElementDependencies d = cs->fromOpenIndyXML(xml);
+
+                this->coordSystems.append(cs);
+                this->dependencies.append(d);
+
+            }
+
+            if(xml.name().compare("geometry") == 0){
+
+                QXmlStreamAttributes attributes = xml.attributes();
+
+                QString geometryType;
+
+                if(attributes.hasAttribute("type")){
+                   geometryType = attributes.value("type").toString();
+                }
+
+                this->addGeometryToList(Configuration::getElementTypeEnum(geometryType), xml);
+
+            }
+
+            if(xml.name().compare("transformationparameter") == 0){
+
+                TrafoParam* t = new TrafoParam();
+                ElementDependencies d = t->fromOpenIndyXML(xml);
+
+                this->trafoParams.append(t);
+                this->dependencies.append(d);
+            }
         }
+    }
 
-         data.getDevice()->close();
-         Console::addLine("resolve dependencies");
+    if(xml.hasError()) {
 
-         /*foreach(Station* s, this->stations){
-             this->stationElements.append(s->position->getId());
-             this->stationElements.append(s->coordSys->getId());
-         }*/
+        Console::addLine(QString("xml not valid: " + xml.errorString()));
+        data.getDevice()->close();
+        return false;
+    }
 
-         this->resolveDependencies(data);
-         return true;
+     data.getDevice()->close();
+     Console::addLine("resolve dependencies");
+
+     /*foreach(Station* s, this->stations){
+         this->stationElements.append(s->position->getId());
+         this->stationElements.append(s->coordSys->getId());
+     }*/
+
+     this->resolveDependencies(data);
+     return true;
 
 
 }
@@ -259,71 +282,89 @@ void ProjectRestorer::clearAllLists(){
 
 }
 
+/*!
+ * \brief ProjectRestorer::addGeometryToList
+ * \param typeOfElement
+ * \param xml
+ */
 void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElement, QXmlStreamReader &xml){
 
     switch (typeOfElement) {
     case (Configuration::ePointElement):{
-            Point *p = new Point(false);
-            ElementDependencies dp = p->fromOpenIndyXML(xml);
 
-            FeatureWrapper *fwp = new FeatureWrapper();
-            fwp->setPoint(p);
+        Point *p = new Point(false);
+        ElementDependencies dp = p->fromOpenIndyXML(xml);
 
-            this->geometries.append(fwp);
-            this->dependencies.append(dp);
-        break;}
-    case (Configuration::ePlaneElement):{
-            Plane *pl = new Plane(false);
-            ElementDependencies dpl = pl->fromOpenIndyXML(xml);
+        FeatureWrapper *fwp = new FeatureWrapper();
+        fwp->setPoint(p);
 
-            FeatureWrapper *fwpl = new FeatureWrapper();
-            fwpl->setPlane(pl);
+        this->geometries.append(fwp);
+        this->dependencies.append(dp);
+        break;
 
-            this->geometries.append(fwpl);
-            this->dependencies.append(dpl);
-        break;}
-    case (Configuration::eSphereElement):{
-            Sphere *sp = new Sphere(false);
-            ElementDependencies dsp = sp->fromOpenIndyXML(xml);
+    }case (Configuration::ePlaneElement):{
 
-            FeatureWrapper *fwsp = new FeatureWrapper();
-            fwsp->setSphere(sp);
+        Plane *pl = new Plane(false);
+        ElementDependencies dpl = pl->fromOpenIndyXML(xml);
 
-            this->geometries.append(fwsp);
-            this->dependencies.append(dsp);
-        break;}
-    case (Configuration::eLineElement):{
-            Line *l = new Line(false);
-            ElementDependencies dl = l->fromOpenIndyXML(xml);
+        FeatureWrapper *fwpl = new FeatureWrapper();
+        fwpl->setPlane(pl);
 
-            FeatureWrapper *fwl = new FeatureWrapper();
-            fwl->setLine(l);
+        this->geometries.append(fwpl);
+        this->dependencies.append(dpl);
+        break;
 
-            this->geometries.append(fwl);
-            this->dependencies.append(dl);
-         break;}
-    case (Configuration::eScalarEntityAngleElement):{
-            ScalarEntityAngle *sAngle = new ScalarEntityAngle(false);
-            ElementDependencies dsAngle = sAngle->fromOpenIndyXML(xml);
+    }case (Configuration::eSphereElement):{
 
-            FeatureWrapper *fwsAngle = new FeatureWrapper();
-            fwsAngle->setScalarEntityAngle(sAngle);
+        Sphere *sp = new Sphere(false);
+        ElementDependencies dsp = sp->fromOpenIndyXML(xml);
 
-            this->geometries.append(fwsAngle);
-            this->dependencies.append(dsAngle);
-         break;}
-    case (Configuration::eScalarEntityDistanceElement):{
-            ScalarEntityDistance *sDistance = new ScalarEntityDistance(false);
-            ElementDependencies dsDistance = sDistance->fromOpenIndyXML(xml);
+        FeatureWrapper *fwsp = new FeatureWrapper();
+        fwsp->setSphere(sp);
 
-            FeatureWrapper *fwsDistance = new FeatureWrapper();
-            fwsDistance->setScalarEntityDistance(sDistance);
+        this->geometries.append(fwsp);
+        this->dependencies.append(dsp);
+        break;
 
-            this->geometries.append(fwsDistance);
-            this->dependencies.append(dsDistance);
-         break;}
-    default:{
-        break;}
+    }case (Configuration::eLineElement):{
+
+        Line *l = new Line(false);
+        ElementDependencies dl = l->fromOpenIndyXML(xml);
+
+        FeatureWrapper *fwl = new FeatureWrapper();
+        fwl->setLine(l);
+
+        this->geometries.append(fwl);
+        this->dependencies.append(dl);
+        break;
+
+    }case (Configuration::eScalarEntityAngleElement):{
+
+        ScalarEntityAngle *sAngle = new ScalarEntityAngle(false);
+        ElementDependencies dsAngle = sAngle->fromOpenIndyXML(xml);
+
+        FeatureWrapper *fwsAngle = new FeatureWrapper();
+        fwsAngle->setScalarEntityAngle(sAngle);
+
+        this->geometries.append(fwsAngle);
+        this->dependencies.append(dsAngle);
+        break;
+
+    }case (Configuration::eScalarEntityDistanceElement):{
+
+        ScalarEntityDistance *sDistance = new ScalarEntityDistance(false);
+        ElementDependencies dsDistance = sDistance->fromOpenIndyXML(xml);
+
+        FeatureWrapper *fwsDistance = new FeatureWrapper();
+        fwsDistance->setScalarEntityDistance(sDistance);
+
+        this->geometries.append(fwsDistance);
+        this->dependencies.append(dsDistance);
+        break;
+
+    }default:{
+        break;
+    }
     }
 
 }
@@ -389,8 +430,10 @@ Station* ProjectRestorer::findStation(int id){
 
 }
 
-
-
+/*!
+ * \brief ProjectRestorer::resolveDependencies
+ * \param data
+ */
 void ProjectRestorer::resolveDependencies(OiProjectData &data){
 
     foreach(ElementDependencies d, this->dependencies){
@@ -398,39 +441,26 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
         FeatureWrapper *resolvedFeature ;
 
         if(d.typeOfElement != Configuration::eObservationElement){
-        resolvedFeature = new FeatureWrapper();
+            resolvedFeature = new FeatureWrapper();
         }
 
         switch (d.typeOfElement) {
         case (Configuration::eStationElement):{
-
             this->resolveStation(resolvedFeature,d);
-
-
-            break;}
-        case (Configuration::eCoordinateSystemElement):{
-
-                this->resolveCoordinateSystem(resolvedFeature,d);
-
-            break;}
-        case (Configuration::eTrafoParamElement):{
-
+            break;
+        }case (Configuration::eCoordinateSystemElement):{
+            this->resolveCoordinateSystem(resolvedFeature,d);
+            break;
+        }case (Configuration::eTrafoParamElement):{
             this->resolveTrafoParam(resolvedFeature,d);
-
-            break;}
-        case (Configuration::eObservationElement):{
-
+            break;
+        }case (Configuration::eObservationElement):{
             this->resolveObservation(d);
-
-            break;}
-
-        default:
-
-                this->resolveGeometry(resolvedFeature,d);
-
+            break;
+        }default:
+            this->resolveGeometry(resolvedFeature,d);
             break;
         }
-
 
         if(d.typeOfElement != Configuration::eObservationElement && !this->stationElements.contains(d.elementID)){
            OiFeatureState::addFeature(resolvedFeature);
@@ -448,7 +478,6 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
            }
         }
     }
-
 
     OiFeatureState::sortFeaturesById();
 
@@ -497,7 +526,6 @@ void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d
             break;
         }
     }
-
 
     this->resolveFeature(fw,d);
 
@@ -619,8 +647,12 @@ void ProjectRestorer::resolveCoordinateSystem(FeatureWrapper *fw, ElementDepende
 
 }
 
-void ProjectRestorer::resolveObservation(ElementDependencies &d)
-{
+/*!
+ * \brief ProjectRestorer::resolveObservation
+ * \param d
+ */
+void ProjectRestorer::resolveObservation(ElementDependencies &d){
+
     Observation* obs = this->findObservation(d.elementID);
 
     QList<int>* obsStations = d.getfeatureDependencies().value("station");
@@ -632,12 +664,7 @@ void ProjectRestorer::resolveObservation(ElementDependencies &d)
             break;
         }
     }
-
-
-
 }
-
-
 
 QList<Function *> ProjectRestorer::resolveFunctions(ElementDependencies &d)
 {
@@ -716,7 +743,7 @@ QList<Function *> ProjectRestorer::resolveFunctions(ElementDependencies &d)
 
 }
 
-void ProjectRestorer::readOiProjectData(QXmlStreamReader &xml)
+/*void ProjectRestorer::readOiProjectData(QXmlStreamReader &xml)
 {
 
     if(xml.name() == "member"){
@@ -747,6 +774,6 @@ void ProjectRestorer::readOiProjectData(QXmlStreamReader &xml)
     }
 
 
-}
+}*/
 
 

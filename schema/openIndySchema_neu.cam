@@ -20,6 +20,13 @@
                 <type name="" />
               </readingTypes>
             </activeSensor>
+            <usedSensors>
+              <sensor name="" plugin="">
+                <readingTypes>
+                  <type name="" />
+                </readingTypes>
+              </sensor>
+            </usedSensors>
             <position ref="" />
             <coordinatesystem ref="" />
             <usedFor>
@@ -36,6 +43,7 @@
             <nominalGeometries>
               <geometry ref="" />
             </nominalGeometries>
+            <transformationParameters ref="" />
             <functions>
               <function name="" plugin="" executionIndex="">
                 <inputElements>
@@ -118,6 +126,7 @@
           <as:constraint action="makeOptional(//coordinatesystem/nominalGeometries)" />
           <as:constraint action="makeOptional(//coordinatesystem/observations,)" />
           <as:constraint action="makeOptional(//coordinatesystem/previouslyNeeded)" />
+          <as:constraint action="makeOptional(//coordinatesystem/transformationParameters)" />
           <as:constraint action="makeOptional(//coordinatesystem/usedFor)" />
           <as:constraint action="makeRepeatable(//coordinatesystems/coordinatesystem)" />
           <as:constraint action="datatype(//element/@index,int)" />
@@ -132,7 +141,6 @@
           <as:constraint action="datatype(//function/@plugin,string)" />
           <as:constraint action="datatype(//function/@type,string)" />
           <as:constraint action="makeOptional(//function/inputElements)" />
-          <as:constraint action="makeRepeatable(//functions/function,)" />
           <as:constraint action="makeRepeatable(//functions/function,)" />
           <as:constraint action="makeRepeatable(//geometries/geometry)" />
           <as:constraint action="datatype(//geometry/@common,boolean)" />
@@ -191,11 +199,13 @@
           <as:constraint action="datatype(//station/@id,int)" />
           <as:constraint action="datatype(//station/@name,string)" />
           <as:constraint action="datatype(//station/@ref,int)" />
+          <as:constraint action="makeOptional(//station/activeSensor,)" />
+          <as:constraint action="makeRepeatable(//stations/station,)" />
           <as:constraint action="makeRepeatable(//stations/station,)" />
           <as:constraint action="makeRepeatable(//transformationparameters/transformationparameter)" />
           <as:constraint action="datatype(//type/@name,string)" />
           <as:constraint action="makeRepeatable(//usedFor/feature,)" />
-          <as:constraint action="makeRepeatable(//usedFor/feature,)" />
+          <as:constraint action="makeRepeatable(//usedSensors/sensor,)" />
         </as:context>
       </as:default>
     </as:Rules>

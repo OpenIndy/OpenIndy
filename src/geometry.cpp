@@ -282,22 +282,22 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
     //this->mConfig.toOpenIndyXML(stream);
 
     //references to all observations which belong to this geometry
+    stream.writeStartElement("observations");
     foreach (Observation *obs, myObservations) {
         obs->writeProxyObservations(stream);
     }
+    stream.writeEndElement();
 
     //references to nominal geometries which belong to this geometry
     foreach (Geometry *geom, this->nominals) {
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "nominalGeometry");
+        stream.writeStartElement("nominalGeometry");
         stream.writeAttribute("ref", QString::number(geom->id));
         stream.writeEndElement();
     }
 
     //reference to the nominal coordinate system which this geometry belongs to
     if(this->myNominalCoordSys != NULL){
-        stream.writeStartElement("member");
-        stream.writeAttribute("type", "coordinatesystem");
+        stream.writeStartElement("coordinatesystem");
         stream.writeAttribute("ref", QString::number(this->myNominalCoordSys->getId()));
         stream.writeEndElement();
     }
@@ -316,20 +316,23 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
     return true;
 }
 
+/*!
+ * \brief Geometry::readGeometryAttributes
+ * \param xml
+ * \param dependencies
+ * \return
+ */
 bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies){
-
 
     if(xml.name() == "standardDeviation") {
 
-            if(xml.tokenType() == QXmlStreamReader::StartElement) {
-
-                QXmlStreamAttributes sigmaAttributes = xml.attributes();
-
-                    if(sigmaAttributes.hasAttribute("value")){
-                       this->myStatistic.stdev = sigmaAttributes.value("value").toDouble();
-                    }
-
-             }
+        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+            QXmlStreamAttributes sigmaAttributes = xml.attributes();
+            if(sigmaAttributes.hasAttribute("value")){
+               this->myStatistic.stdev = sigmaAttributes.value("value").toDouble();
+            }
+         }
+        xml.readNext();
     }
 
     if(xml.name() == "measurementconfig") {
@@ -340,7 +343,7 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
 
                 QXmlStreamAttributes measurementconfigAttributes = xml.attributes();
 
-               if(!this->isNominal){
+                if(!this->isNominal){
 
                     if(measurementconfigAttributes.hasAttribute("name")){
                       //TODO MeasurementConfig setzten
@@ -348,13 +351,58 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
 
                  }
              }
-         xml.readNext();
+            xml.readNext();
         }
     }
 
+    if(xml.name().compare("observations") == 0){
+
+        xml.readNext();
+        while( !xml.atEnd() && xml.name().compare("observation") == 0 ){
+            if(xml.tokenType() == QXmlStreamReader::StartElement){
+                if(xml.attributes().hasAttribute("ref")){
+                    dependencies.addObservationID(xml.attributes().value("ref").toInt());
+                }
+            }
+            xml.readNext();
+        }
+
+    }
+
+    if(xml.name().compare("nominalGeometries") == 0){
+
+        xml.readNext();
+        while( !xml.atEnd() && xml.name().compare("geometry") == 0 ){
+            if(xml.tokenType() == QXmlStreamReader::StartElement){
+                if(xml.attributes().hasAttribute("ref")){
+                    dependencies.addFeatureID(xml.attributes().value("ref").toInt(), "nominalGeometry");
+                }
+            }
+            xml.readNext();
+        }
+
+    }
+
+    if(xml.name().compare("coordinatesystem") == 0){
+
+        if(xml.attributes().hasAttribute("ref")){
+            dependencies.addFeatureID(xml.attributes().value("ref").toInt(),"coordinatesystem");
+        }
+        xml.readNext();
+
+    }
+
+    if(xml.name() == "function"){
+
+       this->readFunction(xml, dependencies);
+        xml.readNext();
+
+    }
+
+    return true;
 
 
-    if(xml.name() == "member"){
+    /*if(xml.name() == "member"){
 
         while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                 xml.name() == "member")) {
@@ -388,7 +436,7 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
                 }
 
             }
-            /* ...and next... */
+
             xml.readNext();
         }
     }
@@ -399,7 +447,7 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
 
     }
 
-    return true;
+    return true;*/
 }
 
 OiVec Geometry::getXYZ() const{

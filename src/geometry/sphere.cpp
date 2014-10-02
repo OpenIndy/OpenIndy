@@ -107,6 +107,11 @@ bool Sphere::toOpenIndyXML(QXmlStreamWriter &stream){
 
 }
 
+/*!
+ * \brief Sphere::fromOpenIndyXML
+ * \param xml
+ * \return
+ */
 ElementDependencies Sphere::fromOpenIndyXML(QXmlStreamReader &xml){
     ElementDependencies dependencies;
 
@@ -131,10 +136,59 @@ ElementDependencies Sphere::fromOpenIndyXML(QXmlStreamReader &xml){
 
     xml.readNext();
 
-    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+    while( !xml.atEnd() && xml.name().compare("geometry") != 0 ){
+
+        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+            if(xml.name() == "coordinates"){
+
+                QXmlStreamAttributes coordinatesAttributes = xml.attributes();
+
+                if(coordinatesAttributes.hasAttribute("x")){
+                  this->xyz.setAt(0,coordinatesAttributes.value("x").toDouble());
+                }
+                if(coordinatesAttributes.hasAttribute("y")){
+                  this->xyz.setAt(1,coordinatesAttributes.value("y").toDouble());
+                }
+                if(coordinatesAttributes.hasAttribute("z")){
+                  this->xyz.setAt(2,coordinatesAttributes.value("z").toDouble());
+                }
+
+                xml.readNext();
+
+            }else{
+                this->readGeometryAttributes(xml,dependencies);
+                xml.readNext();
+            }
+
+        }else if(xml.name() == "radius"){
+
+            if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                QXmlStreamAttributes radiusAttributes = xml.attributes();
+
+                if(radiusAttributes.hasAttribute("value")){
+                   this->radius = radiusAttributes.value("value").toDouble();
+                }
+            }
+            xml.readNext();
+
+        }else{
+            xml.readNext();
+        }
+
+    }
+
+    return dependencies;
+
+
+
+
+
+    /*while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                 xml.name() == "geometry")) {
             if(xml.tokenType() == QXmlStreamReader::StartElement) {
-                /* We've found first name. */
+
                 if(xml.name() == "coordinates") {
 
                         if(xml.tokenType() == QXmlStreamReader::StartElement) {
@@ -173,7 +227,7 @@ ElementDependencies Sphere::fromOpenIndyXML(QXmlStreamReader &xml){
             xml.readNext();
         }
 
-    return dependencies;
+    return dependencies;*/
 }
 
 bool Sphere::saveSimulationData()

@@ -182,8 +182,10 @@ public:
 
     static Configuration::ElementTypes getElementTypeEnum(QString name);
     static Configuration::FeatureTypes getFeatureTypeEnum(QString name);
+    static Configuration::ReadingTypes getReadingTypeEnum(QString name);
     static QString getElementTypeString(Configuration::ElementTypes type);
     static QString getFeatureTypeString(Configuration::FeatureTypes type);
+    static QString getReadingTypeString(Configuration::ReadingTypes type);
 
     static QPixmap getFeatureIcon(Configuration::FeatureTypes featureType);
     static QPixmap getElementIcon(Configuration::ElementTypes elementType);

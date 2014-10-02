@@ -112,56 +112,198 @@ void Station::recalc(){
 
 }
 
+/*!
+ * \brief Station::toOpenIndyXML
+ * \param stream
+ * \return
+ */
 bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
 
-        stream.writeStartElement("station");
-        stream.writeAttribute("id", QString::number(this->id));
-        stream.writeAttribute("name", this->name);
+    stream.writeStartElement("station");
+    stream.writeAttribute("id", QString::number(this->id));
+    stream.writeAttribute("name", this->name);
 
-        if(this->sensorPad->instrument != NULL){
-            stream.writeStartElement("activeSensor");
-            stream.writeAttribute("name",this->sensorPad->instrument->getMetaData()->name);
-            stream.writeAttribute("plugin", this->sensorPad->instrument->getMetaData()->pluginName);
-            stream.writeEndElement();
-        }
+    if(this->sensorPad->instrument != NULL){
+        stream.writeStartElement("activeSensor");
+        stream.writeAttribute("name",this->sensorPad->instrument->getMetaData()->name);
+        stream.writeAttribute("plugin", this->sensorPad->instrument->getMetaData()->pluginName);
 
-        if(this->sensorPad->usedSensors.size()>0){
-            for(int i = 0; i<this->sensorPad->usedSensors.size();i++){
-                stream.writeStartElement("sensor");
-                stream.writeAttribute("name",this->sensorPad->usedSensors.at(i)->getMetaData()->name);
-                stream.writeAttribute("plugin", this->sensorPad->usedSensors.at(i)->getMetaData()->pluginName);
+        stream.writeStartElement("readingTypes");
+        QList<Configuration::ReadingTypes> *readingTypes = this->sensorPad->instrument->getSupportedReadingTypes();
+        if(readingTypes != NULL){
+            foreach(Configuration::ReadingTypes type, *readingTypes){
+                stream.writeStartElement("type");
+                stream.writeAttribute("name", Configuration::getReadingTypeString(type));
                 stream.writeEndElement();
             }
         }
-
-        if(this->position != NULL){
-
-            stream.writeStartElement("member");
-            stream.writeAttribute("type", "position");
-            stream.writeAttribute("ref", QString::number(this->position->getId()));
-            stream.writeEndElement();
-
-        }
-
-        if(this->coordSys != NULL){
-            stream.writeStartElement("member");
-            stream.writeAttribute("type", "coordinatesystem");
-            stream.writeAttribute("ref", QString::number(this->coordSys->getId()));
-            stream.writeEndElement();
-        }
-
-        this->writeFeatureAttributes(stream);
-
         stream.writeEndElement();
 
-        return true;
+        stream.writeEndElement();
+    }
+
+    stream.writeStartElement("usedSensors");
+    if(this->sensorPad->usedSensors.size()>0){
+        for(int i = 0; i<this->sensorPad->usedSensors.size();i++){
+            stream.writeStartElement("sensor");
+            stream.writeAttribute("name",this->sensorPad->usedSensors.at(i)->getMetaData()->name);
+            stream.writeAttribute("plugin", this->sensorPad->usedSensors.at(i)->getMetaData()->pluginName);
+
+            stream.writeStartElement("readingTypes");
+            QList<Configuration::ReadingTypes> *readingTypes = this->sensorPad->usedSensors.at(i)->getSupportedReadingTypes();
+            if(readingTypes != NULL){
+                foreach(Configuration::ReadingTypes type, *readingTypes){
+                    stream.writeStartElement("type");
+                    stream.writeAttribute("name", Configuration::getReadingTypeString(type));
+                    stream.writeEndElement();
+                }
+            }
+            stream.writeEndElement();
+
+            stream.writeEndElement();
+        }
+    }
+    stream.writeEndElement();
+
+    if(this->position != NULL){
+        stream.writeStartElement("position");
+        stream.writeAttribute("ref", QString::number(this->position->getId()));
+        stream.writeEndElement();
+    }
+
+    if(this->coordSys != NULL){
+        stream.writeStartElement("coordinatesystem");
+        stream.writeAttribute("ref", QString::number(this->coordSys->getId()));
+        stream.writeEndElement();
+    }
+
+    this->writeFeatureAttributes(stream);
+
+    stream.writeEndElement();
+
+    return true;
 
 }
 
+/*!
+ * \brief Station::fromOpenIndyXML
+ * \param xml
+ * \return
+ */
 ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;
 
+    //get attributes of the station
+    QXmlStreamAttributes attributes = xml.attributes();
+    if(attributes.hasAttribute("name")){
+        this->name = attributes.value("name").toString();
+    }
+    if(attributes.hasAttribute("id")) {
+        this->id = attributes.value("id").toInt();
+        dependencies.elementID = this->id;
+        dependencies.typeOfElement = Configuration::eStationElement;
+    }
+
+    xml.readNext();
+
+    while( !xml.atEnd() && xml.name().compare("station") != 0 ){
+
+        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+            if(xml.name().compare("activeSensor") == 0){
+
+                sensorInfo sInfo;
+                if(xml.attributes().hasAttribute("name")){
+                    sInfo.name = xml.attributes().value("name").toString();
+                }
+                if(xml.attributes().hasAttribute("plugin")) {
+                    sInfo.plugin = xml.attributes().value("plugin").toString();
+                }
+                dependencies.addActiveSensor(sInfo);
+
+                SensorConfiguration *sc = new SensorConfiguration();
+                this->sensorPad->InstrumentConfig = sc;
+
+                xml.readNext();
+
+            }else if(xml.name().compare("usedSensors") == 0){
+
+                xml.readNext();
+
+                while(xml.name().compare("sensor") == 0
+                      || xml.name().compare("readingTypes") == 0
+                      || xml.name().compare("type") == 0){
+
+                    if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name().compare("sensor") == 0){
+
+                        sensorInfo sInfo;
+                        if(xml.attributes().hasAttribute("name")){
+                            sInfo.name = xml.attributes().value("name").toString();
+                        }
+                        if(xml.attributes().hasAttribute("plugin")) {
+                            sInfo.plugin = xml.attributes().value("plugin").toString();
+                        }
+                        dependencies.addSensorInfo(sInfo);
+
+                        xml.readNext();
+
+                    }
+
+                }
+
+            }else if(xml.name().compare("position") == 0){
+
+                if(xml.attributes().hasAttribute("ref")){
+                    dependencies.setStationPosition(xml.attributes().value("ref").toInt());
+                }
+                xml.readNext();
+
+            }else if(xml.name().compare("coordinatesystem") == 0){
+
+                if(xml.attributes().hasAttribute("ref")){
+                    dependencies.setStationCoordSystem(xml.attributes().value("ref").toInt());
+                }
+                xml.readNext();
+
+            }else if(xml.name().compare("usedFor") == 0){
+
+                readFeatureAttributes(xml,dependencies);
+                xml.readNext();
+
+            }else if(xml.name() == "function"){
+
+                this->readFunction(xml, dependencies);
+                xml.readNext();
+
+            }else{
+                xml.readNext();
+            }
+
+        }else{
+            xml.readNext();
+        }
+
+    }
+
+    return dependencies;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*ElementDependencies dependencies;
 
     QXmlStreamAttributes attributes = xml.attributes();
 
@@ -174,18 +316,14 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
         dependencies.typeOfElement = Configuration::eStationElement;
     }
 
-    /* Next element... */
     xml.readNext();
-    /*
-     * We're going to loop over the things because the order might change.
-     * We'll continue the loop until we hit an EndElement named station.
-     */
+
     while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
             xml.name() == "station")) {
 
         if(xml.tokenType() == QXmlStreamReader::StartElement) {
-            /* We've found first name. */
-            if(xml.name() == "sensor") {
+
+            /*if(xml.name() == "sensor") {
 
                 QString sensorName;
                 QString sensorPlugin;
@@ -213,7 +351,7 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
                     sInfo.plugin = sensorPlugin;
                     dependencies.addSensorInfo(sInfo);
 
-                    /* ...and next... */
+
                     xml.readNext();
                 }
 
@@ -227,8 +365,8 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
 
                 while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                         xml.name() == "activeSensor")) {
-                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
 
+                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
 
                         QXmlStreamAttributes sensorAttributes = xml.attributes();
 
@@ -249,10 +387,24 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
                     dependencies.addActiveSensor(sInfo);
 
                     this->sensorPad->InstrumentConfig = sc;
-                    /* ...and next... */
+
                     xml.readNext();
                 }
 
+
+            }else if(xml.name() == "position"){
+                if(xml.attributes().hasAttribute("ref")){
+                    dependencies.setStationPosition(xml.attributes().value("ref").toInt());
+                }
+            }else if(xml.name() == "coordinatesystem"){
+                if(xml.attributes().hasAttribute("ref")){
+                    dependencies.setStationCoordSystem(xml.attributes().value("ref").toInt());
+                }
+            }
+
+            if(xml.name() == "function"){
+
+               this->readFunction(xml, dependencies);
 
             }
 
@@ -282,24 +434,20 @@ ElementDependencies Station::fromOpenIndyXML(QXmlStreamReader &xml){
                             }
                         }
                     }
-                /* ...and next... */
+
                 xml.readNext();
                }
         }
 
-        if(xml.name() == "function"){
 
-           this->readFunction(xml, dependencies);
 
         }
-        /* ...and next... */
-     }
 
-    xml.readNext();
+        xml.readNext();
 
     }
 
-    return dependencies;
+    return dependencies;*/
 }
 
 /*!

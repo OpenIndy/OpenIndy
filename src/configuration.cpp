@@ -162,6 +162,29 @@ Configuration::FeatureTypes Configuration::getFeatureTypeEnum(QString name){
 }
 
 /*!
+ * \brief Configuration::getReadingTypeEnum
+ * \param name
+ * \return
+ */
+Configuration::ReadingTypes Configuration::getReadingTypeEnum(QString name){
+    if(name.compare(Configuration::sCartesian) == 0){
+        return Configuration::eCartesian;
+    }else if(name.compare(Configuration::sDistance) == 0){
+        return Configuration::eDistance;
+    }else if(name.compare(Configuration::sDirection) == 0){
+        return Configuration::eDirection;
+    }else if(name.compare(Configuration::sPolar) == 0){
+        return Configuration::ePolar;
+    }else if(name.compare(Configuration::sTemperatur) == 0){
+        return Configuration::eTemperatur;
+    }else if(name.compare(Configuration::sLevel) == 0){
+        return Configuration::eLevel;
+    }else if(name.compare("") == 0){
+        return Configuration::eUndefined;
+    }
+}
+
+/*!
  * \brief Configuration::getElementTypeString
  * Get element type name from corresponding enum value
  * \param type
@@ -272,6 +295,27 @@ QString Configuration::getFeatureTypeString(Configuration::FeatureTypes type){
         return Configuration::sEntityTemperature;
     case Configuration::eScalarEntityMeasurementSeriesFeature:
         return Configuration::sEntityMeasurementSeries;
+    default:
+        return "";
+    }
+}
+
+QString Configuration::getReadingTypeString(Configuration::ReadingTypes type){
+    switch (type) {
+    case Configuration::eCartesian:
+        return Configuration::sCartesian;
+    case Configuration::eDistance:
+        return Configuration::sDistance;
+    case Configuration::eDirection:
+        return Configuration::sDirection;
+    case Configuration::ePolar:
+        return Configuration::sPolar;
+    case Configuration::eLevel:
+        return Configuration::sLevel;
+    case Configuration::eUndefined:
+        return "";
+    case Configuration::eTemperatur:
+        return Configuration::sTemperatur;
     default:
         return "";
     }

@@ -82,6 +82,11 @@ bool ScalarEntityAngle::toOpenIndyXML(QXmlStreamWriter &stream){
 
 }
 
+/*!
+ * \brief ScalarEntityAngle::fromOpenIndyXML
+ * \param xml
+ * \return
+ */
 ElementDependencies ScalarEntityAngle::fromOpenIndyXML(QXmlStreamReader &xml){
     ElementDependencies dependencies;
 
@@ -106,10 +111,46 @@ ElementDependencies ScalarEntityAngle::fromOpenIndyXML(QXmlStreamReader &xml){
 
     xml.readNext();
 
-    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
+    while( !xml.atEnd() && xml.name().compare("geometry") != 0 ){
+
+        if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+            if(xml.name() == "angle") {
+
+                if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+                    QXmlStreamAttributes angleAttributes = xml.attributes();
+
+                    if(angleAttributes.hasAttribute("value")){
+                        this->setAngle(angleAttributes.value("value").toDouble());
+                    }
+                    xml.readNext();
+
+                }
+            }else{
+                this->readGeometryAttributes(xml,dependencies);
+                xml.readNext();
+            }
+
+        }else{
+            xml.readNext();
+        }
+
+    }
+
+    return dependencies;
+
+
+
+
+
+
+
+
+    /*while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                 xml.name() == "geometry")) {
             if(xml.tokenType() == QXmlStreamReader::StartElement) {
-                /* We've found first name. */
+
                 if(xml.name() == "angle") {
 
                         if(xml.tokenType() == QXmlStreamReader::StartElement) {
@@ -129,7 +170,7 @@ ElementDependencies ScalarEntityAngle::fromOpenIndyXML(QXmlStreamReader &xml){
             xml.readNext();
         }
 
-    return dependencies;
+    return dependencies;*/
 }
 
 bool ScalarEntityAngle::saveSimulationData()
