@@ -222,7 +222,11 @@ ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
         this->myXyz.setAt(2,attributes.value("z").toDouble());
     }
     if(attributes.hasAttribute("isValid")){
-        this->isValid = attributes.value("isVaild").toInt();
+        if(attributes.value("isValid").toInt() == 1){
+            this->isValid = true;
+        }else{
+            this->isValid = false;
+        }
     }
     if(attributes.hasAttribute("sigmaX")){
         this->sigmaXyz.setAt(0,attributes.value("sigmaX").toDouble());

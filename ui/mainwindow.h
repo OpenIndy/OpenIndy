@@ -198,6 +198,8 @@ private slots:
     void receiveConfig(FeatureWrapper*,MeasurementConfig);
     void createFeature();
 
+    void setActiveCoordinateSystem();
+
     //void fillCoordSysComboBox();
 
     void on_actionControl_pad_triggered();

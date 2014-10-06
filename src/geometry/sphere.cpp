@@ -80,7 +80,8 @@ bool Sphere::toOpenIndyXML(QXmlStreamWriter &stream){
     stream.writeAttribute("nominal",QString::number(this->isNominal));
     stream.writeAttribute("common",QString::number(this->isCommon));
     stream.writeAttribute("solved", QString::number(this->isSolved));
-
+    stream.writeAttribute("group", this->group);
+    stream.writeAttribute("comment", this->comment);
 
     //---------------specific geometry attributes--------------
     if(this->isSolved || this->isNominal){
@@ -132,6 +133,12 @@ ElementDependencies Sphere::fromOpenIndyXML(QXmlStreamReader &xml){
     }
     if(attributes.hasAttribute("solved")) {
         this->isSolved= attributes.value("solved").toInt();
+    }
+    if(attributes.hasAttribute("group")) {
+        this->group= attributes.value("group").toString();
+    }
+    if(attributes.hasAttribute("comment")) {
+        this->comment= attributes.value("comment").toString();
     }
 
     xml.readNext();

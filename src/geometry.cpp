@@ -8,7 +8,6 @@
 Geometry::Geometry(bool isNominal, QObject *parent) : Feature(parent),
     myActual(NULL), myNominalCoordSys(NULL), isNominal(isNominal)
 {
-
 }
 
 Geometry::~Geometry(){
@@ -358,7 +357,7 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
     if(xml.name().compare("observations") == 0){
 
         xml.readNext();
-        while( !xml.atEnd() && xml.name().compare("observation") == 0 ){
+        while( !xml.atEnd() && xml.name().compare("observations") != 0 ){
             if(xml.tokenType() == QXmlStreamReader::StartElement){
                 if(xml.attributes().hasAttribute("ref")){
                     dependencies.addObservationID(xml.attributes().value("ref").toInt());

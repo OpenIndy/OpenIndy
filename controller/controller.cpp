@@ -1876,7 +1876,7 @@ void Controller::setUpCoordinateSystemsModel(){
 
         this->myCoordinateSystemsModel->setStringList(myCoordSys);
 
-        //emit this->CoordSystemsModelChanged();
+        emit this->activeCoordinateSystemChanged();
 
     }catch(exception &e){
         Console::addLine(e.what());

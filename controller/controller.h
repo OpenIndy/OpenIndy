@@ -126,6 +126,8 @@ signals:
 
     void updateGeometryIcons(QStringList availableGeometries);
 
+    void activeCoordinateSystemChanged();
+
 public slots:
     void setUpFeatureGroupsModel();
     void setUpCoordinateSystemsModel();

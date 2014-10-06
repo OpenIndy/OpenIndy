@@ -85,7 +85,9 @@ bool IntersectLinePlane::setUpResult(Point &point){
     //if line and plane are available
     if(line != NULL && plane != NULL){
         //calculate intersection if possible
-        if(this->isIntersection(line, plane)){
+        bool isIntersection = false;
+        isIntersection = this->isIntersection(line, plane);
+        if(isIntersection){
             //perform intersection
             OiVec l_v(3); //direction vector for line
             OiVec p_n(3); //normal vector for plane
@@ -150,8 +152,8 @@ bool IntersectLinePlane::checkElementCount(){
  */
 bool IntersectLinePlane::isIntersection(Line *l, Plane *p){
     //scalar product of the lines's direction vector and the plane's normal vector
-    double sp;
-    OiVec::dot(sp, l->ijk, p->ijk);
+    double sp = l->ijk.getAt(0) * p->ijk.getAt(0) + l->ijk.getAt(1) * p->ijk.getAt(1)
+            + l->ijk.getAt(2) * p->ijk.getAt(2);
     if(sp > 0.0001 || sp < -0.0001){
         return true;
     }

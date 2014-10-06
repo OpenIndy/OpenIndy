@@ -264,7 +264,7 @@ void FeatureTreeViewModel::appendGeometries(FeatureTreeItem *root, QList<Feature
     root->appendChild(item);
     for(int i = 0; i < geometries.size(); i++){
         if(geometries.at(i) == NULL || geometries.at(i)->getGeometry() == NULL
-                || geometries.at(i)->getGeometry()->getNominalSystem() == NULL){
+                || (geometries.at(i)->getGeometry()->getIsNominal() && geometries.at(i)->getGeometry()->getNominalSystem() == NULL)){
             continue;
         }
         QString geomHeader = QString("%1 - %2").arg(geometries.at(i)->getGeometry()->getFeatureName())

@@ -518,8 +518,13 @@ void ProjectRestorer::resolveFeature(FeatureWrapper *fw, ElementDependencies &d)
 
 }
 
-void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d)
-{
+/*!
+ * \brief ProjectRestorer::resolveGeometry
+ * \param fw
+ * \param d
+ */
+void ProjectRestorer::resolveGeometry(FeatureWrapper *fw, ElementDependencies &d){
+
     for(int i = 0; i< this->geometries.size();i++){
         if(geometries.at(i)->getFeature()->getId() == d.elementID){
             *fw = *geometries.at(i);

@@ -102,6 +102,9 @@ void MainWindow::setConnects(){
     //inform the controller when active feature changes
     connect(this, SIGNAL(sendSelectedFeature(int)), &this->control, SLOT(setSelectedFeature(int)));
 
+    //update active coordinate system when QStringListModel in controller changes
+    connect(&this->control, SIGNAL(activeCoordinateSystemChanged()), this, SLOT(setActiveCoordinateSystem()));
+
     //connect to controller to delete one or more features
     connect(this, SIGNAL(sendDeleteFeatures(QList<FeatureWrapper*>)), &this->control, SLOT(deleteFeatures(QList<FeatureWrapper*>)));
     connect(&this->control, SIGNAL(resetFeatureSelection()), this, SLOT(resetFeatureSelection()));
@@ -193,7 +196,6 @@ void MainWindow::setConnects(){
     //show a message box when Controller emits the corresponding signal
     connect(&this->control, SIGNAL(showMessageBox(QString,QString)), this, SLOT(showMessageBox(QString,QString)));
     connect(&this->control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
-
 
     //dataimport
     connect(&this->importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&this->control,SLOT(importFeatures(QList<FeatureWrapper*>)));
@@ -780,6 +782,18 @@ void MainWindow::createFeature(){
 
     }
     this->defaultCreateFeatureSettings();
+}
+
+/*!
+ * \brief MainWindow::setActiveCoordinateSystem
+ * Set the active coordinate system as active item in the coordinate systems combo box
+ */
+void MainWindow::setActiveCoordinateSystem(){
+
+    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
+        this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());
+    }
+
 }
 
 /*!
