@@ -47,6 +47,8 @@ Controller::Controller(QObject *parent) :
 
     //emit refreshGUI();
 
+    OpenIndyServer = new OiServer();
+    OpenIndyServer->startServer();
 
 
 }

@@ -59,6 +59,8 @@
 #include "oiprojectdata.h"
 #include "oiprojectexchanger.h"
 
+#include "oiserver.h"
+
 class Feature;
 class CoordinateSystem;
 class Station;
@@ -101,6 +103,8 @@ public:
     QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
     FeatureUpdater* getFeatureUpdater();
+
+    OiServer *OpenIndyServer;
 
 signals:
     void changedStation();

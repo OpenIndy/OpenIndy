@@ -37,6 +37,7 @@ linux: LIBS = -lGLU
 INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/controller
+INCLUDEPATH += $$PWD/controller/networking
 INCLUDEPATH += $$PWD/src/geometry
 INCLUDEPATH += $$PWD/src/oiemitter
 INCLUDEPATH += $$PWD/src/plugin
@@ -174,7 +175,9 @@ SOURCES += \
     ui/simulationtreeviewmodel.cpp \
     src/simulation/simulationdata.cpp \
     ui/oimultiselectionmodel.cpp \
-	ui/oiloadingdialog.cpp
+	ui/oiloadingdialog.cpp \
+    controller/networking/oiserver.cpp \
+    controller/networking/oinetworkconnection.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -314,7 +317,9 @@ HEADERS  += \
     src/simulation/simulationdata.h \
     src/plugin/pi_generatefeaturefunction.h \
     ui/oimultiselectionmodel.h \
-	ui/oiloadingdialog.h
+	ui/oiloadingdialog.h \
+    controller/networking/oiserver.h \
+    controller/networking/oinetworkconnection.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
