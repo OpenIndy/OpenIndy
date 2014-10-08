@@ -14,7 +14,9 @@ class OiNetworkConnection : public QThread
 public:
     explicit OiNetworkConnection(QObject *parent = 0);
 
+
 signals:
+    void getProject(OiProjectData *d);
 
 public slots:
     bool setSocket(qintptr socketDescriptor);

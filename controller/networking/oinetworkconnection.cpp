@@ -5,16 +5,13 @@ OiNetworkConnection::OiNetworkConnection(QObject *parent) :
 {
     this->socket = new QTcpSocket();
 
-    connect(socket,SIGNAL(readyRead()),this,SLOT(readMessage()));
 }
 
 bool OiNetworkConnection::setSocket(qintptr socketDescriptor)
 {
     bool connectionCheck =  socket->setSocketDescriptor(socketDescriptor);
 
-    if(connectionCheck == true){
-        this->socket->write("connected_to_OpenIndy");
-    }
+   connect(this->socket,SIGNAL(readyRead()),this,SLOT(readMessage()));
 
     return connectionCheck;
 }
@@ -34,12 +31,14 @@ void OiNetworkConnection::readMessage()
         this->deleteLater();
 
     }else if(msg == "p"){
-        OiProjectData d;
 
-        d.setDevice(socket);
-        d.setProjectName("streamData");
+        OiProjectData *d = new OiProjectData();
 
-        OiProjectExchanger::saveProject(d);
+        d->setDevice(socket);
+        d->setProjectName("streamData");
+
+        emit this->getProject(d);
+
 
     }else if(msg.compare("Hello Server")==0){
 

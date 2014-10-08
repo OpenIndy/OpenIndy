@@ -35,6 +35,13 @@ void OiServer::incomingConnection(qintptr socketDescriptor)
 
     usedSockets.append(n);
 
+    connect(n,SIGNAL(getProject(OiProjectData*)),this,SLOT(sendGetProject(OiProjectData*)));
+
     n->start();
 
+}
+
+void OiServer::sendGetProject(OiProjectData *d)
+{
+    emit this->getProject(d);
 }
