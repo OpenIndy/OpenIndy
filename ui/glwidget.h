@@ -53,6 +53,7 @@ signals:
 
 public slots:
     void focusOnFeature(double x, double y, double z);
+    void activeFeatureChanged();
 
 };
 

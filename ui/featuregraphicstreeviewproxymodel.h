@@ -19,6 +19,8 @@ public:
 
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
+    QModelIndex getSourceIndex(const QModelIndex & index);
+
 protected:
     bool filterAcceptsColumn ( int source_column, const QModelIndex & source_parent ) const;
     bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;

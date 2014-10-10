@@ -21,6 +21,9 @@ GLWidget::GLWidget(QWidget *parent) :
 
     oiBackgroundColor = QColor::fromCmykF(0.59,0.40,0.10,0.10);
 
+
+    QObject::connect(OiFeatureState::getInstance(),SIGNAL(activeFeatureChanged()),this,SLOT(activeFeatureChanged()));
+
     //QTimer::singleShot(20, this, SLOT(update()));
 }
 
@@ -160,4 +163,13 @@ void GLWidget::focusOnFeature(double x, double y, double z){
     translateY = y;
     translateZ = z-1;*/
 
+}
+
+
+/*
+ * Erstes Beispiel um auf Slots zu hören
+ * */
+void GLWidget::activeFeatureChanged()
+{
+    qDebug()<<"aktives Feature geändert.";
 }

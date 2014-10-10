@@ -290,6 +290,8 @@ private slots:
 
     void on_actionSimulation_triggered();
 
+    void on_treeView_featureOverview_clicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
 
