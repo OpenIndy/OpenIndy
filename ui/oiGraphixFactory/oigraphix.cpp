@@ -45,6 +45,10 @@ void OiGraphix::drawFeature(FeatureWrapper* feature){
 
 }
 
+/*!
+ * \brief OiGraphix::drawPoint
+ * \param p
+ */
 void OiGraphix::drawPoint(Point *p){
     OiGraphixPoint point;
 
