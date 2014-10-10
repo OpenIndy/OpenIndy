@@ -7,6 +7,10 @@ OiGraphix::OiGraphix()
 {
 }
 
+/*!
+ * \brief OiGraphix::drawFeature
+ * \param feature
+ */
 void OiGraphix::drawFeature(FeatureWrapper* feature){
 
     switch(feature->getTypeOfFeature()){
