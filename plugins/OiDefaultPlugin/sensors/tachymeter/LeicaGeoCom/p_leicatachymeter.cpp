@@ -240,7 +240,7 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
 
         switch (streamFormat) {
         case Configuration::ePolar:
-            if(this->executeEDM()){
+            /*if(this->executeEDM()){
                 command = "%R1Q,2108:5000,1\r\n";
                 if(executeCommand(command)){
                     QString measuredData = this->receive();
@@ -264,11 +264,35 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
                     m.insert("distance",r.rPolar.distance);
 
                 }
+            }*/
+
+            //execute quick measurement for tracking distance
+            command ="%R1Q,2117:\r\n";
+            if(executeCommand(command)){
+                QString measuredData = this->receive();
+                QStringList polarElements = measuredData.split(",");
+
+                r.rPolar.azimuth = polarElements.at(polarElements.size()-3).toDouble();
+                r.rPolar.zenith = polarElements.at(polarElements.size()-2).toDouble();
+                r.rPolar.distance = polarElements.at(polarElements.size()-1).toDouble();
+                r.typeofReading = Configuration::ePolar;
+                r.rPolar.isValid = true;
+
+                if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                    QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                    if(sense.compare("mathematical") == 0){
+                        r.rPolar.azimuth = 2 * PI - r.rPolar.azimuth;
+                    }
+                }
+
+                m.insert("azimuth",r.rPolar.azimuth);
+                m.insert("zenith",r.rPolar.zenith);
+                m.insert("distance",r.rPolar.distance);
             }
 
             break;
         case Configuration::eCartesian:
-            if(this->executeEDM()){
+            /*if(this->executeEDM()){
                 command = "%R1Q,2108:5000,1\r\n";
                 if(executeCommand(command)){
                     QString measuredData = this->receive();
@@ -291,7 +315,32 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
                     m.insert("y",r.rCartesian.xyz.getAt(1));
                     m.insert("z",r.rCartesian.xyz.getAt(2));
                 }
+            }*/
+
+            //execute quick measurement for tracking distance
+            command = "%R1Q,2117:\r\n";
+            if(executeCommand(command)){
+                QString measuredData = this->receive();
+                QStringList polarElements = measuredData.split(",");
+
+                r.rPolar.azimuth = polarElements.at(polarElements.size()-3).toDouble();
+                r.rPolar.zenith = polarElements.at(polarElements.size()-2).toDouble();
+                r.rPolar.distance = polarElements.at(polarElements.size()-1).toDouble();
+                r.typeofReading = Configuration::eCartesian;
+                r.rPolar.isValid = true;
+
+                if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                    QString sense = this->myConfiguration->stringParameter.value("sense of rotation");
+                    if(sense.compare("mathematical") == 0){
+                        r.rPolar.azimuth = 2* PI - r.rPolar.azimuth;
+                    }
+                }
+                r.toCartesian();
+                m.insert("x",r.rCartesian.xyz.getAt(0));
+                m.insert("y",r.rCartesian.xyz.getAt(1));
+                m.insert("z",r.rCartesian.xyz.getAt(2));
             }
+
             break;
         case Configuration::eDirection:
             command = "%R1Q,2107:1\r\n";
