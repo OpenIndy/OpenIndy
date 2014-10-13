@@ -52,7 +52,7 @@ void OiGraphix::drawFeature(FeatureWrapper* feature){
 void OiGraphix::drawPoint(Point *p){
     OiGraphixPoint point;
 
-    point.draw(p->xyz.getAt(0),p->xyz.getAt(1),p->xyz.getAt(2));
+    point.draw(p);
 
     drawResiduals();
 
@@ -60,9 +60,9 @@ void OiGraphix::drawPoint(Point *p){
 
 void OiGraphix::drawLine(Line* l){
 
-    OiGraphixLine line(l->ijk.getAt(0),l->ijk.getAt(1),l->ijk.getAt(2));
+    OiGraphixLine line;
 
-    line.draw(l->xyz.getAt(0),l->xyz.getAt(1),l->xyz.getAt(2));
+    line.draw(l);
 
     drawResiduals();
 
@@ -70,17 +70,15 @@ void OiGraphix::drawLine(Line* l){
 
 void OiGraphix::drawPlane(Plane* p){
 
-    OiGraphixPlane plane(p->ijk.getAt(0),p->ijk.getAt(1),p->ijk.getAt(2));
+    OiGraphixPlane plane;
 
-    plane.draw(p->xyz.getAt(0),p->xyz.getAt(1),p->xyz.getAt(2));
-
-    drawResiduals();
+    plane.draw(p);
 
 }
 
 void OiGraphix::drawSphere(Sphere* s){
-    OiGraphixSphere sphere(s->radius,24,24);
-    sphere.draw((GLfloat)s->xyz.getAt(0),(GLfloat)s->xyz.getAt(1),(GLfloat)s->xyz.getAt(2));
+    OiGraphixSphere sphere;
+    sphere.draw(s);
 
     //TODO Verbesserungen darstellen
     drawResiduals();
@@ -89,7 +87,8 @@ void OiGraphix::drawSphere(Sphere* s){
 void OiGraphix::drawStation(Station* s){
     OiGraphixStation station;
 
-    station.draw(s->position->xyz.getAt(0),s->position->xyz.getAt(1),s->position->xyz.getAt(2));
+    station.draw(s->position);
+
 
     drawResiduals();
 }
@@ -99,9 +98,10 @@ void OiGraphix::drawStation(Station* s){
  * \param p
  */
 void OiGraphix::drawPointCloud(PointCloud *p){
+
     OiGraphixPointCloud pointCloud(p->getPointCloudPoints());
 
-    pointCloud.draw(p->getMainFocus().getAt(0), p->getMainFocus().getAt(1), p->getMainFocus().getAt(2));
+    pointCloud.draw(p);
 
     drawResiduals();
 }

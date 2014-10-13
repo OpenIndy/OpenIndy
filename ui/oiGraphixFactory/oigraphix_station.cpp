@@ -4,7 +4,11 @@ OiGraphixStation::OiGraphixStation()
 {
 }
 
-void OiGraphixStation::draw(GLfloat x, GLfloat y, GLfloat z){
+void OiGraphixStation::draw(Geometry *g){
+
+    GLfloat x = g->getXYZ().getAt(0);
+    GLfloat y = g->getXYZ().getAt(1);
+    GLfloat z = g->getXYZ().getAt(2);
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -26,8 +30,6 @@ void OiGraphixStation::draw(GLfloat x, GLfloat y, GLfloat z){
         glVertex3d(0.0, 0.0, 0.0);
         glVertex3d(0.0, 0.0, 1.0);
     glEnd();
-
-
 
     glPopMatrix();
 

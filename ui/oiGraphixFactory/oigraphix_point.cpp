@@ -4,7 +4,11 @@ OiGraphixPoint::OiGraphixPoint()
 {
 }
 
-void OiGraphixPoint::draw(GLfloat x, GLfloat y, GLfloat z){
+void OiGraphixPoint::draw(Geometry *g){
+
+    GLfloat x = g->getXYZ().getAt(0);
+    GLfloat y = g->getXYZ().getAt(1);
+    GLfloat z = g->getXYZ().getAt(2);
 
     glBegin(GL_POINTS);
 

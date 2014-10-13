@@ -34,10 +34,20 @@ public:
 private:
     void draw();
     int faceAtPosition(const QPoint &pos);
+    void drawSacle();
+    void setCenterAndReadius();
+
+    void mouseToTrackball(int x, int y, int W, int H, OiVec &v);
+    void trackball(OiVec u, OiVec v);
+
 
     GLfloat rotationX;
     GLfloat rotationY;
     GLfloat rotationZ;
+
+    OiVec rotationAxes;
+    GLfloat rotationAngle;
+
     GLfloat translateX;
     GLfloat translateY;
     GLfloat translateZ;
@@ -47,12 +57,20 @@ private:
     int yMax;
     int zMax;
 
+    OiVec center;
+    double radius;
+
+    double zoom;
+
+    int oldMouseX;
+    int oldMouseY;
+
     QColor oiBackgroundColor;
 
 signals:
 
 public slots:
-    void focusOnFeature(double x, double y, double z);
+    void focusOnFeature(Geometry *g);
     void activeFeatureChanged();
 
 };

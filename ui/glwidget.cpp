@@ -3,9 +3,17 @@
 GLWidget::GLWidget(QWidget *parent) :
     QGLWidget(parent)
 {
+    zoom = 1.0;
+
+    center = OiVec(4);
+    radius = 1.0;
+
+    rotationAxes = OiVec(4);
+    rotationAngle = 0.0;
+
 
     setFormat(QGLFormat (QGL::DoubleBuffer | QGL::DepthBuffer));
-    translateZ = -1.0;
+    translateZ = 0.0;
     translateX = 0.0;
     translateY = 0.0;
     rotationX =0.0;
@@ -29,6 +37,8 @@ GLWidget::GLWidget(QWidget *parent) :
 
 
 void GLWidget::initializeGL(){
+
+
     qglClearColor(oiBackgroundColor.lighter());
     //glShadeModel(GL_FLAT);
     glEnable(GL_DEPTH_TEST);
@@ -85,33 +95,70 @@ void GLWidget::resizeGL(int w, int h){
 
 }
 
+
+void GLWidget::setCenterAndReadius(){
+    radius = 1.0;
+
+    if(OiFeatureState::getFeatures().size() > 0){
+
+        for(int i =0; i< OiFeatureState::getFeatures().size(); i++){
+            OiGraphix::drawFeature(OiFeatureState::getFeatures().at(i));
+
+            if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL){
+                Geometry *g = OiFeatureState::getFeatures().at(i)->getGeometry();
+
+                center = center + g->getXYZ();
+
+                double x = g->getXYZ().getAt(0);
+                double y = g->getXYZ().getAt(1);
+                double z = g->getXYZ().getAt(2);
+
+                double abs = sqrt(x*x + y*y + z*z);
+
+                if (abs > radius){
+                    radius = abs;
+                }
+
+
+            }
+        }
+
+        center = center/OiFeatureState::getFeatures().size();
+    }
+}
+
+
+
 /*!
  * \brief GLWidget::draw
  * Redraw all features
  */
 void GLWidget::draw(){
 
+    setCenterAndReadius();
+
     glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
+
+
     glLoadIdentity();
-    //TODO sicht auf schwerpunkt zentrieren
-    glTranslatef(translateX, translateY, translateZ);
+
+
     glRotatef(rotationX, 1.0, 0.0 ,0.0);
     glRotatef(rotationY, 0.0, 1.0 ,0.0);
     glRotatef(rotationZ, 0.0, 0.0 ,1.0);
 
 
+    glScaled(zoom,zoom,zoom);
+
+
+    //glTranslatef(center.getAt(0)+translateX, center.getAt(1)+translateY, center.getAt(2)+translateZ);
+
+    glTranslated(translateX, translateY, translateZ);
+
     qglColor(Qt::red);
-    if(OiFeatureState::getFeatures().size() > 0){
-
-        for(int i =0; i< OiFeatureState::getFeatures().size(); i++){
-            OiGraphix::drawFeature(OiFeatureState::getFeatures().at(i));
-        }
 
 
-    }
-
-    glPopMatrix();
+   // drawSacle();
     update();
 
 
@@ -123,9 +170,31 @@ int GLWidget::faceAtPosition(const QPoint &pos){
 
 void GLWidget::mousePressEvent(QMouseEvent *event){
     lastPos = event->pos();
+
+    oldMouseX = event->x();
+    oldMouseY = event->y();
+
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event){
+
+
+    OiVec u;
+    OiVec v;
+
+    mouseToTrackball(oldMouseX, oldMouseY, width(), height(), u);
+
+    mouseToTrackball(event->x(),event->y(),width(),height(),v);
+
+    trackball(u,v);
+
+    oldMouseX = event->x();
+    oldMouseY = event->y();
+
+
+
+    //ab hier alte Drehung, kann dann weg
+/*
     GLfloat dx = GLfloat(event->x() - lastPos.x()) / width();
     GLfloat dy = GLfloat(event->y() - lastPos.y()) / height();
 
@@ -141,7 +210,59 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event){
         updateGL();
     }
     lastPos = event->pos();
+    */
 }
+
+void GLWidget::mouseToTrackball (int x, int y, int W, int H, OiVec &v)
+{
+    double ox, oy, oz, r;
+
+    if (W>H)
+    {
+        r = H/2.0;
+    }
+    else
+    {
+        r = W/2.0;
+    }
+
+    ox = (x - r)/r;
+    oy = (y - r)/r;
+
+    oy *= -1;
+
+
+    if (ox*ox + oy*oy > radius)
+    {
+        double length = sqrt(ox*ox+oy*oy);
+        ox = ox/length;
+        oy = oy/length;
+
+        oz = 0.0;
+    }
+    else
+    {
+        oz = sqrt(radius - ox*ox - oy*oy);
+    }
+
+
+    v.setAt(0,ox);
+    v.setAt(1,oy);
+    v.setAt(2, 1.0);
+
+
+}
+
+void GLWidget::trackball(OiVec u, OiVec v)
+{
+
+    OiVec::cross(rotationAxes, v, u);
+
+
+
+
+}
+
 
 void GLWidget::mouseDoubleClickEvent(QMouseEvent *event){
     //TODO bei doppel klick koordinaten abgreifen
@@ -152,24 +273,60 @@ void GLWidget::mouseDoubleClickEvent(QMouseEvent *event){
 
 void GLWidget::wheelEvent(QWheelEvent *event){
 
-    translateZ += 0.01*event->delta();
-    event->accept();
-    updateGL();
+    if (event->delta() < 0) zoom *= 1.2; else zoom *= 1/1.2;
+   updateGL();
 }
 
-void GLWidget::focusOnFeature(double x, double y, double z){
+void GLWidget::focusOnFeature(Geometry *g){
     //TODO auf actives feature springen
-   /* translateX = x;
+    //gluLookAt
+
+    double x = g->getXYZ().getAt(0);
+    double y = g->getXYZ().getAt(1);
+    double z = g->getXYZ().getAt(2);
+
+    translateX = x;
     translateY = y;
-    translateZ = z-1;*/
+    translateZ = z;
+
+
+    updateGL();
 
 }
 
 
 /*
- * Erstes Beispiel um auf Slots zu hören
+ *
  * */
 void GLWidget::activeFeatureChanged()
 {
-    qDebug()<<"aktives Feature geändert.";
+    if(OiFeatureState::getActiveFeature() != NULL){
+
+        if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+            Geometry *g = OiFeatureState::getActiveFeature()->getGeometry();
+
+            focusOnFeature(g);
+      }
+   }
 }
+
+ void GLWidget::drawSacle(){
+
+     glMatrixMode(GL_MODELVIEW);
+
+     glPushMatrix();
+
+     glLoadIdentity();
+     glPointSize(10.0);
+     glColor3f(0.0f, 0.0f, 0.0f);
+
+
+     //just a test line
+     glBegin(GL_LINES);
+         glVertex3f(0, -1, -2);
+         glVertex3f(1, -1, -2);
+     glEnd();
+
+
+     glPopMatrix();
+ }
