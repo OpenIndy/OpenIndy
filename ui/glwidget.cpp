@@ -3,22 +3,17 @@
 GLWidget::GLWidget(QWidget *parent) :
     QGLWidget(parent)
 {
+    q_now = QQuaternion();  //Quatanion represents current rotation of the view
+
     zoom = 1.0;
 
     center = OiVec(4);
     radius = 1.0;
 
-    rotationAxes = OiVec(4);
-    rotationAngle = 0.0;
-
-
     setFormat(QGLFormat (QGL::DoubleBuffer | QGL::DepthBuffer));
     translateZ = 0.0;
     translateX = 0.0;
     translateY = 0.0;
-    rotationX =0.0;
-    rotationY =0.0;
-    rotationZ =0.0;
     xMax = 0;
     yMax = 0;
     zMax = 0;
@@ -68,6 +63,10 @@ void GLWidget::initializeGL(){
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+
+
+
 }
 
 void GLWidget::paintGL(){
@@ -96,35 +95,51 @@ void GLWidget::resizeGL(int w, int h){
 }
 
 
-void GLWidget::setCenterAndReadius(){
+void GLWidget::updateCenterAndReadius(){
+    //set default values for radius and center
+    center.setAt(0,0.0);
+    center.setAt(1,0.0);
+    center.setAt(2,0.0);
+
     radius = 1.0;
 
-    if(OiFeatureState::getFeatures().size() > 0){
+        if(OiFeatureState::getFeatures().size() > 0)
+        {
+            //calculate center
+            for(int i =0; i< OiFeatureState::getFeatures().size(); i++)
+            {
+                if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL)
+                {
+                    Geometry *g = OiFeatureState::getFeatures().at(i)->getGeometry();
 
-        for(int i =0; i< OiFeatureState::getFeatures().size(); i++){
-            OiGraphix::drawFeature(OiFeatureState::getFeatures().at(i));
-
-            if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL){
-                Geometry *g = OiFeatureState::getFeatures().at(i)->getGeometry();
-
-                center = center + g->getXYZ();
-
-                double x = g->getXYZ().getAt(0);
-                double y = g->getXYZ().getAt(1);
-                double z = g->getXYZ().getAt(2);
-
-                double abs = sqrt(x*x + y*y + z*z);
-
-                if (abs > radius){
-                    radius = abs;
+                    center = center + g->getXYZ();
                 }
+            }
 
+            center = center/OiFeatureState::getFeatures().size();
 
+            //calculate radius
+            for(int i =0; i< OiFeatureState::getFeatures().size(); i++)
+            {
+                if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL)
+                {
+                    Geometry *g = OiFeatureState::getFeatures().at(i)->getGeometry();
+
+                    OiVec distance = g->getXYZ() - center;
+
+                    double x = distance.getAt(0);
+                    double y = distance.getAt(1);
+                    double z = distance.getAt(2);
+
+                    double abs = sqrt(x*x + y*y + z*z);
+
+                    if (abs > radius)
+                    {
+                        radius = abs;
+                    }
+                }
             }
         }
-
-        center = center/OiFeatureState::getFeatures().size();
-    }
 }
 
 
@@ -135,30 +150,44 @@ void GLWidget::setCenterAndReadius(){
  */
 void GLWidget::draw(){
 
-    setCenterAndReadius();
+    updateCenterAndReadius();
+
+
 
     glMatrixMode(GL_MODELVIEW);
 
-
     glLoadIdentity();
 
-
-    glRotatef(rotationX, 1.0, 0.0 ,0.0);
-    glRotatef(rotationY, 0.0, 1.0 ,0.0);
-    glRotatef(rotationZ, 0.0, 0.0 ,1.0);
-
+    //rotation
 
     glScaled(zoom,zoom,zoom);
 
-
-    //glTranslatef(center.getAt(0)+translateX, center.getAt(1)+translateY, center.getAt(2)+translateZ);
-
+ //   glTranslated(center.getAt(0), center.getAt(1), center.getAt(2));
     glTranslated(translateX, translateY, translateZ);
+
+    QMatrix4x4 R = QMatrix4x4();
+    R.rotate(q_now);
+    glMultMatrixf(R.constData());
+
 
     qglColor(Qt::red);
 
+    //draw features
+    if(OiFeatureState::getFeatures().size() > 0)
+    {
+        for(int i =0; i< OiFeatureState::getFeatures().size(); i++)
+        {
+             OiGraphix::drawFeature(OiFeatureState::getFeatures().at(i));
+        }
+    }
+    drawCenterSphere();
 
-   // drawSacle();
+
+    glTranslated(-translateX, -translateY, -translateZ);
+ //   glTranslated(-center.getAt(0), -center.getAt(1), -center.getAt(2));
+
+   // drawScale();
+
     update();
 
 
@@ -174,43 +203,77 @@ void GLWidget::mousePressEvent(QMouseEvent *event){
     oldMouseX = event->x();
     oldMouseY = event->y();
 
+    qDebug()<<q_now.scalar();
 }
+
+
+
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event){
 
-
-    OiVec u;
-    OiVec v;
-
-    mouseToTrackball(oldMouseX, oldMouseY, width(), height(), u);
-
-    mouseToTrackball(event->x(),event->y(),width(),height(),v);
-
-    trackball(u,v);
-
-    oldMouseX = event->x();
-    oldMouseY = event->y();
-
-
-
-    //ab hier alte Drehung, kann dann weg
-/*
     GLfloat dx = GLfloat(event->x() - lastPos.x()) / width();
     GLfloat dy = GLfloat(event->y() - lastPos.y()) / height();
+
+
+    if(event->buttons() & Qt::LeftButton) {
+
+        OiVec u,v;
+        QQuaternion q = QQuaternion();
+
+        u = OiVec(3);
+        v = OiVec(3);
+
+        mouseToTrackball(oldMouseX, oldMouseY, width(), height(), u);
+
+        mouseToTrackball(event->x(),event->y(),width(),height(),v);
+
+        trackball(u,v,q);
+
+
+        q_now =q*q_now;
+
+        oldMouseX = event->x();
+        oldMouseY = event->y();
+
+
+
+    }
+    //ab hier alte Drehung, kann dann weg
+    /*
 
     if(event->buttons() & Qt::LeftButton) {
         rotationX += 180 *dy;
         rotationY += 180 *dx;
         updateGL();
-    } else if(event->buttons() & Qt::RightButton){
-        //rotationX += 180 * dy;
-        //rotationZ += 180 * dx;
+    } */
+    else if(event->buttons() & Qt::RightButton)
+    {
         translateX += 10*dx;
         translateY += 10*dy;
-        updateGL();
+
     }
     lastPos = event->pos();
-    */
+
+     updateGL();
+
+}
+
+
+
+void GLWidget::trackball(OiVec u, OiVec v, QQuaternion &q){
+        OiVec uv = OiVec(3);
+        double utv = 0.0;
+
+        OiVec::cross(uv, v, u);
+        OiVec::dot(utv,u,v);
+
+        q.setScalar((1+ utv));
+        q.setX(uv.getAt(0));
+        q.setY(uv.getAt(1));
+        q.setZ(uv.getAt(2));
+
+        q.normalize();
+
 }
 
 void GLWidget::mouseToTrackball (int x, int y, int W, int H, OiVec &v)
@@ -245,23 +308,12 @@ void GLWidget::mouseToTrackball (int x, int y, int W, int H, OiVec &v)
         oz = sqrt(radius - ox*ox - oy*oy);
     }
 
-
     v.setAt(0,ox);
     v.setAt(1,oy);
-    v.setAt(2, 1.0);
-
-
-}
-
-void GLWidget::trackball(OiVec u, OiVec v)
-{
-
-    OiVec::cross(rotationAxes, v, u);
-
-
-
+    v.setAt(2,oz);
 
 }
+
 
 
 void GLWidget::mouseDoubleClickEvent(QMouseEvent *event){
@@ -285,10 +337,16 @@ void GLWidget::focusOnFeature(Geometry *g){
     double y = g->getXYZ().getAt(1);
     double z = g->getXYZ().getAt(2);
 
-    translateX = x;
-    translateY = y;
-    translateZ = z;
+    translateX = -x;
+    translateY = -y;
+    translateZ = -z;
 
+    zoom = 1.0;
+
+    q_now.setX(0);
+    q_now.setY(0);
+    q_now.setZ(0);
+    q_now.setScalar(1);
 
     updateGL();
 
@@ -310,23 +368,31 @@ void GLWidget::activeFeatureChanged()
    }
 }
 
- void GLWidget::drawSacle(){
+ void GLWidget::drawScale(){
+    int h = height();
+    int w = width();
 
-     glMatrixMode(GL_MODELVIEW);
 
+    glPushMatrix();
+    glLoadIdentity();
+    glPointSize(10.0);
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+    //just a testline
+    glBegin(GL_LINES);
+        glVertex3f(1, 1, 0);
+        glVertex3f(3, 1, 0);
+    glEnd();
+
+
+    glPopMatrix();
+ }
+
+ void GLWidget::drawCenterSphere(){
      glPushMatrix();
-
-     glLoadIdentity();
-     glPointSize(10.0);
-     glColor3f(0.0f, 0.0f, 0.0f);
-
-
-     //just a test line
-     glBegin(GL_LINES);
-         glVertex3f(0, -1, -2);
-         glVertex3f(1, -1, -2);
-     glEnd();
-
-
+         glTranslatef(center.getAt(0),center.getAt(1),center.getAt(2));
+         GLUquadric *quadratic = gluNewQuadric();
+         glColor3f(0.8f, 0.8f, 0.8f);
+         gluSphere(quadratic, radius, 32, 32);
      glPopMatrix();
  }

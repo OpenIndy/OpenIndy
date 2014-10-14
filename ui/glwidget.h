@@ -10,6 +10,9 @@
 #include "oiGraphixFactory/oigraphix.h"
 #include "oifeaturestate.h"
 
+#include <QQuaternion>
+#include <QMatrix4x4>
+
 #ifdef Q_OS_MAC
     #include <OpenGL/glu.h>
 #else
@@ -34,16 +37,14 @@ public:
 private:
     void draw();
     int faceAtPosition(const QPoint &pos);
-    void drawSacle();
-    void setCenterAndReadius();
+    void drawScale();
+    void updateCenterAndReadius();
 
     void mouseToTrackball(int x, int y, int W, int H, OiVec &v);
-    void trackball(OiVec u, OiVec v);
+    void trackball(OiVec u, OiVec v, QQuaternion &q);
+    void drawCenterSphere();
 
-
-    GLfloat rotationX;
-    GLfloat rotationY;
-    GLfloat rotationZ;
+    QQuaternion q_now;
 
     OiVec rotationAxes;
     GLfloat rotationAngle;
