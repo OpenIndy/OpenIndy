@@ -186,7 +186,7 @@ void GLWidget::draw(){
     glTranslated(-translateX, -translateY, -translateZ);
  //   glTranslated(-center.getAt(0), -center.getAt(1), -center.getAt(2));
 
-   // drawScale();
+    drawScale();
 
     update();
 
@@ -369,23 +369,34 @@ void GLWidget::activeFeatureChanged()
 }
 
  void GLWidget::drawScale(){
-    int h = height();
-    int w = width();
+     //this is the first attempt using only OpneGL
+
+         glMatrixMode(GL_MODELVIEW);
 
 
-    glPushMatrix();
-    glLoadIdentity();
-    glPointSize(10.0);
-    glColor3f(0.0f, 0.0f, 0.0f);
+         //this draws a simple ruler
+         glPushMatrix();
+             glLoadIdentity();
+             glPointSize(10.0);
 
-    //just a testline
-    glBegin(GL_LINES);
-        glVertex3f(1, 1, 0);
-        glVertex3f(3, 1, 0);
-    glEnd();
+             glColor3f(0.0f, 0.0f, 0.0f);
 
+             glBegin(GL_LINES);
+                 glVertex2f(3, -2);
+                 glVertex2f(4, -2);
+             glEnd();
 
-    glPopMatrix();
+             glBegin(GL_LINES);
+                 glVertex2f(3, -1.95);
+                 glVertex2f(3, -2.05);
+             glEnd();
+
+             glBegin(GL_LINES);
+                 glVertex2f(4, -1.95);
+                 glVertex2f(4, -2.05);
+             glEnd();
+         glPopMatrix();
+
  }
 
  void GLWidget::drawCenterSphere(){
