@@ -41,6 +41,9 @@ public:
     bool addSensorInfo(sensorInfo info);
     bool addActiveSensor(sensorInfo info);
 
+    bool addUsedFor(int id);
+    bool addPreviouslyNeeded(int id);
+
     bool setStationPosition(int id);
     bool setStationCoordSystem(int id);
     int getStationPosition();
@@ -59,7 +62,8 @@ public:
 
     sensorInfo getActiveSensor();
 
-
+    QList<int> getUsedFor();
+    QList<int> getPreviouslyNeeded();
 
 private:
     bool hasSensorPlugin;
@@ -76,6 +80,9 @@ private:
 
     int stationCoordSystem;
     int stationPosition;
+
+    QList<int> usedFor;
+    QList<int> previouslyNeeded;
 
 };
 

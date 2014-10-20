@@ -332,9 +332,7 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
             }
          }
         xml.readNext();
-    }
-
-    if(xml.name() == "measurementconfig") {
+    }else if(xml.name() == "measurementconfig") {
 
         while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                 xml.name() == "measurementconfig")) {
@@ -352,9 +350,7 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
              }
             xml.readNext();
         }
-    }
-
-    if(xml.name().compare("observations") == 0){
+    }else if(xml.name().compare("observations") == 0){
 
         xml.readNext();
         while( !xml.atEnd() && xml.name().compare("observations") != 0 ){
@@ -366,9 +362,7 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
             xml.readNext();
         }
 
-    }
-
-    if(xml.name().compare("nominalGeometries") == 0){
+    }else if(xml.name().compare("nominalGeometries") == 0){
 
         xml.readNext();
         while( !xml.atEnd() && xml.name().compare("geometry") == 0 ){
@@ -380,21 +374,21 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
             xml.readNext();
         }
 
-    }
-
-    if(xml.name().compare("coordinatesystem") == 0){
+    }else if(xml.name().compare("coordinatesystem") == 0){
 
         if(xml.attributes().hasAttribute("ref")){
             dependencies.addFeatureID(xml.attributes().value("ref").toInt(),"coordinatesystem");
         }
         xml.readNext();
 
-    }
+    }else if(xml.name() == "function"){
 
-    if(xml.name() == "function"){
-
-       this->readFunction(xml, dependencies);
+        this->readFunction(xml, dependencies);
         xml.readNext();
+
+    }else{
+
+        this->readFeatureAttributes(xml, dependencies);
 
     }
 

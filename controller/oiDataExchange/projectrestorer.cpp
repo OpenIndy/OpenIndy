@@ -299,6 +299,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwp->setPoint(p);
 
         this->geometries.append(fwp);
+        this->features.append(fwp);
         this->dependencies.append(dp);
         break;
 
@@ -311,6 +312,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwpl->setPlane(pl);
 
         this->geometries.append(fwpl);
+        this->features.append(fwpl);
         this->dependencies.append(dpl);
         break;
 
@@ -323,6 +325,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwsp->setSphere(sp);
 
         this->geometries.append(fwsp);
+        this->features.append(fwsp);
         this->dependencies.append(dsp);
         break;
 
@@ -335,6 +338,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwl->setLine(l);
 
         this->geometries.append(fwl);
+        this->features.append(fwl);
         this->dependencies.append(dl);
         break;
 
@@ -347,6 +351,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwsAngle->setScalarEntityAngle(sAngle);
 
         this->geometries.append(fwsAngle);
+        this->features.append(fwsAngle);
         this->dependencies.append(dsAngle);
         break;
 
@@ -359,6 +364,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwsDistance->setScalarEntityDistance(sDistance);
 
         this->geometries.append(fwsDistance);
+        this->features.append(fwsDistance);
         this->dependencies.append(dsDistance);
         break;
 
@@ -447,12 +453,15 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
         switch (d.typeOfElement) {
         case (Configuration::eStationElement):{
             this->resolveStation(resolvedFeature,d);
+            this->features.append(resolvedFeature);
             break;
         }case (Configuration::eCoordinateSystemElement):{
             this->resolveCoordinateSystem(resolvedFeature,d);
+            this->features.append(resolvedFeature);
             break;
         }case (Configuration::eTrafoParamElement):{
             this->resolveTrafoParam(resolvedFeature,d);
+            this->features.append(resolvedFeature);
             break;
         }case (Configuration::eObservationElement):{
             this->resolveObservation(d);
@@ -463,20 +472,35 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
         }
 
         if(d.typeOfElement != Configuration::eObservationElement && !this->stationElements.contains(d.elementID)){
-           OiFeatureState::addFeature(resolvedFeature);
+            OiFeatureState::addFeature(resolvedFeature);
 
-           if(resolvedFeature->getStation()!=NULL && resolvedFeature->getFeature()->getId() == activeStationId){
-               resolvedFeature->getStation()->setActiveStationState(true);
+            if(resolvedFeature->getStation()!=NULL && resolvedFeature->getFeature()->getId() == activeStationId){
+                resolvedFeature->getStation()->setActiveStationState(true);
 
-               if(resolvedFeature->getStation()->coordSys !=NULL && resolvedFeature->getStation()->coordSys->getId() == activeCoordSystemId){
-                   resolvedFeature->getStation()->coordSys->setActiveCoordinateSystemState(true);
-               }
-           }
+                if(resolvedFeature->getStation()->coordSys !=NULL && resolvedFeature->getStation()->coordSys->getId() == activeCoordSystemId){
+                    resolvedFeature->getStation()->coordSys->setActiveCoordinateSystemState(true);
+                }
+            }
 
-           if(resolvedFeature->getCoordinateSystem()!=NULL && resolvedFeature->getFeature()->getId() == activeCoordSystemId){
-               resolvedFeature->getCoordinateSystem()->setActiveCoordinateSystemState(true);
-           }
+            if(resolvedFeature->getCoordinateSystem()!=NULL && resolvedFeature->getFeature()->getId() == activeCoordSystemId){
+                resolvedFeature->getCoordinateSystem()->setActiveCoordinateSystemState(true);
+            }
+
         }
+    }
+
+    /*
+     * add references to usedFor and previouslyNeeded features here
+     * because now all features are in the features list
+     */
+    foreach(ElementDependencies d, this->dependencies){
+
+        FeatureWrapper *myFeature = this->findFeature(d.elementID);
+        if(myFeature != NULL && myFeature->getFeature() != NULL){
+            this->addUsedFor(myFeature, d);
+            this->addPreviouslyNeeded(myFeature, d);
+        }
+
     }
 
     OiFeatureState::sortFeaturesById();
@@ -745,6 +769,54 @@ QList<Function *> ProjectRestorer::resolveFunctions(ElementDependencies &d)
   }
 
   return featureFunctions;
+
+}
+
+/*!
+ * \brief ProjectRestorer::addUsedFor
+ * \param f
+ * \param d
+ */
+void ProjectRestorer::addUsedFor(FeatureWrapper *f, ElementDependencies &d){
+
+    QList<int> usedFor = d.getUsedFor();
+    if(f != NULL && f->getFeature() != NULL && usedFor.size() > 0){
+
+        //get all features and add them as usedFor features
+        for(int i = 0; i < usedFor.size(); i++){
+
+            FeatureWrapper *myFeature = this->findFeature(usedFor.at(i));
+            if(myFeature != NULL && myFeature->getFeature() != NULL){
+                f->getFeature()->usedFor.append(myFeature);
+            }
+
+        }
+
+    }
+
+}
+
+/*!
+ * \brief ProjectRestorer::addPreviouslyNeeded
+ * \param f
+ * \param d
+ */
+void ProjectRestorer::addPreviouslyNeeded(FeatureWrapper *f, ElementDependencies &d){
+
+    QList<int> previouslyNeeded = d.getPreviouslyNeeded();
+    if(f != NULL && f->getFeature() != NULL && previouslyNeeded.size() > 0){
+
+        //get all features and add them as previouslyNeeded features
+        for(int i = 0; i < previouslyNeeded.size(); i++){
+
+            FeatureWrapper *myFeature = this->findFeature(previouslyNeeded.at(i));
+            if(myFeature != NULL && myFeature->getFeature() != NULL){
+                f->getFeature()->previouslyNeeded.append(myFeature);
+            }
+
+        }
+
+    }
 
 }
 

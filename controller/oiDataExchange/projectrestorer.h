@@ -64,6 +64,8 @@ private:
     QList<Function*> resolveFunctions(ElementDependencies &d);
     //void readOiProjectData(QXmlStreamReader &xml);
 
+    void addUsedFor(FeatureWrapper *f, ElementDependencies &d);
+    void addPreviouslyNeeded(FeatureWrapper *f, ElementDependencies &d);
 
 };
 

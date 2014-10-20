@@ -589,17 +589,15 @@ bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
  */
 bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies){
 
-    QXmlStreamAttributes memberAttributes = xml.attributes();
-
     if(xml.name().compare("usedFor") == 0){
 
         xml.readNext();
 
         while( !xml.atEnd() && xml.name().compare("usedFor") != 0 ){
 
-            if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name().compare("feature")){
-                if(memberAttributes.hasAttribute("ref")){
-                    dependencies.addFeatureID(memberAttributes.value("ref").toInt(), "usedFor");
+            if(xml.tokenType() == QXmlStreamReader::StartElement){
+                if(xml.attributes().hasAttribute("ref")){
+                    dependencies.addUsedFor(xml.attributes().value("ref").toInt());
                 }
             }
             xml.readNext();
@@ -612,9 +610,9 @@ bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &
 
         while( !xml.atEnd() && xml.name().compare("previouslyNeeded") != 0 ){
 
-            if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name().compare("feature")){
-                if(memberAttributes.hasAttribute("ref")){
-                    dependencies.addFeatureID(memberAttributes.value("ref").toInt(), "previouslyNeeded");
+            if(xml.tokenType() == QXmlStreamReader::StartElement){
+                if(xml.attributes().hasAttribute("ref")){
+                    dependencies.addPreviouslyNeeded(xml.attributes().value("ref").toInt());
                 }
             }
             xml.readNext();
@@ -729,5 +727,75 @@ bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies &d){
     d.addFunctionInfo(f);
     return true;
     }
+
+}
+
+/*!
+ * \brief Feature::readUsedFor
+ * Loads and saves the features which this feature is used for calculation
+ * \param xml
+ * \param d
+ * \return
+ */
+bool Feature::readUsedFor(QXmlStreamReader &xml, ElementDependencies &d){
+
+    if(xml.name() == "usedFor"){
+
+        while( !(xml.tokenType() == QXmlStreamReader::EndElement &&
+                xml.name() == "usedFor")){
+
+            if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == "feature") {
+
+                QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                if(memberAttributes.hasAttribute("ref")){
+                    d.addUsedFor(memberAttributes.value("ref").toInt());
+                }
+
+            }
+            xml.readNext();
+
+        }
+
+        return true;
+
+    }
+
+    return false;
+
+}
+
+/*!
+ * \brief Feature::readPreviouslyNeeded
+ * Loads and saves the features which have to be calculated before this feature
+ * \param xml
+ * \param d
+ * \return
+ */
+bool Feature::readPreviouslyNeeded(QXmlStreamReader &xml, ElementDependencies &d){
+
+    if(xml.name() == "previouslyNeeded"){
+
+        while( !(xml.tokenType() == QXmlStreamReader::EndElement &&
+                xml.name() == "previouslyNeeded")){
+
+            if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == "feature") {
+
+                QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                if(memberAttributes.hasAttribute("ref")){
+                    d.addPreviouslyNeeded(memberAttributes.value("ref").toInt());
+                }
+
+            }
+            xml.readNext();
+
+        }
+
+        return true;
+
+    }
+
+    return false;
 
 }

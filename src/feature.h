@@ -120,7 +120,9 @@ protected:
 
     bool writeFeatureAttributes(QXmlStreamWriter& stream);
     bool readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies);
-    bool readFunction(QXmlStreamReader &xml ,ElementDependencies &d);
+    bool readFunction(QXmlStreamReader &xml, ElementDependencies &d);
+    bool readUsedFor(QXmlStreamReader &xml, ElementDependencies &d);
+    bool readPreviouslyNeeded(QXmlStreamReader &xml, ElementDependencies &d);
 };
 
 #endif // FEATURE_H
