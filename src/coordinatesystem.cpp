@@ -370,9 +370,9 @@ bool CoordinateSystem::toOpenIndyXML(QXmlStreamWriter &stream){
     }
 
     if(this->trafoParams.size() > 0){
-        stream.writeStartElement("transformationParameters");
+        stream.writeStartElement("transformationparameters");
         for(int k =0;k<this->trafoParams.size();k++){
-            stream.writeStartElement("transformationParameter");
+            stream.writeStartElement("transformationparameter");
             stream.writeAttribute("ref", QString::number(this->trafoParams.at(k)->getId()));
             stream.writeEndElement();
         }

@@ -49,6 +49,11 @@ public:
     int getStationPosition();
     int getStationCoordSystem();
 
+    void setFromSystem(int id);
+    void setToSystem(int id);
+    int getFromSystem();
+    int getToSystem();
+
     bool hasPluginSensor();
     bool hasPluginFunction();
     bool hasObservation();
@@ -83,6 +88,8 @@ private:
 
     QList<int> usedFor;
     QList<int> previouslyNeeded;
+
+    int from, to; //start an dest coordinate systems of a trafoParam
 
 };
 

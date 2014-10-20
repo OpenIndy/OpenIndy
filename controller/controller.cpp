@@ -1509,7 +1509,12 @@ bool Controller::loadProject(OiProjectData &projectData){
     //delete all features
     OiFeatureState::resetFeatureLists();
 
-    return OiProjectExchanger::loadProject(projectData);
+    bool result = OiProjectExchanger::loadProject(projectData);
+
+    //recalc all features after loading
+    this->recalcAll();
+
+    return result;
 
 }
 

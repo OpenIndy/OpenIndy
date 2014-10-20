@@ -687,7 +687,6 @@ bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies &d){
             f.executionIndex = attributes.value("executionIndex").toInt();
         }
 
-
         while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                 xml.name() == "function")) {
             if(xml.tokenType() == QXmlStreamReader::StartElement) {

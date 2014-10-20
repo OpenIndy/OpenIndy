@@ -41,9 +41,9 @@
         <coordinatesystems>
           <coordinatesystem id="%12345%" name="%string%" solved="%true%">
             <expansionOrigin x="%1245.00%" y="%1245.00%" z="%1245.00%" />
-            <transformationParameters>
-              <transformationParameter ref="%string%" />
-            </transformationParameters>
+            <transformationparameters>
+              <transformationparameter ref="%string%" />
+            </transformationparameters>
             <observations>
               <observation ref="%12345%" />
             </observations>
@@ -213,7 +213,6 @@
           <as:constraint action="makeOptional(//station/usedFor)" />
           <as:constraint action="makeRepeatable(//stations/station)" />
           <as:constraint action="setNumberMask(//to/@ref,#######)" />
-          <as:constraint action="makeRepeatable(//transformationParameters/transformationParameter)" />
           <as:constraint action="datatype(//transformationparameter/@datumtrafo,boolean)" />
           <as:constraint action="setNumberMask(//transformationparameter/@id,#######)" />
           <as:constraint action="datatype(//transformationparameter/@movement,boolean)" />

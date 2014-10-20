@@ -119,6 +119,38 @@ int ElementDependencies::getStationCoordSystem()
     return this->stationCoordSystem;
 }
 
+/*!
+ * \brief ElementDependencies::setFromSystem
+ * \param id
+ */
+void ElementDependencies::setFromSystem(int id){
+    this->from = id;
+}
+
+/*!
+ * \brief ElementDependencies::setToSystem
+ * \param id
+ */
+void ElementDependencies::setToSystem(int id){
+   this->to = id;
+}
+
+/*!
+ * \brief ElementDependencies::getFromSystem
+ * \return
+ */
+int ElementDependencies::getFromSystem(){
+    return this->from;
+}
+
+/*!
+ * \brief ElementDependencies::getToSystem
+ * \return
+ */
+int ElementDependencies::getToSystem(){
+    return this->to;
+}
+
 bool ElementDependencies::hasPluginSensor()
 {
     return this->hasSensorPlugin;

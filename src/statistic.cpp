@@ -2,6 +2,9 @@
 
 Statistic::Statistic()
 {
+
+    //TODO initialize mats and vecs with their size
+
     this->isValid = false;
     s0_apriori = 0.0;
     s0_aposteriori = 0.0;
