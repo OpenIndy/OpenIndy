@@ -288,11 +288,13 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
     stream.writeEndElement();
 
     //references to nominal geometries which belong to this geometry
+    stream.writeStartElement("nominalGeometries");
     foreach (Geometry *geom, this->nominals) {
-        stream.writeStartElement("nominalGeometry");
+        stream.writeStartElement("geometry");
         stream.writeAttribute("ref", QString::number(geom->id));
         stream.writeEndElement();
     }
+    stream.writeStartElement("nominalGeometries");
 
     //reference to the nominal coordinate system which this geometry belongs to
     if(this->myNominalCoordSys != NULL){
@@ -365,7 +367,7 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
     }else if(xml.name().compare("nominalGeometries") == 0){
 
         xml.readNext();
-        while( !xml.atEnd() && xml.name().compare("geometry") == 0 ){
+        while( !xml.atEnd() && xml.name().compare("nominalGeometries") != 0 ){
             if(xml.tokenType() == QXmlStreamReader::StartElement){
                 if(xml.attributes().hasAttribute("ref")){
                     dependencies.addFeatureID(xml.attributes().value("ref").toInt(), "nominalGeometry");

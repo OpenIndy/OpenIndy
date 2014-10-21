@@ -6,12 +6,17 @@
 #include "function.h"
 
 
-Observation::Observation(Reading *r, Station *s) : myReading(r), myStation(s), myXyz(4), myOriginalXyz(4), sigmaXyz(4)
+Observation::Observation(Reading *r, Station *s) :
+    myReading(r), myStation(s), myXyz(4), myOriginalXyz(4), sigmaXyz(4)
 {
     this->id = Configuration::generateID();
     if(r != NULL){
         r->obs = this;
     }
+
+    //initialize matrices
+    myStatistic.qxx = OiMat(4,4);
+    myOriginalStatistic.qxx = OiMat(4,4);
 }
 
 Observation::~Observation(){
@@ -221,6 +226,10 @@ ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
         this->myOriginalXyz.setAt(2,attributes.value("z").toDouble());
         this->myXyz.setAt(2,attributes.value("z").toDouble());
     }
+
+    this->myOriginalXyz.setAt(3,1.0);
+    this->myXyz.setAt(3,1.0);
+
     if(attributes.hasAttribute("isValid")){
         if(attributes.value("isValid").toInt() == 1){
             this->isValid = true;
