@@ -205,31 +205,24 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
 ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;
-
     dependencies.typeOfElement = Configuration::eObservationElement;
 
+    //fill observation attributes
     QXmlStreamAttributes attributes = xml.attributes();
-
     if(attributes.hasAttribute("id")) {
         this->id = attributes.value("id").toInt();
         dependencies.elementID = this->id;
     }
     if(attributes.hasAttribute("x")){
-        this->myOriginalXyz.setAt(0,attributes.value("x").toDouble());
         this->myXyz.setAt(0,attributes.value("x").toDouble());
     }
     if(attributes.hasAttribute("y")){
-        this->myOriginalXyz.setAt(1,attributes.value("y").toDouble());
         this->myXyz.setAt(1,attributes.value("y").toDouble());
     }
     if(attributes.hasAttribute("z")){
-        this->myOriginalXyz.setAt(2,attributes.value("z").toDouble());
         this->myXyz.setAt(2,attributes.value("z").toDouble());
     }
-
-    this->myOriginalXyz.setAt(3,1.0);
     this->myXyz.setAt(3,1.0);
-
     if(attributes.hasAttribute("isValid")){
         if(attributes.value("isValid").toInt() == 1){
             this->isValid = true;
@@ -246,66 +239,51 @@ ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
     if(attributes.hasAttribute("sigmaZ")){
         this->sigmaXyz.setAt(2,attributes.value("sigmaZ").toDouble());
     }
-    /* Next element... */
+
     xml.readNext();
-    /*
-     * We're going to loop over the things because the order might change.
-     * We'll continue the loop until we hit an EndElement named observation.
-     */
-    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
-            xml.name() == "observation")) {
+
+    //fill observation's values
+    while( !xml.atEnd() && xml.name().compare("observation") != 0 ){
+
         if(xml.tokenType() == QXmlStreamReader::StartElement) {
 
-            if(xml.name() == "reading") {
+            if(xml.name() == "reading"){
+
+                //load reading and connect to observation
                 Reading *r = this->readReading(xml);
                 r->obs = this;
                 this->myReading = r;
 
+                //get time of measurement
                 if(xml.attributes().hasAttribute("time")){
                     r->measuredAt = QDateTime(QDate::fromString(xml.attributes().value("time").toString(),Qt::ISODate));
-
                 }
+
+                //get original xyz to save at observation object
+                r->toCartesian();
+                this->myOriginalXyz = r->rCartesian.xyz;
+
+                xml.readNext();
+
             }else if(xml.name() == "station"){
 
                 if(xml.attributes().hasAttribute("ref")){
-
                     dependencies.addFeatureID(xml.attributes().value("ref").toInt(), "station");
-
                 }
+                xml.readNext();
 
-                /*while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
-                        xml.name() == "member")) {
-                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
-
-                        QXmlStreamAttributes memberAttributes = xml.attributes();
-
-                        if(memberAttributes.hasAttribute("type")){
-
-                            if (memberAttributes.value("type") == "station"){
-
-                                if(memberAttributes.hasAttribute("ref")){
-
-                                    dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"station");
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                    xml.readNext();
-                }*/
-
+            }else{
+                xml.readNext();
             }
 
+        }else{
+            xml.readNext();
         }
-        /* ...and next... */
-        xml.readNext();
+
     }
 
     return dependencies;
+
 }
 
 /*!

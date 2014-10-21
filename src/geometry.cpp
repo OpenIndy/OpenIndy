@@ -294,7 +294,7 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
         stream.writeAttribute("ref", QString::number(geom->id));
         stream.writeEndElement();
     }
-    stream.writeStartElement("nominalGeometries");
+    stream.writeEndElement();
 
     //reference to the nominal coordinate system which this geometry belongs to
     if(this->myNominalCoordSys != NULL){

@@ -353,7 +353,7 @@ bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
     stream.writeAttribute("my", QString::number(this->scale.getAt(1)));
     stream.writeAttribute("mz", QString::number(this->scale.getAt(2)));
     stream.writeAttribute("use",QString::number(this->use));
-    stream.writeAttribute("time", this->validTime.toLocalTime().toString());
+    stream.writeAttribute("time", this->validTime.toString(Qt::ISODate));
     stream.writeAttribute("movement", QString::number(this->isMovement));
     stream.writeAttribute("datumtrafo", QString::number(this->isDatumTrafo));
 
@@ -424,7 +424,7 @@ ElementDependencies TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
         this->use = attributes.value("use").toInt();
     }
     if(attributes.hasAttribute("time")){
-        this->validTime = QDateTime::fromString(attributes.value("time").toString(),Qt::LocalDate);
+        this->validTime = QDateTime::fromString(attributes.value("time").toString(),Qt::ISODate);
     }
     if(attributes.hasAttribute("movement")){
         this->isMovement = attributes.value("movement").toInt();
@@ -540,7 +540,7 @@ QString TrafoParam::getDisplayUse() const
 
 QString TrafoParam::getDisplayTime() const
 {
-    return this->validTime.toLocalTime().toString();
+    return this->validTime.toString(Qt::ISODate);
 }
 
 QString TrafoParam::getDisplayStdDev() const
