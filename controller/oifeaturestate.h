@@ -51,7 +51,7 @@ signals:
     void activeStationChanged(); //emitted when active station has changed
     void activeCoordinateSystemChanged(); //emitted when display coordinate system has changed
 
-    void featureSetChanged(); //emitted when features where created or deleted
+    void featureSetChanged(); //emitted when features were created or deleted
     void coordSystemSetChanged(); //emitted when coordinate systems (nominal or station) where created or deleted
 
     void availableGroupsChanged(); //emitted when the set of groups which features belong to has changed

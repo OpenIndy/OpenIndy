@@ -1514,6 +1514,8 @@ bool Controller::loadProject(OiProjectData &projectData){
     //recalc all features after loading
     this->recalcAll();
 
+    this->tblModel->updateModel();
+
     return result;
 
 }

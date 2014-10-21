@@ -81,13 +81,15 @@ public:
     OiFeatureState *myFeatureState;
 
     MeasurementConfig lastmConfig;
-    TableModel *tblModel;
+
+    TableModel *tblModel; //base model for feature table
+    FeatureOverviewProxyModel *featureOverviewModel; //filtered feature table (no trafoParams)
+    TrafoParamProxyModel * trafoParamModel; //filtered feature table (only trafoParams)
+
     Console *c;
     Configuration conf;
     QSqlQueryModel *pluginsModel;
-    FeatureOverviewProxyModel *featureOverviewModel;
     QSqlQueryModel *neededElementsModel;
-    TrafoParamProxyModel * trafoParamModel;
 
     QStandardItemModel *functionTreeViewModel; //model for treeview with functions of selected feature
     FeatureTreeViewModel *featureTreeViewModel; //model for treeview with all features
