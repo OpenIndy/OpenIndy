@@ -177,7 +177,8 @@ SOURCES += \
     ui/oimultiselectionmodel.cpp \
 	ui/oiloadingdialog.cpp \
     controller/networking/oiserver.cpp \
-    controller/networking/oinetworkconnection.cpp
+    controller/networking/oinetworkconnection.cpp \
+    controller/oiDataExchange/oirequest.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -319,7 +320,8 @@ HEADERS  += \
     ui/oimultiselectionmodel.h \
 	ui/oiloadingdialog.h \
     controller/networking/oiserver.h \
-    controller/networking/oinetworkconnection.h
+    controller/networking/oinetworkconnection.h \
+    controller/oiDataExchange/oirequest.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
