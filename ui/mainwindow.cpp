@@ -1702,3 +1702,19 @@ void MainWindow::on_actionSimulation_triggered()
     simulationWidget.setFeatureUpdater(control.getFeatureUpdater());
     simulationWidget.show();
 }
+
+void MainWindow::on_treeView_featureOverview_clicked(const QModelIndex &index)
+{
+
+    QModelIndex source_index = this->control.featureGraphicsModel->getSourceIndex(index);
+
+    if(source_index.isValid()){
+        FeatureTreeItem *item = static_cast<FeatureTreeItem*>(source_index.internalPointer());
+
+         if (item != NULL && item->getIsFeature() && item->getFeature() != NULL){
+             item->getFeature()->getFeature()->setActiveFeatureState(true);
+         }
+    }
+
+
+}

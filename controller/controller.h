@@ -59,6 +59,8 @@
 #include "oiprojectdata.h"
 #include "oiprojectexchanger.h"
 
+#include "oiserver.h"
+
 class Feature;
 class CoordinateSystem;
 class Station;
@@ -105,6 +107,8 @@ public:
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
 
     FeatureUpdater* getFeatureUpdater();
+
+    OiServer *OpenIndyServer;
 
 signals:
     void changedStation();
@@ -203,6 +207,8 @@ public slots:
     bool checkPluginAvailability(Configuration::FeatureTypes typeOfFeature);
 
     void updateFeatureMConfig();
+
+    void handleRemoteCommand(OiProjectData *d);
 
    /* void createFeature(int featureType, QString name,QString group,  bool nominal, bool common,
                        CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem);

@@ -6,13 +6,13 @@
 class OiGraphixLine: public OiGraphixGeometry
 {
 public:
-    OiGraphixLine(GLfloat i, GLfloat j, GLfloat k);
+    OiGraphixLine();
 
     GLfloat rx;
     GLfloat ry;
     GLfloat rz;
 
-    void draw(GLfloat x, GLfloat y, GLfloat z);
+    void draw(Geometry *g);
 };
 
 #endif // OIGRAPHIX_LINE_H

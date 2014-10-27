@@ -8,7 +8,7 @@ class OiGraphixStation: public OiGraphixGeometry
 public:
     OiGraphixStation();
 
-    void draw(GLfloat x, GLfloat y, GLfloat z);
+    void draw(Geometry *g);
 };
 
 #endif // OIGRAPHIX_STATION_H

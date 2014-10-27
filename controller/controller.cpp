@@ -47,6 +47,9 @@ Controller::Controller(QObject *parent) :
 
     //emit refreshGUI();
 
+    OpenIndyServer = new OiServer();
+    OpenIndyServer->startServer();
+    connect(OpenIndyServer,SIGNAL(getProject(OiProjectData*)),this,SLOT(handleRemoteCommand(OiProjectData*)));
 
 
 }
@@ -1580,6 +1583,11 @@ void Controller::updateFeatureMConfig()
             }
         }
     }
+}
+
+void Controller::handleRemoteCommand(OiProjectData *d)
+{
+    OiProjectExchanger::saveProject(*d);
 }
 
 /*!
