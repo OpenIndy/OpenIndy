@@ -80,6 +80,7 @@ public:
 
     OiFeatureState *myFeatureState;
 
+    QList<MeasurementConfig> measurementConfigs; //all available measurement configs (saved & unsaved)
     MeasurementConfig lastmConfig;
 
     TableModel *tblModel; //base model for feature table
@@ -102,6 +103,7 @@ public:
 
     QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
+
     FeatureUpdater* getFeatureUpdater();
 
 signals:

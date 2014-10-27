@@ -174,7 +174,8 @@ SOURCES += \
     ui/simulationtreeviewmodel.cpp \
     src/simulation/simulationdata.cpp \
     ui/oimultiselectionmodel.cpp \
-	ui/oiloadingdialog.cpp
+	ui/oiloadingdialog.cpp \
+    controller/oiconfigstate.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -314,7 +315,8 @@ HEADERS  += \
     src/simulation/simulationdata.h \
     src/plugin/pi_generatefeaturefunction.h \
     ui/oimultiselectionmodel.h \
-	ui/oiloadingdialog.h
+	ui/oiloadingdialog.h \
+    controller/oiconfigstate.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

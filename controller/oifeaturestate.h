@@ -11,12 +11,14 @@
 #include "coordinatesystem.h"
 #include "console.h"
 #include "configuration.h"
+#include "oiconfigstate.h"
 
 using namespace std;
 
 class OiFeatureState : public QObject
 {
     Q_OBJECT
+
 private:
     explicit OiFeatureState(QObject *parent = 0);
 
@@ -41,6 +43,8 @@ public:
 
     static QString getActiveGroup();
     static void setActiveGroup(QString group);
+
+    FeatureWrapper *getFeature(int featureId);
 
     static void sortFeatures();
     static void sortFeaturesById();

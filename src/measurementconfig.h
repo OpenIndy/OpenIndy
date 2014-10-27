@@ -17,6 +17,14 @@ class MeasurementConfig
 public:
     MeasurementConfig();
 
+    friend bool operator==(const MeasurementConfig &left, const MeasurementConfig &right){
+        if(left.name.compare(right.name) == 0 && left.internalRef == right.internalRef){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     QString name;
     int count;
     int iterations;
@@ -24,16 +32,17 @@ public:
     bool measureTwoSides;
     bool timeDependent;
     bool distanceDependent;
-
     long timeInterval;
     double distanceInterval;
-
-    //reading
     Configuration::ReadingTypes typeOfReading;
 
     //xml import export
     bool toOpenIndyXML(QXmlStreamWriter& stream);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+
+private:
+    int internalRef; //internalRef to distinguish between different measurement configs with the same name
+    bool isSaved; //true if the config is saved (reusable when restarting OpenIndy), false if not
 };
 
 #endif // MEASUREMENTCONFIG_H

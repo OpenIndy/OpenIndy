@@ -158,6 +158,7 @@
           <as:constraint action="setNumberMask(//from/@ref,#######)" />
           <as:constraint action="setNumberMask(//function/@executionIndex,#######)" />
           <as:constraint action="makeOptional(//function/inputElements)" />
+          <as:constraint action="makeOptional(//functions/function,)" />
           <as:constraint action="makeRepeatable(//functions/function)" />
           <as:constraint action="makeRepeatable(//geometries/geometry)" />
           <as:constraint action="datatype(//geometry/@common,boolean)" />
@@ -179,6 +180,7 @@
           <as:constraint action="setDateMask(//measurement/@time,hh:mm:ss)" />
           <as:constraint action="setNumberMask(//measurement/@value,####.######)" />
           <as:constraint action="makeRepeatable(//measurements/measurement)" />
+          <as:constraint action="makeOptional(//nominalGeometries/geometry,)" />
           <as:constraint action="makeRepeatable(//nominalGeometries/geometry)" />
           <as:constraint action="setNumberMask(//observation/@id,#######)" />
           <as:constraint action="datatype(//observation/@isValid,boolean)" />
@@ -190,6 +192,7 @@
           <as:constraint action="setNumberMask(//observation/@y,####.######)" />
           <as:constraint action="setNumberMask(//observation/@z,####.######)" />
           <as:constraint action="setNumberMask(//observations/@ref,#######)" />
+          <as:constraint action="makeOptional(//observations/observation,)" />
           <as:constraint action="makeRepeatable(//observations/observation)" />
           <as:constraint action="makeRepeatable(//observations/observations)" />
           <as:constraint action="datatype(//oiProjectData/@date,dateTime)" />
@@ -197,6 +200,7 @@
           <as:constraint action="makeOptional(//oiProjectData/observations)" />
           <as:constraint action="makeOptional(//oiProjectData/transformationparameters)" />
           <as:constraint action="setNumberMask(//position/@ref,#######)" />
+          <as:constraint action="makeOptional(//previouslyNeeded/feature,)" />
           <as:constraint action="makeRepeatable(//previouslyNeeded/feature)" />
           <as:constraint action="setNumberMask(//radius/@r,####.######)" />
           <as:constraint action="setNumberMask(//radius/@sr,####.######)" />
@@ -231,8 +235,11 @@
           <as:constraint action="makeOptional(//transformationparameter/functions)" />
           <as:constraint action="makeOptional(//transformationparameter/previouslyNeeded)" />
           <as:constraint action="makeOptional(//transformationparameter/usedFor)" />
+          <as:constraint action="makeOptional(//transformationparameters/transformationparameter,)" />
           <as:constraint action="makeRepeatable(//transformationparameters/transformationparameter)" />
+          <as:constraint action="makeOptional(//usedFor/feature,)" />
           <as:constraint action="makeRepeatable(//usedFor/feature)" />
+          <as:constraint action="makeOptional(//usedSensors/sensor,)" />
           <as:constraint action="makeRepeatable(//usedSensors/sensor)" />
         </as:context>
       </as:default>

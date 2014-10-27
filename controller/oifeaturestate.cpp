@@ -155,6 +155,16 @@ void OiFeatureState::setActiveGroup(QString group){
 }
 
 /*!
+ * \brief OiFeatureState::getFeature
+ * \param featureId
+ * \return
+ */
+FeatureWrapper *OiFeatureState::getFeature(int featureId){
+    int index = OiFeatureState::getFeatureListIndex(featureId);
+    return OiFeatureState::myFeatures.at(index);
+}
+
+/*!
  * \brief OiFeatureState::sortFeatures
  */
 void OiFeatureState::sortFeatures()
@@ -595,6 +605,9 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
 
         }
 
+        //call OiConfigState's connect method
+        OiConfigState::connectFeature(myFeature);
+
     }catch(exception &e){
         Console::addLine(e.what());
     }
@@ -609,6 +622,9 @@ void OiFeatureState::disconnectFeature(FeatureWrapper *myFeature){
             OiFeatureState::myFeatureState, SLOT(setActiveFeature(int)));
     disconnect(myFeature->getFeature(), SIGNAL(featureGroupChanged(int)),
                OiFeatureState::myFeatureState, SLOT(setFeatureGroup(int)));
+
+    //call OiConfigState's disconnect method
+    OiConfigState::disconnectFeature(myFeature);
 }
 
 /*!
