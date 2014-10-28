@@ -108,7 +108,7 @@ public:
 
     FeatureUpdater* getFeatureUpdater();
 
-    OiServer *OpenIndyServer;
+    OiServer *openIndyServer;
 
 signals:
     void changedStation();
@@ -208,7 +208,7 @@ public slots:
 
     void updateFeatureMConfig();
 
-    void handleRemoteCommand(OiProjectData *d);
+    //void handleRemoteCommand(OiProjectData *d);
 
    /* void createFeature(int featureType, QString name,QString group,  bool nominal, bool common,
                        CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem);

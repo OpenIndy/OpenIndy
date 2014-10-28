@@ -161,7 +161,10 @@ void OiFeatureState::setActiveGroup(QString group){
  */
 FeatureWrapper *OiFeatureState::getFeature(int featureId){
     int index = OiFeatureState::getFeatureListIndex(featureId);
-    return OiFeatureState::myFeatures.at(index);
+    if(index >= 0){
+        return OiFeatureState::myFeatures.at(index);
+    }
+    return NULL;
 }
 
 /*!

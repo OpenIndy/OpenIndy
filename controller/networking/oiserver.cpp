@@ -3,45 +3,72 @@
 OiServer::OiServer(QObject *parent) :
     QTcpServer(parent)
 {
+    connect(OiRequestHandler::getInstance(), SIGNAL(sendResponse(OiRequestResponse*)), this, SLOT(receiveResponse(OiRequestResponse*)));
 }
 
-void OiServer::startServer()
-{
+/*!
+ * \brief OiServer::startServer
+ * Starts the server so that clients are able to connect to OpenIndy
+ */
+void OiServer::startServer(){
     if(!this->listen(QHostAddress::Any,1234)){
-
         Console::addLine("could not start local server");
-
     }else{
-
         Console::addLine("local server ready ...");
-
     }
 }
 
-void OiServer::stopServer()
-{
+/*!
+ * \brief OiServer::stopServer
+ * Stops the server so that clients are not able to connect to OpenIndy anymore
+ */
+void OiServer::stopServer(){
+
+    //stop listening for new connections
+    if(this->isListening()){
+        this->close();
+    }
+
+    //stop the already existing threads
+    for(int i = 0; i < this->usedSockets.size(); i++){
+        this->usedSockets.at(i)->exit();
+    }
 
 }
 
-void OiServer::incomingConnection(qintptr socketDescriptor)
-{
-    Console::addLine("connecting to client " + QString::number(socketDescriptor) + " ...");
+/*!
+ * \brief OiServer::incomingConnection
+ * Is called whenever a client tries to connect to OpenIndy
+ * \param socketDescriptor
+ */
+void OiServer::incomingConnection(qintptr socketDescriptor){
 
-    OiNetworkConnection *n = new OiNetworkConnection();
+    Console::addLine("Connecting to client " + QString::number(socketDescriptor) + " ...");
 
-    connect(n,SIGNAL(finished()),n,SLOT(deleteLater()));
+    OiNetworkConnection *myConnection;
+    myConnection = new OiNetworkConnection();
 
-    n->setSocket(socketDescriptor);
+    connect(myConnection, SIGNAL(finished()), myConnection, SLOT(deleteLater()));
+    connect(myConnection, SIGNAL(sendRequest(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveRequest(OiRequestResponse*)));
 
-    usedSockets.append(n);
-
-    connect(n,SIGNAL(getProject(OiProjectData*)),this,SLOT(sendGetProject(OiProjectData*)));
-
-    n->start();
+    myConnection->setSocket(socketDescriptor);
+    this->usedSockets.append(myConnection);
+    myConnection->start();
 
 }
 
-void OiServer::sendGetProject(OiProjectData *d)
-{
-    emit this->getProject(d);
+/*!
+ * \brief OiServer::receiveResponse
+ * Is called from OiRequestHandler whenever a client request was done and the response is available
+ * \param response
+ */
+void OiServer::receiveResponse(OiRequestResponse *response){
+
+    foreach(QThread *socket, this->usedSockets){
+
+    }
+
+    Console::addLine("receive response entered");
+    qDebug() << response->response.toString();
+
 }

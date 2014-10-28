@@ -62,6 +62,19 @@ INCLUDEPATH += $$PWD/lib/fitting
 INCLUDEPATH += $$PWD/lib/fitting/util
 
 SOURCES += p_factory.cpp \
+    lib/fitting/cfitting_approxfunc.cpp \
+    lib/fitting/cfitting_circle.cpp \
+    lib/fitting/cfitting_ellipse.cpp \
+    lib/fitting/cfitting_it.cpp \
+    lib/fitting/cfitting_matrix.cpp \
+    lib/fitting/cfitting_plane.cpp \
+    lib/fitting/cfitting_sphere.cpp \
+    lib/fitting/cfitting_util.cpp \
+    lib/fitting/util/Getopt.cpp \
+    lib/fitting/util/iskeyword.cpp \
+    lib/fitting/util/microtim.cpp \
+    lib/fitting/util/mystring.cpp \
+    lib/fitting/util/rho.cpp \
     functions/construct/p_intersectlineplane.cpp \
     functions/construct/p_intersectplaneplane.cpp \
     functions/construct/p_linefrompoints.cpp \
@@ -82,73 +95,14 @@ SOURCES += p_factory.cpp \
     sensors/laserTracker/pseudoTracker/p_pseudotracker.cpp \
     sensors/tachymeter/LeicaGeoCom/p_leicatachymeter.cpp \
     sensors/undefinedSensor/pseudoSensor/p_pseudosensor.cpp \
-    lib/fitting/cfitting_approxfunc.cpp \
-    lib/fitting/cfitting_circle.cpp \
-    lib/fitting/cfitting_ellipse.cpp \
-    lib/fitting/cfitting_it.cpp \
-    lib/fitting/cfitting_matrix.cpp \
-    lib/fitting/cfitting_plane.cpp \
-    lib/fitting/cfitting_sphere.cpp \
-    lib/fitting/cfitting_util.cpp \
-    lib/fitting/util/Getopt.cpp \
-    lib/fitting/util/iskeyword.cpp \
-    lib/fitting/util/microtim.cpp \
-    lib/fitting/util/mystring.cpp \
-    lib/fitting/util/rho.cpp \
     functions/objectTransformation/p_shiftplane.cpp \
     functions/fit/p_bestfitcircle.cpp \
     functions/systemTransformation/p_simpletemperaturecompensation.cpp \
-    ../../src/unitconverter.cpp \
-    ../../src/trafoparam.cpp \
-    ../../src/statistic.cpp \
-    ../../src/station.cpp \
-    ../../src/sensorlistener.cpp \
-    ../../src/sensorcontrol.cpp \
-    ../../src/sensorconfiguration.cpp \
-    ../../src/residual.cpp \
-    ../../src/reading.cpp \
-    ../../src/pluginmetadata.cpp \
-    ../../src/oimetadata.cpp \
-    ../../src/oiemitter/oiemitter.cpp \
-    ../../src/observation.cpp \
-    ../../src/measurementconfig.cpp \
-    ../../src/geometry.cpp \
-    ../../src/functionconfiguration.cpp \
-    ../../src/function.cpp \
-    ../../src/featurewrapper.cpp \
-    ../../src/feature.cpp \
-    ../../src/elementdependencies.cpp \
-    ../../src/element.cpp \
-    ../../src/coordinatesystem.cpp \
-    ../../src/connectionconfig.cpp \
-    ../../src/configuration.cpp \
-    ../../src/geometry/sphere.cpp \
-    ../../src/geometry/scalarentitytemperature.cpp \
-    ../../src/geometry/scalarentitymeasurementseries.cpp \
-    ../../src/geometry/scalarentitydistance.cpp \
-    ../../src/geometry/scalarentityangle.cpp \
-    ../../src/geometry/pointcloud.cpp \
-    ../../src/geometry/point.cpp \
-    ../../src/geometry/plane.cpp \
-    ../../src/geometry/paraboloid.cpp \
-    ../../src/geometry/nurbs.cpp \
-    ../../src/geometry/line.cpp \
-    ../../src/geometry/hyperboloid.cpp \
-    ../../src/geometry/ellipsoid.cpp \
-    ../../src/geometry/cylinder.cpp \
-    ../../src/geometry/cone.cpp \
-    ../../src/geometry/circle.cpp \
-    ../../src/oiemitter/oifunctionemitter.cpp \
-    ../../src/oiemitter/oinetworkadjustmentemitter.cpp \
-    ../../src/oiemitter/oisensoremitter.cpp \
-    ../../src/oiemitter/oisimulationemitter.cpp \
     functions/systemTransformation/p_extendedtemperaturecompensation.cpp \
     functions/systemTransformation/materials.cpp \
     functions/systemTransformation/p_helmert6param.cpp \
     functions/fit/p_bestfitsphererauls.cpp \
-    ../../src/simulation/uncertaintycomponent.cpp \
     simulations/simplePolarMeasurement/simplepolarmeasurement.cpp \
-    ../../src/simulation/simulationdata.cpp \
     functions/generateFeature/p_pointcloudsegmentation.cpp \
     functions/generateFeature/pointcloud_segmentation/ps_cylindersegment.cpp \
     functions/generateFeature/pointcloud_segmentation/ps_generalmath.cpp \
@@ -159,9 +113,68 @@ SOURCES += p_factory.cpp \
     functions/generateFeature/pointcloud_segmentation/ps_shapesegment.cpp \
     functions/generateFeature/pointcloud_segmentation/ps_spheresegment.cpp \
     functions/generateFeature/pointcloud_segmentation/ps_point_pc.cpp \
-    functions/generateFeature/ps_loadingdialog.cpp
+    functions/generateFeature/ps_loadingdialog.cpp \
+    ../../src/configuration.cpp \
+    ../../src/connectionconfig.cpp \
+    ../../src/coordinatesystem.cpp \
+    ../../src/element.cpp \
+    ../../src/elementdependencies.cpp \
+    ../../src/feature.cpp \
+    ../../src/featurewrapper.cpp \
+    ../../src/function.cpp \
+    ../../src/functionconfiguration.cpp \
+    ../../src/geometry.cpp \
+    ../../src/measurementconfig.cpp \
+    ../../src/observation.cpp \
+    ../../src/oimetadata.cpp \
+    ../../src/pluginmetadata.cpp \
+    ../../src/reading.cpp \
+    ../../src/residual.cpp \
+    ../../src/sensorconfiguration.cpp \
+    ../../src/sensorcontrol.cpp \
+    ../../src/sensorlistener.cpp \
+    ../../src/station.cpp \
+    ../../src/statistic.cpp \
+    ../../src/trafoparam.cpp \
+    ../../src/unitconverter.cpp \
+    ../../src/simulation/simulationdata.cpp \
+    ../../src/simulation/uncertaintycomponent.cpp \
+    ../../src/oiemitter/oiemitter.cpp \
+    ../../src/oiemitter/oifunctionemitter.cpp \
+    ../../src/oiemitter/oinetworkadjustmentemitter.cpp \
+    ../../src/oiemitter/oisensoremitter.cpp \
+    ../../src/oiemitter/oisimulationemitter.cpp \
+    ../../src/geometry/circle.cpp \
+    ../../src/geometry/cone.cpp \
+    ../../src/geometry/cylinder.cpp \
+    ../../src/geometry/ellipsoid.cpp \
+    ../../src/geometry/hyperboloid.cpp \
+    ../../src/geometry/line.cpp \
+    ../../src/geometry/nurbs.cpp \
+    ../../src/geometry/paraboloid.cpp \
+    ../../src/geometry/plane.cpp \
+    ../../src/geometry/point.cpp \
+    ../../src/geometry/pointcloud.cpp \
+    ../../src/geometry/scalarentityangle.cpp \
+    ../../src/geometry/scalarentitydistance.cpp \
+    ../../src/geometry/scalarentitymeasurementseries.cpp \
+    ../../src/geometry/scalarentitytemperature.cpp \
+    ../../src/geometry/sphere.cpp
 
 HEADERS += p_factory.h \
+    lib/fitting/cfitting_approxfunc.h \
+    lib/fitting/cfitting_circle.h \
+    lib/fitting/cfitting_ellipse.h \
+    lib/fitting/cfitting_it.h \
+    lib/fitting/cfitting_matrix.h \
+    lib/fitting/cfitting_plane.h \
+    lib/fitting/cfitting_sphere.h \
+    lib/fitting/cfitting_util.h \
+    lib/fitting/util/getopt.h \
+    lib/fitting/util/iskeyword.h \
+    lib/fitting/util/microtim.h \
+    lib/fitting/util/mystring.h \
+    lib/fitting/util/rho.h \
     ../../lib/openIndyLib/include/global.h \
     ../../lib/openIndyLib/include/linearalgebra.h \
     ../../lib/openIndyLib/include/oimat.h \
@@ -186,84 +199,14 @@ HEADERS += p_factory.h \
     sensors/laserTracker/pseudoTracker/p_pseudotracker.h \
     sensors/tachymeter/LeicaGeoCom/p_leicatachymeter.h \
     sensors/undefinedSensor/pseudoSensor/p_pseudosensor.h \
-    lib/fitting/cfitting_approxfunc.h \
-    lib/fitting/cfitting_circle.h \
-    lib/fitting/cfitting_ellipse.h \
-    lib/fitting/cfitting_it.h \
-    lib/fitting/cfitting_matrix.h \
-    lib/fitting/cfitting_plane.h \
-    lib/fitting/cfitting_sphere.h \
-    lib/fitting/cfitting_util.h \
-    lib/fitting/util/getopt.h \
-    lib/fitting/util/iskeyword.h \
-    lib/fitting/util/microtim.h \
-    lib/fitting/util/mystring.h \
-    lib/fitting/util/rho.h \
     functions/objectTransformation/p_shiftplane.h \
     functions/fit/p_bestfitcircle.h \
     functions/systemTransformation/p_simpletemperaturecompensation.h \
-    ../../src/unitconverter.h \
-    ../../src/trafoparam.h \
-    ../../src/statistic.h \
-    ../../src/station.h \
-    ../../src/sensorlistener.h \
-    ../../src/sensorcontrol.h \
-    ../../src/sensorconfiguration.h \
-    ../../src/sensor.h \
-    ../../src/residual.h \
-    ../../src/reading.h \
-    ../../src/pluginmetadata.h \
-    ../../src/oimetadata.h \
-    ../../src/oiemitter/oiemitter.h \
-    ../../src/observation.h \
-    ../../src/measurementconfig.h \
-    ../../src/geometry.h \
-    ../../src/functionconfiguration.h \
-    ../../src/function.h \
-    ../../src/featurewrapper.h \
-    ../../src/feature.h \
-    ../../src/elementdependencies.h \
-    ../../src/element.h \
-    ../../src/coordinatesystem.h \
-    ../../src/connectionconfig.h \
-    ../../src/configuration.h \
-    ../../src/plugin/pi_totalstation.h \
-    ../../src/plugin/pi_systemtransformation.h \
-    ../../src/plugin/pi_oiplugin.h \
-    ../../src/plugin/pi_objecttransformation.h \
-    ../../src/plugin/pi_networkadjustment.h \
-    ../../src/plugin/pi_lasertracker.h \
-    ../../src/plugin/pi_geodeticfunction.h \
-    ../../src/plugin/pi_fitfunction.h \
-    ../../src/plugin/pi_constructfunction.h \
-    ../../src/geometry/sphere.h \
-    ../../src/geometry/scalarentitytemperature.h \
-    ../../src/geometry/scalarentitymeasurementseries.h \
-    ../../src/geometry/scalarentitydistance.h \
-    ../../src/geometry/scalarentityangle.h \
-    ../../src/geometry/pointcloud.h \
-    ../../src/geometry/point.h \
-    ../../src/geometry/plane.h \
-    ../../src/geometry/paraboloid.h \
-    ../../src/geometry/nurbs.h \
-    ../../src/geometry/line.h \
-    ../../src/geometry/hyperboloid.h \
-    ../../src/geometry/ellipsoid.h \
-    ../../src/geometry/cylinder.h \
-    ../../src/geometry/cone.h \
-    ../../src/geometry/circle.h \
-    ../../src/oiemitter/oifunctionemitter.h \
-    ../../src/oiemitter/oinetworkadjustmentemitter.h \
-    ../../src/oiemitter/oisensoremitter.h \
-    ../../src/oiemitter/oisimulationemitter.h \
     functions/systemTransformation/p_extendedtemperaturecompensation.h \
     functions/systemTransformation/materials.h \
     functions/systemTransformation/p_helmert6param.h \
     functions/fit/p_bestfitsphererauls.h \
-    ../../src/simulation/simulationmodel.h \
-    ../../src/simulation/uncertaintycomponent.h \
     simulations/simplePolarMeasurement/simplepolarmeasurement.h \
-    ../../src/simulation/simulationdata.h \
     functions/generateFeature/p_pointcloudsegmentation.h \
     functions/generateFeature/pointcloud_segmentation/ps_cylindersegment.h \
     functions/generateFeature/pointcloud_segmentation/ps_generalmath.h \
@@ -274,7 +217,65 @@ HEADERS += p_factory.h \
     functions/generateFeature/pointcloud_segmentation/ps_shapesegment.h \
     functions/generateFeature/pointcloud_segmentation/ps_spheresegment.h \
     functions/generateFeature/pointcloud_segmentation/ps_point_pc.h \
-    functions/generateFeature/ps_loadingdialog.h
+    functions/generateFeature/ps_loadingdialog.h \
+    ../../src/configuration.h \
+    ../../src/connectionconfig.h \
+    ../../src/coordinatesystem.h \
+    ../../src/element.h \
+    ../../src/elementdependencies.h \
+    ../../src/feature.h \
+    ../../src/featurewrapper.h \
+    ../../src/function.h \
+    ../../src/functionconfiguration.h \
+    ../../src/geometry.h \
+    ../../src/measurementconfig.h \
+    ../../src/observation.h \
+    ../../src/oimetadata.h \
+    ../../src/pluginmetadata.h \
+    ../../src/reading.h \
+    ../../src/residual.h \
+    ../../src/sensor.h \
+    ../../src/sensorconfiguration.h \
+    ../../src/sensorcontrol.h \
+    ../../src/sensorlistener.h \
+    ../../src/station.h \
+    ../../src/statistic.h \
+    ../../src/trafoparam.h \
+    ../../src/unitconverter.h \
+    ../../src/simulation/simulationdata.h \
+    ../../src/simulation/simulationmodel.h \
+    ../../src/simulation/uncertaintycomponent.h \
+    ../../src/plugin/pi_constructfunction.h \
+    ../../src/plugin/pi_fitfunction.h \
+    ../../src/plugin/pi_generatefeaturefunction.h \
+    ../../src/plugin/pi_geodeticfunction.h \
+    ../../src/plugin/pi_lasertracker.h \
+    ../../src/plugin/pi_networkadjustment.h \
+    ../../src/plugin/pi_objecttransformation.h \
+    ../../src/plugin/pi_oiplugin.h \
+    ../../src/plugin/pi_systemtransformation.h \
+    ../../src/plugin/pi_totalstation.h \
+    ../../src/oiemitter/oiemitter.h \
+    ../../src/oiemitter/oifunctionemitter.h \
+    ../../src/oiemitter/oinetworkadjustmentemitter.h \
+    ../../src/oiemitter/oisensoremitter.h \
+    ../../src/oiemitter/oisimulationemitter.h \
+    ../../src/geometry/circle.h \
+    ../../src/geometry/cone.h \
+    ../../src/geometry/cylinder.h \
+    ../../src/geometry/ellipsoid.h \
+    ../../src/geometry/hyperboloid.h \
+    ../../src/geometry/line.h \
+    ../../src/geometry/nurbs.h \
+    ../../src/geometry/paraboloid.h \
+    ../../src/geometry/plane.h \
+    ../../src/geometry/point.h \
+    ../../src/geometry/pointcloud.h \
+    ../../src/geometry/scalarentityangle.h \
+    ../../src/geometry/scalarentitydistance.h \
+    ../../src/geometry/scalarentitymeasurementseries.h \
+    ../../src/geometry/scalarentitytemperature.h \
+    ../../src/geometry/sphere.h
 
 OTHER_FILES += metaInfo.json
 

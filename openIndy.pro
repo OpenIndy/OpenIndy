@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql serialport network opengl
+QT       += core gui sql serialport network opengl xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -179,7 +179,8 @@ SOURCES += \
     controller/oiconfigstate.cpp \
     controller/networking/oiserver.cpp \
     controller/networking/oinetworkconnection.cpp \
-    controller/oiDataExchange/oirequest.cpp
+    controller/networking/oirequesthandler.cpp \
+    controller/networking/oirequestresponse.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -323,7 +324,8 @@ HEADERS  += \
     controller/oiconfigstate.h \
     controller/networking/oiserver.h \
     controller/networking/oinetworkconnection.h \
-    controller/oiDataExchange/oirequest.h
+    controller/networking/oirequesthandler.h \
+    controller/networking/oirequestresponse.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

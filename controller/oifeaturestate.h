@@ -44,7 +44,7 @@ public:
     static QString getActiveGroup();
     static void setActiveGroup(QString group);
 
-    FeatureWrapper *getFeature(int featureId);
+    static FeatureWrapper *getFeature(int featureId);
 
     static void sortFeatures();
     static void sortFeaturesById();
