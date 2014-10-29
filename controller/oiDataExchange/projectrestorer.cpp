@@ -12,7 +12,7 @@ ProjectRestorer::ProjectRestorer(QObject *parent) :
  */
 bool ProjectRestorer::saveProject(OiProjectData &data){
 
-    if (!data.getDevice()->open(QIODevice::WriteOnly | QIODevice::Text)){
+    /*if (!data.getDevice()->open(QIODevice::WriteOnly | QIODevice::Text)){
         Console::addLine("Cannot open the device");
         return false;
     }
@@ -145,7 +145,7 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
         delete stationPosition;
     }
 
-    Console::addLine("saving completed");
+    Console::addLine("saving completed");*/
 
     return true;
 
@@ -158,7 +158,7 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
  */
 bool ProjectRestorer::loadProject(OiProjectData &data){
 
-    if (!data.getDevice()->open(QIODevice::ReadOnly | QIODevice::Text)) {
+    /*if (!data.getDevice()->open(QIODevice::ReadOnly | QIODevice::Text)) {
         return false;
     }
 
@@ -242,7 +242,7 @@ bool ProjectRestorer::loadProject(OiProjectData &data){
      data.getDevice()->close();
 
      Console::addLine("resolve dependencies");
-     this->resolveDependencies(data);
+     this->resolveDependencies(data);*/
 
      return true;
 

@@ -11,7 +11,7 @@ public:
     Paraboloid(const Paraboloid &copy);
     void recalc();
 
-    bool toOpenIndyXML(QXmlStreamWriter& stream);
+    QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
     bool saveSimulationData();

@@ -64,11 +64,17 @@ void OiServer::incomingConnection(qintptr socketDescriptor){
  */
 void OiServer::receiveResponse(OiRequestResponse *response){
 
-    foreach(QThread *socket, this->usedSockets){
-
+    if(response == NULL){
+        return;
     }
 
-    Console::addLine("receive response entered");
-    qDebug() << response->response.toString();
+    //send the response to the correct client
+    foreach(OiNetworkConnection *socket, this->usedSockets){
+        if(socket->getInternalRef() == response->requesterId){
+
+            socket->receiveResponse(response);
+
+        }
+    }
 
 }

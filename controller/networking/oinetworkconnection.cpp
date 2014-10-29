@@ -28,11 +28,30 @@ bool OiNetworkConnection::setSocket(qintptr socketDescriptor){
 
 }
 
-void OiNetworkConnection::readMessage()
-{
+/*!
+ * \brief OiNetworkConnection::receiveResponse
+ * Is called whenever a response to a request of this client is available
+ * \param response
+ */
+void OiNetworkConnection::receiveResponse(OiRequestResponse *response){
+
+    if(response == NULL){
+        return;
+    }
+
+    this->socket->write(response->response.toByteArray());
+
+}
+
+/*!
+ * \brief OiNetworkConnection::readMessage
+ * Is called whenever a client has sent a message to OpenIndy
+ */
+void OiNetworkConnection::readMessage(){
 
     OiRequestResponse *request;
     request = new OiRequestResponse();
+    request->requesterId = this->internalRef;
 
     QString xmlRequest = this->socket->readAll();
 
@@ -42,46 +61,4 @@ void OiNetworkConnection::readMessage()
 
     emit this->sendRequest(request);
 
-    return;
-
-
-
-
-
-
-
-
-
-    //read incomming string
-    QString msg = this->socket->readLine();    
-    Console::addLine(msg);
-
-    if(msg == "c"){
-        this->socket->write("close connection");
-
-        this->socket->close();
-
-        socket->deleteLater();
-        this->deleteLater();
-
-    }else if(msg == "p"){
-
-        Console::addLine("p entered");
-
-        OiRequestResponse *test;
-        test = new OiRequestResponse();
-
-        qDebug() << "test: " << test->request.isNull();
-
-        QDomElement elem = test->request.createElement("OiRequest");
-        elem.setAttribute("id", OiRequestResponse::eGetActiveFeature);
-        test->request.appendChild(elem);
-
-        emit this->sendRequest(test);
-
-    }else if(msg.compare("Hello Server")==0){
-
-        this->socket->write("HelloClient");
-
-    }
 }

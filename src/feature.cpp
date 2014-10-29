@@ -268,6 +268,39 @@ void Feature::setActiveFeatureState(bool isActive){
 }
 
 /*!
+ * \brief Feature::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Feature::toOpenIndyXML(QDomDocument &xmlDoc) const{
+
+    QDomElement feature = Element::toOpenIndyXML(xmlDoc);
+
+    if(feature.isNull()){
+        return feature;
+    }
+
+    //add feature attributes
+    feature.setAttribute("name", this->getFeatureName());
+    feature.setAttribute("group", this->getGroupName());
+    feature.setAttribute("solved", this->getIsSolved());
+    feature.setAttribute("comment", this->getComment());
+    feature.setAttribute("active", this->getIsActiveFeature());
+
+    //add functions
+    if(this->functionList.size() > 0){
+        QDomElement functions = xmlDoc.createElement("functions");
+        foreach(Function *f, this->functionList){
+
+        }
+        feature.appendChild(functions);
+    }
+
+    return feature;
+
+}
+
+/*!
  * \brief Feature::getDisplayX
  * \return
  */

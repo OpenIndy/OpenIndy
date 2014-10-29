@@ -4,7 +4,8 @@ OiRequestHandler *OiRequestHandler::myRequestHandler = NULL;
 
 OiRequestHandler::OiRequestHandler(QObject *parent)
 {
-
+    this->moveToThread(&this->workerThread);
+    this->workerThread.start();
 }
 
 /*!
@@ -34,7 +35,7 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse *request){
             && request->request.documentElement().tagName().compare("OiRequest") == 0
             && request->request.documentElement().hasAttribute("id")){
 
-        qDebug() << "in if";
+        qDebug() << "in if" << request->request.documentElement().attribute("id", "-1").toInt();
 
         if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eGetProject){
             this->getProject(request);
@@ -78,6 +79,17 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse *request){
  * \param request
  */
 void OiRequestHandler::getProject(OiRequestResponse *request){
+
+    qDebug() << "in get project";
+
+    request->myRequestType = OiRequestResponse::eGetProject;
+    this->prepareResponse(request);
+
+    QDomDocument project = OiProjectExchanger::saveProject();
+    qDebug() << "project check: " << project.toString();
+    request->response.documentElement().appendChild(request->response.importNode(project.documentElement(), true));
+
+    emit this->sendResponse(request);
 
 }
 

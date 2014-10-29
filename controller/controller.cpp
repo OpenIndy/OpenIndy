@@ -27,7 +27,9 @@ Controller::Controller(QObject *parent) :
     this->initModels();
     this->connectModels();
 
-    this->createProject(currentProject);
+    this->createDefaultProject();
+
+    this->lastRequestId = -1;
 
 
 
@@ -131,6 +133,10 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(featureFunctionsChanged()), this, SLOT(changeFunctionTreeViewModel()));
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this, SLOT(changeFunctionTreeViewModel()));
 
+        //send save or load project task to OiRequestHandler & listen to his answers
+        connect(this, SIGNAL(sendSaveLoadRequest(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveRequest(OiRequestResponse*)));
+        connect(OiRequestHandler::getInstance(), SIGNAL(sendResponse(OiRequestResponse*)), this, SLOT(receiveRequestResult(OiRequestResponse*)));
+
     }catch(exception &e){
         Console::addLine(e.what());
     }
@@ -140,7 +146,7 @@ void Controller::connectModels(){
  * \brief Controller::createDefaultFeatures
  * Create a station and the PART system as default features when starting OpenIndy
  */
-bool Controller::createProject(OiProjectData &projectData){
+bool Controller::createDefaultProject(){
 
     if(OiFeatureState::getFeatureCount() == 0){
 
@@ -1482,9 +1488,24 @@ void Controller::setFunctionConfiguration(int functionIndex, FunctionConfigurati
 bool Controller::saveProject(){
     try{
 
-        if(this->currentProject.getIsValid()){
-            if(this->currentProject.getIsSaved()){
-                return OiProjectExchanger::saveProject(this->currentProject);
+        if(OiProjectData::getIsValid()){
+            if(OiProjectData::getIsSaved()){
+
+                OiRequestResponse *request;
+                request = new OiRequestResponse();
+                request->requesterId = Configuration::generateID();
+                this->lastRequestId = request->requesterId;
+
+                QDomElement root = request->request.createElement("OiRequest");
+                root.setAttribute("id", OiRequestResponse::eGetProject);
+                request->request.appendChild(root);
+
+                qDebug() << "vor emit";
+
+                emit this->sendSaveLoadRequest(request);
+
+                qDebug() << "nach emit";
+
             }else{
                 Console::addLine("The project has already been saved");
                 return false;
@@ -1507,7 +1528,7 @@ bool Controller::saveProject(){
  */
 bool Controller::loadProject(OiProjectData &projectData){
 
-    //TODO check if an active project is set
+    /*//TODO check if an active project is set
 
     //delete all features
     OiFeatureState::resetFeatureLists();
@@ -1519,8 +1540,47 @@ bool Controller::loadProject(OiProjectData &projectData){
 
     this->tblModel->updateModel();
 
-    return result;
+    return result;*/
 
+    return true;
+
+}
+
+/*!
+ * \brief Controller::receiveRequestResult
+ * Is called whenever a request was finished by OiRequestHandler and the response is available
+ * \param request
+ * \return
+ */
+bool Controller::receiveRequestResult(OiRequestResponse *request){
+    try{
+
+        qDebug() << "in control response";
+
+        if(request != NULL && request->requesterId == this->lastRequestId && !request->response.isNull()){
+
+            qDebug() << request->myRequestType;
+
+            switch(request->myRequestType){
+            case OiRequestResponse::eGetProject:
+                qDebug() << request->response.toString();
+                break;
+            case OiRequestResponse::eSetProject:
+                qDebug() << request->response.toString();
+                break;
+            }
+
+            this->lastRequestId = -1;
+
+            return true;
+
+        }
+
+        return false;
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
 }
 
 /*!

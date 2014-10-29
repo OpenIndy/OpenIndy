@@ -58,8 +58,8 @@ public:
     QString getDisplayExpansionOriginY() const;
     QString getDisplayExpansionOriginZ() const;
 
-    virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
-    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+    QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
+    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
 private:
 

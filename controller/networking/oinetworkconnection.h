@@ -23,6 +23,7 @@ signals:
 
 public slots:
     bool setSocket(qintptr socketDescriptor);
+    void receiveResponse(OiRequestResponse *response);
 
 private slots:
     void readMessage();

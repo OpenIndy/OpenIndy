@@ -11,6 +11,7 @@
 #include <QDir>
 #include <QApplication>
 #include <QStringListModel>
+#include <QDomDocument>
 
 #include "configuration.h"
 #include "console.h"
@@ -60,6 +61,7 @@
 #include "oiprojectexchanger.h"
 
 #include "oiserver.h"
+#include "oirequesthandler.h"
 
 class Feature;
 class CoordinateSystem;
@@ -77,8 +79,6 @@ class Controller : public QObject
     Q_OBJECT
 public:
     explicit Controller(QObject *parent = 0);
-
-    OiProjectData currentProject; //holds the currently opened OpenIndy-project
 
     OiFeatureState *myFeatureState;
 
@@ -136,6 +136,8 @@ signals:
 
     void activeCoordinateSystemChanged();
 
+    void sendSaveLoadRequest(OiRequestResponse *request); //connected to OiRequestHandler to save or load an OpenIndy project
+
 public slots:
     void setUpFeatureGroupsModel();
     void setUpCoordinateSystemsModel();
@@ -191,7 +193,9 @@ public slots:
     //save & load an OpenIndy project
     bool saveProject();
     bool loadProject(OiProjectData &projectData);
-    bool createProject(OiProjectData &projectData);
+    bool receiveRequestResult(OiRequestResponse *request); //called from OiRequestHandler with the result of save or load task
+
+    bool createDefaultProject();
 
     void setFunctionConfiguration(int functionIndex, FunctionConfiguration config);
 
@@ -228,6 +232,8 @@ private:
     void initModels();
     void connectModels();
     //void createDefaultFeatures();
+
+    int lastRequestId; //id of the last OiRequest (save or load)
 
     FeatureUpdater myFeatureUpdater;
 

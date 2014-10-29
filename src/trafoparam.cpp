@@ -334,10 +334,30 @@ void TrafoParam::setisDatumTrafo(bool isDatumTrafo)
 
 /*!
  * \brief TrafoParam::toOpenIndyXML
- * \param stream
+ * \param xmlDoc
  * \return
  */
-bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
+QDomElement TrafoParam::toOpenIndyXML(QDomDocument &xmlDoc){
+
+    QDomElement trafoParam = Feature::toOpenIndyXML(xmlDoc);
+    trafoParam.setTagName("transformationparameter");
+
+    trafoParam.setAttribute("id", this->getId());
+    trafoParam.setAttribute("name", this->getFeatureName());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
+    trafoParam.setAttribute("solved", this->getIsSolved());
 
     stream.writeStartElement("transformationparameter");
     stream.writeAttribute("id", QString::number(this->id));

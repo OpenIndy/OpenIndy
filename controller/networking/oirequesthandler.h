@@ -3,10 +3,12 @@
 
 #include <QObject>
 #include <QtXml>
+#include <QThread>
 
 #include "oirequestresponse.h"
 #include "oifeaturestate.h"
 #include "featurewrapper.h"
+#include "oiprojectexchanger.h"
 
 /*!
  * \brief The OiRequestHandler class
@@ -29,6 +31,8 @@ signals:
 
 private:
     static OiRequestHandler *myRequestHandler;
+
+    QThread workerThread;
 
     void getProject(OiRequestResponse *request);
     void setProject(OiRequestResponse *request);

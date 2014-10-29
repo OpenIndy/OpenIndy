@@ -3,6 +3,8 @@
 
 #include <QMap>
 #include <QStringList>
+#include <QtXml>
+
 #include "configuration.h"
 #include "point.h"
 #include "line.h"
@@ -92,6 +94,8 @@ public:
     virtual QMap<QString, QStringList> getStringParameter();
 
     virtual QStringList getResultProtocol();
+
+    QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
 
 private:
     OiFunctionEmitter myEmitter;

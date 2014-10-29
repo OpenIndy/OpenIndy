@@ -1150,28 +1150,19 @@ void MainWindow::on_actionNominal_geometry_triggered()
 void MainWindow::on_actionSave_as_triggered(){
     try{
 
-        QString filename = QFileDialog::getSaveFileName(
-                             this,
-                             "Choose a filename to save under",
-                             "oiProject",
-                             "xml (*.xml)");
+        QString filename = QFileDialog::getSaveFileName(this, "Choose a filename to save under", "oiProject", "xml (*.xml)");
 
+        QFileInfo info(filename);
 
+        OiProjectData::setActiveProject(info.fileName(), new QFile(filename));
 
-          control.currentProject.setDevice(new QFile(filename));
+        bool isSuccessfull = this->control.saveProject();
 
-          QFileInfo info(filename);
-
-          control.currentProject.setProjectName(info.fileName());
-
-          //bool isSuccessfull = OiDataImporter::saveToXML(control.features,file,control.activeCoordinateSystem->id);
-          bool isSuccessfull = this->control.saveProject();
-
-          if(isSuccessfull){
-              QMessageBox::information(this,"save data", "Saving the data was successful.");
-          }else{
-              QMessageBox::information(this,"save data", "Saving the data was not successful.");
-          }
+        if(isSuccessfull){
+            QMessageBox::information(this,"save data", "Saving the data was successful.");
+        }else{
+            QMessageBox::information(this,"save data", "Saving the data was not successful.");
+        }
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -1192,7 +1183,7 @@ void MainWindow::changedStation(){
  */
 void MainWindow::on_actionOpen_triggered()
 {
-    QString filename = QFileDialog::getOpenFileName(
+    /*QString filename = QFileDialog::getOpenFileName(
                        this,
                        "Choose a filename to save under",
                        "oiProject",
@@ -1215,7 +1206,7 @@ void MainWindow::on_actionOpen_triggered()
     }
 
     //TODO set up sensorpad
-    //this->setupLaserTrackerPad();
+    //this->setupLaserTrackerPad();*/
 
 
 }
