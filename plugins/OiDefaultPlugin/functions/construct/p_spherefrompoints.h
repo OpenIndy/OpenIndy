@@ -17,10 +17,10 @@
 class SphereFromPoints : public ConstructFunction
 { 
 public:
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
     bool exec(Sphere&);
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
 private:
     void setUpResult(Sphere &s, double *x, double *y, double *z, int count, double *xm, double r, double *qxx);

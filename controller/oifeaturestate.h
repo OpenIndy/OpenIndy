@@ -34,6 +34,8 @@ public:
 
     static const QList<Station *> &getStations();
     static const QList<CoordinateSystem *> &getCoordinateSystems();
+    static const QList<TrafoParam *> &getTransformationParameters();
+    static const QList<FeatureWrapper *> &getGeometries();
 
     static FeatureWrapper* getActiveFeature();
     static Station* getActiveStation();
@@ -89,8 +91,10 @@ private:
     static FeatureWrapper *myActiveFeature; //the currently selected feature in table view
     static QList<CoordinateSystem *> myCoordinateSystems; //list of all non-station coordinate systems
     static QList<Station *> myStations; //list of all stations (each station has pointer to its coordinate system)
+    static QList<TrafoParam *> myTransformationParameters; //list of all trafo params
+    static QList<FeatureWrapper *> myGeometries; //list of all geometry features
     static Station *myActiveStation; //the currently selected station
-    static CoordinateSystem *myActiveCoordinateSystem; //the currently selected display coordinate system*/
+    static CoordinateSystem *myActiveCoordinateSystem; //the currently selected display coordinate system
     static QMap<QString, int> myAvailableGroups; //map of all available groups with number of assigned features
     static QString myActiveGroup; //currently selected feature group
 

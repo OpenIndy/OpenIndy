@@ -193,7 +193,7 @@ bool Function::exec(TrafoParam &t){
  * Can be used for custom parameter definition of type int
  * \return
  */
-QMap<QString, int> Function::getIntegerParameter(){
+QMap<QString, int> Function::getIntegerParameter() const{
     QMap<QString, int> result;
     return result;
 }
@@ -203,7 +203,7 @@ QMap<QString, int> Function::getIntegerParameter(){
  * Can be used for custom parameter definition of type double
  * \return
  */
-QMap<QString,double> Function::getDoubleParameter(){
+QMap<QString,double> Function::getDoubleParameter() const{
     QMap<QString, double> result;
     return result;
 }
@@ -213,7 +213,7 @@ QMap<QString,double> Function::getDoubleParameter(){
  * Can be used for custom parameter definition string
  * \return
  */
-QMap<QString, QStringList> Function::getStringParameter(){
+QMap<QString, QStringList> Function::getStringParameter() const{
     QMap<QString, QStringList> result;
     return result;
 }
@@ -223,7 +223,7 @@ QMap<QString, QStringList> Function::getStringParameter(){
  * The complete result protocol is shown for every function after execution
  * \return
  */
-QStringList Function::getResultProtocol(){
+QStringList Function::getResultProtocol() const{
     return QStringList();
 }
 
@@ -250,7 +250,7 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
     while (inputIterator.hasNext()) {
         inputIterator.next();
         foreach(InputFeature input, inputIterator.value()){
-            QDomElement inputElement = xmlDoc.createElement("inputElement");
+            QDomElement inputElement = xmlDoc.createElement("element");
             inputElement.setAttribute("index", inputIterator.key());
             inputElement.setAttribute("type", input.typeOfElement);
             inputElement.setAttribute("ref", input.id);
@@ -261,40 +261,34 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add integer parameters
     QDomElement integerParams = xmlDoc.createElement("integerParameters");
-    QMapIterator<QString, int> intIterator(this->getFunctionConfiguration().intParameter);
+    QMapIterator<QString, int> intIterator(this->myConfiguration.intParameter);
     while (intIterator.hasNext()) {
         intIterator.next();
-        foreach(int param, intIterator.value()){
-            QDomElement intParam = xmlDoc.createElement("integerParameter");
-            intParam.setAttribute("value", param);
-            intParams.appendChild(intParam);
-        }
+        QDomElement intParam = xmlDoc.createElement("parameter");
+        intParam.setAttribute("value", intIterator.value());
+        integerParams.appendChild(intParam);
     }
     function.appendChild(integerParams);
 
     //add double parameters
     QDomElement doubleParams = xmlDoc.createElement("doubleParameters");
-    QMapIterator<QString, double> doubleIterator(this->getFunctionConfiguration().doubleParameter);
+    QMapIterator<QString, double> doubleIterator(this->myConfiguration.doubleParameter);
     while (doubleIterator.hasNext()) {
         doubleIterator.next();
-        foreach(double param, doubleIterator.value()){
-            QDomElement doubleParam = xmlDoc.createElement("doubleParameter");
-            doubleParam.setAttribute("value", param);
-            doubleParams.appendChild(doubleParam);
-        }
+        QDomElement doubleParam = xmlDoc.createElement("parameter");
+        doubleParam.setAttribute("value", doubleIterator.value());
+        doubleParams.appendChild(doubleParam);
     }
     function.appendChild(doubleParams);
 
     //add string parameters
     QDomElement stringParams = xmlDoc.createElement("stringParameters");
-    QMapIterator<QString, QString> stringIterator(this->getFunctionConfiguration().stringParameter);
+    QMapIterator<QString, QString> stringIterator(this->myConfiguration.stringParameter);
     while (stringIterator.hasNext()) {
         stringIterator.next();
-        foreach(QString param, stringIterator.value()){
-            QDomElement stringParam = xmlDoc.createElement("stringParameter");
-            stringParam.setAttribute("value", param);
-            stringParams.appendChild(stringParam);
-        }
+        QDomElement stringParam = xmlDoc.createElement("parameter");
+        stringParam.setAttribute("value", stringIterator.value());
+        stringParams.appendChild(stringParam);
     }
     function.appendChild(stringParams);
 
@@ -367,7 +361,7 @@ bool Function::isValid(){
  * \brief Function::getFeatureOrder
  * \return
  */
-QMap<int, QList<InputFeature> > Function::getFeatureOrder(){
+QMap<int, QList<InputFeature> > Function::getFeatureOrder() const{
     return this->featureOrder;
 }
 
@@ -383,7 +377,7 @@ Statistic& Function::getStatistic(){
  * \brief Function::getId
  * \return
  */
-int Function::getId(){
+int Function::getId() const{
     return this->id;
 }
 

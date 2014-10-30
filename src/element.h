@@ -23,7 +23,7 @@ public:
     bool setId(int id);
 
     virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
-    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
 signals:
     void elementIdChanged();

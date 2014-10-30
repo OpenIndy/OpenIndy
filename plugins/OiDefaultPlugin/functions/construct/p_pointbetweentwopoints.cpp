@@ -4,7 +4,7 @@
  * \brief PointBetweenTwoPoints::getMetaData
  * \return
  */
-PluginMetaData* PointBetweenTwoPoints::getMetaData(){
+PluginMetaData* PointBetweenTwoPoints::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "PointBetweenTwoPoints";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -20,7 +20,7 @@ PluginMetaData* PointBetweenTwoPoints::getMetaData(){
  * \brief PointBetweenTwoPoints::getNeededElements
  * \return
  */
-QList<InputParams> PointBetweenTwoPoints::getNeededElements(){
+QList<InputParams> PointBetweenTwoPoints::getNeededElements() const{
     QList<InputParams> result;
     InputParams param1;
     param1.index = 0;
@@ -41,7 +41,7 @@ QList<InputParams> PointBetweenTwoPoints::getNeededElements(){
  * \brief PointBetweenTwoPoints::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> PointBetweenTwoPoints::applicableFor(){
+QList<Configuration::FeatureTypes> PointBetweenTwoPoints::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePointFeature);
     return result;

@@ -65,9 +65,23 @@ void Cylinder::recalc(){
 
 }
 
-bool Cylinder::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Cylinder::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    return false;
+    QDomElement cylinder = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(cylinder.isNull()){
+        return cylinder;
+    }
+
+    cylinder.setAttribute("type", Configuration::sCylinder);
+
+    return cylinder;
+
 }
 
 ElementDependencies Cylinder::fromOpenIndyXML(QXmlStreamReader &xml){

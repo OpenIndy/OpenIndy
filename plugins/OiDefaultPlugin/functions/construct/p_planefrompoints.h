@@ -21,10 +21,10 @@ using namespace std;
 class PlaneFromPoints : public ConstructFunction
 {
 public:
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
     bool exec(Plane&);
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
 private:
     bool checkPointCount();

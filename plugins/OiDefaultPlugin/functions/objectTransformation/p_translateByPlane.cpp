@@ -4,7 +4,7 @@
  * \brief TranslateByPlane::getMetaData
  * \return
  */
-PluginMetaData* TranslateByPlane::getMetaData(){
+PluginMetaData* TranslateByPlane::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "TranslateByPlane";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -21,7 +21,7 @@ PluginMetaData* TranslateByPlane::getMetaData(){
  * \brief TranslateByPlane::getNeededElements
  * \return
  */
-QList<InputParams> TranslateByPlane::getNeededElements(){
+QList<InputParams> TranslateByPlane::getNeededElements() const{
     QList<InputParams> result;
     InputParams param1;
     param1.index = 0;
@@ -42,7 +42,7 @@ QList<InputParams> TranslateByPlane::getNeededElements(){
  * \brief TranslateByPlane::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> TranslateByPlane::applicableFor(){
+QList<Configuration::FeatureTypes> TranslateByPlane::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePointFeature);
     result.append(Configuration::eLineFeature);
@@ -55,7 +55,7 @@ QList<Configuration::FeatureTypes> TranslateByPlane::applicableFor(){
  * \brief TranslateByPlane::getStringParameter
  * \return
  */
-QMap<QString, QStringList> TranslateByPlane::getStringParameter(){
+QMap<QString, QStringList> TranslateByPlane::getStringParameter() const{
     QMap<QString, QStringList> result;
     QString key = "invert";
     QStringList value;

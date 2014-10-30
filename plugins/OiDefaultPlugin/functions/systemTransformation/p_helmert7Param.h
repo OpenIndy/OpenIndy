@@ -21,10 +21,10 @@ using namespace std;
 class Helmert7Param : public SystemTransformation
 {  
 public:
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
     bool exec(TrafoParam&);
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
 private:
     bool svdError;

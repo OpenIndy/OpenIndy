@@ -340,58 +340,42 @@ void TrafoParam::setisDatumTrafo(bool isDatumTrafo)
 QDomElement TrafoParam::toOpenIndyXML(QDomDocument &xmlDoc){
 
     QDomElement trafoParam = Feature::toOpenIndyXML(xmlDoc);
-    trafoParam.setTagName("transformationparameter");
 
-    trafoParam.setAttribute("id", this->getId());
-    trafoParam.setAttribute("name", this->getFeatureName());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
-    trafoParam.setAttribute("solved", this->getIsSolved());
+    if(trafoParam.isNull()){
+        return trafoParam;
+    }
 
-    stream.writeStartElement("transformationparameter");
-    stream.writeAttribute("id", QString::number(this->id));
-    stream.writeAttribute("name", this->name);
-    stream.writeAttribute("solved", QString::number(this->isSolved));
-    stream.writeAttribute("tx", QString::number(this->translation.getAt(0)));
-    stream.writeAttribute("ty", QString::number(this->translation.getAt(1)));
-    stream.writeAttribute("tz", QString::number(this->translation.getAt(2)));
-    stream.writeAttribute("rx", QString::number(this->rotation.getAt(0)));
-    stream.writeAttribute("ry", QString::number(this->rotation.getAt(1)));
-    stream.writeAttribute("rz", QString::number(this->rotation.getAt(2)));
-    stream.writeAttribute("mx", QString::number(this->scale.getAt(0)));
-    stream.writeAttribute("my", QString::number(this->scale.getAt(1)));
-    stream.writeAttribute("mz", QString::number(this->scale.getAt(2)));
-    stream.writeAttribute("use",QString::number(this->use));
-    stream.writeAttribute("time", this->validTime.toString(Qt::ISODate));
-    stream.writeAttribute("movement", QString::number(this->isMovement));
-    stream.writeAttribute("datumtrafo", QString::number(this->isDatumTrafo));
+    trafoParam.setTagName("transformationParameter");
 
-    stream.writeStartElement("from");
-    stream.writeAttribute("ref", QString::number(this->from->getId()));
-    stream.writeEndElement();
+    //add trafoParam attributes
+    if(this->translation.getSize() >= 3 && this->rotation.getSize() >= 3 && this->getScale().getSize() >= 3){
+        trafoParam.setAttribute("tx", this->translation.getAt(0));
+        trafoParam.setAttribute("ty", this->translation.getAt(1));
+        trafoParam.setAttribute("tz", this->translation.getAt(2));
+        trafoParam.setAttribute("rx", this->rotation.getAt(0));
+        trafoParam.setAttribute("ry", this->rotation.getAt(1));
+        trafoParam.setAttribute("rz", this->rotation.getAt(2));
+        trafoParam.setAttribute("mx", this->scale.getAt(0));
+        trafoParam.setAttribute("my", this->scale.getAt(1));
+        trafoParam.setAttribute("mz", this->scale.getAt(2));
+    }
+    trafoParam.setAttribute("movement", this->isMovement);
+    trafoParam.setAttribute("datumtrafo", this->isDatumTrafo);
+    trafoParam.setAttribute("use", this->use);
+    trafoParam.setAttribute("time", this->validTime.toString(Qt::ISODate));
 
-    stream.writeStartElement("to");
-    stream.writeAttribute("ref", QString::number(this->to->getId()));
-    stream.writeEndElement();
+    //add from and to coordinate systems
+    if(this->from != NULL && this->to != NULL){
+        QDomElement from = xmlDoc.createElement("from");
+        from.setAttribute("ref", this->from->getId());
+        trafoParam.appendChild(from);
+        QDomElement to = xmlDoc.createElement("to");
+        to.setAttribute("ref", this->to->getId());
+        trafoParam.appendChild(to);
+    }
 
+    return trafoParam;
 
-    this->writeFeatureAttributes(stream);
-
-
-    stream.writeEndElement();
-
-    return true;
 }
 
 /*!

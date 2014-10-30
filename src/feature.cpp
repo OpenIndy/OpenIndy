@@ -280,6 +280,8 @@ QDomElement Feature::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return feature;
     }
 
+    feature.setTagName("feature");
+
     //add feature attributes
     feature.setAttribute("name", this->getFeatureName());
     feature.setAttribute("group", this->getGroupName());
@@ -290,10 +292,42 @@ QDomElement Feature::toOpenIndyXML(QDomDocument &xmlDoc) const{
     //add functions
     if(this->functionList.size() > 0){
         QDomElement functions = xmlDoc.createElement("functions");
+        int index = 0;
         foreach(Function *f, this->functionList){
-
+            QDomElement function = f->toOpenIndyXML(xmlDoc);
+            if(!function.isNull()){
+                function.setAttribute("executionIndex", index);
+                functions.appendChild(function);
+            }
+            index++;
         }
         feature.appendChild(functions);
+    }
+
+    //add usedFor features
+    if(this->usedFor.size() > 0){
+        QDomElement usedForFeatures = xmlDoc.createElement("usedFor");
+        foreach(FeatureWrapper *f, this->usedFor){
+            if(f != NULL && f->getFeature() != NULL){
+                QDomElement usedFor = xmlDoc.createElement("feature");
+                usedFor.setAttribute("ref", f->getFeature()->getId());
+                usedForFeatures.appendChild(usedFor);
+            }
+        }
+        feature.appendChild(usedForFeatures);
+    }
+
+    //add previouslyNeeded features
+    if(this->previouslyNeeded.size() > 0){
+        QDomElement previouslyNeededFeatures = xmlDoc.createElement("previouslyNeeded");
+        foreach(FeatureWrapper *f, this->previouslyNeeded){
+            if(f != NULL && f->getFeature() != NULL){
+                QDomElement previouslyNeeded = xmlDoc.createElement("feature");
+                previouslyNeeded.setAttribute("ref", f->getFeature()->getId());
+                previouslyNeededFeatures.appendChild(previouslyNeeded);
+            }
+        }
+        feature.appendChild(previouslyNeededFeatures);
     }
 
     return feature;

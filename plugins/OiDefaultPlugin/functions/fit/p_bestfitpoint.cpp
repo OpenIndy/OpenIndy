@@ -4,7 +4,7 @@
  * \brief BestFitPoint::getMetaData
  * \return
  */
-PluginMetaData* BestFitPoint::getMetaData(){
+PluginMetaData* BestFitPoint::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "BestFitPoint";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -20,7 +20,7 @@ PluginMetaData* BestFitPoint::getMetaData(){
  * \brief BestFitPoint::getNeededElements
  * \return
  */
-QList<InputParams> BestFitPoint::getNeededElements(){
+QList<InputParams> BestFitPoint::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -35,7 +35,7 @@ QList<InputParams> BestFitPoint::getNeededElements(){
  * \brief BestFitPoint::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> BestFitPoint::applicableFor(){
+QList<Configuration::FeatureTypes> BestFitPoint::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePointFeature);
     return result;

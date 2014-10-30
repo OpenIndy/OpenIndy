@@ -1564,6 +1564,16 @@ bool Controller::receiveRequestResult(OiRequestResponse *request){
             switch(request->myRequestType){
             case OiRequestResponse::eGetProject:
                 qDebug() << request->response.toString();
+
+                //save xml in file
+                if(OiProjectData::getDevice() != NULL){
+                    OiProjectData::getDevice()->open(QIODevice::ReadWrite);
+                    OiProjectData::getDevice()->write(request->response.toByteArray());
+                    OiProjectData::getDevice()->close();
+                }
+
+
+                emit this->showMessageBox(OiProjectData::getProjectName(), "OpenIndy project successfully stored.");
                 break;
             case OiRequestResponse::eSetProject:
                 qDebug() << request->response.toString();

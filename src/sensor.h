@@ -36,23 +36,23 @@ public:
 
     //-----get sensor capabilities-----
 
-    virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes() = 0;
-    virtual QList<Configuration::SensorFunctionalities> getSupportedSensorActions() = 0;
-    virtual QList<Configuration::ConnectionTypes>* getConnectionType() = 0;
+    virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes() const = 0;
+    virtual QList<Configuration::SensorFunctionalities> getSupportedSensorActions() const = 0;
+    virtual QList<Configuration::ConnectionTypes>* getConnectionType() const = 0;
 
     //! get meta data
-    virtual PluginMetaData* getMetaData() = 0;
+    virtual PluginMetaData* getMetaData() const = 0;
 
     //individually defined sensor parameter
-    virtual QMap<QString,int>* getIntegerParameter() = 0;
-    virtual QMap<QString,double>* getDoubleParameter() = 0;
-    virtual QMap <QString, QStringList>* getStringParameter() = 0;
-    virtual QStringList selfDefinedActions() = 0;
+    virtual QMap<QString,int>* getIntegerParameter() const = 0;
+    virtual QMap<QString,double>* getDoubleParameter() const = 0;
+    virtual QMap <QString, QStringList>* getStringParameter() const = 0;
+    virtual QStringList selfDefinedActions() const = 0;
     virtual bool doSelfDefinedAction(QString a) = 0;
 
     //individually defined reading type
-    virtual QString getUndefinedReadingName(){return "undefined";}
-    virtual QMap<QString,double>* getDefaultAccuracy() = 0;
+    virtual QString getUndefinedReadingName() const {return "undefined";}
+    virtual QMap<QString,double>* getDefaultAccuracy() const = 0;
 
     //! sensor configuration
     void setSensorConfiguration(SensorConfiguration* sConfig){myConfiguration = sConfig;}
@@ -90,7 +90,36 @@ public:
     //!checks if sensor is busy
     virtual bool isBusy() = 0;
 
- protected:
+    virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const
+    {
+
+        if(xmlDoc.isNull() || this->getMetaData() == NULL){
+            return QDomElement();
+        }
+
+        QDomElement sensor = xmlDoc.createElement("sensor");
+
+        //add sensor attributes
+        sensor.setAttribute("name", this->getMetaData()->name);
+        sensor.setAttribute("plugin", this->getMetaData()->pluginName);
+
+        //add reading types
+        QDomElement readingTypes = xmlDoc.createElement("readingTypes");
+        if(this->getSupportedReadingTypes() != NULL){
+            QList<Configuration::ReadingTypes> *types = this->getSupportedReadingTypes();
+            for(int i = 0; i < types->size(); i++){
+                QDomElement readingType = xmlDoc.createElement("type");
+                readingType.setAttribute("name", Configuration::getReadingTypeString(types->at(i)));
+                readingTypes.appendChild(readingType);
+            }
+        }
+        sensor.appendChild(readingTypes);
+
+        return sensor;
+
+    }
+
+protected:
     void writeToConsole(QString s){myEmitter.emitSendString(s);}
 
 };

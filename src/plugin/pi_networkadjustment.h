@@ -19,7 +19,7 @@ public:
     QList<CoordinateSystem*> coordSys;
     Statistic *stats;
 
-    virtual PluginMetaData* getMetaData() = 0;
+    virtual PluginMetaData* getMetaData() const = 0;
 
     virtual void recalc() = 0;
 };

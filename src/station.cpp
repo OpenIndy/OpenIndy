@@ -114,74 +114,57 @@ void Station::recalc(){
 
 /*!
  * \brief Station::toOpenIndyXML
- * \param stream
+ * \param xmlDoc
  * \return
  */
-bool Station::toOpenIndyXML(QXmlStreamWriter &stream){
+QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
 
-    stream.writeStartElement("station");
-    stream.writeAttribute("id", QString::number(this->id));
-    stream.writeAttribute("name", this->name);
+    QDomElement station = Feature::toOpenIndyXML(xmlDoc);
 
-    if(this->sensorPad->instrument != NULL){
-        stream.writeStartElement("activeSensor");
-        stream.writeAttribute("name",this->sensorPad->instrument->getMetaData()->name);
-        stream.writeAttribute("plugin", this->sensorPad->instrument->getMetaData()->pluginName);
-
-        stream.writeStartElement("readingTypes");
-        QList<Configuration::ReadingTypes> *readingTypes = this->sensorPad->instrument->getSupportedReadingTypes();
-        if(readingTypes != NULL){
-            foreach(Configuration::ReadingTypes type, *readingTypes){
-                stream.writeStartElement("type");
-                stream.writeAttribute("name", Configuration::getReadingTypeString(type));
-                stream.writeEndElement();
-            }
-        }
-        stream.writeEndElement();
-
-        stream.writeEndElement();
+    if(station.isNull()){
+        return station;
     }
 
-    stream.writeStartElement("usedSensors");
-    if(this->sensorPad->usedSensors.size()>0){
-        for(int i = 0; i<this->sensorPad->usedSensors.size();i++){
-            stream.writeStartElement("sensor");
-            stream.writeAttribute("name",this->sensorPad->usedSensors.at(i)->getMetaData()->name);
-            stream.writeAttribute("plugin", this->sensorPad->usedSensors.at(i)->getMetaData()->pluginName);
+    station.setTagName("station");
 
-            stream.writeStartElement("readingTypes");
-            QList<Configuration::ReadingTypes> *readingTypes = this->sensorPad->usedSensors.at(i)->getSupportedReadingTypes();
-            if(readingTypes != NULL){
-                foreach(Configuration::ReadingTypes type, *readingTypes){
-                    stream.writeStartElement("type");
-                    stream.writeAttribute("name", Configuration::getReadingTypeString(type));
-                    stream.writeEndElement();
+    //add used sensors
+    if(this->sensorPad != NULL && this->sensorPad->usedSensors.size() > 0){
+        QDomElement usedSensors = xmlDoc.createElement("usedSensors");
+        foreach(Sensor *s, this->sensorPad->usedSensors){
+            if(s != NULL){
+                QDomElement sensor = s->toOpenIndyXML(xmlDoc);
+                if(!sensor.isNull()){
+                    usedSensors.appendChild(sensor);
                 }
             }
-            stream.writeEndElement();
+        }
+        station.appendChild(usedSensors);
+    }
 
-            stream.writeEndElement();
+    //add active sensor
+    if(this->sensorPad != NULL && this->sensorPad->instrument != NULL){
+        QDomElement activeSensor = this->sensorPad->instrument->toOpenIndyXML(xmlDoc);
+        if(!activeSensor.isNull()){
+            activeSensor.setTagName("activeSensor");
+            station.appendChild(activeSensor);
         }
     }
-    stream.writeEndElement();
 
+    //add position
     if(this->position != NULL){
-        stream.writeStartElement("position");
-        stream.writeAttribute("ref", QString::number(this->position->getId()));
-        stream.writeEndElement();
+        QDomElement position = xmlDoc.createElement("position");
+        position.setAttribute("ref", this->position->getId());
+        station.appendChild(position);
     }
 
+    //add coordinate system
     if(this->coordSys != NULL){
-        stream.writeStartElement("coordinatesystem");
-        stream.writeAttribute("ref", QString::number(this->coordSys->getId()));
-        stream.writeEndElement();
+        QDomElement stationSystem = xmlDoc.createElement("coordinateSystem");
+        stationSystem.setAttribute("ref", this->coordSys->getId());
+        station.appendChild(stationSystem);
     }
 
-    this->writeFeatureAttributes(stream);
-
-    stream.writeEndElement();
-
-    return true;
+    return station;
 
 }
 

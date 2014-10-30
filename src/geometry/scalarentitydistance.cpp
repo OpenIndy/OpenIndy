@@ -50,36 +50,31 @@ void ScalarEntityDistance::recalc(){
 
 }
 
-bool ScalarEntityDistance::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief ScalarEntityDistance::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement ScalarEntityDistance::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    //---------------common geometry attributes--------------
-    stream.writeStartElement("geometry");
-    stream.writeAttribute("id", QString::number(this->id));
-    stream.writeAttribute("name", this->name);
-    stream.writeAttribute("type", Configuration::sEntityDistance);
-    stream.writeAttribute("nominal",QString::number(this->isNominal));
-    stream.writeAttribute("common",QString::number(this->isCommon));
-    stream.writeAttribute("solved", QString::number(this->isSolved));
-    stream.writeAttribute("group", this->group);
-    stream.writeAttribute("comment", this->comment);
+    QDomElement entityDistance = Geometry::toOpenIndyXML(xmlDoc);
 
-    //---------------specific geometry attributes--------------
-    if(this->isSolved || this->isNominal){
-            stream.writeStartElement("distance");
-            stream.writeAttribute("value", QString::number(this->getDistance()));
-            stream.writeEndElement();
-
-
-            stream.writeStartElement("standardDeviation");
-            stream.writeAttribute("value", QString::number(this->myStatistic.stdev));
-            stream.writeEndElement();
+    if(entityDistance.isNull()){
+        return entityDistance;
     }
 
-   this->writeGeometryAttributes(stream);
+    entityDistance.setAttribute("type", Configuration::sEntityDistance);
 
-   stream.writeEndElement();
+    //add distance
+    QDomElement distance = xmlDoc.createElement("distance");
+    if(this->getIsSolved()){
+        distance.setAttribute("value", this->distance);
+    }else{
+        distance.setAttribute("value", 0.0);
+    }
+    entityDistance.appendChild(distance);
 
-    return true;
+    return entityDistance;
 
 }
 

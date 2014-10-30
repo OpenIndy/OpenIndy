@@ -2,7 +2,7 @@
 
 BestFitCircle::BestFitCircle(){}
 
-PluginMetaData *BestFitCircle::getMetaData() {
+PluginMetaData *BestFitCircle::getMetaData() const {
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "BestFitCircle";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -249,7 +249,7 @@ bool BestFitCircle::exec(Circle &circle) {
     return false;
 }
 
-QList<InputParams> BestFitCircle::getNeededElements() {
+QList<InputParams> BestFitCircle::getNeededElements() const {
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -268,7 +268,7 @@ QList<InputParams> BestFitCircle::getNeededElements() {
     return result;
 }
 
-QList<Configuration::FeatureTypes> BestFitCircle::applicableFor() {
+QList<Configuration::FeatureTypes> BestFitCircle::applicableFor() const {
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eCircleFeature);
     return result;

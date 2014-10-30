@@ -11,7 +11,7 @@ public:
     Nurbs(const Nurbs &copy);
     void recalc();
 
-    QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
+    QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
     bool saveSimulationData();

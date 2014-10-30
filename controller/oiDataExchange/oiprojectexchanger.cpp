@@ -183,9 +183,65 @@ QDomDocument OiProjectExchanger::saveProject(){
     QDomElement stations = project.createElement("stations");
     foreach(Station *s, OiFeatureState::getStations()){
         if(s != NULL){
-            stations.appendChild(s->toOpenIndyXML(project))
+            QDomElement station = s->toOpenIndyXML(project);
+            if(!station.isNull()){
+                stations.appendChild(station);
+            }
         }
     }
+    root.appendChild(stations);
+
+    //add coordinate systems
+    QDomElement coordinateSystems = project.createElement("coordinateSystems");
+    foreach(CoordinateSystem *c, OiFeatureState::getCoordinateSystems()){
+        if(c != NULL){
+            QDomElement coordinateSystem = c->toOpenIndyXML(project);
+            if(!coordinateSystem.isNull()){
+                coordinateSystems.appendChild(coordinateSystem);
+            }
+        }
+    }
+    root.appendChild(coordinateSystems);
+
+    //add trafo params
+    QDomElement trafoParams = project.createElement("transformationParameters");
+    foreach(TrafoParam *tp, OiFeatureState::getTransformationParameters()){
+        if(tp != NULL){
+            QDomElement trafoParam = tp->toOpenIndyXML(project);
+            if(!trafoParam.isNull()){
+                trafoParams.appendChild(trafoParam);
+            }
+        }
+    }
+    root.appendChild(trafoParams);
+
+    //add geometries
+    QDomElement geometries = project.createElement("geometries");
+    foreach(FeatureWrapper *geom, OiFeatureState::getGeometries()){
+        if(geom != NULL){
+            QDomElement geometry = geom->getGeometry()->toOpenIndyXML(project);
+            if(!geometry.isNull()){
+                geometries.appendChild(geometry);
+            }
+        }
+    }
+    root.appendChild(geometries);
+
+    //add observations (search the station coordinate systems for observations)
+    QDomElement observations = project.createElement("observations");
+    foreach(Station *s, OiFeatureState::getStations()){
+        if(s != NULL && s->coordSys != NULL && s->coordSys->getObservations().size() > 0){
+            foreach(Observation *obs, s->coordSys->getObservations()){
+                if(obs != NULL){
+                    QDomElement observation = obs->toOpenIndyXML(project);
+                    if(!observation.isNull()){
+                        observations.appendChild(observation);
+                    }
+                }
+            }
+        }
+    }
+    root.appendChild(observations);
 
     return project;
 

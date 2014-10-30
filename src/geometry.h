@@ -57,7 +57,7 @@ public:
     SimulationData& getSimulationData();
     void setSimulationData(SimulationData s);
 
-    virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) = 0;
+    virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
     virtual bool saveSimulationData() = 0;

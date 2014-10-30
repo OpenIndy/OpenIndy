@@ -4,7 +4,7 @@
  * \brief PointFromPoints::getMetaData
  * \return
  */
-PluginMetaData* PointFromPoints::getMetaData(){
+PluginMetaData* PointFromPoints::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "PointFromPoints";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -20,7 +20,7 @@ PluginMetaData* PointFromPoints::getMetaData(){
  * \brief PointFromPoints::getNeededElements
  * \return
  */
-QList<InputParams> PointFromPoints::getNeededElements(){
+QList<InputParams> PointFromPoints::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -35,7 +35,7 @@ QList<InputParams> PointFromPoints::getNeededElements(){
  * \brief PointFromPoints::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> PointFromPoints::applicableFor(){
+QList<Configuration::FeatureTypes> PointFromPoints::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePointFeature);
     return result;

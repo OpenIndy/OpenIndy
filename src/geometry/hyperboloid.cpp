@@ -44,9 +44,23 @@ void Hyperboloid::recalc(){
 
 }
 
-bool Hyperboloid::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief Hyperboloid::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Hyperboloid::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    return false;
+    QDomElement hyperboloid = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(hyperboloid.isNull()){
+        return hyperboloid;
+    }
+
+    hyperboloid.setAttribute("type", Configuration::sHyperboloid);
+
+    return hyperboloid;
+
 }
 
 ElementDependencies Hyperboloid::fromOpenIndyXML(QXmlStreamReader &xml){

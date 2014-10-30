@@ -27,7 +27,7 @@ OiProjectData *OiProjectData::getInstance(){
  * Returns the currently selected device or NULL
  * \return
  */
-const QIODevice *OiProjectData::getDevice(){
+QIODevice *OiProjectData::getDevice(){
     return OiProjectData::activeProject->device;
 }
 

@@ -1158,11 +1158,11 @@ void MainWindow::on_actionSave_as_triggered(){
 
         bool isSuccessfull = this->control.saveProject();
 
-        if(isSuccessfull){
+        /*if(isSuccessfull){
             QMessageBox::information(this,"save data", "Saving the data was successful.");
         }else{
             QMessageBox::information(this,"save data", "Saving the data was not successful.");
-        }
+        }*/
 
     }catch(exception &e){
         Console::addLine(e.what());

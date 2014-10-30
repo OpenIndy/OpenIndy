@@ -16,14 +16,14 @@ class SimpleTemperatureCompensation : public SystemTransformation
 public:
     SimpleTemperatureCompensation();
 
-    PluginMetaData* getMetaData();
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    PluginMetaData* getMetaData() const;
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
     bool exec(TrafoParam &);
 
-    QMap<QString, QStringList> getStringParameter();
-    QMap<QString, double> getDoubleParameter();
+    QMap<QString, QStringList> getStringParameter() const;
+    QMap<QString, double> getDoubleParameter() const;
 
     void calcExpansion(TrafoParam &tp);
     void calcAccuracy(TrafoParam &tp, double tempAccuracy, double expansion);

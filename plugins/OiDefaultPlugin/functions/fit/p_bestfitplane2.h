@@ -19,10 +19,10 @@
 class BestFitPlane2 : public FitFunction
 {
 public:
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
     bool exec(Plane&);
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
 private:
     void setUpResult(Plane &p, double *x, double *y, double *z, int count, double *n, double d, double *qxx);

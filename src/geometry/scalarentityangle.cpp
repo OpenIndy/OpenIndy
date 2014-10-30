@@ -50,36 +50,31 @@ void ScalarEntityAngle::recalc(){
 
 }
 
-bool ScalarEntityAngle::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief ScalarEntityAngle::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement ScalarEntityAngle::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    //---------------common geometry attributes--------------
-    stream.writeStartElement("geometry");
-    stream.writeAttribute("id", QString::number(this->id));
-    stream.writeAttribute("name", this->name);
-    stream.writeAttribute("type", Configuration::sEntitiyAngle);
-    stream.writeAttribute("nominal",QString::number(this->isNominal));
-    stream.writeAttribute("common",QString::number(this->isCommon));
-    stream.writeAttribute("solved", QString::number(this->isSolved));
-    stream.writeAttribute("group", this->group);
-    stream.writeAttribute("comment", this->comment);
+    QDomElement entityAngle = Geometry::toOpenIndyXML(xmlDoc);
 
-    //---------------specific geometry attributes--------------
-    if(this->isSolved || this->isNominal){
-            stream.writeStartElement("angle");
-            stream.writeAttribute("value", QString::number(this->getAngle()));
-            stream.writeEndElement();
-
-
-            stream.writeStartElement("standardDeviation");
-            stream.writeAttribute("value", QString::number(this->myStatistic.stdev));
-            stream.writeEndElement();
+    if(entityAngle.isNull()){
+        return entityAngle;
     }
 
-   this->writeGeometryAttributes(stream);
+    entityAngle.setAttribute("type", Configuration::sEntitiyAngle);
 
-   stream.writeEndElement();
+    //add angle
+    QDomElement angle = xmlDoc.createElement("angle");
+    if(this->getIsSolved()){
+        angle.setAttribute("value", this->angle);
+    }else{
+        angle.setAttribute("value", 0.0);
+    }
+    entityAngle.appendChild(angle);
 
-    return true;
+    return entityAngle;
 
 }
 

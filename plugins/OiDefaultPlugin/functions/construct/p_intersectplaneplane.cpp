@@ -4,7 +4,7 @@
  * \brief IntersectPlanePlane::getMetaData
  * \return
  */
-PluginMetaData* IntersectPlanePlane::getMetaData(){
+PluginMetaData* IntersectPlanePlane::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "IntersectPlanePlane";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -19,7 +19,7 @@ PluginMetaData* IntersectPlanePlane::getMetaData(){
  * \brief IntersectPlanePlane::getNeededElements
  * \return
  */
-QList<InputParams> IntersectPlanePlane::getNeededElements(){
+QList<InputParams> IntersectPlanePlane::getNeededElements() const{
     QList<InputParams> result;
     InputParams param1;
     param1.index = 0;
@@ -40,7 +40,7 @@ QList<InputParams> IntersectPlanePlane::getNeededElements(){
  * \brief IntersectPlanePlane::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> IntersectPlanePlane::applicableFor(){
+QList<Configuration::FeatureTypes> IntersectPlanePlane::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eLineFeature);
     return result;

@@ -12,10 +12,10 @@
 class ShiftPlane : public ObjectTransformation
 {
 public:
-    PluginMetaData* getMetaData();
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
-    QMap<QString, double> getDoubleParameter();
+    PluginMetaData* getMetaData() const;
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
+    QMap<QString, double> getDoubleParameter() const;
     bool exec(Plane&);
 
 private:

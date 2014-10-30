@@ -14,9 +14,9 @@ class GeodeticFunction : public Function
 public:
     virtual ~GeodeticFunction(){}
 
-    virtual QList<InputParams> getNeededFeatures() = 0;
-    virtual QList<Configuration::FeatureTypes> applicableFor() = 0;
-    virtual PluginMetaData* getMetaData() = 0;
+    virtual QList<InputParams> getNeededFeatures() const = 0;
+    virtual QList<Configuration::FeatureTypes> applicableFor() const = 0;
+    virtual PluginMetaData* getMetaData() const = 0;
 };
 
 #define GeodeticFunction_iidd "de.openIndy.Plugin.Function.GeodeticFunction.v001"

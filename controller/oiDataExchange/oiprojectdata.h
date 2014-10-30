@@ -22,7 +22,7 @@ private:
 public:
     static OiProjectData *getInstance();
 
-    static const QIODevice *getDevice();
+    static QIODevice *getDevice();
     static QString getProjectName();
     static bool getIsValid();
     static bool getIsSaved();

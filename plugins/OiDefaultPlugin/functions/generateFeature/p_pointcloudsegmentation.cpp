@@ -4,7 +4,7 @@
  * \brief PointCloudSegmentation::getMetaData
  * \return
  */
-PluginMetaData* PointCloudSegmentation::getMetaData(){
+PluginMetaData* PointCloudSegmentation::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "PointCloudSegmentation";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -38,7 +38,7 @@ PluginMetaData* PointCloudSegmentation::getMetaData(){
  * \brief PointCloudSegmentation::getNeededElements
  * \return
  */
-QList<InputParams> PointCloudSegmentation::getNeededElements(){
+QList<InputParams> PointCloudSegmentation::getNeededElements() const{
     QList<InputParams> result;
     return result;
 }
@@ -47,7 +47,7 @@ QList<InputParams> PointCloudSegmentation::getNeededElements(){
  * \brief PointCloudSegmentation::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> PointCloudSegmentation::applicableFor(){
+QList<Configuration::FeatureTypes> PointCloudSegmentation::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePointCloudFeature);
     return result;
@@ -57,7 +57,7 @@ QList<Configuration::FeatureTypes> PointCloudSegmentation::applicableFor(){
  * \brief PointCloudSegmentation::getIntegerParameter
  * \return
  */
-QMap<QString, int> PointCloudSegmentation::getIntegerParameter(){
+QMap<QString, int> PointCloudSegmentation::getIntegerParameter() const{
 
     QMap<QString, int> intParams;
 
@@ -81,7 +81,7 @@ QMap<QString, int> PointCloudSegmentation::getIntegerParameter(){
  * \brief PointCloudSegmentation::getDoubleParameter
  * \return
  */
-QMap<QString, double> PointCloudSegmentation::getDoubleParameter(){
+QMap<QString, double> PointCloudSegmentation::getDoubleParameter() const{
 
     QMap<QString, double> doubleParams;
 
@@ -105,7 +105,7 @@ QMap<QString, double> PointCloudSegmentation::getDoubleParameter(){
  * \brief PointCloudSegmentation::getStringParameter
  * \return
  */
-QMap<QString, QStringList> PointCloudSegmentation::getStringParameter(){
+QMap<QString, QStringList> PointCloudSegmentation::getStringParameter() const{
 
     QMap<QString, QStringList> stringParams;
 
@@ -252,7 +252,7 @@ bool PointCloudSegmentation::exec(PointCloud &p){
  * \brief PointCloudSegmentation::getResultProtocol
  * \return
  */
-QStringList PointCloudSegmentation::getResultProtocol(){
+QStringList PointCloudSegmentation::getResultProtocol() const{
     QStringList dummy;
     dummy.append("test protocol");
     return dummy;

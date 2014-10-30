@@ -74,43 +74,34 @@ void Plane::recalc(){
 
 }
 
-bool Plane::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief Plane::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Plane::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    //---------------common geometry attributes--------------
-    stream.writeStartElement("geometry");
-    stream.writeAttribute("id", QString::number(this->id));
-    stream.writeAttribute("name", this->name);
-    stream.writeAttribute("type", Configuration::sPlane);
-    stream.writeAttribute("nominal",QString::number(this->isNominal));
-    stream.writeAttribute("common",QString::number(this->isCommon));
-    stream.writeAttribute("solved", QString::number(this->isSolved));
-    stream.writeAttribute("group", this->group);
-    stream.writeAttribute("comment", this->comment);
+    QDomElement plane = Geometry::toOpenIndyXML(xmlDoc);
 
-    //---------------specific geometry attributes--------------
-    if(this->isSolved || this->isNominal){
-            stream.writeStartElement("coordinates");
-            stream.writeAttribute("x", QString::number(this->xyz.getAt(0)));
-            stream.writeAttribute("y", QString::number(this->xyz.getAt(1)));
-            stream.writeAttribute("z", QString::number(this->xyz.getAt(2)));
-            stream.writeEndElement();
-
-            stream.writeStartElement("spatialDirection");
-            stream.writeAttribute("i", QString::number(this->ijk.getAt(0)));
-            stream.writeAttribute("j", QString::number(this->ijk.getAt(1)));
-            stream.writeAttribute("k", QString::number(this->ijk.getAt(2)));
-            stream.writeEndElement();
-
-            stream.writeStartElement("standardDeviation");
-            stream.writeAttribute("value", QString::number(this->myStatistic.stdev));
-            stream.writeEndElement();
+    if(plane.isNull()){
+        return plane;
     }
 
-   this->writeGeometryAttributes(stream);
+    plane.setAttribute("type", Configuration::sPlane);
 
-   stream.writeEndElement();
+    //add normal vector
+    QDomElement ijk = xmlDoc.createElement("spatialDirection");
+    if(this->ijk.getSize() >= 3 && this->getIsSolved()){
+        ijk.setAttribute("i", this->ijk.getAt(0));
+        ijk.setAttribute("j", this->ijk.getAt(1));
+        ijk.setAttribute("k", this->ijk.getAt(2));
+    }else{
+        ijk.setAttribute("i", 0.0);
+        ijk.setAttribute("j", 0.0);
+        ijk.setAttribute("k", 0.0);
+    }
 
-    return true;
+    return plane;
 
 }
 

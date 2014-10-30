@@ -37,7 +37,7 @@ public:
     bool isValid; //defines wether this observation is valid in current coordinate system
     OiVec sigmaXyz;
 
-    virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
+    QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
 
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 

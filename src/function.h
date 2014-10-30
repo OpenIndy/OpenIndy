@@ -85,15 +85,15 @@ public:
     virtual bool exec(ScalarEntityTemperature&);
     virtual bool exec(ScalarEntityMeasurementSeries&);
 
-    virtual QList<InputParams> getNeededElements() = 0;
-    virtual QList<Configuration::FeatureTypes> applicableFor() = 0;
-    virtual PluginMetaData* getMetaData() = 0;
+    virtual QList<InputParams> getNeededElements() const = 0;
+    virtual QList<Configuration::FeatureTypes> applicableFor() const = 0;
+    virtual PluginMetaData* getMetaData() const = 0;
 
-    virtual QMap<QString, int> getIntegerParameter();
-    virtual QMap<QString, double> getDoubleParameter();
-    virtual QMap<QString, QStringList> getStringParameter();
+    virtual QMap<QString, int> getIntegerParameter() const;
+    virtual QMap<QString, double> getDoubleParameter() const;
+    virtual QMap<QString, QStringList> getStringParameter() const;
 
-    virtual QStringList getResultProtocol();
+    virtual QStringList getResultProtocol() const;
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
 
@@ -143,9 +143,9 @@ public:
     FunctionConfiguration getFunctionConfiguration();
 
     bool isValid();
-    QMap<int, QList<InputFeature> > getFeatureOrder();
+    QMap<int, QList<InputFeature> > getFeatureOrder() const;
     Statistic& getStatistic();
-    int getId();
+    int getId() const;
     virtual void clear();
     virtual void clearResults();
 

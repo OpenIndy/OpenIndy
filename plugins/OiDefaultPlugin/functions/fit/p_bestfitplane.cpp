@@ -4,7 +4,7 @@
  * \brief BestFitPlane::getMetaData
  * \return
  */
-PluginMetaData* BestFitPlane::getMetaData(){
+PluginMetaData* BestFitPlane::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "BestFitPlane";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -20,7 +20,7 @@ PluginMetaData* BestFitPlane::getMetaData(){
  * \brief BestFitPlane::getNeededElements
  * \return
  */
-QList<InputParams> BestFitPlane::getNeededElements(){
+QList<InputParams> BestFitPlane::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -35,7 +35,7 @@ QList<InputParams> BestFitPlane::getNeededElements(){
  * \brief BestFitPlane::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> BestFitPlane::applicableFor(){
+QList<Configuration::FeatureTypes> BestFitPlane::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePlaneFeature);
     return result;

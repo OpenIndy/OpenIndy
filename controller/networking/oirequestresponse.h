@@ -26,7 +26,10 @@ public:
         eMove,
         eMeasure,
         eStartWatchwindow,
-        eStopWatchwindow
+        eStopWatchwindow,
+        eStartStakeOut,
+        eStopStakeOut,
+        eGetNextGeometry
     };
 
     RequestType myRequestType; //defines the type of request

@@ -4,7 +4,7 @@
  * \brief ProjectInPlane::getMetaData
  * \return
  */
-PluginMetaData* ProjectInPlane::getMetaData(){
+PluginMetaData* ProjectInPlane::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "ProjectInPlane";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -19,7 +19,7 @@ PluginMetaData* ProjectInPlane::getMetaData(){
  * \brief ProjectInPlane::getNeededElements
  * \return
  */
-QList<InputParams> ProjectInPlane::getNeededElements(){
+QList<InputParams> ProjectInPlane::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -34,7 +34,7 @@ QList<InputParams> ProjectInPlane::getNeededElements(){
  * \brief ProjectInPlane::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> ProjectInPlane::applicableFor(){
+QList<Configuration::FeatureTypes> ProjectInPlane::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePointFeature);
     return result;

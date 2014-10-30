@@ -24,14 +24,14 @@ using namespace std;
 class TranslateByLine : public ObjectTransformation
 {  
 public:
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
     bool exec(Point&);
     bool exec(Line&);
     bool exec(Plane&);
     bool exec(Sphere&);
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
-    QMap<QString, QStringList> getStringParameter();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
+    QMap<QString, QStringList> getStringParameter() const;
 
 private:
     void shiftPoint(Point&, Line*, ScalarEntityDistance*);
