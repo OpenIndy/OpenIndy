@@ -1555,25 +1555,29 @@ bool Controller::loadProject(OiProjectData &projectData){
 bool Controller::receiveRequestResult(OiRequestResponse *request){
     try{
 
-        qDebug() << "in control response";
-
         if(request != NULL && request->requesterId == this->lastRequestId && !request->response.isNull()){
-
-            qDebug() << request->myRequestType;
 
             switch(request->myRequestType){
             case OiRequestResponse::eGetProject:
-                qDebug() << request->response.toString();
 
                 //save xml in file
                 if(OiProjectData::getDevice() != NULL){
-                    OiProjectData::getDevice()->open(QIODevice::ReadWrite);
-                    OiProjectData::getDevice()->write(request->response.toByteArray());
+
+                    //create new document to remove OiResponse tag
+                    QDomDocument project;
+                    project.appendChild(project.importNode(request->response.documentElement().firstChildElement("oiProjectData"), true));
+
+                    OiProjectData::getDevice()->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+
+                    QTextStream stream(OiProjectData::getDevice());
+                    project.save(stream, 4);
+
                     OiProjectData::getDevice()->close();
+
+                    emit this->showMessageBox(OiProjectData::getProjectName(), "OpenIndy project successfully stored.");
+
                 }
 
-
-                emit this->showMessageBox(OiProjectData::getProjectName(), "OpenIndy project successfully stored.");
                 break;
             case OiRequestResponse::eSetProject:
                 qDebug() << request->response.toString();

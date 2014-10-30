@@ -161,11 +161,11 @@ QDomDocument OiProjectExchanger::saveProject(){
     QDomElement root = project.createElement("oiProjectData");
     root.setAttribute("name", OiProjectData::getProjectName());
     root.setAttribute("date", dateTime);
-    root.setAttribute("idcount", QString::number(Configuration::idCount));
+    root.setAttribute("idCount", QString::number(Configuration::idCount));
     project.appendChild(root);
 
     //add active station and active coordinate system
-    QDomElement activeSystem = project.createElement("activeCoordinatesystem");
+    QDomElement activeSystem = project.createElement("activeCoordinateSystem");
     QDomElement activeStation = project.createElement("activeStation");
     int activeSystemId, activeStationId = -1;
     if(OiFeatureState::getActiveCoordinateSystem() != NULL){
@@ -217,9 +217,17 @@ QDomDocument OiProjectExchanger::saveProject(){
 
     //add geometries
     QDomElement geometries = project.createElement("geometries");
-    foreach(FeatureWrapper *geom, OiFeatureState::getGeometries()){
+    foreach(FeatureWrapper *geom, OiFeatureState::getGeometries()){ //normal geometries
         if(geom != NULL){
             QDomElement geometry = geom->getGeometry()->toOpenIndyXML(project);
+            if(!geometry.isNull()){
+                geometries.appendChild(geometry);
+            }
+        }
+    }
+    foreach(Station *s, OiFeatureState::getStations()){ //station points
+        if(s != NULL && s->position != NULL){
+            QDomElement geometry = s->position->toOpenIndyXML(project);
             if(!geometry.isNull()){
                 geometries.appendChild(geometry);
             }
