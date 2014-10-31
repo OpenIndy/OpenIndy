@@ -32,6 +32,15 @@ public:
         eGetNextGeometry
     };
 
+    enum ErrorCode{
+        eNoError,
+        eWrongFormat,
+        eNoActiveFeature,
+        eNoActiveStation,
+        eNoActiveCoordinateSystem,
+        eNoFeatureWithId
+    };
+
     RequestType myRequestType; //defines the type of request
     QDomDocument request; //holds the XML structure of the request
     QDomDocument response; //holds the XML structure of the response

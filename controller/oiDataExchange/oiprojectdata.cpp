@@ -45,7 +45,7 @@ QString OiProjectData::getProjectName(){
  * \return
  */
 bool OiProjectData::getIsValid(){
-    if(OiProjectData::activeProject->projectName.compare("") != 0){
+    if(OiProjectData::getInstance()->projectName.compare("") != 0){
         return true;
     }
     return false;
@@ -56,7 +56,7 @@ bool OiProjectData::getIsValid(){
  * \return
  */
 bool OiProjectData::getIsSaved(){
-    return OiProjectData::activeProject->isSaved;
+    return OiProjectData::getInstance()->isSaved;
 }
 
 /*!

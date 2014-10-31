@@ -99,6 +99,11 @@ void Controller::initModels(){
         //coordinate systems model
         this->myCoordinateSystemsModel = new QStringListModel();
 
+        //point feature model
+        this->myPointFeatureModel = new PointFeatureModel();
+        this->myPointFeatureProxyModel = new PointFeatureFilterModel();
+        this->myPointFeatureProxyModel->setSourceModel(this->myPointFeatureModel);
+
     }catch(exception &e){
         Console::addLine(e.what());
     }
@@ -149,6 +154,8 @@ void Controller::connectModels(){
 bool Controller::createDefaultProject(){
 
     if(OiFeatureState::getFeatureCount() == 0){
+
+        OiProjectData::setActiveProject("OpenIndyTest");
 
         //create PART and STATION01 as default
         FeatureWrapper *part = OiFeatureState::addFeature(Configuration::eCoordinateSystemFeature, false, "PART");
@@ -1547,6 +1554,42 @@ bool Controller::loadProject(OiProjectData &projectData){
 }
 
 /*!
+ * \brief Controller::startStakeOut
+ * \param request
+ */
+void Controller::startStakeOut(QDomDocument request){
+    OiRequestResponse *myRequest;
+    myRequest = new OiRequestResponse();
+    myRequest->requesterId = Configuration::generateID();
+    this->lastRequestId = myRequest->requesterId;
+
+    QDomNode root = myRequest->request.importNode(request.documentElement(), true);
+    myRequest->request.appendChild(root);
+
+    qDebug() << "test: " << myRequest->request.toString();
+
+    emit this->sendSaveLoadRequest(myRequest);
+}
+
+/*!
+ * \brief Controller::nextStakeOutGeometry
+ */
+void Controller::nextStakeOutGeometry(){
+    OiRequestResponse *myRequest;
+    myRequest = new OiRequestResponse();
+    myRequest->requesterId = Configuration::generateID();
+    this->lastRequestId = myRequest->requesterId;
+
+    QDomDocument request;
+    QDomElement stakeOutId = request.createElement("stakeOutId");
+    //stakeOutId.setAttribute("id", );
+
+    qDebug() << "test: " << myRequest->request.toString();
+
+    emit this->sendSaveLoadRequest(myRequest);
+}
+
+/*!
  * \brief Controller::receiveRequestResult
  * Is called whenever a request was finished by OiRequestHandler and the response is available
  * \param request
@@ -1580,6 +1623,9 @@ bool Controller::receiveRequestResult(OiRequestResponse *request){
 
                 break;
             case OiRequestResponse::eSetProject:
+                qDebug() << request->response.toString();
+                break;
+            case OiRequestResponse::eStartStakeOut:
                 qDebug() << request->response.toString();
                 break;
             }

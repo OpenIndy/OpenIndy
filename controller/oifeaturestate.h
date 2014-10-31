@@ -36,6 +36,7 @@ public:
     static const QList<CoordinateSystem *> &getCoordinateSystems();
     static const QList<TrafoParam *> &getTransformationParameters();
     static const QList<FeatureWrapper *> &getGeometries();
+    static QList<FeatureWrapper *> getFeaturesOfGroup(QString group);
 
     static FeatureWrapper* getActiveFeature();
     static Station* getActiveStation();

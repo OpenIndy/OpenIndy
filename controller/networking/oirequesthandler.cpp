@@ -63,6 +63,12 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse *request){
             this->startWatchwindow(request);
         }else if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eStopWatchwindow){
             this->stopWatchwindow(request);
+        }else if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eStartStakeOut){
+            this->startStakeOut(request);
+        }else if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eStopStakeOut){
+            this->stopStakeOut(request);
+        }else if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eGetNextGeometry){
+            this->GetNextGeometry(request);
         }else{
             return false;
         }
@@ -86,8 +92,12 @@ void OiRequestHandler::getProject(OiRequestResponse *request){
     this->prepareResponse(request);
 
     QDomDocument project = OiProjectExchanger::saveProject();
-    qDebug() << "project check: " << project.toString();
-    request->response.documentElement().appendChild(request->response.importNode(project.documentElement(), true));
+
+    if(!project.isNull()){
+        qDebug() << "project check: " << project.toString();
+        request->response.documentElement().appendChild(request->response.importNode(project.documentElement(), true));
+    }
+
 
     emit this->sendResponse(request);
 
@@ -302,6 +312,157 @@ void OiRequestHandler::startWatchwindow(OiRequestResponse *request)
 
 void OiRequestHandler::stopWatchwindow(OiRequestResponse *request)
 {
+
+}
+
+/*!
+ * \brief OiRequestHandler::startStakeOut
+ * \param request
+ */
+void OiRequestHandler::startStakeOut(OiRequestResponse *request){
+
+    qDebug() << "in start stake out";
+
+    request->myRequestType = OiRequestResponse::eStartStakeOut;
+    this->prepareResponse(request);
+
+    //stake out parameter
+    OiStakeOut::StakeOutMode stakeOutMode;
+    bool stakeOutAllGeometries;
+    QStringList stakeOutGroups;
+    QList<int> stakeOutGeometries;
+    int stakeOutId;
+
+    //get XML nodes
+    QDomElement mode = request->request.documentElement().firstChildElement("mode");
+    QDomElement allGeometries = request->request.documentElement().firstChildElement("allGeometries");
+    QDomElement groups = request->request.documentElement().firstChildElement("groups");
+    QDomElement geometries = request->request.documentElement().firstChildElement("geometries");
+
+    //check if minimum configuration of XML request is available
+    if(mode.isNull() || !mode.hasAttribute("value") || allGeometries.isNull() || !allGeometries.hasAttribute("value")){
+        return;
+    }
+
+    //get the stake out mode
+    if(mode.attribute("value").compare("sequence") == 0){
+        stakeOutMode = OiStakeOut::eSequence;
+    }else if(mode.attribute("value").compare("nearest") == 0){
+        stakeOutMode = OiStakeOut::eNearest;
+    }else{
+        return;
+    }
+
+    //get allGeometries parameter
+    if(allGeometries.attribute("value").toInt() == 1){
+        stakeOutAllGeometries = true;
+    }else if(allGeometries.attribute("value").toInt() == 0){
+        stakeOutAllGeometries = false;
+    }else{
+        return;
+    }
+
+    //get stake out groups
+    if(!groups.isNull()){
+        QDomNodeList myGroups = groups.childNodes();
+        for(int i = 0; i < myGroups.size(); i++){
+            QDomNode node = myGroups.at(i);
+            QDomNamedNodeMap attributes = node.attributes();
+            if(attributes.contains("name")){
+                stakeOutGroups.append(attributes.namedItem("name").nodeValue());
+            }
+        }
+    }
+
+    //get stake out geometries
+    if(!geometries.isNull()){
+        QDomNodeList myGeometries = geometries.childNodes();
+        for(int i = 0; i < myGeometries.size(); i++){
+            QDomNode node = myGeometries.at(i);
+            QDomNamedNodeMap attributes = node.attributes();
+            if(attributes.contains("ref")){
+                stakeOutGeometries.append(attributes.namedItem("ref").nodeValue().toInt());
+            }
+        }
+    }
+
+    if(stakeOutAllGeometries){ //if all geometries shall be staked out
+        stakeOutId = OiStakeOut::startStakeOut(stakeOutMode, stakeOutAllGeometries);
+    }else if(stakeOutGroups.size() > 0){ //if special groups shall be staked out
+        stakeOutId = OiStakeOut::startStakeOut(stakeOutMode, stakeOutAllGeometries, stakeOutGroups);
+    }else if(stakeOutGeometries.size() > 0){ //if special geometries shall be staked out
+        stakeOutId = OiStakeOut::startStakeOut(stakeOutMode, stakeOutAllGeometries, stakeOutGroups, stakeOutGeometries);
+    }else{
+        return;
+    }
+
+    //add stake out id
+    QDomElement response = request->response.createElement("stakeOutId");
+    response.setAttribute("id", stakeOutId);
+    request->response.documentElement().appendChild(response);
+
+    emit this->sendResponse(request);
+
+}
+
+/*!
+ * \brief OiRequestHandler::stopStakeOut
+ * \param request
+ */
+void OiRequestHandler::stopStakeOut(OiRequestResponse *request){
+
+    request->myRequestType = OiRequestResponse::eStopStakeOut;
+    this->prepareResponse(request);
+
+    QDomElement stakeOutId = request->request.documentElement().firstChildElement("stakeOutId");
+
+    if(stakeOutId.isNull()){
+        return;
+    }
+
+    OiStakeOut::stopStakeOut(stakeOutId.attribute("id").toInt());
+
+    emit this->sendResponse(request);
+
+}
+
+/*!
+ * \brief OiRequestHandler::GetNextGeometry
+ * \param request
+ */
+void OiRequestHandler::GetNextGeometry(OiRequestResponse *request){
+
+    qDebug() << "in get next geometry";
+
+    request->myRequestType = OiRequestResponse::eGetNextGeometry;
+    this->prepareResponse(request);
+
+    QDomElement stakeOutId = request->request.documentElement().firstChildElement("stakeOutId");
+
+    if(stakeOutId.isNull()){
+        return;
+    }
+
+    qDebug() << "vor get geom";
+
+    //get the next geometry that shall be staked out
+    FeatureWrapper *geom = OiStakeOut::getNextGeometry(stakeOutId.attribute("id").toInt());
+
+    if(geom == NULL || geom->getGeometry() == NULL){
+        return;
+    }
+
+    //set geom as active feature and aim it
+    geom->getGeometry()->setActiveFeatureState(true);
+
+    qDebug() << "nach get geom";
+
+    //set geometry id as response
+    QDomElement response = request->response.createElement("geometry");
+    response.setAttribute("ref", geom->getGeometry()->getId());
+    request->response.documentElement().appendChild(response);
+
+    emit this->sendResponse(request);
 
 }
 

@@ -221,7 +221,7 @@ background-position: center center;</string>
      <x>0</x>
      <y>0</y>
      <width>1057</width>
-     <height>18</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -308,6 +308,20 @@ background-position: center center;</string>
     </property>
     <addaction name="actionView_settings"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <widget class="QMenu" name="menuStake_out">
+     <property name="title">
+      <string>stake out</string>
+     </property>
+     <addaction name="actionStart_stake_out"/>
+     <addaction name="actionStop_stake_out"/>
+     <addaction name="actionNext"/>
+    </widget>
+    <addaction name="menuStake_out"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSensor"/>
    <addaction name="menuFeatures"/>
@@ -316,6 +330,7 @@ background-position: center center;</string>
    <addaction name="menuSettings"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -873,6 +888,27 @@ color: rgb(255, 255, 255);
    </property>
    <property name="text">
     <string>sensor real time data</string>
+   </property>
+  </action>
+  <action name="actionStart_stake_out">
+   <property name="text">
+    <string>start</string>
+   </property>
+  </action>
+  <action name="actionStop_stake_out">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>stop</string>
+   </property>
+  </action>
+  <action name="actionNext">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>next</string>
    </property>
   </action>
  </widget>

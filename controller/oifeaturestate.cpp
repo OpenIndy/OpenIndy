@@ -91,6 +91,26 @@ const QList<FeatureWrapper *> &OiFeatureState::getGeometries(){
 }
 
 /*!
+ * \brief OiFeatureState::getFeaturesOfGroup
+ * Get all features of a special group
+ * \param group
+ * \return
+ */
+QList<FeatureWrapper *> OiFeatureState::getFeaturesOfGroup(QString group){
+
+    QList<FeatureWrapper *> features;
+
+    foreach(FeatureWrapper *fw, OiFeatureState::myFeatures){
+        if(fw != NULL && fw->getFeature() != NULL && fw->getFeature()->getGroupName().compare(group) == 0){
+            features.append(fw);
+        }
+    }
+
+    return features;
+
+}
+
+/*!
  * \brief OiFeatureState::getActiveFeature
  * Returns a pointer to the active feature's feature wrapper or NULL.
  * \return

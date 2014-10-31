@@ -207,6 +207,11 @@ void MainWindow::setConnects(){
     connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
     connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
 
+    //connect stake out manager
+    connect(&this->myStakeOutManager, SIGNAL(startStakeOut(QDomDocument)), this, SLOT(stakeOutConfigured(QDomDocument)));
+    connect(this, SIGNAL(startStakeOut(QDomDocument)), &this->control, SLOT(startStakeOut(QDomDocument)));
+    connect(this, SIGNAL(nextStakeOutGeometry()), &this->control, SLOT(nextStakeOutGeometry()));
+
 }
 
 /*!
@@ -1707,5 +1712,46 @@ void MainWindow::on_treeView_featureOverview_clicked(const QModelIndex &index)
          }
     }
 
+
+}
+
+/*!
+ * \brief MainWindow::on_actionStart_stake_out_triggered
+ * Start stake out manager
+ */
+void MainWindow::on_actionStart_stake_out_triggered(){
+    this->myStakeOutManager.setModels(this->control.myPointFeatureProxyModel, this->control.myFeatureGroupsModel);
+    this->myStakeOutManager.open();
+}
+
+/*!
+ * \brief MainWindow::on_actionStop_stake_out_triggered
+ * Stop current stake out
+ */
+void MainWindow::on_actionStop_stake_out_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_actionNext_triggered
+ * Continue stake out with the next geometry
+ */
+void MainWindow::on_actionNext_triggered(){
+    emit this->nextStakeOutGeometry();
+}
+
+/*!
+ * \brief MainWindow::stakeOutConfigured
+ * Called from stake out manager when the user has configured the stake out task
+ * \param request
+ */
+void MainWindow::stakeOutConfigured(QDomDocument request){
+
+    //disable start stake out button + enable stop & next buttons
+    this->ui->actionNext->setEnabled(true);
+    this->ui->actionStart_stake_out->setEnabled(false);
+    this->ui->actionStop_stake_out->setEnabled(true);
+
+    emit this->startStakeOut(request);
 
 }

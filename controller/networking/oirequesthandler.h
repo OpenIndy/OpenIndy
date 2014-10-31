@@ -9,6 +9,7 @@
 #include "oifeaturestate.h"
 #include "featurewrapper.h"
 #include "oiprojectexchanger.h"
+#include "oistakeout.h"
 
 /*!
  * \brief The OiRequestHandler class
@@ -47,6 +48,9 @@ private:
     void measure(OiRequestResponse *request);
     void startWatchwindow(OiRequestResponse *request);
     void stopWatchwindow(OiRequestResponse *request);
+    void startStakeOut(OiRequestResponse *request);
+    void stopStakeOut(OiRequestResponse *request);
+    void GetNextGeometry(OiRequestResponse *request);
 
     void prepareResponse(OiRequestResponse *request);
 };

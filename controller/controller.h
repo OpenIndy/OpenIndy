@@ -63,6 +63,9 @@
 #include "oiserver.h"
 #include "oirequesthandler.h"
 
+#include "pointfeaturemodel.h"
+#include "pointfeaturefiltermodel.h"
+
 class Feature;
 class CoordinateSystem;
 class Station;
@@ -102,6 +105,8 @@ public:
     PluginTreeViewModel *myPluginTreeViewModel; //model with all available plugins for plugin manager
     QStringListModel *myFeatureGroupsModel; //model with all available groups
     QStringListModel *myCoordinateSystemsModel; //model with coordinate systems
+    PointFeatureModel *myPointFeatureModel; //model with all point features
+    PointFeatureFilterModel *myPointFeatureProxyModel; //model with all point features filtered by group name
 
     QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
@@ -109,6 +114,8 @@ public:
     FeatureUpdater* getFeatureUpdater();
 
     OiServer *openIndyServer;
+
+    int stakeOutId;
 
 signals:
     void changedStation();
@@ -190,9 +197,11 @@ public slots:
     void addElement2Function(FeatureTreeItem *element, int functionIndex, int elementIndex); //add element to the active function
     void removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex); //remove element from the active function
 
-    //save & load an OpenIndy project
+    //handle requests (save & load projects, stake out)
     bool saveProject();
     bool loadProject(OiProjectData &projectData);
+    void startStakeOut(QDomDocument request);
+    void nextStakeOutGeometry();
     bool receiveRequestResult(OiRequestResponse *request); //called from OiRequestHandler with the result of save or load task
 
     bool createDefaultProject();
