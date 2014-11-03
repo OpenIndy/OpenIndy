@@ -10,6 +10,13 @@
 #include "featurewrapper.h"
 #include "oiprojectexchanger.h"
 #include "oistakeout.h"
+#include "station.h"
+#include "sensorlistener.h"
+
+struct WatchWindowTask{
+    bool taskInProcess;
+    OiRequestResponse *request;
+};
 
 /*!
  * \brief The OiRequestHandler class
@@ -35,6 +42,8 @@ private:
 
     QThread workerThread;
 
+    WatchWindowTask myWatchWindowTask;
+
     void getProject(OiRequestResponse *request);
     void setProject(OiRequestResponse *request);
     void getActiveFeature(OiRequestResponse *request);
@@ -53,6 +62,9 @@ private:
     void GetNextGeometry(OiRequestResponse *request);
 
     void prepareResponse(OiRequestResponse *request);
+
+private slots:
+    void receiveWatchWindowData(QVariantMap data);
 };
 
 #endif // OIREQUESTHANDLER_H

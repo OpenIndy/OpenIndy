@@ -4,6 +4,11 @@ OiRequestHandler *OiRequestHandler::myRequestHandler = NULL;
 
 OiRequestHandler::OiRequestHandler(QObject *parent)
 {
+    //initially no watch window task in process
+    this->myWatchWindowTask.request = NULL;
+    this->myWatchWindowTask.taskInProcess = false;
+
+    //move this class to thread
     this->moveToThread(&this->workerThread);
     this->workerThread.start();
 }
@@ -264,8 +269,61 @@ void OiRequestHandler::setActiveCoordinateSystem(OiRequestResponse *request){
 
 }
 
-void OiRequestHandler::aim(OiRequestResponse *request)
-{
+/*!
+ * \brief OiRequestHandler::aim
+ * \param request
+ */
+void OiRequestHandler::aim(OiRequestResponse *request){
+
+    request->myRequestType = OiRequestResponse::eAim;
+    this->prepareResponse(request);
+
+    //check if active feature is valid
+    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        return;
+    }
+
+    //check if sensor is valid
+    if(OiFeatureState::getActiveStation() == NULL || OiFeatureState::getActiveStation()->coordSys == NULL){
+        return;
+    }
+
+    //check if active coordinate system is valid
+    if(OiFeatureState::getActiveCoordinateSystem() == NULL){
+        return;
+    }
+
+    //get XYZ coordinates of the active feature
+    OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+    if(xyz.getSize() < 3){
+        return;
+    }
+
+    //convert XYZ coordinates to polar elements
+    OiVec polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
+
+    //if the station system and the active system are not the same the polar elements have to be converted
+    if(OiFeatureState::getActiveStation()->coordSys != OiFeatureState::getActiveCoordinateSystem()){
+
+        //get homogeneous matrix (from station system to active system)
+        QList<TrafoParam *> trafoParams = OiFeatureState::getActiveStation()->coordSys->getTransformationParameters();
+        foreach(TrafoParam *tp, trafoParams){
+            if(tp != NULL && tp->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
+                OiMat t = tp->getHomogenMatrix();
+                if(t.getColCount() == 4 && t.getRowCount() == 4){
+                    xyz = t.inv() * xyz;
+                    polarElements = Reading::toPolar(xyz.getAt(0), xyz.getAt(1), xyz.getAt(2));
+                    break;
+                }
+            }
+        }
+
+    }
+
+    //start aiming the active feature
+    OiFeatureState::getActiveStation()->emitStartMove(polarElements.getAt(0), polarElements.getAt(1), polarElements.getAt(2), false);
+
+    emit this->sendResponse(request);
 
 }
 
@@ -305,13 +363,81 @@ void OiRequestHandler::measure(OiRequestResponse *request){
 
 }
 
-void OiRequestHandler::startWatchwindow(OiRequestResponse *request)
-{
+/*!
+ * \brief OiRequestHandler::startWatchwindow
+ * \param request
+ */
+void OiRequestHandler::startWatchwindow(OiRequestResponse *request){
+
+    //only one watch window task should be open at once
+    if(this->myWatchWindowTask.taskInProcess){
+        return;
+    }
+
+    request->myRequestType = OiRequestResponse::eStartWatchwindow;
+    this->prepareResponse(request);
+
+    //get requested reading type
+    Configuration::ReadingTypes myReadingType;
+    QDomElement readingType = request->request.documentElement().firstChildElement("readingType");
+    if(!readingType.isNull() && readingType.hasAttribute("type")){
+        myReadingType = (Configuration::ReadingTypes)readingType.attribute("type").toInt();
+    }else{
+        return;
+    }
+
+    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL
+            && OiFeatureState::getActiveStation()->sensorPad->instrumentListener != NULL){
+
+        //connect the reading stream to the request handler
+        connect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener, SIGNAL(sendReadingMap(QVariantMap)),
+                this, SLOT(receiveWatchWindowData(QVariantMap)));
+
+        //start watch window
+        OiFeatureState::getActiveStation()->startReadingStream(myReadingType); //TODO Übergabeparameter
+
+        //save active watch window task
+        this->myWatchWindowTask.taskInProcess = true;
+        this->myWatchWindowTask.request = request;
+
+    }
+
+    emit this->sendResponse(request);
 
 }
 
-void OiRequestHandler::stopWatchwindow(OiRequestResponse *request)
-{
+/*!
+ * \brief OiRequestHandler::stopWatchwindow
+ * \param request
+ */
+void OiRequestHandler::stopWatchwindow(OiRequestResponse *request){
+
+    //if no task is in process, no task has to be stopped
+    if(!this->myWatchWindowTask.taskInProcess){
+        return;
+    }
+
+    request->myRequestType = OiRequestResponse::eStopWatchwindow;
+    this->prepareResponse(request);
+
+    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL
+            && OiFeatureState::getActiveStation()->sensorPad->instrumentListener != NULL){
+
+        //disconnect the reading stream from the request handler
+        disconnect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener, SIGNAL(sendReadingMap(QVariantMap)),
+                this, SLOT(receiveWatchWindowData(QVariantMap)));
+
+        //stop watch window
+        OiFeatureState::getActiveStation()->stopReadingStream();
+
+        //reset active watch window task
+        this->myWatchWindowTask.taskInProcess = false;
+        delete this->myWatchWindowTask.request;
+        this->myWatchWindowTask.request = NULL;
+
+    }
+
+    emit this->sendResponse(request);
 
 }
 
@@ -474,4 +600,83 @@ void OiRequestHandler::GetNextGeometry(OiRequestResponse *request){
 void OiRequestHandler::prepareResponse(OiRequestResponse *request){
     request->response.appendChild(request->response.createElement("OiResponse"));
     request->response.documentElement().setAttribute("ref", request->myRequestType);
+}
+
+/*!
+ * \brief OiRequestHandler::receiveWatchWindowData
+ * Each time a map with current coordinates is emitted by SensorListener
+ * \param data
+ */
+void OiRequestHandler::receiveWatchWindowData(QVariantMap data){
+
+    if(!this->myWatchWindowTask.taskInProcess || this->myWatchWindowTask.request == NULL){
+        return;
+    }
+
+    //clear the old response
+    this->myWatchWindowTask.request->response.clear();
+
+    this->myWatchWindowTask.request->myRequestType = OiRequestResponse::eStartWatchwindow;
+    this->prepareResponse(this->myWatchWindowTask.request);
+
+    //get requested reading type
+    Configuration::ReadingTypes myReadingType;
+    QDomElement readingType = this->myWatchWindowTask.request->request.documentElement().firstChildElement("readingType");
+    if(!readingType.isNull() && readingType.hasAttribute("type")){
+        myReadingType = (Configuration::ReadingTypes)readingType.attribute("type").toInt();
+    }else{
+        return;
+    }
+
+    //create new response with sensor data
+    QDomElement response = this->myWatchWindowTask.request->response.createElement(Configuration::getReadingTypeString(myReadingType));
+
+    switch(myReadingType){
+    case Configuration::eCartesian:
+        if(data.contains("x") && data.contains("y") && data.contains("z")){
+            response.setAttribute("x", data.value("x").toString());
+            response.setAttribute("y", data.value("y").toString());
+            response.setAttribute("z", data.value("z").toString());
+        }
+        break;
+    case Configuration::ePolar:
+        if(data.contains("azimuth") && data.contains("zenith") && data.contains("distance")){
+            response.setAttribute("azimuth", data.value("azimuth").toString());
+            response.setAttribute("zenith", data.value("zenith").toString());
+            response.setAttribute("distance", data.value("distance").toString());
+        }
+        break;
+    case Configuration::eDirection:
+        if(data.contains("azimuth") && data.contains("zenith")){
+            response.setAttribute("azimuth", data.value("azimuth").toString());
+            response.setAttribute("zenith", data.value("zenith").toString());
+        }
+        break;
+    case Configuration::eDistance:
+        if(data.contains("distance")){
+            response.setAttribute("distance", data.value("distance").toString());
+        }
+        break;
+    case Configuration::eTemperatur:
+        if(data.contains("temperature")){
+            response.setAttribute("temperature", data.value("temperature").toString());
+        }
+        break;
+    case Configuration::eLevel:
+        if(data.contains("RX") && data.contains("RY") && data.contains("RZ")){
+            response.setAttribute("RX", data.value("RX").toString());
+            response.setAttribute("RY", data.value("RY").toString());
+            response.setAttribute("RZ", data.value("RZ").toString());
+        }
+        break;
+    }
+
+    this->myWatchWindowTask.request->response.documentElement().appendChild(response);
+
+    emit this->sendResponse(this->myWatchWindowTask.request);
+
+    QList<QString> sensorData = data.keys();
+    foreach(QString key, sensorData){
+        qDebug() << key << ": " << data.value(key).toString();
+    }
 }

@@ -73,6 +73,7 @@ void OiServer::receiveResponse(OiRequestResponse *response){
         if(socket->getInternalRef() == response->requesterId){
 
             socket->receiveResponse(response);
+            return;
 
         }
     }
