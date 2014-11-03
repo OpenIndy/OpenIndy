@@ -60,11 +60,14 @@ QMap<QString,int>* LeicaTachymeter::getIntegerParameter() const{
 
 QMap<QString,double>* LeicaTachymeter::getDoubleParameter() const{
 
-    QMap <QString, double>* doubleParameter = new QMap<QString, double>;
+    //not used yet !!
+
+    /*QMap <QString, double>* doubleParameter = new QMap<QString, double>;
 
     doubleParameter->insert("addition constant",0.0);
 
-    return doubleParameter;
+    return doubleParameter;*/
+    return NULL;
 
 }
 
@@ -89,12 +92,18 @@ QMap <QString, QStringList>* LeicaTachymeter::getStringParameter() const{
 
 QStringList LeicaTachymeter::selfDefinedActions() const
 {
-    QStringList a;
-    return a;
+    QStringList ownActions;
+
+    ownActions.append("LOCK");
+
+    return ownActions;
 }
 
 bool LeicaTachymeter::doSelfDefinedAction(QString a)
 {
+    if(a == "LOCK"){
+        //activate tracking mode
+    }
 
     return true;
 }
@@ -176,6 +185,145 @@ bool LeicaTachymeter::toggleSightOrientation(){
 
 }
 
+bool LeicaTachymeter::getATRState()
+{
+    if(this->serial->isOpen()){
+
+        //check user defined ATR value
+        if(!this->myConfiguration->stringParameter.contains("ATR")){
+            return false;
+        }
+
+        //check ATR state
+        QString command = "%R1Q,18006:\r\n";
+
+        if(executeCommand(command)){
+            QString measureData = this->receive();
+            //split to get return code and on/off state
+            QStringList responseElements = measureData.split(":");
+            QStringList elements = responseElements.at(1).split(",");
+
+            //if return code of function = 0 (ATR supported)
+            if(elements.at(0).compare("0") == 0){
+                this->setATRState(elements.at(1));
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }else{
+        return false;
+    }
+}
+
+bool LeicaTachymeter::setATRState(QString ATRstate)
+{
+    QString command = "";
+    //user defined ATR value
+    QString value = this->myConfiguration->stringParameter.value("ATR");
+
+    if(value.compare("atr on") == 0){
+        value = "1";
+    }else if(value.compare("atr off") == 0){
+        value = "0";
+    }
+
+    //compare current ATR state and defined ATR state and change if needed
+    if(ATRstate.compare(value) != 0){
+        command = "%R1Q,18005:" + value + "\r\n";
+    }
+
+    bool result = this->checkCommandRC(command);
+    if(result){
+        myEmitter.emitSendString("ATR state changed.");
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool LeicaTachymeter::getLOCKState()
+{
+    if(this->serial->isOpen()){
+
+        //getUserLockState
+        QString command = "%R1Q,18008:\r\n";
+
+        if(executeCommand(command)){
+            QString measureData = this->receive();
+            QStringList responseElements = measureData.split(":");
+            QStringList elements = responseElements.at(1).split(",");
+
+            //if LOCK is supported
+            if(elements.at(0).compare("0") == 0){
+                this->setLOCKState(elements.at(1));
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+    }else{
+        myEmitter.emitSendString("not connected");
+        return false;
+    }
+}
+
+bool LeicaTachymeter::setLOCKState(QString currentState)
+{
+    QString command = "";
+
+    bool on = false;
+
+    if(currentState.compare("0") == 0){
+        myEmitter.emitSendString("activating LOCK mode.");
+        command = "%R1Q,18007:1\r\n";
+        on = true;
+
+    }else if(currentState.compare("1") == 0){
+        myEmitter.emitSendString("deactivating LOCK mode.");
+        command = "%R1Q,18007:0\r\n";
+    }
+
+    bool result = this->checkCommandRC(command);
+    if(result){
+        myEmitter.emitSendString("LOCK state changed");
+        if(on){
+            this->fineAdjust();
+        }
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool LeicaTachymeter::startTargetTracking()
+{
+    QString command = "%R1Q,9013:\r\n";
+
+    bool result = this->checkCommandRC(command);
+    if(result){
+        myEmitter.emitSendString("target tracking active.");
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool LeicaTachymeter::fineAdjust()
+{
+    QString command = "%R1Q,9037:0.08,0.08,0";
+
+    bool result = this->checkCommandRC(command);
+    if(result){
+        myEmitter.emitSendString("fine adjust successful.");
+        this->startTargetTracking();
+        return true;
+    }else{
+        return false;
+    }
+}
+
 bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool isrelativ){
 
     if(isrelativ){
@@ -207,6 +355,9 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
 
 QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
 
+    //check and set ATR state
+    //TODO run at each measurement?? if not maybe reactivate after tracking needed
+    this->getATRState();
 
     switch (m->typeOfReading){
     case Configuration::ePolar:
@@ -628,6 +779,29 @@ bool LeicaTachymeter::executeCommand(QString command){
 
     return false;
 
+}
+
+/*!
+ * \brief checkCommandRC executes the command and checks if it was successfully via the RC of the function
+ * \param command
+ * \return
+ */
+bool LeicaTachymeter::checkCommandRC(QString command)
+{
+    if(executeCommand(command)){
+        QString measureData = this->receive();
+
+        QStringList responseElements = measureData.split(":");
+        QStringList elements = responseElements.at(1).split(",");
+
+        if(elements.at(0).compare("0") == 0){
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
 }
 
 bool LeicaTachymeter::executeEDM(){
