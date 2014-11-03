@@ -56,5 +56,26 @@ QDomElement Element::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
+/*!
+ * \brief Element::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Element::fromOpenIndyXML(QDomElement &xmlElem){
+
+    if(xmlElem.isNull()){
+        return false;
+    }
+
+    if(!xmlElem.hasAttribute("id")){
+        return false;
+    }
+
+    this->id = xmlElem.attribute("id").toInt();
+
+    return true;
+
+}
+
 
 

@@ -38,6 +38,7 @@ public:
     OiVec sigmaXyz;
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
+    bool fromOpenIndyXML(QDomElement &xmlElem);
 
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 

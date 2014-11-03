@@ -143,7 +143,7 @@ signals:
 
     void activeCoordinateSystemChanged();
 
-    void sendSaveLoadRequest(OiRequestResponse *request); //connected to OiRequestHandler to save or load an OpenIndy project
+    void sendXmlRequest(OiRequestResponse *request); //connected to OiRequestHandler to do tasks like savin, loading etc.
 
 public slots:
     void setUpFeatureGroupsModel();
@@ -199,7 +199,7 @@ public slots:
 
     //handle requests (save & load projects, stake out)
     bool saveProject();
-    bool loadProject(OiProjectData &projectData);
+    bool loadProject(QString projectName, QIODevice *myDevice);
     void startStakeOut(QDomDocument request);
     void nextStakeOutGeometry();
     bool receiveRequestResult(OiRequestResponse *request); //called from OiRequestHandler with the result of save or load task

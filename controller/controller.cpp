@@ -139,7 +139,7 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this, SLOT(changeFunctionTreeViewModel()));
 
         //send save or load project task to OiRequestHandler & listen to his answers
-        connect(this, SIGNAL(sendSaveLoadRequest(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveRequest(OiRequestResponse*)));
+        connect(this, SIGNAL(sendXmlRequest(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveRequest(OiRequestResponse*)));
         connect(OiRequestHandler::getInstance(), SIGNAL(sendResponse(OiRequestResponse*)), this, SLOT(receiveRequestResult(OiRequestResponse*)));
 
     }catch(exception &e){
@@ -1507,11 +1507,7 @@ bool Controller::saveProject(){
                 root.setAttribute("id", OiRequestResponse::eGetProject);
                 request->request.appendChild(root);
 
-                qDebug() << "vor emit";
-
-                emit this->sendSaveLoadRequest(request);
-
-                qDebug() << "nach emit";
+                emit this->sendXmlRequest(request);
 
             }else{
                 Console::addLine("The project has already been saved");
@@ -1530,12 +1526,34 @@ bool Controller::saveProject(){
 
 /*!
  * \brief Controller::loadProject
- * \param data
+ * \param projectName
+ * \param myDevice
  * \return
  */
-bool Controller::loadProject(OiProjectData &projectData){
+bool Controller::loadProject(QString projectName, QIODevice *myDevice){
 
-    /*//TODO check if an active project is set
+    //TODO check if an active project is set
+
+    //delete all features
+    OiFeatureState::resetFeatureLists();
+
+    //set active project
+    OiProjectData::setActiveProject(projectName, myDevice);
+
+    OiRequestResponse *request;
+    request = new OiRequestResponse();
+    request->requesterId = Configuration::generateID();
+    this->lastRequestId = request->requesterId;
+
+    QDomElement root = request->request.createElement("OiRequest");
+    root.setAttribute("id", OiRequestResponse::eSetProject);
+    request->request.appendChild(root);
+
+    emit this->sendXmlRequest(request);
+
+    //TODO delete old request objects
+
+    /*
 
     //delete all features
     OiFeatureState::resetFeatureLists();
@@ -1568,7 +1586,7 @@ void Controller::startStakeOut(QDomDocument request){
 
     qDebug() << "test: " << myRequest->request.toString();
 
-    emit this->sendSaveLoadRequest(myRequest);
+    emit this->sendXmlRequest(myRequest);
 }
 
 /*!
@@ -1586,7 +1604,7 @@ void Controller::nextStakeOutGeometry(){
 
     qDebug() << "test: " << myRequest->request.toString();
 
-    emit this->sendSaveLoadRequest(myRequest);
+    emit this->sendXmlRequest(myRequest);
 }
 
 /*!

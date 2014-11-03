@@ -1188,30 +1188,26 @@ void MainWindow::changedStation(){
  */
 void MainWindow::on_actionOpen_triggered()
 {
-    /*QString filename = QFileDialog::getOpenFileName(
+    QString filename = QFileDialog::getOpenFileName(
                        this,
                        "Choose a filename to save under",
                        "oiProject",
                        "xml (*.xml)");
 
-
-    OiProjectData data;
-    data.setDevice(new QFile(filename));
-
+    QIODevice *myDevice = new QFile(filename);
     QFileInfo info(filename);
+    QString projectName = info.fileName();
 
-    data.setProjectName(info.fileName());
+    bool isSuccessfull = this->control.loadProject(projectName, myDevice);
 
-    bool isSuccessfull = this->control.loadProject(data);
-
-    if(isSuccessfull){
+    /*if(isSuccessfull){
         QMessageBox::information(this,"load project", "load "+info.fileName()+ " was successful.");
     }else{
         QMessageBox::information(this,"load project", "load "+info.fileName()+ "  was not successful.");
-    }
+    }*/
 
     //TODO set up sensorpad
-    //this->setupLaserTrackerPad();*/
+    //this->setupLaserTrackerPad();
 
 
 }

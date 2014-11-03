@@ -83,6 +83,39 @@ QDomElement Observation::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief Observation::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Observation::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Element::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set observation attributes
+        if(xmlElem.hasAttribute("isValid") && xmlElem.hasAttribute("x") && xmlElem.hasAttribute("y")
+                && xmlElem.hasAttribute("z") && xmlElem.hasAttribute("sigmaX") && xmlElem.hasAttribute("sigmaY")
+                && xmlElem.hasAttribute("sigmaZ")){
+            this->isValid = xmlElem.attribute("isValid").toInt();
+            this->myXyz.setAt(0, xmlElem.attribute("x"));
+            this->myXyz.setAt(1, xmlElem.attribute("y"));
+            this->myXyz.setAt(2, xmlElem.attribute("z"));
+            this->sigmaXyz.setAt(0, xmlElem.attribute("sigmaX"));
+            this->sigmaXyz.setAt(1, xmlElem.attribute("sigmaY"));
+            this->sigmaXyz.setAt(2, xmlElem.attribute("sigmaZ"));
+        }
+
+        //set reading
+
+
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief Observation::fromOpenIndyXML
  * \param xml
  * \return
  */
