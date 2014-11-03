@@ -628,20 +628,21 @@ QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
 
     QList<Reading*> readings;
 
-    Reading *p = new Reading();
+    Reading *p;
+    p = new Reading();
 
     double dx = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;
     double dy = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;
     double dz = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;
 
-    dx = dx/10000;
-    dy = dy/10000;
-    dz = dz/10000;
+    dx = dx/10000.0;
+    dy = dy/10000.0;
+    dz = dz/10000.0;
 
-    p->rCartesian.xyz.setAt(0, (myDistance * qSin(myZenith) * qCos(myAzimuth))+dx);
-    p->rCartesian.xyz.setAt(1, (myDistance * qSin(myZenith) * qSin(myAzimuth))+dy);
-    p->rCartesian.xyz.setAt(2, (myDistance * qCos(myZenith))+dz);
-    p->rCartesian.xyz.setAt(3, 1);
+    p->rCartesian.xyz.add((myDistance * qSin(myZenith) * qCos(myAzimuth))+dx);
+    p->rCartesian.xyz.add((myDistance * qSin(myZenith) * qSin(myAzimuth))+dy);
+    p->rCartesian.xyz.add((myDistance * qCos(myZenith))+dz);
+    p->rCartesian.xyz.add(1.0);
 
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
