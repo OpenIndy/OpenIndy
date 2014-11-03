@@ -6,7 +6,7 @@ PseudoSensor::PseudoSensor()
 
 
 
-PluginMetaData* PseudoSensor::getMetaData(){
+PluginMetaData* PseudoSensor::getMetaData() const{
 
     PluginMetaData* metaData = new PluginMetaData();
 
@@ -21,7 +21,7 @@ PluginMetaData* PseudoSensor::getMetaData(){
 
 }
 
-QList<Configuration::ReadingTypes>* PseudoSensor::getSupportedReadingTypes(){
+QList<Configuration::ReadingTypes>* PseudoSensor::getSupportedReadingTypes() const{
 
     QList<Configuration::ReadingTypes> *readingTypes = new QList<Configuration::ReadingTypes>;
 
@@ -30,14 +30,14 @@ QList<Configuration::ReadingTypes>* PseudoSensor::getSupportedReadingTypes(){
     return readingTypes;
 }
 
-QList<Configuration::SensorFunctionalities> PseudoSensor::getSupportedSensorActions()
+QList<Configuration::SensorFunctionalities> PseudoSensor::getSupportedSensorActions() const
 {
     QList<Configuration::SensorFunctionalities> a;
 
     return a;
 }
 
-QList<Configuration::ConnectionTypes>* PseudoSensor::getConnectionType(){
+QList<Configuration::ConnectionTypes>* PseudoSensor::getConnectionType() const{
 
     QList<Configuration::ConnectionTypes> *connectionTypes = new QList<Configuration::ConnectionTypes>;
     connectionTypes->append(Configuration::eSerial);
@@ -45,23 +45,23 @@ QList<Configuration::ConnectionTypes>* PseudoSensor::getConnectionType(){
     return connectionTypes;
 }
 
-QMap<QString,int>* PseudoSensor::getIntegerParameter(){
+QMap<QString,int>* PseudoSensor::getIntegerParameter() const{
     return NULL;
 }
 
-QMap<QString,double>* PseudoSensor::getDoubleParameter(){
-
-    return NULL;
-
-}
-
-QMap <QString, QStringList>* PseudoSensor::getStringParameter(){
+QMap<QString,double>* PseudoSensor::getDoubleParameter() const{
 
     return NULL;
 
 }
 
-QStringList PseudoSensor::selfDefinedActions()
+QMap <QString, QStringList>* PseudoSensor::getStringParameter() const{
+
+    return NULL;
+
+}
+
+QStringList PseudoSensor::selfDefinedActions() const
 {
     QStringList a;
     return a;
@@ -72,12 +72,12 @@ bool PseudoSensor::doSelfDefinedAction(QString a)
     return true;
 }
 
-QString PseudoSensor::getUndefinedReadingName()
+QString PseudoSensor::getUndefinedReadingName() const
 {
     return "pseudo reading";
 }
 
-QMap<QString, double> *PseudoSensor::getDefaultAccuracy()
+QMap<QString, double> *PseudoSensor::getDefaultAccuracy() const
 {
     QMap<QString, double>* undefinedSigma = new QMap<QString, double>;
 

@@ -4,9 +4,11 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QThread>
+#include <QtXml>
+
 #include "console.h"
-#include "oiprojectdata.h"
-#include "oiprojectexchanger.h"
+#include "configuration.h"
+#include "oirequestresponse.h"
 
 class OiNetworkConnection : public QThread
 {
@@ -14,21 +16,21 @@ class OiNetworkConnection : public QThread
 public:
     explicit OiNetworkConnection(QObject *parent = 0);
 
+    int getInternalRef();
 
 signals:
-    void getProject(OiProjectData *d);
+    void sendRequest(OiRequestResponse *request);
 
 public slots:
     bool setSocket(qintptr socketDescriptor);
+    void receiveResponse(OiRequestResponse *response);
 
 private slots:
-
     void readMessage();
 
 private:
     QTcpSocket* socket;
-
-
+    int internalRef;
 
 };
 

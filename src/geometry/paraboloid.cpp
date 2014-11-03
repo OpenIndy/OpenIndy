@@ -44,9 +44,23 @@ void Paraboloid::recalc(){
 
 }
 
-bool Paraboloid::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief Paraboloid::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Paraboloid::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    return false;
+    QDomElement paraboloid = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(paraboloid.isNull()){
+        return paraboloid;
+    }
+
+    paraboloid.setAttribute("type", Configuration::sParaboloid);
+
+    return paraboloid;
+
 }
 
 ElementDependencies Paraboloid::fromOpenIndyXML(QXmlStreamReader &xml){

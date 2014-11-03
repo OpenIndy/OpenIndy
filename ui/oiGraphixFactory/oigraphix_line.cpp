@@ -1,18 +1,26 @@
 #include "oigraphix_line.h"
 
-OiGraphixLine::OiGraphixLine(GLfloat i, GLfloat j, GLfloat k)
+OiGraphixLine::OiGraphixLine()
 {
-    rx = i;
-    ry = j;
-    rz = k;
+
 }
 
 
-void OiGraphixLine::draw(GLfloat x, GLfloat y, GLfloat z){
+void OiGraphixLine::draw(Geometry *g){
 
-    GLfloat dx = x+100*rx;
-    GLfloat dy = y +100*ry;
-    GLfloat dz = z +100*rz;
+    GLfloat x = g->getXYZ().getAt(0);
+    GLfloat y = g->getXYZ().getAt(1);
+    GLfloat z = g->getXYZ().getAt(2);
+
+    rx = g->getIJK().getAt(0);
+    ry = g->getIJK().getAt(1);
+    rz = g->getIJK().getAt(2);
+
+    GLfloat dx = g->getXYZ().getAt(0)+100*rx;
+    GLfloat dy = g->getXYZ().getAt(1) +100*ry;
+    GLfloat dz = g->getXYZ().getAt(2) +100*rz;
+
+
 
     glBegin(GL_LINES);
         glVertex3f(x, y, z);

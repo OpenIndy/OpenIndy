@@ -1,6 +1,6 @@
 #include "p_shiftplane.h"
 
-PluginMetaData* ShiftPlane::getMetaData(){
+PluginMetaData* ShiftPlane::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "ShiftPlane";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -13,18 +13,18 @@ PluginMetaData* ShiftPlane::getMetaData(){
     return metaData;
 }
 
-QList<InputParams> ShiftPlane::getNeededElements(){
+QList<InputParams> ShiftPlane::getNeededElements() const{
     QList<InputParams> result;
     return result;
 }
 
-QList<Configuration::FeatureTypes> ShiftPlane::applicableFor(){
+QList<Configuration::FeatureTypes> ShiftPlane::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePlaneFeature);
     return result;
 }
 
-QMap<QString, double> ShiftPlane::getDoubleParameter(){
+QMap<QString, double> ShiftPlane::getDoubleParameter() const{
     QMap<QString, double> result;
     QString key = "shift amount";
     double value = 0.0;

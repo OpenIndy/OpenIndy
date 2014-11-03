@@ -122,3 +122,134 @@ OiVec Reading::errorPropagationPolarToCart(){
 
     return sigmaCartXyz;
 }
+
+/*!
+ * \brief Reading::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
+
+    if(xmlDoc.isNull()){
+        return QDomElement();
+    }
+
+    QDomElement reading = xmlDoc.createElement("reading");
+
+    //add reading attributes
+    reading.setAttribute("id", this->id);
+    reading.setAttribute("time", this->measuredAt.toString(Qt::ISODate));
+    reading.setAttribute("type", Configuration::getReadingTypeString(this->typeofReading));
+
+    //add measurements
+    QDomElement measurements = xmlDoc.createElement("measurements");
+    switch(this->typeofReading){
+    case Configuration::eCartesian:
+        if(this->rCartesian.isValid && this->rCartesian.xyz.getSize() >= 3 && this->rCartesian.sigmaXyz.getSize() >= 3){
+            QDomElement x = xmlDoc.createElement("measurement");
+            x.setAttribute("type", "x");
+            x.setAttribute("value", this->rCartesian.xyz.getAt(0));
+            x.setAttribute("sigma", this->rCartesian.sigmaXyz.getAt(0));
+            measurements.appendChild(x);
+            QDomElement y = xmlDoc.createElement("measurement");
+            y.setAttribute("type", "y");
+            y.setAttribute("value", this->rCartesian.xyz.getAt(1));
+            y.setAttribute("sigma", this->rCartesian.sigmaXyz.getAt(1));
+            measurements.appendChild(y);
+            QDomElement z = xmlDoc.createElement("measurement");
+            z.setAttribute("type", "z");
+            z.setAttribute("value", this->rCartesian.xyz.getAt(2));
+            z.setAttribute("sigma", this->rCartesian.sigmaXyz.getAt(2));
+            measurements.appendChild(z);
+        }
+        break;
+    case Configuration::eDirection:
+        if(this->rDirection.isValid){
+            QDomElement azimuth = xmlDoc.createElement("measurement");
+            azimuth.setAttribute("type", "azimuth");
+            azimuth.setAttribute("value", this->rDirection.azimuth);
+            azimuth.setAttribute("sigma", this->rDirection.sigmaAzimuth);
+            measurements.appendChild(azimuth);
+            QDomElement zenith = xmlDoc.createElement("measurement");
+            zenith.setAttribute("type", "zenith");
+            zenith.setAttribute("value", this->rDirection.zenith);
+            zenith.setAttribute("sigma", this->rDirection.sigmaZenith);
+            measurements.appendChild(zenith);
+        }
+        break;
+    case Configuration::eDistance:
+        if(this->rDistance.isValid){
+            QDomElement distance = xmlDoc.createElement("measurement");
+            distance.setAttribute("type", "distance");
+            distance.setAttribute("value", this->rDistance.distance);
+            distance.setAttribute("sigma", this->rDistance.sigmaDistance);
+            measurements.appendChild(distance);
+        }
+        break;
+    case Configuration::ePolar:
+        if(this->rPolar.isValid){
+            QDomElement azimuth = xmlDoc.createElement("measurement");
+            azimuth.setAttribute("type", "azimuth");
+            azimuth.setAttribute("value", this->rPolar.azimuth);
+            azimuth.setAttribute("sigma", this->rPolar.sigmaAzimuth);
+            measurements.appendChild(azimuth);
+            QDomElement zenith = xmlDoc.createElement("measurement");
+            zenith.setAttribute("type", "zenith");
+            zenith.setAttribute("value", this->rPolar.zenith);
+            zenith.setAttribute("sigma", this->rPolar.sigmaZenith);
+            measurements.appendChild(zenith);
+            QDomElement distance = xmlDoc.createElement("measurement");
+            distance.setAttribute("type", "distance");
+            distance.setAttribute("value", this->rPolar.distance);
+            distance.setAttribute("sigma", this->rPolar.sigmaDistance);
+            measurements.appendChild(distance);
+        }
+        break;
+    case Configuration::eTemperatur:
+        if(this->rTemperature.isValid){
+            QDomElement temperature = xmlDoc.createElement("measurement");
+            temperature.setAttribute("type", "temperature");
+            temperature.setAttribute("value", this->rTemperature.tempDeg);
+            temperature.setAttribute("sigma", this->rTemperature.sigmaTempDeg);
+            measurements.appendChild(temperature);
+        }
+        break;
+    case Configuration::eLevel:
+        if(this->rLevel.isValid){
+            QDomElement rx = xmlDoc.createElement("measurement");
+            rx.setAttribute("type", "RX");
+            rx.setAttribute("value", this->rLevel.RX);
+            rx.setAttribute("sigma", this->rLevel.sigmaRX);
+            measurements.appendChild(rx);
+            QDomElement ry = xmlDoc.createElement("measurement");
+            ry.setAttribute("type", "zenith");
+            ry.setAttribute("value", this->rLevel.RY);
+            ry.setAttribute("sigma", this->rLevel.sigmaRY);
+            measurements.appendChild(ry);
+            QDomElement rz = xmlDoc.createElement("measurement");
+            rz.setAttribute("type", "zenith");
+            rz.setAttribute("value", this->rLevel.RZ);
+            rz.setAttribute("sigma", this->rLevel.sigmaRZ);
+            measurements.appendChild(rz);
+        }
+        break;
+    case Configuration::eUndefined:
+        if(this->rUndefined.isValid && this->rUndefined.values.size() == this->rUndefined.sigmaValues.size()){
+            QList<QString> measurementTypes = this->rUndefined.values.keys();
+            foreach(QString type, measurementTypes){
+                if(this->rUndefined.sigmaValues.contains(type)){
+                    QDomElement measurement = xmlDoc.createElement("measurement");
+                    measurement.setAttribute("type", type);
+                    measurement.setAttribute("value", this->rUndefined.values.value(type));
+                    measurement.setAttribute("sigma", this->rUndefined.sigmaValues.value(type));
+                    measurements.appendChild(measurement);
+                }
+            }
+        }
+        break;
+    }
+    reading.appendChild(measurements);
+
+    return reading;
+
+}

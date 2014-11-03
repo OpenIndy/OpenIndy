@@ -8,7 +8,7 @@ LeicaTachymeter::LeicaTachymeter(){
 
 
 
-PluginMetaData* LeicaTachymeter::getMetaData(){
+PluginMetaData* LeicaTachymeter::getMetaData() const{
 
     PluginMetaData* metaData = new PluginMetaData();
 
@@ -22,7 +22,7 @@ PluginMetaData* LeicaTachymeter::getMetaData(){
     return metaData;
 }
 
-QList<Configuration::ReadingTypes>* LeicaTachymeter::getSupportedReadingTypes(){
+QList<Configuration::ReadingTypes>* LeicaTachymeter::getSupportedReadingTypes() const{
 
     QList<Configuration::ReadingTypes> *readingTypes = new QList<Configuration::ReadingTypes>;
 
@@ -34,7 +34,7 @@ QList<Configuration::ReadingTypes>* LeicaTachymeter::getSupportedReadingTypes(){
     return readingTypes;
 }
 
-QList<Configuration::SensorFunctionalities> LeicaTachymeter::getSupportedSensorActions()
+QList<Configuration::SensorFunctionalities> LeicaTachymeter::getSupportedSensorActions() const
 {
     QList<Configuration::SensorFunctionalities> sensorActions;
 
@@ -46,7 +46,7 @@ QList<Configuration::SensorFunctionalities> LeicaTachymeter::getSupportedSensorA
 
 }
 
-QList<Configuration::ConnectionTypes>* LeicaTachymeter::getConnectionType(){
+QList<Configuration::ConnectionTypes>* LeicaTachymeter::getConnectionType() const{
 
     QList<Configuration::ConnectionTypes> *connectionTypes = new QList<Configuration::ConnectionTypes>;
     connectionTypes->append(Configuration::eSerial);
@@ -54,11 +54,11 @@ QList<Configuration::ConnectionTypes>* LeicaTachymeter::getConnectionType(){
     return connectionTypes;
 }
 
-QMap<QString,int>* LeicaTachymeter::getIntegerParameter(){
+QMap<QString,int>* LeicaTachymeter::getIntegerParameter() const{
     return NULL;
 }
 
-QMap<QString,double>* LeicaTachymeter::getDoubleParameter(){
+QMap<QString,double>* LeicaTachymeter::getDoubleParameter() const{
 
     QMap <QString, double>* doubleParameter = new QMap<QString, double>;
 
@@ -68,7 +68,7 @@ QMap<QString,double>* LeicaTachymeter::getDoubleParameter(){
 
 }
 
-QMap <QString, QStringList>* LeicaTachymeter::getStringParameter(){
+QMap <QString, QStringList>* LeicaTachymeter::getStringParameter() const{
 
     QMap <QString, QStringList>* stringParameter = new QMap<QString, QStringList>;
 
@@ -87,7 +87,7 @@ QMap <QString, QStringList>* LeicaTachymeter::getStringParameter(){
 
 }
 
-QStringList LeicaTachymeter::selfDefinedActions()
+QStringList LeicaTachymeter::selfDefinedActions() const
 {
     QStringList a;
     return a;
@@ -100,7 +100,7 @@ bool LeicaTachymeter::doSelfDefinedAction(QString a)
 }
 
 
-QMap<QString, double>* LeicaTachymeter::getDefaultAccuracy()
+QMap<QString, double>* LeicaTachymeter::getDefaultAccuracy() const
 {
    QMap<QString,double> *defaultAccuracy = new QMap<QString,double>;
 

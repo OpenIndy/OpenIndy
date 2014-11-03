@@ -6,12 +6,17 @@
 #include "function.h"
 
 
-Observation::Observation(Reading *r, Station *s) : myReading(r), myStation(s), myXyz(4), myOriginalXyz(4), sigmaXyz(4)
+Observation::Observation(Reading *r, Station *s) :
+    myReading(r), myStation(s), myXyz(4), myOriginalXyz(4), sigmaXyz(4)
 {
     this->id = Configuration::generateID();
     if(r != NULL){
         r->obs = this;
     }
+
+    //initialize matrices
+    myStatistic.qxx = OiMat(4,4);
+    myOriginalStatistic.qxx = OiMat(4,4);
 }
 
 Observation::~Observation(){
@@ -32,164 +37,48 @@ Observation::~Observation(){
 
 /*!
  * \brief Observation::toOpenIndyXML
- * \param stream
+ * \param xmlDoc
  * \return
  */
-bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
+QDomElement Observation::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    stream.writeStartElement("observation");
-    stream.writeAttribute("id", QString::number(this->id));
-    stream.writeAttribute("x", QString::number(this->myXyz.getAt(0)));
-    stream.writeAttribute("y", QString::number(this->myXyz.getAt(1)));
-    stream.writeAttribute("z", QString::number(this->myXyz.getAt(2)));
-    stream.writeAttribute("isValid", QString::number(this->isValid));
-    stream.writeAttribute("sigmaX", QString::number(this->sigmaXyz.getAt(0)));
-    stream.writeAttribute("sigmaY", QString::number(this->sigmaXyz.getAt(1)));
-    stream.writeAttribute("sigmaZ", QString::number(this->sigmaXyz.getAt(2)));
+    QDomElement observation = Element::toOpenIndyXML(xmlDoc);
 
+    if(observation.isNull()){
+        return observation;
+    }
 
+    observation.setTagName("observation");
+
+    //add observation attributes
+    if(this->myXyz.getSize() >= 3){
+        observation.setAttribute("x", this->myXyz.getAt(0));
+        observation.setAttribute("y", this->myXyz.getAt(1));
+        observation.setAttribute("z", this->myXyz.getAt(2));
+    }else{
+        observation.setAttribute("x", this->myXyz.getAt(0));
+        observation.setAttribute("y", this->myXyz.getAt(1));
+        observation.setAttribute("z", this->myXyz.getAt(2));
+    }
+    observation.setAttribute("isValid", this->isValid);
+
+    //add station
     if(this->myStation != NULL){
-        stream.writeStartElement("station");
-        stream.writeAttribute("ref", QString::number(this->myStation->getId()));
-        stream.writeEndElement();
+        QDomElement station = xmlDoc.createElement("station");
+        station.setAttribute("ref", this->myStation->getId());
+        observation.appendChild(station);
     }
 
+    //add reading
     if(this->myReading != NULL){
-
-        QString measuredAtTime = this->myReading->measuredAt.toString(Qt::ISODate);
-
-        stream.writeStartElement("reading");
-        stream.writeAttribute("id",QString::number(this->myReading->id));
-        stream.writeAttribute("type",QString::number(this->myReading->typeofReading));
-        stream.writeAttribute("time",measuredAtTime);
-
-        stream.writeStartElement("measurements");
-
-        switch(this->myReading->typeofReading){
-            case(Configuration::ePolar) :{
-
-            //get current date and time
-
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","azimuth");
-                stream.writeAttribute("value",QString::number(this->myReading->rPolar.azimuth));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rPolar.sigmaAzimuth));
-                stream.writeEndElement();
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","zenith");
-                stream.writeAttribute("value",QString::number(this->myReading->rPolar.zenith));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rPolar.sigmaZenith));
-                stream.writeEndElement();
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","distance");
-                stream.writeAttribute("value",QString::number(this->myReading->rPolar.distance));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rPolar.sigmaDistance));
-                stream.writeEndElement();
-
-
-                break;
-            }
-            case(Configuration::eDistance) :{
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","distance");
-                stream.writeAttribute("value",QString::number(this->myReading->rDistance.distance));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rDistance.sigmaDistance));
-                stream.writeEndElement();
-
-                break;
-            }
-            case(Configuration::eDirection) :{
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","azimuth");
-                stream.writeAttribute("value",QString::number(this->myReading->rDirection.azimuth));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rDirection.sigmaAzimuth));
-                stream.writeEndElement();
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","zenith");
-                stream.writeAttribute("value",QString::number(this->myReading->rDirection.zenith));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rDirection.sigmaZenith));
-                stream.writeEndElement();
-
-                break;
-            }
-            case(Configuration::eCartesian) :{
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","x");
-                stream.writeAttribute("value",QString::number(this->myReading->rCartesian.xyz.getAt(0)));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rCartesian.sigmaXyz.getAt(0)));
-                stream.writeEndElement();
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","y");
-                stream.writeAttribute("value",QString::number(this->myReading->rCartesian.xyz.getAt(1)));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rCartesian.sigmaXyz.getAt(1)));
-                stream.writeEndElement();
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","z");
-                stream.writeAttribute("value",QString::number(this->myReading->rCartesian.xyz.getAt(2)));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rCartesian.sigmaXyz.getAt(2)));
-                stream.writeEndElement();
-
-
-                break;
-            }
-            case(Configuration::eLevel) :{
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","RX");
-                stream.writeAttribute("value",QString::number(this->myReading->rLevel.RX));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaRX));
-                stream.writeEndElement();
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","RY");
-                stream.writeAttribute("value",QString::number(this->myReading->rLevel.RY));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaRY));
-                stream.writeEndElement();
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type","RZ");
-                stream.writeAttribute("value",QString::number(this->myReading->rLevel.RZ));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rLevel.sigmaRZ));
-                stream.writeEndElement();
-
-
-                break;
+        QDomElement reading = this->myReading->toOpenIndyXML(xmlDoc);
+        if(!reading.isNull()){
+            observation.appendChild(reading);
         }
-        case(Configuration::eUndefined) :{
-
-            QMapIterator<QString, double > j(this->myReading->rUndefined.values);
-            while (j.hasNext()) {
-                j.next();
-
-                stream.writeStartElement("measurement");
-                stream.writeAttribute("type",j.key());
-                stream.writeAttribute("value",QString::number(j.value()));
-                stream.writeAttribute("sigma",QString::number(this->myReading->rUndefined.sigmaValues.value(j.key())));
-                stream.writeEndElement();
-
-            }
-
-                break;
-        }
-        }
-
-        stream.writeEndElement();
-
-        stream.writeEndElement();
     }
 
+    return observation;
 
-    stream.writeEndElement();
-    return true;
 }
 
 /*!
@@ -200,27 +89,24 @@ bool Observation::toOpenIndyXML(QXmlStreamWriter &stream){
 ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;
-
     dependencies.typeOfElement = Configuration::eObservationElement;
 
+    //fill observation attributes
     QXmlStreamAttributes attributes = xml.attributes();
-
     if(attributes.hasAttribute("id")) {
         this->id = attributes.value("id").toInt();
         dependencies.elementID = this->id;
     }
     if(attributes.hasAttribute("x")){
-        this->myOriginalXyz.setAt(0,attributes.value("x").toDouble());
         this->myXyz.setAt(0,attributes.value("x").toDouble());
     }
     if(attributes.hasAttribute("y")){
-        this->myOriginalXyz.setAt(1,attributes.value("y").toDouble());
         this->myXyz.setAt(1,attributes.value("y").toDouble());
     }
     if(attributes.hasAttribute("z")){
-        this->myOriginalXyz.setAt(2,attributes.value("z").toDouble());
         this->myXyz.setAt(2,attributes.value("z").toDouble());
     }
+    this->myXyz.setAt(3,1.0);
     if(attributes.hasAttribute("isValid")){
         if(attributes.value("isValid").toInt() == 1){
             this->isValid = true;
@@ -237,66 +123,51 @@ ElementDependencies Observation::fromOpenIndyXML(QXmlStreamReader &xml){
     if(attributes.hasAttribute("sigmaZ")){
         this->sigmaXyz.setAt(2,attributes.value("sigmaZ").toDouble());
     }
-    /* Next element... */
+
     xml.readNext();
-    /*
-     * We're going to loop over the things because the order might change.
-     * We'll continue the loop until we hit an EndElement named observation.
-     */
-    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
-            xml.name() == "observation")) {
+
+    //fill observation's values
+    while( !xml.atEnd() && xml.name().compare("observation") != 0 ){
+
         if(xml.tokenType() == QXmlStreamReader::StartElement) {
 
-            if(xml.name() == "reading") {
+            if(xml.name() == "reading"){
+
+                //load reading and connect to observation
                 Reading *r = this->readReading(xml);
                 r->obs = this;
                 this->myReading = r;
 
+                //get time of measurement
                 if(xml.attributes().hasAttribute("time")){
                     r->measuredAt = QDateTime(QDate::fromString(xml.attributes().value("time").toString(),Qt::ISODate));
-
                 }
+
+                //get original xyz to save at observation object
+                r->toCartesian();
+                this->myOriginalXyz = r->rCartesian.xyz;
+
+                xml.readNext();
+
             }else if(xml.name() == "station"){
 
                 if(xml.attributes().hasAttribute("ref")){
-
                     dependencies.addFeatureID(xml.attributes().value("ref").toInt(), "station");
-
                 }
+                xml.readNext();
 
-                /*while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
-                        xml.name() == "member")) {
-                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
-
-                        QXmlStreamAttributes memberAttributes = xml.attributes();
-
-                        if(memberAttributes.hasAttribute("type")){
-
-                            if (memberAttributes.value("type") == "station"){
-
-                                if(memberAttributes.hasAttribute("ref")){
-
-                                    dependencies.addFeatureID(memberAttributes.value("ref").toInt(),"station");
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                    xml.readNext();
-                }*/
-
+            }else{
+                xml.readNext();
             }
 
+        }else{
+            xml.readNext();
         }
-        /* ...and next... */
-        xml.readNext();
+
     }
 
     return dependencies;
+
 }
 
 /*!

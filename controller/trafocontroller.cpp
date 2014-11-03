@@ -62,9 +62,12 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
         if(trafoMat.getRowCount() == 4 && trafoMat.getColCount() == 4){
             //transform observations
             foreach (Observation *obs, from->getObservations()) {
-                obs->myXyz = trafoMat * obs->myOriginalXyz;
-                obs->myStatistic.qxx = trafoMat * obs->myOriginalStatistic.qxx;
-                obs->isValid = true;
+                if(obs->myOriginalStatistic.qxx.getRowCount() == 4 && obs->myOriginalStatistic.qxx.getColCount() == 4
+                        && obs->myOriginalXyz.getSize() == 4){
+                    obs->myXyz = trafoMat * obs->myOriginalXyz;
+                    obs->myStatistic.qxx = trafoMat * obs->myOriginalStatistic.qxx;
+                    obs->isValid = true;
+                }
             }
 
             //then apply movements if active system is a part system

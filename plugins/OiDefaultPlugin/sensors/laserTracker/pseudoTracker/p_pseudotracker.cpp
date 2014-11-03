@@ -20,7 +20,7 @@ PseudoTracker::PseudoTracker(){
  * \brief PseudoTracker::getMetaData
  * \return
  */
-PluginMetaData* PseudoTracker::getMetaData(){
+PluginMetaData* PseudoTracker::getMetaData() const{
 
     PluginMetaData* metaData = new PluginMetaData();
 
@@ -38,7 +38,7 @@ PluginMetaData* PseudoTracker::getMetaData(){
  * \brief PseudoTracker::getSupportedReadingTypes
  * \return
  */
-QList<Configuration::ReadingTypes>* PseudoTracker::getSupportedReadingTypes(){
+QList<Configuration::ReadingTypes>* PseudoTracker::getSupportedReadingTypes() const{
 
     QList<Configuration::ReadingTypes> *readingTypes = new QList<Configuration::ReadingTypes>;
 
@@ -56,7 +56,7 @@ QList<Configuration::ReadingTypes>* PseudoTracker::getSupportedReadingTypes(){
  * \brief PseudoTracker::getSupportedSensorActions
  * \return
  */
-QList<Configuration::SensorFunctionalities> PseudoTracker::getSupportedSensorActions()
+QList<Configuration::SensorFunctionalities> PseudoTracker::getSupportedSensorActions() const
 {
     QList<Configuration::SensorFunctionalities> sensorActions;
 
@@ -76,7 +76,7 @@ QList<Configuration::SensorFunctionalities> PseudoTracker::getSupportedSensorAct
  * \brief PseudoTracker::getConnectionType
  * \return
  */
-QList<Configuration::ConnectionTypes>* PseudoTracker::getConnectionType(){
+QList<Configuration::ConnectionTypes>* PseudoTracker::getConnectionType() const{
     QList<Configuration::ConnectionTypes> *connectionTypes = new QList<Configuration::ConnectionTypes>;
     connectionTypes->append(Configuration::eNetwork);
     connectionTypes->append(Configuration::eSerial);
@@ -88,7 +88,7 @@ QList<Configuration::ConnectionTypes>* PseudoTracker::getConnectionType(){
  * \brief PseudoTracker::getIntegerParameter
  * \return
  */
-QMap<QString,int>* PseudoTracker::getIntegerParameter(){
+QMap<QString,int>* PseudoTracker::getIntegerParameter() const{
     return NULL;
 }
 
@@ -96,7 +96,7 @@ QMap<QString,int>* PseudoTracker::getIntegerParameter(){
  * \brief PseudoTracker::getDoubleParameter
  * \return
  */
-QMap<QString,double>* PseudoTracker::getDoubleParameter(){
+QMap<QString,double>* PseudoTracker::getDoubleParameter() const{
 
     QMap<QString,double>* trackerErrors = new QMap<QString,double>;
 
@@ -125,7 +125,7 @@ QMap<QString,double>* PseudoTracker::getDoubleParameter(){
  * \brief PseudoTracker::getStringParameter
  * \return
  */
-QMap <QString, QStringList>* PseudoTracker::getStringParameter(){
+QMap <QString, QStringList>* PseudoTracker::getStringParameter() const{
 
     QMap <QString, QStringList>* stringParameter = new QMap<QString, QStringList>;
 
@@ -145,7 +145,7 @@ QMap <QString, QStringList>* PseudoTracker::getStringParameter(){
  * \brief PseudoTracker::selfDefinedActions
  * \return
  */
-QStringList PseudoTracker::selfDefinedActions()
+QStringList PseudoTracker::selfDefinedActions() const
 {
     QStringList ownActions;
 
@@ -171,7 +171,7 @@ bool PseudoTracker::doSelfDefinedAction(QString a)
  * \brief PseudoTracker::getDefaultAccuracy
  * \return
  */
-QMap<QString, double>* PseudoTracker::getDefaultAccuracy()
+QMap<QString, double>* PseudoTracker::getDefaultAccuracy() const
 {
     QMap<QString,double> *defaultAccuracy = new QMap<QString,double>;
 

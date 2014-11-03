@@ -3,6 +3,8 @@
 
 #include <QtOpenGL>
 #include <math.h>
+#include "geometry.h"
+#include "observation.h"
 
 #define PI 3.141592653589793
 
@@ -23,7 +25,7 @@ public:
     std::vector<GLfloat> texcoords;
     std::vector<GLushort> indices;
 
-    virtual void draw(GLfloat x, GLfloat y, GLfloat z) = 0;
+    virtual void draw(Geometry *g) = 0;
 };
 
 #endif // OIGRAPHIXGEOMETRY_H

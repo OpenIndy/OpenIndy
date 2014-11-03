@@ -4,7 +4,7 @@
  * \brief TranslateByLine::getMetaData
  * \return
  */
-PluginMetaData* TranslateByLine::getMetaData(){
+PluginMetaData* TranslateByLine::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "TranslateByLine";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -21,7 +21,7 @@ PluginMetaData* TranslateByLine::getMetaData(){
  * \brief TranslateByLine::getNeededElements
  * \return
  */
-QList<InputParams> TranslateByLine::getNeededElements(){
+QList<InputParams> TranslateByLine::getNeededElements() const{
     QList<InputParams> result;
     InputParams param1;
     param1.index = 0;
@@ -42,7 +42,7 @@ QList<InputParams> TranslateByLine::getNeededElements(){
  * \brief TranslateByLine::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> TranslateByLine::applicableFor(){
+QList<Configuration::FeatureTypes> TranslateByLine::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePointFeature);
     result.append(Configuration::eLineFeature);
@@ -55,7 +55,7 @@ QList<Configuration::FeatureTypes> TranslateByLine::applicableFor(){
  * \brief TranslateByLine::getStringParameter
  * \return
  */
-QMap<QString, QStringList> TranslateByLine::getStringParameter(){
+QMap<QString, QStringList> TranslateByLine::getStringParameter() const{
     QMap<QString, QStringList> result;
     QString key = "invert";
     QStringList value;

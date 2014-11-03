@@ -4,7 +4,7 @@
  * \brief ChangeRadius::getMetaData
  * \return
  */
-PluginMetaData* ChangeRadius::getMetaData(){
+PluginMetaData* ChangeRadius::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "ChangeRadius";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -19,7 +19,7 @@ PluginMetaData* ChangeRadius::getMetaData(){
  * \brief ChangeRadius::getNeededElements
  * \return
  */
-QList<InputParams> ChangeRadius::getNeededElements(){
+QList<InputParams> ChangeRadius::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -34,7 +34,7 @@ QList<InputParams> ChangeRadius::getNeededElements(){
  * \brief ChangeRadius::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> ChangeRadius::applicableFor(){
+QList<Configuration::FeatureTypes> ChangeRadius::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eSphereFeature);
     return result;

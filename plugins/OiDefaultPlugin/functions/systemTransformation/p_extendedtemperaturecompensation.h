@@ -21,16 +21,16 @@ class ExtendedTemperatureCompensation : public SystemTransformation
 public:
     ExtendedTemperatureCompensation();
 
-    PluginMetaData* getMetaData();
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    PluginMetaData* getMetaData() const;
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
     bool exec(TrafoParam &);
 
-    QMap<QString, QStringList> getStringParameter();
-    QMap<QString, double> getDoubleParameter();
+    QMap<QString, QStringList> getStringParameter() const;
+    QMap<QString, double> getDoubleParameter() const;
 
-    QStringList getResultProtocol();
+    QStringList getResultProtocol() const;
 
 private:
 

@@ -9,20 +9,20 @@ public:
 
     PseudoSensor();
 
-    QList<Configuration::ReadingTypes>* getSupportedReadingTypes();
-    QList<Configuration::SensorFunctionalities> getSupportedSensorActions();
-    QList<Configuration::ConnectionTypes>* getConnectionType();
+    QList<Configuration::ReadingTypes>* getSupportedReadingTypes() const;
+    QList<Configuration::SensorFunctionalities> getSupportedSensorActions() const;
+    QList<Configuration::ConnectionTypes>* getConnectionType() const;
 
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
 
-    QMap<QString,int>* getIntegerParameter();
-    QMap<QString,double>* getDoubleParameter();
-    QMap <QString, QStringList>* getStringParameter();
-    QStringList selfDefinedActions();
+    QMap<QString,int>* getIntegerParameter() const;
+    QMap<QString,double>* getDoubleParameter() const;
+    QMap <QString, QStringList>* getStringParameter() const;
+    QStringList selfDefinedActions() const;
     bool doSelfDefinedAction(QString a);
 
-    QString getUndefinedReadingName();
-    QMap<QString,double>* getDefaultAccuracy();
+    QString getUndefinedReadingName() const;
+    QMap<QString,double>* getDefaultAccuracy() const;
 
     bool accept(SensorControl*, Configuration::SensorFunctionalities){return false;}
 

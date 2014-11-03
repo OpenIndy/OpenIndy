@@ -42,9 +42,32 @@ void ScalarEntityMeasurementSeries::recalc(){
 
 }
 
-bool ScalarEntityMeasurementSeries::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief ScalarEntityMeasurementSeries::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement ScalarEntityMeasurementSeries::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    return false;
+    QDomElement entityMeasurementSeries = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(entityMeasurementSeries.isNull()){
+        return entityMeasurementSeries;
+    }
+
+    entityMeasurementSeries.setAttribute("type", Configuration::sEntityMeasurementSeries);
+
+    //add series value
+    QDomElement seriesValue = xmlDoc.createElement("seriesValue");
+    if(this->getIsSolved()){
+        seriesValue.setAttribute("value", this->seriesValue);
+    }else{
+        seriesValue.setAttribute("value", 0.0);
+    }
+    entityMeasurementSeries.appendChild(seriesValue);
+
+    return entityMeasurementSeries;
+
 }
 
 ElementDependencies ScalarEntityMeasurementSeries::fromOpenIndyXML(QXmlStreamReader &xml){

@@ -11,12 +11,14 @@
 #include "coordinatesystem.h"
 #include "console.h"
 #include "configuration.h"
+#include "oiconfigstate.h"
 
 using namespace std;
 
 class OiFeatureState : public QObject
 {
     Q_OBJECT
+
 private:
     explicit OiFeatureState(QObject *parent = 0);
 
@@ -32,6 +34,9 @@ public:
 
     static const QList<Station *> &getStations();
     static const QList<CoordinateSystem *> &getCoordinateSystems();
+    static const QList<TrafoParam *> &getTransformationParameters();
+    static const QList<FeatureWrapper *> &getGeometries();
+    static QList<FeatureWrapper *> getFeaturesOfGroup(QString group);
 
     static FeatureWrapper* getActiveFeature();
     static Station* getActiveStation();
@@ -42,6 +47,8 @@ public:
     static QString getActiveGroup();
     static void setActiveGroup(QString group);
 
+    static FeatureWrapper *getFeature(int featureId);
+
     static void sortFeatures();
     static void sortFeaturesById();
     static void resetFeatureLists();
@@ -51,7 +58,7 @@ signals:
     void activeStationChanged(); //emitted when active station has changed
     void activeCoordinateSystemChanged(); //emitted when display coordinate system has changed
 
-    void featureSetChanged(); //emitted when features where created or deleted
+    void featureSetChanged(); //emitted when features were created or deleted
     void coordSystemSetChanged(); //emitted when coordinate systems (nominal or station) where created or deleted
 
     void availableGroupsChanged(); //emitted when the set of groups which features belong to has changed
@@ -85,8 +92,10 @@ private:
     static FeatureWrapper *myActiveFeature; //the currently selected feature in table view
     static QList<CoordinateSystem *> myCoordinateSystems; //list of all non-station coordinate systems
     static QList<Station *> myStations; //list of all stations (each station has pointer to its coordinate system)
+    static QList<TrafoParam *> myTransformationParameters; //list of all trafo params
+    static QList<FeatureWrapper *> myGeometries; //list of all geometry features
     static Station *myActiveStation; //the currently selected station
-    static CoordinateSystem *myActiveCoordinateSystem; //the currently selected display coordinate system*/
+    static CoordinateSystem *myActiveCoordinateSystem; //the currently selected display coordinate system
     static QMap<QString, int> myAvailableGroups; //map of all available groups with number of assigned features
     static QString myActiveGroup; //currently selected feature group
 

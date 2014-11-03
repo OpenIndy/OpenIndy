@@ -4,7 +4,7 @@
  * \brief Helmert7Param::getMetaData
  * \return
  */
-PluginMetaData* Helmert7Param::getMetaData(){
+PluginMetaData* Helmert7Param::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "HelmertTransformation";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -20,7 +20,7 @@ PluginMetaData* Helmert7Param::getMetaData(){
  * \brief Helmert7Param::getNeededElements
  * \return
  */
-QList<InputParams> Helmert7Param::getNeededElements(){
+QList<InputParams> Helmert7Param::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -35,7 +35,7 @@ QList<InputParams> Helmert7Param::getNeededElements(){
  * \brief Helmert7Param::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> Helmert7Param::applicableFor(){
+QList<Configuration::FeatureTypes> Helmert7Param::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eTrafoParamFeature);
     return result;

@@ -20,10 +20,10 @@ using namespace std;
 class ChangeRadius : public ObjectTransformation
 {  
 public:
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
     bool exec(Sphere&);
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
 private:
     void attachOffsetToSphere(Sphere&, ScalarEntityDistance*);

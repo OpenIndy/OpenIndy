@@ -138,8 +138,8 @@ private:
  public:
     void recalc();
 
-    virtual bool toOpenIndyXML(QXmlStreamWriter& stream);
-    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+    QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
+    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
 };
 

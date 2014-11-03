@@ -7,12 +7,16 @@
 class OiGraphixSphere : public OiGraphixGeometry
 {
 public:
-    OiGraphixSphere(float radius, unsigned int rings, unsigned int sectors);
+    OiGraphixSphere();
 
-    void draw(GLfloat x, GLfloat y, GLfloat z);
+    void draw(Geometry *g);
 
 private:
     GLfloat radius;
+
+    GLfloat rx;
+    GLfloat ry;
+    GLfloat rz;
 };
 
 #endif // OIGRAPHIX_SPHERE_H

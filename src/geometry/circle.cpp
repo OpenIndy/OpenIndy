@@ -72,10 +72,45 @@ void Circle::recalc(){
 
 }
 
+/*!
+ * \brief Circle::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-bool Circle::toOpenIndyXML(QXmlStreamWriter &stream){
+    QDomElement circle = Geometry::toOpenIndyXML(xmlDoc);
 
-    return false;
+    if(circle.isNull()){
+        return circle;
+    }
+
+    circle.setAttribute("type", Configuration::sCircle);
+
+    //add radius
+    QDomElement radius = xmlDoc.createElement("radius");
+    if(this->getIsSolved()){
+        radius.setAttribute("value", this->radius);
+    }else{
+        radius.setAttribute("value", 0.0);
+    }
+    circle.appendChild(radius);
+
+    //add normal vector of the circle
+    QDomElement ijk = xmlDoc.createElement("spatialDirection");
+    if(this->ijk.getSize() >= 3 && this->getIsSolved()){
+        ijk.setAttribute("i", this->ijk.getAt(0));
+        ijk.setAttribute("j", this->ijk.getAt(1));
+        ijk.setAttribute("k", this->ijk.getAt(2));
+    }else{
+        ijk.setAttribute("i", 0.0);
+        ijk.setAttribute("j", 0.0);
+        ijk.setAttribute("k", 0.0);
+    }
+    circle.appendChild(ijk);
+
+    return circle;
+
 }
 
 ElementDependencies Circle::fromOpenIndyXML(QXmlStreamReader &xml){

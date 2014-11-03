@@ -11,7 +11,7 @@ SimpleTemperatureCompensation::SimpleTemperatureCompensation()
  * \brief getMetaData of the function
  * \return
  */
-PluginMetaData *SimpleTemperatureCompensation::getMetaData()
+PluginMetaData *SimpleTemperatureCompensation::getMetaData() const
 {
     PluginMetaData* metaData = new PluginMetaData();
         metaData->name = "StandardTempComp";
@@ -28,7 +28,7 @@ PluginMetaData *SimpleTemperatureCompensation::getMetaData()
  * \brief getNeededElements
  * \return
  */
-QList<InputParams> SimpleTemperatureCompensation::getNeededElements()
+QList<InputParams> SimpleTemperatureCompensation::getNeededElements() const
 {
     QList<InputParams> result;
     return result;
@@ -38,7 +38,7 @@ QList<InputParams> SimpleTemperatureCompensation::getNeededElements()
  * \brief applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> SimpleTemperatureCompensation::applicableFor()
+QList<Configuration::FeatureTypes> SimpleTemperatureCompensation::applicableFor() const
 {
     QList<Configuration::FeatureTypes> result;
         result.append(Configuration::eTrafoParamFeature);
@@ -68,7 +68,7 @@ bool SimpleTemperatureCompensation::exec(TrafoParam &tp)
  * \brief getStringParameter specifies additional string input parameters for the function.
  * \return
  */
-QMap<QString, QStringList> SimpleTemperatureCompensation::getStringParameter()
+QMap<QString, QStringList> SimpleTemperatureCompensation::getStringParameter() const
 {
     QMap<QString, QStringList> result;
     QString key ="material";
@@ -82,7 +82,7 @@ QMap<QString, QStringList> SimpleTemperatureCompensation::getStringParameter()
  * \brief getDoubleParameter specifies additional double parameters fpr the function.
  * \return
  */
-QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter()
+QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter() const
 {
     QMap<QString,double> result;
     QString key = "referenceTemperature";

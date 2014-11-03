@@ -19,10 +19,10 @@ public:
     double rotate;
     double offset;
 
-    virtual QList<InputParams> getNeededElements() = 0;
-    virtual QList<Configuration::FeatureTypes> applicableFor() = 0;
+    virtual QList<InputParams> getNeededElements() const = 0;
+    virtual QList<Configuration::FeatureTypes> applicableFor() const = 0;
 
-    virtual PluginMetaData* getMetaData() = 0;
+    virtual PluginMetaData* getMetaData() const = 0;
 
 };
 

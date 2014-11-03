@@ -1,6 +1,6 @@
 #include "p_bestfitsphererauls.h"
 
-PluginMetaData *BestFitSphereRauls::getMetaData(){
+PluginMetaData *BestFitSphereRauls::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "BestFitSphereRauls";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -28,7 +28,7 @@ bool BestFitSphereRauls::exec(Sphere &s){
     return false;
 }
 
-QList<InputParams> BestFitSphereRauls::getNeededElements(){
+QList<InputParams> BestFitSphereRauls::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -39,7 +39,7 @@ QList<InputParams> BestFitSphereRauls::getNeededElements(){
     return result;
 }
 
-QList<Configuration::FeatureTypes> BestFitSphereRauls::applicableFor(){
+QList<Configuration::FeatureTypes> BestFitSphereRauls::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eSphereFeature);
     return result;

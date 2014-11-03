@@ -6,6 +6,8 @@ QList<FeatureWrapper*> OiFeatureState::myFeatures;
 FeatureWrapper *OiFeatureState::myActiveFeature = NULL;
 QList<CoordinateSystem*> OiFeatureState::myCoordinateSystems;
 QList<Station*> OiFeatureState::myStations;
+QList<TrafoParam *> OiFeatureState::myTransformationParameters;
+QList<FeatureWrapper *> OiFeatureState::myGeometries;
 Station *OiFeatureState::myActiveStation = NULL;
 CoordinateSystem *OiFeatureState::myActiveCoordinateSystem = NULL;
 QMap<QString, int> OiFeatureState::myAvailableGroups;
@@ -70,6 +72,42 @@ const QList<Station *> &OiFeatureState::getStations(){
  */
 const QList<CoordinateSystem *> &OiFeatureState::getCoordinateSystems(){
     return OiFeatureState::myCoordinateSystems;
+}
+
+/*!
+ * \brief OiFeatureState::getTransformationParameters
+ * \return
+ */
+const QList<TrafoParam *> &OiFeatureState::getTransformationParameters(){
+    return OiFeatureState::myTransformationParameters;
+}
+
+/*!
+ * \brief OiFeatureState::getGeometries
+ * \return
+ */
+const QList<FeatureWrapper *> &OiFeatureState::getGeometries(){
+    return OiFeatureState::myGeometries;
+}
+
+/*!
+ * \brief OiFeatureState::getFeaturesOfGroup
+ * Get all features of a special group
+ * \param group
+ * \return
+ */
+QList<FeatureWrapper *> OiFeatureState::getFeaturesOfGroup(QString group){
+
+    QList<FeatureWrapper *> features;
+
+    foreach(FeatureWrapper *fw, OiFeatureState::myFeatures){
+        if(fw != NULL && fw->getFeature() != NULL && fw->getFeature()->getGroupName().compare(group) == 0){
+            features.append(fw);
+        }
+    }
+
+    return features;
+
 }
 
 /*!
@@ -155,6 +193,19 @@ void OiFeatureState::setActiveGroup(QString group){
 }
 
 /*!
+ * \brief OiFeatureState::getFeature
+ * \param featureId
+ * \return
+ */
+FeatureWrapper *OiFeatureState::getFeature(int featureId){
+    int index = OiFeatureState::getFeatureListIndex(featureId);
+    if(index >= 0){
+        return OiFeatureState::myFeatures.at(index);
+    }
+    return NULL;
+}
+
+/*!
  * \brief OiFeatureState::sortFeatures
  */
 void OiFeatureState::sortFeatures()
@@ -233,7 +284,8 @@ void OiFeatureState::resetFeatureLists()
 FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureType, bool isNominal, QString name){
     try{
 
-        FeatureWrapper *myFeature = new FeatureWrapper();
+        FeatureWrapper *myFeature;
+        myFeature = new FeatureWrapper();
 
         //create feature and assign it to feature wrapper
         switch(featureType){
@@ -266,6 +318,7 @@ FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureTy
         }case Configuration::eTrafoParamFeature:{
             TrafoParam *myTrafoParam = new TrafoParam();
             myFeature->setTrafoParam(myTrafoParam);
+            OiFeatureState::myTransformationParameters.append(myTrafoParam);
             break;
         }case Configuration::eScalarEntityAngleFeature:{
             ScalarEntityAngle *myAngle = new ScalarEntityAngle(isNominal);
@@ -290,6 +343,11 @@ FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureTy
         }else{
             while(!OiFeatureState::validateFeatureName(featureType, name.append("_new"), isNominal)){}
             myFeature->getFeature()->setFeatureName(name);
+        }
+
+        //add feature to list of geometries (if it is a geometry)
+        if(myFeature->getGeometry() != NULL){
+            OiFeatureState::myGeometries.append(myFeature);
         }
 
         //add the feature to the list of features
@@ -354,12 +412,16 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
 
             qDebug() << "nach nominal";
 
-            //add the feature to the list of features, stations and coordinate systems
+            //add the feature to the list of features, stations, coordinate systems, trafo params and geometries
             OiFeatureState::myFeatures.append(myFeature);
             if(myFeature->getCoordinateSystem() != NULL){
                 OiFeatureState::myCoordinateSystems.append(myFeature->getCoordinateSystem());
             }else if(myFeature->getStation() != NULL){
                 OiFeatureState::myStations.append(myFeature->getStation());
+            }else if(myFeature->getTrafoParam() != NULL){
+                OiFeatureState::myTransformationParameters.append(myFeature->getTrafoParam());
+            }else if(myFeature->getGeometry() != NULL){
+                OiFeatureState::myGeometries.append(myFeature);
             }
 
             qDebug() << "vor connects";
@@ -595,6 +657,9 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
 
         }
 
+        //call OiConfigState's connect method
+        OiConfigState::connectFeature(myFeature);
+
     }catch(exception &e){
         Console::addLine(e.what());
     }
@@ -609,6 +674,9 @@ void OiFeatureState::disconnectFeature(FeatureWrapper *myFeature){
             OiFeatureState::myFeatureState, SLOT(setActiveFeature(int)));
     disconnect(myFeature->getFeature(), SIGNAL(featureGroupChanged(int)),
                OiFeatureState::myFeatureState, SLOT(setFeatureGroup(int)));
+
+    //call OiConfigState's disconnect method
+    OiConfigState::disconnectFeature(myFeature);
 }
 
 /*!

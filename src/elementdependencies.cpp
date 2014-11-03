@@ -59,6 +59,32 @@ bool ElementDependencies::addActiveSensor(sensorInfo info)
     return true;
 }
 
+/*!
+ * \brief ElementDependencies::addUsedFor
+ * \param id
+ * \return
+ */
+bool ElementDependencies::addUsedFor(int id){
+    if(!this->usedFor.contains(id)){
+        this->usedFor.append(id);
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief ElementDependencies::addPreviouslyNeeded
+ * \param id
+ * \return
+ */
+bool ElementDependencies::addPreviouslyNeeded(int id){
+    if(!this->previouslyNeeded.contains(id)){
+        this->previouslyNeeded.append(id);
+        return true;
+    }
+    return false;
+}
+
 bool ElementDependencies::setStationPosition(int id)
 {
     if(id<0){
@@ -91,6 +117,38 @@ int ElementDependencies::getStationPosition()
 int ElementDependencies::getStationCoordSystem()
 {
     return this->stationCoordSystem;
+}
+
+/*!
+ * \brief ElementDependencies::setFromSystem
+ * \param id
+ */
+void ElementDependencies::setFromSystem(int id){
+    this->from = id;
+}
+
+/*!
+ * \brief ElementDependencies::setToSystem
+ * \param id
+ */
+void ElementDependencies::setToSystem(int id){
+   this->to = id;
+}
+
+/*!
+ * \brief ElementDependencies::getFromSystem
+ * \return
+ */
+int ElementDependencies::getFromSystem(){
+    return this->from;
+}
+
+/*!
+ * \brief ElementDependencies::getToSystem
+ * \return
+ */
+int ElementDependencies::getToSystem(){
+    return this->to;
 }
 
 bool ElementDependencies::hasPluginSensor()
@@ -136,4 +194,20 @@ QList<sensorInfo> ElementDependencies::getNeededSensors()
 sensorInfo ElementDependencies::getActiveSensor()
 {
     return this->activeSensor;
+}
+
+/*!
+ * \brief ElementDependencies::getUsedFor
+ * \return
+ */
+QList<int> ElementDependencies::getUsedFor(){
+    return this->usedFor;
+}
+
+/*!
+ * \brief ElementDependencies::getPreviouslyNeeded
+ * \return
+ */
+QList<int> ElementDependencies::getPreviouslyNeeded(){
+    return this->previouslyNeeded;
 }

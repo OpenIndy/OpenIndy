@@ -5,6 +5,7 @@
 #include <QList>
 #include <QMap>
 #include <QString>
+#include <QtXml>
 
 #include "element.h"
 #include "configuration.h"
@@ -56,7 +57,7 @@ public:
 
     virtual void recalc() = 0;
 
-    virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
+    virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
     virtual QString getDisplayX() const;
@@ -120,7 +121,9 @@ protected:
 
     bool writeFeatureAttributes(QXmlStreamWriter& stream);
     bool readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies);
-    bool readFunction(QXmlStreamReader &xml ,ElementDependencies &d);
+    bool readFunction(QXmlStreamReader &xml, ElementDependencies &d);
+    bool readUsedFor(QXmlStreamReader &xml, ElementDependencies &d);
+    bool readPreviouslyNeeded(QXmlStreamReader &xml, ElementDependencies &d);
 };
 
 #endif // FEATURE_H

@@ -268,6 +268,73 @@ void Feature::setActiveFeatureState(bool isActive){
 }
 
 /*!
+ * \brief Feature::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Feature::toOpenIndyXML(QDomDocument &xmlDoc) const{
+
+    QDomElement feature = Element::toOpenIndyXML(xmlDoc);
+
+    if(feature.isNull()){
+        return feature;
+    }
+
+    feature.setTagName("feature");
+
+    //add feature attributes
+    feature.setAttribute("name", this->getFeatureName());
+    feature.setAttribute("group", this->getGroupName());
+    feature.setAttribute("solved", this->getIsSolved());
+    feature.setAttribute("comment", this->getComment());
+    feature.setAttribute("active", this->getIsActiveFeature());
+
+    //add functions
+    if(this->functionList.size() > 0){
+        QDomElement functions = xmlDoc.createElement("functions");
+        int index = 0;
+        foreach(Function *f, this->functionList){
+            QDomElement function = f->toOpenIndyXML(xmlDoc);
+            if(!function.isNull()){
+                function.setAttribute("executionIndex", index);
+                functions.appendChild(function);
+            }
+            index++;
+        }
+        feature.appendChild(functions);
+    }
+
+    //add usedFor features
+    if(this->usedFor.size() > 0){
+        QDomElement usedForFeatures = xmlDoc.createElement("usedFor");
+        foreach(FeatureWrapper *f, this->usedFor){
+            if(f != NULL && f->getFeature() != NULL){
+                QDomElement usedFor = xmlDoc.createElement("feature");
+                usedFor.setAttribute("ref", f->getFeature()->getId());
+                usedForFeatures.appendChild(usedFor);
+            }
+        }
+        feature.appendChild(usedForFeatures);
+    }
+
+    //add previouslyNeeded features
+    if(this->previouslyNeeded.size() > 0){
+        QDomElement previouslyNeededFeatures = xmlDoc.createElement("previouslyNeeded");
+        foreach(FeatureWrapper *f, this->previouslyNeeded){
+            if(f != NULL && f->getFeature() != NULL){
+                QDomElement previouslyNeeded = xmlDoc.createElement("feature");
+                previouslyNeeded.setAttribute("ref", f->getFeature()->getId());
+                previouslyNeededFeatures.appendChild(previouslyNeeded);
+            }
+        }
+        feature.appendChild(previouslyNeededFeatures);
+    }
+
+    return feature;
+
+}
+
+/*!
  * \brief Feature::getDisplayX
  * \return
  */
@@ -589,17 +656,15 @@ bool Feature::writeFeatureAttributes(QXmlStreamWriter &stream){
  */
 bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &dependencies){
 
-    QXmlStreamAttributes memberAttributes = xml.attributes();
-
     if(xml.name().compare("usedFor") == 0){
 
         xml.readNext();
 
         while( !xml.atEnd() && xml.name().compare("usedFor") != 0 ){
 
-            if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name().compare("feature")){
-                if(memberAttributes.hasAttribute("ref")){
-                    dependencies.addFeatureID(memberAttributes.value("ref").toInt(), "usedFor");
+            if(xml.tokenType() == QXmlStreamReader::StartElement){
+                if(xml.attributes().hasAttribute("ref")){
+                    dependencies.addUsedFor(xml.attributes().value("ref").toInt());
                 }
             }
             xml.readNext();
@@ -612,9 +677,9 @@ bool Feature::readFeatureAttributes(QXmlStreamReader &xml, ElementDependencies &
 
         while( !xml.atEnd() && xml.name().compare("previouslyNeeded") != 0 ){
 
-            if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name().compare("feature")){
-                if(memberAttributes.hasAttribute("ref")){
-                    dependencies.addFeatureID(memberAttributes.value("ref").toInt(), "previouslyNeeded");
+            if(xml.tokenType() == QXmlStreamReader::StartElement){
+                if(xml.attributes().hasAttribute("ref")){
+                    dependencies.addPreviouslyNeeded(xml.attributes().value("ref").toInt());
                 }
             }
             xml.readNext();
@@ -689,7 +754,6 @@ bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies &d){
             f.executionIndex = attributes.value("executionIndex").toInt();
         }
 
-
         while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                 xml.name() == "function")) {
             if(xml.tokenType() == QXmlStreamReader::StartElement) {
@@ -729,5 +793,75 @@ bool Feature::readFunction(QXmlStreamReader &xml, ElementDependencies &d){
     d.addFunctionInfo(f);
     return true;
     }
+
+}
+
+/*!
+ * \brief Feature::readUsedFor
+ * Loads and saves the features which this feature is used for calculation
+ * \param xml
+ * \param d
+ * \return
+ */
+bool Feature::readUsedFor(QXmlStreamReader &xml, ElementDependencies &d){
+
+    if(xml.name() == "usedFor"){
+
+        while( !(xml.tokenType() == QXmlStreamReader::EndElement &&
+                xml.name() == "usedFor")){
+
+            if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == "feature") {
+
+                QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                if(memberAttributes.hasAttribute("ref")){
+                    d.addUsedFor(memberAttributes.value("ref").toInt());
+                }
+
+            }
+            xml.readNext();
+
+        }
+
+        return true;
+
+    }
+
+    return false;
+
+}
+
+/*!
+ * \brief Feature::readPreviouslyNeeded
+ * Loads and saves the features which have to be calculated before this feature
+ * \param xml
+ * \param d
+ * \return
+ */
+bool Feature::readPreviouslyNeeded(QXmlStreamReader &xml, ElementDependencies &d){
+
+    if(xml.name() == "previouslyNeeded"){
+
+        while( !(xml.tokenType() == QXmlStreamReader::EndElement &&
+                xml.name() == "previouslyNeeded")){
+
+            if(xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == "feature") {
+
+                QXmlStreamAttributes memberAttributes = xml.attributes();
+
+                if(memberAttributes.hasAttribute("ref")){
+                    d.addPreviouslyNeeded(memberAttributes.value("ref").toInt());
+                }
+
+            }
+            xml.readNext();
+
+        }
+
+        return true;
+
+    }
+
+    return false;
 
 }

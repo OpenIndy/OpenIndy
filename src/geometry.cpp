@@ -288,11 +288,13 @@ bool Geometry::writeGeometryAttributes(QXmlStreamWriter &stream){
     stream.writeEndElement();
 
     //references to nominal geometries which belong to this geometry
+    stream.writeStartElement("nominalGeometries");
     foreach (Geometry *geom, this->nominals) {
-        stream.writeStartElement("nominalGeometry");
+        stream.writeStartElement("geometry");
         stream.writeAttribute("ref", QString::number(geom->id));
         stream.writeEndElement();
     }
+    stream.writeEndElement();
 
     //reference to the nominal coordinate system which this geometry belongs to
     if(this->myNominalCoordSys != NULL){
@@ -332,9 +334,7 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
             }
          }
         xml.readNext();
-    }
-
-    if(xml.name() == "measurementconfig") {
+    }else if(xml.name() == "measurementconfig") {
 
         while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
                 xml.name() == "measurementconfig")) {
@@ -352,9 +352,7 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
              }
             xml.readNext();
         }
-    }
-
-    if(xml.name().compare("observations") == 0){
+    }else if(xml.name().compare("observations") == 0){
 
         xml.readNext();
         while( !xml.atEnd() && xml.name().compare("observations") != 0 ){
@@ -366,12 +364,10 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
             xml.readNext();
         }
 
-    }
-
-    if(xml.name().compare("nominalGeometries") == 0){
+    }else if(xml.name().compare("nominalGeometries") == 0){
 
         xml.readNext();
-        while( !xml.atEnd() && xml.name().compare("geometry") == 0 ){
+        while( !xml.atEnd() && xml.name().compare("nominalGeometries") != 0 ){
             if(xml.tokenType() == QXmlStreamReader::StartElement){
                 if(xml.attributes().hasAttribute("ref")){
                     dependencies.addFeatureID(xml.attributes().value("ref").toInt(), "nominalGeometry");
@@ -380,21 +376,21 @@ bool Geometry::readGeometryAttributes(QXmlStreamReader &xml, ElementDependencies
             xml.readNext();
         }
 
-    }
-
-    if(xml.name().compare("coordinatesystem") == 0){
+    }else if(xml.name().compare("coordinatesystem") == 0){
 
         if(xml.attributes().hasAttribute("ref")){
             dependencies.addFeatureID(xml.attributes().value("ref").toInt(),"coordinatesystem");
         }
         xml.readNext();
 
-    }
+    }else if(xml.name() == "function"){
 
-    if(xml.name() == "function"){
-
-       this->readFunction(xml, dependencies);
+        this->readFunction(xml, dependencies);
         xml.readNext();
+
+    }else{
+
+        this->readFeatureAttributes(xml, dependencies);
 
     }
 
@@ -500,6 +496,97 @@ SimulationData& Geometry::getSimulationData()
 void Geometry::setSimulationData(SimulationData s)
 {
     this->mySimulationData = s;
+}
+
+/*!
+ * \brief Geometry::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Geometry::toOpenIndyXML(QDomDocument &xmlDoc) const{
+
+    QDomElement geometry = Feature::toOpenIndyXML(xmlDoc);
+
+    if(geometry.isNull()){
+        return geometry;
+    }
+
+    geometry.setTagName("geometry");
+
+    //set geometry attributes
+    geometry.setAttribute("nominal", this->getIsNominal());
+    geometry.setAttribute("common", this->getIsCommon());
+
+    //add coordinates
+    QDomElement coordinates = xmlDoc.createElement("coordinates");
+    OiVec xyz = this->getXYZ();
+    if(xyz.getSize() >= 3 && this->getIsSolved()){
+        coordinates.setAttribute("x", xyz.getAt(0));
+        coordinates.setAttribute("y", xyz.getAt(1));
+        coordinates.setAttribute("z", xyz.getAt(2));
+    }else{
+        coordinates.setAttribute("x", 0.0);
+        coordinates.setAttribute("y", 0.0);
+        coordinates.setAttribute("z", 0.0);
+    }
+    geometry.appendChild(coordinates);
+
+    //add standard deviation
+    QDomElement stdv = xmlDoc.createElement("standardDeviation");
+    if(this->getIsSolved()){
+        stdv.setAttribute("value", this->myStatistic.stdev);
+    }else{
+        stdv.setAttribute("value", 0.0);
+    }
+    geometry.appendChild(stdv);
+
+    //add observations
+    if(!this->getIsNominal() && this->myObservations.size() > 0){
+        QDomElement observations = xmlDoc.createElement("observations");
+        foreach(Observation *obs, this->myObservations){
+            QDomElement observation = xmlDoc.createElement("observation");
+            observation.setAttribute("ref", obs->getId());
+            observations.appendChild(observation);
+        }
+        geometry.appendChild(observations);
+    }
+
+    //add nominal system
+    if(this->getIsNominal() && this->myNominalCoordSys != NULL){
+        QDomElement nominalSystem = xmlDoc.createElement("nominalCoordinateSystem");
+        nominalSystem.setAttribute("ref", this->myNominalCoordSys->getId());
+        geometry.appendChild(nominalSystem);
+    }
+
+    //add corresponding actual geometry
+    if(this->getIsNominal() && this->myActual != NULL){
+        QDomElement actual = xmlDoc.createElement("actual");
+        actual.setAttribute("ref", this->myActual->getId());
+        geometry.appendChild(actual);
+    }
+
+    //add nominals
+    if(!this->getIsNominal() && this->nominals.size() >= 0){
+        QDomElement nominals = xmlDoc.createElement("nominalGeometries");
+        foreach(Geometry *geom, this->nominals){
+            if(geom != NULL){
+                QDomElement nominal = xmlDoc.createElement("geometry");
+                nominal.setAttribute("ref", geom->getId());
+                nominals.appendChild(nominal);
+            }
+        }
+        geometry.appendChild(nominals);
+    }
+
+    //add measurement config
+    if(!this->getIsNominal()){
+        QDomElement mConfig = xmlDoc.createElement("measurementConfig");
+        mConfig.setAttribute("name", this->mConfig.name);
+        geometry.appendChild(mConfig);
+    }
+
+    return geometry;
+
 }
 
 void Geometry::resetSimulationData()
