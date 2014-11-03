@@ -4,7 +4,7 @@
  * \brief LineFromPoints::getMetaData
  * \return
  */
-PluginMetaData* LineFromPoints::getMetaData(){
+PluginMetaData* LineFromPoints::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "LineFromPoints";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -20,7 +20,7 @@ PluginMetaData* LineFromPoints::getMetaData(){
  * \brief LineFromPoints::getNeededElements
  * \return
  */
-QList<InputParams> LineFromPoints::getNeededElements(){
+QList<InputParams> LineFromPoints::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -35,7 +35,7 @@ QList<InputParams> LineFromPoints::getNeededElements(){
  * \brief LineFromPoints::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> LineFromPoints::applicableFor(){
+QList<Configuration::FeatureTypes> LineFromPoints::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eLineFeature);
     return result;

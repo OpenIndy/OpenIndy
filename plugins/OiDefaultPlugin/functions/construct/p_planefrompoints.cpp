@@ -4,7 +4,7 @@
  * \brief PlaneFromPoints::getMetaData
  * \return
  */
-PluginMetaData* PlaneFromPoints::getMetaData(){
+PluginMetaData* PlaneFromPoints::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "PlaneFromPoints";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -20,7 +20,7 @@ PluginMetaData* PlaneFromPoints::getMetaData(){
  * \brief PlaneFromPoints::getNeededElements
  * \return
  */
-QList<InputParams> PlaneFromPoints::getNeededElements(){
+QList<InputParams> PlaneFromPoints::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -35,7 +35,7 @@ QList<InputParams> PlaneFromPoints::getNeededElements(){
  * \brief PlaneFromPoints::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> PlaneFromPoints::applicableFor(){
+QList<Configuration::FeatureTypes> PlaneFromPoints::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePlaneFeature);
     return result;

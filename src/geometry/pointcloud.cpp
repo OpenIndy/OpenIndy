@@ -146,9 +146,20 @@ void PointCloud::recalc(){
 
 }
 
-bool PointCloud::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief PointCloud::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement PointCloud::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    return false;
+    QDomElement pointCloud = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(pointCloud.isNull()){
+        return pointCloud;
+    }
+
+    pointCloud.setAttribute("type", Configuration::sPointCloud);
 }
 
 ElementDependencies PointCloud::fromOpenIndyXML(QXmlStreamReader &xml){

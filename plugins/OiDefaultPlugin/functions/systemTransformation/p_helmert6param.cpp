@@ -8,7 +8,7 @@ Helmert6Param::Helmert6Param()
  * \brief getMetaData
  * \return
  */
-PluginMetaData *Helmert6Param::getMetaData()
+PluginMetaData *Helmert6Param::getMetaData() const
 {
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "6ParameterHelmertTransformation";
@@ -80,7 +80,7 @@ bool Helmert6Param::exec(TrafoParam &tp)
  * \brief getNeededElements for this function
  * \return
  */
-QList<InputParams> Helmert6Param::getNeededElements()
+QList<InputParams> Helmert6Param::getNeededElements() const
 {
     QList<InputParams> result;
     InputParams param;
@@ -96,14 +96,14 @@ QList<InputParams> Helmert6Param::getNeededElements()
  * \brief This function isapplicable for the following features
  * \return
  */
-QList<Configuration::FeatureTypes> Helmert6Param::applicableFor()
+QList<Configuration::FeatureTypes> Helmert6Param::applicableFor() const
 {
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eTrafoParamFeature);
     return result;
 }
 
-QMap<QString, QStringList> Helmert6Param::getStringParameter()
+QMap<QString, QStringList> Helmert6Param::getStringParameter() const
 {
     QMap<QString,QStringList> result;
     QString key = "useTempComp";
@@ -119,7 +119,7 @@ QMap<QString, QStringList> Helmert6Param::getStringParameter()
  * \brief getResultProtocol returns the result protocol set by the function
  * \return
  */
-QStringList Helmert6Param::getResultProtocol()
+QStringList Helmert6Param::getResultProtocol() const
 {
     QStringList result;
 

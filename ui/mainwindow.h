@@ -46,11 +46,15 @@
 #include <QString>
 #include <QSignalMapper>
 
+#include <QtXml>
+
 #include "tablemodel.h"
 #include "featureattributesexchange.h"
 #include "guiconfiguration.h"
 
 #include "oifeaturestate.h"
+
+#include "oistakeoutmanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -95,6 +99,8 @@ public:
     RealTimeDataDialog rtDataDialog;
 
     WatchWindow *watchWindow;
+
+    OiStakeOutManager myStakeOutManager;
 
     //actions
     //create feature
@@ -162,6 +168,9 @@ signals:
     //TODO create a signal which will be emit every time if a new coordinate system was created and connect it to fillCoordSysComboBox()
     void sendActiveCoordSystem(QString coordSys);
     void sendDeleteFeatures(QList<FeatureWrapper*> myFeatures);
+
+    void startStakeOut(QDomDocument request); //emitted when the user has configured a stake out task
+    void nextStakeOutGeometry(); //emitted when the next geometry has to be selected
 
 public slots:
     void showMessageBox(QString title, QString message);
@@ -289,6 +298,14 @@ private slots:
     void on_actionSensor_real_time_data_triggered();
 
     void on_actionSimulation_triggered();
+
+    void on_treeView_featureOverview_clicked(const QModelIndex &index);
+
+    //stake out methods
+    void on_actionStart_stake_out_triggered();
+    void on_actionStop_stake_out_triggered();
+    void on_actionNext_triggered();
+    void stakeOutConfigured(QDomDocument request);
 
 private:
     Ui::MainWindow *ui;

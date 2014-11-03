@@ -207,6 +207,11 @@ void MainWindow::setConnects(){
     connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
     connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
 
+    //connect stake out manager
+    connect(&this->myStakeOutManager, SIGNAL(startStakeOut(QDomDocument)), this, SLOT(stakeOutConfigured(QDomDocument)));
+    connect(this, SIGNAL(startStakeOut(QDomDocument)), &this->control, SLOT(startStakeOut(QDomDocument)));
+    connect(this, SIGNAL(nextStakeOutGeometry()), &this->control, SLOT(nextStakeOutGeometry()));
+
 }
 
 /*!
@@ -1150,28 +1155,19 @@ void MainWindow::on_actionNominal_geometry_triggered()
 void MainWindow::on_actionSave_as_triggered(){
     try{
 
-        QString filename = QFileDialog::getSaveFileName(
-                             this,
-                             "Choose a filename to save under",
-                             "oiProject",
-                             "xml (*.xml)");
+        QString filename = QFileDialog::getSaveFileName(this, "Choose a filename to save under", "oiProject", "xml (*.xml)");
 
+        QFileInfo info(filename);
 
+        OiProjectData::setActiveProject(info.fileName(), new QFile(filename));
 
-          control.currentProject.setDevice(new QFile(filename));
+        bool isSuccessfull = this->control.saveProject();
 
-          QFileInfo info(filename);
-
-          control.currentProject.setProjectName(info.fileName());
-
-          //bool isSuccessfull = OiDataImporter::saveToXML(control.features,file,control.activeCoordinateSystem->id);
-          bool isSuccessfull = this->control.saveProject();
-
-          if(isSuccessfull){
-              QMessageBox::information(this,"save data", "Saving the data was successful.");
-          }else{
-              QMessageBox::information(this,"save data", "Saving the data was not successful.");
-          }
+        /*if(isSuccessfull){
+            QMessageBox::information(this,"save data", "Saving the data was successful.");
+        }else{
+            QMessageBox::information(this,"save data", "Saving the data was not successful.");
+        }*/
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -1192,7 +1188,7 @@ void MainWindow::changedStation(){
  */
 void MainWindow::on_actionOpen_triggered()
 {
-    QString filename = QFileDialog::getOpenFileName(
+    /*QString filename = QFileDialog::getOpenFileName(
                        this,
                        "Choose a filename to save under",
                        "oiProject",
@@ -1215,7 +1211,7 @@ void MainWindow::on_actionOpen_triggered()
     }
 
     //TODO set up sensorpad
-    //this->setupLaserTrackerPad();
+    //this->setupLaserTrackerPad();*/
 
 
 }
@@ -1701,4 +1697,61 @@ void MainWindow::on_actionSimulation_triggered()
 {
     simulationWidget.setFeatureUpdater(control.getFeatureUpdater());
     simulationWidget.show();
+}
+
+void MainWindow::on_treeView_featureOverview_clicked(const QModelIndex &index)
+{
+
+    QModelIndex source_index = this->control.featureGraphicsModel->getSourceIndex(index);
+
+    if(source_index.isValid()){
+        FeatureTreeItem *item = static_cast<FeatureTreeItem*>(source_index.internalPointer());
+
+         if (item != NULL && item->getIsFeature() && item->getFeature() != NULL){
+             item->getFeature()->getFeature()->setActiveFeatureState(true);
+         }
+    }
+
+
+}
+
+/*!
+ * \brief MainWindow::on_actionStart_stake_out_triggered
+ * Start stake out manager
+ */
+void MainWindow::on_actionStart_stake_out_triggered(){
+    this->myStakeOutManager.setModels(this->control.myPointFeatureProxyModel, this->control.myFeatureGroupsModel);
+    this->myStakeOutManager.open();
+}
+
+/*!
+ * \brief MainWindow::on_actionStop_stake_out_triggered
+ * Stop current stake out
+ */
+void MainWindow::on_actionStop_stake_out_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_actionNext_triggered
+ * Continue stake out with the next geometry
+ */
+void MainWindow::on_actionNext_triggered(){
+    emit this->nextStakeOutGeometry();
+}
+
+/*!
+ * \brief MainWindow::stakeOutConfigured
+ * Called from stake out manager when the user has configured the stake out task
+ * \param request
+ */
+void MainWindow::stakeOutConfigured(QDomDocument request){
+
+    //disable start stake out button + enable stop & next buttons
+    this->ui->actionNext->setEnabled(true);
+    this->ui->actionStart_stake_out->setEnabled(false);
+    this->ui->actionStop_stake_out->setEnabled(true);
+
+    emit this->startStakeOut(request);
+
 }

@@ -8,7 +8,7 @@ ExtendedTemperatureCompensation::ExtendedTemperatureCompensation()
  * \brief getMetaData of the function
  * \return
  */
-PluginMetaData *ExtendedTemperatureCompensation::getMetaData()
+PluginMetaData *ExtendedTemperatureCompensation::getMetaData() const
 {
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "9ParameterHelmertTransformation";
@@ -24,7 +24,7 @@ PluginMetaData *ExtendedTemperatureCompensation::getMetaData()
  * \brief getNeededElements of the function
  * \return
  */
-QList<InputParams> ExtendedTemperatureCompensation::getNeededElements()
+QList<InputParams> ExtendedTemperatureCompensation::getNeededElements() const
 {
     QList<InputParams> result;
     InputParams param;
@@ -39,7 +39,7 @@ QList<InputParams> ExtendedTemperatureCompensation::getNeededElements()
  * \brief applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> ExtendedTemperatureCompensation::applicableFor()
+QList<Configuration::FeatureTypes> ExtendedTemperatureCompensation::applicableFor() const
 {
    QList<Configuration::FeatureTypes> result;
    result.append(Configuration::eTrafoParamFeature);
@@ -199,7 +199,7 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
 * \brief getStringParameter gets all additionally needed string parameters for the function
 * \return
 */
-QMap<QString, QStringList> ExtendedTemperatureCompensation::getStringParameter()
+QMap<QString, QStringList> ExtendedTemperatureCompensation::getStringParameter() const
 {
     QMap<QString, QStringList> result;
 
@@ -210,7 +210,7 @@ QMap<QString, QStringList> ExtendedTemperatureCompensation::getStringParameter()
 * \brief getDoubleParameter gets all additionally needed double parameters for the function
 * \return
 */
-QMap<QString, double> ExtendedTemperatureCompensation::getDoubleParameter()
+QMap<QString, double> ExtendedTemperatureCompensation::getDoubleParameter() const
 {
     QMap<QString,double> result;
 
@@ -221,7 +221,7 @@ QMap<QString, double> ExtendedTemperatureCompensation::getDoubleParameter()
  * \brief getResultProtocol returns a protocoll of the function
  * \return
  */
-QStringList ExtendedTemperatureCompensation::getResultProtocol()
+QStringList ExtendedTemperatureCompensation::getResultProtocol() const
 {
     return this->protocol;
 }

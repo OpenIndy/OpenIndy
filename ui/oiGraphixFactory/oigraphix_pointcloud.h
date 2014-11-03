@@ -9,7 +9,8 @@ class OiGraphixPointCloud : public OiGraphixGeometry
 public:
     OiGraphixPointCloud(QList<Point_PC*> points);
 
-    void draw(GLfloat x, GLfloat y, GLfloat z);
+
+    void draw(Geometry *g);
 
 private:
     QList<Point_PC*> points;

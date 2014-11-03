@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql serialport network opengl
+QT       += core gui sql serialport network opengl xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -175,9 +175,16 @@ SOURCES += \
     ui/simulationtreeviewmodel.cpp \
     src/simulation/simulationdata.cpp \
     ui/oimultiselectionmodel.cpp \
-	ui/oiloadingdialog.cpp \
+    ui/oiloadingdialog.cpp \
+    controller/oiconfigstate.cpp \
     controller/networking/oiserver.cpp \
-    controller/networking/oinetworkconnection.cpp
+    controller/networking/oinetworkconnection.cpp \
+    controller/networking/oirequesthandler.cpp \
+    controller/networking/oirequestresponse.cpp \
+    controller/oistakeout.cpp \
+    ui/oistakeoutmanager.cpp \
+    ui/pointfeaturemodel.cpp \
+    ui/pointfeaturefiltermodel.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -317,9 +324,16 @@ HEADERS  += \
     src/simulation/simulationdata.h \
     src/plugin/pi_generatefeaturefunction.h \
     ui/oimultiselectionmodel.h \
-	ui/oiloadingdialog.h \
+    ui/oiloadingdialog.h \
+    controller/oiconfigstate.h \
     controller/networking/oiserver.h \
-    controller/networking/oinetworkconnection.h
+    controller/networking/oinetworkconnection.h \
+    controller/networking/oirequesthandler.h \
+    controller/networking/oirequestresponse.h \
+    controller/oistakeout.h \
+    ui/oistakeoutmanager.h \
+    ui/pointfeaturemodel.h \
+    ui/pointfeaturefiltermodel.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
@@ -339,6 +353,7 @@ FORMS    += ui/mainwindow.ui \
     ui/oisimulationwidget.ui \
     ui/stationinfodialog.ui \
     ui/realtimedatadialog.ui \
-    ui/oiloadingdialog.ui
+    ui/oiloadingdialog.ui \
+    ui/oistakeoutmanager.ui
 
 

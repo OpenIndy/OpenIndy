@@ -42,9 +42,32 @@ void ScalarEntityTemperature::recalc(){
 
 }
 
-bool ScalarEntityTemperature::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief ScalarEntityTemperature::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement ScalarEntityTemperature::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    return false;
+    QDomElement entityTemperature = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(entityTemperature.isNull()){
+        return entityTemperature;
+    }
+
+    entityTemperature.setAttribute("type", Configuration::sEntityTemperature);
+
+    //add temperature
+    QDomElement temperature = xmlDoc.createElement("temperature");
+    if(this->getIsSolved()){
+        temperature.setAttribute("value", this->temperature);
+    }else{
+        temperature.setAttribute("value", 0.0);
+    }
+    entityTemperature.appendChild(temperature);
+
+    return entityTemperature;
+
 }
 
 ElementDependencies ScalarEntityTemperature::fromOpenIndyXML(QXmlStreamReader &xml){

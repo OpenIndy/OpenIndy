@@ -44,7 +44,7 @@ QVariant FeatureGraphicsTreeViewProxyModel::data(const QModelIndex &index, int r
             FeatureTreeItem *item = static_cast<FeatureTreeItem*>(source_index.internalPointer());
             if(item != NULL && item->getIsFeature()){
                 if(OiFeatureState::getActiveFeature() != NULL && item->getFeature()->getFeature() == OiFeatureState::getActiveFeature()->getFeature()){
-                    return QColor(Qt::green);
+                   return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
                 }
                 if(item->getFeature()->getStation() != NULL){
                     return QColor(Qt::lightGray);
@@ -53,6 +53,13 @@ QVariant FeatureGraphicsTreeViewProxyModel::data(const QModelIndex &index, int r
         }
     }
     return this->sourceModel()->data(source_index, role);
+}
+
+QModelIndex FeatureGraphicsTreeViewProxyModel::getSourceIndex(const QModelIndex &index)
+{
+    QModelIndex source_index = this->mapToSource(index);
+
+    return source_index;
 }
 
 /*!

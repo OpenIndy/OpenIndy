@@ -14,14 +14,14 @@ class Helmert6Param : public SystemTransformation
 public:
     Helmert6Param();
 
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
     bool exec(TrafoParam&);
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
-    QMap<QString, QStringList> getStringParameter();
+    QMap<QString, QStringList> getStringParameter() const;
 
-    QStringList getResultProtocol();
+    QStringList getResultProtocol() const;
 
 private:
     bool svdError;

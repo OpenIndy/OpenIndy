@@ -2,8 +2,7 @@
 #define ELEMENT_H
 
 #include <QObject>
-#include <QXmlStreamWriter>
-#include <QXmlStreamReader>
+#include <QtXml>
 
 #include "elementdependencies.h"
 
@@ -23,7 +22,7 @@ public:
     int getId() const;
     bool setId(int id);
 
-    virtual bool toOpenIndyXML(QXmlStreamWriter& stream) = 0;
+    virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
 signals:

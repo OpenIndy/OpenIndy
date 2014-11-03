@@ -33,18 +33,18 @@ public:
 
     //-----get sensor capabilities-----
 
-    virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes() = 0;
-    virtual QList<Configuration::SensorFunctionalities> getSupportedSensorActions() = 0;
-    virtual QList<Configuration::ConnectionTypes>* getConnectionType() = 0;
+    virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes() const = 0;
+    virtual QList<Configuration::SensorFunctionalities> getSupportedSensorActions() const = 0;
+    virtual QList<Configuration::ConnectionTypes>* getConnectionType() const = 0;
 
     //get meta data
-    virtual PluginMetaData* getMetaData() = 0;
+    virtual PluginMetaData* getMetaData() const = 0;
 
     //individually defined sensor parameter
-    virtual QMap<QString,int>* getIntegerParameter() = 0;
-    virtual QMap<QString,double>* getDoubleParameter() = 0;
-    virtual QMap <QString, QStringList>* getStringParameter() = 0;
-    virtual QStringList selfDefinedActions() = 0;
+    virtual QMap<QString,int>* getIntegerParameter() const = 0;
+    virtual QMap<QString,double>* getDoubleParameter() const = 0;
+    virtual QMap <QString, QStringList>* getStringParameter() const = 0;
+    virtual QStringList selfDefinedActions() const = 0;
     virtual bool doSelfDefinedAction(QString a) = 0;
 
     /*default accuracy
@@ -55,7 +55,7 @@ public:
      * sigmaAngleXZ
      * sigmaAngleYZ
      */
-    virtual QMap<QString,double>* getDefaultAccuracy() = 0;
+    virtual QMap<QString,double>* getDefaultAccuracy() const = 0;
 
     //-----sensor actions-----
     //! abort a running action

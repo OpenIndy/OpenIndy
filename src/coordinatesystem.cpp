@@ -337,54 +337,69 @@ QString CoordinateSystem::getDisplayExpansionOriginZ() const
 
 /*!
  * \brief CoordinateSystem::toOpenIndyXML
- * \param stream
+ * \param xmlDoc
  * \return
  */
-bool CoordinateSystem::toOpenIndyXML(QXmlStreamWriter &stream){
+QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc){
 
-    stream.writeStartElement("coordinatesystem");
-    stream.writeAttribute("id", QString::number(this->id));
-    stream.writeAttribute("name", this->name);
-    stream.writeAttribute("solved", QString::number(this->isSolved));
+    QDomElement coordinateSystem = Feature::toOpenIndyXML(xmlDoc);
 
-    stream.writeStartElement("expansionOrigin");
-    stream.writeAttribute("x", QString::number(this->expansionOrigin.getAt(0)));
-    stream.writeAttribute("y", QString::number(this->expansionOrigin.getAt(1)));
-    stream.writeAttribute("z", QString::number(this->expansionOrigin.getAt(2)));
-    stream.writeEndElement();
-
-    stream.writeStartElement("observations");
-    foreach (Observation *obs, this->observations) {
-        obs->writeProxyObservations(stream);
-    }
-    stream.writeEndElement();
-
-    if(this->nominals.size() > 0){
-        stream.writeStartElement("nominalGeometries");
-        foreach (Geometry *geom, this->nominals) {
-            stream.writeStartElement("geometry");
-            stream.writeAttribute("ref", QString::number(geom->getId()));
-            stream.writeEndElement();
-        }
-        stream.writeEndElement();
+    if(coordinateSystem.isNull()){
+        return coordinateSystem;
     }
 
+    coordinateSystem.setTagName("coordinateSystem");
+
+    //add trafo params
     if(this->trafoParams.size() > 0){
-        stream.writeStartElement("transformationParameters");
-        for(int k =0;k<this->trafoParams.size();k++){
-            stream.writeStartElement("transformationParameter");
-            stream.writeAttribute("ref", QString::number(this->trafoParams.at(k)->getId()));
-            stream.writeEndElement();
+        QDomElement trafoParams = xmlDoc.createElement("transformationParameters");
+        foreach(TrafoParam *tp, this->trafoParams){
+            if(tp != NULL){
+                QDomElement trafoParam = xmlDoc.createElement("transformationParameter");
+                trafoParam.setAttribute("ref", tp->getId());
+                trafoParams.appendChild(trafoParam);
+            }
         }
-        stream.writeEndElement();
+        coordinateSystem.appendChild(trafoParams);
     }
 
-    this->writeFeatureAttributes(stream);
+    //add observations
+    if(this->observations.size() > 0){
+        QDomElement observations = xmlDoc.createElement("observations");
+        foreach(Observation *obs, this->observations){
+            if(obs != NULL){
+                QDomElement observation = xmlDoc.createElement("observation");
+                observation.setAttribute("ref", obs->getId());
+                observations.appendChild(observation);
+            }
+        }
+        coordinateSystem.appendChild(observations);
+    }
 
-    stream.writeEndElement();
+    //add nominals
+    if(this->nominals.size() > 0){
+        QDomElement nominals = xmlDoc.createElement("nominals");
+        foreach(Geometry *geom, this->nominals){
+            if(geom != NULL){
+                QDomElement nominal = xmlDoc.createElement("geometry");
+                nominal.setAttribute("ref", geom->getId());
+                nominals.appendChild(nominal);
+            }
+        }
+        coordinateSystem.appendChild(nominals);
+    }
 
+    //add expansion origin
+    if(this->expansionOrigin.getSize() >= 3){
+        QDomElement expansionOrigin = xmlDoc.createElement("expansionOrigin");
+        expansionOrigin.setAttribute("x", this->expansionOrigin.getAt(0));
+        expansionOrigin.setAttribute("y", this->expansionOrigin.getAt(1));
+        expansionOrigin.setAttribute("z", this->expansionOrigin.getAt(2));
+        coordinateSystem.appendChild(expansionOrigin);
+    }
 
-    return true;
+    return coordinateSystem;
+
 }
 
 /*!

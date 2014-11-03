@@ -43,9 +43,23 @@ void Nurbs::recalc(){
     }
 }
 
-bool Nurbs::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief Nurbs::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Nurbs::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    return false;
+    QDomElement nurbs = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(nurbs.isNull()){
+        return nurbs;
+    }
+
+    nurbs.setAttribute("type", Configuration::sNurbs);
+
+    return nurbs;
+
 }
 
 ElementDependencies Nurbs::fromOpenIndyXML(QXmlStreamReader &xml){

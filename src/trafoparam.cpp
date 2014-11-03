@@ -334,52 +334,62 @@ void TrafoParam::setisDatumTrafo(bool isDatumTrafo)
 
 /*!
  * \brief TrafoParam::toOpenIndyXML
- * \param stream
+ * \param xmlDoc
  * \return
  */
-bool TrafoParam::toOpenIndyXML(QXmlStreamWriter &stream){
+QDomElement TrafoParam::toOpenIndyXML(QDomDocument &xmlDoc){
 
-    stream.writeStartElement("transformationsparameter");
-    stream.writeAttribute("id", QString::number(this->id));
-    stream.writeAttribute("name", this->name);
-    stream.writeAttribute("solved", QString::number(this->isSolved));
-    stream.writeAttribute("tx", QString::number(this->translation.getAt(0)));
-    stream.writeAttribute("ty", QString::number(this->translation.getAt(1)));
-    stream.writeAttribute("tz", QString::number(this->translation.getAt(2)));
-    stream.writeAttribute("rx", QString::number(this->rotation.getAt(0)));
-    stream.writeAttribute("ry", QString::number(this->rotation.getAt(1)));
-    stream.writeAttribute("rz", QString::number(this->rotation.getAt(2)));
-    stream.writeAttribute("mx", QString::number(this->scale.getAt(0)));
-    stream.writeAttribute("my", QString::number(this->scale.getAt(1)));
-    stream.writeAttribute("mz", QString::number(this->scale.getAt(2)));
-    stream.writeAttribute("use",QString::number(this->use));
-    stream.writeAttribute("time", this->validTime.toLocalTime().toString());
-    stream.writeAttribute("movement", QString::number(this->isMovement));
-    stream.writeAttribute("datumtrafo", QString::number(this->isDatumTrafo));
+    QDomElement trafoParam = Feature::toOpenIndyXML(xmlDoc);
 
-    stream.writeStartElement("from");
-    stream.writeAttribute("ref", QString::number(this->from->getId()));
-    stream.writeEndElement();
+    if(trafoParam.isNull()){
+        return trafoParam;
+    }
 
-    stream.writeStartElement("to");
-    stream.writeAttribute("ref", QString::number(this->to->getId()));
-    stream.writeEndElement();
+    trafoParam.setTagName("transformationParameter");
 
+    //add trafoParam attributes
+    if(this->translation.getSize() >= 3 && this->rotation.getSize() >= 3 && this->getScale().getSize() >= 3){
+        trafoParam.setAttribute("tx", this->translation.getAt(0));
+        trafoParam.setAttribute("ty", this->translation.getAt(1));
+        trafoParam.setAttribute("tz", this->translation.getAt(2));
+        trafoParam.setAttribute("rx", this->rotation.getAt(0));
+        trafoParam.setAttribute("ry", this->rotation.getAt(1));
+        trafoParam.setAttribute("rz", this->rotation.getAt(2));
+        trafoParam.setAttribute("mx", this->scale.getAt(0));
+        trafoParam.setAttribute("my", this->scale.getAt(1));
+        trafoParam.setAttribute("mz", this->scale.getAt(2));
+    }
+    trafoParam.setAttribute("movement", this->isMovement);
+    trafoParam.setAttribute("datumtrafo", this->isDatumTrafo);
+    trafoParam.setAttribute("use", this->use);
+    trafoParam.setAttribute("time", this->validTime.toString(Qt::ISODate));
 
-    this->writeFeatureAttributes(stream);
+    //add from and to coordinate systems
+    if(this->from != NULL && this->to != NULL){
+        QDomElement from = xmlDoc.createElement("from");
+        from.setAttribute("ref", this->from->getId());
+        trafoParam.appendChild(from);
+        QDomElement to = xmlDoc.createElement("to");
+        to.setAttribute("ref", this->to->getId());
+        trafoParam.appendChild(to);
+    }
 
+    return trafoParam;
 
-    stream.writeEndElement();
-
-    return true;
 }
 
+/*!
+ * \brief TrafoParam::fromOpenIndyXML
+ * \param xml
+ * \return
+ */
 ElementDependencies TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;
+    dependencies.typeOfElement = Configuration::eTrafoParamElement;
 
+    //fill trafoParam attributes
     QXmlStreamAttributes attributes = xml.attributes();
-
     if(attributes.hasAttribute("name")){
         this->name = attributes.value("name").toString();
     }
@@ -418,7 +428,7 @@ ElementDependencies TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
         this->use = attributes.value("use").toInt();
     }
     if(attributes.hasAttribute("time")){
-        this->validTime = QDateTime::fromString(attributes.value("time").toString(),Qt::LocalDate);
+        this->validTime = QDateTime::fromString(attributes.value("time").toString(),Qt::ISODate);
     }
     if(attributes.hasAttribute("movement")){
         this->isMovement = attributes.value("movement").toInt();
@@ -427,97 +437,51 @@ ElementDependencies TrafoParam::fromOpenIndyXML(QXmlStreamReader &xml){
         this->isDatumTrafo = attributes.value("datumtrafo").toInt();
     }
 
-    /* Next element... */
     xml.readNext();
-    /*
-     * We're going to loop over the things because the order might change.
-     * We'll continue the loop until we hit an EndElement named transformationparameter.
-     */
-    while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
-            xml.name() == "transformationsparameter")) {
+
+    //fill trafoParam's values
+    while( !xml.atEnd() && xml.name().compare("transformationparameter") != 0 ){
+
         if(xml.tokenType() == QXmlStreamReader::StartElement) {
-            /* We've found first name. */
 
-            if(xml.name() == "from") {
+            if(xml.name().compare("from") == 0){
 
-
-                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
-                        xml.name() == "from")) {
-                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
-
-                        QXmlStreamAttributes fromAttributes = xml.attributes();
-
-                        if(fromAttributes.hasAttribute("ref")){
-
-                        }
-
-                    }
-
-                    xml.readNext();
+                QXmlStreamAttributes fromAttributes = xml.attributes();
+                if(fromAttributes.hasAttribute("ref")){
+                    dependencies.setFromSystem(fromAttributes.value("ref").toInt());
                 }
+                xml.readNext();
 
+            }else if(xml.name().compare("to") == 0){
 
-            }
-
-            if(xml.name() == "to") {
-
-
-                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
-                        xml.name() == "to")) {
-                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
-
-                        QXmlStreamAttributes toAttributes = xml.attributes();
-
-                        if(toAttributes.hasAttribute("ref")){
-                            CoordinateSystem *tmpCoord = new CoordinateSystem();
-                            tmpCoord->setId(toAttributes.value("ref").toInt());
-                            this->to = tmpCoord;
-                        }
-
-                    }
-
-                    xml.readNext();
+                QXmlStreamAttributes toAttributes = xml.attributes();
+                if(toAttributes.hasAttribute("ref")){
+                    dependencies.setToSystem(toAttributes.value("ref").toInt());
                 }
+                xml.readNext();
 
+            }else if(xml.name().compare("usedFor") == 0 || xml.name().compare("previouslyNeeded") == 0){
 
-            }
+                this->readFeatureAttributes(xml, dependencies);
+                xml.readNext();
 
-            if(xml.name() == "member"){
-
-                while(!(xml.tokenType() == QXmlStreamReader::EndElement &&
-                        xml.name() == "member")) {
-                    if(xml.tokenType() == QXmlStreamReader::StartElement) {
-
-                        QXmlStreamAttributes memberAttributes = xml.attributes();
-
-                        if(memberAttributes.hasAttribute("type")){
-
-                        this->readFeatureAttributes(xml,dependencies);
-
-                        }
-                    }
-                    /* ...and next... */
-                    xml.readNext();
-                }
-
-            }
-
-
-            if(xml.name() == "function"){
+            }else if(xml.name().compare("function") == 0){
 
                 this->readFunction(xml,dependencies);
+                xml.readNext();
 
+            }else{
+                xml.readNext();
             }
 
-
+        }else{
+            xml.readNext();
         }
-        /* ...and next... */
-        xml.readNext();
+
     }
 
-
-
     return dependencies;
+
 }
 
 QString TrafoParam::getDisplayStartSystem() const{
@@ -580,7 +544,7 @@ QString TrafoParam::getDisplayUse() const
 
 QString TrafoParam::getDisplayTime() const
 {
-    return this->validTime.toLocalTime().toString();
+    return this->validTime.toString(Qt::ISODate);
 }
 
 QString TrafoParam::getDisplayStdDev() const

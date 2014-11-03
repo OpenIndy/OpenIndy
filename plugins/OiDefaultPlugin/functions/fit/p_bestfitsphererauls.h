@@ -16,10 +16,10 @@
 class BestFitSphereRauls : public FitFunction
 {
 public:
-    PluginMetaData *getMetaData();
+    PluginMetaData *getMetaData() const;
     bool exec(Sphere&);
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
 private:
     QList<Observation *> myValidObservations;

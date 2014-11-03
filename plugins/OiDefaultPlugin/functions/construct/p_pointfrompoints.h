@@ -19,10 +19,10 @@ using namespace std;
 class PointFromPoints : public ConstructFunction
 {
 public:
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
     bool exec(Point&);
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
 private:
     void setUpPointResult(Point&);

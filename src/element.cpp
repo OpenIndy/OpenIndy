@@ -38,5 +38,23 @@ bool Element::setId(int id){
     return false;
 }
 
+/*!
+ * \brief Element::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Element::toOpenIndyXML(QDomDocument &xmlDoc) const{
+
+    if(xmlDoc.isNull()){
+        return QDomElement();
+    }
+
+    QDomElement element = xmlDoc.createElement("element");
+    element.setAttribute("id", this->getId());
+
+    return element;
+
+}
+
 
 

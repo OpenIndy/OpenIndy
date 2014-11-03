@@ -15,20 +15,20 @@ class SystemTransformation : public Function
 public:
     virtual ~SystemTransformation(){}
 
-    virtual QList<InputParams> getNeededElements() = 0;
+    virtual QList<InputParams> getNeededElements() const = 0;
 
     /*!
      * \brief applicableFor
      * Only applicable for Transformation Parameter Feature
      * \return
      */
-    QList<Configuration::FeatureTypes> applicableFor(){
+    QList<Configuration::FeatureTypes> applicableFor() const{
         QList<Configuration::FeatureTypes> result;
         result.append(Configuration::eTrafoParamFeature);
         return result;
     }
 
-    virtual PluginMetaData* getMetaData() = 0;
+    virtual PluginMetaData* getMetaData() const = 0;
 
     QList<Station> stations_startSystem;
     QList<CoordinateSystem> coordSystems_startSystem;

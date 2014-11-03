@@ -12,7 +12,7 @@ ProjectRestorer::ProjectRestorer(QObject *parent) :
  */
 bool ProjectRestorer::saveProject(OiProjectData &data){
 
-    if (!data.getDevice()->open(QIODevice::WriteOnly | QIODevice::Text)){
+    /*if (!data.getDevice()->open(QIODevice::WriteOnly | QIODevice::Text)){
         Console::addLine("Cannot open the device");
         return false;
     }
@@ -113,7 +113,7 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
 
     //write all trafoParam to xml
     Console::addLine("write transformationparamters to xml...");
-    stream.writeStartElement("transformationParameters");
+    stream.writeStartElement("transformationparameters");
     foreach(TrafoParam* t, this->trafoParams){
         t->toOpenIndyXML(stream);
     }
@@ -145,7 +145,7 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
         delete stationPosition;
     }
 
-    Console::addLine("saving completed");
+    Console::addLine("saving completed");*/
 
     return true;
 
@@ -158,16 +158,18 @@ bool ProjectRestorer::saveProject(OiProjectData &data){
  */
 bool ProjectRestorer::loadProject(OiProjectData &data){
 
-    if (!data.getDevice()->open(QIODevice::ReadOnly | QIODevice::Text)) {
+    /*if (!data.getDevice()->open(QIODevice::ReadOnly | QIODevice::Text)) {
         return false;
     }
 
-    this->clearAllLists();
+    this->clearAllLists(); //reset lists from a previous Save or Load
 
     QXmlStreamReader xml(data.getDevice());
 
     Console::addLine("load project from xml");
     while(!xml.atEnd() && !xml.hasError()) {
+
+        qDebug() << QString("%1").arg(xml.lineNumber());
 
         QXmlStreamReader::TokenType token = xml.readNext();
 
@@ -178,71 +180,53 @@ bool ProjectRestorer::loadProject(OiProjectData &data){
         if(token == QXmlStreamReader::StartElement) {
 
             if(xml.name().compare("observation") == 0) {
+
                 Observation *o = new Observation(NULL,NULL);
                 ElementDependencies d =  o->fromOpenIndyXML(xml);
-
                 this->dependencies.append(d);
                 this->observations.append(o);
-            }
 
-            if(xml.name().compare("activeCoordinatesystem") == 0){
+            }else if(xml.name().compare("activeCoordinatesystem") == 0){
+
                 if(xml.attributes().hasAttribute("ref")){
-                    activeCoordSystemId = xml.attributes().value("ref").toInt();
+                    this->activeCoordSystemId = xml.attributes().value("ref").toInt();
                 }
-            }
 
-            if(xml.name().compare("activeStation") == 0){
+            }else if(xml.name().compare("activeStation") == 0){
+
                 if(xml.attributes().hasAttribute("ref")){
-                    activeStationId = xml.attributes().value("ref").toInt();
+                    this->activeStationId = xml.attributes().value("ref").toInt();
                 }
-            }
 
-            /*if(xml.name().compare("member") == 0){
-                this->readOiProjectData(xml);
-            }*/
-
-            if(xml.name().compare("station") == 0){
+            }else if(xml.name().compare("station") == 0){
 
                 Station *s = new Station("");
                 ElementDependencies d = s->fromOpenIndyXML(xml);
-
-                stationElements.append(d.getStationCoordSystem());
-                stationElements.append(d.getStationPosition());
-
+                this->stationElements.append(d.getStationCoordSystem());
+                this->stationElements.append(d.getStationPosition());
                 this->stations.append(s);
                 this->dependencies.append(d);
 
-            }
-
-            if(xml.name().compare("coordinatesystem") == 0){
+            }else if(xml.name().compare("coordinatesystem") == 0){
 
                 CoordinateSystem *cs = new CoordinateSystem();
                 ElementDependencies d = cs->fromOpenIndyXML(xml);
-
                 this->coordSystems.append(cs);
                 this->dependencies.append(d);
 
-            }
-
-            if(xml.name().compare("geometry") == 0){
+            }else if(xml.name().compare("geometry") == 0){
 
                 QXmlStreamAttributes attributes = xml.attributes();
-
                 QString geometryType;
-
                 if(attributes.hasAttribute("type")){
                    geometryType = attributes.value("type").toString();
                 }
-
                 this->addGeometryToList(Configuration::getElementTypeEnum(geometryType), xml);
 
-            }
-
-            if(xml.name().compare("transformationparameter") == 0){
+            }else if(xml.name().compare("transformationparameter") == 0){
 
                 TrafoParam* t = new TrafoParam();
                 ElementDependencies d = t->fromOpenIndyXML(xml);
-
                 this->trafoParams.append(t);
                 this->dependencies.append(d);
             }
@@ -250,23 +234,17 @@ bool ProjectRestorer::loadProject(OiProjectData &data){
     }
 
     if(xml.hasError()) {
-
         Console::addLine(QString("xml not valid: " + xml.errorString()));
         data.getDevice()->close();
         return false;
     }
 
      data.getDevice()->close();
+
      Console::addLine("resolve dependencies");
+     this->resolveDependencies(data);*/
 
-     /*foreach(Station* s, this->stations){
-         this->stationElements.append(s->position->getId());
-         this->stationElements.append(s->coordSys->getId());
-     }*/
-
-     this->resolveDependencies(data);
      return true;
-
 
 }
 
@@ -299,6 +277,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwp->setPoint(p);
 
         this->geometries.append(fwp);
+        this->features.append(fwp);
         this->dependencies.append(dp);
         break;
 
@@ -311,6 +290,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwpl->setPlane(pl);
 
         this->geometries.append(fwpl);
+        this->features.append(fwpl);
         this->dependencies.append(dpl);
         break;
 
@@ -323,6 +303,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwsp->setSphere(sp);
 
         this->geometries.append(fwsp);
+        this->features.append(fwsp);
         this->dependencies.append(dsp);
         break;
 
@@ -335,6 +316,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwl->setLine(l);
 
         this->geometries.append(fwl);
+        this->features.append(fwl);
         this->dependencies.append(dl);
         break;
 
@@ -347,6 +329,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwsAngle->setScalarEntityAngle(sAngle);
 
         this->geometries.append(fwsAngle);
+        this->features.append(fwsAngle);
         this->dependencies.append(dsAngle);
         break;
 
@@ -359,6 +342,7 @@ void ProjectRestorer::addGeometryToList(Configuration::ElementTypes typeOfElemen
         fwsDistance->setScalarEntityDistance(sDistance);
 
         this->geometries.append(fwsDistance);
+        this->features.append(fwsDistance);
         this->dependencies.append(dsDistance);
         break;
 
@@ -447,12 +431,15 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
         switch (d.typeOfElement) {
         case (Configuration::eStationElement):{
             this->resolveStation(resolvedFeature,d);
+            this->features.append(resolvedFeature);
             break;
         }case (Configuration::eCoordinateSystemElement):{
             this->resolveCoordinateSystem(resolvedFeature,d);
+            this->features.append(resolvedFeature);
             break;
         }case (Configuration::eTrafoParamElement):{
             this->resolveTrafoParam(resolvedFeature,d);
+            this->features.append(resolvedFeature);
             break;
         }case (Configuration::eObservationElement):{
             this->resolveObservation(d);
@@ -463,20 +450,35 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
         }
 
         if(d.typeOfElement != Configuration::eObservationElement && !this->stationElements.contains(d.elementID)){
-           OiFeatureState::addFeature(resolvedFeature);
+            OiFeatureState::addFeature(resolvedFeature);
 
-           if(resolvedFeature->getStation()!=NULL && resolvedFeature->getFeature()->getId() == activeStationId){
-               resolvedFeature->getStation()->setActiveStationState(true);
+            if(resolvedFeature->getStation()!=NULL && resolvedFeature->getFeature()->getId() == activeStationId){
+                resolvedFeature->getStation()->setActiveStationState(true);
 
-               if(resolvedFeature->getStation()->coordSys !=NULL && resolvedFeature->getStation()->coordSys->getId() == activeCoordSystemId){
-                   resolvedFeature->getStation()->coordSys->setActiveCoordinateSystemState(true);
-               }
-           }
+                if(resolvedFeature->getStation()->coordSys !=NULL && resolvedFeature->getStation()->coordSys->getId() == activeCoordSystemId){
+                    resolvedFeature->getStation()->coordSys->setActiveCoordinateSystemState(true);
+                }
+            }
 
-           if(resolvedFeature->getCoordinateSystem()!=NULL && resolvedFeature->getFeature()->getId() == activeCoordSystemId){
-               resolvedFeature->getCoordinateSystem()->setActiveCoordinateSystemState(true);
-           }
+            if(resolvedFeature->getCoordinateSystem()!=NULL && resolvedFeature->getFeature()->getId() == activeCoordSystemId){
+                resolvedFeature->getCoordinateSystem()->setActiveCoordinateSystemState(true);
+            }
+
         }
+    }
+
+    /*
+     * add references to usedFor and previouslyNeeded features here
+     * because now all features are in the features list
+     */
+    foreach(ElementDependencies d, this->dependencies){
+
+        FeatureWrapper *myFeature = this->findFeature(d.elementID);
+        if(myFeature != NULL && myFeature->getFeature() != NULL){
+            this->addUsedFor(myFeature, d);
+            this->addPreviouslyNeeded(myFeature, d);
+        }
+
     }
 
     OiFeatureState::sortFeaturesById();
@@ -486,7 +488,7 @@ void ProjectRestorer::resolveDependencies(OiProjectData &data){
 void ProjectRestorer::resolveFeature(FeatureWrapper *fw, ElementDependencies &d)
 {
 
-    QMap<QString,QList<int>* > featureDependencies = d.getfeatureDependencies();
+    /*QMap<QString,QList<int>* > featureDependencies = d.getfeatureDependencies();
 
     QList<int>* usedForFeature = featureDependencies.value("usedForFeature");
     QList<int>* previouslyNeeded = featureDependencies.value("previouslyNeeded");
@@ -507,7 +509,7 @@ void ProjectRestorer::resolveFeature(FeatureWrapper *fw, ElementDependencies &d)
                 fw->getFeature()->previouslyNeeded.append(pnf);
             }
         }
-    }
+    }*/
 
     foreach(Function* f, this->resolveFunctions(d)){
         fw->getFeature()->addFunction(f);
@@ -607,8 +609,13 @@ void ProjectRestorer::resolveStation(FeatureWrapper *fw, ElementDependencies &d)
 
 }
 
-void ProjectRestorer::resolveTrafoParam(FeatureWrapper *fw, ElementDependencies &d)
-{
+/*!
+ * \brief ProjectRestorer::resolveTrafoParam
+ * \param fw
+ * \param d
+ */
+void ProjectRestorer::resolveTrafoParam(FeatureWrapper *fw, ElementDependencies &d){
+
     foreach(TrafoParam* t, this->trafoParams){
         if(t->getId() == d.elementID){
             fw->setTrafoParam(t);
@@ -616,7 +623,17 @@ void ProjectRestorer::resolveTrafoParam(FeatureWrapper *fw, ElementDependencies 
         }
     }
 
-    this->resolveFeature(fw,d);
+    if(fw->getTrafoParam() != NULL){
+        CoordinateSystem *fromSystem = this->findCoordSys(d.getFromSystem());
+        CoordinateSystem *toSystem = this->findCoordSys(d.getToSystem());
+        if(fromSystem != NULL && toSystem != NULL){
+            fw->getTrafoParam()->setCoordinateSystems(fromSystem, toSystem);
+            fromSystem->addTransformationParameter(fw->getTrafoParam());
+            toSystem->addTransformationParameter(fw->getTrafoParam());
+        }
+
+        this->resolveFeature(fw,d);
+    }
 
 }
 
@@ -745,6 +762,54 @@ QList<Function *> ProjectRestorer::resolveFunctions(ElementDependencies &d)
   }
 
   return featureFunctions;
+
+}
+
+/*!
+ * \brief ProjectRestorer::addUsedFor
+ * \param f
+ * \param d
+ */
+void ProjectRestorer::addUsedFor(FeatureWrapper *f, ElementDependencies &d){
+
+    QList<int> usedFor = d.getUsedFor();
+    if(f != NULL && f->getFeature() != NULL && usedFor.size() > 0){
+
+        //get all features and add them as usedFor features
+        for(int i = 0; i < usedFor.size(); i++){
+
+            FeatureWrapper *myFeature = this->findFeature(usedFor.at(i));
+            if(myFeature != NULL && myFeature->getFeature() != NULL){
+                f->getFeature()->usedFor.append(myFeature);
+            }
+
+        }
+
+    }
+
+}
+
+/*!
+ * \brief ProjectRestorer::addPreviouslyNeeded
+ * \param f
+ * \param d
+ */
+void ProjectRestorer::addPreviouslyNeeded(FeatureWrapper *f, ElementDependencies &d){
+
+    QList<int> previouslyNeeded = d.getPreviouslyNeeded();
+    if(f != NULL && f->getFeature() != NULL && previouslyNeeded.size() > 0){
+
+        //get all features and add them as previouslyNeeded features
+        for(int i = 0; i < previouslyNeeded.size(); i++){
+
+            FeatureWrapper *myFeature = this->findFeature(previouslyNeeded.at(i));
+            if(myFeature != NULL && myFeature->getFeature() != NULL){
+                f->getFeature()->previouslyNeeded.append(myFeature);
+            }
+
+        }
+
+    }
 
 }
 

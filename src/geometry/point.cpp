@@ -71,36 +71,23 @@ void Point::recalc(){
 
 }
 
-bool Point::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief Point::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Point::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    //---------------common geometry attributes--------------
-    stream.writeStartElement("geometry");
-    stream.writeAttribute("id", QString::number(this->id));
-    stream.writeAttribute("name", this->name);
-    stream.writeAttribute("type", Configuration::sPoint);
-    stream.writeAttribute("nominal",QString::number(this->isNominal));
-    stream.writeAttribute("common",QString::number(this->isCommon));
-    stream.writeAttribute("solved", QString::number(this->isSolved));
-    stream.writeAttribute("group", this->group);
-    stream.writeAttribute("comment", this->comment);
+    QDomElement point = Geometry::toOpenIndyXML(xmlDoc);
 
-    //---------------specific geometry attributes--------------
-    if(this->isSolved || this->isNominal){
-        stream.writeStartElement("coordinates");
-        stream.writeAttribute("x", QString::number(this->xyz.getAt(0)));
-        stream.writeAttribute("y", QString::number(this->xyz.getAt(1)));
-        stream.writeAttribute("z", QString::number(this->xyz.getAt(2)));
-        stream.writeEndElement();
-
-        stream.writeStartElement("standardDeviation");
-        stream.writeAttribute("value", QString::number(this->myStatistic.stdev));
-        stream.writeEndElement();
+    if(point.isNull()){
+        return point;
     }
-    this->writeGeometryAttributes(stream);
 
-    stream.writeEndElement();
+    point.setAttribute("type", Configuration::sPoint);
 
-    return true;
+    return point;
+
 }
 
 /*!

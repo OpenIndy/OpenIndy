@@ -65,9 +65,23 @@ void Cone::recalc(){
 
 }
 
-bool Cone::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief Cone::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Cone::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    return false;
+    QDomElement cone = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(cone.isNull()){
+        return cone;
+    }
+
+    cone.setAttribute("type", Configuration::sCone);
+
+    return cone;
+
 }
 
 ElementDependencies Cone::fromOpenIndyXML(QXmlStreamReader &xml){

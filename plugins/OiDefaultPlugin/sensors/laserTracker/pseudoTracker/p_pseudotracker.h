@@ -20,16 +20,16 @@ public:
 
     PseudoTracker();
 
-    QList<Configuration::ReadingTypes>* getSupportedReadingTypes();
-    QList<Configuration::SensorFunctionalities> getSupportedSensorActions();
-    QList<Configuration::ConnectionTypes>* getConnectionType();
+    QList<Configuration::ReadingTypes>* getSupportedReadingTypes() const;
+    QList<Configuration::SensorFunctionalities> getSupportedSensorActions() const;
+    QList<Configuration::ConnectionTypes>* getConnectionType() const;
 
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
 
-    QMap<QString,int>* getIntegerParameter();
-    QMap<QString,double>* getDoubleParameter();
-    QMap <QString, QStringList>* getStringParameter();
-    QStringList selfDefinedActions();
+    QMap<QString,int>* getIntegerParameter() const;
+    QMap<QString,double>* getDoubleParameter() const;
+    QMap <QString, QStringList>* getStringParameter() const;
+    QStringList selfDefinedActions() const;
     bool doSelfDefinedAction(QString a);
 
     /*default accuracy
@@ -42,7 +42,7 @@ public:
      * sigmaAngleXZ
      * sigmaAngleYZ
      */
-    QMap<QString,double>* getDefaultAccuracy();
+    QMap<QString,double>* getDefaultAccuracy() const;
 
     //! abort a running action
     void abortAction();

@@ -12,10 +12,10 @@ class BestFitCircle : public FitFunction
 public:
     BestFitCircle();
 
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
     bool exec(Circle &circle);
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
 private:
     int getObservationCount();

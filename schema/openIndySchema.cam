@@ -14,8 +14,8 @@
   </as:Header>
   <as:AssemblyStructure>
     <as:Structure ID="NewFile" taxonomy="XML" reference="">
-      <oiProjectData name="%string%" date="%YYYY-MM-DD:HH:MM:SS%" idcount="%12345%">
-        <activeCoordinatesystem ref="%12345%" />
+      <oiProjectData name="%string%" date="%YYYY-MM-DD:HH:MM:SS%" idCount="%12345%">
+        <activeCoordinateSystem ref="%12345%" />
         <activeStation ref="%12345%" />
         <stations>
           <station id="%12345%" name="%string%">
@@ -32,14 +32,14 @@
               </sensor>
             </usedSensors>
             <position ref="%12345%" />
-            <coordinatesystem ref="%12345%" />
+            <coordinateSystem ref="%12345%" />
             <usedFor>
               <feature ref="%12345%" />
             </usedFor>
           </station>
         </stations>
-        <coordinatesystems>
-          <coordinatesystem id="%12345%" name="%string%" solved="%true%">
+        <coordinateSystems>
+          <coordinateSystem id="%12345%" name="%string%" solved="%true%">
             <expansionOrigin x="%1245.00%" y="%1245.00%" z="%1245.00%" />
             <transformationParameters>
               <transformationParameter ref="%string%" />
@@ -51,10 +51,19 @@
               <geometry ref="%12345%" />
             </nominalGeometries>
             <functions>
-              <function name="%string%" plugin="%string%" executionIndex="%12345%">
+              <function name="%string%" plugin="%string%" executionIndex="%12345%" type="%string%">
                 <inputElements>
                   <element index="%12345%" type="%string%" ref="%12345%" />
                 </inputElements>
+                <integerParameters>
+                  <parameter value="%12345%" />
+                </integerParameters>
+                <doubleParameters>
+                  <parameter value="%1111.0000%" />
+                </doubleParameters>
+                <stringParameters>
+                  <parameter value="%string%" />
+                </stringParameters>
               </function>
             </functions>
             <usedFor>
@@ -63,10 +72,10 @@
             <previouslyNeeded>
               <feature ref="%12345%" />
             </previouslyNeeded>
-          </coordinatesystem>
-        </coordinatesystems>
-        <transformationparameters>
-          <transformationparameter id="%12345%" name="%string%" solved="%true%" tx="%1245.00%" ty="%1245.00%" tz="%1245.00%" rx="%1245.00%" ry="%1245.00%" rz="%1245.00%" mx="%1245.00%" my="%1245.00%" mz="%1245.00%" use="%true%" movement="%true%" datumtrafo="%true%" time="%HH:MM:SS%">
+          </coordinateSystem>
+        </coordinateSystems>
+        <transformationParameters>
+          <transformationParameter id="%12345%" name="%string%" solved="%true%" tx="%1245.00%" ty="%1245.00%" tz="%1245.00%" rx="%1245.00%" ry="%1245.00%" rz="%1245.00%" mx="%1245.00%" my="%1245.00%" mz="%1245.00%" use="%true%" movement="%true%" datumTransformation="%true%" time="%HH:MM:SS%">
             <from ref="%12345%" />
             <to ref="%12345%" />
             <functions>
@@ -74,6 +83,15 @@
                 <inputElements>
                   <element index="%12345%" type="%string%" ref="%12345%" />
                 </inputElements>
+                <integerParameters>
+                  <parameter value="%12345%" />
+                </integerParameters>
+                <doubleParameters>
+                  <parameter value="%1111.0000%" />
+                </doubleParameters>
+                <stringParameters>
+                  <parameter value="%string%" />
+                </stringParameters>
               </function>
             </functions>
             <usedFor>
@@ -82,26 +100,39 @@
             <previouslyNeeded>
               <feature ref="%12345%" />
             </previouslyNeeded>
-          </transformationparameter>
-        </transformationparameters>
+          </transformationParameter>
+        </transformationParameters>
         <geometries>
           <geometry id="%12345%" name="%string%" type="%string%" nominal="%true%" common="%true%" solved="%true%">
-            <coordinates x="%1245.00%" y="%1245.00%" z="%1245.00%" sigmaX="%1245.00%" sigmaY="%1245.00%" sigmaZ="%1245.00%" />
+            <coordinates x="%1245.00%" y="%1245.00%" z="%1245.00%" />
             <spatialDirection i="%1245.00%" j="%1245.00%" k="%1245.00%" />
-            <radius r="%1245.00%" sr="%1245.00%" />
+            <radius value="%1245.00%" />
+            <distance value="%1245.00%" />
+            <angle value="%1111.0000%" />
+            <seriesValue value="%1111.0000%" />
+            <temperature value="%1111.0000%" />
             <standardDeviation value="%1245.00%" />
             <observations>
               <observations ref="%12345%" />
             </observations>
-            <coordinatesystem ref="%string%" />
+            <nominalCoordinateSystem ref="%string%" />
             <functions>
               <function name="%string%" plugin="%string%" executionIndex="%12345%" type="%string%">
                 <inputElements>
                   <inputElement index="%12345%" type="%string%" ref="%12345%" />
                 </inputElements>
+                <integerParameters>
+                  <parameter value="%12345%" />
+                </integerParameters>
+                <doubleParameters>
+                  <parameter value="%1111.0000%" />
+                </doubleParameters>
+                <stringParameters>
+                  <parameter value="%string%" />
+                </stringParameters>
               </function>
             </functions>
-            <measurementconfig name="%string%" />
+            <measurementConfig name="%string%" />
             <usedFor>
               <feature ref="%12345%" />
             </usedFor>
@@ -111,6 +142,7 @@
             <nominalGeometries>
               <geometry ref="%string%" />
             </nominalGeometries>
+            <actual ref="%12345%" />
           </geometry>
         </geometries>
         <observations>
@@ -130,24 +162,25 @@
     <as:Rules>
       <as:default>
         <as:context>
-          <as:constraint action="setNumberMask(//activeCoordinatesystem/@ref,#######)" />
+          <as:constraint action="setNumberMask(//activeCoordinateSystem/@ref,#######)" />
           <as:constraint action="setNumberMask(//activeStation/@ref,#######)" />
-          <as:constraint action="setNumberMask(//coordinates/@sigmaX,######.####)" />
-          <as:constraint action="setNumberMask(//coordinates/@sigmaY,######.####)" />
-          <as:constraint action="setNumberMask(//coordinates/@sigmaZ,######.####)" />
+          <as:constraint action="setNumberMask(//actual/@ref,#######)" />
+          <as:constraint action="setNumberMask(//angle/@value,######.####)" />
+          <as:constraint action="setNumberMask(//coordinateSystem/@id,#######)" />
+          <as:constraint action="setNumberMask(//coordinateSystem/@ref,#######)" />
+          <as:constraint action="datatype(//coordinateSystem/@solved,boolean)" />
+          <as:constraint action="makeOptional(//coordinateSystem/expansionOrigin)" />
+          <as:constraint action="makeOptional(//coordinateSystem/functions)" />
+          <as:constraint action="makeOptional(//coordinateSystem/nominalGeometries)" />
+          <as:constraint action="makeOptional(//coordinateSystem/observations)" />
+          <as:constraint action="makeOptional(//coordinateSystem/previouslyNeeded)" />
+          <as:constraint action="makeOptional(//coordinateSystem/usedFor)" />
+          <as:constraint action="makeRepeatable(//coordinateSystems/coordinateSystem)" />
           <as:constraint action="setNumberMask(//coordinates/@x,######.####)" />
           <as:constraint action="setNumberMask(//coordinates/@y,######.####)" />
           <as:constraint action="setNumberMask(//coordinates/@z,######.####)" />
-          <as:constraint action="setNumberMask(//coordinatesystem/@id,#######)" />
-          <as:constraint action="setNumberMask(//coordinatesystem/@ref,#######)" />
-          <as:constraint action="datatype(//coordinatesystem/@solved,boolean)" />
-          <as:constraint action="makeOptional(//coordinatesystem/expansionOrigin)" />
-          <as:constraint action="makeOptional(//coordinatesystem/functions)" />
-          <as:constraint action="makeOptional(//coordinatesystem/nominalGeometries)" />
-          <as:constraint action="makeOptional(//coordinatesystem/observations)" />
-          <as:constraint action="makeOptional(//coordinatesystem/previouslyNeeded)" />
-          <as:constraint action="makeOptional(//coordinatesystem/usedFor)" />
-          <as:constraint action="makeRepeatable(//coordinatesystems/coordinatesystem)" />
+          <as:constraint action="setNumberMask(//distance/@value,######.##)" />
+          <as:constraint action="makeRepeatable(//doubleParameters/parameter)" />
           <as:constraint action="setNumberMask(//element/@index,#######)" />
           <as:constraint action="setNumberMask(//element/@ref,#######)" />
           <as:constraint action="makeRepeatable(//elements/element)" />
@@ -157,29 +190,41 @@
           <as:constraint action="setNumberMask(//feature/@ref,#######)" />
           <as:constraint action="setNumberMask(//from/@ref,#######)" />
           <as:constraint action="setNumberMask(//function/@executionIndex,#######)" />
+          <as:constraint action="makeOptional(//function/doubleParameters)" />
           <as:constraint action="makeOptional(//function/inputElements)" />
+          <as:constraint action="makeOptional(//function/integerParameters,)" />
+          <as:constraint action="makeOptional(//function/stringParameters)" />
           <as:constraint action="makeRepeatable(//functions/function)" />
+          <as:constraint action="makeOptional(//functions/function,)" />
           <as:constraint action="makeRepeatable(//geometries/geometry)" />
           <as:constraint action="datatype(//geometry/@common,boolean)" />
           <as:constraint action="setNumberMask(//geometry/@id,#######)" />
           <as:constraint action="datatype(//geometry/@nominal,boolean)" />
           <as:constraint action="setNumberMask(//geometry/@ref,#######)" />
           <as:constraint action="datatype(//geometry/@solved,boolean)" />
+          <as:constraint action="makeOptional(//geometry/actual)" />
+          <as:constraint action="makeOptional(//geometry/angle)" />
+          <as:constraint action="makeOptional(//geometry/distance)" />
           <as:constraint action="makeOptional(//geometry/functions)" />
-          <as:constraint action="makeOptional(//geometry/measurementconfig)" />
+          <as:constraint action="makeOptional(//geometry/measurementConfig)" />
           <as:constraint action="makeOptional(//geometry/observations)" />
           <as:constraint action="makeOptional(//geometry/previouslyNeeded)" />
           <as:constraint action="makeOptional(//geometry/radius)" />
+          <as:constraint action="makeOptional(//geometry/seriesValue)" />
           <as:constraint action="makeOptional(//geometry/spatialDirection)" />
+          <as:constraint action="makeOptional(//geometry/temperature,)" />
           <as:constraint action="makeOptional(//geometry/usedFor)" />
           <as:constraint action="setNumberMask(//inputElement/@index,#######)" />
           <as:constraint action="setNumberMask(//inputElement/@ref,#######)" />
           <as:constraint action="makeRepeatable(//inputElements/inputElement)" />
+          <as:constraint action="makeRepeatable(//integerParameters/parameter)" />
           <as:constraint action="setNumberMask(//measurement/@sigma,####.######)" />
           <as:constraint action="setDateMask(//measurement/@time,hh:mm:ss)" />
           <as:constraint action="setNumberMask(//measurement/@value,####.######)" />
           <as:constraint action="makeRepeatable(//measurements/measurement)" />
+          <as:constraint action="setNumberMask(//nominalCoordinateSystem/@ref,#######)" />
           <as:constraint action="makeRepeatable(//nominalGeometries/geometry)" />
+          <as:constraint action="makeOptional(//nominalGeometries/geometry,)" />
           <as:constraint action="setNumberMask(//observation/@id,#######)" />
           <as:constraint action="datatype(//observation/@isValid,boolean)" />
           <as:constraint action="setNumberMask(//observation/@ref,#######)" />
@@ -191,18 +236,21 @@
           <as:constraint action="setNumberMask(//observation/@z,####.######)" />
           <as:constraint action="setNumberMask(//observations/@ref,#######)" />
           <as:constraint action="makeRepeatable(//observations/observation)" />
+          <as:constraint action="makeOptional(//observations/observation,)" />
           <as:constraint action="makeRepeatable(//observations/observations)" />
           <as:constraint action="datatype(//oiProjectData/@date,dateTime)" />
-          <as:constraint action="setNumberMask(//oiProjectData/@idcount,#######)" />
+          <as:constraint action="setNumberMask(//oiProjectData/@idCount,#######)" />
           <as:constraint action="makeOptional(//oiProjectData/observations)" />
-          <as:constraint action="makeOptional(//oiProjectData/transformationparameters)" />
+          <as:constraint action="makeOptional(//oiProjectData/transformationParameters)" />
+          <as:constraint action="setNumberMask(//parameter/@value,#######)" />
+          <as:constraint action="setNumberMask(//parameter/@value,######.####)" />
           <as:constraint action="setNumberMask(//position/@ref,#######)" />
           <as:constraint action="makeRepeatable(//previouslyNeeded/feature)" />
-          <as:constraint action="setNumberMask(//radius/@r,####.######)" />
-          <as:constraint action="setNumberMask(//radius/@sr,####.######)" />
+          <as:constraint action="makeOptional(//previouslyNeeded/feature,)" />
           <as:constraint action="setNumberMask(//reading/@id,#######)" />
           <as:constraint action="datatype(//reading/@time,dateTime)" />
           <as:constraint action="makeRepeatable(//readingTypes/type)" />
+          <as:constraint action="setNumberMask(//seriesValue/@value,######.####)" />
           <as:constraint action="setNumberMask(//spatialDirection/@i,######.####)" />
           <as:constraint action="setNumberMask(//spatialDirection/@j,######.####)" />
           <as:constraint action="setNumberMask(//spatialDirection/@k,####.######)" />
@@ -210,31 +258,38 @@
           <as:constraint action="setNumberMask(//station/@id,#######)" />
           <as:constraint action="setNumberMask(//station/@ref,#######)" />
           <as:constraint action="makeOptional(//station/activeSensor,)" />
+          <as:constraint action="makeOptional(//station/activeSensor,)" />
           <as:constraint action="makeOptional(//station/usedFor)" />
+          <as:constraint action="makeOptional(//station/usedSensors,)" />
           <as:constraint action="makeRepeatable(//stations/station)" />
+          <as:constraint action="makeRepeatable(//stringParameters/parameter)" />
+          <as:constraint action="setNumberMask(//temperature/@value,######.####)" />
           <as:constraint action="setNumberMask(//to/@ref,#######)" />
+          <as:constraint action="datatype(//transformationParameter/@datumTransformation,boolean)" />
+          <as:constraint action="setNumberMask(//transformationParameter/@id,#######)" />
+          <as:constraint action="datatype(//transformationParameter/@movement,boolean)" />
+          <as:constraint action="setNumberMask(//transformationParameter/@mx,######.##)" />
+          <as:constraint action="setNumberMask(//transformationParameter/@my,######.##)" />
+          <as:constraint action="setNumberMask(//transformationParameter/@mz,######.##)" />
+          <as:constraint action="setNumberMask(//transformationParameter/@rx,######.##)" />
+          <as:constraint action="setNumberMask(//transformationParameter/@ry,######.##)" />
+          <as:constraint action="setNumberMask(//transformationParameter/@rz,######.##)" />
+          <as:constraint action="datatype(//transformationParameter/@solved,boolean)" />
+          <as:constraint action="setDateMask(//transformationParameter/@time,hh:mm:ss)" />
+          <as:constraint action="setNumberMask(//transformationParameter/@tx,######.##)" />
+          <as:constraint action="setNumberMask(//transformationParameter/@ty,######.##)" />
+          <as:constraint action="setNumberMask(//transformationParameter/@tz,######.##)" />
+          <as:constraint action="datatype(//transformationParameter/@use,boolean)" />
+          <as:constraint action="makeOptional(//transformationParameter/functions)" />
+          <as:constraint action="makeOptional(//transformationParameter/previouslyNeeded)" />
+          <as:constraint action="makeOptional(//transformationParameter/usedFor)" />
           <as:constraint action="makeRepeatable(//transformationParameters/transformationParameter)" />
-          <as:constraint action="datatype(//transformationparameter/@datumtrafo,boolean)" />
-          <as:constraint action="setNumberMask(//transformationparameter/@id,#######)" />
-          <as:constraint action="datatype(//transformationparameter/@movement,boolean)" />
-          <as:constraint action="setNumberMask(//transformationparameter/@mx,######.##)" />
-          <as:constraint action="setNumberMask(//transformationparameter/@my,######.##)" />
-          <as:constraint action="setNumberMask(//transformationparameter/@mz,######.##)" />
-          <as:constraint action="setNumberMask(//transformationparameter/@rx,######.##)" />
-          <as:constraint action="setNumberMask(//transformationparameter/@ry,######.##)" />
-          <as:constraint action="setNumberMask(//transformationparameter/@rz,######.##)" />
-          <as:constraint action="datatype(//transformationparameter/@solved,boolean)" />
-          <as:constraint action="setDateMask(//transformationparameter/@time,hh:mm:ss)" />
-          <as:constraint action="setNumberMask(//transformationparameter/@tx,######.##)" />
-          <as:constraint action="setNumberMask(//transformationparameter/@ty,######.##)" />
-          <as:constraint action="setNumberMask(//transformationparameter/@tz,######.##)" />
-          <as:constraint action="datatype(//transformationparameter/@use,boolean)" />
-          <as:constraint action="makeOptional(//transformationparameter/functions)" />
-          <as:constraint action="makeOptional(//transformationparameter/previouslyNeeded)" />
-          <as:constraint action="makeOptional(//transformationparameter/usedFor)" />
-          <as:constraint action="makeRepeatable(//transformationparameters/transformationparameter)" />
+          <as:constraint action="makeOptional(//transformationparameters/transformationparameter,)" />
           <as:constraint action="makeRepeatable(//usedFor/feature)" />
+          <as:constraint action="makeOptional(//usedFor/feature,)" />
           <as:constraint action="makeRepeatable(//usedSensors/sensor)" />
+          <as:constraint action="makeOptional(//usedSensors/sensor,)" />
+          <as:constraint action="setNumberMask(//valueadius/@value,####.######)" />
         </as:context>
       </as:default>
     </as:Rules>

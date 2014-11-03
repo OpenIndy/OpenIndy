@@ -11,6 +11,7 @@
 #include <QDir>
 #include <QApplication>
 #include <QStringListModel>
+#include <QDomDocument>
 
 #include "configuration.h"
 #include "console.h"
@@ -60,6 +61,10 @@
 #include "oiprojectexchanger.h"
 
 #include "oiserver.h"
+#include "oirequesthandler.h"
+
+#include "pointfeaturemodel.h"
+#include "pointfeaturefiltermodel.h"
 
 class Feature;
 class CoordinateSystem;
@@ -78,18 +83,19 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = 0);
 
-    OiProjectData currentProject; //holds the currently opened OpenIndy-project
-
     OiFeatureState *myFeatureState;
 
+    QList<MeasurementConfig> measurementConfigs; //all available measurement configs (saved & unsaved)
     MeasurementConfig lastmConfig;
-    TableModel *tblModel;
+
+    TableModel *tblModel; //base model for feature table
+    FeatureOverviewProxyModel *featureOverviewModel; //filtered feature table (no trafoParams)
+    TrafoParamProxyModel * trafoParamModel; //filtered feature table (only trafoParams)
+
     Console *c;
     Configuration conf;
     QSqlQueryModel *pluginsModel;
-    FeatureOverviewProxyModel *featureOverviewModel;
     QSqlQueryModel *neededElementsModel;
-    TrafoParamProxyModel * trafoParamModel;
 
     QStandardItemModel *functionTreeViewModel; //model for treeview with functions of selected feature
     FeatureTreeViewModel *featureTreeViewModel; //model for treeview with all features
@@ -99,12 +105,17 @@ public:
     PluginTreeViewModel *myPluginTreeViewModel; //model with all available plugins for plugin manager
     QStringListModel *myFeatureGroupsModel; //model with all available groups
     QStringListModel *myCoordinateSystemsModel; //model with coordinate systems
+    PointFeatureModel *myPointFeatureModel; //model with all point features
+    PointFeatureFilterModel *myPointFeatureProxyModel; //model with all point features filtered by group name
 
     QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
+
     FeatureUpdater* getFeatureUpdater();
 
-    OiServer *OpenIndyServer;
+    OiServer *openIndyServer;
+
+    int stakeOutId;
 
 signals:
     void changedStation();
@@ -131,6 +142,8 @@ signals:
     void updateGeometryIcons(QStringList availableGeometries);
 
     void activeCoordinateSystemChanged();
+
+    void sendSaveLoadRequest(OiRequestResponse *request); //connected to OiRequestHandler to save or load an OpenIndy project
 
 public slots:
     void setUpFeatureGroupsModel();
@@ -184,10 +197,14 @@ public slots:
     void addElement2Function(FeatureTreeItem *element, int functionIndex, int elementIndex); //add element to the active function
     void removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex); //remove element from the active function
 
-    //save & load an OpenIndy project
+    //handle requests (save & load projects, stake out)
     bool saveProject();
     bool loadProject(OiProjectData &projectData);
-    bool createProject(OiProjectData &projectData);
+    void startStakeOut(QDomDocument request);
+    void nextStakeOutGeometry();
+    bool receiveRequestResult(OiRequestResponse *request); //called from OiRequestHandler with the result of save or load task
+
+    bool createDefaultProject();
 
     void setFunctionConfiguration(int functionIndex, FunctionConfiguration config);
 
@@ -204,7 +221,7 @@ public slots:
 
     void updateFeatureMConfig();
 
-    void handleRemoteCommand(OiProjectData *d);
+    //void handleRemoteCommand(OiProjectData *d);
 
    /* void createFeature(int featureType, QString name,QString group,  bool nominal, bool common,
                        CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem);
@@ -224,6 +241,8 @@ private:
     void initModels();
     void connectModels();
     //void createDefaultFeatures();
+
+    int lastRequestId; //id of the last OiRequest (save or load)
 
     FeatureUpdater myFeatureUpdater;
 

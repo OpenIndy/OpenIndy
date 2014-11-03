@@ -57,9 +57,23 @@ void Ellipsoid::recalc(){
 
 }
 
-bool Ellipsoid::toOpenIndyXML(QXmlStreamWriter &stream){
+/*!
+ * \brief Ellipsoid::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Ellipsoid::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    return false;
+    QDomElement ellipsoid = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(ellipsoid.isNull()){
+        return ellipsoid;
+    }
+
+    ellipsoid.setAttribute("type", Configuration::sEllipsoid);
+
+    return ellipsoid;
+
 }
 
 ElementDependencies Ellipsoid::fromOpenIndyXML(QXmlStreamReader &xml){

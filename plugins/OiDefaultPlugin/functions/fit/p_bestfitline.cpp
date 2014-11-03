@@ -4,7 +4,7 @@
  * \brief BestFitLine::getMetaData
  * \return
  */
-PluginMetaData* BestFitLine::getMetaData(){
+PluginMetaData* BestFitLine::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "BestFitLine";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -20,7 +20,7 @@ PluginMetaData* BestFitLine::getMetaData(){
  * \brief BestFitLine::getNeededElements
  * \return
  */
-QList<InputParams> BestFitLine::getNeededElements(){
+QList<InputParams> BestFitLine::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -35,7 +35,7 @@ QList<InputParams> BestFitLine::getNeededElements(){
  * \brief BestFitLine::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> BestFitLine::applicableFor(){
+QList<Configuration::FeatureTypes> BestFitLine::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eLineFeature);
     return result;

@@ -3,6 +3,7 @@
 
 #include <QDateTime>
 #include <QtCore/qmath.h>
+#include <QtXml>
 
 #include "configuration.h"
 #include "oivec.h"
@@ -100,6 +101,8 @@ public:
 
     //error propagation
     OiVec errorPropagationPolarToCart();
+
+    QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
 
 private:
 

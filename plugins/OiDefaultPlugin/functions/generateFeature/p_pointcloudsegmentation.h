@@ -234,18 +234,18 @@ private:
 class PointCloudSegmentation : public GenerateFeatureFunction
 {
 public:
-    PluginMetaData* getMetaData();
+    PluginMetaData* getMetaData() const;
 
     bool exec(PointCloud&);
 
-    QList<InputParams> getNeededElements();
-    QList<Configuration::FeatureTypes> applicableFor();
+    QList<InputParams> getNeededElements() const;
+    QList<Configuration::FeatureTypes> applicableFor() const;
 
-    QMap<QString, int> getIntegerParameter();
-    QMap<QString, double> getDoubleParameter();
-    QMap<QString, QStringList> getStringParameter();
+    QMap<QString, int> getIntegerParameter() const;
+    QMap<QString, double> getDoubleParameter() const;
+    QMap<QString, QStringList> getStringParameter() const;
 
-    QStringList getResultProtocol();
+    QStringList getResultProtocol() const;
 
 private:
     SegmentationConsumer *myHandler;

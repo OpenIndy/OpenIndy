@@ -8,7 +8,7 @@ class OiGraphixPoint: public OiGraphixGeometry
 public:
     OiGraphixPoint();
 
-    void draw(GLfloat x, GLfloat y, GLfloat z);
+    void draw(Geometry *g);
 };
 
 #endif // OIGRAPHIX_POINT_H

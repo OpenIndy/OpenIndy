@@ -27,7 +27,9 @@ Controller::Controller(QObject *parent) :
     this->initModels();
     this->connectModels();
 
-    this->createProject(currentProject);
+    this->createDefaultProject();
+
+    this->lastRequestId = -1;
 
 
 
@@ -47,9 +49,9 @@ Controller::Controller(QObject *parent) :
 
     //emit refreshGUI();
 
-    OpenIndyServer = new OiServer();
-    OpenIndyServer->startServer();
-    connect(OpenIndyServer,SIGNAL(getProject(OiProjectData*)),this,SLOT(handleRemoteCommand(OiProjectData*)));
+    openIndyServer = new OiServer();
+    openIndyServer->startServer();
+    //connect(openIndyServer, SIGNAL(getProject(OiProjectData*)), this, SLOT(handleRemoteCommand(OiProjectData*)));
 
 
 }
@@ -97,6 +99,11 @@ void Controller::initModels(){
         //coordinate systems model
         this->myCoordinateSystemsModel = new QStringListModel();
 
+        //point feature model
+        this->myPointFeatureModel = new PointFeatureModel();
+        this->myPointFeatureProxyModel = new PointFeatureFilterModel();
+        this->myPointFeatureProxyModel->setSourceModel(this->myPointFeatureModel);
+
     }catch(exception &e){
         Console::addLine(e.what());
     }
@@ -131,6 +138,10 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(featureFunctionsChanged()), this, SLOT(changeFunctionTreeViewModel()));
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this, SLOT(changeFunctionTreeViewModel()));
 
+        //send save or load project task to OiRequestHandler & listen to his answers
+        connect(this, SIGNAL(sendSaveLoadRequest(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveRequest(OiRequestResponse*)));
+        connect(OiRequestHandler::getInstance(), SIGNAL(sendResponse(OiRequestResponse*)), this, SLOT(receiveRequestResult(OiRequestResponse*)));
+
     }catch(exception &e){
         Console::addLine(e.what());
     }
@@ -140,9 +151,11 @@ void Controller::connectModels(){
  * \brief Controller::createDefaultFeatures
  * Create a station and the PART system as default features when starting OpenIndy
  */
-bool Controller::createProject(OiProjectData &projectData){
+bool Controller::createDefaultProject(){
 
     if(OiFeatureState::getFeatureCount() == 0){
+
+        OiProjectData::setActiveProject("OpenIndyTest");
 
         //create PART and STATION01 as default
         FeatureWrapper *part = OiFeatureState::addFeature(Configuration::eCoordinateSystemFeature, false, "PART");
@@ -1482,9 +1495,24 @@ void Controller::setFunctionConfiguration(int functionIndex, FunctionConfigurati
 bool Controller::saveProject(){
     try{
 
-        if(this->currentProject.getIsValid()){
-            if(this->currentProject.getIsSaved()){
-                return OiProjectExchanger::saveProject(this->currentProject);
+        if(OiProjectData::getIsValid()){
+            if(OiProjectData::getIsSaved()){
+
+                OiRequestResponse *request;
+                request = new OiRequestResponse();
+                request->requesterId = Configuration::generateID();
+                this->lastRequestId = request->requesterId;
+
+                QDomElement root = request->request.createElement("OiRequest");
+                root.setAttribute("id", OiRequestResponse::eGetProject);
+                request->request.appendChild(root);
+
+                qDebug() << "vor emit";
+
+                emit this->sendSaveLoadRequest(request);
+
+                qDebug() << "nach emit";
+
             }else{
                 Console::addLine("The project has already been saved");
                 return false;
@@ -1507,13 +1535,112 @@ bool Controller::saveProject(){
  */
 bool Controller::loadProject(OiProjectData &projectData){
 
-    //TODO check if an active project is set
+    /*//TODO check if an active project is set
 
     //delete all features
     OiFeatureState::resetFeatureLists();
 
-    return OiProjectExchanger::loadProject(projectData);
+    bool result = OiProjectExchanger::loadProject(projectData);
 
+    //recalc all features after loading
+    this->recalcAll();
+
+    this->tblModel->updateModel();
+
+    return result;*/
+
+    return true;
+
+}
+
+/*!
+ * \brief Controller::startStakeOut
+ * \param request
+ */
+void Controller::startStakeOut(QDomDocument request){
+    OiRequestResponse *myRequest;
+    myRequest = new OiRequestResponse();
+    myRequest->requesterId = Configuration::generateID();
+    this->lastRequestId = myRequest->requesterId;
+
+    QDomNode root = myRequest->request.importNode(request.documentElement(), true);
+    myRequest->request.appendChild(root);
+
+    qDebug() << "test: " << myRequest->request.toString();
+
+    emit this->sendSaveLoadRequest(myRequest);
+}
+
+/*!
+ * \brief Controller::nextStakeOutGeometry
+ */
+void Controller::nextStakeOutGeometry(){
+    OiRequestResponse *myRequest;
+    myRequest = new OiRequestResponse();
+    myRequest->requesterId = Configuration::generateID();
+    this->lastRequestId = myRequest->requesterId;
+
+    QDomDocument request;
+    QDomElement stakeOutId = request.createElement("stakeOutId");
+    //stakeOutId.setAttribute("id", );
+
+    qDebug() << "test: " << myRequest->request.toString();
+
+    emit this->sendSaveLoadRequest(myRequest);
+}
+
+/*!
+ * \brief Controller::receiveRequestResult
+ * Is called whenever a request was finished by OiRequestHandler and the response is available
+ * \param request
+ * \return
+ */
+bool Controller::receiveRequestResult(OiRequestResponse *request){
+    try{
+
+        if(request != NULL && request->requesterId == this->lastRequestId && !request->response.isNull()){
+
+            switch(request->myRequestType){
+            case OiRequestResponse::eGetProject:
+
+                //save xml in file
+                if(OiProjectData::getDevice() != NULL){
+
+                    //create new document to remove OiResponse tag
+                    QDomDocument project;
+                    project.appendChild(project.importNode(request->response.documentElement().firstChildElement("oiProjectData"), true));
+
+                    OiProjectData::getDevice()->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+
+                    QTextStream stream(OiProjectData::getDevice());
+                    project.save(stream, 4);
+
+                    OiProjectData::getDevice()->close();
+
+                    emit this->showMessageBox(OiProjectData::getProjectName(), "OpenIndy project successfully stored.");
+
+                }
+
+                break;
+            case OiRequestResponse::eSetProject:
+                qDebug() << request->response.toString();
+                break;
+            case OiRequestResponse::eStartStakeOut:
+                qDebug() << request->response.toString();
+                break;
+            }
+
+            this->lastRequestId = -1;
+
+            return true;
+
+        }
+
+        return false;
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
 }
 
 /*!
@@ -1578,10 +1705,10 @@ void Controller::updateFeatureMConfig()
     }
 }
 
-void Controller::handleRemoteCommand(OiProjectData *d)
+/*void Controller::handleRemoteCommand(OiProjectData *d)
 {
     OiProjectExchanger::saveProject(*d);
-}
+}*/
 
 /*!
  * \brief Controller::deleteFeature

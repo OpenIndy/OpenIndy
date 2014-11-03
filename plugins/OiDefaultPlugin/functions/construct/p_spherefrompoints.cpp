@@ -4,7 +4,7 @@
  * \brief SphereFromPoints::getMetaData
  * \return
  */
-PluginMetaData* SphereFromPoints::getMetaData(){
+PluginMetaData* SphereFromPoints::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "SphereFromPoints";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -20,7 +20,7 @@ PluginMetaData* SphereFromPoints::getMetaData(){
  * \brief SphereFromPoints::getNeededElements
  * \return
  */
-QList<InputParams> SphereFromPoints::getNeededElements(){
+QList<InputParams> SphereFromPoints::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -35,7 +35,7 @@ QList<InputParams> SphereFromPoints::getNeededElements(){
  * \brief SphereFromPoints::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> SphereFromPoints::applicableFor(){
+QList<Configuration::FeatureTypes> SphereFromPoints::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eSphereFeature);
     return result;

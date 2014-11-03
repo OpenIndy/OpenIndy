@@ -3,8 +3,10 @@
 
 #include <QTcpServer>
 #include <QList>
+
 #include "console.h"
 #include "oinetworkconnection.h"
+#include "oirequesthandler.h"
 
 class OiServer : public QTcpServer
 {
@@ -12,21 +14,16 @@ class OiServer : public QTcpServer
 public:
     explicit OiServer(QObject *parent = 0);
 
-signals:
-    void getProject(OiProjectData *d);
-
 public slots:
-
     void startServer();
     void stopServer();
     void incomingConnection(qintptr socketDescriptor);
 
 private slots:
-    void sendGetProject(OiProjectData *d);
+    void receiveResponse(OiRequestResponse *response);
 
 private:
-    QList<QThread*> usedSockets;
-
+    QList<OiNetworkConnection*> usedSockets;
 
 };
 

@@ -11,41 +11,30 @@
 
 /*!
  * \brief The oiProjectData class
- * exchange object for a whole openindy project.
- * Used by oiprojectexchanger for generating a openindyXML
- * or generating a oiProjectData Object form a openindyXML
+ * Used to hold the active OpenIndy project
  */
 class OiProjectData : public QObject
 {
     Q_OBJECT
-public:
+private:
     explicit OiProjectData(QObject *parent = 0);
-    ~OiProjectData();
 
-    QIODevice *getDevice();
-    bool setDevice(QIODevice *device);
+public:
+    static OiProjectData *getInstance();
 
-    QString getProjectName();
-    void setProjectName(QString name);
+    static QIODevice *getDevice();
+    static QString getProjectName();
+    static bool getIsValid();
+    static bool getIsSaved();
 
-    bool getIsValid();
-
-    void activate(OiFeatureState *myState);
-    void deactivate();
-
-    bool getIsSaved();
-
-    /*CoordinateSystem *activeCoordSystem;
-    Station *activeStation;
-
-    QList<FeatureWrapper*> features;
-    QList<CoordinateSystem*> coordSystems;
-    QList<Station*> stations;*/
+    static bool setActiveProject(QString name, QIODevice *device = NULL);
 
 private:
+    static OiProjectData *activeProject;
+
     QString projectName; //name of the project
     QIODevice *device; //device where the project is saved
-    bool isSaved; //state of the project: true iv it was saved; false if there are unsaved changes
+    bool isSaved; //state of the project: true if it was saved; false if there are unsaved changes
 
 signals:
     void unsavedChangesAvailable(); //is emitted when there were changes made to the project

@@ -1,19 +1,29 @@
 #include "oigraphix_plane.h"
 
-OiGraphixPlane::OiGraphixPlane(GLfloat nx,GLfloat ny, GLfloat nz)
+OiGraphixPlane::OiGraphixPlane()
 {
 
-    rx = nx;
-    ry = ny;
-    rz = nz;
+
 
 }
 
-void OiGraphixPlane::draw(GLfloat x, GLfloat y, GLfloat z){
+void OiGraphixPlane::draw(Geometry *g){
+
+    rx = g->getIJK().getAt(0);
+    ry = g->getIJK().getAt(1);
+    rz = g->getIJK().getAt(2);
+
+    GLfloat x = g->getXYZ().getAt(0);
+    GLfloat y = g->getXYZ().getAt(1);
+    GLfloat z = g->getXYZ().getAt(2);
+
+
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
+
     glTranslatef(x,y,z);
+
 
     glRotatef(acos(rx) * 180.0/PI,1,0,0);
     glRotatef(acos(rz) * 180.0/PI,0,1,0);

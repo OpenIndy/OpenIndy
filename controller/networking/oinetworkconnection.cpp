@@ -4,45 +4,61 @@ OiNetworkConnection::OiNetworkConnection(QObject *parent) :
     QThread(parent)
 {
     this->socket = new QTcpSocket();
-
+    this->internalRef = Configuration::generateID();
 }
 
-bool OiNetworkConnection::setSocket(qintptr socketDescriptor)
-{
-    bool connectionCheck =  socket->setSocketDescriptor(socketDescriptor);
+/*!
+ * \brief OiNetworkConnection::getInternalRef
+ * \return
+ */
+int OiNetworkConnection::getInternalRef(){
+   return this->internalRef;
+}
 
-   connect(this->socket,SIGNAL(readyRead()),this,SLOT(readMessage()));
+/*!
+ * \brief OiNetworkConnection::setSocket
+ * \param socketDescriptor
+ * \return
+ */
+bool OiNetworkConnection::setSocket(qintptr socketDescriptor){
 
+    bool connectionCheck =  this->socket->setSocketDescriptor(socketDescriptor);
+    connect(this->socket, SIGNAL(readyRead()), this, SLOT(readMessage()));
     return connectionCheck;
+
 }
 
-void OiNetworkConnection::readMessage()
-{
-    //read incomming string
-    QString msg = this->socket->readLine();
-    Console::addLine(msg);
+/*!
+ * \brief OiNetworkConnection::receiveResponse
+ * Is called whenever a response to a request of this client is available
+ * \param response
+ */
+void OiNetworkConnection::receiveResponse(OiRequestResponse *response){
 
-    if(msg == "c"){
-        this->socket->write("close connection");
-
-        this->socket->close();
-
-        socket->deleteLater();
-        this->deleteLater();
-
-    }else if(msg == "p"){
-
-        OiProjectData *d = new OiProjectData();
-
-        d->setDevice(socket);
-        d->setProjectName("streamData");
-
-        emit this->getProject(d);
-
-
-    }else if(msg.compare("Hello Server")==0){
-
-        this->socket->write("HelloClient");
-
+    if(response == NULL){
+        return;
     }
+
+    this->socket->write(response->response.toByteArray());
+
+}
+
+/*!
+ * \brief OiNetworkConnection::readMessage
+ * Is called whenever a client has sent a message to OpenIndy
+ */
+void OiNetworkConnection::readMessage(){
+
+    OiRequestResponse *request;
+    request = new OiRequestResponse();
+    request->requesterId = this->internalRef;
+
+    QString xmlRequest = this->socket->readAll();
+
+    qDebug() << "XML Request: " << xmlRequest;
+
+    request->request.setContent(xmlRequest);
+
+    emit this->sendRequest(request);
+
 }

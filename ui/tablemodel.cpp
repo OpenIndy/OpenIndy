@@ -43,9 +43,6 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
 
     try{
 
-        qDebug() << "data function";
-        qDebug() << index.column();
-
         if(!index.isValid())
             return QVariant();
 

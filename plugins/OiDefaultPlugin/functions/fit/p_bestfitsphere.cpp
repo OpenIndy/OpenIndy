@@ -4,7 +4,7 @@
  * \brief BestFitSphere::getMetaData
  * \return
  */
-PluginMetaData* BestFitSphere::getMetaData(){
+PluginMetaData* BestFitSphere::getMetaData() const{
     PluginMetaData* metaData = new PluginMetaData();
     metaData->name = "BestFitSphere";
     metaData->pluginName = "OpenIndy Default Plugin";
@@ -20,7 +20,7 @@ PluginMetaData* BestFitSphere::getMetaData(){
  * \brief BestFitSphere::getNeededElements
  * \return
  */
-QList<InputParams> BestFitSphere::getNeededElements(){
+QList<InputParams> BestFitSphere::getNeededElements() const{
     QList<InputParams> result;
     InputParams param;
     param.index = 0;
@@ -35,7 +35,7 @@ QList<InputParams> BestFitSphere::getNeededElements(){
  * \brief BestFitSphere::applicableFor
  * \return
  */
-QList<Configuration::FeatureTypes> BestFitSphere::applicableFor(){
+QList<Configuration::FeatureTypes> BestFitSphere::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::eSphereFeature);
     return result;
