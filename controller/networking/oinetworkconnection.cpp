@@ -41,6 +41,10 @@ void OiNetworkConnection::receiveResponse(OiRequestResponse *response){
 
     this->socket->write(response->response.toByteArray());
 
+    if(response->myRequestType != OiRequestResponse::eStartWatchwindow){
+        delete response;
+    }
+
 }
 
 /*!
