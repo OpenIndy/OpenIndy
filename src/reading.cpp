@@ -253,3 +253,70 @@ QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
     return reading;
 
 }
+
+/*!
+ * \brief Reading::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Reading::fromOpenIndyXML(QDomElement &xmlElem){
+
+    if(xmlElem.isNull()){
+        return false;
+    }
+
+    //set reading attributes
+    if(!xmlElem.hasAttribute("id") || !xmlElem.hasAttribute("time") || !xmlElem.hasAttribute("type")){
+        return false;
+    }
+    this->id = xmlElem.attribute("id").toInt();
+    this->measuredAt = QDateTime::fromString(xmlElem.attribute("time"), Qt::ISODate);
+    this->typeofReading = (Configuration::ReadingTypes)xmlElem.attribute("type").toInt();
+
+    //get list of measurements
+    QDomElement measurements = xmlElem.firstChildElement("measurements");
+    if(measurements.isNull()){
+        return false;
+    }
+    QDomNodeList measurementList = measurements.elementsByTagName("measurement");
+    if(measurementList.size() == 0){
+        return false;
+    }
+
+    //initialize measurement variables
+    this->rCartesian.xyz = OiVec(4);
+    this->rCartesian.xyz.setAt(3, 1.0);
+    this->rCartesian.sigmaXyz = OiVec(4);
+    this->rCartesian.sigmaXyz.setAt(3, 1.0);
+
+    //fill measurement values
+    for(int i = 0; i < measurementList.size(); i++){
+        QDomElement measurement = measurementList.at(i).toElement();
+        if(!measurement.hasAttribute("type") || !measurement.hasAttribute("value") || !measurement.hasAttribute("sigma")){
+            continue;
+        }
+        if(measurement.attribute("type").compare("x") == 0){
+            this->rCartesian.xyz.setAt(0, measurement.attribute("value").toDouble());
+        }else if(measurement.attribute("type").compare("y") == 0){
+            this->rCartesian.xyz.setAt(1, measurement.attribute("value").toDouble());
+        }else if(measurement.attribute("type").compare("z") == 0){
+            this->rCartesian.xyz.setAt(2, measurement.attribute("value").toDouble());
+        }else if(measurement.attribute("type").compare("azimuth") == 0){
+            this->rPolar.azimuth = measurement.attribute("value").toDouble();
+            this->rDirection.azimuth = measurement.attribute("value").toDouble();
+        }else if(measurement.attribute("type").compare("zenith") == 0){
+            this->rPolar.zenith = measurement.attribute("value").toDouble();
+            this->rDirection.zenith = measurement.attribute("value").toDouble();
+        }else if(measurement.attribute("type").compare("distance") == 0){
+            this->rPolar.distance = measurement.attribute("value").toDouble();
+            this->rDistance.distance = measurement.attribute("value").toDouble();
+        }else if(measurement.attribute("type").compare("RX") == 0){
+            this->rLevel.RX = measurement.attribute("value").toDouble();
+        }else if(measurement.attribute("type").compare("RY") == 0){
+            this->rLevel.RY = measurement.attribute("value").toDouble();
+        }else if(measurement.attribute("type").compare("RZ") == 0){
+            this->rLevel.RZ = measurement.attribute("value").toDouble();
+        }
+    }
+
+}

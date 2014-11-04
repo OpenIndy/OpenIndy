@@ -19,6 +19,14 @@ Observation::Observation(Reading *r, Station *s) :
     myOriginalStatistic.qxx = OiMat(4,4);
 }
 
+Observation::Observation(){
+    this->id = Configuration::generateID();
+
+    //initialize matrices
+    myStatistic.qxx = OiMat(4,4);
+    myOriginalStatistic.qxx = OiMat(4,4);
+}
+
 Observation::~Observation(){
 
     //delete corresponding reading
@@ -93,20 +101,28 @@ bool Observation::fromOpenIndyXML(QDomElement &xmlElem){
     if(result){
 
         //set observation attributes
-        if(xmlElem.hasAttribute("isValid") && xmlElem.hasAttribute("x") && xmlElem.hasAttribute("y")
-                && xmlElem.hasAttribute("z") && xmlElem.hasAttribute("sigmaX") && xmlElem.hasAttribute("sigmaY")
-                && xmlElem.hasAttribute("sigmaZ")){
-            this->isValid = xmlElem.attribute("isValid").toInt();
-            this->myXyz.setAt(0, xmlElem.attribute("x"));
-            this->myXyz.setAt(1, xmlElem.attribute("y"));
-            this->myXyz.setAt(2, xmlElem.attribute("z"));
-            this->sigmaXyz.setAt(0, xmlElem.attribute("sigmaX"));
-            this->sigmaXyz.setAt(1, xmlElem.attribute("sigmaY"));
-            this->sigmaXyz.setAt(2, xmlElem.attribute("sigmaZ"));
+        if(!xmlElem.hasAttribute("isValid") || !xmlElem.hasAttribute("x") || !xmlElem.hasAttribute("y")
+                || !xmlElem.hasAttribute("z") || !xmlElem.hasAttribute("sigmaX") || !xmlElem.hasAttribute("sigmaY")
+                || !xmlElem.hasAttribute("sigmaZ")){
+            return false;
         }
+        this->isValid = xmlElem.attribute("isValid").toInt();
+        this->myXyz.setAt(0, xmlElem.attribute("x").toDouble());
+        this->myXyz.setAt(1, xmlElem.attribute("y").toDouble());
+        this->myXyz.setAt(2, xmlElem.attribute("z").toDouble());
+        this->sigmaXyz.setAt(0, xmlElem.attribute("sigmaX").toDouble());
+        this->sigmaXyz.setAt(1, xmlElem.attribute("sigmaY").toDouble());
+        this->sigmaXyz.setAt(2, xmlElem.attribute("sigmaZ").toDouble());
 
         //set reading
-
+        QDomElement reading = xmlElem.firstChildElement("reading");
+        if(reading.isNull()){
+            return false;
+        }
+        Reading *myReading = new Reading();
+        this->myReading = myReading;
+        myReading->obs = this;
+        result = myReading->fromOpenIndyXML(reading);
 
     }
 

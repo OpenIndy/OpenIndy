@@ -170,6 +170,15 @@ QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
 
 /*!
  * \brief Station::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Station::fromOpenIndyXML(QDomElement &xmlElem){
+
+}
+
+/*!
+ * \brief Station::fromOpenIndyXML
  * \param xml
  * \return
  */

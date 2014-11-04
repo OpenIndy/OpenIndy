@@ -127,22 +127,13 @@ void OiRequestHandler::setProject(OiRequestResponse *request){
         return;
     }
 
-    //load all observations
-    QList<Observation*> myObservations;
+    bool success = OiProjectExchanger::loadProject(oiXml);
 
-    //load all stations
+    if(!success){
+        request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eWrongFormat);
+    }
 
-    //load all coordinate systems
-
-    //load all transformation parameters
-
-    //load all geometries
-
-    //set active station and active coordinate system
-
-    //set general project data
-
-    qDebug() << "in set project";
+    emit this->sendResponse(request);
 
 }
 
@@ -710,7 +701,7 @@ void OiRequestHandler::GetNextGeometry(OiRequestResponse *request){
 void OiRequestHandler::prepareResponse(OiRequestResponse *request){
     request->response.appendChild(request->response.createElement("OiResponse"));
     request->response.documentElement().setAttribute("ref", request->myRequestType);
-    request->response.documentElement().setAttribute("errorCode", 0);
+    request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoError);
 }
 
 /*!

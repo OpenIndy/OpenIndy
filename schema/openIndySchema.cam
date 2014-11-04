@@ -150,7 +150,7 @@
             <station ref="%12345%" />
             <reading id="%12345%" time="%YYYY-MM-DD:HH:MM:SS%" type="%string%">
               <measurements>
-                <measurement type="%string%" value="%1245.00%" sigma="%1245.00%" time="%HH:MM:SS%" />
+                <measurement type="%string%" value="%1245.00%" sigma="%1245.00%" />
               </measurements>
             </reading>
           </observation>
@@ -219,7 +219,6 @@
           <as:constraint action="makeRepeatable(//inputElements/inputElement)" />
           <as:constraint action="makeRepeatable(//integerParameters/parameter)" />
           <as:constraint action="setNumberMask(//measurement/@sigma,####.######)" />
-          <as:constraint action="setDateMask(//measurement/@time,hh:mm:ss)" />
           <as:constraint action="setNumberMask(//measurement/@value,####.######)" />
           <as:constraint action="makeRepeatable(//measurements/measurement)" />
           <as:constraint action="setNumberMask(//nominalCoordinateSystem/@ref,#######)" />
@@ -257,7 +256,6 @@
           <as:constraint action="setNumberMask(//standardDeviation/@value,####.######)" />
           <as:constraint action="setNumberMask(//station/@id,#######)" />
           <as:constraint action="setNumberMask(//station/@ref,#######)" />
-          <as:constraint action="makeOptional(//station/activeSensor,)" />
           <as:constraint action="makeOptional(//station/activeSensor,)" />
           <as:constraint action="makeOptional(//station/usedFor)" />
           <as:constraint action="makeOptional(//station/usedSensors,)" />

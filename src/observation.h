@@ -22,6 +22,7 @@ class Observation : public Element
 {
 public:
     Observation(Reading*, Station*);
+    Observation();
     ~Observation();
 
     Station *myStation;

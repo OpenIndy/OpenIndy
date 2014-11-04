@@ -262,6 +262,37 @@ QDomDocument OiProjectExchanger::saveProject(){
  */
 bool OiProjectExchanger::loadProject(QDomDocument project){
 
+    //delete old features (from a previous project)
+    OiFeatureState::resetFeatureLists();
+
+    //load all observations
+    QList<Observation*> myObservations;
+    QDomElement observations = project.firstChildElement("observations");
+    if(!observations.isNull()){
+        QDomNodeList observationList = observations.childNodes();
+        for(int i = 0; i < observationList.size(); i++){
+            Observation *obs = new Observation();
+            if(!obs->fromOpenIndyXML(observationList.at(i).toElement())){
+                delete obs;
+                continue;
+            }
+            myObservations.append(obs);
+        }
+    }
+
+    //load all stations
+    QList<Station*> myStations;
+
+    //load all coordinate systems
+
+    //load all transformation parameters
+
+    //load all geometries
+
+    //set active station and active coordinate system
+
+    //set general project data
+
     return true;
 
 }

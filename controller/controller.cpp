@@ -1534,8 +1534,6 @@ bool Controller::loadProject(QString projectName, QIODevice *myDevice){
 
     //TODO check if an active project is set
 
-    //delete all features
-    OiFeatureState::resetFeatureLists();
 
     //set active project
     OiProjectData::setActiveProject(projectName, myDevice);

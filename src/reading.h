@@ -103,6 +103,7 @@ public:
     OiVec errorPropagationPolarToCart();
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
+    bool fromOpenIndyXML(QDomElement &xmlElem);
 
 private:
 
