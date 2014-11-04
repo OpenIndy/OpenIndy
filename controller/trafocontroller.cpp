@@ -53,6 +53,9 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
             return true;
         }
 
+        //first set the coord sys not solved. Change after transformation
+        from->setIsSolved(false);
+
         //get homogeneous transformation matrix to transform observations with
         //this matrix transforms the obs to current coord system, and also handles datum - transformations
         OiMat trafoMat = this->getTransformationMatrix(from);
@@ -60,6 +63,12 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
         //if trafo matrix is valid
         //check if matrix is 4x4 = homogeneous matrix
         if(trafoMat.getRowCount() == 4 && trafoMat.getColCount() == 4){
+
+            from->setIsSolved(true);
+
+            //transform coordinate system origin
+            from->origin = trafoMat * from->origin;
+
             //transform observations
             foreach (Observation *obs, from->getObservations()) {
                 if(obs->myOriginalStatistic.qxx.getRowCount() == 4 && obs->myOriginalStatistic.qxx.getColCount() == 4
@@ -100,6 +109,12 @@ void TrafoController::setObservationState(CoordinateSystem *cs, bool valid)
         }
         obs->isValid = valid;
     }
+    //reset origin to 0/0/0
+    cs->origin.setAt(0,0.0);
+    cs->origin.setAt(1,0.0);
+    cs->origin.setAt(2,0.0);
+    cs->origin.setAt(3,1.0);
+    cs->setIsSolved(valid);
 }
 
 /*!

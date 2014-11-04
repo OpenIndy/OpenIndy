@@ -38,7 +38,6 @@ private:
 
     QList<TrafoParam*> findMovements(CoordinateSystem *from);
     void applyMovements(QList<TrafoParam*> movements, CoordinateSystem *from);
-	
 };
 
 #endif // TRAFOCONTROLLER_H

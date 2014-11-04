@@ -43,7 +43,6 @@ Station::Station(QString name)
 
     this->isUpdated = false;
     this->isDrawn = true;
-
 }
 
 Station::~Station(){
@@ -554,15 +553,18 @@ void Station::emitStartDisconnect(){
 }
 
 QString Station::getDisplayX() const{
-    return QString::number(this->position->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    //return QString::number(this->position->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    return QString::number(this->coordSys->origin.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }
 
 QString Station::getDisplayY() const{
-    return QString::number(this->position->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    //return QString::number(this->position->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    return QString::number(this->coordSys->origin.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }
 
 QString Station::getDisplayZ() const{
-    return QString::number(this->position->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    //return QString::number(this->position->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    return QString::number(this->coordSys->origin.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }
 
 QString Station::getDisplayIsCommon() const{

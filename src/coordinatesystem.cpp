@@ -10,6 +10,7 @@ CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), origin(4)
     this->isUpdated = false;
     this->isDrawn = true;
     this->expansionOrigin.setAt(3,1.0);
+    this->origin.setAt(3,1.0);
 }
 
 CoordinateSystem::~CoordinateSystem(){

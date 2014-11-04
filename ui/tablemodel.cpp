@@ -64,20 +64,26 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                     return currentFeature->getFeature()->getFeatureName();
                 case 2:
                     return currentFeature->getFeature()->getGroupName();
-                case 3:
-                    if(currentFeature->getFeature()->getIsSolved()){
+                case 3://special case for stations, because they use the xyz origin of their coordinate system
+                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayX();
+                    }else if(currentFeature->getFeature()->getIsSolved()){
                         return currentFeature->getFeature()->getDisplayX();
                     }else{
                         return QVariant();
                     }
-                case 4:
-                    if(currentFeature->getFeature()->getIsSolved()){
+                case 4://special case for stations, because they use the xyz origin of their coordinate system
+                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayY();
+                    }else if(currentFeature->getFeature()->getIsSolved()){
                         return currentFeature->getFeature()->getDisplayY();
                     }else{
                         return QVariant();
                     }
-                case 5:
-                    if(currentFeature->getFeature()->getIsSolved()){
+                case 5://special case for stations, because they use the xyz origin of their coordinate system
+                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayZ();
+                    }else if(currentFeature->getFeature()->getIsSolved()){
                         return currentFeature->getFeature()->getDisplayZ();
                     }else{
                         return QVariant();
