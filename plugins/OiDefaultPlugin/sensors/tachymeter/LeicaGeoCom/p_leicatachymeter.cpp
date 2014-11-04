@@ -6,8 +6,6 @@ LeicaTachymeter::LeicaTachymeter(){
 
 }
 
-
-
 PluginMetaData* LeicaTachymeter::getMetaData() const{
 
     PluginMetaData* metaData = new PluginMetaData();
@@ -40,7 +38,6 @@ QList<Configuration::SensorFunctionalities> LeicaTachymeter::getSupportedSensorA
 
     sensorActions.append(Configuration::eMoveAngle);
     sensorActions.append(Configuration::eToggleSight);
-
 
     return sensorActions;
 
@@ -87,13 +84,13 @@ QMap <QString, QStringList>* LeicaTachymeter::getStringParameter() const{
     stringParameter->insert("sense of rotation", senseOfRotation);
 
     return stringParameter;
-
 }
 
 QStringList LeicaTachymeter::selfDefinedActions() const
 {
     QStringList ownActions;
 
+    //actiion to activate the LOCK mode if available.
     ownActions.append("LOCK");
 
     return ownActions;
@@ -103,6 +100,7 @@ bool LeicaTachymeter::doSelfDefinedAction(QString a)
 {
     if(a == "LOCK"){
         //activate tracking mode
+        this->getLOCKState();
     }
 
     return true;
@@ -160,9 +158,7 @@ bool LeicaTachymeter::disconnectSensor(){
     }
 
     return true;
-
 }
-
 
 bool LeicaTachymeter::toggleSightOrientation(){
 
@@ -180,9 +176,7 @@ bool LeicaTachymeter::toggleSightOrientation(){
              return true;
             }
     }
-
     return false;
-
 }
 
 bool LeicaTachymeter::getATRState()
@@ -274,21 +268,24 @@ bool LeicaTachymeter::setLOCKState(QString currentState)
     QString command = "";
 
     bool on = false;
-
+    //if is currently off, then turn on
     if(currentState.compare("0") == 0){
         myEmitter.emitSendString("activating LOCK mode.");
         command = "%R1Q,18007:1\r\n";
         on = true;
 
+    //if is currently on, then turn off
     }else if(currentState.compare("1") == 0){
         myEmitter.emitSendString("deactivating LOCK mode.");
         command = "%R1Q,18007:0\r\n";
+        on = false;
     }
 
     bool result = this->checkCommandRC(command);
     if(result){
         myEmitter.emitSendString("LOCK state changed");
         if(on){
+            //if current state is "on", then fine adjust
             this->fineAdjust();
         }
         return true;
@@ -314,9 +311,11 @@ bool LeicaTachymeter::fineAdjust()
 {
     QString command = "%R1Q,9037:0.08,0.08,0";
 
+    //execute fine adjust command
     bool result = this->checkCommandRC(command);
     if(result){
         myEmitter.emitSendString("fine adjust successful.");
+        //if successful then run target tracking.
         this->startTargetTracking();
         return true;
     }else{
@@ -332,7 +331,6 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
 
         if( this->serial->isOpen()){
 
-
             QString command="%R1Q,9027:";
             command.append(QString::number(azimuth));
             command.append(",");
@@ -345,11 +343,8 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
                 myEmitter.emitSendString("completed.");
                 myEmitter.emitSendString(measureData );
                 }
-
         }
-
     }
-
     return true;
 }
 
@@ -375,7 +370,6 @@ QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
     default:
         break;
     }
-
 
     QList<Reading*> emptyList;
     return emptyList;
@@ -578,14 +572,11 @@ bool LeicaTachymeter::isReadyForMeasurement()
 
 QMap<QString, QString> LeicaTachymeter::getSensorStats()
 {
-
     QMap<QString, QString> stats;
 
     stats.insert("connected", QString::number(this->serial->isOpen()));
 
-
     return stats;
-
 }
 
 bool LeicaTachymeter::isBusy()
@@ -594,7 +585,6 @@ bool LeicaTachymeter::isBusy()
 }
 
 QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
-
 
     QList<Reading*> readings;
 
@@ -649,7 +639,6 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
 
 QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
 
-
     QList<Reading*> readings;
 
     if( this->serial->isOpen()){
@@ -684,7 +673,6 @@ QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
 }
 
 QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
-
 
     QList<Reading*> readings;
 
@@ -737,7 +725,6 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
 
 QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
 
-
     QList<Reading*> readings = this->measurePolar(m);
 
     for(int i = 0; i<readings.size();i++){
@@ -749,8 +736,6 @@ QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
     return readings;
 
 }
-
-
 
 QString LeicaTachymeter::receive(){
     QByteArray responseData = this->serial->readAll();
@@ -778,7 +763,6 @@ bool LeicaTachymeter::executeCommand(QString command){
     }
 
     return false;
-
 }
 
 /*!
