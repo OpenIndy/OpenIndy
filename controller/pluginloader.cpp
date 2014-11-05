@@ -1,6 +1,7 @@
 #include "pluginloader.h"
 
 PluginMetaData *PluginLoader::myMetaInfo = new PluginMetaData();
+PluginCopier *PluginLoader::pCopier = new PluginCopier();
 
 PluginLoader::PluginLoader(QObject *parent) :
     QObject(parent)
@@ -252,7 +253,7 @@ QDir appDir(qApp->applicationDirPath());
 
 bool check = true;
 
-    for(int i = 0; i < myMetaInfo->dependeciesPath.size();i++){
+    /*for(int i = 0; i < myMetaInfo->dependeciesPath.size();i++){
 
         //source path
         QString path(dirPath + "/" +  myMetaInfo->dependeciesPath.at(i).toObject().value("name").toString());
@@ -283,7 +284,10 @@ bool check = true;
             check = false;
         }
 
-    }
+    }*/
+
+    pCopier->setPaths(myMetaInfo,appDir.absolutePath(),dirPath);
+    pCopier->start();
 
 return check;
 
@@ -317,6 +321,11 @@ bool PluginLoader::copyDir(QString sourcePath, QString destinationPath){
     }
 
     return true;
+}
+
+PluginCopier *PluginLoader::getCopier()
+{
+    return pCopier;
 }
 
  QList<Sensor*> PluginLoader::loadSensorPlugins(QString path){

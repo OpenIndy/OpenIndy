@@ -7,6 +7,11 @@ PluginLoaderDialog::PluginLoaderDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    connect(PluginLoader::getCopier(),SIGNAL(copyCount(int)),ui->progressBar,SLOT(setValue(int)));
+    connect(PluginLoader::getCopier(),SIGNAL(sendString(QString)),this,SLOT(printMsg(QString)));
+    connect(PluginLoader::getCopier(),SIGNAL(sendErrorMsg(QString)),this,SLOT(printErrorMsg(QString)));
+    connect(PluginLoader::getCopier(),SIGNAL(copyFinished(bool)),this,SLOT(copyFinished(bool)));
+
 }
 
 PluginLoaderDialog::~PluginLoaderDialog()
@@ -55,6 +60,8 @@ void PluginLoaderDialog::on_toolButton_Path_clicked()
 
         if (PluginLoader::myMetaInfo->dependencies){
             this->ui->textBrowser_description->append("dependencies: " + PluginLoader::myMetaInfo->dependeciesPath.size());
+            this->ui->progressBar->setMinimum(0);
+            this->ui->progressBar->setMaximum(PluginLoader::myMetaInfo->dependeciesPath.size());
         }else{
             this->ui->textBrowser_description->append("dependencies: none");
         }
@@ -75,6 +82,7 @@ void PluginLoaderDialog::on_toolButton_Path_clicked()
         this->ui->textBrowser_description->append("#######################");
         this->ui->textBrowser_description->append("description: ");
         this->ui->textBrowser_description->append(PluginLoader::myMetaInfo->description);
+        this->ui->textBrowser_description->append("#######################");
 
 
         QMessageBox::information(this,"valid", "plugin valid");
@@ -100,6 +108,21 @@ void PluginLoaderDialog::on_pushButton_Ok_clicked()
 {
     bool check = PluginLoader::copyPlugin(this->pluginPath);
 
+}
+
+void PluginLoaderDialog::printMsg(QString msg)
+{
+
+    this->ui->textBrowser_description->append(msg);
+}
+
+void PluginLoaderDialog::printErrorMsg(QString msg)
+{
+    this->ui->textBrowser_description->append(msg);
+}
+
+void PluginLoaderDialog::copyFinished(bool check)
+{
     if (check){
         QMessageBox::information(this,"success", "plugin has been copied successfully.");
     }else{

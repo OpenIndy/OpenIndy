@@ -184,7 +184,8 @@ SOURCES += \
     controller/oistakeout.cpp \
     ui/oistakeoutmanager.cpp \
     ui/pointfeaturemodel.cpp \
-    ui/pointfeaturefiltermodel.cpp
+    ui/pointfeaturefiltermodel.cpp \
+    controller/plugincopier.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -333,7 +334,8 @@ HEADERS  += \
     controller/oistakeout.h \
     ui/oistakeoutmanager.h \
     ui/pointfeaturemodel.h \
-    ui/pointfeaturefiltermodel.h
+    ui/pointfeaturefiltermodel.h \
+    controller/plugincopier.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

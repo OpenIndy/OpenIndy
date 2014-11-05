@@ -175,6 +175,7 @@ QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
  */
 bool Station::fromOpenIndyXML(QDomElement &xmlElem){
 
+    return false;
 }
 
 /*!
