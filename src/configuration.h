@@ -60,6 +60,9 @@ public:
     static QString sLevel;
 
     static QString sObservation;
+
+    static QString sFrontSight;
+    static QString sBackSight;
 /*
     static QString sSteel;
     static QString sAluminum;
@@ -189,6 +192,8 @@ public:
 
     static QPixmap getFeatureIcon(Configuration::FeatureTypes featureType);
     static QPixmap getElementIcon(Configuration::ElementTypes elementType);
+
+    static QString getSight(Configuration::Faces face);
 };
 
 #endif // CONFIGURATION_H

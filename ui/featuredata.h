@@ -54,6 +54,10 @@ public:
 
     void showEvent(QShowEvent *event);
 
+public slots:
+
+    void resizeView();
+
 private slots:
     void on_pushButton_cancel_clicked();
 
@@ -68,6 +72,8 @@ private slots:
     void displayUsedReadings();
 
     void on_comboBox_readings_currentTextChanged(const QString &arg1);
+
+    void updateModels();
 
 private:
     Ui::FeatureData *ui;

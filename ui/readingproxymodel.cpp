@@ -13,6 +13,7 @@ ReadingProxyModel::ReadingProxyModel(QObject *parent) :
  */
 bool ReadingProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const
 {
+    //display only the reading attributes that are specified in the guiconfiguration class.
     QList<int> displayColumns = GUIConfiguration::displayReadingAttributes();
     if(displayColumns.size() == 0){
         return true;
@@ -38,15 +39,19 @@ bool ReadingProxyModel::filterAcceptsRow(int source_row, const QModelIndex &sour
     if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
         return false;
     }
-
+    //get geometry of feature
     if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
         geom = OiFeatureState::getActiveFeature()->getGeometry();
+    //get geometry of station position
     }else if(OiFeatureState::getActiveFeature()->getStation() != NULL){
         geom = OiFeatureState::getActiveFeature()->getStation()->position;
     }else{
         return false;
     }
 
+    /*
+    get selected reading type and display only the readings of the geom that have the same reading type.
+    */
     if(GUIConfiguration::readingType.compare(Configuration::sPolar) == 0){
         if(geom->getObservations().at(source_row)->myReading->typeofReading == Configuration::ePolar){
             return true;

@@ -8,6 +8,9 @@
 #include "oifeaturestate.h"
 #include "guiconfiguration.h"
 
+/*!
+ * \brief The ReadingModel class handles to display all the reading attributes.
+ */
 class ReadingModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -20,8 +23,13 @@ public:
 
 signals:
 
+    void resizeView();
+
 public slots:
     void updateModel();
+
+private:
+    QString getUndefValues(QMap<QString,double> undefReading) const;
 };
 
 #endif // READINGMODEL_H

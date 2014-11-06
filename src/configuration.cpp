@@ -43,6 +43,9 @@ QString Configuration::sLevel = "level";
 
 QString Configuration::sObservation = "observation";
 
+QString Configuration::sFrontSight = "front sight";
+QString Configuration::sBackSight = "back sight";
+
 int Configuration::idCount = 0;
 
 int Configuration::generateID(){
@@ -433,4 +436,23 @@ QPixmap Configuration::getElementIcon(Configuration::ElementTypes elementType){
 
     return QPixmap("");
 
+}
+
+/*!
+ * \brief getSightconverts the enum value of sight orientation to a string
+ * \param face
+ * \return
+ */
+QString Configuration::getSight(Configuration::Faces face)
+{
+    switch (face) {
+    case Configuration::eFrontside:
+        return sFrontSight;
+        break;
+    case Configuration::eBackside:
+        return sBackSight;
+        break;
+    default:
+        break;
+    }
 }

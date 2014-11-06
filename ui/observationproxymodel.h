@@ -7,6 +7,10 @@
 #include "guiconfiguration.h"
 #include "oifeaturestate.h"
 
+/*!
+ * \brief The ObservationProxyModel class handles the displayed observations. Which attributes should be displayed is defined in the GUICOnfiguration class. Changes only should be done
+ *  there, to avoid conflicts.
+ */
 class ObservationProxyModel : public QSortFilterProxyModel
 {
 public:

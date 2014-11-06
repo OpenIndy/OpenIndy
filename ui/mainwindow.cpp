@@ -1582,21 +1582,6 @@ void MainWindow::resizeTableView()
 }
 
 /*!
- * \brief MainWindow::updateCoordSys
- * Set the active coordinate system name as selected item in the combo box
- */
-/*void MainWindow::updateCoordSys(){
-    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
-        this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());
-    }
-}*/
-
-/*void MainWindow::updateModel()
-{
-    emit this->control.tblModel->updateModel();
-}*/
-
-/*!
  * \brief on_actionShow_help_triggered opens the local help document with the user guide.
  */
 void MainWindow::on_actionShow_help_triggered()

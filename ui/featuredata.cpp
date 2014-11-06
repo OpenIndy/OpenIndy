@@ -25,6 +25,14 @@ FeatureData::FeatureData(QWidget *parent) :
 
     this->readingOverviewModel = new ReadingProxyModel();
     this->readingOverviewModel->setSourceModel(this->rModel);
+
+
+    this->oModel->updateModel();
+    this->rModel->updateModel();
+
+    //connect reading and observation view
+    connect(this->rModel,SIGNAL(resizeView()),this,SLOT(resizeView()));
+    connect(this->oModel,SIGNAL(resizeView()),this,SLOT(resizeView()));
 }
 
 /*!
@@ -52,7 +60,7 @@ void FeatureData::on_pushButton_ok_clicked()
 }
 
 /*!
- * \brief FeatureData::showEvent
+ * \brief showEvent
  * \param event
  */
 void FeatureData::showEvent(QShowEvent *event)
@@ -61,10 +69,31 @@ void FeatureData::showEvent(QShowEvent *event)
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
 
-    this->oModel->updateModel();
+    //this->updateModels();
 
 	this->initGUI();
     event->accept();
+}
+
+/*!
+ * \brief resizeView to data size
+ */
+void FeatureData::resizeView()
+{
+    ui->tableView_observation->resizeColumnsToContents();
+    ui->tableView_observation->resizeRowsToContents();
+
+    ui->tableView_readings->resizeColumnsToContents();
+    ui->tableView_readings->resizeRowsToContents();
+
+    ui->tableView_displayedfunctionStatistic->resizeColumnsToContents();
+    ui->tableView_displayedfunctionStatistic->resizeRowsToContents();
+
+    ui->tableView_qxxAposteriori->resizeColumnsToContents();
+    ui->tableView_qxxAposteriori->resizeRowsToContents();
+
+    ui->tableView_sxxApriori->resizeColumnsToContents();
+    ui->tableView_sxxApriori->resizeRowsToContents();
 }
 
 /*!
@@ -90,6 +119,8 @@ void FeatureData::initGUI(){
     for(int i=0; i<OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size();i++){
         ui->comboBox_displayedFunction->addItem(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(i)->getMetaData()->name);
     }
+
+    this->updateModels();
 }
 
 /*!
@@ -195,6 +226,15 @@ void FeatureData::on_comboBox_readings_currentTextChanged(const QString &arg1)
 {
     GUIConfiguration::readingType = arg1;
     if(GUIConfiguration::readingType.compare("") != 0){
-        this->rModel->updateModel();
+        this->updateModels();
     }
+}
+
+/*!
+ * \brief updateModels updates the reading and observation model
+ */
+void FeatureData::updateModels()
+{
+    this->rModel->updateModel();
+    this->oModel->updateModel();
 }

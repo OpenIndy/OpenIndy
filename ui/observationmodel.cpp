@@ -5,6 +5,10 @@ ObservationModel::ObservationModel(QObject *parent ) :
 {
 }
 
+/*!
+ * \brief rowCount calculates the number of rows depending on the number of observations of this feature.
+ * \return
+ */
 int ObservationModel::rowCount(const QModelIndex& ) const{
 
     if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
@@ -20,10 +24,21 @@ int ObservationModel::rowCount(const QModelIndex& ) const{
     return 0;
 }
 
+/*!
+ * \brief columnCount returns the number of columns. Its valud depends on the attribute definition in the GUIConfiguration class.
+ * \param parent
+ * \return
+ */
 int ObservationModel::columnCount(const QModelIndex &parent) const{
     return GUIConfiguration::allObsAttributes.size();
 }
 
+/*!
+ * \brief data displays all the attribute values
+ * \param index
+ * \param role
+ * \return
+ */
 QVariant ObservationModel::data(const QModelIndex &index, int role) const{
 
     if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
@@ -87,6 +102,13 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
     return QVariant();
 }
 
+/*!
+ * \brief headerData displays the specified column names
+ * \param section
+ * \param orientation
+ * \param role
+ * \return
+ */
 QVariant ObservationModel::headerData(int section, Qt::Orientation orientation, int role) const{
 
     QStringList m_columns  = GUIConfiguration::allObsAttributes;
@@ -101,7 +123,11 @@ QVariant ObservationModel::headerData(int section, Qt::Orientation orientation, 
     return QVariant();
 }
 
+/*!
+ * \brief updateModel
+ */
 void ObservationModel::updateModel(){
     emit layoutAboutToBeChanged();
     emit layoutChanged();
+    emit resizeView();
 }

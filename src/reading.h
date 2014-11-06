@@ -23,7 +23,7 @@ struct sReadingPolar{
     double sigmaAzimuth;
     double sigmaZenith;
     double sigmaDistance;
-    bool fsBs;
+    Configuration::Faces face;
     bool isValid;
 };
 
@@ -32,7 +32,7 @@ struct sReadingDirection{
     double zenith;
     double sigmaAzimuth;
     double sigmaZenith;
-    bool fsBs;
+    Configuration::Faces face;
     bool isValid;
 };
 

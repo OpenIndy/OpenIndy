@@ -551,7 +551,7 @@ QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
 
     this->noisyPolarReading(p);
 
-    p->rPolar.fsBs = m->face;
+    p->rPolar.face = Configuration::eFrontside;
 
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
@@ -607,7 +607,7 @@ QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
 
     p->rDirection.azimuth = myAzimuth+daz;
     p->rDirection.zenith = myZenith+dze;
-    p->rDirection.fsBs = m->face;
+    p->rDirection.face = Configuration::eFrontside;
 
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();

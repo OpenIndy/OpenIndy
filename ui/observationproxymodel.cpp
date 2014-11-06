@@ -13,6 +13,7 @@ ObservationProxyModel::ObservationProxyModel(QObject *parent) :
  */
 bool ObservationProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const
 {
+    //display only the observation attributes that are specified in the guiconfiguration class.
     QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::obsAttributes,GUIConfiguration::allObsAttributes);
     if(displayColumns.contains(source_column)){
         return true;

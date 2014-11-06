@@ -367,9 +367,18 @@ void GUIConfiguration::generateAllReadAttr()
     GUIConfiguration::allReadAttributes.append(QString("sigma x" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allReadAttributes.append(QString("sigma y" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allReadAttributes.append(QString("sigma z" + UnitConverter::getDistanceUnitString()));
-    GUIConfiguration::allReadAttributes.append("fsbs");
+    GUIConfiguration::allReadAttributes.append("front sight");
     GUIConfiguration::allReadAttributes.append(QString("temperature" + UnitConverter::getTemperatureUnitString()));
     GUIConfiguration::allReadAttributes.append("valid");
+    GUIConfiguration::allReadAttributes.append(QString("sigma temperature" + UnitConverter::getTemperatureUnitString()));
+    GUIConfiguration::allReadAttributes.append("undefined values");
+    GUIConfiguration::allReadAttributes.append("sigma undefined values");
+    GUIConfiguration::allReadAttributes.append(QString("RX" + UnitConverter::getAngleUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("RY" + UnitConverter::getAngleUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("RZ" + UnitConverter::getAngleUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("sigma RX" + UnitConverter::getAngleUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("sigma RY" + UnitConverter::getAngleUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("sigma RZ" + UnitConverter::getAngleUnitString()));
 }
 
 /*!
@@ -389,7 +398,7 @@ void GUIConfiguration::generatePolarAttr()
     DisplayAttribute *readSigAz = new DisplayAttribute(QString("sigma azimuth" + UnitConverter::getAngleUnitString()),true);
     DisplayAttribute *readSigZe = new DisplayAttribute(QString("sigma zenith" + UnitConverter::getAngleUnitString()),true);
     DisplayAttribute *readSigDist = new DisplayAttribute(QString("sigma distance" + UnitConverter::getDistanceUnitString()),true);
-    DisplayAttribute *readFSBS = new DisplayAttribute("fsbs",true);
+    DisplayAttribute *readFSBS = new DisplayAttribute("front sight",true);
     DisplayAttribute *readValid = new DisplayAttribute("valid",true);
 
     GUIConfiguration::polarAttributes.append(readID);
@@ -453,13 +462,13 @@ void GUIConfiguration::generateDistAttr()
     DisplayAttribute *readSigDist = new DisplayAttribute(QString("sigma distance" + UnitConverter::getDistanceUnitString()),true);
     DisplayAttribute *readValid = new DisplayAttribute("valid",true);
 
-    GUIConfiguration::cartAttributes.append(readID);
-    GUIConfiguration::cartAttributes.append(readType);
-    GUIConfiguration::cartAttributes.append(readTime);
-    GUIConfiguration::cartAttributes.append(readInstrument);
-    GUIConfiguration::cartAttributes.append(readDist);
-    GUIConfiguration::cartAttributes.append(readSigDist);
-    GUIConfiguration::cartAttributes.append(readValid);
+    GUIConfiguration::distAttributes.append(readID);
+    GUIConfiguration::distAttributes.append(readType);
+    GUIConfiguration::distAttributes.append(readTime);
+    GUIConfiguration::distAttributes.append(readInstrument);
+    GUIConfiguration::distAttributes.append(readDist);
+    GUIConfiguration::distAttributes.append(readSigDist);
+    GUIConfiguration::distAttributes.append(readValid);
 }
 
 /*!
@@ -478,6 +487,7 @@ void GUIConfiguration::generateDirAttr()
     DisplayAttribute *readSigAz = new DisplayAttribute(QString("sigma azimuth" + UnitConverter::getAngleUnitString()),true);
     DisplayAttribute *readSigZe = new DisplayAttribute(QString("sigma zenith" + UnitConverter::getAngleUnitString()),true);
     DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+    DisplayAttribute *readFsBs = new DisplayAttribute("front sight",true);
 
     GUIConfiguration::dirAttributes.append(readID);
     GUIConfiguration::dirAttributes.append(readType);
@@ -488,6 +498,7 @@ void GUIConfiguration::generateDirAttr()
     GUIConfiguration::dirAttributes.append(readSigAz);
     GUIConfiguration::dirAttributes.append(readSigZe);
     GUIConfiguration::dirAttributes.append(readValid);
+    GUIConfiguration::dirAttributes.append(readFsBs);
 }
 
 /*!
@@ -503,6 +514,7 @@ void GUIConfiguration::generateTempAttr()
     DisplayAttribute *readInstrument = new DisplayAttribute("instrument",true);
     DisplayAttribute *readTemp = new DisplayAttribute(QString("temperature" + UnitConverter::getTemperatureUnitString()),true);
     DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+    DisplayAttribute *readSigTemp = new DisplayAttribute(QString("sigma temperature" + UnitConverter::getTemperatureUnitString()),true);
 
     GUIConfiguration::tempAttributes.append(readID);
     GUIConfiguration::tempAttributes.append(readType);
@@ -510,6 +522,7 @@ void GUIConfiguration::generateTempAttr()
     GUIConfiguration::tempAttributes.append(readInstrument);
     GUIConfiguration::tempAttributes.append(readTemp);
     GUIConfiguration::tempAttributes.append(readValid);
+    GUIConfiguration::tempAttributes.append(readSigTemp);
 }
 
 void GUIConfiguration::generateLevelAttr()
@@ -521,12 +534,24 @@ void GUIConfiguration::generateLevelAttr()
     DisplayAttribute *readTime = new DisplayAttribute("time",true);
     DisplayAttribute *readInstrument = new DisplayAttribute("instrument",true);
     DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+    DisplayAttribute *readRX = new DisplayAttribute(QString("RX" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readRY = new DisplayAttribute(QString("RY" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readRZ = new DisplayAttribute(QString("RZ" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readSigRX = new DisplayAttribute(QString("sigma RX" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readSigRY = new DisplayAttribute(QString("sigma RY" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readSigRZ = new DisplayAttribute(QString("sigma RZ" + UnitConverter::getAngleUnitString()),true);
 
     GUIConfiguration::levelAttributes.append(readID);
     GUIConfiguration::levelAttributes.append(readType);
     GUIConfiguration::levelAttributes.append(readTime);
     GUIConfiguration::levelAttributes.append(readInstrument);
     GUIConfiguration::levelAttributes.append(readValid);
+    GUIConfiguration::levelAttributes.append(readRX);
+    GUIConfiguration::levelAttributes.append(readRY);
+    GUIConfiguration::levelAttributes.append(readRZ);
+    GUIConfiguration::levelAttributes.append(readSigRX);
+    GUIConfiguration::levelAttributes.append(readSigRY);
+    GUIConfiguration::levelAttributes.append(readSigRZ);
 }
 
 void GUIConfiguration::generateUndefAttr()
@@ -538,12 +563,16 @@ void GUIConfiguration::generateUndefAttr()
     DisplayAttribute *readTime = new DisplayAttribute("time",true);
     DisplayAttribute *readInstrument = new DisplayAttribute("instrument",true);
     DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+    DisplayAttribute *readundefVal = new DisplayAttribute("undefined values",true);
+    DisplayAttribute *readSigUndefVal = new DisplayAttribute("sigma undefined values",true);
 
     GUIConfiguration::undefAttributes.append(readID);
     GUIConfiguration::undefAttributes.append(readType);
     GUIConfiguration::undefAttributes.append(readTime);
     GUIConfiguration::undefAttributes.append(readInstrument);
     GUIConfiguration::undefAttributes.append(readValid);
+    GUIConfiguration::undefAttributes.append(readundefVal);
+    GUIConfiguration::undefAttributes.append(readSigUndefVal);
 }
 
 /*!

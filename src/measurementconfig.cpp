@@ -16,7 +16,6 @@ bool MeasurementConfig::toOpenIndyXML(QXmlStreamWriter &stream){
     stream.writeAttribute("name", this->name);
     stream.writeAttribute("internalRef", QString::number(this->internalRef));
     stream.writeAttribute("count", QString::number(this->count));
-    stream.writeAttribute("face", QString::number(this->face));
     stream.writeAttribute("iterations", QString::number(this->iterations));
     stream.writeAttribute("measureTwoSides", this->measureTwoSides?"1":"0");
     stream.writeAttribute("timeDependent", this->timeDependent?"1":"0");
@@ -46,9 +45,6 @@ ElementDependencies MeasurementConfig::fromOpenIndyXML(QXmlStreamReader &xml){
     }
     if(attributes.hasAttribute("count")){
         this->count = attributes.value("count").toInt();
-    }
-    if(attributes.hasAttribute("face")){
-        this->face = (Configuration::Faces)attributes.value("face").toInt();
     }
     if(attributes.hasAttribute("iterations")){
         this->iterations = attributes.value("iterations").toInt();

@@ -8,6 +8,9 @@
 #include "oifeaturestate.h"
 #include "guiconfiguration.h"
 
+/*!
+ * \brief The ObservationModel class handles to display all information and attributes about the observations of the selected feature
+ */
 class ObservationModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -19,6 +22,8 @@ public:
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
 signals:
+
+    void resizeView();
 
 public slots:
     void updateModel();

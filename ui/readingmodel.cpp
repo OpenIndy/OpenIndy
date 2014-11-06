@@ -5,6 +5,10 @@ ReadingModel::ReadingModel(QObject *parent) :
 {
 }
 
+/*!
+ * \brief rowCount returns the number of readings depending on the number of observations
+ * \return
+ */
 int ReadingModel::rowCount(const QModelIndex& ) const{
 
     if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
@@ -20,10 +24,21 @@ int ReadingModel::rowCount(const QModelIndex& ) const{
     return 0;
 }
 
+/*!
+ * \brief columnCount returns the number of columns that are specified in the GUIConfiguration class
+ * \param parent
+ * \return
+ */
 int ReadingModel::columnCount(const QModelIndex &parent) const{
     return GUIConfiguration::allReadAttributes.size();
 }
 
+/*!
+ * \brief data shows all the attribute values of the readings.
+ * \param index
+ * \param role
+ * \return
+ */
 QVariant ReadingModel::data(const QModelIndex &index, int role) const{
 
     if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
@@ -102,13 +117,40 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 16:
-                return QString(geom->getObservations().at(index.row())->myReading->rPolar.fsBs?"true":"false");
+                return Configuration::getSight(geom->getObservations().at(index.row())->myReading->rPolar.face);
                 break;
             case 17:
                 return "-/-";
                 break;
             case 18:
                 return QString(geom->getObservations().at(index.row())->myReading->rPolar.isValid?"true":"false");
+                break;
+            case 19:
+                return "-/-";
+                break;
+            case 20:
+                return "-/-";
+                break;
+            case 21:
+                return "-/-";
+                break;
+            case 22:
+                return "-/-";
+                break;
+            case 23:
+                return "-/-";
+                break;
+            case 24:
+                return "-/-";
+                break;
+            case 25:
+                return "-/-";
+                break;
+            case 26:
+                return "-/-";
+                break;
+            case 27:
+                return "-/-";
                 break;
             default:
                 break;
@@ -173,6 +215,33 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
             case 18:
                 return QString(geom->getObservations().at(index.row())->myReading->rCartesian.isValid?"true":"false");
                 break;
+            case 19:
+                return "-/-";
+                break;
+            case 20:
+                return "-/-";
+                break;
+            case 21:
+                return "-/-";
+                break;
+            case 22:
+                return "-/-";
+                break;
+            case 23:
+                return "-/-";
+                break;
+            case 24:
+                return "-/-";
+                break;
+            case 25:
+                return "-/-";
+                break;
+            case 26:
+                return "-/-";
+                break;
+            case 27:
+                return "-/-";
+                break;
             default:
                 break;
             }
@@ -236,6 +305,33 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
             case 18:
                 return QString(geom->getObservations().at(index.row())->myReading->rCartesian.isValid?"true":"false");
                 break;
+            case 19:
+                return "-/-";
+                break;
+            case 20:
+                return "-/-";
+                break;
+            case 21:
+                return "-/-";
+                break;
+            case 22:
+                return "-/-";
+                break;
+            case 23:
+                return "-/-";
+                break;
+            case 24:
+                return "-/-";
+                break;
+            case 25:
+                return "-/-";
+                break;
+            case 26:
+                return "-/-";
+                break;
+            case 27:
+                return "-/-";
+                break;
             default:
                 break;
             }
@@ -291,13 +387,40 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 16:
-                return QString(geom->getObservations().at(index.row())->myReading->rDirection.fsBs?"true":"false");
+                return Configuration::getSight(geom->getObservations().at(index.row())->myReading->rDirection.face);
                 break;
             case 17:
                 return "-/-";
                 break;
             case 18:
                 return QString(geom->getObservations().at(index.row())->myReading->rDirection.isValid?"true":"false");
+                break;
+            case 19:
+                return "-/-";
+                break;
+            case 20:
+                return "-/-";
+                break;
+            case 21:
+                return "-/-";
+                break;
+            case 22:
+                return "-/-";
+                break;
+            case 23:
+                return "-/-";
+                break;
+            case 24:
+                return "-/-";
+                break;
+            case 25:
+                return "-/-";
+                break;
+            case 26:
+                return "-/-";
+                break;
+            case 27:
+                return "-/-";
                 break;
             default:
                 break;
@@ -362,6 +485,213 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
             case 18:
                 return QString(geom->getObservations().at(index.row())->myReading->rTemperature.isValid?"true":"false");
                 break;
+            case 19:
+                return QString::number(UnitConverter::getTemperature(geom->getObservations().at(index.row())->myReading->rTemperature.sigmaTempDeg),'f',UnitConverter::temperatureDigits);
+                break;
+            case 20:
+                return "-/-";
+                break;
+            case 21:
+                return "-/-";
+                break;
+            case 22:
+                return "-/-";
+                break;
+            case 23:
+                return "-/-";
+                break;
+            case 24:
+                return "-/-";
+                break;
+            case 25:
+                return "-/-";
+                break;
+            case 26:
+                return "-/-";
+                break;
+            case 27:
+                return "-/-";
+                break;
+            default:
+                break;
+            }
+            break;
+        case Configuration::eLevel:
+            switch (index.column()) {
+            case 0:
+                return QString::number(geom->getObservations().at(index.row())->myReading->id);
+                break;
+            case 1:
+                return "level reading";
+                break;
+            case 2:
+                return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
+                break;
+            case 3:
+                return instrument;
+                break;
+            case 4:
+                return "-/-";
+                break;
+            case 5:
+                return "-/-";
+                break;
+            case 6:
+                return "-/-";
+                break;
+            case 7:
+                return "-/-";
+                break;
+            case 8:
+                return "-/-";
+                break;
+            case 9:
+                return "-/-";
+                break;
+            case 10:
+                return "-/-";
+                break;
+            case 11:
+                return "-/-";
+                break;
+            case 12:
+                return "-/-";
+                break;
+            case 13:
+                return "-/-";
+                break;
+            case 14:
+                return "-/-";
+                break;
+            case 15:
+                return "-/-";
+                break;
+            case 16:
+                return "-/-";
+                break;
+            case 17:
+                return "-/-";
+                break;
+            case 18:
+                return QString(geom->getObservations().at(index.row())->myReading->rLevel.isValid?"true":"false");
+                break;
+            case 19:
+                return "-/-";
+                break;
+            case 20:
+                return "-/-";
+                break;
+            case 21:
+                return "-/-";
+                break;
+            case 22:
+                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.RX,'f',UnitConverter::angleDigits);
+                break;
+            case 23:
+                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.RY,'f',UnitConverter::angleDigits);
+                break;
+            case 24:
+                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.RZ,'f',UnitConverter::angleDigits);
+                break;
+            case 25:
+                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.sigmaRX,'f',UnitConverter::angleDigits);
+                break;
+            case 26:
+                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.sigmaRY,'f',UnitConverter::angleDigits);
+                break;
+            case 27:
+                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.sigmaRZ,'f',UnitConverter::angleDigits);
+                break;
+            default:
+                break;
+            }
+            break;
+        case Configuration::eUndefined:
+            switch (index.column()) {
+            case 0:
+                return QString::number(geom->getObservations().at(index.row())->myReading->id);
+                break;
+            case 1:
+                return "undefined reading";
+                break;
+            case 2:
+                return geom->getObservations().at(index.row())->myReading->measuredAt.toString();
+                break;
+            case 3:
+                return instrument;
+                break;
+            case 4:
+                return "-/-";
+                break;
+            case 5:
+                return "-/-";
+                break;
+            case 6:
+                return "-/-";
+                break;
+            case 7:
+                return "-/-";
+                break;
+            case 8:
+                return "-/-";
+                break;
+            case 9:
+                return "-/-";
+                break;
+            case 10:
+                return "-/-";
+                break;
+            case 11:
+                return "-/-";
+                break;
+            case 12:
+                return "-/-";
+                break;
+            case 13:
+                return "-/-";
+                break;
+            case 14:
+                return "-/-";
+                break;
+            case 15:
+                return "-/-";
+                break;
+            case 16:
+                return "-/-";
+                break;
+            case 17:
+                return "-/-";
+                break;
+            case 18:
+                return QString(geom->getObservations().at(index.row())->myReading->rUndefined.isValid?"true":"false");
+                break;
+            case 19:
+                return "-/-";
+                break;
+            case 20:
+                return getUndefValues(geom->getObservations().at(index.row())->myReading->rUndefined.values);
+                break;
+            case 21:
+                return getUndefValues(geom->getObservations().at(index.row())->myReading->rUndefined.sigmaValues);
+                break;
+            case 22:
+                return "-/-";
+                break;
+            case 23:
+                return "-/-";
+                break;
+            case 24:
+                return "-/-";
+                break;
+            case 25:
+                return "-/-";
+                break;
+            case 26:
+                return "-/-";
+                break;
+            case 27:
+                return "-/-";
+                break;
             default:
                 break;
             }
@@ -373,6 +703,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
     return QVariant();
 }
 
+/*!
+ * \brief headerData displays all the header column names. Depends on the specification in the GUIConfiguration class.
+ * \param section
+ * \param orientation
+ * \param role
+ * \return
+ */
 QVariant ReadingModel::headerData(int section, Qt::Orientation orientation, int role) const{
 
     QStringList m_columns  = GUIConfiguration::allReadAttributes;
@@ -387,7 +724,28 @@ QVariant ReadingModel::headerData(int section, Qt::Orientation orientation, int 
     return QVariant();
 }
 
+/*!
+ * \brief updateModel
+ */
 void ReadingModel::updateModel(){
     emit layoutAboutToBeChanged();
     emit layoutChanged();
+    emit resizeView();
+}
+
+/*!
+ * \brief getUndefValues returns all values included in the map as one string to display in the model.
+ * \param undefReading
+ * \return
+ */
+QString ReadingModel::getUndefValues(QMap<QString, double> undefReading) const
+{
+    QString result = "";
+
+    QMapIterator<QString, double> i(undefReading);
+    while(i.hasNext()){
+        i.next();
+        result = result + QString(i.key() + " " + i.value() + " ");
+    }
+    return result;
 }

@@ -28,7 +28,6 @@ public:
     QString name;
     int count;
     int iterations;
-    Configuration::Faces face;
     bool measureTwoSides;
     bool timeDependent;
     bool distanceDependent;
