@@ -40,6 +40,7 @@ private:
     Ui::PluginLoaderDialog *ui;
 
     QString pluginPath;
+    QString metaInfoText;
 
 
 };

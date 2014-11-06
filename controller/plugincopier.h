@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <QDir>
+#include <QApplication>
 #include <QString>
 #include <QStringList>
 #include <QJsonObject>
@@ -27,14 +28,17 @@ signals:
     void copyFinished(bool check);
 
 public slots:
-    void setPaths(PluginMetaData *pluginMeta, QString destinationPath,QString pluginDir);
+    void setPaths(PluginMetaData *pluginMeta, QString filename);
+    void sendMsg(QString msg, bool error);
+    void sendCopyFinished(bool check);
 
 private:
     PluginMetaData *pMetaData;
-    QString dPath;
-    QString pDir;
+    QString pluginPath;
 
     bool copyDir(QString sourcePath, QString destinationPath);
+    void makeErrorMsg(QString msg);
+    bool checkDependenciesExistens(QString path,PluginMetaData *pluginMeta );
 
 };
 

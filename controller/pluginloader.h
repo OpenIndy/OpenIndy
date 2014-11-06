@@ -61,6 +61,7 @@ public slots:
     static QList<NetworkAdjustment*> loadNetworkAdjustmentPlugins(QString path);
 
     static PluginCopier* getCopier();
+    static bool deletePlugin(PluginMetaData* metaData);
 
 
 private:
@@ -70,10 +71,6 @@ private:
 
     //! check whether the oiPlugin is valid
     static bool checkPlugin();
-
-    static bool copyDependencies(QString dirPath);
-    static bool copyDir(QString sourcePath, QString destinationPath);
-
 
 
     static PluginCopier *pCopier;
