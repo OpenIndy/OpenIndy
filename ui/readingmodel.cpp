@@ -62,6 +62,11 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
 
     if(Qt::DisplayRole == role){
 
+        if(geom->getObservations().size() <= index.row()){
+            qDebug() << "obs liste zu kurz";
+            return QVariant();
+        }
+
         QString instrument = geom->getObservations().at(index.row())->myReading->instrument->getMetaData()->name;
 
         switch (geom->getObservations().at(index.row())->myReading->typeofReading) {
@@ -303,7 +308,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 18:
-                return QString(geom->getObservations().at(index.row())->myReading->rCartesian.isValid?"true":"false");
+                return QString(geom->getObservations().at(index.row())->myReading->rDistance.isValid?"true":"false");
                 break;
             case 19:
                 return "-/-";

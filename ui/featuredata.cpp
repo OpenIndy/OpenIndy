@@ -175,6 +175,7 @@ void FeatureData::on_comboBox_displayedFunction_currentIndexChanged(const QStrin
             ui->tableView_displayedfunctionStatistic->setModel(fModel);
             fModel->updateModel();
         }else{
+            fModel->setFunction(NULL);
             ui->tableView_displayedfunctionStatistic->setModel(NULL);
         }
     }

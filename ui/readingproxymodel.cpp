@@ -24,6 +24,8 @@ bool ReadingProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
             return false;
         }
     }
+
+    return true;
 }
 
 /*!
@@ -34,6 +36,7 @@ bool ReadingProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
  */
 bool ReadingProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
+
     Geometry *geom = NULL;
 
     if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
@@ -49,9 +52,14 @@ bool ReadingProxyModel::filterAcceptsRow(int source_row, const QModelIndex &sour
         return false;
     }
 
-    /*
-    get selected reading type and display only the readings of the geom that have the same reading type.
-    */
+    if(geom->getObservations().size() <= source_row){
+        qDebug() << "obs liste in proxy";
+        return false;
+    }
+
+
+    //get selected reading type and display only the readings of the geom that have the same reading type.
+
     if(GUIConfiguration::readingType.compare(Configuration::sPolar) == 0){
         if(geom->getObservations().at(source_row)->myReading->typeofReading == Configuration::ePolar){
             return true;
@@ -95,6 +103,4 @@ bool ReadingProxyModel::filterAcceptsRow(int source_row, const QModelIndex &sour
             return false;
         }
     }
-
-    delete geom;
 }

@@ -43,6 +43,10 @@ int FunctionStatistic::columnCount(const QModelIndex &parent) const{
  */
 QVariant FunctionStatistic::data(const QModelIndex &index, int role) const{
 
+    if(this->ElementIDs.size() == 0){
+        return QVariant();
+    }
+
     if(this->selectedFunction != NULL){
 
         if(!index.isValid())
