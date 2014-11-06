@@ -63,7 +63,7 @@ bool FeatureOverviewProxyModel::filterAcceptsColumn(int source_column, const QMo
     }else{
         return true;
     }*/
-    QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::featureAttributes);
+    QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::featureAttributes,GUIConfiguration::allAttributes);
     if(displayColumns.contains(source_column)){
         return true;
     }else{

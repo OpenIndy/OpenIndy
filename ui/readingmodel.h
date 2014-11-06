@@ -6,6 +6,7 @@
 #include "featurewrapper.h"
 #include "QStringList"
 #include "oifeaturestate.h"
+#include "guiconfiguration.h"
 
 class ReadingModel : public QAbstractTableModel
 {

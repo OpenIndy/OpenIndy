@@ -37,9 +37,9 @@ void SettingsDialog::on_pushButton_ok_clicked()
 
     //first call generate, so they get the new unit string, if changed.
     saveSettings();
-    GUIConfiguration::generateAllAttributes();
-    GUIConfiguration::generateFeatureAttributes();
-    GUIConfiguration::generateTrafoParamAttributes();
+    //! generate lists for gui and view modification
+    GUIConfiguration::generateLists();
+
     //then they get the boolean for display or not.
     getFeatureColumns();
     getTrafoParamColumns();

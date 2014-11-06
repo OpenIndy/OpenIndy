@@ -10,14 +10,58 @@ GUIConfiguration::~GUIConfiguration()
 
 }
 
+//! main view
 QStringList GUIConfiguration::allAttributes;
 QList<DisplayAttribute*> GUIConfiguration::featureAttributes;
 QList<DisplayAttribute*> GUIConfiguration::trafoParamAttributes;
+
+//! observation model
+QStringList GUIConfiguration::allObsAttributes;
+QList<DisplayAttribute*> GUIConfiguration::obsAttributes;
+
+//! reading model
+QString GUIConfiguration::readingType = "";
+QStringList GUIConfiguration::allReadAttributes;
+QList<DisplayAttribute*> GUIConfiguration::polarAttributes;
+QList<DisplayAttribute*> GUIConfiguration::cartAttributes;
+QList<DisplayAttribute*> GUIConfiguration::distAttributes;
+QList<DisplayAttribute*> GUIConfiguration::dirAttributes;
+QList<DisplayAttribute*> GUIConfiguration::tempAttributes;
+QList<DisplayAttribute*> GUIConfiguration::levelAttributes;
+QList<DisplayAttribute*> GUIConfiguration::undefAttributes;
+
+/*!
+ * \brief generateLists. Calls this function at project start and after all unit changes. It will generate the new lists that are used for the gui.
+ */
+void GUIConfiguration::generateLists()
+{
+    //complete lists
+    generateAllAttributes();
+    generateAllObsAttributes();
+    generateAllReadAttr();
+
+    //user defined main and trafo param view
+    generateFeatureAttributes();
+    generateTrafoParamAttributes();
+
+    //User defined observation view
+    generateObsAttributes();
+
+    //user defined reading view
+    generateCartAttr();
+    generatePolarAttr();
+    generateDirAttr();
+    generateDistAttr();
+    generateLevelAttr();
+    generateTempAttr();
+    generateUndefAttr();
+}
 
 /*!
  * \brief generateAllAttributes fills the QStringList with all existing attribute names.
  * This list is later used for the tableview model.
  * Call this function at project beginning and after every change in unit setting!
+ * Append all new attributes at the END of the list !!!!
  */
 void GUIConfiguration::generateAllAttributes()
 {
@@ -181,17 +225,374 @@ void GUIConfiguration::generateTrafoParamAttributes()
  * \param attributes
  * \return
  */
-QList<int> GUIConfiguration::displayAttributes(QList<DisplayAttribute*> attributes)
+QList<int> GUIConfiguration::displayAttributes(QList<DisplayAttribute*> selectedAttributes, QStringList attributes)
 {
     QList<int> display;
 
-    for(int i =0; i<attributes.size();i++){
-        if(attributes.at(i)->displayState == true){
-            int res = GUIConfiguration::allAttributes.indexOf(attributes.at(i)->attrName);
+    for(int i =0; i<selectedAttributes.size();i++){
+        if(selectedAttributes.at(i)->displayState == true){
+            int res = attributes.indexOf(selectedAttributes.at(i)->attrName);
             if(res != -1){
                 display.append(res);
             }
         }
     }
     return display;
+}
+
+/*!
+ * \brief displayReadingAttributes selects the columns that should be displayed depending on the current reading type.
+ * \return
+ */
+QList<int> GUIConfiguration::displayReadingAttributes()
+{
+    QList<int> display;
+
+    //display all selected polar reading attributes
+    if(readingType.compare(Configuration::sPolar) == 0){
+
+        for(int i =0; i<polarAttributes.size();i++){
+            if(polarAttributes.at(i)->displayState == true){
+                int res = allReadAttributes.indexOf(polarAttributes.at(i)->attrName);
+                if(res != -1){
+                    display.append(res);
+                }
+            }
+        }
+        return display;
+
+    //display all selected cartesian reading attributes
+    }else if(readingType.compare(Configuration::sCartesian) == 0){
+
+        for(int i =0; i<cartAttributes.size();i++){
+            if(cartAttributes.at(i)->displayState == true){
+                int res = allReadAttributes.indexOf(cartAttributes.at(i)->attrName);
+                if(res != -1){
+                    display.append(res);
+                }
+            }
+        }
+        return display;
+
+    //display all selected distance reading attributes
+    }else if(readingType.compare(Configuration::sDistance) == 0){
+
+        for(int i =0; i<distAttributes.size();i++){
+            if(distAttributes.at(i)->displayState == true){
+                int res = allReadAttributes.indexOf(distAttributes.at(i)->attrName);
+                if(res != -1){
+                    display.append(res);
+                }
+            }
+        }
+        return display;
+
+    //display all selected direction reading attributes
+    }else if(readingType.compare(Configuration::sDirection) == 0){
+
+        for(int i =0; i<dirAttributes.size();i++){
+            if(dirAttributes.at(i)->displayState == true){
+                int res = allReadAttributes.indexOf(dirAttributes.at(i)->attrName);
+                if(res != -1){
+                    display.append(res);
+                }
+            }
+        }
+        return display;
+
+    //display all selected temperature reading attributes
+    }else if(readingType.compare(Configuration::sTemperatur) == 0){
+
+        for(int i =0; i<tempAttributes.size();i++){
+            if(tempAttributes.at(i)->displayState == true){
+                int res = allReadAttributes.indexOf(tempAttributes.at(i)->attrName);
+                if(res != -1){
+                    display.append(res);
+                }
+            }
+        }
+        return display;
+
+    //display all selected level reading attributes
+    }else if(readingType.compare(Configuration::sLevel) == 0){
+
+        for(int i =0; i<levelAttributes.size();i++){
+            if(levelAttributes.at(i)->displayState == true){
+                int res = allReadAttributes.indexOf(levelAttributes.at(i)->attrName);
+                if(res != -1){
+                    display.append(res);
+                }
+            }
+        }
+        return display;
+
+    //display all selected undefined reading attributes
+    }else if(readingType.compare("undefined") == 0){
+
+        for(int i =0; i<undefAttributes.size();i++){
+            if(undefAttributes.at(i)->displayState == true){
+                int res = allReadAttributes.indexOf(undefAttributes.at(i)->attrName);
+                if(res != -1){
+                    display.append(res);
+                }
+            }
+        }
+        return display;
+
+    }
+    //return empty list if no reading type is set
+    return display;
+}
+
+/*!
+ * \brief generateAllReadAttr all attributes for readings
+ */
+void GUIConfiguration::generateAllReadAttr()
+{
+    GUIConfiguration::allReadAttributes.clear();
+
+    GUIConfiguration::allReadAttributes.append("id");
+    GUIConfiguration::allReadAttributes.append("type");
+    GUIConfiguration::allReadAttributes.append("time");
+    GUIConfiguration::allReadAttributes.append("instrument");
+    GUIConfiguration::allReadAttributes.append(QString("azimuth" + UnitConverter::getAngleUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("zenith" + UnitConverter::getAngleUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("distance" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("sigma azimuth" + UnitConverter::getAngleUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("sigma zenith" + UnitConverter::getAngleUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("sigma distance" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("x" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("y" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("z" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("sigma x" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("sigma y" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allReadAttributes.append(QString("sigma z" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allReadAttributes.append("fsbs");
+    GUIConfiguration::allReadAttributes.append(QString("temperature" + UnitConverter::getTemperatureUnitString()));
+    GUIConfiguration::allReadAttributes.append("valid");
+}
+
+/*!
+ * \brief generatePolarAttr all attributes for polar readings
+ */
+void GUIConfiguration::generatePolarAttr()
+{
+    GUIConfiguration::polarAttributes.clear();
+
+    DisplayAttribute *readID = new DisplayAttribute("id",true);
+    DisplayAttribute *readType = new DisplayAttribute("type",true);
+    DisplayAttribute *readTime = new DisplayAttribute("time",true);
+    DisplayAttribute *readInstrument = new DisplayAttribute("instrument",true);
+    DisplayAttribute *readAzimuth = new DisplayAttribute(QString("azimuth" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readZenith = new DisplayAttribute(QString("zenith" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readDistance = new DisplayAttribute(QString("distance" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *readSigAz = new DisplayAttribute(QString("sigma azimuth" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readSigZe = new DisplayAttribute(QString("sigma zenith" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readSigDist = new DisplayAttribute(QString("sigma distance" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *readFSBS = new DisplayAttribute("fsbs",true);
+    DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+
+    GUIConfiguration::polarAttributes.append(readID);
+    GUIConfiguration::polarAttributes.append(readType);
+    GUIConfiguration::polarAttributes.append(readTime);
+    GUIConfiguration::polarAttributes.append(readInstrument);
+    GUIConfiguration::polarAttributes.append(readAzimuth);
+    GUIConfiguration::polarAttributes.append(readZenith);
+    GUIConfiguration::polarAttributes.append(readDistance);
+    GUIConfiguration::polarAttributes.append(readSigAz);
+    GUIConfiguration::polarAttributes.append(readSigZe);
+    GUIConfiguration::polarAttributes.append(readSigDist);
+    GUIConfiguration::polarAttributes.append(readFSBS);
+    GUIConfiguration::polarAttributes.append(readValid);
+}
+
+/*!
+ * \brief generateCartAttr all attributes for cartesian reading
+ */
+void GUIConfiguration::generateCartAttr()
+{
+    GUIConfiguration::cartAttributes.clear();
+
+    DisplayAttribute *readID = new DisplayAttribute("id",true);
+    DisplayAttribute *readType = new DisplayAttribute("type",true);
+    DisplayAttribute *readTime = new DisplayAttribute("time",true);
+    DisplayAttribute *readInstrument = new DisplayAttribute("instrument",true);
+    DisplayAttribute *readX = new DisplayAttribute(QString("x" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *readY = new DisplayAttribute(QString("y" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *readZ = new DisplayAttribute(QString("z" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *readSigX = new DisplayAttribute(QString("sigma x" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *readSigY = new DisplayAttribute(QString("sigma y" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *readSigZ = new DisplayAttribute(QString("sigma z" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+
+    GUIConfiguration::cartAttributes.append(readID);
+    GUIConfiguration::cartAttributes.append(readType);
+    GUIConfiguration::cartAttributes.append(readTime);
+    GUIConfiguration::cartAttributes.append(readInstrument);
+    GUIConfiguration::cartAttributes.append(readX);
+    GUIConfiguration::cartAttributes.append(readY);
+    GUIConfiguration::cartAttributes.append(readZ);
+    GUIConfiguration::cartAttributes.append(readSigX);
+    GUIConfiguration::cartAttributes.append(readSigY);
+    GUIConfiguration::cartAttributes.append(readSigZ);
+    GUIConfiguration::cartAttributes.append(readValid);
+}
+
+/*!
+ * \brief generateDistAttr all attributes for distance reading
+ */
+void GUIConfiguration::generateDistAttr()
+{
+    GUIConfiguration::distAttributes.clear();
+
+    DisplayAttribute *readID = new DisplayAttribute("id",true);
+    DisplayAttribute *readType = new DisplayAttribute("type",true);
+    DisplayAttribute *readTime = new DisplayAttribute("time",true);
+    DisplayAttribute *readInstrument = new DisplayAttribute("instrument",true);
+    DisplayAttribute *readDist = new DisplayAttribute(QString("distance" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *readSigDist = new DisplayAttribute(QString("sigma distance" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+
+    GUIConfiguration::cartAttributes.append(readID);
+    GUIConfiguration::cartAttributes.append(readType);
+    GUIConfiguration::cartAttributes.append(readTime);
+    GUIConfiguration::cartAttributes.append(readInstrument);
+    GUIConfiguration::cartAttributes.append(readDist);
+    GUIConfiguration::cartAttributes.append(readSigDist);
+    GUIConfiguration::cartAttributes.append(readValid);
+}
+
+/*!
+ * \brief generateDirAttr all attributes for direction reading
+ */
+void GUIConfiguration::generateDirAttr()
+{
+    GUIConfiguration::dirAttributes.clear();
+
+    DisplayAttribute *readID = new DisplayAttribute("id",true);
+    DisplayAttribute *readType = new DisplayAttribute("type",true);
+    DisplayAttribute *readTime = new DisplayAttribute("time",true);
+    DisplayAttribute *readInstrument = new DisplayAttribute("instrument",true);
+    DisplayAttribute *readAzimuth = new DisplayAttribute(QString("azimuth" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readZenith = new DisplayAttribute(QString("zenith" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readSigAz = new DisplayAttribute(QString("sigma azimuth" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readSigZe = new DisplayAttribute(QString("sigma zenith" + UnitConverter::getAngleUnitString()),true);
+    DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+
+    GUIConfiguration::dirAttributes.append(readID);
+    GUIConfiguration::dirAttributes.append(readType);
+    GUIConfiguration::dirAttributes.append(readTime);
+    GUIConfiguration::dirAttributes.append(readInstrument);
+    GUIConfiguration::dirAttributes.append(readAzimuth);
+    GUIConfiguration::dirAttributes.append(readZenith);
+    GUIConfiguration::dirAttributes.append(readSigAz);
+    GUIConfiguration::dirAttributes.append(readSigZe);
+    GUIConfiguration::dirAttributes.append(readValid);
+}
+
+/*!
+ * \brief generateTempAttr all attributes for temperature reading
+ */
+void GUIConfiguration::generateTempAttr()
+{
+    GUIConfiguration::tempAttributes.clear();
+
+    DisplayAttribute *readID = new DisplayAttribute("id",true);
+    DisplayAttribute *readType = new DisplayAttribute("type",true);
+    DisplayAttribute *readTime = new DisplayAttribute("time",true);
+    DisplayAttribute *readInstrument = new DisplayAttribute("instrument",true);
+    DisplayAttribute *readTemp = new DisplayAttribute(QString("temperature" + UnitConverter::getTemperatureUnitString()),true);
+    DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+
+    GUIConfiguration::tempAttributes.append(readID);
+    GUIConfiguration::tempAttributes.append(readType);
+    GUIConfiguration::tempAttributes.append(readTime);
+    GUIConfiguration::tempAttributes.append(readInstrument);
+    GUIConfiguration::tempAttributes.append(readTemp);
+    GUIConfiguration::tempAttributes.append(readValid);
+}
+
+void GUIConfiguration::generateLevelAttr()
+{
+    GUIConfiguration::levelAttributes.clear();
+
+    DisplayAttribute *readID = new DisplayAttribute("id",true);
+    DisplayAttribute *readType = new DisplayAttribute("type",true);
+    DisplayAttribute *readTime = new DisplayAttribute("time",true);
+    DisplayAttribute *readInstrument = new DisplayAttribute("instrument",true);
+    DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+
+    GUIConfiguration::levelAttributes.append(readID);
+    GUIConfiguration::levelAttributes.append(readType);
+    GUIConfiguration::levelAttributes.append(readTime);
+    GUIConfiguration::levelAttributes.append(readInstrument);
+    GUIConfiguration::levelAttributes.append(readValid);
+}
+
+void GUIConfiguration::generateUndefAttr()
+{
+    GUIConfiguration::undefAttributes.clear();
+
+    DisplayAttribute *readID = new DisplayAttribute("id",true);
+    DisplayAttribute *readType = new DisplayAttribute("type",true);
+    DisplayAttribute *readTime = new DisplayAttribute("time",true);
+    DisplayAttribute *readInstrument = new DisplayAttribute("instrument",true);
+    DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+
+    GUIConfiguration::undefAttributes.append(readID);
+    GUIConfiguration::undefAttributes.append(readType);
+    GUIConfiguration::undefAttributes.append(readTime);
+    GUIConfiguration::undefAttributes.append(readInstrument);
+    GUIConfiguration::undefAttributes.append(readValid);
+}
+
+/*!
+ * \brief generateAllObsAttributes. Add new attributes at the end of the list.
+ */
+void GUIConfiguration::generateAllObsAttributes()
+{
+    GUIConfiguration::allObsAttributes.clear();
+
+    GUIConfiguration::allObsAttributes.append("id");
+    GUIConfiguration::allObsAttributes.append("station");
+    GUIConfiguration::allObsAttributes.append("target geometry");
+    GUIConfiguration::allObsAttributes.append(QString("x" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allObsAttributes.append(QString("y" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allObsAttributes.append(QString("z" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allObsAttributes.append("valid");
+    GUIConfiguration::allObsAttributes.append(QString("sigma x" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allObsAttributes.append(QString("sigma y" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allObsAttributes.append(QString("sigma z" + UnitConverter::getDistanceUnitString()));
+}
+
+/*!
+ * \brief generateObsAttributes adds all observation attributes to the list and sets them to be displayed
+ */
+void GUIConfiguration::generateObsAttributes()
+{
+    GUIConfiguration::obsAttributes.clear();
+
+    //generate attributes and set to true for displaying all of them.
+    DisplayAttribute *obsID = new DisplayAttribute("id",true);
+    DisplayAttribute *obsStation = new DisplayAttribute("station",true);
+    DisplayAttribute *obsTarget = new DisplayAttribute("target geometry",true);
+    DisplayAttribute *obsX = new DisplayAttribute(QString("x" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *obsY = new DisplayAttribute(QString("y" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *obsZ = new DisplayAttribute(QString("z" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *obsValid = new DisplayAttribute("valid",true);
+    DisplayAttribute *obsSX = new DisplayAttribute(QString("sigma x" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *obsSY = new DisplayAttribute(QString("sigma y" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *obsSZ = new DisplayAttribute(QString("sigma z" + UnitConverter::getDistanceUnitString()),true);
+
+    //add attributes to list
+    GUIConfiguration::obsAttributes.append(obsID);
+    GUIConfiguration::obsAttributes.append(obsStation);
+    GUIConfiguration::obsAttributes.append(obsTarget);
+    GUIConfiguration::obsAttributes.append(obsX);
+    GUIConfiguration::obsAttributes.append(obsY);
+    GUIConfiguration::obsAttributes.append(obsZ);
+    GUIConfiguration::obsAttributes.append(obsValid);
+    GUIConfiguration::obsAttributes.append(obsSX);
+    GUIConfiguration::obsAttributes.append(obsSY);
+    GUIConfiguration::obsAttributes.append(obsSZ);
 }

@@ -243,11 +243,38 @@ QString Geometry::getDisplayObs() const
 	
 }
 
+/*!
+ * \brief insertReadingType
+ * \param readingType
+ * \param displayName
+ */
 void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QString displayName){
 
-    QMap<Configuration::ReadingTypes,QString>::const_iterator i = usedReadingTypes.find(readingType);
+    //check if enum value is valid. if not return function, else go on with assignment
+    switch (readingType) {
+    case Configuration::ePolar:
+        break;
+    case Configuration::eCartesian:
+        break;
+    case Configuration::eDistance:
+        break;
+    case Configuration::eDirection:
+        break;
+    case Configuration::eTemperatur:
+        break;
+    case Configuration::eLevel:
+        break;
+    case Configuration::eUndefined:
+        break;
+    default:
+        //return function if enum value is not valid
+        return;
+        break;
+    }
 
-    if (i != usedReadingTypes.end() && i.key() != readingType) {
+    QMap<Configuration::ReadingTypes,QString>::const_iterator i = usedReadingTypes.find(readingType);
+    //add reading type to list if it is not in there yet
+    if (i.key() != readingType) {
         usedReadingTypes.insert(readingType,displayName);
     }
 

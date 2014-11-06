@@ -630,6 +630,7 @@ QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
 
     Reading *p;
     p = new Reading();
+    p->typeofReading = m->typeOfReading;
 
     double dx = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;
     double dy = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;

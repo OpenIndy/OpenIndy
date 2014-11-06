@@ -13,9 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    GUIConfiguration::generateAllAttributes();
-    GUIConfiguration::generateFeatureAttributes();
-    GUIConfiguration::generateTrafoParamAttributes();
+    //!generate all lists for gui and view modification
+    GUIConfiguration::generateLists();
 
     initializeActions();
 
