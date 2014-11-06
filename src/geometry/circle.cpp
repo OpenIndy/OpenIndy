@@ -113,6 +113,44 @@ QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
+/*!
+ * \brief Circle::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Circle::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement radius = xmlElem.firstChildElement("radius");
+        QDomElement normalVector = xmlElem.firstChildElement("spatialDirection");
+        QDomElement center = xmlElem.firstChildElement("coordinates");
+
+        if(radius.isNull() || normalVector.isNull() || center.isNull() || !radius.hasAttribute("value")
+                || !normalVector.hasAttribute("i") || !normalVector.hasAttribute("j") || !normalVector.hasAttribute("k")
+                || !center.hasAttribute("x") || !center.hasAttribute("y") || !center.hasAttribute("z")){
+            return false;
+        }
+
+        this->radius = radius.attribute("value").toDouble();
+        this->ijk.setAt(0, normalVector.attribute("i").toDouble());
+        this->ijk.setAt(1, normalVector.attribute("j").toDouble());
+        this->ijk.setAt(2, normalVector.attribute("k").toDouble());
+        this->ijk.setAt(3, 1.0);
+        this->xyz.setAt(0, center.attribute("x").toDouble());
+        this->xyz.setAt(1, center.attribute("y").toDouble());
+        this->xyz.setAt(2, center.attribute("z").toDouble());
+        this->xyz.setAt(3, 1.0);
+
+    }
+
+    return result;
+
+}
+
 ElementDependencies Circle::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;

@@ -84,6 +84,44 @@ QDomElement Cylinder::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
+/*!
+ * \brief Cylinder::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Cylinder::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set cylinder attributes
+        QDomElement radius = xmlElem.firstChildElement("radius");
+        QDomElement directionVector = xmlElem.firstChildElement("spatialDirection");
+        QDomElement axisPoint = xmlElem.firstChildElement("coordinates");
+
+        if(radius.isNull() || directionVector.isNull() || axisPoint.isNull() || !radius.hasAttribute("value")
+                || !directionVector.hasAttribute("i") || !directionVector.hasAttribute("j") || !directionVector.hasAttribute("k")
+                || !axisPoint.hasAttribute("x") || !axisPoint.hasAttribute("y") || !axisPoint.hasAttribute("z")){
+            return false;
+        }
+
+        this->radius = radius.attribute("value").toDouble();
+        this->ijk.setAt(0, directionVector.attribute("i").toDouble());
+        this->ijk.setAt(1, directionVector.attribute("j").toDouble());
+        this->ijk.setAt(2, directionVector.attribute("k").toDouble());
+        this->ijk.setAt(3, 1.0);
+        this->xyz.setAt(0, axisPoint.attribute("x").toDouble());
+        this->xyz.setAt(1, axisPoint.attribute("y").toDouble());
+        this->xyz.setAt(2, axisPoint.attribute("z").toDouble());
+        this->xyz.setAt(3, 1.0);
+
+    }
+
+    return result;
+
+}
+
 ElementDependencies Cylinder::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;

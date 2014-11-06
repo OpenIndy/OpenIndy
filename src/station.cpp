@@ -46,6 +46,44 @@ Station::Station(QString name)
 
 }
 
+Station::Station(){
+
+    //initialize position
+    this->position = new Point(false);
+
+    //initialize sensor control
+    sensorPad = new SensorControl(this);
+    connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
+
+    //move controller to the station thread
+    sensorPad->moveToThread(&stationThread);
+
+    //connections between station and sensorcontrol
+    connect(this->sensorPad,SIGNAL(commandFinished(bool)),this,SLOT(emitActionFinished(bool)));
+
+    connect(this,SIGNAL(startMeasure(Geometry*,bool)),this->sensorPad,SLOT(measure(Geometry*,bool)));
+    connect(this,SIGNAL(startMove(double,double,double,bool)),this->sensorPad,SLOT(move(double,double,double,bool)));
+    connect(this,SIGNAL(startMove(double,double,double)),this->sensorPad,SLOT(move(double,double,double)));
+    connect(this,SIGNAL(startInitialize()),this->sensorPad,SLOT(initialize()));
+    connect(this,SIGNAL(startMotorState()),this->sensorPad,SLOT(motorState()));
+    connect(this,SIGNAL(startHome()),this->sensorPad,SLOT(home()));
+    connect(this,SIGNAL(startToggleSight()),this->sensorPad,SLOT(toggleSight()));
+    connect(this,SIGNAL(startCompensation()),this->sensorPad,SLOT(compensation()));
+    connect(this,SIGNAL(startConnect(ConnectionConfig*)),this->sensorPad,SLOT(connectSensor(ConnectionConfig*)));
+    connect(this,SIGNAL(startDisconnect()),this->sensorPad,SLOT(disconnectSensor()));
+    connect(this,SIGNAL(startReadingStream(int)),this->sensorPad,SLOT(readingStream(int)));
+    connect(this,SIGNAL(startSensorStatsStream()),this->sensorPad,SLOT(sensorStatsStream()));
+    connect(this,SIGNAL(startSelfDefinedAction(QString)),this->sensorPad,SLOT(doSelfDefinedAction(QString)));
+    connect(this,SIGNAL(stopReadingStream()),this->sensorPad,SLOT(stopReadingStream()));
+    connect(this,SIGNAL(stopSensorStatsStream()),this->sensorPad,SLOT(stopStatStream()));
+
+    //start the station thread
+    stationThread.start();
+
+    this->isUpdated = false;
+
+}
+
 Station::~Station(){
 
     stationThread.quit();
@@ -174,6 +212,17 @@ QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
  * \return
  */
 bool Station::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Feature::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set station attributes
+        this->isActiveStation = false;
+
+    }
+
+    return result;
 
 }
 

@@ -80,6 +80,32 @@ QDomElement ScalarEntityDistance::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief ScalarEntityDistance::fromOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+bool ScalarEntityDistance::fromOpenIndyXML(QDomElement &xmlDoc){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement distance = xmlDoc.firstChildElement("distance");
+
+        if(distance.isNull() || !distance.hasAttribute("value")){
+            return false;
+        }
+
+        this->radius = distance.attribute("value").toDouble();
+
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief ScalarEntityDistance::fromOpenIndyXML
  * \param xml
  * \return
  */

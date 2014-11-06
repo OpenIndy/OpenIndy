@@ -14,6 +14,7 @@ public:
     void recalc();
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
+    bool fromOpenIndyXML(QDomElement &xmlDoc);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
     bool saveSimulationData();

@@ -162,6 +162,25 @@ QDomElement PointCloud::toOpenIndyXML(QDomDocument &xmlDoc) const{
     pointCloud.setAttribute("type", Configuration::sPointCloud);
 }
 
+/*!
+ * \brief PointCloud::fromOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+bool PointCloud::fromOpenIndyXML(QDomElement &xmlDoc){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+
+
+    }
+
+    return result;
+
+}
+
 ElementDependencies PointCloud::fromOpenIndyXML(QXmlStreamReader &xml){
     ElementDependencies dependencies;
 

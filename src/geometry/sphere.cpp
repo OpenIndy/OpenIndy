@@ -98,6 +98,38 @@ QDomElement Sphere::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief Sphere::fromOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+bool Sphere::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement radius = xmlElem.firstChildElement("radius");
+        QDomElement center = xmlElem.firstChildElement("coordinates");
+
+        if(radius.isNull() || center.isNull() || !radius.hasAttribute("value")
+                || !center.hasAttribute("x") || !center.hasAttribute("y") || !center.hasAttribute("z")){
+            return false;
+        }
+
+        this->radius = radius.attribute("value").toDouble();
+        this->xyz.setAt(0, center.attribute("x").toDouble());
+        this->xyz.setAt(1, center.attribute("y").toDouble());
+        this->xyz.setAt(2, center.attribute("z").toDouble());
+        this->xyz.setAt(3, 1.0);
+
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief Sphere::fromOpenIndyXML
  * \param xml
  * \return
  */

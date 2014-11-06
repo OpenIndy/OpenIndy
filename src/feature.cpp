@@ -335,6 +335,33 @@ QDomElement Feature::toOpenIndyXML(QDomDocument &xmlDoc) const{
 }
 
 /*!
+ * \brief Feature::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Feature::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Element::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set feature attributes
+        if(!xmlElem.hasAttribute("name") || !xmlElem.hasAttribute("group") || !xmlElem.hasAttribute("comment")
+                || !xmlElem.hasAttribute("solved")){
+            return false;
+        }
+        this->name = xmlElem.attribute("name");
+        this->group = xmlElem.attribute("group");
+        this->comment = xmlElem.attribute("comment");
+        this->isSolved = xmlElem.attribute("solved").toInt();
+
+    }
+
+    return result;
+
+}
+
+/*!
  * \brief Feature::getDisplayX
  * \return
  */

@@ -70,6 +70,32 @@ QDomElement ScalarEntityTemperature::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
+/*!
+ * \brief ScalarEntityTemperature::fromOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+bool ScalarEntityTemperature::fromOpenIndyXML(QDomElement &xmlDoc){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement temperature = xmlDoc.firstChildElement("temperature");
+
+        if(temperature.isNull() || !temperature.hasAttribute("value")){
+            return false;
+        }
+
+        this->radius = temperature.attribute("value").toDouble();
+
+    }
+
+    return result;
+
+}
+
 ElementDependencies ScalarEntityTemperature::fromOpenIndyXML(QXmlStreamReader &xml){
     ElementDependencies dependencies;
 

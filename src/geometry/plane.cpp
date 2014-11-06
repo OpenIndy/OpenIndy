@@ -107,6 +107,42 @@ QDomElement Plane::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief Plane::fromOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+bool Plane::fromOpenIndyXML(QDomElement &xmlDoc){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set plane attributes
+        QDomElement normalVector = xmlDoc.firstChildElement("spatialDirection");
+        QDomElement pointOnPlane = xmlDoc.firstChildElement("coordinates");
+
+        if(normalVector.isNull() || pointOnPlane.isNull()
+                || !normalVector.hasAttribute("i") || !normalVector.hasAttribute("j") || !normalVector.hasAttribute("k")
+                || !pointOnPlane.hasAttribute("x") || !pointOnPlane.hasAttribute("y") || !pointOnPlane.hasAttribute("z")){
+            return false;
+        }
+
+        this->ijk.setAt(0, normalVector.attribute("i").toDouble());
+        this->ijk.setAt(1, normalVector.attribute("j").toDouble());
+        this->ijk.setAt(2, normalVector.attribute("k").toDouble());
+        this->ijk.setAt(3, 1.0);
+        this->xyz.setAt(0, pointOnPlane.attribute("x").toDouble());
+        this->xyz.setAt(1, pointOnPlane.attribute("y").toDouble());
+        this->xyz.setAt(2, pointOnPlane.attribute("z").toDouble());
+        this->xyz.setAt(3, 1.0);
+
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief Plane::fromOpenIndyXML
  * \param xml
  * \return
  */

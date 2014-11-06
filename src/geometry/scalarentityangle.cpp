@@ -80,6 +80,32 @@ QDomElement ScalarEntityAngle::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief ScalarEntityAngle::fromOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+bool ScalarEntityAngle::fromOpenIndyXML(QDomElement &xmlDoc){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement angle = xmlDoc.firstChildElement("angle");
+
+        if(angle.isNull() || !angle.hasAttribute("value")){
+            return false;
+        }
+
+        this->radius = angle.attribute("value").toDouble();
+
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief ScalarEntityAngle::fromOpenIndyXML
  * \param xml
  * \return
  */

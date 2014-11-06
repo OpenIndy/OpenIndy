@@ -70,6 +70,32 @@ QDomElement ScalarEntityMeasurementSeries::toOpenIndyXML(QDomDocument &xmlDoc) c
 
 }
 
+/*!
+ * \brief ScalarEntityMeasurementSeries::fromOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QDomElement &xmlDoc){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement seriesValue = xmlDoc.firstChildElement("seriesValue");
+
+        if(seriesValue.isNull() || !seriesValue.hasAttribute("value")){
+            return false;
+        }
+
+        this->radius = seriesValue.attribute("value").toDouble();
+
+    }
+
+    return result;
+
+}
+
 ElementDependencies ScalarEntityMeasurementSeries::fromOpenIndyXML(QXmlStreamReader &xml){
     ElementDependencies dependencies;
 

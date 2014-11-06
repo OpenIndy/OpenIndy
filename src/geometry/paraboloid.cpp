@@ -63,6 +63,25 @@ QDomElement Paraboloid::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
+/*!
+ * \brief Paraboloid::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Paraboloid::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+
+
+    }
+
+    return result;
+
+}
+
 ElementDependencies Paraboloid::fromOpenIndyXML(QXmlStreamReader &xml){
     ElementDependencies dependencies;
 

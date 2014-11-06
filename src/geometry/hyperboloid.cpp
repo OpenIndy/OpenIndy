@@ -63,6 +63,25 @@ QDomElement Hyperboloid::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
+/*!
+ * \brief Hyperboloid::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Hyperboloid::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+
+
+    }
+
+    return result;
+
+}
+
 ElementDependencies Hyperboloid::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;

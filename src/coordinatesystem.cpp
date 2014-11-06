@@ -404,6 +404,34 @@ QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc){
 
 /*!
  * \brief CoordinateSystem::fromOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlDoc){
+
+    bool result = Feature::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set expansion origin
+        QDomElement expansionOrigin = xmlDoc.firstChildElement("expansionOrigin");
+        if(!expansionOrigin.isNull()){
+            if(!expansionOrigin.hasAttribute("x") || !expansionOrigin.hasAttribute("y") || !expansionOrigin.hasAttribute("z")){
+                return false;
+            }
+            this->expansionOrigin.setAt(0, expansionOrigin.attribute("x").toDouble());
+            this->expansionOrigin.setAt(1, expansionOrigin.attribute("y").toDouble());
+            this->expansionOrigin.setAt(2, expansionOrigin.attribute("z").toDouble());
+        }
+
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief CoordinateSystem::fromOpenIndyXML
  * \param xml
  * \return
  */

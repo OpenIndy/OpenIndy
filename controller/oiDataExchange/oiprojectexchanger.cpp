@@ -2,6 +2,9 @@
 
 #include <QFile>
 
+QList<Observation *> OiProjectExchanger::myObservations;
+QList<Station *> OiProjectExchanger::myStations;
+
 /*QList<Observation*> OiProjectExchanger::observations;
 QList<FeatureWrapper*> OiProjectExchanger::geometries;
 QList<FeatureWrapper*> OiProjectExchanger::stations;
@@ -266,7 +269,6 @@ bool OiProjectExchanger::loadProject(QDomDocument project){
     OiFeatureState::resetFeatureLists();
 
     //load all observations
-    QList<Observation*> myObservations;
     QDomElement observations = project.firstChildElement("observations");
     if(!observations.isNull()){
         QDomNodeList observationList = observations.childNodes();
@@ -276,12 +278,24 @@ bool OiProjectExchanger::loadProject(QDomDocument project){
                 delete obs;
                 continue;
             }
-            myObservations.append(obs);
+            OiProjectExchanger::myObservations.append(obs);
         }
     }
 
     //load all stations
-    QList<Station*> myStations;
+    QDomElement stations = project.firstChildElement("stations");
+    if(stations.isNull()){
+        OiProjectExchanger::clearHelperLists(true);
+    }
+    QDomNodeList stationList = stations.childNodes();
+    for(int i = 0; i < stationList.size(); i++){
+        Station *station = new Station();
+        if(!station->fromOpenIndyXML(stationList.at(i).toElement())){
+            delete station;
+            continue;
+        }
+        OiProjectExchanger::myStations.append(station);
+    }
 
     //load all coordinate systems
 
@@ -294,5 +308,29 @@ bool OiProjectExchanger::loadProject(QDomDocument project){
     //set general project data
 
     return true;
+
+}
+
+/*!
+ * \brief OiProjectExchanger::clearHelperLists
+ * Clear the helper lists for loading an OpenIndy project. If deleteOnClear is true then the list objects
+ * are not only removed but also deleted.
+ * \param deleteOnClear
+ */
+void OiProjectExchanger::clearHelperLists(bool deleteOnClear){
+
+    //delete the helper list objects
+    if(deleteOnClear){
+        foreach(Observation *obs, this->myObservations){
+            delete obs;
+        }
+        foreach(Station *s, this->myStations){
+            delete s;
+        }
+    }
+
+    //clear the helper lists
+    this->myObservations.clear();
+    this->myStations.clear();
 
 }

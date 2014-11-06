@@ -32,7 +32,13 @@ private:
     static QDomDocument saveProject();
     static bool loadProject(QDomDocument project);
 
-    static void addActiveStationAndSystem(QDomElement &parent);
+    //static void addActiveStationAndSystem(QDomElement &parent);
+
+    //helper lists for loading an OpenIndy project
+    static QList<Observation *> myObservations;
+    static QList<Station *> myStations;
+
+    static void clearHelperLists(bool deleteOnClear);
 
 };
 

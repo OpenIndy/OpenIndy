@@ -589,6 +589,37 @@ QDomElement Geometry::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
+/*!
+ * \brief Geometry::fromOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+bool Geometry::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Feature::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set geometry attributes
+        if(!xmlDoc.hasAttribute("nominal") || !xmlDoc.hasAttribute("common")){
+            return false;
+        }
+        this->isNominal = xmlDoc.attribute("nominal").toInt();
+        this->isCommon = xmlDoc.attribute("common").toInt();
+
+        //set standard deviation
+        QDomElement stdv = xmlDoc.firstChildElement("standardDeviation");
+        if(stdv.isNull() || !stdv.hasAttribute("value")){
+            return false;
+        }
+        this->myStatistic.stdev = stdv.attribute("value").toDouble();
+
+    }
+
+    return result;
+
+}
+
 void Geometry::resetSimulationData()
 {
     SimulationData d;
