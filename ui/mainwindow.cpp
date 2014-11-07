@@ -801,6 +801,30 @@ void MainWindow::setActiveCoordinateSystem(){
 
 }
 
+void MainWindow::isSensorConnected(bool b)
+{
+    if(b){
+
+    }else{
+        QMessageBox msgBox;
+        msgBox.setText("connection lost");
+        msgBox.setInformativeText("do you want to reconnect sensor?");
+        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+          case QMessageBox::Ok:
+              this->control.startConnect();
+              break;
+          case QMessageBox::Cancel:
+              break;
+          default:
+              break;
+        }
+    }
+}
+
 /*!
  * \brief displays the dialog to load a plugin
  */

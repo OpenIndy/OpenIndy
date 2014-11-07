@@ -525,6 +525,10 @@ void Station::emitStartMotorState(){
     emit startMotorState();
 }
 
+OiSensorEmitter* Station::getActiveSensorEmitter()
+{
+    return &this->sensorPad->instrument->myEmitter;
+}
 
 void Station::emitStartCompensation(){
     emit startCompensation();

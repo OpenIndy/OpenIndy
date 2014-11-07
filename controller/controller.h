@@ -145,6 +145,8 @@ signals:
 
     void sendXmlRequest(OiRequestResponse *request); //connected to OiRequestHandler to do tasks like savin, loading etc.
 
+    void isConnected(bool);
+
 public slots:
     void setUpFeatureGroupsModel();
     void setUpCoordinateSystemsModel();
@@ -230,6 +232,8 @@ public slots:
     //void checkForNominals(FeatureWrapper *fw);
 
     //void sortFeatures();
+
+    void sendIsConnected(bool b);
 
 private slots:
     void changeFunctionTreeViewModel();

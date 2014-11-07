@@ -208,6 +208,7 @@ private slots:
     void createFeature();
 
     void setActiveCoordinateSystem();
+    void isSensorConnected(bool b);
 
     //void fillCoordSysComboBox();
 

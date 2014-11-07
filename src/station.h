@@ -14,6 +14,7 @@
 #include "coordinatesystem.h"
 #include "sensorconfiguration.h"
 #include "point.h"
+#include "oisensoremitter.h"
 
 class SensorControl;
 class Reading;
@@ -114,6 +115,8 @@ public slots:
     void emitStartDisconnect();
     void emitStartCompensation();
     void emitSelfDefinedAction(QString s);
+
+    OiSensorEmitter* getActiveSensorEmitter();
 
     QString getDisplayX() const;
     QString getDisplayY() const;

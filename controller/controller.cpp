@@ -336,6 +336,8 @@ void Controller::startConnect(){
         if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
             OiFeatureState::getActiveStation()->emitStartConnect(OiFeatureState::getActiveStation()->getInstrumentConfig()->connConfig);
             emit sensorWorks("connecting...");
+            OiSensorEmitter *s = OiFeatureState::getActiveStation()->getActiveSensorEmitter();
+            connect(s,SIGNAL(sendConnectionStat(bool)),this,SLOT(sendIsConnected(bool)));
         }else{
             Console::addLine("sensor not connected");
         }
@@ -355,6 +357,8 @@ void Controller::startDisconnect(){
     }
 
     if(checkSensorValid()){
+        OiSensorEmitter *s = OiFeatureState::getActiveStation()->getActiveSensorEmitter();
+        disconnect(s,SIGNAL(sendConnectionStat(bool)),this,SLOT(sendIsConnected(bool)));
         OiFeatureState::getActiveStation()->emitStartDisconnect();
         emit sensorWorks("disconnecting...");
     }
@@ -1719,6 +1723,11 @@ void Controller::updateFeatureMConfig()
             }
         }
     }
+}
+
+void Controller::sendIsConnected(bool b)
+{
+    emit isConnected(b);
 }
 
 /*void Controller::handleRemoteCommand(OiProjectData *d)
