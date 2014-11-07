@@ -552,18 +552,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //store reading in station
             this->myStation->readingsPol.append(r);
             //create observation
-            Observation *obs = new Observation(r,myStation);
-            //check if the active coordSys is the station sys
-            if(isActiveCoordSys){
-                obs->isValid = true;
-            }else{
-                obs->isValid = false;
-            }
-            //calc obs Xyz
-            obs->myOriginalXyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
-            obs->myXyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
-            //calc sigma xyz
-            obs->sigmaXyz = r->errorPropagationPolarToCart();
+            Observation *obs = new Observation(r,myStation,isActiveCoordSys);
             //save geometry in observation
             obs->myTargetGeometries.append(geom);
             //add observation to fit function of geom
@@ -587,9 +576,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //store reading in station
             this->myStation->readingsDist.append(r);
             //create observation
-            Observation *obs = new Observation(r, myStation);
-            //check if the active coordSys is the station sys
-            obs->isValid = false;
+            Observation *obs = new Observation(r, myStation,isActiveCoordSys);
             //save geometry in observation
             obs->myTargetGeometries.append(geom);
             //add observation to fit function of geom
@@ -613,9 +600,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //store reading in station
             this->myStation->readingsDir.append(r);
             //create observation
-            Observation *obs = new Observation(r, myStation);
-            //check if the active coordSys is the station sys
-            obs->isValid = false;
+            Observation *obs = new Observation(r, myStation,isActiveCoordSys);
             //save geometry in observation
             obs->myTargetGeometries.append(geom);
             //add observation to fit function of geom
@@ -638,21 +623,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //store reading in station
             this->myStation->readingsXyz.append(r);
             //create observation
-            Observation *obs = new Observation(r, myStation);
-            //check if the active coordSys is the station sys
-            if(isActiveCoordSys){
-                obs->isValid = true;
-            }else{
-                obs->isValid = false;
-            }
-            obs->myOriginalXyz.setAt(0,r->rCartesian.xyz.getAt(0));
-            obs->myOriginalXyz.setAt(1,r->rCartesian.xyz.getAt(1));
-            obs->myOriginalXyz.setAt(2,r->rCartesian.xyz.getAt(2));
-            obs->myOriginalXyz.setAt(3,1.0);
-            obs->myXyz.setAt(0,r->rCartesian.xyz.getAt(0));
-            obs->myXyz.setAt(1,r->rCartesian.xyz.getAt(1));
-            obs->myXyz.setAt(2,r->rCartesian.xyz.getAt(2));
-            obs->myXyz.setAt(3,1.0);
+            Observation *obs = new Observation(r, myStation,isActiveCoordSys);
             //save geometry in observation
             //add observation to fit function of geom
             if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
@@ -673,9 +644,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //store reading in station
             this->myStation->readingsLevel.append(r);
             //create observation
-            Observation *obs = new Observation(r, myStation);
-            //check if the active coordSys is the station sys
-            obs->isValid = false;
+            Observation *obs = new Observation(r, myStation,isActiveCoordSys);
             //save geometry in observation
             //add observation to fit function of geom
             if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
@@ -696,9 +665,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //store reading in station
             this->myStation->readingsTemperatur.append(r);
             //create observation
-            Observation *obs = new Observation(r, myStation);
-            //check if the active coordSys is the station sys
-            obs->isValid = false;
+            Observation *obs = new Observation(r, myStation,isActiveCoordSys);
             //save geometry in observation
             //add observation to fit function of geom
             if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
@@ -719,9 +686,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
                 //store reading in station
                 this->myStation->readingsUndefined.append(r);
                 //create observation
-                Observation *obs = new Observation(r, myStation);
-                //check if the active coordSys is the station sys
-                obs->isValid = false;
+                Observation *obs = new Observation(r, myStation,isActiveCoordSys);
                 //save geometry in observation
                 //add observation to fit function of geom
                 if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){

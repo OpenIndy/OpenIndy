@@ -68,7 +68,7 @@ void BestFitPoint::setUpPointResult(Point &point){
     OiVec l;
     vector<double> sigma;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             l.add( obs->myXyz.getAt(0) );
             l.add( obs->myXyz.getAt(1) );
             l.add( obs->myXyz.getAt(2) );
@@ -162,7 +162,7 @@ void BestFitPoint::setUpPointResult(Point &point){
 bool BestFitPoint::checkObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             count++;
         }else{
             this->setUseState(obs->getId(), false);

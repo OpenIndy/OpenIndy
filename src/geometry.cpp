@@ -235,7 +235,7 @@ QString Geometry::getDisplayObs() const
     int validObs = 0;
     int totalObs = this->myObservations.size();
     for(int i=0;i<totalObs;i++){
-        if(this->myObservations.at(i)->isValid){
+        if(this->myObservations.at(i)->getUseState()){
             validObs += 1;
         }
     }

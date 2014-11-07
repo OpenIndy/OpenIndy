@@ -65,7 +65,7 @@ bool BestFitLine::setUpResult(Line &line){
     OiVec centroid(4);
     int n = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             centroid = centroid + obs->myXyz;
             n++;
         }
@@ -138,7 +138,7 @@ OiMat BestFitLine::preCalc(OiVec centroid){
     //calc centroid reduce coordinates
     vector<OiVec> crCoord;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             crCoord.push_back( (obs->myXyz - centroid) );
         }
     }
@@ -160,7 +160,7 @@ OiMat BestFitLine::preCalc(OiVec centroid){
 bool BestFitLine::checkObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             this->setUseState(obs->getId(), true);
             count++;
         }else{

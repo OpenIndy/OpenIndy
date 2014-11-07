@@ -592,6 +592,7 @@ void GUIConfiguration::generateAllObsAttributes()
     GUIConfiguration::allObsAttributes.append(QString("sigma x" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allObsAttributes.append(QString("sigma y" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allObsAttributes.append(QString("sigma z" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allObsAttributes.append("solved");
 }
 
 /*!
@@ -612,6 +613,7 @@ void GUIConfiguration::generateObsAttributes()
     DisplayAttribute *obsSX = new DisplayAttribute(QString("sigma x" + UnitConverter::getDistanceUnitString()),true);
     DisplayAttribute *obsSY = new DisplayAttribute(QString("sigma y" + UnitConverter::getDistanceUnitString()),true);
     DisplayAttribute *obsSZ = new DisplayAttribute(QString("sigma z" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *obsSolved = new DisplayAttribute("solved",true);
 
     //add attributes to list
     GUIConfiguration::obsAttributes.append(obsID);
@@ -624,4 +626,5 @@ void GUIConfiguration::generateObsAttributes()
     GUIConfiguration::obsAttributes.append(obsSX);
     GUIConfiguration::obsAttributes.append(obsSY);
     GUIConfiguration::obsAttributes.append(obsSZ);
+    GUIConfiguration::obsAttributes.append(obsSolved);
 }

@@ -54,7 +54,7 @@ int BestFitSphereRauls::setUpObservations(){
     this->myValidObservations.clear();
     int count = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             this->myValidObservations.append(obs);
             count++;
         }

@@ -6,13 +6,16 @@
 #include "function.h"
 
 
-Observation::Observation(Reading *r, Station *s) :
-    myReading(r), myStation(s), myXyz(4), myOriginalXyz(4), sigmaXyz(4)
+Observation::Observation(Reading *r, Station *s, bool isActiveCoordSys) :
+    myReading(r), myStation(s), myXyz(4), myOriginalXyz(4), sigmaXyz(4), isActiveCoordSys(isActiveCoordSys)
 {
     this->id = Configuration::generateID();
     if(r != NULL){
         r->obs = this;
     }
+
+    //calculate observation and set valid and solved bools
+    this->calcFromReading();
 
     //initialize matrices
     myStatistic.qxx = OiMat(4,4);
@@ -183,6 +186,147 @@ bool Observation::writeProxyObservations(QXmlStreamWriter &stream){
 
     return true;
 
+}
+
+/*!
+ * \brief calcFromReading calculates the observation depending on its reading
+ */
+void Observation::calcFromReading()
+{
+    Reading *r;
+    r = this->myReading;
+
+    switch (this->myReading->typeofReading) {
+    case Configuration::ePolar:
+        //calc obs xyz
+        this->myOriginalXyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
+        this->myXyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
+
+        //calc sigma xyz
+        this->sigmaXyz = r->errorPropagationPolarToCart();
+
+        //created from reading polar
+        this->setIsValid(true);
+
+        //measured in active coord system
+        this->setIsSolved(this->isActiveCoordSys);
+
+        break;
+    case Configuration::eCartesian:
+        //calc xyz
+        this->myOriginalXyz.setAt(0,r->rCartesian.xyz.getAt(0));
+        this->myOriginalXyz.setAt(1,r->rCartesian.xyz.getAt(1));
+        this->myOriginalXyz.setAt(2,r->rCartesian.xyz.getAt(2));
+        this->myOriginalXyz.setAt(3,1.0);
+        this->myXyz.setAt(0,r->rCartesian.xyz.getAt(0));
+        this->myXyz.setAt(1,r->rCartesian.xyz.getAt(1));
+        this->myXyz.setAt(2,r->rCartesian.xyz.getAt(2));
+        this->myXyz.setAt(3,1.0);
+
+        //created from reading cartesian
+        this->setIsValid(true);
+
+        //measured in active coord system
+        this->setIsSolved(this->isActiveCoordSys);
+
+        break;
+    case Configuration::eDirection:
+        //created from reading direction
+        this->setIsValid(false);
+
+        //measured in active coord system
+        this->setIsSolved(this->isActiveCoordSys);
+
+        break;
+    case Configuration::eDistance:
+        //created from reading distance
+        this->setIsValid(false);
+
+        //measured in active coord system
+        this->setIsSolved(this->isActiveCoordSys);
+
+        break;
+    case Configuration::eTemperatur:
+        //created from reading temperature
+        this->setIsValid(false);
+
+        //measured in active coord system
+        this->setIsSolved(this->isActiveCoordSys);
+
+        break;
+    case Configuration::eLevel:
+        //created from reading level
+        this->setIsValid(false);
+
+        //measured in active coord system
+        this->setIsSolved(this->isActiveCoordSys);
+
+        break;
+    case Configuration::eUndefined:
+        //created from reading undefined
+        this->setIsValid(false);
+
+        //measured in active coord system
+        this->setIsSolved(this->isActiveCoordSys);
+
+        break;
+    default:
+        this->setIsValid(false);
+
+        //measured in active coord system
+        this->setIsSolved(this->isActiveCoordSys);
+
+        break;
+    }
+}
+
+/*!
+ * \brief setIsValid defines if the observation has valid xyz coords created from its reading
+ * \param isValid
+ */
+void Observation::setIsValid(bool isValid)
+{
+    this->isValid = isValid;
+}
+
+/*!
+ * \brief getIsValid returns if the observation is valid
+ * \return
+ */
+bool Observation::getIsValid()
+{
+    return this->isValid;
+}
+
+/*!
+ * \brief setIsSolved defines if the observation is solved in the current coordinate system
+ * \param isSolved
+ */
+void Observation::setIsSolved(bool isSolved)
+{
+    this->isSolved = isSolved;
+}
+
+/*!
+ * \brief getIsSolved
+ * \return
+ */
+bool Observation::getIsSolved()
+{
+    return this->isSolved;
+}
+
+/*!
+ * \brief getUseState if the observation can be used for calculation or other things.
+ * For this the observation has to be solved and valid.
+ * \return
+ */
+bool Observation::getUseState()
+{
+    if(this->isSolved && this->isValid){
+        return true;
+    }
+    return false;
 }
 
 Reading* Observation::readReading(QXmlStreamReader& xml){

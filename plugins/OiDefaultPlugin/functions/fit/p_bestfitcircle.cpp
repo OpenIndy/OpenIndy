@@ -43,7 +43,7 @@ bool BestFitCircle::exec(Circle &circle) {
         double xc = 0, yc = 0, zc = 0, rc = 0;
 
         foreach(Observation *obs, this->observations){
-            if(obs->isValid){
+            if(obs->getUseState()){
                 x[k] = obs->myXyz.getAt(0);
                 y[k] = obs->myXyz.getAt(1);
                 z[k] = obs->myXyz.getAt(2);
@@ -281,7 +281,7 @@ QList<Configuration::FeatureTypes> BestFitCircle::applicableFor() const {
 int BestFitCircle::getObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             this->setUseState(obs->getId(), true);
             count++;
         }

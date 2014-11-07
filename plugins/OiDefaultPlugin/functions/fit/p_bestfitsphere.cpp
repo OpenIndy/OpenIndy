@@ -59,7 +59,7 @@ bool BestFitSphere::exec(Sphere &s){
         double *z = new double[obsCount];
         int k = 0;
         foreach(Observation *obs, this->observations){
-            if(obs->isValid){
+            if(obs->getUseState()){
                 x[k] = obs->myXyz.getAt(0);
                 y[k] = obs->myXyz.getAt(1);
                 z[k] = obs->myXyz.getAt(2);
@@ -151,7 +151,7 @@ void BestFitSphere::setUpResult(Sphere &s, double *x, double *y, double *z, int 
 int BestFitSphere::getObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             count++;
         }
     }

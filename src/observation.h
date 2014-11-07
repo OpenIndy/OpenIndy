@@ -21,7 +21,7 @@ class Station;
 class Observation : public Element
 {
 public:
-    Observation(Reading*, Station*);
+    Observation(Reading*, Station*, bool isActiveCoordSys);
     ~Observation();
 
     Station *myStation;
@@ -34,7 +34,7 @@ public:
     Statistic myStatistic;
     Statistic myOriginalStatistic;
 
-    bool isValid; //defines wether this observation is valid in current coordinate system
+
     OiVec sigmaXyz;
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
@@ -43,7 +43,25 @@ public:
 
     bool writeProxyObservations(QXmlStreamWriter& stream);
 
+    void calcFromReading();
+
+    void setIsValid(bool isValid);
+    bool getIsValid();
+
+    void setIsSolved(bool isSolved);
+    bool getIsSolved();
+
+    bool getUseState();
+
  private:
+
+    bool isActiveCoordSys; //indicates if the observation coord system is the current
+        //coordinate system at time of creation
+
+    bool isValid; //defines if the reading can be transformed, without any function, to a xyz observation
+
+    bool isSolved; //defines wether this observation is valid in current coordinate system
+
     Reading* readReading(QXmlStreamReader& xml);
 };
 

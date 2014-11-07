@@ -87,7 +87,7 @@ bool BestFitPlane::setUpResult(Plane &plane){
         double sumZ = 0.0;
         int count = 0;
         foreach(Observation *obs, this->observations){
-            if(obs->isValid){
+            if(obs->getUseState()){
                 sumXN += obs->myXyz.getAt(0) * n.getAt(0);
                 sumYN += obs->myXyz.getAt(1) * n.getAt(1);
                 sumZN += obs->myXyz.getAt(2) * n.getAt(2);
@@ -142,7 +142,7 @@ OiMat BestFitPlane::preCalc(){
     OiVec centroid(4);
     int n = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             centroid = centroid + obs->myXyz;
             n++;
         }
@@ -150,7 +150,7 @@ OiMat BestFitPlane::preCalc(){
     centroid = centroid * (double)(1.0/n);
     vector<OiVec> crCoord;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             crCoord.push_back( (obs->myXyz - centroid) );
         }
     }
@@ -172,7 +172,7 @@ OiMat BestFitPlane::preCalc(){
 bool BestFitPlane::checkObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             this->setUseState(obs->getId(), true);
             count++;
         }else{

@@ -370,8 +370,8 @@ void FeatureTreeViewModel::appendObservation(FeatureTreeItem *root, Observation 
     root->appendChild(geom_observation);
     geom_observation->appendChild( new FeatureTreeItem(obs->myReading->measuredAt.toString()) );
     geom_observation->appendChild( new FeatureTreeItem(obs->myStation->getFeatureName()) );
-    geom_observation->appendChild( new FeatureTreeItem(obs->isValid?"valid: true":"valid: false") );
-    if(obs->isValid){
+    geom_observation->appendChild( new FeatureTreeItem(obs->getIsSolved()?"valid: true":"valid: false") );
+    if(obs->getIsSolved()){
         FeatureTreeItem *x = new FeatureTreeItem( QString("x: %1 %2").arg( QString::number(obs->myXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),
                                                                  'f',UnitConverter::distanceDigits) )
                                                     .arg( UnitConverter::getDistanceUnitString() ) );
@@ -398,8 +398,8 @@ void FeatureTreeViewModel::appendReading(FeatureTreeItem *root, Observation *obs
     root->appendChild(geom_reading);
     geom_reading->appendChild( new FeatureTreeItem(obs->myReading->measuredAt.toString()) );
     geom_reading->appendChild( new FeatureTreeItem(obs->myStation->getFeatureName()) );
-    geom_reading->appendChild( new FeatureTreeItem(obs->isValid?"valid: true":"valid: false") );
-    if(obs->isValid){
+    geom_reading->appendChild( new FeatureTreeItem(obs->getIsSolved()?"valid: true":"valid: false") );
+    if(obs->getIsSolved()){
         if(obs->myReading->typeofReading == Configuration::eDistance){
             FeatureTreeItem *distance = new FeatureTreeItem( QString("distance: %1 %2")
                                                          .arg( QString::number(obs->myReading->rDistance.distance*UnitConverter::getDistanceMultiplier(),
