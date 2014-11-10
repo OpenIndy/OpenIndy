@@ -169,6 +169,34 @@ QList<Observation *> Geometry::getObservations() const{
 bool Geometry::addObservation(Observation *obs){
     if(!this->isNominal && obs != NULL){
         this->myObservations.append(obs);
+
+        //add reading to geom
+        switch (obs->myReading->typeofReading) {
+        case Configuration::ePolar:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sPolar);
+            break;
+        case Configuration::eCartesian:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sCartesian);
+            break;
+        case Configuration::eDirection:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sDirection);
+            break;
+        case Configuration::eDistance:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sDistance);
+            break;
+        case Configuration::eLevel:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sLevel);
+            break;
+        case Configuration::eTemperatur:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sTemperatur);
+            break;
+        case Configuration::eUndefined:
+            this->insertReadingType(obs->myReading->typeofReading,"undefined");
+            break;
+        default:
+            break;
+        }
+
         emit this->geomMyObservationsChanged(this->id);
         return true;
     }
@@ -186,6 +214,7 @@ bool Geometry::removeObservation(Observation *obs){
             if(this->myObservations.at(i)->getId() == obs->getId()){
 
                 this->myObservations.removeAt(i);
+                this->removeReadingType(obs->myReading->typeofReading);
 
                 foreach(Function *myFunc, this->getFunctions()){
                     if(myFunc != NULL){
@@ -496,6 +525,25 @@ double Geometry::getScalar() const
  */
 QMap<Configuration::ReadingTypes, QString> Geometry::getUsedReadingTypes() const{
     return this->usedReadingTypes;
+}
+
+/*!
+ * \brief removeReadingType removes the reading type if there is no more observation with this reading type in the geometry list.
+ */
+void Geometry::removeReadingType(Configuration::ReadingTypes rType)
+{
+    bool rTypeExists = false;
+
+    //check if the geometry still has an observation with that reading type. else delete from map.
+    for(int i=0; i<this->getObservations().size();i++){
+        if(this->getObservations().at(i)->myReading->typeofReading == rType){
+            rTypeExists = true;
+        }
+    }
+
+    if(!rTypeExists){
+        this->usedReadingTypes.remove(rType);
+    }
 }
 
 /*!

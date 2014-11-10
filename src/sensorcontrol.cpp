@@ -562,7 +562,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
 
             //save observation in geometry
             geom->addObservation(obs);
-            geom->insertReadingType(Configuration::ePolar,Configuration::sPolar);
+            //geom->insertReadingType(Configuration::ePolar,Configuration::sPolar);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
@@ -585,7 +585,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             }
             //save observation in geometry
             geom->addObservation(obs);
-            geom->insertReadingType(Configuration::eDistance,Configuration::sDistance);
+            //geom->insertReadingType(Configuration::eDistance,Configuration::sDistance);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
@@ -609,7 +609,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             }
             //save observation in geometry
             geom->addObservation(obs);
-            geom->insertReadingType(Configuration::eDirection,Configuration::sDirection);
+            //geom->insertReadingType(Configuration::eDirection,Configuration::sDirection);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
@@ -632,7 +632,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
             geom->addObservation(obs);
-            geom->insertReadingType(Configuration::eCartesian,Configuration::sCartesian);
+            //geom->insertReadingType(Configuration::eCartesian,Configuration::sCartesian);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
@@ -653,7 +653,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
             geom->addObservation(obs);
-            geom->insertReadingType(Configuration::eLevel,Configuration::sLevel);
+            //geom->insertReadingType(Configuration::eLevel,Configuration::sLevel);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
@@ -674,7 +674,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
             geom->addObservation(obs);
-            geom->insertReadingType(Configuration::eTemperatur,Configuration::sTemperatur);
+            //geom->insertReadingType(Configuration::eTemperatur,Configuration::sTemperatur);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
@@ -695,7 +695,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
                 obs->myTargetGeometries.append(geom);
                 //save observation in geometry
                 geom->addObservation(obs);
-                geom->insertReadingType(Configuration::eUndefined, instrument->getUndefinedReadingName());
+                //geom->insertReadingType(Configuration::eUndefined, instrument->getUndefinedReadingName());
                 //save observation in station
                 this->myStation->coordSys->addObservation(obs);
 

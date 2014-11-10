@@ -1280,7 +1280,8 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
                 //if feature is a geometry add the observation to the list of observations in class geometry
                 Geometry *geom = OiFeatureState::getActiveFeature()->getGeometry();
                 if(geom != NULL){
-                    geom->getObservations().append(element->getObservation());
+                    geom->addObservation(element->getObservation());
+                    geom->getObservations().last()->myTargetGeometries.append(geom);
                 }
             }
         }
