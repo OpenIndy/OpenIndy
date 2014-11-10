@@ -21,7 +21,9 @@ class Station;
 class Observation : public Element
 {
 public:
+
     Observation(Reading*, Station*, bool isActiveCoordSys);
+    Observation();
     ~Observation();
 
     Station *myStation;
@@ -38,6 +40,7 @@ public:
     OiVec sigmaXyz;
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
+    bool fromOpenIndyXML(QDomElement &xmlElem);
 
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 

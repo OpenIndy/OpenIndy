@@ -35,10 +35,18 @@ public:
     enum ErrorCode{
         eNoError,
         eWrongFormat,
+        eUnknownRequestType,
         eNoActiveFeature,
         eNoActiveStation,
         eNoActiveCoordinateSystem,
-        eNoFeatureWithId
+        eNoFeatureWithId,
+        eNoTransformationParameters,
+        eTaskInProcess,
+        eNoTask,
+        eNoSensor,
+        eNoTaskWithId,
+        eStakeOutFinished,
+        eCannotMeasureNominal
     };
 
     RequestType myRequestType; //defines the type of request

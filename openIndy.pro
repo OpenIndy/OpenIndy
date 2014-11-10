@@ -186,7 +186,8 @@ SOURCES += \
     ui/pointfeaturemodel.cpp \
     ui/pointfeaturefiltermodel.cpp \
     ui/observationproxymodel.cpp \
-    ui/readingproxymodel.cpp
+    ui/readingproxymodel.cpp \
+    controller/plugincopier.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -337,7 +338,8 @@ HEADERS  += \
     ui/pointfeaturemodel.h \
     ui/pointfeaturefiltermodel.h \
     ui/observationproxymodel.h \
-    ui/readingproxymodel.h
+    ui/readingproxymodel.h \
+    controller/plugincopier.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

@@ -32,10 +32,17 @@ private slots:
 
     void on_pushButton_Ok_clicked();
 
+    void printMsg(QString msg);
+    void printErrorMsg(QString msg);
+    void copyFinished(bool check);
+
 private:
     Ui::PluginLoaderDialog *ui;
 
     QString pluginPath;
+    QString metaInfoText;
+
+
 };
 
 #endif // PLUGINLOADERDIALOG_H

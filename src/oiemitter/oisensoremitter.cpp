@@ -11,9 +11,9 @@ void OiSensorEmitter::emitSendConnectionStat(bool b)
     emit sendConnectionStat(b);
 }
 
-void OiSensorEmitter::emitSendIsReadyForMeasurement(bool b)
+void OiSensorEmitter::emitSendIsReadyForMeasurement(OiSensorEmitter::sensorState s)
 {
-    emit sendIsReadyForMeasurement(b);
+    emit sendIsReadyForMeasurement(s);
 }
 
 void OiSensorEmitter::emitSendSensorError(QString s)

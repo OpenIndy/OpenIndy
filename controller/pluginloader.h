@@ -20,6 +20,7 @@
 #include "console.h"
 #include "oimetadata.h"
 #include "pluginmetadata.h"
+#include "plugincopier.h"
 
 
 /*!
@@ -59,6 +60,9 @@ public slots:
     static QList<SimulationModel*> loadSimulationPlugins(QString path);
     static QList<NetworkAdjustment*> loadNetworkAdjustmentPlugins(QString path);
 
+    static PluginCopier* getCopier();
+    static bool deletePlugin(PluginMetaData* metaData);
+
 
 private:
 
@@ -68,8 +72,8 @@ private:
     //! check whether the oiPlugin is valid
     static bool checkPlugin();
 
-    static bool copyDependencies(QString dirPath);
-    static bool copyDir(QString sourcePath, QString destinationPath);
+
+    static PluginCopier *pCopier;
 
 };
 

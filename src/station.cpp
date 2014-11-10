@@ -169,6 +169,16 @@ QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
 
 /*!
  * \brief Station::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Station::fromOpenIndyXML(QDomElement &xmlElem){
+
+    return false;
+}
+
+/*!
+ * \brief Station::fromOpenIndyXML
  * \param xml
  * \return
  */
@@ -514,6 +524,10 @@ void Station::emitStartMotorState(){
     emit startMotorState();
 }
 
+OiSensorEmitter* Station::getActiveSensorEmitter()
+{
+    return &this->sensorPad->instrument->myEmitter;
+}
 
 void Station::emitStartCompensation(){
     emit startCompensation();

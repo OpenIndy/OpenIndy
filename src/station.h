@@ -14,6 +14,7 @@
 #include "coordinatesystem.h"
 #include "sensorconfiguration.h"
 #include "point.h"
+#include "oisensoremitter.h"
 
 class SensorControl;
 class Reading;
@@ -115,6 +116,8 @@ public slots:
     void emitStartCompensation();
     void emitSelfDefinedAction(QString s);
 
+    OiSensorEmitter* getActiveSensorEmitter();
+
     QString getDisplayX() const;
     QString getDisplayY() const;
     QString getDisplayZ() const;
@@ -139,6 +142,7 @@ private:
     void recalc();
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
+    bool fromOpenIndyXML(QDomElement &xmlElem);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
 };
