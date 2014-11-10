@@ -119,6 +119,7 @@ public:
     QComboBox *comboBoxNominalSystem;
     QAction * actionMConfig;
     QCheckBox *checkBoxNominal;
+    QLabel *labelSensorStateMsg;
 
     //sensor control pad
     QAction *actionConnect;
@@ -209,6 +210,8 @@ private slots:
 
     void setActiveCoordinateSystem();
     void isSensorConnected(bool b);
+    void setSensorState(int sState,QString sensorMsg);
+    void sensorDisconnected();
 
     //void fillCoordSysComboBox();
 

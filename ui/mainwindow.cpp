@@ -77,6 +77,10 @@ MainWindow::MainWindow(QWidget *parent) :
     this->ui->toolBar_ControlPad->hide();
     this->ui->toolbarCreateFeature->hide();
 
+    //mainToolbar
+    labelSensorStateMsg = new QLabel();
+    ui->mainToolBar->addWidget(labelSensorStateMsg);
+
     //fill coordinatesystem comboBox
     //fillCoordSysComboBox();
 
@@ -128,6 +132,8 @@ void MainWindow::setConnects(){
     connect(&this->control,SIGNAL(sensorWorks(QString)),&this->sInfoDialog,SLOT(showInfo(QString)));
     connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),&this->sInfoDialog,SLOT(hideInfo(bool)));
     connect(this->control.myFeatureState, SIGNAL(activeStationChanged()), this, SLOT(changedStation()));
+    connect(&this->control,SIGNAL(setSensorState(int,QString)),this,SLOT(setSensorState(int,QString)));
+    connect(&this->control,SIGNAL(sensorDisconnected()),this,SLOT(sensorDisconnected()));
 
     //station and sensor setting
     connect(&stationDialog,SIGNAL(disconnectSensor()),&control,SLOT(startDisconnect()));
@@ -823,6 +829,31 @@ void MainWindow::isSensorConnected(bool b)
               break;
         }
     }
+}
+
+void MainWindow::setSensorState(int sState, QString sensorMsg)
+{
+
+    if(!ui->actionSensor_real_time_data->isEnabled()){
+        ui->actionSensor_real_time_data->setEnabled(true);
+    }
+
+    if(sState == OiSensorEmitter::sensorWarning){
+        labelSensorStateMsg->setStyleSheet("background-role: yellow");
+    }else if(sState == OiSensorEmitter::sensorOk){
+        labelSensorStateMsg->setStyleSheet("background-role: green");
+    }else if(sState == OiSensorEmitter::sensorError){
+        labelSensorStateMsg->setStyleSheet("background-role: red");
+    }
+
+    labelSensorStateMsg->setText(sensorMsg);
+
+}
+
+void MainWindow::sensorDisconnected()
+{
+    ui->actionSensor_real_time_data->setEnabled(false);
+    labelSensorStateMsg->setText("");
 }
 
 /*!

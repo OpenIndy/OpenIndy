@@ -147,6 +147,10 @@ signals:
 
     void isConnected(bool);
 
+    void setSensorState(int sensorState, QString msg);
+
+    void sensorDisconnected();
+
 public slots:
     void setUpFeatureGroupsModel();
     void setUpCoordinateSystemsModel();
@@ -234,6 +238,8 @@ public slots:
     //void sortFeatures();
 
     void sendIsConnected(bool b);
+
+    void sendSensorState(int sState, QString msg);
 
 private slots:
     void changeFunctionTreeViewModel();
