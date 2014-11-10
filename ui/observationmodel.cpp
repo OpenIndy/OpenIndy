@@ -97,6 +97,9 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         case 10:
             return QString(geom->getObservations().at(index.row())->getIsSolved()?"true":"false");
             break;
+        case 11:
+            return geom->getObservations().at(index.row())->getIsUsed();
+            break;
         default:
             break;
         }
@@ -124,6 +127,37 @@ QVariant ObservationModel::headerData(int section, Qt::Orientation orientation, 
         return m_columns.at(section);
     }
     return QVariant();
+}
+
+/*!
+ * \brief flags
+ * Add edit-functionality to some cells of the model
+ * \param index
+ * \return
+ */
+Qt::ItemFlags ObservationModel::flags(const QModelIndex &index) const
+{
+    Qt::ItemFlags myFlags = QAbstractTableModel::flags(index);
+    return (myFlags | Qt::ItemIsEditable);
+}
+
+/*!
+ * \brief setData updates the edited features
+ * \param index
+ * \param value
+ * \param role
+ * \return
+ */
+bool ObservationModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if(OiFeatureState::getActiveFeature() != NULL){
+        if(index.column() == 11){ //use state of observation
+            OiFeatureState::getActiveFeature()->getGeometry()->getObservations().at(index.row())->setIsUsed(value.toBool());
+            FeatureUpdater::recalcAll();
+        }
+        return true;
+    }
+    return false;
 }
 
 /*!

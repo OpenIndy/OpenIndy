@@ -7,6 +7,7 @@
 #include "QStringList"
 #include "oifeaturestate.h"
 #include "guiconfiguration.h"
+#include "featureupdater.h"
 
 /*!
  * \brief The ObservationModel class handles to display all information and attributes about the observations of the selected feature
@@ -20,6 +21,8 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
 signals:
 

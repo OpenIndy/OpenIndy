@@ -108,6 +108,9 @@ void FeatureData::initGUI(){
     ui->tableView_observation->setModel(this->observationOverviewModel);
     ui->tableView_readings->setModel(this->readingOverviewModel);
 
+    ObservationDelegate *myObsDelegate = new ObservationDelegate();
+    ui->tableView_observation->setItemDelegate(myObsDelegate);
+
     ui->tableView_displayedfunctionStatistic->setModel(NULL);
     ui->tableView_qxxAposteriori->setModel(NULL);
     ui->tableView_sxxApriori->setModel(NULL);

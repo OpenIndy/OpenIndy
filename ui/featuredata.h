@@ -26,6 +26,7 @@
 #include <QDesktopWidget>
 
 #include "oifeaturestate.h"
+#include "observationdelegate.h"
 
 namespace Ui {
 class FeatureData;

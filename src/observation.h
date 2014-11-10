@@ -54,6 +54,9 @@ public:
     void setIsSolved(bool isSolved);
     bool getIsSolved();
 
+    void setIsUsed(bool use);
+    bool getIsUsed();
+
     bool getUseState();
 
  private:
@@ -64,6 +67,8 @@ public:
     bool isValid; //defines if the reading can be transformed, without any function, to a xyz observation
 
     bool isSolved; //defines wether this observation is valid in current coordinate system
+
+    bool isUsed; //defines if the observation is and should be used for functions
 
     Reading* readReading(QXmlStreamReader& xml);
 };

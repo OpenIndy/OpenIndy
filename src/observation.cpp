@@ -13,6 +13,8 @@ Observation::Observation(Reading *r, Station *s, bool isActiveCoordSys) :
     if(r != NULL){
         r->obs = this;
     }
+    //use all observations on default
+    this->isUsed = true;
 
     //calculate observation and set valid and solved bools
     this->calcFromReading();
@@ -366,13 +368,31 @@ bool Observation::getIsSolved()
 }
 
 /*!
+ * \brief setIsUsed
+ * \param use
+ */
+void Observation::setIsUsed(bool use)
+{
+    this->isUsed = use;
+}
+
+/*!
+ * \brief getIsUsed
+ * \return
+ */
+bool Observation::getIsUsed()
+{
+    return this->isUsed;
+}
+
+/*!
  * \brief getUseState if the observation can be used for calculation or other things.
  * For this the observation has to be solved and valid.
  * \return
  */
 bool Observation::getUseState()
 {
-    if(this->isSolved && this->isValid){
+    if(this->isSolved && this->isValid && this->isUsed){
         return true;
     }
     return false;
