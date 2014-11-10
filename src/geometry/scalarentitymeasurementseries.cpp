@@ -72,23 +72,23 @@ QDomElement ScalarEntityMeasurementSeries::toOpenIndyXML(QDomDocument &xmlDoc) c
 
 /*!
  * \brief ScalarEntityMeasurementSeries::fromOpenIndyXML
- * \param xmlDoc
+ * \param xmlElem
  * \return
  */
-bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QDomElement &xmlDoc){
+bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Geometry::fromOpenIndyXML(xmlElem);
 
     if(result){
 
         //set circle attributes
-        QDomElement seriesValue = xmlDoc.firstChildElement("seriesValue");
+        QDomElement seriesValue = xmlElem.firstChildElement("seriesValue");
 
         if(seriesValue.isNull() || !seriesValue.hasAttribute("value")){
             return false;
         }
 
-        this->radius = seriesValue.attribute("value").toDouble();
+        this->seriesValue = seriesValue.attribute("value").toDouble();
 
     }
 

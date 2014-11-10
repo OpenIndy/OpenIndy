@@ -59,7 +59,7 @@ public:
     QString getDisplayExpansionOriginZ() const;
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
-    bool fromOpenIndyXML(QDomElement &xmlDoc);
+    bool fromOpenIndyXML(QDomElement &xmlElem);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
 private:

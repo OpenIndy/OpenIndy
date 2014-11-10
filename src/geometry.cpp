@@ -601,14 +601,14 @@ bool Geometry::fromOpenIndyXML(QDomElement &xmlElem){
     if(result){
 
         //set geometry attributes
-        if(!xmlDoc.hasAttribute("nominal") || !xmlDoc.hasAttribute("common")){
+        if(!xmlElem.hasAttribute("nominal") || !xmlElem.hasAttribute("common")){
             return false;
         }
-        this->isNominal = xmlDoc.attribute("nominal").toInt();
-        this->isCommon = xmlDoc.attribute("common").toInt();
+        this->isNominal = xmlElem.attribute("nominal").toInt();
+        this->isCommon = xmlElem.attribute("common").toInt();
 
         //set standard deviation
-        QDomElement stdv = xmlDoc.firstChildElement("standardDeviation");
+        QDomElement stdv = xmlElem.firstChildElement("standardDeviation");
         if(stdv.isNull() || !stdv.hasAttribute("value")){
             return false;
         }

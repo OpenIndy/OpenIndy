@@ -64,10 +64,10 @@ QDomElement Nurbs::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief Nurbs::fromOpenIndyXML
- * \param xmlDoc
+ * \param xmlElem
  * \return
  */
-bool Nurbs::fromOpenIndyXML(QDomElement &xmlDoc){
+bool Nurbs::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Geometry::fromOpenIndyXML(xmlElem);
 

@@ -164,10 +164,10 @@ QDomElement PointCloud::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief PointCloud::fromOpenIndyXML
- * \param xmlDoc
+ * \param xmlElem
  * \return
  */
-bool PointCloud::fromOpenIndyXML(QDomElement &xmlDoc){
+bool PointCloud::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Geometry::fromOpenIndyXML(xmlElem);
 

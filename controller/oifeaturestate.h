@@ -88,6 +88,8 @@ private slots:
 private:
     static OiFeatureState *myFeatureState;
 
+    //TODO transform the lists to maps with id of the element as the key
+
     static QList<FeatureWrapper *> myFeatures; //list of all features in OpenIndy
     static FeatureWrapper *myActiveFeature; //the currently selected feature in table view
     static QList<CoordinateSystem *> myCoordinateSystems; //list of all non-station coordinate systems

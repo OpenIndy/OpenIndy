@@ -380,6 +380,45 @@ QDomElement TrafoParam::toOpenIndyXML(QDomDocument &xmlDoc){
 
 /*!
  * \brief TrafoParam::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool TrafoParam::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Feature::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set trafoParam attributes
+        if(!xmlElem.hasAttribute("tx") || !xmlElem.hasAttribute("ty") || !xmlElem.hasAttribute("tz")
+                || !xmlElem.hasAttribute("rx") || !xmlElem.hasAttribute("ry") || !xmlElem.hasAttribute("rz")
+                || !xmlElem.hasAttribute("mx") || !xmlElem.hasAttribute("my") || !xmlElem.hasAttribute("mz")
+                || !xmlElem.hasAttribute("use") || !xmlElem.hasAttribute("movement") || !xmlElem.hasAttribute("datumTransformation")
+                || !xmlElem.hasAttribute("time")){
+            return false;
+        }
+        this->translation.setAt(0, xmlElem.attribute("tx").toDouble());
+        this->translation.setAt(1, xmlElem.attribute("ty").toDouble());
+        this->translation.setAt(2, xmlElem.attribute("tz").toDouble());
+        this->translation.setAt(0, xmlElem.attribute("rx").toDouble());
+        this->translation.setAt(1, xmlElem.attribute("ry").toDouble());
+        this->translation.setAt(2, xmlElem.attribute("rz").toDouble());
+        this->translation.setAt(0, xmlElem.attribute("mx").toDouble());
+        this->translation.setAt(1, xmlElem.attribute("my").toDouble());
+        this->translation.setAt(2, xmlElem.attribute("mz").toDouble());
+        this->use = xmlElem.attribute("use").toInt();
+        this->isMovement = xmlElem.attribute("movement").toInt();
+        this->isDatumTrafo = xmlElem.attribute("datumTransformation").toInt();
+        this->validTime = QDateTime::fromString(xmlElem.attribute("time"), Qt::ISODate);
+
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief TrafoParam::fromOpenIndyXML
  * \param xml
  * \return
  */

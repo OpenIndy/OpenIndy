@@ -80,23 +80,23 @@ QDomElement ScalarEntityDistance::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief ScalarEntityDistance::fromOpenIndyXML
- * \param xmlDoc
+ * \param xmlElem
  * \return
  */
-bool ScalarEntityDistance::fromOpenIndyXML(QDomElement &xmlDoc){
+bool ScalarEntityDistance::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Geometry::fromOpenIndyXML(xmlElem);
 
     if(result){
 
         //set circle attributes
-        QDomElement distance = xmlDoc.firstChildElement("distance");
+        QDomElement distance = xmlElem.firstChildElement("distance");
 
         if(distance.isNull() || !distance.hasAttribute("value")){
             return false;
         }
 
-        this->radius = distance.attribute("value").toDouble();
+        this->distance = distance.attribute("value").toDouble();
 
     }
 

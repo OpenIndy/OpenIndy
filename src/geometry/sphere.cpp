@@ -98,7 +98,7 @@ QDomElement Sphere::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief Sphere::fromOpenIndyXML
- * \param xmlDoc
+ * \param xmlElem
  * \return
  */
 bool Sphere::fromOpenIndyXML(QDomElement &xmlElem){

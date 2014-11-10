@@ -404,17 +404,17 @@ QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc){
 
 /*!
  * \brief CoordinateSystem::fromOpenIndyXML
- * \param xmlDoc
+ * \param xmlElem
  * \return
  */
-bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlDoc){
+bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Feature::fromOpenIndyXML(xmlElem);
 
     if(result){
 
         //set expansion origin
-        QDomElement expansionOrigin = xmlDoc.firstChildElement("expansionOrigin");
+        QDomElement expansionOrigin = xmlElem.firstChildElement("expansionOrigin");
         if(!expansionOrigin.isNull()){
             if(!expansionOrigin.hasAttribute("x") || !expansionOrigin.hasAttribute("y") || !expansionOrigin.hasAttribute("z")){
                 return false;

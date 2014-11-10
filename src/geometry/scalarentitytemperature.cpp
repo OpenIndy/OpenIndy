@@ -72,23 +72,23 @@ QDomElement ScalarEntityTemperature::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief ScalarEntityTemperature::fromOpenIndyXML
- * \param xmlDoc
+ * \param xmlElem
  * \return
  */
-bool ScalarEntityTemperature::fromOpenIndyXML(QDomElement &xmlDoc){
+bool ScalarEntityTemperature::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Geometry::fromOpenIndyXML(xmlElem);
 
     if(result){
 
         //set circle attributes
-        QDomElement temperature = xmlDoc.firstChildElement("temperature");
+        QDomElement temperature = xmlElem.firstChildElement("temperature");
 
         if(temperature.isNull() || !temperature.hasAttribute("value")){
             return false;
         }
 
-        this->radius = temperature.attribute("value").toDouble();
+        this->temperature = temperature.attribute("value").toDouble();
 
     }
 

@@ -107,18 +107,18 @@ QDomElement Plane::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief Plane::fromOpenIndyXML
- * \param xmlDoc
+ * \param xmlElem
  * \return
  */
-bool Plane::fromOpenIndyXML(QDomElement &xmlDoc){
+bool Plane::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Geometry::fromOpenIndyXML(xmlElem);
 
     if(result){
 
         //set plane attributes
-        QDomElement normalVector = xmlDoc.firstChildElement("spatialDirection");
-        QDomElement pointOnPlane = xmlDoc.firstChildElement("coordinates");
+        QDomElement normalVector = xmlElem.firstChildElement("spatialDirection");
+        QDomElement pointOnPlane = xmlElem.firstChildElement("coordinates");
 
         if(normalVector.isNull() || pointOnPlane.isNull()
                 || !normalVector.hasAttribute("i") || !normalVector.hasAttribute("j") || !normalVector.hasAttribute("k")

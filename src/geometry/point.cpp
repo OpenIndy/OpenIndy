@@ -92,17 +92,17 @@ QDomElement Point::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief Point::fromOpenIndyXML
- * \param xmlDoc
+ * \param xmlElem
  * \return
  */
-bool Point::fromOpenIndyXML(QDomElement &xmlDoc){
+bool Point::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Geometry::fromOpenIndyXML(xmlElem);
 
     if(result){
 
         //set point attributes
-        QDomElement coordinates = xmlDoc.firstChildElement("coordinates");
+        QDomElement coordinates = xmlElem.firstChildElement("coordinates");
 
         if(coordinates.isNull() || !coordinates.hasAttribute("x") || !coordinates.hasAttribute("y") || !coordinates.hasAttribute("z")){
             return false;
