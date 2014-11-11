@@ -10,6 +10,7 @@ CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), origin(4)
     this->isUpdated = false;
     this->isDrawn = true;
     this->expansionOrigin.setAt(3,1.0);
+    this->isStationSystem = false;
 }
 
 CoordinateSystem::~CoordinateSystem(){
@@ -18,6 +19,7 @@ CoordinateSystem::~CoordinateSystem(){
     foreach(Observation *myObs, this->observations){
         if(myObs != NULL){
             delete myObs;
+            myObs = NULL;
         }
     }
 
@@ -25,6 +27,7 @@ CoordinateSystem::~CoordinateSystem(){
     foreach(TrafoParam *myTrafo, this->trafoParams){
         if(myTrafo != NULL){
             delete myTrafo;
+            myTrafo = NULL;
         }
     }
 
@@ -32,6 +35,7 @@ CoordinateSystem::~CoordinateSystem(){
     foreach(Geometry *myGeom, this->nominals){
         if(myGeom != NULL){
             delete myGeom;
+            myGeom = NULL;
         }
     }
 
@@ -378,7 +382,7 @@ QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc){
 
     //add nominals
     if(this->nominals.size() > 0){
-        QDomElement nominals = xmlDoc.createElement("nominals");
+        QDomElement nominals = xmlDoc.createElement("nominalGeometries");
         foreach(Geometry *geom, this->nominals){
             if(geom != NULL){
                 QDomElement nominal = xmlDoc.createElement("geometry");

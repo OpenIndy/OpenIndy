@@ -91,7 +91,7 @@ QDomElement Line::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add vector of direction
     QDomElement ijk = xmlDoc.createElement("spatialDirection");
-    if(this->ijk.getSize() >= 3 && this->getIsSolved()){
+    if(this->ijk.getSize() >= 3 && (this->getIsSolved() || this->getIsNominal())){
         ijk.setAttribute("i", this->ijk.getAt(0));
         ijk.setAttribute("j", this->ijk.getAt(0));
         ijk.setAttribute("k", this->ijk.getAt(0));

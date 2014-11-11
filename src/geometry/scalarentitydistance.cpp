@@ -67,7 +67,7 @@ QDomElement ScalarEntityDistance::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add distance
     QDomElement distance = xmlDoc.createElement("distance");
-    if(this->getIsSolved()){
+    if(this->getIsSolved() || this->getIsNominal()){
         distance.setAttribute("value", this->distance);
     }else{
         distance.setAttribute("value", 0.0);

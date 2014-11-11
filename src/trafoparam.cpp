@@ -393,23 +393,54 @@ bool TrafoParam::fromOpenIndyXML(QDomElement &xmlElem){
         if(!xmlElem.hasAttribute("tx") || !xmlElem.hasAttribute("ty") || !xmlElem.hasAttribute("tz")
                 || !xmlElem.hasAttribute("rx") || !xmlElem.hasAttribute("ry") || !xmlElem.hasAttribute("rz")
                 || !xmlElem.hasAttribute("mx") || !xmlElem.hasAttribute("my") || !xmlElem.hasAttribute("mz")
-                || !xmlElem.hasAttribute("use") || !xmlElem.hasAttribute("movement") || !xmlElem.hasAttribute("datumTransformation")
+                || !xmlElem.hasAttribute("use") || !xmlElem.hasAttribute("movement") || !xmlElem.hasAttribute("datumtrafo")
                 || !xmlElem.hasAttribute("time")){
             return false;
         }
         this->translation.setAt(0, xmlElem.attribute("tx").toDouble());
         this->translation.setAt(1, xmlElem.attribute("ty").toDouble());
         this->translation.setAt(2, xmlElem.attribute("tz").toDouble());
-        this->translation.setAt(0, xmlElem.attribute("rx").toDouble());
-        this->translation.setAt(1, xmlElem.attribute("ry").toDouble());
-        this->translation.setAt(2, xmlElem.attribute("rz").toDouble());
-        this->translation.setAt(0, xmlElem.attribute("mx").toDouble());
-        this->translation.setAt(1, xmlElem.attribute("my").toDouble());
-        this->translation.setAt(2, xmlElem.attribute("mz").toDouble());
+        this->rotation.setAt(0, xmlElem.attribute("rx").toDouble());
+        this->rotation.setAt(1, xmlElem.attribute("ry").toDouble());
+        this->rotation.setAt(2, xmlElem.attribute("rz").toDouble());
+        this->scale.setAt(0, xmlElem.attribute("mx").toDouble());
+        this->scale.setAt(1, xmlElem.attribute("my").toDouble());
+        this->scale.setAt(2, xmlElem.attribute("mz").toDouble());
         this->use = xmlElem.attribute("use").toInt();
         this->isMovement = xmlElem.attribute("movement").toInt();
-        this->isDatumTrafo = xmlElem.attribute("datumTransformation").toInt();
+        this->isDatumTrafo = xmlElem.attribute("datumtrafo").toInt();
         this->validTime = QDateTime::fromString(xmlElem.attribute("time"), Qt::ISODate);
+
+        //calculate homogeneous matrix
+        OiMat tmpTranslation(4,4);
+        OiMat tmpRotation(4,4);
+        OiMat tmpScale(4,4);
+
+        tmpTranslation.setAt(0,0,1.0);
+        tmpTranslation.setAt(0,3,this->translation.getAt(0));
+        tmpTranslation.setAt(1,1,1.0);
+        tmpTranslation.setAt(1,3,this->translation.getAt(1));
+        tmpTranslation.setAt(2,2,1.0);
+        tmpTranslation.setAt(2,3,this->translation.getAt(2));
+        tmpTranslation.setAt(3,3,1.0);
+
+        tmpScale.setAt(0,0,this->scale.getAt(0));
+        tmpScale.setAt(1,1,this->scale.getAt(1));
+        tmpScale.setAt(2,2,this->scale.getAt(2));
+        tmpScale.setAt(3,3,1.0);
+
+        tmpRotation.setAt(0,0,qCos(this->rotation.getAt(1))*qCos(this->rotation.getAt(2)));
+        tmpRotation.setAt(0,1,qCos(this->rotation.getAt(0))*qSin(this->rotation.getAt(2))+qSin(this->rotation.getAt(0))*qSin(this->rotation.getAt(1))*qCos(this->rotation.getAt(2)));
+        tmpRotation.setAt(0,2,qSin(this->rotation.getAt(0))*qSin(this->rotation.getAt(2))-qCos(this->rotation.getAt(0))*qSin(this->rotation.getAt(1))*qCos(this->rotation.getAt(2)));
+        tmpRotation.setAt(1,0,-qCos(this->rotation.getAt(1))*qSin(this->rotation.getAt(2)));
+        tmpRotation.setAt(1,1,qCos(this->rotation.getAt(0))*qCos(this->rotation.getAt(2))-qSin(this->rotation.getAt(0))*qSin(this->rotation.getAt(1))*qSin(this->rotation.getAt(2)));
+        tmpRotation.setAt(1,2,qSin(this->rotation.getAt(0))*qCos(this->rotation.getAt(2))+qCos(this->rotation.getAt(0))*qSin(this->rotation.getAt(1))*qSin(this->rotation.getAt(2)));
+        tmpRotation.setAt(2,0,qSin(this->rotation.getAt(1)));
+        tmpRotation.setAt(2,1,-qSin(this->rotation.getAt(0))*qCos(this->rotation.getAt(1)));
+        tmpRotation.setAt(2,2,qCos(this->rotation.getAt(0))*qCos(this->rotation.getAt(1)));
+        tmpRotation.setAt(3,3,1.0);
+
+        this->homogenMatrix = tmpTranslation*tmpScale*tmpRotation;
 
     }
 

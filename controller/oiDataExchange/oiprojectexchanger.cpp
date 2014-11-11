@@ -8,6 +8,7 @@ QMap<int, FeatureWrapper *> OiProjectExchanger::myStations;
 QMap<int, FeatureWrapper *> OiProjectExchanger::myCoordinateSystems;
 QMap<int, FeatureWrapper *> OiProjectExchanger::myTransformationParameters;
 QMap<int, FeatureWrapper *> OiProjectExchanger::myGeometries;
+QList<int> OiProjectExchanger::stationPoints;
 
 /*!
  * \brief OiProjectExchanger::saveProject
@@ -59,11 +60,19 @@ QDomDocument OiProjectExchanger::saveProject(){
     }
     root.appendChild(stations);
 
-    //add coordinate systems
+    //add coordinate systems (nominal + station systems)
     QDomElement coordinateSystems = project.createElement("coordinateSystems");
     foreach(CoordinateSystem *c, OiFeatureState::getCoordinateSystems()){
         if(c != NULL){
             QDomElement coordinateSystem = c->toOpenIndyXML(project);
+            if(!coordinateSystem.isNull()){
+                coordinateSystems.appendChild(coordinateSystem);
+            }
+        }
+    }
+    foreach(Station *s, OiFeatureState::getStations()){
+        if(s != NULL && s->coordSys != NULL){
+            QDomElement coordinateSystem = s->coordSys->toOpenIndyXML(project);
             if(!coordinateSystem.isNull()){
                 coordinateSystems.appendChild(coordinateSystem);
             }
@@ -159,17 +168,38 @@ bool OiProjectExchanger::loadProject(const QDomDocument &project){
 
     }
 
+    //add loaded features to OiFeatureState
+    foreach(FeatureWrapper *station, OiProjectExchanger::myStations){
+        OiFeatureState::addFeature(station);
+        if(station->getStation()->position != NULL){
+            OiProjectExchanger::stationPoints.append(station->getStation()->position->getId());
+        }
+    }
+    foreach(FeatureWrapper *system, OiProjectExchanger::myCoordinateSystems){
+        if(!system->getCoordinateSystem()->isStationSystem){
+            OiFeatureState::addFeature(system);
+        }
+    }
+    foreach(FeatureWrapper *trafoParam, OiProjectExchanger::myTransformationParameters){
+        OiFeatureState::addFeature(trafoParam);
+    }
+    foreach(FeatureWrapper *geometry, OiProjectExchanger::myGeometries){
+        if(!OiProjectExchanger::stationPoints.contains(geometry->getGeometry()->getId())){
+            OiFeatureState::addFeature(geometry);
+        }
+    }
+
     //set active station and active coordinate system
-    QDomElement activeStation = project.firstChildElement("activeStation");
-    QDomElement activeCoordinateSystem = project.firstChildElement("activeCoordinateSystem");
+    QDomElement activeStation = project.documentElement().firstChildElement("activeStation");
+    QDomElement activeCoordinateSystem = project.documentElement().firstChildElement("activeCoordinateSystem");
     if(activeStation.isNull() || activeCoordinateSystem.isNull()
             || !activeStation.hasAttribute("ref") || !activeCoordinateSystem.hasAttribute("ref")
             || !OiProjectExchanger::myStations.contains(activeStation.attribute("ref").toInt())
             || !OiProjectExchanger::myCoordinateSystems.contains(activeCoordinateSystem.attribute("ref").toInt())){
 
         //clear all created elements if no active station or active coordinate system is available
-        OiProjectExchanger::clearHelperMaps(true);
-        return false;
+        //OiProjectExchanger::clearHelperMaps(true);
+        //return false;
 
     }
     FeatureWrapper *myActiveStation = OiProjectExchanger::myStations.value(activeStation.attribute("ref").toInt());
@@ -177,19 +207,8 @@ bool OiProjectExchanger::loadProject(const QDomDocument &project){
     myActiveStation->getStation()->setActiveStationState(true);
     myActiveSystem->getCoordinateSystem()->setActiveCoordinateSystemState(true);
 
-    //add loaded features to OiFeatureState
-    foreach(FeatureWrapper *station, OiProjectExchanger::myStations){
-        OiFeatureState::addFeature(station);
-    }
-    foreach(FeatureWrapper *system, OiProjectExchanger::myCoordinateSystems){
-        OiFeatureState::addFeature(system);
-    }
-    foreach(FeatureWrapper *trafoParam, OiProjectExchanger::myTransformationParameters){
-        OiFeatureState::addFeature(trafoParam);
-    }
-    foreach(FeatureWrapper *geometry, OiProjectExchanger::myGeometries){
-        OiFeatureState::addFeature(geometry);
-    }
+    //clear the helper maps
+    OiProjectExchanger::clearHelperMaps(false);
 
     return true;
 
@@ -202,7 +221,7 @@ bool OiProjectExchanger::loadProject(const QDomDocument &project){
  */
 bool OiProjectExchanger::loadObservations(const QDomDocument &project){
 
-    QDomElement observations = project.firstChildElement("observations");
+    QDomElement observations = project.documentElement().firstChildElement("observations");
     if(!observations.isNull()){
 
         //get a list of all observations tags
@@ -236,7 +255,7 @@ bool OiProjectExchanger::loadObservations(const QDomDocument &project){
  */
 bool OiProjectExchanger::loadStations(const QDomDocument &project){
 
-    QDomElement stations = project.firstChildElement("stations");
+    QDomElement stations = project.documentElement().firstChildElement("stations");
 
     //at least one station has to be available
     if(stations.isNull()){
@@ -280,7 +299,7 @@ bool OiProjectExchanger::loadStations(const QDomDocument &project){
  */
 bool OiProjectExchanger::loadCoordinateSystems(const QDomDocument &project){
 
-    QDomElement coordinateSystems = project.firstChildElement("coordinateSystems");
+    QDomElement coordinateSystems = project.documentElement().firstChildElement("coordinateSystems");
 
     //at least one coordinate system has to be available
     if(coordinateSystems.isNull()){
@@ -324,7 +343,7 @@ bool OiProjectExchanger::loadCoordinateSystems(const QDomDocument &project){
  */
 bool OiProjectExchanger::loadTransformationParameters(const QDomDocument &project){
 
-    QDomElement trafoParams = project.firstChildElement("transformationParameters");
+    QDomElement trafoParams = project.documentElement().firstChildElement("transformationParameters");
     if(!trafoParams.isNull()){
 
         //get a list of all trafo param tags
@@ -361,8 +380,8 @@ bool OiProjectExchanger::loadTransformationParameters(const QDomDocument &projec
  */
 bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
 
-    QDomElement geometries = project.firstChildElement("geometries");
-    if(geometries.isNull()){
+    QDomElement geometries = project.documentElement().firstChildElement("geometries");
+    if(!geometries.isNull()){
 
         //get a list of all geometry tags
         QDomNodeList geometryList = geometries.childNodes();
@@ -401,7 +420,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eCylinderFeature:{
                 Cylinder *myCylinder = new Cylinder(false);
                 myFeatureWrapper->setCylinder(myCylinder);
@@ -410,7 +429,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eEllipsoidFeature:{
                 Ellipsoid *myEllipsoid = new Ellipsoid(false);
                 myFeatureWrapper->setEllipsoid(myEllipsoid);
@@ -419,7 +438,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eHyperboloidFeature:{
                 Hyperboloid *myHyperboloid = new Hyperboloid(false);
                 myFeatureWrapper->setHyperboloid(myHyperboloid);
@@ -428,7 +447,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eLineFeature:{
                 Line *myLine = new Line(false);
                 myFeatureWrapper->setLine(myLine);
@@ -437,7 +456,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eNurbsFeature:{
                 Nurbs *myNurbs = new Nurbs(false);
                 myFeatureWrapper->setNurbs(myNurbs);
@@ -446,7 +465,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eParaboloidFeature:{
                 Paraboloid *myParaboloid = new Paraboloid(false);
                 myFeatureWrapper->setParaboloid(myParaboloid);
@@ -455,7 +474,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::ePlaneFeature:{
                 Plane *myPlane = new Plane(false);
                 myFeatureWrapper->setPlane(myPlane);
@@ -464,7 +483,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::ePointFeature:{
                 Point *myPoint = new Point(false);
                 myFeatureWrapper->setPoint(myPoint);
@@ -473,7 +492,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::ePointCloudFeature:{
                 PointCloud *myPointCloud = new PointCloud(false);
                 myFeatureWrapper->setPointCloud(myPointCloud);
@@ -482,7 +501,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eScalarEntityAngleFeature:{
                 ScalarEntityAngle *myAngle = new ScalarEntityAngle(false);
                 myFeatureWrapper->setScalarEntityAngle(myAngle);
@@ -491,7 +510,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eScalarEntityDistanceFeature:{
                 ScalarEntityDistance *myDistance = new ScalarEntityDistance(false);
                 myFeatureWrapper->setScalarEntityDistance(myDistance);
@@ -500,7 +519,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eScalarEntityMeasurementSeriesFeature:{
                 ScalarEntityMeasurementSeries *myMeasurementSeries = new ScalarEntityMeasurementSeries(false);
                 myFeatureWrapper->setScalarEntityMeasurementSeries(myMeasurementSeries);
@@ -509,7 +528,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eScalarEntityTemperatureFeature:{
                 ScalarEntityTemperature *myTemperature = new ScalarEntityTemperature(false);
                 myFeatureWrapper->setScalarEntityTemperature(myTemperature);
@@ -518,7 +537,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }case Configuration::eSphereFeature:{
                 Sphere *mySphere = new Sphere(false);
                 myFeatureWrapper->setSphere(mySphere);
@@ -527,7 +546,7 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
                     delete myFeatureWrapper;
                     continue;
                 }
-                continue;
+                break;
             }default:{
                 delete myFeatureWrapper;
                 continue;
@@ -551,17 +570,17 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
  */
 bool OiProjectExchanger::restoreStationDependencies(const QDomDocument &project){
 
-    bool result = false;
+    bool result = true;
 
     //iterate through the station tags in the xml project
-    QDomElement stations = project.firstChildElement("stations");
+    QDomElement stations = project.documentElement().firstChildElement("stations");
     if(!stations.isNull()){
         QDomNodeList stationList = stations.childNodes();
         for(int i = 0; i < stationList.size(); i++){
 
             //get the station tag at position i and the corresponding FeatureWrapper
             QDomElement station = stationList.at(i).toElement();
-            if(!station.hasAttribute("id") || OiProjectExchanger::myStations.contains(station.attribute("id").toInt())){
+            if(!station.hasAttribute("id") || !OiProjectExchanger::myStations.contains(station.attribute("id").toInt())){
                 continue;
             }
             FeatureWrapper *myStation = OiProjectExchanger::myStations.value(station.attribute("id").toInt());
@@ -616,6 +635,7 @@ bool OiProjectExchanger::restoreStationDependencies(const QDomDocument &project)
                 FeatureWrapper *mySystem = OiProjectExchanger::myCoordinateSystems.value(coordinateSystem.attribute("ref").toInt());
                 if(mySystem != NULL && mySystem->getCoordinateSystem() != NULL){
                     myStation->getStation()->coordSys = mySystem->getCoordinateSystem();
+                    myStation->getStation()->coordSys->isStationSystem = true;
                 }else{
                     result = false;
                 }
@@ -659,17 +679,17 @@ bool OiProjectExchanger::restoreStationDependencies(const QDomDocument &project)
  */
 bool OiProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &project){
 
-    bool result = false;
+    bool result = true;
 
     //iterate through the coordinate system tags in the xml project
-    QDomElement coordinateSystems = project.firstChildElement("coordinateSystems");
+    QDomElement coordinateSystems = project.documentElement().firstChildElement("coordinateSystems");
     if(!coordinateSystems.isNull()){
         QDomNodeList coordinateSystemList = coordinateSystems.childNodes();
         for(int i = 0; i < coordinateSystemList.size(); i++){
 
             //get the coordinate system tag at position i and the corresponding FeatureWrapper
             QDomElement coordinateSystem = coordinateSystemList.at(i).toElement();
-            if(!coordinateSystem.hasAttribute("id") || OiProjectExchanger::myCoordinateSystems.contains(coordinateSystem.attribute("id").toInt())){
+            if(!coordinateSystem.hasAttribute("id") || !OiProjectExchanger::myCoordinateSystems.contains(coordinateSystem.attribute("id").toInt())){
                 continue;
             }
             FeatureWrapper *myCoordinateSystem = OiProjectExchanger::myCoordinateSystems.value(coordinateSystem.attribute("id").toInt());
@@ -785,17 +805,17 @@ bool OiProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument 
  */
 bool OiProjectExchanger::restoreTrafoParamDependencies(const QDomDocument &project){
 
-    bool result = false;
+    bool result = true;
 
     //iterate through the trafo param tags in the xml project
-    QDomElement trafoParams = project.firstChildElement("transformationParameters");
+    QDomElement trafoParams = project.documentElement().firstChildElement("transformationParameters");
     if(!trafoParams.isNull()){
         QDomNodeList trafoParamList = trafoParams.childNodes();
         for(int i = 0; i < trafoParamList.size(); i++){
 
             //get the trafo param tag at position i and the corresponding FeatureWrapper
             QDomElement trafoParam = trafoParamList.at(i).toElement();
-            if(!trafoParam.hasAttribute("id") || OiProjectExchanger::myTransformationParameters.contains(trafoParam.attribute("id").toInt())){
+            if(!trafoParam.hasAttribute("id") || !OiProjectExchanger::myTransformationParameters.contains(trafoParam.attribute("id").toInt())){
                 continue;
             }
             FeatureWrapper *myTrafoParam = OiProjectExchanger::myTransformationParameters.value(trafoParam.attribute("id").toInt());
@@ -806,9 +826,13 @@ bool OiProjectExchanger::restoreTrafoParamDependencies(const QDomDocument &proje
             //set start and destination system
             QDomElement from = trafoParam.firstChildElement("from");
             QDomElement to = trafoParam.firstChildElement("to");
-            if(from.isNull() || to.isNull() || !from.hasAttribute("ref") || !to.hasAttribute("ref")){
+            if(from.isNull() || to.isNull() || !from.hasAttribute("ref") || !to.hasAttribute("ref")
+                    || !OiProjectExchanger::myCoordinateSystems.contains(from.attribute("ref").toInt())
+                    || !OiProjectExchanger::myCoordinateSystems.contains(from.attribute("ref").toInt())){
                 continue;
             }
+            myTrafoParam->getTrafoParam()->setCoordinateSystems(OiProjectExchanger::myCoordinateSystems.value(from.attribute("ref").toInt())->getCoordinateSystem(),
+                                                                OiProjectExchanger::myCoordinateSystems.value(to.attribute("ref").toInt())->getCoordinateSystem());
 
             //load function plugins
             QDomElement functions = trafoParam.firstChildElement("functions");
@@ -877,17 +901,17 @@ bool OiProjectExchanger::restoreTrafoParamDependencies(const QDomDocument &proje
  */
 bool OiProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
 
-    bool result = false;
+    bool result = true;
 
     //iterate through the geometry tags in the xml project
-    QDomElement geometries = project.firstChildElement("geometries");
+    QDomElement geometries = project.documentElement().firstChildElement("geometries");
     if(!geometries.isNull()){
         QDomNodeList geometryList = geometries.childNodes();
         for(int i = 0; i < geometryList.size(); i++){
 
             //get the geometry tag at position i and the corresponding FeatureWrapper
             QDomElement geometry = geometryList.at(i).toElement();
-            if(!geometry.hasAttribute("id") || OiProjectExchanger::myGeometries.contains(geometry.attribute("id").toInt())){
+            if(!geometry.hasAttribute("id") || !OiProjectExchanger::myGeometries.contains(geometry.attribute("id").toInt())){
                 continue;
             }
             FeatureWrapper *myGeometry = OiProjectExchanger::myGeometries.value(geometry.attribute("id").toInt());
@@ -1001,17 +1025,17 @@ bool OiProjectExchanger::restoreGeometryDependencies(const QDomDocument &project
  */
 bool OiProjectExchanger::restoreObservationDependencies(const QDomDocument &project){
 
-    bool result = false;
+    bool result = true;
 
     //iterate through the observation tags in the xml project
-    QDomElement observations = project.firstChildElement("observations");
+    QDomElement observations = project.documentElement().firstChildElement("observations");
     if(!observations.isNull()){
         QDomNodeList observationList = observations.childNodes();
         for(int i = 0; i < observationList.size(); i++){
 
             //get the observation tag at position i and the corresponding Observation
             QDomElement observation = observationList.at(i).toElement();
-            if(!observation.hasAttribute("id") || OiProjectExchanger::myObservations.contains(observation.attribute("id").toInt())){
+            if(!observation.hasAttribute("id") || !OiProjectExchanger::myObservations.contains(observation.attribute("id").toInt())){
                 continue;
             }
             Observation *myObservation = OiProjectExchanger::myObservations.value(observation.attribute("id").toInt());

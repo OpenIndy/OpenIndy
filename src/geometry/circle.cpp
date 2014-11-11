@@ -89,7 +89,7 @@ QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add radius
     QDomElement radius = xmlDoc.createElement("radius");
-    if(this->getIsSolved()){
+    if(this->getIsSolved() || this->getIsNominal()){
         radius.setAttribute("value", this->radius);
     }else{
         radius.setAttribute("value", 0.0);
@@ -98,7 +98,7 @@ QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add normal vector of the circle
     QDomElement ijk = xmlDoc.createElement("spatialDirection");
-    if(this->ijk.getSize() >= 3 && this->getIsSolved()){
+    if(this->ijk.getSize() >= 3 && (this->getIsSolved() || this->getIsNominal())){
         ijk.setAttribute("i", this->ijk.getAt(0));
         ijk.setAttribute("j", this->ijk.getAt(1));
         ijk.setAttribute("k", this->ijk.getAt(2));

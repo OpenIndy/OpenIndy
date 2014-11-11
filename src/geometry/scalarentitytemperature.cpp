@@ -59,7 +59,7 @@ QDomElement ScalarEntityTemperature::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add temperature
     QDomElement temperature = xmlDoc.createElement("temperature");
-    if(this->getIsSolved()){
+    if(this->getIsSolved() || this->getIsNominal()){
         temperature.setAttribute("value", this->temperature);
     }else{
         temperature.setAttribute("value", 0.0);

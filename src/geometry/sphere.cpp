@@ -86,11 +86,12 @@ QDomElement Sphere::toOpenIndyXML(QDomDocument &xmlDoc) const{
     sphere.setAttribute("type", Configuration::sSphere);
 
     QDomElement radius = xmlDoc.createElement("radius");
-    if(this->getIsSolved()){
+    if(this->getIsSolved() || this->getIsNominal()){
         radius.setAttribute("value", this->radius);
     }else{
         radius.setAttribute("value", 0.0);
     }
+    sphere.appendChild(radius);
 
     return sphere;
 

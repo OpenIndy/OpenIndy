@@ -262,9 +262,17 @@ void OiFeatureState::resetFeatureLists()
     myActiveCoordinateSystem = NULL;
     myActiveGroup = "All Groups";
 
-    foreach(FeatureWrapper *f,myFeatures){
-        delete f->getFeature();
-        delete f;
+    //delete features
+    foreach(FeatureWrapper *feature, OiFeatureState::myFeatures){
+        if(feature != NULL){
+            if(feature->getFeature() != NULL){
+                delete feature->getFeature();
+                Feature *myFeature = feature->getFeature();
+                myFeature = NULL;
+            }
+            delete feature;
+            feature = NULL;
+        }
     }
 
     myFeatures.clear();

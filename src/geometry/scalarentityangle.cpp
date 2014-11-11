@@ -67,7 +67,7 @@ QDomElement ScalarEntityAngle::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add angle
     QDomElement angle = xmlDoc.createElement("angle");
-    if(this->getIsSolved()){
+    if(this->getIsSolved() || this->getIsNominal()){
         angle.setAttribute("value", this->angle);
     }else{
         angle.setAttribute("value", 0.0);

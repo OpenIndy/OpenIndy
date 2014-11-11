@@ -58,6 +58,8 @@ private:
 
     static void clearHelperMaps(bool deleteOnClear);
 
+    static QList<int> stationPoints;
+
 };
 
 #endif // OIPROJECTEXCHANGER_H

@@ -91,7 +91,7 @@ QDomElement Plane::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add normal vector
     QDomElement ijk = xmlDoc.createElement("spatialDirection");
-    if(this->ijk.getSize() >= 3 && this->getIsSolved()){
+    if(this->ijk.getSize() >= 3 && (this->getIsSolved() || this->getIsNominal())){
         ijk.setAttribute("i", this->ijk.getAt(0));
         ijk.setAttribute("j", this->ijk.getAt(1));
         ijk.setAttribute("k", this->ijk.getAt(2));
@@ -100,6 +100,7 @@ QDomElement Plane::toOpenIndyXML(QDomDocument &xmlDoc) const{
         ijk.setAttribute("j", 0.0);
         ijk.setAttribute("k", 0.0);
     }
+    plane.appendChild(ijk);
 
     return plane;
 

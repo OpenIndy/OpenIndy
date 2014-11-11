@@ -62,6 +62,8 @@ public:
     bool fromOpenIndyXML(QDomElement &xmlElem);
     ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
+    bool isStationSystem;
+
 private:
 
     /*

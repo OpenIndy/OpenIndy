@@ -520,7 +520,7 @@ QDomElement Geometry::toOpenIndyXML(QDomDocument &xmlDoc) const{
     //add coordinates
     QDomElement coordinates = xmlDoc.createElement("coordinates");
     OiVec xyz = this->getXYZ();
-    if(xyz.getSize() >= 3 && this->getIsSolved()){
+    if(xyz.getSize() >= 3 && (this->getIsSolved() || this->getIsNominal())){
         coordinates.setAttribute("x", xyz.getAt(0));
         coordinates.setAttribute("y", xyz.getAt(1));
         coordinates.setAttribute("z", xyz.getAt(2));

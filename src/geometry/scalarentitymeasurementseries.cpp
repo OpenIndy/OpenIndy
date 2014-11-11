@@ -59,7 +59,7 @@ QDomElement ScalarEntityMeasurementSeries::toOpenIndyXML(QDomDocument &xmlDoc) c
 
     //add series value
     QDomElement seriesValue = xmlDoc.createElement("seriesValue");
-    if(this->getIsSolved()){
+    if(this->getIsSolved() || this->getIsNominal()){
         seriesValue.setAttribute("value", this->seriesValue);
     }else{
         seriesValue.setAttribute("value", 0.0);

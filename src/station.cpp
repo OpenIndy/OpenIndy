@@ -12,6 +12,7 @@ Station::Station(QString name)
     //ini member
     coordSys = new CoordinateSystem();
     coordSys->setFeatureName(this->name);
+    coordSys->isStationSystem = true;
 
     sensorPad = new SensorControl(this);
     connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));

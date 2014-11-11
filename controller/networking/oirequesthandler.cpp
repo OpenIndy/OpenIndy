@@ -113,7 +113,7 @@ void OiRequestHandler::getProject(OiRequestResponse *request){
  */
 void OiRequestHandler::setProject(OiRequestResponse *request){
 
-    request->myRequestType = OiRequestResponse::eGetProject;
+    request->myRequestType = OiRequestResponse::eSetProject;
     this->prepareResponse(request);
 
     //load xml file to DOM tree
