@@ -100,6 +100,7 @@ void MainWindow::setConnects(){
 
     //inform the controller when active feature changes
     connect(this, SIGNAL(sendSelectedFeature(int)), &this->control, SLOT(setSelectedFeature(int)));
+    connect(this->fDataDialog.oModel,SIGNAL(recalcFeature()),this->control.getFeatureUpdater(),SLOT(recalcAll()));
 
     //update active coordinate system when QStringListModel in controller changes
     connect(&this->control, SIGNAL(activeCoordinateSystemChanged()), this, SLOT(setActiveCoordinateSystem()));

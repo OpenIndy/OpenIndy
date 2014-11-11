@@ -20,6 +20,7 @@ public:
 protected:
     bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const;
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
+
 };
 
 #endif // OBSERVATIONPROXYMODEL_H

@@ -95,8 +95,19 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
             return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
             break;
         case 10:
-            return QString(geom->getObservations().at(index.row())->getIsSolved()?"true":"false");
+            return QString(geom->getObservations().at(index.row())->getIsSolved()?"  true":"  false");
             break;
+        case 11:
+            //return geom->getObservations().at(index.row())->getIsUsed();
+            return QVariant();
+            break;
+        default:
+            break;
+        }
+    }
+
+    if(role == Qt::CheckStateRole){
+        switch (index.column()) {
         case 11:
             return geom->getObservations().at(index.row())->getIsUsed();
             break;
@@ -150,10 +161,14 @@ Qt::ItemFlags ObservationModel::flags(const QModelIndex &index) const
  */
 bool ObservationModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+    if(!index.isValid()){
+        return false;
+    }
+
     if(OiFeatureState::getActiveFeature() != NULL){
         if(index.column() == 11){ //use state of observation
             OiFeatureState::getActiveFeature()->getGeometry()->getObservations().at(index.row())->setIsUsed(value.toBool());
-            FeatureUpdater::recalcAll();
+            emit recalcFeature();
         }
         return true;
     }

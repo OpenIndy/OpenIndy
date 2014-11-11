@@ -27,6 +27,7 @@ public:
 signals:
 
     void resizeView();
+    void recalcFeature();
 
 public slots:
     void updateModel();

@@ -4,6 +4,7 @@
 #include "observation.h"
 #include "station.h"
 #include "function.h"
+#include "oimetadata.h"
 
 Geometry::Geometry(bool isNominal, QObject *parent) : Feature(parent),
     myActual(NULL), myNominalCoordSys(NULL), isNominal(isNominal)
@@ -263,13 +264,24 @@ QString Geometry::getDisplayObs() const
 {
     int validObs = 0;
     int totalObs = this->myObservations.size();
-    for(int i=0;i<totalObs;i++){
-        if(this->myObservations.at(i)->getUseState()){
-            validObs += 1;
+
+    Function *fitFunc = NULL;
+
+    if(this->functionList.at(0)->getMetaData()->iid.compare(OiMetaData::iid_FitFunction) == 0){
+
+        fitFunc = this->functionList.at(0);
+
+        if(fitFunc == NULL){
+            return QString("-/"+QString::number(totalObs));
         }
+        for(int i=0; i<fitFunc->getObservations().size();i++){
+            if(fitFunc->getObservations().at(i)->getUseState()){
+                validObs += 1;
+            }
+        }
+        return QString(QString::number(validObs)+"/"+QString::number(totalObs));
     }
-    return QString(QString::number(validObs)+"/"+QString::number(totalObs));
-	
+    return QString("-/"+QString::number(totalObs));
 }
 
 /*!
