@@ -71,6 +71,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void closeEvent(QCloseEvent * event);
+
     QSignalMapper *signalMapper;
 
     int selectedFeature;
@@ -119,7 +121,6 @@ public:
     QComboBox *comboBoxNominalSystem;
     QAction * actionMConfig;
     QCheckBox *checkBoxNominal;
-    QLabel *labelSensorStateMsg;
 
     //sensor control pad
     QAction *actionConnect;
