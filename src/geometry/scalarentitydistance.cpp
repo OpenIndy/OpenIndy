@@ -147,7 +147,7 @@ QString ScalarEntityDistance::getDisplaySolved() const{
 }
 
 QString ScalarEntityDistance::getDisplayMConfig() const{
-    return this->activeMeasurementConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString ScalarEntityDistance::getDisplayStdDev() const{

@@ -29,7 +29,7 @@ MeasurementConfigDialog::~MeasurementConfigDialog()
 void MeasurementConfigDialog::on_pushButton_ok_clicked()
 {
 
-    mConfig.name = ui->lineEdit_configName->text();
+    /*mConfig.name = ui->lineEdit_configName->text();
     mConfig.count = ui->lineEdit_count->text().toInt();
     mConfig.iterations = ui->lineEdit_iterations->text().toInt();
     mConfig.measureTwoSides = ui->checkBox_fsbs->isChecked();
@@ -52,7 +52,7 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked()
     }
 
     emit sendConfig(OiFeatureState::getActiveFeature(), mConfig);
-    this->close();
+    this->close();*/
 }
 
 /*!
@@ -70,7 +70,7 @@ void MeasurementConfigDialog::on_pushButton_cancel_clicked()
  */
 void MeasurementConfigDialog::receiveConfig(MeasurementConfig mC){
     //TODO mit sensor funktionswerten abgleichen
-    this->mConfig = mC;
+    /*this->mConfig = mC;
 
     ui->lineEdit_configName->setText(mConfig.name);
     ui->lineEdit_count->setText(QString::number(mConfig.count));
@@ -80,7 +80,7 @@ void MeasurementConfigDialog::receiveConfig(MeasurementConfig mC){
     ui->checkBox_distanceDependent->setChecked(this->mConfig.distanceDependent);
     ui->checkBox_timeDependent->setChecked(this->mConfig.timeDependent);
     ui->lineEdit_distanceInterval->setText(QString::number(this->mConfig.distanceInterval));
-    ui->lineEdit_timeInterval->setText(QString::number(this->mConfig.timeInterval));
+    ui->lineEdit_timeInterval->setText(QString::number(this->mConfig.timeInterval));*/
 }
 
 /*!

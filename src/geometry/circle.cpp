@@ -228,7 +228,7 @@ QString Circle::getDisplaySolved() const{
 }
 
 QString Circle::getDisplayMConfig() const{
-    return this->activeMeasurementConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString Circle::getDisplayStdDev() const{

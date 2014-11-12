@@ -181,7 +181,7 @@ public slots:
     void recalcTrafoParam(TrafoParam *tp);
     void changeActiveStation(bool setSensor);
     void showResults(bool);
-    void defaultLastmConfig();
+    //void defaultLastmConfig();
     void savePluginData(PluginMetaData* metaInfo);
     void setSensorModel(Configuration::SensorTypes);
     void getSelectedPlugin(int index);

@@ -40,7 +40,7 @@ private:
 
     static QList<MeasurementConfig> savedMeasurementConfigs; //measurement configs that were saved in configs folder
     static QList<MeasurementConfig> projectMeasurementConfigs; //measurement configs that are only available in the current project
-    static QMap<int, QList<Reading*> > usedMeasurementConfigs; //map with key = measurement config id and value = list of observations that use the config
+    static QMap<QString, QList<Reading*> > usedMeasurementConfigs; //map with key = measurement config display name and value = list of readings that use the config
 
     //load configuration files (xml) from config folder when starting OpenIndy
     static void loadSavedMeasurementConfigs();

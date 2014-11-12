@@ -377,7 +377,7 @@ QString Station::getDisplaySolved() const{
 }
 
 QString Station::getDisplayMConfig() const{
-    return this->position->getMeasurementConfig().name;
+    return this->position->getMeasurementConfig().getDisplayName();
 }
 
 QString Station::getDisplayStdDev() const{

@@ -201,7 +201,7 @@ QString Point::getDisplaySolved() const{
 }
 
 QString Point::getDisplayMConfig() const{
-    return this->activeMeasurementConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString Point::getDisplayStdDev() const{

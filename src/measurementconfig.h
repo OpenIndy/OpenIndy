@@ -6,6 +6,7 @@
 #include "configuration.h"
 #include "elementdependencies.h"
 
+class OiConfigState;
 
 /*!
  * \brief The MeasurementConfig class
@@ -13,6 +14,8 @@
  */
 class MeasurementConfig
 {
+    friend class OiConfigState;
+
 public:
     MeasurementConfig();
 
@@ -31,8 +34,9 @@ public:
 
     }
 
-    //name of the config
-    QString name;
+    QString getName() const;
+    QString getDisplayName() const;
+    bool getIsSaved() const;
 
     //measurement config parameters
     int count; //the number of measurements that the sensor shall bring together to a single reading
@@ -44,12 +48,19 @@ public:
     double distanceInterval; //distance interval in which the sensor shall measure
     Configuration::ReadingTypes typeOfReading; //the type of reading which the sensor shall return
 
-    //true if the config is saved (reusable when restarting OpenIndy), false if not
-    bool isSaved;
-
     //xml import export
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
+
+private:
+    //name of the config
+    QString name;
+
+    //true if the config is saved (reusable when restarting OpenIndy), false if not
+    bool isSaved;
+
+    //only OiConfigState can access this method from outside this class
+    void setIsSaved(bool isSaved);
 };
 
 #endif // MEASUREMENTCONFIG_H

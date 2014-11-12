@@ -494,7 +494,7 @@ QDomElement Geometry::toOpenIndyXML(QDomDocument &xmlDoc) const{
     //add measurement config
     if(!this->getIsNominal()){
         QDomElement mConfig = xmlDoc.createElement("measurementConfig");
-        mConfig.setAttribute("name", this->activeMeasurementConfig.name);
+        mConfig.setAttribute("name", this->activeMeasurementConfig.getName());
         geometry.appendChild(mConfig);
     }
 

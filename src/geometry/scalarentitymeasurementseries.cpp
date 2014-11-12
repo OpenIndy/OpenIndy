@@ -131,7 +131,7 @@ QString ScalarEntityMeasurementSeries::getDisplaySolved() const{
 }
 
 QString ScalarEntityMeasurementSeries::getDisplayMConfig() const{
-    return this->activeMeasurementConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString ScalarEntityMeasurementSeries::getDisplayStdDev() const{

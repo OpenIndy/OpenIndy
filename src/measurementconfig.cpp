@@ -1,8 +1,42 @@
 #include "measurementconfig.h"
 
 MeasurementConfig::MeasurementConfig(){
+
+    //set defaults
+    this->count = 1000;
+    this->iterations = 1;
+    this->measureTwoSides = false;
+    this->timeDependent = false;
+    this->distanceDependent = false;
+    this->timeInterval = 0;
+    this->distanceInterval = 0.0;
     this->typeOfReading = static_cast<Configuration::ReadingTypes>(-1);
     this->isSaved = false;
+
+}
+
+/*!
+ * \brief MeasurementConfig::getName
+ * \return
+ */
+QString MeasurementConfig::getName() const{
+    return this->name;
+}
+
+/*!
+ * \brief MeasurementConfig::getDisplayName
+ * \return
+ */
+QString MeasurementConfig::getDisplayName() const{
+    return QString("%1%2").arg(this->name).arg(this->isSaved?"":" (project)");
+}
+
+/*!
+ * \brief MeasurementConfig::getIsSaved
+ * \return
+ */
+bool MeasurementConfig::getIsSaved() const{
+    return this->isSaved;
 }
 
 /*!

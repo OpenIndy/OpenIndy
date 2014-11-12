@@ -275,7 +275,7 @@ QString Line::getDisplaySolved() const{
 }
 
 QString Line::getDisplayMConfig() const{
-    return this->activeMeasurementConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString Line::getDisplayStdDev() const{

@@ -170,7 +170,7 @@ QString ScalarEntityAngle::getDisplaySolved() const{
 }
 
 QString ScalarEntityAngle::getDisplayMConfig() const{
-    return this->activeMeasurementConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString ScalarEntityAngle::getDisplayStdDev() const{

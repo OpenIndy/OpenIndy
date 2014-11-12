@@ -21,7 +21,7 @@ Controller::Controller(QObject *parent) :
     this->myDeleteFeaturesCallback->c = this;
 
     lastmConfig;
-    this->defaultLastmConfig();
+    //this->defaultLastmConfig();
 
     //set up models
     this->initModels();
@@ -563,7 +563,7 @@ void Controller::showResults(bool b){
  * Setting up a default constellation of the last measurement configuration.
  * It can be changed at runtime.
  */
-void Controller::defaultLastmConfig(){
+/*void Controller::defaultLastmConfig(){
     lastmConfig.name = "default configuration";
     lastmConfig.count = 1;
     lastmConfig.iterations = 1;
@@ -582,7 +582,7 @@ void Controller::defaultLastmConfig(){
     lastmConfig.distanceDependent = false;
     lastmConfig.timeInterval = 0.0;
     lastmConfig.distanceInterval = 0.0;
-}
+}*/
 
 /*!
  * \brief Controller::savePluginData
@@ -696,7 +696,7 @@ void Controller::getSelectedPlugin(int index){
         //this->activeStation->InstrumentConfig = new SensorConfiguration();
         OiFeatureState::getActiveStation()->sensorPad->instrument = PluginLoader::loadSensorPlugin(path, name);
         connect(&OiFeatureState::getActiveStation()->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
-        defaultLastmConfig();
+        //defaultLastmConfig();
         updateFeatureMConfig();
     }
 }

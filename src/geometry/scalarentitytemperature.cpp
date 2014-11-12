@@ -131,7 +131,7 @@ QString ScalarEntityTemperature::getDisplaySolved() const{
 }
 
 QString ScalarEntityTemperature::getDisplayMConfig() const{
-    return this->activeMeasurementConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString ScalarEntityTemperature::getDisplayStdDev() const{

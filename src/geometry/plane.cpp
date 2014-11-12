@@ -278,7 +278,7 @@ QString Plane::getDisplaySolved() const{
 }
 
 QString Plane::getDisplayMConfig() const{
-    return this->activeMeasurementConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString Plane::getDisplayStdDev() const{

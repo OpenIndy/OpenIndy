@@ -4,7 +4,7 @@
 OiConfigState *OiConfigState::myConfigState = OiConfigState::getInstance();
 QList<MeasurementConfig> OiConfigState::savedMeasurementConfigs;
 QList<MeasurementConfig> OiConfigState::projectMeasurementConfigs;
-QMap<int, QList<Reading*> > OiConfigState::usedMeasurementConfigs;
+QMap<QString, QList<Reading*> > OiConfigState::usedMeasurementConfigs;
 
 /*!
  * \brief OiConfigState::OiConfigState
