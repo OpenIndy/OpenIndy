@@ -31,6 +31,8 @@ public:
     QString getDisplayStdDev() const;
     QString getDisplayScalarMeasurementSeriesValue() const;
 
+    static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
+
 private:
     double seriesValue;
 };

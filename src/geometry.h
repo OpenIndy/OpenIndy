@@ -81,10 +81,12 @@ protected:
     QList<Observation*> myObservations;
     CoordinateSystem* myNominalCoordSys;
 
-    MeasurementConfig mConfig;
     Statistic myStatistic;
     SimulationData mySimulationData;
     QMap<Configuration::ReadingTypes, QString> usedReadingTypes;
+
+    //current measurement config that is used to create readings until the user selects another one
+    MeasurementConfig activeMeasurementConfig; //only for this geometry instance
 
 };
 

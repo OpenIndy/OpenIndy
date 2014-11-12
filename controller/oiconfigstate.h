@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <exception>
+#include <QString>
+#include <QStringList>
 
 #include "configuration.h"
 #include "measurementconfig.h"
@@ -20,7 +22,6 @@ private:
 public:
     static OiConfigState *getInstance();
 
-    static const MeasurementConfig &getActiveMeasurementConfig();
     static const QList<MeasurementConfig> &getSavedMeasurementConfigs();
     static const QList<MeasurementConfig> &getProjectMeasurementConfigs();
     static QList<MeasurementConfig> getAllMeasurementConfigs();
@@ -30,28 +31,32 @@ signals:
     void measurementConfigRemoved();
     void activeMeasurementConfigChanged();
 
-public slots:
-    void featureSetChanged();
-
 private slots:
-    void setMeasurementConfig(int id);
+    void defaultMeasurementConfigChanged(int featureId);
+    void observationAdded(int featureId);
 
 private:
     static OiConfigState *myConfigState;
 
-    MeasurementConfig activeMeasurementConfig;
-    QList<MeasurementConfig> savedMeasurementConfigs; //measurement configs that were saved in configs folder
-    QList<MeasurementConfig> projectMeasurementConfigs; //measurement configs that are only available in the current project
-    QMap<int, QList<Observation*> > usedMeasurementConfigs; //map with key = measurement config id and value = list of observations that use the config
+    static QList<MeasurementConfig> savedMeasurementConfigs; //measurement configs that were saved in configs folder
+    static QList<MeasurementConfig> projectMeasurementConfigs; //measurement configs that are only available in the current project
+    static QMap<int, QList<Reading*> > usedMeasurementConfigs; //map with key = measurement config id and value = list of observations that use the config
+
+    //load configuration files (xml) from config folder when starting OpenIndy
+    static void loadSavedMeasurementConfigs();
+    static void loadSavedSensorConfigs();
+
+    //load and set default configs from database when starting OpenIndy
+
+    //called from OiFeatureState to do connects to inform OiConfigState when a specific event occurs
+    static void connectFeature(FeatureWrapper *myFeature); //called from OiFeatureState whenever a feature is added
+    static void disconnectFeature(FeatureWrapper *myFeature); //called from OiFeatureState whenever a feature is removed
 
     enum SignalType{
         eMeasurementConfigAdded,
         eMeasurementConfigRemoved,
         eActiveMeasurementConfigChanged
     };
-
-    static void connectFeature(FeatureWrapper *myFeature); //called from OiFeatureState whenever a feature is added
-    static void disconnectFeature(FeatureWrapper *myFeature); //called from OiFeatureState whenever a feature is removed
 
     void emitSignal(SignalType mySignalType);
 };

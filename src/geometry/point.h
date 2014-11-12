@@ -43,6 +43,8 @@ public:
     QString getDisplaySolved() const;
     QString getDisplayMConfig() const;
     QString getDisplayStdDev() const;
+
+    static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
 };
 
 #endif // POINT_H

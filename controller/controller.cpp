@@ -163,7 +163,6 @@ bool Controller::createDefaultProject(){
         FeatureWrapper *station01 = OiFeatureState::addFeature(Configuration::eStationFeature, false, "STATION01");
 
         //set position parameter for STATION01
-        station01->getStation()->position->setMeasurementConfig(this->lastmConfig);
         station01->getStation()->position->setCommonState(false);
 
         //set STATION01's station system as active station

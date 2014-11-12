@@ -259,7 +259,7 @@ void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QStrin
  * \return
  */
 MeasurementConfig Geometry::getMeasurementConfig() const{
-    return this->mConfig;
+    return this->activeMeasurementConfig;
 }
 
 /*!
@@ -267,7 +267,7 @@ MeasurementConfig Geometry::getMeasurementConfig() const{
  * \param myConfig
  */
 void Geometry::setMeasurementConfig(MeasurementConfig myConfig){
-    this->mConfig = myConfig;
+    this->activeMeasurementConfig = myConfig;
     emit this->geomMyMeasurementConfigChanged(this->id);
 }
 
@@ -407,7 +407,7 @@ QDomElement Geometry::toOpenIndyXML(QDomDocument &xmlDoc) const{
     //add measurement config
     if(!this->getIsNominal()){
         QDomElement mConfig = xmlDoc.createElement("measurementConfig");
-        mConfig.setAttribute("name", this->mConfig.name);
+        mConfig.setAttribute("name", this->activeMeasurementConfig.name);
         geometry.appendChild(mConfig);
     }
 

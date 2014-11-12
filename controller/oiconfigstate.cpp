@@ -1,8 +1,20 @@
 #include "oiconfigstate.h"
 
+//initialize static variables
 OiConfigState *OiConfigState::myConfigState = OiConfigState::getInstance();
+QList<MeasurementConfig> OiConfigState::savedMeasurementConfigs;
+QList<MeasurementConfig> OiConfigState::projectMeasurementConfigs;
+QMap<int, QList<Reading*> > OiConfigState::usedMeasurementConfigs;
 
+/*!
+ * \brief OiConfigState::OiConfigState
+ * \param parent
+ */
 OiConfigState::OiConfigState(QObject *parent) : QObject(parent){
+
+    //load all configs from config folder
+    OiConfigState::loadSavedMeasurementConfigs();
+    OiConfigState::loadSavedSensorConfigs();
 
 }
 
@@ -19,43 +31,99 @@ OiConfigState *OiConfigState::getInstance(){
 }
 
 /*!
- * \brief OiConfigState::getActiveMeasurementConfig
- * \return
+ * \brief OiConfigState::defaultMeasurementConfigChanged
+ * \param featureId
  */
-const MeasurementConfig &OiConfigState::getActiveMeasurementConfig(){
-    return OiConfigState::myConfigState->activeMeasurementConfig;
-}
+void OiConfigState::defaultMeasurementConfigChanged(int featureId){
 
-void OiConfigState::featureSetChanged()
-{
 
 }
 
 /*!
- * \brief OiConfigState::setMeasurementConfig
- * \param id
+ * \brief OiConfigState::observationAdded
+ * \param featureId
  */
-void OiConfigState::setMeasurementConfig(int id){
+void OiConfigState::observationAdded(int featureId){
 
-    /*FeatureWrapper *myFeature = OiFeatureState::getFeature(id);
-    if(myFeature != NULL && myFeature->getGeometry() != NULL){
+    //get coordinate system with id featureId
 
-        //remove the feature from old measurement config map
-        QMap< MeasurementConfig, QList<FeatureWrapper*> >::iterator i;
-        for (i = OiConfigState::usedMeasurementConfigs.begin(); i != OiConfigState::usedMeasurementConfigs.end(); ++i){
-            QList<FeatureWrapper*> myFeatures = i.value();
-            if(myFeatures.contains(myFeature)){
-                myFeatures.removeOne(myFeature);
-                if(myFeatures.size() == 0){ //if the measurement config is not used anymore
-                    OiConfigState::usedMeasurementConfigs.remove(i.key());
-                }else{ //if there are other features which use this measurement config
-                    OiConfigState::usedMeasurementConfigs.insert(i.key(), myFeatures);
-                }
-                break;
-            }
+    //
+
+}
+
+/*!
+ * \brief OiConfigState::loadSavedMeasurementConfigs
+ * Load all measurement configs from config folder next to the executable
+ */
+void OiConfigState::loadSavedMeasurementConfigs(){
+
+    QString appPath = qApp->applicationDirPath();
+    QDir appFolder(appPath);
+
+    //check if application folder exists and contains a subdirectory named config
+    if(!appFolder.exists() || !appFolder.exists("config/measurementConfigs")){
+        return;
+    }
+
+    //create folder object for measurement config folder
+    QDir mConfigFolder(appPath.append("/config/measurementConfigs"));
+    if(!mConfigFolder.exists()){
+        return;
+    }
+
+    //get a list of all xml files inside the measurementConfigs folder
+    QStringList xmlFilter;
+    xmlFilter.append("*.xml");
+    QStringList fileNames = mConfigFolder.entryList(xmlFilter, QDir::Files);
+
+    //create a list that is filled with the names of the loaded measurement configs
+    QList<QString> mConfigNames;
+
+    //load all files and create a MeasurementConfig object for each of them
+    for(int i = 0; i < fileNames.size(); i++){
+
+        //create file from file name and check if it exists
+        QFile mConfigFile(fileNames.at(i));
+        if(!mConfigFile.exists()){
+            continue;
         }
 
-    }*/
+        //try to parse the file content to a QDomDocument
+        QDomDocument mConfigXml;
+        if(!mConfigXml.setContent(&mConfigFile) || mConfigXml.isNull()){
+            continue;
+        }
+
+        //try to parse the file to a MeasurementConfig object
+        MeasurementConfig savedConfig;
+        if(!savedConfig.fromOpenIndyXML(mConfigXml.documentElement())){
+            continue;
+        }
+        savedConfig.isSaved = true;
+
+        //check if a measurement config with the same name has been loaded before
+        if(mConfigNames.contains(savedConfig.name)){
+
+            //delete the config file permanently
+            mConfigFile.remove();
+            continue;
+
+        }
+
+        //add the loaded measurement config to the list of saved configs and emit the corresponding signal
+        OiConfigState::savedMeasurementConfigs.append(savedConfig);
+        OiConfigState::getInstance()->emitSignal(OiConfigState::eMeasurementConfigAdded);
+
+    }
+
+}
+
+/*!
+ * \brief OiConfigState::loadSavedSensorConfigs
+ * Load all sensor configs from config folder next to the executable
+ */
+void OiConfigState::loadSavedSensorConfigs(){
+
 }
 
 /*!
@@ -88,5 +156,15 @@ void OiConfigState::disconnectFeature(FeatureWrapper *myFeature){
  * \param mySignalType
  */
 void OiConfigState::emitSignal(OiConfigState::SignalType mySignalType){
-
+    switch(mySignalType){
+    case OiConfigState::eMeasurementConfigAdded:
+        emit this->measurementConfigAdded();
+        break;
+    case OiConfigState::eMeasurementConfigRemoved:
+        emit this->measurementConfigRemoved();
+        break;
+    case OiConfigState::eActiveMeasurementConfigChanged:
+        emit this->activeMeasurementConfigChanged();
+        break;
+    }
 }

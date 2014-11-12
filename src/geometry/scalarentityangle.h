@@ -34,6 +34,8 @@ public:
     QString getDisplayStdDev() const;
     QString getDisplayScalarAngleValue() const;
 
+    static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
+
 private:
     double angle;
 

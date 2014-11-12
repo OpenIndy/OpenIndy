@@ -31,19 +31,19 @@ public:
 
     }
 
-    //name of the config (always unique)
+    //name of the config
     QString name;
 
     //measurement config parameters
-    int count;
-    int iterations;
-    Configuration::Faces face;
-    bool measureTwoSides;
-    bool timeDependent;
-    bool distanceDependent;
-    long timeInterval;
-    double distanceInterval;
-    Configuration::ReadingTypes typeOfReading;
+    int count; //the number of measurements that the sensor shall bring together to a single reading
+    int iterations; //the number of readings the sensor shall return
+    Configuration::Faces face; //the face (frontside or backside) in which the sensor shall measure
+    bool measureTwoSides; //true if the sensor shall measure in both faces (false if not)
+    bool timeDependent; //true if the sensor shall measure in a special timeInterval (false if not)
+    bool distanceDependent; //true if the sensor shall measure in a special distanceInterval (false if not)
+    long timeInterval; //time interval in which the sensor shall measure
+    double distanceInterval; //distance interval in which the sensor shall measure
+    Configuration::ReadingTypes typeOfReading; //the type of reading which the sensor shall return
 
     //true if the config is saved (reusable when restarting OpenIndy), false if not
     bool isSaved;

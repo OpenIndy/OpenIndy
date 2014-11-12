@@ -2,6 +2,7 @@
 
 MeasurementConfig::MeasurementConfig(){
     this->typeOfReading = static_cast<Configuration::ReadingTypes>(-1);
+    this->isSaved = false;
 }
 
 /*!

@@ -232,7 +232,7 @@ QString Sphere::getDisplaySolved() const{
 }
 
 QString Sphere::getDisplayMConfig() const{
-    return this->mConfig.name;
+    return this->activeMeasurementConfig.name;
 }
 
 QString Sphere::getDisplayStdDev() const{
