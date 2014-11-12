@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow), watchWindow(NULL)
 {
     ui->setupUi(this);
+    this->setDialogsNULL();
 
     //!generate all lists for gui and view modification
     GUIConfiguration::generateLists();
@@ -101,6 +102,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
         OiFeatureState::getActiveStation()->sensorPad->instrument->disconnectSensor();
     }
+
+    //also close all open dialogs when closing mainwindow
+    this->closeAllOpenDialogs();
 
     event->accept();
 }
@@ -1818,24 +1822,29 @@ void MainWindow::stakeOutConfigured(QDomDocument request){
 
 }
 
+/*!
+ * \brief closeAllOpenDialogs (only pointers) at end of openIndy, when closing mainwindow
+ */
 void MainWindow::closeAllOpenDialogs()
 {
-    this->mConfigDialog.close();
-    this->moveDialog.close();
-    this->pLoadDialog.close();
-    this->simulationWidget.close();
-    this->cFeatureDialog->close();
-    this->sEntityDialog->close();
-    this->sPluginDialog.close();
-    this->fPluginDialog.close();
-    this->sInfoDialog.close();
-    this->fDataDialog.close();
-    this->setUpDialog.close();
-    this->trafoParamDialog.close();
-    this->importNominalDialog.close();
-    this->nominalDialog.close();
-    this->stationDialog.close();
-    this->rtDataDialog.close();
-    this->watchWindow->close();
-    this->myStakeOutManager.close();
+    if(this->cFeatureDialog != NULL){
+        this->cFeatureDialog->close();
+    }
+    if(this->sEntityDialog != NULL){
+        this->sEntityDialog->close();
+    }
+    if(this->watchWindow != NULL){
+        this->watchWindow->close();
+    }
+}
+
+/*!
+ * \brief setDialogsNULL sets all pointer dialogs to NULL at programm start.
+ */
+void MainWindow::setDialogsNULL()
+{
+    this->cFeatureDialog = NULL;
+    this->sEntityDialog = NULL;
+    this->watchWindow = NULL;
+
 }

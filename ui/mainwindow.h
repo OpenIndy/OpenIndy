@@ -314,6 +314,7 @@ private slots:
 
     //close dialogs
     void closeAllOpenDialogs();
+    void setDialogsNULL();
 
 private:
     Ui::MainWindow *ui;
