@@ -60,7 +60,6 @@ public:
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
     bool fromOpenIndyXML(QDomElement &xmlElem);
-    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
     bool isStationSystem;
 

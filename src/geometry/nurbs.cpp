@@ -81,13 +81,6 @@ bool Nurbs::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-ElementDependencies Nurbs::fromOpenIndyXML(QXmlStreamReader &xml){
-
-    ElementDependencies dependencies;
-
-    return dependencies;
-}
-
 bool Nurbs::saveSimulationData()
 {
     return false;

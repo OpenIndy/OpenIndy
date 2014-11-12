@@ -22,7 +22,7 @@ OiConfigState *OiConfigState::getInstance(){
  * \brief OiConfigState::getActiveMeasurementConfig
  * \return
  */
-MeasurementConfig OiConfigState::getActiveMeasurementConfig(){
+const MeasurementConfig &OiConfigState::getActiveMeasurementConfig(){
     return OiConfigState::myConfigState->activeMeasurementConfig;
 }
 

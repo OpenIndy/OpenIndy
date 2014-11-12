@@ -96,12 +96,6 @@ bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-ElementDependencies ScalarEntityMeasurementSeries::fromOpenIndyXML(QXmlStreamReader &xml){
-    ElementDependencies dependencies;
-
-    return dependencies;
-}
-
 bool ScalarEntityMeasurementSeries::saveSimulationData()
 {
     this->mySimulationData.addScalar(this->seriesValue);

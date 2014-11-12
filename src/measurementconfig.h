@@ -1,8 +1,7 @@
 #ifndef MEASUREMENTCONFIG_H
 #define MEASUREMENTCONFIG_H
 
-#include <QXmlStreamWriter>
-#include <QXmlStreamReader>
+#include <QtXml>
 
 #include "configuration.h"
 #include "elementdependencies.h"
@@ -17,15 +16,25 @@ class MeasurementConfig
 public:
     MeasurementConfig();
 
+    //! compare the attributes of both measurement configs
     friend bool operator==(const MeasurementConfig &left, const MeasurementConfig &right){
-        if(left.name.compare(right.name) == 0 && left.internalRef == right.internalRef){
+
+        if(left.count == right.count && left.iterations == right.iterations
+                && left.face == right.face && left.measureTwoSides == right.measureTwoSides
+                && left.timeDependent == right.timeDependent && left.distanceDependent == right.distanceDependent
+                && left.timeInterval == right.timeInterval && left.distanceInterval == right.distanceInterval
+                && left.typeOfReading == right.typeOfReading){
             return true;
         }else{
             return false;
         }
+
     }
 
+    //name of the config (always unique)
     QString name;
+
+    //measurement config parameters
     int count;
     int iterations;
     Configuration::Faces face;
@@ -36,13 +45,12 @@ public:
     double distanceInterval;
     Configuration::ReadingTypes typeOfReading;
 
-    //xml import export
-    bool toOpenIndyXML(QXmlStreamWriter& stream);
-    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
+    //true if the config is saved (reusable when restarting OpenIndy), false if not
+    bool isSaved;
 
-private:
-    int internalRef; //internalRef to distinguish between different measurement configs with the same name
-    bool isSaved; //true if the config is saved (reusable when restarting OpenIndy), false if not
+    //xml import export
+    QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
+    bool fromOpenIndyXML(QDomElement &xmlElem);
 };
 
 #endif // MEASUREMENTCONFIG_H

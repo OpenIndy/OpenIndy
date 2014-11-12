@@ -59,7 +59,6 @@ public:
 
     virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     virtual bool fromOpenIndyXML(QDomElement &xmlElem);
-    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
     virtual bool saveSimulationData() = 0;
     void resetSimulationData();
@@ -86,9 +85,6 @@ protected:
     Statistic myStatistic;
     SimulationData mySimulationData;
     QMap<Configuration::ReadingTypes, QString> usedReadingTypes;
-
-    bool writeGeometryAttributes(QXmlStreamWriter& stream);
-    bool readGeometryAttributes(QXmlStreamReader &xml ,ElementDependencies &d);
 
 };
 

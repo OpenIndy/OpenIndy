@@ -142,7 +142,6 @@ SOURCES += \
     src/geometry/scalarentitymeasurementseries.cpp \
     ui/customparameterwidget.cpp \
     src/elementdependencies.cpp \
-    controller/oiDataExchange/projectrestorer.cpp \
     controller/deletefeaturesfunctor.cpp \
     ui/featureoverviewdelegate.cpp \
     ui/trafoparamdelegate.cpp \
@@ -288,7 +287,6 @@ HEADERS  += \
     src/geometry/scalarentitymeasurementseries.h \
     ui/customparameterwidget.h \
     src/elementdependencies.h \
-    controller/oiDataExchange/projectrestorer.h \
     controller/oifunctor.h \
     controller/deletefeaturesfunctor.h \
     ui/featureoverviewdelegate.h \

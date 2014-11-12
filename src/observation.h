@@ -41,12 +41,6 @@ public:
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
-    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
-
-    bool writeProxyObservations(QXmlStreamWriter& stream);
-
- private:
-    Reading* readReading(QXmlStreamReader& xml);
 };
 
 #endif // OBSERVATION_H

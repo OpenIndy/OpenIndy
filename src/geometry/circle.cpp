@@ -151,13 +151,6 @@ bool Circle::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-ElementDependencies Circle::fromOpenIndyXML(QXmlStreamReader &xml){
-
-    ElementDependencies dependencies;
-
-    return dependencies;
-}
-
 QString Circle::getDisplayX() const{
 
     QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);

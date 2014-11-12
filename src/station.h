@@ -135,12 +135,11 @@ private:
 
     bool isActiveStation;
 
- public:
+public:
     void recalc();
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
     bool fromOpenIndyXML(QDomElement &xmlElem);
-    ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
 
 };
 

@@ -181,12 +181,6 @@ bool PointCloud::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-ElementDependencies PointCloud::fromOpenIndyXML(QXmlStreamReader &xml){
-    ElementDependencies dependencies;
-
-    return dependencies;
-}
-
 bool PointCloud::saveSimulationData()
 {
     return false;

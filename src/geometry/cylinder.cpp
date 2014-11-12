@@ -122,13 +122,6 @@ bool Cylinder::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-ElementDependencies Cylinder::fromOpenIndyXML(QXmlStreamReader &xml){
-
-    ElementDependencies dependencies;
-
-    return dependencies;
-}
-
 bool Cylinder::saveSimulationData()
 {
     return false;
