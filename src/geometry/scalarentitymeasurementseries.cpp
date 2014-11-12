@@ -59,7 +59,7 @@ QDomElement ScalarEntityMeasurementSeries::toOpenIndyXML(QDomDocument &xmlDoc) c
 
     //add series value
     QDomElement seriesValue = xmlDoc.createElement("seriesValue");
-    if(this->getIsSolved()){
+    if(this->getIsSolved() || this->getIsNominal()){
         seriesValue.setAttribute("value", this->seriesValue);
     }else{
         seriesValue.setAttribute("value", 0.0);
@@ -67,6 +67,32 @@ QDomElement ScalarEntityMeasurementSeries::toOpenIndyXML(QDomDocument &xmlDoc) c
     entityMeasurementSeries.appendChild(seriesValue);
 
     return entityMeasurementSeries;
+
+}
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement seriesValue = xmlElem.firstChildElement("seriesValue");
+
+        if(seriesValue.isNull() || !seriesValue.hasAttribute("value")){
+            return false;
+        }
+
+        this->seriesValue = seriesValue.attribute("value").toDouble();
+
+    }
+
+    return result;
 
 }
 

@@ -254,25 +254,42 @@ void OiFeatureState::sortFeaturesById()
     qSort(myFeatures.begin(), myFeatures.end(), sortID);
 }
 
-void OiFeatureState::resetFeatureLists()
-{
+/*!
+ * \brief OiFeatureState::resetFeatureLists
+ * Delete all OpenIndy features and clear all feature lists
+ */
+void OiFeatureState::resetFeatureLists(){
 
+    //get a temporary list of all features
+    QList<FeatureWrapper *> tmpFeatures = OiFeatureState::myFeatures;
+
+    //reset active states
     myActiveFeature = NULL;
     myActiveStation = NULL;
     myActiveCoordinateSystem = NULL;
     myActiveGroup = "All Groups";
 
-    foreach(FeatureWrapper *f,myFeatures){
-        delete f->getFeature();
-        delete f;
-    }
-
+    //clear all lists of OiFeatureState
     myFeatures.clear();
     myStations.clear();
     myCoordinateSystems.clear();
     myAvailableGroups.clear();
 
+    //delete features by using the temporary list
+    foreach(FeatureWrapper *feature, tmpFeatures){
+        if(feature != NULL){
+            if(feature->getFeature() != NULL){
+                delete feature->getFeature();
+                Feature *myFeature = feature->getFeature();
+                myFeature = NULL;
+            }
+            delete feature;
+            feature = NULL;
+        }
+    }
+
     OiFeatureState::myFeatureState->emitSignal(OiFeatureState::eFeatureSetChanged);
+
 }
 
 /*!

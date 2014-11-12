@@ -67,7 +67,7 @@ QDomElement ScalarEntityDistance::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add distance
     QDomElement distance = xmlDoc.createElement("distance");
-    if(this->getIsSolved()){
+    if(this->getIsSolved() || this->getIsNominal()){
         distance.setAttribute("value", this->distance);
     }else{
         distance.setAttribute("value", 0.0);
@@ -75,6 +75,32 @@ QDomElement ScalarEntityDistance::toOpenIndyXML(QDomDocument &xmlDoc) const{
     entityDistance.appendChild(distance);
 
     return entityDistance;
+
+}
+
+/*!
+ * \brief ScalarEntityDistance::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool ScalarEntityDistance::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement distance = xmlElem.firstChildElement("distance");
+
+        if(distance.isNull() || !distance.hasAttribute("value")){
+            return false;
+        }
+
+        this->distance = distance.attribute("value").toDouble();
+
+    }
+
+    return result;
 
 }
 

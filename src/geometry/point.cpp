@@ -92,6 +92,36 @@ QDomElement Point::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 /*!
  * \brief Point::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Point::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set point attributes
+        QDomElement coordinates = xmlElem.firstChildElement("coordinates");
+
+        if(coordinates.isNull() || !coordinates.hasAttribute("x") || !coordinates.hasAttribute("y") || !coordinates.hasAttribute("z")){
+            return false;
+        }
+
+        qDebug() << coordinates.attribute("x") << " : " << coordinates.attribute("y") << " : " << coordinates.attribute("z");
+        this->xyz.setAt(0, coordinates.attribute("x").toDouble());
+        this->xyz.setAt(1, coordinates.attribute("y").toDouble());
+        this->xyz.setAt(2, coordinates.attribute("z").toDouble());
+        this->xyz.setAt(3, 1.0);
+
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief Point::fromOpenIndyXML
  * \param xml
  * \return
  */

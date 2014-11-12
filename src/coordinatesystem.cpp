@@ -11,6 +11,7 @@ CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), origin(4)
     this->isDrawn = true;
     this->expansionOrigin.setAt(3,1.0);
     this->origin.setAt(3,1.0);
+    this->isStationSystem = false;
 }
 
 CoordinateSystem::~CoordinateSystem(){
@@ -19,6 +20,7 @@ CoordinateSystem::~CoordinateSystem(){
     foreach(Observation *myObs, this->observations){
         if(myObs != NULL){
             delete myObs;
+            myObs = NULL;
         }
     }
 
@@ -26,6 +28,7 @@ CoordinateSystem::~CoordinateSystem(){
     foreach(TrafoParam *myTrafo, this->trafoParams){
         if(myTrafo != NULL){
             delete myTrafo;
+            myTrafo = NULL;
         }
     }
 
@@ -33,6 +36,7 @@ CoordinateSystem::~CoordinateSystem(){
     foreach(Geometry *myGeom, this->nominals){
         if(myGeom != NULL){
             delete myGeom;
+            myGeom = NULL;
         }
     }
 
@@ -379,7 +383,7 @@ QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc){
 
     //add nominals
     if(this->nominals.size() > 0){
-        QDomElement nominals = xmlDoc.createElement("nominals");
+        QDomElement nominals = xmlDoc.createElement("nominalGeometries");
         foreach(Geometry *geom, this->nominals){
             if(geom != NULL){
                 QDomElement nominal = xmlDoc.createElement("geometry");
@@ -400,6 +404,34 @@ QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc){
     }
 
     return coordinateSystem;
+
+}
+
+/*!
+ * \brief CoordinateSystem::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Feature::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set expansion origin
+        QDomElement expansionOrigin = xmlElem.firstChildElement("expansionOrigin");
+        if(!expansionOrigin.isNull()){
+            if(!expansionOrigin.hasAttribute("x") || !expansionOrigin.hasAttribute("y") || !expansionOrigin.hasAttribute("z")){
+                return false;
+            }
+            this->expansionOrigin.setAt(0, expansionOrigin.attribute("x").toDouble());
+            this->expansionOrigin.setAt(1, expansionOrigin.attribute("y").toDouble());
+            this->expansionOrigin.setAt(2, expansionOrigin.attribute("z").toDouble());
+        }
+
+    }
+
+    return result;
 
 }
 

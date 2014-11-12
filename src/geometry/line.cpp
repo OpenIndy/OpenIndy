@@ -91,7 +91,7 @@ QDomElement Line::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add vector of direction
     QDomElement ijk = xmlDoc.createElement("spatialDirection");
-    if(this->ijk.getSize() >= 3 && this->getIsSolved()){
+    if(this->ijk.getSize() >= 3 && (this->getIsSolved() || this->getIsNominal())){
         ijk.setAttribute("i", this->ijk.getAt(0));
         ijk.setAttribute("j", this->ijk.getAt(0));
         ijk.setAttribute("k", this->ijk.getAt(0));
@@ -103,6 +103,42 @@ QDomElement Line::toOpenIndyXML(QDomDocument &xmlDoc) const{
     line.appendChild(ijk);
 
     return line;
+
+}
+
+/*!
+ * \brief Line::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Line::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set line attributes
+        QDomElement directionVector = xmlElem.firstChildElement("spatialDirection");
+        QDomElement axisPoint = xmlElem.firstChildElement("coordinates");
+
+        if(directionVector.isNull() || axisPoint.isNull()
+                || !directionVector.hasAttribute("i") || !directionVector.hasAttribute("j") || !directionVector.hasAttribute("k")
+                || !axisPoint.hasAttribute("x") || !axisPoint.hasAttribute("y") || !axisPoint.hasAttribute("z")){
+            return false;
+        }
+
+        this->ijk.setAt(0, directionVector.attribute("i").toDouble());
+        this->ijk.setAt(1, directionVector.attribute("j").toDouble());
+        this->ijk.setAt(2, directionVector.attribute("k").toDouble());
+        this->ijk.setAt(3, 1.0);
+        this->xyz.setAt(0, axisPoint.attribute("x").toDouble());
+        this->xyz.setAt(1, axisPoint.attribute("y").toDouble());
+        this->xyz.setAt(2, axisPoint.attribute("z").toDouble());
+        this->xyz.setAt(3, 1.0);
+
+    }
+
+    return result;
 
 }
 

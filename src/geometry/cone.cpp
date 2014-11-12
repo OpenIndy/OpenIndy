@@ -84,6 +84,25 @@ QDomElement Cone::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
+/*!
+ * \brief Cone::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Cone::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+
+
+    }
+
+    return result;
+
+}
+
 ElementDependencies Cone::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;

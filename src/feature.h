@@ -58,6 +58,7 @@ public:
     virtual void recalc() = 0;
 
     virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
+    virtual bool fromOpenIndyXML(QDomElement &xmlElem);
     virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml) = 0;
 
     virtual QString getDisplayX() const;

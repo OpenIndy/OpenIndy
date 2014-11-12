@@ -96,6 +96,7 @@ public:
     virtual QStringList getResultProtocol() const;
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
+    bool fromOpenIndyXML(QDomElement &xmlElem);
 
 private:
     OiFunctionEmitter myEmitter;
@@ -263,6 +264,9 @@ public:
     void removeScalarEntityTemperature(int id);
     ScalarEntityTemperature* getScalarEntityTemperature(int id);
     QList<ScalarEntityTemperature*> getScalarEntityTemperatures();
+
+    void addReading(Reading *r, int position);
+    void addFeature(FeatureWrapper *feature, int position);
 
     void removeFeature(int id);
 

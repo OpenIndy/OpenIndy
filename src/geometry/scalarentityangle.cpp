@@ -67,7 +67,7 @@ QDomElement ScalarEntityAngle::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add angle
     QDomElement angle = xmlDoc.createElement("angle");
-    if(this->getIsSolved()){
+    if(this->getIsSolved() || this->getIsNominal()){
         angle.setAttribute("value", this->angle);
     }else{
         angle.setAttribute("value", 0.0);
@@ -75,6 +75,32 @@ QDomElement ScalarEntityAngle::toOpenIndyXML(QDomDocument &xmlDoc) const{
     entityAngle.appendChild(angle);
 
     return entityAngle;
+
+}
+
+/*!
+ * \brief ScalarEntityAngle::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool ScalarEntityAngle::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement angle = xmlElem.firstChildElement("angle");
+
+        if(angle.isNull() || !angle.hasAttribute("value")){
+            return false;
+        }
+
+        this->angle = angle.attribute("value").toDouble();
+
+    }
+
+    return result;
 
 }
 

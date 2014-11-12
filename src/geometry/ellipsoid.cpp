@@ -76,6 +76,25 @@ QDomElement Ellipsoid::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
+/*!
+ * \brief Ellipsoid::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Ellipsoid::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+
+
+    }
+
+    return result;
+
+}
+
 ElementDependencies Ellipsoid::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;

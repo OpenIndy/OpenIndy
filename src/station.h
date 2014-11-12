@@ -33,8 +33,8 @@ class Station : public Feature
     Q_OBJECT
 public:
 
-    //constructor
     Station(QString name);
+    Station();
     virtual ~Station();
 
     bool getIsActiveStation();

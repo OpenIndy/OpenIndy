@@ -62,6 +62,25 @@ QDomElement Nurbs::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
+/*!
+ * \brief Nurbs::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Nurbs::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+
+
+    }
+
+    return result;
+
+}
+
 ElementDependencies Nurbs::fromOpenIndyXML(QXmlStreamReader &xml){
 
     ElementDependencies dependencies;

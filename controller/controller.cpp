@@ -133,6 +133,7 @@ void Controller::connectModels(){
 
         //update coordinate systems model
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this, SLOT(setUpCoordinateSystemsModel()));
+        connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this, SLOT(setUpCoordinateSystemsModel()));
 
         //update function treeview model for active feature
         connect(this->myFeatureState, SIGNAL(featureFunctionsChanged()), this, SLOT(changeFunctionTreeViewModel()));
@@ -1539,7 +1540,6 @@ bool Controller::loadProject(QString projectName, QIODevice *myDevice){
 
     //TODO check if an active project is set
 
-
     //set active project
     OiProjectData::setActiveProject(projectName, myDevice);
 
@@ -1645,6 +1645,12 @@ bool Controller::receiveRequestResult(OiRequestResponse *request){
                 break;
             case OiRequestResponse::eSetProject:
                 qDebug() << request->response.toString();
+
+                //recalc all features after loading
+                this->recalcAll();
+
+                this->tblModel->updateModel();
+
                 break;
             case OiRequestResponse::eStartStakeOut:
                 qDebug() << request->response.toString();

@@ -1218,6 +1218,10 @@ void MainWindow::on_actionOpen_triggered()
                        "oiProject",
                        "xml (*.xml)");
 
+    if(filename.compare("") == 0){
+        return;
+    }
+
     QIODevice *myDevice = new QFile(filename);
     QFileInfo info(filename);
     QString projectName = info.fileName();

@@ -297,6 +297,65 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
 }
 
 /*!
+ * \brief Function::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Function::fromOpenIndyXML(QDomElement &xmlElem){
+
+    if(xmlElem.isNull()){
+        return false;
+    }
+
+    if(!xmlElem.hasAttribute("name") || !xmlElem.hasAttribute("plugin") || !xmlElem.hasAttribute("executionIndex")
+            || !xmlElem.hasAttribute("type")){
+        return false;
+    }
+
+    //set integer parameter
+    QDomElement integerParameters = xmlElem.firstChildElement("integerParameters");
+    if(!integerParameters.isNull()){
+        QDomNodeList paramList = integerParameters.childNodes();
+        for(int i = 0; i < paramList.size(); i++){
+            QDomElement integerParameter = paramList.at(i).toElement();
+            if(integerParameter.tagName().compare("parameter") && integerParameter.hasAttribute("value")
+                    && integerParameter.hasAttribute("name")){
+                this->myConfiguration.intParameter.insert(integerParameter.attribute("name"), integerParameter.attribute("value").toInt());
+            }
+        }
+    }
+
+    //set double parameter
+    QDomElement doubleParameters = xmlElem.firstChildElement("doubleParameters");
+    if(!doubleParameters.isNull()){
+        QDomNodeList paramList = doubleParameters.childNodes();
+        for(int i = 0; i < paramList.size(); i++){
+            QDomElement doubleParameter = paramList.at(i).toElement();
+            if(doubleParameter.tagName().compare("parameter") && doubleParameter.hasAttribute("value")
+                    && doubleParameter.hasAttribute("name")){
+                this->myConfiguration.doubleParameter.insert(doubleParameter.attribute("name"), doubleParameter.attribute("value").toDouble());
+            }
+        }
+    }
+
+    //set string parameter
+    QDomElement stringParameters = xmlElem.firstChildElement("stringParameters");
+    if(!stringParameters.isNull()){
+        QDomNodeList paramList = stringParameters.childNodes();
+        for(int i = 0; i < paramList.size(); i++){
+            QDomElement stringParameter = paramList.at(i).toElement();
+            if(stringParameter.tagName().compare("parameter") && stringParameter.hasAttribute("value")
+                    && stringParameter.hasAttribute("name")){
+                this->myConfiguration.stringParameter.insert(stringParameter.attribute("name"), stringParameter.attribute("value"));
+            }
+        }
+    }
+
+    return true;
+
+}
+
+/*!
  * \brief Function::setFunctionConfiguration
  * Set function configuration which contains values for custom parameters
  * \param config
@@ -2117,6 +2176,94 @@ Reading* Function::getReadingCartesian(int id){
  */
 QList<Reading*> Function::getCartesianReadings(){
     return this->cartesianReadings;
+}
+
+/*!
+ * \brief Function::addReading
+ * \param r
+ * \param position
+ */
+void Function::addReading(Reading *r, int position){
+    switch(r->typeofReading){
+    case Configuration::eCartesian:
+        this->addReadingCartesian(r, position);
+        break;
+    case Configuration::ePolar:
+        this->addReadingPolar(r, position);
+        break;
+    case Configuration::eDirection:
+        this->addReadingDirection(r, position);
+        break;
+    case Configuration::eDistance:
+        this->addReadingDistance(r, position);
+        break;
+    }
+}
+
+/*!
+ * \brief Function::addFeature
+ * \param feature
+ * \param position
+ */
+void Function::addFeature(FeatureWrapper *feature, int position){
+    switch(feature->getTypeOfFeature()){
+    case Configuration::ePointFeature:
+        this->addPoint(feature->getPoint(), position);
+        break;
+    case Configuration::eLineFeature:
+        this->addLine(feature->getLine(), position);
+        break;
+    case Configuration::ePlaneFeature:
+        this->addPlane(feature->getPlane(), position);
+        break;
+    case Configuration::eCircleFeature:
+        this->addCircle(feature->getCircle(), position);
+        break;
+    case Configuration::eSphereFeature:
+        this->addSphere(feature->getSphere(), position);
+        break;
+    case Configuration::eCylinderFeature:
+        this->addCylinder(feature->getCylinder(), position);
+        break;
+    case Configuration::eConeFeature:
+        this->addCone(feature->getCone(), position);
+        break;
+    case Configuration::eEllipsoidFeature:
+        this->addEllipsoid(feature->getEllipsoid(), position);
+        break;
+    case Configuration::eHyperboloidFeature:
+        this->addHyperboloid(feature->getHyperboloid(), position);
+        break;
+    case Configuration::eParaboloidFeature:
+        this->addParaboloid(feature->getParaboloid(), position);
+        break;
+    case Configuration::ePointCloudFeature:
+        this->addPointCloud(feature->getPointCloud(), position);
+        break;
+    case Configuration::eNurbsFeature:
+        this->addNurb(feature->getNurbs(), position);
+        break;
+    case Configuration::eScalarEntityAngleFeature:
+        this->addScalarEntityAngle(feature->getScalarEntityAngle(), position);
+        break;
+    case Configuration::eScalarEntityDistanceFeature:
+        this->addScalarEntityDistance(feature->getScalarEntityDistance(), position);
+        break;
+    case Configuration::eScalarEntityMeasurementSeriesFeature:
+        break;
+    case Configuration::eScalarEntityTemperatureFeature:
+        this->addScalarEntityTemperature(feature->getScalarEntityTemperature(), position);
+        break;
+    case Configuration::eStationFeature:
+        this->addStation(feature->getStation(), position);
+        break;
+    case Configuration::eCoordinateSystemFeature:
+        this->addCoordSystem(feature->getCoordinateSystem(), position);
+        break;
+    case Configuration::eTrafoParamFeature:
+        this->addTrafoParam(feature->getTrafoParam(), position);
+        break;
+    }
 }
 
 /*!

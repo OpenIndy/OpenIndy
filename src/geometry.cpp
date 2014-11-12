@@ -607,7 +607,7 @@ QDomElement Geometry::toOpenIndyXML(QDomDocument &xmlDoc) const{
     //add coordinates
     QDomElement coordinates = xmlDoc.createElement("coordinates");
     OiVec xyz = this->getXYZ();
-    if(xyz.getSize() >= 3 && this->getIsSolved()){
+    if(xyz.getSize() >= 3 && (this->getIsSolved() || this->getIsNominal())){
         coordinates.setAttribute("x", xyz.getAt(0));
         coordinates.setAttribute("y", xyz.getAt(1));
         coordinates.setAttribute("z", xyz.getAt(2));
@@ -673,6 +673,37 @@ QDomElement Geometry::toOpenIndyXML(QDomDocument &xmlDoc) const{
     }
 
     return geometry;
+
+}
+
+/*!
+ * \brief Geometry::fromOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+bool Geometry::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Feature::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set geometry attributes
+        if(!xmlElem.hasAttribute("nominal") || !xmlElem.hasAttribute("common")){
+            return false;
+        }
+        this->isNominal = xmlElem.attribute("nominal").toInt();
+        this->isCommon = xmlElem.attribute("common").toInt();
+
+        //set standard deviation
+        QDomElement stdv = xmlElem.firstChildElement("standardDeviation");
+        if(stdv.isNull() || !stdv.hasAttribute("value")){
+            return false;
+        }
+        this->myStatistic.stdev = stdv.attribute("value").toDouble();
+
+    }
+
+    return result;
 
 }
 

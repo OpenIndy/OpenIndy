@@ -59,7 +59,7 @@ QDomElement ScalarEntityTemperature::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add temperature
     QDomElement temperature = xmlDoc.createElement("temperature");
-    if(this->getIsSolved()){
+    if(this->getIsSolved() || this->getIsNominal()){
         temperature.setAttribute("value", this->temperature);
     }else{
         temperature.setAttribute("value", 0.0);
@@ -67,6 +67,32 @@ QDomElement ScalarEntityTemperature::toOpenIndyXML(QDomDocument &xmlDoc) const{
     entityTemperature.appendChild(temperature);
 
     return entityTemperature;
+
+}
+
+/*!
+ * \brief ScalarEntityTemperature::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool ScalarEntityTemperature::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement temperature = xmlElem.firstChildElement("temperature");
+
+        if(temperature.isNull() || !temperature.hasAttribute("value")){
+            return false;
+        }
+
+        this->temperature = temperature.attribute("value").toDouble();
+
+    }
+
+    return result;
 
 }
 

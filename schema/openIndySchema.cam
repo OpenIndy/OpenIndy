@@ -18,7 +18,7 @@
         <activeCoordinateSystem ref="%12345%" />
         <activeStation ref="%12345%" />
         <stations>
-          <station id="%12345%" name="%string%">
+          <station id="%12345%" name="%string%" group="%string%" comment="%string%" solved="%true%">
             <activeSensor name="%string%" plugin="%string%">
               <readingTypes>
                 <type name="%string%" />
@@ -39,7 +39,7 @@
           </station>
         </stations>
         <coordinateSystems>
-          <coordinateSystem id="%12345%" name="%string%" solved="%true%">
+          <coordinateSystem id="%12345%" name="%string%" solved="%true%" group="%string%" comment="%string%">
             <expansionOrigin x="%1245.00%" y="%1245.00%" z="%1245.00%" />
             <transformationParameters>
               <transformationParameter ref="%string%" />
@@ -56,13 +56,13 @@
                   <element index="%12345%" type="%string%" ref="%12345%" />
                 </inputElements>
                 <integerParameters>
-                  <parameter value="%12345%" />
+                  <parameter value="%12345%" name="%string%" />
                 </integerParameters>
                 <doubleParameters>
-                  <parameter value="%1111.0000%" />
+                  <parameter value="%1111.0000%" name="%string%" />
                 </doubleParameters>
                 <stringParameters>
-                  <parameter value="%string%" />
+                  <parameter value="%string%" name="%string%" />
                 </stringParameters>
               </function>
             </functions>
@@ -75,7 +75,7 @@
           </coordinateSystem>
         </coordinateSystems>
         <transformationParameters>
-          <transformationParameter id="%12345%" name="%string%" solved="%true%" tx="%1245.00%" ty="%1245.00%" tz="%1245.00%" rx="%1245.00%" ry="%1245.00%" rz="%1245.00%" mx="%1245.00%" my="%1245.00%" mz="%1245.00%" use="%true%" movement="%true%" datumTransformation="%true%" time="%HH:MM:SS%">
+          <transformationParameter id="%12345%" name="%string%" solved="%true%" tx="%1245.00%" ty="%1245.00%" tz="%1245.00%" rx="%1245.00%" ry="%1245.00%" rz="%1245.00%" mx="%1245.00%" my="%1245.00%" mz="%1245.00%" use="%true%" movement="%true%" datumTransformation="%true%" time="%HH:MM:SS%" group="%string%" comment="%string%">
             <from ref="%12345%" />
             <to ref="%12345%" />
             <functions>
@@ -84,13 +84,13 @@
                   <element index="%12345%" type="%string%" ref="%12345%" />
                 </inputElements>
                 <integerParameters>
-                  <parameter value="%12345%" />
+                  <parameter value="%12345%" name="%string%" />
                 </integerParameters>
                 <doubleParameters>
-                  <parameter value="%1111.0000%" />
+                  <parameter value="%1111.0000%" name="%string%" />
                 </doubleParameters>
                 <stringParameters>
-                  <parameter value="%string%" />
+                  <parameter value="%string%" name="%string%" />
                 </stringParameters>
               </function>
             </functions>
@@ -103,7 +103,7 @@
           </transformationParameter>
         </transformationParameters>
         <geometries>
-          <geometry id="%12345%" name="%string%" type="%string%" nominal="%true%" common="%true%" solved="%true%">
+          <geometry id="%12345%" name="%string%" type="%string%" nominal="%true%" common="%true%" solved="%true%" group="%string%" comment="%string%">
             <coordinates x="%1245.00%" y="%1245.00%" z="%1245.00%" />
             <spatialDirection i="%1245.00%" j="%1245.00%" k="%1245.00%" />
             <radius value="%1245.00%" />
@@ -122,13 +122,13 @@
                   <inputElement index="%12345%" type="%string%" ref="%12345%" />
                 </inputElements>
                 <integerParameters>
-                  <parameter value="%12345%" />
+                  <parameter value="%12345%" name="%string%" />
                 </integerParameters>
                 <doubleParameters>
-                  <parameter value="%1111.0000%" />
+                  <parameter value="%1111.0000%" name="%string%" />
                 </doubleParameters>
                 <stringParameters>
-                  <parameter value="%string%" />
+                  <parameter value="%string%" name="%string%" />
                 </stringParameters>
               </function>
             </functions>
@@ -193,6 +193,7 @@
           <as:constraint action="makeOptional(//function/doubleParameters)" />
           <as:constraint action="makeOptional(//function/inputElements)" />
           <as:constraint action="makeOptional(//function/integerParameters,)" />
+          <as:constraint action="makeOptional(//function/integerParameters,)" />
           <as:constraint action="makeOptional(//function/stringParameters)" />
           <as:constraint action="makeRepeatable(//functions/function)" />
           <as:constraint action="makeOptional(//functions/function,)" />
@@ -256,6 +257,7 @@
           <as:constraint action="setNumberMask(//standardDeviation/@value,####.######)" />
           <as:constraint action="setNumberMask(//station/@id,#######)" />
           <as:constraint action="setNumberMask(//station/@ref,#######)" />
+          <as:constraint action="datatype(//station/@solved,boolean)" />
           <as:constraint action="makeOptional(//station/activeSensor,)" />
           <as:constraint action="makeOptional(//station/usedFor)" />
           <as:constraint action="makeOptional(//station/usedSensors,)" />
