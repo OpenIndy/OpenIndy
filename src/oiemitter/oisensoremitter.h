@@ -10,23 +10,21 @@ class OiSensorEmitter : public OiEmitter
 
 public:
 
-    enum sensorState{
-        sensorOk,
-        sensorWarning,
-        sensorError
-    };
+    static const int sensorOk; //1
+    static const int sensorWarning; //2
+    static const int sensorError; //0
 
     explicit OiSensorEmitter(QObject *parent = 0);
 
 signals:
     void sendConnectionStat(bool);
-    void sendIsReadyForMeasurement(OiSensorEmitter::sensorState s);
+    void sendIsReadyForMeasurement(int sensorState, QString stateMsg);
     void sendSensorError(QString);
     void sendMeasureTrigger();
 
 public slots:
     void emitSendConnectionStat(bool);
-    void emitSendIsReadyForMeasurement(OiSensorEmitter::sensorState s);
+    void emitSendIsReadyForMeasurement(int sensorState, QString stateMsg);
     void emitSendSensorError(QString);
     void emitSendMeasureTrigger();
 

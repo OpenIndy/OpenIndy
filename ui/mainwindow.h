@@ -71,6 +71,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void closeEvent(QCloseEvent * event);
+
     QSignalMapper *signalMapper;
 
     int selectedFeature;
@@ -209,6 +211,8 @@ private slots:
 
     void setActiveCoordinateSystem();
     void isSensorConnected(bool b);
+    void setSensorState(int sState,QString sensorMsg);
+    void sensorDisconnected();
 
     //void fillCoordSysComboBox();
 
