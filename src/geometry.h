@@ -46,7 +46,7 @@ public:
     virtual double getScalar() const;
 	
     QMap<Configuration::ReadingTypes, QString> getUsedReadingTypes() const;
-    void insertReadingType(Configuration::ReadingTypes readingType, QString displayName);
+    void removeReadingType(Configuration::ReadingTypes rType);
 
     MeasurementConfig getMeasurementConfig() const;
     void setMeasurementConfig(MeasurementConfig myConfig);
@@ -62,6 +62,9 @@ public:
 
     virtual bool saveSimulationData() = 0;
     void resetSimulationData();
+
+private:
+    void insertReadingType(Configuration::ReadingTypes readingType, QString displayName);
 
 signals:
     void geomIsCommonChanged(int featureId);

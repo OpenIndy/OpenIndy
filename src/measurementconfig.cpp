@@ -22,7 +22,6 @@ QDomElement MeasurementConfig::toOpenIndyXML(QDomDocument &xmlDoc) const{
     mConfig.setAttribute("name", this->name);
     mConfig.setAttribute("count", this->count);
     mConfig.setAttribute("iterations", this->iterations);
-    mConfig.setAttribute("face", this->face);
     mConfig.setAttribute("measureTwoSides", this->measureTwoSides);
     mConfig.setAttribute("timeDependent", this->timeDependent);
     mConfig.setAttribute("distanceDependent", this->distanceDependent);
@@ -46,7 +45,7 @@ bool MeasurementConfig::fromOpenIndyXML(QDomElement &xmlElem){
     }
 
     if(!xmlElem.hasAttribute("name") || !xmlElem.hasAttribute("count") || !xmlElem.hasAttribute("iterations")
-            || !xmlElem.hasAttribute("face") || !xmlElem.hasAttribute("measureTwoSides") || !xmlElem.hasAttribute("timeDependent")
+            || !xmlElem.hasAttribute("measureTwoSides") || !xmlElem.hasAttribute("timeDependent")
             || !xmlElem.hasAttribute("distanceDependent") || !xmlElem.hasAttribute("timeInterval")
             || !xmlElem.hasAttribute("distanceInterval") || !xmlElem.hasAttribute("typeOfReading")){
         return false;
@@ -55,7 +54,6 @@ bool MeasurementConfig::fromOpenIndyXML(QDomElement &xmlElem){
     this->name = xmlElem.attribute("name");
     this->count = xmlElem.attribute("count").toInt();
     this->iterations = xmlElem.attribute("iterations").toInt();
-    this->face = (Configuration::Faces)xmlElem.attribute("face").toInt();
     this->measureTwoSides = xmlElem.attribute("measureTwoSides").toInt();
     this->timeDependent = xmlElem.attribute("timeDependent").toInt();
     this->distanceDependent = xmlElem.attribute("distanceDependent").toInt();

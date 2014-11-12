@@ -336,6 +336,9 @@ void Controller::startConnect(){
         if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
             OiFeatureState::getActiveStation()->emitStartConnect(OiFeatureState::getActiveStation()->getInstrumentConfig()->connConfig);
             emit sensorWorks("connecting...");
+            OiSensorEmitter *s = OiFeatureState::getActiveStation()->getActiveSensorEmitter();
+            connect(s,SIGNAL(sendConnectionStat(bool)),this,SLOT(sendIsConnected(bool)));
+            connect(s,SIGNAL(sendIsReadyForMeasurement(int,QString)),this,SLOT(sendSensorState(int,QString)));
         }else{
             Console::addLine("sensor not connected");
         }
@@ -355,8 +358,12 @@ void Controller::startDisconnect(){
     }
 
     if(checkSensorValid()){
+        OiSensorEmitter *s = OiFeatureState::getActiveStation()->getActiveSensorEmitter();
+        disconnect(s,SIGNAL(sendConnectionStat(bool)),this,SLOT(sendIsConnected(bool)));
+        disconnect(s,SIGNAL(sendIsReadyForMeasurement(int,QString)),this,SLOT(sendSensorState(int,QString)));
         OiFeatureState::getActiveStation()->emitStartDisconnect();
         emit sensorWorks("disconnecting...");
+        emit sensorDisconnected();
     }
 }
 
@@ -1280,7 +1287,8 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
                 //if feature is a geometry add the observation to the list of observations in class geometry
                 Geometry *geom = OiFeatureState::getActiveFeature()->getGeometry();
                 if(geom != NULL){
-                    geom->getObservations().append(element->getObservation());
+                    geom->addObservation(element->getObservation());
+                    geom->getObservations().last()->myTargetGeometries.append(geom);
                 }
             }
         }
@@ -1724,6 +1732,16 @@ void Controller::updateFeatureMConfig()
             }
         }
     }
+}
+
+void Controller::sendIsConnected(bool b)
+{
+    emit isConnected(b);
+}
+
+void Controller::sendSensorState(int sState, QString msg)
+{
+    emit setSensorState(sState,msg);
 }
 
 /*void Controller::handleRemoteCommand(OiProjectData *d)

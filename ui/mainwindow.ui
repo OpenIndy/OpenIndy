@@ -64,48 +64,19 @@
        <number>6</number>
       </property>
       <item>
-       <widget class="QLabel" name="label_CoordSystem">
-        <property name="text">
-         <string>active coordinate system: </string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QComboBox" name="comboBox_activeCoordSystem"/>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Minimum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>15</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_activeGroup">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>active group:</string>
-        </property>
-       </widget>
       </item>
       <item>
        <widget class="QComboBox" name="comboBox_groups">
         <property name="autoFillBackground">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_SensorMsg">
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>
@@ -139,7 +110,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="table">
        <attribute name="title">
@@ -882,12 +853,15 @@ color: rgb(255, 255, 255);
    </property>
   </action>
   <action name="actionSensor_real_time_data">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/res.qrc">
      <normaloff>:/Images/icons/streamingLogo.png</normaloff>:/Images/icons/streamingLogo.png</iconset>
    </property>
    <property name="text">
-    <string>sensor real time data</string>
+    <string>sensor_real_time_data</string>
    </property>
   </action>
   <action name="actionStart_stake_out">

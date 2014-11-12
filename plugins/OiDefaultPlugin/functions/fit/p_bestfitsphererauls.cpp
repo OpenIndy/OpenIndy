@@ -23,6 +23,11 @@ bool BestFitSphereRauls::exec(Sphere &s){
         }
 
     }else{
+        //set statistic to invalid
+        Statistic myStats = s.getStatistic();
+        myStats.isValid = false;
+        s.setStatistic(myStats);
+        this->myStatistic = s.getStatistic();
         this->writeToConsole("Not enough observations available for calculation");
     }
     return false;
@@ -54,7 +59,7 @@ int BestFitSphereRauls::setUpObservations(){
     this->myValidObservations.clear();
     int count = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             this->myValidObservations.append(obs);
             count++;
         }

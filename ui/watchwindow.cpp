@@ -37,11 +37,21 @@ WatchWindow::~WatchWindow()
     delete ui;
 }
 
-
+/*!
+ * \brief setLCDNumber displays the differences between actual and nominal. Only displays values for geometries.
+ * \param m
+ * m includes the display attributes and values.
+ */
 void WatchWindow::setLCDNumber(QVariantMap m){
 
     //change display, depending on checked setting checkboxes.
     iniGUI();
+
+    //only stream differences for geometries.
+    //return if no feature selected or station / coord system
+    if(!this->checkFeatureValid()){
+        return;
+    }
 
     int numberOfDigits = ui->lineEdit_decimalDigits->text().toInt();
 
@@ -349,12 +359,17 @@ void WatchWindow::setLCDNumber(QVariantMap m){
     }
 }
 
+/*!
+ * \brief iniGUI initiates the gui and adds all needed labels and LCD labels for displaying the differences.
+ */
 void WatchWindow::iniGUI()
 {
     int nameSize = ui->lineEdit_fNameFontSize->text().toInt();
     int attributeSize = ui->lineEdit_fAttributeFontSize->text().toInt();
 
     streamData.clear();
+
+    //delete old gui elements
 
     for(int i=0; i<widgets.size();i++){
         delete widgets.at(i);
@@ -372,6 +387,7 @@ void WatchWindow::iniGUI()
         masterLayout = new QVBoxLayout();
     }
 
+    //display feature name
     if(OiFeatureState::getActiveFeature() != NULL){
         QLabel *featureName = new QLabel();
         QFont f( "Arial", nameSize, QFont::Bold);
@@ -381,22 +397,26 @@ void WatchWindow::iniGUI()
         widgets.append(featureName);
     }
 
+    QFont fAttr( "Arial", attributeSize, QFont::Bold);
+
+    QString value = "XX.XX";
+
+    //adding labels and LCDs for cross and distance watch window
     if(activeReadingType == Configuration::ePolar && ui->comboBox_polarMode->currentText().compare("cross and distance") == 0){
         //special gui for cross and distance view at actice polar reading
 
         //cross distance
         QString name = "across";
-        QString value = "0.0";
-        QFont f( "Arial", attributeSize, QFont::Bold);
+
 
         QLabel *l = new QLabel();
         l->setText(name);
-        l->setFont(f);
+        l->setFont(fAttr);
         widgets.append(l);
 
         QLCDNumber *n = new QLCDNumber();
         n->display(value);
-        n->setFont(f);
+        n->setFont(fAttr);
         n->setAutoFillBackground(true);
         widgets.append(n);
 
@@ -407,26 +427,25 @@ void WatchWindow::iniGUI()
         QHBoxLayout *layout = new QHBoxLayout();
         layout->addWidget(l);
         layout->addWidget(n);
-        layout->setStretch(0,1);
-        layout->setStretch(1,4);
+        layout->setStretch(0,2);
+        layout->setStretch(1,3);
         layouts.append(layout);
 
         masterLayout->addLayout(layout);
 
         streamData.insert(name,n);
 
-
         //distance
         name = "distance";
 
         QLabel *l2 = new QLabel();
         l2->setText(name);
-        l2->setFont(f);
+        l2->setFont(fAttr);
         widgets.append(l2);
 
         QLCDNumber *n2 = new QLCDNumber();
         n2->display(value);
-        n2->setFont(f);
+        n2->setFont(fAttr);
         n2->setAutoFillBackground(true);
         widgets.append(n2);
 
@@ -437,8 +456,8 @@ void WatchWindow::iniGUI()
         QHBoxLayout *layout2 = new QHBoxLayout();
         layout2->addWidget(l2);
         layout2->addWidget(n2);
-        layout2->setStretch(0,1);
-        layout2->setStretch(1,4);
+        layout2->setStretch(0,2);
+        layout2->setStretch(1,3);
         layouts.append(layout2);
 
         masterLayout->addLayout(layout2);
@@ -450,12 +469,12 @@ void WatchWindow::iniGUI()
 
         QLabel *l3 = new QLabel();
         l3->setText(name);
-        l3->setFont(f);
+        l3->setFont(fAttr);
         widgets.append(l3);
 
         QLCDNumber *n3 = new QLCDNumber();
         n3->display(value);
-        n3->setFont(f);
+        n3->setFont(fAttr);
         n3->setAutoFillBackground(true);
         widgets.append(n3);
 
@@ -466,29 +485,30 @@ void WatchWindow::iniGUI()
         QHBoxLayout *layout3 = new QHBoxLayout();
         layout3->addWidget(l3);
         layout3->addWidget(n3);
-        layout3->setStretch(0,1);
-        layout3->setStretch(1,4);
+        layout3->setStretch(0,2);
+        layout3->setStretch(1,3);
         layouts.append(layout3);
 
         masterLayout->addLayout(layout3);
 
         streamData.insert(name,n3);
+
+        //dynamical for all other watch window modes
     }else{
         for(int i=0; i<this->checkboxes.size();i++){
 
             if(this->checkboxes.at(i)->isChecked()){
                 QString name = this->checkboxes.at(i)->text();
-                QString value = "0.0";
-                QFont f( "Arial", attributeSize, QFont::Bold);
+                //QString value = "0.0";
 
                 QLabel *l = new QLabel();
                 l->setText(name);
-                l->setFont(f);
+                l->setFont(fAttr);
                 widgets.append(l);
 
                 QLCDNumber *n = new QLCDNumber();
                 n->display(value);
-                n->setFont(f);
+                n->setFont(fAttr);
                 n->setAutoFillBackground(true);
                 widgets.append(n);
 
@@ -499,8 +519,8 @@ void WatchWindow::iniGUI()
                 QHBoxLayout *layout = new QHBoxLayout();
                 layout->addWidget(l);
                 layout->addWidget(n);
-                layout->setStretch(0,1);
-                layout->setStretch(1,4);
+                layout->setStretch(0,2);
+                layout->setStretch(1,3);
                 layouts.append(layout);
 
                 masterLayout->addLayout(layout);
@@ -509,8 +529,6 @@ void WatchWindow::iniGUI()
             }
         }
     }
-
-
 
     ui->pageWatchWindow->setLayout(masterLayout);
 

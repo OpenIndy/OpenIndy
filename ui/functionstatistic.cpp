@@ -43,6 +43,10 @@ int FunctionStatistic::columnCount(const QModelIndex &parent) const{
  */
 QVariant FunctionStatistic::data(const QModelIndex &index, int role) const{
 
+    if(this->ElementIDs.size() == 0){
+        return QVariant();
+    }
+
     if(this->selectedFunction != NULL){
 
         if(!index.isValid())
@@ -129,22 +133,22 @@ void FunctionStatistic::getKeys(){
             for(int i=0; i<r.at(k).residualName.size();i++){
 
                 if(r.at(k).residualUnitType.value(r.at(k).residualName.at(i)) == UnitConverter::eMetric){
-                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i)+ " " + UnitConverter::getDistanceUnitString()))){
-                        this->residualName.append(QString(r.at(k).residualName.at(i) + " " + UnitConverter::getDistanceUnitString()));
+                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i)+  UnitConverter::getDistanceUnitString()))){
+                        this->residualName.append(QString(r.at(k).residualName.at(i) + UnitConverter::getDistanceUnitString()));
                         this->originalResidualName.append(QString(r.at(k).residualName.at(i)));
                     }
 
                 }
                 if(r.at(k).residualUnitType.value(r.at(k).residualName.at(i)) == UnitConverter::eAngular){
-                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i) + " " + UnitConverter::getAngleUnitString()))){
-                        this->residualName.append(QString(r.at(k).residualName.at(i) + " " + UnitConverter::getAngleUnitString()));
+                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i) + UnitConverter::getAngleUnitString()))){
+                        this->residualName.append(QString(r.at(k).residualName.at(i) + UnitConverter::getAngleUnitString()));
                         this->originalResidualName.append(QString(r.at(k).residualName.at(i)));
                     }
 
                 }
                 if(r.at(k).residualUnitType.value(r.at(k).residualName.at(i)) == UnitConverter::eTemperature){
-                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i) + " " + UnitConverter::getTemperatureUnitString()))){
-                        this->residualName.append(QString(r.at(k).residualName.at(i) + " " + UnitConverter::getTemperatureUnitString()));
+                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i) + UnitConverter::getTemperatureUnitString()))){
+                        this->residualName.append(QString(r.at(k).residualName.at(i) + UnitConverter::getTemperatureUnitString()));
                         this->originalResidualName.append(QString(r.at(k).residualName.at(i)));
                     }
 

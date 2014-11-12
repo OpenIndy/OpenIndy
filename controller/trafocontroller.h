@@ -25,7 +25,7 @@ public slots:
     void transformNewObservations(Observation *obs);
 
     bool transformObservations(CoordinateSystem *from);
-    void setObservationState(CoordinateSystem *cs, bool valid);
+    void setObservationState(CoordinateSystem *cs, bool solved);
 
     //to calc movement transformations
     void transformObsForMovementCalculation(CoordinateSystem *from, CoordinateSystem *to);
@@ -38,7 +38,6 @@ private:
 
     QList<TrafoParam*> findMovements(CoordinateSystem *from);
     void applyMovements(QList<TrafoParam*> movements, CoordinateSystem *from);
-	
 };
 
 #endif // TRAFOCONTROLLER_H

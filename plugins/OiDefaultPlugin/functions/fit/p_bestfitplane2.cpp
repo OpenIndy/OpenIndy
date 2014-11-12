@@ -46,7 +46,7 @@ bool BestFitPlane2::exec(Plane &p){
         double *z = new double[obsCount];
         int k = 0;
         foreach(Observation *obs, this->observations){
-            if(obs->isValid){
+            if(obs->getUseState()){
                 x[k] = obs->myXyz.getAt(0);
                 y[k] = obs->myXyz.getAt(1);
                 z[k] = obs->myXyz.getAt(2);
@@ -79,6 +79,11 @@ bool BestFitPlane2::exec(Plane &p){
         delete[] y;
         delete[] z;
     }else{
+        //set statistic to invalid
+        Statistic myStats = p.getStatistic();
+        myStats.isValid = false;
+        p.setStatistic(myStats);
+        this->myStatistic = p.getStatistic();
         this->writeToConsole("Not enough observations available for calculation");
     }
 
@@ -149,7 +154,7 @@ void BestFitPlane2::setUpResult(Plane &p, double *x, double *y, double *z, int c
 int BestFitPlane2::getObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             count++;
         }
     }

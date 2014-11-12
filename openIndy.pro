@@ -183,7 +183,11 @@ SOURCES += \
     controller/oistakeout.cpp \
     ui/oistakeoutmanager.cpp \
     ui/pointfeaturemodel.cpp \
-    ui/pointfeaturefiltermodel.cpp
+    ui/pointfeaturefiltermodel.cpp \
+    ui/observationproxymodel.cpp \
+    ui/readingproxymodel.cpp \
+    controller/plugincopier.cpp \
+    ui/observationdelegate.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -331,7 +335,11 @@ HEADERS  += \
     controller/oistakeout.h \
     ui/oistakeoutmanager.h \
     ui/pointfeaturemodel.h \
-    ui/pointfeaturefiltermodel.h
+    ui/pointfeaturefiltermodel.h \
+    ui/observationproxymodel.h \
+    ui/readingproxymodel.h \
+    controller/plugincopier.h \
+    ui/observationdelegate.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

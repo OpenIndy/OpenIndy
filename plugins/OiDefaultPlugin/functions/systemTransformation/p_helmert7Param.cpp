@@ -380,12 +380,9 @@ bool Helmert7Param::adjust(TrafoParam &tp){
     //if(iterations < 100){ //adjustment successful
         OiVec v = a * x - l_diff;
         OiVec vtv = v.t() * v;
-        qDebug() << "vtv " << vtv.getAt(0);
         double s0_post = sqrt(vtv.getAt(0) / (3.0 * this->locSystem.length() - 7.0));
         OiMat sxx = s0_post * s0_post * qxx;
         //tp.getStatistic()->stdev = s0_post;
-        qDebug() << "so_post "<< s0_post;
-        qDebug() << "trafo std" << tp.getStatistic()->stdev;
         result = true;
     //}
 

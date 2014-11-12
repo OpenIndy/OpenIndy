@@ -13,6 +13,26 @@ FeatureData::FeatureData(QWidget *parent) :
 
     qxxModel = NULL;
     sxxModel = NULL;
+
+    this->observationOverviewModel = NULL;
+    this->readingOverviewModel = NULL;
+
+    rModel = new ReadingModel(0);
+    oModel = new ObservationModel(0);
+
+    this->observationOverviewModel = new ObservationProxyModel();
+    this->observationOverviewModel->setSourceModel(this->oModel);
+
+    this->readingOverviewModel = new ReadingProxyModel();
+    this->readingOverviewModel->setSourceModel(this->rModel);
+
+
+    this->oModel->updateModel();
+    this->rModel->updateModel();
+
+    //connect reading and observation view
+    connect(this->rModel,SIGNAL(resizeView()),this,SLOT(resizeView()));
+    connect(this->oModel,SIGNAL(resizeView()),this,SLOT(resizeView()));
 }
 
 /*!
@@ -40,37 +60,40 @@ void FeatureData::on_pushButton_ok_clicked()
 }
 
 /*!
- * \brief receives the active feature and initiates the models and gui.
- * If the received feature is a station with an active instrument, you can change the instrument config with this dialog
- * and connect the instrument new, if the connection settings were changed.
- * \param FeatureWrapper activeFeature
+ * \brief showEvent
+ * \param event
  */
-/*void FeatureData::getActiveFeature(FeatureWrapper *activeFeature){
-
-    this->selectedFeature = activeFeature;
-    this->setWindowTitle(QString("information abaout " + OiFeatureState::getActiveFeature()->getFeature()->name));
-    rModel = new ReadingModel(*this->selectedFeature,0);
-    oModel = new ObservationModel(*OiFeatureState::getActiveFeature(),0);
-
-    ui->tableView_observation->setModel(oModel);
-    ui->tableView_readings->setModel(rModel);
-
-    ui->tableView_displayedfunctionStatistic->setModel(NULL);
-    ui->tableView_qxxAposteriori->setModel(NULL);
-    ui->tableView_sxxApriori->setModel(NULL);
-    ui->label_s0aposterioriValue->setText("");
-    ui->label_s0aprioriValue->setText("");
-
-    initGUI();
-}*/
-
 void FeatureData::showEvent(QShowEvent *event)
 {
     //Put the dialog in the screen center
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
+
+    //this->updateModels();
+
 	this->initGUI();
     event->accept();
+}
+
+/*!
+ * \brief resizeView to data size
+ */
+void FeatureData::resizeView()
+{
+    ui->tableView_observation->resizeColumnsToContents();
+    ui->tableView_observation->resizeRowsToContents();
+
+    ui->tableView_readings->resizeColumnsToContents();
+    ui->tableView_readings->resizeRowsToContents();
+
+    ui->tableView_displayedfunctionStatistic->resizeColumnsToContents();
+    ui->tableView_displayedfunctionStatistic->resizeRowsToContents();
+
+    ui->tableView_qxxAposteriori->resizeColumnsToContents();
+    ui->tableView_qxxAposteriori->resizeRowsToContents();
+
+    ui->tableView_sxxApriori->resizeColumnsToContents();
+    ui->tableView_sxxApriori->resizeRowsToContents();
 }
 
 /*!
@@ -78,12 +101,15 @@ void FeatureData::showEvent(QShowEvent *event)
  */
 void FeatureData::initGUI(){
 
-    this->setWindowTitle(QString("information abaout " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
-    rModel = new ReadingModel(0);
-    oModel = new ObservationModel(0);
+    this->displayUsedReadings();
 
-    ui->tableView_observation->setModel(oModel);
-    ui->tableView_readings->setModel(rModel);
+    this->setWindowTitle(QString("information abaout " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
+
+    ui->tableView_observation->setModel(this->observationOverviewModel);
+    ui->tableView_readings->setModel(this->readingOverviewModel);
+
+    ObservationDelegate *myObsDelegate = new ObservationDelegate();
+    ui->tableView_observation->setItemDelegate(myObsDelegate);
 
     ui->tableView_displayedfunctionStatistic->setModel(NULL);
     ui->tableView_qxxAposteriori->setModel(NULL);
@@ -96,6 +122,8 @@ void FeatureData::initGUI(){
     for(int i=0; i<OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size();i++){
         ui->comboBox_displayedFunction->addItem(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(i)->getMetaData()->name);
     }
+
+    this->updateModels();
 }
 
 /*!
@@ -150,6 +178,7 @@ void FeatureData::on_comboBox_displayedFunction_currentIndexChanged(const QStrin
             ui->tableView_displayedfunctionStatistic->setModel(fModel);
             fModel->updateModel();
         }else{
+            fModel->setFunction(NULL);
             ui->tableView_displayedfunctionStatistic->setModel(NULL);
         }
     }
@@ -163,4 +192,53 @@ void FeatureData::on_comboBox_displayedFunction_currentIndexChanged(const QStrin
 void FeatureData::closeEvent(QCloseEvent *event)
 {
     event->accept();
+}
+
+/*!
+ * \brief displayUsedReadings checks the used reading types of this geometry and displays them in the combobox.
+ */
+void FeatureData::displayUsedReadings()
+{
+    this->ui->comboBox_readings->clear();
+
+    GUIConfiguration::readingType = "";
+
+    Geometry *geom = NULL;
+
+    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+        geom = OiFeatureState::getActiveFeature()->getGeometry();
+    }else if(OiFeatureState::getActiveFeature()->getStation() != NULL){
+        geom = OiFeatureState::getActiveFeature()->getStation()->position;
+    }
+
+    if(geom != NULL){
+
+        QMapIterator<Configuration::ReadingTypes, QString> i(geom->getUsedReadingTypes());
+        while(i.hasNext()){
+            i.next();
+            this->ui->comboBox_readings->addItem(i.value());
+        }
+    }
+}
+
+/*!
+ * \brief sets current selected reading type name in GUIConfiguration class.
+ * After this the reading model can display the right columns depending on the selected reading type.
+ * \param arg1
+ */
+void FeatureData::on_comboBox_readings_currentTextChanged(const QString &arg1)
+{
+    GUIConfiguration::readingType = arg1;
+    if(GUIConfiguration::readingType.compare("") != 0){
+        this->updateModels();
+    }
+}
+
+/*!
+ * \brief updateModels updates the reading and observation model
+ */
+void FeatureData::updateModels()
+{
+    this->rModel->updateModel();
+    this->oModel->updateModel();
 }

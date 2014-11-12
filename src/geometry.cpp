@@ -4,6 +4,7 @@
 #include "observation.h"
 #include "station.h"
 #include "function.h"
+#include "oimetadata.h"
 
 Geometry::Geometry(bool isNominal, QObject *parent) : Feature(parent),
     myActual(NULL), myNominalCoordSys(NULL), isNominal(isNominal)
@@ -169,6 +170,34 @@ QList<Observation *> Geometry::getObservations() const{
 bool Geometry::addObservation(Observation *obs){
     if(!this->isNominal && obs != NULL){
         this->myObservations.append(obs);
+
+        //add reading to geom
+        switch (obs->myReading->typeofReading) {
+        case Configuration::ePolar:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sPolar);
+            break;
+        case Configuration::eCartesian:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sCartesian);
+            break;
+        case Configuration::eDirection:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sDirection);
+            break;
+        case Configuration::eDistance:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sDistance);
+            break;
+        case Configuration::eLevel:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sLevel);
+            break;
+        case Configuration::eTemperatur:
+            this->insertReadingType(obs->myReading->typeofReading,Configuration::sTemperatur);
+            break;
+        case Configuration::eUndefined:
+            this->insertReadingType(obs->myReading->typeofReading,"undefined");
+            break;
+        default:
+            break;
+        }
+
         emit this->geomMyObservationsChanged(this->id);
         return true;
     }
@@ -186,6 +215,7 @@ bool Geometry::removeObservation(Observation *obs){
             if(this->myObservations.at(i)->getId() == obs->getId()){
 
                 this->myObservations.removeAt(i);
+                this->removeReadingType(obs->myReading->typeofReading);
 
                 foreach(Function *myFunc, this->getFunctions()){
                     if(myFunc != NULL){
@@ -234,20 +264,58 @@ QString Geometry::getDisplayObs() const
 {
     int validObs = 0;
     int totalObs = this->myObservations.size();
-    for(int i=0;i<totalObs;i++){
-        if(this->myObservations.at(i)->isValid){
-            validObs += 1;
+
+    Function *fitFunc = NULL;
+
+    if(this->functionList.at(0)->getMetaData()->iid.compare(OiMetaData::iid_FitFunction) == 0){
+
+        fitFunc = this->functionList.at(0);
+
+        if(fitFunc == NULL){
+            return QString("-/"+QString::number(totalObs));
         }
+        for(int i=0; i<fitFunc->getObservations().size();i++){
+            if(fitFunc->getObservations().at(i)->getUseState()){
+                validObs += 1;
+            }
+        }
+        return QString(QString::number(validObs)+"/"+QString::number(totalObs));
     }
-    return QString(QString::number(validObs)+"/"+QString::number(totalObs));
-	
+    return QString("-/"+QString::number(totalObs));
 }
 
+/*!
+ * \brief insertReadingType
+ * \param readingType
+ * \param displayName
+ */
 void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QString displayName){
 
-    QMap<Configuration::ReadingTypes,QString>::const_iterator i = usedReadingTypes.find(readingType);
+    //check if enum value is valid. if not return function, else go on with assignment
+    switch (readingType) {
+    case Configuration::ePolar:
+        break;
+    case Configuration::eCartesian:
+        break;
+    case Configuration::eDistance:
+        break;
+    case Configuration::eDirection:
+        break;
+    case Configuration::eTemperatur:
+        break;
+    case Configuration::eLevel:
+        break;
+    case Configuration::eUndefined:
+        break;
+    default:
+        //return function if enum value is not valid
+        return;
+        break;
+    }
 
-    if (i != usedReadingTypes.end() && i.key() != readingType) {
+    QMap<Configuration::ReadingTypes,QString>::const_iterator i = usedReadingTypes.find(readingType);
+    //add reading type to list if it is not in there yet
+    if (i.key() != readingType) {
         usedReadingTypes.insert(readingType,displayName);
     }
 
@@ -295,6 +363,25 @@ double Geometry::getScalar() const
  */
 QMap<Configuration::ReadingTypes, QString> Geometry::getUsedReadingTypes() const{
     return this->usedReadingTypes;
+}
+
+/*!
+ * \brief removeReadingType removes the reading type if there is no more observation with this reading type in the geometry list.
+ */
+void Geometry::removeReadingType(Configuration::ReadingTypes rType)
+{
+    bool rTypeExists = false;
+
+    //check if the geometry still has an observation with that reading type. else delete from map.
+    for(int i=0; i<this->getObservations().size();i++){
+        if(this->getObservations().at(i)->myReading->typeofReading == rType){
+            rTypeExists = true;
+        }
+    }
+
+    if(!rTypeExists){
+        this->usedReadingTypes.remove(rType);
+    }
 }
 
 /*!

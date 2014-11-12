@@ -20,7 +20,7 @@ public:
     friend bool operator==(const MeasurementConfig &left, const MeasurementConfig &right){
 
         if(left.count == right.count && left.iterations == right.iterations
-                && left.face == right.face && left.measureTwoSides == right.measureTwoSides
+                && left.measureTwoSides == right.measureTwoSides
                 && left.timeDependent == right.timeDependent && left.distanceDependent == right.distanceDependent
                 && left.timeInterval == right.timeInterval && left.distanceInterval == right.distanceInterval
                 && left.typeOfReading == right.typeOfReading){
@@ -37,7 +37,6 @@ public:
     //measurement config parameters
     int count; //the number of measurements that the sensor shall bring together to a single reading
     int iterations; //the number of readings the sensor shall return
-    Configuration::Faces face; //the face (frontside or backside) in which the sensor shall measure
     bool measureTwoSides; //true if the sensor shall measure in both faces (false if not)
     bool timeDependent; //true if the sensor shall measure in a special timeInterval (false if not)
     bool distanceDependent; //true if the sensor shall measure in a special distanceInterval (false if not)

@@ -6,8 +6,6 @@ LeicaTachymeter::LeicaTachymeter(){
 
 }
 
-
-
 PluginMetaData* LeicaTachymeter::getMetaData() const{
 
     PluginMetaData* metaData = new PluginMetaData();
@@ -41,7 +39,6 @@ QList<Configuration::SensorFunctionalities> LeicaTachymeter::getSupportedSensorA
     sensorActions.append(Configuration::eMoveAngle);
     sensorActions.append(Configuration::eToggleSight);
 
-
     return sensorActions;
 
 }
@@ -60,11 +57,14 @@ QMap<QString,int>* LeicaTachymeter::getIntegerParameter() const{
 
 QMap<QString,double>* LeicaTachymeter::getDoubleParameter() const{
 
-    QMap <QString, double>* doubleParameter = new QMap<QString, double>;
+    //not used yet !!
+
+    /*QMap <QString, double>* doubleParameter = new QMap<QString, double>;
 
     doubleParameter->insert("addition constant",0.0);
 
-    return doubleParameter;
+    return doubleParameter;*/
+    return NULL;
 
 }
 
@@ -84,17 +84,24 @@ QMap <QString, QStringList>* LeicaTachymeter::getStringParameter() const{
     stringParameter->insert("sense of rotation", senseOfRotation);
 
     return stringParameter;
-
 }
 
 QStringList LeicaTachymeter::selfDefinedActions() const
 {
-    QStringList a;
-    return a;
+    QStringList ownActions;
+
+    //actiion to activate the LOCK mode if available.
+    ownActions.append("LOCK");
+
+    return ownActions;
 }
 
 bool LeicaTachymeter::doSelfDefinedAction(QString a)
 {
+    if(a == "LOCK"){
+        //activate tracking mode
+        this->getLOCKState();
+    }
 
     return true;
 }
@@ -151,9 +158,7 @@ bool LeicaTachymeter::disconnectSensor(){
     }
 
     return true;
-
 }
-
 
 bool LeicaTachymeter::toggleSightOrientation(){
 
@@ -171,9 +176,151 @@ bool LeicaTachymeter::toggleSightOrientation(){
              return true;
             }
     }
-
     return false;
+}
 
+bool LeicaTachymeter::getATRState()
+{
+    if(this->serial->isOpen()){
+
+        //check user defined ATR value
+        if(!this->myConfiguration->stringParameter.contains("ATR")){
+            return false;
+        }
+
+        //check ATR state
+        QString command = "%R1Q,18006:\r\n";
+
+        if(executeCommand(command)){
+            QString measureData = this->receive();
+            //split to get return code and on/off state
+            QStringList responseElements = measureData.split(":");
+            QStringList elements = responseElements.at(1).split(",");
+
+            //if return code of function = 0 (ATR supported)
+            if(elements.at(0).compare("0") == 0){
+                this->setATRState(elements.at(1));
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }else{
+        return false;
+    }
+}
+
+bool LeicaTachymeter::setATRState(QString ATRstate)
+{
+    QString command = "";
+    //user defined ATR value
+    QString value = this->myConfiguration->stringParameter.value("ATR");
+
+    if(value.compare("atr on") == 0){
+        value = "1";
+    }else if(value.compare("atr off") == 0){
+        value = "0";
+    }
+
+    //compare current ATR state and defined ATR state and change if needed
+    if(ATRstate.compare(value) != 0){
+        command = "%R1Q,18005:" + value + "\r\n";
+    }
+
+    bool result = this->checkCommandRC(command);
+    if(result){
+        myEmitter.emitSendString("ATR state changed.");
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool LeicaTachymeter::getLOCKState()
+{
+    if(this->serial->isOpen()){
+
+        //getUserLockState
+        QString command = "%R1Q,18008:\r\n";
+
+        if(executeCommand(command)){
+            QString measureData = this->receive();
+            QStringList responseElements = measureData.split(":");
+            QStringList elements = responseElements.at(1).split(",");
+
+            //if LOCK is supported
+            if(elements.at(0).compare("0") == 0){
+                this->setLOCKState(elements.at(1));
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+    }else{
+        myEmitter.emitSendString("not connected");
+        return false;
+    }
+}
+
+bool LeicaTachymeter::setLOCKState(QString currentState)
+{
+    QString command = "";
+
+    bool on = false;
+    //if is currently off, then turn on
+    if(currentState.compare("0") == 0){
+        myEmitter.emitSendString("activating LOCK mode.");
+        command = "%R1Q,18007:1\r\n";
+        on = true;
+
+    //if is currently on, then turn off
+    }else if(currentState.compare("1") == 0){
+        myEmitter.emitSendString("deactivating LOCK mode.");
+        command = "%R1Q,18007:0\r\n";
+        on = false;
+    }
+
+    bool result = this->checkCommandRC(command);
+    if(result){
+        myEmitter.emitSendString("LOCK state changed");
+        if(on){
+            //if current state is "on", then fine adjust
+            this->fineAdjust();
+        }
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool LeicaTachymeter::startTargetTracking()
+{
+    QString command = "%R1Q,9013:\r\n";
+
+    bool result = this->checkCommandRC(command);
+    if(result){
+        myEmitter.emitSendString("target tracking active.");
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool LeicaTachymeter::fineAdjust()
+{
+    QString command = "%R1Q,9037:0.08,0.08,0";
+
+    //execute fine adjust command
+    bool result = this->checkCommandRC(command);
+    if(result){
+        myEmitter.emitSendString("fine adjust successful.");
+        //if successful then run target tracking.
+        this->startTargetTracking();
+        return true;
+    }else{
+        return false;
+    }
 }
 
 bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool isrelativ){
@@ -183,7 +330,6 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
     }else{
 
         if( this->serial->isOpen()){
-
 
             QString command="%R1Q,9027:";
             command.append(QString::number(azimuth));
@@ -197,16 +343,16 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
                 myEmitter.emitSendString("completed.");
                 myEmitter.emitSendString(measureData );
                 }
-
         }
-
     }
-
     return true;
 }
 
 QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
 
+    //check and set ATR state
+    //TODO run at each measurement?? if not maybe reactivate after tracking needed
+    this->getATRState();
 
     switch (m->typeOfReading){
     case Configuration::ePolar:
@@ -225,7 +371,6 @@ QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
         break;
     }
 
-
     QList<Reading*> emptyList;
     return emptyList;
 }
@@ -240,7 +385,7 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
 
         switch (streamFormat) {
         case Configuration::ePolar:
-            if(this->executeEDM()){
+            /*if(this->executeEDM()){
                 command = "%R1Q,2108:5000,1\r\n";
                 if(executeCommand(command)){
                     QString measuredData = this->receive();
@@ -264,11 +409,35 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
                     m.insert("distance",r.rPolar.distance);
 
                 }
+            }*/
+
+            //execute quick measurement for tracking distance
+            command ="%R1Q,2117:\r\n";
+            if(executeCommand(command)){
+                QString measuredData = this->receive();
+                QStringList polarElements = measuredData.split(",");
+
+                r.rPolar.azimuth = polarElements.at(polarElements.size()-3).toDouble();
+                r.rPolar.zenith = polarElements.at(polarElements.size()-2).toDouble();
+                r.rPolar.distance = polarElements.at(polarElements.size()-1).toDouble();
+                r.typeofReading = Configuration::ePolar;
+                r.rPolar.isValid = true;
+
+                if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                    QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                    if(sense.compare("mathematical") == 0){
+                        r.rPolar.azimuth = 2 * PI - r.rPolar.azimuth;
+                    }
+                }
+
+                m.insert("azimuth",r.rPolar.azimuth);
+                m.insert("zenith",r.rPolar.zenith);
+                m.insert("distance",r.rPolar.distance);
             }
 
             break;
         case Configuration::eCartesian:
-            if(this->executeEDM()){
+            /*if(this->executeEDM()){
                 command = "%R1Q,2108:5000,1\r\n";
                 if(executeCommand(command)){
                     QString measuredData = this->receive();
@@ -291,7 +460,32 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
                     m.insert("y",r.rCartesian.xyz.getAt(1));
                     m.insert("z",r.rCartesian.xyz.getAt(2));
                 }
+            }*/
+
+            //execute quick measurement for tracking distance
+            command = "%R1Q,2117:\r\n";
+            if(executeCommand(command)){
+                QString measuredData = this->receive();
+                QStringList polarElements = measuredData.split(",");
+
+                r.rPolar.azimuth = polarElements.at(polarElements.size()-3).toDouble();
+                r.rPolar.zenith = polarElements.at(polarElements.size()-2).toDouble();
+                r.rPolar.distance = polarElements.at(polarElements.size()-1).toDouble();
+                r.typeofReading = Configuration::eCartesian;
+                r.rPolar.isValid = true;
+
+                if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                    QString sense = this->myConfiguration->stringParameter.value("sense of rotation");
+                    if(sense.compare("mathematical") == 0){
+                        r.rPolar.azimuth = 2* PI - r.rPolar.azimuth;
+                    }
+                }
+                r.toCartesian();
+                m.insert("x",r.rCartesian.xyz.getAt(0));
+                m.insert("y",r.rCartesian.xyz.getAt(1));
+                m.insert("z",r.rCartesian.xyz.getAt(2));
             }
+
             break;
         case Configuration::eDirection:
             command = "%R1Q,2107:1\r\n";
@@ -378,14 +572,11 @@ bool LeicaTachymeter::isReadyForMeasurement()
 
 QMap<QString, QString> LeicaTachymeter::getSensorStats()
 {
-
     QMap<QString, QString> stats;
 
     stats.insert("connected", QString::number(this->serial->isOpen()));
 
-
     return stats;
-
 }
 
 bool LeicaTachymeter::isBusy()
@@ -394,7 +585,6 @@ bool LeicaTachymeter::isBusy()
 }
 
 QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
-
 
     QList<Reading*> readings;
 
@@ -449,7 +639,6 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
 
 QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
 
-
     QList<Reading*> readings;
 
     if( this->serial->isOpen()){
@@ -484,7 +673,6 @@ QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
 }
 
 QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
-
 
     QList<Reading*> readings;
 
@@ -537,7 +725,6 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
 
 QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
 
-
     QList<Reading*> readings = this->measurePolar(m);
 
     for(int i = 0; i<readings.size();i++){
@@ -549,8 +736,6 @@ QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
     return readings;
 
 }
-
-
 
 QString LeicaTachymeter::receive(){
     QByteArray responseData = this->serial->readAll();
@@ -578,7 +763,29 @@ bool LeicaTachymeter::executeCommand(QString command){
     }
 
     return false;
+}
 
+/*!
+ * \brief checkCommandRC executes the command and checks if it was successfully via the RC of the function
+ * \param command
+ * \return
+ */
+bool LeicaTachymeter::checkCommandRC(QString command)
+{
+    if(executeCommand(command)){
+        QString measureData = this->receive();
+
+        QStringList responseElements = measureData.split(":");
+        QStringList elements = responseElements.at(1).split(",");
+
+        if(elements.at(0).compare("0") == 0){
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
 }
 
 bool LeicaTachymeter::executeEDM(){

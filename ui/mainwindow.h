@@ -71,6 +71,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void closeEvent(QCloseEvent * event);
+
     QSignalMapper *signalMapper;
 
     int selectedFeature;
@@ -208,6 +210,9 @@ private slots:
     void createFeature();
 
     void setActiveCoordinateSystem();
+    void isSensorConnected(bool b);
+    void setSensorState(int sState,QString sensorMsg);
+    void sensorDisconnected();
 
     //void fillCoordSysComboBox();
 
@@ -306,6 +311,10 @@ private slots:
     void on_actionStop_stake_out_triggered();
     void on_actionNext_triggered();
     void stakeOutConfigured(QDomDocument request);
+
+    //close dialogs
+    void closeAllOpenDialogs();
+    void setDialogsNULL();
 
 private:
     Ui::MainWindow *ui;

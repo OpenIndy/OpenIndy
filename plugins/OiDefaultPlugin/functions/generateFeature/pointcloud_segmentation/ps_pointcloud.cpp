@@ -51,12 +51,10 @@ PS_PointCloud &PS_PointCloud::operator=(const PS_PointCloud &copy){
  */
 bool PS_PointCloud::loadPointCloud(QString fileName){
 
-    qDebug() << "start einlesen";
 
     QFile file(fileName);
 
     if(!file.open(QIODevice::ReadOnly)) {
-        qDebug() << file.errorString();
         return false;
     }
 
@@ -140,7 +138,6 @@ bool PS_PointCloud::setCloud(vector<PS_Point_PC *> *myPoints, PS_BoundingBox_PC 
  */
 bool PS_PointCloud::setUpOctree(PS_InputParameter param)
 {
-    qDebug() << "start octree";
     c1 = clock();
 
     this->myOctree = new PS_Octree();
@@ -161,7 +158,6 @@ bool PS_PointCloud::detectShapes(PS_InputParameter param){
 
         emit this->updateStatus("Octree successfully created", 1);
 
-        qDebug() << "start detecting shapes";
         c1 = clock();
 
         //get leaf nodes from Octree (= nodes that are not subdevided into smaller nodes)
@@ -207,7 +203,6 @@ bool PS_PointCloud::detectShapes(PS_InputParameter param){
 
         }*/
 
-        qDebug() << "number of leafs at all: " << leafs->size();
 
         int numPointLeafs = 0;
         for(int i = 0; i < leafs->size(); i++){
@@ -215,8 +210,6 @@ bool PS_PointCloud::detectShapes(PS_InputParameter param){
                 numPointLeafs++;
             }
         }
-
-        qDebug() << "number of leafs with points: " << numPointLeafs;
 
         cout << "Start Geometrieerkennung: " << (clock() - c1)/(double)CLOCKS_PER_SEC << " seconds." << endl;
 

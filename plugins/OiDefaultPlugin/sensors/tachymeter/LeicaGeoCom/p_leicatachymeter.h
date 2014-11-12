@@ -79,6 +79,25 @@ protected:
     //! toggle between frontside and backside
     bool toggleSightOrientation();
 
+    //! check ATR state
+    bool getATRState();
+
+    //! set ATR state
+    bool setATRState(QString ATRstate);
+
+    //! check LOCK state
+    bool getLOCKState();
+
+    //! sets the LOCK state
+    bool setLOCKState(QString currentState);
+
+    //! starts target tracking
+    bool startTargetTracking();
+
+    //! starts the fine adjustment for ATR on prism
+    bool fineAdjust();
+
+
 private:
 
     QSerialPort *serial;
@@ -99,6 +118,8 @@ private:
     void getError(QSerialPort::SerialPortError);
     bool executeEDM();
     bool executeCommand(QString);
+
+    bool checkCommandRC(QString command);
 
 };
 

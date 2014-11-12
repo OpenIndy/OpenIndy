@@ -1,6 +1,7 @@
 #include "pluginloader.h"
 
 PluginMetaData *PluginLoader::myMetaInfo = new PluginMetaData();
+PluginCopier *PluginLoader::pCopier = new PluginCopier();
 
 PluginLoader::PluginLoader(QObject *parent) :
     QObject(parent)
@@ -24,7 +25,6 @@ QString PluginLoader::findOiPlugin(QString dirPath){
         QString path = pluginsDir.absoluteFilePath(fileName);
 
         QPluginLoader pluginLoader(path);
-        Console::addLine(path);
 
         bool isPlugin = pluginLoader.metaData().value("MetaData").toObject().value("isOiPlugin").toBool();
 
@@ -35,7 +35,10 @@ QString PluginLoader::findOiPlugin(QString dirPath){
             bool isValid;
 
             if (hasMetaData){
+               pCopier->sendMsg("plugin meta data loaded",false);
                isValid = PluginLoader::checkPlugin();
+            }else{
+                pCopier->sendMsg("can not load plugin meta data",true);
             }
 
             if(isValid){
@@ -45,7 +48,7 @@ QString PluginLoader::findOiPlugin(QString dirPath){
     }
 
 
-    Console::addLine("no plugin found");
+    pCopier->sendMsg("no plugin found",true);
     return NULL;
 
 }
@@ -72,14 +75,11 @@ bool PluginLoader::getMetaData(QString path){
 
 
 
-    if (myMetaInfo->iid != NULL){
-         Console::addLine("plugin meta data loaded");
+    if (myMetaInfo->iid != NULL){  
          return true;
     }
 
-    Console::addLine("can not load plugin meta data");
     return false;
-
 
 }
 
@@ -103,17 +103,17 @@ PluginMetaData* PluginLoader::getPluginMetaData(QString path){
 
 
     if (!OiMetaData::findIID(metaInfo->iid)){
-        Console::addLine("plugin not valid: wrong plugin interface version");
+        pCopier->sendMsg("plugin not valid: wrong plugin interface version",true);
     }else if(metaInfo->operatingSystem != OiMetaData::getOperatingSys()){
-        Console::addLine("plugin not valid: wrong operating system");
+        pCopier->sendMsg("plugin not valid: wrong operating system",true);
     }else if(metaInfo->compiler != OiMetaData::getCompiler()){
-        Console::addLine("plugin not valid: different compiler");
+        pCopier->sendMsg("plugin not valid: different compiler",true);
     }else{
-        Console::addLine("plugin meta data loaded");
+        pCopier->sendMsg("plugin meta data loaded",false);
         return metaInfo;
     }
 
-    Console::addLine("can not load plugin meta data");
+    pCopier->sendMsg("can not load plugin meta data",true);
     return NULL;
 
 }
@@ -127,22 +127,22 @@ bool PluginLoader::checkPlugin(){
 
     if(myMetaInfo->operatingSystem != OiMetaData::getOperatingSys()){
 
-        Console::addLine("plugin not valid: wrong operating system");
+        pCopier->sendMsg("plugin not valid: wrong operating system",true);
         return false;
     }
 
     if(myMetaInfo->compiler != OiMetaData::getCompiler()){
 
-        Console::addLine("plugin not valid: different compiler");
+        pCopier->sendMsg("plugin not valid: wrong compiler",true);
         return false;
     }
 
     if(!OiMetaData::findIID(myMetaInfo->iid)){
-        Console::addLine("plugin not valid: wrong plugin interface version");
+        pCopier->sendMsg("plugin not valid: wrong plugin interface version",true);
         return false;
     }
 
-    Console::addLine("plugin valid");
+    pCopier->sendMsg("plugin valid",true);
     myMetaInfo->isValid = true;
     return true;
 
@@ -156,9 +156,12 @@ bool PluginLoader::checkPlugin(){
 bool PluginLoader::copyPlugin(QString filename){
 
     if (!myMetaInfo->isValid){
-        Console::addLine("plugin not valid");
+        pCopier->sendMsg("plugin not valid",true);
         return false;
     }
+
+    myMetaInfo->alreadyExists = false;
+
 
 #ifdef Q_OS_MAC
     QDir pluginsDir(qApp->applicationDirPath());
@@ -174,9 +177,6 @@ bool PluginLoader::copyPlugin(QString filename){
     QDir pluginsDir(qApp->applicationDirPath());
 #endif
 
-    myMetaInfo->alreadyExists = false;
-
-    QFile plugin(filename);
 
     QFileInfo fileInfo(filename);
     QString pluginName(fileInfo.fileName());
@@ -194,13 +194,13 @@ bool PluginLoader::copyPlugin(QString filename){
         PluginMetaData *tmpMeta = PluginLoader::getPluginMetaData(copyString);
 
         if(myMetaInfo->pluginVersion != tmpMeta->pluginVersion){
-            Console::addLine("old plugin version already exits");
-            Console::addLine("removing old plugin version...");
+            pCopier->sendMsg("old plugin version already exits",false);
+            pCopier->sendMsg("removing old plugin version...",false);
             QFile::remove(copyString);
-            Console::addLine("old plugin version removed");
+            pCopier->sendMsg("old plugin version removed",false);
         }else{
-            Console::addLine("plugin already exits");
-            Console::addLine("Adding plugin is terminated");
+            pCopier->sendMsg("plugin already exits",true);
+            pCopier->sendMsg("Adding plugin is terminated",true);
             myMetaInfo->alreadyExists = true;
             return true;
         }
@@ -208,115 +208,46 @@ bool PluginLoader::copyPlugin(QString filename){
 
     }
 
-        Console::addLine("copy: "  + pluginName + " to " +copyString);
+    pCopier->setPaths(myMetaInfo,filename);
+    pCopier->start();
 
-        //copy plugin to application
-        bool success = QFile::copy(plugin.fileName(),copyString);
-
-        //copy dependencies
-        if(myMetaInfo->dependencies){
-         bool copyCheck = PluginLoader::copyDependencies(fileInfo.absoluteDir().absolutePath());
-
-         if (!copyCheck){
-             Console::addLine("error: could not copy all dependencies");
-         }
-        }
-
-        if (success){
-            Console::addLine("plugin file successfully copied");
-            myMetaInfo->path = copyString;
-            myMetaInfo->emitSendMe();
-        }else{
-            Console::addLine("File not copied successfully");
-            return false;
-        }
 
   return true;
 }
 
 
-bool PluginLoader::copyDependencies(QString dirPath){
 
+
+PluginCopier *PluginLoader::getCopier()
+{
+    return pCopier;
+}
+
+bool PluginLoader::deletePlugin(PluginMetaData *metaData)
+{
 #ifdef Q_OS_MAC
-QDir appDir(qApp->applicationDirPath());
+    QDir pluginsDir(qApp->applicationDirPath());
+    pluginsDir.cdUp();
 #endif
 
 
 #ifdef Q_OS_WIN
-QDir appDir(qApp->applicationDirPath());
+    QDir pluginsDir(qApp->applicationDirPath());
 #endif
 
 #ifdef Q_OS_LINUX
-QDir appDir(qApp->applicationDirPath());
+    QDir pluginsDir(qApp->applicationDirPath());
 #endif
 
-bool check = true;
+    QDir desti(pluginsDir.absolutePath()+"/plugins/");
+    //TODO find plugin
+    QString pluginToDelete = QString(desti.absolutePath()+"/"+metaData->name);
 
-    for(int i = 0; i < myMetaInfo->dependeciesPath.size();i++){
-
-        //source path
-        QString path(dirPath + "/" +  myMetaInfo->dependeciesPath.at(i).toObject().value("name").toString());
-        QFileInfo fileInfo(path);
-
-        //destination path
-        QString destPath;
-
-        if (myMetaInfo->dependeciesPath.at(i).toObject().value("path").toString()=="app"){
-            destPath = QString(appDir.absolutePath()+"/"+fileInfo.fileName());
-        }else{
-            destPath = QString(myMetaInfo->dependeciesPath.at(i).toObject().value("path").toString()+"/"+fileInfo.fileName());;
-        }
-
-        //check if source is file or folder
-        if (fileInfo.isFile()){
-
-                QFile::copy(path,destPath);
-                Console::addLine(QString("copy file: " + fileInfo.fileName()));
-
-        }else if(fileInfo.isDir()){
-
-                PluginLoader::copyDir(path,destPath);
-                Console::addLine(QString("copy dir " + fileInfo.fileName()));
-
-        }else{
-            Console::addLine(QString("error (copy failed): "  + fileInfo.fileName() + " unknown file format"));
-            check = false;
-        }
-
+    if(QFile::exists(pluginToDelete)){
+        return QFile::remove(pluginToDelete);
+    }else{
+        return false;
     }
-
-return check;
-
-
-}
-
-bool PluginLoader::copyDir(QString sourcePath, QString destinationPath){
-    QDir desti;
-    desti.mkpath(destinationPath);
-    QDir source=sourcePath;
-
-    QStringList flist=source.entryList(QDir::NoDotAndDotDot | QDir::Files);
-    QStringList dlist = source.entryList(QDir::NoDotAndDotDot | QDir::Dirs);
-
-    //emit fileCount(flist.size());
-    //int val = 0;
-
-    for(int i = 0; i<flist.size();i++){
-        if(!QFile::copy(sourcePath+"/"+flist.at(i),destinationPath+"/"+flist.at(i))){
-            return false;
-        }
-
-        //QFileInfo info(flist.at(i));
-        //val +=1;
-        //emit changeText("copy " + info.fileName());
-        //emit changeFileCount(val);
-    }
-
-    foreach(QString dir,dlist){
-        copyDir(sourcePath+"/"+dir,destinationPath+"/"+dir);
-    }
-
-    return true;
 }
 
  QList<Sensor*> PluginLoader::loadSensorPlugins(QString path){
@@ -327,7 +258,7 @@ bool PluginLoader::copyDir(QString sourcePath, QString destinationPath){
 
     if(PluginLoader::getMetaData(path)){
 
-       Console::addLine("load plugin: " + path);
+       pCopier->sendMsg("load sensor plugins",false);
 
        QObject *plugin = pluginLoader.instance();
 
@@ -338,14 +269,14 @@ bool PluginLoader::copyDir(QString sourcePath, QString destinationPath){
 
             sensorList = SensorFactory->createSensors();
 
-            Console::addLine(QString(myMetaInfo->name + " successfully created."));
+            pCopier->sendMsg(QString(QString::number(sensorList.size())+ " sensors successfully created."),false);
             return sensorList;
        }else{
-           Console::addLine(QString("create" + myMetaInfo->name + "failed"));
+           pCopier->sendMsg(QString("create sensor plugins failed"),true);
            return sensorList;
        }
    }else{
-        Console::addLine("meta data not valid");
+        pCopier->sendMsg("meta data not valid",true);
     }
 
 
@@ -359,7 +290,7 @@ bool PluginLoader::copyDir(QString sourcePath, QString destinationPath){
 
     if(PluginLoader::getMetaData(path)){
 
-       Console::addLine("load plugin: " + path);
+       pCopier->sendMsg("load function plugins",false);
 
        QObject *plugin = pluginLoader.instance();
 
@@ -370,14 +301,14 @@ bool PluginLoader::copyDir(QString sourcePath, QString destinationPath){
 
             functionList = FunctionFactory->createFunctions();
 
-            Console::addLine(QString(myMetaInfo->name + " successfully created."));
+            pCopier->sendMsg(QString(QString::number(functionList.size())+ " functions successfully created."),false);
             return functionList;
        }else{
-           Console::addLine(QString("create" + myMetaInfo->name + "failed"));
+           pCopier->sendMsg(QString("create function plugins failed"),true);
            return functionList;
        }
    }else{
-        Console::addLine("meta data not valid");
+        pCopier->sendMsg("meta data not valid",true);
    }
 
  }
@@ -390,7 +321,7 @@ bool PluginLoader::copyDir(QString sourcePath, QString destinationPath){
 
      if(PluginLoader::getMetaData(path)){
 
-        Console::addLine("load plugin: " + path);
+        pCopier->sendMsg("load simulation plugins",false);
 
         QObject *plugin = pluginLoader.instance();
 
@@ -401,14 +332,14 @@ bool PluginLoader::copyDir(QString sourcePath, QString destinationPath){
 
              simulationList = SimulationFactory->createSimulations();
 
-             Console::addLine(QString(myMetaInfo->name + " successfully created."));
+             pCopier->sendMsg(QString(QString::number(simulationList.size())+ " simulations successfully created."),false);
              return simulationList;
         }else{
-            Console::addLine(QString("create" + myMetaInfo->name + "failed"));
+            pCopier->sendMsg(QString("create simulation plugins failed"),true);
             return simulationList;
         }
     }else{
-         Console::addLine("meta data not valid");
+         pCopier->sendMsg("meta data not valid",true);
     }
  }
 
@@ -420,7 +351,7 @@ QList<NetworkAdjustment*> PluginLoader::loadNetworkAdjustmentPlugins(QString pat
 
     if(PluginLoader::getMetaData(path)){
 
-       Console::addLine("load plugin: " + path);
+       pCopier->sendMsg("load network adjustment plugins",false);
 
        QObject *plugin = pluginLoader.instance();
 
@@ -431,14 +362,14 @@ QList<NetworkAdjustment*> PluginLoader::loadNetworkAdjustmentPlugins(QString pat
 
             networkAdjustmentList = FunctionFactory->createNetworkAdjustments();
 
-            Console::addLine(QString(myMetaInfo->name + " successfully created."));
+            pCopier->sendMsg(QString(QString::number(networkAdjustmentList.size())+ " networkadjustments successfully created."),false);
             return networkAdjustmentList;
        }else{
-           Console::addLine(QString("create" + myMetaInfo->name + "failed"));
+           pCopier->sendMsg(QString("create networkadjustment plugins failed"),true);
            return networkAdjustmentList;
        }
    }else{
-        Console::addLine("meta data not valid");
+        pCopier->sendMsg("meta data not valid",true);
     }
 
 

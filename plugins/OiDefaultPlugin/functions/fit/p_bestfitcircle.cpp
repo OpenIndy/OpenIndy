@@ -43,7 +43,7 @@ bool BestFitCircle::exec(Circle &circle) {
         double xc = 0, yc = 0, zc = 0, rc = 0;
 
         foreach(Observation *obs, this->observations){
-            if(obs->isValid){
+            if(obs->getUseState()){
                 x[k] = obs->myXyz.getAt(0);
                 y[k] = obs->myXyz.getAt(1);
                 z[k] = obs->myXyz.getAt(2);
@@ -73,9 +73,6 @@ bool BestFitCircle::exec(Circle &circle) {
         double nz = plane.getAt(2);
         double d  = plane.getAt(3);
 
-        qDebug() << QString::number(xc) + ", " + QString::number(yc) + ", " + QString::number(zc) + ", " + QString::number(rc);
-        qDebug() << QString::number(nx) + ", " + QString::number(ny) + ", " + QString::number(nz) + ", " + QString::number(d);
-
         // Stelle Matrizen fuer GH-Modell auf; in einer spaeteren Implementierung sollte die NGL direkt aufgebaut werden
         // um Speicherplatz zu sparen. Fuer wenige Punkte (und aus Gruenden der Uebersicht) wird im Moment darauf verzichtet.
         // Aus numerischen Gruenden koennte mit Schwerpunktreduzierten Daten gearbeitet werden.
@@ -86,7 +83,6 @@ bool BestFitCircle::exec(Circle &circle) {
 
         int itr = 0;
         while(true) {
-            qDebug() << "DEBUG: Starte Iteation " + QString::number( itr+1 );
 
             OiMat A(2*obsCount, 8);
             OiMat B(2*obsCount, 3*obsCount);
@@ -96,8 +92,6 @@ bool BestFitCircle::exec(Circle &circle) {
                 double xP = x[i] - v.getAt(3*i);
                 double yP = y[i] - v.getAt(3*i+1);
                 double zP = z[i] - v.getAt(3*i+2);
-
-                //qDebug() << "DEBUG: Fuege Punkt P " + QString::number( xP ) + "/" + QString::number( yP ) + "/" + QString::number( zP ) + " hinzu.";
 
                 // Kugelparameter
                 A.setAt(i, Circle::unknownX, -2.0*(xP - xc));
@@ -166,13 +160,6 @@ bool BestFitCircle::exec(Circle &circle) {
             NGLR.setAt(Circle::unknownJ, NGL.getRowCount()+1, 2.0*ny);
             NGLR.setAt(Circle::unknownK, NGL.getRowCount()+1, 2.0*nz);
 
-            /*
-            for (int i=0; i<NGLR.getRowCount(); i++) {
-                for (int j=0; j<NGLR.getColCount(); j++)
-                    qDebug() << "NGLR("+QString::number(i+1)+", "+QString::number(j+1)+") = "+QString::number( NGLR.getAt(i,j)) +";";
-            }
-            */
-
             OiMat QxxR = NGLR.inv();
             OiVec duk  = QxxR * nglr;
             OiVec du(A.getColCount());
@@ -199,8 +186,6 @@ bool BestFitCircle::exec(Circle &circle) {
 
             v = B.t()*Pww*(A*du-w);
 
-            qDebug() << "DEBUG: Ende Iteation " + QString::number( itr+1 ) + "  max(|dx|) = " + QString::number( maxAbsDu );
-
             if (itr<maxItr && maxAbsDu < 1.0E-8) {
                 qDebug() << "DEBUG: Found Solution!";
                 break;
@@ -211,8 +196,6 @@ bool BestFitCircle::exec(Circle &circle) {
             }
             itr++;
         }
-        qDebug() << QString::number(xc) + ", " + QString::number(yc) + ", " + QString::number(zc) + ", "  + QString::number(rc);
-        qDebug() << QString::number(nx) + ", " + QString::number(ny) + ", " + QString::number(nz) + ", "  + QString::number(d);
 
         // Statistik
         Statistic myStats = circle.getStatistic();
@@ -245,6 +228,12 @@ bool BestFitCircle::exec(Circle &circle) {
         this->myStatistic = circle.getStatistic();
 
         return true;
+    }else{
+        //set statistic to invalid
+        Statistic myStats = circle.getStatistic();
+        myStats.isValid = false;
+        circle.setStatistic(myStats);
+        this->myStatistic = circle.getStatistic();
     }
     return false;
 }
@@ -281,7 +270,7 @@ QList<Configuration::FeatureTypes> BestFitCircle::applicableFor() const {
 int BestFitCircle::getObservationCount(){
     int count = 0;
     foreach(Observation *obs, this->observations){
-        if(obs->isValid){
+        if(obs->getUseState()){
             this->setUseState(obs->getId(), true);
             count++;
         }

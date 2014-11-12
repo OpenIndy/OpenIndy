@@ -9,6 +9,8 @@
 #include "functionstatistic.h"
 #include "matrixmodel.h"
 #include "unitconverter.h"
+#include "observationproxymodel.h"
+#include "readingproxymodel.h"
 
 #include <QDebug>
 #include <QCloseEvent>
@@ -24,6 +26,7 @@
 #include <QDesktopWidget>
 
 #include "oifeaturestate.h"
+#include "observationdelegate.h"
 
 namespace Ui {
 class FeatureData;
@@ -45,9 +48,16 @@ public:
     MatrixModel *qxxModel;
     MatrixModel *sxxModel;
 
+    ObservationProxyModel *observationOverviewModel;
+    ReadingProxyModel *readingOverviewModel;
+
     //void getActiveFeature(FeatureWrapper *activeFeature);
 
     void showEvent(QShowEvent *event);
+
+public slots:
+
+    void resizeView();
 
 private slots:
     void on_pushButton_cancel_clicked();
@@ -59,6 +69,12 @@ private slots:
     void on_comboBox_displayedFunction_currentIndexChanged(const QString &arg1);
 
     void closeEvent(QCloseEvent *event);
+
+    void displayUsedReadings();
+
+    void on_comboBox_readings_currentTextChanged(const QString &arg1);
+
+    void updateModels();
 
 private:
     Ui::FeatureData *ui;

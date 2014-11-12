@@ -12,10 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow), watchWindow(NULL)
 {
     ui->setupUi(this);
+    this->setDialogsNULL();
 
-    GUIConfiguration::generateAllAttributes();
-    GUIConfiguration::generateFeatureAttributes();
-    GUIConfiguration::generateTrafoParamAttributes();
+    //!generate all lists for gui and view modification
+    GUIConfiguration::generateLists();
 
     initializeActions();
 
@@ -77,6 +77,10 @@ MainWindow::MainWindow(QWidget *parent) :
     this->ui->toolBar_ControlPad->hide();
     this->ui->toolbarCreateFeature->hide();
 
+    //mainToolbar
+    ui->label_SensorMsg->setVisible(false);
+    ui->label_SensorMsg->setAutoFillBackground(true);
+
     //fill coordinatesystem comboBox
     //fillCoordSysComboBox();
 
@@ -93,6 +97,18 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+        OiFeatureState::getActiveStation()->sensorPad->instrument->disconnectSensor();
+    }
+
+    //also close all open dialogs when closing mainwindow
+    this->closeAllOpenDialogs();
+
+    event->accept();
+}
+
 /*!
  * \brief MainWindow::setConnects
  * Connect Controller and View
@@ -101,6 +117,7 @@ void MainWindow::setConnects(){
 
     //inform the controller when active feature changes
     connect(this, SIGNAL(sendSelectedFeature(int)), &this->control, SLOT(setSelectedFeature(int)));
+    connect(this->fDataDialog.oModel,SIGNAL(recalcFeature()),this->control.getFeatureUpdater(),SLOT(recalcAll()));
 
     //update active coordinate system when QStringListModel in controller changes
     connect(&this->control, SIGNAL(activeCoordinateSystemChanged()), this, SLOT(setActiveCoordinateSystem()));
@@ -128,6 +145,9 @@ void MainWindow::setConnects(){
     connect(&this->control,SIGNAL(sensorWorks(QString)),&this->sInfoDialog,SLOT(showInfo(QString)));
     connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),&this->sInfoDialog,SLOT(hideInfo(bool)));
     connect(this->control.myFeatureState, SIGNAL(activeStationChanged()), this, SLOT(changedStation()));
+    connect(&this->control,SIGNAL(setSensorState(int,QString)),this,SLOT(setSensorState(int,QString)));
+    connect(&this->control,SIGNAL(isConnected(bool)),this,SLOT(isSensorConnected(bool)));
+    connect(&this->control,SIGNAL(sensorDisconnected()),this,SLOT(sensorDisconnected()));
 
     //station and sensor setting
     connect(&stationDialog,SIGNAL(disconnectSensor()),&control,SLOT(startDisconnect()));
@@ -799,6 +819,67 @@ void MainWindow::setActiveCoordinateSystem(){
         this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());
     }
 
+}
+
+void MainWindow::isSensorConnected(bool b)
+{
+    if(b){
+
+    }else{
+        QMessageBox msgBox;
+        msgBox.setText("connection lost");
+        msgBox.setInformativeText("do you want to reconnect sensor?");
+        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+          case QMessageBox::Ok:
+              this->control.startConnect();
+              break;
+          case QMessageBox::Cancel:
+              break;
+          default:
+              break;
+        }
+    }
+}
+
+void MainWindow::setSensorState(int sState, QString sensorMsg)
+{
+
+    if(!ui->actionSensor_real_time_data->isEnabled()){
+        ui->actionSensor_real_time_data->setEnabled(true);
+    }
+
+    if(!ui->label_SensorMsg->isVisible()){
+      ui->label_SensorMsg->setVisible(true);
+    }
+
+    QPalette p = ui->label_SensorMsg->palette();
+
+    if(sState == OiSensorEmitter::sensorWarning){
+        //labelSensorStateMsg->setStyleSheet("background-role: yellow");
+        p.setColor(QPalette::Window, QColor(Qt::yellow));
+    }else if(sState == OiSensorEmitter::sensorOk){
+        //labelSensorStateMsg->setStyleSheet("background-role: green");
+        p.setColor(QPalette::Window, QColor(Qt::green));
+    }else if(sState == OiSensorEmitter::sensorError){
+        //labelSensorStateMsg->setStyleSheet("background-role: red");
+        p.setColor(QPalette::Window, QColor(Qt::red));
+    }
+
+    ui->label_SensorMsg->setPalette(p);
+
+    ui->label_SensorMsg->setText(sensorMsg);
+
+}
+
+void MainWindow::sensorDisconnected()
+{
+    ui->actionSensor_real_time_data->setEnabled(false);
+    ui->label_SensorMsg->setVisible(false);
+    ui->label_SensorMsg->setText("");
 }
 
 /*!
@@ -1583,21 +1664,6 @@ void MainWindow::resizeTableView()
 }
 
 /*!
- * \brief MainWindow::updateCoordSys
- * Set the active coordinate system name as selected item in the combo box
- */
-/*void MainWindow::updateCoordSys(){
-    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
-        this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());
-    }
-}*/
-
-/*void MainWindow::updateModel()
-{
-    emit this->control.tblModel->updateModel();
-}*/
-
-/*!
  * \brief on_actionShow_help_triggered opens the local help document with the user guide.
  */
 void MainWindow::on_actionShow_help_triggered()
@@ -1753,5 +1819,32 @@ void MainWindow::stakeOutConfigured(QDomDocument request){
     this->ui->actionStop_stake_out->setEnabled(true);
 
     emit this->startStakeOut(request);
+
+}
+
+/*!
+ * \brief closeAllOpenDialogs (only pointers) at end of openIndy, when closing mainwindow
+ */
+void MainWindow::closeAllOpenDialogs()
+{
+    if(this->cFeatureDialog != NULL){
+        this->cFeatureDialog->close();
+    }
+    if(this->sEntityDialog != NULL){
+        this->sEntityDialog->close();
+    }
+    if(this->watchWindow != NULL){
+        this->watchWindow->close();
+    }
+}
+
+/*!
+ * \brief setDialogsNULL sets all pointer dialogs to NULL at programm start.
+ */
+void MainWindow::setDialogsNULL()
+{
+    this->cFeatureDialog = NULL;
+    this->sEntityDialog = NULL;
+    this->watchWindow = NULL;
 
 }

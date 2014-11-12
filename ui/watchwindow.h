@@ -21,6 +21,9 @@ namespace Ui {
 class WatchWindow;
 }
 
+/*!
+ * \brief The WatchWindow class handles displaying of differences between active feature and its nominal value.
+ */
 class WatchWindow : public QDialog
 {
     Q_OBJECT

@@ -53,6 +53,9 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
             return true;
         }
 
+        //first set the coord sys not solved. Change after transformation
+        from->setIsSolved(false);
+
         //get homogeneous transformation matrix to transform observations with
         //this matrix transforms the obs to current coord system, and also handles datum - transformations
         OiMat trafoMat = this->getTransformationMatrix(from);
@@ -60,13 +63,19 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
         //if trafo matrix is valid
         //check if matrix is 4x4 = homogeneous matrix
         if(trafoMat.getRowCount() == 4 && trafoMat.getColCount() == 4){
+
+            from->setIsSolved(true);
+
+            //transform coordinate system origin
+            from->origin = trafoMat * from->origin;
+
             //transform observations
             foreach (Observation *obs, from->getObservations()) {
                 if(obs->myOriginalStatistic.qxx.getRowCount() == 4 && obs->myOriginalStatistic.qxx.getColCount() == 4
                         && obs->myOriginalXyz.getSize() == 4){
                     obs->myXyz = trafoMat * obs->myOriginalXyz;
                     obs->myStatistic.qxx = trafoMat * obs->myOriginalStatistic.qxx;
-                    obs->isValid = true;
+                    obs->setIsSolved(true);
                 }
             }
 
@@ -91,15 +100,21 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
  * \param cs
  * \param valid
  */
-void TrafoController::setObservationState(CoordinateSystem *cs, bool valid)
+void TrafoController::setObservationState(CoordinateSystem *cs, bool solved)
 {
     foreach(Observation *obs, cs->getObservations()){
-        if(valid == true){
+        if(solved == true){
             //reset xyz to original values
             obs->myXyz = obs->myOriginalXyz;
         }
-        obs->isValid = valid;
+        obs->setIsSolved(solved);
     }
+    //reset origin to 0/0/0
+    cs->origin.setAt(0,0.0);
+    cs->origin.setAt(1,0.0);
+    cs->origin.setAt(2,0.0);
+    cs->origin.setAt(3,1.0);
+    cs->setIsSolved(solved);
 }
 
 /*!
@@ -410,7 +425,7 @@ void TrafoController::transformObsForMovementCalculation(CoordinateSystem *from,
 
         foreach (Observation *obs, from->getObservations()) {
             obs->myXyz = m*obs->myOriginalXyz;
-            obs->isValid = true;
+            obs->setIsSolved(true);
         }
     }else{
         this->setObservationState(from,false);

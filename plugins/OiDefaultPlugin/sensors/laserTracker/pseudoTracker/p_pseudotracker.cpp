@@ -207,13 +207,10 @@ void PseudoTracker::abortAction()
 bool PseudoTracker::connectSensor(ConnectionConfig *cConfig){
 
     if(cConfig != NULL){
-        qDebug() << cConfig->ip;
-        qDebug() << cConfig->port;
         isConnected = true;
         QThread::msleep(1000);
         return true;
     }else{
-        qDebug() << "null pointer";
         return false;
     }
 }
@@ -226,7 +223,6 @@ bool PseudoTracker::connectSensor(ConnectionConfig *cConfig){
  *  disconnect app with laser tracker
  */
 bool PseudoTracker::disconnectSensor(){
-    qDebug() << "pseudo tracker disconnect";
     isConnected = false;
     QThread::msleep(1000);
     return true;
@@ -240,7 +236,6 @@ bool PseudoTracker::disconnectSensor(){
  */
 bool PseudoTracker::initialize(){
 
-    qDebug() << "pseudo tracker is initialized";
     myInit = true;
     QThread::msleep(1000);
     return true;
@@ -258,7 +253,6 @@ bool PseudoTracker::initialize(){
  */
 bool PseudoTracker::move(double azimuth, double zenith, double distance,bool isrelativ){
 
-    qDebug() << "pseudo tracker is moved to:" << azimuth << "," << zenith << "," << distance << "," << isrelativ ;
     myAzimuth = azimuth;
     myZenith = zenith;
     myDistance = distance;
@@ -277,7 +271,6 @@ bool PseudoTracker::move(double azimuth, double zenith, double distance,bool isr
  */
 bool PseudoTracker::move(double x, double y, double z){
 
-    qDebug() << "pseudo tracker is moved to:" << x << "," << y << "," << z;
     myAzimuth = qAtan2(y,x);
     myDistance = qSqrt(x*x+y*y+z*z);
     myZenith = acos(z/myDistance);
@@ -294,7 +287,6 @@ bool PseudoTracker::move(double x, double y, double z){
  */
 bool PseudoTracker::home(){
 
-    qDebug() << "pseudo tracker is moved to home" ;
     QThread::msleep(1000);
     return true;
 
@@ -308,7 +300,6 @@ bool PseudoTracker::home(){
  */
 bool PseudoTracker::changeMotorState(){
 
-    qDebug() << "pseudo tracker changed motor state" ;
     if(myMotor){
         myMotor = false;
     }else{
@@ -328,7 +319,6 @@ bool PseudoTracker::changeMotorState(){
  */
 bool PseudoTracker::toggleSightOrientation(){
 
-    qDebug() << "pseudo tracker toggeld Sight orientation" ;
     if(side = 1){
        side = 2;
     }else{
@@ -343,7 +333,6 @@ bool PseudoTracker::toggleSightOrientation(){
  * \return
  */
 bool PseudoTracker::compensation() {
-    qDebug() << "compensation successful";
     QThread::msleep(5000);
     myCompIt = true;
     return true;
@@ -551,7 +540,7 @@ QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
 
     this->noisyPolarReading(p);
 
-    p->rPolar.fsBs = m->face;
+    p->face = Configuration::eFrontside;
 
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
@@ -581,6 +570,7 @@ QList<Reading*> PseudoTracker::measureDistance(MeasurementConfig *m){
     p->rDistance.distance = myDistance + dd;
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
+    p->face = Configuration::eFrontside;
 
     QThread::msleep(1000);
 
@@ -607,7 +597,7 @@ QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
 
     p->rDirection.azimuth = myAzimuth+daz;
     p->rDirection.zenith = myZenith+dze;
-    p->rDirection.fsBs = m->face;
+    p->face = Configuration::eFrontside;
 
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
@@ -628,23 +618,26 @@ QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
 
     QList<Reading*> readings;
 
-    Reading *p = new Reading();
+    Reading *p;
+    p = new Reading();
+    p->typeofReading = m->typeOfReading;
 
     double dx = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;
     double dy = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;
     double dz = ((double) rand()/RAND_MAX)*(30.0-1.0)+1.0;
 
-    dx = dx/10000;
-    dy = dy/10000;
-    dz = dz/10000;
+    dx = dx/10000.0;
+    dy = dy/10000.0;
+    dz = dz/10000.0;
 
-    p->rCartesian.xyz.setAt(0, (myDistance * qSin(myZenith) * qCos(myAzimuth))+dx);
-    p->rCartesian.xyz.setAt(1, (myDistance * qSin(myZenith) * qSin(myAzimuth))+dy);
-    p->rCartesian.xyz.setAt(2, (myDistance * qCos(myZenith))+dz);
-    p->rCartesian.xyz.setAt(3, 1);
+    p->rCartesian.xyz.add((myDistance * qSin(myZenith) * qCos(myAzimuth))+dx);
+    p->rCartesian.xyz.add((myDistance * qSin(myZenith) * qSin(myAzimuth))+dy);
+    p->rCartesian.xyz.add((myDistance * qCos(myZenith))+dz);
+    p->rCartesian.xyz.add(1.0);
 
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
+    p->face = Configuration::eFrontside;
 
     QThread::msleep(1000);
 

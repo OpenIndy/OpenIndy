@@ -1582,16 +1582,16 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
         foreach (Observation *obs, p->getObservations()) {
             //only obs that are valid in the coord system of the movement
             //and transformed obs to the coord system of the movement
-            if(obs->isValid){
+            if(obs->getUseState()){
 
                 if(obs->myReading->measuredAt.time() > startTime.time().addSecs(-180) && //is obs in the time span
                         obs->myReading->measuredAt.time() < startTime.time().addSecs(180)){ //for being a reference obs
-                    obs->isValid = true;
+                    obs->setIsSolved(true);
                 }else{
-                    obs->isValid = false;
+                    obs->setIsSolved(false);
                 }
             }else{
-                obs->isValid = false;
+                obs->setIsSolved(false);
             }
         }
         p->recalc(); //recalc points only with obs that are in the reference time span
@@ -1605,12 +1605,12 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
             if(obs->myStation->coordSys == tp->getStartSystem()){//as actual state use only obs from the current station
                 if(obs->myReading->measuredAt.time() > tp->getValidTime().time().addSecs(-180) && //is obs in the time span
                         obs->myReading->measuredAt.time() < tp->getValidTime().time().addSecs(180)){ //for being a actual obs
-                    obs->isValid = true;
+                    obs->setIsSolved(true);
                 }else{
-                    obs->isValid = false;
+                    obs->setIsSolved(false);
                 }
             }else{
-                obs->isValid = false;
+                obs->setIsSolved(false);
             }
         }
         p->recalc(); //recalc points only with obs that are in the actual time span

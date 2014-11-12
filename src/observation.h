@@ -21,7 +21,8 @@ class Station;
 class Observation : public Element
 {
 public:
-    Observation(Reading*, Station*);
+
+    Observation(Reading*, Station*, bool isActiveCoordSys);
     Observation();
     ~Observation();
 
@@ -35,12 +36,35 @@ public:
     Statistic myStatistic;
     Statistic myOriginalStatistic;
 
-    bool isValid; //defines wether this observation is valid in current coordinate system
+
     OiVec sigmaXyz;
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
+    void calcFromReading();
+
+    void setIsValid(bool isValid);
+    bool getIsValid();
+
+    void setIsSolved(bool isSolved);
+    bool getIsSolved();
+
+    void setIsUsed(bool use);
+    bool getIsUsed();
+
+    bool getUseState();
+
+ private:
+
+    bool isActiveCoordSys; //indicates if the observation coord system is the current
+        //coordinate system at time of creation
+
+    bool isValid; //defines if the reading can be transformed, without any function, to a xyz observation
+
+    bool isSolved; //defines wether this observation is valid in current coordinate system
+
+    bool isUsed; //defines if the observation is and should be used for functions
 };
 
 #endif // OBSERVATION_H
