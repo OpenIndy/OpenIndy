@@ -95,13 +95,6 @@ bool Ellipsoid::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-ElementDependencies Ellipsoid::fromOpenIndyXML(QXmlStreamReader &xml){
-
-    ElementDependencies dependencies;
-
-    return dependencies;
-}
-
 bool Ellipsoid::saveSimulationData()
 {
     return false;

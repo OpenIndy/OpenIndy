@@ -82,12 +82,6 @@ bool Paraboloid::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-ElementDependencies Paraboloid::fromOpenIndyXML(QXmlStreamReader &xml){
-    ElementDependencies dependencies;
-
-    return dependencies;
-}
-
 bool Paraboloid::saveSimulationData()
 {
     return false;

@@ -96,12 +96,6 @@ bool ScalarEntityTemperature::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-ElementDependencies ScalarEntityTemperature::fromOpenIndyXML(QXmlStreamReader &xml){
-    ElementDependencies dependencies;
-
-    return dependencies;
-}
-
 bool ScalarEntityTemperature::saveSimulationData()
 {
     this->mySimulationData.addScalar(this->temperature);

@@ -6,6 +6,7 @@
 
 #include "configuration.h"
 #include "measurementconfig.h"
+#include "sensorconfiguration.h"
 #include "featurewrapper.h"
 #include "oifeaturestate.h"
 
@@ -19,9 +20,14 @@ private:
 public:
     static OiConfigState *getInstance();
 
-    static MeasurementConfig getActiveMeasurementConfig();
+    static const MeasurementConfig &getActiveMeasurementConfig();
+    static const QList<MeasurementConfig> &getSavedMeasurementConfigs();
+    static const QList<MeasurementConfig> &getProjectMeasurementConfigs();
+    static QList<MeasurementConfig> getAllMeasurementConfigs();
 
 signals:
+    void measurementConfigAdded();
+    void measurementConfigRemoved();
     void activeMeasurementConfigChanged();
 
 public slots:
@@ -35,10 +41,13 @@ private:
 
     MeasurementConfig activeMeasurementConfig;
     QList<MeasurementConfig> savedMeasurementConfigs; //measurement configs that were saved in configs folder
-    //QMap< MeasurementConfig, QList<FeatureWrapper*> > usedMeasurementConfigs; //measurement configs that are used by one or more geometries
+    QList<MeasurementConfig> projectMeasurementConfigs; //measurement configs that are only available in the current project
+    QMap<int, QList<Observation*> > usedMeasurementConfigs; //map with key = measurement config id and value = list of observations that use the config
 
     enum SignalType{
-        eMeasurementConfigAdded
+        eMeasurementConfigAdded,
+        eMeasurementConfigRemoved,
+        eActiveMeasurementConfigChanged
     };
 
     static void connectFeature(FeatureWrapper *myFeature); //called from OiFeatureState whenever a feature is added

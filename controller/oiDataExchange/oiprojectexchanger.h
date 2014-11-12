@@ -12,8 +12,6 @@
 #include "systemdbmanager.h"
 #include "pluginloader.h"
 
-#include "projectrestorer.h"
-
 #include "oiprojectdata.h"
 #include "console.h"
 #include "configuration.h"

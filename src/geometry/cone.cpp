@@ -103,13 +103,6 @@ bool Cone::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-ElementDependencies Cone::fromOpenIndyXML(QXmlStreamReader &xml){
-
-    ElementDependencies dependencies;
-
-    return dependencies;
-}
-
 bool Cone::saveSimulationData()
 {
     return false;

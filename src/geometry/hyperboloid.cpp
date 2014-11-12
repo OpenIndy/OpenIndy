@@ -82,13 +82,6 @@ bool Hyperboloid::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-ElementDependencies Hyperboloid::fromOpenIndyXML(QXmlStreamReader &xml){
-
-    ElementDependencies dependencies;
-
-    return dependencies;
-}
-
 bool Hyperboloid::saveSimulationData()
 {
     return false;

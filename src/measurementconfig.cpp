@@ -6,70 +6,62 @@ MeasurementConfig::MeasurementConfig(){
 
 /*!
  * \brief MeasurementConfig::toOpenIndyXML
- * \param stream
+ * \param xmlDoc
  * \return
  */
-bool MeasurementConfig::toOpenIndyXML(QXmlStreamWriter &stream){
+QDomElement MeasurementConfig::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    stream.writeStartElement("MeasurementConfig");
+    if(xmlDoc.isNull()){
+        return QDomElement();
+    }
 
-    stream.writeAttribute("name", this->name);
-    stream.writeAttribute("internalRef", QString::number(this->internalRef));
-    stream.writeAttribute("count", QString::number(this->count));
-    stream.writeAttribute("iterations", QString::number(this->iterations));
-    stream.writeAttribute("measureTwoSides", this->measureTwoSides?"1":"0");
-    stream.writeAttribute("timeDependent", this->timeDependent?"1":"0");
-    stream.writeAttribute("distanceDependent", this->distanceDependent?"1":"0");
-    stream.writeAttribute("timeInterval", QString::number(this->timeInterval));
-    stream.writeAttribute("distanceInterval", QString::number(this->distanceInterval));
-    stream.writeAttribute("typeOfReading", QString::number(this->typeOfReading));
+    QDomElement mConfig = xmlDoc.createElement("measurementConfig");
 
-    stream.writeEndElement();
+    //set measurement config attributes
+    mConfig.setAttribute("name", this->name);
+    mConfig.setAttribute("count", this->count);
+    mConfig.setAttribute("iterations", this->iterations);
+    mConfig.setAttribute("face", this->face);
+    mConfig.setAttribute("measureTwoSides", this->measureTwoSides);
+    mConfig.setAttribute("timeDependent", this->timeDependent);
+    mConfig.setAttribute("distanceDependent", this->distanceDependent);
+    mConfig.setAttribute("timeInterval", this->timeInterval);
+    mConfig.setAttribute("distanceInterval", this->distanceInterval);
+    mConfig.setAttribute("typeOfReading", this->typeOfReading);
 
-    return true;
+    return mConfig;
 
 }
 
 /*!
  * \brief MeasurementConfig::fromOpenIndyXML
- * \param xml
+ * \param xmlElem
  * \return
  */
-ElementDependencies MeasurementConfig::fromOpenIndyXML(QXmlStreamReader &xml){
+bool MeasurementConfig::fromOpenIndyXML(QDomElement &xmlElem){
 
-    ElementDependencies dependencies;
-
-    QXmlStreamAttributes attributes = xml.attributes();
-    if(attributes.hasAttribute("name")){
-        this->name = attributes.value("name").toString();
-    }
-    if(attributes.hasAttribute("count")){
-        this->count = attributes.value("count").toInt();
-    }
-    if(attributes.hasAttribute("iterations")){
-        this->iterations = attributes.value("iterations").toInt();
-    }
-    if(attributes.hasAttribute("measureTwoSides")){
-        this->measureTwoSides = attributes.value("measureTwoSides").toInt();
-    }
-    if(attributes.hasAttribute("timeDependent")){
-        this->timeDependent = attributes.value("timeDependent").toInt();
-    }
-    if(attributes.hasAttribute("distanceDependent")){
-        this->distanceDependent = attributes.value("distanceDependent").toInt();
-    }
-    if(attributes.hasAttribute("timeInterval")){
-        this->timeInterval = attributes.value("timeInterval").toLong();
-    }
-    if(attributes.hasAttribute("distanceInterval")){
-        this->distanceInterval = attributes.value("distanceInterval").toDouble();
-    }
-    if(attributes.hasAttribute("typeOfReading")){
-        this->typeOfReading = (Configuration::ReadingTypes)attributes.value("typeOfReading").toInt();
+    if(xmlElem.isNull()){
+        return false;
     }
 
-    xml.readNext();
+    if(!xmlElem.hasAttribute("name") || !xmlElem.hasAttribute("count") || !xmlElem.hasAttribute("iterations")
+            || !xmlElem.hasAttribute("face") || !xmlElem.hasAttribute("measureTwoSides") || !xmlElem.hasAttribute("timeDependent")
+            || !xmlElem.hasAttribute("distanceDependent") || !xmlElem.hasAttribute("timeInterval")
+            || !xmlElem.hasAttribute("distanceInterval") || !xmlElem.hasAttribute("typeOfReading")){
+        return false;
+    }
 
-    return dependencies;
+    this->name = xmlElem.attribute("name");
+    this->count = xmlElem.attribute("count").toInt();
+    this->iterations = xmlElem.attribute("iterations").toInt();
+    this->face = (Configuration::Faces)xmlElem.attribute("face").toInt();
+    this->measureTwoSides = xmlElem.attribute("measureTwoSides").toInt();
+    this->timeDependent = xmlElem.attribute("timeDependent").toInt();
+    this->distanceDependent = xmlElem.attribute("distanceDependent").toInt();
+    this->timeInterval = xmlElem.attribute("timeInterval").toLong();
+    this->distanceInterval = xmlElem.attribute("distanceInterval").toDouble();
+    this->typeOfReading = (Configuration::ReadingTypes)xmlElem.attribute("typeOfReading").toInt();
+
+    return true;
 
 }

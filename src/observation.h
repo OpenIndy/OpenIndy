@@ -42,10 +42,6 @@ public:
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
-    virtual ElementDependencies fromOpenIndyXML(QXmlStreamReader& xml);
-
-    bool writeProxyObservations(QXmlStreamWriter& stream);
-
     void calcFromReading();
 
     void setIsValid(bool isValid);
@@ -69,8 +65,6 @@ public:
     bool isSolved; //defines wether this observation is valid in current coordinate system
 
     bool isUsed; //defines if the observation is and should be used for functions
-
-    Reading* readReading(QXmlStreamReader& xml);
 };
 
 #endif // OBSERVATION_H
