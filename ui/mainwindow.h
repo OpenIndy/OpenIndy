@@ -308,6 +308,9 @@ private slots:
     void on_actionNext_triggered();
     void stakeOutConfigured(QDomDocument request);
 
+    //close dialogs
+    void closeAllOpenDialogs();
+
 private:
     Ui::MainWindow *ui;
 

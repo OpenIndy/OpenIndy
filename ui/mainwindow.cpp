@@ -1760,3 +1760,25 @@ void MainWindow::stakeOutConfigured(QDomDocument request){
     emit this->startStakeOut(request);
 
 }
+
+void MainWindow::closeAllOpenDialogs()
+{
+    this->mConfigDialog.close();
+    this->moveDialog.close();
+    this->pLoadDialog.close();
+    this->simulationWidget.close();
+    this->cFeatureDialog->close();
+    this->sEntityDialog->close();
+    this->sPluginDialog.close();
+    this->fPluginDialog.close();
+    this->sInfoDialog.close();
+    this->fDataDialog.close();
+    this->setUpDialog.close();
+    this->trafoParamDialog.close();
+    this->importNominalDialog.close();
+    this->nominalDialog.close();
+    this->stationDialog.close();
+    this->rtDataDialog.close();
+    this->watchWindow->close();
+    this->myStakeOutManager.close();
+}
