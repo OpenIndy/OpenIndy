@@ -14,12 +14,23 @@ ObservationDelegate::ObservationDelegate(QObject *parent) :
  */
 QWidget *ObservationDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QCheckBox* cBox;
+    /*QCheckBox* cBox;
     cBox = new QCheckBox(parent);
 
     const ObservationProxyModel *myModel = static_cast<const ObservationProxyModel*>(index.model());
     if(myModel != NULL && (myModel->mapToSource(index).column() == 11)){
         return cBox;
+    }
+    return NULL;*/
+
+    QComboBox *cbBox;
+    cbBox = new QComboBox(parent);
+
+    const ObservationProxyModel *myModel = static_cast<const ObservationProxyModel*>(index.model());
+    if(myModel != NULL && (myModel->mapToSource(index).column() == 11)){
+        cbBox->addItem("true");
+        cbBox->addItem("false");
+        return cbBox;
     }
     return NULL;
 }
@@ -31,12 +42,26 @@ QWidget *ObservationDelegate::createEditor(QWidget *parent, const QStyleOptionVi
  */
 void ObservationDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    const ObservationProxyModel *myModel = static_cast<const ObservationProxyModel*>(index.model());
+    /*const ObservationProxyModel *myModel = static_cast<const ObservationProxyModel*>(index.model());
 
     if(myModel != NULL && (myModel->mapToSource(index).column() == 11)){
         QCheckBox* cBox = qobject_cast<QCheckBox*>(editor);
         if(cBox != NULL){
             cBox->setChecked(index.data().toBool());
+        }
+    }*/
+
+    const ObservationProxyModel *myModel = static_cast<const ObservationProxyModel*>(index.model());
+
+    if(myModel != NULL && (myModel->mapToSource(index).column() == 11)){
+        QComboBox* cbBox = qobject_cast<QComboBox*>(editor);
+        if(cbBox != NULL){
+            bool state = index.data().toBool();
+            if(state){
+                cbBox->setCurrentText("true");
+            }else{
+                cbBox->setCurrentText("false");
+            }
         }
     }
 }
@@ -50,7 +75,7 @@ void ObservationDelegate::setEditorData(QWidget *editor, const QModelIndex &inde
  */
 void ObservationDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-    const ObservationProxyModel *myModel = static_cast<const ObservationProxyModel*>(index.model());
+    /*const ObservationProxyModel *myModel = static_cast<const ObservationProxyModel*>(index.model());
     if(myModel != NULL && (myModel->mapToSource(index).column() == 11)){
         QCheckBox* cBox = qobject_cast<QCheckBox*>(editor);
         if(cBox != NULL){
@@ -58,5 +83,19 @@ void ObservationDelegate::setModelData(QWidget *editor, QAbstractItemModel *mode
             return;
         }
     }
-    return;
+    return;*/
+
+    const ObservationProxyModel *myModel = static_cast<const ObservationProxyModel*>(index.model());
+
+    if(myModel != NULL && (myModel->mapToSource(index).column() == 11)){
+        QComboBox *cbBox = qobject_cast<QComboBox*>(editor);
+        if(cbBox != NULL){
+            QString state = cbBox->currentText();
+            if(state.compare("true") == 0){
+                model->setData(index,true);
+            }else{
+                model->setData(index,false);
+            }
+        }
+    }
 }

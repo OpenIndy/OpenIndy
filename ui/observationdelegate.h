@@ -3,6 +3,7 @@
 
 #include <QItemDelegate>
 #include <QCheckBox>
+#include <QComboBox>
 
 #include "observationproxymodel.h"
 

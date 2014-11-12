@@ -95,19 +95,8 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
             return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
             break;
         case 10:
-            return QString(geom->getObservations().at(index.row())->getIsSolved()?"  true":"  false");
+            return QString(geom->getObservations().at(index.row())->getIsSolved()?"true":"false");
             break;
-        case 11:
-            //return geom->getObservations().at(index.row())->getIsUsed();
-            return QVariant();
-            break;
-        default:
-            break;
-        }
-    }
-
-    if(role == Qt::CheckStateRole){
-        switch (index.column()) {
         case 11:
             return geom->getObservations().at(index.row())->getIsUsed();
             break;
@@ -115,7 +104,6 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
             break;
         }
     }
-
     return QVariant();
 }
 
