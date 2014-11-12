@@ -540,7 +540,7 @@ QList<Reading*> PseudoTracker::measurePolar(MeasurementConfig *m){
 
     this->noisyPolarReading(p);
 
-    p->rPolar.face = Configuration::eFrontside;
+    p->face = Configuration::eFrontside;
 
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
@@ -570,6 +570,7 @@ QList<Reading*> PseudoTracker::measureDistance(MeasurementConfig *m){
     p->rDistance.distance = myDistance + dd;
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
+    p->face = Configuration::eFrontside;
 
     QThread::msleep(1000);
 
@@ -596,7 +597,7 @@ QList<Reading*> PseudoTracker::measureDirection(MeasurementConfig *m){
 
     p->rDirection.azimuth = myAzimuth+daz;
     p->rDirection.zenith = myZenith+dze;
-    p->rDirection.face = Configuration::eFrontside;
+    p->face = Configuration::eFrontside;
 
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
@@ -636,6 +637,7 @@ QList<Reading*> PseudoTracker::measureCartesian(MeasurementConfig *m){
 
     p->instrument = this;
     p->measuredAt = QDateTime::currentDateTime();
+    p->face = Configuration::eFrontside;
 
     QThread::msleep(1000);
 

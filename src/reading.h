@@ -23,7 +23,6 @@ struct sReadingPolar{
     double sigmaAzimuth;
     double sigmaZenith;
     double sigmaDistance;
-    Configuration::Faces face;
     bool isValid;
 };
 
@@ -32,7 +31,6 @@ struct sReadingDirection{
     double zenith;
     double sigmaAzimuth;
     double sigmaZenith;
-    Configuration::Faces face;
     bool isValid;
 };
 
@@ -90,6 +88,7 @@ public:
     sReadingUndefined rUndefined;
     sReadingLevel rLevel;
 
+    Configuration::Faces face;  //shows in which sight it was measured
 
     void toCartesian();
     static OiVec toCartesian(double, double, double);

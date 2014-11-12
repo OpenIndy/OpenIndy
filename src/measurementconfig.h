@@ -20,7 +20,7 @@ public:
     friend bool operator==(const MeasurementConfig &left, const MeasurementConfig &right){
 
         if(left.count == right.count && left.iterations == right.iterations
-                && left.face == right.face && left.measureTwoSides == right.measureTwoSides
+                && left.measureTwoSides == right.measureTwoSides
                 && left.timeDependent == right.timeDependent && left.distanceDependent == right.distanceDependent
                 && left.timeInterval == right.timeInterval && left.distanceInterval == right.distanceInterval
                 && left.typeOfReading == right.typeOfReading){

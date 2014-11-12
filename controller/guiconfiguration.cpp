@@ -433,6 +433,7 @@ void GUIConfiguration::generateCartAttr()
     DisplayAttribute *readSigY = new DisplayAttribute(QString("sigma y" + UnitConverter::getDistanceUnitString()),true);
     DisplayAttribute *readSigZ = new DisplayAttribute(QString("sigma z" + UnitConverter::getDistanceUnitString()),true);
     DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+    DisplayAttribute *readFSBS = new DisplayAttribute("front sight",true);
 
     GUIConfiguration::cartAttributes.append(readID);
     GUIConfiguration::cartAttributes.append(readType);
@@ -445,6 +446,7 @@ void GUIConfiguration::generateCartAttr()
     GUIConfiguration::cartAttributes.append(readSigY);
     GUIConfiguration::cartAttributes.append(readSigZ);
     GUIConfiguration::cartAttributes.append(readValid);
+    GUIConfiguration::cartAttributes.append(readFSBS);
 }
 
 /*!
@@ -461,6 +463,7 @@ void GUIConfiguration::generateDistAttr()
     DisplayAttribute *readDist = new DisplayAttribute(QString("distance" + UnitConverter::getDistanceUnitString()),true);
     DisplayAttribute *readSigDist = new DisplayAttribute(QString("sigma distance" + UnitConverter::getDistanceUnitString()),true);
     DisplayAttribute *readValid = new DisplayAttribute("valid",true);
+    DisplayAttribute *readFSBS = new DisplayAttribute("front sight",true);
 
     GUIConfiguration::distAttributes.append(readID);
     GUIConfiguration::distAttributes.append(readType);
@@ -469,6 +472,7 @@ void GUIConfiguration::generateDistAttr()
     GUIConfiguration::distAttributes.append(readDist);
     GUIConfiguration::distAttributes.append(readSigDist);
     GUIConfiguration::distAttributes.append(readValid);
+    GUIConfiguration::distAttributes.append(readFSBS);
 }
 
 /*!

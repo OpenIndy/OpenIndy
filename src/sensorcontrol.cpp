@@ -438,93 +438,93 @@ void SensorControl::disconnectSensor(){
 }
 
 
-    void SensorControl::storeReadings(QList<Reading*>readings, Geometry* geom, bool isActiveCoordSys){
+void SensorControl::storeReadings(QList<Reading*>readings, Geometry* geom, bool isActiveCoordSys){
 
-        for(int i = 0; i < readings.size();i++){
-            this->saveReading(readings.at(i),geom,isActiveCoordSys);
-        }
-
+    for(int i = 0; i < readings.size();i++){
+        this->saveReading(readings.at(i),geom,isActiveCoordSys);
     }
 
-    bool SensorControl::sendActivateStream()
-    {
-        checkSensor();
+}
 
-        if(this->t != eNoStream){
+bool SensorControl::sendActivateStream()
+{
+    checkSensor();
 
-           instrumentListener->isStreamActive = true;
+    if(this->t != eNoStream){
 
-           switch (t) {
-           case eReadingStream:
-               emit activateReadingStream(typeOfReadingStream);
-               break;
-           case eSenorStats:
-               emit activateStatStream();
-               break;
-           default:
-               break;
-           }
-        }
+       instrumentListener->isStreamActive = true;
 
-
-        return true;
-
-
+       switch (t) {
+       case eReadingStream:
+           emit activateReadingStream(typeOfReadingStream);
+           break;
+       case eSenorStats:
+           emit activateStatStream();
+           break;
+       default:
+           break;
+       }
     }
 
-    bool SensorControl::sendDeactivateStream()
-    {
-        if(!instrumentListener->isStreamActive || t == eNoStream){
-            return true;
-        }
 
-        instrumentListener->isStreamActive = false;
+    return true;
 
 
-        listenerThread.quit();
+}
 
-        if(!listenerThread.wait()){
-           this->myEmitter.sendString("timeout - stream failed");
-            return false;
-        }
-
-        listenerThread.start();
-
+bool SensorControl::sendDeactivateStream()
+{
+    if(!instrumentListener->isStreamActive || t == eNoStream){
         return true;
     }
 
-    bool SensorControl::checkSensor()
-    {
-        if(this->instrumentListener->isStreamActive){
-            this->myEmitter.sendString("sensor stream is active");
-            return false;
+    instrumentListener->isStreamActive = false;
+
+
+    listenerThread.quit();
+
+    if(!listenerThread.wait()){
+       this->myEmitter.sendString("timeout - stream failed");
+        return false;
+    }
+
+    listenerThread.start();
+
+    return true;
+}
+
+bool SensorControl::checkSensor()
+{
+    if(this->instrumentListener->isStreamActive){
+        this->myEmitter.sendString("sensor stream is active");
+        return false;
+    }
+
+    if(instrument->getConnectionState()){
+
+        if(instrument->isBusy()){
+          this->myEmitter.sendString("sensor is busy");
+          return false;
         }
 
-        if(instrument->getConnectionState()){
-
-            if(instrument->isBusy()){
-              this->myEmitter.sendString("sensor is busy");
-              return false;
-            }
-
-        }else{
-           this->myEmitter.sendString("sensor not connected");
-            return false;
-        }
-
-        return true;
+    }else{
+       this->myEmitter.sendString("sensor not connected");
+        return false;
     }
 
-    void SensorControl::streamLostSignal()
-    {
-        this->t = eNoStream;
-        this->instrumentListener->isStreamActive = false;
-        this->myEmitter.sendString("lost sensor connection");
-    }
+    return true;
+}
 
-    OiEmitter& SensorControl::getOiEmitter(){
-        return this->myEmitter;
-    }
+void SensorControl::streamLostSignal()
+{
+    this->t = eNoStream;
+    this->instrumentListener->isStreamActive = false;
+    this->myEmitter.sendString("lost sensor connection");
+}
+
+OiEmitter& SensorControl::getOiEmitter(){
+    return this->myEmitter;
+}
 
 
 /*!

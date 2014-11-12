@@ -6,8 +6,7 @@
 Reading::Reading()
 {
     this->measuredAt = QDateTime::currentDateTime();
-    this->rPolar.face = Configuration::eFrontside;
-    this->rDirection.face = Configuration::eFrontside;
+    this->face = Configuration::eFrontside;
 }
 
 Reading::~Reading(){

@@ -122,7 +122,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 16:
-                return Configuration::getSight(geom->getObservations().at(index.row())->myReading->rPolar.face);
+                return Configuration::getSight(geom->getObservations().at(index.row())->myReading->face);
                 break;
             case 17:
                 return "-/-";
@@ -212,7 +212,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
                 break;
             case 16:
-                return "-/-";
+                return Configuration::getSight(geom->getObservations().at(index.row())->myReading->face);
                 break;
             case 17:
                 return "-/-";
@@ -302,7 +302,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 16:
-                return "-/-";
+                return Configuration::getSight(geom->getObservations().at(index.row())->myReading->face);
                 break;
             case 17:
                 return "-/-";
@@ -392,7 +392,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 16:
-                return Configuration::getSight(geom->getObservations().at(index.row())->myReading->rDirection.face);
+                return Configuration::getSight(geom->getObservations().at(index.row())->myReading->face);
                 break;
             case 17:
                 return "-/-";
