@@ -53,8 +53,6 @@ PS_CylinderSegment *PS_CylinderSegment::detectCylinder(const QList<PS_Point_PC*>
 
     PS_CylinderSegment *result = new PS_CylinderSegment();
 
-    //qDebug() << "sample size: " << points.size();
-
     int numTrials = 0; //number of necessary trials
     int k = 9; //number of points in a required minimal set to define a cylinder (here 9 points)
     float p = 1.0 - param.outlierPercentage; //probability of drawing a cylinder-point from the set of points
@@ -248,10 +246,6 @@ int PS_CylinderSegment::checkPointsInCylinder(PS_CylinderSegment *myCylinder, co
  */
 void PS_CylinderSegment::fit(){
 
-    //qDebug() << "fit";
-
-    //clock_t test = clock();
-
     if(this->myState->myPoints.size() < 6){
         this->myState->isValid = false;
         return;
@@ -311,12 +305,8 @@ void PS_CylinderSegment::fit(){
 
     int numIterations = 0;
 
-    //qDebug() << "vor it " << (clock() - test)/(double)CLOCKS_PER_SEC;
-
     double stopAA = 0.0, stopBB = 0.0, stopXX = 0.0;
     do{
-
-        //qDebug() << "it i " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
         //improve unknowns
         _r += PS_CylinderSegment::x.getAt(0);
@@ -342,7 +332,6 @@ void PS_CylinderSegment::fit(){
 
         PS_CylinderSegment::Rall = PS_CylinderSegment::Rbeta * PS_CylinderSegment::Ralpha;
 
-        //qDebug() << "a und b " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
         //fill A and B matrix + w vector + rechte Seite
         for(int i = 0; i < numPoints; i++){
@@ -394,9 +383,6 @@ void PS_CylinderSegment::fit(){
 
         }
 
-        //qDebug() << "vor bbt " << (clock() - test)/(double)CLOCKS_PER_SEC;
-
-
 
         //build normal equation
         //BBT = B * B.t();
@@ -415,7 +401,6 @@ void PS_CylinderSegment::fit(){
             }
         }*/
 
-        //qDebug() << "vor solve " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
         try{
             if(!OiMat::solve(res, N, -1.0*c)){
@@ -427,8 +412,6 @@ void PS_CylinderSegment::fit(){
             this->myState->isValid = false;
             return;
         }
-
-        //qDebug() << "nach solve " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
         //get results
         /*for(int i = 0; i < numPoints; i++){
@@ -481,10 +464,6 @@ void PS_CylinderSegment::fit(){
         //double sigma = 0.0;
         //sigma = qSqrt((v.t() * v).getAt(0) / 13.0);
 
-        //qDebug() << "loop e: " << 1000.0 * ((clock() - test)/(double)CLOCKS_PER_SEC) << " msec." << endl;
-
-        //qDebug() << "vor armijo " << (clock() - test)/(double)CLOCKS_PER_SEC;
-
         //Armijo Regel
         do{
 
@@ -511,7 +490,6 @@ void PS_CylinderSegment::fit(){
         OiVec::dot(stopAA, PS_CylinderSegment::a,PS_CylinderSegment::a);
         OiVec::dot(stopBB, PS_CylinderSegment::b,PS_CylinderSegment::b);
 
-        //qDebug() << "next " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
         //}while( OiVec::dot(a,a) > 0.5 * OiVec::dot(b,b) );
         }while( stopAA > ( stopBB - 2.0 * 0.001 * sigma * stopBB ) );
@@ -526,7 +504,6 @@ void PS_CylinderSegment::fit(){
 
     }while( (stopXX > 0.0000001) && numIterations < 16 );
 
-    //qDebug() << "nach it " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
     if(numIterations >= 16){
         this->myState->isValid = false;
@@ -539,7 +516,6 @@ void PS_CylinderSegment::fit(){
     _alpha += PS_CylinderSegment::x.getAt(3);
     _beta += PS_CylinderSegment::x.getAt(4);
 
-    //qDebug() << "genauigkeit " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
     //calc sigma
     PS_CylinderSegment::Ralpha.setAt(0, 0, 1.0);
@@ -598,7 +574,6 @@ void PS_CylinderSegment::fit(){
 
     }
 
-    //qDebug() << "fertig " << (clock() - test)/(double)CLOCKS_PER_SEC;
 
     this->myCylinderState->radius = _r;
     this->myCylinderState->xyz[0] = _X0;
@@ -792,7 +767,6 @@ void PS_CylinderSegment::fitBySample(int numPoints){
         //double sigma = 0.0;
         //sigma = qSqrt((v.t() * v).getAt(0) / 13.0);
 
-        //qDebug() << "loop e: " << 1000.0 * ((clock() - test)/(double)CLOCKS_PER_SEC) << " msec." << endl;
 
         //Armijo Regel
         do{
@@ -1302,16 +1276,11 @@ void PS_CylinderSegment::mergeCylinders(const QList<PS_CylinderSegment *> &detec
             pc02Helper.setAt(1, pc2[1]);
             pc02Helper.setAt(2, pc2[2]);
 
-            /*qDebug() << "a " << ijk2Helper.getAt(0) << " " << ijk2Helper.getAt(1) << " " << ijk2Helper.getAt(2);
-            qDebug() << x01[0] << " " << x01[1] << " " << x01[2];
-            qDebug() << x02[0] << " " << x02[1] << " " << x02[2];*/
+
 
             OiVec::cross(distHelper, ijk2Helper, x01Helper - pc02Helper);
-            //qDebug() << "cross " << distHelper.getAt(0) << " " << distHelper.getAt(1) << " " << distHelper.getAt(2);
             OiVec::dot(distX01C2, distHelper, distHelper);
             distX01C2 = qSqrt(distX01C2);
-
-            //qDebug() << "b " << ijk1Helper.getAt(0) << " " << ijk1Helper.getAt(1) << " " << ijk1Helper.getAt(2);
 
             OiVec::cross(distHelper, ijk1Helper, x02Helper - pc01Helper);
             OiVec::dot(distX02C1, distHelper, distHelper);

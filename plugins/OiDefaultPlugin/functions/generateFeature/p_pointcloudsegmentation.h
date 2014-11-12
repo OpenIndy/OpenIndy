@@ -37,10 +37,6 @@ class SegmentationProducer : public QObject{
 public slots:
     void startSegmentation(PS_PointCloud myCloud, PS_InputParameter param){
 
-        qDebug() << "emit angekommen";
-
-
-
         connect(&myCloud, SIGNAL(updateStatus(QString,int)), this, SLOT(updateStatus(QString,int)));
 
         myCloud.setUpOctree(param);
@@ -48,15 +44,12 @@ public slots:
 
         int i = 1;
 
-        qDebug() << "vor get planes";
-
         foreach(PS_PlaneSegment *p, myCloud.getDetectedPlanes()){
 
             FeatureWrapper *myFeature = new FeatureWrapper();
             Plane *myPlane = new Plane(true);
             myPlane->setIsSolved(true);
             myPlane->setFeatureName(QString("plane_%1").arg(i));
-            qDebug() << "set plane values";
             OiVec xyz(3);
             OiVec ijk(3);
             xyz.setAt(0, p->getDistance() * p->getIJK()[0]);
@@ -77,14 +70,11 @@ public slots:
             myPlane->xyz = xyz;
             myPlane->ijk = ijk;
             myFeature->setPlane(myPlane);
-            qDebug() << "vor plane emit";
             emit this->addFeature(myFeature);
 
             i++;
 
         }
-
-        qDebug() << "vor get spherea";
 
         i = 1;
 
@@ -109,8 +99,6 @@ public slots:
             i++;
 
         }
-
-        qDebug() << "vor get cylinders";
 
         i = 1;
 
@@ -144,10 +132,6 @@ public slots:
             i++;
 
         }
-
-        qDebug() << "vor disconnect";
-
-
 
         disconnect(&myCloud, SIGNAL(updateStatus(QString,int)), this, SLOT(updateStatus(QString,int)));
 
@@ -191,7 +175,6 @@ public:
 
         myDialog.reset();
         myDialog.show();
-        qDebug() << "drin in constructor";
     }
     /*SegmentationConsumer(const SegmentationConsumer &copy){
         //this->workerThread = copy.workerThread;
@@ -201,7 +184,6 @@ public:
     void startSegmentationTask(PS_PointCloud myCloud, PS_InputParameter param){
 
         emit this->startSegmentation(myCloud, param);
-        qDebug() << "emit ausgeführt";
     }
 
 signals:
@@ -220,9 +202,7 @@ public slots:
     }
 
     void addFeature(FeatureWrapper *myFeature){
-        qDebug() << "vor add feature";
         myPointCloud.addSegment(myFeature);
-        qDebug() << "nach add feature";
     }
 
 private:

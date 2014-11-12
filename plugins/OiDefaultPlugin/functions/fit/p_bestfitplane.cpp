@@ -50,6 +50,11 @@ bool BestFitPlane::exec(Plane &p){
     if(this->isValid() && this->checkObservationCount()){
         return this->setUpResult( p );
     }else{
+        //set statistic to invalid
+        Statistic myStats = p.getStatistic();
+        myStats.isValid = false;
+        p.setStatistic(myStats);
+        this->myStatistic = p.getStatistic();
         this->writeToConsole("Not enough observations available for calculation");
         return false;
     }

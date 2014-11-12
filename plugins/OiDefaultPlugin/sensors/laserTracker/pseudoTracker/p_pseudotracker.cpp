@@ -207,13 +207,10 @@ void PseudoTracker::abortAction()
 bool PseudoTracker::connectSensor(ConnectionConfig *cConfig){
 
     if(cConfig != NULL){
-        qDebug() << cConfig->ip;
-        qDebug() << cConfig->port;
         isConnected = true;
         QThread::msleep(1000);
         return true;
     }else{
-        qDebug() << "null pointer";
         return false;
     }
 }
@@ -226,7 +223,6 @@ bool PseudoTracker::connectSensor(ConnectionConfig *cConfig){
  *  disconnect app with laser tracker
  */
 bool PseudoTracker::disconnectSensor(){
-    qDebug() << "pseudo tracker disconnect";
     isConnected = false;
     QThread::msleep(1000);
     return true;
@@ -240,7 +236,6 @@ bool PseudoTracker::disconnectSensor(){
  */
 bool PseudoTracker::initialize(){
 
-    qDebug() << "pseudo tracker is initialized";
     myInit = true;
     QThread::msleep(1000);
     return true;
@@ -258,7 +253,6 @@ bool PseudoTracker::initialize(){
  */
 bool PseudoTracker::move(double azimuth, double zenith, double distance,bool isrelativ){
 
-    qDebug() << "pseudo tracker is moved to:" << azimuth << "," << zenith << "," << distance << "," << isrelativ ;
     myAzimuth = azimuth;
     myZenith = zenith;
     myDistance = distance;
@@ -277,7 +271,6 @@ bool PseudoTracker::move(double azimuth, double zenith, double distance,bool isr
  */
 bool PseudoTracker::move(double x, double y, double z){
 
-    qDebug() << "pseudo tracker is moved to:" << x << "," << y << "," << z;
     myAzimuth = qAtan2(y,x);
     myDistance = qSqrt(x*x+y*y+z*z);
     myZenith = acos(z/myDistance);
@@ -294,7 +287,6 @@ bool PseudoTracker::move(double x, double y, double z){
  */
 bool PseudoTracker::home(){
 
-    qDebug() << "pseudo tracker is moved to home" ;
     QThread::msleep(1000);
     return true;
 
@@ -308,7 +300,6 @@ bool PseudoTracker::home(){
  */
 bool PseudoTracker::changeMotorState(){
 
-    qDebug() << "pseudo tracker changed motor state" ;
     if(myMotor){
         myMotor = false;
     }else{
@@ -328,7 +319,6 @@ bool PseudoTracker::changeMotorState(){
  */
 bool PseudoTracker::toggleSightOrientation(){
 
-    qDebug() << "pseudo tracker toggeld Sight orientation" ;
     if(side = 1){
        side = 2;
     }else{
@@ -343,7 +333,6 @@ bool PseudoTracker::toggleSightOrientation(){
  * \return
  */
 bool PseudoTracker::compensation() {
-    qDebug() << "compensation successful";
     QThread::msleep(5000);
     myCompIt = true;
     return true;

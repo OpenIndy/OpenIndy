@@ -116,6 +116,11 @@ bool BestFitSphere::exec(Sphere &s){
         delete[] y;
         delete[] z;
     }else{
+        //set statistic to invalid
+        Statistic myStats = s.getStatistic();
+        myStats.isValid = false;
+        s.setStatistic(myStats);
+        this->myStatistic = s.getStatistic();
         this->writeToConsole("Not enough observations available for calculation");
     }
 

@@ -52,6 +52,11 @@ bool BestFitPoint::exec(Point &p){
         this->writeToConsole("point fit completed");
         return true;
     }else{
+        //set statistic to invalid
+        Statistic myStats = p.getStatistic();
+        myStats.isValid = false;
+        p.setStatistic(myStats);
+        this->myStatistic = p.getStatistic();
         this->writeToConsole("Not enough observations available for calculation");
         return false;
     }

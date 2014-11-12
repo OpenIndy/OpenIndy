@@ -23,8 +23,6 @@ bool PS_Octree::setUp(vector<PS_Point_PC *> *points, PS_BoundingBox_PC *bounding
 
         unsigned int numPoints = points->size();
 
-        qDebug() << "number of points: " << numPoints;
-
         this->minPoints = minPoints;
         this->myBoundingBox = boundingBox;
         this->myPoints = points;
@@ -49,8 +47,6 @@ bool PS_Octree::setUp(vector<PS_Point_PC *> *points, PS_BoundingBox_PC *bounding
 
         cout << "octree fertig " << (clock() - c1)/(double)CLOCKS_PER_SEC << " seconds." << endl;
         c1 = clock();
-
-        qDebug() << "number of leafs: " << this->leafs.size();
 
         //traverse Octree and set the outer neighbours for each node
         this->computeOuterNeighbours(this->root);

@@ -59,7 +59,6 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
     MeasurementConfig mconfig = geom->getMeasurementConfig();
     QList<Reading*> readings = instrument->measure(&mconfig);
 
-    qDebug() << "count readings" << readings.size();
     if(readings.size() == 0){
         this->myEmitter.sendString("measurement not valid!");
         emit commandFinished(false);

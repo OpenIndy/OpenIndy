@@ -477,8 +477,6 @@ void PS_PlaneSegment::mergePlanes(const QList<PS_PlaneSegment *> &detectedPlanes
         mergeMap.insert(i, false);
     }
 
-    qDebug() << "planes found: " << detectedPlanes.size();
-
     //run through all detected planes
     for(int i = 0; i < detectedPlanes.size(); ++i){
 

@@ -108,7 +108,6 @@ bool Point::fromOpenIndyXML(QDomElement &xmlElem){
             return false;
         }
 
-        qDebug() << coordinates.attribute("x") << " : " << coordinates.attribute("y") << " : " << coordinates.attribute("z");
         this->xyz.setAt(0, coordinates.attribute("x").toDouble());
         this->xyz.setAt(1, coordinates.attribute("y").toDouble());
         this->xyz.setAt(2, coordinates.attribute("z").toDouble());

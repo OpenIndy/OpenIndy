@@ -50,6 +50,11 @@ bool BestFitLine::exec(Line &l){
     if(this->isValid() && this->checkObservationCount()){
         return this->setUpResult( l );
     }else{
+        //set statistic to invalid
+        Statistic myStats = l.getStatistic();
+        myStats.isValid = false;
+        l.setStatistic(myStats);
+        this->myStatistic = l.getStatistic();
         this->writeToConsole("Not enough observations available for calculation");
         return false;
     }
