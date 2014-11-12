@@ -204,6 +204,14 @@ private slots:
 
     void on_lineEdit_inputConsole_returnPressed();
     void setupCreateFeature();
+
+    //initiates all standard actions for sensors in the control pad
+    void initSensorActions();
+    //initiates all tracker specific actions in the control pad
+    void initTrackerActions();
+    //initiates all total station specifix actions in the control pad
+    void initTotalStationActions();
+
     void setupLaserTrackerPad();
     void setupTotalStationPad();
     void receiveConfig(FeatureWrapper*,MeasurementConfig);

@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initializeActions();
 
     this->ui->toolBar_ControlPad->addWidget(labelSensorControlName);
-    this->ui->toolBar_ControlPad->addAction(cPsep9);
+    this->ui->toolBar_ControlPad->addAction(cPsep);
 
     this->setModels();
 
@@ -479,6 +479,53 @@ void MainWindow::setupCreateFeature(){
     }
 
     this->defaultCreateFeatureSettings();
+}
+
+/*!
+ * \brief initSensorActions with actions each sensor has
+ */
+void MainWindow::initSensorActions()
+{
+    ui->toolBar_ControlPad->addAction(cPsep);
+    ui->toolBar_ControlPad->addAction(actionConnect);
+    ui->toolBar_ControlPad->addAction(cPsep1);
+    ui->toolBar_ControlPad->addAction(actionDisconnect);
+    ui->toolBar_ControlPad->addAction(cPsep2);
+    ui->toolBar_ControlPad->addAction(actionMeasure);
+}
+
+/*!
+ * \brief initTrackerActions with tracker specific actions
+ */
+void MainWindow::initTrackerActions()
+{
+    ui->toolBar_ControlPad->addAction(cPsep3);
+    ui->toolBar_ControlPad->addAction(actionInitialize);
+    ui->toolBar_ControlPad->addAction(cPsep4);
+    ui->toolBar_ControlPad->addAction(actionHome);
+    ui->toolBar_ControlPad->addAction(cPsep5);
+    ui->toolBar_ControlPad->addAction(actionToggleSightOrientation);
+    ui->toolBar_ControlPad->addAction(cPsep6);
+    ui->toolBar_ControlPad->addAction(actionAim);
+    ui->toolBar_ControlPad->addAction(cPsep7);
+    ui->toolBar_ControlPad->addAction(actionMove);
+    ui->toolBar_ControlPad->addAction(cPsep8);
+    ui->toolBar_ControlPad->addAction(actionChangeMotorState);
+    ui->toolBar_ControlPad->addAction(cPsep9);
+    ui->toolBar_ControlPad->addAction(actionCompensation);
+}
+
+/*!
+ * \brief initTotalStationActions with total station specific actions
+ */
+void MainWindow::initTotalStationActions()
+{
+    ui->toolBar_ControlPad->addAction(cPsep3);
+    ui->toolBar_ControlPad->addAction(actionToggleSightOrientation);
+    ui->toolBar_ControlPad->addAction(cPsep4);
+    ui->toolBar_ControlPad->addAction(actionMove);
+    ui->toolBar_ControlPad->addAction(cPsep5);
+    ui->toolBar_ControlPad->addAction(actionAim);
 }
 
 /*!
