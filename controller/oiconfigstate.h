@@ -5,6 +5,7 @@
 #include <exception>
 #include <QString>
 #include <QStringList>
+#include <QStringListModel>
 
 #include "configuration.h"
 #include "measurementconfig.h"
@@ -25,6 +26,15 @@ public:
     static const QList<MeasurementConfig> &getSavedMeasurementConfigs();
     static const QList<MeasurementConfig> &getProjectMeasurementConfigs();
     static QList<MeasurementConfig> getAllMeasurementConfigs();
+    static const MeasurementConfig &getMeasurementConfig(QString displayName);
+
+    //static bool addProjectMeasurementConfig(const MeasurementConfig &mConfig);
+    //static bool saveMeasurementConfig(const MeasurementConfig &mConfig);
+
+    static bool setMeasurementConfig(FeatureWrapper *geom, MeasurementConfig mConfig);
+
+    //get models to represent config data
+    static QStringListModel *getMeasurementConfigNames();
 
 signals:
     void measurementConfigAdded();
@@ -42,11 +52,20 @@ private:
     static QList<MeasurementConfig> projectMeasurementConfigs; //measurement configs that are only available in the current project
     static QMap<QString, QList<Reading*> > usedMeasurementConfigs; //map with key = measurement config display name and value = list of readings that use the config
 
+    //models to represent config data
+    static QStringListModel *measurementConfigNames; //the names of all available measurement configs
+
     //load configuration files (xml) from config folder when starting OpenIndy
     static void loadSavedMeasurementConfigs();
     static void loadSavedSensorConfigs();
 
+    //save configuration files (xml) to config folder
+    static void saveMeasurementConfig(const MeasurementConfig &mConfig, bool override = false);
+
     //load and set default configs from database when starting OpenIndy
+
+    //check a new measurement config wether it exists and wether it is valid
+    static void checkMeasurementConfig(MeasurementConfig &mConfig, bool &sameName, bool &sameParameters, bool &isUsed);
 
     //called from OiFeatureState to do connects to inform OiConfigState when a specific event occurs
     static void connectFeature(FeatureWrapper *myFeature); //called from OiFeatureState whenever a feature is added

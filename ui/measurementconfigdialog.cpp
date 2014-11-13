@@ -24,10 +24,44 @@ MeasurementConfigDialog::~MeasurementConfigDialog()
 
 /*!
  * \brief MeasurementConfigDialog::on_pushButton_ok_clicked
- * Saves the set up information and emits them to the controller. There they are saved als last measurement configuration.
+ *
  */
-void MeasurementConfigDialog::on_pushButton_ok_clicked()
-{
+void MeasurementConfigDialog::on_pushButton_ok_clicked(){
+
+    //check if dialog entries are valid
+    if(this->ui->comboBox_existingConfigs->currentText().compare("") == 0
+            || this->ui->lineEdit_count->text().compare("") == 0
+            || this->ui->lineEdit_iterations->text().compare("") == 0
+            || this->ui->lineEdit_distanceInterval->text().compare("") == 0
+            || this->ui->lineEdit_timeInterval->text().compare("") == 0){
+        QMessageBox::information(NULL, "Measurement config invalid",
+                                 "One of the fields is empty. Please specify each of the available fields.");
+        return;
+    }
+
+    //create a measurement config object from dialog entries
+    MeasurementConfig mConfig;
+    mConfig.setName(this->ui->comboBox_existingConfigs->currentText());
+    mConfig.count = this->ui->lineEdit_count->text().toInt();
+    mConfig.iterations = this->ui->lineEdit_iterations->text().toInt();
+    mConfig.timeInterval = this->ui->lineEdit_timeInterval->text().toLong();
+    mConfig.distanceInterval = this->ui->lineEdit_distanceInterval->text().toDouble();
+    mConfig.distanceDependent = this->ui->checkBox_distanceDependent->isChecked();
+    mConfig.timeDependent = this->ui->checkBox_timeDependent->isChecked();
+    mConfig.measureTwoSides = this->ui->checkBox_fsbs->isChecked();
+    mConfig.typeOfReading = (Configuration::ReadingTypes)this->ui->comboBox_typeOfReading->currentText().toInt();
+
+    //send created config to OiConfigState
+    if(!OiConfigState::setMeasurementConfig(OiFeatureState::getActiveFeature(), mConfig)){
+        QMessageBox::information(NULL, "Measurement config invalid",
+                                 "Unable to set the measurement config for the active feature. Maybe there is another "
+                                 "measurement config with the same name but different parameters which has been used yet.");
+    }
+
+    this->close();
+
+
+    //this->ui->comboBox_existingConfigs->insertItem(0, ui->comboBox_existingConfigs->currentText());
 
     /*mConfig.name = ui->lineEdit_configName->text();
     mConfig.count = ui->lineEdit_count->text().toInt();
@@ -58,8 +92,7 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked()
 /*!
  * \brief MeasurementConfigDialog::on_pushButton_cancel_clicked
  */
-void MeasurementConfigDialog::on_pushButton_cancel_clicked()
-{
+void MeasurementConfigDialog::on_pushButton_cancel_clicked(){
     this->close();
 }
 
@@ -87,6 +120,23 @@ void MeasurementConfigDialog::receiveConfig(MeasurementConfig mC){
  * \brief MeasurementConfigDialog::initGUI
  */
 void MeasurementConfigDialog::initGUI(){
+
+    //set validators for each dialog field
+    QRegExp regExpInt("^[1-9][0-9]*$");
+    QRegExp regExpDouble("^-?(0|[1-9]{1}[0-9]{0,9})(\\.[0-9]+)?$");
+    this->ui->lineEdit_count->setValidator(new QRegExpValidator(regExpInt, this->ui->lineEdit_count));
+    this->ui->lineEdit_iterations->setValidator(new QRegExpValidator(regExpInt, this->ui->lineEdit_iterations));
+    this->ui->lineEdit_timeInterval->setValidator(new QRegExpValidator(regExpInt, this->ui->lineEdit_timeInterval));
+    this->ui->lineEdit_distanceInterval->setValidator(new QRegExpValidator(regExpDouble, this->ui->lineEdit_distanceInterval));
+
+    //set model of available measurement configs
+    this->ui->comboBox_existingConfigs->setModel(OiConfigState::getMeasurementConfigNames());
+
+    //set default measurement config
+
+    //set available reading types
+
+
 
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
         if(OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
@@ -167,11 +217,18 @@ QString MeasurementConfigDialog::getLabel(QComboBox *cb, int code){
     return cb->itemText(cb->findData(code));
 }
 
-void MeasurementConfigDialog::showEvent(QShowEvent *event)
-{
-    //Put the dialog in the screen center
+/*!
+ * \brief MeasurementConfigDialog::showEvent
+ * \param event
+ */
+void MeasurementConfigDialog::showEvent(QShowEvent *event){
+
+    //put the dialog in the screen center
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
+
+    //set default measurement config as selected config in the dialog
+
     event->accept();
 }
 
@@ -181,4 +238,14 @@ void MeasurementConfigDialog::showEvent(QShowEvent *event)
  */
 void MeasurementConfigDialog::closeEvent(QCloseEvent *event){
     event->accept();
+}
+
+/*!
+ * \brief MeasurementConfigDialog::on_comboBox_existingConfigs_currentIndexChanged
+ * \param arg1
+ */
+void MeasurementConfigDialog::on_comboBox_existingConfigs_currentIndexChanged(const QString &arg1){
+
+    qDebug() << arg1;
+
 }

@@ -3,6 +3,8 @@
 #include "function.h"
 #include "featurewrapper.h"
 
+MeasurementConfig PointCloud::defaultMeasurementConfig;
+
 PointCloud::PointCloud(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4)
 {
     this->id = Configuration::generateID();

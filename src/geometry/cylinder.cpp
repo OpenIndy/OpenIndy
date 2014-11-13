@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig Cylinder::defaultMeasurementConfig;
+
 Cylinder::Cylinder(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4),ijk(4),radius(0.0)
 {
     this->id = Configuration::generateID();

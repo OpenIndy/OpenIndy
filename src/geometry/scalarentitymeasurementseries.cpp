@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig ScalarEntityMeasurementSeries::defaultMeasurementConfig;
+
 ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();

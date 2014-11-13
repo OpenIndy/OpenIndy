@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig Hyperboloid::defaultMeasurementConfig;
+
 Hyperboloid::Hyperboloid(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();

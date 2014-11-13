@@ -40,6 +40,30 @@ bool MeasurementConfig::getIsSaved() const{
 }
 
 /*!
+ * \brief MeasurementConfig::getIsValid
+ * \return
+ */
+bool MeasurementConfig::getIsValid() const{
+    if(this->name.compare("") == 0){
+        return false;
+    }
+    return true;
+}
+
+/*!
+ * \brief MeasurementConfig::setName
+ * \param name
+ * \return
+ */
+bool MeasurementConfig::setName(QString name){
+    if(this->name.compare("") == 0){
+        this->name = name;
+        return true;
+    }
+    return false;
+}
+
+/*!
  * \brief MeasurementConfig::toOpenIndyXML
  * \param xmlDoc
  * \return
@@ -97,4 +121,12 @@ bool MeasurementConfig::fromOpenIndyXML(QDomElement &xmlElem){
 
     return true;
 
+}
+
+/*!
+ * \brief MeasurementConfig::setIsSaved
+ * \param isSaved
+ */
+void MeasurementConfig::setIsSaved(bool isSaved){
+    this->isSaved = isSaved;
 }

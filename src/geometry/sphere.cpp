@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig Sphere::defaultMeasurementConfig;
+
 Sphere::Sphere(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), radius(0.0)
 {
     this->id = Configuration::generateID();

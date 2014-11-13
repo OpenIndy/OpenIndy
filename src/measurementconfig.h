@@ -37,6 +37,9 @@ public:
     QString getName() const;
     QString getDisplayName() const;
     bool getIsSaved() const;
+    bool getIsValid() const;
+
+    bool setName(QString name);
 
     //measurement config parameters
     int count; //the number of measurements that the sensor shall bring together to a single reading

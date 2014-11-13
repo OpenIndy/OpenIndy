@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig Paraboloid::defaultMeasurementConfig;
+
 Paraboloid::Paraboloid(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();

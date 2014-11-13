@@ -1,6 +1,8 @@
 #include "point.h"
 #include "function.h"
 
+MeasurementConfig Point::defaultMeasurementConfig;
+
 Point::Point(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4)
 {
     this->id = Configuration::generateID();

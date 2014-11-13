@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig Line::defaultMeasurementConfig;
+
 Line::Line(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4)
 {
     this->id = Configuration::generateID();
