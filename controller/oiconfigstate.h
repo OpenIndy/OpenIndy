@@ -12,6 +12,7 @@
 #include "sensorconfiguration.h"
 #include "featurewrapper.h"
 #include "oifeaturestate.h"
+#include "systemdbmanager.h"
 
 class OiConfigState : public QObject
 {
