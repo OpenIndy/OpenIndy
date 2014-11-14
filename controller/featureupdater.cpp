@@ -566,7 +566,9 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
             tmpPoint->setNominalSystem(fae.nominalSystem);
             tmpPoint->setIsSolved(true);
         }else{
-            if(functionValid){ tmpPoint->addFunction(defaultFunction); }
+            if(functionValid){
+                tmpPoint->addFunction(defaultFunction);
+            }
         }
 
         FeatureWrapper *fw = new FeatureWrapper();

@@ -122,7 +122,7 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
-        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
+        //connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()));
         connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
         //connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this->tblModel, SLOT(updateModel()));

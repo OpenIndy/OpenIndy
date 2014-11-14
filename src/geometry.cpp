@@ -267,7 +267,7 @@ QString Geometry::getDisplayObs() const
 
     Function *fitFunc = NULL;
 
-    if(this->functionList.at(0)->getMetaData()->iid.compare(OiMetaData::iid_FitFunction) == 0){
+    if(this->functionList.size() > 0 && this->functionList.at(0)->getMetaData()->iid.compare(OiMetaData::iid_FitFunction) == 0){
 
         fitFunc = this->functionList.at(0);
 

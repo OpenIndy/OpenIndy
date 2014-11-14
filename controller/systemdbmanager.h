@@ -70,6 +70,10 @@ public:
     static bool getTotalStationModel(QSqlQueryModel *sqlModel);
     static bool getUndefinedSensorModel(QSqlQueryModel *sqlModel);
 
+    static bool addMeasurementConfig(QString name, bool useAsDefault = false);
+    static bool removeMeasurementConfig(QString name);
+    static QString getDefaultMeasurementConfig(Configuration::FeatureTypes geomType);
+
     static QString getPluginFilePath(QString name, QString plugin);
 
     static QStringList getSupportedGeometries();

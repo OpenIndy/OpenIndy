@@ -183,6 +183,127 @@ bool SystemDbManager::getUndefinedSensorModel(QSqlQueryModel *sqlModel){
 }
 
 /*!
+ * \brief SystemDbManager::addMeasurementConfig
+ * Add a reference to a measurement config (xml) in system database
+ * \param name
+ * \param useAsDefault
+ * \return
+ */
+bool SystemDbManager::addMeasurementConfig(QString name, bool useAsDefault){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString query = QString("INSERT INTO measurementConfigs (name, use_as_default) VALUES ('%1', %2);")
+            .arg(name).arg(QString(useAsDefault?"1":"0"));
+
+        QSqlQuery command(SystemDbManager::db);
+        check = command.exec(query);
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
+ * \brief SystemDbManager::removeMeasurementConfig
+ * \param name
+ * \return
+ */
+bool SystemDbManager::removeMeasurementConfig(QString name){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString query = QString("DELETE FROM measurementConfigs WHERE name = '%1';").arg(name);
+
+        QSqlQuery command(SystemDbManager::db);
+        check = command.exec(query);
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
+ * \brief SystemDbManager::getDefaultMeasurementConfig
+ * \param geomType
+ * \return
+ */
+QString SystemDbManager::getDefaultMeasurementConfig(Configuration::FeatureTypes geomType){
+
+    QString name;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QString query = QString("").arg(name);
+
+
+        /*QString query = QString("%1 %2 %3")
+                .arg("SELECT file_path FROM plugin AS p INNER JOIN functionPlugin AS fp ON p.id = fp.plugin_id")
+                .arg(QString("WHERE p.name = '%1'").arg(plugin))
+                .arg(QString("AND fp.name = '%1';").arg(name));
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+        if(command.next()){ //if the desired plugin element is a function
+            QVariant val = command.value(0);
+            if(val.isValid()){
+                path = val.toString();
+            }
+        }else{
+            query = QString("%1 %2 %3")
+                    .arg("SELECT file_path FROM plugin AS p INNER JOIN sensorPlugin AS sp ON p.id = sp.plugin_id")
+                    .arg(QString("WHERE p.name = '%1'").arg(plugin))
+                    .arg(QString("AND sp.name = '%1';").arg(name));
+            command.finish();
+            command.exec(query);
+            if(command.next()){ //if the desired plugin element is a sensor
+                QVariant val = command.value(0);
+                if(val.isValid()){
+                    path = val.toString();
+                }
+            }else{
+                query = QString("%1 %2 %3")
+                        .arg("SELECT file_path FROM plugin AS p INNER JOIN networkAdjustmentPlugin AS nap ON p.id = nap.plugin_id")
+                        .arg(QString("WHERE p.name = '%1'").arg(plugin))
+                        .arg(QString("AND nap.name = '%1';").arg(name));
+                command.finish();
+                command.exec(query);
+                if(command.next()){ //if the desired plugin element is a network adjustment
+                    QVariant val = command.value(0);
+                    if(val.isValid()){
+                        path = val.toString();
+                    }
+                }else{
+                    query = QString("%1 %2 %3")
+                            .arg("SELECT file_path FROM plugin AS p INNER JOIN simulationPlugin AS s ON p.id = s.plugin_id")
+                            .arg(QString("WHERE p.name = '%1'").arg(plugin))
+                            .arg(QString("AND s.name = '%1';").arg(name));
+                    command.finish();
+                    command.exec(query);
+                    if(command.next()){
+                        QVariant val = command.value(0);
+                        if(val.isValid()){
+                            path = val.toString();
+                        }
+                    }
+                }
+            }
+        }*/
+    }
+    return name;
+
+}
+
+/*!
  * \brief SystemDbManager::getPluginFilePath
  * Get filepath to the plugin with the name "plugin" which contains the function with the name "name"
  * \param name

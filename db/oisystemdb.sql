@@ -23,14 +23,23 @@ CREATE TABLE functionPlugin (
 	FOREIGN KEY (plugin_id) REFERENCES plugin(id)
 );
 
+
+-- alle sensor configs die im config Ordner gespeichert sind
+CREATE TABLE sensorConfig (
+        id integer PRIMARY KEY autoincrement,
+        name text
+);
+
 -- alle Sensoren eines Plugins
 CREATE TABLE sensorPlugin (
 	id integer PRIMARY KEY autoincrement,
 	iid text,
 	plugin_id integer,
+        sensorConfig_id integer,
 	name text,
 	description text,
 	FOREIGN KEY (plugin_id) REFERENCES plugin(id)
+        FOREIGN KEY (sensorConfig_id) REFERENCES sensorConfig(id)
 );
 
 -- alle Netzausgleichungen eines Plugins
@@ -43,10 +52,18 @@ CREATE TABLE networkAdjustmentPlugin (
 	FOREIGN KEY (plugin_id) REFERENCES plugin(id)
 );
 
+-- alle measurement configs die im config Ordner gespeichert sind
+CREATE TABLE measurementConfig (
+        id integer PRIMARY KEY autoincrement,
+        name text
+);
+
 -- alle Feature Typen die es fuer eine OpenIndy Installation gibt
 CREATE TABLE element (
 	id integer PRIMARY KEY autoincrement,
-	element_type text
+        measurementConfig_id integer,
+	element_type text,
+        FOREIGN KEY (measurementConfig_id) REFERENCES measurementConfig(id)
 );
 
 -- fuer jedes Plugin alle Features, die zur Berechnung benötigt werden
