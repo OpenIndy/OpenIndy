@@ -91,6 +91,9 @@ protected:
     //! check LOCK state
     bool getLOCKState();
 
+    //! deactivate lock state
+    void deactiveLockState();
+
     //! sets the LOCK state
     bool setLOCKState(QString currentState);
 

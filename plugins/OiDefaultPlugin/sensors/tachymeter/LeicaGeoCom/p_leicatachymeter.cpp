@@ -214,12 +214,15 @@ bool LeicaTachymeter::getATRState()
 
             //if return code of function = 0 (ATR supported)
             if(elements.at(0).compare("0") == 0){
-                this->setATRState(elements.at(1));
-                return true;
+                if(this->setATRState(elements.at(1))){
+                    return true;
+                }
+                //return true;
             }else{
                 return false;
             }
         }
+        return false;
     }else{
         return false;
     }
@@ -227,7 +230,7 @@ bool LeicaTachymeter::getATRState()
 
 bool LeicaTachymeter::setATRState(QString ATRstate)
 {
-    QString command = "";
+    QString command = QString("%R1Q,18005:" +QString::number(ATRstate.toInt()) + "\r\n") ;
     //user defined ATR value
     QString value = this->myConfiguration->stringParameter.value("ATR");
 
@@ -238,22 +241,29 @@ bool LeicaTachymeter::setATRState(QString ATRstate)
     }
 
     //compare current ATR state and defined ATR state and change if needed
-    if(ATRstate.compare(value) != 0){
-        command = "%R1Q,18005:" + value + "\r\n";
-    }
+    if(QString::number(ATRstate.toInt()).compare(value) != 0){
 
-    bool result = this->checkCommandRC(command);
-    if(result){
-        myEmitter.emitSendString("ATR state changed.");
-        return true;
-    }else{
-        return false;
+        command = "%R1Q,18005:" + value + "\r\n";
+
+        bool result = this->checkCommandRC(command);
+        if(result){
+            myEmitter.emitSendString("ATR state changed.");
+            return true;
+        }else{
+            return false;
+        }
     }
+    return true;
 }
 
 bool LeicaTachymeter::getLOCKState()
 {
     if(this->serial->isOpen()){
+
+        //check user defined ATR value
+        if(!this->myConfiguration->stringParameter.contains("ATR")){
+            return false;
+        }
 
         //getUserLockState
         QString command = "%R1Q,18008:\r\n";
@@ -265,24 +275,60 @@ bool LeicaTachymeter::getLOCKState()
 
             //if LOCK is supported
             if(elements.at(0).compare("0") == 0){
-                this->setLOCKState(elements.at(1));
-                return true;
+                if(this->setLOCKState(elements.at(1))){
+                    return true;
+                }
+                //return true;
             }else{
                 return false;
             }
         }
-
+        return false;
     }else{
         myEmitter.emitSendString("not connected");
         return false;
     }
 }
 
+/*!
+ * \brief deactiveLockState
+ */
+void LeicaTachymeter::deactiveLockState()
+{
+    /*QString atrOn = this->myConfiguration->stringParameter.value("ATR");
+
+    if(atrOn.compare("atr on") == 0){
+        QString command = "%R1Q,18007:0\r\n";
+        this->executeCommand(command);
+    }*/
+}
+
 bool LeicaTachymeter::setLOCKState(QString currentState)
 {
-    QString command = "";
+    QString command = QString("%R1Q,18007:" + QString::number(currentState.toInt()) + "\r\n");
 
-    bool on = false;
+    QString value = this->myConfiguration->stringParameter.value("ATR");
+
+    if(value.compare("atr on") == 0){
+        value = "1";
+    }else{
+        value = "0";
+    }
+
+    if(QString::number(currentState.toInt()).compare(value) != 0){
+        command = "%R1Q,18007:" + value + "\r\n";
+
+        bool result = this->checkCommandRC(command);
+        if(result){
+            myEmitter.emitSendString("atr and locke state changed");
+            return true;
+        }else{
+            return false;
+        }
+    }
+    return true;
+
+    /*bool on = false;
     //if is currently off, then turn on
     if(currentState.compare("0") == 0){
         myEmitter.emitSendString("activating LOCK mode.");
@@ -306,7 +352,7 @@ bool LeicaTachymeter::setLOCKState(QString currentState)
         return true;
     }else{
         return false;
-    }
+    }*/
 }
 
 bool LeicaTachymeter::startTargetTracking()
@@ -592,6 +638,7 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
             }
         }
     }
+    this->deactiveLockState();
     return readings;
 }
 
@@ -642,6 +689,7 @@ QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
             }
         }
     }
+    this->deactiveLockState();
     return readings;
 }
 
@@ -697,6 +745,7 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
             }
         }
     }
+    this->deactiveLockState();
     return readings;
 }
 
@@ -710,6 +759,7 @@ QList<Reading*> LeicaTachymeter::measureCartesian(MeasurementConfig *m){
         readings.at(i)->typeofReading = Configuration::eCartesian;
     }
 
+    this->deactiveLockState();
     return readings;
 
 }
@@ -813,15 +863,23 @@ bool LeicaTachymeter::setTargetTypeMeasure()
                 }
             }
             return true;
-        }else if(receive.compare("%R1P,0,0:0,0\r\n") != 0){ // if not IR and standard
-            //switch to reflector standard
-            command = "%R1Q,17019:0\r\n";
-            if(this->executeCommand(command)){
-                receive = this->receive();
+        }else{
+            if(receive.compare("%R1P,0,0:0,0\r\n") != 0){ // if not IR and standard
+                //switch to reflector standard
+                command = "%R1Q,17019:0\r\n";
+                if(this->executeCommand(command)){
+                    receive = this->receive();
+                    //return true;
+                }
+            }
+            /*if(this->getATRState()){
+                return true;
+            }*/
+            if(this->getLOCKState()){
                 return true;
             }
         }
-        return true;
+        //return true;
     }
     return false;
 }
@@ -851,7 +909,7 @@ bool LeicaTachymeter::setTargetTypeStream()
 
 
         if(reflless){
-            if(receive.compare("%R1P,0,0:0,6\r\n") != 0){ //if not RL and standard
+            if(receive.compare("%R1P,0,0:0,6\r\n") != 0){ //if not RL and tracking
                 //switch to reflectorless tracking
                 command = "%R1Q,17019:6\r\n";
                 if(this->executeCommand(command)){
@@ -860,15 +918,20 @@ bool LeicaTachymeter::setTargetTypeStream()
                 }
             }
             return true;
-        }else if(receive.compare("%R1P,0,0:0,4\r\n") != 0){ // if not IR and standard
+        }else{
+            if(receive.compare("%R1P,0,0:0,4\r\n") != 0){ // if not IR and tracking
             //switch to reflector tracking
-            command = "%R1Q,17019:4\r\n";
-            if(this->executeCommand(command)){
-                receive = this->receive();
+                command = "%R1Q,17019:4\r\n";
+                if(this->executeCommand(command)){
+                    receive = this->receive();
+                    //return true;
+                }
+            }
+            if(this->getATRState()){
                 return true;
             }
         }
-        return true;
+        //return true;
     }
     return false;
 }
