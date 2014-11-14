@@ -212,8 +212,10 @@ private slots:
     //initiates all total station specifix actions in the control pad
     void initTotalStationActions();
 
+    void setupSensorPad();
     void setupLaserTrackerPad();
     void setupTotalStationPad();
+
     void receiveConfig(FeatureWrapper*,MeasurementConfig);
     void createFeature();
 

@@ -76,6 +76,9 @@ protected:
     //! move totalstation to specified position
     bool move(double azimuth, double zenith, double distance,bool isrelativ);
 
+    //! move total station to specified xyz position
+    bool move(double x, double y, double z);
+
     //! toggle between frontside and backside
     bool toggleSightOrientation();
 
@@ -102,6 +105,7 @@ private:
 
     QSerialPort *serial;
 
+    //int getEDMMode();
 
     QList<Reading*> measurePolar(MeasurementConfig*);
     QList<Reading*> measureDistance(MeasurementConfig*);
@@ -120,6 +124,11 @@ private:
     bool executeCommand(QString);
 
     bool checkCommandRC(QString command);
+
+    Configuration::Faces getCurrentFace(double zenith);
+
+    bool setTargetTypeMeasure();
+    bool setTargetTypeStream();
 
 };
 

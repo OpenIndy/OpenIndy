@@ -486,6 +486,8 @@ void MainWindow::setupCreateFeature(){
  */
 void MainWindow::initSensorActions()
 {
+    ui->toolBar_ControlPad->clear();
+    ui->toolBar_ControlPad->addWidget(labelSensorControlName);
     ui->toolBar_ControlPad->addAction(cPsep);
     ui->toolBar_ControlPad->addAction(actionConnect);
     ui->toolBar_ControlPad->addAction(cPsep1);
@@ -529,32 +531,21 @@ void MainWindow::initTotalStationActions()
 }
 
 /*!
+ * \brief setupSensorPad sets all needed widgets for a standard sensor without any specific actions
+ */
+void MainWindow::setupSensorPad()
+{
+    this->initSensorActions();
+}
+
+/*!
  * \brief setupLaserTrackerPad adds all needed Widgets to the control pad, if the active sensor is a lasertracker
  * With that label you can control the laser tracker and start measurements.
  */
 void MainWindow::setupLaserTrackerPad(){
 
-    ui->toolBar_ControlPad->addAction(cPsep);
-    ui->toolBar_ControlPad->addAction(actionConnect);
-    ui->toolBar_ControlPad->addAction(cPsep1);
-    ui->toolBar_ControlPad->addAction(actionDisconnect);
-    ui->toolBar_ControlPad->addAction(cPsep2);
-    ui->toolBar_ControlPad->addAction(actionInitialize);
-    ui->toolBar_ControlPad->addAction(cPsep3);
-    ui->toolBar_ControlPad->addAction(actionHome);
-    ui->toolBar_ControlPad->addAction(cPsep4);
-    ui->toolBar_ControlPad->addAction(actionMeasure);
-    ui->toolBar_ControlPad->addAction(cPsep5);
-    ui->toolBar_ControlPad->addAction(actionToggleSightOrientation);
-    ui->toolBar_ControlPad->addAction(cPsep6);
-    ui->toolBar_ControlPad->addAction(actionAim);
-    ui->toolBar_ControlPad->addAction(cPsep7);
-    ui->toolBar_ControlPad->addAction(actionMove);
-    ui->toolBar_ControlPad->addAction(cPsep8);
-    ui->toolBar_ControlPad->addAction(actionChangeMotorState);
-    ui->toolBar_ControlPad->addAction(cPsep10);
-    ui->toolBar_ControlPad->addAction(actionCompensation);
-
+    this->initSensorActions();
+    this->initTrackerActions();
 }
 
 /*!
@@ -563,17 +554,8 @@ void MainWindow::setupLaserTrackerPad(){
  */
 void MainWindow::setupTotalStationPad(){
 
-    ui->toolBar_ControlPad->addAction(cPsep);
-    ui->toolBar_ControlPad->addAction(actionConnect);
-    ui->toolBar_ControlPad->addAction(cPsep1);
-    ui->toolBar_ControlPad->addAction(actionDisconnect);
-    ui->toolBar_ControlPad->addAction(cPsep2);
-    ui->toolBar_ControlPad->addAction(actionMeasure);
-    ui->toolBar_ControlPad->addAction(cPsep3);
-    ui->toolBar_ControlPad->addAction(actionToggleSightOrientation);
-    ui->toolBar_ControlPad->addAction(cPsep4);
-    ui->toolBar_ControlPad->addAction(actionMove);
-
+    this->initSensorActions();
+    this->initTotalStationActions();
 }
 
 /*!
@@ -597,13 +579,20 @@ void MainWindow::on_actionControl_pad_triggered()
         ui->toolBar_ControlPad->show();
 
         if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
-            if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eLaserTracker){
-                labelSensorControlName->setText("sensor control laser tracker");
+
+            QString sensorName = OiFeatureState::getActiveStation()->sensorPad->instrument->getMetaData()->name;
+            labelSensorControlName->setText(sensorName);
+
+            if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eLaserTracker){ //laser tracker
                 setupLaserTrackerPad();
-            }else if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eTotalStation){
-                labelSensorControlName->setText("sensor control total station");
+
+            }else if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eTotalStation){ //total station
                 setupTotalStationPad();
+
+            }else{ //any sensor
+                setupSensorPad();
             }
+
             if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
                 //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
                 signalMapper = new QSignalMapper();

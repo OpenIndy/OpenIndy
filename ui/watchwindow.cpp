@@ -559,7 +559,7 @@ void WatchWindow::closeEvent(QCloseEvent *e)
     listenerThread.quit();
     listenerThread.wait();
 
-    delete this;
+    //delete this;
 
     e->accept();
 
