@@ -231,7 +231,8 @@ bool OiProjectExchanger::loadObservations(const QDomDocument &project){
 
             //for each observations tag create an observation object and try to parse xml
             Observation *obs = new Observation();
-            if(!obs->fromOpenIndyXML(observationList.at(i).toElement())){
+            QDomElement obsTag = observationList.at(i).toElement();
+            if(!obs->fromOpenIndyXML(obsTag)){
                 delete obs;
                 continue;
             }
@@ -269,7 +270,8 @@ bool OiProjectExchanger::loadStations(const QDomDocument &project){
 
         //for each station tag create a station object and try to parse xml
         Station *station = new Station();
-        if(!station->fromOpenIndyXML(stationList.at(i).toElement())){
+        QDomElement stationTag = stationList.at(i).toElement();
+        if(!station->fromOpenIndyXML(stationTag)){
             delete station;
             continue;
         }
@@ -313,7 +315,8 @@ bool OiProjectExchanger::loadCoordinateSystems(const QDomDocument &project){
 
         //for each coordinate system tag create a coordinate system object and try to parse xml
         CoordinateSystem *coordinateSystem = new CoordinateSystem();
-        if(!coordinateSystem->fromOpenIndyXML(coordinateSystemList.at(i).toElement())){
+        QDomElement coordTag = coordinateSystemList.at(i).toElement();
+        if(!coordinateSystem->fromOpenIndyXML(coordTag)){
             delete coordinateSystem;
             continue;
         }
@@ -353,7 +356,8 @@ bool OiProjectExchanger::loadTransformationParameters(const QDomDocument &projec
 
             //for each trafo param tag create a trafo param object and try to parse xml
             TrafoParam *trafoParam = new TrafoParam();
-            if(!trafoParam->fromOpenIndyXML(trafoParamList.at(i).toElement())){
+            QDomElement trafoTag = trafoParamList.at(i).toElement();
+            if(!trafoParam->fromOpenIndyXML(trafoTag)){
                 delete trafoParam;
                 continue;
             }
