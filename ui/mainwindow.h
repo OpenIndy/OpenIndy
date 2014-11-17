@@ -202,7 +202,6 @@ private slots:
 
     void initializeActions();
 
-    void on_lineEdit_inputConsole_returnPressed();
     void setupCreateFeature();
 
     //initiates all standard actions for sensors in the control pad

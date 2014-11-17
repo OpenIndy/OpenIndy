@@ -559,15 +559,6 @@ void MainWindow::setupTotalStationPad(){
 }
 
 /*!
- * \brief displays the entered text in the console
- */
-void MainWindow::on_lineEdit_inputConsole_returnPressed()
-{
-    Console::addLine(ui->lineEdit_inputConsole->text());
-    ui->lineEdit_inputConsole->clear();
-}
-
-/*!
  * \brief Sets the control pad visible or invisible
  * Also it calls the needed set up function to add all elements for the active sensor.
  */

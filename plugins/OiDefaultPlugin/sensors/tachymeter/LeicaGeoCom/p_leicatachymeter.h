@@ -108,8 +108,6 @@ private:
 
     QSerialPort *serial;
 
-    //int getEDMMode();
-
     QList<Reading*> measurePolar(MeasurementConfig*);
     QList<Reading*> measureDistance(MeasurementConfig*);
     QList<Reading*> measureDirection(MeasurementConfig*);
@@ -132,6 +130,11 @@ private:
 
     bool setTargetTypeMeasure();
     bool setTargetTypeStream();
+    bool setAdjustMode();
+
+    void stopTrackingAfterMeasure();
+
+    bool laserOn;
 
 };
 
