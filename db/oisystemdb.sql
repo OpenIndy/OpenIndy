@@ -81,6 +81,7 @@ CREATE TABLE elementPlugin (
 	id integer PRIMARY KEY autoincrement,
 	element_id integer,
 	functionPlugin_id integer,
+	use_as_default boolean,
 	FOREIGN KEY (element_id) REFERENCES element(id),
 	FOREIGN KEY (functionPlugin_id) REFERENCES functionPlugin(id)
 );

@@ -145,6 +145,7 @@ void MeasurementConfigDialog::initGUI(){
     }else{
         switch(OiFeatureState::getActiveFeature()->getTypeOfFeature()){
         case Configuration::ePointFeature:
+            qDebug() << Point::defaultMeasurementConfig.getName();
             mConfig = Point::defaultMeasurementConfig;
             break;
         case Configuration::eLineFeature:

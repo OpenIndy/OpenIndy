@@ -10,7 +10,8 @@ MeasurementConfig::MeasurementConfig(){
     this->distanceDependent = false;
     this->timeInterval = 0;
     this->distanceInterval = 0.0;
-    this->typeOfReading = static_cast<Configuration::ReadingTypes>(-1);
+    //this->typeOfReading = static_cast<Configuration::ReadingTypes>(-1);
+    this->typeOfReading = Configuration::ePolar;
     this->isSaved = false;
 
 }

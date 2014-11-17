@@ -319,7 +319,7 @@ void OiConfigState::loadSavedMeasurementConfigs(){
     }
 
     //get default measurement configs
-    Circle::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eCircleFeature));
+    /*Circle::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eCircleFeature));
     Cone::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eConeFeature));
     Cylinder::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eCylinderFeature));
     Ellipsoid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eEllipsoidFeature));
@@ -335,7 +335,7 @@ void OiConfigState::loadSavedMeasurementConfigs(){
     ScalarEntityMeasurementSeries::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityMeasurementSeriesFeature));
     ScalarEntityTemperature::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureFeature));
     //Station::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eSphereFeature));
-
+*/
     //set measurement config names model
     OiConfigState::updateMeasurementConfigModels();
 
