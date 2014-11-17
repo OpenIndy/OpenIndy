@@ -11,7 +11,7 @@ MeasurementConfigDialog::MeasurementConfigDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    initGUI();
+    //initGUI();
 }
 
 /*!
@@ -32,8 +32,8 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked(){
     if(this->ui->comboBox_existingConfigs->currentText().compare("") == 0
             || this->ui->lineEdit_count->text().compare("") == 0
             || this->ui->lineEdit_iterations->text().compare("") == 0
-            || this->ui->lineEdit_distanceInterval->text().compare("") == 0
-            || this->ui->lineEdit_timeInterval->text().compare("") == 0){
+            || (this->ui->lineEdit_distanceInterval->text().compare("") == 0 && this->ui->checkBox_distanceDependent->isChecked())
+            || (this->ui->lineEdit_timeInterval->text().compare("") == 0 && this->ui->checkBox_timeDependent->isChecked())){
         QMessageBox::information(NULL, "Measurement config invalid",
                                  "One of the fields is empty. Please specify each of the available fields.");
         return;
@@ -49,7 +49,7 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked(){
     mConfig.distanceDependent = this->ui->checkBox_distanceDependent->isChecked();
     mConfig.timeDependent = this->ui->checkBox_timeDependent->isChecked();
     mConfig.measureTwoSides = this->ui->checkBox_fsbs->isChecked();
-    mConfig.typeOfReading = (Configuration::ReadingTypes)this->ui->comboBox_typeOfReading->currentText().toInt();
+    mConfig.typeOfReading = Configuration::getReadingTypeEnum(this->ui->comboBox_typeOfReading->currentText());
 
     //send created config to OiConfigState
     if(!OiConfigState::setMeasurementConfig(OiFeatureState::getActiveFeature(), mConfig)){
@@ -132,12 +132,92 @@ void MeasurementConfigDialog::initGUI(){
     //set model of available measurement configs
     this->ui->comboBox_existingConfigs->setModel(OiConfigState::getMeasurementConfigNames());
 
+    //check if active feature exists and is a geometry
+    if(OiFeatureState::getActiveFeature() == NULL
+            || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        return;
+    }
+
     //set default measurement config
+    MeasurementConfig mConfig;
+    if(OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig().getIsValid()){
+        mConfig = OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig();
+    }else{
+        switch(OiFeatureState::getActiveFeature()->getTypeOfFeature()){
+        case Configuration::ePointFeature:
+            mConfig = Point::defaultMeasurementConfig;
+            break;
+        case Configuration::eLineFeature:
+            mConfig = Line::defaultMeasurementConfig;
+            break;
+        case Configuration::ePlaneFeature:
+            mConfig = Plane::defaultMeasurementConfig;
+            break;
+        case Configuration::ePointCloudFeature:
+            mConfig = PointCloud::defaultMeasurementConfig;
+            break;
+        case Configuration::eCircleFeature:
+            mConfig = Circle::defaultMeasurementConfig;
+            break;
+        case Configuration::eConeFeature:
+            mConfig = Cone::defaultMeasurementConfig;
+            break;
+        case Configuration::eHyperboloidFeature:
+            mConfig = Hyperboloid::defaultMeasurementConfig;
+            break;
+        case Configuration::eParaboloidFeature:
+            mConfig = Paraboloid::defaultMeasurementConfig;
+            break;
+        case Configuration::eEllipsoidFeature:
+            mConfig = Ellipsoid::defaultMeasurementConfig;
+            break;
+        case Configuration::eScalarEntityAngleFeature:
+            mConfig = ScalarEntityAngle::defaultMeasurementConfig;
+            break;
+        case Configuration::eScalarEntityDistanceFeature:
+            mConfig = ScalarEntityDistance::defaultMeasurementConfig;
+            break;
+        case Configuration::eScalarEntityMeasurementSeriesFeature:
+            mConfig = ScalarEntityMeasurementSeries::defaultMeasurementConfig;
+            break;
+        case Configuration::eScalarEntityTemperatureFeature:
+            mConfig = ScalarEntityTemperature::defaultMeasurementConfig;
+            break;
+        case Configuration::eNurbsFeature:
+            mConfig = Nurbs::defaultMeasurementConfig;
+            break;
+        case Configuration::eSphereFeature:
+            mConfig = Sphere::defaultMeasurementConfig;
+            break;
+        case Configuration::eCylinderFeature:
+            mConfig = Cylinder::defaultMeasurementConfig;
+            break;
+        case Configuration::eStationFeature:
+            //mConfig = Station::defaultMeasurementConfig;
+            break;
+        }
+    }
+
+    //set default values for GUI elements
+    if(mConfig.getIsValid()){
+        this->ui->comboBox_existingConfigs->setCurrentText(mConfig.getDisplayName());
+        this->ui->lineEdit_count->setText(QString::number(mConfig.count));
+        this->ui->lineEdit_iterations->setText(QString::number(mConfig.iterations));
+        this->ui->checkBox_distanceDependent->setChecked(mConfig.distanceDependent);
+        this->ui->checkBox_timeDependent->setChecked(mConfig.timeDependent);
+        this->ui->lineEdit_distanceInterval->setText(QString::number(mConfig.distanceInterval));
+        this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.timeInterval));
+    }else{
+        this->ui->comboBox_existingConfigs->setCurrentText("");
+        this->ui->lineEdit_count->setText("");
+        this->ui->lineEdit_iterations->setText("");
+        this->ui->checkBox_distanceDependent->setChecked(false);
+        this->ui->checkBox_timeDependent->setChecked(false);
+        this->ui->lineEdit_distanceInterval->setText("");
+        this->ui->lineEdit_timeInterval->setText("");
+    }
 
     //set available reading types
-
-
-
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
         if(OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
 
@@ -227,7 +307,7 @@ void MeasurementConfigDialog::showEvent(QShowEvent *event){
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
 
-    //set default measurement config as selected config in the dialog
+    this->initGUI();
 
     event->accept();
 }
@@ -242,10 +322,20 @@ void MeasurementConfigDialog::closeEvent(QCloseEvent *event){
 
 /*!
  * \brief MeasurementConfigDialog::on_comboBox_existingConfigs_currentIndexChanged
- * \param arg1
+ * \param configName
  */
-void MeasurementConfigDialog::on_comboBox_existingConfigs_currentIndexChanged(const QString &arg1){
+void MeasurementConfigDialog::on_comboBox_existingConfigs_currentIndexChanged(const QString &configName){
 
-    qDebug() << arg1;
+    //get selected measurement config
+    MeasurementConfig mConfig = OiConfigState::getMeasurementConfig(configName);
+
+    //set GUI elements to hold the selected measurement config
+    this->ui->comboBox_existingConfigs->setCurrentText(mConfig.getDisplayName());
+    this->ui->lineEdit_count->setText(QString::number(mConfig.count));
+    this->ui->lineEdit_iterations->setText(QString::number(mConfig.iterations));
+    this->ui->checkBox_distanceDependent->setChecked(mConfig.distanceDependent);
+    this->ui->checkBox_timeDependent->setChecked(mConfig.timeDependent);
+    this->ui->lineEdit_distanceInterval->setText(QString::number(mConfig.distanceInterval));
+    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.timeInterval));
 
 }

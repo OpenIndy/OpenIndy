@@ -231,6 +231,27 @@ void OiConfigState::observationAdded(int featureId){
 }
 
 /*!
+ * \brief OiConfigState::updateMeasurementConfigModels
+ */
+void OiConfigState::updateMeasurementConfigModels(){
+
+    QStringList mConfigNames;
+
+    //add saved measurement configs
+    foreach(const MeasurementConfig &mConfig, OiConfigState::savedMeasurementConfigs){
+        mConfigNames.append(mConfig.name);
+    }
+
+    //add project specific measurement configs
+    foreach(const MeasurementConfig &mConfig, OiConfigState::projectMeasurementConfigs){
+        mConfigNames.append(mConfig.name);
+    }
+
+    OiConfigState::measurementConfigNames->setStringList(mConfigNames);
+
+}
+
+/*!
  * \brief OiConfigState::loadSavedMeasurementConfigs
  * Load all measurement configs from config folder next to the executable
  */
@@ -296,8 +317,26 @@ void OiConfigState::loadSavedMeasurementConfigs(){
 
     }
 
+    //get default measurement configs
+    Circle::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eCircleFeature));
+    Cone::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eConeFeature));
+    Cylinder::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eCylinderFeature));
+    Ellipsoid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eEllipsoidFeature));
+    Hyperboloid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eHyperboloidFeature));
+    Line::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eLineFeature));
+    Nurbs::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eNurbsFeature));
+    Paraboloid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eParaboloidFeature));
+    Plane::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::ePlaneFeature));
+    Point::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::ePointFeature));
+    PointCloud::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::ePointCloudFeature));
+    ScalarEntityAngle::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityAngleFeature));
+    ScalarEntityDistance::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityDistanceFeature));
+    ScalarEntityMeasurementSeries::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityMeasurementSeriesFeature));
+    ScalarEntityTemperature::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureFeature));
+    //Station::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eSphereFeature));
+
     //set measurement config names model
-    OiConfigState::measurementConfigNames->setStringList(mConfigNames);
+    OiConfigState::updateMeasurementConfigModels();
 
 }
 
@@ -356,6 +395,12 @@ void OiConfigState::saveMeasurementConfig(const MeasurementConfig &mConfig, bool
 
     //save mConfig in database
     SystemDbManager::addMeasurementConfig(mConfig.getName());
+
+    //add mConfig to list of saved measurement configs
+    OiConfigState::savedMeasurementConfigs.append(mConfig);
+
+    //update the measurement config names model
+    OiConfigState::updateMeasurementConfigModels();
 
 }
 

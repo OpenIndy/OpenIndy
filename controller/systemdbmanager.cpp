@@ -246,7 +246,7 @@ QString SystemDbManager::getDefaultMeasurementConfig(Configuration::FeatureTypes
         QString geomTypeString = Configuration::getFeatureTypeString(geomType);
 
         QString query = QString("SELECT m.name FROM measurementConfig AS m INNER JOIN element AS e")
-                .append("ON m.id = e.measurementConfig_id WHERE element_type = '%1'").arg(geomTypeString);
+                .append(" ON m.id = e.measurementConfig_id WHERE element_type = '%1'").arg(geomTypeString);
 
         QSqlQuery command(SystemDbManager::db);
         command.exec(query);

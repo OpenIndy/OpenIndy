@@ -56,6 +56,9 @@ private:
     //models to represent config data
     static QStringListModel *measurementConfigNames; //the names of all available measurement configs
 
+    //update models when configs where added or deleted
+    static void updateMeasurementConfigModels();
+
     //load configuration files (xml) from config folder when starting OpenIndy
     static void loadSavedMeasurementConfigs();
     static void loadSavedSensorConfigs();

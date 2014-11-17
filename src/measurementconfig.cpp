@@ -28,7 +28,10 @@ QString MeasurementConfig::getName() const{
  * \return
  */
 QString MeasurementConfig::getDisplayName() const{
-    return QString("%1%2").arg(this->name).arg(this->isSaved?"":" (project)");
+    if(this->getIsValid()){
+        return QString("%1%2").arg(this->name).arg(this->isSaved?"":" (project)");
+    }
+    return "";
 }
 
 /*!

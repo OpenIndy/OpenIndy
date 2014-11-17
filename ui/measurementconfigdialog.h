@@ -45,7 +45,7 @@ private slots:
     void on_pushButton_ok_clicked();
     void on_pushButton_cancel_clicked();
 
-
+    void on_comboBox_existingConfigs_currentIndexChanged(const QString &configName);
 
 
 
@@ -64,7 +64,7 @@ private slots:
 
 
 
-    void on_comboBox_existingConfigs_currentIndexChanged(const QString &arg1);
+
 
 private:
     Ui::MeasurementConfigDialog *ui;
