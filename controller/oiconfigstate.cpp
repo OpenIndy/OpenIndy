@@ -296,7 +296,8 @@ void OiConfigState::loadSavedMeasurementConfigs(){
 
         //try to parse the file to a MeasurementConfig object
         MeasurementConfig savedConfig;
-        if(!savedConfig.fromOpenIndyXML(mConfigXml.documentElement())){
+        QDomElement mConfigTag = mConfigXml.documentElement();
+        if(!savedConfig.fromOpenIndyXML(mConfigTag)){
             continue;
         }
         savedConfig.isSaved = true;

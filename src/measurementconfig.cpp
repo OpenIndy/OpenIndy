@@ -86,7 +86,7 @@ QDomElement MeasurementConfig::toOpenIndyXML(QDomDocument &xmlDoc) const{
     mConfig.setAttribute("measureTwoSides", this->measureTwoSides);
     mConfig.setAttribute("timeDependent", this->timeDependent);
     mConfig.setAttribute("distanceDependent", this->distanceDependent);
-    mConfig.setAttribute("timeInterval", this->timeInterval);
+    mConfig.setAttribute("timeInterval", QString::number(this->timeInterval));
     mConfig.setAttribute("distanceInterval", this->distanceInterval);
     mConfig.setAttribute("typeOfReading", this->typeOfReading);
 
