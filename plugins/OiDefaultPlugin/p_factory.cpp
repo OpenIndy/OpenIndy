@@ -84,6 +84,13 @@ QList<SimulationModel *> OiTemplatePlugin::createSimulations(){
     return resultSet;
 }
 
+QList<OiTool *> OiTemplatePlugin::createTools()
+{
+    QList<OiTool*> resultSet;
+    resultSet.append(new OiReportCreator());
+    return resultSet;
+}
+
 /*!
  * \brief OiTemplatePlugin::createSensor
  * Returns the sensor with the specified name
@@ -183,6 +190,17 @@ SimulationModel *OiTemplatePlugin::createSimulation(QString name){
 
     if(name.compare("SimplePolarMeasurement") == 0){
         result = new SimplePolarMeasurement();
+    }
+
+    return result;
+}
+
+OiTool *OiTemplatePlugin::createTool(QString name)
+{
+    OiTool *result = NULL;
+
+    if(name.compare("Report Creator") == 0){
+        result = new OiReportCreator();
     }
 
     return result;

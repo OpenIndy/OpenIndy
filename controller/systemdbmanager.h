@@ -6,6 +6,7 @@
 #include <QString>
 #include <QList>
 #include <QDir>
+#include <QMultiMap>
 
 #include "pluginmetadata.h"
 #include "oimetadata.h"
@@ -87,6 +88,8 @@ public:
     static QList<SimulationPlugin> getAvailableSimulationPlugins();
 
     static void saveDefaultFunction(Configuration::FeatureTypes featureType, QString function, QString plugin);
+
+    static QMultiMap<QString,QString> getAvailableOiTools();
 
 private:
     static QSqlDatabase db;

@@ -1610,9 +1610,6 @@ bool Controller::receiveRequestResult(OiRequestResponse *request){
                 this->tblModel->updateModel();
 
                 break;
-            case OiRequestResponse::eStartStakeOut:
-                qDebug() << request->response.toString();
-                break;
             }
 
             this->lastRequestId = -1;
@@ -1698,6 +1695,22 @@ void Controller::sendIsConnected(bool b)
 void Controller::sendSensorState(int sState, QString msg)
 {
     emit setSensorState(sState,msg);
+}
+
+QMultiMap<QString, QString> Controller::getOiTools()
+{
+    return SystemDbManager::getAvailableOiTools();
+}
+
+void Controller::loadOiToolWidget(QString pluginName, QString toolName)
+{
+    QString pluginPath = SystemDbManager::getPluginFilePath(toolName,pluginName);
+
+    OiTool* oiToolWidget = PluginLoader::loadOiToolPlugin(pluginPath,toolName);
+
+    if(oiToolWidget != NULL){
+        emit openOiToolWidget(oiToolWidget);
+    }
 }
 
 /*void Controller::handleRemoteCommand(OiProjectData *d)

@@ -17,6 +17,7 @@ QString OiMetaData::iid_NetworkAdjustment = NetworkAdjustment_iidd;
 QString OiMetaData::iid_ObjectTransformation = ObjectTransformation_iidd;
 QString OiMetaData::iid_SystemTransformation = SystemTransformation_iidd;
 QString OiMetaData::iid_Simulation = Simulation_iidd;
+QString OiMetaData::iid_OiTool = OiTool_iidd;
 
 
 /*!
@@ -146,6 +147,8 @@ bool OiMetaData::findIID(QString iid){
     }else if(iid.compare(OiMetaData::iid_OiPlugin) == 0){
         return true;
     }else if(iid.compare(OiMetaData::iid_Simulation) == 0){
+        return true;
+    }else if(iid.compare(OiMetaData::iid_OiTool) == 0){
         return true;
     }
 

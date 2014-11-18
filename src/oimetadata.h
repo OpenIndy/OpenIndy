@@ -42,13 +42,13 @@ private:
     static QString iid_SystemTransformation;
     static QString iid_Sensor;
     static QString iid_Simulation;
-
+    static QString iid_OiTool;
 
     static QString getVersion();
     static QString getCompiler();
     static QString getOperatingSys();
     static bool findIID(QString iid);
-    static int generateId();
+    //static int generateId();
 
 };
 

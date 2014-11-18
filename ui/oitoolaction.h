@@ -16,9 +16,16 @@ public:
     QString getPluginName();
     QString getToolName();
 
+
+signals:
+    void openToolWidget(QString pluginName,QString toolName);
+
 private:
     QString toolName;
     QString pluginName;
+
+private slots:
+    void clickCallback();
 
 };
 

@@ -54,7 +54,7 @@
 
 #include "oifeaturestate.h"
 
-#include "oistakeoutmanager.h"
+#include "oitoolaction.h"
 
 namespace Ui {
 class MainWindow;
@@ -101,8 +101,6 @@ public:
     RealTimeDataDialog rtDataDialog;
 
     WatchWindow *watchWindow;
-
-    OiStakeOutManager myStakeOutManager;
 
     //actions
     //create feature
@@ -185,6 +183,9 @@ public slots:
     //void updateModel();
 
     //void updateCoordSys();
+
+    //database methods
+    void createOiToolActions();
 
 private slots:
     void featureContextMenu(const QPoint &point);
@@ -315,15 +316,12 @@ private slots:
 
     void on_treeView_featureOverview_clicked(const QModelIndex &index);
 
-    //stake out methods
-    void on_actionStart_stake_out_triggered();
-    void on_actionStop_stake_out_triggered();
-    void on_actionNext_triggered();
-    void stakeOutConfigured(QDomDocument request);
-
     //close dialogs
     void closeAllOpenDialogs();
     void setDialogsNULL();
+
+    //tools
+    void showOiToolWidget(OiTool* oiToolWidget);
 
 private:
     Ui::MainWindow *ui;

@@ -12,6 +12,7 @@
 #include <QApplication>
 #include <QStringListModel>
 #include <QDomDocument>
+#include <QWidget>
 
 #include "configuration.h"
 #include "console.h"
@@ -153,6 +154,8 @@ signals:
 
     void sensorDisconnected();
 
+    void openOiToolWidget(OiTool* oiToolWidget);
+
 public slots:
     void setUpFeatureGroupsModel();
     void setUpCoordinateSystemsModel();
@@ -242,6 +245,10 @@ public slots:
     void sendIsConnected(bool b);
 
     void sendSensorState(int sState, QString msg);
+
+    //database function
+    QMultiMap<QString,QString> getOiTools();
+    void loadOiToolWidget(QString pluginName,QString toolName);
 
 private slots:
     void changeFunctionTreeViewModel();

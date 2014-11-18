@@ -44,6 +44,7 @@ INCLUDEPATH += ../../src
 INCLUDEPATH += ../../src/geometry
 INCLUDEPATH += ../../src/oiemitter
 INCLUDEPATH += ../../src/plugin
+INCLUDEPATH += ../../src/plugin/oitool
 INCLUDEPATH += ../../src/simulation
 INCLUDEPATH += ../../lib/openIndyLib/include
 
@@ -57,6 +58,7 @@ INCLUDEPATH += $$PWD/functions/systemTransformation
 INCLUDEPATH += $$PWD/functions/generateFeature
 INCLUDEPATH += $$PWD/functions/generateFeature/pointcloud_segmentation
 INCLUDEPATH += $$PWD/simulations/simplePolarMeasurement
+INCLUDEPATH += $$PWD/oiTools
 
 INCLUDEPATH += $$PWD/lib/fitting
 INCLUDEPATH += $$PWD/lib/fitting/util
@@ -159,7 +161,9 @@ SOURCES += p_factory.cpp \
     ../../src/geometry/scalarentitydistance.cpp \
     ../../src/geometry/scalarentitymeasurementseries.cpp \
     ../../src/geometry/scalarentitytemperature.cpp \
-    ../../src/geometry/sphere.cpp
+    ../../src/geometry/sphere.cpp \
+    ../../src/plugin/oitool/oijob.cpp \
+    oiTools/p_oireportcreator.cpp
 
 HEADERS += p_factory.h \
     lib/fitting/cfitting_approxfunc.h \
@@ -275,7 +279,10 @@ HEADERS += p_factory.h \
     ../../src/geometry/scalarentitydistance.h \
     ../../src/geometry/scalarentitymeasurementseries.h \
     ../../src/geometry/scalarentitytemperature.h \
-    ../../src/geometry/sphere.h
+    ../../src/geometry/sphere.h \
+    ../../src/plugin/oitool/oijob.h \
+    ../../src/plugin/oitool/pi_oitool.h \
+    oiTools/p_oireportcreator.h
 
 OTHER_FILES += metaInfo.json
 

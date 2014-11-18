@@ -181,8 +181,6 @@ SOURCES += \
     controller/networking/oinetworkconnection.cpp \
     controller/networking/oirequesthandler.cpp \
     controller/networking/oirequestresponse.cpp \
-    controller/oistakeout.cpp \
-    ui/oistakeoutmanager.cpp \
     ui/pointfeaturemodel.cpp \
     ui/pointfeaturefiltermodel.cpp \
     ui/observationproxymodel.cpp \
@@ -335,8 +333,6 @@ HEADERS  += \
     controller/networking/oinetworkconnection.h \
     controller/networking/oirequesthandler.h \
     controller/networking/oirequestresponse.h \
-    controller/oistakeout.h \
-    ui/oistakeoutmanager.h \
     ui/pointfeaturemodel.h \
     ui/pointfeaturefiltermodel.h \
     ui/observationproxymodel.h \
@@ -365,7 +361,6 @@ FORMS    += ui/mainwindow.ui \
     ui/oisimulationwidget.ui \
     ui/stationinfodialog.ui \
     ui/realtimedatadialog.ui \
-    ui/oiloadingdialog.ui \
-    ui/oistakeoutmanager.ui
+    ui/oiloadingdialog.ui
 
 

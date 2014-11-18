@@ -370,6 +370,19 @@ QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
                         if(val.isValid()){
                             path = val.toString();
                         }
+                    }else{
+                        query = QString("%1 %2 %3")
+                                .arg("SELECT file_path FROM plugin AS p INNER JOIN oiToolPlugin AS t ON p.id = t.plugin_id")
+                                .arg(QString("WHERE p.name = '%1'").arg(plugin))
+                                .arg(QString("AND t.name = '%1';").arg(name));
+                        command.finish();
+                        command.exec(query);
+                        if(command.next()){
+                            QVariant val = command.value(0);
+                            if(val.isValid()){
+                                path = val.toString();
+                            }
+                        }
                     }
                 }
             }
@@ -1137,4 +1150,31 @@ void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureTyp
 
         SystemDbManager::disconnect();
     }
+}
+
+QMultiMap<QString,QString> SystemDbManager::getAvailableOiTools(){
+
+    QMultiMap<QString,QString> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT t.name AS toolname, p.name AS pluginname FROM oiToolPlugin AS t INNER JOIN plugin AS p")
+                .append(" ON p.id = t.plugin_id");
+
+
+        command.exec(query);
+        while(command.next()){
+
+            result.insert(command.value("pluginname").toString(),command.value("toolname").toString());
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+
 }

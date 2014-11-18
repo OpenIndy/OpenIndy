@@ -2,7 +2,7 @@
 
 OiToolAction::OiToolAction(QObject *parent) : QAction(parent)
 {
-
+    connect(this,SIGNAL(triggered()),this,SLOT(clickCallback()));
 }
 
 void OiToolAction::setPluginName(QString pName)
@@ -23,4 +23,9 @@ QString OiToolAction::getPluginName()
 QString OiToolAction::getToolName()
 {
     return this->toolName;
+}
+
+void OiToolAction::clickCallback()
+{
+    emit this->openToolWidget(this->pluginName,this->toolName);
 }
