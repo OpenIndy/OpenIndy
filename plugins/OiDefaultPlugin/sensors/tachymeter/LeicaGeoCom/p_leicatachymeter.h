@@ -76,17 +76,17 @@ protected:
     //! move totalstation to specified position
     bool move(double azimuth, double zenith, double distance,bool isrelativ);
 
+    //! move total station to specified xyz position
+    bool move(double x, double y, double z);
+
     //! toggle between frontside and backside
     bool toggleSightOrientation();
 
-    //! check ATR state
-    bool getATRState();
-
-    //! set ATR state
-    bool setATRState(QString ATRstate);
-
     //! check LOCK state
     bool getLOCKState();
+
+    //! deactivate lock state
+    void deactiveLockState();
 
     //! sets the LOCK state
     bool setLOCKState(QString currentState);
@@ -101,7 +101,6 @@ protected:
 private:
 
     QSerialPort *serial;
-
 
     QList<Reading*> measurePolar(MeasurementConfig*);
     QList<Reading*> measureDistance(MeasurementConfig*);
@@ -120,6 +119,31 @@ private:
     bool executeCommand(QString);
 
     bool checkCommandRC(QString command);
+
+    Configuration::Faces getCurrentFace(double zenith);
+
+    bool setTargetTypeMeasure();
+    bool setTargetTypeStream();
+    bool setAdjustMode();
+
+    void stopTrackingAfterMeasure();
+
+    bool laserOn;
+    bool fineAdjusted;
+
+    bool measureWatchWindow;
+    bool watchWindowOpen;
+    Configuration::ReadingTypes currentStreamFormat;
+    void stopWatchWindowForMeasurement();
+    void restartWatchWindowAfterMeasurement();
+
+
+    Reading* getQuickMeasReading(QString receive);
+
+    void activateLaserPointer();
+    void deactivateLaserPointer();
+
+    void stopTrackingMode();
 
 };
 

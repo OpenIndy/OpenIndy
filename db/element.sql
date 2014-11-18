@@ -17,3 +17,8 @@ INSERT INTO "element" VALUES(16,null,'readingDirection');
 INSERT INTO "element" VALUES(17,null,'readingCartesian');
 INSERT INTO "element" VALUES(18,null,'observation');
 INSERT INTO "element" VALUES(19,null,'coordinatesystem');
+INSERT INTO "element" VALUES(20,null,'sEntitiy angle');
+INSERT INTO "element" VALUES(21,null,'sEntity distance');
+INSERT INTO "element" VALUES(22,null,'sEntity temperature');
+INSERT INTO "element" VALUES(23,null,'sEntity measurement series');
+INSERT INTO "element" VALUES(24,null,'trafoParam');

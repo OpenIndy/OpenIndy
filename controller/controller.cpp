@@ -254,10 +254,10 @@ void Controller::startMove(Reading *parameter){
 
     //TODO check function
     if (parameter->typeofReading == Configuration::ePolar){
-        OiFeatureState::getActiveStation()->startMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
+        OiFeatureState::getActiveStation()->emitStartMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
         emit sensorWorks("moving...");
     }else if (parameter->typeofReading == Configuration::eCartesian){
-        OiFeatureState::getActiveStation()->startMove(parameter->rCartesian.xyz.getAt(0),parameter->rCartesian.xyz.getAt(1),parameter->rCartesian.xyz.getAt(2));
+        OiFeatureState::getActiveStation()->emitStartMove(parameter->rCartesian.xyz.getAt(0),parameter->rCartesian.xyz.getAt(1),parameter->rCartesian.xyz.getAt(2));
         emit sensorWorks("moving...");
     }
 
