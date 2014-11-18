@@ -82,12 +82,6 @@ protected:
     //! toggle between frontside and backside
     bool toggleSightOrientation();
 
-    //! check ATR state
-    bool getATRState();
-
-    //! set ATR state
-    bool setATRState(QString ATRstate);
-
     //! check LOCK state
     bool getLOCKState();
 
@@ -135,6 +129,21 @@ private:
     void stopTrackingAfterMeasure();
 
     bool laserOn;
+    bool fineAdjusted;
+
+    bool measureWatchWindow;
+    bool watchWindowOpen;
+    Configuration::ReadingTypes currentStreamFormat;
+    void stopWatchWindowForMeasurement();
+    void restartWatchWindowAfterMeasurement();
+
+
+    Reading* getQuickMeasReading(QString receive);
+
+    void activateLaserPointer();
+    void deactivateLaserPointer();
+
+    void stopTrackingMode();
 
 };
 
