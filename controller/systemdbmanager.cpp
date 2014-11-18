@@ -385,7 +385,7 @@ QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
  * \param f
  * \return
  */
-int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments,QList<SimulationModel*> simulationList ){
+int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments, QList<SimulationModel*> simulationList , QList<OiTool *> toolList){
     int pluginId = -1;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
@@ -410,6 +410,9 @@ int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> funct
                 }
                 foreach(SimulationModel *s, simulationList){
                     SystemDbManager::saveSimulationPlugin(pluginId,s);
+                }
+                foreach(OiTool *t, toolList){
+                    SystemDbManager::saveOiToolPlugin(pluginId,t);
                 }
 
             }
@@ -704,6 +707,15 @@ void SystemDbManager::saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustmen
             .arg(pluginId).arg(s->getMetaData()->iid).arg(s->getMetaData()->name).arg(s->getMetaData()->description);
     QSqlQuery command(SystemDbManager::db);
     command.exec(query);*/
+}
+
+void SystemDbManager::saveOiToolPlugin(int pluginId, OiTool* t)
+{
+    //insert sensor plugin
+    QString query = QString("INSERT INTO oiToolPlugin (plugin_id, iid, name, description) VALUES (%1, '%2', '%3', '%4')")
+            .arg(pluginId).arg(t->getMetaData()->iid).arg(t->getMetaData()->name).arg(t->getMetaData()->description);
+    QSqlQuery command(SystemDbManager::db);
+    command.exec(query);
 }
 
 /*!

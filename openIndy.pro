@@ -41,6 +41,7 @@ INCLUDEPATH += $$PWD/controller/networking
 INCLUDEPATH += $$PWD/src/geometry
 INCLUDEPATH += $$PWD/src/oiemitter
 INCLUDEPATH += $$PWD/src/plugin
+INCLUDEPATH += $$PWD/src/plugin/oitool
 INCLUDEPATH += $$PWD/src/simulation
 INCLUDEPATH += $$PWD/controller/oiDataExchange
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
@@ -187,7 +188,9 @@ SOURCES += \
     ui/observationproxymodel.cpp \
     ui/readingproxymodel.cpp \
     controller/plugincopier.cpp \
-    ui/observationdelegate.cpp
+    ui/observationdelegate.cpp \
+    src/plugin/oitool/oijob.cpp \
+    ui/oitoolaction.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -339,7 +342,10 @@ HEADERS  += \
     ui/observationproxymodel.h \
     ui/readingproxymodel.h \
     controller/plugincopier.h \
-    ui/observationdelegate.h
+    ui/observationdelegate.h \
+    src/plugin/oitool/pi_oitool.h \
+    src/plugin/oitool/oijob.h \
+    ui/oitoolaction.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

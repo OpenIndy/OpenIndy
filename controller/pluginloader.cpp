@@ -375,6 +375,36 @@ QList<NetworkAdjustment*> PluginLoader::loadNetworkAdjustmentPlugins(QString pat
 
 }
 
+QList<OiTool *> PluginLoader::loadOiToolPlugins(QString path)
+{
+    QList<OiTool*> oiToolList;
+
+    QPluginLoader pluginLoader(path);
+
+    if(PluginLoader::getMetaData(path)){
+
+       pCopier->sendMsg("load oiTool plugins",false);
+
+       QObject *plugin = pluginLoader.instance();
+
+
+       if (plugin) {
+
+           OiPlugin *OiToolFactory = qobject_cast<OiPlugin *>(plugin);
+
+            oiToolList = OiToolFactory->createTools();
+
+            pCopier->sendMsg(QString(QString::number(oiToolList.size())+ " OiTools successfully created."),false);
+            return oiToolList;
+       }else{
+           pCopier->sendMsg(QString("create networkadjustment plugins failed"),true);
+           return oiToolList;
+       }
+   }else{
+        pCopier->sendMsg("meta data not valid",true);
+    }
+}
+
 /*!
  * \brief PluginLoader::loadSensorPlugin
  * Load the sensor with the specified name which is located in the plugin at the specified path
@@ -455,4 +485,20 @@ NetworkAdjustment* PluginLoader::loadNetworkAdjustmentPlugin(QString path, QStri
     }
 
     return n;
+}
+
+OiTool *PluginLoader::loadOiToolPlugin(QString path, QString name)
+{
+    OiTool* t = NULL;
+
+    QPluginLoader pluginLoader(path);
+    QObject *plugin = pluginLoader.instance();
+    if (plugin) {
+        OiPlugin *oiToolFactory = qobject_cast<OiPlugin *>(plugin);
+        t = oiToolFactory->createTool(name);
+    }else{
+        Console::addLine(QString("Cannot load selected network adjustment"));
+    }
+
+    return t;
 }

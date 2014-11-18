@@ -21,6 +21,7 @@
 #include "oimetadata.h"
 #include "pluginmetadata.h"
 #include "plugincopier.h"
+#include "pi_oitool.h"
 
 
 /*!
@@ -54,11 +55,13 @@ public slots:
     static Function* loadFunctionPlugin(QString path, QString name);
     static SimulationModel* loadSimulationPlugin(QString path, QString name);
     static NetworkAdjustment* loadNetworkAdjustmentPlugin(QString path, QString name);
+    static OiTool* loadOiToolPlugin(QString path, QString name);
 
     static QList<Sensor*> loadSensorPlugins(QString path);
     static QList<Function*> loadFunctionPlugins(QString path);
     static QList<SimulationModel*> loadSimulationPlugins(QString path);
     static QList<NetworkAdjustment*> loadNetworkAdjustmentPlugins(QString path);
+    static QList<OiTool*> loadOiToolPlugins(QString path);
 
     static PluginCopier* getCopier();
     static bool deletePlugin(PluginMetaData* metaData);

@@ -85,3 +85,12 @@ CREATE TABLE elementPlugin (
 	FOREIGN KEY (element_id) REFERENCES element(id),
 	FOREIGN KEY (functionPlugin_id) REFERENCES functionPlugin(id)
 );
+
+CREATE TABLE oiToolPlugin (
+	id integer PRIMARY KEY autoincrement,
+	iid text,
+	plugin_id integer,
+	name text,
+	description text,
+	FOREIGN KEY (plugin_id) REFERENCES plugin(id)
+)
