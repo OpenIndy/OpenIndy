@@ -217,10 +217,10 @@ QString Circle::getDisplayRadius() const{
 QString Circle::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-
+/*
 QString Circle::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}
+}*/
 /*QString Circle::getDisplayObs() const{
     return QString::number(this->myObservations.size());
 }*/

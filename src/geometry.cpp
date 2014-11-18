@@ -85,6 +85,15 @@ bool Geometry::getIsNominal() const{
 }
 
 /*!
+ * \brief getDisplayIsNominal
+ * \return
+ */
+QString Geometry::getDisplayIsNominal() const
+{
+    return QString(this->isNominal?"nominal":"actual");
+}
+
+/*!
  * \brief Geometry::getMyNominals
  * \return
  */

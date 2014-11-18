@@ -11,6 +11,7 @@ ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(bool isNominal, QOb
     this->isSolved = false;
     this->isUpdated = false;
     this->isDrawn = false;
+    this->seriesValue = 0.0;
 }
 
 ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(const ScalarEntityMeasurementSeries &copy) : Geometry(copy.isNominal){
@@ -120,10 +121,10 @@ double ScalarEntityMeasurementSeries::getScalar() const
 QString ScalarEntityMeasurementSeries::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-
+/*
 QString ScalarEntityMeasurementSeries::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}
+}*/
 /*QString ScalarEntityMeasurementSeries::getDisplayObs() const{
     return QString::number(this->myObservations.size());
 }*/

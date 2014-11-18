@@ -266,10 +266,10 @@ QString Plane::getDisplayK() const{
 QString Plane::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-
+/*
 QString Plane::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}
+}*/
 
 /*QString Plane::getDisplayObs() const{
     return QString::number(this->myObservations.size());

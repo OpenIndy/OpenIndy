@@ -263,10 +263,10 @@ QString Line::getDisplayK() const{
 QString Line::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-
+/*
 QString Line::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}
+}*/
 
 /*QString Line::getDisplayObs() const{
     return QString::number(this->myObservations.size());

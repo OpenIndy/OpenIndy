@@ -120,10 +120,10 @@ double ScalarEntityTemperature::getTemperature() const{
 QString ScalarEntityTemperature::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-
+/*
 QString ScalarEntityTemperature::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}
+}*/
 /*QString ScalarEntityTemperature::getDisplayObs() const{
     return QString::number(this->myObservations.size());
 }*/
