@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig ScalarEntityDistance::defaultMeasurementConfig;
+
 ScalarEntityDistance::ScalarEntityDistance(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();
@@ -147,7 +149,7 @@ QString ScalarEntityDistance::getDisplaySolved() const{
 }
 
 QString ScalarEntityDistance::getDisplayMConfig() const{
-    return this->mConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString ScalarEntityDistance::getDisplayStdDev() const{

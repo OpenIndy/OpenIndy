@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig Plane::defaultMeasurementConfig;
+
 Plane::Plane(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4)
 {
     this->id = Configuration::generateID();
@@ -278,7 +280,7 @@ QString Plane::getDisplaySolved() const{
 }
 
 QString Plane::getDisplayMConfig() const{
-    return this->mConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString Plane::getDisplayStdDev() const{

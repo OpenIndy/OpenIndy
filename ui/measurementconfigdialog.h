@@ -13,6 +13,7 @@
 #include <QDesktopWidget>
 
 #include "oifeaturestate.h"
+#include "oiconfigstate.h"
 
 namespace Ui {
 class MeasurementConfigDialog;
@@ -35,23 +36,33 @@ signals:
     void sendConfig(FeatureWrapper*, MeasurementConfig);
 
 public slots:
-    void showEvent(QShowEvent *event);
+
 
 private slots:
+    void initGUI();
+    void showEvent(QShowEvent *event);
+
+    void on_pushButton_ok_clicked();
+    void on_pushButton_cancel_clicked();
+
+    void on_comboBox_existingConfigs_currentIndexChanged(const QString &configName);
+
+
+
 
     void closeEvent(QCloseEvent *event);
 
-    void initGUI();
+
 
     void receiveConfig(MeasurementConfig);
 
-    void on_pushButton_ok_clicked();
 
-    void on_pushButton_cancel_clicked();
 
     int getCode(QComboBox *cb, QString label);
 
     QString getLabel(QComboBox *cb, int code);
+
+
 
 
 

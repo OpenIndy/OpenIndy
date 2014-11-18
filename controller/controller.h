@@ -83,7 +83,9 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = 0);
 
+    //instances of at most static classes to take care of OpenIndy state changes
     OiFeatureState *myFeatureState;
+    OiConfigState *myConfigState;
 
     QList<MeasurementConfig> measurementConfigs; //all available measurement configs (saved & unsaved)
     MeasurementConfig lastmConfig;
@@ -181,7 +183,7 @@ public slots:
     void recalcTrafoParam(TrafoParam *tp);
     void changeActiveStation(bool setSensor);
     void showResults(bool);
-    void defaultLastmConfig();
+    //void defaultLastmConfig();
     void savePluginData(PluginMetaData* metaInfo);
     void setSensorModel(Configuration::SensorTypes);
     void getSelectedPlugin(int index);

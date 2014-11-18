@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig ScalarEntityTemperature::defaultMeasurementConfig;
+
 ScalarEntityTemperature::ScalarEntityTemperature(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();
@@ -131,7 +133,7 @@ QString ScalarEntityTemperature::getDisplaySolved() const{
 }
 
 QString ScalarEntityTemperature::getDisplayMConfig() const{
-    return this->mConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString ScalarEntityTemperature::getDisplayStdDev() const{

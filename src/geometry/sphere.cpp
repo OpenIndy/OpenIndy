@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig Sphere::defaultMeasurementConfig;
+
 Sphere::Sphere(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), radius(0.0)
 {
     this->id = Configuration::generateID();
@@ -232,7 +234,7 @@ QString Sphere::getDisplaySolved() const{
 }
 
 QString Sphere::getDisplayMConfig() const{
-    return this->mConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString Sphere::getDisplayStdDev() const{

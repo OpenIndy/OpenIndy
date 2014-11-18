@@ -5,6 +5,7 @@
 #include <QtCore/qmath.h>
 #include <QtXml>
 
+#include "measurementconfig.h"
 #include "configuration.h"
 #include "oivec.h"
 
@@ -88,6 +89,9 @@ public:
     sReadingUndefined rUndefined;
     sReadingLevel rLevel;
 
+    const MeasurementConfig &getMeasurementConfig();
+    void setMeasurementConfig(const MeasurementConfig &mConfig);
+
     Configuration::Faces face;  //shows in which sight it was measured
 
     void toCartesian();
@@ -105,7 +109,7 @@ public:
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
 private:
-
+    //save backup readings while calculating a simulation (reading are randomly shuffled)
     sReadingPolar backupPolar;
     sReadingCartesian backupCartesian;
     sReadingDirection backupDirection;
@@ -113,6 +117,8 @@ private:
     sReadingTemperature backupTemperature;
     sReadingUndefined backupUndefined;
     sReadingLevel backupLevel;
+
+    MeasurementConfig myMeasurementConfig; //the configuration that the sensor used to produce this reading
 };
 
 #endif // READING_H

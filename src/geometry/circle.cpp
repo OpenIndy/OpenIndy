@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig Circle::defaultMeasurementConfig;
+
 Circle::Circle(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4), radius(0.0)
 {
     this->id = Configuration::generateID();
@@ -228,7 +230,7 @@ QString Circle::getDisplaySolved() const{
 }
 
 QString Circle::getDisplayMConfig() const{
-    return this->mConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString Circle::getDisplayStdDev() const{

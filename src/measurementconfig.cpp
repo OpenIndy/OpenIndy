@@ -1,7 +1,70 @@
 #include "measurementconfig.h"
 
 MeasurementConfig::MeasurementConfig(){
-    this->typeOfReading = static_cast<Configuration::ReadingTypes>(-1);
+
+    //set defaults
+    this->count = 1000;
+    this->iterations = 1;
+    this->measureTwoSides = false;
+    this->timeDependent = false;
+    this->distanceDependent = false;
+    this->timeInterval = 0;
+    this->distanceInterval = 0.0;
+    //this->typeOfReading = static_cast<Configuration::ReadingTypes>(-1);
+    this->typeOfReading = Configuration::ePolar;
+    this->isSaved = false;
+
+}
+
+/*!
+ * \brief MeasurementConfig::getName
+ * \return
+ */
+QString MeasurementConfig::getName() const{
+    return this->name;
+}
+
+/*!
+ * \brief MeasurementConfig::getDisplayName
+ * \return
+ */
+QString MeasurementConfig::getDisplayName() const{
+    if(this->getIsValid()){
+        return QString("%1%2").arg(this->name).arg(this->isSaved?"":" (project)");
+    }
+    return "";
+}
+
+/*!
+ * \brief MeasurementConfig::getIsSaved
+ * \return
+ */
+bool MeasurementConfig::getIsSaved() const{
+    return this->isSaved;
+}
+
+/*!
+ * \brief MeasurementConfig::getIsValid
+ * \return
+ */
+bool MeasurementConfig::getIsValid() const{
+    if(this->name.compare("") == 0){
+        return false;
+    }
+    return true;
+}
+
+/*!
+ * \brief MeasurementConfig::setName
+ * \param name
+ * \return
+ */
+bool MeasurementConfig::setName(QString name){
+    if(this->name.compare("") == 0){
+        this->name = name;
+        return true;
+    }
+    return false;
 }
 
 /*!
@@ -24,7 +87,7 @@ QDomElement MeasurementConfig::toOpenIndyXML(QDomDocument &xmlDoc) const{
     mConfig.setAttribute("measureTwoSides", this->measureTwoSides);
     mConfig.setAttribute("timeDependent", this->timeDependent);
     mConfig.setAttribute("distanceDependent", this->distanceDependent);
-    mConfig.setAttribute("timeInterval", this->timeInterval);
+    mConfig.setAttribute("timeInterval", QString::number(this->timeInterval));
     mConfig.setAttribute("distanceInterval", this->distanceInterval);
     mConfig.setAttribute("typeOfReading", this->typeOfReading);
 
@@ -62,4 +125,12 @@ bool MeasurementConfig::fromOpenIndyXML(QDomElement &xmlElem){
 
     return true;
 
+}
+
+/*!
+ * \brief MeasurementConfig::setIsSaved
+ * \param isSaved
+ */
+void MeasurementConfig::setIsSaved(bool isSaved){
+    this->isSaved = isSaved;
 }

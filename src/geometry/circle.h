@@ -50,6 +50,8 @@ public:
 
     bool saveSimulationData();
 
+    static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
+
 };
 
 #endif // CIRCLE_H

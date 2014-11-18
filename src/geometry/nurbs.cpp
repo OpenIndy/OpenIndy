@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig Nurbs::defaultMeasurementConfig;
+
 Nurbs::Nurbs(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();

@@ -267,7 +267,7 @@ QString Geometry::getDisplayObs() const
 
     Function *fitFunc = NULL;
 
-    if(this->functionList.at(0)->getMetaData()->iid.compare(OiMetaData::iid_FitFunction) == 0){
+    if(this->functionList.size() > 0 && this->functionList.at(0)->getMetaData()->iid.compare(OiMetaData::iid_FitFunction) == 0){
 
         fitFunc = this->functionList.at(0);
 
@@ -327,7 +327,7 @@ void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QStrin
  * \return
  */
 MeasurementConfig Geometry::getMeasurementConfig() const{
-    return this->mConfig;
+    return this->activeMeasurementConfig;
 }
 
 /*!
@@ -335,7 +335,7 @@ MeasurementConfig Geometry::getMeasurementConfig() const{
  * \param myConfig
  */
 void Geometry::setMeasurementConfig(MeasurementConfig myConfig){
-    this->mConfig = myConfig;
+    this->activeMeasurementConfig = myConfig;
     emit this->geomMyMeasurementConfigChanged(this->id);
 }
 
@@ -494,7 +494,7 @@ QDomElement Geometry::toOpenIndyXML(QDomDocument &xmlDoc) const{
     //add measurement config
     if(!this->getIsNominal()){
         QDomElement mConfig = xmlDoc.createElement("measurementConfig");
-        mConfig.setAttribute("name", this->mConfig.name);
+        mConfig.setAttribute("name", this->activeMeasurementConfig.getName());
         geometry.appendChild(mConfig);
     }
 

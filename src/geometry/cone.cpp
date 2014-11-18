@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig Cone::defaultMeasurementConfig;
+
 Cone::Cone(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4), alpha(0.0)
 {
     this->id = Configuration::generateID();

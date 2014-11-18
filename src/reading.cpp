@@ -13,6 +13,22 @@ Reading::~Reading(){
 
 }
 
+/*!
+ * \brief Reading::getMeasurementConfig
+ * \return
+ */
+const MeasurementConfig &Reading::getMeasurementConfig(){
+    return this->myMeasurementConfig;
+}
+
+/*!
+ * \brief Reading::setMeasurementConfig
+ * \param mConfig
+ */
+void Reading::setMeasurementConfig(const MeasurementConfig &mConfig){
+    this->myMeasurementConfig = mConfig;
+}
+
 void Reading::toCartesian(){
 
     if(rPolar.isValid){

@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig ScalarEntityAngle::defaultMeasurementConfig;
+
 ScalarEntityAngle::ScalarEntityAngle(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();
@@ -170,7 +172,7 @@ QString ScalarEntityAngle::getDisplaySolved() const{
 }
 
 QString ScalarEntityAngle::getDisplayMConfig() const{
-    return this->mConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString ScalarEntityAngle::getDisplayStdDev() const{

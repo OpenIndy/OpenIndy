@@ -2,6 +2,8 @@
 
 #include "function.h"
 
+MeasurementConfig ScalarEntityMeasurementSeries::defaultMeasurementConfig;
+
 ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
     this->id = Configuration::generateID();
@@ -131,7 +133,7 @@ QString ScalarEntityMeasurementSeries::getDisplaySolved() const{
 }
 
 QString ScalarEntityMeasurementSeries::getDisplayMConfig() const{
-    return this->mConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString ScalarEntityMeasurementSeries::getDisplayStdDev() const{

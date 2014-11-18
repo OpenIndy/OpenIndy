@@ -15,13 +15,15 @@ Controller::Controller(QObject *parent) :
     c = new Console(0);
     Console::c = c;
 
+    //get pointer to state objects
     this->myFeatureState = OiFeatureState::getInstance();
+    this->myConfigState = OiConfigState::getInstance();
 
     this->myDeleteFeaturesCallback = new DeleteFeaturesFunctor();
     this->myDeleteFeaturesCallback->c = this;
 
     lastmConfig;
-    this->defaultLastmConfig();
+    //this->defaultLastmConfig();
 
     //set up models
     this->initModels();
@@ -120,7 +122,7 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
-        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
+        //connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()));
         connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
         //connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this->tblModel, SLOT(updateModel()));
@@ -163,7 +165,6 @@ bool Controller::createDefaultProject(){
         FeatureWrapper *station01 = OiFeatureState::addFeature(Configuration::eStationFeature, false, "STATION01");
 
         //set position parameter for STATION01
-        station01->getStation()->position->setMeasurementConfig(this->lastmConfig);
         station01->getStation()->position->setCommonState(false);
 
         //set STATION01's station system as active station
@@ -564,7 +565,7 @@ void Controller::showResults(bool b){
  * Setting up a default constellation of the last measurement configuration.
  * It can be changed at runtime.
  */
-void Controller::defaultLastmConfig(){
+/*void Controller::defaultLastmConfig(){
     lastmConfig.name = "default configuration";
     lastmConfig.count = 1;
     lastmConfig.iterations = 1;
@@ -583,7 +584,7 @@ void Controller::defaultLastmConfig(){
     lastmConfig.distanceDependent = false;
     lastmConfig.timeInterval = 0.0;
     lastmConfig.distanceInterval = 0.0;
-}
+}*/
 
 /*!
  * \brief Controller::savePluginData
@@ -697,7 +698,7 @@ void Controller::getSelectedPlugin(int index){
         //this->activeStation->InstrumentConfig = new SensorConfiguration();
         OiFeatureState::getActiveStation()->sensorPad->instrument = PluginLoader::loadSensorPlugin(path, name);
         connect(&OiFeatureState::getActiveStation()->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
-        defaultLastmConfig();
+        //defaultLastmConfig();
         updateFeatureMConfig();
     }
 }

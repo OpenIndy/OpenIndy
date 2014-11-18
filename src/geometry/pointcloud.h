@@ -52,6 +52,8 @@ public:
     QString getDisplayY() const;
     QString getDisplayZ() const;
 
+    static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
+
 signals:
     void pcSegmentAdded(FeatureWrapper *segment);
 

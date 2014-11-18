@@ -183,6 +183,136 @@ bool SystemDbManager::getUndefinedSensorModel(QSqlQueryModel *sqlModel){
 }
 
 /*!
+ * \brief SystemDbManager::addMeasurementConfig
+ * Add a reference to a measurement config (xml) in system database
+ * \param name
+ * \return
+ */
+bool SystemDbManager::addMeasurementConfig(QString name){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString query = QString("INSERT INTO measurementConfig (name) VALUES ('%1');").arg(name);
+
+        QSqlQuery command(SystemDbManager::db);
+        check = command.exec(query);
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
+ * \brief SystemDbManager::removeMeasurementConfig
+ * \param name
+ * \return
+ */
+bool SystemDbManager::removeMeasurementConfig(QString name){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString query = QString("DELETE FROM measurementConfigs WHERE name = '%1';").arg(name);
+
+        QSqlQuery command(SystemDbManager::db);
+        check = command.exec(query);
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
+ * \brief SystemDbManager::getDefaultMeasurementConfig
+ * \param geomType
+ * \return
+ */
+QString SystemDbManager::getDefaultMeasurementConfig(Configuration::FeatureTypes geomType){
+
+    QString name;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QString geomTypeString = Configuration::getFeatureTypeString(geomType);
+
+        QString query = QString("SELECT m.name FROM measurementConfig AS m INNER JOIN element AS e")
+                .append(" ON m.id = e.measurementConfig_id WHERE element_type = '%1'").arg(geomTypeString);
+
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+
+        if(command.next()){
+            QVariant val = command.value(0);
+            if(val.isValid()){
+                name = val.toString();
+            }
+        }
+
+        SystemDbManager::disconnect();
+
+    }
+
+    return name;
+
+}
+
+/*!
+ * \brief SystemDbManager::setDefaultMeasurementConfig
+ * \param geomType
+ * \param name
+ * \return
+ */
+bool SystemDbManager::setDefaultMeasurementConfig(Configuration::FeatureTypes geomType, QString name){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString geomTypeString = Configuration::getFeatureTypeString(geomType);
+
+        QString query;
+        QSqlQuery command(SystemDbManager::db);
+
+        //get the id of the measurement config with name
+        int mConfigId = -1;
+        query = QString("SELECT id FROM measurementConfig WHERE name = '%1'").arg(name);
+        command.exec(query);
+        if(command.next()){
+            QVariant val = command.value(0);
+            if(val.isValid()){
+                mConfigId = val.toInt();
+            }
+        }
+
+        //return false if no measurement config with name is in the database
+        if(mConfigId < 0){
+            return false;
+        }
+
+        //save that measurement config as default for the given geometry type
+        query = QString("UPDATE element SET measurementConfig_id = %1 WHERE element_type = '%2'")
+                .arg(mConfigId).arg(geomTypeString);
+        check = command.exec(query);
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
  * \brief SystemDbManager::getPluginFilePath
  * Get filepath to the plugin with the name "plugin" which contains the function with the name "name"
  * \param name

@@ -1,6 +1,8 @@
 #include "point.h"
 #include "function.h"
 
+MeasurementConfig Point::defaultMeasurementConfig;
+
 Point::Point(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4)
 {
     this->id = Configuration::generateID();
@@ -201,7 +203,7 @@ QString Point::getDisplaySolved() const{
 }
 
 QString Point::getDisplayMConfig() const{
-    return this->mConfig.name;
+    return this->activeMeasurementConfig.getDisplayName();
 }
 
 QString Point::getDisplayStdDev() const{
