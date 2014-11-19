@@ -220,7 +220,7 @@ void MainWindow::setConnects(){
     connect(&this->control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
 
     //dataimport
-    connect(&this->importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&this->control,SLOT(importFeatures(QList<FeatureWrapper*>)));
+    //connect(&this->importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&this->control,SLOT(importFeatures(QList<FeatureWrapper*>)));
 
     //when user edits some nominal values of the active feature then tell the Controller to update the feature
     connect(&this->nominalDialog, SIGNAL(sendNominalValues(NominalAttributeExchange)),&this->control,SLOT(getNominalValues(NominalAttributeExchange)));
@@ -1242,14 +1242,6 @@ void MainWindow::on_actionCreate_scalar_entity_triggered()
 }
 
 /*!
- * \brief opens the import dialog for nominal features and sets all coordinate systems for the dialog.
- */
-void MainWindow::on_actionNominal_geometry_triggered()
-{
-    importNominalDialog.show();
-}
-
-/*!
  * \brief getActiveCoordSystem
  * \param coordSys
  */
@@ -1872,4 +1864,46 @@ void MainWindow::setDialogsNULL()
 void MainWindow::showOiToolWidget(OiTool *oiToolWidget)
 {
     oiToolWidget->show();
+}
+
+/*!
+ * \brief MainWindow::on_action_importNominals_triggered
+ */
+void MainWindow::on_action_importNominals_triggered(){
+    this->importNominalDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_action_importMeasurementConfigs_triggered
+ */
+void MainWindow::on_action_importMeasurementConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_action_importSensorConfigs_triggered
+ */
+void MainWindow::on_action_importSensorConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_action_exportNominals_triggered
+ */
+void MainWindow::on_action_exportNominals_triggered(){
+    this->exportNominalDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_action_exportMeasurementConfigs_triggered
+ */
+void MainWindow::on_action_exportMeasurementConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_action_exportSensorConfigs_triggered
+ */
+void MainWindow::on_action_exportSensorConfigs_triggered(){
+
 }

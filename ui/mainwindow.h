@@ -22,7 +22,8 @@
 #include "featuredata.h"
 #include "settingsdialog.h"
 #include "scalarentitydialog.h"
-#include "importnominalgeometrydialog.h"
+#include "importnominaldialog.h"
+#include "exportnominaldialog.h"
 #include "nominaldatadialog.h"
 #include "edittrafoparamdialog.h"
 #include "oiprojectexchanger.h"
@@ -94,7 +95,6 @@ public:
     SettingsDialog setUpDialog;
     EditTrafoparamDialog trafoParamDialog;
 
-    importNominalGeometryDialog importNominalDialog;
     NominalDataDialog nominalDialog;
 
     StationInfoDialog stationDialog;
@@ -156,6 +156,12 @@ public:
     QAction *cPsep8;
     QAction *cPsep9;
     QAction *cPsep10;
+
+    //import dialogs
+    ImportNominalDialog importNominalDialog;
+
+    //export dialogs
+    ExportNominalDialog exportNominalDialog;
 
 signals:
 
@@ -262,8 +268,6 @@ private slots:
 
     void on_actionCreate_scalar_entity_triggered();
 
-    void on_actionNominal_geometry_triggered();
-
     void on_actionCreate_trafoParam_triggered();
 
     void on_actionSave_as_triggered();
@@ -322,6 +326,16 @@ private slots:
 
     //tools
     void showOiToolWidget(OiTool* oiToolWidget);
+
+    //import menu entries
+    void on_action_importNominals_triggered();
+    void on_action_importMeasurementConfigs_triggered();
+    void on_action_importSensorConfigs_triggered();
+
+    //export menu entries
+    void on_action_exportNominals_triggered();
+    void on_action_exportMeasurementConfigs_triggered();
+    void on_action_exportSensorConfigs_triggered();
 
 private:
     Ui::MainWindow *ui;

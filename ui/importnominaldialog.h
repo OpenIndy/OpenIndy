@@ -17,19 +17,19 @@
 #include "oiloadingdialog.h"
 
 namespace Ui {
-class importNominalGeometryDialog;
+class ImportNominalDialog;
 }
 
-class importNominalGeometryDialog : public QDialog
+class ImportNominalDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit importNominalGeometryDialog(QWidget *parent = 0);
-    ~importNominalGeometryDialog();
+    explicit ImportNominalDialog(QWidget *parent = 0);
+    ~ImportNominalDialog();
 
 private:
-    Ui::importNominalGeometryDialog *ui;
+    Ui::ImportNominalDialog *ui;
 
 public slots:
     void showEvent(QShowEvent *event);

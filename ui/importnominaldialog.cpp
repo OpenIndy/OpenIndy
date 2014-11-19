@@ -1,8 +1,8 @@
-#include "importnominalgeometrydialog.h"
-#include "ui_importnominalgeometrydialog.h"
+#include "importnominaldialog.h"
+#include "ui_importnominaldialog.h"
 
-importNominalGeometryDialog::importNominalGeometryDialog(QWidget *parent) :
-    QDialog(parent), ui(new Ui::importNominalGeometryDialog)//, myExchanger(OiDataExchanger::getInstance()), myLoadingDialog(NULL)
+ImportNominalDialog::ImportNominalDialog(QWidget *parent) :
+    QDialog(parent), ui(new Ui::ImportNominalDialog)//, myExchanger(OiDataExchanger::getInstance()), myLoadingDialog(NULL)
 {
     ui->setupUi(this);
 
@@ -13,12 +13,12 @@ importNominalGeometryDialog::importNominalGeometryDialog(QWidget *parent) :
     connect(&this->myExchanger, SIGNAL(updateProgress(int, QString)), this, SLOT(updateProgress(int, QString)));*/
 }
 
-importNominalGeometryDialog::~importNominalGeometryDialog()
+ImportNominalDialog::~ImportNominalDialog()
 {
     delete ui;
 }
 
-void importNominalGeometryDialog::showEvent(QShowEvent *event){
+void ImportNominalDialog::showEvent(QShowEvent *event){
     qDebug() << "show";
     event->accept();
 }
