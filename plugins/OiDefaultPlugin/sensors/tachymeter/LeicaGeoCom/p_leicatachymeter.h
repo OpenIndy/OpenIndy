@@ -145,6 +145,8 @@ private:
 
     void stopTrackingMode();
 
+    Reading* getStreamValues();
+
 };
 
 #endif // P_LEICATACHYMETER_H

@@ -573,7 +573,8 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
 
     //set target to specified value
     //Stream works with trk mode, for fast measurements
-    if(this->setTargetTypeStream()){
+    //if(this->setTargetTypeStream()){
+    if(this->setTargetTypeMeasure()){
 
         /*MeasurementConfig *mconfig;
         mconfig = new MeasurementConfig();
@@ -586,13 +587,15 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
         //call polar measurement method in trk mode.
         r = this->measurePolar(mconfig).first();*/
 
-        QString command = "%R1Q,2117:\r\n";
+        /*QString command = "%R1Q,2117:\r\n";
         QString receive = "";
         if(this->executeCommand(command)){
 
             receive = this->receive();
             r = this->getQuickMeasReading(receive);
-        }
+        }*/
+
+        r = this->getStreamValues();
 
         QThread::msleep(200);
 
@@ -994,6 +997,7 @@ bool LeicaTachymeter::setTargetTypeMeasure()
                 command = "%R1Q,17019:0\r\n";
                 if(this->executeCommand(command)){
                     receive = this->receive();
+                    this->fineAdjusted = false;
                 }
             }
             if(this->getLOCKState()){
@@ -1044,6 +1048,7 @@ bool LeicaTachymeter::setTargetTypeStream()
                 command = "%R1Q,17019:4\r\n";
                 if(this->executeCommand(command)){
                     receive = this->receive();
+                    this->fineAdjusted = false;
                 }
             }
             if(this->getLOCKState()){
@@ -1198,6 +1203,61 @@ void LeicaTachymeter::stopTrackingMode()
 }
 
 /*!
+ * \brief getStreamValues is the measure method for watch window. should be faster than the normal method
+ * \return
+ */
+Reading *LeicaTachymeter::getStreamValues()
+{
+    Reading *r = NULL;
+
+    if(this->myConfiguration->stringParameter.contains("reflector")){
+        QString value = this->myConfiguration->stringParameter.value("reflector");
+        QString command;
+
+        if(value.compare("reflector") == 0){
+            command = "%R1Q,2008:7,1\r\n";
+        }else{
+            command = "%R1Q,2008:8,1\r\n";
+        }
+
+        if(this->executeCommand(command)){
+            QString receive = this->receive();
+            if(receive.compare("%R1P,0,0:0\r\n") == 0){
+
+                command = "%R1Q,2108:5000,1\r\n";
+
+                if(executeCommand(command)){
+
+                    QString measureData = this->receive();
+
+                    QStringList polarElements = measureData.split(",");
+
+                    r = new Reading();
+                    r->rPolar.azimuth = polarElements.at(polarElements.size()-3).toDouble();
+                    r->rPolar.zenith = polarElements.at(polarElements.size()-2).toDouble();
+                    r->rPolar.distance = polarElements.at(polarElements.size()-1).toDouble();
+                    r->typeofReading = Configuration::ePolar;
+                    r->face = this->getCurrentFace(r->rPolar.zenith);
+
+                    if(this->myConfiguration->stringParameter.contains("sense of rotation")){
+                        QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                        if(sense.compare("mathematical") == 0){
+                            r->rPolar.azimuth = 2 * PI - r->rPolar.azimuth;
+                        }
+                    }
+                    r->rPolar.isValid = true;
+                    r->instrument = this;
+                    r->measuredAt = QDateTime::currentDateTime();
+                    return r;
+                }
+            }
+        }
+    }
+    return r;
+
+}
+
+/*!
  * \brief executeEDM for distance measurement
  * \return
  */
@@ -1205,12 +1265,23 @@ bool LeicaTachymeter::executeEDM(){
 
     myEmitter.emitSendString("start edm measurement");
 
-    QString edmCommand = "%R1Q,2008:1,1\r\n";
+    //QString edmCommand = "%R1Q,2008:1,1\r\n";  //maybe wrong. 1 = reflector tape? try with the other values
 
-    if(this->executeCommand(edmCommand)){
-        QString receive = this->receive();
-        if(receive.compare("%R1P,0,0:0\r\n") == 0){
-            return true;
+    if(this->myConfiguration->stringParameter.contains("reflector")){
+        QString value = this->myConfiguration->stringParameter.value("reflector");
+        QString edmCommand;
+
+        if(value.compare("reflector") == 0){
+            edmCommand = "%R1Q,2008:2,1\r\n";
+        }else{
+            edmCommand = "%R1Q,2008:5,1\r\n";
+        }
+
+        if(this->executeCommand(edmCommand)){
+            QString receive = this->receive();
+            if(receive.compare("%R1P,0,0:0\r\n") == 0){
+                return true;
+            }
         }
     }
     return false;

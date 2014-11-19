@@ -118,6 +118,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
 
         featureValues = Reading::toPolar(featureValues.getAt(0),featureValues.getAt(1),featureValues.getAt(2));
 
+        //check for negative values
+        if(featureValues.getAt(0) <= 0.0){
+            featureValues.setAt(0, 2*PI + featureValues.getAt(0));
+        }
+
         double dDist = featureValues.getAt(2) - trackerValues.getAt(2);
 
         double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/UnitConverter::getDistanceMultiplier();
@@ -237,10 +242,6 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             }
 
                             streamData.value("z")->display(QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
-
-                        }else if(j.key() == "R3"){
-
-
 
                         }else{
                             double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
