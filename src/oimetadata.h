@@ -15,6 +15,9 @@
 #include "pi_networkadjustment.h"
 #include "pi_objecttransformation.h"
 #include "pi_systemtransformation.h"
+#include "pi_oiexchangeinterface.h"
+#include "pi_oiexchangesimpleascii.h"
+#include "pi_oiexchangespecialformat.h"
 
 /*!
  * \brief The OiMetaData class
@@ -43,6 +46,9 @@ private:
     static QString iid_Sensor;
     static QString iid_Simulation;
     static QString iid_OiTool;
+    static QString iid_OiExchange;
+    static QString iid_OiExchangeSimpleAscii;
+    static QString iid_OiExchangeSpecialFormat;
 
     static QString getVersion();
     static QString getCompiler();

@@ -45,6 +45,7 @@ INCLUDEPATH += $$PWD/src/plugin/oitool
 INCLUDEPATH += $$PWD/src/simulation
 INCLUDEPATH += $$PWD/controller/oiDataExchange
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
+INCLUDEPATH += $$PWD/src/plugin/oiexchange
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/release/ -lopenIndyLib
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/debug/ -lopenIndyLib
@@ -133,9 +134,7 @@ SOURCES += \
     ui/edittrafoparamdialog.cpp \
     ui/matrixmodel.cpp \
     src/function.cpp \
-    controller/oiDataExchange/oiexchangeobject.cpp \
     controller/oiDataExchange/oidataexchanger.cpp \
-    controller/oiDataExchange/oiexchangeascii.cpp \
     controller/oiDataExchange/oiprojectdata.cpp \
     controller/oiDataExchange/oiprojectexchanger.cpp \
     src/functionconfiguration.cpp \
@@ -158,7 +157,6 @@ SOURCES += \
     controller/oifeaturestate.cpp \
     controller/trafocontroller.cpp \
     ui/featureoverviewproxymodel.cpp \
-    controller/oiDataExchange/oiexchangepts.cpp \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
     ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
@@ -188,7 +186,8 @@ SOURCES += \
     controller/plugincopier.cpp \
     ui/observationdelegate.cpp \
     src/plugin/oitool/oijob.cpp \
-    ui/oitoolaction.cpp
+    ui/oitoolaction.cpp \
+    src/plugin/oiexchange/oiexchangeobject.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -281,10 +280,7 @@ HEADERS  += \
     ui/usedelementsmodel.h \
     ui/edittrafoparamdialog.h \
     ui/matrixmodel.h \
-    controller/oiDataExchange/oiexchangeobject.h \
     controller/oiDataExchange/oidataexchanger.h \
-    controller/oiDataExchange/oiexchangeinterface.h \
-    controller/oiDataExchange/oiexchangeascii.h \
     controller/oiDataExchange/oiprojectdata.h \
     controller/oiDataExchange/oiprojectexchanger.h \
     src/functionconfiguration.h \
@@ -308,7 +304,6 @@ HEADERS  += \
     controller/oifeaturestate.h \
     controller/trafocontroller.h \
     ui/featureoverviewproxymodel.h \
-    controller/oiDataExchange/oiexchangepts.h \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
     ui/oiGraphixFactory/oigraphix_pointcloud.h \
@@ -341,8 +336,12 @@ HEADERS  += \
     ui/observationdelegate.h \
     src/plugin/oitool/pi_oitool.h \
     src/plugin/oitool/oijob.h \
-    ui/oitoolaction.h
-
+    ui/oitoolaction.h \
+    src/plugin/oiexchange/oiexchangeascii.h \
+    src/plugin/oiexchange/oiexchangeobject.h \
+    src/plugin/oiexchange/pi_oiexchangeinterface.h \
+    src/plugin/oiexchange/pi_oiexchangespecialformat.h \
+    src/plugin/oiexchange/pi_oiexchangesimpleascii.h
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
     ui/watchwindow.ui \

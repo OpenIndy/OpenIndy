@@ -106,6 +106,25 @@ public:
         eUndefined
     };
 
+    enum GeometryTypes{
+        ePointGeometry,
+        eLineGeometry,
+        ePlaneGeometry,
+        eSphereGeometry,
+        ePointCloudGeometry,
+        eCircleGeometry,
+        eConeGeometry,
+        eCylinderGeometry,
+        eEllipsoidGeometry,
+        eHyperboloidGeometry,
+        eNurbsGeometry,
+        eParaboloidGeometry,
+        eScalarEntityAngleGeometry,
+        eScalarEntityDistanceGeometry,
+        eScalarEntityTemperatureGeometry,
+        eScalarEntityMeasurementSeriesGeometry
+    };
+
     enum FeatureTypes{
         ePointFeature,
         eLineFeature,

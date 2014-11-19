@@ -10,13 +10,13 @@
  * exchange object which will be used by every oiexchange class to
  * import or export feature
  */
-class oiExchangeObject : public QObject
+class OiExchangeObject : public QObject
 {
     Q_OBJECT
 public:
-    explicit oiExchangeObject(QObject *parent = 0);
-    oiExchangeObject(const oiExchangeObject &copy, QObject *parent = 0);
-    oiExchangeObject &operator=(const oiExchangeObject &copy);
+    explicit OiExchangeObject(QObject *parent = 0);
+    OiExchangeObject(const OiExchangeObject &copy, QObject *parent = 0);
+    OiExchangeObject &operator=(const OiExchangeObject &copy);
 
     //the device for import or export. For example a file
     QIODevice *device;
@@ -24,13 +24,14 @@ public:
     //features that will be imported or exported
     QList<FeatureWrapper*> features;
 
+    //units that shall be used for im- or export
     QMap<UnitConverter::dimensionType, UnitConverter::unitType> unit;
 
-    //Reference coordinate system of the features
+    //reference coordinate system of the features
     CoordinateSystem* nominalCoordSys;
 
     //defines wich element type will be imported
-    Configuration::ElementTypes typeOfElement;
+    //Configuration::ElementTypes typeOfElement;
 
 };
 
