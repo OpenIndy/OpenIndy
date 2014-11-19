@@ -15,6 +15,7 @@ QList<Handle(AIS_InteractiveObject)> OiCadControl::getFeaturesToDraw()
     foreach(FeatureWrapper* g,allGeometries){
        switch(g->getTypeOfFeature()){
            case Configuration::ePlaneFeature:
+           f.append(this->parseOiPlane(g->getPlane()));
 
            break;
            case Configuration::ePointFeature:
@@ -30,6 +31,7 @@ QList<Handle(AIS_InteractiveObject)> OiCadControl::getFeaturesToDraw()
             f.append(this->parseOiSphere(g->getSphere()));
            break;
            case Configuration::ePointCloudFeature:
+
 
            break;
            default:{
@@ -75,7 +77,7 @@ Handle(AIS_InteractiveObject) OiCadControl::parseOiSphere(Sphere *s){
 }
 
 Handle(AIS_InteractiveObject) OiCadControl::parseOiPlane(Plane *p){
-/*
+
     double x = p->getXYZ().getAt(0);
     double y = p->getXYZ().getAt(1);
     double z = p->getXYZ().getAt(2);
@@ -90,15 +92,17 @@ Handle(AIS_InteractiveObject) OiCadControl::parseOiPlane(Plane *p){
 
     gp_Pln plane(point,direction);
 
-   (Handle) Geom_Plane gPln = new Geom_Plane(plane);
+    Handle (Geom_Plane) gPln = new Geom_Plane(plane);
 
     Handle(AIS_InteractiveObject) aAisPln = new AIS_Plane(gPln);
 
+    aAisPln->SetDisplayMode(1);
 
+    //----------------------------
+
+    //----------------------------
 
     return aAisPln;
 
-*/
-    return NULL;
 }
 
