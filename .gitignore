@@ -1,14 +1,14 @@
 # C++ objects and libs
 
-*.slo
-*.lo
-*.o
-*.a
-*.la
-*.lai
-*.so
-*.dll
-*.dylib
+#*.slo
+#*.lo
+#*.o
+#*.a
+#*.la
+#*.lai
+#*.so
+#*.dll
+#*.dylib
 
 *.bak
 *.pdb

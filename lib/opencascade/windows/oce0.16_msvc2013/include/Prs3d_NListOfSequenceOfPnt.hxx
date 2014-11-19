@@ -1,0 +1,33 @@
+// Created on: 2006-04-20
+// Created by: Sergey Kochetkov	
+// Copyright (c) 2006-2014 OPEN CASCADE SAS
+//
+// This file is part of Open CASCADE Technology software library.
+//
+// This library is free software; you can redistribute it and/or modify it under
+// the terms of the GNU Lesser General Public License version 2.1 as published
+// by the Free Software Foundation, with special exception defined in the file
+// OCCT_LGPL_EXCEPTION.txt. Consult the file LICENSE_LGPL_21.txt included in OCCT
+// distribution for complete text of the license and disclaimer of any warranty.
+//
+// Alternatively, this file may be used under the terms of Open CASCADE
+// commercial license or contractual agreement.
+
+#ifndef Prs3d_NListOfSequenceOfPnt_HeaderFile
+#define Prs3d_NListOfSequenceOfPnt_HeaderFile
+
+#include <TColgp_SequenceOfPnt.hxx>
+#include <NCollection_DefineList.hxx>
+#include <NCollection_DefineBaseCollection.hxx>
+
+DEFINE_BASECOLLECTION(Prs3d_BaseCollListOfSequenceOfPnt,
+                      TColgp_SequenceOfPnt)
+DEFINE_LIST          (Prs3d_NListOfSequenceOfPnt,
+                      Prs3d_BaseCollListOfSequenceOfPnt,
+                      TColgp_SequenceOfPnt)
+
+#endif
+
+
+
+
