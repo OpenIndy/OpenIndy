@@ -32,7 +32,10 @@ unix:ICON = $$PWD/res/openIndy.icns
 
 #-----------------------------------linux dependency---------------------------------------
 linux: LIBS = -lGLU
-#-----------------------------------Linear Algebra---------------------------------------
+#-----------------------------------CAD----------------------------------------------------
+include(cadIncludes.pri)
+
+#-----------------------------------Linear Algebra-----------------------------------------
 
 INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/ui
@@ -100,22 +103,15 @@ SOURCES += \
     ui/sensorinfodialog.cpp \
     src/featurewrapper.cpp \
     src/station.cpp \
-    ui/glwidget.cpp \
     src/sensorconfiguration.cpp \
     ui/featuredata.cpp \
     ui/observationmodel.cpp \
     ui/readingmodel.cpp \
-    ui/oiGraphixFactory/oigraphix_sphere.cpp \
-    ui/oiGraphixFactory/oigraphix.cpp \
     src/geometry/scalarentityangle.cpp \
     src/geometry/scalarentitydistance.cpp \
     ui/movementdialog.cpp \
     src/unitconverter.cpp \
     ui/settingsdialog.cpp \
-    ui/oiGraphixFactory/oigraphix_plane.cpp \
-    ui/oiGraphixFactory/oigraphix_point.cpp \
-    ui/oiGraphixFactory/oigraphix_line.cpp \
-    ui/oiGraphixFactory/oigraphix_station.cpp \
     ui/scalarentitydialog.cpp \
     ui/importnominalgeometrydialog.cpp \
     ui/featuretreeviewmodel.cpp \
@@ -160,7 +156,6 @@ SOURCES += \
     controller/oiDataExchange/oiexchangepts.cpp \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
-    ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
     ui/watchwindowlistener.cpp \
     src/oiemitter/oifunctionemitter.cpp \
     src/oiemitter/oisensoremitter.cpp \
@@ -187,7 +182,9 @@ SOURCES += \
     ui/observationproxymodel.cpp \
     ui/readingproxymodel.cpp \
     controller/plugincopier.cpp \
-    ui/observationdelegate.cpp
+    ui/observationdelegate.cpp \
+    ui/oiCAD/oicadviewer.cpp \
+    ui/oiCAD/oicadcontrol.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -242,7 +239,6 @@ HEADERS  += \
     ui/sensorinfodialog.h \
     src/featurewrapper.h \
     src/station.h \
-    ui/glwidget.h \
     src/sensorconfiguration.h \
     ui/featuredata.h \
     ui/observationmodel.h \
@@ -253,18 +249,11 @@ HEADERS  += \
     lib/openIndyLib/include/linearalgebra.h \
     lib/openIndyLib/include/global.h \
     lib/openIndyLib/include/chooselalib.h \
-    ui/oiGraphixFactory/oigraphix_sphere.h \
-    ui/oiGraphixFactory/oigraphix_geometry.h \
-    ui/oiGraphixFactory/oigraphix.h \
     src/geometry/scalarentityangle.h \
     src/geometry/scalarentitydistance.h  \
     ui/movementdialog.h \
     src/unitconverter.h \
     ui/settingsdialog.h  \
-    ui/oiGraphixFactory/oigraphix_plane.h \
-    ui/oiGraphixFactory/oigraphix_point.h \
-    ui/oiGraphixFactory/oigraphix_line.h \
-    ui/oiGraphixFactory/oigraphix_station.h \
     ui/scalarentitydialog.h \
     ui/importnominalgeometrydialog.h \
     ui/featuretreeviewmodel.h \
@@ -310,7 +299,6 @@ HEADERS  += \
     controller/oiDataExchange/oiexchangepts.h \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
-    ui/oiGraphixFactory/oigraphix_pointcloud.h \
     ui/watchwindowlistener.h \
     src/oiemitter/oifunctionemitter.h \
     src/oiemitter/oisensoremitter.h \
@@ -339,7 +327,9 @@ HEADERS  += \
     ui/observationproxymodel.h \
     ui/readingproxymodel.h \
     controller/plugincopier.h \
-    ui/observationdelegate.h
+    ui/observationdelegate.h \
+    ui/oiCAD/oicadviewer.h \
+    ui/oiCAD/oicadcontrol.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

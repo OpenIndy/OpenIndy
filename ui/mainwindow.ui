@@ -166,7 +166,7 @@ background-position: center center;</string>
            </widget>
           </item>
           <item>
-           <widget class="GLWidget" name="widget_graphics" native="true"/>
+           <widget class="OiCadViewer" name="widget_graphics" native="true"/>
           </item>
          </layout>
         </item>
@@ -192,7 +192,7 @@ background-position: center center;</string>
      <x>0</x>
      <y>0</y>
      <width>1081</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -875,9 +875,9 @@ color: rgb(255, 255, 255);
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>GLWidget</class>
+   <class>OiCadViewer</class>
    <extends>QWidget</extends>
-   <header>glwidget.h</header>
+   <header>oiCAD/oicadviewer.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
