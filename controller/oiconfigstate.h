@@ -32,7 +32,7 @@ public:
     //static bool addProjectMeasurementConfig(const MeasurementConfig &mConfig);
     //static bool saveMeasurementConfig(const MeasurementConfig &mConfig);
 
-    static bool setMeasurementConfig(FeatureWrapper *geom, MeasurementConfig mConfig);
+    static bool setMeasurementConfig(MeasurementConfig mConfig);
 
     //get models to represent config data
     static QStringListModel *getMeasurementConfigNames();
