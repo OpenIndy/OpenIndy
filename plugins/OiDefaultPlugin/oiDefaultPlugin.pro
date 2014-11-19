@@ -45,6 +45,7 @@ INCLUDEPATH += ../../src/geometry
 INCLUDEPATH += ../../src/oiemitter
 INCLUDEPATH += ../../src/plugin
 INCLUDEPATH += ../../src/plugin/oitool
+INCLUDEPATH += ../../src/plugin/oiexchange
 INCLUDEPATH += ../../src/simulation
 INCLUDEPATH += ../../lib/openIndyLib/include
 
@@ -163,7 +164,9 @@ SOURCES += p_factory.cpp \
     ../../src/geometry/scalarentitytemperature.cpp \
     ../../src/geometry/sphere.cpp \
     ../../src/plugin/oitool/oijob.cpp \
-    oiTools/p_oireportcreator.cpp
+    oiTools/p_oireportcreator.cpp \
+    ../../src/oiemitter/oiexchangeemitter.cpp \
+    ../../src/plugin/oiexchange/oiexchangeobject.cpp
 
 HEADERS += p_factory.h \
     lib/fitting/cfitting_approxfunc.h \
@@ -282,7 +285,12 @@ HEADERS += p_factory.h \
     ../../src/geometry/sphere.h \
     ../../src/plugin/oitool/oijob.h \
     ../../src/plugin/oitool/pi_oitool.h \
-    oiTools/p_oireportcreator.h
+    oiTools/p_oireportcreator.h \
+    ../../src/oiemitter/oiexchangeemitter.h \
+    ../../src/plugin/oiexchange/oiexchangeobject.h \
+    ../../src/plugin/oiexchange/pi_oiexchangeinterface.h \
+    ../../src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
+    ../../src/plugin/oiexchange/pi_oiexchangespecialformat.h
 
 OTHER_FILES += metaInfo.json
 
