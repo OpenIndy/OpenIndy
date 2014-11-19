@@ -4,6 +4,7 @@
 #include <QStringList>
 #include <QObject>
 
+#include "oiexchangeemitter.h"
 #include "oiexchangeobject.h"
 #include "pluginmetadata.h"
 
@@ -18,7 +19,7 @@ class OiExchangeInterface : public QObject
     Q_OBJECT
 
 public:
-    explicit OiExchangeInterface(QObject *parent = 0) : QObject(parent){}
+    explicit OiExchangeInterface(QObject *parent = 0) : QObject(parent){ this->nominalCoordSys = NULL; }
     virtual ~OiExchangeInterface(){}
 
     /*!
@@ -51,6 +52,55 @@ public:
      */
     virtual QList<Configuration::GeometryTypes> getSupportedGeometries() = 0;
 
+    /*!
+     * \brief setExportObservations
+     * true if only the observations of the selected geometries shall be exported
+     * \param exportObservations
+     */
+    void setExportObservations(bool exportObservations){
+        this->exportObservations = exportObservations;
+    }
+
+    /*!
+     * \brief setUnits
+     * Set the units used for im- or export
+     * \param units
+     */
+    void setUnits(QMap<UnitConverter::dimensionType, UnitConverter::unitType> units){
+        this->units = units;
+    }
+
+    /*!
+     * \brief setNominalSystem
+     * \param nominalCoordSys
+     */
+    void setNominalSystem(CoordinateSystem* nominalCoordSys){
+        this->nominalCoordSys = nominalCoordSys;
+    }
+
+    /*!
+     * \brief addGeometry
+     * Add an imported geometry to the given reference nominal system
+     * \param geom
+     * \return
+     */
+    bool addGeometry(Geometry *geom){
+        if(nominalCoordSys == NULL || geom == NULL){
+            return false;
+        }
+        return nominalCoordSys->addNominal(geom);
+        //TODO add signal slot to the addNominal method to make this work
+    }
+
+    /*!
+     * \brief writeToConsole
+     * Writes a message to console
+     * \param msg
+     */
+    void writeToConsole(QString msg){
+        myExchangeEmitter.sendString(msg);
+    }
+
 signals:
 
     /*!
@@ -60,6 +110,14 @@ signals:
      * \param msg
      */
     void updateProgress(int progress, QString msg);
+
+private:
+    bool exportObservations; //true if only the observations of the selected geometries shall be exported
+    QMap<UnitConverter::dimensionType, UnitConverter::unitType> units; //units used for im- or export
+    CoordinateSystem* nominalCoordSys; //nominal coordinate system the imported geometries are referenced to
+
+protected:
+    OiExchangeEmitter myExchangeEmitter;
 
 };
 
