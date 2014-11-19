@@ -370,6 +370,19 @@ QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
                         if(val.isValid()){
                             path = val.toString();
                         }
+                    }else{
+                        query = QString("%1 %2 %3")
+                                .arg("SELECT file_path FROM plugin AS p INNER JOIN oiToolPlugin AS t ON p.id = t.plugin_id")
+                                .arg(QString("WHERE p.name = '%1'").arg(plugin))
+                                .arg(QString("AND t.name = '%1';").arg(name));
+                        command.finish();
+                        command.exec(query);
+                        if(command.next()){
+                            QVariant val = command.value(0);
+                            if(val.isValid()){
+                                path = val.toString();
+                            }
+                        }
                     }
                 }
             }
@@ -385,7 +398,7 @@ QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
  * \param f
  * \return
  */
-int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments,QList<SimulationModel*> simulationList ){
+int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments, QList<SimulationModel*> simulationList , QList<OiTool *> toolList){
     int pluginId = -1;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
@@ -410,6 +423,9 @@ int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> funct
                 }
                 foreach(SimulationModel *s, simulationList){
                     SystemDbManager::saveSimulationPlugin(pluginId,s);
+                }
+                foreach(OiTool *t, toolList){
+                    SystemDbManager::saveOiToolPlugin(pluginId,t);
                 }
 
             }
@@ -704,6 +720,15 @@ void SystemDbManager::saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustmen
             .arg(pluginId).arg(s->getMetaData()->iid).arg(s->getMetaData()->name).arg(s->getMetaData()->description);
     QSqlQuery command(SystemDbManager::db);
     command.exec(query);*/
+}
+
+void SystemDbManager::saveOiToolPlugin(int pluginId, OiTool* t)
+{
+    //insert sensor plugin
+    QString query = QString("INSERT INTO oiToolPlugin (plugin_id, iid, name, description) VALUES (%1, '%2', '%3', '%4')")
+            .arg(pluginId).arg(t->getMetaData()->iid).arg(t->getMetaData()->name).arg(t->getMetaData()->description);
+    QSqlQuery command(SystemDbManager::db);
+    command.exec(query);
 }
 
 /*!
@@ -1125,4 +1150,31 @@ void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureTyp
 
         SystemDbManager::disconnect();
     }
+}
+
+QMultiMap<QString,QString> SystemDbManager::getAvailableOiTools(){
+
+    QMultiMap<QString,QString> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT t.name AS toolname, p.name AS pluginname FROM oiToolPlugin AS t INNER JOIN plugin AS p")
+                .append(" ON p.id = t.plugin_id");
+
+
+        command.exec(query);
+        while(command.next()){
+
+            result.insert(command.value("pluginname").toString(),command.value("toolname").toString());
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+
 }

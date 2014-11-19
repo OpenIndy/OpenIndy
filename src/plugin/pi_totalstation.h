@@ -23,6 +23,8 @@ public:
         switch(f){
         case(Configuration::eMoveAngle):
             return this->move(s->az,s->ze,s->dist,s->isMoveRelativ);
+        case(Configuration::eMoveXYZ):
+            return this->move(s->x_, s->y_, s->z_);
         case(Configuration::eToggleSight):
             return this->toggleSightOrientation();
         }
@@ -89,6 +91,9 @@ protected:
 
      //! move totalstation to specified position
     virtual bool move(double azimuth, double zenith, double distance,bool isrelativ){this->writeToConsole("not available");return false;}
+
+    //! move total station to specified xyz position
+    virtual bool move(double x, double y, double z){this->writeToConsole("not available");return false;}
 
     //! toggle between frontside and backside
     virtual bool toggleSightOrientation(){this->writeToConsole("not available");return false;}

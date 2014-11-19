@@ -67,7 +67,11 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
             return QVariant();
         }
 
-        QString instrument = geom->getObservations().at(index.row())->myReading->instrument->getMetaData()->name;
+        QString instrument = "";
+
+        if(geom->getObservations().at(index.row())->myReading->instrument != NULL){
+            instrument = geom->getObservations().at(index.row())->myReading->instrument->getMetaData()->name;
+        }
 
         switch (geom->getObservations().at(index.row())->myReading->typeofReading) {
         case Configuration::ePolar:

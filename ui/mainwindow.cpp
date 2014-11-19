@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initializeActions();
 
     this->ui->toolBar_ControlPad->addWidget(labelSensorControlName);
-    this->ui->toolBar_ControlPad->addAction(cPsep9);
+    this->ui->toolBar_ControlPad->addAction(cPsep);
 
     this->setModels();
 
@@ -86,6 +86,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setUpStatusBar();
     control.tblModel->updateModel();
+
+    this->createOiToolActions();
 
 }
 
@@ -227,10 +229,8 @@ void MainWindow::setConnects(){
     connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
     connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
 
-    //connect stake out manager
-    connect(&this->myStakeOutManager, SIGNAL(startStakeOut(QDomDocument)), this, SLOT(stakeOutConfigured(QDomDocument)));
-    connect(this, SIGNAL(startStakeOut(QDomDocument)), &this->control, SLOT(startStakeOut(QDomDocument)));
-    connect(this, SIGNAL(nextStakeOutGeometry()), &this->control, SLOT(nextStakeOutGeometry()));
+    //OiTools
+    connect(&this->control,SIGNAL(openOiToolWidget(OiTool*)),this,SLOT(showOiToolWidget(OiTool*)));
 
 }
 
@@ -482,21 +482,29 @@ void MainWindow::setupCreateFeature(){
 }
 
 /*!
- * \brief setupLaserTrackerPad adds all needed Widgets to the control pad, if the active sensor is a lasertracker
- * With that label you can control the laser tracker and start measurements.
+ * \brief initSensorActions with actions each sensor has
  */
-void MainWindow::setupLaserTrackerPad(){
-
+void MainWindow::initSensorActions()
+{
+    ui->toolBar_ControlPad->clear();
+    ui->toolBar_ControlPad->addWidget(labelSensorControlName);
     ui->toolBar_ControlPad->addAction(cPsep);
     ui->toolBar_ControlPad->addAction(actionConnect);
     ui->toolBar_ControlPad->addAction(cPsep1);
     ui->toolBar_ControlPad->addAction(actionDisconnect);
     ui->toolBar_ControlPad->addAction(cPsep2);
-    ui->toolBar_ControlPad->addAction(actionInitialize);
-    ui->toolBar_ControlPad->addAction(cPsep3);
-    ui->toolBar_ControlPad->addAction(actionHome);
-    ui->toolBar_ControlPad->addAction(cPsep4);
     ui->toolBar_ControlPad->addAction(actionMeasure);
+}
+
+/*!
+ * \brief initTrackerActions with tracker specific actions
+ */
+void MainWindow::initTrackerActions()
+{
+    ui->toolBar_ControlPad->addAction(cPsep3);
+    ui->toolBar_ControlPad->addAction(actionInitialize);
+    ui->toolBar_ControlPad->addAction(cPsep4);
+    ui->toolBar_ControlPad->addAction(actionHome);
     ui->toolBar_ControlPad->addAction(cPsep5);
     ui->toolBar_ControlPad->addAction(actionToggleSightOrientation);
     ui->toolBar_ControlPad->addAction(cPsep6);
@@ -505,9 +513,39 @@ void MainWindow::setupLaserTrackerPad(){
     ui->toolBar_ControlPad->addAction(actionMove);
     ui->toolBar_ControlPad->addAction(cPsep8);
     ui->toolBar_ControlPad->addAction(actionChangeMotorState);
-    ui->toolBar_ControlPad->addAction(cPsep10);
+    ui->toolBar_ControlPad->addAction(cPsep9);
     ui->toolBar_ControlPad->addAction(actionCompensation);
+}
 
+/*!
+ * \brief initTotalStationActions with total station specific actions
+ */
+void MainWindow::initTotalStationActions()
+{
+    ui->toolBar_ControlPad->addAction(cPsep3);
+    ui->toolBar_ControlPad->addAction(actionToggleSightOrientation);
+    ui->toolBar_ControlPad->addAction(cPsep4);
+    ui->toolBar_ControlPad->addAction(actionMove);
+    ui->toolBar_ControlPad->addAction(cPsep5);
+    ui->toolBar_ControlPad->addAction(actionAim);
+}
+
+/*!
+ * \brief setupSensorPad sets all needed widgets for a standard sensor without any specific actions
+ */
+void MainWindow::setupSensorPad()
+{
+    this->initSensorActions();
+}
+
+/*!
+ * \brief setupLaserTrackerPad adds all needed Widgets to the control pad, if the active sensor is a lasertracker
+ * With that label you can control the laser tracker and start measurements.
+ */
+void MainWindow::setupLaserTrackerPad(){
+
+    this->initSensorActions();
+    this->initTrackerActions();
 }
 
 /*!
@@ -516,26 +554,8 @@ void MainWindow::setupLaserTrackerPad(){
  */
 void MainWindow::setupTotalStationPad(){
 
-    ui->toolBar_ControlPad->addAction(cPsep);
-    ui->toolBar_ControlPad->addAction(actionConnect);
-    ui->toolBar_ControlPad->addAction(cPsep1);
-    ui->toolBar_ControlPad->addAction(actionDisconnect);
-    ui->toolBar_ControlPad->addAction(cPsep2);
-    ui->toolBar_ControlPad->addAction(actionMeasure);
-    ui->toolBar_ControlPad->addAction(cPsep3);
-    ui->toolBar_ControlPad->addAction(actionToggleSightOrientation);
-    ui->toolBar_ControlPad->addAction(cPsep4);
-    ui->toolBar_ControlPad->addAction(actionMove);
-
-}
-
-/*!
- * \brief displays the entered text in the console
- */
-void MainWindow::on_lineEdit_inputConsole_returnPressed()
-{
-    Console::addLine(ui->lineEdit_inputConsole->text());
-    ui->lineEdit_inputConsole->clear();
+    this->initSensorActions();
+    this->initTotalStationActions();
 }
 
 /*!
@@ -550,13 +570,20 @@ void MainWindow::on_actionControl_pad_triggered()
         ui->toolBar_ControlPad->show();
 
         if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
-            if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eLaserTracker){
-                labelSensorControlName->setText("sensor control laser tracker");
+
+            QString sensorName = OiFeatureState::getActiveStation()->sensorPad->instrument->getMetaData()->name;
+            labelSensorControlName->setText(sensorName);
+
+            if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eLaserTracker){ //laser tracker
                 setupLaserTrackerPad();
-            }else if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eTotalStation){
-                labelSensorControlName->setText("sensor control total station");
+
+            }else if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eTotalStation){ //total station
                 setupTotalStationPad();
+
+            }else{ //any sensor
+                setupSensorPad();
             }
+
             if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
                 //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
                 signalMapper = new QSignalMapper();
@@ -1664,6 +1691,40 @@ void MainWindow::resizeTableView()
 }
 
 /*!
+ * \brief MainWindow::createOiToolActions
+ */
+void MainWindow::createOiToolActions()
+{
+    QMultiMap<QString,QString> oiTools = control.getOiTools();
+
+    QList<QString> pluginNames = oiTools.keys();
+
+    foreach(QString pluginName, pluginNames){
+
+        QMenu *pluginMenu;
+        pluginMenu = new QMenu();
+        pluginMenu->setTitle(pluginName);
+        ui->menuTools->addMenu(pluginMenu);
+
+        QList<QString> toolNames = oiTools.values(pluginName);
+
+        foreach(QString toolName, toolNames){
+            OiToolAction *a;
+            a = new OiToolAction();
+
+            connect(a,SIGNAL(openToolWidget(QString,QString)),&this->control,SLOT(loadOiToolWidget(QString,QString)));
+
+            a->setToolName(toolName);
+            a->setPluginName(pluginName);
+            a->setText(toolName);
+            pluginMenu->addAction(a);
+        }
+
+    }
+
+}
+
+/*!
  * \brief on_actionShow_help_triggered opens the local help document with the user guide.
  */
 void MainWindow::on_actionShow_help_triggered()
@@ -1782,47 +1843,6 @@ void MainWindow::on_treeView_featureOverview_clicked(const QModelIndex &index)
 }
 
 /*!
- * \brief MainWindow::on_actionStart_stake_out_triggered
- * Start stake out manager
- */
-void MainWindow::on_actionStart_stake_out_triggered(){
-    this->myStakeOutManager.setModels(this->control.myPointFeatureProxyModel, this->control.myFeatureGroupsModel);
-    this->myStakeOutManager.open();
-}
-
-/*!
- * \brief MainWindow::on_actionStop_stake_out_triggered
- * Stop current stake out
- */
-void MainWindow::on_actionStop_stake_out_triggered(){
-
-}
-
-/*!
- * \brief MainWindow::on_actionNext_triggered
- * Continue stake out with the next geometry
- */
-void MainWindow::on_actionNext_triggered(){
-    emit this->nextStakeOutGeometry();
-}
-
-/*!
- * \brief MainWindow::stakeOutConfigured
- * Called from stake out manager when the user has configured the stake out task
- * \param request
- */
-void MainWindow::stakeOutConfigured(QDomDocument request){
-
-    //disable start stake out button + enable stop & next buttons
-    this->ui->actionNext->setEnabled(true);
-    this->ui->actionStart_stake_out->setEnabled(false);
-    this->ui->actionStop_stake_out->setEnabled(true);
-
-    emit this->startStakeOut(request);
-
-}
-
-/*!
  * \brief closeAllOpenDialogs (only pointers) at end of openIndy, when closing mainwindow
  */
 void MainWindow::closeAllOpenDialogs()
@@ -1847,4 +1867,9 @@ void MainWindow::setDialogsNULL()
     this->sEntityDialog = NULL;
     this->watchWindow = NULL;
 
+}
+
+void MainWindow::showOiToolWidget(OiTool *oiToolWidget)
+{
+    oiToolWidget->show();
 }

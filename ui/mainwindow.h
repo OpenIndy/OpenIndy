@@ -54,7 +54,7 @@
 
 #include "oifeaturestate.h"
 
-#include "oistakeoutmanager.h"
+#include "oitoolaction.h"
 
 namespace Ui {
 class MainWindow;
@@ -101,8 +101,6 @@ public:
     RealTimeDataDialog rtDataDialog;
 
     WatchWindow *watchWindow;
-
-    OiStakeOutManager myStakeOutManager;
 
     //actions
     //create feature
@@ -186,6 +184,9 @@ public slots:
 
     //void updateCoordSys();
 
+    //database methods
+    void createOiToolActions();
+
 private slots:
     void featureContextMenu(const QPoint &point);
     void deleteFeatures(bool checked);
@@ -202,10 +203,19 @@ private slots:
 
     void initializeActions();
 
-    void on_lineEdit_inputConsole_returnPressed();
     void setupCreateFeature();
+
+    //initiates all standard actions for sensors in the control pad
+    void initSensorActions();
+    //initiates all tracker specific actions in the control pad
+    void initTrackerActions();
+    //initiates all total station specifix actions in the control pad
+    void initTotalStationActions();
+
+    void setupSensorPad();
     void setupLaserTrackerPad();
     void setupTotalStationPad();
+
     void receiveConfig(FeatureWrapper*,MeasurementConfig);
     void createFeature();
 
@@ -306,15 +316,12 @@ private slots:
 
     void on_treeView_featureOverview_clicked(const QModelIndex &index);
 
-    //stake out methods
-    void on_actionStart_stake_out_triggered();
-    void on_actionStop_stake_out_triggered();
-    void on_actionNext_triggered();
-    void stakeOutConfigured(QDomDocument request);
-
     //close dialogs
     void closeAllOpenDialogs();
     void setDialogsNULL();
+
+    //tools
+    void showOiToolWidget(OiTool* oiToolWidget);
 
 private:
     Ui::MainWindow *ui;

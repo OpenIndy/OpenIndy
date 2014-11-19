@@ -17,6 +17,10 @@ QString OiMetaData::iid_NetworkAdjustment = NetworkAdjustment_iidd;
 QString OiMetaData::iid_ObjectTransformation = ObjectTransformation_iidd;
 QString OiMetaData::iid_SystemTransformation = SystemTransformation_iidd;
 QString OiMetaData::iid_Simulation = Simulation_iidd;
+QString OiMetaData::iid_OiTool = OiTool_iidd;
+QString OiMetaData::iid_OiExchange = OiExchange_iidd;
+QString OiMetaData::iid_OiExchangeSimpleAscii = OiExchangeSimpleAscii_iidd;
+QString OiMetaData::iid_OiExchangeSpecialFormat = OiExchangeSpecialFormat_iidd;
 
 
 /*!
@@ -122,7 +126,11 @@ QString OiMetaData::getOperatingSys(){
 
 }
 
-
+/*!
+ * \brief OiMetaData::findIID
+ * \param iid
+ * \return
+ */
 bool OiMetaData::findIID(QString iid){
 
     if(iid.compare(OiMetaData::iid_LaserTracker) == 0){
@@ -146,6 +154,14 @@ bool OiMetaData::findIID(QString iid){
     }else if(iid.compare(OiMetaData::iid_OiPlugin) == 0){
         return true;
     }else if(iid.compare(OiMetaData::iid_Simulation) == 0){
+        return true;
+    }else if(iid.compare(OiMetaData::iid_OiTool) == 0){
+        return true;
+    }else if(iid.compare(OiMetaData::iid_OiExchange) == 0){
+        return true;
+    }else if(iid.compare(OiMetaData::iid_OiExchangeSimpleAscii) == 0){
+        return true;
+    }else if(iid.compare(OiMetaData::iid_OiExchangeSpecialFormat) == 0){
         return true;
     }
 

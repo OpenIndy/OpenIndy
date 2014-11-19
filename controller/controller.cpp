@@ -254,10 +254,10 @@ void Controller::startMove(Reading *parameter){
 
     //TODO check function
     if (parameter->typeofReading == Configuration::ePolar){
-        OiFeatureState::getActiveStation()->startMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
+        OiFeatureState::getActiveStation()->emitStartMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
         emit sensorWorks("moving...");
     }else if (parameter->typeofReading == Configuration::eCartesian){
-        OiFeatureState::getActiveStation()->startMove(parameter->rCartesian.xyz.getAt(0),parameter->rCartesian.xyz.getAt(1),parameter->rCartesian.xyz.getAt(2));
+        OiFeatureState::getActiveStation()->emitStartMove(parameter->rCartesian.xyz.getAt(0),parameter->rCartesian.xyz.getAt(1),parameter->rCartesian.xyz.getAt(2));
         emit sensorWorks("moving...");
     }
 
@@ -594,63 +594,17 @@ void Controller::showResults(bool b){
  */
 void Controller::savePluginData(PluginMetaData* metaInfo){
 
-if (!metaInfo->alreadyExists){
+    if (!metaInfo->alreadyExists){
 
+        QList<Sensor*> sensorList = PluginLoader::loadSensorPlugins(metaInfo->path);
+        QList<Function*> functionList = PluginLoader::loadFunctionPlugins(metaInfo->path);
+        QList<NetworkAdjustment*> networkAdjustmentList = PluginLoader::loadNetworkAdjustmentPlugins(metaInfo->path);
+        QList<SimulationModel*> simulationList = PluginLoader::loadSimulationPlugins(metaInfo->path);
+        QList<OiTool*> toolList = PluginLoader::loadOiToolPlugins(metaInfo->path);
 
-    QList<Sensor*> sensorList = PluginLoader::loadSensorPlugins(metaInfo->path);
-    QList<Function*> functionList = PluginLoader::loadFunctionPlugins(metaInfo->path);
-    QList<NetworkAdjustment*> networkAdjustmentList = PluginLoader::loadNetworkAdjustmentPlugins(metaInfo->path);
-    QList<SimulationModel*> simulationList = PluginLoader::loadSimulationPlugins(metaInfo->path);
+        SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList,toolList);
 
-    SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList);
-
-    /*for (int i = 0;i<sensorList.size();i++){
-        SystemDbManager::savePlugin(sensorList.at(i)->getMetaData(),functionList,sensorList,networkAdjustmentList);
     }
-
-    for (int i = 0;i<functionList.size();i++){
-        SystemDbManager::savePlugin(functionList.at(i)->getMetaData());
-    }
-
-    for (int i = 0;i<networkAdjustmentList.size();i++){
-        SystemDbManager::savePlugin(networkAdjustmentList.at(i)->getMetaData());
-    }*/
-
-   /* if(metaInfo->iid==OiMetaData::iid_LaserTracker){
-            metaInfo->pluginType = OiMetaData::sensorPlugin;
-            SystemDbManager::savePlugin(metaInfo);
-            Console::addLine(QString("laser tracker plugin added: "+metaInfo->name +"-" +metaInfo->path));
-    }else if(metaInfo->iid==OiMetaData::iid_ConstructFunction){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("construct plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_FitFunction){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        Function *tmpFunction = PluginLoader::loadFunctionPlugin(metaInfo->path);
-        SystemDbManager::savePlugin(metaInfo,tmpFunction);
-        Console::addLine("fit plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_GeodeticFunction){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("geodetic plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_NetworkAdjustment){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("network adjustment plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_ObjectTransformation){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("object transformation plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_SystemTransformation){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("system transformation plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_TotalStation){
-        metaInfo->pluginType = OiMetaData::sensorPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("total station plugin added");
-    }*/
-  }
 }
 
 /*!
@@ -1656,9 +1610,6 @@ bool Controller::receiveRequestResult(OiRequestResponse *request){
                 this->tblModel->updateModel();
 
                 break;
-            case OiRequestResponse::eStartStakeOut:
-                qDebug() << request->response.toString();
-                break;
             }
 
             this->lastRequestId = -1;
@@ -1744,6 +1695,22 @@ void Controller::sendIsConnected(bool b)
 void Controller::sendSensorState(int sState, QString msg)
 {
     emit setSensorState(sState,msg);
+}
+
+QMultiMap<QString, QString> Controller::getOiTools()
+{
+    return SystemDbManager::getAvailableOiTools();
+}
+
+void Controller::loadOiToolWidget(QString pluginName, QString toolName)
+{
+    QString pluginPath = SystemDbManager::getPluginFilePath(toolName,pluginName);
+
+    OiTool* oiToolWidget = PluginLoader::loadOiToolPlugin(pluginPath,toolName);
+
+    if(oiToolWidget != NULL){
+        emit openOiToolWidget(oiToolWidget);
+    }
 }
 
 /*void Controller::handleRemoteCommand(OiProjectData *d)

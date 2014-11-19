@@ -57,6 +57,7 @@
 #include "simulationmodel.h"
 
 #include "simplepolarmeasurement.h"
+#include "p_oireportcreator.h"
 
 class OiTemplatePlugin : public QObject, OiPlugin
 {
@@ -71,10 +72,13 @@ public:
     QList<Function*> createFunctions();
     QList<NetworkAdjustment*> createNetworkAdjustments();
     QList<SimulationModel*> createSimulations();
+    QList<OiTool*> createTools();
     Sensor* createSensor(QString name);
     Function* createFunction(QString name);
     NetworkAdjustment* createNetworkAdjustment(QString name);
     SimulationModel* createSimulation(QString name);
+    OiTool* createTool(QString name);
+
 
 };
 

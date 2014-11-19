@@ -28,7 +28,13 @@ public:
     explicit importNominalGeometryDialog(QWidget *parent = 0);
     ~importNominalGeometryDialog();
 
-signals:
+private:
+    Ui::importNominalGeometryDialog *ui;
+
+public slots:
+    void showEvent(QShowEvent *event);
+
+/*signals:
     void sendFeature(QList<FeatureWrapper*>);
 
 private slots:
@@ -46,23 +52,23 @@ private slots:
 public slots:
     void setUpCoordinateSystems();
 
-    void showEvent(QShowEvent *event);
+
 
 private slots:
     void updateProgress(int progress, QString msg); //progress (0-100)
-    void exchangeFinished(bool success, oiExchangeObject exchangeData);
+    void exchangeFinished(bool success, OiExchangeObject exchangeData);
 
 private:
     Ui::importNominalGeometryDialog *ui;
-    oiExchangeObject ExchangeData;
+    OiExchangeObject ExchangeData;
 
-    oiDataExchanger &myExchanger;
+    OiDataExchanger &myExchanger;
 
     const OiLoadingDialog *myLoadingDialog;
 
     void setUpSupportedElements(QString format);
     void setUpSupportedUnits(QString format);
-    void setUpDescription();
+    void setUpDescription();*/
 };
 
 #endif // IMPORTNOMINALGEOMETRYDIALOG_H

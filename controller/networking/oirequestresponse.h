@@ -26,10 +26,7 @@ public:
         eMove,
         eMeasure,
         eStartWatchwindow,
-        eStopWatchwindow,
-        eStartStakeOut,
-        eStopStakeOut,
-        eGetNextGeometry
+        eStopWatchwindow
     };
 
     enum ErrorCode{
@@ -45,7 +42,6 @@ public:
         eNoTask,
         eNoSensor,
         eNoTaskWithId,
-        eStakeOutFinished,
         eCannotMeasureNominal
     };
 

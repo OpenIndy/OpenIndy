@@ -12,6 +12,7 @@
 #include "console.h"
 #include "configuration.h"
 #include "oiconfigstate.h"
+#include "oijob.h"
 
 using namespace std;
 

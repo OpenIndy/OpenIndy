@@ -5,8 +5,6 @@
 #include <QStringList>
 #include <QObject>
 
-#include "oiexchangeascii.h"
-#include "oiexchangepts.h"
 #include "unitconverter.h"
 
 /*!
@@ -14,16 +12,19 @@
  * static class to manage all the different kinds of data import defined by
  * the oiExchangeInterface. You have to add your oiexchange class here.
  */
-class oiDataExchanger : public QObject
+class OiDataExchanger : public QObject
 {
     Q_OBJECT
 
 private:
-    explicit oiDataExchanger(QObject *parent = 0);
-    ~oiDataExchanger();
+    explicit OiDataExchanger(QObject *parent = 0);
+    ~OiDataExchanger();
 
+
+
+    /*
 public:
-    static oiDataExchanger &getInstance();
+    static OiDataExchanger &getInstance();
 
     static QStringList getOutputFormats();
     static QList<Configuration::ElementTypes> getSupportedElements(QString format);
@@ -33,26 +34,26 @@ public:
     static QList<UnitConverter::unitType> getTemperatureUnits(QString format);
 
 public slots:
-    void importData(oiExchangeObject exchangeData, QString format);
-    void exportData(oiExchangeObject exchangeData, QString format);
+    void importData(OiExchangeObject exchangeData, QString format);
+    void exportData(OiExchangeObject exchangeData, QString format);
 
 signals:
     void updateProgress(int progress, QString msg); //progress in percent (0-100)
-    void exchangeFinished(bool success, oiExchangeObject exchangeData);
+    void exchangeFinished(bool success, OiExchangeObject exchangeData);
 
 private slots:
     void exchangeData();
     void emitUpdateProgress(int progress, QString msg);
 
 private:
-    static oiDataExchanger myInstance;
+    static OiDataExchanger myInstance;
     static QString format;
     static bool import;
 
     QThread myExchangeThread;
 
-    static oiExchangeObject myExchangeData;
-
+    static OiExchangeObject myExchangeData;
+*/
 };
 
 #endif // OIDATAEXCHANGER_H

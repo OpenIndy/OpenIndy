@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1057</width>
-    <height>688</height>
+    <width>1081</width>
+    <height>662</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -191,7 +191,7 @@ background-position: center center;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1057</width>
+     <width>1081</width>
      <height>21</height>
     </rect>
    </property>
@@ -283,15 +283,6 @@ background-position: center center;</string>
     <property name="title">
      <string>Tools</string>
     </property>
-    <widget class="QMenu" name="menuStake_out">
-     <property name="title">
-      <string>stake out</string>
-     </property>
-     <addaction name="actionStart_stake_out"/>
-     <addaction name="actionStop_stake_out"/>
-     <addaction name="actionNext"/>
-    </widget>
-    <addaction name="menuStake_out"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSensor"/>
@@ -468,20 +459,6 @@ color: rgb(255, 255, 255);
         <bool>false</bool>
        </property>
       </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLineEdit" name="lineEdit_inputConsole"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_loadScript">
-         <property name="text">
-          <string>load script</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
      </item>
     </layout>
    </widget>
