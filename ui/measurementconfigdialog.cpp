@@ -52,11 +52,11 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked(){
     mConfig.typeOfReading = Configuration::getReadingTypeEnum(this->ui->comboBox_typeOfReading->currentText());
 
     //send created config to OiConfigState
-    if(!OiConfigState::setMeasurementConfig(OiFeatureState::getActiveFeature(), mConfig)){
+    /*if(!OiConfigState::setMeasurementConfig(OiFeatureState::getActiveFeature(), mConfig)){
         QMessageBox::information(NULL, "Measurement config invalid",
                                  "Unable to set the measurement config for the active feature. Maybe there is another "
                                  "measurement config with the same name but different parameters which has been used yet.");
-    }
+    }*/
 
     this->close();
 

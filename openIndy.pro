@@ -187,7 +187,8 @@ SOURCES += \
     ui/observationdelegate.cpp \
     src/plugin/oitool/oijob.cpp \
     ui/oitoolaction.cpp \
-    src/plugin/oiexchange/oiexchangeobject.cpp
+    src/plugin/oiexchange/oiexchangeobject.cpp \
+    ui/exportnominaldialog.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -341,7 +342,8 @@ HEADERS  += \
     src/plugin/oiexchange/oiexchangeobject.h \
     src/plugin/oiexchange/pi_oiexchangeinterface.h \
     src/plugin/oiexchange/pi_oiexchangespecialformat.h \
-    src/plugin/oiexchange/pi_oiexchangesimpleascii.h
+    src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
+    ui/exportnominaldialog.h
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
     ui/watchwindow.ui \
@@ -360,6 +362,7 @@ FORMS    += ui/mainwindow.ui \
     ui/oisimulationwidget.ui \
     ui/stationinfodialog.ui \
     ui/realtimedatadialog.ui \
-    ui/oiloadingdialog.ui
+    ui/oiloadingdialog.ui \
+    ui/exportnominaldialog.ui
 
 

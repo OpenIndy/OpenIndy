@@ -63,13 +63,13 @@ public:
      * Specify which type of elemen typet shall be im- or exported
      * \param typeOfElement
      */
-    void setGeometryType(Configuration::GeometryTypes typeOfElement){
-        this->typeOfElement = typeOfElement;
+    void setGeometryType(Configuration::GeometryTypes typeOfGeometry){
+        this->typeOfGeometry = typeOfGeometry;
     }
 
 private:
     QList<OiExchangeSimpleAscii::ColumnType> userDefinedColumns; //an ordered list of enum values that specify what to do with each column
-    Configuration::ElementTypes typeOfElement; //specifies which type of element shall be im- or exported
+    Configuration::GeometryTypes typeOfGeometry; //specifies which type of geometry shall be im- or exported
 
 };
 
