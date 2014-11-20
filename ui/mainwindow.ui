@@ -564,6 +564,9 @@ color: rgb(255, 255, 255);
    <property name="text">
     <string>watch window</string>
    </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
   </action>
   <action name="actionConsole">
    <property name="icon">

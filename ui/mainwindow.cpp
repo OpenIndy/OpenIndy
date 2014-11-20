@@ -723,12 +723,15 @@ void MainWindow::initializeActions(){
     actionInitialize = new QAction(0);
     actionInitialize->setText("initialize");
     actionMeasure = new QAction(0);
+    actionMeasure->setShortcut(Qt::Key_F3);
     actionMeasure->setText("measure");
     actionAim = new QAction(0);
+    actionAim->setShortcut(QKeySequence(Qt::ALT + Qt::Key_A));
     actionAim->setText("aim");
     actionMove = new QAction(0);
     actionMove->setText("move");
     actionHome = new QAction(0);
+    actionHome->setShortcut(Qt::Key_F9);
     actionHome->setText("home");
     actionChangeMotorState = new QAction(0);
     actionChangeMotorState->setText("change motor state");

@@ -523,6 +523,9 @@ bool LeicaTachymeter::move(double x, double y, double z)
  */
 QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
 
+    //if tracking measurements are active, stop them
+    this->stopTrackingMode();
+
     //stop watchwindow if it is open
     this->stopWatchWindowForMeasurement();
 
@@ -573,8 +576,8 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
 
     //set target to specified value
     //Stream works with trk mode, for fast measurements
-    //if(this->setTargetTypeStream()){
-    if(this->setTargetTypeMeasure()){
+    if(this->setTargetTypeStream()){
+    //if(this->setTargetTypeMeasure()){
 
         /*MeasurementConfig *mconfig;
         mconfig = new MeasurementConfig();
@@ -597,7 +600,7 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
 
         r = this->getStreamValues();
 
-        QThread::msleep(200);
+        QThread::msleep(100);
 
         if(r == NULL){
             return m;
@@ -992,9 +995,12 @@ bool LeicaTachymeter::setTargetTypeMeasure()
             }
             return true;
         }else{
-            if(receive.compare("%R1P,0,0:0,0\r\n") != 0){ // if not IR and standard
-                //switch to reflector standard
-                command = "%R1Q,17019:0\r\n";
+            //if(receive.compare("%R1P,0,0:0,0\r\n") != 0){ // if not IR and standard
+            if(receive.compare("%R1P,0,0:0,11\r\n") != 0){ // if not IR and precise
+
+                //switch
+                //command = "%R1Q,17019:0\r\n";  //IR standard
+                command = "%R1Q,17019:11\r\n"; //IR precise
                 if(this->executeCommand(command)){
                     receive = this->receive();
                     this->fineAdjusted = false;
@@ -1043,9 +1049,11 @@ bool LeicaTachymeter::setTargetTypeStream()
             }
             return true;
         }else{
-            if(receive.compare("%R1P,0,0:0,4\r\n") != 0){ // if not IR and tracking
-            //switch to reflector tracking
-                command = "%R1Q,17019:4\r\n";
+            //if(receive.compare("%R1P,0,0:0,4\r\n") != 0){ // if not IR and tracking
+            if(receive.compare("%R1P,0,0:0,10\r\n") != 0){ // if not IR and synchrotrack
+                //switch
+                //command = "%R1Q,17019:4\r\n";
+                command = "%R1Q,17019:10\r\n";
                 if(this->executeCommand(command)){
                     receive = this->receive();
                     this->fineAdjusted = false;
@@ -1215,9 +1223,11 @@ Reading *LeicaTachymeter::getStreamValues()
         QString command;
 
         if(value.compare("reflector") == 0){
-            command = "%R1Q,2008:7,1\r\n";
+            //command = "%R1Q,2008:7,1\r\n";
+            command = "%R1Q,2008:1,1\r\n";
         }else{
-            command = "%R1Q,2008:8,1\r\n";
+            //command = "%R1Q,2008:8,1\r\n";
+            command = "%R1Q,2008:1,1\r\n";
         }
 
         if(this->executeCommand(command)){
@@ -1272,9 +1282,11 @@ bool LeicaTachymeter::executeEDM(){
         QString edmCommand;
 
         if(value.compare("reflector") == 0){
-            edmCommand = "%R1Q,2008:2,1\r\n";
+            //edmCommand = "%R1Q,2008:2,1\r\n";
+            edmCommand = "%R1Q,2008:1,1\r\n";
         }else{
-            edmCommand = "%R1Q,2008:5,1\r\n";
+            //edmCommand = "%R1Q,2008:5,1\r\n";
+            edmCommand = "%R1Q,2008:1,1\r\n";
         }
 
         if(this->executeCommand(edmCommand)){
