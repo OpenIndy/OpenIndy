@@ -26,9 +26,10 @@ WatchWindow::WatchWindow(QWidget *parent) :
     listener->moveToThread(&listenerThread);
     listenerThread.start();
 
-    ui->lineEdit_decimalDigits->setText("3");
-    ui->lineEdit_fNameFontSize->setText("30");
-    ui->lineEdit_fAttributeFontSize->setText("60");
+    /*ui->spinBox_decimalDigits->setText("3");
+    ui->spinBox_fNameFontSize->setText("16");
+    ui->spinBox_fAttributeFontSize->setText("12");
+    ui->spinBox_fValueFontSize->setText("40");*/
 
 }
 
@@ -53,7 +54,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         return;
     }
 
-    int numberOfDigits = ui->lineEdit_decimalDigits->text().toInt();
+    int numberOfDigits = ui->spinBox_decimalDigits->text().toInt();
 
     OiMat trafo;
 
@@ -93,7 +94,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                     streamData.value("d3D")->setPalette(Qt::green);
                 }
 
-                streamData.value("d3D")->display(QString::number(distR3*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+                streamData.value("d3D")->setText(QString::number(distR3*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
             }
         }
     }
@@ -133,7 +134,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             streamData.value("distance")->setPalette(Qt::green);
         }
 
-        streamData.value("distance")->display(QString::number(dDist*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+        streamData.value("distance")->setText(QString::number(dDist*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
 
         double alpha = featureValues.getAt(0)-trackerValues.getAt(0);
 
@@ -145,7 +146,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             streamData.value("across")->setPalette(Qt::green);
         }
 
-        streamData.value("across")->display(QString::number(dAcross*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+        streamData.value("across")->setText(QString::number(dAcross*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
 
         //nominal
         double h1 = qSin(((PI/2) - featureValues.getAt(1)))*featureValues.getAt(2);
@@ -160,7 +161,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             streamData.value("dH")->setPalette(Qt::green);
         }
 
-        streamData.value("dH")->display(QString::number(dH*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+        streamData.value("dH")->setText(QString::number(dH*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
 
     }else{
 
@@ -205,7 +206,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 streamData.value("x")->setPalette(Qt::green);
                             }
 
-                            streamData.value("x")->display(QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+                            streamData.value("x")->setText(QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
 
                         }else if(j.key() == "y"){
                             double featureY = 0.0;
@@ -223,7 +224,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 streamData.value("y")->setPalette(Qt::green);
                             }
 
-                            streamData.value("y")->display(QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+                            streamData.value("y")->setText(QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
 
                         }else if(j.key() == "z"){
                             double featureZ = 0.0;
@@ -241,7 +242,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 streamData.value("z")->setPalette(Qt::green);
                             }
 
-                            streamData.value("z")->display(QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+                            streamData.value("z")->setText(QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
 
                         }else{
                             double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
@@ -251,7 +252,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             }else{
                                 streamData.value(j.key())->setPalette(Qt::green);
                             }
-                            streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',numberOfDigits));
+                            streamData.value(j.key())->setText(QString::number(j.value().toDouble(),'f',numberOfDigits));
                         }
 
                         break;
@@ -292,7 +293,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     streamData.value("azimuth")->setPalette(Qt::green);
                                 }
 
-                                streamData.value("azimuth")->display(QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
+                                streamData.value("azimuth")->setText(QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
 
                             }else if(j.key() == "zenith"){
                                 double FeatureZE = 0.0;
@@ -312,7 +313,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     streamData.value("zenith")->setPalette(Qt::green);
                                 }
 
-                                streamData.value("zenith")->display(QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
+                                streamData.value("zenith")->setText(QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
 
                             }else if(j.key() == "distance"){
                                 double FeatureDIS = 0.0;
@@ -332,7 +333,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     streamData.value("distance")->setPalette(Qt::green);
                                 }
 
-                                streamData.value("distance")->display(QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+                                streamData.value("distance")->setText(QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
 
                             }else{
                                 double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
@@ -343,7 +344,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     streamData.value(j.key())->setPalette(Qt::green);
                                 }
 
-                                streamData.value(j.key())->display(QString::number(j.value().toDouble(),'f',numberOfDigits));
+                                streamData.value(j.key())->setText(QString::number(j.value().toDouble(),'f',numberOfDigits));
                             }
                         }
                         break;
@@ -365,8 +366,9 @@ void WatchWindow::setLCDNumber(QVariantMap m){
  */
 void WatchWindow::iniGUI()
 {
-    int nameSize = ui->lineEdit_fNameFontSize->text().toInt();
-    int attributeSize = ui->lineEdit_fAttributeFontSize->text().toInt();
+    int nameSize = ui->spinBox_fNameFontSize->value();
+    int attributeSize = ui->spinBox_fAttributeFontSize->value();
+    int valueSize = ui->spinBox_fValueFontSize->value();
 
     streamData.clear();
 
@@ -395,10 +397,12 @@ void WatchWindow::iniGUI()
         featureName->setFont(f);
         featureName->setText(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
         masterLayout->addWidget(featureName);
+        masterLayout->setStretch(0,0);
         widgets.append(featureName);
     }
 
-    QFont fAttr( "Arial", attributeSize, QFont::Bold);
+    QFont fAttr("Arial", attributeSize, QFont::Bold);
+    QFont fValue("Arial", valueSize, QFont::Bold);
 
     QString value = "XX.XX";
 
@@ -409,32 +413,31 @@ void WatchWindow::iniGUI()
         //cross distance
         QString name = "across";
 
-
         QLabel *l = new QLabel();
         l->setText(name);
         l->setFont(fAttr);
         widgets.append(l);
 
-        QLCDNumber *n = new QLCDNumber();
-        n->display(value);
-        n->setFont(fAttr);
-        n->setAutoFillBackground(true);
-        widgets.append(n);
+        QLabel *lv;
+        lv = new QLabel();
+        lv->setText(value);
+        lv->setFont(fValue);
+        lv->setAutoFillBackground(true);
+        lv->setAlignment(Qt::AlignRight);
+        widgets.append(lv);
 
-        n->setMode(QLCDNumber::Dec);
-        n->setDigitCount(10);
-        n->setSmallDecimalPoint(true);
-
-        QHBoxLayout *layout = new QHBoxLayout();
+        QHBoxLayout *layout;
+        layout = new QHBoxLayout();
         layout->addWidget(l);
-        layout->addWidget(n);
-        layout->setStretch(0,2);
+        layout->addWidget(lv);
+        layout->setStretch(0,1);
         layout->setStretch(1,3);
         layouts.append(layout);
 
         masterLayout->addLayout(layout);
+        masterLayout->setStretch(1,1);
 
-        streamData.insert(name,n);
+        streamData.insert(name,lv);
 
         //distance
         name = "distance";
@@ -444,26 +447,25 @@ void WatchWindow::iniGUI()
         l2->setFont(fAttr);
         widgets.append(l2);
 
-        QLCDNumber *n2 = new QLCDNumber();
-        n2->display(value);
-        n2->setFont(fAttr);
-        n2->setAutoFillBackground(true);
-        widgets.append(n2);
-
-        n2->setMode(QLCDNumber::Dec);
-        n2->setDigitCount(10);
-        n2->setSmallDecimalPoint(true);
+        QLabel *lv2;
+        lv2 = new QLabel();
+        lv2->setText(value);
+        lv2->setFont(fValue);
+        lv2->setAutoFillBackground(true);
+        lv2->setAlignment(Qt::AlignRight);
+        widgets.append(lv2);
 
         QHBoxLayout *layout2 = new QHBoxLayout();
         layout2->addWidget(l2);
-        layout2->addWidget(n2);
-        layout2->setStretch(0,2);
+        layout2->addWidget(lv2);
+        layout2->setStretch(0,1);
         layout2->setStretch(1,3);
         layouts.append(layout2);
 
         masterLayout->addLayout(layout2);
+        masterLayout->setStretch(2,1);
 
-        streamData.insert(name,n2);
+        streamData.insert(name,lv2);
 
         //delta height
         name = "dH";
@@ -473,26 +475,25 @@ void WatchWindow::iniGUI()
         l3->setFont(fAttr);
         widgets.append(l3);
 
-        QLCDNumber *n3 = new QLCDNumber();
-        n3->display(value);
-        n3->setFont(fAttr);
-        n3->setAutoFillBackground(true);
-        widgets.append(n3);
-
-        n3->setMode(QLCDNumber::Dec);
-        n3->setDigitCount(10);
-        n3->setSmallDecimalPoint(true);
+        QLabel *lv3;
+        lv3 = new QLabel();
+        lv3->setText(value);
+        lv3->setFont(fValue);
+        lv3->setAutoFillBackground(true);
+        lv3->setAlignment(Qt::AlignRight);
+        widgets.append(lv3);
 
         QHBoxLayout *layout3 = new QHBoxLayout();
         layout3->addWidget(l3);
-        layout3->addWidget(n3);
-        layout3->setStretch(0,2);
+        layout3->addWidget(lv3);
+        layout3->setStretch(0,1);
         layout3->setStretch(1,3);
         layouts.append(layout3);
 
         masterLayout->addLayout(layout3);
+        masterLayout->setStretch(3,1);
 
-        streamData.insert(name,n3);
+        streamData.insert(name,lv3);
 
         //dynamical for all other watch window modes
     }else{
@@ -507,26 +508,25 @@ void WatchWindow::iniGUI()
                 l->setFont(fAttr);
                 widgets.append(l);
 
-                QLCDNumber *n = new QLCDNumber();
-                n->display(value);
-                n->setFont(fAttr);
-                n->setAutoFillBackground(true);
-                widgets.append(n);
-
-                n->setMode(QLCDNumber::Dec);
-                n->setDigitCount(10);
-                n->setSmallDecimalPoint(true);
+                QLabel *lv;
+                lv = new QLabel();
+                lv->setText(value);
+                lv->setFont(fValue);
+                lv->setAutoFillBackground(true);
+                lv->setAlignment(Qt::AlignRight);
+                widgets.append(lv);
 
                 QHBoxLayout *layout = new QHBoxLayout();
                 layout->addWidget(l);
-                layout->addWidget(n);
-                layout->setStretch(0,2);
+                layout->addWidget(lv);
+                layout->setStretch(0,1);
                 layout->setStretch(1,3);
                 layouts.append(layout);
 
                 masterLayout->addLayout(layout);
+                masterLayout->setStretch((i+1),1);
 
-                streamData.insert(name,n);
+                streamData.insert(name,lv);
             }
         }
     }
@@ -718,7 +718,7 @@ void WatchWindow::getAttributes(QStringList l)
                 this->checkboxes.append(cb);
 
                 QLabel *lab = new QLabel();
-                lab->setText(QString("tolerance d3D"));
+                lab->setText(QString("tolerance d3D %1").arg(UnitConverter::getDistanceUnitString()));
                 attributeLabels.append(lab);
 
                 QLineEdit *le = new QLineEdit();
