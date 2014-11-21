@@ -137,10 +137,10 @@ QStringList LeicaTachymeter::selfDefinedActions() const
 {
     QStringList ownActions;
 
-    //actiion to activate the LOCK mode if available.
-    ownActions.append("LOCK"); //start tracking
-    ownActions.append("stop LOCK"); //stop tracking
-    ownActions.append("stop"); // call this to stop tracking mode
+    //action to activate the LOCK mode if available.
+    ownActions.append("lock to prism"); //start tracking
+    ownActions.append("stop prism lock"); //stop tracking
+    ownActions.append("stop measurement"); // call this to stop tracking mode
     ownActions.append("laserPointer"); //turn on/off laser pointer
 
     return ownActions;
@@ -153,7 +153,7 @@ QStringList LeicaTachymeter::selfDefinedActions() const
  */
 bool LeicaTachymeter::doSelfDefinedAction(QString a)
 {
-    if(a == "LOCK"){
+    if(a == "lock to prism"){
 
         //first turn laser off
         if(laserOn){
@@ -162,12 +162,12 @@ bool LeicaTachymeter::doSelfDefinedAction(QString a)
         //activate lock mode for prism tracking
         this->getLOCKState();
 
-    }else if(a == "stop LOCK"){
+    }else if(a == "stop prism lock"){
 
         //stop lock mode for prism tracking
         this->deactiveLockState();
 
-    }else if(a == "stop"){
+    }else if(a == "stop measurement"){
 
         this->stopTrackingMode();
         this->watchWindowOpen = false;
@@ -223,19 +223,16 @@ bool LeicaTachymeter::connectSensor(ConnectionConfig* connConfig){
 
     if( this->serial->open(QIODevice::ReadWrite) ){
 
-        myEmitter.emitSendString("open port");
-
         if( this->serial->setBaudRate(connConfig->baudRate)
                 && this->serial->setDataBits(connConfig->dataBits)
                 && this->serial->setParity(connConfig->parity)
                 && this->serial->setFlowControl(connConfig->flowControl)
                 && this->serial->setStopBits(connConfig->stopBits) ){
 
-            myEmitter.emitSendString("port properties set");
-            myEmitter.emitSendString("connection open");
+            myEmitter.emitSendString("connected");
             return true;
         }
-      }
+    }
 
     return false;
 
@@ -268,9 +265,8 @@ bool LeicaTachymeter::toggleSightOrientation(){
 
 
             if(executeCommand(command)){
-             myEmitter.emitSendString("changing side");
-             QString measureData = this->receive();
-             myEmitter.emitSendString(measureData);
+                myEmitter.emitSendString("toggle sight");
+                QString measureData = this->receive();
 
              return true;
             }
@@ -354,7 +350,7 @@ bool LeicaTachymeter::setLOCKState(QString currentState)
 
         bool result = this->checkCommandRC(command);
         if(result){
-            myEmitter.emitSendString("atr and locke state changed");
+            myEmitter.emitSendString("atr and lock state changed");
         }else{
             return false;
         }
@@ -443,6 +439,7 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
                 azimuth = 2*PI + azimuth;
             }
 
+            //correct the values depending on specified sense of rotation
             if(this->myConfiguration->stringParameter.contains("sense of rotation")){
                 QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
                 if(sense.compare("mathematical") == 0){
@@ -459,8 +456,6 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
             if(executeCommand(command)){
                 myEmitter.emitSendString("moving...");
                 QString measureData = this->receive();
-                myEmitter.emitSendString("completed.");
-                myEmitter.emitSendString(measureData );
             }
         }
     }
@@ -493,6 +488,7 @@ bool LeicaTachymeter::move(double x, double y, double z)
             r->rPolar.azimuth = 2*PI + r->rPolar.azimuth;
         }
 
+        //correct the values depending on specified sense of rotation
         if(this->myConfiguration->stringParameter.contains("sense of rotation")){
             QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
             if(sense.compare("mathematical") == 0){
@@ -509,8 +505,6 @@ bool LeicaTachymeter::move(double x, double y, double z)
         if(executeCommand(command)){
             myEmitter.emitSendString("moving...");
             QString measureData = this->receive();
-            myEmitter.emitSendString("completed");
-            myEmitter.emitSendString(measureData);
         }
     }
     return true;
@@ -578,25 +572,6 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
     //Stream works with trk mode, for fast measurements
     if(this->setTargetTypeStream()){
     //if(this->setTargetTypeMeasure()){
-
-        /*MeasurementConfig *mconfig;
-        mconfig = new MeasurementConfig();
-
-        mconfig->count =1;
-        mconfig->iterations =1;
-        mconfig->measureTwoSides = false;
-        mconfig->typeOfReading = Configuration::ePolar;
-
-        //call polar measurement method in trk mode.
-        r = this->measurePolar(mconfig).first();*/
-
-        /*QString command = "%R1Q,2117:\r\n";
-        QString receive = "";
-        if(this->executeCommand(command)){
-
-            receive = this->receive();
-            r = this->getQuickMeasReading(receive);
-        }*/
 
         r = this->getStreamValues();
 
@@ -698,13 +673,10 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
                     Reading *r;
                     r = new Reading();
                     QString command = "%R1Q,2108:5000,1\r\n";
-                    myEmitter.emitSendString("edm succesful");
 
                     if(executeCommand(command)){
 
                         QString measureData = this->receive();
-
-                        myEmitter.emitSendString(measureData);
 
                         QStringList polarElements = measureData.split(",");
 
@@ -714,6 +686,7 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
                         r->typeofReading = Configuration::ePolar;
                         r->face = this->getCurrentFace(r->rPolar.zenith);
 
+                        //correct the values depending on specified sense of rotation
                         if(this->myConfiguration->stringParameter.contains("sense of rotation")){
                             QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
                             if(sense.compare("mathematical") == 0){
@@ -764,13 +737,10 @@ QList<Reading*> LeicaTachymeter::measureDistance(MeasurementConfig *m){
                     Reading *r;
                     r = new Reading();
                     QString command = "%R1Q,2108:5000,1\r\n";
-                    myEmitter.emitSendString("edm succesful");
 
                     if(executeCommand(command)){
 
                         QString measureData = this->receive();
-
-                        myEmitter.emitSendString(measureData);
 
                         QStringList polarElements = measureData.split(",");
 
@@ -828,8 +798,6 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
 
                     QString measureData = this->receive();
 
-                    myEmitter.emitSendString(measureData);
-
                     QStringList polarElements = measureData.split(",");
 
                     r->rDirection.azimuth = polarElements.at(polarElements.size()-2).toDouble();
@@ -837,6 +805,7 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
                     r->typeofReading = Configuration::eDirection;
                     r->face = this->getCurrentFace(r->rDirection.zenith);
 
+                    //correct the values depending on specified sense of rotation
                     if(this->myConfiguration->stringParameter.contains("sense of rotation")){
                         QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
                         if(sense.compare("mathematical") == 0){
@@ -1123,6 +1092,9 @@ void LeicaTachymeter::stopTrackingAfterMeasure()
 
 }
 
+/*!
+ * \brief stopWatchWindowForMeasurement
+ */
 void LeicaTachymeter::stopWatchWindowForMeasurement()
 {
     if(watchWindowOpen){
@@ -1131,6 +1103,9 @@ void LeicaTachymeter::stopWatchWindowForMeasurement()
     }
 }
 
+/*!
+ * \brief restartWatchWindowAfterMeasurement
+ */
 void LeicaTachymeter::restartWatchWindowAfterMeasurement()
 {
     if(measureWatchWindow){
@@ -1166,6 +1141,7 @@ Reading *LeicaTachymeter::getQuickMeasReading(QString receive)
     r->typeofReading = Configuration::ePolar;
     r->rPolar.isValid = true;
 
+    //correct the values depending on specified sense of rotation
     if(this->myConfiguration->stringParameter.contains("sense of rotation")){
         QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
         if(sense.compare("mathematical") == 0){
@@ -1206,7 +1182,6 @@ void LeicaTachymeter::stopTrackingMode()
     if(executeCommand(command)){
         QString measuredData = this->receive();
         myEmitter.emitSendString("stop tracking");
-        myEmitter.emitSendString(measuredData);
     }
 }
 
