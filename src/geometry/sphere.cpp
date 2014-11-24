@@ -221,10 +221,10 @@ QString Sphere::getDisplayRadius() const{
 QString Sphere::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-
+/*
 QString Sphere::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}
+}*/
 /*QString Sphere::getDisplayObs() const{
     return QString::number(this->myObservations.size());
 }*/

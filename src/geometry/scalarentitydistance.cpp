@@ -136,10 +136,10 @@ double ScalarEntityDistance::getScalar() const
 QString ScalarEntityDistance::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-
+/*
 QString ScalarEntityDistance::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}
+}*/
 /*QString ScalarEntityDistance::getDisplayObs() const{
     return QString::number(this->myObservations.size());
 }*/

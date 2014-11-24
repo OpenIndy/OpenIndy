@@ -24,6 +24,7 @@ public:
     void setCommonState(bool isCommon);
 
     bool getIsNominal() const;
+    QString getDisplayIsNominal() const;
 
     QList<Geometry *> getMyNominals() const;
     bool addNominal(Geometry *myNominal);

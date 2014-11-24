@@ -189,10 +189,10 @@ QString Point::getDisplayZ() const{
 QString Point::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-
+/*
 QString Point::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}
+}*/
 
 /*QString Point::getDisplayObs() const{
     return QString::number(this->myObservations.size());

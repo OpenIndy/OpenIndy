@@ -10,8 +10,6 @@ MeasurementConfigDialog::MeasurementConfigDialog(QWidget *parent) :
     ui(new Ui::MeasurementConfigDialog)
 {
     ui->setupUi(this);
-
-    //initGUI();
 }
 
 /*!
@@ -20,6 +18,14 @@ MeasurementConfigDialog::MeasurementConfigDialog(QWidget *parent) :
 MeasurementConfigDialog::~MeasurementConfigDialog()
 {
     delete ui;
+}
+
+/*!
+ * \brief MeasurementConfigDialog::setMeasurementConfig
+ * \param mConfig
+ */
+void MeasurementConfigDialog::setMeasurementConfig(MeasurementConfig mConfig){
+    this->mConfig = mConfig;
 }
 
 /*!
@@ -133,13 +139,13 @@ void MeasurementConfigDialog::initGUI(){
     this->ui->comboBox_existingConfigs->setModel(OiConfigState::getMeasurementConfigNames());
 
     //check if active feature exists and is a geometry
-    if(OiFeatureState::getActiveFeature() == NULL
+    /*if(OiFeatureState::getActiveFeature() == NULL
             || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
         return;
-    }
+    }*/
 
     //set default measurement config
-    MeasurementConfig mConfig;
+    /*MeasurementConfig mConfig;
     if(OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig().getIsValid()){
         mConfig = OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig();
     }else{
@@ -197,7 +203,7 @@ void MeasurementConfigDialog::initGUI(){
             //mConfig = Station::defaultMeasurementConfig;
             break;
         }
-    }
+    }*/
 
     //set default values for GUI elements
     if(mConfig.getIsValid()){
@@ -311,6 +317,7 @@ void MeasurementConfigDialog::showEvent(QShowEvent *event){
     this->initGUI();
 
     event->accept();
+
 }
 
 /*!
