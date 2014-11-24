@@ -87,6 +87,8 @@ MainWindow::MainWindow(QWidget *parent) :
     setUpStatusBar();
     control.tblModel->updateModel();
 
+    this->createOiToolActions();
+
 }
 
 /*!
@@ -218,7 +220,7 @@ void MainWindow::setConnects(){
     connect(&this->control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
 
     //dataimport
-    connect(&this->importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&this->control,SLOT(importFeatures(QList<FeatureWrapper*>)));
+    //connect(&this->importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&this->control,SLOT(importFeatures(QList<FeatureWrapper*>)));
 
     //when user edits some nominal values of the active feature then tell the Controller to update the feature
     connect(&this->nominalDialog, SIGNAL(sendNominalValues(NominalAttributeExchange)),&this->control,SLOT(getNominalValues(NominalAttributeExchange)));
@@ -227,10 +229,8 @@ void MainWindow::setConnects(){
     connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
     connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
 
-    //connect stake out manager
-    connect(&this->myStakeOutManager, SIGNAL(startStakeOut(QDomDocument)), this, SLOT(stakeOutConfigured(QDomDocument)));
-    connect(this, SIGNAL(startStakeOut(QDomDocument)), &this->control, SLOT(startStakeOut(QDomDocument)));
-    connect(this, SIGNAL(nextStakeOutGeometry()), &this->control, SLOT(nextStakeOutGeometry()));
+    //OiTools
+    connect(&this->control,SIGNAL(openOiToolWidget(OiTool*)),this,SLOT(showOiToolWidget(OiTool*)));
 
 }
 
@@ -1245,14 +1245,6 @@ void MainWindow::on_actionCreate_scalar_entity_triggered()
 }
 
 /*!
- * \brief opens the import dialog for nominal features and sets all coordinate systems for the dialog.
- */
-void MainWindow::on_actionNominal_geometry_triggered()
-{
-    importNominalDialog.show();
-}
-
-/*!
  * \brief getActiveCoordSystem
  * \param coordSys
  */
@@ -1694,6 +1686,40 @@ void MainWindow::resizeTableView()
 }
 
 /*!
+ * \brief MainWindow::createOiToolActions
+ */
+void MainWindow::createOiToolActions()
+{
+    QMultiMap<QString,QString> oiTools = control.getOiTools();
+
+    QList<QString> pluginNames = oiTools.keys();
+
+    foreach(QString pluginName, pluginNames){
+
+        QMenu *pluginMenu;
+        pluginMenu = new QMenu();
+        pluginMenu->setTitle(pluginName);
+        ui->menuTools->addMenu(pluginMenu);
+
+        QList<QString> toolNames = oiTools.values(pluginName);
+
+        foreach(QString toolName, toolNames){
+            OiToolAction *a;
+            a = new OiToolAction();
+
+            connect(a,SIGNAL(openToolWidget(QString,QString)),&this->control,SLOT(loadOiToolWidget(QString,QString)));
+
+            a->setToolName(toolName);
+            a->setPluginName(pluginName);
+            a->setText(toolName);
+            pluginMenu->addAction(a);
+        }
+
+    }
+
+}
+
+/*!
  * \brief on_actionShow_help_triggered opens the local help document with the user guide.
  */
 void MainWindow::on_actionShow_help_triggered()
@@ -1812,47 +1838,6 @@ void MainWindow::on_treeView_featureOverview_clicked(const QModelIndex &index)
 }
 
 /*!
- * \brief MainWindow::on_actionStart_stake_out_triggered
- * Start stake out manager
- */
-void MainWindow::on_actionStart_stake_out_triggered(){
-    this->myStakeOutManager.setModels(this->control.myPointFeatureProxyModel, this->control.myFeatureGroupsModel);
-    this->myStakeOutManager.open();
-}
-
-/*!
- * \brief MainWindow::on_actionStop_stake_out_triggered
- * Stop current stake out
- */
-void MainWindow::on_actionStop_stake_out_triggered(){
-
-}
-
-/*!
- * \brief MainWindow::on_actionNext_triggered
- * Continue stake out with the next geometry
- */
-void MainWindow::on_actionNext_triggered(){
-    emit this->nextStakeOutGeometry();
-}
-
-/*!
- * \brief MainWindow::stakeOutConfigured
- * Called from stake out manager when the user has configured the stake out task
- * \param request
- */
-void MainWindow::stakeOutConfigured(QDomDocument request){
-
-    //disable start stake out button + enable stop & next buttons
-    this->ui->actionNext->setEnabled(true);
-    this->ui->actionStart_stake_out->setEnabled(false);
-    this->ui->actionStop_stake_out->setEnabled(true);
-
-    emit this->startStakeOut(request);
-
-}
-
-/*!
  * \brief closeAllOpenDialogs (only pointers) at end of openIndy, when closing mainwindow
  */
 void MainWindow::closeAllOpenDialogs()
@@ -1876,5 +1861,52 @@ void MainWindow::setDialogsNULL()
     this->cFeatureDialog = NULL;
     this->sEntityDialog = NULL;
     this->watchWindow = NULL;
+
+}
+
+void MainWindow::showOiToolWidget(OiTool *oiToolWidget)
+{
+    oiToolWidget->show();
+}
+
+/*!
+ * \brief MainWindow::on_action_importNominals_triggered
+ */
+void MainWindow::on_action_importNominals_triggered(){
+    this->importNominalDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_action_importMeasurementConfigs_triggered
+ */
+void MainWindow::on_action_importMeasurementConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_action_importSensorConfigs_triggered
+ */
+void MainWindow::on_action_importSensorConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_action_exportNominals_triggered
+ */
+void MainWindow::on_action_exportNominals_triggered(){
+    this->exportNominalDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_action_exportMeasurementConfigs_triggered
+ */
+void MainWindow::on_action_exportMeasurementConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_action_exportSensorConfigs_triggered
+ */
+void MainWindow::on_action_exportSensorConfigs_triggered(){
 
 }

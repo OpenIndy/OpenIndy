@@ -85,3 +85,41 @@ CREATE TABLE elementPlugin (
 	FOREIGN KEY (element_id) REFERENCES element(id),
 	FOREIGN KEY (functionPlugin_id) REFERENCES functionPlugin(id)
 );
+
+-- alle GUI Tools eines Plugins
+CREATE TABLE oiToolPlugin (
+	id integer PRIMARY KEY autoincrement,
+	iid text,
+	plugin_id integer,
+	name text,
+	description text,
+	FOREIGN KEY (plugin_id) REFERENCES plugin(id)
+);
+
+-- alle Im- und Export Algorithmen eines Plugins
+CREATE TABLE oiExchangePlugin (
+	id integer PRIMARY KEY autoincrement,
+	iid text,
+	plugin_id integer,
+	name text,
+	description text,
+	FOREIGN KEY (plugin_id) REFERENCES plugin(id)
+);
+
+-- für jeden Im- und Export Algorithmus alle Geometrien, die unterstützt werden
+CREATE TABLE elementOiExchange (
+	id integer PRIMARY KEY autoincrement,
+	element_id integer,
+	oiExchangePlugin_id integer,
+	use_as_default boolean,
+	FOREIGN KEY (element_id) REFERENCES element(id),
+	FOREIGN KEY (oiExchangePlugin_id) REFERENCES oiExchangePlugin(id)
+);
+
+-- für jedes special format Plugin alle Dateiendungen, die unterstützt werden
+CREATE TABLE oiExchangeFileExtensions (
+	id integer PRIMARY KEY autoincrement,
+	oiExchangePlugin_id integer,
+	file_extension text,
+	FOREIGN KEY (oiExchangePlugin_id) REFERENCES oiExchangePlugin(id)
+);

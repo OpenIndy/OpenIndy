@@ -22,7 +22,8 @@
 #include "featuredata.h"
 #include "settingsdialog.h"
 #include "scalarentitydialog.h"
-#include "importnominalgeometrydialog.h"
+#include "importnominaldialog.h"
+#include "exportnominaldialog.h"
 #include "nominaldatadialog.h"
 #include "edittrafoparamdialog.h"
 #include "oiprojectexchanger.h"
@@ -54,7 +55,7 @@
 
 #include "oifeaturestate.h"
 
-#include "oistakeoutmanager.h"
+#include "oitoolaction.h"
 
 namespace Ui {
 class MainWindow;
@@ -94,15 +95,12 @@ public:
     SettingsDialog setUpDialog;
     EditTrafoparamDialog trafoParamDialog;
 
-    importNominalGeometryDialog importNominalDialog;
     NominalDataDialog nominalDialog;
 
     StationInfoDialog stationDialog;
     RealTimeDataDialog rtDataDialog;
 
     WatchWindow *watchWindow;
-
-    OiStakeOutManager myStakeOutManager;
 
     //actions
     //create feature
@@ -159,6 +157,12 @@ public:
     QAction *cPsep9;
     QAction *cPsep10;
 
+    //import dialogs
+    ImportNominalDialog importNominalDialog;
+
+    //export dialogs
+    ExportNominalDialog exportNominalDialog;
+
 signals:
 
     //void sendActiveNominalfeature(FeatureWrapper *anf);
@@ -185,6 +189,9 @@ public slots:
     //void updateModel();
 
     //void updateCoordSys();
+
+    //database methods
+    void createOiToolActions();
 
 private slots:
     void featureContextMenu(const QPoint &point);
@@ -261,8 +268,6 @@ private slots:
 
     void on_actionCreate_scalar_entity_triggered();
 
-    void on_actionNominal_geometry_triggered();
-
     void on_actionCreate_trafoParam_triggered();
 
     void on_actionSave_as_triggered();
@@ -315,15 +320,22 @@ private slots:
 
     void on_treeView_featureOverview_clicked(const QModelIndex &index);
 
-    //stake out methods
-    void on_actionStart_stake_out_triggered();
-    void on_actionStop_stake_out_triggered();
-    void on_actionNext_triggered();
-    void stakeOutConfigured(QDomDocument request);
-
     //close dialogs
     void closeAllOpenDialogs();
     void setDialogsNULL();
+
+    //tools
+    void showOiToolWidget(OiTool* oiToolWidget);
+
+    //import menu entries
+    void on_action_importNominals_triggered();
+    void on_action_importMeasurementConfigs_triggered();
+    void on_action_importSensorConfigs_triggered();
+
+    //export menu entries
+    void on_action_exportNominals_triggered();
+    void on_action_exportMeasurementConfigs_triggered();
+    void on_action_exportSensorConfigs_triggered();
 
 private:
     Ui::MainWindow *ui;

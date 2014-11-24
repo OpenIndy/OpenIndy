@@ -12,6 +12,7 @@
 #include "console.h"
 #include "configuration.h"
 #include "oiconfigstate.h"
+#include "oijob.h"
 
 using namespace std;
 
@@ -30,6 +31,7 @@ public:
     static const QList<FeatureWrapper *> &getFeatures();
     static FeatureWrapper *addFeature(Configuration::FeatureTypes featureType, bool isNominal, QString name);
     static bool addFeature(FeatureWrapper *myFeature);
+    static bool addFeatures(const QList<FeatureWrapper *> &myFeatures);
     static bool removeFeature(FeatureWrapper *myFeature);
 
     static const QList<Station *> &getStations();
@@ -48,6 +50,8 @@ public:
     static void setActiveGroup(QString group);
 
     static FeatureWrapper *getFeature(int featureId);
+
+    static CoordinateSystem *getNominalSystem(QString name);
 
     static void sortFeatures();
     static void sortFeaturesById();
@@ -69,6 +73,8 @@ signals:
 
     void geometryObservationsChanged(); //emitted when observations were added or removed
 
+    void systemNominalsChanged(); //emitted when nominals where added or removed from a coordinate system
+
 private slots:
     void setActiveFeature(int featureId); //is called when a feature becomes the active feature
     void setActiveStation(int featureId); //is called when a station becomes the active station
@@ -82,6 +88,8 @@ private slots:
     void setGeometryActual(int featureId); //is called when the actual geometry of a nominal is set
     void setGeometryNominals(int featureId); //is called when a nominal was added or removed from an actual geometry
     void setGeometryObservations(int featureId); //is called when an observations was added or removed from a geometry
+
+    void setSystemsNominals(int featureId); //is called when a nominal was added to a nominal coordinate system
 
     void addPCSegmentAsFeature(FeatureWrapper *segment);
 
@@ -123,7 +131,8 @@ private:
         eAvailableGroupsChanged,
         eFeatureAttributesChanged,
         eFeatureFunctionsChanged,
-        eGeomObservationsChanged
+        eGeomObservationsChanged,
+        eSystemNominalsChanged
     };
 
     void emitSignal(SignalType mySignalType);

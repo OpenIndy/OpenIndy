@@ -57,6 +57,10 @@
 #include "simulationmodel.h"
 
 #include "simplepolarmeasurement.h"
+#include "p_oireportcreator.h"
+
+#include "p_oiexchangeascii.h"
+#include "p_oiexchangepts.h"
 
 class OiTemplatePlugin : public QObject, OiPlugin
 {
@@ -71,10 +75,17 @@ public:
     QList<Function*> createFunctions();
     QList<NetworkAdjustment*> createNetworkAdjustments();
     QList<SimulationModel*> createSimulations();
+    QList<OiTool*> createTools();
+    QList<OiExchangeSimpleAscii*> createSimpleAsciiExchanges();
+    QList<OiExchangeDefinedFormat*> createDefinedFormatExchanges();
+
     Sensor* createSensor(QString name);
     Function* createFunction(QString name);
     NetworkAdjustment* createNetworkAdjustment(QString name);
     SimulationModel* createSimulation(QString name);
+    OiTool* createTool(QString name);
+    OiExchangeSimpleAscii* createSimpleAsciiExchange(QString name);
+    OiExchangeDefinedFormat* createDefinedFormatExchange(QString name);
 
 };
 

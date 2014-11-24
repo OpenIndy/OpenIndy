@@ -105,6 +105,7 @@ public:
      void setScalarEntityDistance(ScalarEntityDistance *sED);
      void setScalarEntityTemperature(ScalarEntityTemperature *SET);
      void setScalarEntityMeasurementSeries(ScalarEntityMeasurementSeries *SEMS);
+
 };
 
 #endif // FEATUREWRAPPER_H

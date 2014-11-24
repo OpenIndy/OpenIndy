@@ -59,18 +59,13 @@ const MeasurementConfig &OiConfigState::getMeasurementConfig(QString displayName
 
 /*!
  * \brief OiConfigState::setMeasurementConfig
- * Set the measurement config of the given geometry geom to mConfig. Save the config if it does not exist yet.
- * \param geom
+ * Add a measurement config to OpenIndy permanently (check if it already exists, before)
  * \param mConfig
  * \return
  */
-bool OiConfigState::setMeasurementConfig(FeatureWrapper *geom, MeasurementConfig mConfig){
+bool OiConfigState::setMeasurementConfig(MeasurementConfig mConfig){
 
-    if(geom == NULL || geom->getGeometry() == NULL){
-        return false;
-    }
-
-    //check mConfig (name, parameters etc.)
+    //check mConfig wether a measurement config with the same name and/or parameters already exists and if it used, yet
     bool sameName, sameParameters, isUsed;
     OiConfigState::checkMeasurementConfig(mConfig, sameName, sameParameters, isUsed);
 
@@ -96,11 +91,8 @@ bool OiConfigState::setMeasurementConfig(FeatureWrapper *geom, MeasurementConfig
         mConfig.setIsSaved(true);
     }
 
-    //set geom's measurement config to mConfig
-    geom->getGeometry()->setMeasurementConfig(mConfig);
-
     //set mConfig as default if it is a saved config
-    if(!mConfig.getIsSaved()){
+    /*if(!mConfig.getIsSaved()){
         return true;
     }
 
@@ -170,7 +162,7 @@ bool OiConfigState::setMeasurementConfig(FeatureWrapper *geom, MeasurementConfig
         Sphere::defaultMeasurementConfig = mConfig;
         SystemDbManager::setDefaultMeasurementConfig(Configuration::eSphereFeature, mConfig.getName());
         break;
-    }
+    }*/
 
     return true;
 
@@ -482,7 +474,7 @@ void OiConfigState::checkMeasurementConfig(MeasurementConfig &mConfig, bool &sam
 void OiConfigState::connectFeature(FeatureWrapper *myFeature){
 
     if(myFeature->getGeometry() != NULL){
-        connect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)), OiConfigState::myConfigState, SLOT(setMeasurementConfig(int)));
+        //connect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)), OiConfigState::myConfigState, SLOT(setMeasurementConfig(int)));
     }
 
 }

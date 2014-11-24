@@ -1,6 +1,6 @@
 #include "oifeaturestate.h"
 
-OiFeatureState *OiFeatureState::myFeatureState = OiFeatureState::getInstance();
+OiFeatureState *OiFeatureState::myFeatureState = NULL;
 
 QList<FeatureWrapper*> OiFeatureState::myFeatures;
 FeatureWrapper *OiFeatureState::myActiveFeature = NULL;
@@ -16,6 +16,24 @@ QString OiFeatureState::myActiveGroup = "";
 
 OiFeatureState::OiFeatureState(QObject *parent) : QObject(parent){
 
+    OiJob::myActiveCoordinateSystem = OiFeatureState::myActiveCoordinateSystem;
+    OiJob::myActiveFeature = OiFeatureState::myActiveFeature;
+    OiJob::myActiveStation = OiFeatureState::myActiveStation;
+    OiJob::myCoordinateSystems = OiFeatureState::getCoordinateSystems();
+    OiJob::myGeometries = OiFeatureState::getGeometries();
+    OiJob::myStations = OiFeatureState::getStations();
+    OiJob::myTransformationParameters = OiFeatureState::getTransformationParameters();
+
+    OiJob *jobInstance = OiJob::getInstance();
+
+    connect(this,SIGNAL(activeFeatureChanged()),jobInstance,SLOT(emitActiveFeatureChanged()));
+    connect(this,SIGNAL(activeStationChanged()),jobInstance,SLOT(emitActiveStationChanged()));
+    connect(this,SIGNAL(activeCoordinateSystemChanged()),jobInstance,SLOT(emitActiveCoordinateSystemChanged()));
+    connect(this,SIGNAL(featureSetChanged()),jobInstance,SLOT(emitFeatureSetChanged()));
+    connect(this,SIGNAL(featureAttributesChanged()),jobInstance,SLOT(emitFeatureAttributesChanged()));
+    connect(this,SIGNAL(geometryObservationsChanged()),jobInstance,SLOT(emitGeometryObservationsChanged()));
+    connect(this,SIGNAL(featureFunctionsChanged()),jobInstance,SLOT(emitFeatureFunctionsChanged()));
+    connect(this,SIGNAL(coordSystemSetChanged()),jobInstance,SLOT(emitCoordSystemSetChanged()));
 }
 
 /* \brief sortID
@@ -206,6 +224,20 @@ FeatureWrapper *OiFeatureState::getFeature(int featureId){
 }
 
 /*!
+ * \brief OiFeatureState::getNominalSystem
+ * \param name
+ * \return
+ */
+CoordinateSystem *OiFeatureState::getNominalSystem(QString name){
+    foreach(CoordinateSystem *c, OiFeatureState::myCoordinateSystems){
+        if(c != NULL && c->getFeatureName().compare(name) == 0){
+            return c;
+        }
+    }
+    return NULL;
+}
+
+/*!
  * \brief OiFeatureState::sortFeatures
  */
 void OiFeatureState::sortFeatures()
@@ -288,7 +320,7 @@ void OiFeatureState::resetFeatureLists(){
         }
     }
 
-    OiFeatureState::myFeatureState->emitSignal(OiFeatureState::eFeatureSetChanged);
+    OiFeatureState::getInstance()->emitSignal(OiFeatureState::eFeatureSetChanged);
 
 }
 
@@ -373,7 +405,7 @@ FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureTy
         //connect the feature's signals to slots in OiFeatureState
         OiFeatureState::connectFeature(myFeature);
 
-        OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
+        OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
 
         return myFeature;
 
@@ -391,6 +423,10 @@ FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureTy
  */
 bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
     try{
+
+        //TODO check if feature already exists
+
+        qDebug() << "add feature " << myFeature->getGeometry()->getDisplayX();
 
         if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
 
@@ -422,11 +458,6 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
 
             qDebug() << "vor nominal add";
 
-            //add nominal to nominal list of coordinate system
-            if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getNominalSystem() != NULL){
-                myFeature->getGeometry()->getNominalSystem()->addNominal(myFeature->getGeometry());
-            }
-
             qDebug() << "nach nominal";
 
             //add the feature to the list of features, stations, coordinate systems, trafo params and geometries
@@ -439,6 +470,11 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
                 OiFeatureState::myTransformationParameters.append(myFeature->getTrafoParam());
             }else if(myFeature->getGeometry() != NULL){
                 OiFeatureState::myGeometries.append(myFeature);
+            }
+
+            //add nominal to nominal list of coordinate system
+            if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getNominalSystem() != NULL){
+                myFeature->getGeometry()->getNominalSystem()->addNominal(myFeature);
             }
 
             qDebug() << "vor connects";
@@ -455,17 +491,97 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
                     int count = OiFeatureState::myAvailableGroups.find(group).value();
                     OiFeatureState::myAvailableGroups.insert(group, count+1);
                 }
-                OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
+                OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
             }
 
             qDebug() << "vor emit";
 
-            OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
+            OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
 
             return true;
 
         }
         return false;
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+        return false;
+    }
+}
+
+/*!
+ * \brief OiFeatureState::addFeatures
+ * \param myFeatures
+ * \return
+ */
+bool OiFeatureState::addFeatures(const QList<FeatureWrapper *> &myFeatures){
+    try{
+
+        foreach(FeatureWrapper *myFeature, myFeatures){
+
+            if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
+
+                //check if feature with this id already exists
+                if(OiFeatureState::getFeatureListIndex(myFeature->getFeature()->getId()) >= 0){
+                    myFeature->getFeature()->setId(Configuration::generateID());
+                }
+
+                //check feature's name
+                bool nameValid = false;
+                if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
+                    nameValid = OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName(), true);
+                }else{
+                    nameValid = OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName());
+                }
+                if(!nameValid){
+                    QString name = myFeature->getFeature()->getFeatureName();
+                    if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
+                        while(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"), true)){}
+                    }else{
+                        while(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"))){}
+                    }
+                    myFeature->getFeature()->setFeatureName(name);
+                }
+
+                //add the feature to the list of features, stations, coordinate systems, trafo params and geometries
+                OiFeatureState::myFeatures.append(myFeature);
+                if(myFeature->getCoordinateSystem() != NULL){
+                    OiFeatureState::myCoordinateSystems.append(myFeature->getCoordinateSystem());
+                }else if(myFeature->getStation() != NULL){
+                    OiFeatureState::myStations.append(myFeature->getStation());
+                }else if(myFeature->getTrafoParam() != NULL){
+                    OiFeatureState::myTransformationParameters.append(myFeature->getTrafoParam());
+                }else if(myFeature->getGeometry() != NULL){
+                    OiFeatureState::myGeometries.append(myFeature);
+                }
+
+                //add nominal to nominal list of coordinate system
+                if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getNominalSystem() != NULL){
+                    myFeature->getGeometry()->getNominalSystem()->addNominal(myFeature);
+                }
+
+                //connect the feature's signals to slots in OiFeatureState
+                OiFeatureState::connectFeature(myFeature);
+
+                //if a group is set for the new feature emit the group changed signal
+                if(myFeature->getFeature()->getGroupName().compare("") != 0){
+                    QString group = myFeature->getFeature()->getGroupName();
+                    if(OiFeatureState::myAvailableGroups.contains(group)){
+                        OiFeatureState::myAvailableGroups.insert(group, 1);
+                    }else{
+                        int count = OiFeatureState::myAvailableGroups.find(group).value();
+                        OiFeatureState::myAvailableGroups.insert(group, count+1);
+                    }
+                    OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
+                }
+
+            }
+
+        }
+
+        OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+
+        return true;
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -494,17 +610,17 @@ bool OiFeatureState::removeFeature(FeatureWrapper *myFeature){
                 if(OiFeatureState::myActiveCoordinateSystem != NULL
                         && OiFeatureState::myActiveCoordinateSystem->getId() == myFeature->getFeature()->getId()){
                     OiFeatureState::myActiveCoordinateSystem = NULL;
-                    OiFeatureState::myFeatureState->emitSignal(eActiveCoordinateSystemChanged);
+                    OiFeatureState::getInstance()->emitSignal(eActiveCoordinateSystemChanged);
                 }
                 if(OiFeatureState::myActiveStation != NULL
                         && OiFeatureState::myActiveStation->getId() == myFeature->getFeature()->getId()){
                     OiFeatureState::myActiveStation = NULL;
-                    OiFeatureState::myFeatureState->emitSignal(eActiveStationChanged);
+                    OiFeatureState::getInstance()->emitSignal(eActiveStationChanged);
                 }
                 if(OiFeatureState::myActiveFeature != NULL && OiFeatureState::myActiveFeature->getFeature() != NULL
                         && OiFeatureState::myActiveFeature->getFeature()->getId() == myFeature->getFeature()->getId()){
                     OiFeatureState::myActiveFeature = NULL;
-                    OiFeatureState::myFeatureState->emitSignal(eActiveFeatureChanged);
+                    OiFeatureState::getInstance()->emitSignal(eActiveFeatureChanged);
                 }
 
                 //remove group from groups map if needed
@@ -517,7 +633,7 @@ bool OiFeatureState::removeFeature(FeatureWrapper *myFeature){
                         }else{
                             OiFeatureState::myAvailableGroups.insert(group, count-1);
                         }
-                        OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
+                        OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
                     }
                 }
 
@@ -539,7 +655,7 @@ bool OiFeatureState::removeFeature(FeatureWrapper *myFeature){
                 delete myFeature->getFeature();
                 delete myFeature;
 
-                OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
+                OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
 
                 return true;
 
@@ -636,22 +752,22 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
 
         //general feature connects
         connect(myFeature->getFeature(), SIGNAL(featureIsActiveChanged(int)),
-                OiFeatureState::myFeatureState, SLOT(setActiveFeature(int)));
+                OiFeatureState::getInstance(), SLOT(setActiveFeature(int)));
         connect(myFeature->getFeature(), SIGNAL(featureGroupChanged(int)),
-                OiFeatureState::myFeatureState, SLOT(setFeatureGroup(int)));
+                OiFeatureState::getInstance(), SLOT(setFeatureGroup(int)));
         connect(myFeature->getFeature(), SIGNAL(featureNameChanged(int,QString)),
-                OiFeatureState::myFeatureState, SLOT(setFeatureName(int,QString)));
+                OiFeatureState::getInstance(), SLOT(setFeatureName(int,QString)));
 
         //geometry specific connects
         if(myFeature->getGeometry() != NULL){
 
             connect(myFeature->getGeometry(), SIGNAL(geomMyObservationsChanged(int)),
-                    OiFeatureState::myFeatureState, SLOT(setGeometryObservations(int)));
+                    OiFeatureState::getInstance(), SLOT(setGeometryObservations(int)));
 
             //only for point clouds
             if(myFeature->getPointCloud() != NULL){
                 connect(myFeature->getPointCloud(), SIGNAL(pcSegmentAdded(FeatureWrapper*)),
-                        OiFeatureState::myFeatureState, SLOT(addPCSegmentAsFeature(FeatureWrapper*)));
+                        OiFeatureState::getInstance(), SLOT(addPCSegmentAsFeature(FeatureWrapper*)));
             }
 
         }
@@ -660,9 +776,9 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
         if(myFeature->getStation() != NULL){
 
             connect(myFeature->getStation(), SIGNAL(activeStationChanged(int)),
-                    OiFeatureState::myFeatureState, SLOT(setActiveStation(int)));
+                    OiFeatureState::getInstance(), SLOT(setActiveStation(int)));
             connect(myFeature->getStation()->coordSys, SIGNAL(activeCoordinateSystemChanged(int)),
-                    OiFeatureState::myFeatureState, SLOT(setActiveCoordinateSystem(int)));
+                    OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)));
 
         }
 
@@ -670,7 +786,9 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
         if(myFeature->getCoordinateSystem() != NULL){
 
             connect(myFeature->getCoordinateSystem(), SIGNAL(activeCoordinateSystemChanged(int)),
-                    OiFeatureState::myFeatureState, SLOT(setActiveCoordinateSystem(int)));
+                    OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)));
+            connect(myFeature->getCoordinateSystem(), SIGNAL(nominalsChanged(int)),
+                    OiFeatureState::getInstance(), SLOT(setSystemsNominals(int)));
 
         }
 
@@ -688,9 +806,9 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
  */
 void OiFeatureState::disconnectFeature(FeatureWrapper *myFeature){
     disconnect(myFeature->getFeature(), SIGNAL(featureIsActiveChanged(int)),
-            OiFeatureState::myFeatureState, SLOT(setActiveFeature(int)));
+            OiFeatureState::getInstance(), SLOT(setActiveFeature(int)));
     disconnect(myFeature->getFeature(), SIGNAL(featureGroupChanged(int)),
-               OiFeatureState::myFeatureState, SLOT(setFeatureGroup(int)));
+               OiFeatureState::getInstance(), SLOT(setFeatureGroup(int)));
 
     //call OiConfigState's disconnect method
     OiConfigState::disconnectFeature(myFeature);
@@ -799,7 +917,7 @@ void OiFeatureState::setActiveFeature(int featureId){
                 }
 
                 //emit signal to inform that active feature has changed
-                OiFeatureState::myFeatureState->emitSignal(eActiveFeatureChanged);
+                OiFeatureState::getInstance()->emitSignal(eActiveFeatureChanged);
 
             }
 
@@ -839,7 +957,7 @@ void OiFeatureState::setActiveStation(int featureId){
                 }
 
                 //emit signal to inform that active station has changed
-                OiFeatureState::myFeatureState->emitSignal(eActiveStationChanged);
+                OiFeatureState::getInstance()->emitSignal(eActiveStationChanged);
 
             }
 
@@ -883,7 +1001,7 @@ void OiFeatureState::setActiveCoordinateSystem(int featureId){
                 }
 
                 //emit signal to inform that active coordinate system has changed
-                OiFeatureState::myFeatureState->emitSignal(eActiveCoordinateSystemChanged);
+                OiFeatureState::getInstance()->emitSignal(eActiveCoordinateSystemChanged);
 
             }
 
@@ -917,7 +1035,7 @@ void OiFeatureState::setActiveCoordinateSystem(int featureId){
                     }
 
                     //emit signal to inform that active coordinate system has changed
-                    OiFeatureState::myFeatureState->emitSignal(eActiveCoordinateSystemChanged);
+                    OiFeatureState::getInstance()->emitSignal(eActiveCoordinateSystemChanged);
 
                 }
 
@@ -942,7 +1060,7 @@ void OiFeatureState::setFeatureGroup(int featureId){
 
             OiFeatureState::updateAvailableGroups();
 
-            OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
+            OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
 
         }
 
@@ -962,7 +1080,7 @@ void OiFeatureState::setFeatureName(int featureId, QString oldName){
         int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
         if(featureIndex >= 0){
 
-            OiFeatureState::myFeatureState->emitSignal(eFeatureAttributesChanged);
+            OiFeatureState::getInstance()->emitSignal(eFeatureAttributesChanged);
 
         }
 
@@ -981,7 +1099,7 @@ void OiFeatureState::setFeatureComment(int featureId){
         int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
         if(featureIndex >= 0){
 
-            OiFeatureState::myFeatureState->emitSignal(eFeatureAttributesChanged);
+            OiFeatureState::getInstance()->emitSignal(eFeatureAttributesChanged);
 
         }
 
@@ -1000,7 +1118,7 @@ void OiFeatureState::setFeatureFunctions(int featureId){
         int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
         if(featureIndex >= 0){
 
-            OiFeatureState::myFeatureState->emitSignal(eFeatureFunctionsChanged);
+            OiFeatureState::getInstance()->emitSignal(eFeatureFunctionsChanged);
 
         }
 
@@ -1019,7 +1137,7 @@ void OiFeatureState::setGeometryActual(int featureId){
         int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
         if(featureIndex >= 0){
 
-            OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
+            OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
 
         }
 
@@ -1038,7 +1156,7 @@ void OiFeatureState::setGeometryNominals(int featureId){
         int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
         if(featureIndex >= 0){
 
-            OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
+            OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
 
         }
 
@@ -1057,9 +1175,38 @@ void OiFeatureState::setGeometryObservations(int featureId){
         int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
         if(featureIndex >= 0){
 
-            OiFeatureState::myFeatureState->emitSignal(eGeomObservationsChanged);
+            OiFeatureState::getInstance()->emitSignal(eGeomObservationsChanged);
 
         }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief OiFeatureState::setSystemsNominals
+ * \param featureId
+ */
+void OiFeatureState::setSystemsNominals(int featureId){
+    try{
+
+        /*int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
+        if(featureIndex >= 0){
+
+            //check if the added nominal already exists in OpenIndy
+            FeatureWrapper *nominalSystem = OiFeatureState::myFeatures.at(featureIndex);
+            FeatureWrapper *myNominal = nominalSystem->getCoordinateSystem()->getNominals().last();
+            int nominalIndex = OiFeatureState::getFeatureListIndex(myNominal->getGeometry()->getId());
+            if(nominalIndex >= 0){
+                OiFeatureState::getInstance()->emitSignal(eSystemNominalsChanged);
+            }else{
+                myNominal->getGeometry()->setId(Configuration::generateID());
+                OiFeatureState::addFeature(myNominal);
+                OiFeatureState::getInstance()->emitSignal(eSystemNominalsChanged);
+            }
+
+        }*/
 
     }catch(exception &e){
         Console::addLine(e.what());

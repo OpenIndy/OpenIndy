@@ -106,6 +106,25 @@ public:
         eUndefined
     };
 
+    enum GeometryTypes{
+        ePointGeometry,
+        eLineGeometry,
+        ePlaneGeometry,
+        eSphereGeometry,
+        ePointCloudGeometry,
+        eCircleGeometry,
+        eConeGeometry,
+        eCylinderGeometry,
+        eEllipsoidGeometry,
+        eHyperboloidGeometry,
+        eNurbsGeometry,
+        eParaboloidGeometry,
+        eScalarEntityAngleGeometry,
+        eScalarEntityDistanceGeometry,
+        eScalarEntityTemperatureGeometry,
+        eScalarEntityMeasurementSeriesGeometry
+    };
+
     enum FeatureTypes{
         ePointFeature,
         eLineFeature,
@@ -186,9 +205,11 @@ public:
     static Configuration::ElementTypes getElementTypeEnum(QString name);
     static Configuration::FeatureTypes getFeatureTypeEnum(QString name);
     static Configuration::ReadingTypes getReadingTypeEnum(QString name);
+    static Configuration::GeometryTypes getGeometryTypeEnum(QString name);
     static QString getElementTypeString(Configuration::ElementTypes type);
     static QString getFeatureTypeString(Configuration::FeatureTypes type);
     static QString getReadingTypeString(Configuration::ReadingTypes type);
+    static QString getGeometryTypeString(Configuration::GeometryTypes type);
 
     static QPixmap getFeatureIcon(Configuration::FeatureTypes featureType);
     static QPixmap getElementIcon(Configuration::ElementTypes elementType);
