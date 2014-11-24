@@ -292,6 +292,7 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked()
     exchange->setGeometryType(Configuration::ePointGeometry);
 
     QList<OiExchangeSimpleAscii::ColumnType> userDefinedColumns;
+    userDefinedColumns.append(OiExchangeSimpleAscii::eColumnFeatureName);
     userDefinedColumns.append(OiExchangeSimpleAscii::eColumnX);
     userDefinedColumns.append(OiExchangeSimpleAscii::eColumnY);
     userDefinedColumns.append(OiExchangeSimpleAscii::eColumnZ);
