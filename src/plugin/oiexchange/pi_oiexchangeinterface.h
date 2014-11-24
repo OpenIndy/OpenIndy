@@ -84,11 +84,11 @@ public:
      * \param geom
      * \return
      */
-    bool addGeometry(Geometry *geom){
-        if(nominalCoordSys == NULL || geom == NULL){
+    bool addGeometry(FeatureWrapper *geom){
+        if(this->nominalCoordSys == NULL || geom == NULL || geom->getGeometry() == NULL){
             return false;
         }
-        return nominalCoordSys->addNominal(geom);
+        return this->nominalCoordSys->addNominal(geom);
         //TODO add signal slot to the addNominal method to make this work
     }
 
@@ -97,8 +97,8 @@ public:
      * Writes a message to console
      * \param msg
      */
-    void writeToConsole(QString msg){
-        myExchangeEmitter.sendString(msg);
+    void writeToConsole(QString msg) const{
+        this->myExchangeEmitter.emitSendString(msg);
     }
 
 signals:
@@ -111,12 +111,12 @@ signals:
      */
     void updateProgress(int progress, QString msg);
 
-private:
+protected:
     bool exportObservations; //true if only the observations of the selected geometries shall be exported
     QMap<UnitConverter::dimensionType, UnitConverter::unitType> units; //units used for im- or export
     CoordinateSystem* nominalCoordSys; //nominal coordinate system the imported geometries are referenced to
 
-protected:
+private:
     OiExchangeEmitter myExchangeEmitter;
 
 };

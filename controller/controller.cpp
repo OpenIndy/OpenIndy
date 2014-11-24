@@ -34,7 +34,7 @@ Controller::Controller(QObject *parent) :
     this->lastRequestId = -1;
 
 
-
+    this->myModelManager = OiModelManager::getInstance();
 
 
     //set up filter mechanism for available elements treeview
@@ -601,8 +601,10 @@ void Controller::savePluginData(PluginMetaData* metaInfo){
         QList<NetworkAdjustment*> networkAdjustmentList = PluginLoader::loadNetworkAdjustmentPlugins(metaInfo->path);
         QList<SimulationModel*> simulationList = PluginLoader::loadSimulationPlugins(metaInfo->path);
         QList<OiTool*> toolList = PluginLoader::loadOiToolPlugins(metaInfo->path);
+        QList<OiExchangeSimpleAscii*> simpleAsciiList = PluginLoader::loadOiExchangeSimpleAsciiPlugins(metaInfo->path);
+        QList<OiExchangeDefinedFormat*> definedFormatList = PluginLoader::loadOiExchangeDefinedFormatPlugins(metaInfo->path);
 
-        SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList,toolList);
+        SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList,toolList, simpleAsciiList, definedFormatList);
 
     }
 }

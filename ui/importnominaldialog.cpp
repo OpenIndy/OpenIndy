@@ -19,7 +19,14 @@ ImportNominalDialog::~ImportNominalDialog()
 }
 
 void ImportNominalDialog::showEvent(QShowEvent *event){
+
     qDebug() << "show";
+
+    this->ui->comboBox_plugin_sa->setModel(&OiModelManager::getPluginNamesModel());
+    this->ui->comboBox_system_sa->setModel(&OiModelManager::getNominalSystemsModel());
+    this->ui->comboBox_geometry_sa->setModel(&OiModelManager::getGeometryTypesModel());
+    //this->ui->comboBox_exchange_sa->setModel(OiModelManager::getSimpleAsciiExchangePlugins());
+
     event->accept();
 }
 
@@ -236,3 +243,60 @@ void importNominalGeometryDialog::on_comboBox_typeOfElement_currentIndexChanged(
 {
     this->setUpDescription();
 }*/
+
+/*!
+ * \brief ImportNominalDialog::on_pushButton_file_sa_clicked
+ * Triggered whenever the user wants to select an ascii file to be imported
+ */
+void ImportNominalDialog::on_pushButton_file_sa_clicked(){
+
+    QString filename = QFileDialog::getOpenFileName(
+                       this,
+                       "Select an ascii file to be imported");
+
+    if(filename.compare("") == 0){
+        return;
+    }
+
+    /*QIODevice *myDevice = new QFile(filename);
+    QFileInfo info(filename);
+    QString projectName = info.fileName();
+
+    qDebug() << projectName;*/
+
+    this->ui->lineEdit_file_sa->setText(filename);
+
+}
+
+void ImportNominalDialog::on_comboBox_plugin_sa_currentIndexChanged(const QString &arg1){
+    this->ui->comboBox_exchange_sa->setModel(OiModelManager::getSimpleAsciiExchangePlugins(arg1));
+}
+
+void ImportNominalDialog::on_pushButton_cancel_sa_clicked()
+{
+    this->close();
+}
+
+void ImportNominalDialog::on_pushButton_import_sa_clicked()
+{
+
+    QIODevice *myDevice = new QFile(this->ui->lineEdit_file_sa->text());
+
+    OiExchangeObject *myexchangeObject = new OiExchangeObject();
+    myexchangeObject->device = myDevice;
+
+    OiExchangeSimpleAscii *exchange = PluginLoader::loadOiExchangeSimpleAsciiPlugin(
+                SystemDbManager::getPluginFilePath(this->ui->comboBox_exchange_sa->currentText(), this->ui->comboBox_plugin_sa->currentText()), this->ui->comboBox_exchange_sa->currentText());
+
+    exchange->setNominalSystem(OiFeatureState::getNominalSystem(this->ui->comboBox_system_sa->currentText()));
+    exchange->setGeometryType(Configuration::ePointGeometry);
+
+    QList<OiExchangeSimpleAscii::ColumnType> userDefinedColumns;
+    userDefinedColumns.append(OiExchangeSimpleAscii::eColumnX);
+    userDefinedColumns.append(OiExchangeSimpleAscii::eColumnY);
+    userDefinedColumns.append(OiExchangeSimpleAscii::eColumnZ);
+    exchange->setUserDefinedColumns(userDefinedColumns);
+
+    OiDataExchanger::importData(exchange, *myexchangeObject);
+    this->close();
+}

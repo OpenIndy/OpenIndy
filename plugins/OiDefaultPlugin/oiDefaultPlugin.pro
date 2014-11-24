@@ -60,6 +60,7 @@ INCLUDEPATH += $$PWD/functions/generateFeature
 INCLUDEPATH += $$PWD/functions/generateFeature/pointcloud_segmentation
 INCLUDEPATH += $$PWD/simulations/simplePolarMeasurement
 INCLUDEPATH += $$PWD/oiTools
+INCLUDEPATH += $$PWD/oiExchange
 
 INCLUDEPATH += $$PWD/lib/fitting
 INCLUDEPATH += $$PWD/lib/fitting/util
@@ -166,7 +167,9 @@ SOURCES += p_factory.cpp \
     ../../src/plugin/oitool/oijob.cpp \
     oiTools/p_oireportcreator.cpp \
     ../../src/oiemitter/oiexchangeemitter.cpp \
-    ../../src/plugin/oiexchange/oiexchangeobject.cpp
+    ../../src/plugin/oiexchange/oiexchangeobject.cpp \
+    oiExchange/p_oiexchangeascii.cpp \
+    oiExchange/p_oiexchangepts.cpp
 
 HEADERS += p_factory.h \
     lib/fitting/cfitting_approxfunc.h \
@@ -290,7 +293,9 @@ HEADERS += p_factory.h \
     ../../src/plugin/oiexchange/oiexchangeobject.h \
     ../../src/plugin/oiexchange/pi_oiexchangeinterface.h \
     ../../src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
-    ../../src/plugin/oiexchange/pi_oiexchangespecialformat.h
+    ../../src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
+    oiExchange/p_oiexchangeascii.h \
+    oiExchange/p_oiexchangepts.h
 
 OTHER_FILES += metaInfo.json
 

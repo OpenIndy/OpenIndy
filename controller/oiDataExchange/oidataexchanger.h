@@ -6,12 +6,9 @@
 #include <QObject>
 
 #include "unitconverter.h"
+#include "pi_oiexchangesimpleascii.h"
+#include "pi_oiexchangedefinedformat.h"
 
-/*!
- * \brief The oiDataExchanger class
- * static class to manage all the different kinds of data import defined by
- * the oiExchangeInterface. You have to add your oiexchange class here.
- */
 class OiDataExchanger : public QObject
 {
     Q_OBJECT
@@ -20,6 +17,14 @@ private:
     explicit OiDataExchanger(QObject *parent = 0);
     ~OiDataExchanger();
 
+public:
+    static bool importData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData);
+    static bool importData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData);
+    static bool exportData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData);
+    static bool exportData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData);
+
+private:
+    QThread myExchangeThread;
 
 
     /*

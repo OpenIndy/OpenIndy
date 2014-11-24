@@ -20,7 +20,7 @@ QString OiMetaData::iid_Simulation = Simulation_iidd;
 QString OiMetaData::iid_OiTool = OiTool_iidd;
 QString OiMetaData::iid_OiExchange = OiExchange_iidd;
 QString OiMetaData::iid_OiExchangeSimpleAscii = OiExchangeSimpleAscii_iidd;
-QString OiMetaData::iid_OiExchangeSpecialFormat = OiExchangeSpecialFormat_iidd;
+QString OiMetaData::iid_OiExchangeDefinedFormat = OiExchangeDefinedFormat_iidd;
 
 
 /*!
@@ -161,7 +161,7 @@ bool OiMetaData::findIID(QString iid){
         return true;
     }else if(iid.compare(OiMetaData::iid_OiExchangeSimpleAscii) == 0){
         return true;
-    }else if(iid.compare(OiMetaData::iid_OiExchangeSpecialFormat) == 0){
+    }else if(iid.compare(OiMetaData::iid_OiExchangeDefinedFormat) == 0){
         return true;
     }
 

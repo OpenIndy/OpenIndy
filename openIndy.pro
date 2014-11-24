@@ -189,7 +189,9 @@ SOURCES += \
     src/plugin/oiexchange/oiexchangeobject.cpp \
     ui/exportnominaldialog.cpp \
     ui/importnominaldialog.cpp \
-    src/oiemitter/oiexchangeemitter.cpp
+    src/oiemitter/oiexchangeemitter.cpp \
+    controller/oimodelmanager.cpp \
+    ui/oisimpleasciiexchangemodel.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -341,11 +343,13 @@ HEADERS  += \
     src/plugin/oiexchange/oiexchangeascii.h \
     src/plugin/oiexchange/oiexchangeobject.h \
     src/plugin/oiexchange/pi_oiexchangeinterface.h \
-    src/plugin/oiexchange/pi_oiexchangespecialformat.h \
     src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
     ui/exportnominaldialog.h \
     ui/importnominaldialog.h \
-    src/oiemitter/oiexchangeemitter.h
+    src/oiemitter/oiexchangeemitter.h \
+    src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
+    controller/oimodelmanager.h \
+    ui/oisimpleasciiexchangemodel.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

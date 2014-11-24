@@ -224,6 +224,20 @@ FeatureWrapper *OiFeatureState::getFeature(int featureId){
 }
 
 /*!
+ * \brief OiFeatureState::getNominalSystem
+ * \param name
+ * \return
+ */
+CoordinateSystem *OiFeatureState::getNominalSystem(QString name){
+    foreach(CoordinateSystem *c, OiFeatureState::myCoordinateSystems){
+        if(c != NULL && c->getFeatureName().compare(name) == 0){
+            return c;
+        }
+    }
+    return NULL;
+}
+
+/*!
  * \brief OiFeatureState::sortFeatures
  */
 void OiFeatureState::sortFeatures()
@@ -410,6 +424,10 @@ FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureTy
 bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
     try{
 
+        //TODO check if feature already exists
+
+        qDebug() << "add feature " << myFeature->getGeometry()->getDisplayX();
+
         if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
 
             qDebug() << "vor id check";
@@ -440,11 +458,6 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
 
             qDebug() << "vor nominal add";
 
-            //add nominal to nominal list of coordinate system
-            if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getNominalSystem() != NULL){
-                myFeature->getGeometry()->getNominalSystem()->addNominal(myFeature->getGeometry());
-            }
-
             qDebug() << "nach nominal";
 
             //add the feature to the list of features, stations, coordinate systems, trafo params and geometries
@@ -457,6 +470,11 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
                 OiFeatureState::myTransformationParameters.append(myFeature->getTrafoParam());
             }else if(myFeature->getGeometry() != NULL){
                 OiFeatureState::myGeometries.append(myFeature);
+            }
+
+            //add nominal to nominal list of coordinate system
+            if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getNominalSystem() != NULL){
+                myFeature->getGeometry()->getNominalSystem()->addNominal(myFeature);
             }
 
             qDebug() << "vor connects";
@@ -689,6 +707,8 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
 
             connect(myFeature->getCoordinateSystem(), SIGNAL(activeCoordinateSystemChanged(int)),
                     OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)));
+            connect(myFeature->getCoordinateSystem(), SIGNAL(nominalsChanged(int)),
+                    OiFeatureState::getInstance(), SLOT(setSystemsNominals(int)));
 
         }
 
@@ -1076,6 +1096,35 @@ void OiFeatureState::setGeometryObservations(int featureId){
         if(featureIndex >= 0){
 
             OiFeatureState::getInstance()->emitSignal(eGeomObservationsChanged);
+
+        }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief OiFeatureState::setSystemsNominals
+ * \param featureId
+ */
+void OiFeatureState::setSystemsNominals(int featureId){
+    try{
+
+        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
+        if(featureIndex >= 0){
+
+            //check if the added nominal already exists in OpenIndy
+            FeatureWrapper *nominalSystem = OiFeatureState::myFeatures.at(featureIndex);
+            FeatureWrapper *myNominal = nominalSystem->getCoordinateSystem()->getNominals().last();
+            int nominalIndex = OiFeatureState::getFeatureListIndex(myNominal->getGeometry()->getId());
+            if(nominalIndex >= 0){
+                OiFeatureState::getInstance()->emitSignal(eSystemNominalsChanged);
+            }else{
+                myNominal->getGeometry()->setId(Configuration::generateID());
+                OiFeatureState::addFeature(myNominal);
+                OiFeatureState::getInstance()->emitSignal(eSystemNominalsChanged);
+            }
 
         }
 

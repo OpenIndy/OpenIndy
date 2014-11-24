@@ -3,6 +3,7 @@
 
 #include <QList>
 
+#include "featurewrapper.h"
 #include "feature.h"
 #include "oivec.h"
 #include "oiemitter.h"
@@ -33,9 +34,10 @@ public:
     bool addTransformationParameter(TrafoParam * const trafoParam);
     bool removeTransformationParameter(TrafoParam * const trafoParam);
 
-    const QList<Geometry *> &getNominals() const;
-    bool addNominal(Geometry * const nominal);
-    bool removeNominal(Geometry * const nominal);
+    const QList<FeatureWrapper *> &getNominals() const;
+    bool addNominal(FeatureWrapper * const nominal);
+    bool removeNominal(FeatureWrapper * const nominal);
+    bool removeNominal(int featureId);
 
     bool getIsActiveCoordinateSystem() const;
     void setActiveCoordinateSystemState(bool isActiveCoordinateSystem);
@@ -80,7 +82,7 @@ signals:
 protected:
     QList<Observation*> observations;
     QList<TrafoParam*> trafoParams;
-    QList<Geometry*> nominals;
+    QList<FeatureWrapper*> nominals;
 
     bool isActiveCoordinateSystem;
 };

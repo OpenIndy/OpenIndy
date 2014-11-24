@@ -33,8 +33,9 @@ CoordinateSystem::~CoordinateSystem(){
     }
 
     //delete nominals of this coordinate system
-    foreach(Geometry *myGeom, this->nominals){
-        if(myGeom != NULL){
+    foreach(FeatureWrapper *myGeom, this->nominals){
+        if(myGeom != NULL && myGeom->getGeometry() != NULL){
+            delete myGeom->getGeometry();
             delete myGeom;
             myGeom = NULL;
         }
@@ -181,26 +182,37 @@ bool CoordinateSystem::removeTransformationParameter(TrafoParam * const trafoPar
  * \brief CoordinateSystem::getNominals
  * \return
  */
-const QList<Geometry *> &CoordinateSystem::getNominals() const{
+const QList<FeatureWrapper *> &CoordinateSystem::getNominals() const{
     return this->nominals;
 }
 
-bool CoordinateSystem::addNominal(Geometry * const nominal)
+/*bool CoordinateSystem::addNominal(Geometry * const nominal)
 {
     this->nominals.append(nominal);
     return true;
-}
+}*/
 
 /*!
  * \brief CoordinateSystem::addNominal
  * \param nominal
  * \return
  */
-/*bool CoordinateSystem::addNominal(Geometry * const nominal){
+bool CoordinateSystem::addNominal(FeatureWrapper * const nominal){
     try{
 
-        if(nominal != NULL){
+        qDebug() << "in add nominal";
+
+        if(nominal != NULL && nominal->getGeometry() != NULL){
+
+            if(nominal->getGeometry()->getFeatureName().compare("") == 0){
+                nominal->getGeometry()->setFeatureName(QString("%1").arg(Configuration::generateID()));
+            }
+
+            nominal->getGeometry()->setNominalSystem(this);
+            nominal->getGeometry()->setIsSolved(true);
+
             this->nominals.append(nominal);
+            qDebug() << "vor emit";
             emit this->nominalsChanged(this->id);
             return true;
         }
@@ -210,20 +222,21 @@ bool CoordinateSystem::addNominal(Geometry * const nominal)
 
         return false;
     }
-}*/
+}
 
 /*!
  * \brief CoordinateSystem::removeNominal
  * \param nominal
  * \return
  */
-bool CoordinateSystem::removeNominal(Geometry * const nominal){
+bool CoordinateSystem::removeNominal(FeatureWrapper * const nominal){
     try{
 
-        if(nominal != NULL){
+        if(nominal != NULL && nominal->getGeometry() != NULL){
             int removeIndex = -1;
             for(int i = 0; i < this->nominals.size(); i++){
-                if(this->nominals.at(i) != NULL && this->nominals.at(i)->getId() == nominal->getId()){
+                if(this->nominals.at(i) != NULL && this->nominals.at(i)->getGeometry() != NULL
+                        && this->nominals.at(i)->getGeometry()->getId() == nominal->getGeometry()->getId()){
                     removeIndex = i;
                     break;
                 }
@@ -233,6 +246,35 @@ bool CoordinateSystem::removeNominal(Geometry * const nominal){
                 emit this->nominalsChanged(this->id);
                 return true;
             }
+        }
+        return false;
+
+    }catch(exception &e){
+
+        return false;
+    }
+}
+
+/*!
+ * \brief CoordinateSystem::removeNominal
+ * \param featureId
+ * \return
+ */
+bool CoordinateSystem::removeNominal(int featureId){
+    try{
+
+        int removeIndex = -1;
+        for(int i = 0; i < this->nominals.size(); i++){
+            if(this->nominals.at(i) != NULL && this->nominals.at(i)->getGeometry() != NULL
+                    && this->nominals.at(i)->getGeometry()->getId() == featureId){
+                removeIndex = i;
+                break;
+            }
+        }
+        if(removeIndex >= 0){
+            this->nominals.removeAt(removeIndex);
+            emit this->nominalsChanged(this->id);
+            return true;
         }
         return false;
 
@@ -384,10 +426,10 @@ QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc){
     //add nominals
     if(this->nominals.size() > 0){
         QDomElement nominals = xmlDoc.createElement("nominalGeometries");
-        foreach(Geometry *geom, this->nominals){
-            if(geom != NULL){
+        foreach(FeatureWrapper *geom, this->nominals){
+            if(geom != NULL && geom->getGeometry() != NULL){
                 QDomElement nominal = xmlDoc.createElement("geometry");
-                nominal.setAttribute("ref", geom->getId());
+                nominal.setAttribute("ref", geom->getGeometry()->getId());
                 nominals.appendChild(nominal);
             }
         }

@@ -734,7 +734,7 @@ bool OiProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument 
                     if(geometry.hasAttribute("ref") && OiProjectExchanger::myGeometries.contains(geometry.attribute("ref").toInt())){
                         FeatureWrapper *myGeometry = OiProjectExchanger::myGeometries.value(geometry.attribute("ref").toInt());
                         if(myGeometry->getGeometry()->getIsNominal()){
-                            myCoordinateSystem->getCoordinateSystem()->addNominal(myGeometry->getGeometry());
+                            myCoordinateSystem->getCoordinateSystem()->addNominal(myGeometry);
                         }
                     }
                 }

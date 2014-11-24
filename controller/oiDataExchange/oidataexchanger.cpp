@@ -15,11 +15,33 @@ OiDataExchanger::OiDataExchanger(QObject *parent) : QObject(parent){
 
 OiDataExchanger::~OiDataExchanger(){
 
-    /*if(this->myExchangeThread.isRunning()){
+    //stop thread if it is still running
+    if(this->myExchangeThread.isRunning()){
         this->myExchangeThread.quit();
         this->myExchangeThread.wait();
-    }*/
+    }
 
+}
+
+bool OiDataExchanger::importData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData)
+{
+    simpleAsciiExchange->importOiData(projectData);
+    return true;
+}
+
+bool OiDataExchanger::importData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData)
+{
+    return true;
+}
+
+bool OiDataExchanger::exportData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData)
+{
+    return true;
+}
+
+bool OiDataExchanger::exportData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData)
+{
+    return true;
 }
 
 /*!

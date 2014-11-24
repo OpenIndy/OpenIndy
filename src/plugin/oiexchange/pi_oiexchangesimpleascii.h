@@ -103,7 +103,7 @@ public:
         this->usedDelimiter = usedDelimiter;
     }
 
-private:
+protected:
     QList<OiExchangeSimpleAscii::ColumnType> userDefinedColumns; //an ordered list of enum values that specify what to do with each column
     Configuration::GeometryTypes typeOfGeometry; //specifies which type of geometry shall be im- or exported
     bool skipFirstLine; //Skip the first line in a file during import / do not write headers to file during export
@@ -111,6 +111,6 @@ private:
 
 };
 
-#define OiExchangeSimpleAscii_iidd "de.openIndy.Plugin.OiExchangeSimpleAscii.v001"
+#define OiExchangeSimpleAscii_iidd "de.openIndy.Plugin.OiExchange.OiExchangeSimpleAscii.v001"
 
 #endif // PI_OIEXCHANGESIMPLEASCII_H

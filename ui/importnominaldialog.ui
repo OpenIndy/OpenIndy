@@ -32,7 +32,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget_import">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_specialFormats">
       <attribute name="title">
@@ -336,7 +336,7 @@
        <item row="0" column="0">
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="1,2">
+          <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="1,2">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
@@ -400,6 +400,26 @@
               </layout>
              </item>
              <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_19">
+               <item>
+                <widget class="QLabel" name="label_exchange_sa">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>exchange method:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="comboBox_exchange_sa"/>
+               </item>
+              </layout>
+             </item>
+             <item>
               <spacer name="verticalSpacer_7">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -431,7 +451,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_2"/>
+                <widget class="QComboBox" name="comboBox_system_sa"/>
                </item>
               </layout>
              </item>
@@ -446,7 +466,7 @@
                <property name="sizeHint" stdset="0">
                 <size>
                  <width>20</width>
-                 <height>10</height>
+                 <height>13</height>
                 </size>
                </property>
               </spacer>
@@ -603,8 +623,8 @@
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>20</width>
-                 <height>40</height>
+                 <width>228</width>
+                 <height>13</height>
                 </size>
                </property>
               </spacer>

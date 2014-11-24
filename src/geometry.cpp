@@ -32,7 +32,7 @@ Geometry::~Geometry(){
 
         //delete this geometry from list of nominals in myNominalCoordSys
         if(this->myNominalCoordSys != NULL){
-            this->myNominalCoordSys->removeNominal(this);
+            this->myNominalCoordSys->removeNominal(this->id);
         }
     }else{
         //delete observations that only belong to this geometry
