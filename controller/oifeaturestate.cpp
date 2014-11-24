@@ -15,25 +15,6 @@ bool OiFeatureState::groupsToBeUpdated = false;
 QString OiFeatureState::myActiveGroup = "";
 
 OiFeatureState::OiFeatureState(QObject *parent) : QObject(parent){
-
-    OiJob::myActiveCoordinateSystem = OiFeatureState::myActiveCoordinateSystem;
-    OiJob::myActiveFeature = OiFeatureState::myActiveFeature;
-    OiJob::myActiveStation = OiFeatureState::myActiveStation;
-    OiJob::myCoordinateSystems = OiFeatureState::getCoordinateSystems();
-    OiJob::myGeometries = OiFeatureState::getGeometries();
-    OiJob::myStations = OiFeatureState::getStations();
-    OiJob::myTransformationParameters = OiFeatureState::getTransformationParameters();
-
-    OiJob *jobInstance = OiJob::getInstance();
-
-    connect(this,SIGNAL(activeFeatureChanged()),jobInstance,SLOT(emitActiveFeatureChanged()));
-    connect(this,SIGNAL(activeStationChanged()),jobInstance,SLOT(emitActiveStationChanged()));
-    connect(this,SIGNAL(activeCoordinateSystemChanged()),jobInstance,SLOT(emitActiveCoordinateSystemChanged()));
-    connect(this,SIGNAL(featureSetChanged()),jobInstance,SLOT(emitFeatureSetChanged()));
-    connect(this,SIGNAL(featureAttributesChanged()),jobInstance,SLOT(emitFeatureAttributesChanged()));
-    connect(this,SIGNAL(geometryObservationsChanged()),jobInstance,SLOT(emitGeometryObservationsChanged()));
-    connect(this,SIGNAL(featureFunctionsChanged()),jobInstance,SLOT(emitFeatureFunctionsChanged()));
-    connect(this,SIGNAL(coordSystemSetChanged()),jobInstance,SLOT(emitCoordSystemSetChanged()));
 }
 
 /* \brief sortID

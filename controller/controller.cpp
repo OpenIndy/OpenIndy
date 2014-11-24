@@ -1709,6 +1709,20 @@ void Controller::loadOiToolWidget(QString pluginName, QString toolName)
     OiTool* oiToolWidget = PluginLoader::loadOiToolPlugin(pluginPath,toolName);
 
     if(oiToolWidget != NULL){
+
+        OiJob *jobState = new OiJobState();
+
+        connect(OiFeatureState::getInstance(),SIGNAL(activeFeatureChanged()),jobState,SLOT(emitActiveFeatureChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(activeStationChanged()),jobState,SLOT(emitActiveStationChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(activeCoordinateSystemChanged()),jobState,SLOT(emitActiveCoordinateSystemChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(featureSetChanged()),jobState,SLOT(emitFeatureSetChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(featureAttributesChanged()),jobState,SLOT(emitFeatureAttributesChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(geometryObservationsChanged()),jobState,SLOT(emitGeometryObservationsChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(featureFunctionsChanged()),jobState,SLOT(emitFeatureFunctionsChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(coordSystemSetChanged()),jobState,SLOT(emitCoordSystemSetChanged()));
+
+        oiToolWidget->setOiJob(jobState);
+
         emit openOiToolWidget(oiToolWidget);
     }
 }

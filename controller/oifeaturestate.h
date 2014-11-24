@@ -13,6 +13,7 @@
 #include "configuration.h"
 #include "oiconfigstate.h"
 #include "oijob.h"
+#include "oijobstate.h"
 
 using namespace std;
 

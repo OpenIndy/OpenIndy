@@ -188,7 +188,8 @@ SOURCES += \
     src/plugin/oitool/oijob.cpp \
     ui/oitoolaction.cpp \
     src/plugin/oiexchange/oiexchangeobject.cpp \
-    ui/exportnominaldialog.cpp
+    ui/exportnominaldialog.cpp \
+    controller/oijobstate.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -343,7 +344,8 @@ HEADERS  += \
     src/plugin/oiexchange/pi_oiexchangeinterface.h \
     src/plugin/oiexchange/pi_oiexchangespecialformat.h \
     src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
-    ui/exportnominaldialog.h
+    ui/exportnominaldialog.h \
+    controller/oijobstate.h
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
     ui/watchwindow.ui \
