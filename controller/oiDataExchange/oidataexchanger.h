@@ -4,11 +4,13 @@
 #include <QString>
 #include <QStringList>
 #include <QObject>
+#include <QApplication>
 
 #include "unitconverter.h"
 #include "pi_oiexchangesimpleascii.h"
 #include "pi_oiexchangedefinedformat.h"
 #include "oiloadingdialog.h"
+#include "oifeaturestate.h"
 
 struct ImExportTask{
     bool isImport;
@@ -35,10 +37,15 @@ public:
 private:
     static OiDataExchanger *myInstance;
     static QThread myExchangeThread;
-    static ImExportTask currentTask;
+    ImExportTask currentTask;
 
 private slots:
     void runDataExchange();
+
+    void finished();
+
+signals:
+    void exchangeFinished();
 
 
     /*

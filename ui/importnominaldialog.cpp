@@ -299,8 +299,5 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked()
 
     OiDataExchanger::importData(exchange, *myexchangeObject);
 
-    OiLoadingDialog::showLoadingDialog();
-    connect(exchange, SIGNAL(updateProgress(int,QString)), OiLoadingDialog::getInstance(), SLOT(updateProgress(int,QString)));
-
     this->close();
 }

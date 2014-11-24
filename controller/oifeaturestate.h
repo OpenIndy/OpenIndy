@@ -31,6 +31,7 @@ public:
     static const QList<FeatureWrapper *> &getFeatures();
     static FeatureWrapper *addFeature(Configuration::FeatureTypes featureType, bool isNominal, QString name);
     static bool addFeature(FeatureWrapper *myFeature);
+    static bool addFeatures(const QList<FeatureWrapper *> &myFeatures);
     static bool removeFeature(FeatureWrapper *myFeature);
 
     static const QList<Station *> &getStations();

@@ -82,14 +82,16 @@ public:
      * \brief addGeometry
      * Add an imported geometry to the given reference nominal system
      * \param geom
+     * \param projectData
      * \return
      */
-    bool addGeometry(FeatureWrapper *geom){
+    bool addGeometry(FeatureWrapper *geom, OiExchangeObject &projectData){
         if(this->nominalCoordSys == NULL || geom == NULL || geom->getGeometry() == NULL){
             return false;
         }
-        return this->nominalCoordSys->addNominal(geom);
-        //TODO add signal slot to the addNominal method to make this work
+        geom->getGeometry()->setNominalSystem(this->nominalCoordSys);
+        projectData.features.append(geom);
+        return true;
     }
 
     /*!

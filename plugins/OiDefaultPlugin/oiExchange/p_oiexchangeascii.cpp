@@ -249,6 +249,8 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
 
     try{
 
+        projectData.features.clear();
+
         //set the number of error prone lines to 0
         int numErrors = 0;
 
@@ -356,7 +358,7 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
                 if(!errorWhileParsing){
                     FeatureWrapper *myGeometry = new FeatureWrapper();
                     myGeometry->setPoint(myNominal);
-                    this->nominalCoordSys->addNominal(myGeometry);
+                    this->addGeometry(myGeometry, projectData);
                 }
 
                 //update import progress

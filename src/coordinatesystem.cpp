@@ -200,8 +200,6 @@ const QList<FeatureWrapper *> &CoordinateSystem::getNominals() const{
 bool CoordinateSystem::addNominal(FeatureWrapper * const nominal){
     try{
 
-        qDebug() << "in add nominal";
-
         if(nominal != NULL && nominal->getGeometry() != NULL){
 
             if(nominal->getGeometry()->getFeatureName().compare("") == 0){
@@ -212,7 +210,34 @@ bool CoordinateSystem::addNominal(FeatureWrapper * const nominal){
             nominal->getGeometry()->setIsSolved(true);
 
             this->nominals.append(nominal);
-            qDebug() << "vor emit";
+            emit this->nominalsChanged(this->id);
+            return true;
+        }
+        return false;
+
+    }catch(exception &e){
+
+        return false;
+    }
+}
+
+/*!
+ * \brief CoordinateSystem::addNominals
+ * \param nominals
+ * \return
+ */
+bool CoordinateSystem::addNominals(const QList<FeatureWrapper *> &nominals){
+    try{
+
+        if(nominals.size() > 0){
+
+            foreach(FeatureWrapper *geom, nominals){
+                geom->getGeometry()->setNominalSystem(this);
+                geom->getGeometry()->setIsSolved(true);
+                geom->setCoordinateSystem(this);
+                this->nominals.append(geom);
+            }
+
             emit this->nominalsChanged(this->id);
             return true;
         }

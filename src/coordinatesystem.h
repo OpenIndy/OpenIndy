@@ -36,6 +36,7 @@ public:
 
     const QList<FeatureWrapper *> &getNominals() const;
     bool addNominal(FeatureWrapper * const nominal);
+    bool addNominals(const QList<FeatureWrapper *> &nominals);
     bool removeNominal(FeatureWrapper * const nominal);
     bool removeNominal(int featureId);
 

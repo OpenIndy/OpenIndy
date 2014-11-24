@@ -24,6 +24,7 @@ public:
 
 public slots:
     void updateProgress(int progress, QString msg) const; //progress (0-100)
+    void finished();
 
 private:
     Ui::OiLoadingDialog *ui;
