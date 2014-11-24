@@ -427,7 +427,7 @@ void WatchWindow::iniGUI()
         featureName->setFont(f);
 
         if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-            featureName->setText("<p align=\"left\">name: " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "   ("
+            featureName->setText("<p align=\"left\">" + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "   ("
                                  + OiFeatureState::getActiveCoordinateSystem()->getFeatureName() + ")   obs: "
                                  + QString::number(OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size()) + "</p>");
         }else{
