@@ -25,12 +25,6 @@ WatchWindow::WatchWindow(QWidget *parent) :
 
     listener->moveToThread(&listenerThread);
     listenerThread.start();
-
-    /*ui->spinBox_decimalDigits->setText("3");
-    ui->spinBox_fNameFontSize->setText("16");
-    ui->spinBox_fAttributeFontSize->setText("12");
-    ui->spinBox_fValueFontSize->setText("40");*/
-
 }
 
 WatchWindow::~WatchWindow()
@@ -93,8 +87,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                 }else{
                     streamData.value("d3D")->setPalette(Qt::green);
                 }
+                QString lName = "<p align=\"left\">d3D</p>";
+                QString lValue = "<p align=\"right\">" + QString::number(distR3*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+                QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-                streamData.value("d3D")->setText(QString::number(distR3*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+                streamData.value("d3D")->setText(table);
             }
         }
     }
@@ -133,8 +130,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         }else{
             streamData.value("distance")->setPalette(Qt::green);
         }
+        QString lName = "<p align=\"left\">distance</p>";
+        QString lValue = "<p align=\"right\">" + QString::number(dDist*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+        QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-        streamData.value("distance")->setText(QString::number(dDist*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+        streamData.value("distance")->setText(table);
 
         double alpha = featureValues.getAt(0)-trackerValues.getAt(0);
 
@@ -145,8 +145,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         }else{
             streamData.value("across")->setPalette(Qt::green);
         }
+        lName = "<p align=\"left\">across</p>";
+        lValue = "<p align=\"right\">" + QString::number(dAcross*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+        table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-        streamData.value("across")->setText(QString::number(dAcross*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+        streamData.value("across")->setText(table);
 
         //nominal
         double h1 = qSin(((PI/2) - featureValues.getAt(1)))*featureValues.getAt(2);
@@ -160,8 +163,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         }else{
             streamData.value("dH")->setPalette(Qt::green);
         }
+        lName = "<p align=\"left\">dH</p>";
+        lValue = "<p align=\"right\">" + QString::number(dH*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+        table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-        streamData.value("dH")->setText(QString::number(dH*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+        streamData.value("dH")->setText(table);
 
     }else{
 
@@ -205,8 +211,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             }else{
                                 streamData.value("x")->setPalette(Qt::green);
                             }
+                            QString lName = "<p align=\"left\">x</p>";
+                            QString lValue = "<p align=\"right\">" + QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+                            QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-                            streamData.value("x")->setText(QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+                            streamData.value("x")->setText(table);
 
                         }else if(j.key() == "y"){
                             double featureY = 0.0;
@@ -223,8 +232,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             }else{
                                 streamData.value("y")->setPalette(Qt::green);
                             }
+                            QString lName = "<p align=\"left\">y</p>";
+                            QString lValue = "<p align=\"right\">" + QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+                            QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-                            streamData.value("y")->setText(QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+                            streamData.value("y")->setText(table);
 
                         }else if(j.key() == "z"){
                             double featureZ = 0.0;
@@ -241,8 +253,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             }else{
                                 streamData.value("z")->setPalette(Qt::green);
                             }
+                            QString lName = "<p align=\"left\">z</p>";
+                            QString lValue = "<p align=\"right\">" + QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+                            QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-                            streamData.value("z")->setText(QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+                            streamData.value("z")->setText(table);
 
                         }else{
                             double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
@@ -252,7 +267,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             }else{
                                 streamData.value(j.key())->setPalette(Qt::green);
                             }
-                            streamData.value(j.key())->setText(QString::number(j.value().toDouble(),'f',numberOfDigits));
+                            QString lName = "<p align=\"left\">" + j.key() + "</p>";
+                            QString lValue = "<p align=\"right\">" + QString::number(j.value().toDouble(),'f',numberOfDigits) + "</p>";
+                            QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+
+                            streamData.value(j.key())->setText(table);
                         }
 
                         break;
@@ -292,8 +311,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 }else{
                                     streamData.value("azimuth")->setPalette(Qt::green);
                                 }
+                                QString lName = "<p align=\"left\">azimuth</p>";
+                                QString lValue = "<p align=\"right\">" + QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',numberOfDigits) + "</p>";
+                                QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-                                streamData.value("azimuth")->setText(QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
+                                streamData.value("azimuth")->setText(table);
 
                             }else if(j.key() == "zenith"){
                                 double FeatureZE = 0.0;
@@ -312,8 +334,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 }else{
                                     streamData.value("zenith")->setPalette(Qt::green);
                                 }
+                                QString lName = "<p align=\"left\">zenith</p>";
+                                QString lValue = "<p align=\"right\">" + QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',numberOfDigits) + "</p>";
+                                QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-                                streamData.value("zenith")->setText(QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',numberOfDigits));
+                                streamData.value("zenith")->setText(table);
 
                             }else if(j.key() == "distance"){
                                 double FeatureDIS = 0.0;
@@ -332,8 +357,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 }else{
                                     streamData.value("distance")->setPalette(Qt::green);
                                 }
+                                QString lName = "<p align=\"left\">distance</p>";
+                                QString lValue = "<p align=\"right\">" + QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+                                QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-                                streamData.value("distance")->setText(QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits));
+                                streamData.value("distance")->setText(table);
 
                             }else{
                                 double tolerance = this->attributeTolerance.value(j.key())->text().toDouble();
@@ -343,8 +371,11 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 }else{
                                     streamData.value(j.key())->setPalette(Qt::green);
                                 }
+                                QString lName = "<p align=\"left\">" + j.key() + "</p>";
+                                QString lValue = "<p align=\"right\">" + QString::number(j.value().toDouble(),'f',numberOfDigits) + "</p>";
+                                QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
 
-                                streamData.value(j.key())->setText(QString::number(j.value().toDouble(),'f',numberOfDigits));
+                                streamData.value(j.key())->setText(table);
                             }
                         }
                         break;
@@ -366,14 +397,9 @@ void WatchWindow::setLCDNumber(QVariantMap m){
  */
 void WatchWindow::iniGUI()
 {
-    int nameSize = ui->spinBox_fNameFontSize->value();
-    int attributeSize = ui->spinBox_fAttributeFontSize->value();
-    int valueSize = ui->spinBox_fValueFontSize->value();
-
     streamData.clear();
 
     //delete old gui elements
-
     for(int i=0; i<widgets.size();i++){
         delete widgets.at(i);
     }
@@ -390,19 +416,41 @@ void WatchWindow::iniGUI()
         masterLayout = new QVBoxLayout();
     }
 
+    //QFont f( "Arial", 40, QFont::Bold);
+    QFont f;
+    f.setFamily("Arial");
+
     //display feature name
     if(OiFeatureState::getActiveFeature() != NULL){
-        QLabel *featureName = new QLabel();
-        QFont f( "Arial", nameSize, QFont::Bold);
+        QLabel *featureName;
+        featureName = new QLabel();
         featureName->setFont(f);
-        featureName->setText(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
-        masterLayout->addWidget(featureName);
-        masterLayout->setStretch(0,0);
-        widgets.append(featureName);
-    }
 
-    QFont fAttr("Arial", attributeSize, QFont::Bold);
-    QFont fValue("Arial", valueSize, QFont::Bold);
+        if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+            featureName->setText("<p align=\"left\">name: " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "   ("
+                                 + OiFeatureState::getActiveCoordinateSystem()->getFeatureName() + ")   obs: "
+                                 + QString::number(OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size()) + "</p>");
+        }else{
+            featureName->setText("<p align=\"left\">name: " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "   ("
+                                 + OiFeatureState::getActiveCoordinateSystem()->getFeatureName() + ") " + "</p>");
+        }
+
+
+        featureName->setAlignment(Qt::AlignVCenter);
+        featureName->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+        featureName->setScaledContents(true);
+
+        QHBoxLayout *layout;
+        layout = new QHBoxLayout();
+        layout->addWidget(featureName);
+        layout->setStretch(0,1);
+
+        masterLayout->addLayout(layout);
+        masterLayout->setStretch(0,1);
+
+        widgets.append(featureName);
+        layouts.append(layout);
+    }
 
     QString value = "XX.XX";
 
@@ -413,25 +461,23 @@ void WatchWindow::iniGUI()
         //cross distance
         QString name = "across";
 
-        QLabel *l = new QLabel();
-        l->setText(name);
-        l->setFont(fAttr);
-        widgets.append(l);
-
         QLabel *lv;
         lv = new QLabel();
-        lv->setText(value);
-        lv->setFont(fValue);
+        QString lName = "<p align=\"left\">" + name + "</p>";
+        QString lValue = "<p align=\"right\">" + value + "</p>";
+        QString table = "<table width=\"100%\"> <tr> <td >" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+        lv->setText(table);
+        lv->setFont(f);
         lv->setAutoFillBackground(true);
-        lv->setAlignment(Qt::AlignRight);
+        lv->setAlignment(Qt::AlignVCenter);
+        lv->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+        lv->setScaledContents(true);
         widgets.append(lv);
 
         QHBoxLayout *layout;
         layout = new QHBoxLayout();
-        layout->addWidget(l);
         layout->addWidget(lv);
         layout->setStretch(0,1);
-        layout->setStretch(1,3);
         layouts.append(layout);
 
         masterLayout->addLayout(layout);
@@ -442,24 +488,22 @@ void WatchWindow::iniGUI()
         //distance
         name = "distance";
 
-        QLabel *l2 = new QLabel();
-        l2->setText(name);
-        l2->setFont(fAttr);
-        widgets.append(l2);
-
         QLabel *lv2;
         lv2 = new QLabel();
-        lv2->setText(value);
-        lv2->setFont(fValue);
+        lName = "<p align=\"left\">" + name + "</p>";
+        lValue = "<p align=\"right\">" + value + "</p>";
+        table = "<table width=\"100%\"> <tr> <td >" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+        lv2->setText(table);
+        lv2->setFont(f);
         lv2->setAutoFillBackground(true);
-        lv2->setAlignment(Qt::AlignRight);
+        lv2->setAlignment(Qt::AlignVCenter);
+        lv2->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+        lv2->setScaledContents(true);
         widgets.append(lv2);
 
         QHBoxLayout *layout2 = new QHBoxLayout();
-        layout2->addWidget(l2);
         layout2->addWidget(lv2);
         layout2->setStretch(0,1);
-        layout2->setStretch(1,3);
         layouts.append(layout2);
 
         masterLayout->addLayout(layout2);
@@ -470,24 +514,22 @@ void WatchWindow::iniGUI()
         //delta height
         name = "dH";
 
-        QLabel *l3 = new QLabel();
-        l3->setText(name);
-        l3->setFont(fAttr);
-        widgets.append(l3);
-
         QLabel *lv3;
         lv3 = new QLabel();
-        lv3->setText(value);
-        lv3->setFont(fValue);
+        lName = "<p align=\"left\">" + name + "</p>";
+        lValue = "<p align=\"right\">" + value + "</p>";
+        table = "<table width=\"100%\"> <tr> <td >" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+        lv->setText(table);
+        lv3->setFont(f);
         lv3->setAutoFillBackground(true);
-        lv3->setAlignment(Qt::AlignRight);
+        lv3->setAlignment(Qt::AlignVCenter);
+        lv3->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+        lv3->setScaledContents(true);
         widgets.append(lv3);
 
         QHBoxLayout *layout3 = new QHBoxLayout();
-        layout3->addWidget(l3);
         layout3->addWidget(lv3);
         layout3->setStretch(0,1);
-        layout3->setStretch(1,3);
         layouts.append(layout3);
 
         masterLayout->addLayout(layout3);
@@ -501,26 +543,23 @@ void WatchWindow::iniGUI()
 
             if(this->checkboxes.at(i)->isChecked()){
                 QString name = this->checkboxes.at(i)->text();
-                //QString value = "0.0";
-
-                QLabel *l = new QLabel();
-                l->setText(name);
-                l->setFont(fAttr);
-                widgets.append(l);
 
                 QLabel *lv;
                 lv = new QLabel();
-                lv->setText(value);
-                lv->setFont(fValue);
+                QString lName = "<p align=\"left\">" + this->checkboxes.at(i)->text() + "</p>";
+                QString lValue = "<p align=\"right\">" + value + "</p>";
+                QString table = "<table width=\"100%\"> <tr> <td >" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                lv->setText(table);
+                lv->setFont(f);
                 lv->setAutoFillBackground(true);
-                lv->setAlignment(Qt::AlignRight);
+                lv->setAlignment(Qt::AlignVCenter);
+                lv->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+                lv->setScaledContents(true);
                 widgets.append(lv);
 
                 QHBoxLayout *layout = new QHBoxLayout();
-                layout->addWidget(l);
                 layout->addWidget(lv);
                 layout->setStretch(0,1);
-                layout->setStretch(1,3);
                 layouts.append(layout);
 
                 masterLayout->addLayout(layout);
@@ -532,6 +571,25 @@ void WatchWindow::iniGUI()
     }
 
     ui->pageWatchWindow->setLayout(masterLayout);
+
+    for(int i=0; i<widgets.size();i++){
+
+        //first show the label, so the correct size gets displayed and returned by function
+        this->widgets.at(i)->show();
+
+        //then get font of label
+        QFont f = this->widgets.at(i)->font();
+        //get label height
+        double h = this->widgets.at(i)->height();
+        //h = 0.90*h;
+        //f.setPixelSize(h);
+        QFontMetrics fm(f);
+        //get scale factor of font height and label height
+        double scale = h/fm.height();
+        //set new font size to label
+        f.setPointSizeF(f.pointSizeF()*scale);
+        this->widgets.at(i)->setFont(f);
+    }
 
     //emit sendGUIReady(true);
     listener->isGUIReady = true;
@@ -574,6 +632,7 @@ void WatchWindow::showEvent(QShowEvent *event)
     ui->comboBox_polarMode->addItem("normale mode");
     ui->comboBox_polarMode->addItem("cross and distance");
     ui->comboBox_polarMode->setVisible(false);
+    ui->label_polarMode->setVisible(false);
 
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
         connect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this->listener,SLOT(setLCDNumber(QVariantMap)));
@@ -766,8 +825,10 @@ void WatchWindow::on_comboBox_suppReadings_currentIndexChanged(const QString &ar
 
     if(arg1.compare(Configuration::sPolar) == 0){
         ui->comboBox_polarMode->setVisible(true);
+        ui->label_polarMode->setVisible(true);
     }else{
         ui->comboBox_polarMode->setVisible(false);
+        ui->label_polarMode->setVisible(false);
     }
 
 
