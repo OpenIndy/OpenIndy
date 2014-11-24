@@ -36,6 +36,7 @@ public:
 
 signals:
     //void sendConfig(FeatureWrapper*, MeasurementConfig);
+    void measurementConfigSelected(MeasurementConfig mConfig);
 
 public slots:
 

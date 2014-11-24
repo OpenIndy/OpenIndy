@@ -130,7 +130,7 @@ void MainWindow::setConnects(){
 
     //measurement config settings
     connect(&this->mConfigDialog,SIGNAL(sendConfig(FeatureWrapper*,MeasurementConfig)),this,SLOT(receiveConfig(FeatureWrapper*,MeasurementConfig)));
-    connect(this,SIGNAL(sendConfig(MeasurementConfig)),&this->mConfigDialog,SLOT(receiveConfig(MeasurementConfig)));
+    //connect(this,SIGNAL(sendConfig(MeasurementConfig)),&this->mConfigDialog,SLOT(receiveConfig(MeasurementConfig)));
 
     //sensor function
     connect(this->actionMeasure,SIGNAL(triggered()),&this->control,SLOT(startMeasurement()));
@@ -188,9 +188,9 @@ void MainWindow::setConnects(){
 
     //create feature connects
     connect(this->cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
-    connect(this->cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
+    connect(this->cFeatureDialog,SIGNAL(createFeatureMConfig(Configuration::FeatureTypes)),this,SLOT(openCreateFeatureMConfig(Configuration::FeatureTypes)));
     connect(this->sEntityDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
-    connect(this->sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
+    connect(this->sEntityDialog,SIGNAL(createFeatureMConfig(Configuration::FeatureTypes)),this,SLOT(openCreateFeatureMConfig(Configuration::FeatureTypes)));
     connect(this->cFeatureDialog,SIGNAL(trafoParamCreated()),this,SLOT(trafoParamAdded()));
 
     //sensor plugin dialog
@@ -615,7 +615,7 @@ void MainWindow::on_actionControl_pad_triggered()
  * \param FeatureWrapper *af
  * \param MeasurementConfig *mC
  */
-void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig mC){
+/*void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig mC){
 
     if(af == NULL){
         this->control.lastmConfig = mC;
@@ -627,16 +627,15 @@ void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig mC){
         }
         this->control.lastmConfig = mC;
     }
-}
+}*/
 
 /*!
  * \brief edit MeasurementConfig of selected feature.
- * This configuration only belongs to the selected feature.
- * You can set new configurations at the create feature / scalar entity menu for new features.
+ * Open the measurement config dialog to select a config for the active feature
  */
 void MainWindow::on_actionMeasurement_Configuration_triggered()
 {
-    if(OiFeatureState::getActiveFeature() != NULL && (OiFeatureState::getActiveFeature()->getGeometry() != NULL || OiFeatureState::getActiveFeature()->getStation() != NULL)){
+    /*if(OiFeatureState::getActiveFeature() != NULL && (OiFeatureState::getActiveFeature()->getGeometry() != NULL || OiFeatureState::getActiveFeature()->getStation() != NULL)){
 
         if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
             MeasurementConfig mConfig = OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig();
@@ -648,7 +647,85 @@ void MainWindow::on_actionMeasurement_Configuration_triggered()
         }
 
         mConfigDialog.show();
+    }*/
+
+    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        return;
     }
+
+    MeasurementConfig defaultConfig = OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig();
+
+    this->mConfigDialog.setMeasurementConfig(defaultConfig);
+
+    connect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
+               this, SLOT(setMeasurementConfig(MeasurementConfig)));
+
+    this->mConfigDialog.show();
+
+}
+
+/*!
+ * \brief opens the measurement configuration dialog.
+ * Open the measurement config dialog to set the default measurement config (when creating a feature)
+ */
+void MainWindow::openCreateFeatureMConfig(Configuration::FeatureTypes typeOfFeature){
+
+    //emit sendConfig(this->control.lastmConfig);
+
+    //set the default measurement config as selected mConfig
+    switch(typeOfFeature){
+    case Configuration::eCircleFeature:
+        this->mConfigDialog.setMeasurementConfig(Circle::defaultMeasurementConfig);
+        break;
+    case Configuration::eConeFeature:
+        this->mConfigDialog.setMeasurementConfig(Cone::defaultMeasurementConfig);
+        break;
+    case Configuration::eCylinderFeature:
+        this->mConfigDialog.setMeasurementConfig(Cylinder::defaultMeasurementConfig);
+        break;
+    case Configuration::eEllipsoidFeature:
+        this->mConfigDialog.setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
+        break;
+    case Configuration::eHyperboloidFeature:
+        this->mConfigDialog.setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
+        break;
+    case Configuration::eLineFeature:
+        this->mConfigDialog.setMeasurementConfig(Line::defaultMeasurementConfig);
+        break;
+    case Configuration::eNurbsFeature:
+        this->mConfigDialog.setMeasurementConfig(Nurbs::defaultMeasurementConfig);
+        break;
+    case Configuration::eParaboloidFeature:
+        this->mConfigDialog.setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
+        break;
+    case Configuration::ePlaneFeature:
+        this->mConfigDialog.setMeasurementConfig(Plane::defaultMeasurementConfig);
+        break;
+    case Configuration::ePointFeature:
+        this->mConfigDialog.setMeasurementConfig(Point::defaultMeasurementConfig);
+        break;
+    case Configuration::ePointCloudFeature:
+        this->mConfigDialog.setMeasurementConfig(PointCloud::defaultMeasurementConfig);
+        break;
+    case Configuration::eScalarEntityAngleFeature:
+        this->mConfigDialog.setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
+        break;
+    case Configuration::eScalarEntityDistanceFeature:
+        this->mConfigDialog.setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
+        break;
+    case Configuration::eScalarEntityMeasurementSeriesFeature:
+        this->mConfigDialog.setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
+        break;
+    case Configuration::eScalarEntityTemperatureFeature:
+        this->mConfigDialog.setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
+        break;
+    case Configuration::eSphereFeature:
+        this->mConfigDialog.setMeasurementConfig(Sphere::defaultMeasurementConfig);
+        break;
+    }
+
+    this->mConfigDialog.show();
+
 }
 
 /*!
@@ -1148,16 +1225,6 @@ void MainWindow::on_actionSet_function_triggered(){
         //show the dialog
         fPluginDialog.show();
     }
-}
-
-/*!
- * \brief opens the measurement configuration dialog.
- * Also the last configuration and the current active station is set to the class and with this the current active
- * sensor for the supported reading types.
- */
-void MainWindow::openCreateFeatureMConfig(){
-    emit sendConfig(this->control.lastmConfig);
-    mConfigDialog.show();
 }
 
 /*!
@@ -1908,5 +1975,31 @@ void MainWindow::on_action_exportMeasurementConfigs_triggered(){
  * \brief MainWindow::on_action_exportSensorConfigs_triggered
  */
 void MainWindow::on_action_exportSensorConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::setMeasurementConfig
+ * Set the measurement config of the active feature
+ * \param mConfig
+ */
+void MainWindow::setMeasurementConfig(MeasurementConfig mConfig){
+
+    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        return;
+    }
+
+    if(!mConfig.getIsValid()){
+        return;
+    }
+
+    //set measurement config of the active feature
+    OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(mConfig);
+
+    //set mConfig as default for the feature type of the active feature
+    OiConfigState::setDefaultMeasurementConfig(mConfig, OiFeatureState::getActiveFeature()->getTypeOfFeature());
+
+    disconnect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
+               this, SLOT(setMeasurementConfig(MeasurementConfig)));
 
 }

@@ -222,7 +222,7 @@ private slots:
     void setupLaserTrackerPad();
     void setupTotalStationPad();
 
-    void receiveConfig(FeatureWrapper*,MeasurementConfig);
+    //void receiveConfig(FeatureWrapper*,MeasurementConfig);
     void createFeature();
 
     void setActiveCoordinateSystem();
@@ -260,7 +260,7 @@ private slots:
 
     void on_actionSet_function_triggered();
 
-    void openCreateFeatureMConfig();
+    void openCreateFeatureMConfig(Configuration::FeatureTypes typeOfFeature);
 
     void setUpStatusBar();
 
@@ -336,6 +336,9 @@ private slots:
     void on_action_exportNominals_triggered();
     void on_action_exportMeasurementConfigs_triggered();
     void on_action_exportSensorConfigs_triggered();
+
+
+    void setMeasurementConfig(MeasurementConfig mConfig); //set the measurement config of the active feature
 
 private:
     Ui::MainWindow *ui;

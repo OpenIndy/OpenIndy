@@ -28,7 +28,7 @@ signals:
 
     void createFeature(FeatureAttributesExchange fae);
 
-    void createFeatureMConfig();
+    void createFeatureMConfig(Configuration::FeatureTypes typeOfFeature);
 
 private slots:
     void initGUI();

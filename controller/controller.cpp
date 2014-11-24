@@ -193,7 +193,59 @@ bool Controller::createDefaultProject(){
  */
 void Controller::addFeature(FeatureAttributesExchange fae){
 
-    int fType = FeatureUpdater::addFeature(fae,this->lastmConfig);
+    MeasurementConfig mConfig;
+    switch(fae.featureType){
+    case Configuration::eCircleFeature:
+        mConfig = Circle::defaultMeasurementConfig;
+        break;
+    case Configuration::eConeFeature:
+        mConfig = Cone::defaultMeasurementConfig;
+        break;
+    case Configuration::eCylinderFeature:
+        mConfig = Cylinder::defaultMeasurementConfig;
+        break;
+    case Configuration::eEllipsoidFeature:
+        mConfig = Ellipsoid::defaultMeasurementConfig;
+        break;
+    case Configuration::eHyperboloidFeature:
+        mConfig = Hyperboloid::defaultMeasurementConfig;
+        break;
+    case Configuration::eLineFeature:
+        mConfig = Line::defaultMeasurementConfig;
+        break;
+    case Configuration::eNurbsFeature:
+        mConfig = Nurbs::defaultMeasurementConfig;
+        break;
+    case Configuration::eParaboloidFeature:
+        mConfig = Paraboloid::defaultMeasurementConfig;
+        break;
+    case Configuration::ePlaneFeature:
+        mConfig = Plane::defaultMeasurementConfig;
+        break;
+    case Configuration::ePointFeature:
+        mConfig = Point::defaultMeasurementConfig;
+        break;
+    case Configuration::ePointCloudFeature:
+        mConfig = PointCloud::defaultMeasurementConfig;
+        break;
+    case Configuration::eScalarEntityAngleFeature:
+        mConfig = ScalarEntityAngle::defaultMeasurementConfig;
+        break;
+    case Configuration::eScalarEntityDistanceFeature:
+        mConfig = ScalarEntityDistance::defaultMeasurementConfig;
+        break;
+    case Configuration::eScalarEntityMeasurementSeriesFeature:
+        mConfig = ScalarEntityMeasurementSeries::defaultMeasurementConfig;
+        break;
+    case Configuration::eScalarEntityTemperatureFeature:
+        mConfig = ScalarEntityTemperature::defaultMeasurementConfig;
+        break;
+    case Configuration::eSphereFeature:
+        mConfig = Sphere::defaultMeasurementConfig;
+        break;
+    }
+
+    int fType = FeatureUpdater::addFeature(fae, mConfig);
     if(fType == Configuration::eStationFeature && fType == Configuration::eCoordinateSystemFeature){
         emit CoordSystemsModelChanged();
     }
