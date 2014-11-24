@@ -17,6 +17,8 @@ private:
     ~OiLoadingDialog();
 
 public:
+    static OiLoadingDialog *getInstance();
+
     static const OiLoadingDialog *showLoadingDialog();
     static void closeLoadingDialog();
 

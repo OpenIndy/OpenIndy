@@ -8,6 +8,13 @@
 #include "unitconverter.h"
 #include "pi_oiexchangesimpleascii.h"
 #include "pi_oiexchangedefinedformat.h"
+#include "oiloadingdialog.h"
+
+struct ImExportTask{
+    bool isImport;
+    OiExchangeObject projectData;
+    OiExchangeInterface *plugin;
+};
 
 class OiDataExchanger : public QObject
 {
@@ -17,6 +24,8 @@ private:
     explicit OiDataExchanger(QObject *parent = 0);
     ~OiDataExchanger();
 
+    static OiDataExchanger *getInstance();
+
 public:
     static bool importData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData);
     static bool importData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData);
@@ -24,7 +33,12 @@ public:
     static bool exportData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData);
 
 private:
-    QThread myExchangeThread;
+    static OiDataExchanger *myInstance;
+    static QThread myExchangeThread;
+    static ImExportTask currentTask;
+
+private slots:
+    void runDataExchange();
 
 
     /*

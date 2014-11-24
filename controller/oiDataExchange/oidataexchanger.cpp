@@ -1,7 +1,8 @@
 #include "oidataexchanger.h"
 
-
-
+QThread OiDataExchanger::myExchangeThread;
+OiDataExchanger *OiDataExchanger::myInstance = OiDataExchanger::getInstance();
+ImExportTask OiDataExchanger::currentTask;
 
 /*
 OiDataExchanger OiDataExchanger::myInstance;
@@ -23,25 +24,125 @@ OiDataExchanger::~OiDataExchanger(){
 
 }
 
-bool OiDataExchanger::importData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData)
-{
-    simpleAsciiExchange->importOiData(projectData);
-    return true;
+/*!
+ * \brief OiDataExchanger::getInstance
+ * \return
+ */
+OiDataExchanger *OiDataExchanger::getInstance(){
+    OiDataExchanger *instance = new OiDataExchanger();
+    return instance;
 }
 
-bool OiDataExchanger::importData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData)
-{
+bool OiDataExchanger::importData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData){
+
+    //quit the thread if it is still running
+    if(OiDataExchanger::myExchangeThread.isRunning()){
+        OiDataExchanger::myExchangeThread.quit();
+        OiDataExchanger::myExchangeThread.wait();
+    }
+
+    //set current task
+    OiDataExchanger::currentTask.isImport = true;
+    OiDataExchanger::currentTask.projectData = projectData;
+    OiDataExchanger::currentTask.plugin = simpleAsciiExchange;
+
+    connect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
+
+    //run the import
+    OiDataExchanger::myExchangeThread.start();
+
     return true;
+
 }
 
-bool OiDataExchanger::exportData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData)
-{
+bool OiDataExchanger::importData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData){
+
+    //quit the thread if it is still running
+    if(OiDataExchanger::myExchangeThread.isRunning()){
+        OiDataExchanger::myExchangeThread.quit();
+        OiDataExchanger::myExchangeThread.wait();
+    }
+
+    //set current task
+    OiDataExchanger::currentTask.isImport = true;
+    OiDataExchanger::currentTask.projectData = projectData;
+    OiDataExchanger::currentTask.plugin = definedFormatExchange;
+
+    connect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
+
+    //run the import
+    OiDataExchanger::myExchangeThread.start();
+
     return true;
+
 }
 
-bool OiDataExchanger::exportData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData)
-{
+bool OiDataExchanger::exportData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData){
+
+    //quit the thread if it is still running
+    if(OiDataExchanger::myExchangeThread.isRunning()){
+        OiDataExchanger::myExchangeThread.quit();
+        OiDataExchanger::myExchangeThread.wait();
+    }
+
+    //set current task
+    OiDataExchanger::currentTask.isImport = false;
+    OiDataExchanger::currentTask.projectData = projectData;
+    OiDataExchanger::currentTask.plugin = simpleAsciiExchange;
+
+    connect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
+
+    //run the import
+    OiDataExchanger::myExchangeThread.start();
+
     return true;
+
+}
+
+bool OiDataExchanger::exportData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData){
+
+    //quit the thread if it is still running
+    if(OiDataExchanger::myExchangeThread.isRunning()){
+        OiDataExchanger::myExchangeThread.quit();
+        OiDataExchanger::myExchangeThread.wait();
+    }
+
+    //set current task
+    OiDataExchanger::currentTask.isImport = false;
+    OiDataExchanger::currentTask.projectData = projectData;
+    OiDataExchanger::currentTask.plugin = definedFormatExchange;
+
+    connect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
+
+    //run the import
+    OiDataExchanger::myExchangeThread.start();
+
+    return true;
+
+}
+
+/*!
+ * \brief OiDataExchanger::runDataExchange
+ */
+void OiDataExchanger::runDataExchange(){
+
+    moveToThread(&OiDataExchanger::myExchangeThread);
+
+    //run the im- or export task
+    if(OiDataExchanger::currentTask.isImport){
+        OiDataExchanger::currentTask.plugin->importOiData(OiDataExchanger::currentTask.projectData);
+    }else{
+        OiDataExchanger::currentTask.plugin->exportOiData(OiDataExchanger::currentTask.projectData);
+    }
+
+    //stop the thread
+    OiDataExchanger::myExchangeThread.quit();
+    OiDataExchanger::myExchangeThread.wait();
+
+    disconnect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
+
+    OiLoadingDialog::closeLoadingDialog();
+
 }
 
 /*!

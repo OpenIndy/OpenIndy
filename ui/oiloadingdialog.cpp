@@ -15,6 +15,10 @@ OiLoadingDialog::~OiLoadingDialog()
     delete ui;
 }
 
+OiLoadingDialog *OiLoadingDialog::getInstance(){
+    return OiLoadingDialog::myDialog;
+}
+
 /*!
  * \brief OiLoadingDialog::showLoadingDialog
  * If not yet opened this function opens and returns a LoadingDialog

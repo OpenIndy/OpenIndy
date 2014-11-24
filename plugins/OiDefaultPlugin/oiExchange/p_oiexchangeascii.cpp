@@ -265,11 +265,17 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
                 projectData.device->open(QIODevice::ReadOnly | QIODevice::Text);
             }
 
+            qint64 fileSize = projectData.device->size();
+            qint64 readSize = 0;
+            qint64 numPoints = 0;
+
             //read all lines
             QTextStream in(projectData.device);
             while (!in.atEnd()){
 
                 QString line = in.readLine();
+
+                readSize += line.size();
 
                 //split the line at delimiter
                 QStringList columns = line.split(this->getDelimiter(this->usedDelimiter));
@@ -352,6 +358,15 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
                     myGeometry->setPoint(myNominal);
                     this->nominalCoordSys->addNominal(myGeometry);
                 }
+
+                //update import progress
+                int progress = (int)(((float)readSize / (float)fileSize) * 100.0);
+                if(progress == 100){
+                    progress = 99;
+                }
+                numPoints++;
+                emit this->updateProgress(progress, QString("%1 nominal(s) loaded").arg(numPoints) );
+                readSize += 2;
 
             }
 
