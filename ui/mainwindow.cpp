@@ -1878,3 +1878,56 @@ void MainWindow::setDialogsNULL()
     this->watchWindow = NULL;
 
 }
+
+/*!
+ * \brief keyPressEvent
+ * \param e
+ */
+void MainWindow::keyPressEvent(QKeyEvent *e)
+{
+    int key = e->key();
+    int modifiers = e->modifiers();
+    //if ctrl copy was pressed
+    if(key == Qt::Key_C && modifiers == Qt::CTRL){
+        qDebug() << "ctrl c";
+        this->copyValuesFromView();
+    }
+}
+
+/*!
+ * \brief copyValuesFromView copys the selected values from the view.
+ */
+void MainWindow::copyValuesFromView()
+{
+    QAbstractItemModel *model = ui->tableView_data->model();
+    QItemSelectionModel *selection = ui->tableView_data->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+
+    std::sort(indexes.begin(), indexes.end());
+
+    QString selected_text;
+
+    QModelIndex current;
+    QModelIndex previous = indexes.first();
+    indexes.removeFirst();
+
+    foreach (current, indexes) {
+        QVariant data = model->data(current);
+        QString text = data.toString();
+        // At this point `text` contains the text in one cell
+        selected_text.append(text);
+
+        // If you are at the start of the row the row number of the previous index
+        // isn't the same.  Text is followed by a row separator, which is a newline.
+        if(current.row() != previous.row()){
+            selected_text.append('\n');
+        }else{
+            // Otherwise it's the same row, so append a column separator, which is a tab.
+            selected_text.append('\t');
+        }
+        previous = current;
+    }
+    selected_text.append(model->data(current).toString());
+    selected_text.append('\n');
+    QApplication::clipboard()->setText(selected_text);
+}

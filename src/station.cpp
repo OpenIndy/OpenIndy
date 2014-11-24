@@ -369,7 +369,7 @@ QString Station::getDisplayIsCommon() const{
 }
 
 QString Station::getDisplayIsNominal() const{
-    return QString(position->getIsNominal()?"true":"false");
+    return QString(position->getIsNominal()?"nominal":"actual");
 }
 
 QString Station::getDisplaySolved() const{

@@ -7,6 +7,9 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QPoint>
+#include <QKeyEvent>
+#include <QClipboard>
+#include <QtAlgorithms>
 
 #include "controller.h"
 #include "station.h"
@@ -324,6 +327,12 @@ private slots:
     //close dialogs
     void closeAllOpenDialogs();
     void setDialogsNULL();
+
+
+    //copy clipboard tableview
+    void keyPressEvent(QKeyEvent *e);
+
+    void copyValuesFromView();
 
 private:
     Ui::MainWindow *ui;
