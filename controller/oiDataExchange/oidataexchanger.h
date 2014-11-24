@@ -4,14 +4,20 @@
 #include <QString>
 #include <QStringList>
 #include <QObject>
+#include <QApplication>
 
 #include "unitconverter.h"
+#include "pi_oiexchangesimpleascii.h"
+#include "pi_oiexchangedefinedformat.h"
+#include "oiloadingdialog.h"
+#include "oifeaturestate.h"
 
-/*!
- * \brief The oiDataExchanger class
- * static class to manage all the different kinds of data import defined by
- * the oiExchangeInterface. You have to add your oiexchange class here.
- */
+struct ImExportTask{
+    bool isImport;
+    OiExchangeObject projectData;
+    OiExchangeInterface *plugin;
+};
+
 class OiDataExchanger : public QObject
 {
     Q_OBJECT
@@ -20,6 +26,26 @@ private:
     explicit OiDataExchanger(QObject *parent = 0);
     ~OiDataExchanger();
 
+    static OiDataExchanger *getInstance();
+
+public:
+    static bool importData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData);
+    static bool importData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData);
+    static bool exportData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData);
+    static bool exportData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData);
+
+private:
+    static OiDataExchanger *myInstance;
+    static QThread myExchangeThread;
+    ImExportTask currentTask;
+
+private slots:
+    void runDataExchange();
+
+    void finished();
+
+signals:
+    void exchangeFinished();
 
 
     /*

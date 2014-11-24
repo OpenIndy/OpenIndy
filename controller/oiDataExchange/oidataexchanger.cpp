@@ -1,7 +1,7 @@
 #include "oidataexchanger.h"
 
-
-
+QThread OiDataExchanger::myExchangeThread;
+OiDataExchanger *OiDataExchanger::myInstance = OiDataExchanger::getInstance();
 
 /*
 OiDataExchanger OiDataExchanger::myInstance;
@@ -15,11 +15,175 @@ OiDataExchanger::OiDataExchanger(QObject *parent) : QObject(parent){
 
 OiDataExchanger::~OiDataExchanger(){
 
-    /*if(this->myExchangeThread.isRunning()){
+    //stop thread if it is still running
+    if(this->myExchangeThread.isRunning()){
         this->myExchangeThread.quit();
         this->myExchangeThread.wait();
-    }*/
+    }
 
+}
+
+/*!
+ * \brief OiDataExchanger::getInstance
+ * \return
+ */
+OiDataExchanger *OiDataExchanger::getInstance(){
+    OiDataExchanger *instance = new OiDataExchanger();
+    return instance;
+}
+
+bool OiDataExchanger::importData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData){
+
+    //quit the thread if it is still running
+    if(OiDataExchanger::myExchangeThread.isRunning()){
+        OiDataExchanger::myExchangeThread.quit();
+        OiDataExchanger::myExchangeThread.wait();
+    }
+
+    //set current task
+    ImExportTask currentTask;
+    currentTask.isImport = true;
+    currentTask.projectData = projectData;
+    currentTask.plugin = simpleAsciiExchange;
+    OiDataExchanger::myInstance->currentTask = currentTask;
+
+    OiLoadingDialog::showLoadingDialog();
+    connect(currentTask.plugin, SIGNAL(updateProgress(int,QString)), OiLoadingDialog::getInstance(), SLOT(updateProgress(int,QString)));
+    connect(OiDataExchanger::myInstance, SIGNAL(exchangeFinished()), OiLoadingDialog::getInstance(), SLOT(finished()));
+
+
+    connect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
+
+    //connect(OiDataExchanger::myInstance, SIGNAL(exchangeFinished()), OiDataExchanger::myInstance, SLOT(finished()));
+
+    //run the import
+    OiDataExchanger::myInstance->moveToThread(&OiDataExchanger::myExchangeThread);
+    OiDataExchanger::myExchangeThread.start();
+
+    return true;
+
+}
+
+bool OiDataExchanger::importData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData){
+
+    //quit the thread if it is still running
+    if(OiDataExchanger::myExchangeThread.isRunning()){
+        OiDataExchanger::myExchangeThread.quit();
+        OiDataExchanger::myExchangeThread.wait();
+    }
+
+    //set current task
+    ImExportTask currentTask;
+    currentTask.isImport = true;
+    currentTask.projectData = projectData;
+    currentTask.plugin = definedFormatExchange;
+
+    connect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
+    connect(OiDataExchanger::myInstance, SIGNAL(exchangeFinished()), OiLoadingDialog::getInstance(), SLOT(finished()));
+
+    //run the import
+    OiDataExchanger::myInstance->moveToThread(&OiDataExchanger::myExchangeThread);
+    OiDataExchanger::myExchangeThread.start();
+
+    return true;
+
+}
+
+bool OiDataExchanger::exportData(OiExchangeSimpleAscii *simpleAsciiExchange, OiExchangeObject &projectData){
+
+    //quit the thread if it is still running
+    if(OiDataExchanger::myExchangeThread.isRunning()){
+        OiDataExchanger::myExchangeThread.quit();
+        OiDataExchanger::myExchangeThread.wait();
+    }
+
+    //set current task
+    ImExportTask currentTask;
+    currentTask.isImport = true;
+    currentTask.projectData = projectData;
+    currentTask.plugin = simpleAsciiExchange;
+
+    connect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
+    connect(OiDataExchanger::myInstance, SIGNAL(exchangeFinished()), OiLoadingDialog::getInstance(), SLOT(finished()));
+
+    //run the import
+    OiDataExchanger::myInstance->moveToThread(&OiDataExchanger::myExchangeThread);
+    OiDataExchanger::myExchangeThread.start();
+
+    return true;
+
+}
+
+bool OiDataExchanger::exportData(OiExchangeDefinedFormat *definedFormatExchange, OiExchangeObject &projectData){
+
+    //quit the thread if it is still running
+    if(OiDataExchanger::myExchangeThread.isRunning()){
+        OiDataExchanger::myExchangeThread.quit();
+        OiDataExchanger::myExchangeThread.wait();
+    }
+
+    //set current task
+    ImExportTask currentTask;
+    currentTask.isImport = true;
+    currentTask.projectData = projectData;
+    currentTask.plugin = definedFormatExchange;
+
+    connect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
+    connect(OiDataExchanger::myInstance, SIGNAL(exchangeFinished()), OiLoadingDialog::getInstance(), SLOT(finished()));
+
+    //run the import
+    OiDataExchanger::myInstance->moveToThread(&OiDataExchanger::myExchangeThread);
+    OiDataExchanger::myExchangeThread.start();
+
+    return true;
+
+}
+
+/*!
+ * \brief OiDataExchanger::runDataExchange
+ */
+void OiDataExchanger::runDataExchange(){
+
+
+    //run the im- or export task
+    if(currentTask.isImport){
+        currentTask.plugin->importOiData(currentTask.projectData);
+    }else{
+        currentTask.plugin->exportOiData(currentTask.projectData);
+    }
+
+    qDebug() << "available features: " << currentTask.projectData.features.size();
+
+    //add the imported features to OpenIndy
+    if(currentTask.isImport){
+        //OiLoadingDialog::getInstance()->updateProgress(99, "adding imported nominals to OpenIndy");
+        foreach(FeatureWrapper *myFeature, currentTask.projectData.features){
+            if(myFeature->getGeometry()->getFeatureName().compare("") == 0){
+                myFeature->getGeometry()->setFeatureName(QString("%1").arg(Configuration::generateID()));
+            }
+        }
+        OiFeatureState::addFeatures(OiDataExchanger::currentTask.projectData.features);
+    }
+
+
+
+    //this->moveToThread(QApplication::instance()->thread());
+
+    //stop the thread
+    OiDataExchanger::myExchangeThread.quit();
+    OiDataExchanger::myExchangeThread.wait();
+
+    //close the loading dialog
+    emit this->exchangeFinished();
+
+    disconnect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
+    disconnect(OiDataExchanger::myInstance, SIGNAL(exchangeFinished()), OiLoadingDialog::getInstance(), SLOT(finished()));
+
+}
+
+void OiDataExchanger::finished()
+{
+    OiLoadingDialog::closeLoadingDialog();
 }
 
 /*!

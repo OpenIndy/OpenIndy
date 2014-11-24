@@ -67,6 +67,11 @@
 #include "pointfeaturemodel.h"
 #include "pointfeaturefiltermodel.h"
 
+#include "pi_oiexchangedefinedformat.h"
+#include "pi_oiexchangesimpleascii.h"
+
+#include "oimodelmanager.h"
+
 class Feature;
 class CoordinateSystem;
 class Station;
@@ -83,6 +88,8 @@ class Controller : public QObject
     Q_OBJECT
 public:
     explicit Controller(QObject *parent = 0);
+
+    OiModelManager *myModelManager;
 
     //instances of at most static classes to take care of OpenIndy state changes
     OiFeatureState *myFeatureState;

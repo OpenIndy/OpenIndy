@@ -119,7 +119,6 @@ SOURCES += \
     ui/oiGraphixFactory/oigraphix_line.cpp \
     ui/oiGraphixFactory/oigraphix_station.cpp \
     ui/scalarentitydialog.cpp \
-    ui/importnominalgeometrydialog.cpp \
     ui/featuretreeviewmodel.cpp \
     ui/featuretreeitem.cpp \
     ui/availableelementstreeviewproxymodel.cpp \
@@ -189,7 +188,11 @@ SOURCES += \
     ui/oitoolaction.cpp \
     src/plugin/oiexchange/oiexchangeobject.cpp \
     ui/exportnominaldialog.cpp \
-    controller/oijobstate.cpp
+    controller/oijobstate.cpp \
+    ui/importnominaldialog.cpp \
+    src/oiemitter/oiexchangeemitter.cpp \
+    controller/oimodelmanager.cpp \
+    ui/oisimpleasciiexchangemodel.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -268,7 +271,6 @@ HEADERS  += \
     ui/oiGraphixFactory/oigraphix_line.h \
     ui/oiGraphixFactory/oigraphix_station.h \
     ui/scalarentitydialog.h \
-    ui/importnominalgeometrydialog.h \
     ui/featuretreeviewmodel.h \
     ui/featuretreeitem.h \
     ui/availableelementstreeviewproxymodel.h \
@@ -342,10 +344,15 @@ HEADERS  += \
     src/plugin/oiexchange/oiexchangeascii.h \
     src/plugin/oiexchange/oiexchangeobject.h \
     src/plugin/oiexchange/pi_oiexchangeinterface.h \
-    src/plugin/oiexchange/pi_oiexchangespecialformat.h \
     src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
     ui/exportnominaldialog.h \
-    controller/oijobstate.h
+    controller/oijobstate.h \
+    ui/importnominaldialog.h \
+    src/oiemitter/oiexchangeemitter.h \
+    src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
+    controller/oimodelmanager.h \
+    ui/oisimpleasciiexchangemodel.h
+
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
     ui/watchwindow.ui \
@@ -358,13 +365,13 @@ FORMS    += ui/mainwindow.ui \
     ui/movementdialog.ui \
     ui/settingsdialog.ui \
     ui/scalarentitydialog.ui \
-    ui/importnominalgeometrydialog.ui \
     ui/nominaldatadialog.ui \
     ui/edittrafoparamdialog.ui \
     ui/oisimulationwidget.ui \
     ui/stationinfodialog.ui \
     ui/realtimedatadialog.ui \
     ui/oiloadingdialog.ui \
-    ui/exportnominaldialog.ui
+    ui/exportnominaldialog.ui \
+    ui/importnominaldialog.ui
 
 

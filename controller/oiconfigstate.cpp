@@ -474,7 +474,7 @@ void OiConfigState::checkMeasurementConfig(MeasurementConfig &mConfig, bool &sam
 void OiConfigState::connectFeature(FeatureWrapper *myFeature){
 
     if(myFeature->getGeometry() != NULL){
-        connect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)), OiConfigState::myConfigState, SLOT(setMeasurementConfig(int)));
+        //connect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)), OiConfigState::myConfigState, SLOT(setMeasurementConfig(int)));
     }
 
 }

@@ -400,9 +400,81 @@ QList<OiTool *> PluginLoader::loadOiToolPlugins(QString path)
            pCopier->sendMsg(QString("create networkadjustment plugins failed"),true);
            return oiToolList;
        }
-   }else{
+    }else{
         pCopier->sendMsg("meta data not valid",true);
     }
+}
+
+/*!
+ * \brief PluginLoader::loadOiExchangeSimpleAsciiPlugins
+ * \param path
+ * \return
+ */
+QList<OiExchangeSimpleAscii *> PluginLoader::loadOiExchangeSimpleAsciiPlugins(QString path){
+
+    QList<OiExchangeSimpleAscii*> simpleAsciiExchangeList;
+
+    QPluginLoader pluginLoader(path);
+
+    if(PluginLoader::getMetaData(path)){
+
+        pCopier->sendMsg("load exchange plugins",false);
+
+        QObject *plugin = pluginLoader.instance();
+        if (plugin) {
+
+            OiPlugin *oiExchangeFactory = qobject_cast<OiPlugin *>(plugin);
+            simpleAsciiExchangeList = oiExchangeFactory->createSimpleAsciiExchanges();
+            pCopier->sendMsg(QString(QString::number(simpleAsciiExchangeList.size())+ " simple ascii exchange plugins successfully created."),false);
+            return simpleAsciiExchangeList;
+
+        }else{
+
+            pCopier->sendMsg(QString("create simple ascii exchange plugins failed"),true);
+            return simpleAsciiExchangeList;
+
+        }
+
+    }else{
+        pCopier->sendMsg("meta data not valid",true);
+    }
+
+}
+
+/*!
+ * \brief PluginLoader::loadOiExchangeDefinedFormatPlugins
+ * \param path
+ * \return
+ */
+QList<OiExchangeDefinedFormat *> PluginLoader::loadOiExchangeDefinedFormatPlugins(QString path){
+
+    QList<OiExchangeDefinedFormat*> definedFormatExchangeList;
+
+    QPluginLoader pluginLoader(path);
+
+    if(PluginLoader::getMetaData(path)){
+
+        pCopier->sendMsg("load exchange plugins",false);
+
+        QObject *plugin = pluginLoader.instance();
+        if (plugin) {
+
+            OiPlugin *oiExchangeFactory = qobject_cast<OiPlugin *>(plugin);
+            definedFormatExchangeList = oiExchangeFactory->createDefinedFormatExchanges();
+            pCopier->sendMsg(QString(QString::number(definedFormatExchangeList.size())+ " defined format exchange plugins successfully created."),false);
+            return definedFormatExchangeList;
+
+        }else{
+
+            pCopier->sendMsg(QString("create defined format exchange plugins failed"),true);
+            return definedFormatExchangeList;
+
+        }
+
+    }else{
+        pCopier->sendMsg("meta data not valid",true);
+    }
+
 }
 
 /*!
@@ -501,4 +573,50 @@ OiTool *PluginLoader::loadOiToolPlugin(QString path, QString name)
     }
 
     return t;
+}
+
+/*!
+ * \brief PluginLoader::loadOiExchangeSimpleAsciiPlugin
+ * \param path
+ * \param name
+ * \return
+ */
+OiExchangeSimpleAscii *PluginLoader::loadOiExchangeSimpleAsciiPlugin(QString path, QString name){
+
+    OiExchangeSimpleAscii* esa = NULL;
+
+    QPluginLoader pluginLoader(path);
+    QObject *plugin = pluginLoader.instance();
+    if (plugin) {
+        OiPlugin *oiExchangeFactory = qobject_cast<OiPlugin *>(plugin);
+        esa = oiExchangeFactory->createSimpleAsciiExchange(name);
+    }else{
+        Console::addLine(QString("Cannot load selected simple ascii exchange plugin"));
+    }
+
+    return esa;
+
+}
+
+/*!
+ * \brief PluginLoader::loadOiExchangeDefinedFormatPlugin
+ * \param path
+ * \param name
+ * \return
+ */
+OiExchangeDefinedFormat *PluginLoader::loadOiExchangeDefinedFormatPlugin(QString path, QString name){
+
+    OiExchangeDefinedFormat* edf = NULL;
+
+    QPluginLoader pluginLoader(path);
+    QObject *plugin = pluginLoader.instance();
+    if (plugin) {
+        OiPlugin *oiExchangeFactory = qobject_cast<OiPlugin *>(plugin);
+        edf = oiExchangeFactory->createDefinedFormatExchange(name);
+    }else{
+        Console::addLine(QString("Cannot load selected defined format exchange plugin"));
+    }
+
+    return edf;
+
 }

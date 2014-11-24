@@ -14,10 +14,10 @@ public:
     explicit OiEmitter(QObject *parent = 0);
 
 signals:
-    void sendString(QString);
+    void sendString(QString) const;
 
 public slots:
-    void emitSendString(QString);
+    void emitSendString(QString) const;
 
 };
 
