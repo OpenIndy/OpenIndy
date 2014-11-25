@@ -81,7 +81,7 @@ private:
     QMap<QString, QLineEdit*> attributeTolerance;
     QList<QLayout*> attributeLayout;
 
-    QList<QWidget*> widgets;
+    QList<QLabel*> widgets;
     QList<QLayout*> layouts;
 
     int activeReadingType;

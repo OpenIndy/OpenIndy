@@ -89,7 +89,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                 }
                 QString lName = "<p align=\"left\">d3D</p>";
                 QString lValue = "<p align=\"right\">" + QString::number(distR3*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
-                QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                 streamData.value("d3D")->setText(table);
             }
@@ -132,7 +132,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         }
         QString lName = "<p align=\"left\">distance</p>";
         QString lValue = "<p align=\"right\">" + QString::number(dDist*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
-        QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+        QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
         streamData.value("distance")->setText(table);
 
@@ -147,7 +147,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         }
         lName = "<p align=\"left\">across</p>";
         lValue = "<p align=\"right\">" + QString::number(dAcross*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
-        table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+        table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
         streamData.value("across")->setText(table);
 
@@ -165,7 +165,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         }
         lName = "<p align=\"left\">dH</p>";
         lValue = "<p align=\"right\">" + QString::number(dH*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
-        table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+        table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table";
 
         streamData.value("dH")->setText(table);
 
@@ -213,7 +213,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             }
                             QString lName = "<p align=\"left\">x</p>";
                             QString lValue = "<p align=\"right\">" + QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
-                            QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                            QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                             streamData.value("x")->setText(table);
 
@@ -234,7 +234,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             }
                             QString lName = "<p align=\"left\">y</p>";
                             QString lValue = "<p align=\"right\">" + QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
-                            QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                            QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                             streamData.value("y")->setText(table);
 
@@ -255,7 +255,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             }
                             QString lName = "<p align=\"left\">z</p>";
                             QString lValue = "<p align=\"right\">" + QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
-                            QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                            QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                             streamData.value("z")->setText(table);
 
@@ -269,7 +269,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             }
                             QString lName = "<p align=\"left\">" + j.key() + "</p>";
                             QString lValue = "<p align=\"right\">" + QString::number(j.value().toDouble(),'f',numberOfDigits) + "</p>";
-                            QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                            QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                             streamData.value(j.key())->setText(table);
                         }
@@ -313,7 +313,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 }
                                 QString lName = "<p align=\"left\">azimuth</p>";
                                 QString lValue = "<p align=\"right\">" + QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',numberOfDigits) + "</p>";
-                                QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                                QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                                 streamData.value("azimuth")->setText(table);
 
@@ -336,7 +336,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 }
                                 QString lName = "<p align=\"left\">zenith</p>";
                                 QString lValue = "<p align=\"right\">" + QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',numberOfDigits) + "</p>";
-                                QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                                QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                                 streamData.value("zenith")->setText(table);
 
@@ -359,7 +359,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 }
                                 QString lName = "<p align=\"left\">distance</p>";
                                 QString lValue = "<p align=\"right\">" + QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
-                                QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                                QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                                 streamData.value("distance")->setText(table);
 
@@ -373,7 +373,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 }
                                 QString lName = "<p align=\"left\">" + j.key() + "</p>";
                                 QString lValue = "<p align=\"right\">" + QString::number(j.value().toDouble(),'f',numberOfDigits) + "</p>";
-                                QString table = "<table width=\"100%\"> <tr> <td>" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                                QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                                 streamData.value(j.key())->setText(table);
                             }
@@ -420,6 +420,9 @@ void WatchWindow::iniGUI()
     QFont f;
     f.setFamily("Arial");
 
+    //represents the number (index) of displayed labels in the master layout
+    int labelCount = 0;
+
     //display feature name
     if(OiFeatureState::getActiveFeature() != NULL){
         QLabel *featureName;
@@ -427,14 +430,23 @@ void WatchWindow::iniGUI()
         featureName->setFont(f);
 
         if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-            featureName->setText("<p align=\"left\">" + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "   ("
-                                 + OiFeatureState::getActiveCoordinateSystem()->getFeatureName() + ")   obs: "
-                                 + QString::number(OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size()) + "</p>");
-        }else{
-            featureName->setText("<p align=\"left\">name: " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "   ("
-                                 + OiFeatureState::getActiveCoordinateSystem()->getFeatureName() + ") " + "</p>");
-        }
 
+            QString name ="<p align=\"center\">" + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "</p>";
+            QString coordsys = "<p align=\"center\"(>" + OiFeatureState::getActiveCoordinateSystem()->getFeatureName() + "<)/p>";
+            QString obs = "<p align=\"center\">obs: " + QString::number(OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size()) + "</p>";
+            QString featName = "";
+
+            featName ="<table width=\"100%\"> <tr> <td>" + name + "</td> <td>" + coordsys + "</td> <td>" + obs + "</td> </tr> </table>";
+            featureName->setText(featName);
+
+        }else{
+            QString name ="<p align=\"center\">" + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "</p>";
+            QString coordsys = "<p align=\"center\">" + OiFeatureState::getActiveCoordinateSystem()->getFeatureName() + "</p>";
+            QString featName = "";
+
+            featName ="<table width=\"100%\"> <tr> <td>" + name + "</td> <td>" + coordsys + "</td> </tr> </table>";
+            featureName->setText(featName);
+        }
 
         featureName->setAlignment(Qt::AlignVCenter);
         featureName->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
@@ -446,7 +458,9 @@ void WatchWindow::iniGUI()
         layout->setStretch(0,1);
 
         masterLayout->addLayout(layout);
-        masterLayout->setStretch(0,1);
+        masterLayout->setStretch(labelCount,1);
+
+        labelCount++;
 
         widgets.append(featureName);
         layouts.append(layout);
@@ -465,7 +479,7 @@ void WatchWindow::iniGUI()
         lv = new QLabel();
         QString lName = "<p align=\"left\">" + name + "</p>";
         QString lValue = "<p align=\"right\">" + value + "</p>";
-        QString table = "<table width=\"100%\"> <tr> <td >" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+        QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
         lv->setText(table);
         lv->setFont(f);
         lv->setAutoFillBackground(true);
@@ -481,7 +495,8 @@ void WatchWindow::iniGUI()
         layouts.append(layout);
 
         masterLayout->addLayout(layout);
-        masterLayout->setStretch(1,1);
+        masterLayout->setStretch(labelCount,3);
+        labelCount++;
 
         streamData.insert(name,lv);
 
@@ -492,7 +507,7 @@ void WatchWindow::iniGUI()
         lv2 = new QLabel();
         lName = "<p align=\"left\">" + name + "</p>";
         lValue = "<p align=\"right\">" + value + "</p>";
-        table = "<table width=\"100%\"> <tr> <td >" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+        table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
         lv2->setText(table);
         lv2->setFont(f);
         lv2->setAutoFillBackground(true);
@@ -507,7 +522,8 @@ void WatchWindow::iniGUI()
         layouts.append(layout2);
 
         masterLayout->addLayout(layout2);
-        masterLayout->setStretch(2,1);
+        masterLayout->setStretch(labelCount,3);
+        labelCount++;
 
         streamData.insert(name,lv2);
 
@@ -518,7 +534,7 @@ void WatchWindow::iniGUI()
         lv3 = new QLabel();
         lName = "<p align=\"left\">" + name + "</p>";
         lValue = "<p align=\"right\">" + value + "</p>";
-        table = "<table width=\"100%\"> <tr> <td >" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+        table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
         lv->setText(table);
         lv3->setFont(f);
         lv3->setAutoFillBackground(true);
@@ -533,7 +549,8 @@ void WatchWindow::iniGUI()
         layouts.append(layout3);
 
         masterLayout->addLayout(layout3);
-        masterLayout->setStretch(3,1);
+        masterLayout->setStretch(labelCount,3);
+        labelCount++;
 
         streamData.insert(name,lv3);
 
@@ -548,7 +565,7 @@ void WatchWindow::iniGUI()
                 lv = new QLabel();
                 QString lName = "<p align=\"left\">" + this->checkboxes.at(i)->text() + "</p>";
                 QString lValue = "<p align=\"right\">" + value + "</p>";
-                QString table = "<table width=\"100%\"> <tr> <td >" + lName + "</td> <td>" + lValue + "</td> </tr></table";
+                QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
                 lv->setText(table);
                 lv->setFont(f);
                 lv->setAutoFillBackground(true);
@@ -563,7 +580,8 @@ void WatchWindow::iniGUI()
                 layouts.append(layout);
 
                 masterLayout->addLayout(layout);
-                masterLayout->setStretch((i+1),1);
+                masterLayout->setStretch((labelCount),3);
+                labelCount++;
 
                 streamData.insert(name,lv);
             }
@@ -581,8 +599,7 @@ void WatchWindow::iniGUI()
         QFont f = this->widgets.at(i)->font();
         //get label height
         double h = this->widgets.at(i)->height();
-        //h = 0.90*h;
-        //f.setPixelSize(h);
+        double w = this->widgets.at(i)->width();
         QFontMetrics fm(f);
         //get scale factor of font height and label height
         double scale = h/fm.height();
