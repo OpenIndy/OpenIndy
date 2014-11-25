@@ -89,6 +89,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->createOiToolActions();
 
+    //resize view on start
+    this->resizeTableView();
+
 }
 
 /*!
@@ -166,6 +169,8 @@ void MainWindow::setConnects(){
     connect(this->ui->tableView_trafoParam,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTrafoParamClicked(QModelIndex)));
     connect(this->comboBoxFeatureType,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeCreateFeatureToolbar(int)));
     connect(this->checkBoxNominal,SIGNAL(toggled(bool)),this,SLOT(CheckBoxNominalToggled(bool)));
+    connect(this->ui->tableView_data->horizontalHeader(),SIGNAL(doubleClicked(QModelIndex)),this,SLOT(handleViewDoubleClick(QModelIndex)));
+    connect(this->ui->tableView_trafoParam->horizontalHeader(),SIGNAL(doubleClicked(QModelIndex)),this,SLOT(handleViewDoubleClick(QModelIndex)));
 
     //always scroll to bottom in Console
     connect(this->control.c, SIGNAL(changedList()), this->ui->listView_Console, SLOT(scrollToBottom()));
@@ -226,8 +231,8 @@ void MainWindow::setConnects(){
     connect(&this->nominalDialog, SIGNAL(sendNominalValues(NominalAttributeExchange)),&this->control,SLOT(getNominalValues(NominalAttributeExchange)));
 
     //tableview
-    connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
-    connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
+    //connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
+    //connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
 
     //OiTools
     connect(&this->control,SIGNAL(openOiToolWidget(OiTool*)),this,SLOT(showOiToolWidget(OiTool*)));
@@ -1214,6 +1219,17 @@ void MainWindow::handleTrafoParamClicked(const QModelIndex &idx)
     this->selectedFeature = source_idx.row();
 
     emit this->sendSelectedFeature(selectedFeature);
+}
+
+/*!
+ * \brief handleViewDoubleClick used to resize view at this development state
+ */
+void MainWindow::handleViewDoubleClick(const QModelIndex &idx)
+{
+    //if index is not valid (clicking the header) the views get resized
+    if(!idx.isValid()){
+        this->resizeTableView();
+    }
 }
 
 /*!
