@@ -478,6 +478,7 @@ void OiConfigState::saveMeasurementConfig(const MeasurementConfig &mConfig, bool
     MeasurementConfig savedConfig = OiConfigState::getMeasurementConfig(mConfig.getDisplayName());
     if(!savedConfig.getIsValid()){
         OiConfigState::savedMeasurementConfigs.append(mConfig);
+        OiConfigState::savedMeasurementConfigs.last().setIsSaved(true);
     }
 
     //update the measurement config names model
