@@ -1889,7 +1889,6 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
     int modifiers = e->modifiers();
     //if ctrl copy was pressed
     if(key == Qt::Key_C && modifiers == Qt::CTRL){
-        qDebug() << "ctrl c";
         this->copyValuesFromView();
     }
 }
@@ -1899,35 +1898,58 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
  */
 void MainWindow::copyValuesFromView()
 {
+    //get model and selected rows and columns
     QAbstractItemModel *model = ui->tableView_data->model();
     QItemSelectionModel *selection = ui->tableView_data->selectionModel();
     QModelIndexList indexes = selection->selectedIndexes();
 
-    std::sort(indexes.begin(), indexes.end());
+    //sort indexes
+    qSort(indexes);
 
-    QString selected_text;
+    //check if something in main view is selected
+    if(indexes.size()<1){
 
-    QModelIndex current;
+        //if not, check if something in trafo param view is selected
+        model = ui->tableView_trafoParam->model();
+        selection = ui->tableView_trafoParam->selectionModel();
+        indexes = selection->selectedIndexes();
+
+        qSort(indexes);
+
+        //if also not, copy nothing
+        if(indexes.size()<1){
+            return;
+        }
+        //return;
+    }
+
+    QString copy_table;
+    QModelIndex last = indexes.last();
     QModelIndex previous = indexes.first();
+
     indexes.removeFirst();
 
-    foreach (current, indexes) {
-        QVariant data = model->data(current);
+    //loop over all selected rows and columns
+    for(int i=0;i<indexes.size();i++){
+        QVariant data = model->data(previous);
         QString text = data.toString();
-        // At this point `text` contains the text in one cell
-        selected_text.append(text);
 
-        // If you are at the start of the row the row number of the previous index
-        // isn't the same.  Text is followed by a row separator, which is a newline.
-        if(current.row() != previous.row()){
-            selected_text.append('\n');
-        }else{
-            // Otherwise it's the same row, so append a column separator, which is a tab.
-            selected_text.append('\t');
+        QModelIndex index = indexes.at(i);
+        copy_table.append(text);
+
+        //if new line
+        if(index.row() != previous.row()){
+            copy_table.append('\n');
+        }else{ //if same line, but new column
+            copy_table.append('\t');
         }
-        previous = current;
+        previous = index;
     }
-    selected_text.append(model->data(current).toString());
-    selected_text.append('\n');
-    QApplication::clipboard()->setText(selected_text);
+    //get last selected cell
+    copy_table.append(model->data(last).toString());
+    copy_table.append('\n');
+
+    //set values to clipboard, so you can copy them
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(copy_table);
 }
