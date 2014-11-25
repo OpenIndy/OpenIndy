@@ -744,6 +744,8 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
 
             connect(myFeature->getGeometry(), SIGNAL(geomMyObservationsChanged(int)),
                     OiFeatureState::getInstance(), SLOT(setGeometryObservations(int)));
+            connect(myFeature->getGeometry(), SIGNAL(geomMyActualChanged(int)),
+                    OiFeatureState::getInstance(), SLOT(setGeometryActual(int)));
 
             //only for point clouds
             if(myFeature->getPointCloud() != NULL){
@@ -1116,7 +1118,75 @@ void OiFeatureState::setGeometryActual(int featureId){
     try{
 
         int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
+
         if(featureIndex >= 0){
+
+            FeatureWrapper *myNominal = OiFeatureState::getFeature(featureId);
+            myNominal->getGeometry()->getMyActual();
+            FeatureWrapper *newActual;
+            newActual= new FeatureWrapper();
+
+            /*switch (myNominal->getTypeOfFeature()) {
+            case Configuration::ePointFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eLineFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::ePlaneFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eSphereFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eStationFeature:
+
+                break;
+            case Configuration::eCoordinateSystemFeature:
+
+                break;
+            case Configuration::eTrafoParamFeature:
+
+                break;
+            case Configuration::ePointCloudFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eCircleFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eConeFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eCylinderFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eEllipsoidFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eHyperboloidFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eNurbsFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eParaboloidFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eScalarEntityAngleFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eScalarEntityDistanceFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eScalarEntityTemperatureFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            case Configuration::eScalarEntityMeasurementSeriesFeature:
+                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+                break;
+            default:
+                break;
+            }*/
 
             OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
 

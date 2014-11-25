@@ -56,13 +56,13 @@ private slots:
 
 
 
-    //void receiveConfig(MeasurementConfig);
+    void receiveConfig(MeasurementConfig);
 
 
 
-    //int getCode(QComboBox *cb, QString label);
+    int getCode(QComboBox *cb, QString label);
 
-    //QString getLabel(QComboBox *cb, int code);
+    QString getLabel(QComboBox *cb, int code);
 
 
 
