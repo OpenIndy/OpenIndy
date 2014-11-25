@@ -36,6 +36,7 @@ public:
 
 signals:
     //void sendConfig(FeatureWrapper*, MeasurementConfig);
+    void measurementConfigSelected(MeasurementConfig mConfig);
 
 public slots:
 
@@ -56,13 +57,13 @@ private slots:
 
 
 
-    void receiveConfig(MeasurementConfig);
+    //void receiveConfig(MeasurementConfig);
 
 
 
-    int getCode(QComboBox *cb, QString label);
+    //int getCode(QComboBox *cb, QString label);
 
-    QString getLabel(QComboBox *cb, int code);
+    //QString getLabel(QComboBox *cb, int code);
 
 
 

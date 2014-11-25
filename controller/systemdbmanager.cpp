@@ -195,7 +195,10 @@ bool SystemDbManager::addMeasurementConfig(QString name){
 
     if(SystemDbManager::connect()){
 
-        QString query = QString("INSERT INTO measurementConfig (name) VALUES ('%1');").arg(name);
+        QString query = QString("INSERT INTO measurementConfig (name) SELECT '%1' %2;")
+                .arg(name)
+                .arg(QString("WHERE NOT EXISTS(SELECT 1 FROM measurementConfig WHERE name = '%1')")
+                     .arg(name));
 
         QSqlQuery command(SystemDbManager::db);
         check = command.exec(query);

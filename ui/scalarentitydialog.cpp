@@ -125,7 +125,8 @@ void ScalarEntityDialog::on_comboBox_scalarEntityType_currentTextChanged(const Q
 
 void ScalarEntityDialog::on_toolButton_mConfig_clicked()
 {
-    emit createFeatureMConfig();
+    Configuration::FeatureTypes featureType = static_cast<Configuration::FeatureTypes>(ui->comboBox_scalarEntityType->itemData(ui->comboBox_scalarEntityType->currentIndex()).toInt());
+    emit createFeatureMConfig(featureType);
 }
 
 

@@ -37,11 +37,12 @@ OiConfigState *OiConfigState::getInstance(){
  * \param displayName
  * \return
  */
-const MeasurementConfig &OiConfigState::getMeasurementConfig(QString displayName){
+MeasurementConfig OiConfigState::getMeasurementConfig(QString displayName){
 
     //check saved measurement configs
     foreach(const MeasurementConfig &config, OiConfigState::savedMeasurementConfigs){
-        if(config.getDisplayName().compare(displayName) == 0){
+        QString configName = config.getDisplayName();
+        if(configName.compare(displayName) == 0){
             return config;
         }
     }
@@ -58,12 +59,12 @@ const MeasurementConfig &OiConfigState::getMeasurementConfig(QString displayName
 }
 
 /*!
- * \brief OiConfigState::setMeasurementConfig
+ * \brief OiConfigState::addMeasurementConfig
  * Add a measurement config to OpenIndy permanently (check if it already exists, before)
  * \param mConfig
  * \return
  */
-bool OiConfigState::setMeasurementConfig(MeasurementConfig mConfig){
+bool OiConfigState::addMeasurementConfig(MeasurementConfig &mConfig){
 
     //check mConfig wether a measurement config with the same name and/or parameters already exists and if it used, yet
     bool sameName, sameParameters, isUsed;
@@ -163,6 +164,90 @@ bool OiConfigState::setMeasurementConfig(MeasurementConfig mConfig){
         SystemDbManager::setDefaultMeasurementConfig(Configuration::eSphereFeature, mConfig.getName());
         break;
     }*/
+
+    return true;
+
+}
+
+/*!
+ * \brief OiConfigState::setDefaultMeasurementConfig
+ * \param mConfig
+ * \param typeOfFeature
+ * \return
+ */
+bool OiConfigState::setDefaultMeasurementConfig(MeasurementConfig mConfig, Configuration::FeatureTypes typeOfFeature){
+
+    if(!mConfig.getIsValid() || !mConfig.getIsSaved()){
+        return false;
+    }
+
+    //set mConfig as default measurement config for the feature type typeOfFeature
+    switch(typeOfFeature){
+    case Configuration::eCircleFeature:
+        Circle::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eCircleFeature, mConfig.getName());
+        break;
+    case Configuration::eConeFeature:
+        Cone::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eConeFeature, mConfig.getName());
+        break;
+    case Configuration::eCylinderFeature:
+        Cylinder::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eCylinderFeature, mConfig.getName());
+        break;
+    case Configuration::eEllipsoidFeature:
+        Ellipsoid::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eEllipsoidFeature, mConfig.getName());
+        break;
+    case Configuration::eHyperboloidFeature:
+        Hyperboloid::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eHyperboloidFeature, mConfig.getName());
+        break;
+    case Configuration::eLineFeature:
+        Line::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eLineFeature, mConfig.getName());
+        break;
+    case Configuration::eNurbsFeature:
+        Nurbs::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eNurbsFeature, mConfig.getName());
+        break;
+    case Configuration::eParaboloidFeature:
+        Paraboloid::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eParaboloidFeature, mConfig.getName());
+        break;
+    case Configuration::ePlaneFeature:
+        Plane::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePlaneFeature, mConfig.getName());
+        break;
+    case Configuration::ePointFeature:
+        Point::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePointFeature, mConfig.getName());
+        break;
+    case Configuration::ePointCloudFeature:
+        PointCloud::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePointCloudFeature, mConfig.getName());
+        break;
+    case Configuration::eScalarEntityAngleFeature:
+        ScalarEntityAngle::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityAngleFeature, mConfig.getName());
+        break;
+    case Configuration::eScalarEntityDistanceFeature:
+        ScalarEntityDistance::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityDistanceFeature, mConfig.getName());
+        break;
+    case Configuration::eScalarEntityMeasurementSeriesFeature:
+        ScalarEntityMeasurementSeries::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityMeasurementSeriesFeature, mConfig.getName());
+        break;
+    case Configuration::eScalarEntityTemperatureFeature:
+        ScalarEntityTemperature::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureFeature, mConfig.getName());
+        break;
+    case Configuration::eSphereFeature:
+        Sphere::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eSphereFeature, mConfig.getName());
+        break;
+    }
 
     return true;
 
@@ -390,7 +475,10 @@ void OiConfigState::saveMeasurementConfig(const MeasurementConfig &mConfig, bool
     SystemDbManager::addMeasurementConfig(mConfig.getName());
 
     //add mConfig to list of saved measurement configs
-    OiConfigState::savedMeasurementConfigs.append(mConfig);
+    MeasurementConfig savedConfig = OiConfigState::getMeasurementConfig(mConfig.getDisplayName());
+    if(!savedConfig.getIsValid()){
+        OiConfigState::savedMeasurementConfigs.append(mConfig);
+    }
 
     //update the measurement config names model
     OiConfigState::updateMeasurementConfigModels();
@@ -486,7 +574,7 @@ void OiConfigState::connectFeature(FeatureWrapper *myFeature){
 void OiConfigState::disconnectFeature(FeatureWrapper *myFeature){
 
     if(myFeature->getGeometry() != NULL){
-        disconnect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)), OiConfigState::myConfigState, SLOT(setMeasurementConfig(int)));
+        //disconnect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)), OiConfigState::myConfigState, SLOT(saveMeasurementConfig(int)));
     }
 
 }
