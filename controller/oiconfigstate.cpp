@@ -41,7 +41,8 @@ MeasurementConfig OiConfigState::getMeasurementConfig(QString displayName){
 
     //check saved measurement configs
     foreach(const MeasurementConfig &config, OiConfigState::savedMeasurementConfigs){
-        if(config.getDisplayName().compare(displayName) == 0){
+        QString configName = config.getDisplayName();
+        if(configName.compare(displayName) == 0){
             return config;
         }
     }
