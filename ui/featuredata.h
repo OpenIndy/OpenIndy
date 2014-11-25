@@ -24,6 +24,8 @@
 #include <QtNetwork/QNetworkInterface>
 #include <QShowEvent>
 #include <QDesktopWidget>
+#include <QKeyEvent>
+#include <QClipboard>
 
 #include "oifeaturestate.h"
 #include "observationdelegate.h"
@@ -75,6 +77,10 @@ private slots:
     void on_comboBox_readings_currentTextChanged(const QString &arg1);
 
     void updateModels();
+
+    void keyPressEvent(QKeyEvent *event);
+
+    void copyValuesFromView();
 
 private:
     Ui::FeatureData *ui;
