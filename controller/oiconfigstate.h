@@ -44,7 +44,7 @@ signals:
     void activeMeasurementConfigChanged();
 
 private slots:
-    void defaultMeasurementConfigChanged(int featureId);
+    void geomMeasurementConfigChanged(int featureId);
     void observationAdded(int featureId);
 
 private:
