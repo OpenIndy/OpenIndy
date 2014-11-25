@@ -27,12 +27,13 @@ public:
     static const QList<MeasurementConfig> &getSavedMeasurementConfigs();
     static const QList<MeasurementConfig> &getProjectMeasurementConfigs();
     static QList<MeasurementConfig> getAllMeasurementConfigs();
-    static const MeasurementConfig &getMeasurementConfig(QString displayName);
+    static MeasurementConfig getMeasurementConfig(QString displayName);
 
     //static bool addProjectMeasurementConfig(const MeasurementConfig &mConfig);
     //static bool saveMeasurementConfig(const MeasurementConfig &mConfig);
 
-    static bool setMeasurementConfig(FeatureWrapper *geom, MeasurementConfig mConfig);
+    static bool addMeasurementConfig(MeasurementConfig &mConfig);
+    static bool setDefaultMeasurementConfig(MeasurementConfig mConfig, Configuration::FeatureTypes typeOfFeature);
 
     //get models to represent config data
     static QStringListModel *getMeasurementConfigNames();
@@ -43,7 +44,7 @@ signals:
     void activeMeasurementConfigChanged();
 
 private slots:
-    void defaultMeasurementConfigChanged(int featureId);
+    void geomMeasurementConfigChanged(int featureId);
     void observationAdded(int featureId);
 
 private:

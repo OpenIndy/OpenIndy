@@ -198,6 +198,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                 default:
                     break;
                 }
+
             }
 
             if (role == Qt::BackgroundRole){
@@ -288,7 +289,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 void TableModel::updateModel(){
     emit layoutAboutToBeChanged();
     emit layoutChanged();
-    emit resizeTable();
+    //emit resizeTable();
 }
 
 /*!

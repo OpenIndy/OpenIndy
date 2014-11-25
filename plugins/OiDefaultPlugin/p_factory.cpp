@@ -85,6 +85,36 @@ QList<SimulationModel *> OiTemplatePlugin::createSimulations(){
 }
 
 /*!
+ * \brief OiTemplatePlugin::createTools
+ * \return
+ */
+QList<OiTool *> OiTemplatePlugin::createTools(){
+    QList<OiTool*> resultSet;
+    resultSet.append(new OiReportCreator());
+    return resultSet;
+}
+
+/*!
+ * \brief OiTemplatePlugin::createSimpleAsciiExchanges
+ * \return
+ */
+QList<OiExchangeSimpleAscii *> OiTemplatePlugin::createSimpleAsciiExchanges(){
+    QList<OiExchangeSimpleAscii*> resultSet;
+    resultSet.append(new OiExchangeAscii());
+    return resultSet;
+}
+
+/*!
+ * \brief OiTemplatePlugin::createDefinedFormatExchanges
+ * \return
+ */
+QList<OiExchangeDefinedFormat *> OiTemplatePlugin::createDefinedFormatExchanges(){
+    QList<OiExchangeDefinedFormat*> resultSet;
+    resultSet.append(new OiExchangePts());
+    return resultSet;
+}
+
+/*!
  * \brief OiTemplatePlugin::createSensor
  * Returns the sensor with the specified name
  * \param name
@@ -186,4 +216,49 @@ SimulationModel *OiTemplatePlugin::createSimulation(QString name){
     }
 
     return result;
+}
+
+OiTool *OiTemplatePlugin::createTool(QString name)
+{
+    OiTool *result = NULL;
+
+    if(name.compare("Report Creator") == 0){
+        result = new OiReportCreator();
+    }
+
+    return result;
+}
+
+/*!
+ * \brief OiTemplatePlugin::createSimpleAsciiExchange
+ * \param name
+ * \return
+ */
+OiExchangeSimpleAscii *OiTemplatePlugin::createSimpleAsciiExchange(QString name){
+
+    OiExchangeSimpleAscii *result = NULL;
+
+    if(name.compare("OiExchangeAscii") == 0){
+        result = new OiExchangeAscii();
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief OiTemplatePlugin::createDefinedFormatExchange
+ * \param name
+ * \return
+ */
+OiExchangeDefinedFormat *OiTemplatePlugin::createDefinedFormatExchange(QString name){
+
+    OiExchangeDefinedFormat *result = NULL;
+
+    if(name.compare("OiExchangePts") == 0){
+        result = new OiExchangePts();
+    }
+
+    return result;
+
 }

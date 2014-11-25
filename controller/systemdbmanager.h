@@ -6,6 +6,7 @@
 #include <QString>
 #include <QList>
 #include <QDir>
+#include <QMultiMap>
 
 #include "pluginmetadata.h"
 #include "oimetadata.h"
@@ -59,7 +60,10 @@ struct Plugin{
 class SystemDbManager
 {
 public:
-    static int savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments,QList<SimulationModel*> simulationList );
+    static int savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors,
+                          QList<NetworkAdjustment*> networkAdjustments,QList<SimulationModel*> simulationList,
+                          QList<OiTool*>toolList, QList<OiExchangeSimpleAscii*> simpleAsciiList,
+                          QList<OiExchangeDefinedFormat*> definedFormatList);
     static bool deletePlugin(int id);
 
     static bool getCreateFunctionModel(QSqlQueryModel *sqlModel, Configuration::FeatureTypes ft);
@@ -80,6 +84,8 @@ public:
     static QStringList getSupportedGeometries();
 
     static QList<Plugin> getAvailablePlugins();
+    static QStringList getAvailablePluginNames();
+
     static FunctionPlugin getDefaultFunction(Configuration::FeatureTypes featureType);
     static QList<FunctionPlugin> getAvailableFitFunctions(Configuration::FeatureTypes featureType);
     static QList<FunctionPlugin> getAvailableConstructFunctions(Configuration::FeatureTypes featureType);
@@ -87,6 +93,11 @@ public:
     static QList<SimulationPlugin> getAvailableSimulationPlugins();
 
     static void saveDefaultFunction(Configuration::FeatureTypes featureType, QString function, QString plugin);
+
+    static QMultiMap<QString,QString> getAvailableOiTools();
+
+    static QMultiMap<QString,QString> getAvailableSimpleAsciiExchangePlugins();
+    static QMultiMap<QString,QString> getAvailableDefinedFormatExchangePlugins();
 
 private:
     static QSqlDatabase db;
@@ -104,6 +115,9 @@ private:
     static void saveSensorPlugin(int pluginId, Sensor* s);
     static void saveSimulationPlugin(int pluginId, SimulationModel* s);
     static void saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustment* n);
+    static void saveOiToolPlugin(int pluginId, OiTool* t);
+    static void saveOiExchangeSimpleAsciiPlugin(int pluginId, OiExchangeSimpleAscii* sa);
+    static void saveOiExchangeDefinedFormatPlugin(int pluginId, OiExchangeDefinedFormat* df);
 
 };
 

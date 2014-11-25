@@ -37,11 +37,12 @@ OiConfigState *OiConfigState::getInstance(){
  * \param displayName
  * \return
  */
-const MeasurementConfig &OiConfigState::getMeasurementConfig(QString displayName){
+MeasurementConfig OiConfigState::getMeasurementConfig(QString displayName){
 
     //check saved measurement configs
     foreach(const MeasurementConfig &config, OiConfigState::savedMeasurementConfigs){
-        if(config.getDisplayName().compare(displayName) == 0){
+        QString configName = config.getDisplayName();
+        if(configName.compare(displayName) == 0){
             return config;
         }
     }
@@ -58,19 +59,14 @@ const MeasurementConfig &OiConfigState::getMeasurementConfig(QString displayName
 }
 
 /*!
- * \brief OiConfigState::setMeasurementConfig
- * Set the measurement config of the given geometry geom to mConfig. Save the config if it does not exist yet.
- * \param geom
+ * \brief OiConfigState::addMeasurementConfig
+ * Add a measurement config to OpenIndy permanently (check if it already exists, before)
  * \param mConfig
  * \return
  */
-bool OiConfigState::setMeasurementConfig(FeatureWrapper *geom, MeasurementConfig mConfig){
+bool OiConfigState::addMeasurementConfig(MeasurementConfig &mConfig){
 
-    if(geom == NULL || geom->getGeometry() == NULL){
-        return false;
-    }
-
-    //check mConfig (name, parameters etc.)
+    //check mConfig wether a measurement config with the same name and/or parameters already exists and if it used, yet
     bool sameName, sameParameters, isUsed;
     OiConfigState::checkMeasurementConfig(mConfig, sameName, sameParameters, isUsed);
 
@@ -96,16 +92,97 @@ bool OiConfigState::setMeasurementConfig(FeatureWrapper *geom, MeasurementConfig
         mConfig.setIsSaved(true);
     }
 
-    //set geom's measurement config to mConfig
-    geom->getGeometry()->setMeasurementConfig(mConfig);
-
     //set mConfig as default if it is a saved config
-    if(!mConfig.getIsSaved()){
+    /*if(!mConfig.getIsSaved()){
         return true;
     }
 
     //set mConfig as default measurement config for the geometry type of geom
     switch(geom->getTypeOfFeature()){
+    case Configuration::eCircleFeature:
+        Circle::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eCircleFeature, mConfig.getName());
+        break;
+    case Configuration::eConeFeature:
+        Cone::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eConeFeature, mConfig.getName());
+        break;
+    case Configuration::eCylinderFeature:
+        Cylinder::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eCylinderFeature, mConfig.getName());
+        break;
+    case Configuration::eEllipsoidFeature:
+        Ellipsoid::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eEllipsoidFeature, mConfig.getName());
+        break;
+    case Configuration::eHyperboloidFeature:
+        Hyperboloid::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eHyperboloidFeature, mConfig.getName());
+        break;
+    case Configuration::eLineFeature:
+        Line::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eLineFeature, mConfig.getName());
+        break;
+    case Configuration::eNurbsFeature:
+        Nurbs::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eNurbsFeature, mConfig.getName());
+        break;
+    case Configuration::eParaboloidFeature:
+        Paraboloid::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eParaboloidFeature, mConfig.getName());
+        break;
+    case Configuration::ePlaneFeature:
+        Plane::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePlaneFeature, mConfig.getName());
+        break;
+    case Configuration::ePointFeature:
+        Point::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePointFeature, mConfig.getName());
+        break;
+    case Configuration::ePointCloudFeature:
+        PointCloud::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePointCloudFeature, mConfig.getName());
+        break;
+    case Configuration::eScalarEntityAngleFeature:
+        ScalarEntityAngle::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityAngleFeature, mConfig.getName());
+        break;
+    case Configuration::eScalarEntityDistanceFeature:
+        ScalarEntityDistance::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityDistanceFeature, mConfig.getName());
+        break;
+    case Configuration::eScalarEntityMeasurementSeriesFeature:
+        ScalarEntityMeasurementSeries::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityMeasurementSeriesFeature, mConfig.getName());
+        break;
+    case Configuration::eScalarEntityTemperatureFeature:
+        ScalarEntityTemperature::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureFeature, mConfig.getName());
+        break;
+    case Configuration::eSphereFeature:
+        Sphere::defaultMeasurementConfig = mConfig;
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eSphereFeature, mConfig.getName());
+        break;
+    }*/
+
+    return true;
+
+}
+
+/*!
+ * \brief OiConfigState::setDefaultMeasurementConfig
+ * \param mConfig
+ * \param typeOfFeature
+ * \return
+ */
+bool OiConfigState::setDefaultMeasurementConfig(MeasurementConfig mConfig, Configuration::FeatureTypes typeOfFeature){
+
+    if(!mConfig.getIsValid() || !mConfig.getIsSaved()){
+        return false;
+    }
+
+    //set mConfig as default measurement config for the feature type typeOfFeature
+    switch(typeOfFeature){
     case Configuration::eCircleFeature:
         Circle::defaultMeasurementConfig = mConfig;
         SystemDbManager::setDefaultMeasurementConfig(Configuration::eCircleFeature, mConfig.getName());
@@ -213,7 +290,10 @@ QStringListModel *OiConfigState::getMeasurementConfigNames(){
  * \brief OiConfigState::defaultMeasurementConfigChanged
  * \param featureId
  */
-void OiConfigState::defaultMeasurementConfigChanged(int featureId){
+void OiConfigState::geomMeasurementConfigChanged(int featureId){
+
+//    FeatureWrapper *myGeometry = OiFeatureState::getFeature(featureId);
+
 
 
 }
@@ -319,23 +399,38 @@ void OiConfigState::loadSavedMeasurementConfigs(){
     }
 
     //get default measurement configs
-    /*Circle::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eCircleFeature));
-    Cone::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eConeFeature));
-    Cylinder::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eCylinderFeature));
-    Ellipsoid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eEllipsoidFeature));
-    Hyperboloid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eHyperboloidFeature));
-    Line::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eLineFeature));
-    Nurbs::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eNurbsFeature));
-    Paraboloid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eParaboloidFeature));
-    Plane::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::ePlaneFeature));
-    Point::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::ePointFeature));
-    PointCloud::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::ePointCloudFeature));
-    ScalarEntityAngle::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityAngleFeature));
-    ScalarEntityDistance::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityDistanceFeature));
-    ScalarEntityMeasurementSeries::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityMeasurementSeriesFeature));
-    ScalarEntityTemperature::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureFeature));
-    //Station::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(Configuration::eSphereFeature));
-*/
+    QString mConfigName = "";
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eCircleFeature);
+    Circle::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eConeFeature);
+    Cone::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eCylinderFeature);
+    Cylinder::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eEllipsoidFeature);
+    Ellipsoid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eHyperboloidFeature);
+    Hyperboloid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eLineFeature);
+    Line::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eNurbsFeature);
+    Nurbs::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eParaboloidFeature);
+    Paraboloid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::ePlaneFeature);
+    Plane::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::ePointFeature);
+    Point::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::ePointCloudFeature);
+    PointCloud::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityAngleFeature);
+    ScalarEntityAngle::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityDistanceFeature);
+    ScalarEntityDistance::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityMeasurementSeriesFeature);
+    ScalarEntityMeasurementSeries::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureFeature);
+    ScalarEntityTemperature::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+
     //set measurement config names model
     OiConfigState::updateMeasurementConfigModels();
 
@@ -398,7 +493,11 @@ void OiConfigState::saveMeasurementConfig(const MeasurementConfig &mConfig, bool
     SystemDbManager::addMeasurementConfig(mConfig.getName());
 
     //add mConfig to list of saved measurement configs
-    OiConfigState::savedMeasurementConfigs.append(mConfig);
+    MeasurementConfig savedConfig = OiConfigState::getMeasurementConfig(mConfig.getDisplayName());
+    if(!savedConfig.getIsValid()){
+        OiConfigState::savedMeasurementConfigs.append(mConfig);
+        OiConfigState::savedMeasurementConfigs.last().setIsSaved(true);
+    }
 
     //update the measurement config names model
     OiConfigState::updateMeasurementConfigModels();
@@ -481,9 +580,10 @@ void OiConfigState::checkMeasurementConfig(MeasurementConfig &mConfig, bool &sam
  */
 void OiConfigState::connectFeature(FeatureWrapper *myFeature){
 
-    if(myFeature->getGeometry() != NULL){
-        connect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)), OiConfigState::myConfigState, SLOT(setMeasurementConfig(int)));
-    }
+    /*if(myFeature->getGeometry() != NULL){
+        connect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)),
+                OiConfigState::myConfigState, SLOT(geomMeasurementConfigChanged(int)));
+    }*/
 
 }
 
@@ -493,9 +593,10 @@ void OiConfigState::connectFeature(FeatureWrapper *myFeature){
  */
 void OiConfigState::disconnectFeature(FeatureWrapper *myFeature){
 
-    if(myFeature->getGeometry() != NULL){
-        disconnect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)), OiConfigState::myConfigState, SLOT(setMeasurementConfig(int)));
-    }
+    /*if(myFeature->getGeometry() != NULL){
+        disconnect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)),
+                   OiConfigState::myConfigState, SLOT(geomMeasurementConfigChanged(int)));
+    }*/
 
 }
 

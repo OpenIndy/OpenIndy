@@ -16,19 +16,29 @@
 #include "oifeaturestate.h"
 #include "oiloadingdialog.h"
 
+#include "oimodelmanager.h"
+
+#include "pluginloader.h"
+
 namespace Ui {
-class importNominalGeometryDialog;
+class ImportNominalDialog;
 }
 
-class importNominalGeometryDialog : public QDialog
+class ImportNominalDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit importNominalGeometryDialog(QWidget *parent = 0);
-    ~importNominalGeometryDialog();
+    explicit ImportNominalDialog(QWidget *parent = 0);
+    ~ImportNominalDialog();
 
-signals:
+private:
+    Ui::ImportNominalDialog *ui;
+
+public slots:
+    void showEvent(QShowEvent *event);
+
+/*signals:
     void sendFeature(QList<FeatureWrapper*>);
 
 private slots:
@@ -46,23 +56,28 @@ private slots:
 public slots:
     void setUpCoordinateSystems();
 
-    void showEvent(QShowEvent *event);
+
 
 private slots:
     void updateProgress(int progress, QString msg); //progress (0-100)
-    void exchangeFinished(bool success, oiExchangeObject exchangeData);
+    void exchangeFinished(bool success, OiExchangeObject exchangeData);
 
 private:
     Ui::importNominalGeometryDialog *ui;
-    oiExchangeObject ExchangeData;
+    OiExchangeObject ExchangeData;
 
-    oiDataExchanger &myExchanger;
+    OiDataExchanger &myExchanger;
 
     const OiLoadingDialog *myLoadingDialog;
 
     void setUpSupportedElements(QString format);
     void setUpSupportedUnits(QString format);
-    void setUpDescription();
+    void setUpDescription();*/
+private slots:
+    void on_pushButton_file_sa_clicked();
+    void on_comboBox_plugin_sa_currentIndexChanged(const QString &arg1);
+    void on_pushButton_cancel_sa_clicked();
+    void on_pushButton_import_sa_clicked();
 };
 
 #endif // IMPORTNOMINALGEOMETRYDIALOG_H

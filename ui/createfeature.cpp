@@ -461,7 +461,7 @@ void CreateFeature::on_checkBox_Nominal_toggled(bool checked)
  */
 void CreateFeature::on_toolButton_mConfig_clicked()
 {
-    emit createFeatureMConfig();
+    emit createFeatureMConfig(this->typeOfFeature);
 }
 
 /*!
