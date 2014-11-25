@@ -724,6 +724,11 @@ void MainWindow::openCreateFeatureMConfig(Configuration::FeatureTypes typeOfFeat
         break;
     }
 
+    connect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
+               this, SLOT(setDefaultMeasurementConfig(MeasurementConfig)));
+
+    currentCreateFeature = typeOfFeature;
+
     this->mConfigDialog.show();
 
 }
@@ -2001,5 +2006,19 @@ void MainWindow::setMeasurementConfig(MeasurementConfig mConfig){
 
     disconnect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
                this, SLOT(setMeasurementConfig(MeasurementConfig)));
+
+}
+
+/*!
+ * \brief MainWindow::setDefaultMeasurementConfig
+ * \param mConfig
+ */
+void MainWindow::setDefaultMeasurementConfig(MeasurementConfig mConfig){
+
+    //set mConfig as default for the feature type of the active feature
+    OiConfigState::setDefaultMeasurementConfig(mConfig, this->currentCreateFeature);
+
+    disconnect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
+               this, SLOT(setDefaultMeasurementConfig(MeasurementConfig)));
 
 }

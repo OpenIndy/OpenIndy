@@ -339,6 +339,9 @@ private slots:
 
 
     void setMeasurementConfig(MeasurementConfig mConfig); //set the measurement config of the active feature
+    void setDefaultMeasurementConfig(MeasurementConfig mConfig); //set the default measurement config
+
+
 
 private:
     Ui::MainWindow *ui;
@@ -350,6 +353,9 @@ private:
 
     void setConnects();
     void setModels();
+
+
+    Configuration::FeatureTypes currentCreateFeature;
 };
 
 #endif // MAINWINDOW_H
