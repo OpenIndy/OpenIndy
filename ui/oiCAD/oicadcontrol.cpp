@@ -13,16 +13,19 @@ QList<Handle(AIS_InteractiveObject)> OiCadControl::getFeaturesToDraw()
     QList<FeatureWrapper*> allGeometries= OiFeatureState::getGeometries();
 
     foreach(FeatureWrapper* g,allGeometries){
+       if (g->getGeometry()->getIsSolved()){
+
        switch(g->getTypeOfFeature()){
+
            case Configuration::ePlaneFeature:
            f.append(this->parseOiPlane(g->getPlane()));
 
            break;
            case Configuration::ePointFeature:
-            f.append(this->parseOiPoint(g->getPoint()));
+           f.append(this->parseOiPoint(g->getPoint()));
            break;
            case Configuration::eLineFeature:
-
+                f.append(this->parseOiLine(g->getLine()));
            break;
            case Configuration::eStationFeature:
 
@@ -37,6 +40,7 @@ QList<Handle(AIS_InteractiveObject)> OiCadControl::getFeaturesToDraw()
            default:{
            break;
            }
+          }
        }
     }
 
@@ -71,8 +75,6 @@ Handle(AIS_InteractiveObject) OiCadControl::parseOiSphere(Sphere *s){
 
     Handle(AIS_InteractiveObject) aAisSp = new AIS_Shape(S);
 
-    aAisSp->SetDisplayMode(1);
-
     return aAisSp;
 }
 
@@ -92,17 +94,41 @@ Handle(AIS_InteractiveObject) OiCadControl::parseOiPlane(Plane *p){
 
     gp_Pln plane(point,direction);
 
-    Handle (Geom_Plane) gPln = new Geom_Plane(plane);
+    AIS_Plane *a = new AIS_Plane(new Geom_Plane(plane));
 
-    Handle(AIS_InteractiveObject) aAisPln = new AIS_Plane(gPln);
+    a->SetSize(5);
 
-    aAisPln->SetDisplayMode(1);
-
-    //----------------------------
-
-    //----------------------------
+    Handle (AIS_InteractiveObject) aAisPln = a;
 
     return aAisPln;
 
+
 }
 
+Handle_AIS_InteractiveObject OiCadControl::parseOiLine(Line *l){
+
+    double x = l->getXYZ().getAt(0);
+    double y = l->getXYZ().getAt(1);
+    double z = l->getXYZ().getAt(2);
+
+    double i = l->getIJK().getAt(0);
+    double j = l->getIJK().getAt(1);
+    double k = l->getIJK().getAt(2);
+
+
+    gp_Pnt point(x,y,z);
+    gp_Dir direction(i,j,k);
+
+
+    Handle (Geom_Line) gLn = new Geom_Line(point, direction);
+
+    Handle(AIS_InteractiveObject) aAisLn = new AIS_Line(gLn);
+
+    aAisLn->SetDisplayMode(1);
+
+    return aAisLn;
+
+
+
+
+}

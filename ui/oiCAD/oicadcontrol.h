@@ -20,8 +20,9 @@
 #include <AIS_Point.hxx>
 #include <AIS_Plane.hxx>
 #include <AIS_Shape.hxx>
+#include <AIS_Line.hxx>
 
-
+#include <Geom_Line.hxx>
 #include <Geom_CartesianPoint.hxx>
 
 class OiCadControl : public QObject
@@ -39,7 +40,7 @@ private:
     Handle_AIS_InteractiveObject parseOiPoint(Point *p);
     Handle_AIS_InteractiveObject parseOiSphere(Sphere *s);
     Handle_AIS_InteractiveObject parseOiPlane(Plane *p);
-
+    Handle_AIS_InteractiveObject parseOiLine(Line *l);
 
 };
 

@@ -91,12 +91,7 @@ OiCadViewer::OiCadViewer(QWidget* parent):QWidget(parent)
 
 
 }
-/*
-OiCadViewer::~OiCadViewer()
-{
 
-}
-*/
 void OiCadViewer::paintEvent(QPaintEvent * pEvent)
 {
     if (!myView.IsNull()){
@@ -106,14 +101,8 @@ void OiCadViewer::paintEvent(QPaintEvent * pEvent)
         QList<Handle(AIS_InteractiveObject)> shapes = control.getFeaturesToDraw();
 
         foreach(Handle(AIS_InteractiveObject) s, shapes){
+            s->SetDisplayMode(1);
             this->getIC()->Display(s);
-
-
-            /*
-            Handle (AIS_Shape) aisS = new AIS_Shape(s);
-            aisS->SetDisplayMode(1);
-            this->getIC()->Display(aisS);
-            */
         }
 
     }
@@ -136,16 +125,13 @@ void OiCadViewer::resizeEvent(QResizeEvent * e)
     }
 }
 
-
-//falls man dann mit dem Mausrad zoomen können soll, muss ich das hier irgendwie rein bekommen
 void OiCadViewer::wheelEvent(QWheelEvent* event) {
-    double zoom;
     if (event->delta() < 0)
-        zoom *= 1.2;
-    else zoom *= 1/1.2;
-
-    // myView->Zoom(myStartPnt.x(), myStartPnt.y(), currentPnt.x(), currentPnt.y());
-
+        myView->Zoom(10, 10, 1, 1);
+    else
+    {
+        myView->Zoom(1, 1, 10, 10);
+    }
 }
 
 
