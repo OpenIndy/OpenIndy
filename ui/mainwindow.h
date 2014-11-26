@@ -209,7 +209,7 @@ private slots:
     //void getActiveCoordSystem(QString coordSys);
     void handleTableViewClicked(const QModelIndex &);
     void handleTrafoParamClicked(const QModelIndex &);
-    void handleViewDoubleClick(const QModelIndex &);
+    void handleViewDoubleClick(int);
 
     void initializeActions();
 

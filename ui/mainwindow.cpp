@@ -169,8 +169,8 @@ void MainWindow::setConnects(){
     connect(this->ui->tableView_trafoParam,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTrafoParamClicked(QModelIndex)));
     connect(this->comboBoxFeatureType,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeCreateFeatureToolbar(int)));
     connect(this->checkBoxNominal,SIGNAL(toggled(bool)),this,SLOT(CheckBoxNominalToggled(bool)));
-    connect(this->ui->tableView_data->horizontalHeader(),SIGNAL(doubleClicked(QModelIndex)),this,SLOT(handleViewDoubleClick(QModelIndex)));
-    connect(this->ui->tableView_trafoParam->horizontalHeader(),SIGNAL(doubleClicked(QModelIndex)),this,SLOT(handleViewDoubleClick(QModelIndex)));
+    connect(this->ui->tableView_data->horizontalHeader(),SIGNAL(sectionDoubleClicked(int)),this,SLOT(handleViewDoubleClick(int)));
+    connect(this->ui->tableView_trafoParam->horizontalHeader(),SIGNAL(sectionDoubleClicked(int)),this,SLOT(handleViewDoubleClick(int)));
 
     //always scroll to bottom in Console
     connect(this->control.c, SIGNAL(changedList()), this->ui->listView_Console, SLOT(scrollToBottom()));
@@ -1224,12 +1224,10 @@ void MainWindow::handleTrafoParamClicked(const QModelIndex &idx)
 /*!
  * \brief handleViewDoubleClick used to resize view at this development state
  */
-void MainWindow::handleViewDoubleClick(const QModelIndex &idx)
+void MainWindow::handleViewDoubleClick(int idx)
 {
     //if index is not valid (clicking the header) the views get resized
-    if(!idx.isValid()){
-        this->resizeTableView();
-    }
+    this->resizeTableView();
 }
 
 /*!
