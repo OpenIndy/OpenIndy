@@ -13,6 +13,7 @@
 #include "featurewrapper.h"
 #include "oifeaturestate.h"
 #include "systemdbmanager.h"
+#include "pluginloader.h"
 
 class OiConfigState : public QObject
 {
@@ -35,8 +36,11 @@ public:
     static bool addMeasurementConfig(MeasurementConfig &mConfig);
     static bool setDefaultMeasurementConfig(MeasurementConfig mConfig, Configuration::FeatureTypes typeOfFeature);
 
+    static SensorConfiguration createConfigFromSensor(QString pluginName, QString sensorName);
+
     //get models to represent config data
     static QStringListModel *getMeasurementConfigNames();
+    static QStringListModel *getSensorConfigNames();
 
 signals:
     void measurementConfigAdded();
@@ -56,6 +60,7 @@ private:
 
     //models to represent config data
     static QStringListModel *measurementConfigNames; //the names of all available measurement configs
+    static QStringListModel *sensorConfigNames; //the names of all available sensor configs
 
     //update models when configs where added or deleted
     static void updateMeasurementConfigModels();

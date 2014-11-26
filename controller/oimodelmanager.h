@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMap>
 #include <QAbstractItemModel>
+#include <QStandardItemModel>
 #include <QStringListModel>
 
 #include "systemdbmanager.h"
@@ -25,6 +26,15 @@ public:
     static QStringListModel *getSimpleAsciiExchangePlugins(QString plugin);
     //static QStringListModel getDefinedFormatExchangePlugins();
 
+    static QStandardItemModel &getSensorTypes();
+    static QStandardItemModel &getBaudRateTypes();
+    static QStandardItemModel &getDataBitTypes();
+    static QStandardItemModel &getFlowControlTypes();
+    static QStandardItemModel &getParityTypes();
+    static QStandardItemModel &getStopBitTypes();
+    static QStandardItemModel &getAvailableSerialPorts();
+    static QStandardItemModel &getAvailableIpAdresses();
+
 private:
     static OiModelManager *myInstance;
 
@@ -33,6 +43,15 @@ private:
     static QStringListModel nominalSystemsModel;
 
     static QStringListModel geometryTypes;
+
+    static QStandardItemModel sensorTypes;
+    static QStandardItemModel baudRateTypes;
+    static QStandardItemModel dataBitTypes;
+    static QStandardItemModel flowControlTypes;
+    static QStandardItemModel parityTypes;
+    static QStandardItemModel stopBitTypes;
+    static QStandardItemModel availableSerialPorts;
+    static QStandardItemModel availableIpAdresses;
 
     //static QStringListModel simpleAsciiExchangePlugins;
     //static QStringListModel definedFormatExchangePlugins;

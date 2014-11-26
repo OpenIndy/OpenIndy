@@ -83,18 +83,37 @@ void SensorPluginDialog::receiveModel(QSqlQueryModel *sqlModel){
 
 /*!
  * \brief SensorPluginDialog::handleTableClicked
- * Calculates the actual selected index and shows the description of the selected plugin in the textbrowser.
+ * Triggered whenever the user selected another sensor plugin
  * \param idx
  */
 void SensorPluginDialog::handleTableClicked(const QModelIndex &idx){
+
+    qDebug() << "sensor selected";
+
     if(!idx.isValid()){
         return;
     }
+
+    //get plugin name and sensor name from table model
+    QModelIndex modelIdxPlugin = this->ui->tableView_sensorPlugins->model()->index(idx.row(), 2);
+    QModelIndex modelIdxSensor = this->ui->tableView_sensorPlugins->model()->index(idx.row(), 0);
+    QString pluginName = ui->tableView_sensorPlugins->model()->data(modelIdxPlugin).toString();
+    QString sensorName = ui->tableView_sensorPlugins->model()->data(modelIdxSensor).toString();
+
+    //if no valid sensor config is selected set the sensor plugins defaults as current sensor config
+    if(!this->selectedSConfig.getIsValid() && (this->selectedSConfig.pluginName.compare(pluginName) != 0
+                                               || this->selectedSConfig.sensorName.compare(sensorName) != 0)){
+        qDebug() << "invalid sensor config";
+        this->selectedSConfig = OiConfigState::createConfigFromSensor(pluginName, sensorName);
+    }
+
+    //--------------------
+
     destructDynamicGUI();
     selectedIndex = idx.row();
     ui->textBrowser_description->clear();
-    QModelIndex modelIdx = ui->tableView_sensorPlugins->model()->index(idx.row(), 1);
-    QString description = ui->tableView_sensorPlugins->model()->data(modelIdx).toString();
+    QModelIndex modelIdxDescription = ui->tableView_sensorPlugins->model()->index(idx.row(), 1);
+    QString description = ui->tableView_sensorPlugins->model()->data(modelIdxDescription).toString();
     ui->textBrowser_description->append(description);
 
     ui->pushButton_ok->setEnabled(true);
@@ -103,11 +122,24 @@ void SensorPluginDialog::handleTableClicked(const QModelIndex &idx){
 
 }
 
+/*!
+ * \brief SensorPluginDialog::setSelectedSensorConfig
+ * \param selectedSConfig
+ */
+void SensorPluginDialog::setSelectedSensorConfig(SensorConfiguration selectedSConfig){
+
+    //set selected sensor config
+    this->selectedSConfig = selectedSConfig;
+
+    //update all the GUI elements to display the selected sensor config parameters
+
+}
+
 void SensorPluginDialog::initSensorConfig()
 {
     sensorConfig = new SensorConfiguration();
 
-   sensorConfig->name = ui->lineEdit_configName->text();
+   //sensorConfig->name = ui->lineEdit_configName->text();
    sensorConfig->instrumentType = this->TypeOfSensor;
 
    sensorConfig->connConfig->baudRate = static_cast<QSerialPort::BaudRate>(ui->comboBox_baudrate->itemData(ui->comboBox_baudrate->currentIndex()).toInt());
@@ -730,4 +762,13 @@ void SensorPluginDialog::setLabelUnits()
     ui->label_sigmaY->setText(QString("sigma y " + UnitConverter::getDistanceUnitString()));
     ui->label_sigmaZ->setText(QString("sigma z " + UnitConverter::getDistanceUnitString()));
     ui->label_sigmaZenith->setText(QString("sigma zenith " + UnitConverter::getAngleUnitString()));
+}
+
+/*!
+ * \brief SensorPluginDialog::on_comboBox_sensorConfig_currentIndexChanged
+ * Triggered whenever the user selected another sensor config
+ * \param arg1
+ */
+void SensorPluginDialog::on_comboBox_sensorConfig_currentIndexChanged(const QString &arg1){
+
 }

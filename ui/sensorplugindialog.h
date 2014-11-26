@@ -22,6 +22,7 @@
 #include "sensorconfiguration.h"
 #include "sensor.h"
 #include "unitconverter.h"
+#include "oiconfigstate.h"
 
 namespace Ui {
 class SensorPluginDialog;
@@ -62,7 +63,7 @@ private slots:
 
     void on_pushButton_cancel_clicked();
 
-    void handleTableClicked(const QModelIndex &);
+
 
     void initSensorConfig();
 
@@ -89,6 +90,13 @@ private slots:
     void getSensorParameters();
 
     void setLabelUnits();
+
+    void on_comboBox_sensorConfig_currentIndexChanged(const QString &arg1);
+
+
+    //-------------------------------------------
+
+    void handleTableClicked(const QModelIndex &);
 
 private:
     Ui::SensorPluginDialog *ui;
@@ -120,6 +128,18 @@ private:
 
     QMap<QString, QLayout*> accuracyLayouts;
     QMap<QString, QLayout*> sensorConfigLayouts;
+
+
+
+
+    //----------------------------------------
+
+    void setSelectedSensorConfig(SensorConfiguration selectedSConfig);
+
+    SensorConfiguration selectedSConfig; //currently selected sensor config in sensor plugin dialog
+
+
+
 
 };
 

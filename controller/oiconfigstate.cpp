@@ -6,6 +6,7 @@ QList<MeasurementConfig> OiConfigState::savedMeasurementConfigs;
 QList<MeasurementConfig> OiConfigState::projectMeasurementConfigs;
 QMap<QString, QList<Reading*> > OiConfigState::usedMeasurementConfigs;
 QStringListModel *OiConfigState::measurementConfigNames = new QStringListModel();
+QStringListModel *OiConfigState::sensorConfigNames = new QStringListModel();
 
 /*!
  * \brief OiConfigState::OiConfigState
@@ -254,6 +255,103 @@ bool OiConfigState::setDefaultMeasurementConfig(MeasurementConfig mConfig, Confi
 }
 
 /*!
+ * \brief OiConfigState::createConfigFromSensor
+ * Using a given senor plugin this function creates a sensor configuration which uses the defaults defined in the plugin
+ * \param pluginName
+ * \param sensorName
+ * \return
+ */
+SensorConfiguration OiConfigState::createConfigFromSensor(QString pluginName, QString sensorName){
+
+    SensorConfiguration sConfig;
+
+    //load sensor plugin
+    QString path = SystemDbManager::getPluginFilePath(sensorName, pluginName);
+    Sensor *mySensor = PluginLoader::loadSensorPlugin(path, sensorName);
+
+    if(mySensor == NULL){
+        return sConfig;
+    }
+
+    //fill plugin name and sensor name
+    sConfig.pluginName = mySensor->getMetaData()->pluginName;
+    sConfig.sensorName = mySensor->getMetaData()->name;
+
+    //fill default accuracies
+    QMap<QString, double> defaultAccuracies = *(mySensor->getDefaultAccuracy());
+    QStringList sigmaTypes = defaultAccuracies.keys();
+    for(int i = 0; i < sigmaTypes.size(); ++i){
+        if(sigmaTypes.at(i).compare("sigmaAzimuth") == 0){
+            sConfig.sigma.sigmaAzimuth = defaultAccuracies.value(sigmaTypes.at(i));
+        }else if(sigmaTypes.at(i).compare("sigmaZenith") == 0){
+            sConfig.sigma.sigmaZenith = defaultAccuracies.value(sigmaTypes.at(i));
+        }else if(sigmaTypes.at(i).compare("sigmaDistance") == 0){
+            sConfig.sigma.sigmaDistance = defaultAccuracies.value(sigmaTypes.at(i));
+        }else if(sigmaTypes.at(i).compare("sigmaX") == 0){
+            sConfig.sigma.sigmaXyz.setAt(0, defaultAccuracies.value(sigmaTypes.at(i)));
+        }else if(sigmaTypes.at(i).compare("sigmaY") == 0){
+            sConfig.sigma.sigmaXyz.setAt(1, defaultAccuracies.value(sigmaTypes.at(i)));
+        }else if(sigmaTypes.at(i).compare("sigmaZ") == 0){
+            sConfig.sigma.sigmaXyz.setAt(2, defaultAccuracies.value(sigmaTypes.at(i)));
+        }else if(sigmaTypes.at(i).compare("sigmaTempDeg") == 0){
+            sConfig.sigma.sigmaTemp = defaultAccuracies.value(sigmaTypes.at(i));
+        }else if(sigmaTypes.at(i).compare("sigmaAngleXZ") == 0){
+            sConfig.sigma.sigmaAngleXZ = defaultAccuracies.value(sigmaTypes.at(i));
+        }else if(sigmaTypes.at(i).compare("sigmaAngleYZ") == 0){
+            sConfig.sigma.sigmaAngleYZ = defaultAccuracies.value(sigmaTypes.at(i));
+        }else{
+            sConfig.sigma.sigmaUndefined.insert(sigmaTypes.at(i), defaultAccuracies.value(sigmaTypes.at(i)));
+        }
+    }
+
+    //fill default connection parameters
+    QList<Configuration::ConnectionTypes> supportedConnectionTypes = *(mySensor->getConnectionType());
+    if(supportedConnectionTypes.size() > 0 && supportedConnectionTypes.at(0) == Configuration::eSerial){
+        sConfig.connConfig->typeOfConnection = Configuration::eSerial;
+        sConfig.connConfig->baudRate = QSerialPort::Baud1200;
+        sConfig.connConfig->comPort = "COM1";
+        sConfig.connConfig->dataBits = QSerialPort::Data5;
+        sConfig.connConfig->flowControl = QSerialPort::NoFlowControl;
+        sConfig.connConfig->parity = QSerialPort::NoParity;
+        sConfig.connConfig->stopBits = QSerialPort::OneStop;
+    }else if(supportedConnectionTypes.size() > 0 && supportedConnectionTypes.at(0) == Configuration::eNetwork){
+        sConfig.connConfig->typeOfConnection = Configuration::eNetwork;
+        sConfig.connConfig->ip = "127.0.0.1";
+        sConfig.connConfig->port = "80";
+    }
+
+    //fill default integer parameters
+    if(mySensor->getIntegerParameter() != NULL){
+        QMap<QString,int> integerParameters = *(mySensor->getIntegerParameter());
+        QStringList intParamNames = integerParameters.keys();
+        for(int i = 0; i < intParamNames.size(); ++i){
+            sConfig.integerParameter.insert(intParamNames.at(i), integerParameters.value(intParamNames.at(i)));
+        }
+    }
+
+    //fill default double parameters
+    if(mySensor->getDoubleParameter() != NULL){
+        QMap<QString,double> doubleParameters = *(mySensor->getDoubleParameter());
+        QStringList doubleParamNames = doubleParameters.keys();
+        for(int i = 0; i < doubleParamNames.size(); ++i){
+            sConfig.doubleParameter.insert(doubleParamNames.at(i), doubleParameters.value(doubleParamNames.at(i)));
+        }
+    }
+
+    //fill default string parameters
+    if(mySensor->getStringParameter() != NULL){
+        QMap<QString,QStringList> stringParameters = *(mySensor->getStringParameter());
+        QStringList stringParamNames = stringParameters.keys();
+        for(int i = 0; i < stringParamNames.size(); ++i){
+            sConfig.stringParameter.insert(stringParamNames.at(i), stringParameters.value(stringParamNames.at(i)).at(0));
+        }
+    }
+
+    return sConfig;
+
+}
+
+/*!
  * \brief OiConfigState::addProjectMeasurementConfig
  * Adds a measurement config from another project to current OpenIndy set up
  * \param mConfig
@@ -284,6 +382,15 @@ bool OiConfigState::setDefaultMeasurementConfig(MeasurementConfig mConfig, Confi
  */
 QStringListModel *OiConfigState::getMeasurementConfigNames(){
     return OiConfigState::measurementConfigNames;
+}
+
+/*!
+ * \brief OiConfigState::getSensorConfigNames
+ * Returns the names of all available sensor configs
+ * \return
+ */
+QStringListModel *OiConfigState::getSensorConfigNames(){
+    return OiConfigState::sensorConfigNames;
 }
 
 /*!

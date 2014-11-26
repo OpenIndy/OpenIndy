@@ -26,7 +26,7 @@ void StationInfoDialog::showEvent(QShowEvent *event)
     this->setWindowTitle(QString("information abaout " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
     if(OiFeatureState::getActiveFeature()->getStation() != NULL && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL){
         ui->label_activeSensor->setText(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getMetaData()->name);
-        ui->lineEdit_configName->setText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->name);
+        ui->lineEdit_configName->setText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->getName());
         getReadingType();
         getSensorConfiguration();
         getSensorParameters();
@@ -428,7 +428,7 @@ void StationInfoDialog::initSensorConfiguration()
 {
     sensorConfig = new SensorConfiguration();
 
-    sensorConfig->name = ui->lineEdit_configName->text();
+    //sensorConfig->name = ui->lineEdit_configName->text();
     sensorConfig->instrumentType = OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->instrumentType;
 
     sensorConfig->connConfig->baudRate = static_cast<QSerialPort::BaudRate>(ui->comboBox_baudrate->itemData(ui->comboBox_baudrate->currentIndex()).toInt());
