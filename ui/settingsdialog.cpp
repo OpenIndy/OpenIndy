@@ -181,6 +181,8 @@ void SettingsDialog::getFeatureColumns()
     for(int i=0; i<GUIConfiguration::featureAttributes.size();i++){
         if(allFeatureAttributes.contains(GUIConfiguration::featureAttributes.at(i)->attrName)){
             GUIConfiguration::featureAttributes.at(i)->displayState = false;
+        }else if(displayedFeatureAttributes.contains(GUIConfiguration::featureAttributes.at(i)->attrName)){
+            GUIConfiguration::featureAttributes.at(i)->displayState = true;
         }
     }
 }
@@ -193,6 +195,8 @@ void SettingsDialog::getTrafoParamColumns()
     for(int i=0;i<GUIConfiguration::trafoParamAttributes.size();i++){
         if(allTrafoParamAttributes.contains(GUIConfiguration::trafoParamAttributes.at(i)->attrName)){
             GUIConfiguration::trafoParamAttributes.at(i)->displayState = false;
+        }else if(displayedTrafoParamAttributes.contains(GUIConfiguration::trafoParamAttributes.at(i)->attrName)){
+            GUIConfiguration::trafoParamAttributes.at(i)->displayState = true;
         }
     }
 }

@@ -19,20 +19,20 @@ QWidget* TrafoParamDelegate::createEditor(QWidget *parent, const QStyleOptionVie
     QDateTimeEdit* myDateTimeEdit = new QDateTimeEdit(parent);
     QComboBox* myDatumTrafoCB = new QComboBox(parent);
     const TrafoParamProxyModel *myModel = static_cast<const TrafoParamProxyModel*>(index.model());
-    if(myModel != NULL && (myModel->mapToSource(index).column() == 1 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 32)){ //column feature name or comment
+    if(myModel != NULL && (myModel->mapToSource(index).column() == 3 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 12)){ //column feature name or comment
         return myEditor;
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 33){
+    if(myModel != NULL && myModel->mapToSource(index).column() == 25){
         //myCheckbox->setText("use");
         //return myCheckbox;
         myCombobox->addItem("true");
         myCombobox->addItem("false");
         return myCombobox;
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 34){
+    if(myModel != NULL && myModel->mapToSource(index).column() == 38){
         return myDateTimeEdit;
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 35){
+    if(myModel != NULL && myModel->mapToSource(index).column() == 26){
         myDatumTrafoCB->addItem("true");
         myDatumTrafoCB->addItem("false");
         return myDatumTrafoCB;
@@ -48,13 +48,13 @@ QWidget* TrafoParamDelegate::createEditor(QWidget *parent, const QStyleOptionVie
  */
 void TrafoParamDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
     const TrafoParamProxyModel *myModel = static_cast<const TrafoParamProxyModel*>(index.model());
-    if(myModel != NULL && (myModel->mapToSource(index).column() == 1 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 32)){ //column feature name or comment
+    if(myModel != NULL && (myModel->mapToSource(index).column() == 3 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 12)){ //column feature name or comment
          QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
          if(myEditor != NULL){
              myEditor->setText(index.data().toString());
          }
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 33){
+    if(myModel != NULL && myModel->mapToSource(index).column() == 25){
         /*QCheckBox* myCheckbox = qobject_cast<QCheckBox*>(editor);
         if(myCheckbox != NULL){
             myCheckbox->setChecked(index.data().toBool());
@@ -70,13 +70,13 @@ void TrafoParamDelegate::setEditorData(QWidget *editor, const QModelIndex &index
             }
         }
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 34){
+    if(myModel != NULL && myModel->mapToSource(index).column() == 38){
         QDateTimeEdit* myDateTimeEdit = qobject_cast<QDateTimeEdit*>(editor);
         if(myDateTimeEdit != NULL){
             myDateTimeEdit->setDateTime(index.data().toDateTime());
         }
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 35){
+    if(myModel != NULL && myModel->mapToSource(index).column() == 26){
         QComboBox* myDatumTrafoCB = qobject_cast<QComboBox*>(editor);
         if(myDatumTrafoCB != NULL){
             bool state = index.data().toBool();
@@ -98,14 +98,14 @@ void TrafoParamDelegate::setEditorData(QWidget *editor, const QModelIndex &index
  */
 void TrafoParamDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const{
     const TrafoParamProxyModel *myModel = static_cast<const TrafoParamProxyModel*>(index.model());
-    if(myModel != NULL && (myModel->mapToSource(index).column() == 1 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 32)){ //column feature name or comment
+    if(myModel != NULL && (myModel->mapToSource(index).column() == 3 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 12)){ //column feature name or comment
         QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
         if(myEditor != NULL){
             model->setData(index, myEditor->text());
             return;
         }
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 33){
+    if(myModel != NULL && myModel->mapToSource(index).column() == 25){
         /*QCheckBox* myCheckbox = qobject_cast<QCheckBox*>(editor);
         if(myCheckbox != NULL){
             model->setData(index,myCheckbox->isChecked());
@@ -121,14 +121,14 @@ void TrafoParamDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
             return;
         }
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 34){
+    if(myModel != NULL && myModel->mapToSource(index).column() == 38){
         QDateTimeEdit* myDateTimeEdit = qobject_cast<QDateTimeEdit*>(editor);
         if(myDateTimeEdit != NULL){
             model->setData(index,myDateTimeEdit->dateTime());
             return;
         }
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 35){
+    if(myModel != NULL && myModel->mapToSource(index).column() == 26){
         QComboBox* myDatumTrafoCB = qobject_cast<QComboBox*>(editor);
         if(myDatumTrafoCB != NULL){
             QString state = myDatumTrafoCB->currentText();
