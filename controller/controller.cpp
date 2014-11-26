@@ -286,8 +286,8 @@ void Controller::startMeasurement(){
         if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
             if(!this->generateActualForNominal(OiFeatureState::getActiveFeature())){
                 Console::addLine("can not create actual for nominal feature");
+                return;
             }
-            return;
         }
         OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
 
@@ -1789,94 +1789,36 @@ bool Controller::generateActualForNominal(FeatureWrapper *f)
         return false;
     }
 
-    Geometry *g = NULL;
+    if(f->getGeometry()->getMyActual() != NULL){
 
-    switch (f->getTypeOfFeature()) {
-    case Configuration::ePointFeature:
-        g = new Point(false);
-        g->setMeasurementConfig(Point::defaultMeasurementConfig);
-        break;
-    case Configuration::eLineFeature:
-        g = new Line(false);
-        g->setMeasurementConfig(Line::defaultMeasurementConfig);
-        break;
-    case Configuration::ePlaneFeature:
-        g = new Plane(false);
-        g->setMeasurementConfig(Plane::defaultMeasurementConfig);
-        break;
-    case Configuration::eSphereFeature:
-        g = new Sphere(false);
-        g->setMeasurementConfig(Sphere::defaultMeasurementConfig);
-        break;
-    case Configuration::eStationFeature:
-
-        break;
-    case Configuration::eCoordinateSystemFeature:
-
-        break;
-    case Configuration::eTrafoParamFeature:
-
-        break;
-    case Configuration::ePointCloudFeature:
-        g = new PointCloud(false);
-        g->setMeasurementConfig(PointCloud::defaultMeasurementConfig);
-        break;
-    case Configuration::eCircleFeature:
-        g = new Circle(false);
-        g->setMeasurementConfig(Circle::defaultMeasurementConfig);
-        break;
-    case Configuration::eConeFeature:
-        g = new Cone(false);
-        g->setMeasurementConfig(Cone::defaultMeasurementConfig);
-        break;
-    case Configuration::eCylinderFeature:
-        g = new Cylinder(false);
-        g->setMeasurementConfig(Cylinder::defaultMeasurementConfig);
-        break;
-    case Configuration::eEllipsoidFeature:
-        g = new Ellipsoid(false);
-        g->setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
-        break;
-    case Configuration::eHyperboloidFeature:
-        g = new Hyperboloid(false);
-        g->setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
-        break;
-    case Configuration::eNurbsFeature:
-        g = new Nurbs(false);
-        g->setMeasurementConfig(Nurbs::defaultMeasurementConfig);
-        break;
-    case Configuration::eParaboloidFeature:
-        g = new Paraboloid(false);
-        g->setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
-        break;
-    case Configuration::eScalarEntityAngleFeature:
-        g = new ScalarEntityAngle(false);
-        g->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
-        break;
-    case Configuration::eScalarEntityDistanceFeature:
-        g = new ScalarEntityDistance(false);
-        g->setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
-        break;
-    case Configuration::eScalarEntityTemperatureFeature:
-        g = new ScalarEntityTemperature(false);
-        g->setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
-        break;
-    case Configuration::eScalarEntityMeasurementSeriesFeature:
-        g = new ScalarEntityMeasurementSeries(false);
-        g->setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
-        break;
-    default:
-        break;
-    }
-
-    if(g != NULL){
-        g->setFeatureName(f->getGeometry()->getFeatureName());
-        f->getGeometry()->setMyActual(g);
     }else{
-        return false;
+        FeatureAttributesExchange fae;
+        MeasurementConfig mConfig;
+
+        fae.actual = true;
+        fae.common = false;
+        fae.count = 1;
+        fae.name = f->getGeometry()->getFeatureName();
+        fae.destSystem = NULL;
+        fae.featureType = f->getTypeOfFeature();
+        fae.function = this->getDefaultFunction(f->getTypeOfFeature());
+        fae.group = f->getGeometry()->getGroupName();
+        fae.isMovement = false;
+        fae.nominal = false;
+        fae.nominalSystem = NULL;
+        fae.startSystem = NULL;
+
+        int fType = FeatureUpdater::addFeature(fae, mConfig);
+
+        if(f->getTypeOfFeature() !=fType){
+            return false;
+        }
     }
+
+    f->getGeometry()->getMyActual()->setActiveFeatureState(true);
 
     return true;
+
 }
 
 /*void Controller::handleRemoteCommand(OiProjectData *d)
