@@ -9,6 +9,7 @@ QStringListModel *OiConfigState::measurementConfigNames = new QStringListModel()
 QStringListModel *OiConfigState::sensorConfigNames = new QStringListModel();
 QList<SensorConfiguration> OiConfigState::savedSensorConfigs;
 QList<SensorConfiguration> OiConfigState::projectSensorConfigs;
+SensorConfiguration OiConfigState::defaultSensorConfig;
 
 /*!
  * \brief OiConfigState::OiConfigState
@@ -381,6 +382,27 @@ SensorConfiguration OiConfigState::getSensorConfig(QString displayName){
 }
 
 /*!
+ * \brief OiConfigState::addSensorConfig
+ * Adds the given sensor config to OpenIndy permanently or tries to edit an existing one
+ * \param sConfig
+ * \return
+ */
+bool OiConfigState::addSensorConfig(SensorConfiguration &sConfig){
+
+    //check if the given config exists as a project sensor config, if so return
+    foreach(const SensorConfiguration &config, OiConfigState::projectSensorConfigs){
+        if(config.getDisplayName().compare(sConfig.getDisplayName()) == 0){
+            return false;
+        }
+    }
+
+    //add the fiven sensor config to OpenIndy (or edit an existing one)
+    OiConfigState::saveSensorConfig(sConfig);
+    return true;
+
+}
+
+/*!
  * \brief OiConfigState::addProjectMeasurementConfig
  * Adds a measurement config from another project to current OpenIndy set up
  * \param mConfig
@@ -464,6 +486,27 @@ void OiConfigState::updateMeasurementConfigModels(){
     }
 
     OiConfigState::measurementConfigNames->setStringList(mConfigNames);
+
+}
+
+/*!
+ * \brief OiConfigState::updateSensorConfigModels
+ */
+void OiConfigState::updateSensorConfigModels(){
+
+    QStringList sConfigNames;
+
+    //add saved sensor configs
+    foreach(const SensorConfiguration &sConfig, OiConfigState::savedSensorConfigs){
+        sConfigNames.append(sConfig.name);
+    }
+
+    //add project specific sensor configs
+    foreach(const SensorConfiguration &sConfig, OiConfigState::projectSensorConfigs){
+        sConfigNames.append(sConfig.name);
+    }
+
+    OiConfigState::sensorConfigNames->setStringList(sConfigNames);
 
 }
 
@@ -637,6 +680,55 @@ void OiConfigState::saveMeasurementConfig(const MeasurementConfig &mConfig, bool
 
     //update the measurement config names model
     OiConfigState::updateMeasurementConfigModels();
+
+}
+
+/*!
+ * \brief OiConfigState::saveSensorConfig
+ * \param sConfig
+ */
+void OiConfigState::saveSensorConfig(const SensorConfiguration &sConfig){
+
+    //create xml document
+    QDomDocument sConfigXml("sensorConfig");
+
+    //add sConfig to document as xml
+    QDomElement root = sConfig.toOpenIndyXML(sConfigXml);
+    sConfigXml.appendChild(root);
+
+    //get config folder (create if does not exist yet)
+    QString appPath = qApp->applicationDirPath();
+    QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
+    if(!sConfigFolder.exists()){
+        sConfigFolder.mkpath(".");
+    }
+
+    //set the file name
+    QString fileName = sConfig.getName();
+
+    //save sConfig to xml file
+    QFile configFile(sConfigFolder.absoluteFilePath(fileName.append(".xml")));
+    configFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+    QTextStream stream(&configFile);
+    sConfigXml.save(stream, 4);
+    configFile.close();
+
+    //save sConfig in database
+    SystemDbManager::addSensorConfig(sConfig.getName());
+
+    //add sConfig to list of saved sensor configs
+    SensorConfiguration savedConfig = OiConfigState::getSensorConfig(sConfig.getDisplayName());
+    if(!savedConfig.getIsValid()){
+        OiConfigState::savedSensorConfigs.append(sConfig);
+        OiConfigState::savedSensorConfigs.last().setIsSaved(true);
+    }
+
+    //set sConfig as default config
+    OiConfigState::defaultSensorConfig = sConfig;
+    SystemDbManager::setDefaultSensorConfig(sConfig.getName());
+
+    //update the sensor config names model
+    OiConfigState::updateSensorConfigModels();
 
 }
 

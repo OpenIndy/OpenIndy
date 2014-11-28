@@ -48,10 +48,27 @@ SensorPluginDialog::~SensorPluginDialog()
 
 /*!
  * \brief SensorPluginDialog::on_pushButton_ok_clicked
- * Sends the index of the selected sensor plugin and the sensor type to the controller for making an instance of the plugin.
+ * Triggered whenever the user clicked the save button
  */
-void SensorPluginDialog::on_pushButton_ok_clicked()
-{
+void SensorPluginDialog::on_pushButton_ok_clicked(){
+
+    //check if sensor config name is empty
+    if(this->ui->comboBox_sensorConfig->currentText().compare("") == 0){
+        Console::addLine("No sensor config name selected.");
+        return;
+    }
+
+    //save or edit the sensor config
+    this->setSensorConfigFromGUI();
+    this->selectedSConfig.setName(this->ui->comboBox_sensorConfig->currentText());
+    if(OiConfigState::addSensorConfig(this->selectedSConfig)){
+        this->close();
+        return;
+    }
+    Console::addLine("The sensor config cannot be set.");
+
+
+
 
     /*if(ui->comboBox_availableSensorTypes->currentIndex() != -1){
         TypeOfSensor = static_cast<Configuration::SensorTypes>(ui->comboBox_availableSensorTypes->itemData(ui->comboBox_availableSensorTypes->currentIndex()).toInt());
@@ -182,6 +199,8 @@ void SensorPluginDialog::handleTableClicked(const QModelIndex &idx){
  */
 void SensorPluginDialog::initModels(){
 
+    this->ui->comboBox_sensorConfig->setModel(OiConfigState::getSensorConfigNames());
+
     this->ui->comboBox_availableSensorTypes->setModel(&OiModelManager::getSensorTypes());
     this->ui->comboBox_baudrate->setModel(&OiModelManager::getBaudRateTypes());
     this->ui->comboBox_comPort->setModel(&OiModelManager::getAvailableSerialPorts());
@@ -205,7 +224,7 @@ void SensorPluginDialog::setSelectedSensorConfig(SensorConfiguration selectedSCo
     this->selectedSConfig = selectedSConfig;
 
     //update all the GUI elements to display the selected sensor config parameters
-    this->updateDynamicGUI();
+    this->setGUIFromSensorConfig();
 
 }
 
@@ -213,7 +232,7 @@ void SensorPluginDialog::setSelectedSensorConfig(SensorConfiguration selectedSCo
  * \brief SensorPluginDialog::updateDynamicGUI
  * Update the dynamic GUI
  */
-void SensorPluginDialog::updateDynamicGUI(){
+void SensorPluginDialog::setGUIFromSensorConfig(){
 
     //destroy the old GUI
     this->destructDynamicGUI();
@@ -222,14 +241,31 @@ void SensorPluginDialog::updateDynamicGUI(){
     this->setLabelUnits();
 
     //set accuracy values
-    this->setAccuracy();
+    this->setAccuracyFromConfig();
 
     //set connection parameters
-    this->setConnectionType();
-    this->setConnectionParameters();
+    this->setConnectionTypeFromConfig();
+    this->setConnectionParametersFromConfig();
 
     //set sensor parameters
-    this->setSensorParameters();
+    this->setSensorParametersFromConfig();
+
+}
+
+/*!
+ * \brief SensorPluginDialog::setSensorConfigFromGUI
+ * Updates the selected sensor config from GUI elements
+ */
+void SensorPluginDialog::setSensorConfigFromGUI(){
+
+    //set connection
+    this->setConnectionFromGUI();
+
+    //set accuracy
+    this->setAccuracyFromGUI();
+
+    //set sensor parameters
+    this->setSensorParametersFromGUI();
 
 }
 
@@ -403,7 +439,7 @@ void SensorPluginDialog::initGUI(){
 void SensorPluginDialog::on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1)
 {
     int currentIndex = ui->comboBox_availableSensorTypes->currentIndex();
-    ui->pushButton_ok->setEnabled(false);
+    //ui->pushButton_ok->setEnabled(false);
     disableConnectionSettings();
     disableAccuracyElements();
     destructDynamicGUI();
@@ -434,7 +470,7 @@ void SensorPluginDialog::on_comboBox_availableSensorTypes_currentIndexChanged(co
  * \brief SensorPluginDialog::setConnectionType
  * Sets the connection type from sensor config (network, serial)
  */
-void SensorPluginDialog::setConnectionType(){
+void SensorPluginDialog::setConnectionTypeFromConfig(){
 
     this->ui->comboBox_typeOfConnection->clear();
 
@@ -476,7 +512,7 @@ void SensorPluginDialog::setConnectionType(){
  * \brief SensorPluginDialog::setConnectionParameters
  * Sets the connection parameters from sensor config
  */
-void SensorPluginDialog::setConnectionParameters(){
+void SensorPluginDialog::setConnectionParametersFromConfig(){
 
     int index = -1;
 
@@ -621,7 +657,7 @@ void SensorPluginDialog::disableAccuracyElements()
  * \brief SensorPluginDialog::setAccuracy
  * Sets the accuracy values of the selected sensor config in the GUI
  */
-void SensorPluginDialog::setAccuracy(){
+void SensorPluginDialog::setAccuracyFromConfig(){
 
     if(this->selectedSConfig.mySensor == NULL){
         return;
@@ -878,7 +914,7 @@ void SensorPluginDialog::destructDynamicGUI(){
  * \brief SensorPluginDialog::setSensorParameters
  * Set special sensor parameters from selected sensor config
  */
-void SensorPluginDialog::setSensorParameters(){
+void SensorPluginDialog::setSensorParametersFromConfig(){
 
     //set integer parameters
     QMap<QString, int> intParams = this->selectedSConfig.integerParameter;
@@ -980,6 +1016,74 @@ void SensorPluginDialog::setSensorParameters(){
 
     //add the layout with all sensor parameters to the GUI
     this->ui->tab_sensorConfiguration->setLayout(this->masterSensorConfigLayout);
+
+}
+
+/*!
+ * \brief SensorPluginDialog::setAccuracyFromGUI
+ */
+void SensorPluginDialog::setAccuracyFromGUI(){
+
+    this->selectedSConfig.sigma.sigmaAngleXZ = this->ui->lineEdit_sigmaAngleXZ->text().toDouble();
+    this->selectedSConfig.sigma.sigmaAngleYZ = this->ui->lineEdit_sigmaAngleYZ->text().toDouble();
+    this->selectedSConfig.sigma.sigmaAzimuth = this->ui->lineEdit_sigmaAzimuth->text().toDouble();
+    this->selectedSConfig.sigma.sigmaDistance = this->ui->lineEdit_sigmaDistance->text().toDouble();
+    this->selectedSConfig.sigma.sigmaTemp = this->ui->lineEdit_sigmaTemp->text().toDouble();
+    this->selectedSConfig.sigma.sigmaXyz.setAt(0, this->ui->lineEdit_sigmaX->text().toDouble());
+    this->selectedSConfig.sigma.sigmaXyz.setAt(1, this->ui->lineEdit_sigmaY->text().toDouble());
+    this->selectedSConfig.sigma.sigmaXyz.setAt(2, this->ui->lineEdit_sigmaZ->text().toDouble());
+    this->selectedSConfig.sigma.sigmaZenith = this->ui->lineEdit_sigmaZenith->text().toDouble();
+
+    QMapIterator<QString,QLineEdit*> undefinedIterator(this->undefinedSigma);
+    while(undefinedIterator.hasNext()){
+        undefinedIterator.next();
+        this->selectedSConfig.sigma.sigmaUndefined.insert(undefinedIterator.key(), undefinedIterator.value()->text().toDouble());
+    }
+
+}
+
+/*!
+ * \brief SensorPluginDialog::setConnectionFromGUI
+ */
+void SensorPluginDialog::setConnectionFromGUI(){
+
+    this->selectedSConfig.connConfig->baudRate = static_cast<QSerialPort::BaudRate>(this->ui->comboBox_baudrate->itemData(this->ui->comboBox_baudrate->currentIndex()).toInt());
+    this->selectedSConfig.connConfig->comPort = this->ui->comboBox_comPort->currentText();
+    this->selectedSConfig.connConfig->dataBits = static_cast<QSerialPort::DataBits>(this->ui->comboBox_databits->itemData(this->ui->comboBox_databits->currentIndex()).toInt());
+    this->selectedSConfig.connConfig->flowControl = static_cast<QSerialPort::FlowControl>(this->ui->comboBox_flowcontrol->itemData(this->ui->comboBox_flowcontrol->currentIndex()).toInt());
+    this->selectedSConfig.connConfig->ip = this->ui->comboBox_ip->currentText();
+    this->selectedSConfig.connConfig->parity = static_cast<QSerialPort::Parity>(this->ui->comboBox_parity->itemData(this->ui->comboBox_parity->currentIndex()).toInt());
+    this->selectedSConfig.connConfig->port = this->ui->lineEdit_port->text();
+    this->selectedSConfig.connConfig->stopBits = static_cast<QSerialPort::StopBits>(this->ui->comboBox_stopbits->itemData(this->ui->comboBox_stopbits->currentIndex()).toInt());
+    this->selectedSConfig.connConfig->typeOfConnection = static_cast<Configuration::ConnectionTypes>(this->ui->comboBox_typeOfConnection->itemData(this->ui->comboBox_typeOfConnection->currentIndex()).toInt());
+
+}
+
+/*!
+ * \brief SensorPluginDialog::setSensorParametersFromGUI
+ */
+void SensorPluginDialog::setSensorParametersFromGUI(){
+
+    //set double parameter
+   QMapIterator<QString, QLineEdit*> doubleIterator(this->doubleParameter);
+   while(doubleIterator.hasNext()){
+       doubleIterator.next();
+       this->selectedSConfig.doubleParameter.insert(doubleIterator.key(), doubleIterator.value()->text().toDouble());
+   }
+
+   //set integer parameter
+   QMapIterator<QString, QLineEdit*> intIterator(integerParameter);
+   while(intIterator.hasNext()){
+       intIterator.next();
+       this->selectedSConfig.integerParameter.insert(intIterator.key(), intIterator.value()->text().toInt());
+   }
+
+   //set string parameter
+   QMapIterator<QString, QComboBox*> stringIterator(stringParameter);
+   while(stringIterator.hasNext()){
+       stringIterator.next();
+       this->selectedSConfig.stringParameter.insert(stringIterator.key(), stringIterator.value()->currentText());
+   }
 
 }
 

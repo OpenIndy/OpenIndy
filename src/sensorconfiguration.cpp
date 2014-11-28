@@ -295,3 +295,11 @@ bool SensorConfiguration::fromOpenIndyXML(QDomElement &xmlElem){
     return true;
 
 }
+
+/*!
+ * \brief SensorConfiguration::setIsSaved
+ * \param isSaved
+ */
+void SensorConfiguration::setIsSaved(bool isSaved){
+    this->isSaved = isSaved;
+}

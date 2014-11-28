@@ -372,8 +372,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>420</width>
-              <height>194</height>
+              <width>382</width>
+              <height>171</height>
              </rect>
             </property>
             <attribute name="label">
@@ -599,7 +599,7 @@
        <item>
         <widget class="QPushButton" name="pushButton_ok">
          <property name="text">
-          <string>ok</string>
+          <string>save</string>
          </property>
         </widget>
        </item>

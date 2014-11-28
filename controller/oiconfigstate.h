@@ -36,6 +36,7 @@ public:
     //sensor config
     static SensorConfiguration createConfigFromSensor(QString pluginName, QString sensorName);
     static SensorConfiguration getSensorConfig(QString displayName);
+    static bool addSensorConfig(SensorConfiguration &sConfig);
 
     //get models to represent config data
     static QStringListModel *getMeasurementConfigNames();
@@ -60,12 +61,15 @@ private:
     static QList<SensorConfiguration> savedSensorConfigs; //sensor configs that were saved in configs folder
     static QList<SensorConfiguration> projectSensorConfigs; //sensor configs that are only available in the current project
 
+    static SensorConfiguration defaultSensorConfig;
+
     //models to represent config data
     static QStringListModel *measurementConfigNames; //the names of all available measurement configs
     static QStringListModel *sensorConfigNames; //the names of all available sensor configs
 
     //update models when configs where added or deleted
     static void updateMeasurementConfigModels();
+    static void updateSensorConfigModels();
 
     //load configuration files (xml) from config folder when starting OpenIndy
     static void loadSavedMeasurementConfigs();
@@ -73,6 +77,7 @@ private:
 
     //save configuration files (xml) to config folder
     static void saveMeasurementConfig(const MeasurementConfig &mConfig, bool override = false);
+    static void saveSensorConfig(const SensorConfiguration &sConfig);
 
     //load and set default configs from database when starting OpenIndy
 

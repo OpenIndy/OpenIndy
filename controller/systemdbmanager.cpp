@@ -316,6 +316,119 @@ bool SystemDbManager::setDefaultMeasurementConfig(Configuration::FeatureTypes ge
 }
 
 /*!
+ * \brief SystemDbManager::addSensorConfig
+ * \param name
+ * \return
+ */
+bool SystemDbManager::addSensorConfig(QString name){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString query = QString("INSERT INTO sensorConfig (name, use_as_default) SELECT '%1', 0 %2;")
+                .arg(name)
+                .arg(QString("WHERE NOT EXISTS(SELECT 1 FROM sensorConfig WHERE name = '%1')")
+                     .arg(name));
+
+        QSqlQuery command(SystemDbManager::db);
+        check = command.exec(query);
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
+ * \brief SystemDbManager::removeSensorConfig
+ * \param name
+ * \return
+ */
+bool SystemDbManager::removeSensorConfig(QString name){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString query = QString("DELETE FROM sensorConfigs WHERE name = '%1';").arg(name);
+
+        QSqlQuery command(SystemDbManager::db);
+        check = command.exec(query);
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
+ * \brief SystemDbManager::getDefaultSensorConfig
+ * \return
+ */
+QString SystemDbManager::getDefaultSensorConfig(){
+
+    QString name;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QString query = QString("SELECT name FROM sensorConfig WHERE use_as_default = 1;");
+
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+
+        if(command.next()){
+            QVariant val = command.value(0);
+            if(val.isValid()){
+                name = val.toString();
+            }
+        }
+
+        SystemDbManager::disconnect();
+
+    }
+
+    return name;
+
+}
+
+/*!
+ * \brief SystemDbManager::setDefaultSensorConfig
+ * \param name
+ * \return
+ */
+bool SystemDbManager::setDefaultSensorConfig(QString name){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        //set all sensor configs to not be the default
+        QString query = QString("UPDATE sensorConfig SET use_as_default = 0;");
+        check = command.exec(query);
+
+        //set the given sensor config as default
+        if(check){
+            query = QString("UPDATE sensorConfig SET use_as_default = 1 WHERE name = '%1';").arg(name);
+            check = command.exec(query);
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
  * \brief SystemDbManager::getPluginFilePath
  * Get filepath to the plugin with the name "plugin" which contains the function with the name "name"
  * \param name

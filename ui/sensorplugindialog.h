@@ -60,7 +60,7 @@ private slots:
 
     void receiveModel(QSqlQueryModel* sqlModel);
 
-    void on_pushButton_ok_clicked();
+
 
     void on_pushButton_cancel_clicked();
 
@@ -99,6 +99,7 @@ private slots:
 
     void on_comboBox_sensorConfig_currentIndexChanged(const QString &text);
     void handleTableClicked(const QModelIndex &idx);
+    void on_pushButton_ok_clicked();
 
 private:
     Ui::SensorPluginDialog *ui;
@@ -139,16 +140,22 @@ private:
     void initModels();
 
     void setSelectedSensorConfig(SensorConfiguration selectedSConfig);
-    void updateDynamicGUI();
+    void setGUIFromSensorConfig();
+    void setSensorConfigFromGUI();
 
     void destructDynamicGUI();
 
     //create and fill GUI elements from selected sensor config
     void setLabelUnits();
-    void setAccuracy();
-    void setConnectionType();
-    void setConnectionParameters();
-    void setSensorParameters();
+    void setAccuracyFromConfig();
+    void setConnectionTypeFromConfig();
+    void setConnectionParametersFromConfig();
+    void setSensorParametersFromConfig();
+
+    //set selected sensor config from GUI elements
+    void setAccuracyFromGUI();
+    void setConnectionFromGUI();
+    void setSensorParametersFromGUI();
 
     SensorConfiguration selectedSConfig; //currently selected sensor config in sensor plugin dialog
 
