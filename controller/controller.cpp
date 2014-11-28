@@ -386,7 +386,7 @@ void Controller::startConnect(){
 
     if(OiFeatureState::getActiveStation() != NULL){
         if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-            OiFeatureState::getActiveStation()->emitStartConnect(OiFeatureState::getActiveStation()->getInstrumentConfig()->connConfig);
+            OiFeatureState::getActiveStation()->emitStartConnect(OiFeatureState::getActiveStation()->getInstrumentConfig().connConfig);
             emit sensorWorks("connecting...");
             OiSensorEmitter *s = OiFeatureState::getActiveStation()->getActiveSensorEmitter();
             connect(s,SIGNAL(sendConnectionStat(bool)),this,SLOT(sendIsConnected(bool)));
@@ -688,7 +688,7 @@ void Controller::setSensorModel(Configuration::SensorTypes sT){
  */
 void Controller::getSelectedPlugin(int index){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    /*if(OiFeatureState::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
@@ -706,7 +706,7 @@ void Controller::getSelectedPlugin(int index){
         connect(&OiFeatureState::getActiveStation()->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
         //defaultLastmConfig();
         updateFeatureMConfig();
-    }
+    }*/
 }
 
 void Controller::getTempSensor(int index)
@@ -761,11 +761,19 @@ void Controller::setSelectedFeature(int featureIndex){
  * \brief Controller::receiveSensorConfiguration
  * \param sc
  */
-void Controller::receiveSensorConfiguration(SensorConfiguration *sc, bool connect){
+void Controller::receiveSensorConfiguration(SensorConfiguration sc, bool connect){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
+    OiFeatureState::getActiveStation()->sensorPad->instrument = sc.mySensor;
+    QObject::connect(&OiFeatureState::getActiveStation()->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
+    updateFeatureMConfig();
 
     if(connect){
         OiFeatureState::getActiveStation()->setInstrumentConfig(sc);
-        //this->activeStation->emitStartConnect(sc->connConfig);
         this->startConnect();
     }else{
         OiFeatureState::getActiveStation()->setInstrumentConfig(sc);

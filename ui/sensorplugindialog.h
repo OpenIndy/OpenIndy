@@ -47,24 +47,12 @@ public:
 signals:
     void sendSensorType(Configuration::SensorTypes);
     void selectedPlugin(int);
-    void sendSensorConfig(SensorConfiguration *sc, bool connect);
+    void sendSensorConfig(SensorConfiguration sc, bool connect);
     void selectedTempPlugin(int index);
 
 private slots:
 
-    void closeEvent(QCloseEvent *event);
-
-    void showEvent(QShowEvent *event);
-
     //void receiveTempSensor(Sensor *s);
-
-    void receiveModel(QSqlQueryModel* sqlModel);
-
-
-
-    void on_pushButton_cancel_clicked();
-
-
 
     //void initSensorConfig();
 
@@ -76,30 +64,23 @@ private slots:
 
     void on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1);
 
-
-
     void on_comboBox_typeOfConnection_currentIndexChanged(const QString &arg1);
 
     void disableConnectionSettings();
 
     void disableAccuracyElements();
 
-
-
-
-
-
-
-
-
-
-
-
     //-------------------------------------------
+
+    void closeEvent(QCloseEvent *event);
+    void showEvent(QShowEvent *event);
 
     void on_comboBox_sensorConfig_currentIndexChanged(const QString &text);
     void handleTableClicked(const QModelIndex &idx);
     void on_pushButton_ok_clicked();
+    void on_pushButton_cancel_clicked();
+
+    void receiveModel(QSqlQueryModel* sqlModel);
 
 private:
     Ui::SensorPluginDialog *ui;
@@ -151,6 +132,7 @@ private:
     void setConnectionTypeFromConfig();
     void setConnectionParametersFromConfig();
     void setSensorParametersFromConfig();
+    void setSelectedSensorPlugin(SensorConfiguration &sConfig);
 
     //set selected sensor config from GUI elements
     void setAccuracyFromGUI();

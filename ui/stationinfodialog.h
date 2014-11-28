@@ -71,7 +71,7 @@ private slots:
 
 private:
 
-    SensorConfiguration *sensorConfig;
+    SensorConfiguration sensorConfig;
 
     QVBoxLayout *masterAccuracyLayout;
     QVBoxLayout *masterSensorConfigLayout;

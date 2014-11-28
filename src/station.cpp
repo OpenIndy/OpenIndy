@@ -131,14 +131,14 @@ void Station::startThread(){
     stationThread.start();
 }
 
-void Station::setInstrumentConfig(SensorConfiguration *sensorConfig){
+void Station::setInstrumentConfig(SensorConfiguration sensorConfig){
 
     sensorPad->InstrumentConfig = sensorConfig;
     sensorPad->instrument->setSensorConfiguration(sensorConfig);
 
 }
 
-SensorConfiguration* Station::getInstrumentConfig(){
+SensorConfiguration Station::getInstrumentConfig(){
     return sensorPad->InstrumentConfig;
 }
 

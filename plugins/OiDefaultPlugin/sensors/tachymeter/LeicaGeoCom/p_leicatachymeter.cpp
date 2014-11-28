@@ -283,7 +283,7 @@ bool LeicaTachymeter::getLOCKState()
     if(this->serial->isOpen()){
 
         //check user defined ATR value
-        if(!this->myConfiguration->stringParameter.contains("ATR")){ //only if atr is on
+        if(!this->myConfiguration.stringParameter.contains("ATR")){ //only if atr is on
             return false;
         }
 
@@ -317,7 +317,7 @@ bool LeicaTachymeter::getLOCKState()
  */
 void LeicaTachymeter::deactiveLockState()
 {
-    QString atrOn = this->myConfiguration->stringParameter.value("ATR");
+    QString atrOn = this->myConfiguration.stringParameter.value("ATR");
 
     if(atrOn.compare("atr on") == 0){
         //if ATR is on, then deactivate lock mode
@@ -335,7 +335,7 @@ bool LeicaTachymeter::setLOCKState(QString currentState)
 {
     QString command = QString("%R1Q,18007:" + QString::number(currentState.toInt()) + "\r\n");
 
-    QString value = this->myConfiguration->stringParameter.value("ATR");
+    QString value = this->myConfiguration.stringParameter.value("ATR");
 
     if(value.compare("atr on") == 0){
         value = "1";
@@ -440,8 +440,8 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
             }
 
             //correct the values depending on specified sense of rotation
-            if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-                QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+            if(this->myConfiguration.stringParameter.contains("sense of rotation")){
+                QString sense =  this->myConfiguration.stringParameter.value("sense of rotation");
                 if(sense.compare("mathematical") == 0){
                     azimuth = 2*PI - azimuth;
                 }
@@ -489,8 +489,8 @@ bool LeicaTachymeter::move(double x, double y, double z)
         }
 
         //correct the values depending on specified sense of rotation
-        if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-            QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+        if(this->myConfiguration.stringParameter.contains("sense of rotation")){
+            QString sense =  this->myConfiguration.stringParameter.value("sense of rotation");
             if(sense.compare("mathematical") == 0){
                 r->rPolar.azimuth = 2*PI - r->rPolar.azimuth;
             }
@@ -687,8 +687,8 @@ QList<Reading*> LeicaTachymeter::measurePolar(MeasurementConfig *m){
                         r->face = this->getCurrentFace(r->rPolar.zenith);
 
                         //correct the values depending on specified sense of rotation
-                        if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-                            QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                        if(this->myConfiguration.stringParameter.contains("sense of rotation")){
+                            QString sense =  this->myConfiguration.stringParameter.value("sense of rotation");
                             if(sense.compare("mathematical") == 0){
                                 r->rPolar.azimuth = 2 * PI - r->rPolar.azimuth;
                             }
@@ -806,8 +806,8 @@ QList<Reading*> LeicaTachymeter::measureDirection(MeasurementConfig *m){
                     r->face = this->getCurrentFace(r->rDirection.zenith);
 
                     //correct the values depending on specified sense of rotation
-                    if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-                        QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                    if(this->myConfiguration.stringParameter.contains("sense of rotation")){
+                        QString sense =  this->myConfiguration.stringParameter.value("sense of rotation");
                         if(sense.compare("mathematical") == 0){
                             r->rDirection.azimuth = 2 * PI - r->rDirection.azimuth;
                         }
@@ -938,8 +938,8 @@ bool LeicaTachymeter::setTargetTypeMeasure()
     QString refl = "";
     bool reflless = false;
 
-    if(this->myConfiguration->stringParameter.contains("reflector")){
-        refl = this->myConfiguration->stringParameter.value("reflector");
+    if(this->myConfiguration.stringParameter.contains("reflector")){
+        refl = this->myConfiguration.stringParameter.value("reflector");
     }
 
     //check if reflectorless was selected
@@ -992,8 +992,8 @@ bool LeicaTachymeter::setTargetTypeStream()
     QString refl = "";
     bool reflless = false;
 
-    if(this->myConfiguration->stringParameter.contains("reflector")){
-        refl = this->myConfiguration->stringParameter.value("reflector");
+    if(this->myConfiguration.stringParameter.contains("reflector")){
+        refl = this->myConfiguration.stringParameter.value("reflector");
     }
 
     //check if reflectorless was selected
@@ -1042,8 +1042,8 @@ bool LeicaTachymeter::setTargetTypeStream()
  */
 bool LeicaTachymeter::setAdjustMode()
 {
-    if(this->myConfiguration->stringParameter.contains("ATR accuracy")){
-        QString atrAcc = this->myConfiguration->stringParameter.value("ATR accuracy");
+    if(this->myConfiguration.stringParameter.contains("ATR accuracy")){
+        QString atrAcc = this->myConfiguration.stringParameter.value("ATR accuracy");
 
         QString command = "%R1Q,9030:\r\n";
         if(this->executeCommand(command)){
@@ -1079,11 +1079,11 @@ bool LeicaTachymeter::setAdjustMode()
  */
 void LeicaTachymeter::stopTrackingAfterMeasure()
 {
-    if(this->myConfiguration->stringParameter.contains("stop tracking after measurement") &&
-            this->myConfiguration->stringParameter.contains("ATR")){
+    if(this->myConfiguration.stringParameter.contains("stop tracking after measurement") &&
+            this->myConfiguration.stringParameter.contains("ATR")){
 
-        QString atrValue = this->myConfiguration->stringParameter.value("ATR");
-        QString trackValue = this->myConfiguration->stringParameter.value("stop tracking after measurement");
+        QString atrValue = this->myConfiguration.stringParameter.value("ATR");
+        QString trackValue = this->myConfiguration.stringParameter.value("stop tracking after measurement");
 
         if(atrValue.compare("atr on") == 0 && trackValue.compare("yes") == 0){
             this->deactiveLockState();
@@ -1142,8 +1142,8 @@ Reading *LeicaTachymeter::getQuickMeasReading(QString receive)
     r->rPolar.isValid = true;
 
     //correct the values depending on specified sense of rotation
-    if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-        QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+    if(this->myConfiguration.stringParameter.contains("sense of rotation")){
+        QString sense =  this->myConfiguration.stringParameter.value("sense of rotation");
         if(sense.compare("mathematical") == 0){
             r->rPolar.azimuth = 2 * PI - r->rPolar.azimuth;
         }
@@ -1193,8 +1193,8 @@ Reading *LeicaTachymeter::getStreamValues()
 {
     Reading *r = NULL;
 
-    if(this->myConfiguration->stringParameter.contains("reflector")){
-        QString value = this->myConfiguration->stringParameter.value("reflector");
+    if(this->myConfiguration.stringParameter.contains("reflector")){
+        QString value = this->myConfiguration.stringParameter.value("reflector");
         QString command;
 
         if(value.compare("reflector") == 0){
@@ -1224,8 +1224,8 @@ Reading *LeicaTachymeter::getStreamValues()
                     r->typeofReading = Configuration::ePolar;
                     r->face = this->getCurrentFace(r->rPolar.zenith);
 
-                    if(this->myConfiguration->stringParameter.contains("sense of rotation")){
-                        QString sense =  this->myConfiguration->stringParameter.value("sense of rotation");
+                    if(this->myConfiguration.stringParameter.contains("sense of rotation")){
+                        QString sense =  this->myConfiguration.stringParameter.value("sense of rotation");
                         if(sense.compare("mathematical") == 0){
                             r->rPolar.azimuth = 2 * PI - r->rPolar.azimuth;
                         }
@@ -1252,8 +1252,8 @@ bool LeicaTachymeter::executeEDM(){
 
     //QString edmCommand = "%R1Q,2008:1,1\r\n";  //maybe wrong. 1 = reflector tape? try with the other values
 
-    if(this->myConfiguration->stringParameter.contains("reflector")){
-        QString value = this->myConfiguration->stringParameter.value("reflector");
+    if(this->myConfiguration.stringParameter.contains("reflector")){
+        QString value = this->myConfiguration.stringParameter.value("reflector");
         QString edmCommand;
 
         if(value.compare("reflector") == 0){

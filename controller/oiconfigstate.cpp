@@ -280,6 +280,7 @@ SensorConfiguration OiConfigState::createConfigFromSensor(QString pluginName, QS
     sConfig.pluginName = mySensor->getMetaData()->pluginName;
     sConfig.sensorName = mySensor->getMetaData()->name;
     sConfig.mySensor = mySensor;
+    sConfig.instrumentType = Configuration::getSensorTypeEnum(mySensor->getMetaData()->iid);
 
     //fill default accuracies
     QMap<QString, double> defaultAccuracies = *(mySensor->getDefaultAccuracy());
@@ -620,6 +621,80 @@ void OiConfigState::loadSavedMeasurementConfigs(){
  * Load all sensor configs from config folder next to the executable
  */
 void OiConfigState::loadSavedSensorConfigs(){
+
+    QString appPath = qApp->applicationDirPath();
+    QDir appFolder(appPath);
+
+    //check if application folder exists and contains a subdirectory named config
+    if(!appFolder.exists() || !appFolder.exists("config/sensorConfigs")){
+        return;
+    }
+
+    //create folder object for sensor config folder
+    QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
+    if(!sConfigFolder.exists()){
+        return;
+    }
+
+    //get a list of all xml files inside the sensorConfigs folder
+    QStringList xmlFilter;
+    xmlFilter.append("*.xml");
+    QStringList fileNames = sConfigFolder.entryList(xmlFilter, QDir::Files);
+
+    //create a list that is filled with the names of the loaded sensor configs
+    QStringList sConfigNames;
+
+    //load all files and create a SensorConfig object for each of them
+    for(int i = 0; i < fileNames.size(); i++){
+
+        //create file from file name and check if it exists
+        QFile sConfigFile(sConfigFolder.absoluteFilePath(fileNames.at(i)));
+        if(!sConfigFile.exists()){
+            continue;
+        }
+
+        //try to parse the file content to a QDomDocument
+        QDomDocument sConfigXml;
+        if(!sConfigXml.setContent(&sConfigFile) || sConfigXml.isNull()){
+            continue;
+        }
+
+        //try to parse the file to a SensorConfig object
+        SensorConfiguration savedConfig;
+        QDomElement sConfigTag = sConfigXml.documentElement();
+        if(!savedConfig.fromOpenIndyXML(sConfigTag)){
+            continue;
+        }
+        savedConfig.isSaved = true;
+
+        //check if a sensor config with the same name has been loaded before
+        if(sConfigNames.contains(savedConfig.getName())){
+
+            //delete the config file permanently
+            sConfigFile.remove();
+            continue;
+
+        }
+        sConfigNames.append(savedConfig.getName());
+
+        //create sensor object and add it to sensor config
+        QString path = SystemDbManager::getPluginFilePath(savedConfig.sensorName, savedConfig.pluginName);
+        Sensor *mySensor = PluginLoader::loadSensorPlugin(path, savedConfig.sensorName);
+        savedConfig.mySensor = mySensor;
+        savedConfig.instrumentType = Configuration::getSensorTypeEnum(mySensor->getMetaData()->iid);
+
+        //add the loaded sensor config to the list of saved configs and emit the corresponding signal
+        OiConfigState::savedSensorConfigs.append(savedConfig);
+        OiConfigState::getInstance()->emitSignal(OiConfigState::eSensorConfigAdded);
+
+    }
+
+    //get default sensor config
+    QString sConfigName = SystemDbManager::getDefaultSensorConfig();
+    OiConfigState::defaultSensorConfig = OiConfigState::getSensorConfig(sConfigName);
+
+    //set sensor config names model
+    OiConfigState::updateSensorConfigModels();
 
 }
 

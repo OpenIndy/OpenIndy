@@ -92,8 +92,8 @@ public slots:
     void stopThread();
     void startThread();
 
-    void setInstrumentConfig(SensorConfiguration *sensorConfig);
-    SensorConfiguration* getInstrumentConfig();
+    void setInstrumentConfig(SensorConfiguration sensorConfig);
+    SensorConfiguration getInstrumentConfig();
 
     //measurement
     void emitStartMeasure(Geometry *geom, bool isActiveCoordSys);

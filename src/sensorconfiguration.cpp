@@ -75,6 +75,7 @@ QDomElement SensorConfiguration::toOpenIndyXML(QDomDocument &xmlDoc) const{
     }
 
     QDomElement sConfig = xmlDoc.createElement("sensorConfig");
+    sConfig.setAttribute("name", this->name);
 
     //get sensor information to know which attributes to save in xml
     QList<Configuration::ReadingTypes> supportedReadingTypes = *this->mySensor->getSupportedReadingTypes();

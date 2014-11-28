@@ -91,7 +91,10 @@ private:
     enum SignalType{
         eMeasurementConfigAdded,
         eMeasurementConfigRemoved,
-        eActiveMeasurementConfigChanged
+        eActiveMeasurementConfigChanged,
+        eSensorConfigAdded,
+        eSensorConfigRemoved,
+        eSensorConfigChanged
     };
 
     void emitSignal(SignalType mySignalType);

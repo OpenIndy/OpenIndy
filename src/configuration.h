@@ -206,6 +206,7 @@ public:
     static Configuration::FeatureTypes getFeatureTypeEnum(QString name);
     static Configuration::ReadingTypes getReadingTypeEnum(QString name);
     static Configuration::GeometryTypes getGeometryTypeEnum(QString name);
+    static Configuration::SensorTypes getSensorTypeEnum(QString iid);
     static QString getElementTypeString(Configuration::ElementTypes type);
     static QString getFeatureTypeString(Configuration::FeatureTypes type);
     static QString getReadingTypeString(Configuration::ReadingTypes type);

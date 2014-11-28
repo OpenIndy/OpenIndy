@@ -12,6 +12,10 @@ SensorPluginDialog::SensorPluginDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    qSqlModel = new QSqlQueryModel();
+    masterAccuracyLayout = new QVBoxLayout();
+    masterSensorConfigLayout = new QVBoxLayout();
+
     this->initModels();
 
     //----------------------
@@ -20,9 +24,7 @@ SensorPluginDialog::SensorPluginDialog(QWidget *parent) :
     //tmpSensor = NULL;
     //sensorConfig = NULL;
 
-    qSqlModel = new QSqlQueryModel();
-    masterAccuracyLayout = new QVBoxLayout();
-    masterSensorConfigLayout = new QVBoxLayout();
+
 
     connect(ui->tableView_sensorPlugins,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTableClicked(QModelIndex)));
     disableConnectionSettings();
@@ -62,6 +64,26 @@ void SensorPluginDialog::on_pushButton_ok_clicked(){
     this->setSensorConfigFromGUI();
     this->selectedSConfig.setName(this->ui->comboBox_sensorConfig->currentText());
     if(OiConfigState::addSensorConfig(this->selectedSConfig)){
+
+        //ask for connection
+        QMessageBox msgBox;
+        msgBox.setText("Want to connect sensor?");
+        msgBox.setInformativeText("");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+        case QMessageBox::Yes:
+            emit sendSensorConfig(this->selectedSConfig, true);
+            break;
+        case QMessageBox::No:
+            emit sendSensorConfig(this->selectedSConfig, false);
+            break;
+        default:
+            break;
+        }
+
         this->close();
         return;
     }
@@ -119,8 +141,8 @@ void SensorPluginDialog::handleTableClicked(const QModelIndex &idx){
     //get plugin name and sensor name from table model
     QModelIndex modelIdxPlugin = this->ui->tableView_sensorPlugins->model()->index(idx.row(), 2);
     QModelIndex modelIdxSensor = this->ui->tableView_sensorPlugins->model()->index(idx.row(), 0);
-    QString pluginName = ui->tableView_sensorPlugins->model()->data(modelIdxPlugin).toString();
-    QString sensorName = ui->tableView_sensorPlugins->model()->data(modelIdxSensor).toString();
+    QString pluginName = this->ui->tableView_sensorPlugins->model()->data(modelIdxPlugin).toString();
+    QString sensorName = this->ui->tableView_sensorPlugins->model()->data(modelIdxSensor).toString();
 
     //if a sensor plugin was selected that does not equal the previous selection
     if(this->selectedSConfig.pluginName.compare(pluginName) != 0
@@ -131,65 +153,10 @@ void SensorPluginDialog::handleTableClicked(const QModelIndex &idx){
 
     }
 
-
-/*
-    //if no valid sensor config is selected set the sensor plugins defaults as current sensor config
-    if(!this->selectedSConfig.getIsValid() && (this->selectedSConfig.pluginName.compare(pluginName) != 0
-                                               || this->selectedSConfig.sensorName.compare(sensorName) != 0)){
-        qDebug() << "invalid sensor config";
-
-        //get default sensor config from selected sensor plugin
-        this->selectedSConfig = OiConfigState::createConfigFromSensor(pluginName, sensorName);
-
-        //set dynamic GUI to represent that config
-
-
-
-*/
-
-        /*destructDynamicGUI();
-        this->ui->textBrowser_description->clear();
-        QModelIndex modelIdxDescription = ui->tableView_sensorPlugins->model()->index(idx.row(), 1);
-        QString description = this->ui->tableView_sensorPlugins->model()->data(modelIdxDescription).toString();
-        this->ui->textBrowser_description->append(description);
-
-        this->tmpSensor = s;
-
-        this->setLabelUnits();
-        this->getConnectionType();
-        this->getReadingType();
-        this->getSensorParameters();
-
-
-
-
-
-
-
-
-
-        selectedIndex = idx.row();
-
-
-
-        ui->pushButton_ok->setEnabled(true);
-
-        emit selectedTempPlugin(selectedIndex);*/
-
-    //}
-
-    //--------------------
-
-    /*destructDynamicGUI();
-    selectedIndex = idx.row();
-    ui->textBrowser_description->clear();
+    //set description
     QModelIndex modelIdxDescription = ui->tableView_sensorPlugins->model()->index(idx.row(), 1);
-    QString description = ui->tableView_sensorPlugins->model()->data(modelIdxDescription).toString();
-    ui->textBrowser_description->append(description);
-
-    ui->pushButton_ok->setEnabled(true);
-
-    emit selectedTempPlugin(selectedIndex);*/
+    QString description = this->ui->tableView_sensorPlugins->model()->data(modelIdxDescription).toString();
+    this->ui->textBrowser_description->append(description);
 
 }
 
@@ -199,8 +166,6 @@ void SensorPluginDialog::handleTableClicked(const QModelIndex &idx){
  */
 void SensorPluginDialog::initModels(){
 
-    this->ui->comboBox_sensorConfig->setModel(OiConfigState::getSensorConfigNames());
-
     this->ui->comboBox_availableSensorTypes->setModel(&OiModelManager::getSensorTypes());
     this->ui->comboBox_baudrate->setModel(&OiModelManager::getBaudRateTypes());
     this->ui->comboBox_comPort->setModel(&OiModelManager::getAvailableSerialPorts());
@@ -209,7 +174,8 @@ void SensorPluginDialog::initModels(){
     this->ui->comboBox_ip->setModel(&OiModelManager::getAvailableIpAdresses());
     this->ui->comboBox_parity->setModel(&OiModelManager::getParityTypes());
     this->ui->comboBox_stopbits->setModel(&OiModelManager::getStopBitTypes());
-    //this->ui->comboBox_typeOfConnection->setModel(OiModelManager::get);
+
+    this->ui->comboBox_sensorConfig->setModel(OiConfigState::getSensorConfigNames());
 
 }
 
@@ -547,10 +513,7 @@ void SensorPluginDialog::setConnectionParametersFromConfig(){
     }
 
     //set selected com port
-    index = this->ui->comboBox_comPort->findData(this->selectedSConfig.connConfig->comPort);
-    if(index > -1){
-        this->ui->comboBox_comPort->setCurrentIndex(index);
-    }
+    this->ui->comboBox_comPort->setCurrentText(this->selectedSConfig.connConfig->comPort);
 
     //set selected ip
     index = this->ui->comboBox_ip->findData(this->selectedSConfig.connConfig->ip);
@@ -968,6 +931,7 @@ void SensorPluginDialog::setSensorParametersFromConfig(){
         this->masterSensorConfigLayout->addLayout(layout);
 
         //save the created GUI elements to be able to easily access them later
+        QString test = doubleParamsIterator.key();
         this->doubleParameter.insert(doubleParamsIterator.key(),le);
         this->doubleParameterLabel.insert(doubleParamsIterator.key(),l);
         this->sensorConfigLayouts.insert(doubleParamsIterator.key(),layout);
@@ -1016,6 +980,34 @@ void SensorPluginDialog::setSensorParametersFromConfig(){
 
     //add the layout with all sensor parameters to the GUI
     this->ui->tab_sensorConfiguration->setLayout(this->masterSensorConfigLayout);
+
+}
+
+/*!
+ * \brief SensorPluginDialog::setSelectedSensorPlugin
+ * Select the plugin in table view that the given config contains
+ * \param sConfig
+ */
+void SensorPluginDialog::setSelectedSensorPlugin(SensorConfiguration &sConfig){
+
+    //select the right instrument type in the combo box
+    int index = this->ui->comboBox_availableSensorTypes->findData(sConfig.instrumentType);
+    this->ui->comboBox_availableSensorTypes->setCurrentIndex(index);
+
+    //select the right model index in table view that respresents the sensor plugin of sConfig
+    if(this->ui->tableView_sensorPlugins->model() != NULL
+            && this->ui->tableView_sensorPlugins->model()->hasIndex(0, 0)){
+        QModelIndex startIndex = this->ui->tableView_sensorPlugins->model()->index(0, 0);
+        if(!startIndex.isValid()){
+            return;
+        }
+        QModelIndexList modelIndexes = this->ui->tableView_sensorPlugins->model()->match(startIndex, Qt::DisplayRole,
+                                                                                         sConfig.sensorName);
+        if(modelIndexes.size() == 0){
+            return;
+        }
+        this->ui->tableView_sensorPlugins->selectionModel()->setCurrentIndex(modelIndexes.at(0), QItemSelectionModel::Select);
+    }
 
 }
 
@@ -1111,5 +1103,14 @@ void SensorPluginDialog::setLabelUnits(){
  * \param text
  */
 void SensorPluginDialog::on_comboBox_sensorConfig_currentIndexChanged(const QString &text){
-    this->setSelectedSensorConfig(OiConfigState::getSensorConfig(text));
+    SensorConfiguration myConfig = OiConfigState::getSensorConfig(text);
+    if(myConfig.getIsValid()){
+
+        //select the right plugin in table view
+        this->setSelectedSensorPlugin(myConfig);
+
+        //set the GUI elements show the selected sensor config
+        this->setSelectedSensorConfig(myConfig);
+
+    }
 }
