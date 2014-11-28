@@ -158,10 +158,8 @@ void OiModelManager::initModels(){
     QStringList geometryTypes;
     geometryTypes.append(Configuration::sPoint);
 
-    //initialize sensor types model
-    QStandardItem *laserTracker = new QStandardItem("lasertracker");
-    laserTracker->setData(Configuration::eLaserTracker, Qt::UserRole);
-    this->sensorTypes.appendRow(laserTracker);
+    //initialize sensor specific models
+    this->initSensorModels();
 
 
 
@@ -172,63 +170,8 @@ void OiModelManager::initModels(){
 
 
 
-/*
-    //add sensor types
-    ui->comboBox_availableSensorTypes->insertItem(ui->comboBox_availableSensorTypes->count(),"lasertracker",Configuration::eLaserTracker);
-    ui->comboBox_availableSensorTypes->insertItem(ui->comboBox_availableSensorTypes->count(),"totalstation",Configuration::eTotalStation);
-    ui->comboBox_availableSensorTypes->insertItem(ui->comboBox_availableSensorTypes->count(),"others",Configuration::eUndefinedSensor);
 
-    //add baudrates
-    ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"1200",QSerialPort::Baud1200);
-    ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"2400",QSerialPort::Baud2400);
-    ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"4800",QSerialPort::Baud4800);
-    ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"9600",QSerialPort::Baud9600);
-    ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"19200",QSerialPort::Baud19200);
-    ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"38400",QSerialPort::Baud38400);
-    ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"57600",QSerialPort::Baud57600);
-    ui->comboBox_baudrate->insertItem(ui->comboBox_baudrate->count(),"115200",QSerialPort::Baud115200);
 
-    //add databits
-    ui->comboBox_databits->insertItem(ui->comboBox_databits->count(),"5",QSerialPort::Data5);
-    ui->comboBox_databits->insertItem(ui->comboBox_databits->count(),"6",QSerialPort::Data6);
-    ui->comboBox_databits->insertItem(ui->comboBox_databits->count(),"7",QSerialPort::Data7);
-    ui->comboBox_databits->insertItem(ui->comboBox_databits->count(),"8",QSerialPort::Data8);
-    ui->comboBox_databits->insertItem(ui->comboBox_databits->count(),"unknown",QSerialPort::UnknownDataBits);
-
-    //add flow control
-    ui->comboBox_flowcontrol->insertItem(ui->comboBox_flowcontrol->count(),"no flowcontrol",QSerialPort::NoFlowControl);
-    ui->comboBox_flowcontrol->insertItem(ui->comboBox_flowcontrol->count(),"hardware flowcontrol",QSerialPort::HardwareControl);
-    ui->comboBox_flowcontrol->insertItem(ui->comboBox_flowcontrol->count(),"software flowcontrol",QSerialPort::SoftwareControl);
-    ui->comboBox_flowcontrol->insertItem(ui->comboBox_flowcontrol->count(),"unknown flowcontrol",QSerialPort::UnknownFlowControl);
-
-    //add parity
-    ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"no parity",QSerialPort::NoParity);
-    ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"even parity",QSerialPort::EvenParity);
-    ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"odd parity",QSerialPort::OddParity);
-    ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"space parity",QSerialPort::SpaceParity);
-    ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"mark parity",QSerialPort::MarkParity);
-    ui->comboBox_parity->insertItem(ui->comboBox_parity->count(),"unknown parity",QSerialPort::UnknownParity);
-
-    //add stopbits
-    ui->comboBox_stopbits->insertItem(ui->comboBox_stopbits->count(),"one stop",QSerialPort::OneStop);
-    ui->comboBox_stopbits->insertItem(ui->comboBox_stopbits->count(),"one and half stop",QSerialPort::OneAndHalfStop);
-    ui->comboBox_stopbits->insertItem(ui->comboBox_stopbits->count(),"two stop",QSerialPort::TwoStop);
-    ui->comboBox_stopbits->insertItem(ui->comboBox_stopbits->count(),"unknown stopbits",QSerialPort::UnknownStopBits);
-
-    //add available serial ports
-    foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts()){
-        ui->comboBox_comPort->insertItem(ui->comboBox_comPort->count(),info.portName());
-    }
-
-    //display all iPv4 addresses
-    QList<QHostAddress> ipAdresses = QNetworkInterface::allAddresses();
-    foreach(const QHostAddress &adress, ipAdresses){
-
-        if(adress.protocol() == QAbstractSocket::IPv4Protocol){
-            ui->comboBox_ip->insertItem(ui->comboBox_ip->count(),adress.toString());
-        }
-    }
-    */
 
 
 
@@ -239,5 +182,126 @@ void OiModelManager::initModels(){
     QStringList definedFormatExchangePlugins = SystemDbManager::getAvailableDefinedFormatExchangePlugins();
     OiModelManager::simpleAsciiExchangePlugins.setStringList(simpleAsciiExchangePlugins);
     OiModelManager::definedFormatExchangePlugins.setStringList(definedFormatExchangePlugins);*/
+
+}
+
+/*!
+ * \brief OiModelManager::initSensorModels
+ */
+void OiModelManager::initSensorModels(){
+
+    //initialize sensor types model
+    QStandardItem *laserTracker = new QStandardItem("lasertracker");
+    laserTracker->setData(Configuration::eLaserTracker, Qt::UserRole);
+    this->sensorTypes.appendRow(laserTracker);
+    QStandardItem *totalStation = new QStandardItem("totalstation");
+    totalStation->setData(Configuration::eTotalStation, Qt::UserRole);
+    this->sensorTypes.appendRow(totalStation);
+    QStandardItem *undefinedSensor = new QStandardItem("undefined sensor");
+    undefinedSensor->setData(Configuration::eUndefinedSensor, Qt::UserRole);
+    this->sensorTypes.appendRow(undefinedSensor);
+
+    //initialize baud rate model
+    QStandardItem *baud1200 = new QStandardItem("1200");
+    baud1200->setData(QSerialPort::Baud1200, Qt::UserRole);
+    this->baudRateTypes.appendRow(baud1200);
+    QStandardItem *baud2400 = new QStandardItem("2400");
+    baud2400->setData(QSerialPort::Baud2400, Qt::UserRole);
+    this->baudRateTypes.appendRow(baud2400);
+    QStandardItem *baud4800 = new QStandardItem("4800");
+    baud4800->setData(QSerialPort::Baud4800, Qt::UserRole);
+    this->baudRateTypes.appendRow(baud4800);
+    QStandardItem *baud9600 = new QStandardItem("9600");
+    baud9600->setData(QSerialPort::Baud9600, Qt::UserRole);
+    this->baudRateTypes.appendRow(baud9600);
+    QStandardItem *baud19200 = new QStandardItem("19200");
+    baud19200->setData(QSerialPort::Baud19200, Qt::UserRole);
+    this->baudRateTypes.appendRow(baud19200);
+    QStandardItem *baud38400 = new QStandardItem("38400");
+    baud38400->setData(QSerialPort::Baud38400, Qt::UserRole);
+    this->baudRateTypes.appendRow(baud38400);
+    QStandardItem *baud57600 = new QStandardItem("57600");
+    baud57600->setData(QSerialPort::Baud57600, Qt::UserRole);
+    this->baudRateTypes.appendRow(baud57600);
+    QStandardItem *baud115200 = new QStandardItem("115200");
+    baud115200->setData(QSerialPort::Baud115200, Qt::UserRole);
+    this->baudRateTypes.appendRow(baud115200);
+
+    //initialize databits model
+    QStandardItem *data5 = new QStandardItem("5");
+    data5->setData(QSerialPort::Data5, Qt::UserRole);
+    this->dataBitTypes.appendRow(data5);
+    QStandardItem *data6 = new QStandardItem("6");
+    data6->setData(QSerialPort::Data6, Qt::UserRole);
+    this->dataBitTypes.appendRow(data6);
+    QStandardItem *data7 = new QStandardItem("7");
+    data7->setData(QSerialPort::Data7, Qt::UserRole);
+    this->dataBitTypes.appendRow(data7);
+    QStandardItem *data8 = new QStandardItem("8");
+    data8->setData(QSerialPort::Data8, Qt::UserRole);
+    this->dataBitTypes.appendRow(data8);
+
+    //initialize flow control model
+    QStandardItem *noControl = new QStandardItem("no flowcontrol");
+    noControl->setData(QSerialPort::NoFlowControl, Qt::UserRole);
+    this->flowControlTypes.appendRow(noControl);
+    QStandardItem *hardwareControl = new QStandardItem("hardware flowcontrol");
+    hardwareControl->setData(QSerialPort::HardwareControl, Qt::UserRole);
+    this->flowControlTypes.appendRow(hardwareControl);
+    QStandardItem *softwareControl = new QStandardItem("software flowcontrol");
+    softwareControl->setData(QSerialPort::SoftwareControl, Qt::UserRole);
+    this->flowControlTypes.appendRow(softwareControl);
+    QStandardItem *unknownControl = new QStandardItem("unknown flowcontrol");
+    unknownControl->setData(QSerialPort::UnknownFlowControl, Qt::UserRole);
+    this->flowControlTypes.appendRow(unknownControl);
+
+    //initialize parity model
+    QStandardItem *noParity = new QStandardItem("no parity");
+    noParity->setData(QSerialPort::NoParity, Qt::UserRole);
+    this->parityTypes.appendRow(noParity);
+    QStandardItem *evenParity = new QStandardItem("even parity");
+    evenParity->setData(QSerialPort::EvenParity, Qt::UserRole);
+    this->parityTypes.appendRow(evenParity);
+    QStandardItem *oddParity = new QStandardItem("odd parity");
+    oddParity->setData(QSerialPort::OddParity, Qt::UserRole);
+    this->parityTypes.appendRow(oddParity);
+    QStandardItem *spaceParity = new QStandardItem("space parity");
+    spaceParity->setData(QSerialPort::SpaceParity, Qt::UserRole);
+    this->parityTypes.appendRow(spaceParity);
+    QStandardItem *markParity = new QStandardItem("mark parity");
+    markParity->setData(QSerialPort::MarkParity, Qt::UserRole);
+    this->parityTypes.appendRow(markParity);
+    QStandardItem *unknownParity = new QStandardItem("unknown parity");
+    unknownParity->setData(QSerialPort::UnknownParity, Qt::UserRole);
+    this->parityTypes.appendRow(unknownParity);
+
+    //initialize stop bits model
+    QStandardItem *oneStop = new QStandardItem("one stop");
+    oneStop->setData(QSerialPort::OneStop, Qt::UserRole);
+    this->stopBitTypes.appendRow(oneStop);
+    QStandardItem *oneHalfStop = new QStandardItem("one and half");
+    oneHalfStop->setData(QSerialPort::OneAndHalfStop, Qt::UserRole);
+    this->stopBitTypes.appendRow(oneHalfStop);
+    QStandardItem *twoStop = new QStandardItem("two stop");
+    twoStop->setData(QSerialPort::TwoStop, Qt::UserRole);
+    this->stopBitTypes.appendRow(twoStop);
+    QStandardItem *unknownStop = new QStandardItem("unknown stopbits");
+    unknownStop->setData(QSerialPort::UnknownStopBits, Qt::UserRole);
+    this->stopBitTypes.appendRow(unknownStop);
+
+    //initialize serial ports model
+    foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts()){
+        QStandardItem *serialPort = new QStandardItem(info.portName());
+        this->availableSerialPorts.appendRow(serialPort);
+    }
+
+    //initialize ip4 addresses model
+    QList<QHostAddress> ipAdresses = QNetworkInterface::allAddresses();
+    foreach(const QHostAddress &adress, ipAdresses){
+        if(adress.protocol() == QAbstractSocket::IPv4Protocol){
+            QStandardItem *ip = new QStandardItem(adress.toString());
+            this->availableIpAdresses.appendRow(ip);
+        }
+    }
 
 }

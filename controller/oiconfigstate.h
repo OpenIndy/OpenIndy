@@ -25,18 +25,17 @@ private:
 public:
     static OiConfigState *getInstance();
 
+    //measurement config
     static const QList<MeasurementConfig> &getSavedMeasurementConfigs();
     static const QList<MeasurementConfig> &getProjectMeasurementConfigs();
     static QList<MeasurementConfig> getAllMeasurementConfigs();
     static MeasurementConfig getMeasurementConfig(QString displayName);
-
-    //static bool addProjectMeasurementConfig(const MeasurementConfig &mConfig);
-    //static bool saveMeasurementConfig(const MeasurementConfig &mConfig);
-
     static bool addMeasurementConfig(MeasurementConfig &mConfig);
     static bool setDefaultMeasurementConfig(MeasurementConfig mConfig, Configuration::FeatureTypes typeOfFeature);
 
+    //sensor config
     static SensorConfiguration createConfigFromSensor(QString pluginName, QString sensorName);
+    static SensorConfiguration getSensorConfig(QString displayName);
 
     //get models to represent config data
     static QStringListModel *getMeasurementConfigNames();
@@ -57,6 +56,9 @@ private:
     static QList<MeasurementConfig> savedMeasurementConfigs; //measurement configs that were saved in configs folder
     static QList<MeasurementConfig> projectMeasurementConfigs; //measurement configs that are only available in the current project
     static QMap<QString, QList<Reading*> > usedMeasurementConfigs; //map with key = measurement config display name and value = list of readings that use the config
+
+    static QList<SensorConfiguration> savedSensorConfigs; //sensor configs that were saved in configs folder
+    static QList<SensorConfiguration> projectSensorConfigs; //sensor configs that are only available in the current project
 
     //models to represent config data
     static QStringListModel *measurementConfigNames; //the names of all available measurement configs

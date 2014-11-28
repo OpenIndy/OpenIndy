@@ -6,6 +6,9 @@
 #include <QAbstractItemModel>
 #include <QStandardItemModel>
 #include <QStringListModel>
+#include <QSerialPortInfo>
+#include <QHostAddress>
+#include <QNetworkInterface>
 
 #include "systemdbmanager.h"
 #include "oifeaturestate.h"
@@ -56,7 +59,14 @@ private:
     //static QStringListModel simpleAsciiExchangePlugins;
     //static QStringListModel definedFormatExchangePlugins;
 
+    //initialize all models provided by OiModelManager
     void initModels();
+
+    //helper methods to initialize the different models
+    void initSensorModels();
+
+
+
 
     //TODO think about a way to manage models (delete them when not necessary)
 };

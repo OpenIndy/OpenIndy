@@ -7,6 +7,8 @@ QList<MeasurementConfig> OiConfigState::projectMeasurementConfigs;
 QMap<QString, QList<Reading*> > OiConfigState::usedMeasurementConfigs;
 QStringListModel *OiConfigState::measurementConfigNames = new QStringListModel();
 QStringListModel *OiConfigState::sensorConfigNames = new QStringListModel();
+QList<SensorConfiguration> OiConfigState::savedSensorConfigs;
+QList<SensorConfiguration> OiConfigState::projectSensorConfigs;
 
 /*!
  * \brief OiConfigState::OiConfigState
@@ -273,9 +275,10 @@ SensorConfiguration OiConfigState::createConfigFromSensor(QString pluginName, QS
         return sConfig;
     }
 
-    //fill plugin name and sensor name
+    //fill plugin name and sensor name and set sensor object
     sConfig.pluginName = mySensor->getMetaData()->pluginName;
     sConfig.sensorName = mySensor->getMetaData()->name;
+    sConfig.mySensor = mySensor;
 
     //fill default accuracies
     QMap<QString, double> defaultAccuracies = *(mySensor->getDefaultAccuracy());
@@ -348,6 +351,32 @@ SensorConfiguration OiConfigState::createConfigFromSensor(QString pluginName, QS
     }
 
     return sConfig;
+
+}
+
+/*!
+ * \brief OiConfigState::getSensorConfig
+ * \param displayName
+ * \return
+ */
+SensorConfiguration OiConfigState::getSensorConfig(QString displayName){
+
+    //check saved sensor configs
+    foreach(const SensorConfiguration &config, OiConfigState::savedSensorConfigs){
+        QString configName = config.getDisplayName();
+        if(configName.compare(displayName) == 0){
+            return config;
+        }
+    }
+
+    //check project sensor configs
+    foreach(const SensorConfiguration &config, OiConfigState::projectSensorConfigs){
+        if(config.getDisplayName().compare(displayName) == 0){
+            return config;
+        }
+    }
+
+    return SensorConfiguration();
 
 }
 

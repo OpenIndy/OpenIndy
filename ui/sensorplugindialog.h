@@ -23,6 +23,7 @@
 #include "sensor.h"
 #include "unitconverter.h"
 #include "oiconfigstate.h"
+#include "oimodelmanager.h"
 
 namespace Ui {
 class SensorPluginDialog;
@@ -55,7 +56,7 @@ private slots:
 
     void showEvent(QShowEvent *event);
 
-    void receiveTempSensor(Sensor *s);
+    //void receiveTempSensor(Sensor *s);
 
     void receiveModel(QSqlQueryModel* sqlModel);
 
@@ -65,7 +66,7 @@ private slots:
 
 
 
-    void initSensorConfig();
+    //void initSensorConfig();
 
     int getCode(QComboBox *cb, QString type);
 
@@ -75,7 +76,7 @@ private slots:
 
     void on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1);
 
-    void getConnectionType();
+
 
     void on_comboBox_typeOfConnection_currentIndexChanged(const QString &arg1);
 
@@ -83,20 +84,21 @@ private slots:
 
     void disableAccuracyElements();
 
-    void getReadingType();
 
-    void destructDynamicGUI();
 
-    void getSensorParameters();
 
-    void setLabelUnits();
 
-    void on_comboBox_sensorConfig_currentIndexChanged(const QString &arg1);
+
+
+
+
+
 
 
     //-------------------------------------------
 
-    void handleTableClicked(const QModelIndex &);
+    void on_comboBox_sensorConfig_currentIndexChanged(const QString &text);
+    void handleTableClicked(const QModelIndex &idx);
 
 private:
     Ui::SensorPluginDialog *ui;
@@ -105,11 +107,11 @@ private:
 
     QSqlQueryModel *qSqlModel;
 
-    Sensor *tmpSensor;
+    //Sensor *tmpSensor;
 
     Configuration::SensorTypes TypeOfSensor;
 
-    SensorConfiguration *sensorConfig;
+    //SensorConfiguration *sensorConfig;
 
     QVBoxLayout *masterAccuracyLayout;
     QVBoxLayout *masterSensorConfigLayout;
@@ -134,12 +136,21 @@ private:
 
     //----------------------------------------
 
+    void initModels();
+
     void setSelectedSensorConfig(SensorConfiguration selectedSConfig);
+    void updateDynamicGUI();
+
+    void destructDynamicGUI();
+
+    //create and fill GUI elements from selected sensor config
+    void setLabelUnits();
+    void setAccuracy();
+    void setConnectionType();
+    void setConnectionParameters();
+    void setSensorParameters();
 
     SensorConfiguration selectedSConfig; //currently selected sensor config in sensor plugin dialog
-
-
-
 
 };
 
