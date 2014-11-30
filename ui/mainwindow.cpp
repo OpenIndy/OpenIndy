@@ -91,7 +91,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //resize view on start
     this->resizeTableView();
-
+    //call once at beginning to store default order. later the list gets overwritten
+    //this->getDefaultFeatureHeaderOrder();
 }
 
 /*!
@@ -233,6 +234,7 @@ void MainWindow::setConnects(){
     //tableview
     //connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
     //connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
+    connect(&this->setUpDialog,SIGNAL(changedColumnOrder()),this,SLOT(setColumnOrder()));
 
     //OiTools
     connect(&this->control,SIGNAL(openOiToolWidget(OiTool*)),this,SLOT(showOiToolWidget(OiTool*)));
@@ -262,6 +264,22 @@ void MainWindow::setModels(){
     this->setUpDialog.setPluginsModel(this->control.myPluginTreeViewModel);
 
 }
+
+/*!
+ * \brief getDefaultFeatureHeaderOrder stores the default order of the header. Later the user specified order gets saved in the list
+ */
+/*void MainWindow::getDefaultFeatureHeaderOrder()
+{
+    lastFeatureHeaderOrder.clear();
+
+    //get default order of displayed attributes
+    for(int i=0;i<GUIConfiguration::featureAttributes.size();i++){
+
+        if(GUIConfiguration::featureAttributes.at(i)->displayState){
+            lastFeatureHeaderOrder.append(GUIConfiguration::featureAttributes.at(i)->attrName);
+        }
+    }
+}*/
 
 /*!
  * \brief ChangeCreateFeatureToolbar function enables or disables elements of the create feature toolbar dependend on the selected feature type.
@@ -1229,6 +1247,55 @@ void MainWindow::handleViewDoubleClick(int idx)
     //if index is not valid (clicking the header) the views get resized
     this->resizeTableView();
 }
+
+/*!
+ * \brief setColumnOrder of main table view and trafo param table view by user specified order
+ */
+/*void MainWindow::setColumnOrder()
+{
+    QStringList userDefOrder;
+
+    userDefOrder = GUIConfiguration::userDefFeatOrder;
+
+    //if an attribute is removed or added
+    if(userDefOrder.size() != this->lastFeatureHeaderOrder.size()){
+        //go back to default config with all current values, so list size is correct
+        this->getDefaultFeatureHeaderOrder();
+    }
+
+    int userIndex, defaultIndex;
+
+    //loop over user defined list
+    for(int k=0;k<userDefOrder.size();k++){
+
+        userIndex = k;
+        qDebug() << "user index: " << userIndex;
+        //get position of attribute in default list
+        defaultIndex = lastFeatureHeaderOrder.indexOf(userDefOrder.at(k));
+        qDebug() << "default index: " << defaultIndex;
+        qDebug() << "user def: " << userDefOrder.at(k);
+
+        //ui->tableView_data->model()->setHeaderData()
+        //switch sections
+        ui->tableView_data->horizontalHeader()->moveSection(defaultIndex,userIndex);
+
+        //change order of list, so that following attributes are used correctly
+        if(userIndex != defaultIndex){
+
+            lastFeatureHeaderOrder.insert(userIndex,userDefOrder.at(k));
+
+            if(userIndex > defaultIndex){
+                lastFeatureHeaderOrder.removeAt(defaultIndex);
+            }else if(userIndex < defaultIndex){
+                lastFeatureHeaderOrder.removeAt(defaultIndex+1);
+            }
+        }
+    }
+
+    //set current user def order as last order
+    this->lastFeatureHeaderOrder.clear();
+    this->lastFeatureHeaderOrder = userDefOrder;
+}*/
 
 /*!
  * \brief Opens the dialog for setting functions to a feature.

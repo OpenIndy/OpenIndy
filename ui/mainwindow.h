@@ -211,6 +211,8 @@ private slots:
     void handleTrafoParamClicked(const QModelIndex &);
     void handleViewDoubleClick(int);
 
+    //void setColumnOrder();
+
     void initializeActions();
 
     void setupCreateFeature();
@@ -361,6 +363,8 @@ private:
     void setConnects();
     void setModels();
 
+    //void getDefaultFeatureHeaderOrder();
+    //QStringList lastFeatureHeaderOrder;
 
     Configuration::FeatureTypes currentCreateFeature;
 };
