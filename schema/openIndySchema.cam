@@ -157,7 +157,7 @@
         </observations>
         <configs>
           <measurementConfigs>
-            <measurementConfig name="%string%" count="%12345%" iterations="%12345%" measureTwoSides="%true%" timeDependent="%true%" distanceDependent="%true%" timeInterval="%1245.00%" distanceInterval="%1245.00%" typeOfReading="%12345%">%string%</measurementConfig>
+            <measurementConfig name="%string%" count="%12345%" iterations="%12345%" measureTwoSides="%true%" timeDependent="%true%" distanceDependent="%true%" timeInterval="%1245.00%" distanceInterval="%1245.00%" typeOfReading="%12345%" />
           </measurementConfigs>
           <sensorConfigs>
             <sensorConfig name="%string%">
