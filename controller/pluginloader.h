@@ -21,6 +21,7 @@
 #include "oimetadata.h"
 #include "pluginmetadata.h"
 #include "plugincopier.h"
+#include "pi_oitool.h"
 
 
 /*!
@@ -49,20 +50,24 @@ public slots:
     static bool copyPlugin(QString filename);
 
 //loading stored openIndy plugins
-    //! load a laser tracker plugin
     static Sensor* loadSensorPlugin(QString path, QString name);
     static Function* loadFunctionPlugin(QString path, QString name);
     static SimulationModel* loadSimulationPlugin(QString path, QString name);
     static NetworkAdjustment* loadNetworkAdjustmentPlugin(QString path, QString name);
+    static OiTool* loadOiToolPlugin(QString path, QString name);
+    static OiExchangeSimpleAscii *loadOiExchangeSimpleAsciiPlugin(QString path, QString name);
+    static OiExchangeDefinedFormat *loadOiExchangeDefinedFormatPlugin(QString path, QString name);
 
     static QList<Sensor*> loadSensorPlugins(QString path);
     static QList<Function*> loadFunctionPlugins(QString path);
     static QList<SimulationModel*> loadSimulationPlugins(QString path);
     static QList<NetworkAdjustment*> loadNetworkAdjustmentPlugins(QString path);
+    static QList<OiTool*> loadOiToolPlugins(QString path);
+    static QList<OiExchangeSimpleAscii *> loadOiExchangeSimpleAsciiPlugins(QString path);
+    static QList<OiExchangeDefinedFormat *> loadOiExchangeDefinedFormatPlugins(QString path);
 
     static PluginCopier* getCopier();
     static bool deletePlugin(PluginMetaData* metaData);
-
 
 private:
 

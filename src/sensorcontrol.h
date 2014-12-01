@@ -30,7 +30,7 @@ public:
     //instrument
     Sensor *instrument;
     QList<Sensor*> usedSensors;
-    SensorConfiguration *InstrumentConfig;
+    SensorConfiguration InstrumentConfig;
     SensorListener *instrumentListener;
 
     QThread listenerThread;
@@ -56,6 +56,7 @@ signals:
     void recalcFeature(Feature*);
     void activateStatStream();
     void activateReadingStream(int);
+    void measurementFinished(bool);
 
 
 public slots:

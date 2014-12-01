@@ -199,19 +199,36 @@ background-position: center center;</string>
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuImport">
+    <widget class="QMenu" name="menu_import">
      <property name="title">
       <string>import</string>
      </property>
-     <addaction name="actionProject"/>
-     <addaction name="separator"/>
-     <addaction name="actionNominal_geometry"/>
+     <property name="icon">
+      <iconset resource="../res/res.qrc">
+       <normaloff>:/Images/icons/arrow_left.png</normaloff>:/Images/icons/arrow_left.png</iconset>
+     </property>
+     <addaction name="action_importNominals"/>
+     <addaction name="action_importMeasurementConfigs"/>
+     <addaction name="action_importSensorConfigs"/>
+    </widget>
+    <widget class="QMenu" name="menu_export">
+     <property name="title">
+      <string>export</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../res/res.qrc">
+       <normaloff>:/Images/icons/arrow_right.png</normaloff>:/Images/icons/arrow_right.png</iconset>
+     </property>
+     <addaction name="action_exportNominals"/>
+     <addaction name="action_exportMeasurementConfigs"/>
+     <addaction name="action_exportSensorConfigs"/>
     </widget>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
+    <addaction name="menu_import"/>
+    <addaction name="menu_export"/>
     <addaction name="actionClose"/>
-    <addaction name="menuImport"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -283,15 +300,6 @@ background-position: center center;</string>
     <property name="title">
      <string>Tools</string>
     </property>
-    <widget class="QMenu" name="menuStake_out">
-     <property name="title">
-      <string>stake out</string>
-     </property>
-     <addaction name="actionStart_stake_out"/>
-     <addaction name="actionStop_stake_out"/>
-     <addaction name="actionNext"/>
-    </widget>
-    <addaction name="menuStake_out"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSensor"/>
@@ -564,6 +572,9 @@ color: rgb(255, 255, 255);
    <property name="text">
     <string>watch window</string>
    </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
   </action>
   <action name="actionConsole">
    <property name="icon">
@@ -705,9 +716,9 @@ color: rgb(255, 255, 255);
     <string>project</string>
    </property>
   </action>
-  <action name="actionNominal_geometry">
+  <action name="action_importNominals">
    <property name="text">
-    <string>elements</string>
+    <string>nominals</string>
    </property>
   </action>
   <action name="actionCreate_trafoParam">
@@ -850,25 +861,29 @@ color: rgb(255, 255, 255);
     <string>sensor_real_time_data</string>
    </property>
   </action>
-  <action name="actionStart_stake_out">
+  <action name="action_importMeasurementConfigs">
    <property name="text">
-    <string>start</string>
+    <string>measurement configs</string>
    </property>
   </action>
-  <action name="actionStop_stake_out">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
+  <action name="action_importSensorConfigs">
    <property name="text">
-    <string>stop</string>
+    <string>sensor configs</string>
    </property>
   </action>
-  <action name="actionNext">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
+  <action name="action_exportNominals">
    <property name="text">
-    <string>next</string>
+    <string>nominals</string>
+   </property>
+  </action>
+  <action name="action_exportMeasurementConfigs">
+   <property name="text">
+    <string>measurement configs</string>
+   </property>
+  </action>
+  <action name="action_exportSensorConfigs">
+   <property name="text">
+    <string>sensor configs</string>
    </property>
   </action>
  </widget>

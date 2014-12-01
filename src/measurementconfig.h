@@ -4,7 +4,6 @@
 #include <QtXml>
 
 #include "configuration.h"
-#include "elementdependencies.h"
 
 class OiConfigState;
 

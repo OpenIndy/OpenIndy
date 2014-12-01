@@ -30,12 +30,9 @@ int Element::getId() const{
  * \param id
  */
 bool Element::setId(int id){
-    if(id == -1){
-        this->id = id;
-        emit this->elementIdChanged();
-        return true;
-    }
-    return false;
+    this->id = id;
+    emit this->elementIdChanged();
+    return true;
 }
 
 /*!

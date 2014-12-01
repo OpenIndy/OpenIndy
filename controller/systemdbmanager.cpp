@@ -195,7 +195,10 @@ bool SystemDbManager::addMeasurementConfig(QString name){
 
     if(SystemDbManager::connect()){
 
-        QString query = QString("INSERT INTO measurementConfig (name) VALUES ('%1');").arg(name);
+        QString query = QString("INSERT INTO measurementConfig (name) SELECT '%1' %2;")
+                .arg(name)
+                .arg(QString("WHERE NOT EXISTS(SELECT 1 FROM measurementConfig WHERE name = '%1')")
+                     .arg(name));
 
         QSqlQuery command(SystemDbManager::db);
         check = command.exec(query);
@@ -313,6 +316,119 @@ bool SystemDbManager::setDefaultMeasurementConfig(Configuration::FeatureTypes ge
 }
 
 /*!
+ * \brief SystemDbManager::addSensorConfig
+ * \param name
+ * \return
+ */
+bool SystemDbManager::addSensorConfig(QString name){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString query = QString("INSERT INTO sensorConfig (name, use_as_default) SELECT '%1', 0 %2;")
+                .arg(name)
+                .arg(QString("WHERE NOT EXISTS(SELECT 1 FROM sensorConfig WHERE name = '%1')")
+                     .arg(name));
+
+        QSqlQuery command(SystemDbManager::db);
+        check = command.exec(query);
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
+ * \brief SystemDbManager::removeSensorConfig
+ * \param name
+ * \return
+ */
+bool SystemDbManager::removeSensorConfig(QString name){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString query = QString("DELETE FROM sensorConfigs WHERE name = '%1';").arg(name);
+
+        QSqlQuery command(SystemDbManager::db);
+        check = command.exec(query);
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
+ * \brief SystemDbManager::getDefaultSensorConfig
+ * \return
+ */
+QString SystemDbManager::getDefaultSensorConfig(){
+
+    QString name;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QString query = QString("SELECT name FROM sensorConfig WHERE use_as_default = 1;");
+
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+
+        if(command.next()){
+            QVariant val = command.value(0);
+            if(val.isValid()){
+                name = val.toString();
+            }
+        }
+
+        SystemDbManager::disconnect();
+
+    }
+
+    return name;
+
+}
+
+/*!
+ * \brief SystemDbManager::setDefaultSensorConfig
+ * \param name
+ * \return
+ */
+bool SystemDbManager::setDefaultSensorConfig(QString name){
+
+    bool check = false;
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        //set all sensor configs to not be the default
+        QString query = QString("UPDATE sensorConfig SET use_as_default = 0;");
+        check = command.exec(query);
+
+        //set the given sensor config as default
+        if(check){
+            query = QString("UPDATE sensorConfig SET use_as_default = 1 WHERE name = '%1';").arg(name);
+            check = command.exec(query);
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return check;
+
+}
+
+/*!
  * \brief SystemDbManager::getPluginFilePath
  * Get filepath to the plugin with the name "plugin" which contains the function with the name "name"
  * \param name
@@ -370,6 +486,32 @@ QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
                         if(val.isValid()){
                             path = val.toString();
                         }
+                    }else{
+                        query = QString("%1 %2 %3")
+                                .arg("SELECT file_path FROM plugin AS p INNER JOIN oiToolPlugin AS t ON p.id = t.plugin_id")
+                                .arg(QString("WHERE p.name = '%1'").arg(plugin))
+                                .arg(QString("AND t.name = '%1';").arg(name));
+                        command.finish();
+                        command.exec(query);
+                        if(command.next()){
+                            QVariant val = command.value(0);
+                            if(val.isValid()){
+                                path = val.toString();
+                            }
+                        }else{
+                            query = QString("%1 %2 %3")
+                                    .arg("SELECT file_path FROM plugin AS p INNER JOIN oiExchangePlugin AS ep ON p.id = ep.plugin_id")
+                                    .arg(QString(" WHERE p.name = '%1'").arg(plugin))
+                                    .arg(QString(" AND ep.name = '%1';").arg(name));
+                            command.finish();
+                            command.exec(query);
+                            if(command.next()){
+                                QVariant val = command.value(0);
+                                if(val.isValid()){
+                                    path = val.toString();
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -382,10 +524,16 @@ QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
  * \brief SystemDbManager::savePlugin
  * Save the specified plugin in the system database of OpenIndy
  * \param metaInfo
- * \param f
+ * \param functions
+ * \param sensors
+ * \param networkAdjustments
+ * \param simulationList
+ * \param toolList
+ * \param simpleAsciiList
+ * \param definedFormatList
  * \return
  */
-int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments,QList<SimulationModel*> simulationList ){
+int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments, QList<SimulationModel*> simulationList , QList<OiTool *> toolList, QList<OiExchangeSimpleAscii *> simpleAsciiList, QList<OiExchangeDefinedFormat *> definedFormatList){
     int pluginId = -1;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
@@ -410,6 +558,15 @@ int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> funct
                 }
                 foreach(SimulationModel *s, simulationList){
                     SystemDbManager::saveSimulationPlugin(pluginId,s);
+                }
+                foreach(OiTool *t, toolList){
+                    SystemDbManager::saveOiToolPlugin(pluginId,t);
+                }
+                foreach(OiExchangeSimpleAscii *sa, simpleAsciiList){
+                    SystemDbManager::saveOiExchangeSimpleAsciiPlugin(pluginId,sa);
+                }
+                foreach(OiExchangeDefinedFormat *df, definedFormatList){
+                    SystemDbManager::saveOiExchangeDefinedFormatPlugin(pluginId,df);
                 }
 
             }
@@ -706,6 +863,88 @@ void SystemDbManager::saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustmen
     command.exec(query);*/
 }
 
+void SystemDbManager::saveOiToolPlugin(int pluginId, OiTool* t){
+    //insert sensor plugin
+    QString query = QString("INSERT INTO oiToolPlugin (plugin_id, iid, name, description) VALUES (%1, '%2', '%3', '%4')")
+            .arg(pluginId).arg(t->getMetaData()->iid).arg(t->getMetaData()->name).arg(t->getMetaData()->description);
+    QSqlQuery command(SystemDbManager::db);
+    command.exec(query);
+}
+
+/*!
+ * \brief SystemDbManager::saveOiExchangeSimpleAsciiPlugin
+ * \param pluginId
+ * \param sa
+ */
+void SystemDbManager::saveOiExchangeSimpleAsciiPlugin(int pluginId, OiExchangeSimpleAscii *sa){
+
+    //get a list of supported elements
+    QList<QString> elementNames;
+    QList<Configuration::GeometryTypes> elementEnums = sa->getSupportedGeometries();
+    for(int i = 0; i < elementEnums.size(); i++){
+        elementNames.append(Configuration::getGeometryTypeString(elementEnums.at(i)));
+    }
+    QList<int> supportedElements;
+    supportedElements = SystemDbManager::getElementIds(elementNames);
+
+    QString query = QString("INSERT INTO oiExchangePlugin (iid, plugin_id, name, description) VALUES ('%1', %2, '%3', '%4');")
+            .arg(sa->getMetaData()->iid).arg(pluginId).arg(sa->getMetaData()->name).arg(sa->getMetaData()->description);
+
+    QSqlQuery command(SystemDbManager::db);
+
+    if(!command.exec(query)){
+        return;
+    }
+
+    //add supported geometries to database
+    int exchangeId = SystemDbManager::getLastId("oiExchangePlugin");
+    for(int i = 0; i < supportedElements.size(); i++){
+
+        query = QString("INSERT INTO elementOiExchange (element_id, oiExchangePlugin_id) VALUES (%1, %2);")
+                .arg(supportedElements.at(i)).arg(exchangeId);
+        command.exec(query);
+
+    }
+
+}
+
+/*!
+ * \brief SystemDbManager::saveOiExchangeDefinedFormatPlugin
+ * \param pluginId
+ * \param df
+ */
+void SystemDbManager::saveOiExchangeDefinedFormatPlugin(int pluginId, OiExchangeDefinedFormat *df){
+
+    //get a list of supported elements
+    QList<QString> elementNames;
+    QList<Configuration::GeometryTypes> elementEnums = df->getSupportedGeometries();
+    for(int i = 0; i < elementEnums.size(); i++){
+        elementNames.append(Configuration::getGeometryTypeString(elementEnums.at(i)));
+    }
+    QList<int> supportedElements;
+    supportedElements = SystemDbManager::getElementIds(elementNames);
+
+    QString query = QString("INSERT INTO oiExchangePlugin (iid, plugin_id, name, description) VALUES ('%1', %2, '%3', '%4');")
+            .arg(df->getMetaData()->iid).arg(pluginId).arg(df->getMetaData()->name).arg(df->getMetaData()->description);
+
+    QSqlQuery command(SystemDbManager::db);
+
+    if(!command.exec(query)){
+        return;
+    }
+
+    //add supported geometries to database
+    int exchangeId = SystemDbManager::getLastId("oiExchangePlugin");
+    for(int i = 0; i < supportedElements.size(); i++){
+
+        query = QString("INSERT INTO elementOiExchange (element_id, oiExchangePlugin_id) VALUES (%1, %2);")
+                .arg(supportedElements.at(i)).arg(exchangeId);
+        command.exec(query);
+
+    }
+
+}
+
 /*!
  * \brief SystemDbManager::getSupportedGeometries
  * Retrieve a list of all geometries for which a corresponding plugin exists
@@ -849,6 +1088,30 @@ QList<Plugin> SystemDbManager::getAvailablePlugins(){
 
             }
 
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+}
+
+/*!
+ * \brief SystemDbManager::getAvailablePluginNames
+ * \return
+ */
+QStringList SystemDbManager::getAvailablePluginNames(){
+    QStringList result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QString query = QString("SELECT name FROM plugin;");
+
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+        while(command.next()){
+            result.append(command.value(0).toString());
         }
 
         SystemDbManager::disconnect();
@@ -1125,4 +1388,91 @@ void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureTyp
 
         SystemDbManager::disconnect();
     }
+}
+
+QMultiMap<QString,QString> SystemDbManager::getAvailableOiTools(){
+
+    QMultiMap<QString,QString> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT t.name AS toolname, p.name AS pluginname FROM oiToolPlugin AS t INNER JOIN plugin AS p")
+                .append(" ON p.id = t.plugin_id");
+
+
+        command.exec(query);
+        while(command.next()){
+
+            result.insert(command.value("pluginname").toString(),command.value("toolname").toString());
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief SystemDbManager::getAvailableSimpleAsciiExchangePlugins
+ * \return
+ */
+QMultiMap<QString,QString> SystemDbManager::getAvailableSimpleAsciiExchangePlugins(){
+
+    QMultiMap<QString,QString> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT ep.name AS exchangename, p.name AS pluginname FROM oiExchangePlugin AS ep INNER JOIN plugin AS p ON %1 WHERE %2;")
+                .arg(QString("ep.plugin_id = p.id")).arg(QString("ep.iid = '%1'").arg(OiMetaData::iid_OiExchangeSimpleAscii));
+
+        command.exec(query);
+        while(command.next()){
+
+            result.insert(command.value("pluginname").toString(),command.value("exchangename").toString());
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief SystemDbManager::getAvailableDefinedFormatExchangePlugins
+ * \return
+ */
+QMultiMap<QString,QString> SystemDbManager::getAvailableDefinedFormatExchangePlugins(){
+
+    QMultiMap<QString,QString> result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT ep.name AS exchangename, p.name AS pluginname FROM oiExchangePlugin AS ep INNER JOIN plugin AS p ON %1 WHERE %2;")
+                .arg(QString("ep.plugin_id = p.id")).arg(QString("ep.iid = '%1'").arg(OiMetaData::iid_OiExchangeDefinedFormat));
+
+        command.exec(query);
+        while(command.next()){
+
+            result.insert(command.value("pluginname").toString(),command.value("exchangename").toString());
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+
 }

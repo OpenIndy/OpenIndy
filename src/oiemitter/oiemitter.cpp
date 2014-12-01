@@ -6,9 +6,9 @@ OiEmitter::OiEmitter(QObject *parent) :
 }
 
 
-void OiEmitter::emitSendString(QString s){
+void OiEmitter::emitSendString(QString s) const{
 
-    emit sendString(s);
+    emit this->sendString(s);
 
 }
 

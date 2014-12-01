@@ -1,25 +1,36 @@
-#include "importnominalgeometrydialog.h"
-#include "ui_importnominalgeometrydialog.h"
+#include "importnominaldialog.h"
+#include "ui_importnominaldialog.h"
 
-importNominalGeometryDialog::importNominalGeometryDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::importNominalGeometryDialog), myExchanger(oiDataExchanger::getInstance()), myLoadingDialog(NULL)
+ImportNominalDialog::ImportNominalDialog(QWidget *parent) :
+    QDialog(parent), ui(new Ui::ImportNominalDialog)//, myExchanger(OiDataExchanger::getInstance()), myLoadingDialog(NULL)
 {
     ui->setupUi(this);
 
-    initGUI();
+    /*initGUI();
 
-    qRegisterMetaType<oiExchangeObject>("oiExchangeObject");
-    connect(&this->myExchanger, SIGNAL(exchangeFinished(bool,oiExchangeObject)), this, SLOT(exchangeFinished(bool,oiExchangeObject)));
-    connect(&this->myExchanger, SIGNAL(updateProgress(int, QString)), this, SLOT(updateProgress(int, QString)));
+    qRegisterMetaType<OiExchangeObject>("oiExchangeObject");
+    connect(&this->myExchanger, SIGNAL(exchangeFinished(bool,OiExchangeObject)), this, SLOT(exchangeFinished(bool,OiExchangeObject)));
+    connect(&this->myExchanger, SIGNAL(updateProgress(int, QString)), this, SLOT(updateProgress(int, QString)));*/
 }
 
-importNominalGeometryDialog::~importNominalGeometryDialog()
+ImportNominalDialog::~ImportNominalDialog()
 {
     delete ui;
 }
 
-void importNominalGeometryDialog::initGUI(){
+void ImportNominalDialog::showEvent(QShowEvent *event){
+
+    qDebug() << "show";
+
+    this->ui->comboBox_plugin_sa->setModel(&OiModelManager::getPluginNamesModel());
+    this->ui->comboBox_system_sa->setModel(&OiModelManager::getNominalSystemsModel());
+    this->ui->comboBox_geometry_sa->setModel(&OiModelManager::getGeometryTypesModel());
+    //this->ui->comboBox_exchange_sa->setModel(OiModelManager::getSimpleAsciiExchangePlugins());
+
+    event->accept();
+}
+
+/*void importNominalGeometryDialog::initGUI(){
 
     ui->comboBox_angleUnit->clear();
     ui->comboBox_distUnit->clear();
@@ -27,10 +38,10 @@ void importNominalGeometryDialog::initGUI(){
     ui->comboBox_angleUnit->setVisible(true);
     ui->comboBox_distUnit->setVisible(true);
     ui->comboBox_tempUnit->setVisible(true);
-    ui->comboBox_format->addItems(oiDataExchanger::getOutputFormats());
+    ui->comboBox_format->addItems(OiDataExchanger::getOutputFormats());
 
-    setUpSupportedElements(oiDataExchanger::getOutputFormats().at(0));
-    setUpSupportedUnits(oiDataExchanger::getOutputFormats().at(0));
+    setUpSupportedElements(OiDataExchanger::getOutputFormats().at(0));
+    setUpSupportedUnits(OiDataExchanger::getOutputFormats().at(0));
     setUpDescription();
 
 }
@@ -39,7 +50,7 @@ void importNominalGeometryDialog::setUpSupportedElements(QString format){
 
     ui->comboBox_typeOfElement->clear();
 
-    QList<Configuration::ElementTypes> proxyElementTypes = oiDataExchanger::getSupportedElements(format);
+    QList<Configuration::ElementTypes> proxyElementTypes = OiDataExchanger::getSupportedElements(format);
 
     QStringList supportedElements;
 
@@ -57,9 +68,9 @@ void importNominalGeometryDialog::setUpSupportedUnits(QString format)
     ui->comboBox_distUnit->clear();
     ui->comboBox_tempUnit->clear();
 
-    QList<UnitConverter::unitType> angleUnit = oiDataExchanger::getAngleUnits(format);
-    QList<UnitConverter::unitType> distUnit = oiDataExchanger::getDistanceUnits(format);
-    QList<UnitConverter::unitType> tempUnit = oiDataExchanger::getTemperatureUnits(format);
+    QList<UnitConverter::unitType> angleUnit = OiDataExchanger::getAngleUnits(format);
+    QList<UnitConverter::unitType> distUnit = OiDataExchanger::getDistanceUnits(format);
+    QList<UnitConverter::unitType> tempUnit = OiDataExchanger::getTemperatureUnits(format);
 
     if(angleUnit.size()>0){
         QStringList a;
@@ -100,7 +111,7 @@ void importNominalGeometryDialog::setUpDescription()
     QString typeOfElement = ui->comboBox_typeOfElement->currentText();
     QString format = ui->comboBox_format->currentText();
 
-    QStringList description = oiDataExchanger::getElementDescription(format,Configuration::getElementTypeEnum(typeOfElement));
+    QStringList description = OiDataExchanger::getElementDescription(format,Configuration::getElementTypeEnum(typeOfElement));
 
     QStringListModel *model = new QStringListModel;
     model->setStringList(description);
@@ -196,10 +207,6 @@ void importNominalGeometryDialog::showEvent(QShowEvent *event)
     event->accept();
 }
 
-/*!
- * \brief importNominalGeometryDialog::updateProgress
- * \param progress
- */
 void importNominalGeometryDialog::updateProgress(int progress, QString msg){
 
     //update progress in loading dialog
@@ -209,13 +216,7 @@ void importNominalGeometryDialog::updateProgress(int progress, QString msg){
 
 }
 
-/*!
- * \brief importNominalGeometryDialog::exchangeFinished
- * Is calles when an exchange task was done
- * \param success
- * \param exchangeData
- */
-void importNominalGeometryDialog::exchangeFinished(bool success, oiExchangeObject exchangeData){
+void importNominalGeometryDialog::exchangeFinished(bool success, OiExchangeObject exchangeData){
 
     //if successfully loaded create features
     if(success){
@@ -241,4 +242,63 @@ void importNominalGeometryDialog::on_comboBox_format_currentIndexChanged(const Q
 void importNominalGeometryDialog::on_comboBox_typeOfElement_currentIndexChanged(const QString &arg1)
 {
     this->setUpDescription();
+}*/
+
+/*!
+ * \brief ImportNominalDialog::on_pushButton_file_sa_clicked
+ * Triggered whenever the user wants to select an ascii file to be imported
+ */
+void ImportNominalDialog::on_pushButton_file_sa_clicked(){
+
+    QString filename = QFileDialog::getOpenFileName(
+                       this,
+                       "Select an ascii file to be imported");
+
+    if(filename.compare("") == 0){
+        return;
+    }
+
+    /*QIODevice *myDevice = new QFile(filename);
+    QFileInfo info(filename);
+    QString projectName = info.fileName();
+
+    qDebug() << projectName;*/
+
+    this->ui->lineEdit_file_sa->setText(filename);
+
+}
+
+void ImportNominalDialog::on_comboBox_plugin_sa_currentIndexChanged(const QString &arg1){
+    this->ui->comboBox_exchange_sa->setModel(OiModelManager::getSimpleAsciiExchangePlugins(arg1));
+}
+
+void ImportNominalDialog::on_pushButton_cancel_sa_clicked()
+{
+    this->close();
+}
+
+void ImportNominalDialog::on_pushButton_import_sa_clicked()
+{
+
+    QIODevice *myDevice = new QFile(this->ui->lineEdit_file_sa->text());
+
+    OiExchangeObject *myexchangeObject = new OiExchangeObject();
+    myexchangeObject->device = myDevice;
+
+    OiExchangeSimpleAscii *exchange = PluginLoader::loadOiExchangeSimpleAsciiPlugin(
+                SystemDbManager::getPluginFilePath(this->ui->comboBox_exchange_sa->currentText(), this->ui->comboBox_plugin_sa->currentText()), this->ui->comboBox_exchange_sa->currentText());
+
+    exchange->setNominalSystem(OiFeatureState::getNominalSystem(this->ui->comboBox_system_sa->currentText()));
+    exchange->setGeometryType(Configuration::ePointGeometry);
+
+    QList<OiExchangeSimpleAscii::ColumnType> userDefinedColumns;
+    userDefinedColumns.append(OiExchangeSimpleAscii::eColumnFeatureName);
+    userDefinedColumns.append(OiExchangeSimpleAscii::eColumnX);
+    userDefinedColumns.append(OiExchangeSimpleAscii::eColumnY);
+    userDefinedColumns.append(OiExchangeSimpleAscii::eColumnZ);
+    exchange->setUserDefinedColumns(userDefinedColumns);
+
+    OiDataExchanger::importData(exchange, *myexchangeObject);
+
+    this->close();
 }

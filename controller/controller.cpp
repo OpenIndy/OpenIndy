@@ -34,7 +34,7 @@ Controller::Controller(QObject *parent) :
     this->lastRequestId = -1;
 
 
-
+    this->myModelManager = OiModelManager::getInstance();
 
 
     //set up filter mechanism for available elements treeview
@@ -122,10 +122,8 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
-        //connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()));
         connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
-        //connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this->tblModel, SLOT(updateModel()));
 
         //update feature groups model when a group is added or removed
         connect(this->myFeatureState, SIGNAL(availableGroupsChanged()), this, SLOT(setUpFeatureGroupsModel()));
@@ -193,7 +191,59 @@ bool Controller::createDefaultProject(){
  */
 void Controller::addFeature(FeatureAttributesExchange fae){
 
-    int fType = FeatureUpdater::addFeature(fae,this->lastmConfig);
+    MeasurementConfig mConfig;
+    switch(fae.featureType){
+    case Configuration::eCircleFeature:
+        mConfig = Circle::defaultMeasurementConfig;
+        break;
+    case Configuration::eConeFeature:
+        mConfig = Cone::defaultMeasurementConfig;
+        break;
+    case Configuration::eCylinderFeature:
+        mConfig = Cylinder::defaultMeasurementConfig;
+        break;
+    case Configuration::eEllipsoidFeature:
+        mConfig = Ellipsoid::defaultMeasurementConfig;
+        break;
+    case Configuration::eHyperboloidFeature:
+        mConfig = Hyperboloid::defaultMeasurementConfig;
+        break;
+    case Configuration::eLineFeature:
+        mConfig = Line::defaultMeasurementConfig;
+        break;
+    case Configuration::eNurbsFeature:
+        mConfig = Nurbs::defaultMeasurementConfig;
+        break;
+    case Configuration::eParaboloidFeature:
+        mConfig = Paraboloid::defaultMeasurementConfig;
+        break;
+    case Configuration::ePlaneFeature:
+        mConfig = Plane::defaultMeasurementConfig;
+        break;
+    case Configuration::ePointFeature:
+        mConfig = Point::defaultMeasurementConfig;
+        break;
+    case Configuration::ePointCloudFeature:
+        mConfig = PointCloud::defaultMeasurementConfig;
+        break;
+    case Configuration::eScalarEntityAngleFeature:
+        mConfig = ScalarEntityAngle::defaultMeasurementConfig;
+        break;
+    case Configuration::eScalarEntityDistanceFeature:
+        mConfig = ScalarEntityDistance::defaultMeasurementConfig;
+        break;
+    case Configuration::eScalarEntityMeasurementSeriesFeature:
+        mConfig = ScalarEntityMeasurementSeries::defaultMeasurementConfig;
+        break;
+    case Configuration::eScalarEntityTemperatureFeature:
+        mConfig = ScalarEntityTemperature::defaultMeasurementConfig;
+        break;
+    case Configuration::eSphereFeature:
+        mConfig = Sphere::defaultMeasurementConfig;
+        break;
+    }
+
+    int fType = FeatureUpdater::addFeature(fae, mConfig);
     if(fType == Configuration::eStationFeature && fType == Configuration::eCoordinateSystemFeature){
         emit CoordSystemsModelChanged();
     }
@@ -232,8 +282,10 @@ void Controller::startMeasurement(){
     if(checkSensorValid() && checkFeatureValid()){
 
         if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
-            Console::addLine("can not measure nominal feature");
-            return;
+            if(!this->generateActualForNominal(OiFeatureState::getActiveFeature())){
+                Console::addLine("can not create actual for nominal feature");
+                return;
+            }
         }
         OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
 
@@ -336,7 +388,7 @@ void Controller::startConnect(){
 
     if(OiFeatureState::getActiveStation() != NULL){
         if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-            OiFeatureState::getActiveStation()->emitStartConnect(OiFeatureState::getActiveStation()->getInstrumentConfig()->connConfig);
+            OiFeatureState::getActiveStation()->emitStartConnect(OiFeatureState::getActiveStation()->getInstrumentConfig().connConfig);
             emit sensorWorks("connecting...");
             OiSensorEmitter *s = OiFeatureState::getActiveStation()->getActiveSensorEmitter();
             connect(s,SIGNAL(sendConnectionStat(bool)),this,SLOT(sendIsConnected(bool)));
@@ -594,63 +646,19 @@ void Controller::showResults(bool b){
  */
 void Controller::savePluginData(PluginMetaData* metaInfo){
 
-if (!metaInfo->alreadyExists){
+    if (!metaInfo->alreadyExists){
 
+        QList<Sensor*> sensorList = PluginLoader::loadSensorPlugins(metaInfo->path);
+        QList<Function*> functionList = PluginLoader::loadFunctionPlugins(metaInfo->path);
+        QList<NetworkAdjustment*> networkAdjustmentList = PluginLoader::loadNetworkAdjustmentPlugins(metaInfo->path);
+        QList<SimulationModel*> simulationList = PluginLoader::loadSimulationPlugins(metaInfo->path);
+        QList<OiTool*> toolList = PluginLoader::loadOiToolPlugins(metaInfo->path);
+        QList<OiExchangeSimpleAscii*> simpleAsciiList = PluginLoader::loadOiExchangeSimpleAsciiPlugins(metaInfo->path);
+        QList<OiExchangeDefinedFormat*> definedFormatList = PluginLoader::loadOiExchangeDefinedFormatPlugins(metaInfo->path);
 
-    QList<Sensor*> sensorList = PluginLoader::loadSensorPlugins(metaInfo->path);
-    QList<Function*> functionList = PluginLoader::loadFunctionPlugins(metaInfo->path);
-    QList<NetworkAdjustment*> networkAdjustmentList = PluginLoader::loadNetworkAdjustmentPlugins(metaInfo->path);
-    QList<SimulationModel*> simulationList = PluginLoader::loadSimulationPlugins(metaInfo->path);
+        SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList,toolList, simpleAsciiList, definedFormatList);
 
-    SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList);
-
-    /*for (int i = 0;i<sensorList.size();i++){
-        SystemDbManager::savePlugin(sensorList.at(i)->getMetaData(),functionList,sensorList,networkAdjustmentList);
     }
-
-    for (int i = 0;i<functionList.size();i++){
-        SystemDbManager::savePlugin(functionList.at(i)->getMetaData());
-    }
-
-    for (int i = 0;i<networkAdjustmentList.size();i++){
-        SystemDbManager::savePlugin(networkAdjustmentList.at(i)->getMetaData());
-    }*/
-
-   /* if(metaInfo->iid==OiMetaData::iid_LaserTracker){
-            metaInfo->pluginType = OiMetaData::sensorPlugin;
-            SystemDbManager::savePlugin(metaInfo);
-            Console::addLine(QString("laser tracker plugin added: "+metaInfo->name +"-" +metaInfo->path));
-    }else if(metaInfo->iid==OiMetaData::iid_ConstructFunction){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("construct plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_FitFunction){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        Function *tmpFunction = PluginLoader::loadFunctionPlugin(metaInfo->path);
-        SystemDbManager::savePlugin(metaInfo,tmpFunction);
-        Console::addLine("fit plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_GeodeticFunction){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("geodetic plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_NetworkAdjustment){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("network adjustment plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_ObjectTransformation){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("object transformation plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_SystemTransformation){
-        metaInfo->pluginType = OiMetaData::functionPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("system transformation plugin added");
-    }else if(metaInfo->iid==OiMetaData::iid_TotalStation){
-        metaInfo->pluginType = OiMetaData::sensorPlugin;
-        SystemDbManager::savePlugin(metaInfo);
-        Console::addLine("total station plugin added");
-    }*/
-  }
 }
 
 /*!
@@ -682,7 +690,7 @@ void Controller::setSensorModel(Configuration::SensorTypes sT){
  */
 void Controller::getSelectedPlugin(int index){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    /*if(OiFeatureState::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
@@ -700,7 +708,7 @@ void Controller::getSelectedPlugin(int index){
         connect(&OiFeatureState::getActiveStation()->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
         //defaultLastmConfig();
         updateFeatureMConfig();
-    }
+    }*/
 }
 
 void Controller::getTempSensor(int index)
@@ -755,11 +763,19 @@ void Controller::setSelectedFeature(int featureIndex){
  * \brief Controller::receiveSensorConfiguration
  * \param sc
  */
-void Controller::receiveSensorConfiguration(SensorConfiguration *sc, bool connect){
+void Controller::receiveSensorConfiguration(SensorConfiguration sc, bool connect){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
+    OiFeatureState::getActiveStation()->sensorPad->instrument = sc.mySensor;
+    QObject::connect(&OiFeatureState::getActiveStation()->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
+    updateFeatureMConfig();
 
     if(connect){
         OiFeatureState::getActiveStation()->setInstrumentConfig(sc);
-        //this->activeStation->emitStartConnect(sc->connConfig);
         this->startConnect();
     }else{
         OiFeatureState::getActiveStation()->setInstrumentConfig(sc);
@@ -1656,9 +1672,6 @@ bool Controller::receiveRequestResult(OiRequestResponse *request){
                 this->tblModel->updateModel();
 
                 break;
-            case OiRequestResponse::eStartStakeOut:
-                qDebug() << request->response.toString();
-                break;
             }
 
             this->lastRequestId = -1;
@@ -1744,6 +1757,74 @@ void Controller::sendIsConnected(bool b)
 void Controller::sendSensorState(int sState, QString msg)
 {
     emit setSensorState(sState,msg);
+}
+
+QMultiMap<QString, QString> Controller::getOiTools()
+{
+    return SystemDbManager::getAvailableOiTools();
+}
+
+void Controller::loadOiToolWidget(QString pluginName, QString toolName)
+{
+    QString pluginPath = SystemDbManager::getPluginFilePath(toolName,pluginName);
+
+    OiTool* oiToolWidget = PluginLoader::loadOiToolPlugin(pluginPath,toolName);
+
+    if(oiToolWidget != NULL){
+
+        OiJob *jobState = new OiJobState();
+
+        connect(OiFeatureState::getInstance(),SIGNAL(activeFeatureChanged()),jobState,SLOT(emitActiveFeatureChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(activeStationChanged()),jobState,SLOT(emitActiveStationChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(activeCoordinateSystemChanged()),jobState,SLOT(emitActiveCoordinateSystemChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(featureSetChanged()),jobState,SLOT(emitFeatureSetChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(featureAttributesChanged()),jobState,SLOT(emitFeatureAttributesChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(geometryObservationsChanged()),jobState,SLOT(emitGeometryObservationsChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(featureFunctionsChanged()),jobState,SLOT(emitFeatureFunctionsChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(coordSystemSetChanged()),jobState,SLOT(emitCoordSystemSetChanged()));
+
+        oiToolWidget->setOiJob(jobState);
+
+        emit openOiToolWidget(oiToolWidget);
+    }
+}
+
+bool Controller::generateActualForNominal(FeatureWrapper *f)
+{
+    if(f==NULL || f->getGeometry() == NULL){
+        return false;
+    }
+
+    if(f->getGeometry()->getMyActual() != NULL){
+
+    }else{
+        FeatureAttributesExchange fae;
+        MeasurementConfig mConfig;
+
+        fae.actual = true;
+        fae.common = false;
+        fae.count = 1;
+        fae.name = f->getGeometry()->getFeatureName();
+        fae.destSystem = NULL;
+        fae.featureType = f->getTypeOfFeature();
+        fae.function = this->getDefaultFunction(f->getTypeOfFeature());
+        fae.group = f->getGeometry()->getGroupName();
+        fae.isMovement = false;
+        fae.nominal = false;
+        fae.nominalSystem = NULL;
+        fae.startSystem = NULL;
+
+        int fType = FeatureUpdater::addFeature(fae, mConfig);
+
+        if(f->getTypeOfFeature() !=fType){
+            return false;
+        }
+    }
+
+    f->getGeometry()->getMyActual()->setActiveFeatureState(true);
+
+    return true;
+
 }
 
 /*void Controller::handleRemoteCommand(OiProjectData *d)

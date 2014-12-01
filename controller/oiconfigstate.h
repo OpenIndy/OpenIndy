@@ -13,6 +13,7 @@
 #include "featurewrapper.h"
 #include "oifeaturestate.h"
 #include "systemdbmanager.h"
+#include "pluginloader.h"
 
 class OiConfigState : public QObject
 {
@@ -24,18 +25,26 @@ private:
 public:
     static OiConfigState *getInstance();
 
+    //measurement config
     static const QList<MeasurementConfig> &getSavedMeasurementConfigs();
     static const QList<MeasurementConfig> &getProjectMeasurementConfigs();
     static QList<MeasurementConfig> getAllMeasurementConfigs();
-    static const MeasurementConfig &getMeasurementConfig(QString displayName);
+    static QList<MeasurementConfig> getUsedMeasurementConfigs();
+    static MeasurementConfig getMeasurementConfig(QString displayName);
+    static bool addMeasurementConfig(MeasurementConfig &mConfig);
+    static bool addProjectMeasurementConfig(const MeasurementConfig &mConfig);
+    static bool setDefaultMeasurementConfig(MeasurementConfig mConfig, Configuration::FeatureTypes typeOfFeature);
 
-    //static bool addProjectMeasurementConfig(const MeasurementConfig &mConfig);
-    //static bool saveMeasurementConfig(const MeasurementConfig &mConfig);
-
-    static bool setMeasurementConfig(FeatureWrapper *geom, MeasurementConfig mConfig);
+    //sensor config
+    static QList<SensorConfiguration> getAllSensorConfigs();
+    static SensorConfiguration createConfigFromSensor(QString pluginName, QString sensorName);
+    static SensorConfiguration getSensorConfig(QString displayName);
+    static bool addSensorConfig(SensorConfiguration &sConfig);
+    static bool addProjectSensorConfig(const SensorConfiguration &sConfig);
 
     //get models to represent config data
     static QStringListModel *getMeasurementConfigNames();
+    static QStringListModel *getSensorConfigNames();
 
 signals:
     void measurementConfigAdded();
@@ -43,7 +52,7 @@ signals:
     void activeMeasurementConfigChanged();
 
 private slots:
-    void defaultMeasurementConfigChanged(int featureId);
+    void geomMeasurementConfigChanged(int featureId);
     void observationAdded(int featureId);
 
 private:
@@ -53,11 +62,18 @@ private:
     static QList<MeasurementConfig> projectMeasurementConfigs; //measurement configs that are only available in the current project
     static QMap<QString, QList<Reading*> > usedMeasurementConfigs; //map with key = measurement config display name and value = list of readings that use the config
 
+    static QList<SensorConfiguration> savedSensorConfigs; //sensor configs that were saved in configs folder
+    static QList<SensorConfiguration> projectSensorConfigs; //sensor configs that are only available in the current project
+
+    static SensorConfiguration defaultSensorConfig;
+
     //models to represent config data
     static QStringListModel *measurementConfigNames; //the names of all available measurement configs
+    static QStringListModel *sensorConfigNames; //the names of all available sensor configs
 
     //update models when configs where added or deleted
     static void updateMeasurementConfigModels();
+    static void updateSensorConfigModels();
 
     //load configuration files (xml) from config folder when starting OpenIndy
     static void loadSavedMeasurementConfigs();
@@ -65,6 +81,7 @@ private:
 
     //save configuration files (xml) to config folder
     static void saveMeasurementConfig(const MeasurementConfig &mConfig, bool override = false);
+    static void saveSensorConfig(const SensorConfiguration &sConfig);
 
     //load and set default configs from database when starting OpenIndy
 
@@ -78,7 +95,10 @@ private:
     enum SignalType{
         eMeasurementConfigAdded,
         eMeasurementConfigRemoved,
-        eActiveMeasurementConfigChanged
+        eActiveMeasurementConfigChanged,
+        eSensorConfigAdded,
+        eSensorConfigRemoved,
+        eSensorConfigChanged
     };
 
     void emitSignal(SignalType mySignalType);

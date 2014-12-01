@@ -7,6 +7,9 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QPoint>
+#include <QKeyEvent>
+#include <QClipboard>
+#include <QtAlgorithms>
 
 #include "controller.h"
 #include "station.h"
@@ -22,7 +25,8 @@
 #include "featuredata.h"
 #include "settingsdialog.h"
 #include "scalarentitydialog.h"
-#include "importnominalgeometrydialog.h"
+#include "importnominaldialog.h"
+#include "exportnominaldialog.h"
 #include "nominaldatadialog.h"
 #include "edittrafoparamdialog.h"
 #include "oiprojectexchanger.h"
@@ -54,7 +58,7 @@
 
 #include "oifeaturestate.h"
 
-#include "oistakeoutmanager.h"
+#include "oitoolaction.h"
 
 namespace Ui {
 class MainWindow;
@@ -94,15 +98,12 @@ public:
     SettingsDialog setUpDialog;
     EditTrafoparamDialog trafoParamDialog;
 
-    importNominalGeometryDialog importNominalDialog;
     NominalDataDialog nominalDialog;
 
     StationInfoDialog stationDialog;
     RealTimeDataDialog rtDataDialog;
 
     WatchWindow *watchWindow;
-
-    OiStakeOutManager myStakeOutManager;
 
     //actions
     //create feature
@@ -159,6 +160,12 @@ public:
     QAction *cPsep9;
     QAction *cPsep10;
 
+    //import dialogs
+    ImportNominalDialog importNominalDialog;
+
+    //export dialogs
+    ExportNominalDialog exportNominalDialog;
+
 signals:
 
     //void sendActiveNominalfeature(FeatureWrapper *anf);
@@ -186,6 +193,9 @@ public slots:
 
     //void updateCoordSys();
 
+    //database methods
+    void createOiToolActions();
+
 private slots:
     void featureContextMenu(const QPoint &point);
     void deleteFeatures(bool checked);
@@ -199,6 +209,9 @@ private slots:
     //void getActiveCoordSystem(QString coordSys);
     void handleTableViewClicked(const QModelIndex &);
     void handleTrafoParamClicked(const QModelIndex &);
+    void handleViewDoubleClick(int);
+
+    //void setColumnOrder();
 
     void initializeActions();
 
@@ -215,7 +228,7 @@ private slots:
     void setupLaserTrackerPad();
     void setupTotalStationPad();
 
-    void receiveConfig(FeatureWrapper*,MeasurementConfig);
+    //void receiveConfig(FeatureWrapper*,MeasurementConfig);
     void createFeature();
 
     void setActiveCoordinateSystem();
@@ -253,15 +266,13 @@ private slots:
 
     void on_actionSet_function_triggered();
 
-    void openCreateFeatureMConfig();
+    void openCreateFeatureMConfig(Configuration::FeatureTypes typeOfFeature);
 
     void setUpStatusBar();
 
     void on_actionView_settings_triggered();
 
     void on_actionCreate_scalar_entity_triggered();
-
-    void on_actionNominal_geometry_triggered();
 
     void on_actionCreate_trafoParam_triggered();
 
@@ -315,15 +326,31 @@ private slots:
 
     void on_treeView_featureOverview_clicked(const QModelIndex &index);
 
-    //stake out methods
-    void on_actionStart_stake_out_triggered();
-    void on_actionStop_stake_out_triggered();
-    void on_actionNext_triggered();
-    void stakeOutConfigured(QDomDocument request);
-
     //close dialogs
     void closeAllOpenDialogs();
     void setDialogsNULL();
+
+    //copy clipboard tableview
+    void keyPressEvent(QKeyEvent *e);
+
+    void copyValuesFromView();
+	
+    //tools
+    void showOiToolWidget(OiTool* oiToolWidget);
+
+    //import menu entries
+    void on_action_importNominals_triggered();
+    void on_action_importMeasurementConfigs_triggered();
+    void on_action_importSensorConfigs_triggered();
+
+    //export menu entries
+    void on_action_exportNominals_triggered();
+    void on_action_exportMeasurementConfigs_triggered();
+    void on_action_exportSensorConfigs_triggered();
+
+
+    void setMeasurementConfig(MeasurementConfig mConfig); //set the measurement config of the active feature
+    void setDefaultMeasurementConfig(MeasurementConfig mConfig); //set the default measurement config
 
 private:
     Ui::MainWindow *ui;
@@ -335,6 +362,11 @@ private:
 
     void setConnects();
     void setModels();
+
+    //void getDefaultFeatureHeaderOrder();
+    //QStringList lastFeatureHeaderOrder;
+
+    Configuration::FeatureTypes currentCreateFeature;
 };
 
 #endif // MAINWINDOW_H

@@ -757,22 +757,22 @@ void PseudoTracker::noisyPolarReading(Reading *r)
         return;
     }
 
-    double lambda = this->myConfiguration->doubleParameter.value("lambda [mm]")/1000;
-    double mu = this->myConfiguration->doubleParameter.value("mu");
-    double ex = this->myConfiguration->doubleParameter.value("ex [mm]")/1000;
-    double by = this->myConfiguration->doubleParameter.value("by [mm]")/1000;
-    double bz = this->myConfiguration->doubleParameter.value("bz [mm]")/1000;
-    double alpha = this->myConfiguration->doubleParameter.value("alpha [arc sec]")*(M_PI/648000.0);
-    double gamma = this->myConfiguration->doubleParameter.value("gamma [arc sec]")*(M_PI/648000.0);
-    double Aa1 = this->myConfiguration->doubleParameter.value("Aa1 [arc sec]")*(M_PI/648000.0);
-    double Ba1 = this->myConfiguration->doubleParameter.value("Ba1 [arc sec]")*(M_PI/648000.0);
-    double Aa2 = this->myConfiguration->doubleParameter.value("Aa2 [arc sec]")*(M_PI/648000.0);
-    double Ba2 = this->myConfiguration->doubleParameter.value("Ba2 [arc sec]")*(M_PI/648000.0);
-    double Ae0 = this->myConfiguration->doubleParameter.value("Ae0 [arc sec]")*(M_PI/648000.0);
-    double Ae1 = this->myConfiguration->doubleParameter.value("Ae1 [arc sec]")*(M_PI/648000.0);
-    double Be1 = this->myConfiguration->doubleParameter.value("Be1 [arc sec]")*(M_PI/648000.0);
-    double Ae2 = this->myConfiguration->doubleParameter.value("Ae2 [arc sec]")*(M_PI/648000.0);
-    double Be2 = this->myConfiguration->doubleParameter.value("Be2 [arc sec]")*(M_PI/648000.0);
+    double lambda = this->myConfiguration.doubleParameter.value("lambda [mm]")/1000;
+    double mu = this->myConfiguration.doubleParameter.value("mu");
+    double ex = this->myConfiguration.doubleParameter.value("ex [mm]")/1000;
+    double by = this->myConfiguration.doubleParameter.value("by [mm]")/1000;
+    double bz = this->myConfiguration.doubleParameter.value("bz [mm]")/1000;
+    double alpha = this->myConfiguration.doubleParameter.value("alpha [arc sec]")*(M_PI/648000.0);
+    double gamma = this->myConfiguration.doubleParameter.value("gamma [arc sec]")*(M_PI/648000.0);
+    double Aa1 = this->myConfiguration.doubleParameter.value("Aa1 [arc sec]")*(M_PI/648000.0);
+    double Ba1 = this->myConfiguration.doubleParameter.value("Ba1 [arc sec]")*(M_PI/648000.0);
+    double Aa2 = this->myConfiguration.doubleParameter.value("Aa2 [arc sec]")*(M_PI/648000.0);
+    double Ba2 = this->myConfiguration.doubleParameter.value("Ba2 [arc sec]")*(M_PI/648000.0);
+    double Ae0 = this->myConfiguration.doubleParameter.value("Ae0 [arc sec]")*(M_PI/648000.0);
+    double Ae1 = this->myConfiguration.doubleParameter.value("Ae1 [arc sec]")*(M_PI/648000.0);
+    double Be1 = this->myConfiguration.doubleParameter.value("Be1 [arc sec]")*(M_PI/648000.0);
+    double Ae2 = this->myConfiguration.doubleParameter.value("Ae2 [arc sec]")*(M_PI/648000.0);
+    double Be2 = this->myConfiguration.doubleParameter.value("Be2 [arc sec]")*(M_PI/648000.0);
 
     lambda = randomX(1,0,lambda);
     mu = randomX(1,0,mu);

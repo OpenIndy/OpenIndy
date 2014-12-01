@@ -34,14 +34,6 @@ public:
     QStringList selfDefinedActions() const;
     bool doSelfDefinedAction(QString a);
 
-    /*default accuracy
-     *keys:
-     * sigmaAzimuth sigmaAzimuth sigmaDistance
-     * sigmaXyz
-     * sigmaTempDeg
-     * sigmaAngleXZ
-     * sigmaAngleYZ
-     */
     QMap<QString,double>* getDefaultAccuracy() const;
 
     //! abort a running action
@@ -144,6 +136,8 @@ private:
     void deactivateLaserPointer();
 
     void stopTrackingMode();
+
+    Reading* getStreamValues();
 
 };
 

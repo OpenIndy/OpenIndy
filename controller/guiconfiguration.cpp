@@ -15,6 +15,10 @@ QStringList GUIConfiguration::allAttributes;
 QList<DisplayAttribute*> GUIConfiguration::featureAttributes;
 QList<DisplayAttribute*> GUIConfiguration::trafoParamAttributes;
 
+//user def order
+//QStringList GUIConfiguration::userDefFeatOrder;
+//QStringList GUIConfiguration::userDefTrafoOrder;
+
 //! observation model
 QStringList GUIConfiguration::allObsAttributes;
 QList<DisplayAttribute*> GUIConfiguration::obsAttributes;
@@ -67,27 +71,38 @@ void GUIConfiguration::generateAllAttributes()
 {
     GUIConfiguration::allAttributes.clear();
 
+    //feature
     GUIConfiguration::allAttributes.append("feature type");
-    GUIConfiguration::allAttributes.append("feature name");
+    GUIConfiguration::allAttributes.append("nominal");
     GUIConfiguration::allAttributes.append("group");
+    GUIConfiguration::allAttributes.append("feature name");
     GUIConfiguration::allAttributes.append(QString("x" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allAttributes.append(QString("y" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allAttributes.append(QString("z" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allAttributes.append(QString("stddev" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allAttributes.append("observations");
-    GUIConfiguration::allAttributes.append("solved");
     GUIConfiguration::allAttributes.append("measurement config");
     GUIConfiguration::allAttributes.append("functions");
-    GUIConfiguration::allAttributes.append("common point");
-    GUIConfiguration::allAttributes.append("nominal");
-    GUIConfiguration::allAttributes.append(QString("stddev" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allAttributes.append("solved");
+    GUIConfiguration::allAttributes.append("comment");
+    GUIConfiguration::allAttributes.append(QString("radius" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allAttributes.append("I");
     GUIConfiguration::allAttributes.append("J");
     GUIConfiguration::allAttributes.append("K");
-    GUIConfiguration::allAttributes.append(QString("radius" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allAttributes.append("common point");
     GUIConfiguration::allAttributes.append("scalar value [m]");
     GUIConfiguration::allAttributes.append("scalar value [dec. degree]");
+    GUIConfiguration::allAttributes.append(QString("temperature" + UnitConverter::getTemperatureUnitString()));
+    GUIConfiguration::allAttributes.append("measurement series");
+    GUIConfiguration::allAttributes.append(QString("expansion origin x" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allAttributes.append(QString("expansion origin y" + UnitConverter::getDistanceUnitString()));
+    GUIConfiguration::allAttributes.append(QString("expansion origin z" + UnitConverter::getDistanceUnitString()));
+    //additional for trafo param
+    GUIConfiguration::allAttributes.append("use");
+    GUIConfiguration::allAttributes.append("datumTransformation");
     GUIConfiguration::allAttributes.append("start");
     GUIConfiguration::allAttributes.append("destination");
+    GUIConfiguration::allAttributes.append("time");
     GUIConfiguration::allAttributes.append(QString("translation x" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allAttributes.append(QString("translation y" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allAttributes.append(QString("translation z" + UnitConverter::getDistanceUnitString()));
@@ -97,15 +112,6 @@ void GUIConfiguration::generateAllAttributes()
     GUIConfiguration::allAttributes.append("scale x");
     GUIConfiguration::allAttributes.append("scale y");
     GUIConfiguration::allAttributes.append("scale z");
-    GUIConfiguration::allAttributes.append(QString("temperature" + UnitConverter::getTemperatureUnitString()));
-    GUIConfiguration::allAttributes.append("measurement series");
-    GUIConfiguration::allAttributes.append("comment");
-    GUIConfiguration::allAttributes.append("use");
-    GUIConfiguration::allAttributes.append("time");
-    GUIConfiguration::allAttributes.append("datumTransformation");
-    GUIConfiguration::allAttributes.append(QString("expansion origin x" + UnitConverter::getDistanceUnitString()));
-    GUIConfiguration::allAttributes.append(QString("expansion origin y" + UnitConverter::getDistanceUnitString()));
-    GUIConfiguration::allAttributes.append(QString("expansion origin z" + UnitConverter::getDistanceUnitString()));
 }
 
 /*!
@@ -118,53 +124,53 @@ void GUIConfiguration::generateFeatureAttributes()
 
     DisplayAttribute *ftype = new DisplayAttribute("feature type",true);
     GUIConfiguration::featureAttributes.append(ftype);
-    DisplayAttribute *fname = new DisplayAttribute("feature name",true);
-    GUIConfiguration::featureAttributes.append(fname);
+    DisplayAttribute *fNominal = new DisplayAttribute("nominal",true);
+    GUIConfiguration::featureAttributes.append(fNominal);
     DisplayAttribute *fgroup = new DisplayAttribute("group",true);
     GUIConfiguration::featureAttributes.append(fgroup);
+    DisplayAttribute *fname = new DisplayAttribute("feature name",true);
+    GUIConfiguration::featureAttributes.append(fname);
     DisplayAttribute *fX = new DisplayAttribute(QString("x"+UnitConverter::getDistanceUnitString()),true);
     GUIConfiguration::featureAttributes.append(fX);
     DisplayAttribute *fY = new DisplayAttribute(QString("y"+UnitConverter::getDistanceUnitString()),true);
     GUIConfiguration::featureAttributes.append(fY);
     DisplayAttribute *fZ = new DisplayAttribute(QString("z"+UnitConverter::getDistanceUnitString()),true);
     GUIConfiguration::featureAttributes.append(fZ);
+    DisplayAttribute *fStddev = new DisplayAttribute(QString("stddev"+UnitConverter::getDistanceUnitString()),true);
+    GUIConfiguration::featureAttributes.append(fStddev);
     DisplayAttribute *fobs = new DisplayAttribute("observations",true);
     GUIConfiguration::featureAttributes.append(fobs);
-    DisplayAttribute *fSolved = new DisplayAttribute("solved",true);
-    GUIConfiguration::featureAttributes.append(fSolved);
     DisplayAttribute *fMConfig = new DisplayAttribute("measurement config",true);
     GUIConfiguration::featureAttributes.append(fMConfig);
     DisplayAttribute *fFunctions = new DisplayAttribute("functions",true);
     GUIConfiguration::featureAttributes.append(fFunctions);
-    DisplayAttribute *fcomPoint = new DisplayAttribute("common point",true);
-    GUIConfiguration::featureAttributes.append(fcomPoint);
-    DisplayAttribute *fNominal = new DisplayAttribute("nominal",true);
-    GUIConfiguration::featureAttributes.append(fNominal);
-    DisplayAttribute *fStddev = new DisplayAttribute(QString("stddev"+UnitConverter::getDistanceUnitString()),true);
-    GUIConfiguration::featureAttributes.append(fStddev);
+    DisplayAttribute *fSolved = new DisplayAttribute("solved",true);
+    GUIConfiguration::featureAttributes.append(fSolved);
+    DisplayAttribute *fcomment = new DisplayAttribute("comment",true);
+    GUIConfiguration::featureAttributes.append(fcomment);
+    DisplayAttribute *fRadius = new DisplayAttribute(QString("radius"+UnitConverter::getDistanceUnitString()),true);
+    GUIConfiguration::featureAttributes.append(fRadius);
     DisplayAttribute *fI = new DisplayAttribute("I",true);
     GUIConfiguration::featureAttributes.append(fI);
     DisplayAttribute *fJ = new DisplayAttribute("J",true);
     GUIConfiguration::featureAttributes.append(fJ);
     DisplayAttribute *fK = new DisplayAttribute("K",true);
     GUIConfiguration::featureAttributes.append(fK);
-    DisplayAttribute *fRadius = new DisplayAttribute(QString("radius"+UnitConverter::getDistanceUnitString()),true);
-    GUIConfiguration::featureAttributes.append(fRadius);
-    DisplayAttribute *fscalarD = new DisplayAttribute("scalar value [m]",true);
+    DisplayAttribute *fcomPoint = new DisplayAttribute("common point",true);
+    GUIConfiguration::featureAttributes.append(fcomPoint);
+    DisplayAttribute *fscalarD = new DisplayAttribute("scalar value [m]",false);
     GUIConfiguration::featureAttributes.append(fscalarD);
-    DisplayAttribute *fscalarA = new DisplayAttribute("scalar value [dec.degree]",true);
+    DisplayAttribute *fscalarA = new DisplayAttribute("scalar value [dec. degree]",false);
     GUIConfiguration::featureAttributes.append(fscalarA);
-    DisplayAttribute *fTemperature = new DisplayAttribute(QString("temperature"+UnitConverter::getTemperatureUnitString()),true);
+    DisplayAttribute *fTemperature = new DisplayAttribute(QString("temperature"+UnitConverter::getTemperatureUnitString()),false);
     GUIConfiguration::featureAttributes.append(fTemperature);
-    DisplayAttribute *fMeasSeries = new DisplayAttribute("measurement series",true);
+    DisplayAttribute *fMeasSeries = new DisplayAttribute("measurement series",false);
     GUIConfiguration::featureAttributes.append(fMeasSeries);
-    DisplayAttribute *fcomment = new DisplayAttribute("comment",true);
-    GUIConfiguration::featureAttributes.append(fcomment);
-    DisplayAttribute *fExpOriX = new DisplayAttribute(QString("expansion origin x" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *fExpOriX = new DisplayAttribute(QString("expansion origin x" + UnitConverter::getDistanceUnitString()),false);
     GUIConfiguration::featureAttributes.append(fExpOriX);
-    DisplayAttribute *fExpOriY = new DisplayAttribute(QString("expansion origin y" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *fExpOriY = new DisplayAttribute(QString("expansion origin y" + UnitConverter::getDistanceUnitString()),false);
     GUIConfiguration::featureAttributes.append(fExpOriY);
-    DisplayAttribute *fExpOriZ = new DisplayAttribute(QString("expansion origin z" + UnitConverter::getDistanceUnitString()),true);
+    DisplayAttribute *fExpOriZ = new DisplayAttribute(QString("expansion origin z" + UnitConverter::getDistanceUnitString()),false);
     GUIConfiguration::featureAttributes.append(fExpOriZ);
 }
 
@@ -178,18 +184,28 @@ void GUIConfiguration::generateTrafoParamAttributes()
 
     DisplayAttribute *ftype = new DisplayAttribute("feature type",true);
     GUIConfiguration::trafoParamAttributes.append(ftype);
-    DisplayAttribute *fname = new DisplayAttribute("feature name",true);
-    GUIConfiguration::trafoParamAttributes.append(fname);
     DisplayAttribute *fgroup = new DisplayAttribute("group",true);
     GUIConfiguration::trafoParamAttributes.append(fgroup);
-    DisplayAttribute *fsolved = new DisplayAttribute("solved",true);
-    GUIConfiguration::trafoParamAttributes.append(fsolved);
+    DisplayAttribute *fname = new DisplayAttribute("feature name",true);
+    GUIConfiguration::trafoParamAttributes.append(fname);
+    DisplayAttribute *fSTD = new DisplayAttribute(QString("stddev" + UnitConverter::getDistanceUnitString()),true);
+    GUIConfiguration::trafoParamAttributes.append(fSTD);
     DisplayAttribute *fFunctions = new DisplayAttribute("functions",true);
     GUIConfiguration::trafoParamAttributes.append(fFunctions);
+    DisplayAttribute *fsolved = new DisplayAttribute("solved",true);
+    GUIConfiguration::trafoParamAttributes.append(fsolved);
+    DisplayAttribute *fcomment = new DisplayAttribute("comment",true);
+    GUIConfiguration::trafoParamAttributes.append(fcomment);
+    DisplayAttribute *fuse = new DisplayAttribute("use",true);
+    GUIConfiguration::trafoParamAttributes.append(fuse);
+    DisplayAttribute *fdatumTrafo = new DisplayAttribute("datumTransformation",true);
+    GUIConfiguration::trafoParamAttributes.append(fdatumTrafo);
     DisplayAttribute *fstart = new DisplayAttribute("start",true);
     GUIConfiguration::trafoParamAttributes.append(fstart);
     DisplayAttribute *fdest = new DisplayAttribute("destination",true);
     GUIConfiguration::trafoParamAttributes.append(fdest);
+    DisplayAttribute *ftime = new DisplayAttribute("time",true);
+    GUIConfiguration::trafoParamAttributes.append(ftime);
     DisplayAttribute *fTranslationX = new DisplayAttribute(QString("translation x"+UnitConverter::getDistanceUnitString()),true);
     GUIConfiguration::trafoParamAttributes.append(fTranslationX);
     DisplayAttribute *fTranslationY = new DisplayAttribute(QString("translation y"+UnitConverter::getDistanceUnitString()),true);
@@ -208,16 +224,6 @@ void GUIConfiguration::generateTrafoParamAttributes()
     GUIConfiguration::trafoParamAttributes.append(fScaleY);
     DisplayAttribute *fScaleZ = new DisplayAttribute("scale z",true);
     GUIConfiguration::trafoParamAttributes.append(fScaleZ);
-    DisplayAttribute *fcomment = new DisplayAttribute("comment",true);
-    GUIConfiguration::trafoParamAttributes.append(fcomment);
-    DisplayAttribute *fuse = new DisplayAttribute("use",true);
-    GUIConfiguration::trafoParamAttributes.append(fuse);
-    DisplayAttribute *ftime = new DisplayAttribute("time",true);
-    GUIConfiguration::trafoParamAttributes.append(ftime);
-    DisplayAttribute *fdatumTrafo = new DisplayAttribute("datumTransformation",true);
-    GUIConfiguration::trafoParamAttributes.append(fdatumTrafo);
-    DisplayAttribute *fSTD = new DisplayAttribute(QString("stddev" + UnitConverter::getDistanceUnitString()),true);
-    GUIConfiguration::trafoParamAttributes.append(fSTD);
 }
 
 /*!

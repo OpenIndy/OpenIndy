@@ -55,6 +55,154 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
 
         if(currentFeature != NULL && currentFeature->getFeature() != NULL){
 
+            //neu
+            if(Qt::DisplayRole == role){
+
+                switch (index.column()) {
+                case 0://type
+                    return currentFeature->returnFeatureType();
+                case 1://act/nom
+                    return currentFeature->getFeature()->getDisplayIsNominal();
+                case 2://group
+                    return currentFeature->getFeature()->getGroupName();
+                case 3://name
+                    return currentFeature->getFeature()->getFeatureName();
+                case 4://x
+                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayX();
+                    }else if(currentFeature->getFeature()->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayX();
+                    }else{
+                        return QVariant();
+                    }
+                case 5://y
+                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayY();
+                    }else if(currentFeature->getFeature()->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayY();
+                    }else{
+                        return QVariant();
+                    }
+                case 6://z
+                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayZ();
+                    }else if(currentFeature->getFeature()->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayZ();
+                    }else{
+                        return QVariant();
+                    }
+                case 7://stddev
+                    return currentFeature->getFeature()->getDisplayStdDev();
+                case 8://obs
+                    return currentFeature->getFeature()->getDisplayObs();
+                case 9://mconfig
+                    return currentFeature->getFeature()->getDisplayMConfig();
+                case 10://function
+                    if(currentFeature->getFeature()->getFunctions().size() == 0){
+                        return "no function set";
+                    }else{
+                        functions += currentFeature->getFeature()->getFunctions().at(0)->getMetaData()->name;
+                        for(int i=1;i<currentFeature->getFeature()->getFunctions().size();i++){
+                            functions += "," + currentFeature->getFeature()->getFunctions().at(i)->getMetaData()->name;
+                        }
+                        return functions;
+                    }
+                case 11://solved
+                    return currentFeature->getFeature()->getDisplaySolved();
+                case 12://comment
+                    return currentFeature->getFeature()->getComment();
+                case 13://radius
+                    if(currentFeature->getFeature()->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayRadius();
+                    }else{
+                        return QVariant();
+                    }
+                case 14://i
+                    if(currentFeature->getFeature()->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayI();
+                    }else{
+                        return QVariant();
+                    }
+                case 15://j
+                    if(currentFeature->getFeature()->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayJ();
+                    }else{
+                        return QVariant();
+                    }
+                case 16://k
+                    if(currentFeature->getFeature()->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayK();
+                    }else{
+                        return QVariant();
+                    }
+                case 17://com point
+                    return currentFeature->getFeature()->getDisplayIsCommon();
+                case 18://scalar value dist
+                    if(currentFeature->getFeature()->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayScalarDistanceValue();
+                    }else{
+                        return QVariant();
+                    }
+                case 19://scalar value rad
+                    if(currentFeature->getFeature()->getIsSolved()){
+                        return currentFeature->getFeature()->getDisplayScalarAngleValue();
+                    }else{
+                        return QVariant();
+                    }
+                case 20://temperature
+                    return currentFeature->getFeature()->getDisplayScalarTemperatureValue();
+                case 21://measurement series
+                    return currentFeature->getFeature()->getDisplayScalarMeasurementSeriesValue();
+                case 22://expansion origin x
+                   return currentFeature->getFeature()->getDisplayExpansionOriginX();
+                case 23://expansion origin y
+                    return currentFeature->getFeature()->getDisplayExpansionOriginY();
+                case 24://expansion origin z
+                    return currentFeature->getFeature()->getDisplayExpansionOriginZ();
+                case 25://use
+                    if(currentFeature->getTrafoParam() != NULL){
+                        return currentFeature->getTrafoParam()->getIsUsed();
+                    }
+                    return QVariant();
+                case 26://datum trafo
+                    if(currentFeature->getTrafoParam() != NULL){
+                        return currentFeature->getTrafoParam()->getisDatumTrafo();
+                    }
+                    return QVariant();
+                case 27://start system
+                    return currentFeature->getFeature()->getDisplayStartSystem();
+                case 28://dest system
+                    return currentFeature->getFeature()->getDisplayDestinationSystem();
+                case 29://tx
+                    return currentFeature->getFeature()->getDisplayTranslationX();
+                case 30://ty
+                    return currentFeature->getFeature()->getDisplayTranslationY();
+                case 31://tz
+                    return currentFeature->getFeature()->getDisplayTranslationZ();
+                case 32://rx
+                    return currentFeature->getFeature()->getDisplayRotationX();
+                case 33://ry
+                    return currentFeature->getFeature()->getDisplayRotationY();
+                case 34://rz
+                    return currentFeature->getFeature()->getDisplayRotationZ();
+                case 35://sx
+                    return currentFeature->getFeature()->getDisplayScaleX();
+                case 36://sy
+                    return currentFeature->getFeature()->getDisplayScaleY();
+                case 37://sz
+                    return currentFeature->getFeature()->getDisplayScaleZ();
+                case 38://time
+                    if(currentFeature->getTrafoParam() != NULL){
+                        return currentFeature->getTrafoParam()->getValidTime();
+                    }
+                    return QVariant();
+                default:
+                    break;
+                }
+
+            }
+            /*
+            //alt
             if(Qt::DisplayRole == role){
 
                 switch (index.column()) {
@@ -198,7 +346,8 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                 default:
                     break;
                 }
-            }
+
+            }*/
 
             if (role == Qt::BackgroundRole){
 
@@ -229,10 +378,11 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                 }
 
                 //if feature is not solved
-                if( (index.column() == 3 || index.column() == 4 || index.column() == 5
+                if( (index.column() == 4 || index.column() == 5 || index.column() == 6
                         || index.column() == 13 || index.column() == 14
                         || index.column() == 15 || index.column() == 16
-                        || index.column() == 17 || index.column() == 18)
+                        || index.column() == 18 || index.column() == 19
+                        || index.column() == 20 || index.column() == 21)
                         && !currentFeature->getFeature()->getIsSolved()){
                     return QColor(Qt::yellow);
                 }
@@ -288,7 +438,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 void TableModel::updateModel(){
     emit layoutAboutToBeChanged();
     emit layoutChanged();
-    emit resizeTable();
+    //emit resizeTable();
 }
 
 /*!
@@ -312,7 +462,7 @@ Qt::ItemFlags TableModel::flags(const QModelIndex & index) const{
  */
 bool TableModel::setData(const QModelIndex & index, const QVariant & value, int role){
     if(OiFeatureState::getActiveFeature() != NULL){
-        if(index.column() == 1){ //feature name
+        if(index.column() == 3){ //feature name
 
             FeatureAttributesExchange myExchange;
             if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
@@ -360,19 +510,19 @@ bool TableModel::setData(const QModelIndex & index, const QVariant & value, int 
             QString oldValue = OiFeatureState::getActiveFeature()->getFeature()->getGroupName();
             OiFeatureState::getActiveFeature()->getFeature()->setGroupName(value.toString());
             emit this->groupNameChanged(oldValue, value.toString());
-        }else if(index.column() == 32){ //feature comment
+        }else if(index.column() == 12){ //feature comment
             OiFeatureState::getActiveFeature()->getFeature()->setComment(value.toString());
-        }else if(index.column() == 33){//trafo param use
+        }else if(index.column() == 25){//trafo param use
             OiFeatureState::getActiveFeature()->getTrafoParam()->setIsUsed(value.toBool());
-        }else if(index.column() == 34){//trafo param time
+        }else if(index.column() == 38){//trafo param time
             OiFeatureState::getActiveFeature()->getTrafoParam()->setValidTime(value.toDateTime());
-        }else if(index.column() == 35){//trafo param datum transformation
+        }else if(index.column() == 26){//trafo param datum transformation
             OiFeatureState::getActiveFeature()->getTrafoParam()->setisDatumTrafo(value.toBool());
-        }else if(index.column() == 36){
+        }else if(index.column() == 22){
             OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginX(value.toDouble()/UnitConverter::getDistanceMultiplier());
-        }else if(index.column() == 37){
+        }else if(index.column() == 23){
             OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginY(value.toDouble()/UnitConverter::getDistanceMultiplier());
-        }else if(index.column() == 38){
+        }else if(index.column() == 24){
             OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginZ(value.toDouble()/UnitConverter::getDistanceMultiplier());
         }
 

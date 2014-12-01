@@ -242,3 +242,78 @@ void FeatureData::updateModels()
     this->rModel->updateModel();
     this->oModel->updateModel();
 }
+
+/*!
+ * \brief keyPressEvent
+ * \param event
+ */
+void FeatureData::keyPressEvent(QKeyEvent *event)
+{
+    int key = event->key();
+    int modifiers = event->modifiers();
+
+    if(key == Qt::Key_C && modifiers == Qt::CTRL){
+        this->copyValuesFromView();
+    }
+}
+
+/*!
+ * \brief copyValuesFromView copys the selected values from the view.
+ */
+void FeatureData::copyValuesFromView()
+{
+    //get model and selected rows and columns
+    QAbstractItemModel *model = ui->tableView_observation->model();
+    QItemSelectionModel *selection = ui->tableView_observation->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+
+    //sort indexes
+    qSort(indexes);
+
+    //check if something in observation view is selected
+    if(indexes.size()<1){
+
+        //if not, check if something in reading view is selected
+        model = ui->tableView_readings->model();
+        selection = ui->tableView_readings->selectionModel();
+        indexes = selection->selectedIndexes();
+
+        qSort(indexes);
+
+        //if also not, copy nothing
+        if(indexes.size()<1){
+            return;
+        }
+        //return;
+    }
+
+    QString copy_table;
+    QModelIndex last = indexes.last();
+    QModelIndex previous = indexes.first();
+
+    indexes.removeFirst();
+
+    //loop over all selected rows and columns
+    for(int i=0;i<indexes.size();i++){
+        QVariant data = model->data(previous);
+        QString text = data.toString();
+
+        QModelIndex index = indexes.at(i);
+        copy_table.append(text);
+
+        //if new line
+        if(index.row() != previous.row()){
+            copy_table.append('\n');
+        }else{ //if same line, but new column
+            copy_table.append('\t');
+        }
+        previous = index;
+    }
+    //get last selected cell
+    copy_table.append(model->data(last).toString());
+    copy_table.append('\n');
+
+    //set values to clipboard, so you can copy them
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(copy_table);
+}

@@ -16,6 +16,7 @@
 #include <QCheckBox>
 #include "watchwindowlistener.h"
 #include "featureupdater.h"
+#include <QLineEdit>
 
 namespace Ui {
 class WatchWindow;
@@ -73,14 +74,14 @@ private:
     void stopStream();
     void startStream();
 
-    QMap<QString,QLCDNumber*> streamData;
+    QMap<QString,QLabel*> streamData;
 
     QList<QCheckBox*> checkboxes;
     QList<QLabel*> attributeLabels;
     QMap<QString, QLineEdit*> attributeTolerance;
     QList<QLayout*> attributeLayout;
 
-    QList<QWidget*> widgets;
+    QList<QLabel*> widgets;
     QList<QLayout*> layouts;
 
     int activeReadingType;

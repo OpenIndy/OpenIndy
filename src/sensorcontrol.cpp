@@ -10,7 +10,6 @@ SensorControl::SensorControl(Station *st)
     myStation = st;
 
     instrument = NULL;
-    InstrumentConfig = NULL;
     instrumentListener = new SensorListener(instrument);
     this->t = this->eNoStream;
 
@@ -62,9 +61,11 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
     if(readings.size() == 0){
         this->myEmitter.sendString("measurement not valid!");
         emit commandFinished(false);
+        emit measurementFinished(false);
     }else{
         this->storeReadings(readings,geom, isActiveCoordSys);
         emit commandFinished(true);
+        emit measurementFinished(true);
         emit this->recalcFeature(geom);
     }
 
@@ -545,9 +546,9 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //set type
             r->typeofReading = Configuration::ePolar;
             //set accuracy
-            r->rPolar.sigmaAzimuth = myStation->getInstrumentConfig()->sigma.sigmaAzimuth;
-            r->rPolar.sigmaZenith= myStation->getInstrumentConfig()->sigma.sigmaZenith;
-            r->rPolar.sigmaDistance = myStation->getInstrumentConfig()->sigma.sigmaDistance;
+            r->rPolar.sigmaAzimuth = myStation->getInstrumentConfig().sigma.sigmaAzimuth;
+            r->rPolar.sigmaZenith= myStation->getInstrumentConfig().sigma.sigmaZenith;
+            r->rPolar.sigmaDistance = myStation->getInstrumentConfig().sigma.sigmaDistance;
             //store reading in station
             this->myStation->readingsPol.append(r);
             //create observation
@@ -571,7 +572,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //set type
             r->typeofReading = Configuration::eDistance;
             //set accuracy
-            r->rDistance.sigmaDistance = myStation->getInstrumentConfig()->sigma.sigmaDistance;
+            r->rDistance.sigmaDistance = myStation->getInstrumentConfig().sigma.sigmaDistance;
             //store reading in station
             this->myStation->readingsDist.append(r);
             //create observation
@@ -594,8 +595,8 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //set type
             r->typeofReading =Configuration::eDirection;
             //set accuracy
-            r->rDirection.sigmaAzimuth = myStation->getInstrumentConfig()->sigma.sigmaAzimuth;
-            r->rDirection.sigmaZenith= myStation->getInstrumentConfig()->sigma.sigmaZenith;
+            r->rDirection.sigmaAzimuth = myStation->getInstrumentConfig().sigma.sigmaAzimuth;
+            r->rDirection.sigmaZenith= myStation->getInstrumentConfig().sigma.sigmaZenith;
             //store reading in station
             this->myStation->readingsDir.append(r);
             //create observation
@@ -618,7 +619,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             //set type
             r->typeofReading = Configuration::eCartesian;
             //set accuracy
-            r->rCartesian.sigmaXyz = myStation->getInstrumentConfig()->sigma.sigmaXyz;
+            r->rCartesian.sigmaXyz = myStation->getInstrumentConfig().sigma.sigmaXyz;
             //store reading in station
             this->myStation->readingsXyz.append(r);
             //create observation

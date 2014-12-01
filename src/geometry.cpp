@@ -32,7 +32,7 @@ Geometry::~Geometry(){
 
         //delete this geometry from list of nominals in myNominalCoordSys
         if(this->myNominalCoordSys != NULL){
-            this->myNominalCoordSys->removeNominal(this);
+            this->myNominalCoordSys->removeNominal(this->id);
         }
     }else{
         //delete observations that only belong to this geometry
@@ -177,7 +177,16 @@ QList<Observation *> Geometry::getObservations() const{
  * \return
  */
 bool Geometry::addObservation(Observation *obs){
+
     if(!this->isNominal && obs != NULL){
+
+        //check if the observations has already been added
+        foreach(Observation *o, this->myObservations){
+            if(o->getId() == obs->getId()){
+                return false;
+            }
+        }
+
         this->myObservations.append(obs);
 
         //add reading to geom
@@ -211,6 +220,7 @@ bool Geometry::addObservation(Observation *obs){
         return true;
     }
     return false;
+
 }
 
 /*!

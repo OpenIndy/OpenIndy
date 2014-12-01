@@ -40,6 +40,8 @@ public:
 signals:
     void modelChanged();
 
+    void changedColumnOrder();
+
 private slots:
     void on_pushButton_ok_clicked();
 
@@ -70,6 +72,10 @@ private slots:
     void on_toolButton_removeTrafoParamAttribute_clicked();
 
     void on_treeView_plugins_clicked(const QModelIndex &index);
+
+    void on_toolButton_up_clicked();
+
+    void on_toolButton_down_clicked();
 
 private:
 

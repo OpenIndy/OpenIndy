@@ -108,6 +108,9 @@ void SettingsDialog::showEvent(QShowEvent *event){
 void SettingsDialog::closeEvent(QCloseEvent *event)
 {
     emit modelChanged();
+
+    emit changedColumnOrder();
+
     event->accept();
 }
 
@@ -131,6 +134,22 @@ void SettingsDialog::displayFeatureColumns()
 {
     allFeatureAttributes.clear();
     displayedFeatureAttributes.clear();
+
+    /*if(GUIConfiguration::userDefFeatOrder.size() > 0){
+        displayedFeatureAttributes = GUIConfiguration::userDefFeatOrder;
+    }
+
+    for(int i=0; i<GUIConfiguration::featureAttributes.size();i++){
+        if(GUIConfiguration::featureAttributes.at(i)->displayState){
+
+            if(!(GUIConfiguration::userDefFeatOrder.size() > 0)){
+                displayedFeatureAttributes.append(GUIConfiguration::featureAttributes.at(i)->attrName);
+            }
+        }else{
+            allFeatureAttributes.append(GUIConfiguration::featureAttributes.at(i)->attrName);
+        }
+    }*/
+
     for(int i=0; i<GUIConfiguration::featureAttributes.size();i++){
         if(GUIConfiguration::featureAttributes.at(i)->displayState){
             displayedFeatureAttributes.append(GUIConfiguration::featureAttributes.at(i)->attrName);
@@ -139,8 +158,8 @@ void SettingsDialog::displayFeatureColumns()
         }
 
     }
-    allFeatureAttributes.sort(Qt::CaseSensitive);
-    displayedFeatureAttributes.sort(Qt::CaseSensitive);
+    //allFeatureAttributes.sort(Qt::CaseSensitive);
+    //displayedFeatureAttributes.sort(Qt::CaseSensitive);
     m_featureAttributes = new QStringListModel(allFeatureAttributes);
     ui->listView_allFeatureAttributes->setModel(m_featureAttributes);
 
@@ -164,8 +183,8 @@ void SettingsDialog::displayTrafoParamColumns()
         }
 
     }
-    allTrafoParamAttributes.sort(Qt::CaseSensitive);
-    displayedTrafoParamAttributes.sort(Qt::CaseSensitive);
+    //allTrafoParamAttributes.sort(Qt::CaseSensitive);
+    //displayedTrafoParamAttributes.sort(Qt::CaseSensitive);
     m_TrafoParamAttributes = new QStringListModel(allTrafoParamAttributes);
     ui->listView_allTrafoParamAttributes->setModel(m_TrafoParamAttributes);
 
@@ -181,8 +200,15 @@ void SettingsDialog::getFeatureColumns()
     for(int i=0; i<GUIConfiguration::featureAttributes.size();i++){
         if(allFeatureAttributes.contains(GUIConfiguration::featureAttributes.at(i)->attrName)){
             GUIConfiguration::featureAttributes.at(i)->displayState = false;
+        }else if(displayedFeatureAttributes.contains(GUIConfiguration::featureAttributes.at(i)->attrName)){
+            GUIConfiguration::featureAttributes.at(i)->displayState = true;
         }
     }
+
+
+    //get user defined feature order
+    //GUIConfiguration::userDefFeatOrder.clear();
+    //GUIConfiguration::userDefFeatOrder = displayedFeatureAttributes;
 }
 
 /*!
@@ -193,8 +219,14 @@ void SettingsDialog::getTrafoParamColumns()
     for(int i=0;i<GUIConfiguration::trafoParamAttributes.size();i++){
         if(allTrafoParamAttributes.contains(GUIConfiguration::trafoParamAttributes.at(i)->attrName)){
             GUIConfiguration::trafoParamAttributes.at(i)->displayState = false;
+        }else if(displayedTrafoParamAttributes.contains(GUIConfiguration::trafoParamAttributes.at(i)->attrName)){
+            GUIConfiguration::trafoParamAttributes.at(i)->displayState = true;
         }
     }
+
+    //get user defined trafo param order
+    //GUIConfiguration::userDefTrafoOrder.clear();
+    //GUIConfiguration::userDefTrafoOrder = displayedTrafoParamAttributes;
 }
 
 /*!
@@ -209,8 +241,8 @@ void SettingsDialog::on_toolButton_addFeatureAttribute_clicked()
         QModelIndex idx = ui->listView_allFeatureAttributes->currentIndex();
         displayedFeatureAttributes.append(allFeatureAttributes.at(idx.row()));
         allFeatureAttributes.removeAt(idx.row());
-        allFeatureAttributes.sort(Qt::CaseSensitive);
-        displayedFeatureAttributes.sort(Qt::CaseSensitive);
+        //allFeatureAttributes.sort(Qt::CaseSensitive);
+        //displayedFeatureAttributes.sort(Qt::CaseSensitive);
         m_featureAttributes = new QStringListModel(allFeatureAttributes);
         ui->listView_allFeatureAttributes->setModel(m_featureAttributes);
 
@@ -231,8 +263,8 @@ void SettingsDialog::on_toolButton_removeFeatureAttribute_clicked()
         QModelIndex idx = ui->listView_displayedFeatureAttributes->currentIndex();
         allFeatureAttributes.append(displayedFeatureAttributes.at(idx.row()));
         displayedFeatureAttributes.removeAt(idx.row());
-        allFeatureAttributes.sort(Qt::CaseSensitive);
-        displayedFeatureAttributes.sort(Qt::CaseSensitive);
+        //allFeatureAttributes.sort(Qt::CaseSensitive);
+        //displayedFeatureAttributes.sort(Qt::CaseSensitive);
         m_featureAttributes = new QStringListModel(allFeatureAttributes);
         ui->listView_allFeatureAttributes->setModel(m_featureAttributes);
 
@@ -254,8 +286,8 @@ void SettingsDialog::on_toolButton_addTrafoParamAttribute_clicked()
         if(idx.isValid()){
             displayedTrafoParamAttributes.append(allTrafoParamAttributes.at(idx.row()));
             allTrafoParamAttributes.removeAt(idx.row());
-            allTrafoParamAttributes.sort(Qt::CaseSensitive);
-            displayedTrafoParamAttributes.sort(Qt::CaseSensitive);
+            //allTrafoParamAttributes.sort(Qt::CaseSensitive);
+            //displayedTrafoParamAttributes.sort(Qt::CaseSensitive);
             m_TrafoParamAttributes = new QStringListModel(allTrafoParamAttributes);
             ui->listView_allTrafoParamAttributes->setModel(m_TrafoParamAttributes);
 
@@ -278,8 +310,8 @@ void SettingsDialog::on_toolButton_removeTrafoParamAttribute_clicked()
         if(idx.isValid()){
             allTrafoParamAttributes.append(displayedTrafoParamAttributes.at(idx.row()));
             displayedTrafoParamAttributes.removeAt(idx.row());
-            allTrafoParamAttributes.sort(Qt::CaseSensitive);
-            displayedTrafoParamAttributes.sort(Qt::CaseSensitive);
+            //allTrafoParamAttributes.sort(Qt::CaseSensitive);
+            //displayedTrafoParamAttributes.sort(Qt::CaseSensitive);
             m_TrafoParamAttributes = new QStringListModel(allTrafoParamAttributes);
             ui->listView_allTrafoParamAttributes->setModel(m_TrafoParamAttributes);
 
@@ -313,4 +345,30 @@ void SettingsDialog::on_treeView_plugins_clicked(const QModelIndex &index){
         this->myPluginInformation->reset();
     }
 
+}
+
+void SettingsDialog::on_toolButton_up_clicked()
+{
+    /*if(!ui->listView_displayedFeatureAttributes->currentIndex().isValid()){
+        return;
+    }
+    QModelIndex idx = ui->listView_displayedFeatureAttributes->currentIndex();
+    if(idx.row()>0 && idx.row()<displayedFeatureAttributes.size()){
+        displayedFeatureAttributes.swap(idx.row(),idx.row()-1);
+        m_displayedFeatureAttributes = new QStringListModel(displayedFeatureAttributes);
+        ui->listView_displayedFeatureAttributes->setModel(m_displayedFeatureAttributes);
+    }*/
+}
+
+void SettingsDialog::on_toolButton_down_clicked()
+{
+    /*if(!ui->listView_displayedFeatureAttributes->currentIndex().isValid()){
+        return;
+    }
+    QModelIndex idx = ui->listView_displayedFeatureAttributes->currentIndex();
+    if(idx.row()<displayedFeatureAttributes.size()-1){
+        displayedFeatureAttributes.swap(idx.row(),idx.row()+1);
+        m_displayedFeatureAttributes = new QStringListModel(displayedFeatureAttributes);
+        ui->listView_displayedFeatureAttributes->setModel(m_displayedFeatureAttributes);
+    }*/
 }

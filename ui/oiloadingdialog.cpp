@@ -15,6 +15,13 @@ OiLoadingDialog::~OiLoadingDialog()
     delete ui;
 }
 
+OiLoadingDialog *OiLoadingDialog::getInstance(){
+    if(OiLoadingDialog::myDialog == NULL){
+        OiLoadingDialog::myDialog = new OiLoadingDialog();
+    }
+    return OiLoadingDialog::myDialog;
+}
+
 /*!
  * \brief OiLoadingDialog::showLoadingDialog
  * If not yet opened this function opens and returns a LoadingDialog
@@ -67,4 +74,9 @@ void OiLoadingDialog::updateProgress(int progress, QString msg) const{
     this->ui->progressBar->setValue(progress);
     this->ui->label_description->setText(msg);
 
+}
+
+void OiLoadingDialog::finished(){
+    qDebug() << "finished loading";
+    OiLoadingDialog::closeLoadingDialog();
 }

@@ -155,6 +155,31 @@
             </reading>
           </observation>
         </observations>
+        <configs>
+          <measurementConfigs>
+            <measurementConfig name="%string%" count="%12345%" iterations="%12345%" measureTwoSides="%true%" timeDependent="%true%" distanceDependent="%true%" timeInterval="%1245.00%" distanceInterval="%1245.00%" typeOfReading="%12345%" />
+          </measurementConfigs>
+          <sensorConfigs>
+            <sensorConfig name="%string%">
+              <accuracy sigmaAzimuth="%1245.00%" sigmaZenith="%1245.00%" sigmaDistance="%1245.00%" sigmaX="%1245.00%" sigmaY="%1245.00%" sigmaZ="%1245.00%" sigmaTemp="%1245.00%" sigmaAngleXZ="%1245.00%" sigmaAngleYZ="%1245.00%">
+                <sigmaUndefined>
+                  <sigma name="%string%" value="%1245.00%">%string%</sigma>
+                </sigmaUndefined>
+              </accuracy>
+              <plugin name="%string%" sensor="%string%" />
+              <connection ip="%string%" port="%string%" comPort="%string%" baudRate="%12345%" dataBits="%12345%" parity="%12345%" stopBits="%12345%" flowControl="%12345%" typeOfConnection="%12345%">%string%</connection>
+              <integerParameters>
+                <parameter name="%string%" value="%12345%">%string%</parameter>
+              </integerParameters>
+              <doubleParameters>
+                <parameter name="%string%" value="%1245.00%">%string%</parameter>
+              </doubleParameters>
+              <stringParameters>
+                <parameter name="%string%" value="%string%">%string%</parameter>
+              </stringParameters>
+            </sensorConfig>
+          </sensorConfigs>
+        </configs>
       </oiProjectData>
     </as:Structure>
   </as:AssemblyStructure>
@@ -162,10 +187,45 @@
     <as:Rules>
       <as:default>
         <as:context>
+          <as:constraint action="makeOptional(//accuracy/@sigmaAngleXZ)" />
+          <as:constraint action="setNumberMask(//accuracy/@sigmaAngleXZ,######.##)" />
+          <as:constraint action="makeOptional(//accuracy/@sigmaAngleYZ)" />
+          <as:constraint action="setNumberMask(//accuracy/@sigmaAngleYZ,######.##)" />
+          <as:constraint action="makeOptional(//accuracy/@sigmaAzimuth)" />
+          <as:constraint action="setNumberMask(//accuracy/@sigmaAzimuth,######.##)" />
+          <as:constraint action="makeOptional(//accuracy/@sigmaDistance)" />
+          <as:constraint action="setNumberMask(//accuracy/@sigmaDistance,######.##)" />
+          <as:constraint action="makeOptional(//accuracy/@sigmaTemp)" />
+          <as:constraint action="setNumberMask(//accuracy/@sigmaTemp,######.##)" />
+          <as:constraint action="makeOptional(//accuracy/@sigmaX)" />
+          <as:constraint action="setNumberMask(//accuracy/@sigmaX,######.##)" />
+          <as:constraint action="makeOptional(//accuracy/@sigmaY)" />
+          <as:constraint action="setNumberMask(//accuracy/@sigmaY,######.##)" />
+          <as:constraint action="makeOptional(//accuracy/@sigmaZ)" />
+          <as:constraint action="setNumberMask(//accuracy/@sigmaZ,######.##)" />
+          <as:constraint action="makeOptional(//accuracy/@sigmaZenith)" />
+          <as:constraint action="setNumberMask(//accuracy/@sigmaZenith,######.##)" />
+          <as:constraint action="makeOptional(//accuracy/sigmaUndefined)" />
           <as:constraint action="setNumberMask(//activeCoordinateSystem/@ref,#######)" />
           <as:constraint action="setNumberMask(//activeStation/@ref,#######)" />
           <as:constraint action="setNumberMask(//actual/@ref,#######)" />
           <as:constraint action="setNumberMask(//angle/@value,######.####)" />
+          <as:constraint action="makeOptional(//configs/measurementConfigs,)" />
+          <as:constraint action="makeOptional(//configs/sensorConfigs,)" />
+          <as:constraint action="makeOptional(//connection/@baudRate)" />
+          <as:constraint action="setNumberMask(//connection/@baudRate,#######)" />
+          <as:constraint action="makeOptional(//connection/@comPort)" />
+          <as:constraint action="makeOptional(//connection/@dataBits)" />
+          <as:constraint action="setNumberMask(//connection/@dataBits,#######)" />
+          <as:constraint action="makeOptional(//connection/@flowControl)" />
+          <as:constraint action="setNumberMask(//connection/@flowControl,#######)" />
+          <as:constraint action="makeOptional(//connection/@ip)" />
+          <as:constraint action="makeOptional(//connection/@parity)" />
+          <as:constraint action="setNumberMask(//connection/@parity,#######)" />
+          <as:constraint action="makeOptional(//connection/@port)" />
+          <as:constraint action="makeOptional(//connection/@stopBits)" />
+          <as:constraint action="setNumberMask(//connection/@stopBits,#######)" />
+          <as:constraint action="setNumberMask(//connection/@typeOfConnection,#######)" />
           <as:constraint action="setNumberMask(//coordinateSystem/@id,#######)" />
           <as:constraint action="setNumberMask(//coordinateSystem/@ref,#######)" />
           <as:constraint action="datatype(//coordinateSystem/@solved,boolean)" />
@@ -192,7 +252,6 @@
           <as:constraint action="setNumberMask(//function/@executionIndex,#######)" />
           <as:constraint action="makeOptional(//function/doubleParameters)" />
           <as:constraint action="makeOptional(//function/inputElements)" />
-          <as:constraint action="makeOptional(//function/integerParameters,)" />
           <as:constraint action="makeOptional(//function/integerParameters,)" />
           <as:constraint action="makeOptional(//function/stringParameters)" />
           <as:constraint action="makeRepeatable(//functions/function)" />
@@ -221,6 +280,15 @@
           <as:constraint action="makeRepeatable(//integerParameters/parameter)" />
           <as:constraint action="setNumberMask(//measurement/@sigma,####.######)" />
           <as:constraint action="setNumberMask(//measurement/@value,####.######)" />
+          <as:constraint action="setNumberMask(//measurementConfig/@count,#######)" />
+          <as:constraint action="datatype(//measurementConfig/@distanceDependent,boolean)" />
+          <as:constraint action="setNumberMask(//measurementConfig/@distanceInterval,######.##)" />
+          <as:constraint action="setNumberMask(//measurementConfig/@iterations,#######)" />
+          <as:constraint action="datatype(//measurementConfig/@measureTwoSides,boolean)" />
+          <as:constraint action="datatype(//measurementConfig/@timeDependent,boolean)" />
+          <as:constraint action="setNumberMask(//measurementConfig/@timeInterval,######.##)" />
+          <as:constraint action="setNumberMask(//measurementConfig/@typeOfReading,#######)" />
+          <as:constraint action="makeRepeatable(//measurementConfigs/measurementConfig,)" />
           <as:constraint action="makeRepeatable(//measurements/measurement)" />
           <as:constraint action="setNumberMask(//nominalCoordinateSystem/@ref,#######)" />
           <as:constraint action="makeRepeatable(//nominalGeometries/geometry)" />
@@ -240,17 +308,25 @@
           <as:constraint action="makeRepeatable(//observations/observations)" />
           <as:constraint action="datatype(//oiProjectData/@date,dateTime)" />
           <as:constraint action="setNumberMask(//oiProjectData/@idCount,#######)" />
+          <as:constraint action="makeOptional(//oiProjectData/configs,)" />
           <as:constraint action="makeOptional(//oiProjectData/observations)" />
           <as:constraint action="makeOptional(//oiProjectData/transformationParameters)" />
           <as:constraint action="setNumberMask(//parameter/@value,#######)" />
           <as:constraint action="setNumberMask(//parameter/@value,######.####)" />
+          <as:constraint action="setNumberMask(//parameter/@value,######.##)" />
           <as:constraint action="setNumberMask(//position/@ref,#######)" />
           <as:constraint action="makeRepeatable(//previouslyNeeded/feature)" />
           <as:constraint action="makeOptional(//previouslyNeeded/feature,)" />
           <as:constraint action="setNumberMask(//reading/@id,#######)" />
           <as:constraint action="datatype(//reading/@time,dateTime)" />
           <as:constraint action="makeRepeatable(//readingTypes/type)" />
+          <as:constraint action="makeOptional(//sensorConfig/doubleParameters)" />
+          <as:constraint action="makeOptional(//sensorConfig/integerParameters,)" />
+          <as:constraint action="makeOptional(//sensorConfig/stringParameters)" />
+          <as:constraint action="makeRepeatable(//sensorConfigs/sensorConfig)" />
           <as:constraint action="setNumberMask(//seriesValue/@value,######.####)" />
+          <as:constraint action="setNumberMask(//sigma/@value,######.##)" />
+          <as:constraint action="makeRepeatable(//sigmaUndefined/sigma)" />
           <as:constraint action="setNumberMask(//spatialDirection/@i,######.####)" />
           <as:constraint action="setNumberMask(//spatialDirection/@j,######.####)" />
           <as:constraint action="setNumberMask(//spatialDirection/@k,####.######)" />

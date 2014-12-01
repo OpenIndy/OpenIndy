@@ -1,5 +1,7 @@
 #include "configuration.h"
 
+#include "oimetadata.h"
+
 Configuration::Configuration(QObject *parent) :
     QObject(parent)
 {
@@ -188,6 +190,62 @@ Configuration::ReadingTypes Configuration::getReadingTypeEnum(QString name){
 }
 
 /*!
+ * \brief Configuration::getGeometryTypeEnum
+ * \param name
+ * \return
+ */
+Configuration::GeometryTypes Configuration::getGeometryTypeEnum(QString name){
+    if(name.compare(Configuration::sPlane) == 0){
+        return Configuration::ePlaneGeometry;
+    }else if(name.compare(Configuration::sPoint) == 0){
+        return Configuration::ePointGeometry;
+    }else if(name.compare(Configuration::sLine) == 0){
+        return Configuration::eLineGeometry;
+    }else if(name.compare(Configuration::sSphere) == 0){
+        return Configuration::eSphereGeometry;
+    }else if(name.compare(Configuration::sEntitiyAngle) == 0){
+        return Configuration::eScalarEntityAngleGeometry;
+    }else if(name.compare(Configuration::sEntityDistance) == 0){
+        return Configuration::eScalarEntityDistanceGeometry;
+    }else if(name.compare(Configuration::sCircle) == 0){
+        return Configuration::eCircleGeometry;
+    }else if(name.compare(Configuration::sCone) == 0){
+        return Configuration::eConeGeometry;
+    }else if(name.compare(Configuration::sCylinder) == 0){
+        return Configuration::eCylinderGeometry;
+    }else if(name.compare(Configuration::sEllipsoid) == 0){
+        return Configuration::eEllipsoidGeometry;
+    }else if(name.compare(Configuration::sHyperboloid) == 0){
+        return Configuration::eHyperboloidGeometry;
+    }else if(name.compare(Configuration::sParaboloid) == 0){
+        return Configuration::eParaboloidGeometry;
+    }else if(name.compare(Configuration::sNurbs) == 0){
+        return Configuration::eNurbsGeometry;
+    }else if(name.compare(Configuration::sPointCloud) == 0){
+        return Configuration::ePointCloudGeometry;
+    }else if(name.compare(Configuration::sEntityTemperature) == 0){
+        return Configuration::eScalarEntityTemperatureGeometry;
+    }else if(name.compare(Configuration::sEntityMeasurementSeries) == 0){
+        return Configuration::eScalarEntityMeasurementSeriesGeometry;
+    }
+}
+
+/*!
+ * \brief Configuration::getSensorTypeEnum
+ * \param iid
+ * \return
+ */
+Configuration::SensorTypes Configuration::getSensorTypeEnum(QString iid){
+    if(iid.compare(OiMetaData::iid_TotalStation) == 0){
+        return Configuration::eTotalStation;
+    }else if(iid.compare(OiMetaData::iid_LaserTracker) == 0){
+        return Configuration::eLaserTracker;
+    }else{
+        return Configuration::eUndefinedSensor;
+    }
+}
+
+/*!
  * \brief Configuration::getElementTypeString
  * Get element type name from corresponding enum value
  * \param type
@@ -319,6 +377,50 @@ QString Configuration::getReadingTypeString(Configuration::ReadingTypes type){
         return "";
     case Configuration::eTemperatur:
         return Configuration::sTemperatur;
+    default:
+        return "";
+    }
+}
+
+/*!
+ * \brief Configuration::getGeometryTypeString
+ * \param type
+ * \return
+ */
+QString Configuration::getGeometryTypeString(Configuration::GeometryTypes type){
+    switch (type) {
+    case Configuration::ePlaneGeometry:
+        return Configuration::sPlane;
+    case Configuration::ePointGeometry:
+        return Configuration::sPoint ;
+    case Configuration::eLineGeometry:
+        return Configuration::sLine;
+    case Configuration::eSphereGeometry:
+        return Configuration::sSphere;
+    case Configuration::eScalarEntityAngleGeometry:
+        return Configuration::sEntitiyAngle;
+    case Configuration::eScalarEntityDistanceGeometry:
+        return Configuration::sEntityDistance;
+    case Configuration::eCircleGeometry:
+        return Configuration::sCircle;
+    case Configuration::eConeGeometry:
+        return Configuration::sCone;
+    case Configuration::eCylinderGeometry:
+        return Configuration::sCylinder;
+    case Configuration::eEllipsoidGeometry:
+        return Configuration::sEllipsoid;
+    case Configuration::eHyperboloidGeometry:
+        return Configuration::sHyperboloid;
+    case Configuration::eParaboloidGeometry:
+        return Configuration::sParaboloid;
+    case Configuration::eNurbsGeometry:
+        return Configuration::sNurbs;
+    case Configuration::ePointCloudGeometry:
+        return Configuration::sPointCloud;
+    case Configuration::eScalarEntityTemperatureGeometry:
+        return Configuration::sEntityTemperature;
+    case Configuration::eScalarEntityMeasurementSeriesGeometry:
+        return Configuration::sEntityMeasurementSeries;
     default:
         return "";
     }

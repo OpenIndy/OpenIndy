@@ -27,6 +27,10 @@ public:
     static QList<DisplayAttribute*> featureAttributes;
     static QList<DisplayAttribute*> trafoParamAttributes;
 
+    //user defined column order
+    //static QStringList userDefFeatOrder;
+    //static QStringList userDefTrafoOrder;
+
     //!functions and lists for observation model
     static QStringList allObsAttributes;
     static QList<DisplayAttribute*> obsAttributes;

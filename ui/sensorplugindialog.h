@@ -22,6 +22,8 @@
 #include "sensorconfiguration.h"
 #include "sensor.h"
 #include "unitconverter.h"
+#include "oiconfigstate.h"
+#include "oimodelmanager.h"
 
 namespace Ui {
 class SensorPluginDialog;
@@ -45,26 +47,14 @@ public:
 signals:
     void sendSensorType(Configuration::SensorTypes);
     void selectedPlugin(int);
-    void sendSensorConfig(SensorConfiguration *sc, bool connect);
+    void sendSensorConfig(SensorConfiguration sc, bool connect);
     void selectedTempPlugin(int index);
 
 private slots:
 
-    void closeEvent(QCloseEvent *event);
+    //void receiveTempSensor(Sensor *s);
 
-    void showEvent(QShowEvent *event);
-
-    void receiveTempSensor(Sensor *s);
-
-    void receiveModel(QSqlQueryModel* sqlModel);
-
-    void on_pushButton_ok_clicked();
-
-    void on_pushButton_cancel_clicked();
-
-    void handleTableClicked(const QModelIndex &);
-
-    void initSensorConfig();
+    //void initSensorConfig();
 
     int getCode(QComboBox *cb, QString type);
 
@@ -74,21 +64,23 @@ private slots:
 
     void on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1);
 
-    void getConnectionType();
-
     void on_comboBox_typeOfConnection_currentIndexChanged(const QString &arg1);
 
     void disableConnectionSettings();
 
     void disableAccuracyElements();
 
-    void getReadingType();
+    //-------------------------------------------
 
-    void destructDynamicGUI();
+    void closeEvent(QCloseEvent *event);
+    void showEvent(QShowEvent *event);
 
-    void getSensorParameters();
+    void on_comboBox_sensorConfig_currentIndexChanged(const QString &text);
+    void handleTableClicked(const QModelIndex &idx);
+    void on_pushButton_ok_clicked();
+    void on_pushButton_cancel_clicked();
 
-    void setLabelUnits();
+    void receiveModel(QSqlQueryModel* sqlModel);
 
 private:
     Ui::SensorPluginDialog *ui;
@@ -97,11 +89,11 @@ private:
 
     QSqlQueryModel *qSqlModel;
 
-    Sensor *tmpSensor;
+    //Sensor *tmpSensor;
 
     Configuration::SensorTypes TypeOfSensor;
 
-    SensorConfiguration *sensorConfig;
+    //SensorConfiguration *sensorConfig;
 
     QVBoxLayout *masterAccuracyLayout;
     QVBoxLayout *masterSensorConfigLayout;
@@ -120,6 +112,34 @@ private:
 
     QMap<QString, QLayout*> accuracyLayouts;
     QMap<QString, QLayout*> sensorConfigLayouts;
+
+
+
+
+    //----------------------------------------
+
+    void initModels();
+
+    void setSelectedSensorConfig(SensorConfiguration selectedSConfig);
+    void setGUIFromSensorConfig();
+    void setSensorConfigFromGUI();
+
+    void destructDynamicGUI();
+
+    //create and fill GUI elements from selected sensor config
+    void setLabelUnits();
+    void setAccuracyFromConfig();
+    void setConnectionTypeFromConfig();
+    void setConnectionParametersFromConfig();
+    void setSensorParametersFromConfig();
+    void setSelectedSensorPlugin(SensorConfiguration &sConfig);
+
+    //set selected sensor config from GUI elements
+    void setAccuracyFromGUI();
+    void setConnectionFromGUI();
+    void setSensorParametersFromGUI();
+
+    SensorConfiguration selectedSConfig; //currently selected sensor config in sensor plugin dialog
 
 };
 

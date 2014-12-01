@@ -30,10 +30,13 @@ public:
     explicit MeasurementConfigDialog(QWidget *parent = 0);
     ~MeasurementConfigDialog();
 
-    MeasurementConfig mConfig;
+    void setMeasurementConfig(MeasurementConfig mConfig);
+
+
 
 signals:
-    void sendConfig(FeatureWrapper*, MeasurementConfig);
+    //void sendConfig(FeatureWrapper*, MeasurementConfig);
+    void measurementConfigSelected(MeasurementConfig mConfig);
 
 public slots:
 
@@ -54,13 +57,13 @@ private slots:
 
 
 
-    void receiveConfig(MeasurementConfig);
+    //void receiveConfig(MeasurementConfig);
 
 
 
-    int getCode(QComboBox *cb, QString label);
+    //int getCode(QComboBox *cb, QString label);
 
-    QString getLabel(QComboBox *cb, int code);
+    //QString getLabel(QComboBox *cb, int code);
 
 
 
@@ -68,6 +71,9 @@ private slots:
 
 private:
     Ui::MeasurementConfigDialog *ui;
+
+    MeasurementConfig mConfig; //currently selected measurement config
+
 };
 
 #endif // MEASUREMENTCONFIGDIALOG_H

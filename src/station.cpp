@@ -60,6 +60,7 @@ Station::Station(){
 
     //connections between station and sensorcontrol
     connect(this->sensorPad,SIGNAL(commandFinished(bool)),this,SLOT(emitActionFinished(bool)));
+    connect(this->sensorPad,SIGNAL(measurementFinished(bool)),this,SLOT(emitMeasurementFinished(bool)));
 
     connect(this,SIGNAL(startMeasure(Geometry*,bool)),this->sensorPad,SLOT(measure(Geometry*,bool)));
     connect(this,SIGNAL(startMove(double,double,double,bool)),this->sensorPad,SLOT(move(double,double,double,bool)));
@@ -131,14 +132,14 @@ void Station::startThread(){
     stationThread.start();
 }
 
-void Station::setInstrumentConfig(SensorConfiguration *sensorConfig){
+void Station::setInstrumentConfig(SensorConfiguration sensorConfig){
 
     sensorPad->InstrumentConfig = sensorConfig;
     sensorPad->instrument->setSensorConfiguration(sensorConfig);
 
 }
 
-SensorConfiguration* Station::getInstrumentConfig(){
+SensorConfiguration Station::getInstrumentConfig(){
     return sensorPad->InstrumentConfig;
 }
 
@@ -233,6 +234,11 @@ bool Station::fromOpenIndyXML(QDomElement &xmlElem){
 void Station::emitActionFinished(bool wasSuccesful){
 
     emit actionFinished(wasSuccesful);
+}
+
+void Station::emitMeasurementFinished(bool wasSuccessful)
+{
+    emit measurementFinished(wasSuccessful);
 }
 
 /*!
@@ -369,7 +375,7 @@ QString Station::getDisplayIsCommon() const{
 }
 
 QString Station::getDisplayIsNominal() const{
-    return QString(position->getIsNominal()?"true":"false");
+    return QString(position->getIsNominal()?"nominal":"actual");
 }
 
 QString Station::getDisplaySolved() const{

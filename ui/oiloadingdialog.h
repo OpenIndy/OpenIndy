@@ -17,11 +17,14 @@ private:
     ~OiLoadingDialog();
 
 public:
+    static OiLoadingDialog *getInstance();
+
     static const OiLoadingDialog *showLoadingDialog();
     static void closeLoadingDialog();
 
 public slots:
     void updateProgress(int progress, QString msg) const; //progress (0-100)
+    void finished();
 
 private:
     Ui::OiLoadingDialog *ui;

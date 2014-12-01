@@ -31,7 +31,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab_units">
         <attribute name="title">
@@ -178,6 +178,20 @@
                  <property name="icon">
                   <iconset resource="../res/res.qrc">
                    <normaloff>:/Images/icons/1leftarrow.png</normaloff>:/Images/icons/1leftarrow.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="toolButton_up">
+                 <property name="text">
+                  <string>up</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="toolButton_down">
+                 <property name="text">
+                  <string>down</string>
                  </property>
                 </widget>
                </item>

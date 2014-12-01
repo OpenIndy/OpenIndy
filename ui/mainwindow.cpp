@@ -87,6 +87,12 @@ MainWindow::MainWindow(QWidget *parent) :
     setUpStatusBar();
     control.tblModel->updateModel();
 
+    this->createOiToolActions();
+
+    //resize view on start
+    this->resizeTableView();
+    //call once at beginning to store default order. later the list gets overwritten
+    //this->getDefaultFeatureHeaderOrder();
 }
 
 /*!
@@ -128,7 +134,7 @@ void MainWindow::setConnects(){
 
     //measurement config settings
     connect(&this->mConfigDialog,SIGNAL(sendConfig(FeatureWrapper*,MeasurementConfig)),this,SLOT(receiveConfig(FeatureWrapper*,MeasurementConfig)));
-    connect(this,SIGNAL(sendConfig(MeasurementConfig)),&this->mConfigDialog,SLOT(receiveConfig(MeasurementConfig)));
+    //connect(this,SIGNAL(sendConfig(MeasurementConfig)),&this->mConfigDialog,SLOT(receiveConfig(MeasurementConfig)));
 
     //sensor function
     connect(this->actionMeasure,SIGNAL(triggered()),&this->control,SLOT(startMeasurement()));
@@ -164,6 +170,8 @@ void MainWindow::setConnects(){
     connect(this->ui->tableView_trafoParam,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTrafoParamClicked(QModelIndex)));
     connect(this->comboBoxFeatureType,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeCreateFeatureToolbar(int)));
     connect(this->checkBoxNominal,SIGNAL(toggled(bool)),this,SLOT(CheckBoxNominalToggled(bool)));
+    connect(this->ui->tableView_data->horizontalHeader(),SIGNAL(sectionDoubleClicked(int)),this,SLOT(handleViewDoubleClick(int)));
+    connect(this->ui->tableView_trafoParam->horizontalHeader(),SIGNAL(sectionDoubleClicked(int)),this,SLOT(handleViewDoubleClick(int)));
 
     //always scroll to bottom in Console
     connect(this->control.c, SIGNAL(changedList()), this->ui->listView_Console, SLOT(scrollToBottom()));
@@ -186,15 +194,15 @@ void MainWindow::setConnects(){
 
     //create feature connects
     connect(this->cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
-    connect(this->cFeatureDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
+    connect(this->cFeatureDialog,SIGNAL(createFeatureMConfig(Configuration::FeatureTypes)),this,SLOT(openCreateFeatureMConfig(Configuration::FeatureTypes)));
     connect(this->sEntityDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
-    connect(this->sEntityDialog,SIGNAL(createFeatureMConfig()),this,SLOT(openCreateFeatureMConfig()));
+    connect(this->sEntityDialog,SIGNAL(createFeatureMConfig(Configuration::FeatureTypes)),this,SLOT(openCreateFeatureMConfig(Configuration::FeatureTypes)));
     connect(this->cFeatureDialog,SIGNAL(trafoParamCreated()),this,SLOT(trafoParamAdded()));
 
     //sensor plugin dialog
     connect(&this->sPluginDialog,SIGNAL(sendSensorType(Configuration::SensorTypes)),&this->control,SLOT(setSensorModel(Configuration::SensorTypes)));
     connect(&this->sPluginDialog,SIGNAL(selectedPlugin(int)),&this->control,SLOT(getSelectedPlugin(int)));
-    connect(&this->sPluginDialog,SIGNAL(sendSensorConfig(SensorConfiguration*,bool)),&this->control,SLOT(receiveSensorConfiguration(SensorConfiguration*,bool)));
+    connect(&this->sPluginDialog,SIGNAL(sendSensorConfig(SensorConfiguration,bool)),&this->control,SLOT(receiveSensorConfiguration(SensorConfiguration,bool)));
     connect(&this->control,SIGNAL(sendSQLModel(QSqlQueryModel*)),&this->sPluginDialog,SLOT(receiveModel(QSqlQueryModel*)));
     connect(&this->sPluginDialog,SIGNAL(selectedTempPlugin(int)),&this->control,SLOT(getTempSensor(int)));
     connect(&this->control,SIGNAL(sendTempSensor(Sensor*)),&this->sPluginDialog,SLOT(receiveTempSensor(Sensor*)));
@@ -218,19 +226,18 @@ void MainWindow::setConnects(){
     connect(&this->control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
 
     //dataimport
-    connect(&this->importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&this->control,SLOT(importFeatures(QList<FeatureWrapper*>)));
+    //connect(&this->importNominalDialog,SIGNAL(sendFeature(QList<FeatureWrapper*>)),&this->control,SLOT(importFeatures(QList<FeatureWrapper*>)));
 
     //when user edits some nominal values of the active feature then tell the Controller to update the feature
     connect(&this->nominalDialog, SIGNAL(sendNominalValues(NominalAttributeExchange)),&this->control,SLOT(getNominalValues(NominalAttributeExchange)));
 
     //tableview
-    connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
-    connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
+    //connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
+    //connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
+    connect(&this->setUpDialog,SIGNAL(changedColumnOrder()),this,SLOT(setColumnOrder()));
 
-    //connect stake out manager
-    connect(&this->myStakeOutManager, SIGNAL(startStakeOut(QDomDocument)), this, SLOT(stakeOutConfigured(QDomDocument)));
-    connect(this, SIGNAL(startStakeOut(QDomDocument)), &this->control, SLOT(startStakeOut(QDomDocument)));
-    connect(this, SIGNAL(nextStakeOutGeometry()), &this->control, SLOT(nextStakeOutGeometry()));
+    //OiTools
+    connect(&this->control,SIGNAL(openOiToolWidget(OiTool*)),this,SLOT(showOiToolWidget(OiTool*)));
 
 }
 
@@ -257,6 +264,22 @@ void MainWindow::setModels(){
     this->setUpDialog.setPluginsModel(this->control.myPluginTreeViewModel);
 
 }
+
+/*!
+ * \brief getDefaultFeatureHeaderOrder stores the default order of the header. Later the user specified order gets saved in the list
+ */
+/*void MainWindow::getDefaultFeatureHeaderOrder()
+{
+    lastFeatureHeaderOrder.clear();
+
+    //get default order of displayed attributes
+    for(int i=0;i<GUIConfiguration::featureAttributes.size();i++){
+
+        if(GUIConfiguration::featureAttributes.at(i)->displayState){
+            lastFeatureHeaderOrder.append(GUIConfiguration::featureAttributes.at(i)->attrName);
+        }
+    }
+}*/
 
 /*!
  * \brief ChangeCreateFeatureToolbar function enables or disables elements of the create feature toolbar dependend on the selected feature type.
@@ -569,15 +592,20 @@ void MainWindow::on_actionControl_pad_triggered()
     }else{
         ui->toolBar_ControlPad->show();
 
-        if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
+        if(OiFeatureState::getActiveStation() == NULL || OiFeatureState::getActiveStation()->sensorPad == NULL
+                || OiFeatureState::getActiveStation()->sensorPad->instrument == NULL){
+            return;
+        }
+
+        //if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
 
             QString sensorName = OiFeatureState::getActiveStation()->sensorPad->instrument->getMetaData()->name;
             labelSensorControlName->setText(sensorName);
 
-            if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eLaserTracker){ //laser tracker
+            if(OiFeatureState::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eLaserTracker){ //laser tracker
                 setupLaserTrackerPad();
 
-            }else if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eTotalStation){ //total station
+            }else if(OiFeatureState::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eTotalStation){ //total station
                 setupTotalStationPad();
 
             }else{ //any sensor
@@ -605,7 +633,7 @@ void MainWindow::on_actionControl_pad_triggered()
 
                 }
             }
-        }
+        //}
     }
 }
 
@@ -615,7 +643,7 @@ void MainWindow::on_actionControl_pad_triggered()
  * \param FeatureWrapper *af
  * \param MeasurementConfig *mC
  */
-void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig mC){
+/*void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig mC){
 
     if(af == NULL){
         this->control.lastmConfig = mC;
@@ -627,16 +655,15 @@ void MainWindow::receiveConfig(FeatureWrapper *af, MeasurementConfig mC){
         }
         this->control.lastmConfig = mC;
     }
-}
+}*/
 
 /*!
  * \brief edit MeasurementConfig of selected feature.
- * This configuration only belongs to the selected feature.
- * You can set new configurations at the create feature / scalar entity menu for new features.
+ * Open the measurement config dialog to select a config for the active feature
  */
 void MainWindow::on_actionMeasurement_Configuration_triggered()
 {
-    if(OiFeatureState::getActiveFeature() != NULL && (OiFeatureState::getActiveFeature()->getGeometry() != NULL || OiFeatureState::getActiveFeature()->getStation() != NULL)){
+    /*if(OiFeatureState::getActiveFeature() != NULL && (OiFeatureState::getActiveFeature()->getGeometry() != NULL || OiFeatureState::getActiveFeature()->getStation() != NULL)){
 
         if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
             MeasurementConfig mConfig = OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig();
@@ -648,7 +675,90 @@ void MainWindow::on_actionMeasurement_Configuration_triggered()
         }
 
         mConfigDialog.show();
+    }*/
+
+    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        return;
     }
+
+    MeasurementConfig defaultConfig = OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig();
+
+    this->mConfigDialog.setMeasurementConfig(defaultConfig);
+
+    connect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
+               this, SLOT(setMeasurementConfig(MeasurementConfig)));
+
+    this->mConfigDialog.show();
+
+}
+
+/*!
+ * \brief opens the measurement configuration dialog.
+ * Open the measurement config dialog to set the default measurement config (when creating a feature)
+ */
+void MainWindow::openCreateFeatureMConfig(Configuration::FeatureTypes typeOfFeature){
+
+    //emit sendConfig(this->control.lastmConfig);
+
+    //set the default measurement config as selected mConfig
+    switch(typeOfFeature){
+    case Configuration::eCircleFeature:
+        this->mConfigDialog.setMeasurementConfig(Circle::defaultMeasurementConfig);
+        break;
+    case Configuration::eConeFeature:
+        this->mConfigDialog.setMeasurementConfig(Cone::defaultMeasurementConfig);
+        break;
+    case Configuration::eCylinderFeature:
+        this->mConfigDialog.setMeasurementConfig(Cylinder::defaultMeasurementConfig);
+        break;
+    case Configuration::eEllipsoidFeature:
+        this->mConfigDialog.setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
+        break;
+    case Configuration::eHyperboloidFeature:
+        this->mConfigDialog.setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
+        break;
+    case Configuration::eLineFeature:
+        this->mConfigDialog.setMeasurementConfig(Line::defaultMeasurementConfig);
+        break;
+    case Configuration::eNurbsFeature:
+        this->mConfigDialog.setMeasurementConfig(Nurbs::defaultMeasurementConfig);
+        break;
+    case Configuration::eParaboloidFeature:
+        this->mConfigDialog.setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
+        break;
+    case Configuration::ePlaneFeature:
+        this->mConfigDialog.setMeasurementConfig(Plane::defaultMeasurementConfig);
+        break;
+    case Configuration::ePointFeature:
+        this->mConfigDialog.setMeasurementConfig(Point::defaultMeasurementConfig);
+        break;
+    case Configuration::ePointCloudFeature:
+        this->mConfigDialog.setMeasurementConfig(PointCloud::defaultMeasurementConfig);
+        break;
+    case Configuration::eScalarEntityAngleFeature:
+        this->mConfigDialog.setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
+        break;
+    case Configuration::eScalarEntityDistanceFeature:
+        this->mConfigDialog.setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
+        break;
+    case Configuration::eScalarEntityMeasurementSeriesFeature:
+        this->mConfigDialog.setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
+        break;
+    case Configuration::eScalarEntityTemperatureFeature:
+        this->mConfigDialog.setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
+        break;
+    case Configuration::eSphereFeature:
+        this->mConfigDialog.setMeasurementConfig(Sphere::defaultMeasurementConfig);
+        break;
+    }
+
+    connect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
+               this, SLOT(setDefaultMeasurementConfig(MeasurementConfig)));
+
+    currentCreateFeature = typeOfFeature;
+
+    this->mConfigDialog.show();
+
 }
 
 /*!
@@ -723,12 +833,15 @@ void MainWindow::initializeActions(){
     actionInitialize = new QAction(0);
     actionInitialize->setText("initialize");
     actionMeasure = new QAction(0);
+    actionMeasure->setShortcut(Qt::Key_F3);
     actionMeasure->setText("measure");
     actionAim = new QAction(0);
+    actionAim->setShortcut(QKeySequence(Qt::ALT + Qt::Key_A));
     actionAim->setText("aim");
     actionMove = new QAction(0);
     actionMove->setText("move");
     actionHome = new QAction(0);
+    actionHome->setShortcut(Qt::Key_F9);
     actionHome->setText("home");
     actionChangeMotorState = new QAction(0);
     actionChangeMotorState->setText("change motor state");
@@ -1132,6 +1245,64 @@ void MainWindow::handleTrafoParamClicked(const QModelIndex &idx)
 }
 
 /*!
+ * \brief handleViewDoubleClick used to resize view at this development state
+ */
+void MainWindow::handleViewDoubleClick(int idx)
+{
+    //if index is not valid (clicking the header) the views get resized
+    this->resizeTableView();
+}
+
+/*!
+ * \brief setColumnOrder of main table view and trafo param table view by user specified order
+ */
+/*void MainWindow::setColumnOrder()
+{
+    QStringList userDefOrder;
+
+    userDefOrder = GUIConfiguration::userDefFeatOrder;
+
+    //if an attribute is removed or added
+    if(userDefOrder.size() != this->lastFeatureHeaderOrder.size()){
+        //go back to default config with all current values, so list size is correct
+        this->getDefaultFeatureHeaderOrder();
+    }
+
+    int userIndex, defaultIndex;
+
+    //loop over user defined list
+    for(int k=0;k<userDefOrder.size();k++){
+
+        userIndex = k;
+        qDebug() << "user index: " << userIndex;
+        //get position of attribute in default list
+        defaultIndex = lastFeatureHeaderOrder.indexOf(userDefOrder.at(k));
+        qDebug() << "default index: " << defaultIndex;
+        qDebug() << "user def: " << userDefOrder.at(k);
+
+        //ui->tableView_data->model()->setHeaderData()
+        //switch sections
+        ui->tableView_data->horizontalHeader()->moveSection(defaultIndex,userIndex);
+
+        //change order of list, so that following attributes are used correctly
+        if(userIndex != defaultIndex){
+
+            lastFeatureHeaderOrder.insert(userIndex,userDefOrder.at(k));
+
+            if(userIndex > defaultIndex){
+                lastFeatureHeaderOrder.removeAt(defaultIndex);
+            }else if(userIndex < defaultIndex){
+                lastFeatureHeaderOrder.removeAt(defaultIndex+1);
+            }
+        }
+    }
+
+    //set current user def order as last order
+    this->lastFeatureHeaderOrder.clear();
+    this->lastFeatureHeaderOrder = userDefOrder;
+}*/
+
+/*!
  * \brief Opens the dialog for setting functions to a feature.
  * Sets the plugins model and the function treeview model to the class.
  */
@@ -1145,16 +1316,6 @@ void MainWindow::on_actionSet_function_triggered(){
         //show the dialog
         fPluginDialog.show();
     }
-}
-
-/*!
- * \brief opens the measurement configuration dialog.
- * Also the last configuration and the current active station is set to the class and with this the current active
- * sensor for the supported reading types.
- */
-void MainWindow::openCreateFeatureMConfig(){
-    emit sendConfig(this->control.lastmConfig);
-    mConfigDialog.show();
 }
 
 /*!
@@ -1239,14 +1400,6 @@ void MainWindow::on_actionView_settings_triggered()
 void MainWindow::on_actionCreate_scalar_entity_triggered()
 {
     sEntityDialog->show();
-}
-
-/*!
- * \brief opens the import dialog for nominal features and sets all coordinate systems for the dialog.
- */
-void MainWindow::on_actionNominal_geometry_triggered()
-{
-    importNominalDialog.show();
 }
 
 /*!
@@ -1691,6 +1844,40 @@ void MainWindow::resizeTableView()
 }
 
 /*!
+ * \brief MainWindow::createOiToolActions
+ */
+void MainWindow::createOiToolActions()
+{
+    QMultiMap<QString,QString> oiTools = control.getOiTools();
+
+    QList<QString> pluginNames = oiTools.keys();
+
+    foreach(QString pluginName, pluginNames){
+
+        QMenu *pluginMenu;
+        pluginMenu = new QMenu();
+        pluginMenu->setTitle(pluginName);
+        ui->menuTools->addMenu(pluginMenu);
+
+        QList<QString> toolNames = oiTools.values(pluginName);
+
+        foreach(QString toolName, toolNames){
+            OiToolAction *a;
+            a = new OiToolAction();
+
+            connect(a,SIGNAL(openToolWidget(QString,QString)),&this->control,SLOT(loadOiToolWidget(QString,QString)));
+
+            a->setToolName(toolName);
+            a->setPluginName(pluginName);
+            a->setText(toolName);
+            pluginMenu->addAction(a);
+        }
+
+    }
+
+}
+
+/*!
  * \brief on_actionShow_help_triggered opens the local help document with the user guide.
  */
 void MainWindow::on_actionShow_help_triggered()
@@ -1809,47 +1996,6 @@ void MainWindow::on_treeView_featureOverview_clicked(const QModelIndex &index)
 }
 
 /*!
- * \brief MainWindow::on_actionStart_stake_out_triggered
- * Start stake out manager
- */
-void MainWindow::on_actionStart_stake_out_triggered(){
-    this->myStakeOutManager.setModels(this->control.myPointFeatureProxyModel, this->control.myFeatureGroupsModel);
-    this->myStakeOutManager.open();
-}
-
-/*!
- * \brief MainWindow::on_actionStop_stake_out_triggered
- * Stop current stake out
- */
-void MainWindow::on_actionStop_stake_out_triggered(){
-
-}
-
-/*!
- * \brief MainWindow::on_actionNext_triggered
- * Continue stake out with the next geometry
- */
-void MainWindow::on_actionNext_triggered(){
-    emit this->nextStakeOutGeometry();
-}
-
-/*!
- * \brief MainWindow::stakeOutConfigured
- * Called from stake out manager when the user has configured the stake out task
- * \param request
- */
-void MainWindow::stakeOutConfigured(QDomDocument request){
-
-    //disable start stake out button + enable stop & next buttons
-    this->ui->actionNext->setEnabled(true);
-    this->ui->actionStart_stake_out->setEnabled(false);
-    this->ui->actionStop_stake_out->setEnabled(true);
-
-    emit this->startStakeOut(request);
-
-}
-
-/*!
  * \brief closeAllOpenDialogs (only pointers) at end of openIndy, when closing mainwindow
  */
 void MainWindow::closeAllOpenDialogs()
@@ -1874,4 +2020,166 @@ void MainWindow::setDialogsNULL()
     this->sEntityDialog = NULL;
     this->watchWindow = NULL;
 
+}
+
+void MainWindow::showOiToolWidget(OiTool *oiToolWidget)
+{
+    oiToolWidget->show();
+}
+
+/*!
+ * \brief MainWindow::on_action_importNominals_triggered
+ */
+void MainWindow::on_action_importNominals_triggered(){
+    this->importNominalDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_action_importMeasurementConfigs_triggered
+ */
+void MainWindow::on_action_importMeasurementConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_action_importSensorConfigs_triggered
+ */
+void MainWindow::on_action_importSensorConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_action_exportNominals_triggered
+ */
+void MainWindow::on_action_exportNominals_triggered(){
+    this->exportNominalDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_action_exportMeasurementConfigs_triggered
+ */
+void MainWindow::on_action_exportMeasurementConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_action_exportSensorConfigs_triggered
+ */
+void MainWindow::on_action_exportSensorConfigs_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::setMeasurementConfig
+ * Set the measurement config of the active feature
+ * \param mConfig
+ */
+void MainWindow::setMeasurementConfig(MeasurementConfig mConfig){
+
+    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        return;
+    }
+
+    if(!mConfig.getIsValid()){
+        return;
+    }
+
+    //set measurement config of the active feature
+    OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(mConfig);
+
+    //set mConfig as default for the feature type of the active feature
+    OiConfigState::setDefaultMeasurementConfig(mConfig, OiFeatureState::getActiveFeature()->getTypeOfFeature());
+
+    disconnect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
+               this, SLOT(setMeasurementConfig(MeasurementConfig)));
+
+}
+
+/*!
+ * \brief MainWindow::setDefaultMeasurementConfig
+ * \param mConfig
+ */
+void MainWindow::setDefaultMeasurementConfig(MeasurementConfig mConfig){
+
+    //set mConfig as default for the feature type of the active feature
+    OiConfigState::setDefaultMeasurementConfig(mConfig, this->currentCreateFeature);
+
+    disconnect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
+               this, SLOT(setDefaultMeasurementConfig(MeasurementConfig)));
+
+}
+
+/*!
+ * \brief keyPressEvent
+ * \param e
+ */
+void MainWindow::keyPressEvent(QKeyEvent *e)
+{
+    int key = e->key();
+    int modifiers = e->modifiers();
+    //if ctrl copy was pressed
+    if(key == Qt::Key_C && modifiers == Qt::CTRL){
+        this->copyValuesFromView();
+    }
+}
+
+/*!
+ * \brief copyValuesFromView copys the selected values from the view.
+ */
+void MainWindow::copyValuesFromView()
+{
+    //get model and selected rows and columns
+    QAbstractItemModel *model = ui->tableView_data->model();
+    QItemSelectionModel *selection = ui->tableView_data->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+
+    //sort indexes
+    qSort(indexes);
+
+    //check if something in main view is selected
+    if(indexes.size()<1){
+
+        //if not, check if something in trafo param view is selected
+        model = ui->tableView_trafoParam->model();
+        selection = ui->tableView_trafoParam->selectionModel();
+        indexes = selection->selectedIndexes();
+
+        qSort(indexes);
+
+        //if also not, copy nothing
+        if(indexes.size()<1){
+            return;
+        }
+        //return;
+    }
+
+    QString copy_table;
+    QModelIndex last = indexes.last();
+    QModelIndex previous = indexes.first();
+
+    indexes.removeFirst();
+
+    //loop over all selected rows and columns
+    for(int i=0;i<indexes.size();i++){
+        QVariant data = model->data(previous);
+        QString text = data.toString();
+
+        QModelIndex index = indexes.at(i);
+        copy_table.append(text);
+
+        //if new line
+        if(index.row() != previous.row()){
+            copy_table.append('\n');
+        }else{ //if same line, but new column
+            copy_table.append('\t');
+        }
+        previous = index;
+    }
+    //get last selected cell
+    copy_table.append(model->data(last).toString());
+    copy_table.append('\n');
+
+    //set values to clipboard, so you can copy them
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(copy_table);
 }

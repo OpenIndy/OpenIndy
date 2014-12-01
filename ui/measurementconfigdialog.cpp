@@ -10,8 +10,6 @@ MeasurementConfigDialog::MeasurementConfigDialog(QWidget *parent) :
     ui(new Ui::MeasurementConfigDialog)
 {
     ui->setupUi(this);
-
-    //initGUI();
 }
 
 /*!
@@ -20,6 +18,14 @@ MeasurementConfigDialog::MeasurementConfigDialog(QWidget *parent) :
 MeasurementConfigDialog::~MeasurementConfigDialog()
 {
     delete ui;
+}
+
+/*!
+ * \brief MeasurementConfigDialog::setMeasurementConfig
+ * \param mConfig
+ */
+void MeasurementConfigDialog::setMeasurementConfig(MeasurementConfig mConfig){
+    this->mConfig = mConfig;
 }
 
 /*!
@@ -52,11 +58,12 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked(){
     mConfig.typeOfReading = Configuration::getReadingTypeEnum(this->ui->comboBox_typeOfReading->currentText());
 
     //send created config to OiConfigState
-    if(!OiConfigState::setMeasurementConfig(OiFeatureState::getActiveFeature(), mConfig)){
+    if(!OiConfigState::addMeasurementConfig(mConfig)){
         QMessageBox::information(NULL, "Measurement config invalid",
-                                 "Unable to set the measurement config for the active feature. Maybe there is another "
-                                 "measurement config with the same name but different parameters which has been used yet.");
+                                 "The selected measurement config is invalid.");
     }
+
+    emit this->measurementConfigSelected(mConfig);
 
     this->close();
 
@@ -93,6 +100,7 @@ void MeasurementConfigDialog::on_pushButton_ok_clicked(){
  * \brief MeasurementConfigDialog::on_pushButton_cancel_clicked
  */
 void MeasurementConfigDialog::on_pushButton_cancel_clicked(){
+    emit this->measurementConfigSelected(MeasurementConfig());
     this->close();
 }
 
@@ -101,9 +109,9 @@ void MeasurementConfigDialog::on_pushButton_cancel_clicked(){
  * Receives the last measurement configuration setup from the controller, and sets the values to the GUI elements.
  *\param mC
  */
-void MeasurementConfigDialog::receiveConfig(MeasurementConfig mC){
+/*void MeasurementConfigDialog::receiveConfig(MeasurementConfig mC){
     //TODO mit sensor funktionswerten abgleichen
-    /*this->mConfig = mC;
+    this->mConfig = mC;
 
     ui->lineEdit_configName->setText(mConfig.name);
     ui->lineEdit_count->setText(QString::number(mConfig.count));
@@ -113,8 +121,8 @@ void MeasurementConfigDialog::receiveConfig(MeasurementConfig mC){
     ui->checkBox_distanceDependent->setChecked(this->mConfig.distanceDependent);
     ui->checkBox_timeDependent->setChecked(this->mConfig.timeDependent);
     ui->lineEdit_distanceInterval->setText(QString::number(this->mConfig.distanceInterval));
-    ui->lineEdit_timeInterval->setText(QString::number(this->mConfig.timeInterval));*/
-}
+    ui->lineEdit_timeInterval->setText(QString::number(this->mConfig.timeInterval));
+}*/
 
 /*!
  * \brief MeasurementConfigDialog::initGUI
@@ -133,13 +141,13 @@ void MeasurementConfigDialog::initGUI(){
     this->ui->comboBox_existingConfigs->setModel(OiConfigState::getMeasurementConfigNames());
 
     //check if active feature exists and is a geometry
-    if(OiFeatureState::getActiveFeature() == NULL
+    /*if(OiFeatureState::getActiveFeature() == NULL
             || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
         return;
-    }
+    }*/
 
     //set default measurement config
-    MeasurementConfig mConfig;
+    /*MeasurementConfig mConfig;
     if(OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig().getIsValid()){
         mConfig = OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig();
     }else{
@@ -197,7 +205,7 @@ void MeasurementConfigDialog::initGUI(){
             //mConfig = Station::defaultMeasurementConfig;
             break;
         }
-    }
+    }*/
 
     //set default values for GUI elements
     if(mConfig.getIsValid()){
@@ -283,9 +291,9 @@ void MeasurementConfigDialog::initGUI(){
  * \param label
  * \return
  */
-int MeasurementConfigDialog::getCode(QComboBox *cb, QString label){
+/*int MeasurementConfigDialog::getCode(QComboBox *cb, QString label){
     return cb->findText(label);
-}
+}*/
 
 /*!
  * \brief MeasurementConfigDialog::getLabel
@@ -294,9 +302,9 @@ int MeasurementConfigDialog::getCode(QComboBox *cb, QString label){
  * \param code
  * \return
  */
-QString MeasurementConfigDialog::getLabel(QComboBox *cb, int code){
+/*QString MeasurementConfigDialog::getLabel(QComboBox *cb, int code){
     return cb->itemText(cb->findData(code));
-}
+}*/
 
 /*!
  * \brief MeasurementConfigDialog::showEvent
@@ -311,6 +319,7 @@ void MeasurementConfigDialog::showEvent(QShowEvent *event){
     this->initGUI();
 
     event->accept();
+
 }
 
 /*!
