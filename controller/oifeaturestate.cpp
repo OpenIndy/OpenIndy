@@ -407,8 +407,6 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
 
         //TODO check if feature already exists
 
-        qDebug() << "add feature " << myFeature->getGeometry()->getDisplayX();
-
         if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
 
             qDebug() << "vor id check";
