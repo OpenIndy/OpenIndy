@@ -480,6 +480,7 @@ bool OiConfigState::addSensorConfig(SensorConfiguration &sConfig){
  */
 bool OiConfigState::addProjectSensorConfig(const SensorConfiguration &sConfig){
     OiConfigState::projectSensorConfigs.append(sConfig);
+    return true;
 }
 
 /*!

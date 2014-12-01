@@ -78,83 +78,8 @@
      <item>
       <widget class="QTabWidget" name="tabWidget_options">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
-       <widget class="QWidget" name="tab_configs">
-        <attribute name="title">
-         <string>configs</string>
-        </attribute>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>9</x>
-           <y>9</y>
-           <width>233</width>
-           <height>22</height>
-          </rect>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1">
-          <item>
-           <widget class="QLineEdit" name="lineEdit_configName"/>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_configName">
-            <property name="text">
-             <string>configuration name</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>9</x>
-           <y>37</y>
-           <width>185</width>
-           <height>22</height>
-          </rect>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,1">
-          <item>
-           <widget class="QComboBox" name="comboBox_existingConfigs"/>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_existingconfigs">
-            <property name="text">
-             <string>existing configurations</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>9</x>
-           <y>65</y>
-           <width>249</width>
-           <height>21</height>
-          </rect>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,1">
-          <item>
-           <widget class="QToolButton" name="toolButton_loadConfig">
-            <property name="text">
-             <string>load existing configuration</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="toolButton_saveConfig">
-            <property name="text">
-             <string>save configuration</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </widget>
        <widget class="QWidget" name="plugin">
         <attribute name="title">
          <string>plugin</string>
@@ -562,8 +487,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>98</width>
+              <height>28</height>
              </rect>
             </property>
             <attribute name="label">
@@ -599,7 +524,7 @@
        <item>
         <widget class="QPushButton" name="pushButton_ok">
          <property name="text">
-          <string>save</string>
+          <string>set</string>
          </property>
         </widget>
        </item>
