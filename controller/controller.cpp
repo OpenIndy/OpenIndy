@@ -282,8 +282,10 @@ void Controller::startMeasurement(){
     if(checkSensorValid() && checkFeatureValid()){
 
         if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
-            Console::addLine("can not measure nominal feature");
-            return;
+            if(!this->generateActualForNominal(OiFeatureState::getActiveFeature())){
+                Console::addLine("can not create actual for nominal feature");
+                return;
+            }
         }
         OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
 
@@ -1761,8 +1763,60 @@ void Controller::loadOiToolWidget(QString pluginName, QString toolName)
     OiTool* oiToolWidget = PluginLoader::loadOiToolPlugin(pluginPath,toolName);
 
     if(oiToolWidget != NULL){
+
+        OiJob *jobState = new OiJobState();
+
+        connect(OiFeatureState::getInstance(),SIGNAL(activeFeatureChanged()),jobState,SLOT(emitActiveFeatureChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(activeStationChanged()),jobState,SLOT(emitActiveStationChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(activeCoordinateSystemChanged()),jobState,SLOT(emitActiveCoordinateSystemChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(featureSetChanged()),jobState,SLOT(emitFeatureSetChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(featureAttributesChanged()),jobState,SLOT(emitFeatureAttributesChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(geometryObservationsChanged()),jobState,SLOT(emitGeometryObservationsChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(featureFunctionsChanged()),jobState,SLOT(emitFeatureFunctionsChanged()));
+        connect(OiFeatureState::getInstance(),SIGNAL(coordSystemSetChanged()),jobState,SLOT(emitCoordSystemSetChanged()));
+
+        oiToolWidget->setOiJob(jobState);
+
         emit openOiToolWidget(oiToolWidget);
     }
+}
+
+bool Controller::generateActualForNominal(FeatureWrapper *f)
+{
+    if(f==NULL || f->getGeometry() == NULL){
+        return false;
+    }
+
+    if(f->getGeometry()->getMyActual() != NULL){
+
+    }else{
+        FeatureAttributesExchange fae;
+        MeasurementConfig mConfig;
+
+        fae.actual = true;
+        fae.common = false;
+        fae.count = 1;
+        fae.name = f->getGeometry()->getFeatureName();
+        fae.destSystem = NULL;
+        fae.featureType = f->getTypeOfFeature();
+        fae.function = this->getDefaultFunction(f->getTypeOfFeature());
+        fae.group = f->getGeometry()->getGroupName();
+        fae.isMovement = false;
+        fae.nominal = false;
+        fae.nominalSystem = NULL;
+        fae.startSystem = NULL;
+
+        int fType = FeatureUpdater::addFeature(fae, mConfig);
+
+        if(f->getTypeOfFeature() !=fType){
+            return false;
+        }
+    }
+
+    f->getGeometry()->getMyActual()->setActiveFeatureState(true);
+
+    return true;
+
 }
 
 /*void Controller::handleRemoteCommand(OiProjectData *d)

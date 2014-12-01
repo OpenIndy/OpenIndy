@@ -60,6 +60,7 @@ public:
 signals:
     //evertime the sensor finised an action, this signal will be emitted
     void actionFinished(bool);
+    void measurementFinished(bool);
 
     //starts the measurement
     void startMeasure(Geometry *geom, bool isActiveCoordSys);
@@ -130,6 +131,7 @@ public slots:
 private slots:
     //! will be emitted when sensor action is completed
     void emitActionFinished(bool wasSuccessful);
+    void emitMeasurementFinished(bool wasSuccessful);
     void writeToConsole(QString);
 
 private:

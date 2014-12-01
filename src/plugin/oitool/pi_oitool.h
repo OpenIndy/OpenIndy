@@ -10,16 +10,23 @@ class OiTool : public QWidget
 {
     Q_OBJECT
 public:
-    explicit OiTool(QWidget *parent = 0):QWidget(parent){}
+    explicit OiTool(QWidget *parent = 0):QWidget(parent){openIndyJob = NULL;}
     virtual ~OiTool(){}
 
     virtual PluginMetaData* getMetaData() const = 0;
+
+    void setOiJob(OiJob *oiJob){
+        this->openIndyJob = oiJob;
+    }
 
 signals:
     void sendCustomXMLResponse(QDomElement response);
 
 public slots:
     virtual void customXMLRequest(QDomElement request) = 0;
+
+protected:
+    OiJob *openIndyJob;
 
 
 };

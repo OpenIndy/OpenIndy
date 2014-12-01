@@ -188,6 +188,7 @@ SOURCES += \
     ui/oitoolaction.cpp \
     src/plugin/oiexchange/oiexchangeobject.cpp \
     ui/exportnominaldialog.cpp \
+    controller/oijobstate.cpp \
     ui/importnominaldialog.cpp \
     src/oiemitter/oiexchangeemitter.cpp \
     controller/oimodelmanager.cpp \
@@ -345,6 +346,7 @@ HEADERS  += \
     src/plugin/oiexchange/pi_oiexchangeinterface.h \
     src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
     ui/exportnominaldialog.h \
+    controller/oijobstate.h \
     ui/importnominaldialog.h \
     src/oiemitter/oiexchangeemitter.h \
     src/plugin/oiexchange/pi_oiexchangedefinedformat.h \

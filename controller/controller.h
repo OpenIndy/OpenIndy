@@ -257,6 +257,9 @@ public slots:
     QMultiMap<QString,QString> getOiTools();
     void loadOiToolWidget(QString pluginName,QString toolName);
 
+
+    bool generateActualForNominal(FeatureWrapper* f);
+
 private slots:
     void changeFunctionTreeViewModel();
 
