@@ -62,8 +62,13 @@ void SensorPluginDialog::on_pushButton_ok_clicked(){
 
     //check if the sensor plugin is available
     if(this->selectedSConfig.mySensor == NULL){
-        Console::addLine("Selected sensor plugin not available.");
-        return;
+        SensorConfiguration sConfig = OiConfigState::createConfigFromSensor(this->selectedSConfig.pluginName,
+                                                                            this->selectedSConfig.sensorName);
+        this->selectedSConfig.mySensor = sConfig.mySensor;
+        if(this->selectedSConfig.mySensor == NULL){
+            Console::addLine("Selected sensor plugin not available.");
+            return;
+        }
     }
 
     //save or edit the sensor config

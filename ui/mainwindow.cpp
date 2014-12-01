@@ -592,6 +592,11 @@ void MainWindow::on_actionControl_pad_triggered()
     }else{
         ui->toolBar_ControlPad->show();
 
+        if(OiFeatureState::getActiveStation() == NULL || OiFeatureState::getActiveStation()->sensorPad == NULL
+                || OiFeatureState::getActiveStation()->sensorPad->instrument == NULL){
+            return;
+        }
+
         //if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
 
             QString sensorName = OiFeatureState::getActiveStation()->sensorPad->instrument->getMetaData()->name;
