@@ -4,7 +4,7 @@ double UnitConverter::angleMultiplier = RHO_DEGREE;
 double UnitConverter::distanceMultiplier = 1.0;
 double UnitConverter::temperatureMultiplier = 1.0;
 
-int UnitConverter::angleDigits = 5;
+int UnitConverter::angleDigits = 6;
 int UnitConverter::distanceDigits = 4;
 int UnitConverter::temperatureDigits = 4;
 int UnitConverter::dimensionLessDigits = 6;

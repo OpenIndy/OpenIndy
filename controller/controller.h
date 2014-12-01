@@ -199,7 +199,7 @@ public slots:
     void getSelectedPlugin(int index);
     void getTempSensor(int index);
     void setSelectedFeature(int featureIndex);
-    void receiveSensorConfiguration(SensorConfiguration *sc, bool connect);
+    void receiveSensorConfiguration(SensorConfiguration sc, bool connect);
     void receiveFunctionId(int id);
 
     void setFunction();

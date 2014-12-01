@@ -79,6 +79,11 @@ public:
     static QString getDefaultMeasurementConfig(Configuration::FeatureTypes geomType);
     static bool setDefaultMeasurementConfig(Configuration::FeatureTypes geomType, QString name);
 
+    static bool addSensorConfig(QString name);
+    static bool removeSensorConfig(QString name);
+    static QString getDefaultSensorConfig();
+    static bool setDefaultSensorConfig(QString name);
+
     static QString getPluginFilePath(QString name, QString plugin);
 
     static QStringList getSupportedGeometries();

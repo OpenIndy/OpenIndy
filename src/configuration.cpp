@@ -1,5 +1,7 @@
 #include "configuration.h"
 
+#include "oimetadata.h"
+
 Configuration::Configuration(QObject *parent) :
     QObject(parent)
 {
@@ -225,6 +227,21 @@ Configuration::GeometryTypes Configuration::getGeometryTypeEnum(QString name){
         return Configuration::eScalarEntityTemperatureGeometry;
     }else if(name.compare(Configuration::sEntityMeasurementSeries) == 0){
         return Configuration::eScalarEntityMeasurementSeriesGeometry;
+    }
+}
+
+/*!
+ * \brief Configuration::getSensorTypeEnum
+ * \param iid
+ * \return
+ */
+Configuration::SensorTypes Configuration::getSensorTypeEnum(QString iid){
+    if(iid.compare(OiMetaData::iid_TotalStation) == 0){
+        return Configuration::eTotalStation;
+    }else if(iid.compare(OiMetaData::iid_LaserTracker) == 0){
+        return Configuration::eLaserTracker;
+    }else{
+        return Configuration::eUndefinedSensor;
     }
 }
 

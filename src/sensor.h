@@ -30,7 +30,7 @@ public:
 
 //attributes
     OiSensorEmitter myEmitter;
-    SensorConfiguration* myConfiguration;
+    SensorConfiguration myConfiguration;
 
 //methods
 
@@ -55,7 +55,9 @@ public:
     virtual QMap<QString,double>* getDefaultAccuracy() const = 0;
 
     //! sensor configuration
-    void setSensorConfiguration(SensorConfiguration* sConfig){myConfiguration = sConfig;}
+    void setSensorConfiguration(SensorConfiguration sConfig){
+        myConfiguration = sConfig;
+    }
 
     //-----sensor actions-----
 

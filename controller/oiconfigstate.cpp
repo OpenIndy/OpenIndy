@@ -6,6 +6,10 @@ QList<MeasurementConfig> OiConfigState::savedMeasurementConfigs;
 QList<MeasurementConfig> OiConfigState::projectMeasurementConfigs;
 QMap<QString, QList<Reading*> > OiConfigState::usedMeasurementConfigs;
 QStringListModel *OiConfigState::measurementConfigNames = new QStringListModel();
+QStringListModel *OiConfigState::sensorConfigNames = new QStringListModel();
+QList<SensorConfiguration> OiConfigState::savedSensorConfigs;
+QList<SensorConfiguration> OiConfigState::projectSensorConfigs;
+SensorConfiguration OiConfigState::defaultSensorConfig;
 
 /*!
  * \brief OiConfigState::OiConfigState
@@ -254,6 +258,152 @@ bool OiConfigState::setDefaultMeasurementConfig(MeasurementConfig mConfig, Confi
 }
 
 /*!
+ * \brief OiConfigState::createConfigFromSensor
+ * Using a given senor plugin this function creates a sensor configuration which uses the defaults defined in the plugin
+ * \param pluginName
+ * \param sensorName
+ * \return
+ */
+SensorConfiguration OiConfigState::createConfigFromSensor(QString pluginName, QString sensorName){
+
+    SensorConfiguration sConfig;
+
+    //load sensor plugin
+    QString path = SystemDbManager::getPluginFilePath(sensorName, pluginName);
+    Sensor *mySensor = PluginLoader::loadSensorPlugin(path, sensorName);
+
+    if(mySensor == NULL){
+        return sConfig;
+    }
+
+    //fill plugin name and sensor name and set sensor object
+    sConfig.pluginName = mySensor->getMetaData()->pluginName;
+    sConfig.sensorName = mySensor->getMetaData()->name;
+    sConfig.mySensor = mySensor;
+    sConfig.instrumentType = Configuration::getSensorTypeEnum(mySensor->getMetaData()->iid);
+
+    //fill default accuracies
+    QMap<QString, double> defaultAccuracies = *(mySensor->getDefaultAccuracy());
+    QStringList sigmaTypes = defaultAccuracies.keys();
+    for(int i = 0; i < sigmaTypes.size(); ++i){
+        if(sigmaTypes.at(i).compare("sigmaAzimuth") == 0){
+            sConfig.sigma.sigmaAzimuth = defaultAccuracies.value(sigmaTypes.at(i));
+        }else if(sigmaTypes.at(i).compare("sigmaZenith") == 0){
+            sConfig.sigma.sigmaZenith = defaultAccuracies.value(sigmaTypes.at(i));
+        }else if(sigmaTypes.at(i).compare("sigmaDistance") == 0){
+            sConfig.sigma.sigmaDistance = defaultAccuracies.value(sigmaTypes.at(i));
+        }else if(sigmaTypes.at(i).compare("sigmaX") == 0){
+            sConfig.sigma.sigmaXyz.setAt(0, defaultAccuracies.value(sigmaTypes.at(i)));
+        }else if(sigmaTypes.at(i).compare("sigmaY") == 0){
+            sConfig.sigma.sigmaXyz.setAt(1, defaultAccuracies.value(sigmaTypes.at(i)));
+        }else if(sigmaTypes.at(i).compare("sigmaZ") == 0){
+            sConfig.sigma.sigmaXyz.setAt(2, defaultAccuracies.value(sigmaTypes.at(i)));
+        }else if(sigmaTypes.at(i).compare("sigmaTempDeg") == 0){
+            sConfig.sigma.sigmaTemp = defaultAccuracies.value(sigmaTypes.at(i));
+        }else if(sigmaTypes.at(i).compare("sigmaAngleXZ") == 0){
+            sConfig.sigma.sigmaAngleXZ = defaultAccuracies.value(sigmaTypes.at(i));
+        }else if(sigmaTypes.at(i).compare("sigmaAngleYZ") == 0){
+            sConfig.sigma.sigmaAngleYZ = defaultAccuracies.value(sigmaTypes.at(i));
+        }else{
+            sConfig.sigma.sigmaUndefined.insert(sigmaTypes.at(i), defaultAccuracies.value(sigmaTypes.at(i)));
+        }
+    }
+
+    //fill default connection parameters
+    QList<Configuration::ConnectionTypes> supportedConnectionTypes = *(mySensor->getConnectionType());
+    if(supportedConnectionTypes.size() > 0 && supportedConnectionTypes.at(0) == Configuration::eSerial){
+        sConfig.connConfig->typeOfConnection = Configuration::eSerial;
+        sConfig.connConfig->baudRate = QSerialPort::Baud1200;
+        sConfig.connConfig->comPort = "COM1";
+        sConfig.connConfig->dataBits = QSerialPort::Data5;
+        sConfig.connConfig->flowControl = QSerialPort::NoFlowControl;
+        sConfig.connConfig->parity = QSerialPort::NoParity;
+        sConfig.connConfig->stopBits = QSerialPort::OneStop;
+    }else if(supportedConnectionTypes.size() > 0 && supportedConnectionTypes.at(0) == Configuration::eNetwork){
+        sConfig.connConfig->typeOfConnection = Configuration::eNetwork;
+        sConfig.connConfig->ip = "127.0.0.1";
+        sConfig.connConfig->port = "80";
+    }
+
+    //fill default integer parameters
+    if(mySensor->getIntegerParameter() != NULL){
+        QMap<QString,int> integerParameters = *(mySensor->getIntegerParameter());
+        QStringList intParamNames = integerParameters.keys();
+        for(int i = 0; i < intParamNames.size(); ++i){
+            sConfig.integerParameter.insert(intParamNames.at(i), integerParameters.value(intParamNames.at(i)));
+        }
+    }
+
+    //fill default double parameters
+    if(mySensor->getDoubleParameter() != NULL){
+        QMap<QString,double> doubleParameters = *(mySensor->getDoubleParameter());
+        QStringList doubleParamNames = doubleParameters.keys();
+        for(int i = 0; i < doubleParamNames.size(); ++i){
+            sConfig.doubleParameter.insert(doubleParamNames.at(i), doubleParameters.value(doubleParamNames.at(i)));
+        }
+    }
+
+    //fill default string parameters
+    if(mySensor->getStringParameter() != NULL){
+        QMap<QString,QStringList> stringParameters = *(mySensor->getStringParameter());
+        QStringList stringParamNames = stringParameters.keys();
+        for(int i = 0; i < stringParamNames.size(); ++i){
+            sConfig.stringParameter.insert(stringParamNames.at(i), stringParameters.value(stringParamNames.at(i)).at(0));
+        }
+    }
+
+    return sConfig;
+
+}
+
+/*!
+ * \brief OiConfigState::getSensorConfig
+ * \param displayName
+ * \return
+ */
+SensorConfiguration OiConfigState::getSensorConfig(QString displayName){
+
+    //check saved sensor configs
+    foreach(const SensorConfiguration &config, OiConfigState::savedSensorConfigs){
+        QString configName = config.getDisplayName();
+        if(configName.compare(displayName) == 0){
+            return config;
+        }
+    }
+
+    //check project sensor configs
+    foreach(const SensorConfiguration &config, OiConfigState::projectSensorConfigs){
+        if(config.getDisplayName().compare(displayName) == 0){
+            return config;
+        }
+    }
+
+    return SensorConfiguration();
+
+}
+
+/*!
+ * \brief OiConfigState::addSensorConfig
+ * Adds the given sensor config to OpenIndy permanently or tries to edit an existing one
+ * \param sConfig
+ * \return
+ */
+bool OiConfigState::addSensorConfig(SensorConfiguration &sConfig){
+
+    //check if the given config exists as a project sensor config, if so return
+    foreach(const SensorConfiguration &config, OiConfigState::projectSensorConfigs){
+        if(config.getDisplayName().compare(sConfig.getDisplayName()) == 0){
+            return false;
+        }
+    }
+
+    //add the fiven sensor config to OpenIndy (or edit an existing one)
+    OiConfigState::saveSensorConfig(sConfig);
+    return true;
+
+}
+
+/*!
  * \brief OiConfigState::addProjectMeasurementConfig
  * Adds a measurement config from another project to current OpenIndy set up
  * \param mConfig
@@ -284,6 +434,15 @@ bool OiConfigState::setDefaultMeasurementConfig(MeasurementConfig mConfig, Confi
  */
 QStringListModel *OiConfigState::getMeasurementConfigNames(){
     return OiConfigState::measurementConfigNames;
+}
+
+/*!
+ * \brief OiConfigState::getSensorConfigNames
+ * Returns the names of all available sensor configs
+ * \return
+ */
+QStringListModel *OiConfigState::getSensorConfigNames(){
+    return OiConfigState::sensorConfigNames;
 }
 
 /*!
@@ -328,6 +487,27 @@ void OiConfigState::updateMeasurementConfigModels(){
     }
 
     OiConfigState::measurementConfigNames->setStringList(mConfigNames);
+
+}
+
+/*!
+ * \brief OiConfigState::updateSensorConfigModels
+ */
+void OiConfigState::updateSensorConfigModels(){
+
+    QStringList sConfigNames;
+
+    //add saved sensor configs
+    foreach(const SensorConfiguration &sConfig, OiConfigState::savedSensorConfigs){
+        sConfigNames.append(sConfig.name);
+    }
+
+    //add project specific sensor configs
+    foreach(const SensorConfiguration &sConfig, OiConfigState::projectSensorConfigs){
+        sConfigNames.append(sConfig.name);
+    }
+
+    OiConfigState::sensorConfigNames->setStringList(sConfigNames);
 
 }
 
@@ -442,6 +622,80 @@ void OiConfigState::loadSavedMeasurementConfigs(){
  */
 void OiConfigState::loadSavedSensorConfigs(){
 
+    QString appPath = qApp->applicationDirPath();
+    QDir appFolder(appPath);
+
+    //check if application folder exists and contains a subdirectory named config
+    if(!appFolder.exists() || !appFolder.exists("config/sensorConfigs")){
+        return;
+    }
+
+    //create folder object for sensor config folder
+    QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
+    if(!sConfigFolder.exists()){
+        return;
+    }
+
+    //get a list of all xml files inside the sensorConfigs folder
+    QStringList xmlFilter;
+    xmlFilter.append("*.xml");
+    QStringList fileNames = sConfigFolder.entryList(xmlFilter, QDir::Files);
+
+    //create a list that is filled with the names of the loaded sensor configs
+    QStringList sConfigNames;
+
+    //load all files and create a SensorConfig object for each of them
+    for(int i = 0; i < fileNames.size(); i++){
+
+        //create file from file name and check if it exists
+        QFile sConfigFile(sConfigFolder.absoluteFilePath(fileNames.at(i)));
+        if(!sConfigFile.exists()){
+            continue;
+        }
+
+        //try to parse the file content to a QDomDocument
+        QDomDocument sConfigXml;
+        if(!sConfigXml.setContent(&sConfigFile) || sConfigXml.isNull()){
+            continue;
+        }
+
+        //try to parse the file to a SensorConfig object
+        SensorConfiguration savedConfig;
+        QDomElement sConfigTag = sConfigXml.documentElement();
+        if(!savedConfig.fromOpenIndyXML(sConfigTag)){
+            continue;
+        }
+        savedConfig.isSaved = true;
+
+        //check if a sensor config with the same name has been loaded before
+        if(sConfigNames.contains(savedConfig.getName())){
+
+            //delete the config file permanently
+            sConfigFile.remove();
+            continue;
+
+        }
+        sConfigNames.append(savedConfig.getName());
+
+        //create sensor object and add it to sensor config
+        QString path = SystemDbManager::getPluginFilePath(savedConfig.sensorName, savedConfig.pluginName);
+        Sensor *mySensor = PluginLoader::loadSensorPlugin(path, savedConfig.sensorName);
+        savedConfig.mySensor = mySensor;
+        savedConfig.instrumentType = Configuration::getSensorTypeEnum(mySensor->getMetaData()->iid);
+
+        //add the loaded sensor config to the list of saved configs and emit the corresponding signal
+        OiConfigState::savedSensorConfigs.append(savedConfig);
+        OiConfigState::getInstance()->emitSignal(OiConfigState::eSensorConfigAdded);
+
+    }
+
+    //get default sensor config
+    QString sConfigName = SystemDbManager::getDefaultSensorConfig();
+    OiConfigState::defaultSensorConfig = OiConfigState::getSensorConfig(sConfigName);
+
+    //set sensor config names model
+    OiConfigState::updateSensorConfigModels();
+
 }
 
 /*!
@@ -501,6 +755,55 @@ void OiConfigState::saveMeasurementConfig(const MeasurementConfig &mConfig, bool
 
     //update the measurement config names model
     OiConfigState::updateMeasurementConfigModels();
+
+}
+
+/*!
+ * \brief OiConfigState::saveSensorConfig
+ * \param sConfig
+ */
+void OiConfigState::saveSensorConfig(const SensorConfiguration &sConfig){
+
+    //create xml document
+    QDomDocument sConfigXml("sensorConfig");
+
+    //add sConfig to document as xml
+    QDomElement root = sConfig.toOpenIndyXML(sConfigXml);
+    sConfigXml.appendChild(root);
+
+    //get config folder (create if does not exist yet)
+    QString appPath = qApp->applicationDirPath();
+    QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
+    if(!sConfigFolder.exists()){
+        sConfigFolder.mkpath(".");
+    }
+
+    //set the file name
+    QString fileName = sConfig.getName();
+
+    //save sConfig to xml file
+    QFile configFile(sConfigFolder.absoluteFilePath(fileName.append(".xml")));
+    configFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+    QTextStream stream(&configFile);
+    sConfigXml.save(stream, 4);
+    configFile.close();
+
+    //save sConfig in database
+    SystemDbManager::addSensorConfig(sConfig.getName());
+
+    //add sConfig to list of saved sensor configs
+    SensorConfiguration savedConfig = OiConfigState::getSensorConfig(sConfig.getDisplayName());
+    if(!savedConfig.getIsValid()){
+        OiConfigState::savedSensorConfigs.append(sConfig);
+        OiConfigState::savedSensorConfigs.last().setIsSaved(true);
+    }
+
+    //set sConfig as default config
+    OiConfigState::defaultSensorConfig = sConfig;
+    SystemDbManager::setDefaultSensorConfig(sConfig.getName());
+
+    //update the sensor config names model
+    OiConfigState::updateSensorConfigModels();
 
 }
 

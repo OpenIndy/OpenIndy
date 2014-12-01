@@ -11,6 +11,7 @@ public:
     ConnectionConfig();
 
     Configuration::ConnectionTypes typeOfConnection;
+
     QString ip;
     QString port;
     QString comPort;

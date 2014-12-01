@@ -4,7 +4,11 @@
 #include <QObject>
 #include <QMap>
 #include <QAbstractItemModel>
+#include <QStandardItemModel>
 #include <QStringListModel>
+#include <QSerialPortInfo>
+#include <QHostAddress>
+#include <QNetworkInterface>
 
 #include "systemdbmanager.h"
 #include "oifeaturestate.h"
@@ -25,6 +29,15 @@ public:
     static QStringListModel *getSimpleAsciiExchangePlugins(QString plugin);
     //static QStringListModel getDefinedFormatExchangePlugins();
 
+    static QStandardItemModel &getSensorTypes();
+    static QStandardItemModel &getBaudRateTypes();
+    static QStandardItemModel &getDataBitTypes();
+    static QStandardItemModel &getFlowControlTypes();
+    static QStandardItemModel &getParityTypes();
+    static QStandardItemModel &getStopBitTypes();
+    static QStandardItemModel &getAvailableSerialPorts();
+    static QStandardItemModel &getAvailableIpAdresses();
+
 private:
     static OiModelManager *myInstance;
 
@@ -34,10 +47,26 @@ private:
 
     static QStringListModel geometryTypes;
 
+    static QStandardItemModel sensorTypes;
+    static QStandardItemModel baudRateTypes;
+    static QStandardItemModel dataBitTypes;
+    static QStandardItemModel flowControlTypes;
+    static QStandardItemModel parityTypes;
+    static QStandardItemModel stopBitTypes;
+    static QStandardItemModel availableSerialPorts;
+    static QStandardItemModel availableIpAdresses;
+
     //static QStringListModel simpleAsciiExchangePlugins;
     //static QStringListModel definedFormatExchangePlugins;
 
+    //initialize all models provided by OiModelManager
     void initModels();
+
+    //helper methods to initialize the different models
+    void initSensorModels();
+
+
+
 
     //TODO think about a way to manage models (delete them when not necessary)
 };

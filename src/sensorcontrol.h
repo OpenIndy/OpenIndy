@@ -30,7 +30,7 @@ public:
     //instrument
     Sensor *instrument;
     QList<Sensor*> usedSensors;
-    SensorConfiguration *InstrumentConfig;
+    SensorConfiguration InstrumentConfig;
     SensorListener *instrumentListener;
 
     QThread listenerThread;

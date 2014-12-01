@@ -202,7 +202,7 @@ void MainWindow::setConnects(){
     //sensor plugin dialog
     connect(&this->sPluginDialog,SIGNAL(sendSensorType(Configuration::SensorTypes)),&this->control,SLOT(setSensorModel(Configuration::SensorTypes)));
     connect(&this->sPluginDialog,SIGNAL(selectedPlugin(int)),&this->control,SLOT(getSelectedPlugin(int)));
-    connect(&this->sPluginDialog,SIGNAL(sendSensorConfig(SensorConfiguration*,bool)),&this->control,SLOT(receiveSensorConfiguration(SensorConfiguration*,bool)));
+    connect(&this->sPluginDialog,SIGNAL(sendSensorConfig(SensorConfiguration,bool)),&this->control,SLOT(receiveSensorConfiguration(SensorConfiguration,bool)));
     connect(&this->control,SIGNAL(sendSQLModel(QSqlQueryModel*)),&this->sPluginDialog,SLOT(receiveModel(QSqlQueryModel*)));
     connect(&this->sPluginDialog,SIGNAL(selectedTempPlugin(int)),&this->control,SLOT(getTempSensor(int)));
     connect(&this->control,SIGNAL(sendTempSensor(Sensor*)),&this->sPluginDialog,SLOT(receiveTempSensor(Sensor*)));
@@ -592,15 +592,15 @@ void MainWindow::on_actionControl_pad_triggered()
     }else{
         ui->toolBar_ControlPad->show();
 
-        if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
+        //if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
 
             QString sensorName = OiFeatureState::getActiveStation()->sensorPad->instrument->getMetaData()->name;
             labelSensorControlName->setText(sensorName);
 
-            if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eLaserTracker){ //laser tracker
+            if(OiFeatureState::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eLaserTracker){ //laser tracker
                 setupLaserTrackerPad();
 
-            }else if(OiFeatureState::getActiveStation()->getInstrumentConfig()->instrumentType==Configuration::eTotalStation){ //total station
+            }else if(OiFeatureState::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eTotalStation){ //total station
                 setupTotalStationPad();
 
             }else{ //any sensor
@@ -628,7 +628,7 @@ void MainWindow::on_actionControl_pad_triggered()
 
                 }
             }
-        }
+        //}
     }
 }
 

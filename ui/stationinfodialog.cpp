@@ -26,7 +26,7 @@ void StationInfoDialog::showEvent(QShowEvent *event)
     this->setWindowTitle(QString("information abaout " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
     if(OiFeatureState::getActiveFeature()->getStation() != NULL && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL){
         ui->label_activeSensor->setText(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getMetaData()->name);
-        ui->lineEdit_configName->setText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->name);
+        ui->lineEdit_configName->setText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().getName());
         getReadingType();
         getSensorConfiguration();
         getSensorParameters();
@@ -104,15 +104,15 @@ void StationInfoDialog::getSensorConfiguration()
     ui->label_sigmaZ->setText(QString("sigma z " + UnitConverter::getDistanceUnitString()));
     ui->label_sigmaZenith->setText(QString("sigma zenith " + UnitConverter::getAngleUnitString()));
 
-    ui->lineEdit_sigmaAzimuth->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaAzimuth*UnitConverter::getAngleMultiplier()));
-    ui->lineEdit_sigmaDistance->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaDistance*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaZenith->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaZenith*UnitConverter::getAngleMultiplier()));
-    ui->lineEdit_sigmaTemperature->setText(QString::number(UnitConverter::getTemperature(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaTemp)));
-    ui->lineEdit_sigmaX->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaY->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaXZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaAngleXZ*UnitConverter::getAngleMultiplier()));
-    ui->lineEdit_sigmaYZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaAngleYZ*UnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaAzimuth->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaAzimuth*UnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaDistance->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaDistance*UnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaZenith->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaZenith*UnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaTemperature->setText(QString::number(UnitConverter::getTemperature(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaTemp)));
+    ui->lineEdit_sigmaX->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaY->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaXZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaAngleXZ*UnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaYZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaAngleYZ*UnitConverter::getAngleMultiplier()));
 }
 
 /*!
@@ -182,7 +182,7 @@ void StationInfoDialog::getReadingType()
                         l->setText(j.key());
                         QLineEdit *le = new QLineEdit();
                         //le->setText(QString::number(j.value()));
-                        le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->sigma.sigmaUndefined.value(j.key())));
+                        le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaUndefined.value(j.key())));
 
                         QHBoxLayout *layout = new QHBoxLayout();
                         layout->addWidget(l);
@@ -251,7 +251,7 @@ void StationInfoDialog::getSensorParameters()
             l->setText(j.key());
             QLineEdit *le = new QLineEdit();
             //le->setText(QString::number(j.value()));
-            le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->doubleParameter.value(j.key())));
+            le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().doubleParameter.value(j.key())));
 
             QHBoxLayout *layout = new QHBoxLayout();
             layout->addWidget(l);
@@ -279,7 +279,7 @@ void StationInfoDialog::getSensorParameters()
             l->setText(k.key());
             QLineEdit *le = new QLineEdit();
             //le->setText(QString::number(k.value()));
-            le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->integerParameter.value(k.key())));
+            le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().integerParameter.value(k.key())));
 
             QHBoxLayout *layout = new QHBoxLayout();
             layout->addWidget(l);
@@ -309,7 +309,7 @@ void StationInfoDialog::getSensorParameters()
             for(int a=0;a< m.value().size();a++){
                 cb->addItem(m.value().at(a));
             }
-            cb->setCurrentIndex(cb->findText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->stringParameter.value(m.key())));
+            cb->setCurrentIndex(cb->findText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().stringParameter.value(m.key())));
 
             QHBoxLayout *layout = new QHBoxLayout();
             layout->addWidget(l);
@@ -426,9 +426,9 @@ void StationInfoDialog::destructDynamicGUI()
  */
 void StationInfoDialog::initSensorConfiguration()
 {
-    sensorConfig = new SensorConfiguration();
+    /*sensorConfig = new SensorConfiguration();
 
-    sensorConfig->name = ui->lineEdit_configName->text();
+    //sensorConfig->name = ui->lineEdit_configName->text();
     sensorConfig->instrumentType = OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->instrumentType;
 
     sensorConfig->connConfig->baudRate = static_cast<QSerialPort::BaudRate>(ui->comboBox_baudrate->itemData(ui->comboBox_baudrate->currentIndex()).toInt());
@@ -477,7 +477,7 @@ void StationInfoDialog::initSensorConfiguration()
     while(m.hasNext()){
         m.next();
         sensorConfig->stringParameter.insert(m.key(),m.value()->currentText());
-    }
+    }*/
 }
 
 /*!
@@ -485,7 +485,7 @@ void StationInfoDialog::initSensorConfiguration()
  */
 void StationInfoDialog::initConnection()
 {
-    if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getConnectionType() != NULL){
+    /*if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getConnectionType() != NULL){
 
         QList<Configuration::ConnectionTypes> conTypes = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getConnectionType();
         for(int i=0; i<conTypes.size();i++){
@@ -553,6 +553,7 @@ void StationInfoDialog::initConnection()
     ui->comboBox_ip->setCurrentIndex(ui->comboBox_ip->findText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->ip));
     ui->lineEdit_ip->setText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->ip);
     ui->lineEdit_port->setText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig()->connConfig->port);
+*/
 }
 
 /*!
