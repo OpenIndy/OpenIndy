@@ -620,9 +620,9 @@ bool OiProjectExchanger::restoreStationDependencies(const QDomDocument &project)
                 }else{
                     result = false;
                 }
-            }else{
+            }/*else{
                 result = false;
-            }
+            }*/
 
             //set position point
             QDomElement position = station.firstChildElement("position");
