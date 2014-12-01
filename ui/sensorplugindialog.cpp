@@ -60,6 +60,12 @@ void SensorPluginDialog::on_pushButton_ok_clicked(){
         return;
     }
 
+    //check if the sensor plugin is available
+    if(this->selectedSConfig.mySensor == NULL){
+        Console::addLine("Selected sensor plugin not available.");
+        return;
+    }
+
     //save or edit the sensor config
     this->setSensorConfigFromGUI();
     this->selectedSConfig.setName(this->ui->comboBox_sensorConfig->currentText());

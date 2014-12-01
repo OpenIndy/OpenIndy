@@ -680,8 +680,10 @@ void OiConfigState::loadSavedSensorConfigs(){
         //create sensor object and add it to sensor config
         QString path = SystemDbManager::getPluginFilePath(savedConfig.sensorName, savedConfig.pluginName);
         Sensor *mySensor = PluginLoader::loadSensorPlugin(path, savedConfig.sensorName);
-        savedConfig.mySensor = mySensor;
-        savedConfig.instrumentType = Configuration::getSensorTypeEnum(mySensor->getMetaData()->iid);
+        if(mySensor != NULL){
+            savedConfig.mySensor = mySensor;
+            savedConfig.instrumentType = Configuration::getSensorTypeEnum(mySensor->getMetaData()->iid);
+        }
 
         //add the loaded sensor config to the list of saved configs and emit the corresponding signal
         OiConfigState::savedSensorConfigs.append(savedConfig);

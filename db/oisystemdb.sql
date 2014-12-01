@@ -31,6 +31,16 @@ CREATE TABLE sensorConfig (
 	use_as_default boolean
 );
 
+-- alle simulation plugins
+CREATE TABLE simulationPlugin (
+	id integer PRIMARY KEY autoincrement,
+	iid text,
+	plugin_id integer,
+	name text,
+	description text,
+	FOREIGN KEY (plugin_id) REFERENCES plugin(id)
+);
+
 -- alle Sensoren eines Plugins
 CREATE TABLE sensorPlugin (
 	id integer PRIMARY KEY autoincrement,
