@@ -16,6 +16,7 @@
 #include "console.h"
 #include "configuration.h"
 #include "oirequesthandler.h"
+#include "oiconfigstate.h"
 
 #include <QtXml>
 
@@ -30,12 +31,13 @@ private:
     static QDomDocument saveProject();
     static bool loadProject(const QDomDocument &project);
 
-    //helper methods for loading different types of elements
+    //helper methods for loading different types of elements & configs
     static bool loadObservations(const QDomDocument &project);
     static bool loadStations(const QDomDocument &project);
     static bool loadCoordinateSystems(const QDomDocument &project);
     static bool loadTransformationParameters(const QDomDocument &project);
     static bool loadGeometries(const QDomDocument &project);
+    static bool loadConfigs(const QDomDocument &project);
 
     //helper methods for restoring the dependencies between the loaded elements
     static bool restoreStationDependencies(const QDomDocument &project);
@@ -53,6 +55,10 @@ private:
     static QMap<int, FeatureWrapper *> myCoordinateSystems;
     static QMap<int, FeatureWrapper *> myTransformationParameters;
     static QMap<int, FeatureWrapper *> myGeometries;
+
+    //helper maps to load configs (QString is the name)
+    static QMap<QString, MeasurementConfig> myMConfigs;
+    static QMap<QString, SensorConfiguration> mySConfigs;
 
     static void clearHelperMaps(bool deleteOnClear);
 

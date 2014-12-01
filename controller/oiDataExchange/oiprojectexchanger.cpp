@@ -9,6 +9,8 @@ QMap<int, FeatureWrapper *> OiProjectExchanger::myCoordinateSystems;
 QMap<int, FeatureWrapper *> OiProjectExchanger::myTransformationParameters;
 QMap<int, FeatureWrapper *> OiProjectExchanger::myGeometries;
 QList<int> OiProjectExchanger::stationPoints;
+QMap<QString, MeasurementConfig> OiProjectExchanger::myMConfigs;
+QMap<QString, SensorConfiguration> OiProjectExchanger::mySConfigs;
 
 /*!
  * \brief OiProjectExchanger::saveProject
@@ -128,6 +130,36 @@ QDomDocument OiProjectExchanger::saveProject(){
     }
     root.appendChild(observations);
 
+    //add configs
+
+    //TODO only save necessary mConfigs
+
+    QDomElement configs = project.createElement("configs");
+    QDomElement measurementConfigs = project.createElement("measurementConfigs");
+    QDomElement sensorConfigs = project.createElement("sensorConfigs");
+
+    //add measurement configs
+    QList<MeasurementConfig> mConfigs = OiConfigState::getAllMeasurementConfigs();
+    foreach(const MeasurementConfig &mConfig, mConfigs){
+        QDomElement config = mConfig.toOpenIndyXML(project);
+        if(!config.isNull()){
+            measurementConfigs.appendChild(config);
+        }
+    }
+    configs.appendChild(measurementConfigs);
+
+    //add sensor configs
+    QList<SensorConfiguration> sConfigs = OiConfigState::getAllSensorConfigs();
+    foreach(const SensorConfiguration &sConfig, sConfigs){
+        QDomElement config = sConfig.toOpenIndyXML(project);
+        if(!config.isNull()){
+            sensorConfigs.appendChild(config);
+        }
+    }
+    configs.appendChild(sensorConfigs);
+
+    root.appendChild(configs);
+
     return project;
 
 }
@@ -147,7 +179,8 @@ bool OiProjectExchanger::loadProject(const QDomDocument &project){
             || !OiProjectExchanger::loadStations(project)
             || !OiProjectExchanger::loadCoordinateSystems(project)
             || !OiProjectExchanger::loadTransformationParameters(project)
-            || !OiProjectExchanger::loadGeometries(project)){
+            || !OiProjectExchanger::loadGeometries(project)
+            || !OiProjectExchanger::loadConfigs(project)){
 
         //clear all created elements if an error occured in one of the loading helpers (e.g. no station available)
         OiProjectExchanger::clearHelperMaps(true);
@@ -187,6 +220,14 @@ bool OiProjectExchanger::loadProject(const QDomDocument &project){
         if(!OiProjectExchanger::stationPoints.contains(geometry->getGeometry()->getId())){
             OiFeatureState::addFeature(geometry);
         }
+    }
+
+    //add configs to OiConfigState
+    foreach(const MeasurementConfig &mConfig, OiProjectExchanger::myMConfigs){
+        OiConfigState::addProjectMeasurementConfig(mConfig);
+    }
+    foreach(const SensorConfiguration &sConfig, OiProjectExchanger::mySConfigs){
+        OiConfigState::addProjectSensorConfig(sConfig);
     }
 
     //set active station and active coordinate system
@@ -559,6 +600,49 @@ bool OiProjectExchanger::loadGeometries(const QDomDocument &project){
             //add the feature wrapper to the list of successfully loaded geometries
             OiProjectExchanger::myGeometries.insert(myFeatureWrapper->getFeature()->getId(), myFeatureWrapper);
 
+        }
+
+    }
+
+    return true;
+
+}
+
+/*!
+ * \brief OiProjectExchanger::loadConfigs
+ * \param project
+ * \return
+ */
+bool OiProjectExchanger::loadConfigs(const QDomDocument &project){
+
+    QDomElement configs = project.documentElement().firstChildElement("configs");
+
+    if(!configs.isNull()){
+
+        //measurement configs
+        QDomElement mConfigs = configs.firstChildElement("measurementConfigs");
+        if(!mConfigs.isNull()){
+            QDomNodeList mConfigList = mConfigs.childNodes();
+            for(int i = 0; i < mConfigList.size(); ++i){
+                QDomElement mConfigElement = mConfigList.at(i).toElement();
+                MeasurementConfig mConfig;
+                if(mConfig.fromOpenIndyXML(mConfigElement)){
+                    OiProjectExchanger::myMConfigs.insert(mConfig.getName(), mConfig);
+                }
+            }
+        }
+
+        //sensor configs
+        QDomElement sConfigs = configs.firstChildElement("sensorConfigs");
+        if(!sConfigs.isNull()){
+            QDomNodeList sConfigList = sConfigs.childNodes();
+            for(int i = 0; i < sConfigList.size(); ++i){
+                QDomElement sConfigElement = sConfigList.at(i).toElement();
+                SensorConfiguration sConfig;
+                if(sConfig.fromOpenIndyXML(sConfigElement)){
+                    OiProjectExchanger::mySConfigs.insert(sConfig.getName(), sConfig);
+                }
+            }
         }
 
     }
@@ -1013,6 +1097,13 @@ bool OiProjectExchanger::restoreGeometryDependencies(const QDomDocument &project
             if(!nominalSystem.isNull() && nominalSystem.hasAttribute("ref") && OiProjectExchanger::myCoordinateSystems.contains(nominalSystem.attribute("ref").toInt())){
                 FeatureWrapper *myNominalSystem = OiProjectExchanger::myCoordinateSystems.value(nominalSystem.attribute("ref").toInt());
                 myGeometry->getGeometry()->setNominalSystem(myNominalSystem->getCoordinateSystem());
+            }
+
+            //set measurement configs
+            QDomElement mConfigElement = geometry.firstChildElement("measurementConfig");
+            if(!mConfigElement.isNull() && mConfigElement.hasAttribute("name") && OiProjectExchanger::myMConfigs.contains(mConfigElement.attribute("name"))){
+                MeasurementConfig mConfig = OiProjectExchanger::myMConfigs.value(mConfigElement.attribute("name"));
+                myGeometry->getGeometry()->setMeasurementConfig(mConfig);
             }
 
         }

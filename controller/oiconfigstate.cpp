@@ -37,6 +37,50 @@ OiConfigState *OiConfigState::getInstance(){
 }
 
 /*!
+ * \brief OiConfigState::getSavedMeasurementConfigs
+ * \return
+ */
+const QList<MeasurementConfig> &OiConfigState::getSavedMeasurementConfigs(){
+    return OiConfigState::savedMeasurementConfigs;
+}
+
+/*!
+ * \brief OiConfigState::getProjectMeasurementConfigs
+ * \return
+ */
+const QList<MeasurementConfig> &OiConfigState::getProjectMeasurementConfigs(){
+    return OiConfigState::projectMeasurementConfigs;
+}
+
+/*!
+ * \brief OiConfigState::getAllMeasurementConfigs
+ * \return
+ */
+QList<MeasurementConfig> OiConfigState::getAllMeasurementConfigs(){
+
+    QList<MeasurementConfig> result;
+
+    foreach(const MeasurementConfig &mConfig, OiConfigState::savedMeasurementConfigs){
+        result.append(mConfig);
+    }
+
+    return result;
+
+}
+
+QList<MeasurementConfig> OiConfigState::getUsedMeasurementConfigs(){
+
+    QList<MeasurementConfig> result;
+
+    foreach(const QString &mConfigName, OiConfigState::usedMeasurementConfigs.keys()){
+        result.append(OiConfigState::getMeasurementConfig(mConfigName));
+    }
+
+    return result;
+
+}
+
+/*!
  * \brief OiConfigState::getMeasurementConfig
  * \param displayName
  * \return
@@ -174,6 +218,16 @@ bool OiConfigState::addMeasurementConfig(MeasurementConfig &mConfig){
 }
 
 /*!
+ * \brief OiConfigState::addProjectMeasurementConfig
+ * \param mConfig
+ * \return
+ */
+bool OiConfigState::addProjectMeasurementConfig(const MeasurementConfig &mConfig){
+    OiConfigState::projectMeasurementConfigs.append(mConfig);
+    return true;
+}
+
+/*!
  * \brief OiConfigState::setDefaultMeasurementConfig
  * \param mConfig
  * \param typeOfFeature
@@ -254,6 +308,22 @@ bool OiConfigState::setDefaultMeasurementConfig(MeasurementConfig mConfig, Confi
     }
 
     return true;
+
+}
+
+/*!
+ * \brief OiConfigState::getAllSensorConfigs
+ * \return
+ */
+QList<SensorConfiguration> OiConfigState::getAllSensorConfigs(){
+
+    QList<SensorConfiguration> result;
+
+    foreach(const SensorConfiguration &sConfig, OiConfigState::savedSensorConfigs){
+        result.append(sConfig);
+    }
+
+    return result;
 
 }
 
@@ -401,6 +471,15 @@ bool OiConfigState::addSensorConfig(SensorConfiguration &sConfig){
     OiConfigState::saveSensorConfig(sConfig);
     return true;
 
+}
+
+/*!
+ * \brief OiConfigState::addProjectSensorConfig
+ * \param sConfig
+ * \return
+ */
+bool OiConfigState::addProjectSensorConfig(const SensorConfiguration &sConfig){
+    OiConfigState::projectSensorConfigs.append(sConfig);
 }
 
 /*!

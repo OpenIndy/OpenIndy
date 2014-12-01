@@ -29,14 +29,18 @@ public:
     static const QList<MeasurementConfig> &getSavedMeasurementConfigs();
     static const QList<MeasurementConfig> &getProjectMeasurementConfigs();
     static QList<MeasurementConfig> getAllMeasurementConfigs();
+    static QList<MeasurementConfig> getUsedMeasurementConfigs();
     static MeasurementConfig getMeasurementConfig(QString displayName);
     static bool addMeasurementConfig(MeasurementConfig &mConfig);
+    static bool addProjectMeasurementConfig(const MeasurementConfig &mConfig);
     static bool setDefaultMeasurementConfig(MeasurementConfig mConfig, Configuration::FeatureTypes typeOfFeature);
 
     //sensor config
+    static QList<SensorConfiguration> getAllSensorConfigs();
     static SensorConfiguration createConfigFromSensor(QString pluginName, QString sensorName);
     static SensorConfiguration getSensorConfig(QString displayName);
     static bool addSensorConfig(SensorConfiguration &sConfig);
+    static bool addProjectSensorConfig(const SensorConfiguration &sConfig);
 
     //get models to represent config data
     static QStringListModel *getMeasurementConfigNames();
