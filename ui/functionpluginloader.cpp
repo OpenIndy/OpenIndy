@@ -290,9 +290,10 @@ bool FunctionPluginLoader::checkChildren(FeatureTreeItem *item, Configuration::E
  * \param neededType
  */
 void FunctionPluginLoader::setUpSelectedElements(QList<FeatureTreeItem *> &result, FeatureTreeItem *item, Configuration::ElementTypes neededType){
-
+    FeatureTreeItem *copy = new FeatureTreeItem(item->getDisplayValue());
+    *copy = *item;
     if(item->getElementType() == neededType){
-        result.append(item);
+        result.append(copy);
     }else{
         for(int i = 0; i < item->getChildCount(); i++){
             setUpSelectedElements(result, item->getChild(i), neededType);

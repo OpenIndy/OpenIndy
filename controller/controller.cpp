@@ -1094,7 +1094,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                     for(int i = 0; i < featurePosition.size(); i++){
                         Observation *o = func->getObservation(featurePosition.at(i).id);
                         if(o != NULL && o->myReading != NULL){
-                            FeatureTreeItem *observation = new FeatureTreeItem(o->myReading->measuredAt.toString());
+                            FeatureTreeItem *observation = new FeatureTreeItem(QString::number(o->myReading->id));
                             observation->setObservation(o);
                             this->usedElementsModel->addElement(observation);
                         }
