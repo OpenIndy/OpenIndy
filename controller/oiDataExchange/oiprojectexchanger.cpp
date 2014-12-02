@@ -702,7 +702,8 @@ bool OiProjectExchanger::restoreStationDependencies(const QDomDocument &project)
                 if(mySensor != NULL){
                     myStation->getStation()->sensorPad->instrument = mySensor;
                 }else{
-                    result = false;
+                    myStation->getStation()->sensorPad->instrument = NULL;
+                    //result = false;
                 }
             }/*else{
                 result = false;
