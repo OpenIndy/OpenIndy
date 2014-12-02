@@ -134,6 +134,24 @@ void SensorPluginDialog::receiveModel(QSqlQueryModel *sqlModel){
         ui->tableView_sensorPlugins->setModel(sqlModel);
     }
 
+    //select the right row in the table model
+    if(this->ui->tableView_sensorPlugins->model() != NULL
+            && this->selectedSConfig.getIsValid()
+                && this->ui->tableView_sensorPlugins->model()->hasIndex(0, 0)){
+        QModelIndex startIndex = this->ui->tableView_sensorPlugins->model()->index(0, 0);
+        if(!startIndex.isValid()){
+            return;
+        }
+        QModelIndexList modelIndexes = this->ui->tableView_sensorPlugins->model()->match(startIndex, Qt::DisplayRole,
+                                                                                         this->selectedSConfig.sensorName);
+        if(modelIndexes.size() == 0){
+            return;
+        }
+        this->ui->tableView_sensorPlugins->selectionModel()->setCurrentIndex(modelIndexes.at(0), QItemSelectionModel::Select);
+
+        this->setGUIFromSensorConfig();
+    }
+
 }
 
 /*!
@@ -167,7 +185,7 @@ void SensorPluginDialog::handleTableClicked(const QModelIndex &idx){
     //set description
     QModelIndex modelIdxDescription = ui->tableView_sensorPlugins->model()->index(idx.row(), 1);
     QString description = this->ui->tableView_sensorPlugins->model()->data(modelIdxDescription).toString();
-    this->ui->textBrowser_description->append(description);
+    this->ui->textBrowser_description->setText(description);
 
 }
 
@@ -550,8 +568,24 @@ void SensorPluginDialog::closeEvent(QCloseEvent *event){
 
 void SensorPluginDialog::showEvent(QShowEvent *event)
 {
+
+
     qSqlModel = NULL;
     qSqlModel = new QSqlQueryModel();
+
+    //select the default sensor config
+    SensorConfiguration defaultConfig = OiConfigState::getDefaultSensorConfig();
+
+
+    this->initModels();
+
+    this->selectedSConfig = defaultConfig;
+
+    //set combo box to default config
+    if(defaultConfig.getIsValid()){
+        this->ui->comboBox_sensorConfig->setCurrentText(defaultConfig.getDisplayName());
+        emit sendSensorType(defaultConfig.instrumentType);
+    }
 
     //put the dialog in the screen center
     const QRect screen = QApplication::desktop()->screenGeometry();

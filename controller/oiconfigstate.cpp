@@ -469,6 +469,7 @@ bool OiConfigState::addSensorConfig(SensorConfiguration &sConfig){
     }
 
     //add the fiven sensor config to OpenIndy (or edit an existing one)
+    sConfig.setIsSaved(true);
     OiConfigState::saveSensorConfig(sConfig);
     return true;
 
@@ -483,6 +484,14 @@ bool OiConfigState::addProjectSensorConfig(const SensorConfiguration &sConfig){
     OiConfigState::updateSensorConfigModels();
     OiConfigState::projectSensorConfigs.append(sConfig);
     return true;
+}
+
+/*!
+ * \brief OiConfigState::getDefaultSensorConfig
+ * \return
+ */
+SensorConfiguration OiConfigState::getDefaultSensorConfig(){
+    return OiConfigState::defaultSensorConfig;
 }
 
 /*!
