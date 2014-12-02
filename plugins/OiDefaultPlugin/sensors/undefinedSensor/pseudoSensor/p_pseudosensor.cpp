@@ -81,7 +81,7 @@ QMap<QString, double> *PseudoSensor::getDefaultAccuracy() const
 {
     QMap<QString, double>* undefinedSigma = new QMap<QString, double>;
 
-    undefinedSigma->insert("pseudo sigma", 0.54);
+    undefinedSigma->insert("pseudoSigma", 0.54);
 
     return undefinedSigma;
 }

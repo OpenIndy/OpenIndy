@@ -735,6 +735,7 @@ void OiConfigState::loadSavedSensorConfigs(){
 
         //try to parse the file content to a QDomDocument
         QDomDocument sConfigXml;
+        QString error;
         if(!sConfigXml.setContent(&sConfigFile) || sConfigXml.isNull()){
             continue;
         }
