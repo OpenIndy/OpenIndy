@@ -677,7 +677,8 @@ void MainWindow::on_actionMeasurement_Configuration_triggered()
         mConfigDialog.show();
     }*/
 
-    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL
+            || OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
         return;
     }
 
