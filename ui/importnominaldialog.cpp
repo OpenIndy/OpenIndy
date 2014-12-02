@@ -27,6 +27,10 @@ void ImportNominalDialog::showEvent(QShowEvent *event){
     this->ui->comboBox_geometry_sa->setModel(&OiModelManager::getGeometryTypesModel());
     //this->ui->comboBox_exchange_sa->setModel(OiModelManager::getSimpleAsciiExchangePlugins());
 
+    this->ui->comboBox_distance_sa->setModel(&OiModelManager::getDistanceUnitsModel());
+    this->ui->comboBox_angle_sa->setModel(&OiModelManager::getAngleUnitsModel());
+    this->ui->comboBox_temperature_sa->setModel(&OiModelManager::getTemperatureUnitsModel());
+
     event->accept();
 }
 
@@ -277,8 +281,10 @@ void ImportNominalDialog::on_pushButton_cancel_sa_clicked()
     this->close();
 }
 
-void ImportNominalDialog::on_pushButton_import_sa_clicked()
-{
+/*!
+ * \brief ImportNominalDialog::on_pushButton_import_sa_clicked
+ */
+void ImportNominalDialog::on_pushButton_import_sa_clicked(){
 
     QIODevice *myDevice = new QFile(this->ui->lineEdit_file_sa->text());
 
@@ -288,15 +294,24 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked()
     OiExchangeSimpleAscii *exchange = PluginLoader::loadOiExchangeSimpleAsciiPlugin(
                 SystemDbManager::getPluginFilePath(this->ui->comboBox_exchange_sa->currentText(), this->ui->comboBox_plugin_sa->currentText()), this->ui->comboBox_exchange_sa->currentText());
 
+    //set nominal system for imported geometries
     exchange->setNominalSystem(OiFeatureState::getNominalSystem(this->ui->comboBox_system_sa->currentText()));
     exchange->setGeometryType(Configuration::ePointGeometry);
 
+    //set selected column order
     QList<OiExchangeSimpleAscii::ColumnType> userDefinedColumns;
     userDefinedColumns.append(OiExchangeSimpleAscii::eColumnFeatureName);
     userDefinedColumns.append(OiExchangeSimpleAscii::eColumnX);
     userDefinedColumns.append(OiExchangeSimpleAscii::eColumnY);
     userDefinedColumns.append(OiExchangeSimpleAscii::eColumnZ);
     exchange->setUserDefinedColumns(userDefinedColumns);
+
+    //set units
+    QMap<UnitConverter::dimensionType, UnitConverter::unitType> selectedUnits;
+    selectedUnits.insert(UnitConverter::eMetric, UnitConverter::getUnitType(this->ui->comboBox_distance_sa->currentText()));
+    selectedUnits.insert(UnitConverter::eTemperature, UnitConverter::getUnitType(this->ui->comboBox_angle_sa->currentText()));
+    selectedUnits.insert(UnitConverter::eAngular, UnitConverter::getUnitType(this->ui->comboBox_temperature_sa->currentText()));
+    exchange->setUnits(selectedUnits);
 
     OiDataExchanger::importData(exchange, *myexchangeObject);
 

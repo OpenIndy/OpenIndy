@@ -161,6 +161,7 @@ void OiDataExchanger::runDataExchange(){
             if(myFeature->getGeometry()->getFeatureName().compare("") == 0){
                 myFeature->getGeometry()->setFeatureName(QString("%1").arg(Configuration::generateID()));
             }
+            myFeature->getGeometry()->setIsSolved(true);
         }
         OiFeatureState::addFeatures(OiDataExchanger::currentTask.projectData.features);
     }

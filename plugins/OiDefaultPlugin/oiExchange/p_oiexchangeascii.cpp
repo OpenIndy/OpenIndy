@@ -311,6 +311,19 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
                         x = columns.at(i).toDouble(&errorWhileParsing);
                         errorWhileParsing = !errorWhileParsing;
 
+                        //transform the unit of the imported coordinate to [m]
+                        if(this->units.contains(UnitConverter::eMetric)
+                                && this->units.value(UnitConverter::eMetric) != UnitConverter::eMETER){
+                            switch(this->units.value(UnitConverter::eMetric)){
+                            case UnitConverter::eMILLIMETER:
+                                x = x / 1000.0;
+                                break;
+                            case UnitConverter::eInch:
+                                x = x / 39.37007874;
+                                break;
+                            }
+                        }
+
                         if(!errorWhileParsing){
                             myNominal->xyz.setAt(0, x);
                         }
@@ -323,6 +336,19 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
                         y = columns.at(i).toDouble(&errorWhileParsing);
                         errorWhileParsing = !errorWhileParsing;
 
+                        //transform the unit of the imported coordinate to [m]
+                        if(this->units.contains(UnitConverter::eMetric)
+                                && this->units.value(UnitConverter::eMetric) != UnitConverter::eMETER){
+                            switch(this->units.value(UnitConverter::eMetric)){
+                            case UnitConverter::eMILLIMETER:
+                                y = y / 1000.0;
+                                break;
+                            case UnitConverter::eInch:
+                                y = y / 39.37007874;
+                                break;
+                            }
+                        }
+
                         if(!errorWhileParsing){
                             myNominal->xyz.setAt(1, y);
                         }
@@ -334,6 +360,19 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
                         double z = 0.0;
                         z = columns.at(i).toDouble(&errorWhileParsing);
                         errorWhileParsing = !errorWhileParsing;
+
+                        //transform the unit of the imported coordinate to [m]
+                        if(this->units.contains(UnitConverter::eMetric)
+                                && this->units.value(UnitConverter::eMetric) != UnitConverter::eMETER){
+                            switch(this->units.value(UnitConverter::eMetric)){
+                            case UnitConverter::eMILLIMETER:
+                                z = z / 1000.0;
+                                break;
+                            case UnitConverter::eInch:
+                                z = z / 39.37007874;
+                                break;
+                            }
+                        }
 
                         if(!errorWhileParsing){
                             myNominal->xyz.setAt(2, z);

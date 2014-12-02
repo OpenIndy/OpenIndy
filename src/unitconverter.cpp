@@ -57,7 +57,7 @@ void UnitConverter::setDistanceUnit(unitType scalar){
         UnitConverter::distanceType = scalar;
         break;
     case UnitConverter::eMILLIMETER:
-        UnitConverter::distanceMultiplier = 1000;
+        UnitConverter::distanceMultiplier = 1000.0;
         UnitConverter::distanceType = scalar;
         break;
     case UnitConverter::eInch:
