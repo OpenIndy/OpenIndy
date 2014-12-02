@@ -442,6 +442,10 @@ void FunctionPluginLoader::on_cmd_addElement_clicked(){
                 emit this->addElement(item, this->selectedFunctionIndex.parent().row(), this->selectedFunctionIndex.row());
             }
 
+            /*foreach(FeatureTreeItem *item, selectedElements){
+                delete item;
+            }*/
+
             //enable used elements treeview
             this->ui->treeView_usedElements->setEnabled(true);
 

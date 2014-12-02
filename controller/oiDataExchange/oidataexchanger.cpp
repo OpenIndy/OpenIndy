@@ -146,16 +146,16 @@ void OiDataExchanger::runDataExchange(){
 
 
     //run the im- or export task
-    if(currentTask.isImport){
-        currentTask.plugin->importOiData(currentTask.projectData);
+    if(this->currentTask.isImport){
+        this->currentTask.plugin->importOiData(this->currentTask.projectData);
     }else{
-        currentTask.plugin->exportOiData(currentTask.projectData);
+        this->currentTask.plugin->exportOiData(this->currentTask.projectData);
     }
 
-    qDebug() << "available features: " << currentTask.projectData.features.size();
+    qDebug() << "available features: " << this->currentTask.projectData.features.size();
 
     //add the imported features to OpenIndy
-    if(currentTask.isImport){
+    if(this->currentTask.isImport){
         //OiLoadingDialog::getInstance()->updateProgress(99, "adding imported nominals to OpenIndy");
         foreach(FeatureWrapper *myFeature, currentTask.projectData.features){
             if(myFeature->getGeometry()->getFeatureName().compare("") == 0){
@@ -163,7 +163,7 @@ void OiDataExchanger::runDataExchange(){
             }
             myFeature->getGeometry()->setIsSolved(true);
         }
-        OiFeatureState::addFeatures(OiDataExchanger::currentTask.projectData.features);
+        OiFeatureState::addFeatures(this->currentTask.projectData.features);
     }
 
 
@@ -179,6 +179,9 @@ void OiDataExchanger::runDataExchange(){
 
     disconnect(&OiDataExchanger::myExchangeThread, SIGNAL(started()), OiDataExchanger::myInstance, SLOT(runDataExchange()));
     disconnect(OiDataExchanger::myInstance, SIGNAL(exchangeFinished()), OiLoadingDialog::getInstance(), SLOT(finished()));
+
+    //delete done task
+    delete this->currentTask.plugin;
 
 }
 

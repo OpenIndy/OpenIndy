@@ -294,6 +294,11 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked(){
     OiExchangeSimpleAscii *exchange = PluginLoader::loadOiExchangeSimpleAsciiPlugin(
                 SystemDbManager::getPluginFilePath(this->ui->comboBox_exchange_sa->currentText(), this->ui->comboBox_plugin_sa->currentText()), this->ui->comboBox_exchange_sa->currentText());
 
+    if(exchange == NULL){
+        QMessageBox::information(NULL, "import error", "no plugin available");
+        return;
+    }
+
     //set nominal system for imported geometries
     exchange->setNominalSystem(OiFeatureState::getNominalSystem(this->ui->comboBox_system_sa->currentText()));
     exchange->setGeometryType(Configuration::ePointGeometry);
