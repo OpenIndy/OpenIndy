@@ -41,7 +41,6 @@ public:
     static SensorConfiguration getSensorConfig(QString displayName);
     static bool addSensorConfig(SensorConfiguration &sConfig);
     static bool addProjectSensorConfig(const SensorConfiguration &sConfig);
-    static SensorConfiguration getDefaultSensorConfig();
 
     //get models to represent config data
     static QStringListModel *getMeasurementConfigNames();

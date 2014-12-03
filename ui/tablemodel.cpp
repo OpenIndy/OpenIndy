@@ -71,7 +71,6 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                     if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
                         return currentFeature->getFeature()->getDisplayX();
                     }else if(currentFeature->getFeature()->getIsSolved()){
-                        qDebug() << "vor display x call";
                         return currentFeature->getFeature()->getDisplayX();
                     }else{
                         return QVariant();

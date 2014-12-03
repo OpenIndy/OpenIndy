@@ -131,13 +131,7 @@ bool Point::saveSimulationData()
 
 QString Point::getDisplayX() const{
 
-    qDebug() << "x normal: " << this->xyz.getAt(0);
-
-    qDebug() << "unit converter: " << UnitConverter::getDistanceMultiplier();
-
     QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-
-    qDebug() << "x danach: " << value;
 
     if(!this->isNominal){
         if(this->isSolved){
