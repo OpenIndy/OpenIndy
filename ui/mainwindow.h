@@ -367,6 +367,10 @@ private:
     //QStringList lastFeatureHeaderOrder;
 
     Configuration::FeatureTypes currentCreateFeature;
+
+    void checkControlPadVisible();
+
+    void setUpControlPad();
 };
 
 #endif // MAINWINDOW_H
