@@ -56,7 +56,7 @@ signals:
     void recalcFeature(Feature*);
     void activateStatStream();
     void activateReadingStream(int);
-    void measurementFinished(bool);
+    void measurementFinished(int,bool);
 
 
 public slots:

@@ -61,11 +61,11 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
     if(readings.size() == 0){
         this->myEmitter.sendString("measurement not valid!");
         emit commandFinished(false);
-        emit measurementFinished(false);
+        emit measurementFinished(geom->getId(),false);
     }else{
         this->storeReadings(readings,geom, isActiveCoordSys);
         emit commandFinished(true);
-        emit measurementFinished(true);
+        emit measurementFinished(geom->getId(),true);
         emit this->recalcFeature(geom);
     }
 

@@ -60,7 +60,6 @@ Station::Station(){
 
     //connections between station and sensorcontrol
     connect(this->sensorPad,SIGNAL(commandFinished(bool)),this,SLOT(emitActionFinished(bool)));
-    connect(this->sensorPad,SIGNAL(measurementFinished(bool)),this,SLOT(emitMeasurementFinished(bool)));
 
     connect(this,SIGNAL(startMeasure(Geometry*,bool)),this->sensorPad,SLOT(measure(Geometry*,bool)));
     connect(this,SIGNAL(startMove(double,double,double,bool)),this->sensorPad,SLOT(move(double,double,double,bool)));
@@ -236,31 +235,26 @@ void Station::emitActionFinished(bool wasSuccesful){
     emit actionFinished(wasSuccesful);
 }
 
-void Station::emitMeasurementFinished(bool wasSuccessful)
-{
-    emit measurementFinished(wasSuccessful);
-}
-
 /*!
  * \brief emitStartStream
  */
-void Station::emitStartReadingStream(int readingType){
+void Station::emitStartReadingStream(int readingType) const{
     emit startReadingStream(readingType);
 }
 
 /*!
  * \brief Station::stopStream
  */
-void Station::emitStopReadingStream(){
+void Station::emitStopReadingStream() const{
     emit stopReadingStream();
 }
 
-void Station::emitStartSensorStatsStream()
+void Station::emitStartSensorStatsStream() const
 {
     emit startSensorStatsStream();
 }
 
-void Station::emitStopSensorStatsStream()
+void Station::emitStopSensorStatsStream() const
 {
     emit stopSensorStatsStream();
 }
@@ -274,7 +268,7 @@ void Station::emitStopSensorStatsStream()
  * The determined observation will be saved in the station coordinatesystem and
  * in the given geometry
  */
-void Station::emitStartMeasure(Geometry *geom, bool isActiveCoordSys){
+void Station::emitStartMeasure(Geometry *geom, bool isActiveCoordSys) const{
     emit startMeasure(geom,isActiveCoordSys);
 }
 
@@ -285,7 +279,7 @@ void Station::emitStartMeasure(Geometry *geom, bool isActiveCoordSys){
  * \param dist
  * \param isRelativ
  */
-void Station::emitStartMove(double azimuth, double zenith, double dist, bool isRelativ){
+void Station::emitStartMove(double azimuth, double zenith, double dist, bool isRelativ) const{
     emit startMove(azimuth, zenith, dist, isRelativ);
 }
 
@@ -295,21 +289,21 @@ void Station::emitStartMove(double azimuth, double zenith, double dist, bool isR
  * \param y
  * \param z
  */
-void Station::emitStartMove(double x, double y, double z){
+void Station::emitStartMove(double x, double y, double z) const{
     emit startMove(x, y, z);
 }
 
 /*!
  * \brief Station::emitStartInitialize
  */
-void Station::emitStartInitialize(){
+void Station::emitStartInitialize() const{
     emit startInitialize();
 }
 
 /*!
  * \brief Station::emitStartMotorState
  */
-void Station::emitStartMotorState(){
+void Station::emitStartMotorState() const{
     emit startMotorState();
 }
 
@@ -318,11 +312,11 @@ OiSensorEmitter* Station::getActiveSensorEmitter()
     return &this->sensorPad->instrument->myEmitter;
 }
 
-void Station::emitStartCompensation(){
+void Station::emitStartCompensation() const{
     emit startCompensation();
 }
 
-void Station::emitSelfDefinedAction(QString s)
+void Station::emitSelfDefinedAction(QString s) const
 {
     emit startSelfDefinedAction(s);
 }
@@ -330,28 +324,28 @@ void Station::emitSelfDefinedAction(QString s)
 /*!
  * \brief Station::emitStartHome
  */
-void Station::emitStartHome(){
+void Station::emitStartHome() const{
     emit startHome();
 }
 
 /*!
  * \brief Station::emitStartToggleSight
  */
-void Station::emitStartToggleSight(){
+void Station::emitStartToggleSight() const{
     emit startToggleSight();
 }
 
 /*!
  * \brief Station::emitStartConnect
  */
-void Station::emitStartConnect(ConnectionConfig *cConfig){
+void Station::emitStartConnect(ConnectionConfig *cConfig) const{
     emit startConnect(cConfig);
 }
 
 /*!
  * \brief Station::emitStartDisconnect
  */
-void Station::emitStartDisconnect(){
+void Station::emitStartDisconnect() const{
     emit startDisconnect();
 }
 
