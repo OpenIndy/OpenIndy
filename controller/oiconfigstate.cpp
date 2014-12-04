@@ -692,6 +692,8 @@ void OiConfigState::loadSavedMeasurementConfigs(){
     ScalarEntityMeasurementSeries::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
     mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureFeature);
     ScalarEntityTemperature::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eSphereFeature);
+    Sphere::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
 
     //set measurement config names model
     OiConfigState::updateMeasurementConfigModels();
