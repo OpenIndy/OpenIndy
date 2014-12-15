@@ -290,7 +290,7 @@ bool Reading::fromOpenIndyXML(QDomElement &xmlElem){
     }
     this->id = xmlElem.attribute("id").toInt();
     this->measuredAt = QDateTime::fromString(xmlElem.attribute("time"), Qt::ISODate);
-    this->typeofReading = (Configuration::ReadingTypes)xmlElem.attribute("type").toInt();
+    this->typeofReading = Configuration::getReadingTypeEnum(xmlElem.attribute("type"));
 
     //get list of measurements
     QDomElement measurements = xmlElem.firstChildElement("measurements");
