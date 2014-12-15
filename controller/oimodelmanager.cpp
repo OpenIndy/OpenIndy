@@ -15,6 +15,9 @@ QStandardItemModel OiModelManager::availableSerialPorts;
 QStandardItemModel OiModelManager::availableIpAdresses;
 //QStringListModel *OiModelManager::simpleAsciiExchangePlugins;
 //QStringListModel OiModelManager::definedFormatExchangePlugins;
+QStringListModel OiModelManager::distanceUnitsModel;
+QStringListModel OiModelManager::angleUnitsModel;
+QStringListModel OiModelManager::temperatureUnitsModel;
 
 OiModelManager::OiModelManager(QObject *parent) : QObject(parent)
 {
@@ -137,6 +140,30 @@ QStandardItemModel &OiModelManager::getAvailableIpAdresses(){
 }
 
 /*!
+ * \brief OiModelManager::getDistanceUnitsModel
+ * \return
+ */
+QStringListModel &OiModelManager::getDistanceUnitsModel(){
+    return OiModelManager::distanceUnitsModel;
+}
+
+/*!
+ * \brief OiModelManager::getAngleUnitsModel
+ * \return
+ */
+QStringListModel &OiModelManager::getAngleUnitsModel(){
+    return OiModelManager::angleUnitsModel;
+}
+
+/*!
+ * \brief OiModelManager::getTemperatureUnitsModel
+ * \return
+ */
+QStringListModel &OiModelManager::getTemperatureUnitsModel(){
+    return OiModelManager::temperatureUnitsModel;
+}
+
+/*!
  * \brief OiModelManager::initModels
  * Initialize all models once when OpenIndy is opened
  */
@@ -161,6 +188,8 @@ void OiModelManager::initModels(){
     //initialize sensor specific models
     this->initSensorModels();
 
+    //initialize unit models
+    this->initUnitModels();
 
 
 
@@ -303,5 +332,35 @@ void OiModelManager::initSensorModels(){
             this->availableIpAdresses.appendRow(ip);
         }
     }
+
+}
+
+/*!
+ * \brief OiModelManager::initUnitModels
+ */
+void OiModelManager::initUnitModels(){
+
+    //distance units
+    QStringList distanceUnits;
+    distanceUnits.append(UnitConverter::getUnitString(UnitConverter::eMETER));
+    distanceUnits.append(UnitConverter::getUnitString(UnitConverter::eMILLIMETER));
+    distanceUnits.append(UnitConverter::getUnitString(UnitConverter::eInch));
+    OiModelManager::distanceUnitsModel.setStringList(distanceUnits);
+
+    //angle units
+    QStringList angleUnits;
+    angleUnits.append(UnitConverter::getUnitString(UnitConverter::eDECIMALDEGREE));
+    angleUnits.append(UnitConverter::getUnitString(UnitConverter::eGON));
+    angleUnits.append(UnitConverter::getUnitString(UnitConverter::eRADIANT));
+    angleUnits.append(UnitConverter::getUnitString(UnitConverter::eMilliRadians));
+    angleUnits.append(UnitConverter::getUnitString(UnitConverter::eArcSeconds));
+    OiModelManager::angleUnitsModel.setStringList(angleUnits);
+
+    //temperature units
+    QStringList temperatureUnits;
+    temperatureUnits.append(UnitConverter::getUnitString(UnitConverter::eGRAD));
+    temperatureUnits.append(UnitConverter::getUnitString(UnitConverter::eKelvin));
+    temperatureUnits.append(UnitConverter::getUnitString(UnitConverter::eFahrenheit));
+    OiModelManager::temperatureUnitsModel.setStringList(temperatureUnits);
 
 }

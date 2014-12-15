@@ -52,6 +52,15 @@ public:
 
     //individually defined reading type
     virtual QString getUndefinedReadingName() const {return "undefined";}
+
+    /*default accuracy
+     *keys:
+     * sigmaAzimuth sigmaAzimuth sigmaDistance
+     * sigmaXyz
+     * sigmaTempDeg
+     * sigmaAngleXZ
+     * sigmaAngleYZ
+     */
     virtual QMap<QString,double>* getDefaultAccuracy() const = 0;
 
     //! sensor configuration

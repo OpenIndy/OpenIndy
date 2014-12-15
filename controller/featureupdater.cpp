@@ -149,7 +149,7 @@ int FeatureUpdater::addFeature(FeatureAttributesExchange fae, MeasurementConfig 
             FeatureUpdater::createFeature(mConfig,featureNames.at(i),false,fae);
         }
         if(fae.nominal){
-            FeatureUpdater::createFeature(mConfig,featureNames.at(i),true,fae);
+            FeatureUpdater::createFeature(MeasurementConfig(),featureNames.at(i),true,fae);
         }
 
     }

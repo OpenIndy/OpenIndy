@@ -102,7 +102,6 @@ void GUIConfiguration::generateAllAttributes()
     GUIConfiguration::allAttributes.append("datumTransformation");
     GUIConfiguration::allAttributes.append("start");
     GUIConfiguration::allAttributes.append("destination");
-    GUIConfiguration::allAttributes.append("time");
     GUIConfiguration::allAttributes.append(QString("translation x" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allAttributes.append(QString("translation y" + UnitConverter::getDistanceUnitString()));
     GUIConfiguration::allAttributes.append(QString("translation z" + UnitConverter::getDistanceUnitString()));
@@ -112,6 +111,7 @@ void GUIConfiguration::generateAllAttributes()
     GUIConfiguration::allAttributes.append("scale x");
     GUIConfiguration::allAttributes.append("scale y");
     GUIConfiguration::allAttributes.append("scale z");
+    GUIConfiguration::allAttributes.append("time");
 }
 
 /*!

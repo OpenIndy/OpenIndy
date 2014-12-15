@@ -702,7 +702,8 @@ bool OiProjectExchanger::restoreStationDependencies(const QDomDocument &project)
                 if(mySensor != NULL){
                     myStation->getStation()->sensorPad->instrument = mySensor;
                 }else{
-                    result = false;
+                    myStation->getStation()->sensorPad->instrument = NULL;
+                    //result = false;
                 }
             }/*else{
                 result = false;
@@ -1138,11 +1139,14 @@ bool OiProjectExchanger::restoreObservationDependencies(const QDomDocument &proj
                 continue;
             }
 
-            //set station
+            //set station and sensor
             QDomElement station = observation.firstChildElement("station");
             if(!station.isNull() && station.hasAttribute("ref") && OiProjectExchanger::myStations.contains(station.attribute("ref").toInt())){
                 FeatureWrapper *myStation = OiProjectExchanger::myStations.value(station.attribute("ref").toInt());
                 myObservation->myStation = myStation->getStation();
+                if(myStation->getStation()->sensorPad != NULL && myStation->getStation()->sensorPad->instrument != NULL){
+                    myObservation->myReading->instrument = myStation->getStation()->sensorPad->instrument;
+                }
             }
 
         }

@@ -12,6 +12,7 @@
 
 #include "systemdbmanager.h"
 #include "oifeaturestate.h"
+#include "unitconverter.h"
 
 class OiModelManager : public QObject
 {
@@ -38,6 +39,10 @@ public:
     static QStandardItemModel &getAvailableSerialPorts();
     static QStandardItemModel &getAvailableIpAdresses();
 
+    static QStringListModel &getDistanceUnitsModel();
+    static QStringListModel &getAngleUnitsModel();
+    static QStringListModel &getTemperatureUnitsModel();
+
 private:
     static OiModelManager *myInstance;
 
@@ -56,6 +61,10 @@ private:
     static QStandardItemModel availableSerialPorts;
     static QStandardItemModel availableIpAdresses;
 
+    static QStringListModel distanceUnitsModel;
+    static QStringListModel angleUnitsModel;
+    static QStringListModel temperatureUnitsModel;
+
     //static QStringListModel simpleAsciiExchangePlugins;
     //static QStringListModel definedFormatExchangePlugins;
 
@@ -64,6 +73,7 @@ private:
 
     //helper methods to initialize the different models
     void initSensorModels();
+    void initUnitModels();
 
 
 

@@ -287,6 +287,56 @@ void Controller::startMeasurement(){
                 return;
             }
         }
+        switch (OiFeatureState::getActiveFeature()->getTypeOfFeature()) {
+        case Configuration::ePlaneFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Plane::defaultMeasurementConfig);
+            break;
+        case Configuration::ePointFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Point::defaultMeasurementConfig);
+            break;
+        case Configuration::eLineFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Line::defaultMeasurementConfig);
+            break;
+        case Configuration::eSphereFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Sphere::defaultMeasurementConfig);
+            break;
+        case Configuration::eScalarEntityAngleFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
+            break;
+        case Configuration::eScalarEntityDistanceFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
+            break;
+        case Configuration::eCircleFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Circle::defaultMeasurementConfig);
+            break;
+        case Configuration::eConeFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Cone::defaultMeasurementConfig);
+            break;
+        case Configuration::eCylinderFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Cylinder::defaultMeasurementConfig);
+            break;
+        case Configuration::eEllipsoidFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
+            break;
+        case Configuration::eHyperboloidFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
+            break;
+        case Configuration::eParaboloidFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
+            break;
+        case Configuration::eNurbsFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Nurbs::defaultMeasurementConfig);
+            break;
+        case Configuration::ePointCloudFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(PointCloud::defaultMeasurementConfig);
+            break;
+        case Configuration::eScalarEntityTemperatureFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
+            break;
+        case Configuration::eScalarEntityMeasurementSeriesFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
+            break;
+        }
         OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
 
         emit sensorWorks("measuring...");
@@ -1094,7 +1144,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
                     for(int i = 0; i < featurePosition.size(); i++){
                         Observation *o = func->getObservation(featurePosition.at(i).id);
                         if(o != NULL && o->myReading != NULL){
-                            FeatureTreeItem *observation = new FeatureTreeItem(o->myReading->measuredAt.toString());
+                            FeatureTreeItem *observation = new FeatureTreeItem(QString::number(o->myReading->id));
                             observation->setObservation(o);
                             this->usedElementsModel->addElement(observation);
                         }

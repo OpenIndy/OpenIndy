@@ -969,7 +969,7 @@ void SensorPluginDialog::setSensorParametersFromConfig(){
                     l->addItem(values.at(i));
                 }
             }
-            l->setCurrentText(stringParamsIterator.key());
+            l->setCurrentText(stringParamsIterator.value());
 
             //create layout for GUI elements
             QHBoxLayout *layout = new QHBoxLayout();

@@ -223,6 +223,7 @@ bool OiConfigState::addMeasurementConfig(MeasurementConfig &mConfig){
  * \return
  */
 bool OiConfigState::addProjectMeasurementConfig(const MeasurementConfig &mConfig){
+    OiConfigState::updateMeasurementConfigModels();
     OiConfigState::projectMeasurementConfigs.append(mConfig);
     return true;
 }
@@ -479,6 +480,7 @@ bool OiConfigState::addSensorConfig(SensorConfiguration &sConfig){
  * \return
  */
 bool OiConfigState::addProjectSensorConfig(const SensorConfiguration &sConfig){
+    OiConfigState::updateSensorConfigModels();
     OiConfigState::projectSensorConfigs.append(sConfig);
     return true;
 }
@@ -558,12 +560,12 @@ void OiConfigState::updateMeasurementConfigModels(){
 
     //add saved measurement configs
     foreach(const MeasurementConfig &mConfig, OiConfigState::savedMeasurementConfigs){
-        mConfigNames.append(mConfig.name);
+        mConfigNames.append(mConfig.getDisplayName());
     }
 
     //add project specific measurement configs
     foreach(const MeasurementConfig &mConfig, OiConfigState::projectMeasurementConfigs){
-        mConfigNames.append(mConfig.name);
+        mConfigNames.append(mConfig.getDisplayName());
     }
 
     OiConfigState::measurementConfigNames->setStringList(mConfigNames);
@@ -579,12 +581,12 @@ void OiConfigState::updateSensorConfigModels(){
 
     //add saved sensor configs
     foreach(const SensorConfiguration &sConfig, OiConfigState::savedSensorConfigs){
-        sConfigNames.append(sConfig.name);
+        sConfigNames.append(sConfig.getDisplayName());
     }
 
     //add project specific sensor configs
     foreach(const SensorConfiguration &sConfig, OiConfigState::projectSensorConfigs){
-        sConfigNames.append(sConfig.name);
+        sConfigNames.append(sConfig.getDisplayName());
     }
 
     OiConfigState::sensorConfigNames->setStringList(sConfigNames);
@@ -735,6 +737,7 @@ void OiConfigState::loadSavedSensorConfigs(){
 
         //try to parse the file content to a QDomDocument
         QDomDocument sConfigXml;
+        QString error;
         if(!sConfigXml.setContent(&sConfigFile) || sConfigXml.isNull()){
             continue;
         }
