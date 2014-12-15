@@ -276,6 +276,8 @@ void ImportNominalDialog::on_pushButton_file_sa_clicked(){
 
     this->ui->lineEdit_file_sa->setText(filename);
 
+    this->updatePreview();
+
 }
 
 /*!
@@ -307,6 +309,8 @@ void ImportNominalDialog::on_comboBox_exchange_sa_currentIndexChanged(const QStr
         model->setFilter(exchange->getSupportedGeometries());
     }
 
+    this->updatePreview();
+
 }
 
 void ImportNominalDialog::on_pushButton_cancel_sa_clicked()
@@ -319,17 +323,45 @@ void ImportNominalDialog::on_pushButton_cancel_sa_clicked()
  */
 void ImportNominalDialog::on_pushButton_import_sa_clicked(){
 
+    OiExchangeObject *myexchangeObject = this->getExchangeObject();
+
+    OiExchangeSimpleAscii *exchange = this->getExchangePlugin();
+    if(exchange == NULL){
+        return;
+    }
+
+    OiDataExchanger::importData(exchange, *myexchangeObject);
+
+    this->close();
+}
+
+/*!
+ * \brief ImportNominalDialog::getExchangeObject
+ * \return
+ */
+OiExchangeObject *ImportNominalDialog::getExchangeObject(){
+
+    //get selected device
     QIODevice *myDevice = new QFile(this->ui->lineEdit_file_sa->text());
 
-    OiExchangeObject *myexchangeObject = new OiExchangeObject();
-    myexchangeObject->device = myDevice;
+    OiExchangeObject *myExchangeObject = new OiExchangeObject();
+    myExchangeObject->device = myDevice;
+
+    return myExchangeObject;
+
+}
+
+/*!
+ * \brief ImportNominalDialog::getExchangePlugin
+ * \return
+ */
+OiExchangeSimpleAscii *ImportNominalDialog::getExchangePlugin(){
 
     OiExchangeSimpleAscii *exchange = PluginLoader::loadOiExchangeSimpleAsciiPlugin(
                 SystemDbManager::getPluginFilePath(this->ui->comboBox_exchange_sa->currentText(), this->ui->comboBox_plugin_sa->currentText()), this->ui->comboBox_exchange_sa->currentText());
 
     if(exchange == NULL){
-        QMessageBox::information(NULL, "import error", "no plugin available");
-        return;
+        return exchange;
     }
 
     //set nominal system for imported geometries
@@ -356,7 +388,40 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked(){
     selectedUnits.insert(UnitConverter::eAngular, UnitConverter::getUnitType(this->ui->comboBox_temperature_sa->currentText()));
     exchange->setUnits(selectedUnits);
 
-    OiDataExchanger::importData(exchange, *myexchangeObject);
+    return exchange;
 
-    this->close();
+}
+
+/*!
+ * \brief ImportNominalDialog::updatePreview
+ */
+void ImportNominalDialog::updatePreview(){
+
+    //if no file or no import-method is selected
+    if(this->ui->lineEdit_file_sa->text().compare("") == 0 || this->ui->comboBox_exchange_sa->currentText().compare("") == 0){
+        return;
+    }
+
+    //if no geometry type is selected
+    if(this->ui->comboBox_geometry_sa->currentText().compare("") == 0){
+        return;
+    }
+
+    //get exchange object
+    OiExchangeObject *myExchangeObject = this->getExchangeObject();
+
+    //get exchange plugin
+    OiExchangeSimpleAscii *exchange = this->getExchangePlugin();
+    if(exchange == NULL){
+        return;
+    }
+
+    QMap<OiExchangeSimpleAscii::ColumnType, QVariantList> content = exchange->getFilePreview(
+                Configuration::getGeometryTypeEnum(this->ui->comboBox_geometry_sa->currentText()),
+                *myExchangeObject);
+
+    //TODO: implement preview table view
+
+    qDebug() << "preview lines: " << content.size();
+
 }

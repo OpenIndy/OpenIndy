@@ -82,6 +82,11 @@ private slots:
     void on_pushButton_cancel_sa_clicked();
     void on_pushButton_import_sa_clicked();
 
+private:
+    OiExchangeObject *getExchangeObject();
+    OiExchangeSimpleAscii *getExchangePlugin();
+    void updatePreview();
+
 };
 
 #endif // IMPORTNOMINALGEOMETRYDIALOG_H
