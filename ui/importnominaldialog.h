@@ -20,6 +20,8 @@
 
 #include "pluginloader.h"
 
+#include "geometrytypesproxymodel.h"
+
 namespace Ui {
 class ImportNominalDialog;
 }
@@ -75,9 +77,16 @@ private:
     void setUpDescription();*/
 private slots:
     void on_pushButton_file_sa_clicked();
-    void on_comboBox_plugin_sa_currentIndexChanged(const QString &arg1);
+    void on_comboBox_plugin_sa_currentIndexChanged(const QString &pluginName);
+    void on_comboBox_exchange_sa_currentIndexChanged(const QString &exchangeMethod);
     void on_pushButton_cancel_sa_clicked();
     void on_pushButton_import_sa_clicked();
+
+private:
+    OiExchangeObject *getExchangeObject();
+    OiExchangeSimpleAscii *getExchangePlugin();
+    void updatePreview();
+
 };
 
 #endif // IMPORTNOMINALGEOMETRYDIALOG_H

@@ -189,7 +189,8 @@ SOURCES += \
     ui/importnominaldialog.cpp \
     src/oiemitter/oiexchangeemitter.cpp \
     controller/oimodelmanager.cpp \
-    ui/oisimpleasciiexchangemodel.cpp
+    ui/oisimpleasciiexchangemodel.cpp \
+    ui/geometrytypesproxymodel.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -341,7 +342,8 @@ HEADERS  += \
     src/oiemitter/oiexchangeemitter.h \
     src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
     controller/oimodelmanager.h \
-    ui/oisimpleasciiexchangemodel.h
+    ui/oisimpleasciiexchangemodel.h \
+    ui/geometrytypesproxymodel.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

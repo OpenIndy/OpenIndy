@@ -79,6 +79,14 @@ public:
     }
 
     /*!
+     * \brief setGroup
+     * \param groupName
+     */
+    void setGroup(QString groupName){
+        this->groupName = groupName;
+    }
+
+    /*!
      * \brief addGeometry
      * Add an imported geometry to the given reference nominal system
      * \param geom
@@ -117,6 +125,7 @@ protected:
     bool exportObservations; //true if only the observations of the selected geometries shall be exported
     QMap<UnitConverter::dimensionType, UnitConverter::unitType> units; //units used for im- or export
     CoordinateSystem* nominalCoordSys; //nominal coordinate system the imported geometries are referenced to
+    QString groupName; //group that the imported nominals shall be added to
 
 private:
     OiExchangeEmitter myExchangeEmitter;

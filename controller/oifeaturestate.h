@@ -17,6 +17,16 @@
 
 using namespace std;
 
+/*!
+ * \brief The FeatureListContainer struct
+ * Works as a container for all features in OpenIndy.
+ * The features are stored as lists and also as maps (with their id as key).
+ * The lists and maps are kept in sync.
+ */
+struct FeatureListContainer{
+
+};
+
 class OiFeatureState : public QObject
 {
     Q_OBJECT
@@ -30,6 +40,7 @@ public:
     static int getFeatureCount();
 
     static const QList<FeatureWrapper *> &getFeatures();
+    static FeatureWrapper *getFeature(int featureId);
     static FeatureWrapper *addFeature(Configuration::FeatureTypes featureType, bool isNominal, QString name);
     static bool addFeature(FeatureWrapper *myFeature);
     static bool addFeatures(const QList<FeatureWrapper *> &myFeatures);
@@ -49,8 +60,6 @@ public:
 
     static QString getActiveGroup();
     static void setActiveGroup(QString group);
-
-    static FeatureWrapper *getFeature(int featureId);
 
     static CoordinateSystem *getNominalSystem(QString name);
 
