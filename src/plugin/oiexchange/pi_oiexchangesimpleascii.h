@@ -78,7 +78,7 @@ public:
 
     /*!
      * \brief setGeometryType
-     * Specify which type of elemen typet shall be im- or exported
+     * Specify which type of elemen shall be im- or exported
      * \param typeOfElement
      */
     void setGeometryType(Configuration::GeometryTypes typeOfGeometry){

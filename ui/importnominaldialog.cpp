@@ -6,6 +6,12 @@ ImportNominalDialog::ImportNominalDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->ui->comboBox_geometry_sa->setModel(OiModelManager::getGeometryTypesFilterModel());
+    this->ui->comboBox_distance_sa->setModel(&OiModelManager::getDistanceUnitsModel());
+    this->ui->comboBox_angle_sa->setModel(&OiModelManager::getAngleUnitsModel());
+    this->ui->comboBox_temperature_sa->setModel(&OiModelManager::getTemperatureUnitsModel());
+
+
     /*initGUI();
 
     qRegisterMetaType<OiExchangeObject>("oiExchangeObject");
@@ -22,14 +28,14 @@ void ImportNominalDialog::showEvent(QShowEvent *event){
 
     qDebug() << "show";
 
+
     this->ui->comboBox_plugin_sa->setModel(&OiModelManager::getPluginNamesModel());
     this->ui->comboBox_system_sa->setModel(&OiModelManager::getNominalSystemsModel());
-    this->ui->comboBox_geometry_sa->setModel(&OiModelManager::getGeometryTypesModel());
+
     //this->ui->comboBox_exchange_sa->setModel(OiModelManager::getSimpleAsciiExchangePlugins());
 
-    this->ui->comboBox_distance_sa->setModel(&OiModelManager::getDistanceUnitsModel());
-    this->ui->comboBox_angle_sa->setModel(&OiModelManager::getAngleUnitsModel());
-    this->ui->comboBox_temperature_sa->setModel(&OiModelManager::getTemperatureUnitsModel());
+
+    this->ui->comboBox_groupNames->setModel(&OiModelManager::getGroupNamesModel());
 
     event->accept();
 }
@@ -272,8 +278,35 @@ void ImportNominalDialog::on_pushButton_file_sa_clicked(){
 
 }
 
-void ImportNominalDialog::on_comboBox_plugin_sa_currentIndexChanged(const QString &arg1){
-    this->ui->comboBox_exchange_sa->setModel(OiModelManager::getSimpleAsciiExchangePlugins(arg1));
+/*!
+ * \brief ImportNominalDialog::on_comboBox_plugin_sa_currentIndexChanged
+ * Triggered when the selected plugin was changed
+ * \param pluginName
+ */
+void ImportNominalDialog::on_comboBox_plugin_sa_currentIndexChanged(const QString &pluginName){
+    this->ui->comboBox_exchange_sa->setModel(OiModelManager::getSimpleAsciiExchangePlugins(pluginName));
+}
+
+/*!
+ * \brief ImportNominalDialog::on_comboBox_exchange_sa_currentIndexChanged
+ * Triggered when the selected exchange method was changed
+ * \param exchangeMethod
+ */
+void ImportNominalDialog::on_comboBox_exchange_sa_currentIndexChanged(const QString &exchangeMethod){
+
+    OiExchangeSimpleAscii *exchange = PluginLoader::loadOiExchangeSimpleAsciiPlugin(
+                SystemDbManager::getPluginFilePath(this->ui->comboBox_exchange_sa->currentText(), this->ui->comboBox_plugin_sa->currentText()), this->ui->comboBox_exchange_sa->currentText());
+
+    if(exchange == NULL){
+        QMessageBox::information(NULL, "import error", "no plugin available");
+        return;
+    }
+
+    GeometryTypesProxyModel* model = dynamic_cast<GeometryTypesProxyModel*>(this->ui->comboBox_geometry_sa->model());
+    if(model != NULL){
+        model->setFilter(exchange->getSupportedGeometries());
+    }
+
 }
 
 void ImportNominalDialog::on_pushButton_cancel_sa_clicked()
@@ -301,7 +334,12 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked(){
 
     //set nominal system for imported geometries
     exchange->setNominalSystem(OiFeatureState::getNominalSystem(this->ui->comboBox_system_sa->currentText()));
+
+    //set type of geometry that shall be imported
     exchange->setGeometryType(Configuration::ePointGeometry);
+
+    //set group for imported geometries
+    exchange->setGroup(this->ui->comboBox_groupNames->currentText());
 
     //set selected column order
     QList<OiExchangeSimpleAscii::ColumnType> userDefinedColumns;

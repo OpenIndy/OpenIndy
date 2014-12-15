@@ -18,6 +18,7 @@ QStandardItemModel OiModelManager::availableIpAdresses;
 QStringListModel OiModelManager::distanceUnitsModel;
 QStringListModel OiModelManager::angleUnitsModel;
 QStringListModel OiModelManager::temperatureUnitsModel;
+QStringListModel OiModelManager::groupNamesModel;
 
 OiModelManager::OiModelManager(QObject *parent) : QObject(parent)
 {
@@ -164,6 +165,27 @@ QStringListModel &OiModelManager::getTemperatureUnitsModel(){
 }
 
 /*!
+ * \brief OiModelManager::getGroupNamesModel
+ * \return
+ */
+QStringListModel &OiModelManager::getGroupNamesModel(){
+    QStringList availableGroups = OiFeatureState::getAvailableGroups().keys();
+    availableGroups.push_front("");
+    OiModelManager::groupNamesModel.setStringList(availableGroups);
+    return OiModelManager::groupNamesModel;
+}
+
+/*!
+ * \brief OiModelManager::getGroupNamesFilterModel
+ * \return
+ */
+GeometryTypesProxyModel *OiModelManager::getGeometryTypesFilterModel(){
+    GeometryTypesProxyModel *model = new GeometryTypesProxyModel();
+    model->setSourceModel(&OiModelManager::geometryTypes);
+    return model;
+}
+
+/*!
  * \brief OiModelManager::initModels
  * Initialize all models once when OpenIndy is opened
  */
@@ -184,6 +206,22 @@ void OiModelManager::initModels(){
     //initialize geometry types
     QStringList geometryTypes;
     geometryTypes.append(Configuration::sPoint);
+    geometryTypes.append(Configuration::sLine);
+    geometryTypes.append(Configuration::sPlane);
+    geometryTypes.append(Configuration::sSphere);
+    geometryTypes.append(Configuration::sCylinder);
+    geometryTypes.append(Configuration::sCone);
+    geometryTypes.append(Configuration::sHyperboloid);
+    geometryTypes.append(Configuration::sParaboloid);
+    geometryTypes.append(Configuration::sEllipsoid);
+    geometryTypes.append(Configuration::sPointCloud);
+    geometryTypes.append(Configuration::sCircle);
+    geometryTypes.append(Configuration::sNurbs);
+    geometryTypes.append(Configuration::sEntitiyAngle);
+    geometryTypes.append(Configuration::sEntityDistance);
+    geometryTypes.append(Configuration::sEntityMeasurementSeries);
+    geometryTypes.append(Configuration::sEntityTemperature);
+    OiModelManager::geometryTypes.setStringList(geometryTypes);
 
     //initialize sensor specific models
     this->initSensorModels();

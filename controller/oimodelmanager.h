@@ -14,6 +14,8 @@
 #include "oifeaturestate.h"
 #include "unitconverter.h"
 
+#include "geometrytypesproxymodel.h"
+
 class OiModelManager : public QObject
 {
     Q_OBJECT
@@ -25,7 +27,9 @@ public:
 
     static QStringListModel &getPluginNamesModel();
     static QStringListModel &getNominalSystemsModel();
+
     static QStringListModel &getGeometryTypesModel();
+    static GeometryTypesProxyModel *getGeometryTypesFilterModel();
 
     static QStringListModel *getSimpleAsciiExchangePlugins(QString plugin);
     //static QStringListModel getDefinedFormatExchangePlugins();
@@ -42,6 +46,8 @@ public:
     static QStringListModel &getDistanceUnitsModel();
     static QStringListModel &getAngleUnitsModel();
     static QStringListModel &getTemperatureUnitsModel();
+
+    static QStringListModel &getGroupNamesModel();
 
 private:
     static OiModelManager *myInstance;
@@ -64,6 +70,8 @@ private:
     static QStringListModel distanceUnitsModel;
     static QStringListModel angleUnitsModel;
     static QStringListModel temperatureUnitsModel;
+
+    static QStringListModel groupNamesModel;
 
     //static QStringListModel simpleAsciiExchangePlugins;
     //static QStringListModel definedFormatExchangePlugins;
