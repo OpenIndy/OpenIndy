@@ -17,16 +17,12 @@
 
 using namespace std;
 
+struct FeatureContainer;
+
 /*!
- * \brief The FeatureListContainer struct
- * Works as a container for all features in OpenIndy.
- * The features are stored as lists and also as maps (with their id as key).
- * The lists and maps are kept in sync.
+ * \brief The OiFeatureState class
+ * A static manager class that holds all features and works as an observer that informs about feature changes
  */
-struct FeatureListContainer{
-
-};
-
 class OiFeatureState : public QObject
 {
     Q_OBJECT
@@ -101,21 +97,19 @@ private slots:
 
     void setSystemsNominals(int featureId); //is called when a nominal was added to a nominal coordinate system
 
+    void removeFeature(int featureId); //is called when the destructor of a feature is entered
+
     void addPCSegmentAsFeature(FeatureWrapper *segment);
 
 private:
     static OiFeatureState *myFeatureState;
 
-    //TODO transform the lists to maps with id of the element as the key
+    static FeatureContainer myFeatureContainer; //container that holds all features as lists and maps
 
-    static QList<FeatureWrapper *> myFeatures; //list of all features in OpenIndy
     static FeatureWrapper *myActiveFeature; //the currently selected feature in table view
-    static QList<CoordinateSystem *> myCoordinateSystems; //list of all non-station coordinate systems
-    static QList<Station *> myStations; //list of all stations (each station has pointer to its coordinate system)
-    static QList<TrafoParam *> myTransformationParameters; //list of all trafo params
-    static QList<FeatureWrapper *> myGeometries; //list of all geometry features
     static Station *myActiveStation; //the currently selected station
     static CoordinateSystem *myActiveCoordinateSystem; //the currently selected display coordinate system
+
     static QMap<QString, int> myAvailableGroups; //map of all available groups with number of assigned features
     static QString myActiveGroup; //currently selected feature group
 
@@ -126,6 +120,7 @@ private:
     static int getCoordinateSystemIndex(int featureId);
     static int getStationCoordinayteSystemIndex(int featureId);
     static void updateAvailableGroups();
+
     static void connectFeature(FeatureWrapper *myFeature);
     static void disconnectFeature(FeatureWrapper *myFeature);
 
@@ -146,6 +141,135 @@ private:
     };
 
     void emitSignal(SignalType mySignalType);
+
+};
+
+/*!
+ * \brief The FeatureContainer struct
+ * Works as a container for all features in OpenIndy.
+ * The features are stored as lists and also as maps (with their id as key).
+ * The lists and maps are kept in sync.
+ */
+class FeatureContainer : public QObject{
+    Q_OBJECT
+
+public:
+    explicit FeatureContainer(QObject *parent = 0) : QObject(parent){}
+
+    //getter to access feature lists
+    QList<FeatureWrapper *> &getFeaturesList(){ return this->myFeaturesList; }
+    QList<CoordinateSystem *> &getCoordinateSystemsList(){ return this->myCoordinateSystemsList; }
+    QList<Station *> &getStationsList(){ return this->myStationsList; }
+    QList<TrafoParam *> &getTransformationParametersList(){ return this->myTransformationParametersList; }
+    QList<FeatureWrapper *> &getGeometriesList(){ return this->myGeometriesList; }
+
+    //getter to get a list of all feature ids
+    QList<int> getFeatureIdList(){ return this->myFeaturesMap.keys(); }
+
+    //getter to access a single feature by its id
+    FeatureWrapper *getFeatureById(int id){ return this->myFeaturesMap.value(id, NULL); }
+
+    //getter to get the number of available features
+    int getFeatureCount(){ return this->myFeaturesList.size(); }
+    int getStationCount(){ return this->myStationsList.size(); }
+    int getCoordinateSystemCount(){ return this->myCoordinateSystemsList.size(); }
+    int getTransformationParameterCount(){ return this->myTransformationParametersList.size(); }
+    int getGeometryCount(){ return this->myGeometriesList.size(); }
+
+public slots:
+
+    //! stores a feature in lists and maps for later access
+    bool addFeature(FeatureWrapper *myFeature){
+
+        //if the feature is not valid
+        if(myFeature == NULL || myFeature->getFeature() == NULL){
+            return false;
+        }
+
+        //if the feature already exists it is not added
+        if(this->myFeaturesMap.contains(myFeature->getFeature()->getId())){
+            return false;
+        }
+
+        //add the feature to the feature lists and maps
+        this->myFeaturesList.append(myFeature);
+        this->myFeaturesMap.insert(myFeature->getFeature()->getId(), myFeature);
+        switch(myFeature->getTypeOfFeature()){
+        case Configuration::eCoordinateSystemFeature:
+            this->myCoordinateSystemsList.append(myFeature->getCoordinateSystem());
+            break;
+        case Configuration::eStationFeature:
+            this->myStationsList.append(myFeature->getStation());
+            break;
+        case Configuration::eTrafoParamFeature:
+            this->myTransformationParametersList.append(myFeature->getTrafoParam());
+            break;
+        default:
+            this->myGeometriesList.append(myFeature);
+            break;
+        }
+
+    }
+
+    //! removes the feature with the given id permanently and also calls the feature's destructor
+    bool removeAndDeleteFeature(int id){
+
+        FeatureWrapper *myFeature = this->myFeaturesMap.value(id);
+        if(this->removeFeature(id)){
+            delete myFeature->getFeature();
+            delete myFeature;
+            return true;
+        }
+        return false;
+
+    }
+
+    //! removes the feature with the given id permanently
+    bool removeFeature(int id){
+
+        //check if the feature exists
+        if(!this->myFeaturesMap.contains(id)){
+            return false;
+        }
+
+        FeatureWrapper *myFeature = this->myFeaturesMap.value(id);
+
+        //check if the feature is valid
+        if(myFeature == NULL || myFeature->getFeature() == NULL){
+            return false;
+        }
+
+        //remove the feature from lists and map
+        this->myFeaturesList.removeOne(myFeature);
+        this->myFeaturesMap.remove(id);
+        switch(myFeature->getTypeOfFeature()){
+        case Configuration::eCoordinateSystemFeature:
+            this->myCoordinateSystemsList.removeOne(myFeature->getCoordinateSystem());
+            break;
+        case Configuration::eStationFeature:
+            this->myStationsList.removeOne(myFeature->getStation());
+            break;
+        case Configuration::eTrafoParamFeature:
+            this->myTransformationParametersList.removeOne(myFeature->getTrafoParam());
+            break;
+        default:
+            this->myGeometriesList.removeOne(myFeature);
+            break;
+        }
+
+    }
+
+private:
+
+    //feature lists (useful to provide lists of features by category (geometries, stations etc.)
+    QList<FeatureWrapper *> myFeaturesList; //list of all features in OpenIndy
+    QList<CoordinateSystem *> myCoordinateSystemsList; //list of all non-station coordinate systems
+    QList<Station *> myStationsList; //list of all stations (each station has pointer to its coordinate system)
+    QList<TrafoParam *> myTransformationParametersList; //list of all trafo params
+    QList<FeatureWrapper *> myGeometriesList; //list of all geometry features
+
+    //feature maps (useful to quickly find a feature with a given id)
+    QMap<int, FeatureWrapper *> myFeaturesMap; //map of all features in OpenIndy with their id as key
 
 };
 
