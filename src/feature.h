@@ -106,6 +106,7 @@ signals:
     void featureDisplayColorChanged(int featureId);
     void featureIsDrawnChanged(int featureId);
     void featureIsActiveChanged(int featureId);
+    void featureAboutToBeDeleted(int featureId);
 
 protected:
     QString name;

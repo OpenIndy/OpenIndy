@@ -159,8 +159,13 @@ bool Controller::createDefaultProject(){
         OiProjectData::setActiveProject("OpenIndyTest");
 
         //create PART and STATION01 as default
-        FeatureWrapper *part = OiFeatureState::addFeature(Configuration::eCoordinateSystemFeature, false, "PART");
-        FeatureWrapper *station01 = OiFeatureState::addFeature(Configuration::eStationFeature, false, "STATION01");
+        FeatureAttributesExchange partAttributes, stationAttributes;
+        partAttributes.featureType = Configuration::eCoordinateSystemFeature;
+        partAttributes.name = "PART";
+        stationAttributes.featureType = Configuration::eStationFeature;
+        stationAttributes.name = "STATION01";
+        FeatureWrapper *part = OiFeatureState::addFeature(partAttributes);
+        FeatureWrapper *station01 = OiFeatureState::addFeature(stationAttributes);
 
         //set position parameter for STATION01
         station01->getStation()->position->setCommonState(false);
@@ -191,6 +196,7 @@ bool Controller::createDefaultProject(){
  */
 void Controller::addFeature(FeatureAttributesExchange fae){
 
+    //get default measurement config depending on the feature type of the feature to be created
     MeasurementConfig mConfig;
     switch(fae.featureType){
     case Configuration::eCircleFeature:
