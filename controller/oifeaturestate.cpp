@@ -385,14 +385,14 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
             //check feature's name
             bool nameValid = false;
             if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
-                nameValid = OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName(), true);
+                nameValid = OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName(), true, myFeature->getGeometry()->getNominalSystem());
             }else{
                 nameValid = OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName());
             }
             if(!nameValid){
                 QString name = myFeature->getFeature()->getFeatureName();
                 if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
-                    while(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"), true)){}
+                    while(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"), true, myFeature->getGeometry()->getNominalSystem())){}
                 }else{
                     while(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"))){}
                 }
@@ -455,14 +455,14 @@ bool OiFeatureState::addFeatures(const QList<FeatureWrapper *> &myFeatures){
                 //check feature's name
                 bool nameValid = false;
                 if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
-                    nameValid = OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName(), true);
+                    nameValid = OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName(), true, myFeature->getGeometry()->getNominalSystem());
                 }else{
                     nameValid = OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName());
                 }
                 if(!nameValid){
                     QString name = myFeature->getFeature()->getFeatureName();
                     if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
-                        while(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"), true)){}
+                        while(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"), true, myFeature->getGeometry()->getNominalSystem())){}
                     }else{
                         while(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"))){}
                     }
@@ -722,12 +722,13 @@ void OiFeatureState::disconnectFeature(FeatureWrapper *myFeature){
 
 /*!
  * \brief OiFeatureState::validateFeatureName
- * \param featureType
- * \param isNominal
- * \param featureName
+ * \param featureType the type of the feature that shall be added
+ * \param featureName the name of the feature that shall be added
+ * \param isNominal true if a nominal shall be added, false if not
+ * \param myNomSys a pointer to the nominal system of the feature (only if isNominal = true)
  * \return
  */
-bool OiFeatureState::validateFeatureName(Configuration::FeatureTypes featureType, QString featureName, bool isNominal, CoordinateSystem *myNomSys, int featureId){
+bool OiFeatureState::validateFeatureName(Configuration::FeatureTypes featureType, QString featureName, bool isNominal, CoordinateSystem *myNomSys){
     try{
 
         //do not accept empty names
@@ -735,51 +736,44 @@ bool OiFeatureState::validateFeatureName(Configuration::FeatureTypes featureType
             return false;
         }
 
-        if(isNominal){ //there must not be two nominals with both, the same name and the same nominal system
+        //get a list of all features with name featureName
+        QList<FeatureWrapper *> equalNameFeatures = OiFeatureState::myFeatureContainer.getFeaturesByName(featureName);
 
-            //iterate through all features...
-            foreach(FeatureWrapper *myFeature, OiFeatureState::myFeatureContainer.getFeaturesList()){
-                if(myFeature != NULL && myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
+        //accept featureName if no other feature with the same name exists
+        if(equalNameFeatures.size() == 0){
+            return true;
+        }
 
-                    //...and if they are nominals with the same name and system return false
-                    if(myFeature->getGeometry()->getFeatureName().compare(featureName) == 0
-                            && myFeature->getGeometry()->getNominalSystem() != NULL && myNomSys != NULL
-                            && myFeature->getGeometry()->getNominalSystem()->getId() == myNomSys->getId()
-                            && myFeature->getGeometry()->getId() != featureId){
-                        return false;
-                    }
+        if(isNominal){
 
-                }else if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getGeometry() == NULL){
+            //reject featureName if there is another nominal with the same name and nominal system or
+            //if there is a station, coordinate system or trafo param feature with the same name
+            foreach(FeatureWrapper *myFeature, equalNameFeatures){
 
-                    //...or if their name equals the name of a non-geometry feature return false
-                    if(myFeature->getFeature()->getFeatureName().compare(featureName) == 0
-                            && myFeature->getFeature()->getId() != featureId){
-                        return false;
-                    }
-
+                if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()
+                        && myFeature->getGeometry()->getNominalSystem() == myNomSys){
+                    return false;
+                }else if(myFeature->getTypeOfFeature() == Configuration::eCoordinateSystemFeature
+                         || myFeature->getTypeOfFeature() == Configuration::eTrafoParamFeature
+                         || myFeature->getTypeOfFeature() == Configuration::eStationFeature){
+                    return false;
                 }
+
             }
 
-        }else{ //there must not be two actuals with the same name
+        }else{
 
-            //iterate through all features...
-            foreach(FeatureWrapper *myFeature, OiFeatureState::myFeatureContainer.getFeaturesList()){
-                if(myFeature != NULL && myFeature->getGeometry() != NULL && !myFeature->getGeometry()->getIsNominal()){
+            //reject featureName if a station, coordinate system or trafo param feature shall be added and its name is already used
+            if(featureType == Configuration::eCoordinateSystemFeature || featureType == Configuration::eStationFeature
+                    || featureType == Configuration::eTrafoParamFeature){
+                return false;
+            }
 
-                    //...and if they are actuals with the same name return false
-                    if(myFeature->getGeometry()->getFeatureName().compare(featureName) == 0
-                            && myFeature->getGeometry()->getId() != featureId){
-                        return false;
-                    }
-
-                }else if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getGeometry() == NULL){
-
-                    //...or if their name equals the name of a non-geometry feature return false
-                    if(myFeature->getFeature()->getFeatureName().compare(featureName) == 0
-                            &&myFeature->getFeature()->getId() != featureId){
-                        return false;
-                    }
-
+            //reject featureName if an actual geometry shall be added with the same name and type
+            foreach(FeatureWrapper *myFeature, equalNameFeatures){
+                if(myFeature->getGeometry() != NULL && !myFeature->getGeometry()->getIsNominal()
+                        && myFeature->getTypeOfFeature() == featureType){
+                    return false;
                 }
             }
 

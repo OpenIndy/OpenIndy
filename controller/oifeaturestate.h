@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <exception>
+#include <QMap>
+#include <QMultiMap>
 
 #include "featurewrapper.h"
 #include "feature.h"
@@ -125,7 +127,7 @@ private:
     static void disconnectFeature(FeatureWrapper *myFeature);
 
     static bool validateFeatureName(Configuration::FeatureTypes featureType, QString featureName,
-                                    bool isNominal = false, CoordinateSystem *myNomSys = NULL, int featureId = -1);
+                                    bool isNominal = false, CoordinateSystem *myNomSys = NULL);
 
     enum SignalType{
         eActiveFeatureChanged,
@@ -164,10 +166,12 @@ public:
     QList<FeatureWrapper *> &getGeometriesList(){ return this->myGeometriesList; }
 
     //getter to get a list of all feature ids
-    QList<int> getFeatureIdList(){ return this->myFeaturesMap.keys(); }
+    QList<int> getFeatureIdList(){ return this->myFeaturesIdMap.keys(); }
+    QList<QString> getFeatureNameList(){ return this->myFeaturesNameMap.keys(); }
 
     //getter to access a single feature by its id
-    FeatureWrapper *getFeatureById(int id){ return this->myFeaturesMap.value(id, NULL); }
+    FeatureWrapper *getFeatureById(int id){ return this->myFeaturesIdMap.value(id, NULL); }
+    QList<FeatureWrapper *> getFeaturesByName(QString name){ return this->myFeaturesNameMap.values(name); }
 
     //getter to get the number of available features
     int getFeatureCount(){ return this->myFeaturesList.size(); }
@@ -187,13 +191,14 @@ public slots:
         }
 
         //if the feature already exists it is not added
-        if(this->myFeaturesMap.contains(myFeature->getFeature()->getId())){
+        if(this->myFeaturesIdMap.contains(myFeature->getFeature()->getId())){
             return false;
         }
 
         //add the feature to the feature lists and maps
         this->myFeaturesList.append(myFeature);
-        this->myFeaturesMap.insert(myFeature->getFeature()->getId(), myFeature);
+        this->myFeaturesIdMap.insert(myFeature->getFeature()->getId(), myFeature);
+        this->myFeaturesNameMap.insert(myFeature->getFeature()->getFeatureName(), myFeature);
         switch(myFeature->getTypeOfFeature()){
         case Configuration::eCoordinateSystemFeature:
             this->myCoordinateSystemsList.append(myFeature->getCoordinateSystem());
@@ -209,12 +214,14 @@ public slots:
             break;
         }
 
+        return true;
+
     }
 
     //! removes the feature with the given id permanently and also calls the feature's destructor
     bool removeAndDeleteFeature(int id){
 
-        FeatureWrapper *myFeature = this->myFeaturesMap.value(id);
+        FeatureWrapper *myFeature = this->myFeaturesIdMap.value(id);
         if(this->removeFeature(id)){
             delete myFeature->getFeature();
             delete myFeature;
@@ -228,11 +235,11 @@ public slots:
     bool removeFeature(int id){
 
         //check if the feature exists
-        if(!this->myFeaturesMap.contains(id)){
+        if(!this->myFeaturesIdMap.contains(id)){
             return false;
         }
 
-        FeatureWrapper *myFeature = this->myFeaturesMap.value(id);
+        FeatureWrapper *myFeature = this->myFeaturesIdMap.value(id);
 
         //check if the feature is valid
         if(myFeature == NULL || myFeature->getFeature() == NULL){
@@ -241,7 +248,8 @@ public slots:
 
         //remove the feature from lists and map
         this->myFeaturesList.removeOne(myFeature);
-        this->myFeaturesMap.remove(id);
+        this->myFeaturesIdMap.remove(id);
+        this->myFeaturesNameMap.remove(myFeature->getFeature()->getFeatureName(), myFeature);
         switch(myFeature->getTypeOfFeature()){
         case Configuration::eCoordinateSystemFeature:
             this->myCoordinateSystemsList.removeOne(myFeature->getCoordinateSystem());
@@ -257,6 +265,8 @@ public slots:
             break;
         }
 
+        return true;
+
     }
 
 private:
@@ -268,8 +278,9 @@ private:
     QList<TrafoParam *> myTransformationParametersList; //list of all trafo params
     QList<FeatureWrapper *> myGeometriesList; //list of all geometry features
 
-    //feature maps (useful to quickly find a feature with a given id)
-    QMap<int, FeatureWrapper *> myFeaturesMap; //map of all features in OpenIndy with their id as key
+    //feature maps (useful to quickly find a feature with a given id or name)
+    QMap<int, FeatureWrapper *> myFeaturesIdMap; //map of all features in OpenIndy with their id as key
+    QMultiMap<QString, FeatureWrapper *> myFeaturesNameMap; //map of all features in OpenIndy with their name as key
 
 };
 
