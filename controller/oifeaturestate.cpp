@@ -678,26 +678,26 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
 
         //general feature connects
         connect(myFeature->getFeature(), SIGNAL(featureIsActiveChanged(int)),
-                OiFeatureState::getInstance(), SLOT(setActiveFeature(int)));
+                OiFeatureState::getInstance(), SLOT(setActiveFeature(int)), Qt::DirectConnection);
         connect(myFeature->getFeature(), SIGNAL(featureGroupChanged(int)),
-                OiFeatureState::getInstance(), SLOT(setFeatureGroup(int)));
+                OiFeatureState::getInstance(), SLOT(setFeatureGroup(int)), Qt::DirectConnection);
         connect(myFeature->getFeature(), SIGNAL(featureNameChanged(int,QString)),
-                OiFeatureState::getInstance(), SLOT(setFeatureName(int,QString)));
+                OiFeatureState::getInstance(), SLOT(setFeatureName(int,QString)), Qt::DirectConnection);
         connect(myFeature->getFeature(), SIGNAL(featureAboutToBeDeleted(int)),
-                OiFeatureState::getInstance(), SLOT(removeFeature(int)));
+                OiFeatureState::getInstance(), SLOT(removeFeature(int)), Qt::DirectConnection);
 
         //geometry specific connects
         if(myFeature->getGeometry() != NULL){
 
             connect(myFeature->getGeometry(), SIGNAL(geomMyObservationsChanged(int)),
-                    OiFeatureState::getInstance(), SLOT(setGeometryObservations(int)));
+                    OiFeatureState::getInstance(), SLOT(setGeometryObservations(int)), Qt::DirectConnection);
             connect(myFeature->getGeometry(), SIGNAL(geomMyActualChanged(int)),
-                    OiFeatureState::getInstance(), SLOT(setGeometryActual(int)));
+                    OiFeatureState::getInstance(), SLOT(setGeometryActual(int)), Qt::DirectConnection);
 
             //only for point clouds
             if(myFeature->getPointCloud() != NULL){
                 connect(myFeature->getPointCloud(), SIGNAL(pcSegmentAdded(FeatureWrapper*)),
-                        OiFeatureState::getInstance(), SLOT(addPCSegmentAsFeature(FeatureWrapper*)));
+                        OiFeatureState::getInstance(), SLOT(addPCSegmentAsFeature(FeatureWrapper*)), Qt::DirectConnection);
             }
 
         }
@@ -706,9 +706,9 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
         if(myFeature->getStation() != NULL){
 
             connect(myFeature->getStation(), SIGNAL(activeStationChanged(int)),
-                    OiFeatureState::getInstance(), SLOT(setActiveStation(int)));
+                    OiFeatureState::getInstance(), SLOT(setActiveStation(int)), Qt::DirectConnection);
             connect(myFeature->getStation()->coordSys, SIGNAL(activeCoordinateSystemChanged(int)),
-                    OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)));
+                    OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
 
         }
 
@@ -716,9 +716,9 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
         if(myFeature->getCoordinateSystem() != NULL){
 
             connect(myFeature->getCoordinateSystem(), SIGNAL(activeCoordinateSystemChanged(int)),
-                    OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)));
+                    OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
             connect(myFeature->getCoordinateSystem(), SIGNAL(nominalsChanged(int)),
-                    OiFeatureState::getInstance(), SLOT(setSystemsNominals(int)));
+                    OiFeatureState::getInstance(), SLOT(setSystemsNominals(int)), Qt::DirectConnection);
 
         }
 
