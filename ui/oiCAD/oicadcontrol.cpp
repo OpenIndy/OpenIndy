@@ -75,6 +75,8 @@ Handle(AIS_InteractiveObject) OiCadControl::parseOiSphere(Sphere *s){
 
     Handle(AIS_InteractiveObject) aAisSp = new AIS_Shape(S);
 
+    aAisSp->SetDisplayMode(1);
+
     return aAisSp;
 }
 
@@ -100,6 +102,10 @@ Handle(AIS_InteractiveObject) OiCadControl::parseOiPlane(Plane *p){
 
     Handle (AIS_InteractiveObject) aAisPln = a;
 
+    aAisPln->SetDisplayMode(1);
+    aAisPln->SetWidth(5.0);
+    aAisPln->SetColor(Quantity_NOC_GREEN);
+
     return aAisPln;
 
 
@@ -119,12 +125,13 @@ Handle_AIS_InteractiveObject OiCadControl::parseOiLine(Line *l){
     gp_Pnt point(x,y,z);
     gp_Dir direction(i,j,k);
 
+    AIS_Line *a = new AIS_Line(new Geom_Line(point, direction));
 
-    Handle (Geom_Line) gLn = new Geom_Line(point, direction);
-
-    Handle(AIS_InteractiveObject) aAisLn = new AIS_Line(gLn);
+    Handle (AIS_InteractiveObject) aAisLn = a;
 
     aAisLn->SetDisplayMode(1);
+    aAisLn->SetWidth(2.0);
+    aAisLn->SetColor(Quantity_NOC_GREEN);
 
     return aAisLn;
 
