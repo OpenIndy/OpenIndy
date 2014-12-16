@@ -16,6 +16,7 @@
 #include "oiconfigstate.h"
 #include "oijob.h"
 #include "oijobstate.h"
+#include "featureattributesexchange.h"
 
 using namespace std;
 
@@ -39,9 +40,12 @@ public:
 
     static const QList<FeatureWrapper *> &getFeatures();
     static FeatureWrapper *getFeature(int featureId);
-    static FeatureWrapper *addFeature(Configuration::FeatureTypes featureType, bool isNominal, QString name);
+
+    static FeatureWrapper *addFeature(FeatureAttributesExchange attributes);
     static bool addFeature(FeatureWrapper *myFeature);
+    static QList<FeatureWrapper *> addFeatures(FeatureAttributesExchange attributes);
     static bool addFeatures(const QList<FeatureWrapper *> &myFeatures);
+
     static bool removeFeature(FeatureWrapper *myFeature);
 
     static const QList<Station *> &getStations();
@@ -117,10 +121,10 @@ private:
 
     static bool groupsToBeUpdated;
 
-    static int getFeatureListIndex(int featureId);
+    /*static int getFeatureListIndex(int featureId);
     static int getStationListIndex(int featureId);
     static int getCoordinateSystemIndex(int featureId);
-    static int getStationCoordinayteSystemIndex(int featureId);
+    static int getStationCoordinayteSystemIndex(int featureId);*/
     static void updateAvailableGroups();
 
     static void connectFeature(FeatureWrapper *myFeature);

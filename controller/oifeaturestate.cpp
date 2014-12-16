@@ -289,32 +289,32 @@ void OiFeatureState::resetFeatureLists(){
  * \param myFeatureType
  * \return
  */
-FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureType, bool isNominal, QString name){
+FeatureWrapper *OiFeatureState::addFeature(FeatureAttributesExchange attributes){
     try{
 
         FeatureWrapper *myFeature;
         myFeature = new FeatureWrapper();
 
         //create feature and assign it to feature wrapper
-        switch(featureType){
+        switch(attributes.featureType){
         case Configuration::ePointFeature:{
-            Point *myPoint = new Point(isNominal);
+            Point *myPoint = new Point(attributes.nominal);
             myFeature->setPoint(myPoint);
             break;
         }case Configuration::eLineFeature:{
-            Line *myLine = new Line(isNominal);
+            Line *myLine = new Line(attributes.nominal);
             myFeature->setLine(myLine);
             break;
         }case Configuration::ePlaneFeature:{
-            Plane *myPlane = new Plane(isNominal);
+            Plane *myPlane = new Plane(attributes.nominal);
             myFeature->setPlane(myPlane);
             break;
         }case Configuration::eSphereFeature:{
-            Sphere *mySphere = new Sphere(isNominal);
+            Sphere *mySphere = new Sphere(attributes.nominal);
             myFeature->setSphere(mySphere);
             break;
         }case Configuration::eStationFeature:{
-            Station *myStation = new Station(name);
+            Station *myStation = new Station(attributes.name);
             myFeature->setStation(myStation);
             break;
         }case Configuration::eCoordinateSystemFeature:{
@@ -326,15 +326,15 @@ FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureTy
             myFeature->setTrafoParam(myTrafoParam);
             break;
         }case Configuration::eScalarEntityAngleFeature:{
-            ScalarEntityAngle *myAngle = new ScalarEntityAngle(isNominal);
+            ScalarEntityAngle *myAngle = new ScalarEntityAngle(attributes.nominal);
             myFeature->setScalarEntityAngle(myAngle);
             break;
         }case Configuration::eScalarEntityDistanceFeature:{
-            ScalarEntityDistance *myDistance = new ScalarEntityDistance(isNominal);
+            ScalarEntityDistance *myDistance = new ScalarEntityDistance(attributes.nominal);
             myFeature->setScalarEntityDistance(myDistance);
             break;
         }case Configuration::eScalarEntityTemperatureFeature:{
-            ScalarEntityTemperature *myTemperature = new ScalarEntityTemperature(isNominal);
+            ScalarEntityTemperature *myTemperature = new ScalarEntityTemperature(attributes.nominal);
             myFeature->setScalarEntityTemperature(myTemperature);
             break;
         }default:{
@@ -343,11 +343,11 @@ FeatureWrapper *OiFeatureState::addFeature(Configuration::FeatureTypes featureTy
         }}
 
         //set feature's name
-        if(OiFeatureState::validateFeatureName(featureType, name, isNominal)){
-            myFeature->getFeature()->setFeatureName(name);
+        if(OiFeatureState::validateFeatureName(attributes.featureType, attributes.name, attributes.nominal)){
+            myFeature->getFeature()->setFeatureName(attributes.name);
         }else{
-            while(!OiFeatureState::validateFeatureName(featureType, name.append("_new"), isNominal)){}
-            myFeature->getFeature()->setFeatureName(name);
+            while(!OiFeatureState::validateFeatureName(attributes.featureType, attributes.name.append("_new"), attributes.nominal)){}
+            myFeature->getFeature()->setFeatureName(attributes.name);
         }
 
         //store the feature
@@ -378,7 +378,7 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
         if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
 
             //check if feature with this id already exists
-            if(OiFeatureState::getFeatureListIndex(myFeature->getFeature()->getId()) >= 0){
+            if(OiFeatureState::myFeatureContainer.getFeatureById(myFeature->getFeature()->getId()) != NULL){
                 myFeature->getFeature()->setId(Configuration::generateID());
             }
 
@@ -437,6 +437,30 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
 
 /*!
  * \brief OiFeatureState::addFeatures
+ * Creates and adds features by using the given feature attributes
+ * \param attributes
+ * \return
+ */
+QList<FeatureWrapper *> OiFeatureState::addFeatures(FeatureAttributesExchange attributes){
+    try{
+
+        QString name = attributes.name;
+        QString index = 0;
+
+        for(int i = 0; i < attributes.count; i++){
+
+
+
+        }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+        return QList<FeatureWrapper *>();
+    }
+}
+
+/*!
+ * \brief OiFeatureState::addFeatures
  * \param myFeatures
  * \return
  */
@@ -448,7 +472,7 @@ bool OiFeatureState::addFeatures(const QList<FeatureWrapper *> &myFeatures){
             if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
 
                 //check if feature with this id already exists
-                if(OiFeatureState::getFeatureListIndex(myFeature->getFeature()->getId()) >= 0){
+                if(OiFeatureState::myFeatureContainer.getFeatureById(myFeature->getFeature()->getId()) != NULL){
                     myFeature->getFeature()->setId(Configuration::generateID());
                 }
 
@@ -516,9 +540,9 @@ bool OiFeatureState::removeFeature(FeatureWrapper *myFeature){
 
         if(myFeature != NULL && myFeature->getFeature() != NULL){
 
-            int removeFeatureIndex = OiFeatureState::getFeatureListIndex(myFeature->getFeature()->getId());
+            //int removeFeatureIndex = OiFeatureState::getFeatureListIndex(myFeature->getFeature()->getId());
 
-            if(removeFeatureIndex >= 0){
+            //if(removeFeatureIndex >= 0){
 
                 //disconnect feature's signals from OiFeatureState
                 OiFeatureState::disconnectFeature(myFeature);
@@ -561,8 +585,8 @@ bool OiFeatureState::removeFeature(FeatureWrapper *myFeature){
 
                 return true;
 
-            }
-            return false;
+            //}
+            //return false;
 
         }
         return false;
@@ -794,32 +818,31 @@ bool OiFeatureState::validateFeatureName(Configuration::FeatureTypes featureType
 void OiFeatureState::setActiveFeature(int featureId){
     try{
 
-        //get list index of the edited feature
-        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
+        //get the feature with id featureId
+        FeatureWrapper *myFeature = OiFeatureState::myFeatureContainer.getFeatureById(featureId);
 
-        //if a feature exists at that index
-        if(featureIndex >= 0){
+        //if no feature exists with that id
+        if(myFeature == NULL){
+            return;
+        }
 
-            //if the feature was set to be the active feature
-            if(OiFeatureState::myFeatureContainer.getFeaturesList().at(featureIndex)->getFeature()->getIsActiveFeature()){
+        //if the feature was set to be the active feature
+        if(myFeature->getFeature()->getIsActiveFeature()){
 
-                //set the active feature pointer to that feature ...
-                OiFeatureState::myActiveFeature = OiFeatureState::myFeatureContainer.getFeaturesList().at(featureIndex);
+            //set the active feature pointer to that feature ...
+            OiFeatureState::myActiveFeature = myFeature;
 
-                //... and set isActive of active feature to true and all other feature's isActive property to false
-                for(unsigned int i = 0; i < OiFeatureState::getFeatureCount(); i++){
-                    if(i != featureIndex && OiFeatureState::myFeatureContainer.getFeaturesList().at(i) != NULL
-                            && OiFeatureState::myFeatureContainer.getFeaturesList().at(i)->getFeature() != NULL){
-                        OiFeatureState::myFeatureContainer.getFeaturesList().at(i)->getFeature()->setActiveFeatureState(false);
-                    }else{
-                        OiFeatureState::myFeatureContainer.getFeaturesList().at(i)->getFeature()->setActiveFeatureState(true);
-                    }
+            //... and set isActive of active feature to true and all other feature's isActive property to false
+            foreach(FeatureWrapper *f, OiFeatureState::myFeatureContainer.getFeaturesList()){
+                if(f->getFeature()->getId() == featureId){
+                    f->getFeature()->setActiveFeatureState(true);
+                }else{
+                    f->getFeature()->setActiveFeatureState(false);
                 }
-
-                //emit signal to inform that active feature has changed
-                OiFeatureState::getInstance()->emitSignal(eActiveFeatureChanged);
-
             }
+
+            //emit signal to inform that active feature has changed
+            OiFeatureState::getInstance()->emitSignal(eActiveFeatureChanged);
 
         }
 
@@ -835,31 +858,31 @@ void OiFeatureState::setActiveFeature(int featureId){
 void OiFeatureState::setActiveStation(int featureId){
     try{
 
-        //get list index of the edited station
-        int stationIndex = OiFeatureState::getStationListIndex(featureId);
+        //get the station with id featureId
+        FeatureWrapper *myStation = OiFeatureState::myFeatureContainer.getFeatureById(featureId);
 
-        //if a station exists at that index
-        if(stationIndex >= 0){
+        //if no station exists with that id
+        if(myStation == NULL || myStation->getStation() == NULL){
+            return;
+        }
 
-            //if the station was set to be the active station
-            if(OiFeatureState::myFeatureContainer.getStationsList().at(stationIndex)->getIsActiveStation()){
+        //if the station was set to be the active station
+        if(myStation->getStation()->getIsActiveStation()){
 
-                //set the active station pointer to that station ...
-                OiFeatureState::myActiveStation = OiFeatureState::myFeatureContainer.getStationsList().at(stationIndex);
+            //set the active station pointer to that station ...
+            OiFeatureState::myActiveStation = myStation->getStation();
 
-                //... and set isActiveStation of active station to true and all other station's isActiveStation property to false
-                for(unsigned int i = 0; i < OiFeatureState::myFeatureContainer.getStationsList().size(); i++){
-                    if(i != stationIndex && OiFeatureState::myFeatureContainer.getStationsList().at(i) != NULL){
-                        OiFeatureState::myFeatureContainer.getStationsList().at(i)->setActiveStationState(false);
-                    }else{
-                        OiFeatureState::myFeatureContainer.getStationsList().at(i)->setActiveStationState(true);
-                    }
+            //... and set isActiveStation of active station to true and all other station's isActiveStation property to false
+            foreach(Station *s, OiFeatureState::myFeatureContainer.getStationsList()){
+                if(s->getId() == featureId){
+                    s->setActiveStationState(true);
+                }else{
+                    s->setActiveStationState(false);
                 }
-
-                //emit signal to inform that active station has changed
-                OiFeatureState::getInstance()->emitSignal(eActiveStationChanged);
-
             }
+
+            //emit signal to inform that active station has changed
+            OiFeatureState::getInstance()->emitSignal(eActiveStationChanged);
 
         }
 
@@ -875,71 +898,55 @@ void OiFeatureState::setActiveStation(int featureId){
 void OiFeatureState::setActiveCoordinateSystem(int featureId){
     try{
 
-        //get list index of active part coordinate system
-        int csIndex = OiFeatureState::getCoordinateSystemIndex(featureId);
+        //get the coordinate system with id featureId
+        CoordinateSystem *mySystem = NULL;
+        FeatureWrapper *myCoordinateSystem = OiFeatureState::myFeatureContainer.getFeatureById(featureId);
 
-        if(csIndex >= 0){ //if a part coordinate system exists at that index
+        if(myCoordinateSystem != NULL){
+            mySystem = myCoordinateSystem->getCoordinateSystem();
+        }
 
-            //if the coordinate system was set to be the active coordinate system
-            if(OiFeatureState::myFeatureContainer.getCoordinateSystemsList().at(csIndex)->getIsActiveCoordinateSystem()){
+        //if no coordinate system with that id exists
+        if(myCoordinateSystem == NULL || myCoordinateSystem->getCoordinateSystem() == NULL){
 
-                //set the active coordinate system pointer to that coordinate system
-                OiFeatureState::myActiveCoordinateSystem = OiFeatureState::myFeatureContainer.getCoordinateSystemsList().at(csIndex);
-
-                //set isActiveCoordinateSystem of active system to true and all other system's isActiveCoordinateSystem property to false
-                for(unsigned int i = 0; i < OiFeatureState::myFeatureContainer.getStationsList().size(); i++){ //station systems
-                    if(OiFeatureState::myFeatureContainer.getStationsList().at(i) != NULL && OiFeatureState::myFeatureContainer.getStationsList().at(i)->coordSys != NULL){
-                        OiFeatureState::myFeatureContainer.getStationsList().at(i)->coordSys->setActiveCoordinateSystemState(false);
-                    }
+            //check if there is a station system with id featureId
+            foreach(Station *s, OiFeatureState::myFeatureContainer.getStationsList()){
+                if(s->coordSys->getId() == featureId){
+                    mySystem = s->coordSys;
+                    break;
                 }
-                for(unsigned int i = 0; i < OiFeatureState::myFeatureContainer.getCoordinateSystemsList().size(); i++){ //part systems
-                    if(i != csIndex && OiFeatureState::myFeatureContainer.getCoordinateSystemsList().at(i) != NULL){
-                        OiFeatureState::myFeatureContainer.getCoordinateSystemsList().at(i)->setActiveCoordinateSystemState(false);
-                    }else{
-                        OiFeatureState::myFeatureContainer.getCoordinateSystemsList().at(i)->setActiveCoordinateSystemState(true);
-                    }
-                }
-
-                //emit signal to inform that active coordinate system has changed
-                OiFeatureState::getInstance()->emitSignal(eActiveCoordinateSystemChanged);
-
             }
 
-        }else{
+        }
 
-            //get list index of active station coordinate system
-            csIndex = OiFeatureState::getStationCoordinayteSystemIndex(featureId);
+        if(mySystem == NULL){
+            return;
+        }
 
-            if(csIndex >= 0){ //if a station coordinate system exists at that index
+        //if the coordinate system was set to be the active coordinate system
+        if(mySystem->getIsActiveCoordinateSystem()){
 
-                //if the coordinate system was set to be the active coordinate system
-                if(OiFeatureState::myFeatureContainer.getStationsList().at(csIndex)->coordSys->getIsActiveCoordinateSystem()){
+            //set the active coordinate system pointer to that coordinate system
+            OiFeatureState::myActiveCoordinateSystem = mySystem;
 
-                    //set the active coordinate system pointer to that coordinate system
-                    OiFeatureState::myActiveCoordinateSystem = OiFeatureState::myFeatureContainer.getStationsList().at(csIndex)->coordSys;
-
-                    //set isActiveCoordinateSystem of active system to true and all other system's isActiveCoordinateSystem property to false
-                    for(unsigned int i = 0; i < OiFeatureState::myFeatureContainer.getCoordinateSystemsList().size(); i++){ //part systems
-                        if(OiFeatureState::myFeatureContainer.getCoordinateSystemsList().at(i) != NULL){
-                            OiFeatureState::myFeatureContainer.getCoordinateSystemsList().at(i)->setActiveCoordinateSystemState(false);
-                        }
-                    }
-                    for(unsigned int i = 0; i < OiFeatureState::myFeatureContainer.getStationsList().size(); i++){ //station systems
-                        if(OiFeatureState::myFeatureContainer.getStationsList().at(i) != NULL && OiFeatureState::myFeatureContainer.getStationsList().at(i)->coordSys != NULL){
-                            if(OiFeatureState::myFeatureContainer.getStationsList().at(i)->coordSys->getId() == featureId){
-                                OiFeatureState::myFeatureContainer.getStationsList().at(i)->coordSys->setActiveCoordinateSystemState(true);
-                            }else{
-                                OiFeatureState::myFeatureContainer.getStationsList().at(i)->coordSys->setActiveCoordinateSystemState(false);
-                            }
-                        }
-                    }
-
-                    //emit signal to inform that active coordinate system has changed
-                    OiFeatureState::getInstance()->emitSignal(eActiveCoordinateSystemChanged);
-
+            //set isActiveCoordinateSystem of active system to true and all other system's isActiveCoordinateSystem property to false
+            foreach(CoordinateSystem *c, OiFeatureState::myFeatureContainer.getCoordinateSystemsList()){
+                if(c->getId() == featureId){
+                    c->setActiveCoordinateSystemState(true);
+                }else{
+                    c->setActiveCoordinateSystemState(false);
                 }
-
             }
+            foreach(Station *s, OiFeatureState::myFeatureContainer.getStationsList()){
+                if(s->coordSys->getId() == featureId){
+                    s->coordSys->setActiveCoordinateSystemState(true);
+                }else{
+                    s->coordSys->setActiveCoordinateSystemState(false);
+                }
+            }
+
+            //emit signal to inform that active coordinate system has changed
+            OiFeatureState::getInstance()->emitSignal(eActiveCoordinateSystemChanged);
 
         }
 
@@ -955,14 +962,9 @@ void OiFeatureState::setActiveCoordinateSystem(int featureId){
 void OiFeatureState::setFeatureGroup(int featureId){
     try{
 
-        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
-        if(featureIndex >= 0){
+        OiFeatureState::updateAvailableGroups();
 
-            OiFeatureState::updateAvailableGroups();
-
-            OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
-
-        }
+        OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -977,12 +979,7 @@ void OiFeatureState::setFeatureGroup(int featureId){
 void OiFeatureState::setFeatureName(int featureId, QString oldName){
     try{
 
-        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
-        if(featureIndex >= 0){
-
-            OiFeatureState::getInstance()->emitSignal(eFeatureAttributesChanged);
-
-        }
+        OiFeatureState::getInstance()->emitSignal(eFeatureAttributesChanged);
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -996,12 +993,7 @@ void OiFeatureState::setFeatureName(int featureId, QString oldName){
 void OiFeatureState::setFeatureComment(int featureId){
     try{
 
-        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
-        if(featureIndex >= 0){
-
-            OiFeatureState::getInstance()->emitSignal(eFeatureAttributesChanged);
-
-        }
+        OiFeatureState::getInstance()->emitSignal(eFeatureAttributesChanged);
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -1015,12 +1007,7 @@ void OiFeatureState::setFeatureComment(int featureId){
 void OiFeatureState::setFeatureFunctions(int featureId){
     try{
 
-        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
-        if(featureIndex >= 0){
-
-            OiFeatureState::getInstance()->emitSignal(eFeatureFunctionsChanged);
-
-        }
+        OiFeatureState::getInstance()->emitSignal(eFeatureFunctionsChanged);
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -1034,80 +1021,80 @@ void OiFeatureState::setFeatureFunctions(int featureId){
 void OiFeatureState::setGeometryActual(int featureId){
     try{
 
-        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
+        FeatureWrapper *myNominal = OiFeatureState::getFeature(featureId);
 
-        if(featureIndex >= 0){
-
-            FeatureWrapper *myNominal = OiFeatureState::getFeature(featureId);
-            myNominal->getGeometry()->getMyActual();
-            FeatureWrapper *newActual;
-            newActual= new FeatureWrapper();
-
-            /*switch (myNominal->getTypeOfFeature()) {
-            case Configuration::ePointFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eLineFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::ePlaneFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eSphereFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eStationFeature:
-
-                break;
-            case Configuration::eCoordinateSystemFeature:
-
-                break;
-            case Configuration::eTrafoParamFeature:
-
-                break;
-            case Configuration::ePointCloudFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eCircleFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eConeFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eCylinderFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eEllipsoidFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eHyperboloidFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eNurbsFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eParaboloidFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eScalarEntityAngleFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eScalarEntityDistanceFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eScalarEntityTemperatureFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            case Configuration::eScalarEntityMeasurementSeriesFeature:
-                newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
-                break;
-            default:
-                break;
-            }*/
-
-            OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
-
+        if(myNominal == NULL || myNominal->getGeometry() == NULL){
+            return;
         }
+
+
+        myNominal->getGeometry()->getMyActual();
+        FeatureWrapper *newActual;
+        newActual= new FeatureWrapper();
+
+        /*switch (myNominal->getTypeOfFeature()) {
+        case Configuration::ePointFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eLineFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::ePlaneFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eSphereFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eStationFeature:
+
+            break;
+        case Configuration::eCoordinateSystemFeature:
+
+            break;
+        case Configuration::eTrafoParamFeature:
+
+            break;
+        case Configuration::ePointCloudFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eCircleFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eConeFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eCylinderFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eEllipsoidFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eHyperboloidFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eNurbsFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eParaboloidFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eScalarEntityAngleFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eScalarEntityDistanceFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eScalarEntityTemperatureFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        case Configuration::eScalarEntityMeasurementSeriesFeature:
+            newActual->setPoint((Point*)myNominal->getGeometry()->getMyActual());
+            break;
+        default:
+            break;
+        }*/
+
+        OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -1121,12 +1108,7 @@ void OiFeatureState::setGeometryActual(int featureId){
 void OiFeatureState::setGeometryNominals(int featureId){
     try{
 
-        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
-        if(featureIndex >= 0){
-
-            OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
-
-        }
+        OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -1140,12 +1122,7 @@ void OiFeatureState::setGeometryNominals(int featureId){
 void OiFeatureState::setGeometryObservations(int featureId){
     try{
 
-        int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
-        if(featureIndex >= 0){
-
-            OiFeatureState::getInstance()->emitSignal(eGeomObservationsChanged);
-
-        }
+        OiFeatureState::getInstance()->emitSignal(eGeomObservationsChanged);
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -1208,7 +1185,7 @@ void OiFeatureState::addPCSegmentAsFeature(FeatureWrapper *segment){
  * \param featureId
  * \return
  */
-int OiFeatureState::getFeatureListIndex(int featureId){
+/*int OiFeatureState::getFeatureListIndex(int featureId){
     for(unsigned int i = 0; i < OiFeatureState::getFeatureCount(); i++){
         FeatureWrapper *myFeature = OiFeatureState::myFeatureContainer.getFeaturesList().at(i);
         if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getId() == featureId){
@@ -1216,14 +1193,14 @@ int OiFeatureState::getFeatureListIndex(int featureId){
         }
     }
     return -1;
-}
+}*/
 
 /*!
  * \brief OiFeatureState::getStationListIndex
  * \param featureId
  * \return
  */
-int OiFeatureState::getStationListIndex(int featureId){
+/*int OiFeatureState::getStationListIndex(int featureId){
     for(unsigned int i = 0; i < OiFeatureState::myFeatureContainer.getStationsList().size(); i++){
         Station *myStation = OiFeatureState::myFeatureContainer.getStationsList().at(i);
         if(myStation != NULL && myStation->getId() == featureId){
@@ -1231,14 +1208,14 @@ int OiFeatureState::getStationListIndex(int featureId){
         }
     }
     return -1;
-}
+}*/
 
 /*!
  * \brief OiFeatureState::getCoordinateSystemIndex
  * \param featureId
  * \return
  */
-int OiFeatureState::getCoordinateSystemIndex(int featureId){
+/*int OiFeatureState::getCoordinateSystemIndex(int featureId){
     for(unsigned int i = 0; i < OiFeatureState::myFeatureContainer.getCoordinateSystemsList().size(); i++){
         CoordinateSystem *mySystem = OiFeatureState::myFeatureContainer.getCoordinateSystemsList().at(i);
         if(mySystem != NULL && mySystem->getId() == featureId){
@@ -1246,14 +1223,14 @@ int OiFeatureState::getCoordinateSystemIndex(int featureId){
         }
     }
     return -1;
-}
+}*/
 
 /*!
  * \brief OiFeatureState::getStationCoordinayteSystemIndex
  * \param featureId
  * \return
  */
-int OiFeatureState::getStationCoordinayteSystemIndex(int featureId){
+/*int OiFeatureState::getStationCoordinayteSystemIndex(int featureId){
     for(unsigned int i = 0; i < OiFeatureState::myFeatureContainer.getStationsList().size(); i++){
         Station *myStation = OiFeatureState::myFeatureContainer.getStationsList().at(i);
         if(myStation != NULL && myStation->coordSys != NULL && myStation->coordSys->getId() == featureId){
@@ -1261,4 +1238,4 @@ int OiFeatureState::getStationCoordinayteSystemIndex(int featureId){
         }
     }
     return -1;
-}
+}*/
