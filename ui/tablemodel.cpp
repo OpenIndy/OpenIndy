@@ -29,7 +29,6 @@ int TableModel::rowCount(const QModelIndex& ) const{
  */
 int TableModel::columnCount(const QModelIndex &parent) const{
     return GUIConfiguration::allAttributes.size();
-    //return 33;
 }
 
 /*!
@@ -40,6 +39,35 @@ int TableModel::columnCount(const QModelIndex &parent) const{
  * \return
  */
 QVariant TableModel::data(const QModelIndex &index, int role) const{
+    /*try{
+
+        //check model index
+        if(!index.isValid()){
+            return QVariant();
+        }
+
+        //get the feature to display at row index.row()
+        FeatureWrapper *currentFeature = NULL;
+        if(OiFeatureState::getFeatureCount() > index.row()){
+            currentFeature = OiFeatureState::getFeatures().at(index.row());
+        }
+
+        //check the feature
+        if(currentFeature == NULL || currentFeature->getFeature() == NULL){
+            return QVariant();
+        }
+
+    }catch(const exception &e){
+        Console::addLine(e.what());
+        return QVariant();
+    }*/
+
+
+
+
+
+
+    //--------------------
 
     try{
 
