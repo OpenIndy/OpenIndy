@@ -39,7 +39,7 @@ int TableModel::columnCount(const QModelIndex &parent) const{
  * \return
  */
 QVariant TableModel::data(const QModelIndex &index, int role) const{
-    /*try{
+    try{
 
         //check model index
         if(!index.isValid()){
@@ -57,386 +57,200 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
             return QVariant();
         }
 
+        //display role
+        if(role == Qt::DisplayRole){
+            switch (index.column()) {
+            case 0: //feature type
+                return currentFeature->returnFeatureType();
+            case 1: //actual - nominal
+                return currentFeature->getFeature()->getDisplayIsNominal();
+            case 2: //group
+                return currentFeature->getFeature()->getGroupName();
+            case 3: //name
+                return currentFeature->getFeature()->getFeatureName();
+            case 4: //x
+                if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayX();
+                }else if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayX();
+                }
+                return QVariant();
+            case 5: //y
+                if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayY();
+                }else if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayY();
+                }
+                return QVariant();
+            case 6: //z
+                if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayZ();
+                }else if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayZ();
+                }
+                return QVariant();
+            case 7: //stddev
+                return currentFeature->getFeature()->getDisplayStdDev();
+            case 8: //obs
+                return currentFeature->getFeature()->getDisplayObs();
+            case 9: //mconfig
+                return currentFeature->getFeature()->getDisplayMConfig();
+            case 10: //function
+                if(currentFeature->getFeature()->getFunctions().size() == 0){
+                    return "no function set";
+                }else{
+                    QString functions = currentFeature->getFeature()->getFunctions().at(0)->getMetaData()->name;
+                    for(int i = 1; i < currentFeature->getFeature()->getFunctions().size(); i++){
+                        functions += "," + currentFeature->getFeature()->getFunctions().at(i)->getMetaData()->name;
+                    }
+                    return functions;
+                }
+            case 11: //solved
+                return currentFeature->getFeature()->getDisplaySolved();
+            case 12: //comment
+                return currentFeature->getFeature()->getComment();
+            case 13: //radius
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayRadius();
+                }
+                return QVariant();
+            case 14: //i
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayI();
+                }
+                return QVariant();
+            case 15: //j
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayJ();
+                }
+                return QVariant();
+            case 16: //k
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayK();
+                }
+                return QVariant();
+            case 17: //com point
+                return currentFeature->getFeature()->getDisplayIsCommon();
+            case 18: //scalar value dist
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayScalarDistanceValue();
+                }
+                return QVariant();
+            case 19: //scalar value rad
+                if(currentFeature->getFeature()->getIsSolved()){
+                    return currentFeature->getFeature()->getDisplayScalarAngleValue();
+                }
+                return QVariant();
+            case 20: //temperature
+                return currentFeature->getFeature()->getDisplayScalarTemperatureValue();
+            case 21: //measurement series
+                return currentFeature->getFeature()->getDisplayScalarMeasurementSeriesValue();
+            case 22: //expansion origin x
+               return currentFeature->getFeature()->getDisplayExpansionOriginX();
+            case 23: //expansion origin y
+                return currentFeature->getFeature()->getDisplayExpansionOriginY();
+            case 24: //expansion origin z
+                return currentFeature->getFeature()->getDisplayExpansionOriginZ();
+            case 25: //use
+                if(currentFeature->getTrafoParam() != NULL){
+                    return currentFeature->getTrafoParam()->getIsUsed();
+                }
+                return QVariant();
+            case 26: //datum trafo
+                if(currentFeature->getTrafoParam() != NULL){
+                    return currentFeature->getTrafoParam()->getisDatumTrafo();
+                }
+                return QVariant();
+            case 27: //start system
+                return currentFeature->getFeature()->getDisplayStartSystem();
+            case 28: //dest system
+                return currentFeature->getFeature()->getDisplayDestinationSystem();
+            case 29: //tx
+                return currentFeature->getFeature()->getDisplayTranslationX();
+            case 30: //ty
+                return currentFeature->getFeature()->getDisplayTranslationY();
+            case 31: //tz
+                return currentFeature->getFeature()->getDisplayTranslationZ();
+            case 32: //rx
+                return currentFeature->getFeature()->getDisplayRotationX();
+            case 33: //ry
+                return currentFeature->getFeature()->getDisplayRotationY();
+            case 34: //rz
+                return currentFeature->getFeature()->getDisplayRotationZ();
+            case 35: //sx
+                return currentFeature->getFeature()->getDisplayScaleX();
+            case 36: //sy
+                return currentFeature->getFeature()->getDisplayScaleY();
+            case 37: //sz
+                return currentFeature->getFeature()->getDisplayScaleZ();
+            case 38: //time
+                if(currentFeature->getTrafoParam() != NULL){
+                    return currentFeature->getTrafoParam()->getValidTime();
+                }
+                return QVariant();
+            default:
+                return QVariant();
+            }
+        }
+
+        //background role
+        if(role == Qt::BackgroundRole){
+
+            //active feature
+            if (currentFeature->getFeature()->getIsActiveFeature()){
+                return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
+            }
+
+            //active station
+            if(currentFeature->getTypeOfFeature() == Configuration::eStationFeature
+                    && currentFeature->getStation()->getIsActiveStation()){
+                return QColor(Qt::darkGray);
+            }
+
+            //non active station
+            if (currentFeature->getTypeOfFeature() == Configuration::eStationFeature
+                    && !currentFeature->getStation()->getIsActiveStation()){
+                return QColor(Qt::lightGray);
+            }
+
+            //not solved
+            if( (index.column() == 4 || index.column() == 5 || index.column() == 6
+                    || index.column() == 13 || index.column() == 14
+                    || index.column() == 15 || index.column() == 16
+                    || index.column() == 18 || index.column() == 19
+                    || index.column() == 20 || index.column() == 21)
+                    && !currentFeature->getFeature()->getIsSolved()){
+                return QColor(Qt::yellow);
+            }
+
+            //nominal
+            if(currentFeature->getGeometry() != NULL && currentFeature->getGeometry()->getIsNominal()){
+                return QColor(QColor::fromRgb(230,230,180));
+            }
+
+            return QVariant();
+
+        }
+
+        //foreground role
+        if(role == Qt::ForegroundRole){
+
+            //active station
+            if(currentFeature->getTypeOfFeature() == Configuration::eStationFeature
+                    && currentFeature->getStation()->getIsActiveStation()){
+                return QColor(Qt::white);
+            }
+
+            return QVariant();
+
+        }
+
+        return QVariant();
+
     }catch(const exception &e){
         Console::addLine(e.what());
         return QVariant();
-    }*/
-
-
-
-
-
-
-    //--------------------
-
-    try{
-
-        if(!index.isValid())
-            return QVariant();
-
-        QString functions = "";
-
-        FeatureWrapper *currentFeature = NULL;
-        if(OiFeatureState::getFeatureCount() > index.row()){
-            currentFeature = OiFeatureState::getFeatures().at(index.row());
-        }
-
-        if(currentFeature != NULL && currentFeature->getFeature() != NULL){
-
-            //neu
-            if(Qt::DisplayRole == role){
-
-                switch (index.column()) {
-                case 0://type
-                    return currentFeature->returnFeatureType();
-                case 1://act/nom
-                    return currentFeature->getFeature()->getDisplayIsNominal();
-                case 2://group
-                    return currentFeature->getFeature()->getGroupName();
-                case 3://name
-                    return currentFeature->getFeature()->getFeatureName();
-                case 4://x
-                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayX();
-                    }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayX();
-                    }else{
-                        return QVariant();
-                    }
-                case 5://y
-                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayY();
-                    }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayY();
-                    }else{
-                        return QVariant();
-                    }
-                case 6://z
-                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayZ();
-                    }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayZ();
-                    }else{
-                        return QVariant();
-                    }
-                case 7://stddev
-                    return currentFeature->getFeature()->getDisplayStdDev();
-                case 8://obs
-                    return currentFeature->getFeature()->getDisplayObs();
-                case 9://mconfig
-                    return currentFeature->getFeature()->getDisplayMConfig();
-                case 10://function
-                    if(currentFeature->getFeature()->getFunctions().size() == 0){
-                        return "no function set";
-                    }else{
-                        functions += currentFeature->getFeature()->getFunctions().at(0)->getMetaData()->name;
-                        for(int i=1;i<currentFeature->getFeature()->getFunctions().size();i++){
-                            functions += "," + currentFeature->getFeature()->getFunctions().at(i)->getMetaData()->name;
-                        }
-                        return functions;
-                    }
-                case 11://solved
-                    return currentFeature->getFeature()->getDisplaySolved();
-                case 12://comment
-                    return currentFeature->getFeature()->getComment();
-                case 13://radius
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayRadius();
-                    }else{
-                        return QVariant();
-                    }
-                case 14://i
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayI();
-                    }else{
-                        return QVariant();
-                    }
-                case 15://j
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayJ();
-                    }else{
-                        return QVariant();
-                    }
-                case 16://k
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayK();
-                    }else{
-                        return QVariant();
-                    }
-                case 17://com point
-                    return currentFeature->getFeature()->getDisplayIsCommon();
-                case 18://scalar value dist
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayScalarDistanceValue();
-                    }else{
-                        return QVariant();
-                    }
-                case 19://scalar value rad
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayScalarAngleValue();
-                    }else{
-                        return QVariant();
-                    }
-                case 20://temperature
-                    return currentFeature->getFeature()->getDisplayScalarTemperatureValue();
-                case 21://measurement series
-                    return currentFeature->getFeature()->getDisplayScalarMeasurementSeriesValue();
-                case 22://expansion origin x
-                   return currentFeature->getFeature()->getDisplayExpansionOriginX();
-                case 23://expansion origin y
-                    return currentFeature->getFeature()->getDisplayExpansionOriginY();
-                case 24://expansion origin z
-                    return currentFeature->getFeature()->getDisplayExpansionOriginZ();
-                case 25://use
-                    if(currentFeature->getTrafoParam() != NULL){
-                        return currentFeature->getTrafoParam()->getIsUsed();
-                    }
-                    return QVariant();
-                case 26://datum trafo
-                    if(currentFeature->getTrafoParam() != NULL){
-                        return currentFeature->getTrafoParam()->getisDatumTrafo();
-                    }
-                    return QVariant();
-                case 27://start system
-                    return currentFeature->getFeature()->getDisplayStartSystem();
-                case 28://dest system
-                    return currentFeature->getFeature()->getDisplayDestinationSystem();
-                case 29://tx
-                    return currentFeature->getFeature()->getDisplayTranslationX();
-                case 30://ty
-                    return currentFeature->getFeature()->getDisplayTranslationY();
-                case 31://tz
-                    return currentFeature->getFeature()->getDisplayTranslationZ();
-                case 32://rx
-                    return currentFeature->getFeature()->getDisplayRotationX();
-                case 33://ry
-                    return currentFeature->getFeature()->getDisplayRotationY();
-                case 34://rz
-                    return currentFeature->getFeature()->getDisplayRotationZ();
-                case 35://sx
-                    return currentFeature->getFeature()->getDisplayScaleX();
-                case 36://sy
-                    return currentFeature->getFeature()->getDisplayScaleY();
-                case 37://sz
-                    return currentFeature->getFeature()->getDisplayScaleZ();
-                case 38://time
-                    if(currentFeature->getTrafoParam() != NULL){
-                        return currentFeature->getTrafoParam()->getValidTime();
-                    }
-                    return QVariant();
-                default:
-                    break;
-                }
-
-            }
-            /*
-            //alt
-            if(Qt::DisplayRole == role){
-
-                switch (index.column()) {
-                case 0:
-                    return currentFeature->returnFeatureType();
-                case 1:
-                    return currentFeature->getFeature()->getFeatureName();
-                case 2:
-                    return currentFeature->getFeature()->getGroupName();
-                case 3://special case for stations, because they use the xyz origin of their coordinate system
-                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayX();
-                    }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayX();
-                    }else{
-                        return QVariant();
-                    }
-                case 4://special case for stations, because they use the xyz origin of their coordinate system
-                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayY();
-                    }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayY();
-                    }else{
-                        return QVariant();
-                    }
-                case 5://special case for stations, because they use the xyz origin of their coordinate system
-                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayZ();
-                    }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayZ();
-                    }else{
-                        return QVariant();
-                    }
-                case 6:
-                    return currentFeature->getFeature()->getDisplayObs();
-                case 7:
-                    return currentFeature->getFeature()->getDisplaySolved();
-                case 8:
-                    return currentFeature->getFeature()->getDisplayMConfig();
-                case 9:
-                    if(currentFeature->getFeature()->getFunctions().size() == 0){
-                        return "no function set";
-                    }else{
-                        functions += currentFeature->getFeature()->getFunctions().at(0)->getMetaData()->name;
-                        for(int i=1;i<currentFeature->getFeature()->getFunctions().size();i++){
-                            functions += "," + currentFeature->getFeature()->getFunctions().at(i)->getMetaData()->name;
-                        }
-                        return functions;
-                    }
-                case 10:
-                    return currentFeature->getFeature()->getDisplayIsCommon();
-                case 11:
-                    return currentFeature->getFeature()->getDisplayIsNominal();
-                case 12:
-                    return currentFeature->getFeature()->getDisplayStdDev();
-                case 13:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayI();
-                    }else{
-                        return QVariant();
-                    }
-                case 14:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayJ();
-                    }else{
-                        return QVariant();
-                    }
-                case 15:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayK();
-                    }else{
-                        return QVariant();
-                    }
-                case 16:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayRadius();
-                    }else{
-                        return QVariant();
-                    }
-                case 17:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayScalarDistanceValue();
-                    }else{
-                        return QVariant();
-                    }
-                case 18:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayScalarAngleValue();
-                    }else{
-                        return QVariant();
-                    }
-                case 19:
-                    return currentFeature->getFeature()->getDisplayStartSystem();
-                case 20:
-                    return currentFeature->getFeature()->getDisplayDestinationSystem();
-                case 21:
-                    return currentFeature->getFeature()->getDisplayTranslationX();
-                case 22:
-                    return currentFeature->getFeature()->getDisplayTranslationY();
-                case 23:
-                    return currentFeature->getFeature()->getDisplayTranslationZ();
-                case 24:
-                    return currentFeature->getFeature()->getDisplayRotationX();
-                case 25:
-                    return currentFeature->getFeature()->getDisplayRotationY();
-                case 26:
-                    return currentFeature->getFeature()->getDisplayRotationZ();
-                case 27:
-                    return currentFeature->getFeature()->getDisplayScaleX();
-                case 28:
-                    return currentFeature->getFeature()->getDisplayScaleY();
-                case 29:
-                    return currentFeature->getFeature()->getDisplayScaleZ();
-                case 30:
-                    return currentFeature->getFeature()->getDisplayScalarTemperatureValue();
-                case 31:
-                    return currentFeature->getFeature()->getDisplayScalarMeasurementSeriesValue();
-                case 32:
-                    return currentFeature->getFeature()->getComment();
-                case 33:
-                    if(currentFeature->getTrafoParam() != NULL){
-                        return currentFeature->getTrafoParam()->getIsUsed();
-                    }
-                    return QVariant();
-                case 34:
-                    if(currentFeature->getTrafoParam() != NULL){
-                        return currentFeature->getTrafoParam()->getValidTime();
-                    }
-                    return QVariant();
-                case 35:
-                    if(currentFeature->getTrafoParam() != NULL){
-                        return currentFeature->getTrafoParam()->getisDatumTrafo();
-                    }
-                    return QVariant();
-                case 36:
-                    return currentFeature->getFeature()->getDisplayExpansionOriginX();
-                case 37:
-                    return currentFeature->getFeature()->getDisplayExpansionOriginY();
-                case 38:
-                    return currentFeature->getFeature()->getDisplayExpansionOriginZ();
-                default:
-                    break;
-                }
-
-            }*/
-
-            if (role == Qt::BackgroundRole){
-
-                /*if(currentFeature->getGeometry() != NULL && currentFeature->getGeometry()->getMeasurementConfig().typeOfReading == -1){
-                    if(index.column() == 8){
-                        return QColor(Qt::red);
-                    }
-                }
-
-                if(currentFeature->getStation() != NULL && currentFeature->getStation()->position->getMeasurementConfig().typeOfReading == -1){
-                    if(index.column() == 8){
-                        return QColor(Qt::red);
-                    }
-                }*/
-
-                if (OiFeatureState::getActiveFeature() != NULL && currentFeature->getFeature() == OiFeatureState::getActiveFeature()->getFeature()){
-                    return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
-                }
-
-                if(OiFeatureState::getFeatures().at(index.row())->getStation() != NULL){
-                    if(OiFeatureState::getFeatures().at(index.row())->getStation() == OiFeatureState::getActiveStation()){
-                        return QColor(Qt::darkGray);
-                    }
-                }
-
-                if (OiFeatureState::getFeatures().at(index.row())->getStation()!=NULL){
-                    return QColor(Qt::lightGray);
-                }
-
-                //if feature is not solved
-                if( (index.column() == 4 || index.column() == 5 || index.column() == 6
-                        || index.column() == 13 || index.column() == 14
-                        || index.column() == 15 || index.column() == 16
-                        || index.column() == 18 || index.column() == 19
-                        || index.column() == 20 || index.column() == 21)
-                        && !currentFeature->getFeature()->getIsSolved()){
-                    return QColor(Qt::yellow);
-                }
-                if(OiFeatureState::getFeatures().at(index.row())->getGeometry() != NULL &&
-                        OiFeatureState::getFeatures().at(index.row())->getGeometry()->getIsNominal()){
-                    return QColor(QColor::fromRgb(230,230,180));
-                }
-
-            }
-
-            if (role == Qt::ForegroundRole ) {
-
-                if(currentFeature->getStation() != NULL && currentFeature->getStation()->getIsActiveStation()){
-                    return QColor(Qt::white);
-                }
-            }
-
-        }
-        return QVariant();
-
-    }catch(exception &e){
-        qDebug() << e.what();
-        return QVariant();
     }
-
-
 }
 
 /*!
