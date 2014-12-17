@@ -217,35 +217,36 @@ CoordinateSystem *OiFeatureState::getNominalSystem(QString name){
  */
 void OiFeatureState::sortFeatures()
 {
-    /*for(int i=0; i<OiFeatureState::getFeatureCount();i++){
+    for(int i=0; i<OiFeatureState::getFeatureCount();i++){
         if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->getIsNominal() == false){
             for(int k=0;k<OiFeatureState::getFeatures().size();k++){
                 if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->getIsNominal() == true){
                     if(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName().compare(OiFeatureState::getFeatures().at(k)->getFeature()->getFeatureName(),Qt::CaseSensitive)==0){
                         if(!(i ==k-1)){
-                            myFeatures.insert(i+1,myFeatures.at(k));
+                            OiFeatureState::myFeatureContainer.getFeaturesList().insert(i+1,OiFeatureState::myFeatureContainer.getFeaturesList().at(k));
                             if(i<k){
-                                myFeatures.removeAt(k+1);
+                                OiFeatureState::myFeatureContainer.getFeaturesList().removeAt(k+1);
                             }else{
                                 i -= 1;
-                                myFeatures.removeAt(k);
+                                OiFeatureState::myFeatureContainer.getFeaturesList().removeAt(k);
                             }
                             k -= 1;
                         }
                     }
                 }
             }
-        }else if(myFeatures.at(i)->getStation() != NULL){
-            for(int j=0;j<myFeatures.size();j++){
-                if(myFeatures.at(j)->getPoint() != NULL && myFeatures.at(j)->getPoint()->getIsNominal() == true){
-                    if(myFeatures.at(i)->getStation()->getFeatureName().compare(myFeatures.at(j)->getPoint()->getFeatureName(),Qt::CaseSensitive)==0){
+        }else if(OiFeatureState::myFeatureContainer.getFeaturesList().at(i)->getStation() != NULL){
+            for(int j=0;j<OiFeatureState::myFeatureContainer.getFeaturesList().size();j++){
+                if(OiFeatureState::myFeatureContainer.getFeaturesList().at(j)->getPoint() != NULL
+                        && OiFeatureState::myFeatureContainer.getFeaturesList().at(j)->getPoint()->getIsNominal() == true){
+                    if(OiFeatureState::myFeatureContainer.getFeaturesList().at(i)->getStation()->getFeatureName().compare(OiFeatureState::myFeatureContainer.getFeaturesList().at(j)->getPoint()->getFeatureName(),Qt::CaseSensitive)==0){
                         if(!(i ==j-1)){
-                            myFeatures.insert(i+1,myFeatures.at(j));
+                            OiFeatureState::myFeatureContainer.getFeaturesList().insert(i+1,OiFeatureState::myFeatureContainer.getFeaturesList().at(j));
                             if(i<j){
-                                myFeatures.removeAt(j+1);
+                                OiFeatureState::myFeatureContainer.getFeaturesList().removeAt(j+1);
                             }else{
                                 i -= 1;
-                                myFeatures.removeAt(j);
+                                OiFeatureState::myFeatureContainer.getFeaturesList().removeAt(j);
                             }
                             j -= 1;
                         }
@@ -253,7 +254,7 @@ void OiFeatureState::sortFeatures()
                 }
             }
         }
-    }*/
+    }
 }
 
 void OiFeatureState::sortFeaturesById()
