@@ -217,6 +217,7 @@ public slots:
             this->myGeometriesList.append(myFeature);
             break;
         }
+        this->updateDisplayList();
 
         return true;
 
@@ -268,8 +269,68 @@ public slots:
             this->myGeometriesList.removeOne(myFeature);
             break;
         }
+        this->updateDisplayList();
 
         return true;
+
+    }
+
+    //! sets up the display list so that actuals and nominals are next to each other
+    void updateDisplayList(){
+
+        //clear display list
+        this->myDisplayFeaturesList.clear();
+
+        //refill display list
+        int currentIndex = 0;
+        while(currentIndex < this->myDisplayFeaturesList.size()){
+
+            //get the next feature at currentIndex
+            FeatureWrapper *currentFeature = this->myFeaturesList.at(currentIndex);
+
+            //check if current feature has already been added
+            if(this->myDisplayFeaturesList.contains(currentFeature)){
+                currentIndex++;
+                continue;
+            }
+
+            //if current feature is no geometry
+            if(currentFeature->getGeometry() == NULL){
+                this->myDisplayFeaturesList.append(currentFeature);
+                currentIndex++;
+                continue;
+            }
+
+            //get a list of all features with the same name
+            QList<FeatureWrapper *> equalNameFeatures = this->getFeaturesByName(currentFeature->getFeature()->getFeatureName());
+
+            //if current feature is a nominal geometry
+            if(currentFeature->getGeometry()->getIsNominal()){
+
+                //add actual first if it exists
+                if(currentFeature->getGeometry()->getMyActual() != NULL){
+                    FeatureWrapper *myActual = this->getFeatureById(currentFeature->getGeometry()->getMyActual()->getId());
+                    if(myActual != NULL){
+                        this->myDisplayFeaturesList.append(myActual);
+                    }
+                }
+
+                //add all nominals with equal name
+                this->myDisplayFeaturesList.append(currentFeature);
+                foreach(FeatureWrapper *myFeature, equalNameFeatures){
+                    if(myFeature != NULL && myFeature->getGeometry() != NULL && !this->myDisplayFeaturesList.contains(myFeature)){
+                        this->myDisplayFeaturesList.append(myFeature);
+                    }
+                }
+
+            }
+
+            //if current feature is an actual geometry
+            this->myDisplayFeaturesList.append(currentFeature);
+
+            //TODO
+
+        }
 
     }
 
@@ -285,6 +346,9 @@ private:
     //feature maps (useful to quickly find a feature with a given id or name)
     QMap<int, FeatureWrapper *> myFeaturesIdMap; //map of all features in OpenIndy with their id as key
     QMultiMap<QString, FeatureWrapper *> myFeaturesNameMap; //map of all features in OpenIndy with their name as key
+
+    //feature list use for display (sorted by name and nominal-actual relations))
+    QList<FeatureWrapper *> myDisplayFeaturesList; //list of all features in OpenIndy
 
 };
 

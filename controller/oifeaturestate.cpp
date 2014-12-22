@@ -217,7 +217,7 @@ CoordinateSystem *OiFeatureState::getNominalSystem(QString name){
  */
 void OiFeatureState::sortFeatures()
 {
-    for(int i=0; i<OiFeatureState::getFeatureCount();i++){
+    /*for(int i=0; i<OiFeatureState::getFeatureCount();i++){
         if(OiFeatureState::getFeatures().at(i)->getGeometry() != NULL && OiFeatureState::getFeatures().at(i)->getGeometry()->getIsNominal() == false){
             for(int k=0;k<OiFeatureState::getFeatures().size();k++){
                 if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->getIsNominal() == true){
@@ -254,7 +254,7 @@ void OiFeatureState::sortFeatures()
                 }
             }
         }
-    }
+    }*/
 }
 
 void OiFeatureState::sortFeaturesById()
@@ -771,12 +771,13 @@ bool OiFeatureState::validateFeatureName(Configuration::FeatureTypes featureType
 
         if(isNominal){
 
-            //reject featureName if there is another nominal with the same name and nominal system or
+            //reject featureName if there is another nominal with the same type, name and nominal system or
             //if there is a station, coordinate system or trafo param feature with the same name
             foreach(FeatureWrapper *myFeature, equalNameFeatures){
 
                 if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()
-                        && myFeature->getGeometry()->getNominalSystem() == myNomSys){
+                        && myFeature->getGeometry()->getNominalSystem() == myNomSys
+                        && myFeature->getTypeOfFeature() == featureType){
                     return false;
                 }else if(myFeature->getTypeOfFeature() == Configuration::eCoordinateSystemFeature
                          || myFeature->getTypeOfFeature() == Configuration::eTrafoParamFeature
