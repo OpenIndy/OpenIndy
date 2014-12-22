@@ -53,6 +53,7 @@ public:
     static const QList<TrafoParam *> &getTransformationParameters();
     static const QList<FeatureWrapper *> &getGeometries();
     static QList<FeatureWrapper *> getFeaturesOfGroup(QString group);
+    static QList<FeatureWrapper *> getFeaturesByName(QString name);
 
     static FeatureWrapper* getActiveFeature();
     static Station* getActiveStation();
@@ -217,7 +218,7 @@ public slots:
             this->myGeometriesList.append(myFeature);
             break;
         }
-        this->updateDisplayList();
+        //this->updateDisplayList();
 
         return true;
 
@@ -269,14 +270,14 @@ public slots:
             this->myGeometriesList.removeOne(myFeature);
             break;
         }
-        this->updateDisplayList();
+        //this->updateDisplayList();
 
         return true;
 
     }
 
     //! sets up the display list so that actuals and nominals are next to each other
-    void updateDisplayList(){
+    /*void updateDisplayList(){
 
         //clear display list
         this->myDisplayFeaturesList.clear();
@@ -332,7 +333,7 @@ public slots:
 
         }
 
-    }
+    }*/
 
 private:
 
@@ -348,7 +349,7 @@ private:
     QMultiMap<QString, FeatureWrapper *> myFeaturesNameMap; //map of all features in OpenIndy with their name as key
 
     //feature list use for display (sorted by name and nominal-actual relations))
-    QList<FeatureWrapper *> myDisplayFeaturesList; //list of all features in OpenIndy
+    //QList<FeatureWrapper *> myDisplayFeaturesList; //list of all features in OpenIndy
 
 };
 

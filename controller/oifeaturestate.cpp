@@ -108,6 +108,15 @@ QList<FeatureWrapper *> OiFeatureState::getFeaturesOfGroup(QString group){
 }
 
 /*!
+ * \brief OiFeatureState::getFeaturesWithName
+ * \param name
+ * \return
+ */
+QList<FeatureWrapper *> OiFeatureState::getFeaturesByName(QString name){
+    return OiFeatureState::myFeatureContainer.getFeaturesByName(name);
+}
+
+/*!
  * \brief OiFeatureState::getActiveFeature
  * Returns a pointer to the active feature's feature wrapper or NULL.
  * \return

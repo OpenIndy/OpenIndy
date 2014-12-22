@@ -69,6 +69,7 @@ void Controller::initModels(){
         this->tblModel = new TableModel();
         this->featureOverviewModel = new FeatureOverviewProxyModel();
         this->featureOverviewModel->setSourceModel(this->tblModel);
+        this->featureOverviewModel->setDynamicSortFilter(true);
         this->trafoParamModel = new TrafoParamProxyModel();
         this->trafoParamModel->setSourceModel(this->tblModel);
 

@@ -32,6 +32,76 @@ bool FeatureOverviewProxyModel::filterAcceptsRow(int source_row, const QModelInd
     }
 }
 
+/*!
+ * \brief FeatureOverviewProxyModel::lessThan
+ * \param left
+ * \param right
+ * \return
+ */
+bool FeatureOverviewProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
+
+    //check indexes
+    if(!left.isValid() || !right.isValid()){
+        return false;
+    }
+
+    //get row index for each model index
+    int leftIndex = left.row();
+    int rightIndex = right.row();
+
+    //get relevant properties of left and right feature
+    QString leftName = "", rightName = "";
+    int leftId = 0, rightId = 0;
+    bool leftNominal = false, rightNominal = false;
+    FeatureWrapper *leftFeature = OiFeatureState::getFeatures().at(leftIndex);
+    FeatureWrapper *rightFeature = OiFeatureState::getFeatures().at(rightIndex);
+    if(leftFeature != NULL && leftFeature->getFeature() != NULL
+            && rightFeature != NULL && rightFeature->getFeature() != NULL){
+        leftName = leftFeature->getFeature()->getFeatureName();
+        rightName = rightFeature->getFeature()->getFeatureName();
+        leftId = leftFeature->getFeature()->getId();
+        rightId = rightFeature->getFeature()->getId();
+        if(leftFeature->getGeometry() != NULL){
+            leftNominal = leftFeature->getGeometry()->getIsNominal();
+        }
+        if(rightFeature->getGeometry() != NULL){
+            rightNominal = rightFeature->getGeometry()->getIsNominal();
+        }
+    }
+
+    //compare the properties of left and right feature
+    if(leftName.compare(rightName) == 0){ //if feature names are equal
+
+        if(leftNominal != rightNominal){ //if one is actual and the other one is nominal
+            return leftNominal;
+        }
+
+        return leftId > rightId;
+
+    }else{ //if feature names are not equal
+
+        //get smallest id of features with equal name
+        int leftSmallestId = -1;
+        int rightSmallestId = -1;
+        QList<FeatureWrapper *> leftFeatures = OiFeatureState::getFeaturesByName(leftName);
+        QList<FeatureWrapper *> rightFeatures = OiFeatureState::getFeaturesByName(rightName);
+        for(int i = 0; i < leftFeatures.size(); i++){
+            if(leftSmallestId == -1 || leftFeatures.at(i)->getFeature()->getId() < leftSmallestId){
+                leftSmallestId = leftFeatures.at(i)->getFeature()->getId();
+            }
+        }
+        for(int i = 0; i < rightFeatures.size(); i++){
+            if(rightSmallestId == -1 || rightFeatures.at(i)->getFeature()->getId() < rightSmallestId){
+                rightSmallestId = rightFeatures.at(i)->getFeature()->getId();
+            }
+        }
+
+        return leftSmallestId > rightSmallestId;
+
+    }
+
+}
+
 void FeatureOverviewProxyModel::sortNominalToActual()
 {/*
     int row = 2;
