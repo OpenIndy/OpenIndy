@@ -39,7 +39,14 @@ public:
     static int getFeatureCount();
 
     static const QList<FeatureWrapper *> &getFeatures();
+    static QList<FeatureWrapper *> getFeaturesByName(QString name);
+    static QList<FeatureWrapper *> getFeaturesByGroup(QString group);
     static FeatureWrapper *getFeature(int featureId);
+
+    static const QList<Station *> &getStations();
+    static const QList<CoordinateSystem *> &getCoordinateSystems();
+    static const QList<TrafoParam *> &getTransformationParameters();
+    static const QList<FeatureWrapper *> &getGeometries();
 
     static FeatureWrapper *addFeature(FeatureAttributesExchange attributes);
     static bool addFeature(FeatureWrapper *myFeature);
@@ -47,13 +54,6 @@ public:
     static bool addFeatures(const QList<FeatureWrapper *> &myFeatures);
 
     static bool removeFeature(FeatureWrapper *myFeature);
-
-    static const QList<Station *> &getStations();
-    static const QList<CoordinateSystem *> &getCoordinateSystems();
-    static const QList<TrafoParam *> &getTransformationParameters();
-    static const QList<FeatureWrapper *> &getGeometries();
-    static QList<FeatureWrapper *> getFeaturesOfGroup(QString group);
-    static QList<FeatureWrapper *> getFeaturesByName(QString name);
 
     static FeatureWrapper* getActiveFeature();
     static Station* getActiveStation();
@@ -66,8 +66,6 @@ public:
 
     static CoordinateSystem *getNominalSystem(QString name);
 
-    static void sortFeatures();
-    static void sortFeaturesById();
     static void resetFeatureLists();
 
     static bool validateFeatureName(Configuration::FeatureTypes featureType, QString featureName,
@@ -84,10 +82,10 @@ signals:
     void availableGroupsChanged(); //emitted when the set of groups which features belong to has changed
 
     void featureAttributesChanged(); //emitted when a feature's attributes like name, comment etc. have changed
-
     void featureFunctionsChanged(); //emitted when a features's functions have changed
 
     void geometryObservationsChanged(); //emitted when observations were added or removed
+    void geometryMeasurementConfigChanged(); //emitted when measurement config was set
 
     void systemNominalsChanged(); //emitted when nominals where added or removed from a coordinate system
 
@@ -104,6 +102,7 @@ private slots:
     void setGeometryActual(int featureId); //is called when the actual geometry of a nominal is set
     void setGeometryNominals(int featureId); //is called when a nominal was added or removed from an actual geometry
     void setGeometryObservations(int featureId); //is called when an observations was added or removed from a geometry
+    void setGeometryMeasurementConfig(int featureId); //is called when the measurement config of a geometry has changed
 
     void setSystemsNominals(int featureId); //is called when a nominal was added to a nominal coordinate system
 
@@ -125,10 +124,6 @@ private:
 
     static bool groupsToBeUpdated;
 
-    /*static int getFeatureListIndex(int featureId);
-    static int getStationListIndex(int featureId);
-    static int getCoordinateSystemIndex(int featureId);
-    static int getStationCoordinayteSystemIndex(int featureId);*/
     static void updateAvailableGroups();
 
     static QList<FeatureWrapper *> createFeatures(const FeatureAttributesExchange &attributes);
@@ -147,6 +142,7 @@ private:
         eFeatureAttributesChanged,
         eFeatureFunctionsChanged,
         eGeomObservationsChanged,
+        eGeomMeasurementConfigChanged,
         eSystemNominalsChanged
     };
 

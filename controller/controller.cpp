@@ -163,10 +163,16 @@ bool Controller::createDefaultProject(){
         FeatureAttributesExchange partAttributes, stationAttributes;
         partAttributes.featureType = Configuration::eCoordinateSystemFeature;
         partAttributes.name = "PART";
+        partAttributes.count = 1;
         stationAttributes.featureType = Configuration::eStationFeature;
         stationAttributes.name = "STATION01";
+        stationAttributes.count = 1;
         FeatureWrapper *part = OiFeatureState::addFeature(partAttributes);
         FeatureWrapper *station01 = OiFeatureState::addFeature(stationAttributes);
+
+        if(part == NULL || station01 == NULL){
+            return false;
+        }
 
         //set position parameter for STATION01
         station01->getStation()->position->setCommonState(false);

@@ -558,3 +558,19 @@ QString Configuration::getSight(Configuration::Faces face)
         break;
     }
 }
+
+/*!
+ * \brief Configuration::getIsGeometry
+ * \param typeOfFeature
+ * \return
+ */
+bool Configuration::getIsGeometry(Configuration::FeatureTypes typeOfFeature){
+
+    if(typeOfFeature == Configuration::eCoordinateSystemFeature
+            || typeOfFeature == Configuration::eTrafoParamFeature
+            || typeOfFeature == Configuration::eStationFeature){
+        return false;
+    }
+    return true;
+
+}

@@ -216,6 +216,8 @@ public:
     static QPixmap getElementIcon(Configuration::ElementTypes elementType);
 
     static QString getSight(Configuration::Faces face);
+
+    static bool getIsGeometry(Configuration::FeatureTypes typeOfFeature);
 };
 
 #endif // CONFIGURATION_H
