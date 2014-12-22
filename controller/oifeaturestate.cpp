@@ -454,14 +454,29 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
 QList<FeatureWrapper *> OiFeatureState::addFeatures(FeatureAttributesExchange attributes){
     try{
 
-        QString name = attributes.name;
-        QString index = 0;
-
-        for(int i = 0; i < attributes.count; i++){
+        QList<FeatureWrapper *> result;
 
 
 
+        OiFeatureState::createFeatures(attributes);
+
+
+
+        //if a group is set for the new feature emit the group changed signal
+        if(attributes.group.compare("") != 0){
+            QString group = attributes.group;
+            if(OiFeatureState::myAvailableGroups.contains(group)){
+                OiFeatureState::myAvailableGroups.insert(group, 1);
+            }else{
+                int count = OiFeatureState::myAvailableGroups.find(group).value();
+                OiFeatureState::myAvailableGroups.insert(group, count+1);
+            }
+            OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
         }
+
+        OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+
+        return result;
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -673,6 +688,226 @@ void OiFeatureState::updateAvailableGroups(){
         if(!myGroups.contains(OiFeatureState::myActiveGroup)){
             OiFeatureState::myActiveGroup = "All Groups";
         }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+}
+
+/*!
+ * \brief OiFeatureState::createFeatures
+ * \param attributes
+ * \return
+ */
+QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributesExchange &attributes){
+
+    QList<FeatureWrapper *> result;
+
+    try{
+
+        //get the feature name
+        QString name;
+        int index;
+        OiFeatureState::createFeatureName(name, index, attributes.name, attributes.count);
+
+        bool nominal = attributes.nominal;
+
+        int numIterations = 1;
+
+        if(attributes.nominal && attributes.actual){
+            numIterations++;
+        }
+
+        for(int j = 0; j < numIterations; j++){
+
+            //create all features
+            for(int i = 0; i < attributes.count; i++){
+
+                //create feature + feature wrapper and set measurement config
+                FeatureWrapper *myFeature = new FeatureWrapper();
+                switch(attributes.featureType){
+                case Configuration::ePointFeature: {
+                    Point *myPoint = new Point(nominal);
+                    myPoint->setMeasurementConfig(Point::defaultMeasurementConfig);
+                    myFeature->setPoint(myPoint);
+                    break;
+                }case Configuration::eLineFeature: {
+                    Line *myLine = new Line(nominal);
+                    myLine->setMeasurementConfig(Line::defaultMeasurementConfig);
+                    myFeature->setLine(myLine);
+                    break;
+                }case Configuration::ePlaneFeature:{
+                    Plane *myPlane = new Plane(nominal);
+                    myPlane->setMeasurementConfig(Plane::defaultMeasurementConfig);
+                    myFeature->setPlane(myPlane);
+                    break;
+                }case Configuration::eSphereFeature:{
+                    Sphere *mySphere = new Sphere(nominal);
+                    mySphere->setMeasurementConfig(Sphere::defaultMeasurementConfig);
+                    myFeature->setSphere(mySphere);
+                    break;
+                }case Configuration::eCircleFeature:{
+                    Circle *myCircle = new Circle(nominal);
+                    myCircle->setMeasurementConfig(Circle::defaultMeasurementConfig);
+                    myFeature->setCircle(myCircle);
+                    break;
+                }case Configuration::eConeFeature:{
+                    Cone *myCone = new Cone(nominal);
+                    myCone->setMeasurementConfig(Cone::defaultMeasurementConfig);
+                    myFeature->setCone(myCone);
+                    break;
+                }case Configuration::eCylinderFeature:{
+                    Cylinder *myCylinder = new Cylinder(nominal);
+                    myCylinder->setMeasurementConfig(Cylinder::defaultMeasurementConfig);
+                    myFeature->setCylinder(myCylinder);
+                    break;
+                }case Configuration::eEllipsoidFeature:{
+                    Ellipsoid *myEllipsoid = new Ellipsoid(nominal);
+                    myEllipsoid->setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
+                    myFeature->setEllipsoid(myEllipsoid);
+                    break;
+                }case Configuration::eHyperboloidFeature:{
+                    Hyperboloid *myHyperboloid = new Hyperboloid(nominal);
+                    myHyperboloid->setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
+                    myFeature->setHyperboloid(myHyperboloid);
+                    break;
+                }case Configuration::eParaboloidFeature:{
+                    Paraboloid *myParaboloid = new Paraboloid(nominal);
+                    myParaboloid->setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
+                    myFeature->setParaboloid(myParaboloid);
+                    break;
+                }case Configuration::ePointCloudFeature:{
+                    PointCloud *myPointCloud = new PointCloud(nominal);
+                    myPointCloud->setMeasurementConfig(PointCloud::defaultMeasurementConfig);
+                    myFeature->setPointCloud(myPointCloud);
+                    break;
+                }case Configuration::eNurbsFeature:{
+                    Nurbs *myNurbs = new Nurbs(nominal);
+                    myNurbs->setMeasurementConfig(Nurbs::defaultMeasurementConfig);
+                    myFeature->setNurbs(myNurbs);
+                    break;
+                }case Configuration::eStationFeature:{
+                    Station *myStation = new Station(name);
+                    myFeature->setStation(myStation);
+                    break;
+                }case Configuration::eCoordinateSystemFeature:{
+                    CoordinateSystem *myCoordinateSystem = new CoordinateSystem();
+                    myFeature->setCoordinateSystem(myCoordinateSystem);
+                    break;
+                }case Configuration::eTrafoParamFeature:{
+                    TrafoParam *myTrafoParam = new TrafoParam();
+                    myTrafoParam->setCoordinateSystems(attributes.startSystem, attributes.destSystem);
+                    myTrafoParam->setIsMovement(attributes.isMovement);
+                    for(int i=0; i<OiFeatureState::getCoordinateSystems().size();i++){
+                        if(OiFeatureState::getCoordinateSystems().at(i) == attributes.startSystem){
+                            OiFeatureState::getCoordinateSystems().at(i)->addTransformationParameter(myTrafoParam);
+                        }
+                        if(OiFeatureState::getCoordinateSystems().at(i) == attributes.destSystem){
+                            OiFeatureState::getCoordinateSystems().at(i)->addTransformationParameter(myTrafoParam);
+                        }
+                    }
+                    for(int i=0; i<OiFeatureState::getStations().size();i++){
+                        if(OiFeatureState::getStations().at(i)->coordSys == attributes.startSystem){
+                            OiFeatureState::getStations().at(i)->coordSys->addTransformationParameter(myTrafoParam);
+                        }
+                        if(OiFeatureState::getStations().at(i)->coordSys == attributes.destSystem){
+                            OiFeatureState::getStations().at(i)->coordSys->addTransformationParameter(myTrafoParam);
+                        }
+                    }
+                    myFeature->setTrafoParam(myTrafoParam);
+                    break;
+                }case Configuration::eScalarEntityAngleFeature:{
+                    ScalarEntityAngle *myAngle = new ScalarEntityAngle(nominal);
+                    myAngle->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
+                    myFeature->setScalarEntityAngle(myAngle);
+                    break;
+                }case Configuration::eScalarEntityDistanceFeature:{
+                    ScalarEntityDistance *myDistance = new ScalarEntityDistance(nominal);
+                    myDistance->setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
+                    myFeature->setScalarEntityDistance(myDistance);
+                    break;
+                }case Configuration::eScalarEntityTemperatureFeature:{
+                    ScalarEntityTemperature *myTemperature = new ScalarEntityTemperature(nominal);
+                    myTemperature->setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
+                    myFeature->setScalarEntityTemperature(myTemperature);
+                    break;
+                }case Configuration::eScalarEntityMeasurementSeriesFeature:{
+                    ScalarEntityMeasurementSeries *myMeasurementSeries = new ScalarEntityMeasurementSeries(nominal);
+                    myMeasurementSeries->setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
+                    myFeature->setScalarEntityMeasurementSeries(myMeasurementSeries);
+                    break;
+                }default:
+                    break;
+                }
+
+                //set feature attributes
+                QString featureName = name;
+                if(attributes.count > 1){
+                    featureName = name + QString::number(index+i);
+                }
+                myFeature->getFeature()->setFeatureName(featureName);
+                myFeature->getFeature()->setGroupName(attributes.group);
+                if(myFeature->getGeometry() != NULL){
+                    myFeature->getGeometry()->setCommonState(attributes.common);
+                    if(myFeature->getGeometry()->getIsNominal()){
+                        myFeature->getGeometry()->setNominalSystem(attributes.nominalSystem);
+                    }
+                }
+
+                //add the feature to the list of features, stations, coordinate systems, trafo params and geometries
+                OiFeatureState::myFeatureContainer.addFeature(myFeature);
+
+                //add nominal to nominal list of coordinate system
+                if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getNominalSystem() != NULL){
+                    myFeature->getGeometry()->getNominalSystem()->addNominal(myFeature);
+                }
+
+                //connect the feature's signals to slots in OiFeatureState
+                OiFeatureState::connectFeature(myFeature);
+
+                result.append(myFeature);
+
+                //set function
+                if(nominal){
+                    QString filePath = SystemDbManager::getPluginFilePath(attributes.function, attributes.plugin);
+                    Function *checkFunction = PluginLoader::loadFunctionPlugin(filePath, attributes.function);
+
+                    myFeature->getFeature()->addFunction(checkFunction);
+                }
+
+            }
+
+            nominal = !nominal;
+
+        }
+
+    }catch(exception &e){
+        Console::addLine(e.what());
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief OiFeatureState::createFeatureName
+ * Creates a feature name from an input name
+ * \param outputName: created name
+ * \param index: numerical postfix
+ * \param inputName: input feature name that may contain a name and a numerical postfix
+ * \param count: number of features to be created
+ */
+void OiFeatureState::createFeatureName(QString &outputName, int &index, QString inputName, int count){
+    try{
+
+        int startIndex = inputName.size() - 1;
+
+        //split the input name into name and postfix
+        while(startIndex > 0 && inputName.at(startIndex).isDigit()){
+            startIndex--;
+        }
+        outputName = inputName.mid(0, startIndex + 1);
+        index = inputName.mid(startIndex, inputName.size() - startIndex - 1).toInt();
 
     }catch(exception &e){
         Console::addLine(e.what());

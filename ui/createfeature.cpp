@@ -319,7 +319,24 @@ void CreateFeature::on_toolButton_create_clicked()
         bool isCommon = ui->checkBox_common->isChecked();
         CoordinateSystem *nominalSystem = NULL;
         QString function = this->ui->comboBox_function->currentText();
+        QString plugin = "";
         bool isMovement = ui->checkBox_movement->isChecked();
+
+        QStringList split1 = function.split('[');
+        if(split1.size() >= 2){
+            QStringList split2 = split1.at(split1.size()-1).split(']');
+            if(split2.size() == 2){
+
+                //get function name and plugin name
+                function = "";
+                for(int i = 0; i < split1.size()-1; i++){
+                    function.append(split1.at(i));
+                }
+                function.truncate(function.size()-1);
+                plugin = split2.at(0);
+
+            }
+        }
 
         if(name == ""){
             return;
@@ -343,6 +360,7 @@ void CreateFeature::on_toolButton_create_clicked()
             featureAttributes.name = name;
             featureAttributes.group = group;
             featureAttributes.function = function;
+            featureAttributes.plugin = plugin;
             featureAttributes.actual = isActual;
             featureAttributes.nominal = isNominal;
             featureAttributes.common = isCommon;
@@ -383,6 +401,7 @@ void CreateFeature::on_toolButton_create_clicked()
                 featureAttributes.name = name;
                 featureAttributes.group = group;
                 featureAttributes.function = function;
+                featureAttributes.plugin = plugin;
                 featureAttributes.actual = isActual;
                 featureAttributes.nominal = isNominal;
                 featureAttributes.common = isCommon;

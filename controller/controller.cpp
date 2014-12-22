@@ -250,10 +250,12 @@ void Controller::addFeature(FeatureAttributesExchange fae){
         break;
     }
 
-    int fType = FeatureUpdater::addFeature(fae, mConfig);
+    OiFeatureState::addFeatures(fae);
+
+    /*int fType = FeatureUpdater::addFeature(fae, mConfig);
     if(fType == Configuration::eStationFeature && fType == Configuration::eCoordinateSystemFeature){
         emit CoordSystemsModelChanged();
-    }
+    }*/
 
     //refresh feature tree view models
     //this->featureTreeViewModel->refreshModel();
@@ -1871,11 +1873,8 @@ bool Controller::generateActualForNominal(FeatureWrapper *f)
         fae.nominalSystem = NULL;
         fae.startSystem = NULL;
 
-        int fType = FeatureUpdater::addFeature(fae, mConfig);
+        OiFeatureState::addFeature(fae);
 
-        if(f->getTypeOfFeature() !=fType){
-            return false;
-        }
     }
 
     f->getGeometry()->getMyActual()->setActiveFeatureState(true);

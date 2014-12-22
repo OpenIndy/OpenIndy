@@ -25,13 +25,6 @@ public:
 
     static TrafoController trafoControl;
 
-    static bool validateFeatureName(QString featureName,FeatureAttributesExchange fae);
-    static int addFeature(FeatureAttributesExchange fae, MeasurementConfig mConfig);
-    static QStringList ConstructFeatureName(QString name, int count);
-    //static void sortFeatures();
-    static void checkForNominals(FeatureWrapper *fw);
-    static void addNominalToActual(FeatureWrapper *fw);
-
 signals:
     
 public slots:
@@ -42,9 +35,6 @@ public slots:
     void switchCoordinateSystem(CoordinateSystem *to);
     TrafoParam* findTrafoParam(CoordinateSystem *searchSystem, QList<TrafoParam *> trafoParams);
 
-
-    //bool deleteFeature(FeatureWrapper *myFeatureWrapper);
-
 private:
     void fillTrafoParamFunctionNN(SystemTransformation *function, TrafoParam *tp);
     void fillTrafoParamFunctionAN(SystemTransformation *function, TrafoParam *tp);
@@ -53,10 +43,6 @@ private:
     void switchCoordinateSystemWithoutTransformation(CoordinateSystem *to);
 
     void switchCoordinateSystemWithoutMovement(CoordinateSystem *to);
-
-    static void createFeature(MeasurementConfig mConfig, QString name, bool nominal, FeatureAttributesExchange fae);
-
-    static Function* getFunctionFromComboValue(QString functionValue, QString &functionName, QString &pluginName);
 
 };
 

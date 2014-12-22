@@ -20,6 +20,8 @@ public:
     CoordinateSystem *nominalSystem;
     CoordinateSystem *startSystem;
     CoordinateSystem *destSystem;
+
+    QString plugin;
     QString function;
 
     //trafo param
