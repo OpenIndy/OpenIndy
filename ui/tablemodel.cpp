@@ -303,75 +303,106 @@ Qt::ItemFlags TableModel::flags(const QModelIndex & index) const{
  * \return
  */
 bool TableModel::setData(const QModelIndex & index, const QVariant & value, int role){
-    if(OiFeatureState::getActiveFeature() != NULL){
-        if(index.column() == 3){ //feature name
 
-            FeatureAttributesExchange myExchange;
-            if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-                myExchange.actual = !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal();
-                myExchange.nominal = OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal();
-                myExchange.nominalSystem = OiFeatureState::getActiveFeature()->getGeometry()->getNominalSystem();
-            }else if(OiFeatureState::getActiveFeature()->getTrafoParam() != NULL){
-                myExchange.startSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->getStartSystem();
-                myExchange.destSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->getDestinationSystem();
-            }
-            myExchange.featureType = OiFeatureState::getActiveFeature()->getTypeOfFeature();
-            myExchange.name = OiFeatureState::getActiveFeature()->getFeature()->getFeatureName();
+    //get the active feature
+    FeatureWrapper *myFeature = OiFeatureState::getActiveFeature();
+    if(myFeature == NULL || myFeature->getFeature() == NULL){
+        return false;
+    }
 
-            if(FeatureUpdater::validateFeatureName(value.toString(), myExchange)){
+    if(index.column() == 3){ //feature name
 
-                if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
-                    Geometry *myGeom = OiFeatureState::getActiveFeature()->getGeometry();
-                    if(myGeom->getIsNominal() && myGeom->getMyActual() != NULL){
-                        myGeom->getMyActual()->setFeatureName(value.toString());
-                        foreach(Geometry *nomGeom, myGeom->getMyActual()->getMyNominals()){
-                            if(nomGeom != NULL){
-                                nomGeom->setFeatureName(value.toString());
-                            }
-                        }
-                    }else{
-                        myGeom->setFeatureName(value.toString());
-                        foreach(Geometry *nomGeom, myGeom->getMyNominals()){
-                            if(nomGeom != NULL){
-                                nomGeom->setFeatureName(value.toString());
-                            }
-                        }
-                    }
-                }else{
-                    OiFeatureState::getActiveFeature()->getFeature()->setFeatureName(value.toString());
-                }
-
-                FeatureUpdater::checkForNominals(OiFeatureState::getActiveFeature());
-                FeatureUpdater::addNominalToActual(OiFeatureState::getActiveFeature());
-				
-                OiFeatureState::sortFeatures();
-
-            }
-
-        }else if(index.column() == 2){ //feature group
-            QString oldValue = OiFeatureState::getActiveFeature()->getFeature()->getGroupName();
-            OiFeatureState::getActiveFeature()->getFeature()->setGroupName(value.toString());
-            emit this->groupNameChanged(oldValue, value.toString());
-        }else if(index.column() == 12){ //feature comment
-            OiFeatureState::getActiveFeature()->getFeature()->setComment(value.toString());
-        }else if(index.column() == 25){//trafo param use
-            OiFeatureState::getActiveFeature()->getTrafoParam()->setIsUsed(value.toBool());
-        }else if(index.column() == 38){//trafo param time
-            OiFeatureState::getActiveFeature()->getTrafoParam()->setValidTime(value.toDateTime());
-        }else if(index.column() == 26){//trafo param datum transformation
-            OiFeatureState::getActiveFeature()->getTrafoParam()->setisDatumTrafo(value.toBool());
-        }else if(index.column() == 22){
-            OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginX(value.toDouble()/UnitConverter::getDistanceMultiplier());
-        }else if(index.column() == 23){
-            OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginY(value.toDouble()/UnitConverter::getDistanceMultiplier());
-        }else if(index.column() == 24){
-            OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginZ(value.toDouble()/UnitConverter::getDistanceMultiplier());
+        //get attributes necessary for name validation
+        bool isNominal = false;
+        CoordinateSystem *nominalSystem = NULL;
+        if(myFeature->getGeometry() != NULL){
+            isNominal = myFeature->getGeometry()->getIsNominal();
+            nominalSystem = myFeature->getGeometry()->getNominalSystem();
         }
 
+        //check if the feature name is ok
+        if(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), value.toString(),
+                                               isNominal, nominalSystem)){
+            return false;
+        }
 
-        this->updateModel();
+        //if active feature is a geometry then corresponding nominals have to be renamed, too
+        if(myFeature->getGeometry() != NULL){
+            if(myFeature->getGeometry()->getIsNominal() && myFeature->getGeometry()->getMyActual() != NULL){
+                myFeature->getGeometry()->getMyActual()->setFeatureName(value.toString());
+                foreach(Geometry *nomGeom, myFeature->getGeometry()->getMyActual()->getMyNominals()){
+                    if(nomGeom != NULL){
+                        nomGeom->setFeatureName(value.toString());
+                    }
+                }
+            }else{
+                myFeature->getGeometry()->setFeatureName(value.toString());
+                foreach(Geometry *nomGeom, myFeature->getGeometry()->getMyNominals()){
+                    if(nomGeom != NULL){
+                        nomGeom->setFeatureName(value.toString());
+                    }
+                }
+            }
+        }else{
+            myFeature->getGeometry()->setFeatureName(value.toString());
+        }
 
-        return true;
+    }else if(index.column() == 2){ //feature group
+
+        QString oldValue = myFeature->getFeature()->getGroupName();
+        myFeature->getFeature()->setGroupName(value.toString());
+        emit this->groupNameChanged(oldValue, value.toString());
+
+    }else if(index.column() == 12){ //feature comment
+
+        myFeature->getFeature()->setComment(value.toString());
+
+    }else if(index.column() == 25){ //trafo param use
+
+        if(myFeature->getTrafoParam() == NULL){
+            return false;
+        }
+        myFeature->getTrafoParam()->setIsUsed(value.toBool());
+
+    }else if(index.column() == 38){ //trafo param time
+
+        if(myFeature->getTrafoParam() == NULL){
+            return false;
+        }
+        myFeature->getTrafoParam()->setValidTime(value.toDateTime());
+
+    }else if(index.column() == 26){ //trafo param datum transformation
+
+        if(myFeature->getTrafoParam() == NULL){
+            return false;
+        }
+        myFeature->getTrafoParam()->setisDatumTrafo(value.toBool());
+
+    }else if(index.column() == 22){ //expansion origin x
+
+        if(myFeature->getCoordinateSystem() == NULL){
+            return false;
+        }
+        myFeature->getCoordinateSystem()->setExpansionOriginX(value.toDouble()/UnitConverter::getDistanceMultiplier());
+
+    }else if(index.column() == 23){ //expansion origin y
+
+        if(myFeature->getCoordinateSystem() == NULL){
+            return false;
+        }
+        myFeature->getCoordinateSystem()->setExpansionOriginY(value.toDouble()/UnitConverter::getDistanceMultiplier());
+
+    }else if(index.column() == 24){ //expansion origin z
+
+        if(myFeature->getCoordinateSystem() == NULL){
+            return false;
+        }
+        myFeature->getCoordinateSystem()->setExpansionOriginZ(value.toDouble()/UnitConverter::getDistanceMultiplier());
+
     }
-    return false;
+
+    this->updateModel();
+
+    return true;
+
 }

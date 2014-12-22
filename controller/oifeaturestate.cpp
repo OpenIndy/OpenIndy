@@ -695,6 +695,8 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
                 OiFeatureState::getInstance(), SLOT(setFeatureName(int,QString)), Qt::DirectConnection);
         connect(myFeature->getFeature(), SIGNAL(featureAboutToBeDeleted(int)),
                 OiFeatureState::getInstance(), SLOT(removeFeature(int)), Qt::DirectConnection);
+        connect(myFeature->getFeature(), SIGNAL(featureNameChanged(int,QString)),
+                &OiFeatureState::getInstance()->myFeatureContainer, SLOT(renameFeature(int,QString)), Qt::DirectConnection);
 
         //geometry specific connects
         if(myFeature->getGeometry() != NULL){

@@ -70,6 +70,9 @@ public:
     static void sortFeaturesById();
     static void resetFeatureLists();
 
+    static bool validateFeatureName(Configuration::FeatureTypes featureType, QString featureName,
+                                    bool isNominal = false, CoordinateSystem *myNomSys = NULL);
+
 signals:
     void activeFeatureChanged(); //emitted when active feature has changed
     void activeStationChanged(); //emitted when active station has changed
@@ -130,9 +133,6 @@ private:
 
     static void connectFeature(FeatureWrapper *myFeature);
     static void disconnectFeature(FeatureWrapper *myFeature);
-
-    static bool validateFeatureName(Configuration::FeatureTypes featureType, QString featureName,
-                                    bool isNominal = false, CoordinateSystem *myNomSys = NULL);
 
     enum SignalType{
         eActiveFeatureChanged,
@@ -273,6 +273,27 @@ public slots:
         //this->updateDisplayList();
 
         return true;
+
+    }
+
+    //! re-add the feature in the map with feature name as key
+    bool renameFeature(int featureId, QString oldName){
+
+        FeatureWrapper *myFeature = this->myFeaturesIdMap.value(featureId, NULL);
+
+        //if the feature is not valid
+        if(myFeature == NULL || myFeature->getFeature() == NULL){
+            return false;
+        }
+
+        //remove and re-add the feature
+        int numRemoved = this->myFeaturesNameMap.remove(oldName, myFeature);
+
+        if(numRemoved == 1){
+            this->myFeaturesNameMap.insert(myFeature->getFeature()->getFeatureName(), myFeature);
+            return true;
+        }
+        return false;
 
     }
 
