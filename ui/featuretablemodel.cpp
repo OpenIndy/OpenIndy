@@ -1,4 +1,4 @@
-#include "tablemodel.h"
+#include "featuretablemodel.h"
 
 /*!
  * \brief TableModel::TableModel
@@ -6,7 +6,7 @@
  * \param coordSys
  * \param parent
  */
-TableModel::TableModel(QObject *parent) : QAbstractTableModel(parent)
+FeatureTableModel::FeatureTableModel(QObject *parent) : QAbstractTableModel(parent)
 {
 
 }
@@ -15,7 +15,7 @@ TableModel::TableModel(QObject *parent) : QAbstractTableModel(parent)
  * \brief TableModel::rowCount
  * \return
  */
-int TableModel::rowCount(const QModelIndex& ) const{
+int FeatureTableModel::rowCount(const QModelIndex& ) const{
     if(OiFeatureState::getFeatureCount() > 0){
         return OiFeatureState::getFeatureCount();
     }
@@ -27,7 +27,7 @@ int TableModel::rowCount(const QModelIndex& ) const{
  * \param parent
  * \return
  */
-int TableModel::columnCount(const QModelIndex &parent) const{
+int FeatureTableModel::columnCount(const QModelIndex &parent) const{
     return GUIConfiguration::allAttributes.size();
 }
 
@@ -38,7 +38,7 @@ int TableModel::columnCount(const QModelIndex &parent) const{
  * \param role
  * \return
  */
-QVariant TableModel::data(const QModelIndex &index, int role) const{
+QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
     try{
 
         //check model index
@@ -260,7 +260,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
  * \param role
  * \return
  */
-QVariant TableModel::headerData(int section, Qt::Orientation orientation, int role) const{
+QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation, int role) const{
 
     QStringList m_columns = GUIConfiguration::allAttributes;
 
@@ -277,7 +277,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 /*!
  * \brief TableModel::updateModel
  */
-void TableModel::updateModel(){
+void FeatureTableModel::updateModel(){
     emit layoutAboutToBeChanged();
     emit layoutChanged();
     //emit resizeTable();
@@ -289,7 +289,7 @@ void TableModel::updateModel(){
  * \param index
  * \return
  */
-Qt::ItemFlags TableModel::flags(const QModelIndex & index) const{
+Qt::ItemFlags FeatureTableModel::flags(const QModelIndex & index) const{
     Qt::ItemFlags myFlags = QAbstractTableModel::flags(index);
     return (myFlags | Qt::ItemIsEditable);
 }
@@ -302,7 +302,7 @@ Qt::ItemFlags TableModel::flags(const QModelIndex & index) const{
  * \param role
  * \return
  */
-bool TableModel::setData(const QModelIndex & index, const QVariant & value, int role){
+bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & value, int role){
 
     //get the active feature
     FeatureWrapper *myFeature = OiFeatureState::getActiveFeature();

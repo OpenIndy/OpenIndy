@@ -5,6 +5,8 @@
 #include <QModelIndex>
 #include <QPixmap>
 #include <QList>
+
+#include "oifeaturestate.h"
 #include "featuretreeitem.h"
 
 class UsedElementsModel : public QAbstractItemModel
@@ -21,7 +23,8 @@ public:
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
-    void refreshModel();
+    void updateModel(int functionIndex, int elementIndex);
+
     void addElement(FeatureTreeItem *item);
     void removeElement(FeatureTreeItem *item);
     void removeAllElements();
@@ -32,6 +35,8 @@ private:
     QList<FeatureTreeItem*> items;
     FeatureTreeItem *rootItem;
     FeatureTreeItem *selectedItem;
+
+    void refreshModel();
 };
 
 #endif // USEDELEMENTSMODEL_H

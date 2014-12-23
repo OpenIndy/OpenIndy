@@ -16,7 +16,7 @@
 
 #include "configuration.h"
 #include "console.h"
-#include "tablemodel.h"
+#include "featuretablemodel.h"
 #include "measurementconfig.h"
 #include "pluginloader.h"
 #include "oimetadata.h"
@@ -40,7 +40,7 @@
 #include "scalarentitytemperature.h"
 #include "scalarentitymeasurementseries.h"
 
-#include "featureoverviewproxymodel.h"
+#include "featuretableproxymodel.h"
 #include "trafoparamproxymodel.h"
 #include "featuretreeitem.h"
 
@@ -89,43 +89,58 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = 0);
 
+private:
+    //instances of manager classes to take care of OpenIndy state changes
+    OiFeatureState *myFeatureState;
+    FeatureUpdater *myFeatureUpdater;
+    OiConfigState *myConfigState;
     OiModelManager *myModelManager;
 
-    //instances of at most static classes to take care of OpenIndy state changes
-    OiFeatureState *myFeatureState;
-    OiConfigState *myConfigState;
+public:
 
-    QList<MeasurementConfig> measurementConfigs; //all available measurement configs (saved & unsaved)
-    MeasurementConfig lastmConfig;
 
-    TableModel *tblModel; //base model for feature table
-    FeatureOverviewProxyModel *featureOverviewModel; //filtered feature table (no trafoParams)
-    TrafoParamProxyModel * trafoParamModel; //filtered feature table (only trafoParams)
+    //active feature models
+    //QStandardItemModel *functionTreeViewModel; //model for treeview with functions of selected feature
+
+
+    //all feature models
+    //FeatureTreeViewModel *featureTreeViewModel; //model for treeview with all features
+    //FeatureGraphicsTreeViewProxyModel *featureGraphicsModel; //model for treeview with features in graphics view with featureTreeViewModel as source model
+    //PointFeatureModel *myPointFeatureModel; //model with all point features
+    //PointFeatureFilterModel *myPointFeatureProxyModel; //model with all point features filtered by group name
+
+    //QList<MeasurementConfig> measurementConfigs; //all available measurement configs (saved & unsaved)
+    //MeasurementConfig lastmConfig;
+
+    //FeatureTableModel *tblModel; //base model for feature table
+    //FeatureTableProxyModel *featureOverviewModel; //filtered feature table (no trafoParams)
+    //TrafoParamProxyModel * trafoParamModel; //filtered feature table (only trafoParams)
 
     Console *c;
     Configuration conf;
-    QSqlQueryModel *pluginsModel;
-    QSqlQueryModel *neededElementsModel;
 
-    QStandardItemModel *functionTreeViewModel; //model for treeview with functions of selected feature
-    FeatureTreeViewModel *featureTreeViewModel; //model for treeview with all features
-    AvailableElementsTreeViewProxyModel *availableElementsModel; //model for available elements with featureTreeViewModel as source model
-    FeatureGraphicsTreeViewProxyModel *featureGraphicsModel; //model for treeview with features in graphics view with featureTreeViewModel as source model
-    UsedElementsModel *usedElementsModel; //model for listview with elements that are used for a function
-    PluginTreeViewModel *myPluginTreeViewModel; //model with all available plugins for plugin manager
-    QStringListModel *myFeatureGroupsModel; //model with all available groups
-    QStringListModel *myCoordinateSystemsModel; //model with coordinate systems
-    PointFeatureModel *myPointFeatureModel; //model with all point features
-    PointFeatureFilterModel *myPointFeatureProxyModel; //model with all point features filtered by group name
+    //QSqlQueryModel *pluginsModel;
+    //QSqlQueryModel *neededElementsModel;
+
+
+    //function specific models
+    //AvailableElementsTreeViewProxyModel *availableElementsModel; //model for available elements with featureTreeViewModel as source model
+    //UsedElementsModel *usedElementsModel; //model for listview with elements that are used for a function
+
+    //PluginTreeViewModel *myPluginTreeViewModel; //model with all available plugins for plugin manager
+    //QStringListModel *myFeatureGroupsModel; //model with all available groups
+    //QStringListModel *myCoordinateSystemsModel; //model with coordinate systems
+
+
 
     QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
 
-    FeatureUpdater* getFeatureUpdater();
+    //FeatureUpdater* getFeatureUpdater();
 
     OiServer *openIndyServer;
 
-    int stakeOutId;
+    //int stakeOutId;
 
 signals:
     void changedStation();
@@ -164,8 +179,8 @@ signals:
     void openOiToolWidget(OiTool* oiToolWidget);
 
 public slots:
-    void setUpFeatureGroupsModel();
-    void setUpCoordinateSystemsModel();
+    //void setUpFeatureGroupsModel();
+    //void setUpCoordinateSystemsModel();
     void setActiveGroup(QString group);
 
     void getNominalValues(NominalAttributeExchange nominalValue);
@@ -195,23 +210,23 @@ public slots:
     void showResults(bool);
     //void defaultLastmConfig();
     void savePluginData(PluginMetaData* metaInfo);
-    void setSensorModel(Configuration::SensorTypes);
+    //void setSensorModel(Configuration::SensorTypes);
     void getSelectedPlugin(int index);
-    void getTempSensor(int index);
+    //void getTempSensor(int index);
     void setSelectedFeature(int featureIndex);
     void receiveSensorConfiguration(SensorConfiguration sc, bool connect);
-    void receiveFunctionId(int id);
+    //void receiveFunctionId(int id);
 
-    void setFunction();
+    //void setFunction();
     void createFunction(int index);
     void deleteFunctionFromFeature(int index);
 
     bool checkSensorValid();
     bool checkFeatureValid();
 
-    void importFeatures(QList<FeatureWrapper*> f);
+    //void importFeatures(QList<FeatureWrapper*> f);
 
-    void setSelectedFunction(int functionIndex, int neededElementIndex); //receive selected function from function plugin dialog
+    //void setSelectedFunction(int functionIndex, int neededElementIndex); //receive selected function from function plugin dialog
     void addElement2Function(FeatureTreeItem *element, int functionIndex, int elementIndex); //add element to the active function
     void removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex); //remove element from the active function
 
@@ -261,10 +276,10 @@ public slots:
     bool generateActualForNominal(FeatureWrapper* f);
 
 private slots:
-    void changeFunctionTreeViewModel();
+    //void changeFunctionTreeViewModel();
 
 private:
-    void changeUsedElementsModel(int functionIndex, int elementIndex);
+    //void changeUsedElementsModel(int functionIndex, int elementIndex);
     bool checkCircleWarning(Feature *activeFeature, Feature *usedForActiveFeature);
 
     void initModels();
@@ -273,7 +288,7 @@ private:
 
     int lastRequestId; //id of the last OiRequest (save or load)
 
-    FeatureUpdater myFeatureUpdater;
+    //FeatureUpdater myFeatureUpdater;
 
     QList<FeatureWrapper*> featuresToDelete;
 

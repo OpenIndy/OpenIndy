@@ -239,6 +239,10 @@ FeatureWrapper *OiFeatureState::addFeature(FeatureAttributesExchange attributes)
             }
 
             OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+            if(attributes.featureType == Configuration::eCoordinateSystemFeature
+                    || attributes.featureType == Configuration::eStationFeature){
+                OiFeatureState::getInstance()->emitSignal(eCoordSysSetChanged);
+            }
 
             return myFeatures.at(0);
 
@@ -311,6 +315,10 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
         }
 
         OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+        if(myFeature->getTypeOfFeature() == Configuration::eCoordinateSystemFeature
+                || myFeature->getTypeOfFeature() == Configuration::eStationFeature){
+            OiFeatureState::getInstance()->emitSignal(eCoordSysSetChanged);
+        }
 
         return true;
 
@@ -345,6 +353,10 @@ QList<FeatureWrapper *> OiFeatureState::addFeatures(FeatureAttributesExchange at
         }
 
         OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+        if(attributes.featureType == Configuration::eCoordinateSystemFeature
+                || attributes.featureType == Configuration::eStationFeature){
+            OiFeatureState::getInstance()->emitSignal(eCoordSysSetChanged);
+        }
 
         return result;
 
@@ -411,6 +423,11 @@ bool OiFeatureState::addFeatures(const QList<FeatureWrapper *> &myFeatures){
                     OiFeatureState::myAvailableGroups.insert(group, count+1);
                 }
                 OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
+            }
+
+            if(myFeature->getTypeOfFeature() == Configuration::eCoordinateSystemFeature
+                    || myFeature->getTypeOfFeature() == Configuration::eStationFeature){
+                OiFeatureState::getInstance()->emitSignal(eCoordSysSetChanged);
             }
 
         }
@@ -577,7 +594,7 @@ QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributesEx
 
         int numIterations = 1;
 
-        if(attributes.nominal && attributes.actual && !Configuration::getIsGeometry(attributes.featureType)){
+        if(attributes.nominal && attributes.actual && Configuration::getIsGeometry(attributes.featureType)){
             numIterations++;
         }
 
@@ -729,7 +746,7 @@ QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributesEx
                 OiFeatureState::connectFeature(myFeature);
 
                 //set function
-                if(nominal){
+                if(!nominal){
                     QString filePath = SystemDbManager::getPluginFilePath(attributes.function, attributes.plugin);
                     Function *checkFunction = PluginLoader::loadFunctionPlugin(filePath, attributes.function);
 

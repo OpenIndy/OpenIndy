@@ -6,8 +6,8 @@
 #include <QModelIndex>
 #include <QAbstractTableModel>
 
-#include "featureoverviewproxymodel.h"
-#include "tablemodel.h"
+#include "featuretableproxymodel.h"
+#include "featuretablemodel.h"
 
 class FeatureOverviewDelegate : public QItemDelegate
 {

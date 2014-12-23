@@ -60,7 +60,6 @@ DEPENDPATH += $$PWD/lib/openIndyLib/bin/release
 
 SOURCES += \
     ui/watchwindow.cpp \
-    ui/tablemodel.cpp \
     ui/sensorplugindialog.cpp \
     ui/pluginloaderdialog.cpp \
     ui/measurementconfigdialog.cpp \
@@ -155,7 +154,6 @@ SOURCES += \
     ui/oisimulationwidget.cpp \
     controller/oifeaturestate.cpp \
     controller/trafocontroller.cpp \
-    ui/featureoverviewproxymodel.cpp \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
     ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
@@ -193,11 +191,12 @@ SOURCES += \
     src/oiemitter/oiexchangeemitter.cpp \
     controller/oimodelmanager.cpp \
     ui/oisimpleasciiexchangemodel.cpp \
-    ui/geometrytypesproxymodel.cpp
+    ui/geometrytypesproxymodel.cpp \
+    ui/featuretablemodel.cpp \
+    ui/featuretableproxymodel.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
-    ui/tablemodel.h \
     ui/sensorplugindialog.h \
     ui/pluginloaderdialog.h \
     ui/measurementconfigdialog.h \
@@ -308,7 +307,6 @@ HEADERS  += \
     ui/oisimulationwidget.h \
     controller/oifeaturestate.h \
     controller/trafocontroller.h \
-    ui/featureoverviewproxymodel.h \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
     ui/oiGraphixFactory/oigraphix_pointcloud.h \
@@ -353,7 +351,9 @@ HEADERS  += \
     src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
     controller/oimodelmanager.h \
     ui/oisimpleasciiexchangemodel.h \
-    ui/geometrytypesproxymodel.h
+    ui/geometrytypesproxymodel.h \
+    ui/featuretablemodel.h \
+    ui/featuretableproxymodel.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

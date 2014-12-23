@@ -1,11 +1,11 @@
-#include "featureoverviewproxymodel.h"
+#include "featuretableproxymodel.h"
 
 /*!
  * \brief FeatureOvserviewProxyModel constructor
  * \param QList<FeatureWrapper*> &features
  * \param parent
  */
-FeatureOverviewProxyModel::FeatureOverviewProxyModel(QObject *parent) :
+FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent)
 {
 }
@@ -16,7 +16,7 @@ FeatureOverviewProxyModel::FeatureOverviewProxyModel(QObject *parent) :
  * \param source_parent
  * \return
  */
-bool FeatureOverviewProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
+bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
     if(OiFeatureState::getActiveGroup().compare("All Groups") == 0){
         if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL){
             return false;
@@ -38,7 +38,7 @@ bool FeatureOverviewProxyModel::filterAcceptsRow(int source_row, const QModelInd
  * \param right
  * \return
  */
-bool FeatureOverviewProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
+bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
 
     //check indexes
     if(!left.isValid() || !right.isValid()){
@@ -102,7 +102,7 @@ bool FeatureOverviewProxyModel::lessThan(const QModelIndex &left, const QModelIn
 
 }
 
-void FeatureOverviewProxyModel::sortNominalToActual()
+void FeatureTableProxyModel::sortNominalToActual()
 {/*
     int row = 2;
     for(int i=0; i<row-1;i++){
@@ -125,7 +125,7 @@ void FeatureOverviewProxyModel::sortNominalToActual()
  * \param source_parent
  * \return
  */
-bool FeatureOverviewProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
+bool FeatureTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
     /*if(source_column == 19 || source_column == 20 || source_column == 21 || source_column == 22 || source_column == 23
             || source_column == 24 || source_column == 25 || source_column == 26 || source_column == 27
             || source_column == 28 || source_column == 29){
@@ -147,7 +147,7 @@ bool FeatureOverviewProxyModel::filterAcceptsColumn(int source_column, const QMo
  * \param indices
  * \return
  */
-QList<FeatureWrapper*> FeatureOverviewProxyModel::getFeaturesAtIndices(QModelIndexList &indices){
+QList<FeatureWrapper*> FeatureTableProxyModel::getFeaturesAtIndices(QModelIndexList &indices){
     QList<FeatureWrapper*> result;
 
     foreach(QModelIndex idx, indices){
@@ -168,6 +168,6 @@ QList<FeatureWrapper*> FeatureOverviewProxyModel::getFeaturesAtIndices(QModelInd
 /*!
  * \brief FeatureOvserviewProxyModel::activeGroupChanged
  */
-void FeatureOverviewProxyModel::activeGroupChanged(){
+void FeatureTableProxyModel::activeGroupChanged(){
     this->invalidateFilter();
 }

@@ -8,14 +8,14 @@
 #include "oifeaturestate.h"
 
 /*!
- * \brief The FeatureOvserviewProxyModel class  is a proxy model that filters all relevant feature attributes.
+ * \brief The FeatureTableProxyModel class  is a proxy model that filters all relevant feature attributes.
  * This proxy model only displays geometries, stations and coordinate systems with all their relevant attributes.
  */
-class FeatureOverviewProxyModel : public QSortFilterProxyModel
+class FeatureTableProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:
-    explicit FeatureOverviewProxyModel(QObject *parent = 0);
+    explicit FeatureTableProxyModel(QObject *parent = 0);
 
     QList<FeatureWrapper*> getFeaturesAtIndices(QModelIndexList &indices);
 

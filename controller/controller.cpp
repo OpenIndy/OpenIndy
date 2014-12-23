@@ -17,12 +17,14 @@ Controller::Controller(QObject *parent) :
 
     //get pointer to state objects
     this->myFeatureState = OiFeatureState::getInstance();
+
     this->myConfigState = OiConfigState::getInstance();
+    this->myModelManager = OiModelManager::getInstance();
 
     this->myDeleteFeaturesCallback = new DeleteFeaturesFunctor();
     this->myDeleteFeaturesCallback->c = this;
 
-    lastmConfig;
+    //lastmConfig;
     //this->defaultLastmConfig();
 
     //set up models
@@ -34,11 +36,11 @@ Controller::Controller(QObject *parent) :
     this->lastRequestId = -1;
 
 
-    this->myModelManager = OiModelManager::getInstance();
+
 
 
     //set up filter mechanism for available elements treeview
-    connect(this, SIGNAL(sendAvailableElementsFilter(Configuration::ElementTypes,bool)), this->availableElementsModel, SLOT(setFilter(Configuration::ElementTypes,bool)));
+    //connect(this, SIGNAL(sendAvailableElementsFilter(Configuration::ElementTypes,bool)), this->availableElementsModel, SLOT(setFilter(Configuration::ElementTypes,bool)));
 
 
     connect(PluginLoader::myMetaInfo,SIGNAL(sendMe(PluginMetaData*)),this,SLOT(savePluginData(PluginMetaData*)));
@@ -65,47 +67,47 @@ Controller::Controller(QObject *parent) :
 void Controller::initModels(){
     try{
 
-        //models for tableviews
-        this->tblModel = new TableModel();
-        this->featureOverviewModel = new FeatureOverviewProxyModel();
+        /*//models for tableviews
+        this->tblModel = new FeatureTableModel();
+        this->featureOverviewModel = new FeatureTableProxyModel();
         this->featureOverviewModel->setSourceModel(this->tblModel);
         this->featureOverviewModel->setDynamicSortFilter(true);
         this->trafoParamModel = new TrafoParamProxyModel();
-        this->trafoParamModel->setSourceModel(this->tblModel);
+        this->trafoParamModel->setSourceModel(this->tblModel);*/
 
         //models for function plugin dialog
-        this->functionTreeViewModel = new QStandardItemModel();
-        this->functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
-        this->neededElementsModel = new QSqlQueryModel();
-        this->usedElementsModel = new UsedElementsModel();
+        //this->functionTreeViewModel = new QStandardItemModel();
+        //this->functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
+        //this->neededElementsModel = new QSqlQueryModel();
+        //this->usedElementsModel = new UsedElementsModel();
 
-        this->pluginsModel = new QSqlQueryModel();
+        //this->pluginsModel = new QSqlQueryModel();
 
         //model for plugin overview
-        this->myPluginTreeViewModel = new PluginTreeViewModel();
-        this->myPluginTreeViewModel->refreshModel();
+        //this->myPluginTreeViewModel = new PluginTreeViewModel();
+        //this->myPluginTreeViewModel->refreshModel();
 
         //feature treeview models
-        this->featureTreeViewModel = new FeatureTreeViewModel();
+        /*this->featureTreeViewModel = new FeatureTreeViewModel();
         this->featureTreeViewModel->refreshModel();
         this->availableElementsModel = new AvailableElementsTreeViewProxyModel();
         this->availableElementsModel->setHeader("available elements");
         this->availableElementsModel->setSourceModel(this->featureTreeViewModel);
         this->featureGraphicsModel = new FeatureGraphicsTreeViewProxyModel();
         this->featureGraphicsModel->setHeader("feature overview");
-        this->featureGraphicsModel->setSourceModel(this->featureTreeViewModel);
+        this->featureGraphicsModel->setSourceModel(this->featureTreeViewModel);*/
 
         //feature groups model
-        this->myFeatureGroupsModel = new QStringListModel();
-        this->setUpFeatureGroupsModel();
+        //this->myFeatureGroupsModel = new QStringListModel();
+        //this->setUpFeatureGroupsModel();
 
         //coordinate systems model
-        this->myCoordinateSystemsModel = new QStringListModel();
+        //this->myCoordinateSystemsModel = new QStringListModel();
 
         //point feature model
-        this->myPointFeatureModel = new PointFeatureModel();
-        this->myPointFeatureProxyModel = new PointFeatureFilterModel();
-        this->myPointFeatureProxyModel->setSourceModel(this->myPointFeatureModel);
+        //this->myPointFeatureModel = new PointFeatureModel();
+        //this->myPointFeatureProxyModel = new PointFeatureFilterModel();
+        //this->myPointFeatureProxyModel->setSourceModel(this->myPointFeatureModel);
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -120,17 +122,18 @@ void Controller::connectModels(){
     try{
 
         //update table model when one or more features change
-        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
+        /*connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
+*/
         connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()));
-        connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
+        //connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
 
         //update feature groups model when a group is added or removed
         connect(this->myFeatureState, SIGNAL(availableGroupsChanged()), this, SLOT(setUpFeatureGroupsModel()));
 
         //update feature tree view model which is used in function plugin loader
-        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->featureTreeViewModel, SLOT(refreshModel()));
+        //connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->featureTreeViewModel, SLOT(refreshModel()));
 
         //update coordinate systems model
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this, SLOT(setUpCoordinateSystemsModel()));
@@ -588,7 +591,7 @@ void Controller::startCustomAction(QString s)
 
 void Controller::recalcAll()
 {
-   myFeatureUpdater.recalcAll();
+   this->myFeatureUpdater->recalcAll();
    emit refreshGUI();
 }
 
@@ -611,9 +614,9 @@ void Controller::recalcActiveFeature(){
  */
 void Controller::recalcFeature(Feature *f){
     //start recalcing
-    this->myFeatureUpdater.recalcFeature(f);
+    this->myFeatureUpdater->recalcFeature(f);
     //refresh feature tree view models
-    this->featureTreeViewModel->refreshModel();
+    //this->featureTreeViewModel->refreshModel();
 }
 
 /*!
@@ -623,9 +626,9 @@ void Controller::recalcFeature(Feature *f){
  */
 void Controller::recalcTrafoParam(TrafoParam *tp){
     //start recalcing
-    this->myFeatureUpdater.recalcTrafoParam(tp);
+    this->myFeatureUpdater->recalcTrafoParam(tp);
     //refresh feature tree view models
-    this->featureTreeViewModel->refreshModel();
+    //this->featureTreeViewModel->refreshModel();
 }
 
 /*!
@@ -731,7 +734,7 @@ void Controller::savePluginData(PluginMetaData* metaInfo){
  * Loads all available plugins for the chosen sensor. You can chose the sensor at runtime in the set instrument menu.
  * \param sT
  */
-void Controller::setSensorModel(Configuration::SensorTypes sT){
+/*void Controller::setSensorModel(Configuration::SensorTypes sT){
 
     switch(sT){
     case Configuration::eLaserTracker:
@@ -745,7 +748,7 @@ void Controller::setSensorModel(Configuration::SensorTypes sT){
         break;
     }
     emit sendSQLModel(pluginsModel);
-}
+}*/
 
 /*!
  * \brief Controller::getSelectedPlugin
@@ -776,7 +779,7 @@ void Controller::getSelectedPlugin(int index){
     }*/
 }
 
-void Controller::getTempSensor(int index)
+/*void Controller::getTempSensor(int index)
 {
     QString path = pluginsModel->record(index).value("file_path").toString();
     QString name = pluginsModel->record(index).value("name").toString();
@@ -786,7 +789,7 @@ void Controller::getTempSensor(int index)
         emit sendTempSensor(s);
     }
 
-}
+}*/
 
 /*!
  * \brief Controller::getSelectedFeature
@@ -852,7 +855,7 @@ void Controller::receiveSensorConfiguration(SensorConfiguration sc, bool connect
  * \brief Controller::setFunction
  * Opens the menu to set a function for the active feature. The dialog shows all available functions for the selected feature.
  */
-void Controller::setFunction(){
+/*void Controller::setFunction(){
     if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() == 0
                 && (OiFeatureState::getActiveFeature()->getGeometry() == NULL || !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal())){
@@ -863,16 +866,16 @@ void Controller::setFunction(){
     }else{
         Console::addLine("no feature selected");
     }
-}
+}*/
 
 /*!
  * \brief Controller::receiveFunctionId
  * Receives the id of the selected function for the selected feature and querys the needed elements from database for that function.
  * \param id
  */
-void Controller::receiveFunctionId(int id){
+/*void Controller::receiveFunctionId(int id){
     SystemDbManager::getNeededElements(neededElementsModel, id);
-}
+}*/
 
 /*!
  * \brief Controller::createFunction
@@ -882,13 +885,11 @@ void Controller::receiveFunctionId(int id){
 void Controller::createFunction(int index){
     qDebug() << "creat func";
     qDebug() << index;
-    qDebug() << this->pluginsModel->record(index).value("file_path").toString();
-    QString path = pluginsModel->record(index).value("file_path").toString();
+    //qDebug() << this->pluginsModel->record(index).value("file_path").toString();
+    /*QString path = pluginsModel->record(index).value("file_path").toString();
     QString name = pluginsModel->record(index).value("name").toString();
     if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         //if the active feature is not a nominal geometry
-        /*if(OiFeatureState::getActiveFeature()->getGeometry() == NULL
-                || !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){*/
             //create function and connect OiFunctionEmitter to console
             Function *newFunction = PluginLoader::loadFunctionPlugin(path,name);
             if(newFunction != NULL){
@@ -896,13 +897,11 @@ void Controller::createFunction(int index){
                 OiFeatureState::getActiveFeature()->getFeature()->addFunction(newFunction);
             }
             //set up tree view model with all functions of selected feature
-            this->changeFunctionTreeViewModel();
+            //this->changeFunctionTreeViewModel();
             //set up available functions for the active feature
             this->setFunction();
-        /*}else{
-            Console::addLine("A nominal geometry cannot have a function!");
-        }*/
-    }
+
+    }*/
 }
 
 /*!
@@ -920,9 +919,9 @@ void Controller::deleteFunctionFromFeature(int index){
             }else{
                 activeFeature->removeFunction(index);
                 //set up tree view model with all functions of selected feature
-                this->changeFunctionTreeViewModel();
+                //this->changeFunctionTreeViewModel();
                 //set up available functions for the active feature
-                this->setFunction();
+                //this->setFunction();
             }
         }
     }
@@ -957,7 +956,7 @@ bool Controller::checkSensorValid(){
     }
 }
 
-void Controller::importFeatures(QList<FeatureWrapper*> f){
+/*void Controller::importFeatures(QList<FeatureWrapper*> f){
     for(int i = 0;i<f.size();i++){
 
         OiFeatureState::addFeature(f.at(i));
@@ -965,10 +964,10 @@ void Controller::importFeatures(QList<FeatureWrapper*> f){
     }
 
     //refresh feature tree view models
-    this->featureTreeViewModel->refreshModel();
+    //this->featureTreeViewModel->refreshModel();
 
     refreshGUI();
-}
+}*/
 
 void Controller::setActiveCoordSystem(QString CoordSysName){
 
@@ -993,7 +992,7 @@ void Controller::setActiveCoordSystem(QString CoordSysName){
     if(OiFeatureState::getActiveCoordinateSystem() != NULL){
 
         //transform observations to current system and recalc all features
-        this->myFeatureUpdater.switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
+        this->myFeatureUpdater->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
 
     }
 
@@ -1005,7 +1004,7 @@ void Controller::setActiveCoordSystem(QString CoordSysName){
  * \brief Controller::changeFunctionTreeViewModel
  * Update model for tree view with all functions of selected feature
  */
-void Controller::changeFunctionTreeViewModel(){
+/*void Controller::changeFunctionTreeViewModel(){
     this->functionTreeViewModel->clear();
     this->functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
     QStandardItem *rootItem = this->functionTreeViewModel->invisibleRootItem();
@@ -1026,7 +1025,7 @@ void Controller::changeFunctionTreeViewModel(){
             }
         }
     }
-}
+}*/
 
 /*!
  * \brief Controller::changeUsedElementsModel
@@ -1034,7 +1033,7 @@ void Controller::changeFunctionTreeViewModel(){
  * \param functionIndex
  * \param elementIndex
  */
-void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
+/*void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
     this->usedElementsModel->removeAllElements();
 
     if(functionIndex >= 0 && elementIndex >= 0 && OiFeatureState::getActiveFeature() != NULL
@@ -1222,7 +1221,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
     }
 
     this->usedElementsModel->refreshModel();
-}
+}*/
 
 /*!
  * \brief Controller::setSelectedFunction
@@ -1230,7 +1229,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
  * \param index
  * \param neededElement
  */
-void Controller::setSelectedFunction(int functionIndex, int neededElementIndex){
+/*void Controller::setSelectedFunction(int functionIndex, int neededElementIndex){
     if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex && functionIndex >= 0){ //if function index is valid
         if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().size() > neededElementIndex
                 && neededElementIndex >= 0){ //if needed element index is valid
@@ -1249,7 +1248,7 @@ void Controller::setSelectedFunction(int functionIndex, int neededElementIndex){
     }
     //re-build used elements model
     this->changeUsedElementsModel(functionIndex, neededElementIndex);
-}
+}*/
 
 /*!
  * \brief Controller::addElement2Function
@@ -1375,7 +1374,7 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
                 }
             }
         }
-        this->changeUsedElementsModel(functionIndex, elementIndex);
+        //this->changeUsedElementsModel(functionIndex, elementIndex);
     }
 }
 
@@ -1460,7 +1459,7 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
                         feature->getFunctions().at(functionIndex)->removeReadingPolar(element->getReading()->id);
                 }
             }
-            this->changeUsedElementsModel(functionIndex, elementIndex);
+            //this->changeUsedElementsModel(functionIndex, elementIndex);
         }
     }
 }
@@ -1734,7 +1733,7 @@ bool Controller::receiveRequestResult(OiRequestResponse *request){
                 //recalc all features after loading
                 this->recalcAll();
 
-                this->tblModel->updateModel();
+                //this->tblModel->updateModel();
 
                 break;
             }
@@ -1773,7 +1772,7 @@ void Controller::updateFeatureMConfig()
         QList<Configuration::ReadingTypes> readingTypes = *OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
 
         //Check and edit lastMConfig
-        bool contains = false;
+        /*bool contains = false;
         for(int i=0; i< readingTypes.size();i++){
             if(this->lastmConfig.typeOfReading == readingTypes.at(i)){
                 contains = true;
@@ -1781,10 +1780,10 @@ void Controller::updateFeatureMConfig()
         }
         if(!contains){
             this->lastmConfig.typeOfReading = readingTypes.at(0);
-        }
+        }*/
 
         //check and edit previous mconfigs
-        for(int k=0; k<OiFeatureState::getFeatures().size();k++){
+        /*for(int k=0; k<OiFeatureState::getFeatures().size();k++){
             contains = false;
             if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL){
                 for(int m=0;m<readingTypes.size();m++){
@@ -1810,7 +1809,7 @@ void Controller::updateFeatureMConfig()
                     OiFeatureState::getFeatures().at(k)->getStation()->position->setMeasurementConfig(myConfig);
                 }
             }
-        }
+        }*/
     }
 }
 
@@ -2034,7 +2033,7 @@ void Controller::deleteFeaturesCallback(bool command){
         }
 
         //recalc all features because some of the features maybe depent on the deleted features
-        this->myFeatureUpdater.recalcFeatureSet();
+        this->myFeatureUpdater->recalcFeatureSet();
 
         //refresh feature tree view models
         //this->featureTreeViewModel->refreshModel();
@@ -2144,15 +2143,15 @@ QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
     return result;
 }
 
-FeatureUpdater *Controller::getFeatureUpdater()
+/*FeatureUpdater *Controller::getFeatureUpdater()
 {
     return &myFeatureUpdater;
-}
+}*/
 
 /*!
  * \brief Controller::setUpFeatureGroupsModel
  */
-void Controller::setUpFeatureGroupsModel(){
+/*void Controller::setUpFeatureGroupsModel(){
     try{
 
         QStringList myFeatureGroups;
@@ -2169,12 +2168,12 @@ void Controller::setUpFeatureGroupsModel(){
     }catch(exception &e){
         Console::addLine(e.what());
     }
-}
+}*/
 
 /*!
  * \brief Controller::setUpCoordinateSystemsModel
  */
-void Controller::setUpCoordinateSystemsModel(){
+/*void Controller::setUpCoordinateSystemsModel(){
     try{
 
         QStringList myCoordSys;
@@ -2200,7 +2199,7 @@ void Controller::setUpCoordinateSystemsModel(){
     }catch(exception &e){
         Console::addLine(e.what());
     }
-}
+}*/
 
 /*!
  * \brief Controller::setActiveGroup

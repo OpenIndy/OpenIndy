@@ -52,7 +52,7 @@
 
 #include <QtXml>
 
-#include "tablemodel.h"
+#include "featuretablemodel.h"
 #include "featureattributesexchange.h"
 #include "guiconfiguration.h"
 

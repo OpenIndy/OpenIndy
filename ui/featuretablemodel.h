@@ -14,11 +14,12 @@
 #include "guiconfiguration.h"
 #include "oifeaturestate.h"
 
-class TableModel : public QAbstractTableModel
+class FeatureTableModel : public QAbstractTableModel
 {
     Q_OBJECT
+
 public:
-    explicit TableModel(QObject *parent = 0);
+    explicit FeatureTableModel(QObject *parent = 0);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;

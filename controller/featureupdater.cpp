@@ -2,9 +2,22 @@
 
 TrafoController FeatureUpdater::trafoControl;
 
+FeatureUpdater *FeatureUpdater::myFeatureUpdater = NULL;
+
 FeatureUpdater::FeatureUpdater(QObject *parent) :
     QObject(parent)
 {
+}
+
+/*!
+ * \brief FeatureUpdater::getInstance
+ * \return
+ */
+FeatureUpdater *FeatureUpdater::getInstance(){
+    if(FeatureUpdater::myFeatureUpdater == NULL){
+        FeatureUpdater::myFeatureUpdater = new FeatureUpdater();
+    }
+    return FeatureUpdater::myFeatureUpdater;
 }
 
 /*!
@@ -103,6 +116,7 @@ void FeatureUpdater::recalcFeatureSet(){
             }
         }
     }
+    emit this->featuresRecalculated();
 }
 
 /*!

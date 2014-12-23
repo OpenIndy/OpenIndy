@@ -20,12 +20,19 @@
 class FeatureUpdater : public QObject
 {
     Q_OBJECT
-public:
+
+private:
     explicit FeatureUpdater(QObject *parent = 0);
+
+public:
+    static FeatureUpdater *getInstance();
 
     static TrafoController trafoControl;
 
 signals:
+    void featuresRecalculated();
+    void featureRecalculated(int featureId);
+    void trafoParamRecalculated(int featureId);
     
 public slots:
     void recalcAll();
@@ -43,6 +50,8 @@ private:
     void switchCoordinateSystemWithoutTransformation(CoordinateSystem *to);
 
     void switchCoordinateSystemWithoutMovement(CoordinateSystem *to);
+
+    static FeatureUpdater *myFeatureUpdater;
 
 };
 

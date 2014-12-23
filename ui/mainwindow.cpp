@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //fillCoordSysComboBox();
 
     setUpStatusBar();
-    control.tblModel->updateModel();
+    //control.tblModel->updateModel();
 
     this->createOiToolActions();
 
@@ -123,7 +123,7 @@ void MainWindow::setConnects(){
 
     //inform the controller when active feature changes
     connect(this, SIGNAL(sendSelectedFeature(int)), &this->control, SLOT(setSelectedFeature(int)));
-    connect(this->fDataDialog.oModel,SIGNAL(recalcFeature()),this->control.getFeatureUpdater(),SLOT(recalcAll()));
+    connect(this->fDataDialog.oModel,SIGNAL(recalcFeature()),FeatureUpdater::getInstance(),SLOT(recalcAll()));
 
     //update active coordinate system when QStringListModel in controller changes
     connect(&this->control, SIGNAL(activeCoordinateSystemChanged()), this, SLOT(setActiveCoordinateSystem()));
@@ -150,7 +150,7 @@ void MainWindow::setConnects(){
     //sensor info
     connect(&this->control,SIGNAL(sensorWorks(QString)),&this->sInfoDialog,SLOT(showInfo(QString)));
     connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),&this->sInfoDialog,SLOT(hideInfo(bool)));
-    connect(this->control.myFeatureState, SIGNAL(activeStationChanged()), this, SLOT(changedStation()));
+    connect(OiFeatureState::getInstance(), SIGNAL(activeStationChanged()), this, SLOT(changedStation()));
     connect(&this->control,SIGNAL(setSensorState(int,QString)),this,SLOT(setSensorState(int,QString)));
     connect(&this->control,SIGNAL(isConnected(bool)),this,SLOT(isSensorConnected(bool)));
     connect(&this->control,SIGNAL(sensorDisconnected()),this,SLOT(sensorDisconnected()));
@@ -190,7 +190,7 @@ void MainWindow::setConnects(){
     //update GUI when the settings are changed
     connect(&this->setUpDialog,SIGNAL(accepted()),this,SLOT(setUpStatusBar()));
     connect(&this->setUpDialog,SIGNAL(rejected()),this,SLOT(setUpStatusBar()));
-    connect(&this->setUpDialog,SIGNAL(modelChanged()),this->control.tblModel,SLOT(updateModel()));
+    connect(&this->setUpDialog,SIGNAL(modelChanged()),&OiModelManager::getFeatureTableModel(),SLOT(updateModel()));
 
     //create feature connects
     connect(this->cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
@@ -249,20 +249,20 @@ void MainWindow::setModels(){
 
     this->ui->listView_Console->setModel(control.c->output);
 
-    this->ui->tableView_data->setModel(this->control.featureOverviewModel);
+    this->ui->tableView_data->setModel(&OiModelManager::getFeatureTableProxyModel());
     this->ui->tableView_data->setSortingEnabled(true);
-    this->ui->tableView_trafoParam->setModel(this->control.trafoParamModel);
+    this->ui->tableView_trafoParam->setModel(&OiModelManager::getTrafoParamProxyModel());
 
-    this->ui->treeView_featureOverview->setModel(this->control.featureGraphicsModel);
+    this->ui->treeView_featureOverview->setModel(&OiModelManager::getFeatureGraphicsModel());
 
-    this->ui->comboBox_groups->setModel(this->control.myFeatureGroupsModel);
+    this->ui->comboBox_groups->setModel(&OiModelManager::getGroupNamesModel());
 
-    this->ui->comboBox_activeCoordSystem->setModel(this->control.myCoordinateSystemsModel);
+    this->ui->comboBox_activeCoordSystem->setModel(&OiModelManager::getCoordinateSystemsModel());
 
-    this->fPluginDialog.receiveAvailableElementsModel(this->control.availableElementsModel);
-    this->fPluginDialog.receiveUsedElementsModel(this->control.usedElementsModel);
+    //this->fPluginDialog.receiveAvailableElementsModel(OiModelManager::getAvailableElementsModel());
+    //this->fPluginDialog.receiveUsedElementsModel(this->control.usedElementsModel);
 
-    this->setUpDialog.setPluginsModel(this->control.myPluginTreeViewModel);
+    this->setUpDialog.setPluginsModel(&OiModelManager::getPluginTreeViewModel());
 
 }
 
@@ -1200,15 +1200,15 @@ void MainWindow::on_actionSet_instrument_triggered()
  * \param const QModelIndex &idx
  */
 void MainWindow::handleTableViewClicked(const QModelIndex &idx){
-    FeatureOverviewProxyModel *model = static_cast<FeatureOverviewProxyModel*>(this->ui->tableView_data->model());
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_data->model());
 
     QModelIndex source_idx = model->mapToSource(idx);
 
     if(this->selectedFeature != source_idx.row()){
         //hide available elements treeview elements
-        if(this->control.availableElementsModel != NULL){
+        /*if(this->control.availableElementsModel != NULL){
             this->control.availableElementsModel->setFilter(Configuration::eUndefinedElement, true);
-        }
+        }*/
         //disable used elements and available elements treeviews
         this->fPluginDialog.disableFunctionInteractions();
         //set description of function plugin loader to empty text
@@ -1232,9 +1232,9 @@ void MainWindow::handleTrafoParamClicked(const QModelIndex &idx)
 
     if(this->selectedFeature != source_idx.row()){
         //hide available elements treeview elements
-        if(this->control.availableElementsModel != NULL){
+        /*if(this->control.availableElementsModel != NULL){
             this->control.availableElementsModel->setFilter(Configuration::eUndefinedElement, true);
-        }
+        }*/
         //disable used elements and available elements treeviews
         this->fPluginDialog.disableFunctionInteractions();
         //set description of function plugin loader to empty text
@@ -1311,10 +1311,10 @@ void MainWindow::handleViewDoubleClick(int idx)
 void MainWindow::on_actionSet_function_triggered(){
     if(OiFeatureState::getActiveFeature() != NULL){
         //get models from database
-        this->control.setFunction();
+        //this->control.setFunction();
         //send models to function plugin loader
-        fPluginDialog.receivePluginsModel(this->control.pluginsModel);
-        fPluginDialog.receiveFunctionsModel(this->control.functionTreeViewModel);
+        //fPluginDialog.receivePluginsModel(this->control.pluginsModel);
+        //fPluginDialog.receiveFunctionsModel(this->control.functionTreeViewModel);
         //show the dialog
         fPluginDialog.show();
     }
@@ -1593,7 +1593,7 @@ void MainWindow::featureContextMenu(const QPoint &point){
         }
     }else{
         QModelIndex selectedIndex = this->ui->tableView_data->indexAt(point);
-        FeatureOverviewProxyModel *tableModel = static_cast<FeatureOverviewProxyModel*>(this->ui->tableView_data->model());
+        FeatureTableProxyModel *tableModel = static_cast<FeatureTableProxyModel*>(this->ui->tableView_data->model());
         if(tableModel != NULL){
             QModelIndexList myIndexList;
             myIndexList.append(selectedIndex);
@@ -1634,7 +1634,7 @@ void MainWindow::deleteFeatures(bool checked){
             QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(myIndices);
             emit this->sendDeleteFeatures(myFeatures);
         }else{
-            FeatureOverviewProxyModel *tableModel = static_cast<FeatureOverviewProxyModel*>(this->ui->tableView_data->model());
+            FeatureTableProxyModel *tableModel = static_cast<FeatureTableProxyModel*>(this->ui->tableView_data->model());
             QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(myIndices);
             emit this->sendDeleteFeatures(myFeatures);
         }
@@ -1721,7 +1721,7 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
         this->ui->comboBox_groups->addItem("All Groups");
         this->ui->comboBox_groups->addItems(groups);
         this->ui->comboBox_groups->setCurrentText("All Groups");
-        this->control.tblModel->updateModel();
+        //this->control.tblModel->updateModel();
     }
 }
 
@@ -1731,7 +1731,7 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
  */
 void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
 {
-    FeatureOverviewProxyModel *model = this->control.featureOverviewModel;
+    FeatureTableProxyModel *model = &OiModelManager::getFeatureTableProxyModel();
     if(model != NULL){
         if(arg1.compare("") != 0){
             OiFeatureState::setActiveGroup(arg1);
@@ -1977,14 +1977,14 @@ void MainWindow::on_actionSensor_real_time_data_triggered()
 
 void MainWindow::on_actionSimulation_triggered()
 {
-    simulationWidget.setFeatureUpdater(control.getFeatureUpdater());
+    simulationWidget.setFeatureUpdater(FeatureUpdater::getInstance());
     simulationWidget.show();
 }
 
 void MainWindow::on_treeView_featureOverview_clicked(const QModelIndex &index)
 {
 
-    QModelIndex source_index = this->control.featureGraphicsModel->getSourceIndex(index);
+    QModelIndex source_index = OiModelManager::getFeatureGraphicsModel().getSourceIndex(index);
 
     if(source_index.isValid()){
         FeatureTreeItem *item = static_cast<FeatureTreeItem*>(source_index.internalPointer());

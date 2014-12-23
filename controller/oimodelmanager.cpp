@@ -3,6 +3,7 @@
 OiModelManager *OiModelManager::myInstance = NULL;
 
 QStringListModel OiModelManager::pluginNamesModel;
+QStringListModel OiModelManager::coordinateSystemsModel;
 QStringListModel OiModelManager::nominalSystemsModel;
 QStringListModel OiModelManager::geometryTypes;
 QStandardItemModel OiModelManager::sensorTypes;
@@ -19,9 +20,20 @@ QStringListModel OiModelManager::distanceUnitsModel;
 QStringListModel OiModelManager::angleUnitsModel;
 QStringListModel OiModelManager::temperatureUnitsModel;
 QStringListModel OiModelManager::groupNamesModel;
+FeatureTableModel OiModelManager::featureTableModel;
+FeatureTableProxyModel OiModelManager::featureTableProxyModel;
+TrafoParamProxyModel OiModelManager::trafoParamProxyModel;
+FeatureTreeViewModel OiModelManager::featureTreeViewModel;
+FeatureGraphicsTreeViewProxyModel OiModelManager::featureGraphicsModel;
+PluginTreeViewModel OiModelManager::pluginTreeViewModel;
+QSqlQueryModel OiModelManager::createFeatureFunctionsModel;
+QSqlQueryModel OiModelManager::changeFeatureFunctionsModel;
+QSqlQueryModel OiModelManager::laserTrackerModel;
+QSqlQueryModel OiModelManager::totalStationModel;
+QSqlQueryModel OiModelManager::undefinedSensorModel;
 
-OiModelManager::OiModelManager(QObject *parent) : QObject(parent)
-{
+OiModelManager::OiModelManager(QObject *parent) : QObject(parent){
+
 }
 
 /*!
@@ -32,6 +44,7 @@ OiModelManager *OiModelManager::getInstance(){
     if(OiModelManager::myInstance == NULL){
         OiModelManager::myInstance = new OiModelManager();
         OiModelManager::myInstance->initModels();
+        OiModelManager::myInstance->connectModels();
     }
     return OiModelManager::myInstance;
 }
@@ -42,6 +55,54 @@ OiModelManager *OiModelManager::getInstance(){
  */
 QStringListModel &OiModelManager::getPluginNamesModel(){
     return OiModelManager::pluginNamesModel;
+}
+
+/*!
+ * \brief OiModelManager::getPluginTreeViewModel
+ * \return
+ */
+PluginTreeViewModel &OiModelManager::getPluginTreeViewModel(){
+    return OiModelManager::pluginTreeViewModel;
+}
+
+/*!
+ * \brief OiModelManager::getCreateFunctionsModel
+ * \return
+ */
+QSqlQueryModel &OiModelManager::getCreateFunctionsModel(){
+    return OiModelManager::createFeatureFunctionsModel;
+}
+
+/*!
+ * \brief OiModelManager::getChangeFunctionsModel
+ * \return
+ */
+QSqlQueryModel &OiModelManager::getChangeFunctionsModel(){
+    return OiModelManager::changeFeatureFunctionsModel;
+}
+
+/*!
+ * \brief OiModelManager::getSensorsModel
+ * \param typeOfSensor
+ * \return
+ */
+QSqlQueryModel &OiModelManager::getSensorsModel(Configuration::SensorTypes typeOfSensor){
+    switch(typeOfSensor){
+    case Configuration::eLaserTracker:
+        return OiModelManager::laserTrackerModel;
+    case Configuration::eTotalStation:
+        return OiModelManager::totalStationModel;
+    default:
+        return OiModelManager::undefinedSensorModel;
+    }
+}
+
+/*!
+ * \brief OiModelManager::getCoordinateSystemsModel
+ * \return
+ */
+QStringListModel &OiModelManager::getCoordinateSystemsModel(){
+    return OiModelManager::coordinateSystemsModel;
 }
 
 /*!
@@ -74,6 +135,132 @@ QStringListModel *OiModelManager::getSimpleAsciiExchangePlugins(QString plugin){
     pluginsModel->setStringList(exchangePlugins);
 
     return pluginsModel;
+}
+
+/*!
+ * \brief OiModelManager::getAvailableElementsModel
+ * The model contains a hierarchy of all elements of type filter
+ * \param filter
+ * \return
+ */
+AvailableElementsTreeViewProxyModel *OiModelManager::getAvailableElementsModel(Configuration::ElementTypes filter){
+
+    AvailableElementsTreeViewProxyModel *availableElementsModel;// = new AvailableElementsTreeViewProxyModel();
+
+    availableElementsModel->setHeader("available elements");
+    availableElementsModel->setSourceModel(&OiModelManager::featureTreeViewModel);
+    availableElementsModel->setFilter(filter, false);
+
+    return availableElementsModel;
+
+}
+
+/*!
+ * \brief OiModelManager::getUsedElementsModel
+ * The model contains all elements used for the function at functionIndex of the active feature (at elementIndex)
+ * \param functionIndex: index of the function in the list of functions of active feature
+ * \param elementIndex: index of the needed elements of the function
+ * \return
+ */
+UsedElementsModel *OiModelManager::getUsedElementsModel(int functionIndex, int elementIndex){
+
+    UsedElementsModel *usedElementsModel = new UsedElementsModel();
+
+    usedElementsModel->updateModel(functionIndex, elementIndex);
+
+    return usedElementsModel;
+
+}
+
+/*!
+ * \brief OiModelManager::getFunctionTreeViewModel
+ * \return
+ */
+QStandardItemModel *OiModelManager::getFunctionTreeViewModel(){
+
+    //check if active feature is valid
+    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getFeature() == NULL){
+        return NULL;
+    }
+
+    QStandardItemModel *functionTreeViewModel = new QStandardItemModel();
+
+    functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
+
+    QStandardItem *rootItem = functionTreeViewModel->invisibleRootItem();
+    foreach(Function *f, OiFeatureState::getActiveFeature()->getFeature()->getFunctions()){
+
+        if(f == NULL){
+            continue;
+        }
+
+        QStandardItem *function = new QStandardItem(f->getMetaData()->name);
+        foreach(InputParams param, f->getNeededElements()){
+            if(param.infinite){
+                QStandardItem *element = new QStandardItem(QString("n %1s").arg(Configuration::getElementTypeString(param.typeOfElement)));
+                function->appendRow(element);
+            }else{
+                QStandardItem *element = new QStandardItem(QString("1 %1").arg(Configuration::getElementTypeString(param.typeOfElement)));
+                function->appendRow(element);
+            }
+        }
+
+        rootItem->appendRow(function);
+
+    }
+
+    return functionTreeViewModel;
+
+}
+
+/*!
+ * \brief OiModelManager::featureSetChanged
+ */
+void OiModelManager::featureSetChanged(){
+    OiModelManager::featureTableModel.updateModel();
+    OiModelManager::featureTreeViewModel.refreshModel();
+}
+
+/*!
+ * \brief OiModelManager::activeFeatureChanged
+ */
+void OiModelManager::activeFeatureChanged(){
+    OiModelManager::featureTableModel.updateModel();
+}
+
+/*!
+ * \brief OiModelManager::activeStationChanged
+ */
+void OiModelManager::activeStationChanged(){
+    OiModelManager::featureTableModel.updateModel();
+}
+
+/*!
+ * \brief OiModelManager::activeCoordinateSystemChanged
+ */
+void OiModelManager::activeCoordinateSystemChanged(){
+    OiModelManager::featureTableModel.updateModel();
+}
+
+/*!
+ * \brief OiModelManager::availableGroupsChanged
+ */
+void OiModelManager::availableGroupsChanged(){
+    this->initGroupNameModels();
+}
+
+/*!
+ * \brief OiModelManager::coordSystemSetChanged
+ */
+void OiModelManager::coordSystemSetChanged(){
+    this->initCoordinateSystemModels();
+}
+
+/*!
+ * \brief OiModelManager::featuresRecalculated
+ */
+void OiModelManager::featuresRecalculated(){
+
 }
 
 /*!
@@ -169,14 +356,51 @@ QStringListModel &OiModelManager::getTemperatureUnitsModel(){
  * \return
  */
 QStringListModel &OiModelManager::getGroupNamesModel(){
-    QStringList availableGroups = OiFeatureState::getAvailableGroups().keys();
-    availableGroups.push_front("");
-    OiModelManager::groupNamesModel.setStringList(availableGroups);
     return OiModelManager::groupNamesModel;
 }
 
 /*!
- * \brief OiModelManager::getGroupNamesFilterModel
+ * \brief OiModelManager::getFeatureTableModel
+ * \return
+ */
+FeatureTableModel &OiModelManager::getFeatureTableModel(){
+    return OiModelManager::featureTableModel;
+}
+
+/*!
+ * \brief OiModelManager::getFeatureTableProxyModel
+ * \return
+ */
+FeatureTableProxyModel &OiModelManager::getFeatureTableProxyModel(){
+    return OiModelManager::featureTableProxyModel;
+}
+
+/*!
+ * \brief OiModelManager::getTrafoParamProxyModel
+ * \return
+ */
+TrafoParamProxyModel &OiModelManager::getTrafoParamProxyModel(){
+    return OiModelManager::trafoParamProxyModel;
+}
+
+/*!
+ * \brief OiModelManager::getFeatureTreeViewModel
+ * \return
+ */
+FeatureTreeViewModel &OiModelManager::getFeatureTreeViewModel(){
+    return OiModelManager::featureTreeViewModel;
+}
+
+/*!
+ * \brief OiModelManager::getFeatureGraphicsModel
+ * \return
+ */
+FeatureGraphicsTreeViewProxyModel &OiModelManager::getFeatureGraphicsModel(){
+    return OiModelManager::featureGraphicsModel;
+}
+
+/*!
+ * \brief OiModelManager::getGeometryTypesFilterModel
  * \return
  */
 GeometryTypesProxyModel *OiModelManager::getGeometryTypesFilterModel(){
@@ -191,17 +415,11 @@ GeometryTypesProxyModel *OiModelManager::getGeometryTypesFilterModel(){
  */
 void OiModelManager::initModels(){
 
-    //initialize exchange plugin models
-    QStringList pluginNames = SystemDbManager::getAvailablePluginNames();
-    OiModelManager::pluginNamesModel.setStringList(pluginNames);
+    //initialize plugin models
+    this->initPluginModels();
 
     //initialize coordinate system models
-    QStringList nominalSystems;
-    QList<CoordinateSystem *> mySystems = OiFeatureState::getCoordinateSystems();
-    foreach(CoordinateSystem *c, mySystems){
-        nominalSystems.append(c->getFeatureName());
-    }
-    OiModelManager::nominalSystemsModel.setStringList(nominalSystems);
+    this->initCoordinateSystemModels();
 
     //initialize geometry types
     QStringList geometryTypes;
@@ -229,7 +447,15 @@ void OiModelManager::initModels(){
     //initialize unit models
     this->initUnitModels();
 
+    //models for tableviews
+    OiModelManager::featureTableProxyModel.setSourceModel(&OiModelManager::featureTableModel);
+    OiModelManager::featureTableProxyModel.setDynamicSortFilter(true);
+    OiModelManager::trafoParamProxyModel.setSourceModel(&OiModelManager::featureTableModel);
 
+    //treeview models
+    OiModelManager::featureGraphicsModel.setSourceModel(&OiModelManager::featureTreeViewModel);
+
+    this->initGroupNameModels();
 
 
 
@@ -249,6 +475,24 @@ void OiModelManager::initModels(){
     QStringList definedFormatExchangePlugins = SystemDbManager::getAvailableDefinedFormatExchangePlugins();
     OiModelManager::simpleAsciiExchangePlugins.setStringList(simpleAsciiExchangePlugins);
     OiModelManager::definedFormatExchangePlugins.setStringList(definedFormatExchangePlugins);*/
+
+}
+
+/*!
+ * \brief OiModelManager::connectModels
+ */
+void OiModelManager::connectModels(){
+
+    connect(OiFeatureState::getInstance(), SIGNAL(featureSetChanged()), this, SLOT(featureSetChanged()), Qt::DirectConnection);
+    connect(OiFeatureState::getInstance(), SIGNAL(activeFeatureChanged()), this, SLOT(activeFeatureChanged()), Qt::DirectConnection);
+    connect(OiFeatureState::getInstance(), SIGNAL(activeCoordinateSystemChanged()), this, SLOT(activeCoordinateSystemChanged()), Qt::DirectConnection);
+    connect(OiFeatureState::getInstance(), SIGNAL(activeStationChanged()), this, SLOT(activeStationChanged()), Qt::DirectConnection);
+
+    connect(FeatureUpdater::getInstance(), SIGNAL(featuresRecalculated()), this, SLOT(featuresRecalculated()), Qt::DirectConnection);
+
+    connect(OiFeatureState::getInstance(), SIGNAL(availableGroupsChanged()), this, SLOT(availableGroupsChanged()), Qt::DirectConnection);
+
+    connect(OiFeatureState::getInstance(), SIGNAL(coordSystemSetChanged()), this, SLOT(coordSystemSetChanged()), Qt::DirectConnection);
 
 }
 
@@ -374,6 +618,27 @@ void OiModelManager::initSensorModels(){
 }
 
 /*!
+ * \brief OiModelManager::initCoordinateSystemModels
+ */
+void OiModelManager::initCoordinateSystemModels(){
+
+    QStringList coordinateSystems;
+    QStringList nominalSystems;
+    QList<CoordinateSystem *> mySystems = OiFeatureState::getCoordinateSystems();
+    foreach(CoordinateSystem *c, mySystems){
+        nominalSystems.append(c->getFeatureName());
+        coordinateSystems.append(c->getFeatureName());
+    }
+    QList<Station *> myStations = OiFeatureState::getStations();
+    foreach(Station *s, myStations){
+        coordinateSystems.append(s->getFeatureName());
+    }
+    OiModelManager::nominalSystemsModel.setStringList(nominalSystems);
+    OiModelManager::coordinateSystemsModel.setStringList(coordinateSystems);
+
+}
+
+/*!
  * \brief OiModelManager::initUnitModels
  */
 void OiModelManager::initUnitModels(){
@@ -400,5 +665,32 @@ void OiModelManager::initUnitModels(){
     temperatureUnits.append(UnitConverter::getUnitString(UnitConverter::eKelvin));
     temperatureUnits.append(UnitConverter::getUnitString(UnitConverter::eFahrenheit));
     OiModelManager::temperatureUnitsModel.setStringList(temperatureUnits);
+
+}
+
+/*!
+ * \brief OiModelManager::initGroupNameModels
+ */
+void OiModelManager::initGroupNameModels(){
+
+    QStringList availableGroups = OiFeatureState::getAvailableGroups().keys();
+    availableGroups.push_front("");
+    OiModelManager::groupNamesModel.setStringList(availableGroups);
+
+}
+
+/*!
+ * \brief OiModelManager::initPluginModels
+ */
+void OiModelManager::initPluginModels(){
+
+    //plugin tree view
+    OiModelManager::pluginTreeViewModel.refreshModel();
+
+    //plugin names
+    QStringList pluginNames = SystemDbManager::getAvailablePluginNames();
+    OiModelManager::pluginNamesModel.setStringList(pluginNames);
+
+
 
 }

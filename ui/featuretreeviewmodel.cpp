@@ -2,7 +2,7 @@
 
 FeatureTreeViewModel::FeatureTreeViewModel(QObject *parent) : QAbstractItemModel(parent){
     this->rootItem = new FeatureTreeItem("available elements");
-    this->refreshModel();
+    //this->refreshModel();
 }
 
 /*!
