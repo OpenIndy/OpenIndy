@@ -21,13 +21,21 @@ CreateFeature::~CreateFeature()
 }
 
 /*!
+ * \brief CreateFeature::setFeatureType
+ * \param typeOfFeature
+ */
+void CreateFeature::setFeatureType(Configuration::FeatureTypes typeOfFeature){
+    this->typeOfFeature = typeOfFeature;
+}
+
+/*!
  * \brief receiveFeatureType enables all gui elements and functions for the selected feature type.
  * Enables or disables some GUI elemts depending from the feature type. The feature type is set by the selected feature in the
  * combobox in the main application or by clicking on a create feature button (e.g. the create point button) in the toolbar of the
  * main application.
  * \param Configuration::FeatureTypes fT
  */
-void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
+/*void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
     this->typeOfFeature = fT;
 
     initGUI();
@@ -299,7 +307,7 @@ void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
     }
 
     initGUI();
-}
+}*/
 
 /*!
  * \brief create feature.
@@ -506,12 +514,17 @@ void CreateFeature::setAvailableFunctions(QStringList functions, QString default
     this->ui->comboBox_function->setCurrentText(defaultFunction);
 }
 
-void CreateFeature::showEvent(QShowEvent *event)
-{
-    //Put the dialog in the screen center
+/*!
+ * \brief CreateFeature::showEvent
+ * \param event
+ */
+void CreateFeature::showEvent(QShowEvent *event){
+
+    //put the dialog in the screen center
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
     event->accept();
+
 }
 
 /*!

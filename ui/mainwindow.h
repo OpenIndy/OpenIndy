@@ -75,21 +75,98 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void closeEvent(QCloseEvent * event);
+signals:
 
-    QSignalMapper *signalMapper;
+    //###################################
+    //tasks to be performed by controller
+    //###################################
 
-    int selectedFeature;
+    void setActiveFeature(int featureId);
+
+private slots:
+
+    //#########################
+    //actions triggered by user
+    //#########################
+
+    //create feature actions
+    void on_actionCreate_point_triggered();
+    void on_actionCreate_line_triggered();
+    void on_actionCreate_plane_triggered();
+    void on_actionCreate_sphere_triggered();
+    void on_actionCreate_station_triggered();
+    void on_actionCreate_coordinatesystem_triggered();
+    void on_actionCreate_scalar_entity_triggered();
+    void on_actionCreate_trafoParam_triggered();
+    void on_actionCreate_cone_triggered();
+    void on_actionCreate_cylinder_triggered();
+    void on_actionCreate_ellipsoid_triggered();
+    void on_actionCreate_hyperboloid_triggered();
+    void on_actionCreate_paraboloid_triggered();
+    void on_actionCreate_nurbs_triggered();
+    void on_actionCreate_pointcloud_triggered();
+    void on_actionCreate_circle_triggered();
+    void on_actionActivate_station_triggered();
+
+    //show create feature dialogs
+    void showCreateFeatureDialog(Configuration::FeatureTypes featureType);
+    void showScalarEntityDialog(Configuration::FeatureTypes featureType);
+
+    //save and load project actions
+    void on_actionSave_as_triggered();
+    void on_actionOpen_triggered();
+
+    //table view interactions
+    void handleTableViewClicked(const QModelIndex &index);
+    void handleTrafoParamClicked(const QModelIndex &index);
+    void on_tableView_data_customContextMenuRequested(const QPoint &pos);
+    void on_tableView_trafoParam_customContextMenuRequested(const QPoint &pos);
+    void featureContextMenu(const QPoint &point);
+    void handleViewDoubleClick(int index);
+
+    //open or close dialogs
+    void on_actionControl_pad_triggered();
+    void on_actionMeasurement_Configuration_triggered();
+    void on_actionConsole_triggered();
+    void on_actionWatch_window_triggered();
+    void on_actionLoad_plugins_triggered();
+    void on_actionShow_hide_feature_toolbar_triggered();
+    void on_actionSet_instrument_triggered();
+    void on_actionSet_function_triggered();
+    void openCreateFeatureMConfig(Configuration::FeatureTypes typeOfFeature);
+    void on_actionView_settings_triggered();
+    void showProperties(bool checked);
+
+private:
+
+    //####################################
+    //set up models and connect controller
+    //####################################
+
+    void assignModels();
+    void setConnects();
 
     Controller control;
 
+    //#################
+    //init GUI elements
+    //#################
+
+    void initFeatureTableView();
+    void initDialogs();
+
+    //############################
+    //OpenIndy dialogs and widgets
+    //############################
+
     MeasurementConfigDialog mConfigDialog;
+
     MovementDialog moveDialog;
     PluginLoaderDialog pLoadDialog;
     OiSimulationWidget simulationWidget;
 
-    CreateFeature *cFeatureDialog;
-    ScalarEntityDialog *sEntityDialog;
+    CreateFeature cFeatureDialog;
+    ScalarEntityDialog sEntityDialog;
 
     SensorPluginDialog sPluginDialog;
     FunctionPluginLoader fPluginDialog;
@@ -103,7 +180,26 @@ public:
     StationInfoDialog stationDialog;
     RealTimeDataDialog rtDataDialog;
 
-    WatchWindow *watchWindow;
+    WatchWindow watchWindow;
+
+    //import and export dialogs
+    ImportNominalDialog importNominalDialog;
+    ExportNominalDialog exportNominalDialog;
+
+
+
+
+    //---------------------------------------
+
+    void closeEvent(QCloseEvent * event);
+
+    QSignalMapper *signalMapper;
+
+    int selectedFeature;
+
+
+
+
 
     //actions
     //create feature
@@ -160,14 +256,11 @@ public:
     QAction *cPsep9;
     QAction *cPsep10;
 
-    //import dialogs
-    ImportNominalDialog importNominalDialog;
 
-    //export dialogs
-    ExportNominalDialog exportNominalDialog;
 
 signals:
 
+    /*
     //void sendActiveNominalfeature(FeatureWrapper *anf);
     void sendConfig(MeasurementConfig);
     void sendFeatureType(Configuration::FeatureTypes);
@@ -178,8 +271,9 @@ signals:
     void sendActiveCoordSystem(QString coordSys);
     void sendDeleteFeatures(QList<FeatureWrapper*> myFeatures);
 
-    void startStakeOut(QDomDocument request); //emitted when the user has configured a stake out task
-    void nextStakeOutGeometry(); //emitted when the next geometry has to be selected
+    //void startStakeOut(QDomDocument request); //emitted when the user has configured a stake out task
+    //void nextStakeOutGeometry(); //emitted when the next geometry has to be selected
+*/
 
 public slots:
     void showMessageBox(QString title, QString message);
@@ -197,9 +291,9 @@ public slots:
     void createOiToolActions();
 
 private slots:
-    void featureContextMenu(const QPoint &point);
+
     void deleteFeatures(bool checked);
-    void showProperties(bool checked);
+
 
     void ChangeCreateFeatureToolbar(int i);
     void CheckBoxNominalToggled(bool toggled);
@@ -207,9 +301,7 @@ private slots:
     void changedStation();
 
     //void getActiveCoordSystem(QString coordSys);
-    void handleTableViewClicked(const QModelIndex &);
-    void handleTrafoParamClicked(const QModelIndex &);
-    void handleViewDoubleClick(int);
+
 
     //void setColumnOrder();
 
@@ -238,72 +330,22 @@ private slots:
 
     //void fillCoordSysComboBox();
 
-    void on_actionControl_pad_triggered();
 
-    void on_actionMeasurement_Configuration_triggered();
-
-    void on_actionConsole_triggered();
-
-    void on_actionWatch_window_triggered();
-
-    void on_actionLoad_plugins_triggered();
-
-    void on_actionShow_hide_feature_toolbar_triggered();
-
-    void on_actionCreate_point_triggered();
-
-    void on_actionCreate_line_triggered();
-
-    void on_actionCreate_plane_triggered();
-
-    void on_actionCreate_sphere_triggered();
-
-    void on_actionCreate_station_triggered();
-
-    void on_actionCreate_coordinatesystem_triggered();
-
-    void on_actionSet_instrument_triggered();
-
-    void on_actionSet_function_triggered();
-
-    void openCreateFeatureMConfig(Configuration::FeatureTypes typeOfFeature);
 
     void setUpStatusBar();
 
-    void on_actionView_settings_triggered();
 
-    void on_actionCreate_scalar_entity_triggered();
 
-    void on_actionCreate_trafoParam_triggered();
 
-    void on_actionSave_as_triggered();
 
-    void on_actionOpen_triggered();
 
-    void on_actionCreate_cone_triggered();
 
-    void on_actionCreate_cylinder_triggered();
 
-    void on_actionCreate_ellipsoid_triggered();
-
-    void on_actionCreate_hyperboloid_triggered();
-
-    void on_actionCreate_paraboloid_triggered();
-
-    void on_actionCreate_nurbs_triggered();
-
-    void on_actionCreate_pointcloud_triggered();
-
-    void on_actionCreate_circle_triggered();
-
-    void on_actionActivate_station_triggered();
 
 
     void defaultCreateFeatureSettings();
 
-    void on_tableView_data_customContextMenuRequested(const QPoint &pos);
 
-    void on_tableView_trafoParam_customContextMenuRequested(const QPoint &pos);
 
     void on_comboBox_groups_currentIndexChanged(const QString &arg1);
 
@@ -312,8 +354,7 @@ private slots:
 
     void on_actionPlugin_manager_triggered();
 
-    void showCreateFeatureDialog(Configuration::FeatureTypes featureType);
-    void showScalarEntityDialog(Configuration::FeatureTypes featureType);
+
 
     void clearCustomWidgets();
 
@@ -360,8 +401,7 @@ private:
     QModelIndexList featuresToDelete;
     bool isTrafoParamSelected;
 
-    void setConnects();
-    void setModels();
+
 
     //void getDefaultFeatureHeaderOrder();
     //QStringList lastFeatureHeaderOrder;

@@ -89,58 +89,80 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = 0);
 
+signals:
+
+    //##################################################
+    //signals to inform GUI about OpenIndy state changes
+    //##################################################
+
+    void featureSetChanged();
+    void featureAttributesChanged();
+
+    void activeFeatureChanged();
+    void activeStationChanged();
+    void activeCoordinateSystemChanged();
+    void activeGroupChanged();
+
+    void availableGroupNamesChanged();
+
+public slots:
+
+    //###########################################
+    //actions to be performed (triggered by user)
+    //###########################################
+
+    void setActiveFeature(int featureId);
+    void setActiveStation();
+    void setActiveCoordinateSystem();
+
+    void startMeasurement();
+    void startMove(Reading *parameter);
+    void startAim();
+    void startConnect();
+    void startDisconnect();
+    void startToggleSight();
+    void startInitialize();
+    void startHome();
+    void startCompensation();
+    void startChangeMotorState();
+    void startCustomAction(QString s);
+
+    void recalcAll();
+    void recalcActiveFeature();
+    void recalcFeature(Feature *f);
+    void recalcTrafoParam(TrafoParam *tp);
+
+    bool saveProject();
+    bool loadProject(QString projectName, QIODevice *myDevice);
+
+private slots:
+
+    void connectStateChanges();
+    bool createDefaultProject();
+
 private:
+
+    //###################################################################
     //instances of manager classes to take care of OpenIndy state changes
+    //###################################################################
+
     OiFeatureState *myFeatureState;
     FeatureUpdater *myFeatureUpdater;
     OiConfigState *myConfigState;
     OiModelManager *myModelManager;
 
+    //----------------------------------------------------
+
 public:
 
-
-    //active feature models
-    //QStandardItemModel *functionTreeViewModel; //model for treeview with functions of selected feature
-
-
-    //all feature models
-    //FeatureTreeViewModel *featureTreeViewModel; //model for treeview with all features
-    //FeatureGraphicsTreeViewProxyModel *featureGraphicsModel; //model for treeview with features in graphics view with featureTreeViewModel as source model
-    //PointFeatureModel *myPointFeatureModel; //model with all point features
-    //PointFeatureFilterModel *myPointFeatureProxyModel; //model with all point features filtered by group name
-
-    //QList<MeasurementConfig> measurementConfigs; //all available measurement configs (saved & unsaved)
-    //MeasurementConfig lastmConfig;
-
-    //FeatureTableModel *tblModel; //base model for feature table
-    //FeatureTableProxyModel *featureOverviewModel; //filtered feature table (no trafoParams)
-    //TrafoParamProxyModel * trafoParamModel; //filtered feature table (only trafoParams)
 
     Console *c;
     Configuration conf;
 
-    //QSqlQueryModel *pluginsModel;
-    //QSqlQueryModel *neededElementsModel;
-
-
-    //function specific models
-    //AvailableElementsTreeViewProxyModel *availableElementsModel; //model for available elements with featureTreeViewModel as source model
-    //UsedElementsModel *usedElementsModel; //model for listview with elements that are used for a function
-
-    //PluginTreeViewModel *myPluginTreeViewModel; //model with all available plugins for plugin manager
-    //QStringListModel *myFeatureGroupsModel; //model with all available groups
-    //QStringListModel *myCoordinateSystemsModel; //model with coordinate systems
-
-
-
     QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
 
-    //FeatureUpdater* getFeatureUpdater();
-
     OiServer *openIndyServer;
-
-    //int stakeOutId;
 
 signals:
     void changedStation();
@@ -166,8 +188,6 @@ signals:
 
     void updateGeometryIcons(QStringList availableGeometries);
 
-    void activeCoordinateSystemChanged();
-
     void sendXmlRequest(OiRequestResponse *request); //connected to OiRequestHandler to do tasks like savin, loading etc.
 
     void isConnected(bool);
@@ -179,8 +199,6 @@ signals:
     void openOiToolWidget(OiTool* oiToolWidget);
 
 public slots:
-    //void setUpFeatureGroupsModel();
-    //void setUpCoordinateSystemsModel();
     void setActiveGroup(QString group);
 
     void getNominalValues(NominalAttributeExchange nominalValue);
@@ -189,55 +207,26 @@ public slots:
     void setActiveCoordSystem(QString CoordSysName);
     void addFeature(FeatureAttributesExchange fae);
 
-    //sensor function
-    void startMeasurement();
-    void startMove(Reading *parameter);
-    void startAim();
-    void startConnect();
-    void startDisconnect();
-    void startToggleSight();
-    void startInitialize();
-    void startHome();
-    void startCompensation();
-    void startChangeMotorState();
-    void startCustomAction(QString s);
-
-    void recalcAll();
-    void recalcActiveFeature();
-    void recalcFeature(Feature *f);
-    void recalcTrafoParam(TrafoParam *tp);
     void changeActiveStation(bool setSensor);
     void showResults(bool);
-    //void defaultLastmConfig();
+
     void savePluginData(PluginMetaData* metaInfo);
-    //void setSensorModel(Configuration::SensorTypes);
-    void getSelectedPlugin(int index);
-    //void getTempSensor(int index);
+
     void setSelectedFeature(int featureIndex);
     void receiveSensorConfiguration(SensorConfiguration sc, bool connect);
-    //void receiveFunctionId(int id);
 
-    //void setFunction();
     void createFunction(int index);
     void deleteFunctionFromFeature(int index);
 
     bool checkSensorValid();
     bool checkFeatureValid();
 
-    //void importFeatures(QList<FeatureWrapper*> f);
-
-    //void setSelectedFunction(int functionIndex, int neededElementIndex); //receive selected function from function plugin dialog
     void addElement2Function(FeatureTreeItem *element, int functionIndex, int elementIndex); //add element to the active function
     void removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex); //remove element from the active function
 
-    //handle requests (save & load projects, stake out)
-    bool saveProject();
-    bool loadProject(QString projectName, QIODevice *myDevice);
-    void startStakeOut(QDomDocument request);
-    void nextStakeOutGeometry();
     bool receiveRequestResult(OiRequestResponse *request); //called from OiRequestHandler with the result of save or load task
 
-    bool createDefaultProject();
+
 
     void setFunctionConfiguration(int functionIndex, FunctionConfiguration config);
 
@@ -247,22 +236,9 @@ public slots:
 
     void deleteFeaturesCallback(bool);
 
-    //void groupNameChanged(QString oldValue, QString newValue);
-
-    void checkAvailablePlugins();
     bool checkPluginAvailability(Configuration::FeatureTypes typeOfFeature);
 
     void updateFeatureMConfig();
-
-    //void handleRemoteCommand(OiProjectData *d);
-
-   /* void createFeature(int featureType, QString name,QString group,  bool nominal, bool common,
-                       CoordinateSystem *nominalSystem, CoordinateSystem *startSystem, CoordinateSystem *destSystem);
-*/
-    //void addNominalToActual(FeatureWrapper *fw);
-    //void checkForNominals(FeatureWrapper *fw);
-
-    //void sortFeatures();
 
     void sendIsConnected(bool b);
 
@@ -275,20 +251,12 @@ public slots:
 
     bool generateActualForNominal(FeatureWrapper* f);
 
-private slots:
-    //void changeFunctionTreeViewModel();
-
 private:
-    //void changeUsedElementsModel(int functionIndex, int elementIndex);
     bool checkCircleWarning(Feature *activeFeature, Feature *usedForActiveFeature);
 
-    void initModels();
     void connectModels();
-    //void createDefaultFeatures();
 
     int lastRequestId; //id of the last OiRequest (save or load)
-
-    //FeatureUpdater myFeatureUpdater;
 
     QList<FeatureWrapper*> featuresToDelete;
 

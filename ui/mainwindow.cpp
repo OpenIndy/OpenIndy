@@ -12,6 +12,25 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow), watchWindow(NULL)
 {
     ui->setupUi(this);
+
+    //assign models to GUI elements
+    this->assignModels();
+
+    //connect controller to main window
+    this->setConnects();
+
+    //set up dialogs
+    this->initDialogs();
+
+    //set up table view
+    this->initFeatureTableView();
+
+
+
+
+
+/*
+
     this->setDialogsNULL();
 
     //!generate all lists for gui and view modification
@@ -24,17 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setModels();
 
-    FeatureOverviewDelegate *myFeatureDelegate = new FeatureOverviewDelegate();
-    this->ui->tableView_data->setItemDelegate(myFeatureDelegate);
 
-    this->ui->tableView_data->horizontalHeader()->setSectionsMovable(true);
-    this->ui->tableView_data->verticalHeader()->setSectionsMovable(true);
-
-    TrafoParamDelegate *myTrafoParamDelegate = new TrafoParamDelegate();
-    this->ui->tableView_trafoParam->setItemDelegate(myTrafoParamDelegate);
-
-    this->ui->tableView_trafoParam->horizontalHeader()->setSectionsMovable(true);
-    this->ui->tableView_trafoParam->verticalHeader()->setSectionsMovable(true);
 
     this->cFeatureDialog = new CreateFeature();
     this->sEntityDialog = new ScalarEntityDialog();
@@ -93,6 +102,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->resizeTableView();
     //call once at beginning to store default order. later the list gets overwritten
     //this->getDefaultFeatureHeaderOrder();
+*/
+
 }
 
 /*!
@@ -121,6 +132,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
  */
 void MainWindow::setConnects(){
 
+    //connect controller
+    connect(this, SIGNAL(setActiveFeature(int)), &this->control, SLOT(setActiveFeature(int)), Qt::DirectConnection);
+
+
+
+
+/*
     //inform the controller when active feature changes
     connect(this, SIGNAL(sendSelectedFeature(int)), &this->control, SLOT(setSelectedFeature(int)));
     connect(this->fDataDialog.oModel,SIGNAL(recalcFeature()),FeatureUpdater::getInstance(),SLOT(recalcAll()));
@@ -160,55 +178,58 @@ void MainWindow::setConnects(){
     connect(&stationDialog,SIGNAL(connectSensor()),&control,SLOT(startConnect()));
     connect(&stationDialog,SIGNAL(showStationGeomProperties(FeatureWrapper*)),this,SLOT(openStationGeomProperties(FeatureWrapper*)));
 
+
     //mainwindow actions
     connect(this->actionMConfig,SIGNAL(triggered()),this,SLOT(openCreateFeatureMConfig()));
     connect(this->ui->actionClose,SIGNAL(triggered()),this,SLOT(close()));
-    connect(this->ui->tableView_data,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTableViewClicked(QModelIndex)));
+
     connect(this->actionCreate,SIGNAL(triggered()),this,SLOT(createFeature()));
     connect(this->actionMove,SIGNAL(triggered()),&moveDialog,SLOT(show()));
     connect(&this->moveDialog,SIGNAL(sendReading(Reading*)),&this->control,SLOT(startMove(Reading*)));
-    connect(this->ui->tableView_trafoParam,SIGNAL(clicked(QModelIndex)),this,SLOT(handleTrafoParamClicked(QModelIndex)));
+
+
     connect(this->comboBoxFeatureType,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeCreateFeatureToolbar(int)));
     connect(this->checkBoxNominal,SIGNAL(toggled(bool)),this,SLOT(CheckBoxNominalToggled(bool)));
     connect(this->ui->tableView_data->horizontalHeader(),SIGNAL(sectionDoubleClicked(int)),this,SLOT(handleViewDoubleClick(int)));
     connect(this->ui->tableView_trafoParam->horizontalHeader(),SIGNAL(sectionDoubleClicked(int)),this,SLOT(handleViewDoubleClick(int)));
-
+*/
     //always scroll to bottom in Console
-    connect(this->control.c, SIGNAL(changedList()), this->ui->listView_Console, SLOT(scrollToBottom()));
+    //connect(this->control.c, SIGNAL(changedList()), this->ui->listView_Console, SLOT(scrollToBottom()));
 
     //enable or disable GUI elements in create feature dialog depending on the active feature's feature type
-    connect(this, SIGNAL(sendFeatureType(Configuration::FeatureTypes)), this->cFeatureDialog, SLOT(receiveFeatureType(Configuration::FeatureTypes)));
+    //connect(this, SIGNAL(sendFeatureType(Configuration::FeatureTypes)), this->cFeatureDialog, SLOT(receiveFeatureType(Configuration::FeatureTypes)));
 
     //inform the Controller when the user has changed the display coordinate system
     //connect(this->ui->comboBox_activeCoordSystem, SIGNAL(currentIndexChanged(QString)), &this->control, SLOT(setActiveCoordSystem(QString)));
     //connect(&this->control, SIGNAL(CoordSystemsModelChanged()), this, SLOT(updateCoordSys()));
 
     //openGl view connects
-    connect(&this->control, SIGNAL(sendPositionOfActiveFeature(double,double,double)), this->ui->widget_graphics, SLOT(focusOnFeature(double,double,double)));
+    //connect(&this->control, SIGNAL(sendPositionOfActiveFeature(double,double,double)), this->ui->widget_graphics, SLOT(focusOnFeature(double,double,double)));
 
     //TODO Loesung finden, da statusbar Text verschwindet
     //update GUI when the settings are changed
-    connect(&this->setUpDialog,SIGNAL(accepted()),this,SLOT(setUpStatusBar()));
+    /*connect(&this->setUpDialog,SIGNAL(accepted()),this,SLOT(setUpStatusBar()));
     connect(&this->setUpDialog,SIGNAL(rejected()),this,SLOT(setUpStatusBar()));
     connect(&this->setUpDialog,SIGNAL(modelChanged()),&OiModelManager::getFeatureTableModel(),SLOT(updateModel()));
+*/
 
     //create feature connects
-    connect(this->cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
+    /*connect(this->cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
     connect(this->cFeatureDialog,SIGNAL(createFeatureMConfig(Configuration::FeatureTypes)),this,SLOT(openCreateFeatureMConfig(Configuration::FeatureTypes)));
     connect(this->sEntityDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
     connect(this->sEntityDialog,SIGNAL(createFeatureMConfig(Configuration::FeatureTypes)),this,SLOT(openCreateFeatureMConfig(Configuration::FeatureTypes)));
     connect(this->cFeatureDialog,SIGNAL(trafoParamCreated()),this,SLOT(trafoParamAdded()));
-
+*/
     //sensor plugin dialog
-    connect(&this->sPluginDialog,SIGNAL(sendSensorType(Configuration::SensorTypes)),&this->control,SLOT(setSensorModel(Configuration::SensorTypes)));
+    /*connect(&this->sPluginDialog,SIGNAL(sendSensorType(Configuration::SensorTypes)),&this->control,SLOT(setSensorModel(Configuration::SensorTypes)));
     connect(&this->sPluginDialog,SIGNAL(selectedPlugin(int)),&this->control,SLOT(getSelectedPlugin(int)));
     connect(&this->sPluginDialog,SIGNAL(sendSensorConfig(SensorConfiguration,bool)),&this->control,SLOT(receiveSensorConfiguration(SensorConfiguration,bool)));
     connect(&this->control,SIGNAL(sendSQLModel(QSqlQueryModel*)),&this->sPluginDialog,SLOT(receiveModel(QSqlQueryModel*)));
     connect(&this->sPluginDialog,SIGNAL(selectedTempPlugin(int)),&this->control,SLOT(getTempSensor(int)));
     connect(&this->control,SIGNAL(sendTempSensor(Sensor*)),&this->sPluginDialog,SLOT(receiveTempSensor(Sensor*)));
-
+*/
     //function plugin dialog
-    connect(&this->fPluginDialog, SIGNAL(sendPluginID(int)),&this->control,SLOT(receiveFunctionId(int)));
+    /*connect(&this->fPluginDialog, SIGNAL(sendPluginID(int)),&this->control,SLOT(receiveFunctionId(int)));
     connect(&this->fPluginDialog, SIGNAL(createFunction(int)), &this->control, SLOT(createFunction(int)));
     connect(&this->fPluginDialog, SIGNAL(setSelectedFunction(int,int)), &this->control, SLOT(setSelectedFunction(int,int)));
     connect(&this->control, SIGNAL(sendFunctionDescription(QString)), &this->fPluginDialog, SLOT(receiveFunctionDescription(QString)));
@@ -220,8 +241,8 @@ void MainWindow::setConnects(){
             &this->fPluginDialog, SLOT(receiveExtraParameterForFunction(QMap<QString,int>,QMap<QString,double>,QMap<QString,QStringList>,FunctionConfiguration)));
     connect(&this->fPluginDialog, SIGNAL(sendFunctionConfiguration(int,FunctionConfiguration)),
             &this->control, SLOT(setFunctionConfiguration(int,FunctionConfiguration)));
-
-    //show a message box when Controller emits the corresponding signal
+*/
+ /*   //show a message box when Controller emits the corresponding signal
     connect(&this->control, SIGNAL(showMessageBox(QString,QString)), this, SLOT(showMessageBox(QString,QString)));
     connect(&this->control, SIGNAL(showMessageBoxForDecision(QString,QString,OiFunctor*)), this, SLOT(showMessageBoxForDecision(QString,QString,OiFunctor*)));
 
@@ -234,10 +255,47 @@ void MainWindow::setConnects(){
     //tableview
     //connect(this->control.tblModel,SIGNAL(resizeTable()),this,SLOT(resizeTableView()));
     //connect(this->control.myFeatureState,SIGNAL(geometryObservationsChanged()),this,SLOT(resizeTableView()));
-    connect(&this->setUpDialog,SIGNAL(changedColumnOrder()),this,SLOT(setColumnOrder()));
+    //connect(&this->setUpDialog,SIGNAL(changedColumnOrder()),this,SLOT(setColumnOrder()));
 
     //OiTools
-    connect(&this->control,SIGNAL(openOiToolWidget(OiTool*)),this,SLOT(showOiToolWidget(OiTool*)));
+    //connect(&this->control,SIGNAL(openOiToolWidget(OiTool*)),this,SLOT(showOiToolWidget(OiTool*)));
+*/
+}
+
+/*!
+ * \brief MainWindow::initFeatureTableView
+ */
+void MainWindow::initFeatureTableView(){
+
+    //generate all lists for gui and view modification
+    GUIConfiguration::generateLists();
+
+    //manually update and resize table model (only the first time)
+    OiModelManager::getFeatureTableModel().updateModel();
+    this->resizeTableView();
+
+    //create and assign delegates to be able to edit the model entries
+    FeatureOverviewDelegate *myFeatureDelegate = new FeatureOverviewDelegate();
+    this->ui->tableView_data->setItemDelegate(myFeatureDelegate);
+    TrafoParamDelegate *myTrafoParamDelegate = new TrafoParamDelegate();
+    this->ui->tableView_trafoParam->setItemDelegate(myTrafoParamDelegate);
+
+    //make rows and columns movable
+    this->ui->tableView_data->horizontalHeader()->setSectionsMovable(true);
+    this->ui->tableView_data->verticalHeader()->setSectionsMovable(true);
+    this->ui->tableView_trafoParam->horizontalHeader()->setSectionsMovable(true);
+    this->ui->tableView_trafoParam->verticalHeader()->setSectionsMovable(true);
+
+    //connect table view click events
+    connect(this->ui->tableView_data, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTableViewClicked(QModelIndex)));
+    connect(this->ui->tableView_trafoParam, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTrafoParamClicked(QModelIndex)));
+
+}
+
+/*!
+ * \brief MainWindow::initDialogs
+ */
+void MainWindow::initDialogs(){
 
 }
 
@@ -245,7 +303,7 @@ void MainWindow::setConnects(){
  * \brief MainWindow::setModels
  * Assign the models in the controller to UI-components
  */
-void MainWindow::setModels(){
+void MainWindow::assignModels(){
 
     this->ui->listView_Console->setModel(control.c->output);
 
@@ -782,15 +840,15 @@ void MainWindow::on_actionWatch_window_triggered()
 {
 
 
-    watchWindow = new WatchWindow();
+    //watchWindow = new WatchWindow();
 
-    connect(watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
+    connect(&watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
 
     /*watchWindow.myStation = OiFeatureState::getActiveStation();
     watchWindow.activeCoordinateSystem = control.activeCoordinateSystem;
     watchWindow.activeFeature = control.activeFeature;*/
 
-    watchWindow->show();
+    watchWindow.show();
 
 }
 
@@ -1054,143 +1112,127 @@ void MainWindow::on_actionShow_hide_feature_toolbar_triggered()
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (point).
  */
-void MainWindow::on_actionCreate_point_triggered()
-{
-    emit sendFeatureType(Configuration::ePointFeature);
+void MainWindow::on_actionCreate_point_triggered(){
+    //emit sendFeatureType(Configuration::ePointFeature);
     this->showCreateFeatureDialog(Configuration::ePointFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (line).
  */
-void MainWindow::on_actionCreate_line_triggered()
-{
-    emit sendFeatureType(Configuration::eLineFeature);
+void MainWindow::on_actionCreate_line_triggered(){
+    //emit sendFeatureType(Configuration::eLineFeature);
     this->showCreateFeatureDialog(Configuration::eLineFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (plane).
  */
-void MainWindow::on_actionCreate_plane_triggered()
-{
-    emit sendFeatureType(Configuration::ePlaneFeature);
+void MainWindow::on_actionCreate_plane_triggered(){
+    //emit sendFeatureType(Configuration::ePlaneFeature);
     this->showCreateFeatureDialog(Configuration::ePlaneFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (sphere).
  */
-void MainWindow::on_actionCreate_sphere_triggered()
-{
-    emit sendFeatureType(Configuration::eSphereFeature);
+void MainWindow::on_actionCreate_sphere_triggered(){
+    //emit sendFeatureType(Configuration::eSphereFeature);
     this->showCreateFeatureDialog(Configuration::eSphereFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (cone).
  */
-void MainWindow::on_actionCreate_cone_triggered()
-{
-    emit sendFeatureType(Configuration::eConeFeature);
+void MainWindow::on_actionCreate_cone_triggered(){
+    //emit sendFeatureType(Configuration::eConeFeature);
     this->showCreateFeatureDialog(Configuration::eConeFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (cylinder).
  */
-void MainWindow::on_actionCreate_cylinder_triggered()
-{
-    emit sendFeatureType(Configuration::eCylinderFeature);
+void MainWindow::on_actionCreate_cylinder_triggered(){
+    //emit sendFeatureType(Configuration::eCylinderFeature);
     this->showCreateFeatureDialog(Configuration::eCylinderFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (ellipsoid).
  */
-void MainWindow::on_actionCreate_ellipsoid_triggered()
-{
-    emit sendFeatureType(Configuration::eEllipsoidFeature);
+void MainWindow::on_actionCreate_ellipsoid_triggered(){
+    //emit sendFeatureType(Configuration::eEllipsoidFeature);
     this->showCreateFeatureDialog(Configuration::eEllipsoidFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (hyperboloid).
  */
-void MainWindow::on_actionCreate_hyperboloid_triggered()
-{
-    emit sendFeatureType(Configuration::eHyperboloidFeature);
+void MainWindow::on_actionCreate_hyperboloid_triggered(){
+    //emit sendFeatureType(Configuration::eHyperboloidFeature);
     this->showCreateFeatureDialog(Configuration::eHyperboloidFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (paraboloid).
  */
-void MainWindow::on_actionCreate_paraboloid_triggered()
-{
-    emit sendFeatureType(Configuration::eParaboloidFeature);
+void MainWindow::on_actionCreate_paraboloid_triggered(){
+    //emit sendFeatureType(Configuration::eParaboloidFeature);
     this->showCreateFeatureDialog(Configuration::eParaboloidFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (nurbs).
  */
-void MainWindow::on_actionCreate_nurbs_triggered()
-{
-    emit sendFeatureType(Configuration::eNurbsFeature);
+void MainWindow::on_actionCreate_nurbs_triggered(){
+    //emit sendFeatureType(Configuration::eNurbsFeature);
     this->showCreateFeatureDialog(Configuration::eNurbsFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (pointcloud).
  */
-void MainWindow::on_actionCreate_pointcloud_triggered()
-{
-    emit sendFeatureType(Configuration::ePointCloudFeature);
+void MainWindow::on_actionCreate_pointcloud_triggered(){
+    //emit sendFeatureType(Configuration::ePointCloudFeature);
     this->showCreateFeatureDialog(Configuration::ePointCloudFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (station).
  */
-void MainWindow::on_actionCreate_station_triggered()
-{
-    emit sendFeatureType(Configuration::eStationFeature);
+void MainWindow::on_actionCreate_station_triggered(){
+    //emit sendFeatureType(Configuration::eStationFeature);
     this->showCreateFeatureDialog(Configuration::eStationFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (coordinate system).
  */
-void MainWindow::on_actionCreate_coordinatesystem_triggered()
-{
-    emit sendFeatureType(Configuration::eCoordinateSystemFeature);
+void MainWindow::on_actionCreate_coordinatesystem_triggered(){
+    //emit sendFeatureType(Configuration::eCoordinateSystemFeature);
     this->showCreateFeatureDialog(Configuration::eCoordinateSystemFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (transformation parameters)
  */
-void MainWindow::on_actionCreate_trafoParam_triggered()
-{
-    emit sendFeatureType(Configuration::eTrafoParamFeature);
+void MainWindow::on_actionCreate_trafoParam_triggered(){
+    //emit sendFeatureType(Configuration::eTrafoParamFeature);
     this->showCreateFeatureDialog(Configuration::eTrafoParamFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (circle)
  */
-void MainWindow::on_actionCreate_circle_triggered()
-{
-    emit sendFeatureType(Configuration::eCircleFeature);
+void MainWindow::on_actionCreate_circle_triggered(){
+    //emit sendFeatureType(Configuration::eCircleFeature);
     this->showCreateFeatureDialog(Configuration::eCircleFeature);
 }
 
 /*!
  * \brief set Instrument. Opens the dialog with all configurations for setting an instrument.
  */
-void MainWindow::on_actionSet_instrument_triggered()
-{
+void MainWindow::on_actionSet_instrument_triggered(){
     sPluginDialog.show();
 }
 
@@ -1199,16 +1241,33 @@ void MainWindow::on_actionSet_instrument_triggered()
  * Also displays the measurement config of the feature on the fly, if the measurement config dialog is open.
  * \param const QModelIndex &idx
  */
-void MainWindow::handleTableViewClicked(const QModelIndex &idx){
+void MainWindow::handleTableViewClicked(const QModelIndex &index){
+
+    //get source index of selected row
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_data->model());
+    QModelIndex sourceIndex = model->mapToSource(index);
+
+    //check if there is a valid feature at that index
+    FeatureWrapper *selectedFeature = NULL;
+    if(OiFeatureState::getFeatureCount() > sourceIndex.row()){
+        selectedFeature = OiFeatureState::getFeatures().at(sourceIndex.row());
+    }
+    if(selectedFeature == NULL || selectedFeature->getFeature() == NULL){
+        return;
+    }
+
+    //set the selected feature as the active feature
+    if(!selectedFeature->getFeature()->getIsActiveFeature()){
+        emit this->setActiveFeature(selectedFeature->getFeature()->getId());
+    }
+
+
+    /*
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_data->model());
 
-    QModelIndex source_idx = model->mapToSource(idx);
+    QModelIndex source_idx = model->mapToSource(index);
 
     if(this->selectedFeature != source_idx.row()){
-        //hide available elements treeview elements
-        /*if(this->control.availableElementsModel != NULL){
-            this->control.availableElementsModel->setFilter(Configuration::eUndefinedElement, true);
-        }*/
         //disable used elements and available elements treeviews
         this->fPluginDialog.disableFunctionInteractions();
         //set description of function plugin loader to empty text
@@ -1217,24 +1276,41 @@ void MainWindow::handleTableViewClicked(const QModelIndex &idx){
 
     this->selectedFeature = source_idx.row();
 
-    emit this->sendSelectedFeature(selectedFeature);
+    //emit this->sendSelectedFeature(selectedFeature);*/
 }
 
 /*!
  * \brief MainWindow::handleTrafoParamClicked
  * \param idx
  */
-void MainWindow::handleTrafoParamClicked(const QModelIndex &idx)
-{
-    TrafoParamProxyModel *model = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
+void MainWindow::handleTrafoParamClicked(const QModelIndex &index){
 
-    QModelIndex source_idx = model->mapToSource(idx);
+    //get source index of selected row
+    TrafoParamProxyModel *model = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
+    QModelIndex sourceIndex = model->mapToSource(index);
+
+    //check if there is a valid feature at that index
+    FeatureWrapper *selectedFeature = NULL;
+    if(OiFeatureState::getFeatureCount() > sourceIndex.row()){
+        selectedFeature = OiFeatureState::getFeatures().at(sourceIndex.row());
+    }
+    if(selectedFeature == NULL || selectedFeature->getFeature() == NULL){
+        return;
+    }
+
+    //set the selected feature as the active feature
+    if(!selectedFeature->getFeature()->getIsActiveFeature()){
+        emit this->setActiveFeature(selectedFeature->getFeature()->getId());
+    }
+
+
+
+    /*TrafoParamProxyModel *model = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
+
+    QModelIndex source_idx = model->mapToSource(index);
 
     if(this->selectedFeature != source_idx.row()){
         //hide available elements treeview elements
-        /*if(this->control.availableElementsModel != NULL){
-            this->control.availableElementsModel->setFilter(Configuration::eUndefinedElement, true);
-        }*/
         //disable used elements and available elements treeviews
         this->fPluginDialog.disableFunctionInteractions();
         //set description of function plugin loader to empty text
@@ -1243,13 +1319,13 @@ void MainWindow::handleTrafoParamClicked(const QModelIndex &idx)
 
     this->selectedFeature = source_idx.row();
 
-    emit this->sendSelectedFeature(selectedFeature);
+    //emit this->sendSelectedFeature(selectedFeature);*/
 }
 
 /*!
  * \brief handleViewDoubleClick used to resize view at this development state
  */
-void MainWindow::handleViewDoubleClick(int idx)
+void MainWindow::handleViewDoubleClick(int index)
 {
     //if index is not valid (clicking the header) the views get resized
     this->resizeTableView();
@@ -1401,7 +1477,7 @@ void MainWindow::on_actionView_settings_triggered()
  */
 void MainWindow::on_actionCreate_scalar_entity_triggered()
 {
-    sEntityDialog->show();
+    sEntityDialog.show();
 }
 
 /*!
@@ -1632,11 +1708,11 @@ void MainWindow::deleteFeatures(bool checked){
         if(this->isTrafoParamSelected){
             TrafoParamProxyModel *tableModel = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
             QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(myIndices);
-            emit this->sendDeleteFeatures(myFeatures);
+            //emit this->sendDeleteFeatures(myFeatures);
         }else{
             FeatureTableProxyModel *tableModel = static_cast<FeatureTableProxyModel*>(this->ui->tableView_data->model());
             QList<FeatureWrapper*> myFeatures = tableModel->getFeaturesAtIndices(myIndices);
-            emit this->sendDeleteFeatures(myFeatures);
+            //emit this->sendDeleteFeatures(myFeatures);
         }
 
     }
@@ -1706,8 +1782,8 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
     this->comboBoxGroup->clear();
     this->comboBoxGroup->clearEditText();
     this->comboBoxGroup->addItems(groups);
-    this->cFeatureDialog->availableGroupsChanged(groups);
-    this->sEntityDialog->availableGroupsChanged(groups);
+    this->cFeatureDialog.availableGroupsChanged(groups);
+    this->sEntityDialog.availableGroupsChanged(groups);
 
     QString activeGroup = this->ui->comboBox_groups->currentText();
 
@@ -1914,8 +1990,8 @@ QDir appDir(qApp->applicationDirPath());
  * \param featureType
  */
 void MainWindow::showCreateFeatureDialog(Configuration::FeatureTypes featureType){
-    this->cFeatureDialog->setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
-    this->cFeatureDialog->show();
+    //this->cFeatureDialog.setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
+    this->cFeatureDialog.show();
 }
 
 /*!
@@ -1924,8 +2000,8 @@ void MainWindow::showCreateFeatureDialog(Configuration::FeatureTypes featureType
  * \param featureType
  */
 void MainWindow::showScalarEntityDialog(Configuration::FeatureTypes featureType){
-    this->sEntityDialog->setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
-    this->sEntityDialog->show();
+    //this->sEntityDialog.setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
+    this->sEntityDialog.show();
 }
 
 /*!
@@ -2002,7 +2078,7 @@ void MainWindow::on_treeView_featureOverview_clicked(const QModelIndex &index)
  */
 void MainWindow::closeAllOpenDialogs()
 {
-    if(this->cFeatureDialog != NULL){
+    /*if(this->cFeatureDialog != NULL){
         this->cFeatureDialog->close();
     }
     if(this->sEntityDialog != NULL){
@@ -2010,7 +2086,7 @@ void MainWindow::closeAllOpenDialogs()
     }
     if(this->watchWindow != NULL){
         this->watchWindow->close();
-    }
+    }*/
 }
 
 /*!
@@ -2018,9 +2094,9 @@ void MainWindow::closeAllOpenDialogs()
  */
 void MainWindow::setDialogsNULL()
 {
-    this->cFeatureDialog = NULL;
+    /*this->cFeatureDialog = NULL;
     this->sEntityDialog = NULL;
-    this->watchWindow = NULL;
+    this->watchWindow = NULL;*/
 
 }
 

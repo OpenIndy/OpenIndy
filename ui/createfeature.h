@@ -23,43 +23,42 @@ public:
     explicit CreateFeature(QWidget *parent = 0);
     ~CreateFeature();
 
-    Configuration::FeatureTypes typeOfFeature;
+    void setFeatureType(Configuration::FeatureTypes typeOfFeature);
 
-    void availableGroupsChanged(QStringList myGroups);
-    void setAvailableFunctions(QStringList functions, QString defaultFunction);
 
-    void showEvent(QShowEvent *event);
+    //void availableGroupsChanged(QStringList myGroups);
+    //void setAvailableFunctions(QStringList functions, QString defaultFunction);
+
+
 
 signals:
 
     void createFeature(FeatureAttributesExchange fae);
-
     void createFeatureMConfig(Configuration::FeatureTypes typeOfFeature);
 
     void trafoParamCreated();
 
 private slots:
 
-    void initGUI();
 
-    void receiveFeatureType(Configuration::FeatureTypes);
+
+    //void receiveFeatureType(Configuration::FeatureTypes);
 
     void on_toolButton_create_clicked();
-
     void on_toolButton_cancel_clicked();
-
     void on_checkBox_Nominal_toggled(bool checked);
-
     void on_toolButton_mConfig_clicked();
-
     void on_checkBox_Actual_toggled(bool checked);
-
     void on_checkBox_movement_toggled(bool checked);
-
     void on_comboBox_destinationSystem_currentIndexChanged(const QString &arg1);
 
 private:
     Ui::CreateFeature *ui;
+
+    Configuration::FeatureTypes typeOfFeature;
+
+    void showEvent(QShowEvent *event);
+    void initGUI();
 };
 
 #endif // CREATEFEATURE_H
