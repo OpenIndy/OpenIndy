@@ -159,8 +159,13 @@ bool Controller::createDefaultProject(){
         OiProjectData::setActiveProject("OpenIndyTest");
 
         //create PART and STATION01 as default
-        FeatureWrapper *part = OiFeatureState::addFeature(Configuration::eCoordinateSystemFeature, false, "PART");
-        FeatureWrapper *station01 = OiFeatureState::addFeature(Configuration::eStationFeature, false, "STATION01");
+        FeatureAttributesExchange partAttributes, stationAttributes;
+        partAttributes.featureType = Configuration::eCoordinateSystemFeature;
+        partAttributes.name = "PART";
+        stationAttributes.featureType = Configuration::eStationFeature;
+        stationAttributes.name = "STATION01";
+        FeatureWrapper *part = OiFeatureState::addFeature(partAttributes);
+        FeatureWrapper *station01 = OiFeatureState::addFeature(stationAttributes);
 
         //set position parameter for STATION01
         station01->getStation()->position->setCommonState(false);
@@ -191,6 +196,7 @@ bool Controller::createDefaultProject(){
  */
 void Controller::addFeature(FeatureAttributesExchange fae){
 
+    //get default measurement config depending on the feature type of the feature to be created
     MeasurementConfig mConfig;
     switch(fae.featureType){
     case Configuration::eCircleFeature:
@@ -286,6 +292,56 @@ void Controller::startMeasurement(){
                 Console::addLine("can not create actual for nominal feature");
                 return;
             }
+        }
+        switch (OiFeatureState::getActiveFeature()->getTypeOfFeature()) {
+        case Configuration::ePlaneFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Plane::defaultMeasurementConfig);
+            break;
+        case Configuration::ePointFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Point::defaultMeasurementConfig);
+            break;
+        case Configuration::eLineFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Line::defaultMeasurementConfig);
+            break;
+        case Configuration::eSphereFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Sphere::defaultMeasurementConfig);
+            break;
+        case Configuration::eScalarEntityAngleFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
+            break;
+        case Configuration::eScalarEntityDistanceFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
+            break;
+        case Configuration::eCircleFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Circle::defaultMeasurementConfig);
+            break;
+        case Configuration::eConeFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Cone::defaultMeasurementConfig);
+            break;
+        case Configuration::eCylinderFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Cylinder::defaultMeasurementConfig);
+            break;
+        case Configuration::eEllipsoidFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
+            break;
+        case Configuration::eHyperboloidFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
+            break;
+        case Configuration::eParaboloidFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
+            break;
+        case Configuration::eNurbsFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Nurbs::defaultMeasurementConfig);
+            break;
+        case Configuration::ePointCloudFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(PointCloud::defaultMeasurementConfig);
+            break;
+        case Configuration::eScalarEntityTemperatureFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
+            break;
+        case Configuration::eScalarEntityMeasurementSeriesFeature:
+            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
+            break;
         }
         OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
 

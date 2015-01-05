@@ -290,7 +290,7 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
 
                 for(int i = 0; i < columns.size(); i++){
 
-                    //stop parsing if the current line has to many columns
+                    //stop parsing if the current line has too many columns
                     if(this->userDefinedColumns.size() <= i){
                         break;
                     }
@@ -300,10 +300,10 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
                         myNominal->setFeatureName(columns.at(i));
                         break;
                     case OiExchangeSimpleAscii::eColumnComment:
-                        myNominal->setFeatureName(columns.at(i));
+                        myNominal->setComment(columns.at(i));
                         break;
                     case OiExchangeSimpleAscii::eColumnGroupName:
-                        myNominal->setFeatureName(columns.at(i));
+                        myNominal->setGroupName(columns.at(i));
                         break;
                     case OiExchangeSimpleAscii::eColumnX:{
 
@@ -391,6 +391,11 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
                         break;
                     }
 
+                }
+
+                //set group of the geometry
+                if(this->groupName.compare("") != 0){
+                    myNominal->setGroupName(this->groupName);
                 }
 
                 //add the imported nominal to OpenIndy

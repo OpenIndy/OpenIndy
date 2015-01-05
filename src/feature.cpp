@@ -9,6 +9,8 @@ Feature::Feature(QObject *parent) : Element(parent), isActiveFeature(false), isS
 
 Feature::~Feature(){
 
+    emit this->featureAboutToBeDeleted(this->getId());
+
     //check and update features which need this feature to recalc
     if(this->usedFor.size() > 0){
         foreach(FeatureWrapper *myDependent, this->usedFor){

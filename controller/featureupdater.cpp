@@ -141,15 +141,15 @@ int FeatureUpdater::addFeature(FeatureAttributesExchange fae, MeasurementConfig 
     QStringList featureNames = ConstructFeatureName(fae.name, fae.count);
 
     for(int i=0; i<featureNames.size();i++){
-        if(!FeatureUpdater::validateFeatureName(featureNames.at(i),fae)){
+        /*if(!FeatureUpdater::validateFeatureName(featureNames.at(i),fae)){
             continue;
-        }
+        }*/
 
         if(fae.actual){
             FeatureUpdater::createFeature(mConfig,featureNames.at(i),false,fae);
         }
         if(fae.nominal){
-            FeatureUpdater::createFeature(mConfig,featureNames.at(i),true,fae);
+            FeatureUpdater::createFeature(MeasurementConfig(),featureNames.at(i),true,fae);
         }
 
     }

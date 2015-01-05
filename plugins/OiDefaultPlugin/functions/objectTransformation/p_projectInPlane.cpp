@@ -37,6 +37,7 @@ QList<InputParams> ProjectInPlane::getNeededElements() const{
 QList<Configuration::FeatureTypes> ProjectInPlane::applicableFor() const{
     QList<Configuration::FeatureTypes> result;
     result.append(Configuration::ePointFeature);
+    result.append(Configuration::eSphereFeature);
     return result;
 }
 
@@ -50,6 +51,26 @@ bool ProjectInPlane::exec(Point &targetPoint){
         Plane *plane = this->getPlane();
         if(plane != NULL){
             this->projectPoint(targetPoint, plane);
+            return true;
+        }else{
+            this->writeToConsole("Not enough valid geometries available for calculation");
+            return false;
+        }
+    }else{
+        this->writeToConsole("Not enough valid geometries available for calculation");
+        return false;
+    }
+}
+
+/*!
+ * \brief ProjectInPlane::exec
+ * \return
+ */
+bool ProjectInPlane::exec(Sphere &targetSphere){
+    if(this->isValid()){
+        Plane *plane = this->getPlane();
+        if(plane != NULL){
+            this->projectPoint(targetSphere, plane);
             return true;
         }else{
             this->writeToConsole("Not enough valid geometries available for calculation");
@@ -108,4 +129,36 @@ void ProjectInPlane::projectPoint(Point &point, Plane *plane){
     x_point = x_point - s * n0;
     x_point.add(1.0);
     point.xyz = x_point;
+}
+
+/*!
+ * \brief ProjectInPlane::projectPoint
+ */
+void ProjectInPlane::projectPoint(Sphere &sphere, Plane *plane){
+    OiVec n(3);
+    n.setAt(0, plane->ijk.getAt(0));
+    n.setAt(1, plane->ijk.getAt(1));
+    n.setAt(2, plane->ijk.getAt(2));
+    OiVec n0 = n.normalize(); //normal vector of plane
+    OiVec x_plane(3); //position vector of plane
+    x_plane.setAt(0, plane->xyz.getAt(0));
+    x_plane.setAt(1, plane->xyz.getAt(1));
+    x_plane.setAt(2, plane->xyz.getAt(2));
+    OiVec x_point(3); //position vector of sphere
+    x_point.setAt(0, sphere.xyz.getAt(0));
+    x_point.setAt(1, sphere.xyz.getAt(1));
+    x_point.setAt(2, sphere.xyz.getAt(2));
+    double d;
+    OiVec::dot(d, x_plane, n0); //distance plane from origin
+    if(d < 0.0){
+        n0 = -1.0 * n0;
+        d = -d;
+    }
+    double s;
+    OiVec::dot(s, x_point, n0);
+    s = s- d; //distance point from plane
+    //project sphere in plane
+    x_point = x_point - s * n0;
+    x_point.add(1.0);
+    sphere.xyz = x_point;
 }
