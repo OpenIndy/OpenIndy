@@ -82,7 +82,7 @@ bool CoordinateSystem::addObservation(Observation * const observation){
 
         if(observation != NULL){
             this->observations.append(observation);
-            emit this->observationsChanged(this->id);
+            emit this->observationsChanged(this->id, observation->getId());
             return true;
         }
         return false;

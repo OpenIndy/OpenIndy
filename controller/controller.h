@@ -163,6 +163,8 @@ signals:
 
     void openOiToolWidget(OiTool* oiToolWidget);
 
+    void showWatchWindow();
+
 public slots:
     void setUpFeatureGroupsModel();
     void setUpCoordinateSystemsModel();
@@ -186,6 +188,8 @@ public slots:
     void startCompensation();
     void startChangeMotorState();
     void startCustomAction(QString s);
+
+    void emitShowWatchWindow();
 
     void recalcAll();
     void recalcActiveFeature();

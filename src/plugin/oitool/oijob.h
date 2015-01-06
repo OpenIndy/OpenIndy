@@ -32,6 +32,9 @@ signals:
     void featureFunctionsChanged();
     void coordSystemSetChanged();
 
+    void startAim();
+    void showWatchWindow();
+
 public slots:
     void emitActiveFeatureChanged();
     void emitActiveStationChanged();

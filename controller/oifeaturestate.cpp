@@ -1,5 +1,7 @@
 #include "oifeaturestate.h"
 
+#include "featureupdater.h"
+
 OiFeatureState *OiFeatureState::myFeatureState = NULL;
 
 FeatureWrapper *OiFeatureState::myActiveFeature = NULL;
@@ -628,6 +630,9 @@ void OiFeatureState::emitSignal(OiFeatureState::SignalType mySignalType){
     case eGeomObservationsChanged:
         emit this->geometryObservationsChanged();
         break;
+    case eSystemObservationsChanged:
+        emit this->systemObservationsAdded();
+        break;
     }
 }
 
@@ -709,6 +714,8 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
                     OiFeatureState::getInstance(), SLOT(setActiveStation(int)), Qt::DirectConnection);
             connect(myFeature->getStation()->coordSys, SIGNAL(activeCoordinateSystemChanged(int)),
                     OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
+            connect(myFeature->getStation()->coordSys, SIGNAL(observationsChanged(int, int)),
+                    OiFeatureState::getInstance(), SLOT(setSystemObservations(int, int)), Qt::DirectConnection);
 
         }
 
@@ -719,6 +726,8 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
                     OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
             connect(myFeature->getCoordinateSystem(), SIGNAL(nominalsChanged(int)),
                     OiFeatureState::getInstance(), SLOT(setSystemsNominals(int)), Qt::DirectConnection);
+            connect(myFeature->getCoordinateSystem(), SIGNAL(observationsChanged(int, int)),
+                    OiFeatureState::getInstance(), SLOT(setSystemObservations(int, int)), Qt::DirectConnection);
 
         }
 
@@ -1178,6 +1187,80 @@ void OiFeatureState::addPCSegmentAsFeature(FeatureWrapper *segment){
 
     OiFeatureState::addFeature(segment);
 
+}
+
+void OiFeatureState::setSystemObservations(int featureId, int obsId)
+{
+
+    CoordinateSystem *mySystem = NULL;
+
+    QList<CoordinateSystem *> systems = this->myFeatureContainer.getCoordinateSystemsList();
+    QList<Station *> stations = this->myFeatureContainer.getStationsList();
+
+    foreach(CoordinateSystem *system, systems){
+        if(system->getId() == featureId){
+            mySystem = system;
+            break;
+        }
+    }
+    foreach(Station *station, stations){
+        if(station->coordSys->getId() == featureId){
+            mySystem = station->coordSys;
+            break;
+        }
+    }
+
+    if(mySystem == NULL){
+        return;
+    }
+
+    if(mySystem == OiFeatureState::getActiveCoordinateSystem()){
+        return;
+    }
+
+    //get observation that was added
+    Observation *myObservation;
+    foreach(Observation *obs, mySystem->getObservations()){
+        if(obs == NULL || obs->getId() != obsId){
+            continue;
+        }
+        myObservation = obs;
+        break;
+    }
+    if(myObservation == NULL){
+        return;
+    }
+
+    FeatureUpdater::trafoControl.transformNewObservations(myObservation);
+
+
+    /*
+    TrafoParam *myTrafo = NULL;
+    foreach(TrafoParam *t, myFeature->getCoordinateSystem()->getTransformationParameters()){
+        if(t->getStartSystem() == OiFeatureState::getActiveCoordinateSystem()){
+            myTrafo = t->getStartSystem();
+        }else if(t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
+            myTrafo = t->getDestinationSystem();
+        }
+    }
+
+    if(myTrafo == NULL){
+        return;
+    }
+
+    OiMat transMat;
+    myTrafo->getHomogenMatrix();
+
+    Observation *myObservation;
+    foreach(Observation *obs, myFeature->getCoordinateSystem()->getObservations()){
+        if(obs == NULL || obs->getId() != obsId){
+            continue;
+        }
+        myObservation = obs;
+        break;
+    }*/
+
+    OiFeatureState::getInstance()->emitSignal(eSystemObservationsChanged);
 }
 
 /*!

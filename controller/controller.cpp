@@ -143,6 +143,9 @@ void Controller::connectModels(){
         connect(this, SIGNAL(sendXmlRequest(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveRequest(OiRequestResponse*)));
         connect(OiRequestHandler::getInstance(), SIGNAL(sendResponse(OiRequestResponse*)), this, SLOT(receiveRequestResult(OiRequestResponse*)));
 
+        //save project each time when observations were added
+        connect(OiFeatureState::getInstance(), SIGNAL(systemObservationsAdded()), this, SLOT(saveProject()));
+
     }catch(exception &e){
         Console::addLine(e.what());
     }
@@ -575,6 +578,11 @@ void Controller::startCustomAction(QString s)
 
     emit sensorWorks(s);
     OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
+}
+
+void Controller::emitShowWatchWindow()
+{
+    emit this->showWatchWindow();
 }
 
 void Controller::recalcAll()
@@ -1714,7 +1722,8 @@ bool Controller::receiveRequestResult(OiRequestResponse *request){
 
                     OiProjectData::getDevice()->close();
 
-                    emit this->showMessageBox(OiProjectData::getProjectName(), "OpenIndy project successfully stored.");
+                    //emit this->showMessageBox(OiProjectData::getProjectName(), "OpenIndy project successfully stored.");
+                    Console::addLine("OpenIndy project successfully stored.");
 
                 }
 
@@ -1838,6 +1847,9 @@ void Controller::loadOiToolWidget(QString pluginName, QString toolName)
         connect(OiFeatureState::getInstance(),SIGNAL(geometryObservationsChanged()),jobState,SLOT(emitGeometryObservationsChanged()));
         connect(OiFeatureState::getInstance(),SIGNAL(featureFunctionsChanged()),jobState,SLOT(emitFeatureFunctionsChanged()));
         connect(OiFeatureState::getInstance(),SIGNAL(coordSystemSetChanged()),jobState,SLOT(emitCoordSystemSetChanged()));
+
+        connect(jobState, SIGNAL(startAim()), this, SLOT(startAim()));
+        connect(jobState, SIGNAL(showWatchWindow()), this, SLOT(emitShowWatchWindow()));
 
         oiToolWidget->setOiJob(jobState);
 

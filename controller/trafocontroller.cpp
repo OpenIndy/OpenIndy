@@ -33,8 +33,18 @@ void TrafoController::transformNewObservations(Observation *obs)
             }
             obs->myXyz = t * obs->myXyz;
             obs->myStatistic.qxx = t * obs->myStatistic.qxx;
+
+            obs->setIsSolved(true);
+            obs->setIsValid(true);
+        }else{
+            obs->setIsSolved(false);
+            obs->setIsValid(true);
         }
+        return;
     }
+    obs->setIsSolved(true);
+    obs->setIsValid(true);
+
 }
 
 /*!

@@ -75,7 +75,7 @@ private:
     OiVec expansionOrigin;
 
 signals:
-    void observationsChanged(int coordId);
+    void observationsChanged(int coordId, int obsId);
     void transformationParametersChanged(int coordId);
     void nominalsChanged(int coordId);
     void activeCoordinateSystemChanged(int coordId);

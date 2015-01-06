@@ -239,6 +239,8 @@ void MainWindow::setConnects(){
     //OiTools
     connect(&this->control,SIGNAL(openOiToolWidget(OiTool*)),this,SLOT(showOiToolWidget(OiTool*)));
 
+    connect(&this->control, SIGNAL(showWatchWindow()), this, SLOT(on_actionWatch_window_triggered()));
+
 }
 
 /*!
