@@ -110,6 +110,15 @@ QList<FeatureWrapper *> OiFeatureState::getFeaturesOfGroup(QString group){
 }
 
 /*!
+ * \brief OiFeatureState::getFeaturesWithName
+ * \param name
+ * \return
+ */
+QList<FeatureWrapper *> OiFeatureState::getFeaturesByName(QString name){
+    return OiFeatureState::myFeatureContainer.getFeaturesByName(name);
+}
+
+/*!
  * \brief OiFeatureState::getActiveFeature
  * Returns a pointer to the active feature's feature wrapper or NULL.
  * \return
@@ -225,29 +234,30 @@ void OiFeatureState::sortFeatures()
                 if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL && OiFeatureState::getFeatures().at(k)->getGeometry()->getIsNominal() == true){
                     if(OiFeatureState::getFeatures().at(i)->getFeature()->getFeatureName().compare(OiFeatureState::getFeatures().at(k)->getFeature()->getFeatureName(),Qt::CaseSensitive)==0){
                         if(!(i ==k-1)){
-                            myFeatures.insert(i+1,myFeatures.at(k));
+                            OiFeatureState::myFeatureContainer.getFeaturesList().insert(i+1,OiFeatureState::myFeatureContainer.getFeaturesList().at(k));
                             if(i<k){
-                                myFeatures.removeAt(k+1);
+                                OiFeatureState::myFeatureContainer.getFeaturesList().removeAt(k+1);
                             }else{
                                 i -= 1;
-                                myFeatures.removeAt(k);
+                                OiFeatureState::myFeatureContainer.getFeaturesList().removeAt(k);
                             }
                             k -= 1;
                         }
                     }
                 }
             }
-        }else if(myFeatures.at(i)->getStation() != NULL){
-            for(int j=0;j<myFeatures.size();j++){
-                if(myFeatures.at(j)->getPoint() != NULL && myFeatures.at(j)->getPoint()->getIsNominal() == true){
-                    if(myFeatures.at(i)->getStation()->getFeatureName().compare(myFeatures.at(j)->getPoint()->getFeatureName(),Qt::CaseSensitive)==0){
+        }else if(OiFeatureState::myFeatureContainer.getFeaturesList().at(i)->getStation() != NULL){
+            for(int j=0;j<OiFeatureState::myFeatureContainer.getFeaturesList().size();j++){
+                if(OiFeatureState::myFeatureContainer.getFeaturesList().at(j)->getPoint() != NULL
+                        && OiFeatureState::myFeatureContainer.getFeaturesList().at(j)->getPoint()->getIsNominal() == true){
+                    if(OiFeatureState::myFeatureContainer.getFeaturesList().at(i)->getStation()->getFeatureName().compare(OiFeatureState::myFeatureContainer.getFeaturesList().at(j)->getPoint()->getFeatureName(),Qt::CaseSensitive)==0){
                         if(!(i ==j-1)){
-                            myFeatures.insert(i+1,myFeatures.at(j));
+                            OiFeatureState::myFeatureContainer.getFeaturesList().insert(i+1,OiFeatureState::myFeatureContainer.getFeaturesList().at(j));
                             if(i<j){
-                                myFeatures.removeAt(j+1);
+                                OiFeatureState::myFeatureContainer.getFeaturesList().removeAt(j+1);
                             }else{
                                 i -= 1;
-                                myFeatures.removeAt(j);
+                                OiFeatureState::myFeatureContainer.getFeaturesList().removeAt(j);
                             }
                             j -= 1;
                         }
@@ -690,6 +700,8 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
                 OiFeatureState::getInstance(), SLOT(setFeatureName(int,QString)), Qt::DirectConnection);
         connect(myFeature->getFeature(), SIGNAL(featureAboutToBeDeleted(int)),
                 OiFeatureState::getInstance(), SLOT(removeFeature(int)), Qt::DirectConnection);
+        connect(myFeature->getFeature(), SIGNAL(featureNameChanged(int,QString)),
+                &OiFeatureState::getInstance()->myFeatureContainer, SLOT(renameFeature(int,QString)), Qt::DirectConnection);
 
         //geometry specific connects
         if(myFeature->getGeometry() != NULL){
@@ -779,12 +791,13 @@ bool OiFeatureState::validateFeatureName(Configuration::FeatureTypes featureType
 
         if(isNominal){
 
-            //reject featureName if there is another nominal with the same name and nominal system or
+            //reject featureName if there is another nominal with the same type, name and nominal system or
             //if there is a station, coordinate system or trafo param feature with the same name
             foreach(FeatureWrapper *myFeature, equalNameFeatures){
 
                 if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()
-                        && myFeature->getGeometry()->getNominalSystem() == myNomSys){
+                        && myFeature->getGeometry()->getNominalSystem() == myNomSys
+                        && myFeature->getTypeOfFeature() == featureType){
                     return false;
                 }else if(myFeature->getTypeOfFeature() == Configuration::eCoordinateSystemFeature
                          || myFeature->getTypeOfFeature() == Configuration::eTrafoParamFeature
