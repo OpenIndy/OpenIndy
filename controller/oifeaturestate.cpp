@@ -390,7 +390,7 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
         if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
 
             //check if feature with this id already exists
-            if(OiFeatureState::myFeatureContainer.getFeatureById(myFeature->getFeature()->getId()) != NULL){
+            if(myFeature->getFeature()->getId() < 0 || OiFeatureState::myFeatureContainer.getFeatureById(myFeature->getFeature()->getId()) != NULL){
                 myFeature->getFeature()->setId(Configuration::generateID());
             }
 
@@ -484,7 +484,7 @@ bool OiFeatureState::addFeatures(const QList<FeatureWrapper *> &myFeatures){
             if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
 
                 //check if feature with this id already exists
-                if(OiFeatureState::myFeatureContainer.getFeatureById(myFeature->getFeature()->getId()) != NULL){
+                if(myFeature->getFeature()->getId() < 0 || OiFeatureState::myFeatureContainer.getFeatureById(myFeature->getFeature()->getId()) != NULL){
                     myFeature->getFeature()->setId(Configuration::generateID());
                 }
 
