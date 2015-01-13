@@ -806,9 +806,9 @@ void Controller::setSelectedFeature(int featureIndex){
 
             //send the actual position of the active feature
             if(OiFeatureState::getActiveFeature()->getGeometry()!= NULL){
-                double x  = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayX().toDouble();
-                double y = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayY().toDouble();
-                double z = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayZ().toDouble();
+                double x  = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayX(false).toDouble();
+                double y = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayY(false).toDouble();
+                double z = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayZ(false).toDouble();
 
                 emit sendPositionOfActiveFeature(x,  y,  z);
             }

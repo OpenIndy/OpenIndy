@@ -69,25 +69,25 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                     return currentFeature->getFeature()->getFeatureName();
                 case 4://x
                     if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayX();
+                        return currentFeature->getFeature()->getDisplayX(GUIConfiguration::getShowDifferences());
                     }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayX();
+                        return currentFeature->getFeature()->getDisplayX(GUIConfiguration::getShowDifferences());
                     }else{
                         return QVariant();
                     }
                 case 5://y
                     if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayY();
+                        return currentFeature->getFeature()->getDisplayY(GUIConfiguration::getShowDifferences());
                     }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayY();
+                        return currentFeature->getFeature()->getDisplayY(GUIConfiguration::getShowDifferences());
                     }else{
                         return QVariant();
                     }
                 case 6://z
                     if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayZ();
+                        return currentFeature->getFeature()->getDisplayZ(GUIConfiguration::getShowDifferences());
                     }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayZ();
+                        return currentFeature->getFeature()->getDisplayZ(GUIConfiguration::getShowDifferences());
                     }else{
                         return QVariant();
                     }
@@ -113,25 +113,25 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                     return currentFeature->getFeature()->getComment();
                 case 13://radius
                     if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayRadius();
+                        return currentFeature->getFeature()->getDisplayRadius(GUIConfiguration::getShowDifferences());
                     }else{
                         return QVariant();
                     }
                 case 14://i
                     if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayI();
+                        return currentFeature->getFeature()->getDisplayI(GUIConfiguration::getShowDifferences());
                     }else{
                         return QVariant();
                     }
                 case 15://j
                     if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayJ();
+                        return currentFeature->getFeature()->getDisplayJ(GUIConfiguration::getShowDifferences());
                     }else{
                         return QVariant();
                     }
                 case 16://k
                     if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayK();
+                        return currentFeature->getFeature()->getDisplayK(GUIConfiguration::getShowDifferences());
                     }else{
                         return QVariant();
                     }
