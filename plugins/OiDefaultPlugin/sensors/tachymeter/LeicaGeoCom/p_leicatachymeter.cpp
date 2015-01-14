@@ -120,11 +120,17 @@ QMap <QString, QStringList>* LeicaTachymeter::getStringParameter() const{
     senseOfRotation.append("mathematical");
     senseOfRotation.append("geodetic");
 
+    //user defined measure mode
+    QStringList measureMode;
+    measureMode.append("precise");
+    measureMode.append("fast");
+
     stringParameter->insert("reflector",reflector);
     stringParameter->insert("ATR",ATR);
     stringParameter->insert("stop tracking after measurement", tracking);
     stringParameter->insert("ATR accuracy", trackAccuracy);
     stringParameter->insert("sense of rotation", senseOfRotation);
+    stringParameter->insert("measure mode", measureMode);
 
     return stringParameter;
 }
@@ -435,6 +441,9 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
 
         if( this->serial->isOpen()){
 
+            //stop prism lock
+            this->deactiveLockState();
+
             if(azimuth <= 0.0){
                 azimuth = 2*PI + azimuth;
             }
@@ -457,6 +466,9 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
                 myEmitter.emitSendString("moving...");
                 QString measureData = this->receive();
             }
+
+        //start laser to find the position
+        this->activateLaserPointer();
         }
     }
     return true;
@@ -484,6 +496,9 @@ bool LeicaTachymeter::move(double x, double y, double z)
 
     if(this->serial->isOpen()){
 
+        //stop prism lock
+        this->deactiveLockState();
+
         if(r->rPolar.azimuth <= 0.0){
             r->rPolar.azimuth = 2*PI + r->rPolar.azimuth;
         }
@@ -506,6 +521,9 @@ bool LeicaTachymeter::move(double x, double y, double z)
             myEmitter.emitSendString("moving...");
             QString measureData = this->receive();
         }
+
+        //start laser to find the position
+        this->activateLaserPointer();
     }
     return true;
 }
@@ -938,8 +956,14 @@ bool LeicaTachymeter::setTargetTypeMeasure()
     QString refl = "";
     bool reflless = false;
 
+    QString measureMode = "";
+
     if(this->myConfiguration.stringParameter.contains("reflector")){
         refl = this->myConfiguration.stringParameter.value("reflector");
+    }
+
+    if(this->myConfiguration.stringParameter.contains("measure mode")){
+        measureMode = this->myConfiguration.stringParameter.value("measure mode");
     }
 
     //check if reflectorless was selected
@@ -964,17 +988,34 @@ bool LeicaTachymeter::setTargetTypeMeasure()
             }
             return true;
         }else{
-            //if(receive.compare("%R1P,0,0:0,0\r\n") != 0){ // if not IR and standard
-            if(receive.compare("%R1P,0,0:0,11\r\n") != 0){ // if not IR and precise
 
-                //switch
-                //command = "%R1Q,17019:0\r\n";  //IR standard
-                command = "%R1Q,17019:11\r\n"; //IR precise
-                if(this->executeCommand(command)){
-                    receive = this->receive();
-                    this->fineAdjusted = false;
+            if(measureMode.compare("precise") == 0){
+
+                //if(receive.compare("%R1P,0,0:0,0\r\n") != 0){ // if not IR and standard
+                if(receive.compare("%R1P,0,0:0,11\r\n") != 0){ // if not IR and precise
+
+                    //switch
+                    //command = "%R1Q,17019:0\r\n";  //IR standard
+                    command = "%R1Q,17019:11\r\n"; //IR precise
+                    if(this->executeCommand(command)){
+                        receive = this->receive();
+                        this->fineAdjusted = false;
+                    }
+                }
+            }else if(measureMode.compare("fast") == 0){
+
+                //1 IR fast
+                if(receive.compare("&R1P,0,0:0,1\r\n") != 0){
+
+                    //switch
+                    command = "%R1Q,17019:1\r\n"; //IR fast
+                    if(this->executeCommand(command)){
+                        receive = this->receive();
+                        this->fineAdjust();
+                    }
                 }
             }
+
             if(this->getLOCKState()){
                 return true;
             }

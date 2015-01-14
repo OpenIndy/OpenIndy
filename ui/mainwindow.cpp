@@ -252,6 +252,7 @@ void MainWindow::setModels(){
     this->ui->listView_Console->setModel(control.c->output);
 
     this->ui->tableView_data->setModel(this->control.featureOverviewModel);
+    this->ui->tableView_data->setSortingEnabled(true);
     this->ui->tableView_trafoParam->setModel(this->control.trafoParamModel);
 
     this->ui->treeView_featureOverview->setModel(this->control.featureGraphicsModel);

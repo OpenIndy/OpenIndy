@@ -159,6 +159,7 @@ QMap<OiExchangeSimpleAscii::ColumnType, QVariantList> OiExchangeAscii::getFilePr
                 if(columns.size() <= i){
                     QVariantList rows = filePreview.value(defaultColumnOrder.at(i));
                     rows.append(QString());
+                    continue;
                 }
 
                 //get the rows that already exist and append the current one

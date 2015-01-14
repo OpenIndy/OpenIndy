@@ -29,7 +29,6 @@ int TableModel::rowCount(const QModelIndex& ) const{
  */
 int TableModel::columnCount(const QModelIndex &parent) const{
     return GUIConfiguration::allAttributes.size();
-    //return 33;
 }
 
 /*!
@@ -40,19 +39,26 @@ int TableModel::columnCount(const QModelIndex &parent) const{
  * \return
  */
 QVariant TableModel::data(const QModelIndex &index, int role) const{
-
     try{
 
-        if(!index.isValid())
+        //check model index
+        if(!index.isValid()){
             return QVariant();
+        }
 
         QString functions = "";
 
+        //get the feature to display at row index.row()
         FeatureWrapper *currentFeature = NULL;
         if(OiFeatureState::getFeatureCount() > index.row()){
             currentFeature = OiFeatureState::getFeatures().at(index.row());
         }
 
+		//check the feature
+        if(currentFeature == NULL || currentFeature->getFeature() == NULL){
+            return QVariant();
+        }
+		
         if(currentFeature != NULL && currentFeature->getFeature() != NULL){
 
             //neu
@@ -199,216 +205,66 @@ QVariant TableModel::data(const QModelIndex &index, int role) const{
                 default:
                     break;
                 }
+			}
+		
+			//background role
+			if(role == Qt::BackgroundRole){
 
-            }
-            /*
-            //alt
-            if(Qt::DisplayRole == role){
+				//active feature
+				if (currentFeature->getFeature()->getIsActiveFeature()){
+					return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
+				}
 
-                switch (index.column()) {
-                case 0:
-                    return currentFeature->returnFeatureType();
-                case 1:
-                    return currentFeature->getFeature()->getFeatureName();
-                case 2:
-                    return currentFeature->getFeature()->getGroupName();
-                case 3://special case for stations, because they use the xyz origin of their coordinate system
-                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayX();
-                    }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayX();
-                    }else{
-                        return QVariant();
-                    }
-                case 4://special case for stations, because they use the xyz origin of their coordinate system
-                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayY();
-                    }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayY();
-                    }else{
-                        return QVariant();
-                    }
-                case 5://special case for stations, because they use the xyz origin of their coordinate system
-                    if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayZ();
-                    }else if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayZ();
-                    }else{
-                        return QVariant();
-                    }
-                case 6:
-                    return currentFeature->getFeature()->getDisplayObs();
-                case 7:
-                    return currentFeature->getFeature()->getDisplaySolved();
-                case 8:
-                    return currentFeature->getFeature()->getDisplayMConfig();
-                case 9:
-                    if(currentFeature->getFeature()->getFunctions().size() == 0){
-                        return "no function set";
-                    }else{
-                        functions += currentFeature->getFeature()->getFunctions().at(0)->getMetaData()->name;
-                        for(int i=1;i<currentFeature->getFeature()->getFunctions().size();i++){
-                            functions += "," + currentFeature->getFeature()->getFunctions().at(i)->getMetaData()->name;
-                        }
-                        return functions;
-                    }
-                case 10:
-                    return currentFeature->getFeature()->getDisplayIsCommon();
-                case 11:
-                    return currentFeature->getFeature()->getDisplayIsNominal();
-                case 12:
-                    return currentFeature->getFeature()->getDisplayStdDev();
-                case 13:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayI();
-                    }else{
-                        return QVariant();
-                    }
-                case 14:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayJ();
-                    }else{
-                        return QVariant();
-                    }
-                case 15:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayK();
-                    }else{
-                        return QVariant();
-                    }
-                case 16:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayRadius();
-                    }else{
-                        return QVariant();
-                    }
-                case 17:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayScalarDistanceValue();
-                    }else{
-                        return QVariant();
-                    }
-                case 18:
-                    if(currentFeature->getFeature()->getIsSolved()){
-                        return currentFeature->getFeature()->getDisplayScalarAngleValue();
-                    }else{
-                        return QVariant();
-                    }
-                case 19:
-                    return currentFeature->getFeature()->getDisplayStartSystem();
-                case 20:
-                    return currentFeature->getFeature()->getDisplayDestinationSystem();
-                case 21:
-                    return currentFeature->getFeature()->getDisplayTranslationX();
-                case 22:
-                    return currentFeature->getFeature()->getDisplayTranslationY();
-                case 23:
-                    return currentFeature->getFeature()->getDisplayTranslationZ();
-                case 24:
-                    return currentFeature->getFeature()->getDisplayRotationX();
-                case 25:
-                    return currentFeature->getFeature()->getDisplayRotationY();
-                case 26:
-                    return currentFeature->getFeature()->getDisplayRotationZ();
-                case 27:
-                    return currentFeature->getFeature()->getDisplayScaleX();
-                case 28:
-                    return currentFeature->getFeature()->getDisplayScaleY();
-                case 29:
-                    return currentFeature->getFeature()->getDisplayScaleZ();
-                case 30:
-                    return currentFeature->getFeature()->getDisplayScalarTemperatureValue();
-                case 31:
-                    return currentFeature->getFeature()->getDisplayScalarMeasurementSeriesValue();
-                case 32:
-                    return currentFeature->getFeature()->getComment();
-                case 33:
-                    if(currentFeature->getTrafoParam() != NULL){
-                        return currentFeature->getTrafoParam()->getIsUsed();
-                    }
-                    return QVariant();
-                case 34:
-                    if(currentFeature->getTrafoParam() != NULL){
-                        return currentFeature->getTrafoParam()->getValidTime();
-                    }
-                    return QVariant();
-                case 35:
-                    if(currentFeature->getTrafoParam() != NULL){
-                        return currentFeature->getTrafoParam()->getisDatumTrafo();
-                    }
-                    return QVariant();
-                case 36:
-                    return currentFeature->getFeature()->getDisplayExpansionOriginX();
-                case 37:
-                    return currentFeature->getFeature()->getDisplayExpansionOriginY();
-                case 38:
-                    return currentFeature->getFeature()->getDisplayExpansionOriginZ();
-                default:
-                    break;
-                }
+				//active station
+				if(currentFeature->getTypeOfFeature() == Configuration::eStationFeature
+						&& currentFeature->getStation()->getIsActiveStation()){
+					return QColor(Qt::darkGray);
+				}
 
-            }*/
+				//non active station
+				if (currentFeature->getTypeOfFeature() == Configuration::eStationFeature
+						&& !currentFeature->getStation()->getIsActiveStation()){
+					return QColor(Qt::lightGray);
+				}
 
-            if (role == Qt::BackgroundRole){
+				//not solved
+				if( (index.column() == 4 || index.column() == 5 || index.column() == 6
+						|| index.column() == 13 || index.column() == 14
+						|| index.column() == 15 || index.column() == 16
+						|| index.column() == 18 || index.column() == 19
+						|| index.column() == 20 || index.column() == 21)
+						&& !currentFeature->getFeature()->getIsSolved()){
+					return QColor(Qt::yellow);
+				}
 
-                /*if(currentFeature->getGeometry() != NULL && currentFeature->getGeometry()->getMeasurementConfig().typeOfReading == -1){
-                    if(index.column() == 8){
-                        return QColor(Qt::red);
-                    }
-                }
+				//nominal
+				if(currentFeature->getGeometry() != NULL && currentFeature->getGeometry()->getIsNominal()){
+					return QColor(QColor::fromRgb(230,230,180));
+				}
 
-                if(currentFeature->getStation() != NULL && currentFeature->getStation()->position->getMeasurementConfig().typeOfReading == -1){
-                    if(index.column() == 8){
-                        return QColor(Qt::red);
-                    }
-                }*/
+				return QVariant();
 
-                if (OiFeatureState::getActiveFeature() != NULL && currentFeature->getFeature() == OiFeatureState::getActiveFeature()->getFeature()){
-                    return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
-                }
+			}
 
-                if(OiFeatureState::getFeatures().at(index.row())->getStation() != NULL){
-                    if(OiFeatureState::getFeatures().at(index.row())->getStation() == OiFeatureState::getActiveStation()){
-                        return QColor(Qt::darkGray);
-                    }
-                }
+			//foreground role
+			if(role == Qt::ForegroundRole){
 
-                if (OiFeatureState::getFeatures().at(index.row())->getStation()!=NULL){
-                    return QColor(Qt::lightGray);
-                }
+				//active station
+				if(currentFeature->getTypeOfFeature() == Configuration::eStationFeature
+						&& currentFeature->getStation()->getIsActiveStation()){
+					return QColor(Qt::white);
+				}
 
-                //if feature is not solved
-                if( (index.column() == 4 || index.column() == 5 || index.column() == 6
-                        || index.column() == 13 || index.column() == 14
-                        || index.column() == 15 || index.column() == 16
-                        || index.column() == 18 || index.column() == 19
-                        || index.column() == 20 || index.column() == 21)
-                        && !currentFeature->getFeature()->getIsSolved()){
-                    return QColor(Qt::yellow);
-                }
-                if(OiFeatureState::getFeatures().at(index.row())->getGeometry() != NULL &&
-                        OiFeatureState::getFeatures().at(index.row())->getGeometry()->getIsNominal()){
-                    return QColor(QColor::fromRgb(230,230,180));
-                }
+				return QVariant();
 
-            }
-
-            if (role == Qt::ForegroundRole ) {
-
-                if(currentFeature->getStation() != NULL && currentFeature->getStation()->getIsActiveStation()){
-                    return QColor(Qt::white);
-                }
-            }
-
-        }
+			}
+		}
         return QVariant();
 
-    }catch(exception &e){
-        qDebug() << e.what();
+    }catch(const exception &e){
+        Console::addLine(e.what());
         return QVariant();
     }
-
-
 }
 
 /*!
@@ -461,75 +317,106 @@ Qt::ItemFlags TableModel::flags(const QModelIndex & index) const{
  * \return
  */
 bool TableModel::setData(const QModelIndex & index, const QVariant & value, int role){
-    if(OiFeatureState::getActiveFeature() != NULL){
-        if(index.column() == 3){ //feature name
 
-            FeatureAttributesExchange myExchange;
-            if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-                myExchange.actual = !OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal();
-                myExchange.nominal = OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal();
-                myExchange.nominalSystem = OiFeatureState::getActiveFeature()->getGeometry()->getNominalSystem();
-            }else if(OiFeatureState::getActiveFeature()->getTrafoParam() != NULL){
-                myExchange.startSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->getStartSystem();
-                myExchange.destSystem = OiFeatureState::getActiveFeature()->getTrafoParam()->getDestinationSystem();
-            }
-            myExchange.featureType = OiFeatureState::getActiveFeature()->getTypeOfFeature();
-            myExchange.name = OiFeatureState::getActiveFeature()->getFeature()->getFeatureName();
+    //get the active feature
+    FeatureWrapper *myFeature = OiFeatureState::getActiveFeature();
+    if(myFeature == NULL || myFeature->getFeature() == NULL){
+        return false;
+    }
 
-            if(FeatureUpdater::validateFeatureName(value.toString(), myExchange)){
+    if(index.column() == 3){ //feature name
 
-                if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){ //if active feature is geometry then corresponding nominals have to be taken in account
-                    Geometry *myGeom = OiFeatureState::getActiveFeature()->getGeometry();
-                    if(myGeom->getIsNominal() && myGeom->getMyActual() != NULL){
-                        myGeom->getMyActual()->setFeatureName(value.toString());
-                        foreach(Geometry *nomGeom, myGeom->getMyActual()->getMyNominals()){
-                            if(nomGeom != NULL){
-                                nomGeom->setFeatureName(value.toString());
-                            }
-                        }
-                    }else{
-                        myGeom->setFeatureName(value.toString());
-                        foreach(Geometry *nomGeom, myGeom->getMyNominals()){
-                            if(nomGeom != NULL){
-                                nomGeom->setFeatureName(value.toString());
-                            }
-                        }
-                    }
-                }else{
-                    OiFeatureState::getActiveFeature()->getFeature()->setFeatureName(value.toString());
-                }
-
-                FeatureUpdater::checkForNominals(OiFeatureState::getActiveFeature());
-                FeatureUpdater::addNominalToActual(OiFeatureState::getActiveFeature());
-				
-                OiFeatureState::sortFeatures();
-
-            }
-
-        }else if(index.column() == 2){ //feature group
-            QString oldValue = OiFeatureState::getActiveFeature()->getFeature()->getGroupName();
-            OiFeatureState::getActiveFeature()->getFeature()->setGroupName(value.toString());
-            emit this->groupNameChanged(oldValue, value.toString());
-        }else if(index.column() == 12){ //feature comment
-            OiFeatureState::getActiveFeature()->getFeature()->setComment(value.toString());
-        }else if(index.column() == 25){//trafo param use
-            OiFeatureState::getActiveFeature()->getTrafoParam()->setIsUsed(value.toBool());
-        }else if(index.column() == 38){//trafo param time
-            OiFeatureState::getActiveFeature()->getTrafoParam()->setValidTime(value.toDateTime());
-        }else if(index.column() == 26){//trafo param datum transformation
-            OiFeatureState::getActiveFeature()->getTrafoParam()->setisDatumTrafo(value.toBool());
-        }else if(index.column() == 22){
-            OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginX(value.toDouble()/UnitConverter::getDistanceMultiplier());
-        }else if(index.column() == 23){
-            OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginY(value.toDouble()/UnitConverter::getDistanceMultiplier());
-        }else if(index.column() == 24){
-            OiFeatureState::getActiveFeature()->getCoordinateSystem()->setExpansionOriginZ(value.toDouble()/UnitConverter::getDistanceMultiplier());
+        //get attributes necessary for name validation
+        bool isNominal = false;
+        CoordinateSystem *nominalSystem = NULL;
+        if(myFeature->getGeometry() != NULL){
+            isNominal = myFeature->getGeometry()->getIsNominal();
+            nominalSystem = myFeature->getGeometry()->getNominalSystem();
         }
 
+        //check if the feature name is ok
+        if(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), value.toString(),
+                                               isNominal, nominalSystem)){
+            return false;
+        }
 
-        this->updateModel();
+        //if active feature is a geometry then corresponding nominals have to be renamed, too
+        if(myFeature->getGeometry() != NULL){
+            if(myFeature->getGeometry()->getIsNominal() && myFeature->getGeometry()->getMyActual() != NULL){
+                myFeature->getGeometry()->getMyActual()->setFeatureName(value.toString());
+                foreach(Geometry *nomGeom, myFeature->getGeometry()->getMyActual()->getMyNominals()){
+                    if(nomGeom != NULL){
+                        nomGeom->setFeatureName(value.toString());
+                    }
+                }
+            }else{
+                myFeature->getGeometry()->setFeatureName(value.toString());
+                foreach(Geometry *nomGeom, myFeature->getGeometry()->getMyNominals()){
+                    if(nomGeom != NULL){
+                        nomGeom->setFeatureName(value.toString());
+                    }
+                }
+            }
+        }else{
+            myFeature->getGeometry()->setFeatureName(value.toString());
+        }
 
-        return true;
+    }else if(index.column() == 2){ //feature group
+
+        QString oldValue = myFeature->getFeature()->getGroupName();
+        myFeature->getFeature()->setGroupName(value.toString());
+        emit this->groupNameChanged(oldValue, value.toString());
+
+    }else if(index.column() == 12){ //feature comment
+
+        myFeature->getFeature()->setComment(value.toString());
+
+    }else if(index.column() == 25){ //trafo param use
+
+        if(myFeature->getTrafoParam() == NULL){
+            return false;
+        }
+        myFeature->getTrafoParam()->setIsUsed(value.toBool());
+
+    }else if(index.column() == 38){ //trafo param time
+
+        if(myFeature->getTrafoParam() == NULL){
+            return false;
+        }
+        myFeature->getTrafoParam()->setValidTime(value.toDateTime());
+
+    }else if(index.column() == 26){ //trafo param datum transformation
+
+        if(myFeature->getTrafoParam() == NULL){
+            return false;
+        }
+        myFeature->getTrafoParam()->setisDatumTrafo(value.toBool());
+
+    }else if(index.column() == 22){ //expansion origin x
+
+        if(myFeature->getCoordinateSystem() == NULL){
+            return false;
+        }
+        myFeature->getCoordinateSystem()->setExpansionOriginX(value.toDouble()/UnitConverter::getDistanceMultiplier());
+
+    }else if(index.column() == 23){ //expansion origin y
+
+        if(myFeature->getCoordinateSystem() == NULL){
+            return false;
+        }
+        myFeature->getCoordinateSystem()->setExpansionOriginY(value.toDouble()/UnitConverter::getDistanceMultiplier());
+
+    }else if(index.column() == 24){ //expansion origin z
+
+        if(myFeature->getCoordinateSystem() == NULL){
+            return false;
+        }
+        myFeature->getCoordinateSystem()->setExpansionOriginZ(value.toDouble()/UnitConverter::getDistanceMultiplier());
+
     }
-    return false;
+
+    this->updateModel();
+
+    return true;
+
 }
