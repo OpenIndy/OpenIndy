@@ -153,6 +153,17 @@ QStringList LeicaTachymeter::selfDefinedActions() const
  */
 bool LeicaTachymeter::doSelfDefinedAction(QString a)
 {
+
+    qDebug() << "you pressed: " << a;
+
+    if(a.compare("l") == 0){
+
+        qDebug() << "leica tachy l pressed";
+
+        //TODO laser ausschalten bzw. einschalten
+
+    }
+
     if(a == "lock to prism"){
 
         //first turn laser off

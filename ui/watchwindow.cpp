@@ -612,11 +612,17 @@ void WatchWindow::iniGUI()
     listener->isGUIReady = true;
 }
 
-void WatchWindow::keyPressEvent(QKeyEvent *e)
-{
+void WatchWindow::keyPressEvent(QKeyEvent *e){
+
+    //emit measure command
     if(e->key() == Qt::Key_F3){
         emit startMeasure();
     }
+
+    //emit self defined action
+    emit this->doSelfDefinedAction(e->text());
+    qDebug() << e->text();
+
 }
 
 void WatchWindow::closeEvent(QCloseEvent *e)
