@@ -442,7 +442,10 @@ void SensorControl::disconnectSensor(){
 void SensorControl::storeReadings(QList<Reading*>readings, Geometry* geom, bool isActiveCoordSys){
 
     for(int i = 0; i < readings.size();i++){
-        this->saveReading(readings.at(i),geom,isActiveCoordSys);
+
+        if(readings.at(i) != NULL){
+            this->saveReading(readings.at(i),geom,isActiveCoordSys);
+        }
     }
 
 }
