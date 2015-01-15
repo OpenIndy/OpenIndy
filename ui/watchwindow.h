@@ -41,6 +41,7 @@ public:
 
 signals:
     void startMeasure();
+    void doSelfDefinedAction(QString key);
 
     void sendSettingsReady(bool);
     void sendCheckBoxReady(bool);

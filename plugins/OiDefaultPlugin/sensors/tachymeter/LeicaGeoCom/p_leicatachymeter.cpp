@@ -125,12 +125,18 @@ QMap <QString, QStringList>* LeicaTachymeter::getStringParameter() const{
     measureMode.append("precise");
     measureMode.append("fast");
 
+    //laser beam after aim
+    QStringList laserAfterAim;
+    laserAfterAim.append("yes");
+    laserAfterAim.append("no");
+
     stringParameter->insert("reflector",reflector);
     stringParameter->insert("ATR",ATR);
     stringParameter->insert("stop tracking after measurement", tracking);
     stringParameter->insert("ATR accuracy", trackAccuracy);
     stringParameter->insert("sense of rotation", senseOfRotation);
     stringParameter->insert("measure mode", measureMode);
+    stringParameter->insert("laser beam after aim", laserAfterAim);
 
     return stringParameter;
 }
@@ -159,6 +165,23 @@ QStringList LeicaTachymeter::selfDefinedActions() const
  */
 bool LeicaTachymeter::doSelfDefinedAction(QString a)
 {
+
+    qDebug() << "you pressed: " << a;
+
+    if(a.compare("l") == 0){
+
+        qDebug() << "leica tachy l pressed";
+
+        //TODO laser ausschalten bzw. einschalten
+        //first turn laser off
+        if(laserOn){
+            this->deactivateLaserPointer();
+        }
+        //activate lock mode for prism tracking
+        this->getLOCKState();
+
+    }
+
     if(a == "lock to prism"){
 
         //first turn laser off
@@ -441,8 +464,16 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
 
         if( this->serial->isOpen()){
 
-            //stop prism lock
-            this->deactiveLockState();
+            //check if prism lock should be aborted before move/aim
+            if(this->myConfiguration.stringParameter.contains("laser beam after aim")){
+                QString laserAim = this->myConfiguration.stringParameter.value("laser beam after aim");
+                if(laserAim.compare("yes") == 0){
+                    //stop prism lock
+                    this->deactiveLockState();
+                }else{
+                    //do not stop tracking and prism lock
+                }
+            }
 
             if(azimuth <= 0.0){
                 azimuth = 2*PI + azimuth;
@@ -467,8 +498,15 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
                 QString measureData = this->receive();
             }
 
-        //start laser to find the position
-        this->activateLaserPointer();
+            if(this->myConfiguration.stringParameter.contains("laser beam after aim")){
+                QString laserAim = this->myConfiguration.stringParameter.value("laser beam after aim");
+                if(laserAim.compare("yes") == 0){
+                    //start laser to find the position
+                    this->activateLaserPointer();
+                }else{
+                    //do not start laser
+                }
+            }
         }
     }
     return true;

@@ -787,6 +787,7 @@ void MainWindow::on_actionWatch_window_triggered()
     watchWindow = new WatchWindow();
 
     connect(watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
+    connect(watchWindow, SIGNAL(doSelfDefinedAction(QString)), &control, SLOT(startCustomAction(QString)));
 
     /*watchWindow.myStation = OiFeatureState::getActiveStation();
     watchWindow.activeCoordinateSystem = control.activeCoordinateSystem;
