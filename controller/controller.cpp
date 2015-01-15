@@ -354,6 +354,45 @@ void Controller::startMeasurement(){
 }
 
 /*!
+ * \brief Controller::addMeasurement
+ * Add the last reading of current sensor to the active feature as an observations
+ */
+void Controller::addMeasurement(){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }else if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        Console::addLine("no active feature");
+        return;
+    }
+
+    bool checkActiveCoordSys = false;
+
+    if (OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+        checkActiveCoordSys = true;
+    }
+
+    if(checkSensorValid() && checkFeatureValid()){
+
+        if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
+            if(!this->generateActualForNominal(OiFeatureState::getActiveFeature())){
+                Console::addLine("can not create actual for nominal feature");
+                return;
+            }
+        }
+
+        QPair<Configuration::ReadingTypes, Reading*> lastReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getLastReading();
+
+        Reading *r = new Reading();
+        *r = *lastReading.second;
+        OiFeatureState::getActiveStation()->sensorPad->addReading(r, OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
+
+    }
+
+}
+
+/*!
  * \brief Controller::startMove
  * After checking some conditions, it calls the move function of the active sensor.
  */
@@ -577,7 +616,7 @@ void Controller::startCustomAction(QString s)
         return;
     }
 
-    emit sensorWorks(s);
+    emit sensorWorks("custom action: " + s);
     OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
 }
 

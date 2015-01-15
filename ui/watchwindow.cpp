@@ -614,14 +614,25 @@ void WatchWindow::iniGUI()
 
 void WatchWindow::keyPressEvent(QKeyEvent *e){
 
-    //emit measure command
+
     if(e->key() == Qt::Key_F3){
+
+        //emit measure command
         emit startMeasure();
+
+    }else if(e->key() == Qt::Key_F4){
+
+        emit this->addMeasurement();
+
     }
 
     //emit self defined action
-    emit this->doSelfDefinedAction(e->text());
-    qDebug() << e->text();
+    if(e->text().compare("") != 0){
+        emit this->doSelfDefinedAction(e->text());
+    }
+
+    //emit key pressed event to be able to react on such event (e.g. in OiTools)
+    emit this->keyPressed((Qt::Key)e->key());
 
 }
 

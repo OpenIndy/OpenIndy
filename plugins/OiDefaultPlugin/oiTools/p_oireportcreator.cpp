@@ -20,3 +20,8 @@ void OiReportCreator::customXMLRequest(QDomElement request)
 
 }
 
+void OiReportCreator::watchWindowKeyPressed(Qt::Key)
+{
+
+}
+

@@ -84,6 +84,8 @@ public slots:
 
     void copyMe(SensorControl *sc);
 
+    void addReading(Reading* r, Geometry* geom, bool isActiveCoordSys);
+
 private:
 
     enum streamType{

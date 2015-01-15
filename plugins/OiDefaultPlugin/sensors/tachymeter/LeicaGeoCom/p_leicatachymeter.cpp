@@ -528,6 +528,8 @@ bool LeicaTachymeter::move(double x, double y, double z)
  */
 QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
 
+    QList<Reading*> emptyList;
+
     //if tracking measurements are active, stop them
     this->stopTrackingMode();
 
@@ -540,16 +542,16 @@ QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
 
         switch (m->typeOfReading){
         case Configuration::ePolar:
-            return this->measurePolar(m);
+            emptyList = this->measurePolar(m);
             break;
         case Configuration::eCartesian:
-            return this->measureCartesian(m);
+            emptyList = this->measureCartesian(m);
             break;
         case Configuration::eDirection:
-            return this->measureDirection(m);
+            emptyList = this->measureDirection(m);
             break;
         case Configuration::eDistance:
-            return this->measureDistance(m);
+            emptyList = this->measureDistance(m);
             break;
         default:
             break;
@@ -559,7 +561,13 @@ QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
     //restart watchwindow if it was open before measurement
     this->restartWatchWindowAfterMeasurement();
 
-    QList<Reading*> emptyList;
+    if(emptyList.size() > 0){
+        this->lastReading.first = emptyList.last()->typeofReading;
+        Reading *r = new Reading();
+        *r = *emptyList.last();
+        this->lastReading.second = r;
+    }
+
     return emptyList;
 }
 
@@ -616,6 +624,12 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
             break;
         }
     }
+
+    this->lastReading.first = r->typeofReading;
+    Reading *myReading = new Reading();
+    *myReading = *r;
+    this->lastReading.second = myReading;
+
     return m;
 }
 

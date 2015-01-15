@@ -786,8 +786,10 @@ void MainWindow::on_actionWatch_window_triggered()
 
     watchWindow = new WatchWindow();
 
-    connect(watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
-    connect(watchWindow, SIGNAL(doSelfDefinedAction(QString)), &control, SLOT(startCustomAction(QString)));
+    connect(watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()), Qt::DirectConnection);
+    connect(watchWindow, SIGNAL(addMeasurement()), &control, SLOT(addMeasurement()), Qt::DirectConnection);
+    connect(watchWindow, SIGNAL(doSelfDefinedAction(QString)), &control, SLOT(startCustomAction(QString)), Qt::DirectConnection);
+    connect(watchWindow, SIGNAL(keyPressed(Qt::Key)), this, SLOT(emitWatchWindowKeyPressed(Qt::Key)), Qt::DirectConnection);
 
     /*watchWindow.myStation = OiFeatureState::getActiveStation();
     watchWindow.activeCoordinateSystem = control.activeCoordinateSystem;
@@ -1883,6 +1885,13 @@ void MainWindow::createOiToolActions()
 }
 
 /*!
+ * \brief MainWindow::emitWatchWindowKeyPressed
+ */
+void MainWindow::emitWatchWindowKeyPressed(Qt::Key key){
+    emit this->watchWindowKeyPressed(key);
+}
+
+/*!
  * \brief on_actionShow_help_triggered opens the local help document with the user guide.
  */
 void MainWindow::on_actionShow_help_triggered()
@@ -2029,6 +2038,8 @@ void MainWindow::setDialogsNULL()
 
 void MainWindow::showOiToolWidget(OiTool *oiToolWidget)
 {
+    //disconnect(this, SIGNAL(watchWindowKeyPressed(Qt::Key)), oiToolWidget, SLOT(watchWindowKeyPressed(Qt::Key)));
+    connect(this, SIGNAL(watchWindowKeyPressed(Qt::Key)), oiToolWidget, SLOT(watchWindowKeyPressed(Qt::Key)));
     oiToolWidget->show();
 }
 

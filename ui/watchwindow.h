@@ -41,7 +41,9 @@ public:
 
 signals:
     void startMeasure();
+    void addMeasurement();
     void doSelfDefinedAction(QString key);
+    void keyPressed(Qt::Key key);
 
     void sendSettingsReady(bool);
     void sendCheckBoxReady(bool);

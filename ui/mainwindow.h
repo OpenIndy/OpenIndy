@@ -181,6 +181,8 @@ signals:
     void startStakeOut(QDomDocument request); //emitted when the user has configured a stake out task
     void nextStakeOutGeometry(); //emitted when the next geometry has to be selected
 
+    void watchWindowKeyPressed(Qt::Key key);
+
 public slots:
     void showMessageBox(QString title, QString message);
     void showMessageBoxForDecision(QString title, QString message, OiFunctor *func);
@@ -195,6 +197,8 @@ public slots:
 
     //database methods
     void createOiToolActions();
+
+    void emitWatchWindowKeyPressed(Qt::Key);
 
 private slots:
     void featureContextMenu(const QPoint &point);
