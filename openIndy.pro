@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql serialport network opengl xml
+QT       += core gui sql serialport network opengl xml websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -193,7 +193,9 @@ SOURCES += \
     src/oiemitter/oiexchangeemitter.cpp \
     controller/oimodelmanager.cpp \
     ui/oisimpleasciiexchangemodel.cpp \
-    ui/geometrytypesproxymodel.cpp
+    ui/geometrytypesproxymodel.cpp \
+    controller/networking/oiwebsocket.cpp \
+    controller/networking/oiwebsocketserver.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -353,7 +355,9 @@ HEADERS  += \
     src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
     controller/oimodelmanager.h \
     ui/oisimpleasciiexchangemodel.h \
-    ui/geometrytypesproxymodel.h
+    ui/geometrytypesproxymodel.h \
+    controller/networking/oiwebsocket.h \
+    controller/networking/oiwebsocketserver.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
