@@ -53,6 +53,8 @@ Controller::Controller(QObject *parent) :
 
     openIndyServer = new OiServer();
     openIndyServer->startServer();
+    openIndyWebSocketServer = new OiWebSocketServer();
+    openIndyWebSocketServer->startServer();
     //connect(openIndyServer, SIGNAL(getProject(OiProjectData*)), this, SLOT(handleRemoteCommand(OiProjectData*)));
 
 

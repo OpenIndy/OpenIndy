@@ -62,6 +62,7 @@
 #include "oiprojectexchanger.h"
 
 #include "oiserver.h"
+#include "oiwebsocketserver.h"
 #include "oirequesthandler.h"
 
 #include "pointfeaturemodel.h"
@@ -124,6 +125,7 @@ public:
     FeatureUpdater* getFeatureUpdater();
 
     OiServer *openIndyServer;
+    OiWebSocketServer *openIndyWebSocketServer;
 
     int stakeOutId;
 
