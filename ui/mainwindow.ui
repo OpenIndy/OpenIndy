@@ -261,6 +261,7 @@ background-position: center center;</string>
     <addaction name="actionShow_hide_feature_toolbar"/>
     <addaction name="actionSimulation"/>
     <addaction name="actionSensor_real_time_data"/>
+    <addaction name="actionMagnify"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
     <property name="title">
@@ -512,6 +513,78 @@ color: rgb(255, 255, 255);
    <addaction name="actionCreate_nurbs"/>
    <addaction name="actionCreate_pointcloud"/>
    <addaction name="actionCreate_circle"/>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_magnify">
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QGridLayout" name="gridLayout_2" columnstretch="5,1,5">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_featName">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>featName</string>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_featActNom">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>featActNom</string>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionOpen">
    <property name="icon">
@@ -884,6 +957,11 @@ color: rgb(255, 255, 255);
   <action name="action_exportSensorConfigs">
    <property name="text">
     <string>sensor configs</string>
+   </property>
+  </action>
+  <action name="actionMagnify">
+   <property name="text">
+    <string>magnify</string>
    </property>
   </action>
  </widget>

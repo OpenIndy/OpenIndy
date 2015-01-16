@@ -172,6 +172,7 @@ void MainWindow::setConnects(){
     connect(this->checkBoxNominal,SIGNAL(toggled(bool)),this,SLOT(CheckBoxNominalToggled(bool)));
     connect(this->ui->tableView_data->horizontalHeader(),SIGNAL(sectionDoubleClicked(int)),this,SLOT(handleViewDoubleClick(int)));
     connect(this->ui->tableView_trafoParam->horizontalHeader(),SIGNAL(sectionDoubleClicked(int)),this,SLOT(handleViewDoubleClick(int)));
+    connect(this->ui->tableView_data->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(selectionChangedByKeyboard(QModelIndex,QModelIndex)));
 
     //always scroll to bottom in Console
     connect(this->control.c, SIGNAL(changedList()), this->ui->listView_Console, SLOT(scrollToBottom()));
@@ -1221,6 +1222,8 @@ void MainWindow::handleTableViewClicked(const QModelIndex &idx){
     this->selectedFeature = source_idx.row();
 
     emit this->sendSelectedFeature(selectedFeature);
+
+    this->setMagnifyValues();
 }
 
 /*!
@@ -1247,6 +1250,8 @@ void MainWindow::handleTrafoParamClicked(const QModelIndex &idx)
     this->selectedFeature = source_idx.row();
 
     emit this->sendSelectedFeature(selectedFeature);
+
+    this->setMagnifyValues();
 }
 
 /*!
@@ -2129,6 +2134,66 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 }
 
 /*!
+ * \brief selectionChangedByKeyboard sets the current feature. Row was changed by pressing keyboard up or down button.
+ * \param newIdx
+ * \param oldIdx
+ */
+void MainWindow::selectionChangedByKeyboard(QModelIndex newIdx, QModelIndex oldIdx)
+{
+    //get new active feature
+    this->handleTableViewClicked(newIdx);
+}
+
+/*!
+ * \brief setMagnifyValues sets the feature name type actual/nominal and observations to the magnify window
+ */
+void MainWindow::setMagnifyValues()
+{
+    if(OiFeatureState::getActiveFeature() != NULL){
+        this->ui->label_featName->setText(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
+        this->ui->label_featActNom->setText(OiFeatureState::getActiveFeature()->getFeature()->getDisplayIsNominal());
+    }
+
+    //resize labels to maximum
+
+    //then get font of label
+    QFont f = ui->label_featActNom->font();
+    //get label height
+    double h = ui->label_featActNom->height();
+    double w = ui->label_featActNom->width();
+    QFontMetrics fm(f);
+    //get scale factor of font height and label height
+    double scaleW = w/fm.width(ui->label_featActNom->text());
+    double scaleH = h/fm.height();
+    //set new font size to label
+    if(scaleH > scaleW){
+        f.setPointSizeF(f.pointSizeF()*scaleW);
+    }else{
+        f.setPointSizeF(f.pointSizeF()*scaleH);
+    }
+
+    ui->label_featActNom->setFont(f);
+
+    //then get font of label
+    f = ui->label_featName->font();
+    //get label height
+    h = ui->label_featName->height();
+    w = ui->label_featName->width();
+    QFontMetrics fm2(f);
+    //get scale factor of font height and label height
+    scaleW = w/fm2.width(ui->label_featName->text());
+    scaleH = h/fm2.height();
+    //set new font size to label
+    if(scaleH > scaleW){
+        f.setPointSizeF(f.pointSizeF()*scaleW);
+    }else{
+        f.setPointSizeF(f.pointSizeF()*scaleH);
+    }
+
+    ui->label_featName->setFont(f);
+}
+
+/*!
  * \brief copyValuesFromView copys the selected values from the view.
  */
 void MainWindow::copyValuesFromView()
@@ -2187,4 +2252,9 @@ void MainWindow::copyValuesFromView()
     //set values to clipboard, so you can copy them
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(copy_table);
+}
+
+void MainWindow::on_actionMagnify_triggered()
+{
+    this->ui->dockWidget_magnify->show();
 }
