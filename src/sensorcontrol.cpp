@@ -381,6 +381,9 @@ void SensorControl::copyMe(SensorControl *sc)
 void SensorControl::addReading(Reading *r, Geometry *geom, bool isActiveCoordSys)
 {
     this->saveReading(r, geom, isActiveCoordSys);
+    emit commandFinished(true);
+    emit measurementFinished(geom->getId(),true);
+    emit this->recalcFeature(geom);
 }
 
 
