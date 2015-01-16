@@ -345,26 +345,35 @@ bool PseudoTracker::compensation() {
  */
 QList<Reading*> PseudoTracker::measure(MeasurementConfig *mc){
 
+    QList<Reading*> readings;
+
     switch (mc->typeOfReading) {
     case Configuration::ePolar:{
-        return measurePolar(mc);
+        readings = measurePolar(mc);
         break;
     }case Configuration::eDistance:{
-        return measureDistance(mc);
+        readings = measureDistance(mc);
         break;
     }case Configuration::eDirection:{
-        return measureDirection(mc);
+        readings = measureDirection(mc);
         break;
     }case Configuration::eCartesian:{
-        return measureCartesian(mc);
+        readings = measureCartesian(mc);
         break;
     }
     default:
         break;
     }
 
-    QList<Reading*> readings;
+    if(readings.size() > 0){
+        this->lastReading.first = readings.last()->typeofReading;
+        Reading *r = new Reading();
+        *r = *readings.last();
+        this->lastReading.second = r;
+    }
+
     return readings;
+
 }
 
 /*!
@@ -464,6 +473,11 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
     default:
         break;
     }
+
+    this->lastReading.first = r.typeofReading;
+    Reading *myReading = new Reading();
+    *myReading = r;
+    this->lastReading.second = myReading;
 
     QThread::msleep(300);
 

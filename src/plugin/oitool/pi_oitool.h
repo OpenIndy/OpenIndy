@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QDomElement>
+#include <QCloseEvent>
+
 #include "pluginmetadata.h"
 #include "oijob.h"
 
@@ -24,9 +26,16 @@ signals:
 
 public slots:
     virtual void customXMLRequest(QDomElement request) = 0;
+    virtual void watchWindowKeyPressed(Qt::Key key) = 0;
 
 protected:
     OiJob *openIndyJob;
+
+public:
+    void closeEvent(QCloseEvent *event){
+        this->deleteLater();
+        event->accept();
+    }
 
 
 };

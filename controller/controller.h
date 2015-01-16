@@ -178,6 +178,7 @@ public slots:
 
     //sensor function
     void startMeasurement();
+    void addMeasurement();
     void startMove(Reading *parameter);
     void startAim();
     void startConnect();

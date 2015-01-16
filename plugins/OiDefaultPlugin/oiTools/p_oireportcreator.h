@@ -10,6 +10,7 @@ public:
 
 public slots:
     void customXMLRequest(QDomElement request);
+    void watchWindowKeyPressed(Qt::Key);
 
 };
 

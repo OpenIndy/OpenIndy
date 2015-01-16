@@ -325,15 +325,25 @@ void SensorControl::doSelfDefinedAction(QString s)
 {
     locker.lock();
 
+    if(!this->sendDeactivateStream()){
+        locker.unlock();
+        emit commandFinished(false);
+        return;
+    }
+
     if(!this->checkSensor()){
        locker.unlock();
        emit commandFinished(false);
        return;
     }
 
-    bool wasSuccessful =  instrument->doSelfDefinedAction(s);
+    bool wasSuccessful = instrument->doSelfDefinedAction(s);
 
     emit commandFinished(wasSuccessful);
+
+    if(!this->sendActivateStream()){
+
+    }
 
     locker.unlock();
 
@@ -366,6 +376,11 @@ void SensorControl::copyMe(SensorControl *sc)
     sc->instrumentListener->moveToThread(&sc->listenerThread);
 
     sc->listenerThread.start();
+}
+
+void SensorControl::addReading(Reading *r, Geometry *geom, bool isActiveCoordSys)
+{
+    this->saveReading(r, geom, isActiveCoordSys);
 }
 
 
