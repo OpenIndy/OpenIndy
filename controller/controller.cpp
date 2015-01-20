@@ -125,7 +125,8 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
-        connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()));
+        connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()), Qt::DirectConnection);
+        connect(this->myFeatureState, SIGNAL(systemObservationsAdded()), this, SLOT(recalcActiveFeature()), Qt::DirectConnection);
         connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
 
         //update feature groups model when a group is added or removed
@@ -148,6 +149,10 @@ void Controller::connectModels(){
 
         //save project each time when observations were added
         connect(OiFeatureState::getInstance(), SIGNAL(systemObservationsAdded()), this, SLOT(saveProject()));
+
+
+
+        connect(this, SIGNAL(refreshGUI()), this->tblModel, SLOT(updateModel()));
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -627,6 +632,11 @@ void Controller::emitShowWatchWindow()
     emit this->showWatchWindow();
 }
 
+void Controller::emitCloseWatchWindow()
+{
+    emit this->closeWatchWindow();
+}
+
 void Controller::recalcAll()
 {
    myFeatureUpdater.recalcAll();
@@ -643,6 +653,7 @@ void Controller::recalcActiveFeature(){
     }else if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         this->recalcFeature(OiFeatureState::getActiveFeature()->getFeature());
     }
+    emit this->refreshGUI();
 }
 
 /*!
@@ -655,6 +666,9 @@ void Controller::recalcFeature(Feature *f){
     this->myFeatureUpdater.recalcFeature(f);
     //refresh feature tree view models
     this->featureTreeViewModel->refreshModel();
+
+    emit this->refreshGUI();
+
 }
 
 /*!
@@ -1892,6 +1906,7 @@ void Controller::loadOiToolWidget(QString pluginName, QString toolName)
 
         connect(jobState, SIGNAL(startAim()), this, SLOT(startAim()));
         connect(jobState, SIGNAL(showWatchWindow()), this, SLOT(emitShowWatchWindow()));
+        connect(jobState,SIGNAL(closeWatchWindow()), this, SLOT(emitCloseWatchWindow()));
 
         oiToolWidget->setOiJob(jobState);
 

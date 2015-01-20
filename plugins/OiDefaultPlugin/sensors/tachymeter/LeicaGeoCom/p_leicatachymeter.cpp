@@ -534,8 +534,16 @@ bool LeicaTachymeter::move(double x, double y, double z)
 
     if(this->serial->isOpen()){
 
-        //stop prism lock
-        this->deactiveLockState();
+        //check if prism lock should be aborted before move/aim
+        if(this->myConfiguration.stringParameter.contains("laser beam after aim")){
+            QString laserAim = this->myConfiguration.stringParameter.value("laser beam after aim");
+            if(laserAim.compare("yes") == 0){
+                //stop prism lock
+                this->deactiveLockState();
+            }else{
+                //do not stop tracking and prism lock
+            }
+        }
 
         if(r->rPolar.azimuth <= 0.0){
             r->rPolar.azimuth = 2*PI + r->rPolar.azimuth;
@@ -560,8 +568,15 @@ bool LeicaTachymeter::move(double x, double y, double z)
             QString measureData = this->receive();
         }
 
-        //start laser to find the position
-        this->activateLaserPointer();
+        if(this->myConfiguration.stringParameter.contains("laser beam after aim")){
+            QString laserAim = this->myConfiguration.stringParameter.value("laser beam after aim");
+            if(laserAim.compare("yes") == 0){
+                //start laser to find the position
+                this->activateLaserPointer();
+            }else{
+                //do not start laser
+            }
+        }
     }
     return true;
 }

@@ -34,6 +34,7 @@ signals:
 
     void startAim();
     void showWatchWindow();
+    void closeWatchWindow();
 
 public slots:
     void emitActiveFeatureChanged();

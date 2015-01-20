@@ -138,6 +138,9 @@ background-position: center center;</string>
           <property name="showGrid">
            <bool>true</bool>
           </property>
+          <property name="sortingEnabled">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
        </layout>

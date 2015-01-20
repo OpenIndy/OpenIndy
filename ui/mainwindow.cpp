@@ -241,6 +241,7 @@ void MainWindow::setConnects(){
     connect(&this->control,SIGNAL(openOiToolWidget(OiTool*)),this,SLOT(showOiToolWidget(OiTool*)));
 
     connect(&this->control, SIGNAL(showWatchWindow()), this, SLOT(on_actionWatch_window_triggered()));
+    connect(&this->control, SIGNAL(closeWatchWindow()),this,SLOT(closeWatchWindow()));
 
 }
 
@@ -2268,4 +2269,11 @@ void MainWindow::copyValuesFromView()
 void MainWindow::on_actionMagnify_triggered()
 {
     this->ui->dockWidget_magnify->show();
+}
+
+void MainWindow::closeWatchWindow()
+{
+    if(this->watchWindow != NULL){
+        watchWindow->close();
+    }
 }

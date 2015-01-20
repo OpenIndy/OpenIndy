@@ -362,6 +362,8 @@ private slots:
 
     void on_actionMagnify_triggered();
 
+    void closeWatchWindow();
+
 private:
     Ui::MainWindow *ui;
 
