@@ -48,6 +48,7 @@ signals:
     void sendSettingsReady(bool);
     void sendCheckBoxReady(bool);
     void sendGUIReady(bool);
+    void closeWatchWindow();
 
 private slots:
     void setLCDNumber(QVariantMap);

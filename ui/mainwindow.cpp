@@ -793,6 +793,8 @@ void MainWindow::on_actionWatch_window_triggered()
     connect(watchWindow, SIGNAL(doSelfDefinedAction(QString)), &control, SLOT(startCustomAction(QString)), Qt::DirectConnection);
     connect(watchWindow, SIGNAL(keyPressed(Qt::Key)), this, SLOT(emitWatchWindowKeyPressed(Qt::Key)), Qt::DirectConnection);
 
+    connect(watchWindow, SIGNAL(closeWatchWindow()),this, SLOT(closeWatchWindow()));
+
     /*watchWindow.myStation = OiFeatureState::getActiveStation();
     watchWindow.activeCoordinateSystem = control.activeCoordinateSystem;
     watchWindow.activeFeature = control.activeFeature;*/
@@ -2274,6 +2276,14 @@ void MainWindow::on_actionMagnify_triggered()
 void MainWindow::closeWatchWindow()
 {
     if(this->watchWindow != NULL){
+        disconnect(watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
+        disconnect(watchWindow, SIGNAL(addMeasurement()), &control, SLOT(addMeasurement()));
+        disconnect(watchWindow, SIGNAL(doSelfDefinedAction(QString)), &control, SLOT(startCustomAction(QString)));
+        disconnect(watchWindow, SIGNAL(keyPressed(Qt::Key)), this, SLOT(emitWatchWindowKeyPressed(Qt::Key)));
+
         watchWindow->close();
+
+        delete this->watchWindow;
+        watchWindow = NULL;
     }
 }

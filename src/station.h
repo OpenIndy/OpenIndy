@@ -16,6 +16,8 @@
 #include "point.h"
 #include "oisensoremitter.h"
 
+#include "sensorlistener.h"
+
 class SensorControl;
 class Reading;
 class CoordinateSystem;

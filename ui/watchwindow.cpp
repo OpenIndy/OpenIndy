@@ -706,6 +706,8 @@ void WatchWindow::closeEvent(QCloseEvent *e)
 
     //delete this;
 
+    emit closeWatchWindow();
+
     e->accept();
 
 }

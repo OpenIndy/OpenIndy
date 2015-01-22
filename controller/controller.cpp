@@ -704,6 +704,8 @@ void Controller::changeActiveStation(bool setSensor){
             this->startDisconnect();
         }*/
 
+        disconnect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
+
         if(setSensor){
             OiFeatureState::getActiveStation()->sensorPad->copyMe(OiFeatureState::getActiveFeature()->getStation()->sensorPad);
             //OiFeatureState::getActiveFeature()->getStation()->sensorPad = OiFeatureState::getActiveStation()->sensorPad;

@@ -134,6 +134,7 @@ void Station::startThread(){
 void Station::setInstrumentConfig(SensorConfiguration sensorConfig){
 
     sensorPad->InstrumentConfig = sensorConfig;
+    sensorPad->instrumentListener->setInstrument(sensorConfig.mySensor);
     sensorPad->instrument->setSensorConfiguration(sensorConfig);
 
 }
