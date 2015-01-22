@@ -166,6 +166,7 @@ signals:
     void openOiToolWidget(OiTool* oiToolWidget);
 
     void showWatchWindow();
+    void closeWatchWindow();
 
 public slots:
     void setUpFeatureGroupsModel();
@@ -193,6 +194,7 @@ public slots:
     void startCustomAction(QString s);
 
     void emitShowWatchWindow();
+    void emitCloseWatchWindow();
 
     void recalcAll();
     void recalcActiveFeature();

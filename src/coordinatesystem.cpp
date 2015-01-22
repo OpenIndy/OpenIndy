@@ -12,6 +12,7 @@ CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), origin(4)
     this->expansionOrigin.setAt(3,1.0);
     this->origin.setAt(3,1.0);
     this->isStationSystem = false;
+    this->isActiveCoordinateSystem = false;
 }
 
 CoordinateSystem::~CoordinateSystem(){

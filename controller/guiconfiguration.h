@@ -53,6 +53,10 @@ public:
 
     static QList<int> displayReadingAttributes();
 
+    //to display differences between nominal and actual features in the view
+    static void setShowDifferences(bool show);
+    static bool getShowDifferences();
+
 private:
 
     //! functions and lists for main view and trafoParam
@@ -73,6 +77,10 @@ private:
     static void generateTempAttr();
     static void generateLevelAttr();
     static void generateUndefAttr();
+
+    //settings
+    //to display differences between nominal and actual features in the view
+    static bool showDifferences;
 };
 
 #endif // GUICONFIGURATION_H

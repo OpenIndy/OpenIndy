@@ -129,9 +129,15 @@ bool Point::saveSimulationData()
     return true;
 }
 
-QString Point::getDisplayX() const{
+QString Point::getDisplayX(bool showDiff) const{
 
     QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    qDebug() << "value=" << value;
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){
@@ -149,9 +155,13 @@ QString Point::getDisplayX() const{
 
 }
 
-QString Point::getDisplayY() const{
+QString Point::getDisplayY(bool showDiff) const{
 
     QString value = QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){
@@ -168,8 +178,12 @@ QString Point::getDisplayY() const{
     return value;
 }
 
-QString Point::getDisplayZ() const{
+QString Point::getDisplayZ(bool showDiff) const{
     QString value = QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){

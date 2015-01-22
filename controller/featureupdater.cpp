@@ -971,6 +971,8 @@ void FeatureUpdater::createFeature(MeasurementConfig mConfig, QString name, bool
 
         tmp->position->setMeasurementConfig(mConfig);
 
+        tmp->setActiveStationState(false);
+
         if(nominal){
             tmp->setIsSolved(true);
         }else{

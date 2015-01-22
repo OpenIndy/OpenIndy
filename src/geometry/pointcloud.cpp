@@ -190,14 +190,14 @@ bool PointCloud::saveSimulationData()
 
 //TODO change functions with unitconverter and String format
 
-QString PointCloud::getDisplayX() const{
+QString PointCloud::getDisplayX(bool showDiff) const{
     return QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }
 
-QString PointCloud::getDisplayY() const{
+QString PointCloud::getDisplayY(bool showDiff) const{
     return QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }
 
-QString PointCloud::getDisplayZ() const{
+QString PointCloud::getDisplayZ(bool showDiff) const{
     return QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 }

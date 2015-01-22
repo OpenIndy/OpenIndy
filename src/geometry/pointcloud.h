@@ -48,9 +48,9 @@ public:
 
     bool saveSimulationData();
 
-    QString getDisplayX() const;
-    QString getDisplayY() const;
-    QString getDisplayZ() const;
+    QString getDisplayX(bool showDiff) const;
+    QString getDisplayY(bool showDiff) const;
+    QString getDisplayZ(bool showDiff) const;
 
     static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
 

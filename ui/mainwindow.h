@@ -337,6 +337,10 @@ private slots:
     //copy clipboard tableview
     void keyPressEvent(QKeyEvent *e);
 
+    void selectionChangedByKeyboard(QModelIndex newIdx, QModelIndex oldIdx);
+
+    void setMagnifyValues();
+
     void copyValuesFromView();
 	
     //tools
@@ -355,6 +359,10 @@ private slots:
 
     void setMeasurementConfig(MeasurementConfig mConfig); //set the measurement config of the active feature
     void setDefaultMeasurementConfig(MeasurementConfig mConfig); //set the default measurement config
+
+    void on_actionMagnify_triggered();
+
+    void closeWatchWindow();
 
 private:
     Ui::MainWindow *ui;

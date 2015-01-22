@@ -59,6 +59,9 @@ void SettingsDialog::on_pushButton_cancel_clicked()
  */
 void SettingsDialog::initGUI(){
 
+    this->ui->checkBox_differences->setChecked(false);
+    this->ui->checkBox_differences->setToolTip("show differences between actual and nominal feature");
+
     ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"decimal degree",UnitConverter::eDECIMALDEGREE);
     ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"gon",UnitConverter::eGON);
     ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"radiant",UnitConverter::eRADIANT);
@@ -96,6 +99,8 @@ void SettingsDialog::showEvent(QShowEvent *event){
     ui->comboBox_distanceType->setCurrentIndex(ui->comboBox_distanceType->findData(UnitConverter::distanceType));
     ui->comboBox_temperatureType->setCurrentIndex(ui->comboBox_temperatureType->findData(UnitConverter::temperatureType));
 
+    ui->checkBox_differences->setChecked(GUIConfiguration::getShowDifferences());
+
     displayFeatureColumns();
     displayTrafoParamColumns();
     event->accept();
@@ -115,7 +120,7 @@ void SettingsDialog::closeEvent(QCloseEvent *event)
 }
 
 /*!
- * \brief saveSettings
+ * \brief saveSettings saves the current settings made in the dialog
  */
 void SettingsDialog::saveSettings(){
 
@@ -125,6 +130,8 @@ void SettingsDialog::saveSettings(){
     UnitConverter::setAngleUnit(static_cast<UnitConverter::unitType>(ui->comboBox_angleType->itemData(ui->comboBox_angleType->currentIndex()).toInt()));
     UnitConverter::setDistanceUnit(static_cast<UnitConverter::unitType>(ui->comboBox_distanceType->itemData(ui->comboBox_distanceType->currentIndex()).toInt()));
     UnitConverter::setTemperatureUnit(static_cast<UnitConverter::unitType>(ui->comboBox_temperatureType->itemData(ui->comboBox_temperatureType->currentIndex()).toInt()));
+
+    GUIConfiguration::setShowDifferences(this->ui->checkBox_differences->isChecked());
 }
 
 /*!

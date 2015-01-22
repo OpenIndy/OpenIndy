@@ -632,6 +632,11 @@ void Controller::emitShowWatchWindow()
     emit this->showWatchWindow();
 }
 
+void Controller::emitCloseWatchWindow()
+{
+    emit this->closeWatchWindow();
+}
+
 void Controller::recalcAll()
 {
    myFeatureUpdater.recalcAll();
@@ -698,6 +703,8 @@ void Controller::changeActiveStation(bool setSensor){
         /*if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
             this->startDisconnect();
         }*/
+
+        disconnect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
 
         if(setSensor){
             OiFeatureState::getActiveStation()->sensorPad->copyMe(OiFeatureState::getActiveFeature()->getStation()->sensorPad);
@@ -857,9 +864,9 @@ void Controller::setSelectedFeature(int featureIndex){
 
             //send the actual position of the active feature
             if(OiFeatureState::getActiveFeature()->getGeometry()!= NULL){
-                double x  = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayX().toDouble();
-                double y = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayY().toDouble();
-                double z = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayZ().toDouble();
+                double x  = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayX(false).toDouble();
+                double y = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayY(false).toDouble();
+                double z = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayZ(false).toDouble();
 
                 emit sendPositionOfActiveFeature(x,  y,  z);
             }
@@ -1901,6 +1908,7 @@ void Controller::loadOiToolWidget(QString pluginName, QString toolName)
 
         connect(jobState, SIGNAL(startAim()), this, SLOT(startAim()));
         connect(jobState, SIGNAL(showWatchWindow()), this, SLOT(emitShowWatchWindow()));
+        connect(jobState,SIGNAL(closeWatchWindow()), this, SLOT(emitCloseWatchWindow()));
 
         oiToolWidget->setOiJob(jobState);
 
