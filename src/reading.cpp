@@ -55,7 +55,18 @@ OiVec Reading::toCartesian(double az, double ze, double dist){
 }
 
 void Reading::toPolar(){
-    return;
+
+    OiVec polarElems = Reading::toPolar(this->rCartesian.xyz.getAt(0), this->rCartesian.xyz.getAt(1), this->rCartesian.xyz.getAt(2));
+
+    this->rPolar.azimuth = polarElems.getAt(0);
+    this->rPolar.zenith = polarElems.getAt(1);
+    this->rPolar.distance = polarElems.getAt(2);
+
+    this->rDirection.azimuth = polarElems.getAt(0);
+    this->rDirection.zenith = polarElems.getAt(1);
+
+    this->rDistance.distance = polarElems.getAt(2);
+
 }
 
 OiVec Reading::toPolar(double x, double y, double z){
