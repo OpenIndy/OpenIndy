@@ -251,6 +251,9 @@ bool OiProjectExchanger::loadProject(const QDomDocument &project){
     //clear the helper maps
     OiProjectExchanger::clearHelperMaps(false);
 
+    //set configuration max id to a high unique value
+    Configuration::idCount = 100000;
+
     return true;
 
 }

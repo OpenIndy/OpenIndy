@@ -389,6 +389,12 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
 
         if(myFeature != NULL && myFeature->getFeature() != NULL && myFeature->getFeature()->getFeatureName().compare("") != 0){
 
+            if(myFeature->getFeature()->getFunctions().size() == 1){
+                Function *myFunc = myFeature->getFeature()->getFunctions().at(0);
+                qDebug() << 7;
+            }
+
+
             //check if feature with this id already exists
             if(myFeature->getFeature()->getId() < 0 || OiFeatureState::myFeatureContainer.getFeatureById(myFeature->getFeature()->getId()) != NULL){
                 myFeature->getFeature()->setId(Configuration::generateID());

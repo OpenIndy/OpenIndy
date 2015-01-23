@@ -1505,6 +1505,9 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
                 element->getFeature()->getFeature()->usedFor.removeOne(OiFeatureState::getActiveFeature());
             }else if(element->getIsObservation() && element->getObservation() != NULL){
                 feature->getFunctions().at(functionIndex)->removeObservation(element->getObservation()->getId());
+                if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+                    element->getObservation()->myTargetGeometries.removeOne(OiFeatureState::getActiveFeature()->getGeometry());
+                }
             }else if(element->getIsReading() && element->getReading() != NULL){
                 switch(element->getReading()->typeofReading){
                     case Configuration::eCartesian:
@@ -1519,6 +1522,7 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
             }
             this->changeUsedElementsModel(functionIndex, elementIndex);
         }
+
     }
 }
 
