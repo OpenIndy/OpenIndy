@@ -1752,6 +1752,7 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
         if(this->ui->comboBox_groups->currentText().compare(OiFeatureState::getActiveGroup()) != 0){
             this->ui->comboBox_groups->setCurrentText(OiFeatureState::getActiveGroup());
         }
+        this->control.tblModel->updateModel();
         model->activeGroupChanged();
     }
 }
