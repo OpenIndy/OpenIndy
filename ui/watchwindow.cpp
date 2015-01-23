@@ -18,6 +18,8 @@ WatchWindow::WatchWindow(QWidget *parent) :
     ui->radioButton_nomact->setChecked(false);
     ui->radioButton_actnom->setChecked(true);
 
+    ui->spinBox_decimalDigits->setValue(2);
+
     listener = new WatchWindowListener();
 
     connect(this,SIGNAL(sendCheckBoxReady(bool)),this->listener,SLOT(setCheckBoxReady(bool)));
