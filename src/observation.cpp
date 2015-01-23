@@ -85,6 +85,8 @@ QDomElement Observation::toOpenIndyXML(QDomDocument &xmlDoc) const{
         observation.setAttribute("sigmaZ", this->sigmaXyz.getAt(2));
     }
     observation.setAttribute("isValid", this->isValid);
+    observation.setAttribute("isSolved", this->isSolved);
+    observation.setAttribute("isUsed", this->isUsed);
 
     //add station
     if(this->myStation != NULL){
@@ -123,6 +125,8 @@ bool Observation::fromOpenIndyXML(QDomElement &xmlElem){
             return false;
         }
         this->isValid = xmlElem.attribute("isValid").toInt();
+        this->isSolved = xmlElem.attribute("isSolved").toInt();
+        this->isUsed = xmlElem.attribute("isUsed").toInt();
         this->myXyz.setAt(0, xmlElem.attribute("x").toDouble());
         this->myXyz.setAt(1, xmlElem.attribute("y").toDouble());
         this->myXyz.setAt(2, xmlElem.attribute("z").toDouble());
