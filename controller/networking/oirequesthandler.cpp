@@ -62,6 +62,8 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse *request){
             this->startWatchwindow(request);
         }else if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eStopWatchwindow){
             this->stopWatchwindow(request);
+        }else if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eOiToolRequest){
+            emit this->sendOiToolRequest(request);
         }else{
 
             //send error message
@@ -79,6 +81,18 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse *request){
     }
 
     return false;
+
+}
+
+/*!
+ * \brief OiRequestHandler::receiveOiToolResponse
+ * \param response
+ */
+void OiRequestHandler::receiveOiToolResponse(OiRequestResponse *response){
+
+    response->myRequestType = OiRequestResponse::eOiToolRequest;
+
+    emit this->sendResponse(response);
 
 }
 
@@ -413,16 +427,78 @@ void OiRequestHandler::measure(OiRequestResponse *request){
         return;
     }
 
+    //if active feature is a nominal create a corresponding actual
     if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
-        request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eCannotMeasureNominal);
-        emit this->sendResponse(request);
-        return;
+
+        if(OiFeatureState::getActiveFeature()->getGeometry()->getMyActual() != NULL){
+
+        }else{
+
+            QString result;
+            FunctionPlugin plugin = SystemDbManager::getDefaultFunction(OiFeatureState::getActiveFeature()->getTypeOfFeature());
+            if(plugin.name.compare("") != 0){
+                result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
+            }
+
+            FeatureAttributesExchange fae;
+            MeasurementConfig mConfig = Point::defaultMeasurementConfig;
+
+            fae.actual = true;
+            fae.common = false;
+            fae.count = 1;
+            fae.name = OiFeatureState::getActiveFeature()->getGeometry()->getFeatureName();
+            fae.destSystem = NULL;
+            fae.featureType = OiFeatureState::getActiveFeature()->getTypeOfFeature();
+            fae.function = result;
+            fae.group = OiFeatureState::getActiveFeature()->getGeometry()->getGroupName();
+            fae.isMovement = false;
+            fae.nominal = false;
+            fae.nominalSystem = NULL;
+            fae.startSystem = NULL;
+
+            int fType = FeatureUpdater::addFeature(fae, mConfig);
+            if(fType != OiFeatureState::getActiveFeature()->getTypeOfFeature()){
+                return;
+            }
+
+        }
+        OiFeatureState::getActiveFeature()->getGeometry()->getMyActual()->setActiveFeatureState(true);
+
     }
 
-    //measure the active feature
-    OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), OiFeatureState::getActiveCoordinateSystem() == OiFeatureState::getActiveStation()->coordSys);
+    //depending on the measure mode measure the actual or select the last sensor reading
+    int errorCode = 0;
+    QDomElement measureMode = request->request.documentElement().firstChildElement("mode");
+    if(measureMode.isNull() || !measureMode.hasAttribute("name")){
+        errorCode = OiRequestResponse::eWrongFormat;
+    }else{
+
+        if(measureMode.attribute("name").compare("normal") == 0){ //normal measurement
+
+            //measure the active feature
+            OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), OiFeatureState::getActiveCoordinateSystem() == OiFeatureState::getActiveStation()->coordSys);
+
+        }else{ //use last reading instead of performing a measurement
+
+            bool checkActiveCoordSys = false;
+            if (OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+                checkActiveCoordSys = true;
+            }
+
+            QPair<Configuration::ReadingTypes, Reading*> lastReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getLastReading();
+
+            Reading *r = new Reading();
+            *r = *lastReading.second;
+            OiFeatureState::getActiveStation()->sensorPad->addReading(r, OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
+
+        }
+
+    }
 
     //TODO signals um bei sensorbefehlen die entsprechende GUI anzuzeigen
+
+
+    request->response.documentElement().setAttribute("errorCode", errorCode);
 
     emit this->sendResponse(request);
 

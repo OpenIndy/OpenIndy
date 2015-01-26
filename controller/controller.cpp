@@ -1914,6 +1914,9 @@ void Controller::loadOiToolWidget(QString pluginName, QString toolName)
         connect(jobState, SIGNAL(showWatchWindow()), this, SLOT(emitShowWatchWindow()));
         connect(jobState,SIGNAL(closeWatchWindow()), this, SLOT(emitCloseWatchWindow()));
 
+        connect(OiRequestHandler::getInstance(), SIGNAL(sendOiToolRequest(OiRequestResponse*)), oiToolWidget, SLOT(customXMLRequest(OiRequestResponse*)));
+        connect(oiToolWidget, SIGNAL(sendCustomXMLResponse(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveOiToolResponse(OiRequestResponse*)));
+
         oiToolWidget->setOiJob(jobState);
 
         emit openOiToolWidget(oiToolWidget);

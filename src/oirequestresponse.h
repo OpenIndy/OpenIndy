@@ -26,7 +26,8 @@ public:
         eMove,
         eMeasure,
         eStartWatchwindow,
-        eStopWatchwindow
+        eStopWatchwindow,
+        eOiToolRequest
     };
 
     enum ErrorCode{

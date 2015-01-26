@@ -177,7 +177,7 @@ SOURCES += \
     controller/networking/oiserver.cpp \
     controller/networking/oinetworkconnection.cpp \
     controller/networking/oirequesthandler.cpp \
-    controller/networking/oirequestresponse.cpp \
+    src/oirequestresponse.cpp \
     ui/pointfeaturemodel.cpp \
     ui/pointfeaturefiltermodel.cpp \
     ui/observationproxymodel.cpp \
@@ -334,7 +334,7 @@ HEADERS  += \
     controller/networking/oiserver.h \
     controller/networking/oinetworkconnection.h \
     controller/networking/oirequesthandler.h \
-    controller/networking/oirequestresponse.h \
+    src/oirequestresponse.h \
     ui/pointfeaturemodel.h \
     ui/pointfeaturefiltermodel.h \
     ui/observationproxymodel.h \

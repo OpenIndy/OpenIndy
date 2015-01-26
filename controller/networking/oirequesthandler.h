@@ -11,6 +11,7 @@
 #include "oiprojectexchanger.h"
 #include "station.h"
 #include "sensorlistener.h"
+#include "featureupdater.h"
 
 struct WatchWindowTask{
     bool taskInProcess;
@@ -33,8 +34,12 @@ public:
 public slots:
     bool receiveRequest(OiRequestResponse *request);
 
+    void receiveOiToolResponse(OiRequestResponse *response);
+
 signals:
     bool sendResponse(OiRequestResponse *response);
+
+    void sendOiToolRequest(OiRequestResponse *request);
 
 private:
     static OiRequestHandler *myRequestHandler;
