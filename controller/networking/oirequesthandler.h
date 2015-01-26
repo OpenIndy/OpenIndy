@@ -59,6 +59,8 @@ private:
 
     void prepareResponse(OiRequestResponse *request);
 
+    bool buildWatchWindowMessage(QDomElement &wwTag, int readingType, QVariantMap streamData);
+
 private slots:
     void receiveWatchWindowData(QVariantMap data);
 };

@@ -86,6 +86,8 @@ public slots:
 
     void addReading(Reading* r, Geometry* geom, bool isActiveCoordSys);
 
+    Configuration::ReadingTypes getTypeOfReadingStream();
+
 private:
 
     enum streamType{

@@ -42,6 +42,8 @@ public:
     bool getIsActiveStation();
     bool setActiveStationState(bool isActiveStation);
 
+    Configuration::ReadingTypes getReadingStreamType();
+
     Point *position;
 
     SensorControl *sensorPad;

@@ -387,6 +387,16 @@ void SensorControl::addReading(Reading *r, Geometry *geom, bool isActiveCoordSys
     emit this->recalcFeature(geom);
 }
 
+/*!
+ * \brief SensorControl::getTypeOfReadingStream
+ * \return
+ */
+Configuration::ReadingTypes SensorControl::getTypeOfReadingStream(){
+
+    return (Configuration::ReadingTypes) this->typeOfReadingStream;
+
+}
+
 
 /*!
  * \brief SensorControl::connect
