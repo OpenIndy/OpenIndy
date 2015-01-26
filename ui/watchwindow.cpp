@@ -688,6 +688,11 @@ void WatchWindow::keyPressEvent(QKeyEvent *e){
     //emit key pressed event to be able to react on such event (e.g. in OiTools)
     emit this->keyPressed((Qt::Key)e->key());
 
+    //Leica Tracker smartfind after aim
+    if(e->key() == Qt::Key_F && e->modifiers() == Qt::ALT){
+        emit this->doSelfDefinedAction("find target");
+    }
+
 }
 
 void WatchWindow::closeEvent(QCloseEvent *e)
