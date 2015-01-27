@@ -122,6 +122,10 @@ bool Station::setActiveStationState(bool isActiveStation){
     return false;
 }
 
+Configuration::ReadingTypes Station::getReadingStreamType(){
+    return this->sensorPad->getTypeOfReadingStream();
+}
+
 void Station::stopThread(){
     stationThread.quit();
     stationThread.wait();

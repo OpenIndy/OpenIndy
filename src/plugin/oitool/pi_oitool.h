@@ -2,7 +2,7 @@
 #define PI_OITOOL_H
 
 #include <QWidget>
-#include <QDomElement>
+#include <oirequestresponse.h>
 #include <QCloseEvent>
 
 #include "pluginmetadata.h"
@@ -22,10 +22,10 @@ public:
     }
 
 signals:
-    void sendCustomXMLResponse(QDomElement response);
+    void sendCustomXMLResponse(OiRequestResponse *response);
 
 public slots:
-    virtual void customXMLRequest(QDomElement request) = 0;
+    virtual void customXMLRequest(OiRequestResponse *request) = 0;
     virtual void watchWindowKeyPressed(Qt::Key key) = 0;
 
 protected:

@@ -3,13 +3,15 @@
 
 #include "pi_oitool.h"
 
+#include "oirequestresponse.h"
+
 class OiReportCreator : public OiTool
 { 
 public:
     PluginMetaData* getMetaData() const;
 
 public slots:
-    void customXMLRequest(QDomElement request);
+    void customXMLRequest(OiRequestResponse *request);
     void watchWindowKeyPressed(Qt::Key);
 
 };
