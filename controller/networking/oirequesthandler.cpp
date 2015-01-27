@@ -475,8 +475,12 @@ void OiRequestHandler::measure(OiRequestResponse *request){
 
         if(measureMode.attribute("name").compare("normal") == 0){ //normal measurement
 
-            //measure the active feature
+            //measure the active feature and set measurement task
+            this->myMeasurementTask.request = request;
+            this->myMeasurementTask.taskInProcess = true;
+            connect(OiFeatureState::getActiveStation()->sensorPad, SIGNAL(commandFinished(bool)), this, SLOT(measurementFinished(bool)));
             OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), OiFeatureState::getActiveCoordinateSystem() == OiFeatureState::getActiveStation()->coordSys);
+            return;
 
         }else{ //use last reading instead of performing a measurement
 
@@ -636,15 +640,17 @@ bool OiRequestHandler::buildWatchWindowMessage(QDomElement &wwTag, int readingTy
         streamXyz.setAt(3, 1.0);
 
         //get trafo params and transform sensor xyz
-        QList<TrafoParam*> trafoParams = OiFeatureState::getActiveStation()->coordSys->getTransformationParameters(OiFeatureState::getActiveCoordinateSystem());
-        if(trafoParams.size() == 0){
-            return false;
+        if(!OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+            QList<TrafoParam*> trafoParams = OiFeatureState::getActiveStation()->coordSys->getTransformationParameters(OiFeatureState::getActiveCoordinateSystem());
+            if(trafoParams.size() == 0){
+                return false;
+            }
+            OiMat trafo = trafoParams.at(0)->getHomogenMatrix();
+            if(trafo.getRowCount() != 4 || trafo.getColCount() != 4){
+                return false;
+            }
+            streamXyz = trafo * streamXyz;
         }
-        OiMat trafo = trafoParams.at(0)->getHomogenMatrix();
-        if(trafo.getRowCount() != 4 || trafo.getColCount() != 4){
-            return false;
-        }
-        streamXyz = trafo * streamXyz;
 
         //build difference sensor - feature
         OiVec diff = streamXyz - xyz;
@@ -725,5 +731,22 @@ void OiRequestHandler::receiveWatchWindowData(QVariantMap data){
     qDebug() << "response: " << this->myWatchWindowTask.request->response.toString();
 
     emit this->sendResponse(this->myWatchWindowTask.request);
+
+}
+
+/*!
+ * \brief OiRequestHandler::measurementFinished
+ * \param geomId
+ * \param success
+ */
+void OiRequestHandler::measurementFinished(bool success){
+
+    disconnect(OiFeatureState::getActiveStation()->sensorPad, SIGNAL(commandFinished(bool)), this, SLOT(measurementFinished(bool)));
+
+    this->myMeasurementTask.taskInProcess = false;
+
+    this->myMeasurementTask.request->response.documentElement().setAttribute("errorCode", success ? 0 : OiRequestResponse::eMeasurementError);
+
+    emit this->sendResponse(this->myMeasurementTask.request);
 
 }

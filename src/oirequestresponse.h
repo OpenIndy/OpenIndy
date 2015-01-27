@@ -43,7 +43,8 @@ public:
         eNoTask,
         eNoSensor,
         eNoTaskWithId,
-        eCannotMeasureNominal
+        eCannotMeasureNominal,
+        eMeasurementError
     };
 
     RequestType myRequestType; //defines the type of request

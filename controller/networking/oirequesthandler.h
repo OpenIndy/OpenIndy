@@ -17,6 +17,10 @@ struct WatchWindowTask{
     bool taskInProcess;
     OiRequestResponse *request;
 };
+struct MeasurementTask{
+    bool taskInProcess;
+    OiRequestResponse *request;
+};
 
 /*!
  * \brief The OiRequestHandler class
@@ -47,6 +51,7 @@ private:
     QThread workerThread;
 
     WatchWindowTask myWatchWindowTask;
+    MeasurementTask myMeasurementTask;
 
     void getProject(OiRequestResponse *request);
     void setProject(OiRequestResponse *request);
@@ -68,6 +73,8 @@ private:
 
 private slots:
     void receiveWatchWindowData(QVariantMap data);
+
+    void measurementFinished(bool success);
 };
 
 #endif // OIREQUESTHANDLER_H
