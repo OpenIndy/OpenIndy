@@ -535,6 +535,13 @@ void OiRequestHandler::startWatchwindow(OiRequestResponse *request){
         return;
     }
 
+    //check if active feature exists
+    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveFeature);
+        emit this->sendResponse(request);
+        return;
+    }
+
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL
             && OiFeatureState::getActiveStation()->sensorPad->instrumentListener != NULL){
 
