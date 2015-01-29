@@ -3,7 +3,7 @@
 
 WatchWindow::WatchWindow(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::WatchWindow)
+    ui(new Ui::WatchWindow), isVisible(false)
 {
     ui->setupUi(this);
 
@@ -678,25 +678,28 @@ void WatchWindow::keyPressEvent(QKeyEvent *e){
 
         emit this->addMeasurement();
 
+    }else{ //emit key pressed event to be able to react on such event (e.g. in OiTools)
+        emit this->keyPressed((Qt::Key)e->key());
     }
 
-    //emit self defined action
-    if(e->text().compare("") != 0){
-        emit this->doSelfDefinedAction(e->text());
-    }
-
-    //emit key pressed event to be able to react on such event (e.g. in OiTools)
-    emit this->keyPressed((Qt::Key)e->key());
-
-    //Leica Tracker smartfind after aim
-    if(e->key() == Qt::Key_F && e->modifiers() == Qt::ALT){
+    /*
+     * else if(e->key() == Qt::Key_F && e->modifiers() == Qt::ALT){ //Leica Tracker smartfind after aim
         emit this->doSelfDefinedAction("find target");
     }
+    else if(e->text().compare("") != 0){ //emit self defined action
+        emit this->doSelfDefinedAction(e->text());
+    }*/
 
 }
 
 void WatchWindow::closeEvent(QCloseEvent *e)
 {
+
+    if(this->isVisible == false){
+        return;
+    }
+    this->isVisible = false;
+
     OiFeatureState::getActiveStation()->emitStopReadingStream();
     streamData.clear();
 
@@ -721,6 +724,8 @@ void WatchWindow::closeEvent(QCloseEvent *e)
 
 void WatchWindow::showEvent(QShowEvent *event)
 {
+    this->isVisible = true;
+
     listenerThread.start();
 
     ui->comboBox_polarMode->clear();

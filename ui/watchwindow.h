@@ -94,6 +94,8 @@ private:
 
     QString getUnitString(QString attribute);
 
+    bool isVisible;
+
 };
 
 #endif // WATCHWINDOW_H

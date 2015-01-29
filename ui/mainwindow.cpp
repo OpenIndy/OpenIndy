@@ -2284,6 +2284,9 @@ void MainWindow::closeWatchWindow()
 
         watchWindow->close();
 
+        if(watchWindow == NULL){
+            return;
+        }
         delete this->watchWindow;
         watchWindow = NULL;
     }
