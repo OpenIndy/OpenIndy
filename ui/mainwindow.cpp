@@ -325,6 +325,71 @@ void MainWindow::assignModels(){
 }
 
 /*!
+ * \brief checkControlPadVisible sets control pad visible if sensor is connected and a sensor function is called
+ */
+void MainWindow::checkControlPadVisible()
+{
+    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL){
+        if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument->getConnectionState()){
+
+            if(ui->toolBar_ControlPad->isHidden()){
+                ui->toolBar_ControlPad->show();
+                this->setUpControlPad();
+            }
+        }
+    }
+}
+
+/*!
+ * \brief setUpControlPad inits actions on control pad
+ */
+void MainWindow::setUpControlPad()
+{
+    if(OiFeatureState::getActiveStation() == NULL || OiFeatureState::getActiveStation()->sensorPad == NULL
+            || OiFeatureState::getActiveStation()->sensorPad->instrument == NULL){
+        return;
+    }
+
+    //if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
+
+        QString sensorName = OiFeatureState::getActiveStation()->sensorPad->instrument->getMetaData()->name;
+        labelSensorControlName->setText(sensorName);
+
+        if(OiFeatureState::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eLaserTracker){ //laser tracker
+            setupLaserTrackerPad();
+
+        }else if(OiFeatureState::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eTotalStation){ //total station
+            setupTotalStationPad();
+
+        }else{ //any sensor
+            setupSensorPad();
+        }
+
+        if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+            //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
+            signalMapper = new QSignalMapper();
+            connect(signalMapper,SIGNAL(mapped(QString)),&control,SLOT(startCustomAction(QString)));
+            //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
+            QStringList customActionStrings = OiFeatureState::getActiveStation()->sensorPad->instrument->selfDefinedActions();
+            this->clearCustomWidgets();
+            for(int i=0; i<customActionStrings.size();i++){
+                QAction *sep = new QAction(0);
+                sep->setSeparator(true);
+                customActions.append(sep);
+                QAction *act = new QAction(0);
+                act->setText(customActionStrings.at(i));
+                customActions.append(act);
+                ui->toolBar_ControlPad->addAction(sep);
+                ui->toolBar_ControlPad->addAction(act);
+                connect(act,SIGNAL(triggered()),signalMapper,SLOT(map()));
+                signalMapper->setMapping(act,act->text());
+
+            }
+        }
+    //}
+}
+
+/*!
  * \brief getDefaultFeatureHeaderOrder stores the default order of the header. Later the user specified order gets saved in the list
  */
 /*void MainWindow::getDefaultFeatureHeaderOrder()
@@ -650,49 +715,7 @@ void MainWindow::on_actionControl_pad_triggered()
         ui->toolBar_ControlPad->hide();
     }else{
         ui->toolBar_ControlPad->show();
-
-        if(OiFeatureState::getActiveStation() == NULL || OiFeatureState::getActiveStation()->sensorPad == NULL
-                || OiFeatureState::getActiveStation()->sensorPad->instrument == NULL){
-            return;
-        }
-
-        //if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
-
-            QString sensorName = OiFeatureState::getActiveStation()->sensorPad->instrument->getMetaData()->name;
-            labelSensorControlName->setText(sensorName);
-
-            if(OiFeatureState::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eLaserTracker){ //laser tracker
-                setupLaserTrackerPad();
-
-            }else if(OiFeatureState::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eTotalStation){ //total station
-                setupTotalStationPad();
-
-            }else{ //any sensor
-                setupSensorPad();
-            }
-
-            if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-                //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
-                signalMapper = new QSignalMapper();
-                connect(signalMapper,SIGNAL(mapped(QString)),&control,SLOT(startCustomAction(QString)));
-                //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
-                QStringList customActionStrings = OiFeatureState::getActiveStation()->sensorPad->instrument->selfDefinedActions();
-                this->clearCustomWidgets();
-                for(int i=0; i<customActionStrings.size();i++){
-                    QAction *sep = new QAction(0);
-                    sep->setSeparator(true);
-                    customActions.append(sep);
-                    QAction *act = new QAction(0);
-                    act->setText(customActionStrings.at(i));
-                    customActions.append(act);
-                    ui->toolBar_ControlPad->addAction(sep);
-                    ui->toolBar_ControlPad->addAction(act);
-                    connect(act,SIGNAL(triggered()),signalMapper,SLOT(map()));
-                    signalMapper->setMapping(act,act->text());
-
-                }
-            }
-        //}
+        this->setUpControlPad();
     }
 }
 
@@ -893,15 +916,15 @@ void MainWindow::initializeActions(){
     actionInitialize = new QAction(0);
     actionInitialize->setText("initialize");
     actionMeasure = new QAction(0);
-    actionMeasure->setShortcut(Qt::Key_F3);
+    //actionMeasure->setShortcut(Qt::Key_F3);
     actionMeasure->setText("measure");
     actionAim = new QAction(0);
-    actionAim->setShortcut(QKeySequence(Qt::ALT + Qt::Key_A));
+    //actionAim->setShortcut(QKeySequence(Qt::ALT + Qt::Key_A));
     actionAim->setText("aim");
     actionMove = new QAction(0);
     actionMove->setText("move");
     actionHome = new QAction(0);
-    actionHome->setShortcut(Qt::Key_F9);
+    //actionHome->setShortcut(Qt::Key_F9);
     actionHome->setText("home");
     actionChangeMotorState = new QAction(0);
     actionChangeMotorState->setText("change motor state");
@@ -2195,9 +2218,22 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     int key = e->key();
     int modifiers = e->modifiers();
+
     //if ctrl copy was pressed
     if(key == Qt::Key_C && modifiers == Qt::CTRL){
         this->copyValuesFromView();
+    }
+    if(key == Qt::Key_F3){
+        //this->checkControlPadVisible();
+        this->actionMeasure->trigger();
+    }
+    if(key == Qt::Key_A && modifiers == Qt::ALT){
+        //this->checkControlPadVisible();
+        this->actionAim->trigger();
+    }
+    if(key == Qt::Key_F9){
+        //this->checkControlPadVisible();
+        this->actionHome->trigger();
     }
 }
 
