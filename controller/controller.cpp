@@ -47,7 +47,7 @@ Controller::Controller(QObject *parent) :
  * \brief Controller::setActiveFeature
  * \param featureId
  */
-void Controller::setActiveFeature(int featureId){
+void Controller::setActiveFeature(const int &featureId){
 
 	//get the selected feature by its id
     FeatureWrapper *selectedFeature = OiFeatureState::getFeature(featureId);
@@ -65,12 +65,22 @@ void Controller::setActiveFeature(int featureId){
 
 }
 
-void Controller::setActiveStation()
+void Controller::setActiveStation(const int &featureId)
 {
 
 }
 
-void Controller::setActiveCoordinateSystem()
+void Controller::setActiveCoordinateSystem(const int &featureId)
+{
+
+}
+
+void Controller::addFeatures(const FeatureAttributes &attributes)
+{
+
+}
+
+void Controller::removeFeature(const int &featureId)
 {
 
 }
@@ -416,7 +426,7 @@ void Controller::startChangeMotorState(){
  * \brief Controller::startCustomAction calls the custom action of the sensor.
  * \param s
  */
-void Controller::startCustomAction(QString s)
+void Controller::startCustomAction(const QString &s)
 {
     if(OiFeatureState::getActiveStation() == NULL){
         Console::addLine("no active station");
@@ -446,12 +456,12 @@ void Controller::connectModels(){
 	
 	
 		//update table model when one or more features change
-        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
-        connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
-        connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
+        //connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
+        //connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
+        //connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()), Qt::DirectConnection);
         connect(this->myFeatureState, SIGNAL(systemObservationsAdded()), this, SLOT(recalcActiveFeature()), Qt::DirectConnection);
-        connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
+        //connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
 
 		connect(this->myFeatureState, SIGNAL(featureFunctionsChanged()), this, SLOT(changeFunctionTreeViewModel()));
 		
@@ -459,7 +469,7 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(availableGroupsChanged()), this, SLOT(setUpFeatureGroupsModel()));
 
         //update feature tree view model which is used in function plugin loader
-        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->featureTreeViewModel, SLOT(refreshModel()));
+        //connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->featureTreeViewModel, SLOT(refreshModel()));
 
         //update coordinate systems model
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this, SLOT(setUpCoordinateSystemsModel()));
@@ -468,7 +478,7 @@ void Controller::connectModels(){
         //save project each time when observations were added
         connect(OiFeatureState::getInstance(), SIGNAL(systemObservationsAdded()), this, SLOT(saveProject()));
 
-        connect(this, SIGNAL(refreshGUI()), this->tblModel, SLOT(updateModel()));
+        //connect(this, SIGNAL(refreshGUI()), this->tblModel, SLOT(updateModel()));
 
         //send save or load project task to OiRequestHandler & listen to his answers
         connect(this, SIGNAL(sendXmlRequest(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveRequest(OiRequestResponse*)));
@@ -490,7 +500,7 @@ bool Controller::createDefaultProject(){
         OiProjectData::setActiveProject("OpenIndyTest");
 
         //create PART and STATION01 as default
-        FeatureAttributesExchange partAttributes, stationAttributes;
+        FeatureAttributes partAttributes, stationAttributes;
         partAttributes.featureType = Configuration::eCoordinateSystemFeature;
         partAttributes.name = "PART";
         partAttributes.count = 1;
@@ -531,7 +541,7 @@ bool Controller::createDefaultProject(){
  * \param actualNominal
  * \param isCommonPoint
  */
-void Controller::addFeature(FeatureAttributesExchange fae){
+void Controller::addFeature(FeatureAttributes fae){
 
     //get default measurement config depending on the feature type of the feature to be created
     MeasurementConfig mConfig;
@@ -608,7 +618,7 @@ void Controller::addFeature(FeatureAttributesExchange fae){
  * \brief Controller::startCustomAction calls the custom action of the sensor.
  * \param s
  */
-void Controller::startCustomAction(QString s)
+/*void Controller::startCustomAction(QString s)
 {
     if(OiFeatureState::getActiveStation() == NULL){
         Console::addLine("no active station");
@@ -617,7 +627,7 @@ void Controller::startCustomAction(QString s)
 
     emit sensorWorks("custom action: " + s);
     OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
-}
+}*/
 
 void Controller::emitShowWatchWindow()
 {
@@ -640,12 +650,12 @@ void Controller::recalcAll()
  * Call recalcFeature function for active feature
  */
 void Controller::recalcActiveFeature(){
-    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getTrafoParam() != NULL){
+    /*if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getTrafoParam() != NULL){
         this->recalcTrafoParam(OiFeatureState::getActiveFeature()->getTrafoParam());
     }else if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         this->recalcFeature(OiFeatureState::getActiveFeature()->getFeature());
     }
-    emit this->refreshGUI();
+    emit this->refreshGUI();*/
 }
 
 /*!
@@ -653,14 +663,14 @@ void Controller::recalcActiveFeature(){
  * Recalcs the given feature
  * \param f
  */
-void Controller::recalcFeature(Feature *f){
-    //start recalcing
+void Controller::recalcFeature(const int &featureId){
+    /*//start recalcing
     this->myFeatureUpdater->recalcFeature(f);
     //refresh feature tree view models
 
-    this->featureTreeViewModel->refreshModel();
+    //this->featureTreeViewModel->refreshModel();
 
-    emit this->refreshGUI();
+    emit this->refreshGUI();*/
 
 }
 
@@ -669,11 +679,11 @@ void Controller::recalcFeature(Feature *f){
  * Recalcs the given trafo param
  * \param tp
  */
-void Controller::recalcTrafoParam(TrafoParam *tp){
-    //start recalcing
-    this->myFeatureUpdater->recalcTrafoParam(tp);
+void Controller::recalcTrafoParam(const int &featureId){
+    /*//start recalcing
+    this->myFeatureUpdater->recalcTrafoParam(featureId);
     //refresh feature tree view models
-    //this->featureTreeViewModel->refreshModel();
+    //this->featureTreeViewModel->refreshModel();*/
 }
 
 /*!
@@ -924,7 +934,7 @@ void Controller::setActiveCoordSystem(QString CoordSysName){
  * \brief Controller::changeFunctionTreeViewModel
  * Update model for tree view with all functions of selected feature
  */
-void Controller::changeFunctionTreeViewModel(){
+/*void Controller::changeFunctionTreeViewModel(){
     this->functionTreeViewModel->clear();
     this->functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
     QStandardItem *rootItem = this->functionTreeViewModel->invisibleRootItem();
@@ -945,7 +955,7 @@ void Controller::changeFunctionTreeViewModel(){
             }
         }
     }
-}
+}*/
 
 /*!
  * \brief Controller::changeUsedElementsModel
@@ -953,7 +963,7 @@ void Controller::changeFunctionTreeViewModel(){
  * \param functionIndex
  * \param elementIndex
  */
-void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
+/*void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
     this->usedElementsModel->removeAllElements();
 
     if(functionIndex >= 0 && elementIndex >= 0 && OiFeatureState::getActiveFeature() != NULL
@@ -1141,7 +1151,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
     }
 
     this->usedElementsModel->refreshModel();
-}
+}*/
 
 /*!
  * \brief Controller::setSelectedFunction
@@ -1149,7 +1159,7 @@ void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
  * \param index
  * \param neededElement
  */
-void Controller::setSelectedFunction(int functionIndex, int neededElementIndex){
+/*void Controller::setSelectedFunction(int functionIndex, int neededElementIndex){
     if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex && functionIndex >= 0){ //if function index is valid
         if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().size() > neededElementIndex
                 && neededElementIndex >= 0){ //if needed element index is valid
@@ -1168,7 +1178,7 @@ void Controller::setSelectedFunction(int functionIndex, int neededElementIndex){
     }
     //re-build used elements model
     this->changeUsedElementsModel(functionIndex, neededElementIndex);
-}
+}*/
 
 /*!
  * \brief Controller::addElement2Function
@@ -1544,7 +1554,7 @@ bool Controller::saveProject(){
  * \param myDevice
  * \return
  */
-bool Controller::loadProject(QString projectName, QIODevice *myDevice){
+bool Controller::loadProject(const QString &projectName, QIODevice *myDevice){
 
     //TODO check if an active project is set
 
@@ -1582,8 +1592,27 @@ bool Controller::loadProject(QString projectName, QIODevice *myDevice){
 
 }
 
-void Controller::connectStateChanges()
-{
+void Controller::connectStateChanges(){
+
+    //##########################################
+    //connect OiFeatureState (signal forwarding)
+    //##########################################
+
+    QObject::connect(myFeatureState, SIGNAL(featureSetChanged()), this, SIGNAL(featureSetChanged()), Qt::DirectConnection);
+    QObject::connect(myFeatureState, SIGNAL(coordSystemSetChanged()), this, SIGNAL(coordSystemSetChanged()), Qt::DirectConnection);
+
+    QObject::connect(myFeatureState, SIGNAL(featureAttributesChanged()), this, SIGNAL(featureAttributesChanged()), Qt::DirectConnection);
+    QObject::connect(myFeatureState, SIGNAL(activeFeatureChanged()), this, SIGNAL(activeFeatureChanged()), Qt::DirectConnection);
+
+    QObject::connect(myFeatureState, SIGNAL(geometryObservationsChanged()), this, SIGNAL(geometryObservationsChanged()), Qt::DirectConnection);
+    QObject::connect(myFeatureState, SIGNAL(geometryMeasurementConfigChanged()), this, SIGNAL(geometryMeasurementConfigChanged()), Qt::DirectConnection);
+
+    QObject::connect(myFeatureState, SIGNAL(activeFeatureChanged()), this, SIGNAL(activeFeatureChanged()), Qt::DirectConnection);
+    QObject::connect(myFeatureState, SIGNAL(activeStationChanged()), this, SIGNAL(activeStationChanged()), Qt::DirectConnection);
+    QObject::connect(myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this, SIGNAL(activeCoordinateSystemChanged()), Qt::DirectConnection);
+    QObject::connect(myFeatureState, SIGNAL(activeGroupChanged()), this, SIGNAL(activeGroupChanged()), Qt::DirectConnection);
+
+    QObject::connect(myFeatureState, SIGNAL(availableGroupNamesChanged()), this, SIGNAL(availableGroupNamesChanged()), Qt::DirectConnection);
 
 }
 
@@ -1763,7 +1792,7 @@ bool Controller::generateActualForNominal(FeatureWrapper *f)
     if(f->getGeometry()->getMyActual() != NULL){
 
     }else{
-        FeatureAttributesExchange fae;
+        FeatureAttributes fae;
         MeasurementConfig mConfig;
 
         fae.actual = true;

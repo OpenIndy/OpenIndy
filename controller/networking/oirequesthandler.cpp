@@ -440,7 +440,7 @@ void OiRequestHandler::measure(OiRequestResponse *request){
                 result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
             }
 
-            FeatureAttributesExchange fae;
+            FeatureAttributes fae;
             MeasurementConfig mConfig = Point::defaultMeasurementConfig;
 
             fae.actual = true;
@@ -456,10 +456,10 @@ void OiRequestHandler::measure(OiRequestResponse *request){
             fae.nominalSystem = NULL;
             fae.startSystem = NULL;
 
-            int fType = FeatureUpdater::addFeature(fae, mConfig);
+            /*int fType = FeatureUpdater::addFeature(fae, mConfig);
             if(fType != OiFeatureState::getActiveFeature()->getTypeOfFeature()){
                 return;
-            }
+            }*/
 
         }
         OiFeatureState::getActiveFeature()->getGeometry()->getMyActual()->setActiveFeatureState(true);

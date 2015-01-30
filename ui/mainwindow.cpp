@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->assignModels();
 
     //connect controller to main window
-    this->setConnects();
+    this->connectController();
 
     //set up dialogs
     this->initDialogs();
@@ -130,10 +130,28 @@ void MainWindow::closeEvent(QCloseEvent *event)
  * \brief MainWindow::setConnects
  * Connect Controller and View
  */
-void MainWindow::setConnects(){
+void MainWindow::connectController(){
 
-    //connect controller
-    connect(this, SIGNAL(setActiveFeature(int)), &this->control, SLOT(setActiveFeature(int)), Qt::DirectConnection);
+    //#####################################################
+    //connect signals in controller to slots in main window
+    //#####################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //connect(this, SIGNAL(setActiveFeature(int)), &this->control, SLOT(setActiveFeature(int)), Qt::DirectConnection);
 
 
 
@@ -195,7 +213,7 @@ void MainWindow::setConnects(){
 
 */
 
-    connect(this->ui->tableView_data->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(selectionChangedByKeyboard(QModelIndex,QModelIndex)));
+    //connect(this->ui->tableView_data->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(selectionChangedByKeyboard(QModelIndex,QModelIndex)));
 
 
     //always scroll to bottom in Console
@@ -874,12 +892,12 @@ void MainWindow::on_actionWatch_window_triggered()
     //watchWindow = new WatchWindow();
 
 
-    connect(watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()), Qt::DirectConnection);
-    connect(watchWindow, SIGNAL(addMeasurement()), &control, SLOT(addMeasurement()), Qt::DirectConnection);
-    connect(watchWindow, SIGNAL(doSelfDefinedAction(QString)), &control, SLOT(startCustomAction(QString)), Qt::DirectConnection);
-    connect(watchWindow, SIGNAL(keyPressed(Qt::Key)), this, SLOT(emitWatchWindowKeyPressed(Qt::Key)), Qt::DirectConnection);
+    connect(&watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()), Qt::DirectConnection);
+    connect(&watchWindow, SIGNAL(addMeasurement()), &control, SLOT(addMeasurement()), Qt::DirectConnection);
+    connect(&watchWindow, SIGNAL(doSelfDefinedAction(QString)), &control, SLOT(startCustomAction(QString)), Qt::DirectConnection);
+    connect(&watchWindow, SIGNAL(keyPressed(Qt::Key)), this, SLOT(emitWatchWindowKeyPressed(Qt::Key)), Qt::DirectConnection);
 
-    connect(watchWindow, SIGNAL(closeWatchWindow()),this, SLOT(closeWatchWindow()));
+    connect(&watchWindow, SIGNAL(closeWatchWindow()),this, SLOT(closeWatchWindow()));
 
 
     /*watchWindow.myStation = OiFeatureState::getActiveStation();
@@ -1026,7 +1044,7 @@ void MainWindow::createFeature(){
                 }
             }
 
-            FeatureAttributesExchange featureAttributes;
+            FeatureAttributes featureAttributes;
             featureAttributes.count = count;
             featureAttributes.featureType = featureType;
             featureAttributes.name = name;
@@ -1051,13 +1069,13 @@ void MainWindow::createFeature(){
  * \brief MainWindow::setActiveCoordinateSystem
  * Set the active coordinate system as active item in the coordinate systems combo box
  */
-void MainWindow::setActiveCoordinateSystem(){
+/*void MainWindow::setActiveCoordinateSystem(const int &featureId){
 
     if(OiFeatureState::getActiveCoordinateSystem() != NULL){
         this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());
     }
 
-}
+}*/
 
 void MainWindow::isSensorConnected(bool b)
 {
@@ -1829,7 +1847,7 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
     this->comboBoxGroup->clear();
     this->comboBoxGroup->clearEditText();
     this->comboBoxGroup->addItems(groups);
-    this->cFeatureDialog.availableGroupsChanged(groups);
+    //this->cFeatureDialog.availableGroupsChanged(groups);
     this->sEntityDialog.availableGroupsChanged(groups);
 
     QString activeGroup = this->ui->comboBox_groups->currentText();
@@ -1862,7 +1880,7 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
         if(this->ui->comboBox_groups->currentText().compare(OiFeatureState::getActiveGroup()) != 0){
             this->ui->comboBox_groups->setCurrentText(OiFeatureState::getActiveGroup());
         }
-        this->control.tblModel->updateModel();
+        //this->control.tblModel->updateModel();
         model->activeGroupChanged();
     }
 }
@@ -2046,7 +2064,7 @@ QDir appDir(qApp->applicationDirPath());
  */
 void MainWindow::showCreateFeatureDialog(Configuration::FeatureTypes featureType){
     //this->cFeatureDialog.setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
-    this->cFeatureDialog.show();
+    this->createFeatureDlg.show();
 }
 
 /*!
@@ -2399,18 +2417,12 @@ void MainWindow::on_actionMagnify_triggered()
 
 void MainWindow::closeWatchWindow()
 {
-    if(this->watchWindow != NULL){
-        disconnect(watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
-        disconnect(watchWindow, SIGNAL(addMeasurement()), &control, SLOT(addMeasurement()));
-        disconnect(watchWindow, SIGNAL(doSelfDefinedAction(QString)), &control, SLOT(startCustomAction(QString)));
-        disconnect(watchWindow, SIGNAL(keyPressed(Qt::Key)), this, SLOT(emitWatchWindowKeyPressed(Qt::Key)));
 
-        watchWindow->close();
+        disconnect(&watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()));
+        disconnect(&watchWindow, SIGNAL(addMeasurement()), &control, SLOT(addMeasurement()));
+        disconnect(&watchWindow, SIGNAL(doSelfDefinedAction(QString)), &control, SLOT(startCustomAction(QString)));
+        disconnect(&watchWindow, SIGNAL(keyPressed(Qt::Key)), this, SLOT(emitWatchWindowKeyPressed(Qt::Key)));
 
-        if(watchWindow == NULL){
-            return;
-        }
-        delete this->watchWindow;
-        watchWindow = NULL;
-    }
+        watchWindow.close();
+
 }

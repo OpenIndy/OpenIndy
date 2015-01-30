@@ -93,11 +93,17 @@ public:
 signals:
 
     //##################################################
-    //signals to inform GUI about OpenIndy state changes
+    //signals to inform GUI about OiFeatureState changes
     //##################################################
 
     void featureSetChanged();
+    void coordSystemSetChanged();
+
     void featureAttributesChanged();
+    void featureFunctionsChanged();
+
+    void geometryObservationsChanged();
+    void geometryMeasurementConfigChanged();
 
     void activeFeatureChanged();
     void activeStationChanged();
@@ -112,10 +118,16 @@ public slots:
     //actions to be performed (triggered by user)
     //###########################################
 
-    void setActiveFeature(int featureId);
-    void setActiveStation();
-    void setActiveCoordinateSystem();
+    //active feature states
+    void setActiveFeature(const int &featureId);
+    void setActiveStation(const int &featureId);
+    void setActiveCoordinateSystem(const int &featureId);
 
+    //add or remove features
+    void addFeatures(const FeatureAttributes &attributes);
+    void removeFeature(const int &featureId);
+
+    //sensor methods
     void startMeasurement();
 	void addMeasurement();
     void startMove(Reading *parameter);
@@ -127,15 +139,16 @@ public slots:
     void startHome();
     void startCompensation();
     void startChangeMotorState();
-    void startCustomAction(QString s);
+    void startCustomAction(const QString &s);
 
+    //recalculation of features
     void recalcAll();
     void recalcActiveFeature();
-    void recalcFeature(Feature *f);
-    void recalcTrafoParam(TrafoParam *tp);
+    void recalcFeature(const int &featureId);
+    void recalcTrafoParam(const int &featureId);
 
     bool saveProject();
-    bool loadProject(QString projectName, QIODevice *myDevice);
+    bool loadProject(const QString &projectName, QIODevice *myDevice);
 
 private slots:
 
@@ -211,7 +224,7 @@ public slots:
     int checkActiveFeatureIndex(int current, int index);
 
     void setActiveCoordSystem(QString CoordSysName);
-    void addFeature(FeatureAttributesExchange fae);
+    void addFeature(FeatureAttributes fae);
 
     void emitShowWatchWindow();
     void emitCloseWatchWindow();

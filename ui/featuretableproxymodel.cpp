@@ -16,7 +16,7 @@ FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
  * \param source_parent
  * \return
  */
-bool FeatureOverviewProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
+bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
 
     if(OiFeatureState::getFeatures().size() <= source_row){
         return false;

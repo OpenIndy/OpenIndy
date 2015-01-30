@@ -20,7 +20,7 @@
 
 using namespace std;
 
-struct FeatureContainer;
+class FeatureContainer;
 
 /*!
  * \brief The OiFeatureState class
@@ -48,9 +48,9 @@ public:
     static const QList<TrafoParam *> &getTransformationParameters();
     static const QList<FeatureWrapper *> &getGeometries();
 
-    static FeatureWrapper *addFeature(FeatureAttributesExchange attributes);
+    static FeatureWrapper *addFeature(FeatureAttributes attributes);
     static bool addFeature(FeatureWrapper *myFeature);
-    static QList<FeatureWrapper *> addFeatures(FeatureAttributesExchange attributes);
+    static QList<FeatureWrapper *> addFeatures(FeatureAttributes attributes);
     static bool addFeatures(const QList<FeatureWrapper *> &myFeatures);
 
     static bool removeFeature(FeatureWrapper *myFeature);
@@ -92,27 +92,27 @@ signals:
     void systemObservationsAdded(); //emitted when observations were added to a coordinate system
 
 private slots:
-    void setActiveFeature(int featureId); //is called when a feature becomes the active feature
-    void setActiveStation(int featureId); //is called when a station becomes the active station
-    void setActiveCoordinateSystem(int featureId); //is called when a coordinate system becomes the display system
+    void setActiveFeature(const int &featureId); //is called when a feature becomes the active feature
+    void setActiveStation(const int &featureId); //is called when a station becomes the active station
+    void setActiveCoordinateSystem(const int &featureId); //is called when a coordinate system becomes the display system
 
-    void setFeatureGroup(int featureId); //is called when the group attribute of a feature is changed
-    void setFeatureName(int featureId, QString oldName); //is called when the name of a feature is changed
-    void setFeatureComment(int featureId); //is called when the comment of a feature is changed
-    void setFeatureFunctions(int featureId); //is called when the list of functions of a feature was edited
+    void setFeatureGroup(const int &featureId); //is called when the group attribute of a feature is changed
+    void setFeatureName(const int &featureId, const QString &oldName); //is called when the name of a feature is changed
+    void setFeatureComment(const int &featureId); //is called when the comment of a feature is changed
+    void setFeatureFunctions(const int &featureId); //is called when the list of functions of a feature was edited
 
-    void setGeometryActual(int featureId); //is called when the actual geometry of a nominal is set
-    void setGeometryNominals(int featureId); //is called when a nominal was added or removed from an actual geometry
-    void setGeometryObservations(int featureId); //is called when an observations was added or removed from a geometry
-    void setGeometryMeasurementConfig(int featureId); //is called when the measurement config of a geometry has changed
+    void setGeometryActual(const int &featureId); //is called when the actual geometry of a nominal is set
+    void setGeometryNominals(const int &featureId); //is called when a nominal was added or removed from an actual geometry
+    void setGeometryObservations(const int &featureId); //is called when an observations was added or removed from a geometry
+    void setGeometryMeasurementConfig(const int &featureId); //is called when the measurement config of a geometry has changed
 
-    void setSystemsNominals(int featureId); //is called when a nominal was added to a nominal coordinate system
+    void setSystemsNominals(const int &featureId); //is called when a nominal was added to a nominal coordinate system
 
-    void removeFeature(int featureId); //is called when the destructor of a feature is entered
+    void removeFeature(const int &featureId); //is called when the destructor of a feature is entered
 
     void addPCSegmentAsFeature(FeatureWrapper *segment);
 
-    void setSystemObservations(int featureId, int obsId);
+    void setSystemObservations(const int &featureId, const int &obsId);
 
 private:
     static OiFeatureState *myFeatureState;
@@ -130,7 +130,7 @@ private:
 
     static void updateAvailableGroups();
 
-    static QList<FeatureWrapper *> createFeatures(const FeatureAttributesExchange &attributes);
+    static QList<FeatureWrapper *> createFeatures(const FeatureAttributes &attributes);
     static void createFeatureName(QString &outputName, int &index, QString inputName, int count = 1);
 
     static void connectFeature(FeatureWrapper *myFeature);
@@ -174,20 +174,20 @@ public:
     QList<TrafoParam *> &getTransformationParametersList(){ return this->myTransformationParametersList; }
     QList<FeatureWrapper *> &getGeometriesList(){ return this->myGeometriesList; }
 
-    //getter to get a list of all feature ids
-    QList<int> getFeatureIdList(){ return this->myFeaturesIdMap.keys(); }
-    QList<QString> getFeatureNameList(){ return this->myFeaturesNameMap.keys(); }
+    //getter to get a list of all feature ids and names
+    QList<int> getFeatureIdList() const{ return this->myFeaturesIdMap.keys(); }
+    QList<QString> getFeatureNameList() const{ return this->myFeaturesNameMap.keys(); }
 
-    //getter to access a single feature by its id
-    FeatureWrapper *getFeatureById(int id){ return this->myFeaturesIdMap.value(id, NULL); }
-    QList<FeatureWrapper *> getFeaturesByName(QString name){ return this->myFeaturesNameMap.values(name); }
+    //getter to access features by id or name
+    FeatureWrapper *getFeatureById(const int &featureId) const{ return this->myFeaturesIdMap.value(featureId, NULL); }
+    QList<FeatureWrapper *> getFeaturesByName(const QString &name) const{ return this->myFeaturesNameMap.values(name); }
 
     //getter to get the number of available features
-    int getFeatureCount(){ return this->myFeaturesList.size(); }
-    int getStationCount(){ return this->myStationsList.size(); }
-    int getCoordinateSystemCount(){ return this->myCoordinateSystemsList.size(); }
-    int getTransformationParameterCount(){ return this->myTransformationParametersList.size(); }
-    int getGeometryCount(){ return this->myGeometriesList.size(); }
+    int getFeatureCount() const{ return this->myFeaturesList.size(); }
+    int getStationCount() const{ return this->myStationsList.size(); }
+    int getCoordinateSystemCount() const{ return this->myCoordinateSystemsList.size(); }
+    int getTransformationParameterCount() const{ return this->myTransformationParametersList.size(); }
+    int getGeometryCount() const{ return this->myGeometriesList.size(); }
 
 public slots:
 
