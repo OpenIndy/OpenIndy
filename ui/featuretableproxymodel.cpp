@@ -16,7 +16,12 @@ FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
  * \param source_parent
  * \return
  */
-bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
+bool FeatureOverviewProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
+
+    if(OiFeatureState::getFeatures().size() <= source_row){
+        return false;
+    }
+
     if(OiFeatureState::getActiveGroup().compare("All Groups") == 0){
         if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL){
             return false;

@@ -11,8 +11,13 @@
 #include "oiprojectexchanger.h"
 #include "station.h"
 #include "sensorlistener.h"
+#include "featureupdater.h"
 
 struct WatchWindowTask{
+    bool taskInProcess;
+    OiRequestResponse *request;
+};
+struct MeasurementTask{
     bool taskInProcess;
     OiRequestResponse *request;
 };
@@ -33,8 +38,12 @@ public:
 public slots:
     bool receiveRequest(OiRequestResponse *request);
 
+    void receiveOiToolResponse(OiRequestResponse *response);
+
 signals:
     bool sendResponse(OiRequestResponse *response);
+
+    void sendOiToolRequest(OiRequestResponse *request);
 
 private:
     static OiRequestHandler *myRequestHandler;
@@ -42,6 +51,7 @@ private:
     QThread workerThread;
 
     WatchWindowTask myWatchWindowTask;
+    MeasurementTask myMeasurementTask;
 
     void getProject(OiRequestResponse *request);
     void setProject(OiRequestResponse *request);
@@ -59,8 +69,12 @@ private:
 
     void prepareResponse(OiRequestResponse *request);
 
+    bool buildWatchWindowMessage(QDomElement &wwTag, int readingType, QVariantMap streamData);
+
 private slots:
     void receiveWatchWindowData(QVariantMap data);
+
+    void measurementFinished(bool success);
 };
 
 #endif // OIREQUESTHANDLER_H

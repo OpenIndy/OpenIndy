@@ -89,6 +89,8 @@ signals:
 
     void systemNominalsChanged(); //emitted when nominals where added or removed from a coordinate system
 
+    void systemObservationsAdded(); //emitted when observations were added to a coordinate system
+
 private slots:
     void setActiveFeature(int featureId); //is called when a feature becomes the active feature
     void setActiveStation(int featureId); //is called when a station becomes the active station
@@ -109,6 +111,8 @@ private slots:
     void removeFeature(int featureId); //is called when the destructor of a feature is entered
 
     void addPCSegmentAsFeature(FeatureWrapper *segment);
+
+    void setSystemObservations(int featureId, int obsId);
 
 private:
     static OiFeatureState *myFeatureState;
@@ -143,7 +147,8 @@ private:
         eFeatureFunctionsChanged,
         eGeomObservationsChanged,
         eGeomMeasurementConfigChanged,
-        eSystemNominalsChanged
+        eSystemNominalsChanged,
+        eSystemObservationsChanged
     };
 
     void emitSignal(SignalType mySignalType);

@@ -60,13 +60,13 @@ public:
     virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     virtual bool fromOpenIndyXML(QDomElement &xmlElem);
 
-    virtual QString getDisplayX() const;
-    virtual QString getDisplayY() const;
-    virtual QString getDisplayZ() const;
-    virtual QString getDisplayI() const;
-    virtual QString getDisplayJ() const;
-    virtual QString getDisplayK() const;
-    virtual QString getDisplayRadius() const;
+    virtual QString getDisplayX(bool showDiff) const;
+    virtual QString getDisplayY(bool showDiff) const;
+    virtual QString getDisplayZ(bool showDiff) const;
+    virtual QString getDisplayI(bool showDiff) const;
+    virtual QString getDisplayJ(bool showDiff) const;
+    virtual QString getDisplayK(bool showDiff) const;
+    virtual QString getDisplayRadius(bool showDiff) const;
     virtual QString getDisplayIsCommon() const;
     virtual QString getDisplayIsNominal() const;
     virtual QString getDisplayObs() const;

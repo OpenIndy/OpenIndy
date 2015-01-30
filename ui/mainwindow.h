@@ -275,6 +275,8 @@ signals:
     //void nextStakeOutGeometry(); //emitted when the next geometry has to be selected
 */
 
+    void watchWindowKeyPressed(Qt::Key key);
+
 public slots:
     void showMessageBox(QString title, QString message);
     void showMessageBoxForDecision(QString title, QString message, OiFunctor *func);
@@ -289,6 +291,8 @@ public slots:
 
     //database methods
     void createOiToolActions();
+
+    void emitWatchWindowKeyPressed(Qt::Key);
 
 private slots:
 
@@ -374,6 +378,10 @@ private slots:
     //copy clipboard tableview
     void keyPressEvent(QKeyEvent *e);
 
+    void selectionChangedByKeyboard(QModelIndex newIdx, QModelIndex oldIdx);
+
+    void setMagnifyValues();
+
     void copyValuesFromView();
 	
     //tools
@@ -392,6 +400,10 @@ private slots:
 
     void setMeasurementConfig(MeasurementConfig mConfig); //set the measurement config of the active feature
     void setDefaultMeasurementConfig(MeasurementConfig mConfig); //set the default measurement config
+
+    void on_actionMagnify_triggered();
+
+    void closeWatchWindow();
 
 private:
     Ui::MainWindow *ui;

@@ -56,7 +56,7 @@ signals:
     void recalcFeature(Feature*);
     void activateStatStream();
     void activateReadingStream(int);
-    void measurementFinished(bool);
+    void measurementFinished(int,bool);
 
 
 public slots:
@@ -83,6 +83,10 @@ public slots:
     void stopStatStream();
 
     void copyMe(SensorControl *sc);
+
+    void addReading(Reading* r, Geometry* geom, bool isActiveCoordSys);
+
+    Configuration::ReadingTypes getTypeOfReadingStream();
 
 private:
 

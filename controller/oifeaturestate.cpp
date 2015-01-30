@@ -1,5 +1,7 @@
 #include "oifeaturestate.h"
 
+#include "featureupdater.h"
+
 OiFeatureState *OiFeatureState::myFeatureState = NULL;
 
 FeatureWrapper *OiFeatureState::myActiveFeature = NULL;
@@ -533,6 +535,9 @@ void OiFeatureState::emitSignal(OiFeatureState::SignalType mySignalType){
     case eGeomObservationsChanged:
         emit this->geometryObservationsChanged();
         break;
+    case eSystemObservationsChanged:
+        emit this->systemObservationsAdded();
+        break;
     }
 }
 
@@ -838,6 +843,8 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
                     OiFeatureState::getInstance(), SLOT(setActiveStation(int)), Qt::DirectConnection);
             connect(myFeature->getStation()->coordSys, SIGNAL(activeCoordinateSystemChanged(int)),
                     OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
+            connect(myFeature->getStation()->coordSys, SIGNAL(observationsChanged(int, int)),
+                    OiFeatureState::getInstance(), SLOT(setSystemObservations(int, int)), Qt::DirectConnection);
 
         }
 
@@ -848,6 +855,8 @@ void OiFeatureState::connectFeature(FeatureWrapper *myFeature){
                     OiFeatureState::getInstance(), SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
             connect(myFeature->getCoordinateSystem(), SIGNAL(nominalsChanged(int)),
                     OiFeatureState::getInstance(), SLOT(setSystemsNominals(int)), Qt::DirectConnection);
+            connect(myFeature->getCoordinateSystem(), SIGNAL(observationsChanged(int, int)),
+                    OiFeatureState::getInstance(), SLOT(setSystemObservations(int, int)), Qt::DirectConnection);
 
         }
 

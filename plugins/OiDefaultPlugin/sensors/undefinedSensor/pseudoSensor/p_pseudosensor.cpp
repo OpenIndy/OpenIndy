@@ -114,6 +114,13 @@ QList<Reading*> PseudoSensor::measure(MeasurementConfig *mc){
         break;
     }
 
+    if(readings.size() > 0){
+        this->lastReading.first = readings.last()->typeofReading;
+        Reading *r = new Reading();
+        *r = *readings.last();
+        this->lastReading.second = r;
+    }
+
     return readings;
 }
 

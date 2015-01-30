@@ -366,7 +366,7 @@ void FeatureTreeViewModel::appendTrafoParams(FeatureTreeItem *root, QList<Featur
  * \param obs
  */
 void FeatureTreeViewModel::appendObservation(FeatureTreeItem *root, Observation *obs){
-    FeatureTreeItem *geom_observation = new FeatureTreeItem(QString::number(obs->myReading->id));
+    FeatureTreeItem *geom_observation = new FeatureTreeItem(QString::number(obs->getId()));
     root->appendChild(geom_observation);
     geom_observation->appendChild( new FeatureTreeItem(obs->myReading->measuredAt.toString()) );
     geom_observation->appendChild( new FeatureTreeItem(obs->myStation->getFeatureName()) );

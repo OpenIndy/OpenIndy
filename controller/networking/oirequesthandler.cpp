@@ -62,6 +62,8 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse *request){
             this->startWatchwindow(request);
         }else if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eStopWatchwindow){
             this->stopWatchwindow(request);
+        }else if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eOiToolRequest){
+            emit this->sendOiToolRequest(request);
         }else{
 
             //send error message
@@ -79,6 +81,18 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse *request){
     }
 
     return false;
+
+}
+
+/*!
+ * \brief OiRequestHandler::receiveOiToolResponse
+ * \param response
+ */
+void OiRequestHandler::receiveOiToolResponse(OiRequestResponse *response){
+
+    response->myRequestType = OiRequestResponse::eOiToolRequest;
+
+    emit this->sendResponse(response);
 
 }
 
@@ -413,16 +427,82 @@ void OiRequestHandler::measure(OiRequestResponse *request){
         return;
     }
 
+    //if active feature is a nominal create a corresponding actual
     if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
-        request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eCannotMeasureNominal);
-        emit this->sendResponse(request);
-        return;
+
+        if(OiFeatureState::getActiveFeature()->getGeometry()->getMyActual() != NULL){
+
+        }else{
+
+            QString result;
+            FunctionPlugin plugin = SystemDbManager::getDefaultFunction(OiFeatureState::getActiveFeature()->getTypeOfFeature());
+            if(plugin.name.compare("") != 0){
+                result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
+            }
+
+            FeatureAttributesExchange fae;
+            MeasurementConfig mConfig = Point::defaultMeasurementConfig;
+
+            fae.actual = true;
+            fae.common = false;
+            fae.count = 1;
+            fae.name = OiFeatureState::getActiveFeature()->getGeometry()->getFeatureName();
+            fae.destSystem = NULL;
+            fae.featureType = OiFeatureState::getActiveFeature()->getTypeOfFeature();
+            fae.function = result;
+            fae.group = OiFeatureState::getActiveFeature()->getGeometry()->getGroupName();
+            fae.isMovement = false;
+            fae.nominal = false;
+            fae.nominalSystem = NULL;
+            fae.startSystem = NULL;
+
+            int fType = FeatureUpdater::addFeature(fae, mConfig);
+            if(fType != OiFeatureState::getActiveFeature()->getTypeOfFeature()){
+                return;
+            }
+
+        }
+        OiFeatureState::getActiveFeature()->getGeometry()->getMyActual()->setActiveFeatureState(true);
+
     }
 
-    //measure the active feature
-    OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), OiFeatureState::getActiveCoordinateSystem() == OiFeatureState::getActiveStation()->coordSys);
+    //depending on the measure mode measure the actual or select the last sensor reading
+    int errorCode = 0;
+    QDomElement measureMode = request->request.documentElement().firstChildElement("mode");
+    if(measureMode.isNull() || !measureMode.hasAttribute("name")){
+        errorCode = OiRequestResponse::eWrongFormat;
+    }else{
+
+        if(measureMode.attribute("name").compare("normal") == 0){ //normal measurement
+
+            //measure the active feature and set measurement task
+            this->myMeasurementTask.request = request;
+            this->myMeasurementTask.taskInProcess = true;
+            connect(OiFeatureState::getActiveStation()->sensorPad, SIGNAL(commandFinished(bool)), this, SLOT(measurementFinished(bool)));
+            OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), OiFeatureState::getActiveCoordinateSystem() == OiFeatureState::getActiveStation()->coordSys);
+            return;
+
+        }else{ //use last reading instead of performing a measurement
+
+            bool checkActiveCoordSys = false;
+            if (OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+                checkActiveCoordSys = true;
+            }
+
+            QPair<Configuration::ReadingTypes, Reading*> lastReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getLastReading();
+
+            Reading *r = new Reading();
+            *r = *lastReading.second;
+            OiFeatureState::getActiveStation()->sensorPad->addReading(r, OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
+
+        }
+
+    }
 
     //TODO signals um bei sensorbefehlen die entsprechende GUI anzuzeigen
+
+
+    request->response.documentElement().setAttribute("errorCode", errorCode);
 
     emit this->sendResponse(request);
 
@@ -455,6 +535,13 @@ void OiRequestHandler::startWatchwindow(OiRequestResponse *request){
         return;
     }
 
+    //check if active feature exists
+    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveFeature);
+        emit this->sendResponse(request);
+        return;
+    }
+
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL
             && OiFeatureState::getActiveStation()->sensorPad->instrumentListener != NULL){
 
@@ -463,7 +550,7 @@ void OiRequestHandler::startWatchwindow(OiRequestResponse *request){
                 this, SLOT(receiveWatchWindowData(QVariantMap)));
 
         //start watch window
-        OiFeatureState::getActiveStation()->startReadingStream(myReadingType); //TODO Übergabeparameter
+        OiFeatureState::getActiveStation()->emitStartReadingStream(myReadingType); //TODO Übergabeparameter
 
         //save active watch window task
         this->myWatchWindowTask.taskInProcess = true;
@@ -532,6 +619,66 @@ void OiRequestHandler::prepareResponse(OiRequestResponse *request){
 }
 
 /*!
+ * \brief OiRequestHandler::buildWatchWindowMessage
+ * \param wwTag: the XML tag that shall be filled
+ * \param readingType: the requested reading type
+ * \param streamData: the sensor stream data
+ * \return
+ */
+bool OiRequestHandler::buildWatchWindowMessage(QDomElement &wwTag, int readingType, QVariantMap streamData){
+
+    //get xyz of active geometry
+    OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+
+    //get and transform sensor stream data
+    switch(OiFeatureState::getActiveStation()->getReadingStreamType()){
+    case Configuration::eCartesian:{
+
+        //check if x, y, z are available
+        if(!streamData.contains("x") || !streamData.contains("y") || !streamData.contains("z")){
+            return false;
+        }
+
+        //get sensor xyz
+        OiVec streamXyz(4);
+        streamXyz.setAt(0, streamData.value("x").toDouble());
+        streamXyz.setAt(1, streamData.value("y").toDouble());
+        streamXyz.setAt(2, streamData.value("z").toDouble());
+        streamXyz.setAt(3, 1.0);
+
+        //get trafo params and transform sensor xyz
+        if(!OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+            QList<TrafoParam*> trafoParams = OiFeatureState::getActiveStation()->coordSys->getTransformationParameters(OiFeatureState::getActiveCoordinateSystem());
+            if(trafoParams.size() == 0){
+                return false;
+            }
+            OiMat trafo = trafoParams.at(0)->getHomogenMatrix();
+            if(trafo.getRowCount() != 4 || trafo.getColCount() != 4){
+                return false;
+            }
+            streamXyz = trafo * streamXyz;
+        }
+
+        //build difference sensor - feature
+        OiVec diff = streamXyz - xyz;
+
+        //fill watch window tag
+        wwTag.setTagName("cartesian");
+        wwTag.setAttribute("x", QString::number(diff.getAt(0)));
+        wwTag.setAttribute("y", QString::number(diff.getAt(1)));
+        wwTag.setAttribute("z", QString::number(diff.getAt(2)));
+
+        return true;
+
+    }case Configuration::ePolar:{
+        break;
+    }default:
+        return false;
+    }
+
+}
+
+/*!
  * \brief OiRequestHandler::receiveWatchWindowData
  * Each time a map with current coordinates is emitted by SensorListener
  * \param data
@@ -549,65 +696,64 @@ void OiRequestHandler::receiveWatchWindowData(QVariantMap data){
     this->prepareResponse(this->myWatchWindowTask.request);
 
     //get requested reading type
-    Configuration::ReadingTypes myReadingType;
+    int myReadingType;
     QDomElement readingType = this->myWatchWindowTask.request->request.documentElement().firstChildElement("readingType");
     if(!readingType.isNull() && readingType.hasAttribute("type")){
-        myReadingType = (Configuration::ReadingTypes)readingType.attribute("type").toInt();
+        myReadingType = readingType.attribute("type").toInt();
     }else{
         this->myWatchWindowTask.request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eWrongFormat);
         emit this->sendResponse(this->myWatchWindowTask.request);
         return;
     }
 
-    //create new response with sensor data
-    QDomElement response = this->myWatchWindowTask.request->response.createElement(Configuration::getReadingTypeString(myReadingType));
-
-    switch(myReadingType){
-    case Configuration::eCartesian:
-        if(data.contains("x") && data.contains("y") && data.contains("z")){
-            response.setAttribute("x", data.value("x").toString());
-            response.setAttribute("y", data.value("y").toString());
-            response.setAttribute("z", data.value("z").toString());
-        }
-        break;
-    case Configuration::ePolar:
-        if(data.contains("azimuth") && data.contains("zenith") && data.contains("distance")){
-            response.setAttribute("azimuth", data.value("azimuth").toString());
-            response.setAttribute("zenith", data.value("zenith").toString());
-            response.setAttribute("distance", data.value("distance").toString());
-        }
-        break;
-    case Configuration::eDirection:
-        if(data.contains("azimuth") && data.contains("zenith")){
-            response.setAttribute("azimuth", data.value("azimuth").toString());
-            response.setAttribute("zenith", data.value("zenith").toString());
-        }
-        break;
-    case Configuration::eDistance:
-        if(data.contains("distance")){
-            response.setAttribute("distance", data.value("distance").toString());
-        }
-        break;
-    case Configuration::eTemperatur:
-        if(data.contains("temperature")){
-            response.setAttribute("temperature", data.value("temperature").toString());
-        }
-        break;
-    case Configuration::eLevel:
-        if(data.contains("RX") && data.contains("RY") && data.contains("RZ")){
-            response.setAttribute("RX", data.value("RX").toString());
-            response.setAttribute("RY", data.value("RY").toString());
-            response.setAttribute("RZ", data.value("RZ").toString());
-        }
-        break;
+    //check if active feature exists and is a geometry
+    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        this->myWatchWindowTask.request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eWrongFormat);
+        emit this->sendResponse(this->myWatchWindowTask.request);
+        return;
     }
 
-    this->myWatchWindowTask.request->response.documentElement().appendChild(response);
+    //check if active station exists
+    if(OiFeatureState::getActiveStation() == NULL){
+        this->myWatchWindowTask.request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eWrongFormat);
+        emit this->sendResponse(this->myWatchWindowTask.request);
+        return;
+    }
+
+    //create feature info tag
+    QDomElement featureTag = this->myWatchWindowTask.request->response.createElement("geometry");
+    featureTag.setAttribute("id", OiFeatureState::getActiveFeature()->getFeature()->getId());
+    featureTag.setAttribute("name", OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
+
+    //create tag with watch window data
+    QDomElement wwTag = this->myWatchWindowTask.request->response.createElement("cartesian");
+    this->buildWatchWindowMessage(wwTag, myReadingType, data);
+
+    qDebug() << "wwtag " << wwTag.text();
+
+    //build xml response
+    this->myWatchWindowTask.request->response.documentElement().appendChild(featureTag);
+    this->myWatchWindowTask.request->response.documentElement().appendChild(wwTag);
+
+    qDebug() << "response: " << this->myWatchWindowTask.request->response.toString();
 
     emit this->sendResponse(this->myWatchWindowTask.request);
 
-    QList<QString> sensorData = data.keys();
-    foreach(QString key, sensorData){
-        qDebug() << key << ": " << data.value(key).toString();
-    }
+}
+
+/*!
+ * \brief OiRequestHandler::measurementFinished
+ * \param geomId
+ * \param success
+ */
+void OiRequestHandler::measurementFinished(bool success){
+
+    disconnect(OiFeatureState::getActiveStation()->sensorPad, SIGNAL(commandFinished(bool)), this, SLOT(measurementFinished(bool)));
+
+    this->myMeasurementTask.taskInProcess = false;
+
+    this->myMeasurementTask.request->response.documentElement().setAttribute("errorCode", success ? 0 : OiRequestResponse::eMeasurementError);
+
+    emit this->sendResponse(this->myMeasurementTask.request);
+
 }

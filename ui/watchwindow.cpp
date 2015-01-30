@@ -3,7 +3,7 @@
 
 WatchWindow::WatchWindow(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::WatchWindow)
+    ui(new Ui::WatchWindow), isVisible(false)
 {
     ui->setupUi(this);
 
@@ -14,6 +14,11 @@ WatchWindow::WatchWindow(QWidget *parent) :
     settingsLayout = new QVBoxLayout();
 
     ui->groupBox_displayValues->setLayout(settingsLayout);
+
+    ui->radioButton_nomact->setChecked(false);
+    ui->radioButton_actnom->setChecked(true);
+
+    ui->spinBox_decimalDigits->setValue(2);
 
     listener = new WatchWindowListener();
 
@@ -121,7 +126,12 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             featureValues.setAt(0, 2*PI + featureValues.getAt(0));
         }
 
-        double dDist = featureValues.getAt(2) - trackerValues.getAt(2);
+        double dDist;
+        if(ui->radioButton_actnom->isChecked()){
+            dDist = trackerValues.getAt(2) - featureValues.getAt(2);
+        }else{
+            dDist = featureValues.getAt(2) - trackerValues.getAt(2);
+        }
 
         double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/UnitConverter::getDistanceMultiplier();
 
@@ -136,7 +146,12 @@ void WatchWindow::setLCDNumber(QVariantMap m){
 
         streamData.value("distance")->setText(table);
 
-        double alpha = featureValues.getAt(0)-trackerValues.getAt(0);
+        double alpha;
+        if(ui->radioButton_actnom->isChecked()){
+            alpha = trackerValues.getAt(0) - featureValues.getAt(0);
+        }else{
+            alpha = featureValues.getAt(0)-trackerValues.getAt(0);
+        }
 
         double dAcross =  alpha * trackerValues.getAt(2);
 
@@ -156,7 +171,12 @@ void WatchWindow::setLCDNumber(QVariantMap m){
         //actual
         double h2 = qSin(((PI/2) - trackerValues.getAt(1)))*trackerValues.getAt(2);
 
-        double dH = h1 - h2;
+        double dH;
+        if(ui->radioButton_actnom->isChecked()){
+            dH = h2 - h1;
+        }else{
+            dH = h1 - h2;
+        }
 
         if(qFabs(dH) >= qFabs(tolerance)){
             streamData.value("dH")->setPalette(Qt::red);
@@ -176,8 +196,6 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             j.next();
 
             for(int i=0;i<this->checkboxes.size();i++){
-
-
 
                 if(this->checkboxes.at(i)->text() == j.key() && this->checkboxes.at(i)->isChecked()){
 
@@ -202,7 +220,13 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             if(this->checkFeatureValid()){
                                 featureX = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(0);
                             }
-                            double dX = featureX - trackerXYZ.getAt(0);
+
+                            double dX;
+                            if(ui->radioButton_actnom->isChecked()){
+                                dX = trackerXYZ.getAt(0) - featureX;
+                            }else{
+                                dX = featureX - trackerXYZ.getAt(0);
+                            }
 
                             double tolerance = this->attributeTolerance.value("x")->text().toDouble()/UnitConverter::getDistanceMultiplier();
 
@@ -223,7 +247,13 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             if(this->checkFeatureValid()){
                                 featureY = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(1);
                             }
-                            double dY = featureY - trackerXYZ.getAt(1);
+
+                            double dY;
+                            if(ui->radioButton_actnom->isChecked()){
+                                dY = trackerXYZ.getAt(1) - featureY;
+                            }else{
+                                dY = featureY - trackerXYZ.getAt(1);
+                            }
 
                             double tolerance = this->attributeTolerance.value("y")->text().toDouble()/UnitConverter::getDistanceMultiplier();
 
@@ -244,7 +274,13 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                             if(this->checkFeatureValid()){
                                 featureZ = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ().getAt(2);
                             }
-                            double dZ = featureZ - trackerXYZ.getAt(2);
+
+                            double dZ;
+                            if(ui->radioButton_actnom->isChecked()){
+                                dZ = trackerXYZ.getAt(2) - featureZ;
+                            }else{
+                                dZ = featureZ - trackerXYZ.getAt(2);
+                            }
 
                             double tolerance = this->attributeTolerance.value("z")->text().toDouble()/UnitConverter::getDistanceMultiplier();
 
@@ -302,7 +338,13 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
                                     FeatureAZ = featurePolar.getAt(0);
                                 }
-                                double dAZ = FeatureAZ - trackerValues.getAt(0);
+
+                                double dAZ;
+                                if(ui->radioButton_actnom->isChecked()){
+                                    dAZ = trackerValues.getAt(0) - FeatureAZ;
+                                }else{
+                                    dAZ = FeatureAZ - trackerValues.getAt(0);
+                                }
 
                                 double tolerance = this->attributeTolerance.value("azimuth")->text().toDouble()/UnitConverter::getAngleMultiplier();
 
@@ -325,7 +367,13 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
                                     FeatureZE = featurePolar.getAt(1);
                                 }
+
                                 double dZE = FeatureZE - trackerValues.getAt(1);
+                                if(ui->radioButton_actnom->isChecked()){
+                                    dZE = trackerValues.getAt(1) - FeatureZE;
+                                }else{
+                                    dZE = FeatureZE - trackerValues.getAt(1);
+                                }
 
                                 double tolerance = this->attributeTolerance.value("zenith")->text().toDouble()/UnitConverter::getAngleMultiplier();
 
@@ -348,7 +396,13 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     OiVec featurePolar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
                                     FeatureDIS = featurePolar.getAt(2);
                                 }
-                                double dDIS = FeatureDIS - trackerValues.getAt(2);
+
+                                double dDIS;
+                                if(ui->radioButton_actnom->isChecked()){
+                                    dDIS = trackerValues.getAt(2) - FeatureDIS;
+                                }else{
+                                    dDIS = FeatureDIS - trackerValues.getAt(2);
+                                }
 
                                 double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/UnitConverter::getDistanceMultiplier();
 
@@ -432,19 +486,19 @@ void WatchWindow::iniGUI()
         if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
 
             QString name ="<p align=\"center\">" + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "</p>";
-            QString coordsys = "<p align=\"center\"(>" + OiFeatureState::getActiveCoordinateSystem()->getFeatureName() + "<)/p>";
+            QString actNom = "<p align=\"center\"(>" + OiFeatureState::getActiveFeature()->getFeature()->getDisplayIsNominal() + "<)/p>";
             QString obs = "<p align=\"center\">obs: " + QString::number(OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size()) + "</p>";
             QString featName = "";
 
-            featName ="<table width=\"100%\"> <tr> <td>" + name + "</td> <td>" + coordsys + "</td> <td>" + obs + "</td> </tr> </table>";
+            featName ="<table width=\"100%\"> <tr> <td>" + name + "</td> <td>" + actNom + "</td> <td>" + obs + "</td> </tr> </table>";
             featureName->setText(featName);
 
         }else{
             QString name ="<p align=\"center\">" + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "</p>";
-            QString coordsys = "<p align=\"center\">" + OiFeatureState::getActiveCoordinateSystem()->getFeatureName() + "</p>";
+            QString actNom = "<p align=\"center\">" + OiFeatureState::getActiveFeature()->getFeature()->getDisplayIsNominal() + "</p>";
             QString featName = "";
 
-            featName ="<table width=\"100%\"> <tr> <td>" + name + "</td> <td>" + coordsys + "</td> </tr> </table>";
+            featName ="<table width=\"100%\"> <tr> <td>" + name + "</td> <td>" + actNom + "</td> </tr> </table>";
             featureName->setText(featName);
         }
 
@@ -612,15 +666,40 @@ void WatchWindow::iniGUI()
     listener->isGUIReady = true;
 }
 
-void WatchWindow::keyPressEvent(QKeyEvent *e)
-{
+void WatchWindow::keyPressEvent(QKeyEvent *e){
+
+
     if(e->key() == Qt::Key_F3){
+
+        //emit measure command
         emit startMeasure();
+
+    }else if(e->key() == Qt::Key_F4){
+
+        emit this->addMeasurement();
+
+    }else{ //emit key pressed event to be able to react on such event (e.g. in OiTools)
+        emit this->keyPressed((Qt::Key)e->key());
     }
+
+    /*
+     * else if(e->key() == Qt::Key_F && e->modifiers() == Qt::ALT){ //Leica Tracker smartfind after aim
+        emit this->doSelfDefinedAction("find target");
+    }
+    else if(e->text().compare("") != 0){ //emit self defined action
+        emit this->doSelfDefinedAction(e->text());
+    }*/
+
 }
 
 void WatchWindow::closeEvent(QCloseEvent *e)
 {
+
+    if(this->isVisible == false){
+        return;
+    }
+    this->isVisible = false;
+
     OiFeatureState::getActiveStation()->emitStopReadingStream();
     streamData.clear();
 
@@ -637,12 +716,16 @@ void WatchWindow::closeEvent(QCloseEvent *e)
 
     //delete this;
 
+    emit closeWatchWindow();
+
     e->accept();
 
 }
 
 void WatchWindow::showEvent(QShowEvent *event)
 {
+    this->isVisible = true;
+
     listenerThread.start();
 
     ui->comboBox_polarMode->clear();

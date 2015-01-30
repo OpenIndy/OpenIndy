@@ -39,12 +39,12 @@ public:
 
     void recalc();
 
-    QString getDisplayX() const;
-    QString getDisplayY() const;
-    QString getDisplayZ() const;
-    QString getDisplayI() const;
-    QString getDisplayJ() const;
-    QString getDisplayK() const;
+    QString getDisplayX(bool showDiff) const;
+    QString getDisplayY(bool showDiff) const;
+    QString getDisplayZ(bool showDiff) const;
+    QString getDisplayI(bool showDiff) const;
+    QString getDisplayJ(bool showDiff) const;
+    QString getDisplayK(bool showDiff) const;
     QString getDisplayIsCommon() const;
     //QString getDisplayIsNominal() const;
     //QString getDisplayObs() const;

@@ -37,6 +37,9 @@ Controller::Controller(QObject *parent) :
     openIndyServer = new OiServer();
     openIndyServer->startServer();
 
+    openIndyWebSocketServer = new OiWebSocketServer();
+    openIndyWebSocketServer->startServer();
+    //connect(openIndyServer, SIGNAL(getProject(OiProjectData*)), this, SLOT(handleRemoteCommand(OiProjectData*)));
 
 }
 
@@ -46,14 +49,14 @@ Controller::Controller(QObject *parent) :
  */
 void Controller::setActiveFeature(int featureId){
 
-    //get the selected feature by its id
+	//get the selected feature by its id
     FeatureWrapper *selectedFeature = OiFeatureState::getFeature(featureId);
-
-    //check if the selected feature exists
+	
+	//check if the selected feature exists
     if(selectedFeature == NULL || selectedFeature->getFeature() == NULL){
         Console::addLine("Cannot activate an invalid feature");
         return;
-    }
+	}
 
     //activate the feature if it is not activated yet
     if(!selectedFeature->getFeature()->getIsActiveFeature()){
@@ -155,6 +158,45 @@ void Controller::startMeasurement(){
 
         emit sensorWorks("measuring...");
     }
+}
+
+/*!
+ * \brief Controller::addMeasurement
+ * Add the last reading of current sensor to the active feature as an observations
+ */
+void Controller::addMeasurement(){
+
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }else if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+        Console::addLine("no active feature");
+        return;
+    }
+
+    bool checkActiveCoordSys = false;
+
+    if (OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+        checkActiveCoordSys = true;
+    }
+
+    if(checkSensorValid() && checkFeatureValid()){
+
+        if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
+            if(!this->generateActualForNominal(OiFeatureState::getActiveFeature())){
+                Console::addLine("can not create actual for nominal feature");
+                return;
+            }
+        }
+
+        QPair<Configuration::ReadingTypes, Reading*> lastReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getLastReading();
+
+        Reading *r = new Reading();
+        *r = *lastReading.second;
+        OiFeatureState::getActiveStation()->sensorPad->addReading(r, OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
+
+    }
+
 }
 
 /*!
@@ -401,28 +443,32 @@ void Controller::startCustomAction(QString s)
  */
 void Controller::connectModels(){
     try{
-
-        //update table model when one or more features change
-        /*connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
+	
+	
+		//update table model when one or more features change
+        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
         connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
-*/
-        connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()));
-        //connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
+        connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()), Qt::DirectConnection);
+        connect(this->myFeatureState, SIGNAL(systemObservationsAdded()), this, SLOT(recalcActiveFeature()), Qt::DirectConnection);
+        connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
 
+		connect(this->myFeatureState, SIGNAL(featureFunctionsChanged()), this, SLOT(changeFunctionTreeViewModel()));
+		
         //update feature groups model when a group is added or removed
         connect(this->myFeatureState, SIGNAL(availableGroupsChanged()), this, SLOT(setUpFeatureGroupsModel()));
 
         //update feature tree view model which is used in function plugin loader
-        //connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->featureTreeViewModel, SLOT(refreshModel()));
+        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->featureTreeViewModel, SLOT(refreshModel()));
 
         //update coordinate systems model
         connect(this->myFeatureState, SIGNAL(featureSetChanged()), this, SLOT(setUpCoordinateSystemsModel()));
         connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this, SLOT(setUpCoordinateSystemsModel()));
 
-        //update function treeview model for active feature
-        connect(this->myFeatureState, SIGNAL(featureFunctionsChanged()), this, SLOT(changeFunctionTreeViewModel()));
-        connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this, SLOT(changeFunctionTreeViewModel()));
+        //save project each time when observations were added
+        connect(OiFeatureState::getInstance(), SIGNAL(systemObservationsAdded()), this, SLOT(saveProject()));
+
+        connect(this, SIGNAL(refreshGUI()), this->tblModel, SLOT(updateModel()));
 
         //send save or load project task to OiRequestHandler & listen to his answers
         connect(this, SIGNAL(sendXmlRequest(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveRequest(OiRequestResponse*)));
@@ -558,6 +604,30 @@ void Controller::addFeature(FeatureAttributesExchange fae){
     //this->featureTreeViewModel->refreshModel();
 }
 
+/*!
+ * \brief Controller::startCustomAction calls the custom action of the sensor.
+ * \param s
+ */
+void Controller::startCustomAction(QString s)
+{
+    if(OiFeatureState::getActiveStation() == NULL){
+        Console::addLine("no active station");
+        return;
+    }
+
+    emit sensorWorks("custom action: " + s);
+    OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
+}
+
+void Controller::emitShowWatchWindow()
+{
+    emit this->showWatchWindow();
+}
+
+void Controller::emitCloseWatchWindow()
+{
+    emit this->closeWatchWindow();
+}
 
 void Controller::recalcAll()
 {
@@ -575,6 +645,7 @@ void Controller::recalcActiveFeature(){
     }else if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
         this->recalcFeature(OiFeatureState::getActiveFeature()->getFeature());
     }
+    emit this->refreshGUI();
 }
 
 /*!
@@ -586,7 +657,11 @@ void Controller::recalcFeature(Feature *f){
     //start recalcing
     this->myFeatureUpdater->recalcFeature(f);
     //refresh feature tree view models
-    //this->featureTreeViewModel->refreshModel();
+
+    this->featureTreeViewModel->refreshModel();
+
+    emit this->refreshGUI();
+
 }
 
 /*!
@@ -621,6 +696,8 @@ void Controller::changeActiveStation(bool setSensor){
         /*if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
             this->startDisconnect();
         }*/
+
+        disconnect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
 
         if(setSensor){
             OiFeatureState::getActiveStation()->sensorPad->copyMe(OiFeatureState::getActiveFeature()->getStation()->sensorPad);
@@ -692,9 +769,9 @@ void Controller::setSelectedFeature(int featureIndex){
 
             //send the actual position of the active feature
             if(OiFeatureState::getActiveFeature()->getGeometry()!= NULL){
-                double x  = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayX().toDouble();
-                double y = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayY().toDouble();
-                double z = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayZ().toDouble();
+                double x  = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayX(false).toDouble();
+                double y = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayY(false).toDouble();
+                double z = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayZ(false).toDouble();
 
                 emit sendPositionOfActiveFeature(x,  y,  z);
             }
@@ -841,6 +918,256 @@ void Controller::setActiveCoordSystem(QString CoordSysName){
 
     //update table view for all features
     emit this->refreshGUI();
+}
+
+/*!
+ * \brief Controller::changeFunctionTreeViewModel
+ * Update model for tree view with all functions of selected feature
+ */
+void Controller::changeFunctionTreeViewModel(){
+    this->functionTreeViewModel->clear();
+    this->functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
+    QStandardItem *rootItem = this->functionTreeViewModel->invisibleRootItem();
+    if(OiFeatureState::getActiveFeature() != NULL){
+        foreach(Function *f, OiFeatureState::getActiveFeature()->getFeature()->getFunctions()){
+            if(f != NULL){
+                QStandardItem *function = new QStandardItem(f->getMetaData()->name);
+                foreach(InputParams param, f->getNeededElements()){
+                    if(param.infinite){
+                        QStandardItem *element = new QStandardItem(QString("n %1s").arg(Configuration::getElementTypeString(param.typeOfElement)));
+                        function->appendRow(element);
+                    }else{
+                        QStandardItem *element = new QStandardItem(QString("1 %1").arg(Configuration::getElementTypeString(param.typeOfElement)));
+                        function->appendRow(element);
+                    }
+                }
+                rootItem->appendRow(function);
+            }
+        }
+    }
+}
+
+/*!
+ * \brief Controller::changeUsedElementsModel
+ * Update model for listview with used elements
+ * \param functionIndex
+ * \param elementIndex
+ */
+void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
+    this->usedElementsModel->removeAllElements();
+
+    if(functionIndex >= 0 && elementIndex >= 0 && OiFeatureState::getActiveFeature() != NULL
+            && OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex
+            && OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().size() > elementIndex){
+        //get function at functionIndex of active feature
+        Function *func = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex);
+        QMap<int, QList<InputFeature> > featureOrder = func->getFeatureOrder();
+        QMap<int, QList<InputFeature> >::iterator idx = featureOrder.find(elementIndex);
+        if(idx != featureOrder.end() && idx.value().size() > 0){ //if the list with elements is not empty
+            QList<InputFeature> featurePosition = idx.value(); //elements of function at elementIndex
+            switch(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement){
+                case Configuration::ePointElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        Point *p = func->getPoint(featurePosition.at(i).id);
+                        if(p != NULL){
+                            FeatureWrapper *pointWrapper = new FeatureWrapper();
+                            pointWrapper->setPoint(p);
+                            FeatureTreeItem *point = new FeatureTreeItem(p->getFeatureName());
+                            point->setFeature(pointWrapper);
+                            this->usedElementsModel->addElement(point);
+                        }
+                    }
+                    break;
+                case Configuration::eLineElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        Line *l = func->getLine(featurePosition.at(i).id);
+                        if(l != NULL){
+                            FeatureWrapper *lineWrapper = new FeatureWrapper();
+                            lineWrapper->setLine(l);
+                            FeatureTreeItem *line = new FeatureTreeItem(l->getFeatureName());
+                            line->setFeature(lineWrapper);
+                            this->usedElementsModel->addElement(line);
+                        }
+                    }
+                    break;
+                case Configuration::ePlaneElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        Plane *p = func->getPlane(featurePosition.at(i).id);
+                        if(p != NULL){
+                            FeatureWrapper *planeWrapper = new FeatureWrapper();
+                            planeWrapper->setPlane(p);
+                            FeatureTreeItem *plane = new FeatureTreeItem(p->getFeatureName());
+                            plane->setFeature(planeWrapper);
+                            this->usedElementsModel->addElement(plane);
+                        }
+                    }
+                    break;
+                case Configuration::eSphereElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        Sphere *s = func->getSphere(featurePosition.at(i).id);
+                        if(s != NULL){
+                            FeatureWrapper *sphereWrapper = new FeatureWrapper();
+                            sphereWrapper->setSphere(s);
+                            FeatureTreeItem *sphere = new FeatureTreeItem(s->getFeatureName());
+                            sphere->setFeature(sphereWrapper);
+                            this->usedElementsModel->addElement(sphere);
+                        }
+                    }
+                    break;
+                case Configuration::eScalarEntityAngleElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        ScalarEntityAngle *s = func->getScalarEntityAngle(featurePosition.at(i).id);
+                        if(s != NULL){
+                            FeatureWrapper *angleWrapper = new FeatureWrapper();
+                            angleWrapper->setScalarEntityAngle(s);
+                            FeatureTreeItem *angle = new FeatureTreeItem(s->getFeatureName());
+                            angle->setFeature(angleWrapper);
+                            this->usedElementsModel->addElement(angle);
+                        }
+                    }
+                    break;
+                case Configuration::eScalarEntityDistanceElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        ScalarEntityDistance *s = func->getScalarEntityDistance(featurePosition.at(i).id);
+                        if(s != NULL){
+                            FeatureWrapper *distanceWrapper = new FeatureWrapper();
+                            distanceWrapper->setScalarEntityDistance(s);
+                            FeatureTreeItem *distance = new FeatureTreeItem(s->getFeatureName());
+                            distance->setFeature(distanceWrapper);
+                            this->usedElementsModel->addElement(distance);
+                        }
+                    }
+                    break;
+                case Configuration::eTrafoParamElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        TrafoParam *tp = func->getTrafoParam(featurePosition.at(i).id);
+                        if(tp != NULL){
+                            FeatureWrapper *trafoParamWrapper = new FeatureWrapper();
+                            trafoParamWrapper->setTrafoParam(tp);
+                            FeatureTreeItem *trafoParam = new FeatureTreeItem(tp->getFeatureName());
+                            trafoParam->setFeature(trafoParamWrapper);
+                            this->usedElementsModel->addElement(trafoParam);
+                        }
+                    }
+                    break;
+                case Configuration::eCoordinateSystemElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        CoordinateSystem *cs = func->getCoordinateSystem(featurePosition.at(i).id);
+                        if(cs != NULL){
+                            FeatureWrapper *coordinateSystemWrapper = new FeatureWrapper();
+                            coordinateSystemWrapper->setCoordinateSystem(cs);
+                            FeatureTreeItem *coordinateSystem = new FeatureTreeItem(cs->getFeatureName());
+                            coordinateSystem->setFeature(coordinateSystemWrapper);
+                            this->usedElementsModel->addElement(coordinateSystem);
+                        }
+                    }
+                    break;
+                case Configuration::eStationElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        Station *s = func->getStation(featurePosition.at(i).id);
+                        if(s != NULL){
+                            FeatureWrapper *stationWrapper = new FeatureWrapper();
+                            stationWrapper->setStation(s);
+                            FeatureTreeItem *station = new FeatureTreeItem(s->getFeatureName());
+                            station->setFeature(stationWrapper);
+                            this->usedElementsModel->addElement(station);
+                        }
+                    }
+                    break;
+                case Configuration::eObservationElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        Observation *o = func->getObservation(featurePosition.at(i).id);
+                        if(o != NULL && o->myReading != NULL){
+                            FeatureTreeItem *observation = new FeatureTreeItem(QString::number(o->getId()));
+                            observation->setObservation(o);
+                            this->usedElementsModel->addElement(observation);
+                        }
+                    }
+                    break;
+                case Configuration::eReadingCartesianElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        Reading *r = func->getReadingCartesian(featurePosition.at(i).id);
+                        if(r != NULL){
+                            FeatureTreeItem *reading = new FeatureTreeItem(r->measuredAt.toString());
+                            reading->setReading(r);
+                            this->usedElementsModel->addElement(reading);
+                        }
+                    }
+                    break;
+                case Configuration::eReadingDirectionElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        Reading *r = func->getReadingDirection(featurePosition.at(i).id);
+                        if(r != NULL){
+                            FeatureTreeItem *reading = new FeatureTreeItem(r->measuredAt.toString());
+                            reading->setReading(r);
+                            this->usedElementsModel->addElement(reading);
+                        }
+                    }
+                    break;
+                case Configuration::eReadingDistanceElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        Reading *r = func->getReadingDistance(featurePosition.at(i).id);
+                        if(r != NULL){
+                            FeatureTreeItem *reading = new FeatureTreeItem(r->measuredAt.toString());
+                            reading->setReading(r);
+                            this->usedElementsModel->addElement(reading);
+                        }
+                    }
+                    break;
+                case Configuration::eReadingPolarElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        Reading *r = func->getReadingPolar(featurePosition.at(i).id);
+                        if(r != NULL){
+                            FeatureTreeItem *reading = new FeatureTreeItem(r->measuredAt.toString());
+                            reading->setReading(r);
+                            this->usedElementsModel->addElement(reading);
+                        }
+                    }
+                    break;
+                case Configuration::eScalarEntityTemperatureElement:
+                    for(int i = 0; i < featurePosition.size(); i++){
+                        ScalarEntityTemperature *s = func->getScalarEntityTemperature(featurePosition.at(i).id);
+                        if(s != NULL){
+                            FeatureWrapper *temperatureWrapper = new FeatureWrapper();
+                            temperatureWrapper->setScalarEntityTemperature(s);
+                            FeatureTreeItem *temperature = new FeatureTreeItem(s->getFeatureName());
+                            temperature->setFeature(temperatureWrapper);
+                            this->usedElementsModel->addElement(temperature);
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    this->usedElementsModel->refreshModel();
+}
+
+/*!
+ * \brief Controller::setSelectedFunction
+ * Receive selected function from function plugin loader dialog
+ * \param index
+ * \param neededElement
+ */
+void Controller::setSelectedFunction(int functionIndex, int neededElementIndex){
+    if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex && functionIndex >= 0){ //if function index is valid
+        if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().size() > neededElementIndex
+                && neededElementIndex >= 0){ //if needed element index is valid
+            emit this->sendFunctionDescription(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements()
+                                               .at(neededElementIndex).description);
+            emit this->sendAvailableElementsFilter(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements()
+                                                   .at(neededElementIndex).typeOfElement, false);
+        }else{ //if function itself was clicked
+            Function *func = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex);
+            emit this->sendFunctionDescription(func->getMetaData()->description);
+            emit this->sendAvailableElementsFilter(Configuration::eUndefinedElement, true);
+            emit this->sendExtraParameterForFunction(func->getIntegerParameter(), func->getDoubleParameter(), func->getStringParameter(), func->getFunctionConfiguration());
+        }
+    }else{
+        emit this->sendAvailableElementsFilter(Configuration::eUndefinedElement, true);
+    }
+    //re-build used elements model
+    this->changeUsedElementsModel(functionIndex, neededElementIndex);
 }
 
 /*!
@@ -1040,6 +1367,9 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
                 element->getFeature()->getFeature()->usedFor.removeOne(OiFeatureState::getActiveFeature());
             }else if(element->getIsObservation() && element->getObservation() != NULL){
                 feature->getFunctions().at(functionIndex)->removeObservation(element->getObservation()->getId());
+                if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+                    element->getObservation()->myTargetGeometries.removeOne(OiFeatureState::getActiveFeature()->getGeometry());
+                }
             }else if(element->getIsReading() && element->getReading() != NULL){
                 switch(element->getReading()->typeofReading){
                     case Configuration::eCartesian:
@@ -1054,6 +1384,7 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
             }
             //this->changeUsedElementsModel(functionIndex, elementIndex);
         }
+
     }
 }
 
@@ -1284,7 +1615,8 @@ bool Controller::receiveRequestResult(OiRequestResponse *request){
 
                     OiProjectData::getDevice()->close();
 
-                    emit this->showMessageBox(OiProjectData::getProjectName(), "OpenIndy project successfully stored.");
+                    //emit this->showMessageBox(OiProjectData::getProjectName(), "OpenIndy project successfully stored.");
+                    Console::addLine("OpenIndy project successfully stored.");
 
                 }
 
@@ -1408,6 +1740,13 @@ void Controller::loadOiToolWidget(QString pluginName, QString toolName)
         connect(OiFeatureState::getInstance(),SIGNAL(geometryObservationsChanged()),jobState,SLOT(emitGeometryObservationsChanged()));
         connect(OiFeatureState::getInstance(),SIGNAL(featureFunctionsChanged()),jobState,SLOT(emitFeatureFunctionsChanged()));
         connect(OiFeatureState::getInstance(),SIGNAL(coordSystemSetChanged()),jobState,SLOT(emitCoordSystemSetChanged()));
+
+        connect(jobState, SIGNAL(startAim()), this, SLOT(startAim()));
+        connect(jobState, SIGNAL(showWatchWindow()), this, SLOT(emitShowWatchWindow()));
+        connect(jobState,SIGNAL(closeWatchWindow()), this, SLOT(emitCloseWatchWindow()));
+
+        connect(OiRequestHandler::getInstance(), SIGNAL(sendOiToolRequest(OiRequestResponse*)), oiToolWidget, SLOT(customXMLRequest(OiRequestResponse*)));
+        connect(oiToolWidget, SIGNAL(sendCustomXMLResponse(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveOiToolResponse(OiRequestResponse*)));
 
         oiToolWidget->setOiJob(jobState);
 

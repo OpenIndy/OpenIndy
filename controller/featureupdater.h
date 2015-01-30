@@ -47,8 +47,8 @@ private:
     void fillTrafoParamFunctionAN(SystemTransformation *function, TrafoParam *tp);
     void fillTrafoParamFunctionAA(SystemTransformation *function, TrafoParam *tp);
     void fillTrafoParamFunctionMovement(SystemTransformation *function, TrafoParam *tp);
-    void switchCoordinateSystemWithoutTransformation(CoordinateSystem *to);
 
+    void switchCoordinateSystemWithoutTransformation(CoordinateSystem *to);
     void switchCoordinateSystemWithoutMovement(CoordinateSystem *to);
 
     static FeatureUpdater *myFeatureUpdater;

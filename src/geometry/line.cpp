@@ -152,8 +152,12 @@ bool Line::saveSimulationData()
     return true;
 }
 
-QString Line::getDisplayX() const{
+QString Line::getDisplayX(bool showDiff) const{
     QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){
@@ -170,8 +174,12 @@ QString Line::getDisplayX() const{
     return value;
 }
 
-QString Line::getDisplayY() const{
+QString Line::getDisplayY(bool showDiff) const{
     QString value = QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){
@@ -188,8 +196,12 @@ QString Line::getDisplayY() const{
     return value;
 }
 
-QString Line::getDisplayZ() const{
+QString Line::getDisplayZ(bool showDiff) const{
     QString value = QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){
@@ -206,8 +218,12 @@ QString Line::getDisplayZ() const{
     return value;
 }
 
-QString Line::getDisplayI() const{
+QString Line::getDisplayI(bool showDiff) const{
     QString value = QString::number(this->ijk.getAt(0),'f',6);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){
@@ -224,8 +240,12 @@ QString Line::getDisplayI() const{
     return value;
 }
 
-QString Line::getDisplayJ() const{
+QString Line::getDisplayJ(bool showDiff) const{
     QString value = QString::number(this->ijk.getAt(1),'f',6);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){
@@ -242,8 +262,12 @@ QString Line::getDisplayJ() const{
     return value;
 }
 
-QString Line::getDisplayK() const{
+QString Line::getDisplayK(bool showDiff) const{
     QString value = QString::number(this->ijk.getAt(2),'f',6);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){

@@ -26,7 +26,8 @@ public:
         eMove,
         eMeasure,
         eStartWatchwindow,
-        eStopWatchwindow
+        eStopWatchwindow,
+        eOiToolRequest
     };
 
     enum ErrorCode{
@@ -42,7 +43,8 @@ public:
         eNoTask,
         eNoSensor,
         eNoTaskWithId,
-        eCannotMeasureNominal
+        eCannotMeasureNominal,
+        eMeasurementError
     };
 
     RequestType myRequestType; //defines the type of request

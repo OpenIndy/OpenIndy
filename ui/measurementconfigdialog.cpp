@@ -345,6 +345,7 @@ void MeasurementConfigDialog::on_comboBox_existingConfigs_currentIndexChanged(co
     this->ui->lineEdit_iterations->setText(QString::number(mConfig.iterations));
     this->ui->checkBox_distanceDependent->setChecked(mConfig.distanceDependent);
     this->ui->checkBox_timeDependent->setChecked(mConfig.timeDependent);
+    this->ui->checkBox_fsbs->setChecked(mConfig.measureTwoSides);
     this->ui->lineEdit_distanceInterval->setText(QString::number(mConfig.distanceInterval));
     this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.timeInterval));
 

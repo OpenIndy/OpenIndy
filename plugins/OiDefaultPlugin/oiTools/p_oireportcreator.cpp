@@ -15,7 +15,12 @@ PluginMetaData* OiReportCreator::getMetaData() const{
     return metaData;
 }
 
-void OiReportCreator::customXMLRequest(QDomElement request)
+void OiReportCreator::customXMLRequest(OiRequestResponse *request)
+{
+
+}
+
+void OiReportCreator::watchWindowKeyPressed(Qt::Key)
 {
 
 }

@@ -12,6 +12,7 @@ CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), origin(4)
     this->expansionOrigin.setAt(3,1.0);
     this->origin.setAt(3,1.0);
     this->isStationSystem = false;
+    this->isActiveCoordinateSystem = false;
 }
 
 CoordinateSystem::~CoordinateSystem(){
@@ -82,7 +83,7 @@ bool CoordinateSystem::addObservation(Observation * const observation){
 
         if(observation != NULL){
             this->observations.append(observation);
-            emit this->observationsChanged(this->id);
+            emit this->observationsChanged(this->id, observation->getId());
             return true;
         }
         return false;

@@ -367,7 +367,7 @@ bool Feature::fromOpenIndyXML(QDomElement &xmlElem){
  * \brief Feature::getDisplayX
  * \return
  */
-QString Feature::getDisplayX() const{
+QString Feature::getDisplayX(bool showDiff) const{
     return "-/-";
 }
 
@@ -375,7 +375,7 @@ QString Feature::getDisplayX() const{
  * \brief Feature::getDisplayY
  * \return
  */
-QString Feature::getDisplayY() const{
+QString Feature::getDisplayY(bool showDiff) const{
     return "-/-";
 }
 
@@ -383,7 +383,7 @@ QString Feature::getDisplayY() const{
  * \brief Feature::getDisplayZ
  * \return
  */
-QString Feature::getDisplayZ() const{
+QString Feature::getDisplayZ(bool showDiff) const{
     return "-/-";
 }
 
@@ -391,7 +391,7 @@ QString Feature::getDisplayZ() const{
  * \brief Feature::getDisplayI
  * \return
  */
-QString Feature::getDisplayI() const{
+QString Feature::getDisplayI(bool showDiff) const{
     return "-/-";
 }
 
@@ -399,7 +399,7 @@ QString Feature::getDisplayI() const{
  * \brief Feature::getDisplayJ
  * \return
  */
-QString Feature::getDisplayJ() const{
+QString Feature::getDisplayJ(bool showDiff) const{
     return "-/-";
 }
 
@@ -407,7 +407,7 @@ QString Feature::getDisplayJ() const{
  * \brief Feature::getDisplayK
  * \return
  */
-QString Feature::getDisplayK() const{
+QString Feature::getDisplayK(bool showDiff) const{
     return "-/-";
 }
 
@@ -415,7 +415,7 @@ QString Feature::getDisplayK() const{
  * \brief Feature::getDisplayRadius
  * \return
  */
-QString Feature::getDisplayRadius() const{
+QString Feature::getDisplayRadius(bool showDiff) const{
     return "-/-";
 }
 

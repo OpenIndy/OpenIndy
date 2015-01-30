@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql serialport network opengl xml
+QT       += core gui sql serialport network opengl xml websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -175,7 +175,7 @@ SOURCES += \
     controller/networking/oiserver.cpp \
     controller/networking/oinetworkconnection.cpp \
     controller/networking/oirequesthandler.cpp \
-    controller/networking/oirequestresponse.cpp \
+    src/oirequestresponse.cpp \
     ui/pointfeaturemodel.cpp \
     ui/pointfeaturefiltermodel.cpp \
     ui/observationproxymodel.cpp \
@@ -194,6 +194,8 @@ SOURCES += \
     ui/geometrytypesproxymodel.cpp \
     ui/featuretablemodel.cpp \
     ui/featuretableproxymodel.cpp
+    controller/networking/oiwebsocket.cpp \
+    controller/networking/oiwebsocketserver.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -330,7 +332,7 @@ HEADERS  += \
     controller/networking/oiserver.h \
     controller/networking/oinetworkconnection.h \
     controller/networking/oirequesthandler.h \
-    controller/networking/oirequestresponse.h \
+    src/oirequestresponse.h \
     ui/pointfeaturemodel.h \
     ui/pointfeaturefiltermodel.h \
     ui/observationproxymodel.h \
@@ -354,6 +356,8 @@ HEADERS  += \
     ui/geometrytypesproxymodel.h \
     ui/featuretablemodel.h \
     ui/featuretableproxymodel.h
+    controller/networking/oiwebsocket.h \
+    controller/networking/oiwebsocketserver.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

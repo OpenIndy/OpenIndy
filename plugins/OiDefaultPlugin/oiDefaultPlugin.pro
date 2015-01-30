@@ -169,7 +169,8 @@ SOURCES += p_factory.cpp \
     ../../src/oiemitter/oiexchangeemitter.cpp \
     ../../src/plugin/oiexchange/oiexchangeobject.cpp \
     oiExchange/p_oiexchangeascii.cpp \
-    oiExchange/p_oiexchangepts.cpp
+    oiExchange/p_oiexchangepts.cpp \
+    ../../src/oirequestresponse.cpp
 
 HEADERS += p_factory.h \
     lib/fitting/cfitting_approxfunc.h \
@@ -295,7 +296,8 @@ HEADERS += p_factory.h \
     ../../src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
     ../../src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
     oiExchange/p_oiexchangeascii.h \
-    oiExchange/p_oiexchangepts.h
+    oiExchange/p_oiexchangepts.h \
+    ../../src/oirequestresponse.h
 
 OTHER_FILES += metaInfo.json
 

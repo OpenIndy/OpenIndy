@@ -62,6 +62,7 @@
 #include "oiprojectexchanger.h"
 
 #include "oiserver.h"
+#include "oiwebsocketserver.h"
 #include "oirequesthandler.h"
 
 #include "pointfeaturemodel.h"
@@ -116,6 +117,7 @@ public slots:
     void setActiveCoordinateSystem();
 
     void startMeasurement();
+	void addMeasurement();
     void startMove(Reading *parameter);
     void startAim();
     void startConnect();
@@ -163,6 +165,7 @@ public:
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
 
     OiServer *openIndyServer;
+    OiWebSocketServer *openIndyWebSocketServer;
 
 signals:
     void changedStation();
@@ -198,6 +201,9 @@ signals:
 
     void openOiToolWidget(OiTool* oiToolWidget);
 
+    void showWatchWindow();
+    void closeWatchWindow();
+
 public slots:
     void setActiveGroup(QString group);
 
@@ -206,6 +212,9 @@ public slots:
 
     void setActiveCoordSystem(QString CoordSysName);
     void addFeature(FeatureAttributesExchange fae);
+
+    void emitShowWatchWindow();
+    void emitCloseWatchWindow();
 
     void changeActiveStation(bool setSensor);
     void showResults(bool);

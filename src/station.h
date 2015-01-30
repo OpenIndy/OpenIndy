@@ -16,6 +16,8 @@
 #include "point.h"
 #include "oisensoremitter.h"
 
+#include "sensorlistener.h"
+
 class SensorControl;
 class Reading;
 class CoordinateSystem;
@@ -40,6 +42,8 @@ public:
     bool getIsActiveStation();
     bool setActiveStationState(bool isActiveStation);
 
+    Configuration::ReadingTypes getReadingStreamType();
+
     Point *position;
 
     SensorControl *sensorPad;
@@ -60,28 +64,27 @@ public:
 signals:
     //evertime the sensor finised an action, this signal will be emitted
     void actionFinished(bool);
-    void measurementFinished(bool);
 
     //starts the measurement
-    void startMeasure(Geometry *geom, bool isActiveCoordSys);
+    void startMeasure(Geometry *geom, bool isActiveCoordSys) const;
 
     //data streams
-    void startReadingStream(int);
-    void startSensorStatsStream();
-    void stopReadingStream();
-    void stopSensorStatsStream();
+    void startReadingStream(int) const;
+    void startSensorStatsStream() const;
+    void stopReadingStream() const;
+    void stopSensorStatsStream() const;
 
     //sensor actions (station signals)
-    void startMove(double, double, double, bool);
-    void startMove(double, double, double);
-    void startInitialize();
-    void startMotorState();
-    void startHome();
-    void startToggleSight();
-    void startConnect(ConnectionConfig*);
-    void startDisconnect();
-    void startCompensation();
-    void startSelfDefinedAction(QString s);
+    void startMove(double, double, double, bool) const;
+    void startMove(double, double, double) const;
+    void startInitialize() const;
+    void startMotorState() const;
+    void startHome() const;
+    void startToggleSight() const;
+    void startConnect(ConnectionConfig*) const;
+    void startDisconnect() const;
+    void startCompensation() const;
+    void startSelfDefinedAction(QString s) const;
 
     void sendToConsole(QString);
 
@@ -97,25 +100,25 @@ public slots:
     SensorConfiguration getInstrumentConfig();
 
     //measurement
-    void emitStartMeasure(Geometry *geom, bool isActiveCoordSys);
+    void emitStartMeasure(Geometry *geom, bool isActiveCoordSys) const;
 
     //data stream
-    void emitStartReadingStream(int readingType);
-    void emitStopReadingStream();
-    void emitStartSensorStatsStream();
-    void emitStopSensorStatsStream();
+    void emitStartReadingStream(int readingType) const;
+    void emitStopReadingStream() const;
+    void emitStartSensorStatsStream() const;
+    void emitStopSensorStatsStream() const;
 
     //sensor actions (slots to emit the station signals)
-    void emitStartMove(double, double, double, bool);
-    void emitStartMove(double, double, double);
-    void emitStartInitialize();
-    void emitStartMotorState();
-    void emitStartHome();
-    void emitStartToggleSight();
-    void emitStartConnect(ConnectionConfig*);
-    void emitStartDisconnect();
-    void emitStartCompensation();
-    void emitSelfDefinedAction(QString s);
+    void emitStartMove(double, double, double, bool) const;
+    void emitStartMove(double, double, double) const;
+    void emitStartInitialize() const;
+    void emitStartMotorState() const;
+    void emitStartHome() const;
+    void emitStartToggleSight() const;
+    void emitStartConnect(ConnectionConfig*) const;
+    void emitStartDisconnect() const;
+    void emitStartCompensation() const;
+    void emitSelfDefinedAction(QString s) const;
 
     OiSensorEmitter* getActiveSensorEmitter();
 
@@ -131,7 +134,6 @@ public slots:
 private slots:
     //! will be emitted when sensor action is completed
     void emitActionFinished(bool wasSuccessful);
-    void emitMeasurementFinished(bool wasSuccessful);
     void writeToConsole(QString);
 
 private:

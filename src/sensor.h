@@ -5,6 +5,8 @@
 #include <QStringList>
 #include <QMap>
 #include <QVariant>
+#include <QPair>
+
 #include "sensorcontrol.h"
 #include "oisensoremitter.h"
 #include "pluginmetadata.h"
@@ -130,8 +132,19 @@ public:
 
     }
 
+    /*!
+     * \brief getLastReading
+     * Returns the last reading (measured or streamed) of this sensor
+     * \return
+     */
+    QPair<Configuration::ReadingTypes, Reading*> getLastReading(){
+        return this->lastReading;
+    }
+
 protected:
     void writeToConsole(QString s){myEmitter.emitSendString(s);}
+
+    QPair<Configuration::ReadingTypes, Reading*> lastReading;
 
 };
 

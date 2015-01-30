@@ -10,6 +10,9 @@ GUIConfiguration::~GUIConfiguration()
 
 }
 
+//settings
+bool GUIConfiguration::showDifferences = false;
+
 //! main view
 QStringList GUIConfiguration::allAttributes;
 QList<DisplayAttribute*> GUIConfiguration::featureAttributes;
@@ -348,6 +351,16 @@ QList<int> GUIConfiguration::displayReadingAttributes()
     }
     //return empty list if no reading type is set
     return display;
+}
+
+void GUIConfiguration::setShowDifferences(bool show)
+{
+    showDifferences = show;
+}
+
+bool GUIConfiguration::getShowDifferences()
+{
+    return showDifferences;
 }
 
 /*!

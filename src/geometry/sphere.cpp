@@ -142,9 +142,13 @@ bool Sphere::saveSimulationData()
     return true;
 }
 
-QString Sphere::getDisplayX() const{
+QString Sphere::getDisplayX(bool showDiff) const{
 
     QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){
@@ -162,9 +166,13 @@ QString Sphere::getDisplayX() const{
 
 }
 
-QString Sphere::getDisplayY() const{
+QString Sphere::getDisplayY(bool showDiff) const{
 
     QString value = QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){
@@ -181,8 +189,12 @@ QString Sphere::getDisplayY() const{
     return value;
 }
 
-QString Sphere::getDisplayZ() const{
+QString Sphere::getDisplayZ(bool showDiff) const{
     QString value = QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){
@@ -199,9 +211,13 @@ QString Sphere::getDisplayZ() const{
     return value;
 }
 
-QString Sphere::getDisplayRadius() const{
+QString Sphere::getDisplayRadius(bool showDiff) const{
 
     QString value = QString::number(this->radius*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    if(!showDiff){
+        return value;
+    }
 
     if(!this->isNominal){
         if(this->isSolved){

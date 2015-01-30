@@ -34,9 +34,9 @@ public:
 
     bool saveSimulationData();
 
-    QString getDisplayX() const;
-    QString getDisplayY() const;
-    QString getDisplayZ() const;
+    QString getDisplayX(bool showDiff) const;
+    QString getDisplayY(bool showDiff) const;
+    QString getDisplayZ(bool showDiff) const;
     QString getDisplayIsCommon() const;
     //QString getDisplayIsNominal() const;
     //QString getDisplayObs() const;

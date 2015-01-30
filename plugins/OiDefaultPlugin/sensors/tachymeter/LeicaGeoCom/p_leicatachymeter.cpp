@@ -120,11 +120,23 @@ QMap <QString, QStringList>* LeicaTachymeter::getStringParameter() const{
     senseOfRotation.append("mathematical");
     senseOfRotation.append("geodetic");
 
+    //user defined measure mode
+    QStringList measureMode;
+    measureMode.append("precise");
+    measureMode.append("fast");
+
+    //laser beam after aim
+    QStringList laserAfterAim;
+    laserAfterAim.append("yes");
+    laserAfterAim.append("no");
+
     stringParameter->insert("reflector",reflector);
     stringParameter->insert("ATR",ATR);
     stringParameter->insert("stop tracking after measurement", tracking);
     stringParameter->insert("ATR accuracy", trackAccuracy);
     stringParameter->insert("sense of rotation", senseOfRotation);
+    stringParameter->insert("measure mode", measureMode);
+    stringParameter->insert("laser beam after aim", laserAfterAim);
 
     return stringParameter;
 }
@@ -153,6 +165,23 @@ QStringList LeicaTachymeter::selfDefinedActions() const
  */
 bool LeicaTachymeter::doSelfDefinedAction(QString a)
 {
+
+    qDebug() << "you pressed: " << a;
+
+    if(a.compare("l") == 0){
+
+        qDebug() << "leica tachy l pressed";
+
+        //TODO laser ausschalten bzw. einschalten
+        //first turn laser off
+        if(laserOn){
+            this->deactivateLaserPointer();
+        }
+        //activate lock mode for prism tracking
+        this->getLOCKState();
+
+    }
+
     if(a == "lock to prism"){
 
         //first turn laser off
@@ -435,6 +464,17 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
 
         if( this->serial->isOpen()){
 
+            //check if prism lock should be aborted before move/aim
+            if(this->myConfiguration.stringParameter.contains("laser beam after aim")){
+                QString laserAim = this->myConfiguration.stringParameter.value("laser beam after aim");
+                if(laserAim.compare("yes") == 0){
+                    //stop prism lock
+                    this->deactiveLockState();
+                }else{
+                    //do not stop tracking and prism lock
+                }
+            }
+
             if(azimuth <= 0.0){
                 azimuth = 2*PI + azimuth;
             }
@@ -456,6 +496,16 @@ bool LeicaTachymeter::move(double azimuth, double zenith, double distance,bool i
             if(executeCommand(command)){
                 myEmitter.emitSendString("moving...");
                 QString measureData = this->receive();
+            }
+
+            if(this->myConfiguration.stringParameter.contains("laser beam after aim")){
+                QString laserAim = this->myConfiguration.stringParameter.value("laser beam after aim");
+                if(laserAim.compare("yes") == 0){
+                    //start laser to find the position
+                    this->activateLaserPointer();
+                }else{
+                    //do not start laser
+                }
             }
         }
     }
@@ -484,6 +534,17 @@ bool LeicaTachymeter::move(double x, double y, double z)
 
     if(this->serial->isOpen()){
 
+        //check if prism lock should be aborted before move/aim
+        if(this->myConfiguration.stringParameter.contains("laser beam after aim")){
+            QString laserAim = this->myConfiguration.stringParameter.value("laser beam after aim");
+            if(laserAim.compare("yes") == 0){
+                //stop prism lock
+                this->deactiveLockState();
+            }else{
+                //do not stop tracking and prism lock
+            }
+        }
+
         if(r->rPolar.azimuth <= 0.0){
             r->rPolar.azimuth = 2*PI + r->rPolar.azimuth;
         }
@@ -506,6 +567,16 @@ bool LeicaTachymeter::move(double x, double y, double z)
             myEmitter.emitSendString("moving...");
             QString measureData = this->receive();
         }
+
+        if(this->myConfiguration.stringParameter.contains("laser beam after aim")){
+            QString laserAim = this->myConfiguration.stringParameter.value("laser beam after aim");
+            if(laserAim.compare("yes") == 0){
+                //start laser to find the position
+                this->activateLaserPointer();
+            }else{
+                //do not start laser
+            }
+        }
     }
     return true;
 }
@@ -516,6 +587,8 @@ bool LeicaTachymeter::move(double x, double y, double z)
  * \return
  */
 QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
+
+    QList<Reading*> emptyList;
 
     //if tracking measurements are active, stop them
     this->stopTrackingMode();
@@ -529,16 +602,16 @@ QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
 
         switch (m->typeOfReading){
         case Configuration::ePolar:
-            return this->measurePolar(m);
+            emptyList = this->measurePolar(m);
             break;
         case Configuration::eCartesian:
-            return this->measureCartesian(m);
+            emptyList = this->measureCartesian(m);
             break;
         case Configuration::eDirection:
-            return this->measureDirection(m);
+            emptyList = this->measureDirection(m);
             break;
         case Configuration::eDistance:
-            return this->measureDistance(m);
+            emptyList = this->measureDistance(m);
             break;
         default:
             break;
@@ -548,7 +621,13 @@ QList<Reading*> LeicaTachymeter::measure(MeasurementConfig *m){
     //restart watchwindow if it was open before measurement
     this->restartWatchWindowAfterMeasurement();
 
-    QList<Reading*> emptyList;
+    if(emptyList.size() > 0){
+        this->lastReading.first = emptyList.last()->typeofReading;
+        Reading *r = new Reading();
+        *r = *emptyList.last();
+        this->lastReading.second = r;
+    }
+
     return emptyList;
 }
 
@@ -605,6 +684,12 @@ QVariantMap LeicaTachymeter::readingStream(Configuration::ReadingTypes streamFor
             break;
         }
     }
+
+    this->lastReading.first = r->typeofReading;
+    Reading *myReading = new Reading();
+    *myReading = *r;
+    this->lastReading.second = myReading;
+
     return m;
 }
 
@@ -938,8 +1023,14 @@ bool LeicaTachymeter::setTargetTypeMeasure()
     QString refl = "";
     bool reflless = false;
 
+    QString measureMode = "";
+
     if(this->myConfiguration.stringParameter.contains("reflector")){
         refl = this->myConfiguration.stringParameter.value("reflector");
+    }
+
+    if(this->myConfiguration.stringParameter.contains("measure mode")){
+        measureMode = this->myConfiguration.stringParameter.value("measure mode");
     }
 
     //check if reflectorless was selected
@@ -964,17 +1055,34 @@ bool LeicaTachymeter::setTargetTypeMeasure()
             }
             return true;
         }else{
-            //if(receive.compare("%R1P,0,0:0,0\r\n") != 0){ // if not IR and standard
-            if(receive.compare("%R1P,0,0:0,11\r\n") != 0){ // if not IR and precise
 
-                //switch
-                //command = "%R1Q,17019:0\r\n";  //IR standard
-                command = "%R1Q,17019:11\r\n"; //IR precise
-                if(this->executeCommand(command)){
-                    receive = this->receive();
-                    this->fineAdjusted = false;
+            if(measureMode.compare("precise") == 0){
+
+                //if(receive.compare("%R1P,0,0:0,0\r\n") != 0){ // if not IR and standard
+                if(receive.compare("%R1P,0,0:0,11\r\n") != 0){ // if not IR and precise
+
+                    //switch
+                    //command = "%R1Q,17019:0\r\n";  //IR standard
+                    command = "%R1Q,17019:11\r\n"; //IR precise
+                    if(this->executeCommand(command)){
+                        receive = this->receive();
+                        this->fineAdjusted = false;
+                    }
+                }
+            }else if(measureMode.compare("fast") == 0){
+
+                //1 IR fast
+                if(receive.compare("&R1P,0,0:0,1\r\n") != 0){
+
+                    //switch
+                    command = "%R1Q,17019:1\r\n"; //IR fast
+                    if(this->executeCommand(command)){
+                        receive = this->receive();
+                        this->fineAdjust();
+                    }
                 }
             }
+
             if(this->getLOCKState()){
                 return true;
             }

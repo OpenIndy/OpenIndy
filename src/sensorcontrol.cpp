@@ -61,11 +61,11 @@ void SensorControl::measure(Geometry* geom,bool isActiveCoordSys){
     if(readings.size() == 0){
         this->myEmitter.sendString("measurement not valid!");
         emit commandFinished(false);
-        emit measurementFinished(false);
+        emit measurementFinished(geom->getId(),false);
     }else{
         this->storeReadings(readings,geom, isActiveCoordSys);
         emit commandFinished(true);
-        emit measurementFinished(true);
+        emit measurementFinished(geom->getId(),true);
         emit this->recalcFeature(geom);
     }
 
@@ -325,15 +325,25 @@ void SensorControl::doSelfDefinedAction(QString s)
 {
     locker.lock();
 
+    if(!this->sendDeactivateStream()){
+        locker.unlock();
+        emit commandFinished(false);
+        return;
+    }
+
     if(!this->checkSensor()){
        locker.unlock();
        emit commandFinished(false);
        return;
     }
 
-    bool wasSuccessful =  instrument->doSelfDefinedAction(s);
+    bool wasSuccessful = instrument->doSelfDefinedAction(s);
 
     emit commandFinished(wasSuccessful);
+
+    if(!this->sendActivateStream()){
+
+    }
 
     locker.unlock();
 
@@ -358,14 +368,33 @@ void SensorControl::copyMe(SensorControl *sc)
     sc->instrument = this->instrument;
     sc->InstrumentConfig = this->InstrumentConfig;
 
-    sc->instrumentListener = this->instrumentListener;
+    sc->instrumentListener->setInstrument(this->instrument);
+    /*sc->instrumentListener = this->instrumentListener;
     connect(sc,SIGNAL(activateStatStream()),sc->instrumentListener,SLOT(sensorStatStream()));
     connect(sc,SIGNAL(activateReadingStream(int)),sc->instrumentListener,SLOT(sensorReadingStream(int)));
     connect(sc->instrumentListener,SIGNAL(connectionLost()),sc,SLOT(streamLostSignal()));
 
     sc->instrumentListener->moveToThread(&sc->listenerThread);
 
-    sc->listenerThread.start();
+    sc->listenerThread.start();*/
+}
+
+void SensorControl::addReading(Reading *r, Geometry *geom, bool isActiveCoordSys)
+{
+    this->saveReading(r, geom, isActiveCoordSys);
+    emit commandFinished(true);
+    emit measurementFinished(geom->getId(),true);
+    emit this->recalcFeature(geom);
+}
+
+/*!
+ * \brief SensorControl::getTypeOfReadingStream
+ * \return
+ */
+Configuration::ReadingTypes SensorControl::getTypeOfReadingStream(){
+
+    return (Configuration::ReadingTypes) this->typeOfReadingStream;
+
 }
 
 
@@ -376,6 +405,7 @@ void SensorControl::connectSensor(ConnectionConfig *connConfig){
 
     locker.lock();
 
+    listenerThread.start();
 
     if(this->t != eNoStream){
         this->sendDeactivateStream();
@@ -433,6 +463,13 @@ void SensorControl::disconnectSensor(){
         this->t = eNoStream;
     }
 
+    listenerThread.quit();
+
+    if(!listenerThread.wait()){
+        this->myEmitter.sendString("timeout - stream failed");
+        emit commandFinished(false);
+    }
+
     emit commandFinished(wasSuccessful);
 
     locker.unlock();
@@ -442,7 +479,10 @@ void SensorControl::disconnectSensor(){
 void SensorControl::storeReadings(QList<Reading*>readings, Geometry* geom, bool isActiveCoordSys){
 
     for(int i = 0; i < readings.size();i++){
-        this->saveReading(readings.at(i),geom,isActiveCoordSys);
+
+        if(readings.at(i) != NULL){
+            this->saveReading(readings.at(i),geom,isActiveCoordSys);
+        }
     }
 
 }
