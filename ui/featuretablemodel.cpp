@@ -335,10 +335,10 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         }
 
         //check if the feature name is ok
-        if(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), value.toString(),
+        /*if(!OiFeatureState::validateFeatureName(myFeature->getTypeOfFeature(), value.toString(),
                                                isNominal, nominalSystem)){
             return false;
-        }
+        }*/
 
         //if active feature is a geometry then corresponding nominals have to be renamed, too
         if(myFeature->getGeometry() != NULL){

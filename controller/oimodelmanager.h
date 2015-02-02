@@ -76,6 +76,8 @@ public:
 
     static GeometryTypesProxyModel *getGeometryTypesFilterModel();
 
+
+
     static QStringListModel *getSimpleAsciiExchangePlugins(QString plugin);
     //static QStringListModel getDefinedFormatExchangePlugins();
 

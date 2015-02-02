@@ -51,6 +51,7 @@ OiModelManager *OiModelManager::getInstance(){
 
 /*!
  * \brief OiModelManager::getPluginNamesModel
+ * Get a model that contains the names of all loaded plugins
  * \return
  */
 QStringListModel &OiModelManager::getPluginNamesModel(){
@@ -59,6 +60,7 @@ QStringListModel &OiModelManager::getPluginNamesModel(){
 
 /*!
  * \brief OiModelManager::getPluginTreeViewModel
+ * Get a model that contains all loaded plugins with hierachical information
  * \return
  */
 PluginTreeViewModel &OiModelManager::getPluginTreeViewModel(){
@@ -67,6 +69,7 @@ PluginTreeViewModel &OiModelManager::getPluginTreeViewModel(){
 
 /*!
  * \brief OiModelManager::getCreateFunctionsModel
+ * Get a model that contains all create functions available in the loaded plugins
  * \return
  */
 QSqlQueryModel &OiModelManager::getCreateFunctionsModel(){
@@ -75,6 +78,7 @@ QSqlQueryModel &OiModelManager::getCreateFunctionsModel(){
 
 /*!
  * \brief OiModelManager::getChangeFunctionsModel
+ * Get a model that contains all change functions available in the loaded plugins
  * \return
  */
 QSqlQueryModel &OiModelManager::getChangeFunctionsModel(){
@@ -83,6 +87,7 @@ QSqlQueryModel &OiModelManager::getChangeFunctionsModel(){
 
 /*!
  * \brief OiModelManager::getSensorsModel
+ * Get a model that contains all sensors of the given type
  * \param typeOfSensor
  * \return
  */
@@ -99,6 +104,7 @@ QSqlQueryModel &OiModelManager::getSensorsModel(Configuration::SensorTypes typeO
 
 /*!
  * \brief OiModelManager::getCoordinateSystemsModel
+ * Get a model that contains the names of all coordinate systems
  * \return
  */
 QStringListModel &OiModelManager::getCoordinateSystemsModel(){
@@ -107,6 +113,7 @@ QStringListModel &OiModelManager::getCoordinateSystemsModel(){
 
 /*!
  * \brief OiModelManager::getNominalSystemsModel
+ * Get a model that contains the names of all nominal coordinate systems
  * \return
  */
 QStringListModel &OiModelManager::getNominalSystemsModel(){
@@ -115,6 +122,7 @@ QStringListModel &OiModelManager::getNominalSystemsModel(){
 
 /*!
  * \brief OiModelManager::getGeometryTypesModel
+ * Get a model that contains the names of all available geometry types
  * \return
  */
 QStringListModel &OiModelManager::getGeometryTypesModel(){
@@ -123,12 +131,13 @@ QStringListModel &OiModelManager::getGeometryTypesModel(){
 
 /*!
  * \brief OiModelManager::getSimpleAsciiExchangePlugins
+ * Get a model that contains the names of all available simple ascii exchange plugins
  * \param plugin
  * \return
  */
 QStringListModel *OiModelManager::getSimpleAsciiExchangePlugins(QString plugin){
 
-    QMultiMap<QString,QString> simpleAsciiExchangePlugins = SystemDbManager::getAvailableSimpleAsciiExchangePlugins();
+    QMultiMap<QString,QString> simpleAsciiExchangePlugins;// = SystemDbManager::getAvailableSimpleAsciiExchangePlugins();
 
     QStringListModel *pluginsModel = new QStringListModel();
     QStringList exchangePlugins = simpleAsciiExchangePlugins.values(plugin);
@@ -401,6 +410,7 @@ FeatureGraphicsTreeViewProxyModel &OiModelManager::getFeatureGraphicsModel(){
 
 /*!
  * \brief OiModelManager::getGeometryTypesFilterModel
+ * Get a model that contains all available geometry types and has the ability to set a filter
  * \return
  */
 GeometryTypesProxyModel *OiModelManager::getGeometryTypesFilterModel(){
@@ -688,8 +698,8 @@ void OiModelManager::initPluginModels(){
     OiModelManager::pluginTreeViewModel.refreshModel();
 
     //plugin names
-    QStringList pluginNames = SystemDbManager::getAvailablePluginNames();
-    OiModelManager::pluginNamesModel.setStringList(pluginNames);
+    //QStringList pluginNames = SystemDbManager::getAvailablePluginNames();
+    //OiModelManager::pluginNamesModel.setStringList(pluginNames);
 
 
 

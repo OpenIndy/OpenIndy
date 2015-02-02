@@ -3,24 +3,61 @@
 QSqlDatabase SystemDbManager::db;
 bool SystemDbManager::isInit = false;
 
+/*!
+ * \brief SystemDbManager::savePlugin
+ * \param plugin
+ */
+bool SystemDbManager::savePlugin(const Plugin &plugin){
+
+    return false;
+
+}
 
 /*!
- * \brief SystemDbManager::getCreateFunctionModel
- * Set up model with all available function plugins for the specified feature type
- * \param sqlModel
- * \param ft
+ * \brief SystemDbManager::deletePlugin
+ * \param plugin
  * \return
  */
-bool SystemDbManager::getCreateFunctionModel(QSqlQueryModel *sqlModel, Configuration::FeatureTypes ft){
+bool SystemDbManager::deletePlugin(const Plugin &plugin){
+
+    return false;
+
+}
+
+/*!
+ * \brief SystemDbManager::deletePlugin
+ * \param iid
+ * \return
+ */
+bool SystemDbManager::deletePlugin(const QString &iid){
+
+    return false;
+
+}
+
+/*!
+ * \brief SystemDbManager::getCreateFunctionsModel
+ * \param sqlModel
+ * \param typeOfFeature
+ * \return
+ */
+bool SystemDbManager::getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const Configuration::FeatureTypes &typeOfFeature){
+
+    if(sqlModel.isNull()){
+        return false;
+    }
+
     sqlModel->clear();
+
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
     bool check = false;
     if(SystemDbManager::connect()){
 
-        QString feature = Configuration::getFeatureTypeString(ft);
+        QString feature = Configuration::getFeatureTypeString(typeOfFeature);
 
         QString query;
-        if(ft == Configuration::eTrafoParamFeature){ //trafo param is defined by system transformation
+        if(typeOfFeature == Configuration::eTrafoParamFeature){ //trafo param is defined by system transformation
             query = QString("SELECT fp.name, fp.description, fp.iid, p.file_path FROM elementPlugin AS ep "
                                     "INNER JOIN functionPlugin AS fp ON fp.id = ep.functionPlugin_id "
                                     "INNER JOIN plugin AS p ON p.id = fp.plugin_id "
@@ -44,24 +81,32 @@ bool SystemDbManager::getCreateFunctionModel(QSqlQueryModel *sqlModel, Configura
         }else{ check = true; }
 
         SystemDbManager::disconnect();
+
     }
     return check;
+
 }
 
 /*!
- * \brief SystemDbManager::getChangeFunctionModel
- * Set up model with all available function plugins for the specified feature type
+ * \brief SystemDbManager::getChangeFunctionsModel
  * \param sqlModel
- * \param ft
+ * \param typeOfFeature
  * \return
  */
-bool SystemDbManager::getChangeFunctionModel(QSqlQueryModel *sqlModel, Configuration::FeatureTypes ft){
+bool SystemDbManager::getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const Configuration::FeatureTypes &typeOfFeature){
+
+    if(sqlModel.isNull()){
+        return false;
+    }
+
     sqlModel->clear();
+
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
     bool check = false;
     if(SystemDbManager::connect()){
 
-        QString feature = Configuration::getFeatureTypeString(ft);
+        QString feature = Configuration::getFeatureTypeString(typeOfFeature);
 
         QString query = QString("SELECT fp.name, fp.description, fp.iid, p.file_path FROM elementPlugin AS ep "
                                 "INNER JOIN functionPlugin AS fp ON fp.id = ep.functionPlugin_id "
@@ -79,25 +124,53 @@ bool SystemDbManager::getChangeFunctionModel(QSqlQueryModel *sqlModel, Configura
         }else{ check = true; }
 
         SystemDbManager::disconnect();
+
     }
     return check;
+
 }
 
 /*!
- * \brief SystemDbManager::getNeededFeatures
- * Get all needed elements for the function plugin with the specified id
+ * \brief SystemDbManager::getNeededElementsModel
  * \param sqlModel
- * \param id
+ * \param functionPlugin
  * \return
  */
-bool SystemDbManager::getNeededElements(QSqlQueryModel *sqlModel, int id){
+bool SystemDbManager::getNeededElementsModel(QPointer<QSqlQueryModel> &sqlModel, const FunctionPlugin &functionPlugin){
+
+    if(sqlModel.isNull()){
+        return false;
+    }
+
     sqlModel->clear();
+
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
     bool check = false;
     if(SystemDbManager::connect()){
-        QString query = QString("SELECT e.id, e.element_type, pe.element_infinite FROM pluginElement AS pe "
+
+        //get the id of the function plugin
+        int functionId = -1;
+        QString query = QString("SELECT fp.id FROM functionPlugin AS fp "
+                                "INNER JOIN plugin AS p ON fp.plugin_id = p.id "
+                                "WHERE p.name = '%1' AND fp.name = '%2'")
+                .arg(functionPlugin.pluginName).arg(functionPlugin.name);
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+        if(command.next()){
+            QVariant val = command.value(0);
+            if(val.isValid()){
+                functionId = val.toInt();
+            }
+        }
+
+        if(functionId == -1){
+            return false;
+        }
+
+        query = QString("SELECT e.id, e.element_type, pe.element_infinite FROM pluginElement AS pe "
                                 "INNER JOIN element AS e ON pe.element_id = e.id "
-                                "WHERE pe.functionPlugin_id = %1").arg(id);
+                                "WHERE pe.functionPlugin_id = %1").arg(functionId);
 
         sqlModel->setQuery(query, SystemDbManager::db);
 
@@ -106,21 +179,31 @@ bool SystemDbManager::getNeededElements(QSqlQueryModel *sqlModel, int id){
         }else{ check = true; }
 
         SystemDbManager::disconnect();
+
     }
     return check;
+
 }
 
 /*!
  * \brief SystemDbManager::getLaserTrackerModel
- * Fill QSqlQueryModel with all available Lasertracker Plugins
+ * Get a model of all available laser tracker sensor plugins
  * \param sqlModel
  * \return
  */
-bool SystemDbManager::getLaserTrackerModel(QSqlQueryModel *sqlModel){
+bool SystemDbManager::getLaserTrackerModel(QPointer<QSqlQueryModel> &sqlModel){
+
+    if(sqlModel.isNull()){
+        return false;
+    }
+
     sqlModel->clear();
+
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
     bool check = false;
     if(SystemDbManager::connect()){
+
         QString query = QString("SELECT sp.name, sp.description, p.name AS plugin, p.file_path FROM sensorPlugin AS sp INNER JOIN plugin AS p "
                                 "ON sp.plugin_id = p.id WHERE sp.iid = '%1';")
             .arg(OiMetaData::iid_LaserTracker);
@@ -132,21 +215,31 @@ bool SystemDbManager::getLaserTrackerModel(QSqlQueryModel *sqlModel){
         }else{ check = true; }
 
         SystemDbManager::disconnect();
+
     }
     return check;
+
 }
 
 /*!
  * \brief SystemDbManager::getTotalStationModel
- * Fill QSqlQueryModel with all available Totalstation Plugins
+ * Get a model of all available total station sensor plugins
  * \param sqlModel
  * \return
  */
-bool SystemDbManager::getTotalStationModel(QSqlQueryModel *sqlModel){
+bool SystemDbManager::getTotalStationModel(QPointer<QSqlQueryModel> &sqlModel){
+
+    if(sqlModel.isNull()){
+        return false;
+    }
+
     sqlModel->clear();
+
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
     bool check = false;
     if(SystemDbManager::connect()){
+
         QString query = QString("SELECT sp.name, sp.description, p.name AS plugin, p.file_path FROM sensorPlugin AS sp INNER JOIN plugin AS p "
                                 "ON sp.plugin_id = p.id WHERE sp.iid = '%1';")
             .arg(OiMetaData::iid_TotalStation);
@@ -158,15 +251,31 @@ bool SystemDbManager::getTotalStationModel(QSqlQueryModel *sqlModel){
         }else{ check = true; }
 
         SystemDbManager::disconnect();
+
     }
     return check;
+
 }
 
-bool SystemDbManager::getUndefinedSensorModel(QSqlQueryModel *sqlModel){
+/*!
+ * \brief SystemDbManager::getUndefinedSensorModel
+ * Get a model of all available undefined sensor plugins
+ * \param sqlModel
+ * \return
+ */
+bool SystemDbManager::getUndefinedSensorModel(QPointer<QSqlQueryModel> &sqlModel){
+
+    if(sqlModel.isNull()){
+        return false;
+    }
+
     sqlModel->clear();
+
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
     bool check = false;
     if(SystemDbManager::connect()){
+
         QString query = QString("SELECT sp.name, sp.description, p.name AS plugin, p.file_path FROM sensorPlugin AS sp INNER JOIN plugin AS p "
                                 "ON sp.plugin_id = p.id WHERE sp.iid = '%1';")
             .arg(OiMetaData::iid_Sensor);
@@ -178,17 +287,20 @@ bool SystemDbManager::getUndefinedSensorModel(QSqlQueryModel *sqlModel){
         }else{ check = true; }
 
         SystemDbManager::disconnect();
+
     }
     return check;
+
 }
+
 
 /*!
  * \brief SystemDbManager::addMeasurementConfig
- * Add a reference to a measurement config (xml) in system database
+ * Add a reference to a measurement config (xml) to system database
  * \param name
  * \return
  */
-bool SystemDbManager::addMeasurementConfig(QString name){
+bool SystemDbManager::addMeasurementConfig(const QString &name){
 
     bool check = false;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
@@ -212,10 +324,11 @@ bool SystemDbManager::addMeasurementConfig(QString name){
 
 /*!
  * \brief SystemDbManager::removeMeasurementConfig
+ * Remove a measurement config from system database
  * \param name
  * \return
  */
-bool SystemDbManager::removeMeasurementConfig(QString name){
+bool SystemDbManager::removeMeasurementConfig(const QString &name){
 
     bool check = false;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
@@ -236,17 +349,18 @@ bool SystemDbManager::removeMeasurementConfig(QString name){
 
 /*!
  * \brief SystemDbManager::getDefaultMeasurementConfig
+ * Get the default measurement config of the given geometry type
  * \param geomType
  * \return
  */
-QString SystemDbManager::getDefaultMeasurementConfig(Configuration::FeatureTypes geomType){
+QString SystemDbManager::getDefaultMeasurementConfig(const Configuration::GeometryTypes &typeOfGeometry){
 
     QString name;
 
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
 
-        QString geomTypeString = Configuration::getFeatureTypeString(geomType);
+        QString geomTypeString = Configuration::getGeometryTypeString(typeOfGeometry);
 
         QString query = QString("SELECT m.name FROM measurementConfig AS m INNER JOIN element AS e")
                 .append(" ON m.id = e.measurementConfig_id WHERE element_type = '%1'").arg(geomTypeString);
@@ -271,18 +385,19 @@ QString SystemDbManager::getDefaultMeasurementConfig(Configuration::FeatureTypes
 
 /*!
  * \brief SystemDbManager::setDefaultMeasurementConfig
+ * Set the default measurement config of the given geometry type
  * \param geomType
  * \param name
  * \return
  */
-bool SystemDbManager::setDefaultMeasurementConfig(Configuration::FeatureTypes geomType, QString name){
+bool SystemDbManager::setDefaultMeasurementConfig(const Configuration::GeometryTypes &typeOfGeometry, const QString &name){
 
     bool check = false;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
 
     if(SystemDbManager::connect()){
 
-        QString geomTypeString = Configuration::getFeatureTypeString(geomType);
+        QString geomTypeString = Configuration::getGeometryTypeString(typeOfGeometry);
 
         QString query;
         QSqlQuery command(SystemDbManager::db);
@@ -315,12 +430,13 @@ bool SystemDbManager::setDefaultMeasurementConfig(Configuration::FeatureTypes ge
 
 }
 
+
 /*!
  * \brief SystemDbManager::addSensorConfig
  * \param name
  * \return
  */
-bool SystemDbManager::addSensorConfig(QString name){
+bool SystemDbManager::addSensorConfig(const QString &name){
 
     bool check = false;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
@@ -347,7 +463,7 @@ bool SystemDbManager::addSensorConfig(QString name){
  * \param name
  * \return
  */
-bool SystemDbManager::removeSensorConfig(QString name){
+bool SystemDbManager::removeSensorConfig(const QString &name){
 
     bool check = false;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
@@ -402,7 +518,7 @@ QString SystemDbManager::getDefaultSensorConfig(){
  * \param name
  * \return
  */
-bool SystemDbManager::setDefaultSensorConfig(QString name){
+bool SystemDbManager::setDefaultSensorConfig(const QString &name){
 
     bool check = false;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
@@ -429,12 +545,92 @@ bool SystemDbManager::setDefaultSensorConfig(QString name){
 }
 
 /*!
- * \brief SystemDbManager::getPluginFilePath
- * Get filepath to the plugin with the name "plugin" which contains the function with the name "name"
- * \param name
- * \param plugin
+ * \brief SystemDbManager::getSensorPluginFilePath
+ * \param filePath
+ * \param pluginName
+ * \param sensorName
  * \return
  */
+bool SystemDbManager::getSensorPluginFilePath(QString &filePath, const QString &pluginName, const QString &sensorName){
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString query = QString("%1 %2 %3")
+                .arg("SELECT file_path FROM plugin AS p INNER JOIN sensorPlugin AS sp ON p.id = sp.plugin_id")
+                .arg(QString("WHERE p.name = '%1'").arg(pluginName))
+                .arg(QString("AND sp.name = '%1';").arg(sensorName));
+
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+        if(command.next()){
+            QVariant val = command.value(0);
+            if(val.isValid()){
+                filePath = val.toString();
+                return true;
+            }
+        }
+
+    }
+    return false;
+
+}
+
+/*!
+ * \brief SystemDbManager::getFunctionPluginFilePath
+ * \param filePath
+ * \param pluginName
+ * \param functionName
+ * \return
+ */
+bool SystemDbManager::getFunctionPluginFilePath(QString &filePath, const QString &pluginName, const QString &functionName){
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+
+    if(SystemDbManager::connect()){
+
+        QString query = QString("%1 %2 %3")
+                .arg("SELECT file_path FROM plugin AS p INNER JOIN functionPlugin AS fp ON p.id = fp.plugin_id")
+                .arg(QString("WHERE p.name = '%1'").arg(pluginName))
+                .arg(QString("AND fp.name = '%1';").arg(functionName));
+
+        QSqlQuery command(SystemDbManager::db);
+        command.exec(query);
+        if(command.next()){
+            QVariant val = command.value(0);
+            if(val.isValid()){
+                filePath = val.toString();
+                return true;
+            }
+        }
+
+    }
+    return false;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
     QString path = QString("");
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
@@ -519,112 +715,10 @@ QString SystemDbManager::getPluginFilePath(QString name, QString plugin){
     }
     return path;
 }
-
-/*!
- * \brief SystemDbManager::savePlugin
- * Save the specified plugin in the system database of OpenIndy
- * \param metaInfo
- * \param functions
- * \param sensors
- * \param networkAdjustments
- * \param simulationList
- * \param toolList
- * \param simpleAsciiList
- * \param definedFormatList
- * \return
- */
-int SystemDbManager::savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors, QList<NetworkAdjustment*> networkAdjustments, QList<SimulationModel*> simulationList , QList<OiTool *> toolList, QList<OiExchangeSimpleAscii *> simpleAsciiList, QList<OiExchangeDefinedFormat *> definedFormatList){
-    int pluginId = -1;
-    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
-    if(SystemDbManager::connect()){
-
-        bool transaction = SystemDbManager::db.transaction();
-        if(transaction){
-
-            //save Plugin
-            pluginId = SystemDbManager::savePluginHelper(metaInfo);
-
-            //if the plugin was saved
-            if(pluginId > -1){
-
-                foreach(Function* f, functions){
-                    SystemDbManager::saveFunctionPlugin(pluginId, f);
-                }
-                foreach(Sensor* s, sensors){
-                    SystemDbManager::saveSensorPlugin(pluginId, s);
-                }
-                foreach(NetworkAdjustment* n, networkAdjustments){
-                    SystemDbManager::saveNetworkAdjustmentPlugin(pluginId, n);
-                }
-                foreach(SimulationModel *s, simulationList){
-                    SystemDbManager::saveSimulationPlugin(pluginId,s);
-                }
-                foreach(OiTool *t, toolList){
-                    SystemDbManager::saveOiToolPlugin(pluginId,t);
-                }
-                foreach(OiExchangeSimpleAscii *sa, simpleAsciiList){
-                    SystemDbManager::saveOiExchangeSimpleAsciiPlugin(pluginId,sa);
-                }
-                foreach(OiExchangeDefinedFormat *df, definedFormatList){
-                    SystemDbManager::saveOiExchangeDefinedFormatPlugin(pluginId,df);
-                }
-
-            }
-
-            if(!SystemDbManager::db.commit()){
-                SystemDbManager::db.rollback();
-            }
-
-        }else{
-            Console::addLine( QString("Database error: %1").arg(SystemDbManager::db.lastError().text()) );
-        }
-
-        SystemDbManager::disconnect();
-    }
-    return pluginId;
-}
-
-/*!
- * \brief SystemDbManager::deletePlugin
- * Delete the specified plugin and all dependencies
- * \param id
- * \return
- */
-bool SystemDbManager::deletePlugin(int id){
-    bool check = false;
-    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
-    if(SystemDbManager::connect()){
-
-        //start transaction to delete in all tables
-        bool transaction = SystemDbManager::db.transaction();
-        if(transaction){
-
-            QString query = QString("DELETE FROM elementPlugin WHERE plugin_id = %1").arg(id);
-            QSqlQuery command(SystemDbManager::db);
-            command.exec(query);
-
-            query = QString("DELETE FROM pluginElement WHERE plugin_id =%1").arg(id);
-            command.exec(query);
-
-            query = QString("DELETE FROM plugin WHERE id = %1").arg(id);
-            command.exec(query);
-
-            if( !SystemDbManager::db.commit() ){
-                Console::addLine( QString("Database error: %1").arg(command.lastError().text()) );
-            }else{ check = true; }
-
-        }else{
-            Console::addLine( QString("Database error: %1").arg(SystemDbManager::db.lastError().text()) );
-        }
-
-        SystemDbManager::disconnect();
-    }
-    return check;
-}
+*/
 
 /*!
  * \brief SystemDbManager::init
- * Initialize OpenIndy system database
  */
 void SystemDbManager::init(){
 
@@ -646,6 +740,7 @@ void SystemDbManager::init(){
 
     SystemDbManager::db.setDatabaseName(dbPath);
     SystemDbManager::isInit = true;
+
 }
 
 /*!
@@ -945,11 +1040,7 @@ void SystemDbManager::saveOiExchangeDefinedFormatPlugin(int pluginId, OiExchange
 
 }
 
-/*!
- * \brief SystemDbManager::getSupportedGeometries
- * Retrieve a list of all geometries for which a corresponding plugin exists
- * \return
- */
+/*
 QStringList SystemDbManager::getSupportedGeometries(){
     QStringList result;
 
@@ -970,11 +1061,7 @@ QStringList SystemDbManager::getSupportedGeometries(){
     return result;
 }
 
-/*!
- * \brief SystemDbManager::getAvailablePlugins
- * Returns a list with all available plugins
- * \return
- */
+
 QList<Plugin> SystemDbManager::getAvailablePlugins(){
     QList<Plugin> result;
 
@@ -1096,10 +1183,7 @@ QList<Plugin> SystemDbManager::getAvailablePlugins(){
     return result;
 }
 
-/*!
- * \brief SystemDbManager::getAvailablePluginNames
- * \return
- */
+
 QStringList SystemDbManager::getAvailablePluginNames(){
     QStringList result;
 
@@ -1120,12 +1204,7 @@ QStringList SystemDbManager::getAvailablePluginNames(){
     return result;
 }
 
-/*!
- * \brief SystemDbManager::getAvailableFitFunctions
- * Returns all fit functions that are available for the specified feature type
- * \param featureType
- * \return
- */
+
 QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::FeatureTypes featureType){
     QList<FunctionPlugin> result;
 
@@ -1182,12 +1261,7 @@ QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::F
     return result;
 }
 
-/*!
- * \brief SystemDbManager::getAvailableConstructFunctions
- * Returns all construct functions that are available for the specified feature type
- * \param featureType
- * \return
- */
+
 QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(Configuration::FeatureTypes featureType){
     QList<FunctionPlugin> result;
 
@@ -1278,12 +1352,7 @@ QList<SimulationPlugin> SystemDbManager::getAvailableSimulationPlugins()
     return result;
 }
 
-/*!
- * \brief SystemDbManager::getDefaultFunction
- * Returns the default function for the specified feature type
- * \param featureType
- * \return
- */
+
 FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes featureType){
     FunctionPlugin result;
 
@@ -1340,13 +1409,7 @@ FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes f
     return result;
 }
 
-/*!
- * \brief SystemDbManager::saveDefaultFunction
- * Save function as default
- * \param featureType
- * \param function
- * \param plugin
- */
+
 void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureType, QString function, QString plugin){
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
@@ -1417,10 +1480,7 @@ QMultiMap<QString,QString> SystemDbManager::getAvailableOiTools(){
 
 }
 
-/*!
- * \brief SystemDbManager::getAvailableSimpleAsciiExchangePlugins
- * \return
- */
+
 QMultiMap<QString,QString> SystemDbManager::getAvailableSimpleAsciiExchangePlugins(){
 
     QMultiMap<QString,QString> result;
@@ -1447,10 +1507,7 @@ QMultiMap<QString,QString> SystemDbManager::getAvailableSimpleAsciiExchangePlugi
 
 }
 
-/*!
- * \brief SystemDbManager::getAvailableDefinedFormatExchangePlugins
- * \return
- */
+
 QMultiMap<QString,QString> SystemDbManager::getAvailableDefinedFormatExchangePlugins(){
 
     QMultiMap<QString,QString> result;
@@ -1476,3 +1533,4 @@ QMultiMap<QString,QString> SystemDbManager::getAvailableDefinedFormatExchangePlu
     return result;
 
 }
+*/

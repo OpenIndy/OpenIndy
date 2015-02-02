@@ -172,7 +172,7 @@ QDomDocument OiProjectExchanger::saveProject(){
 bool OiProjectExchanger::loadProject(const QDomDocument &project){
 
     //delete old features (from a previous project)
-    OiFeatureState::resetFeatureLists();
+    //OiFeatureState::resetFeatureLists();
 
     //load all elements from xml into helper lists
     if(!OiProjectExchanger::loadObservations(project)
@@ -688,7 +688,8 @@ bool OiProjectExchanger::restoreStationDependencies(const QDomDocument &project)
                 for(int j = 0; j < usedSensorsList.size(); j++){
                     QDomElement usedSensor = usedSensorsList.at(j).toElement();
                     if(usedSensor.hasAttribute("name") && usedSensor.hasAttribute("plugin")){
-                        QString pluginFilePath = SystemDbManager::getPluginFilePath(usedSensor.attribute("name"), usedSensor.attribute("plugin"));
+                        QString pluginFilePath;
+                        SystemDbManager::getSensorPluginFilePath(pluginFilePath, usedSensor.attribute("plugin"), usedSensor.attribute("name"));
                         Sensor *mySensor = PluginLoader::loadSensorPlugin(pluginFilePath, usedSensor.attribute("name"));
                         if(mySensor != NULL){
                             myStation->getStation()->sensorPad->usedSensors.append(mySensor);
@@ -700,7 +701,8 @@ bool OiProjectExchanger::restoreStationDependencies(const QDomDocument &project)
             //load active sensor plugin
             QDomElement activeSensor = station.firstChildElement("activeSensor");
             if(!activeSensor.isNull() && activeSensor.hasAttribute("name") && activeSensor.hasAttribute("plugin")){
-                QString pluginFilePath = SystemDbManager::getPluginFilePath(activeSensor.attribute("name"), activeSensor.attribute("plugin"));
+                QString pluginFilePath;
+                SystemDbManager::getSensorPluginFilePath(pluginFilePath, activeSensor.attribute("plugin"), activeSensor.attribute("name"));
                 Sensor *mySensor = PluginLoader::loadSensorPlugin(pluginFilePath, activeSensor.attribute("name"));
                 if(mySensor != NULL){
                     myStation->getStation()->sensorPad->instrument = mySensor;
@@ -1186,7 +1188,8 @@ QList<Function *> OiProjectExchanger::restoreFunctionDependencies(const QDomElem
             }
 
             //load function plugin
-            QString pluginFilePath = SystemDbManager::getPluginFilePath(function.attribute("name"), function.attribute("plugin"));
+            QString pluginFilePath;
+            SystemDbManager::getFunctionPluginFilePath(pluginFilePath, function.attribute("plugin"), function.attribute("name"));
             Function *myFunction = PluginLoader::loadFunctionPlugin(pluginFilePath, function.attribute("name"));
             if(myFunction == NULL){
                 continue;

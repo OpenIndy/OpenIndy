@@ -54,7 +54,7 @@
 
 #include "deletefeaturesfunctor.h"
 
-#include "featureattributesexchange.h"
+#include "featureattributes.h"
 #include "nominalattributeexchange.h"
 
 #include "oifeaturestate.h"
@@ -96,20 +96,25 @@ signals:
     //signals to inform GUI about OiFeatureState changes
     //##################################################
 
+    //feature set changed
     void featureSetChanged();
     void coordSystemSetChanged();
 
+    //general feature attributes changed
     void featureAttributesChanged();
     void featureFunctionsChanged();
 
+    //geometry specific attributes changed
     void geometryObservationsChanged();
     void geometryMeasurementConfigChanged();
 
+    //active feature changes
     void activeFeatureChanged();
     void activeStationChanged();
     void activeCoordinateSystemChanged();
-    void activeGroupChanged();
 
+    //feature group changes
+    void activeGroupChanged();
     void availableGroupNamesChanged();
 
 public slots:
@@ -174,7 +179,7 @@ public:
     Console *c;
     Configuration conf;
 
-    QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
+    //QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
 
     OiServer *openIndyServer;
@@ -267,7 +272,7 @@ public slots:
     void sendSensorState(int sState, QString msg);
 
     //database function
-    QMultiMap<QString,QString> getOiTools();
+    //QMultiMap<QString,QString> getOiTools();
     void loadOiToolWidget(QString pluginName,QString toolName);
 
 

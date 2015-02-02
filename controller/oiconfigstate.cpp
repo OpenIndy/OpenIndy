@@ -244,67 +244,67 @@ bool OiConfigState::setDefaultMeasurementConfig(MeasurementConfig mConfig, Confi
     switch(typeOfFeature){
     case Configuration::eCircleFeature:
         Circle::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eCircleFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eCircleGeometry, mConfig.getName());
         break;
     case Configuration::eConeFeature:
         Cone::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eConeFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eConeGeometry, mConfig.getName());
         break;
     case Configuration::eCylinderFeature:
         Cylinder::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eCylinderFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eCylinderGeometry, mConfig.getName());
         break;
     case Configuration::eEllipsoidFeature:
         Ellipsoid::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eEllipsoidFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eEllipsoidGeometry, mConfig.getName());
         break;
     case Configuration::eHyperboloidFeature:
         Hyperboloid::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eHyperboloidFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eHyperboloidGeometry, mConfig.getName());
         break;
     case Configuration::eLineFeature:
         Line::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eLineFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eLineGeometry, mConfig.getName());
         break;
     case Configuration::eNurbsFeature:
         Nurbs::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eNurbsFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eNurbsGeometry, mConfig.getName());
         break;
     case Configuration::eParaboloidFeature:
         Paraboloid::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eParaboloidFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eParaboloidGeometry, mConfig.getName());
         break;
     case Configuration::ePlaneFeature:
         Plane::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePlaneFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePlaneGeometry, mConfig.getName());
         break;
     case Configuration::ePointFeature:
         Point::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePointFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePointGeometry, mConfig.getName());
         break;
     case Configuration::ePointCloudFeature:
         PointCloud::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePointCloudFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::ePointCloudGeometry, mConfig.getName());
         break;
     case Configuration::eScalarEntityAngleFeature:
         ScalarEntityAngle::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityAngleFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityAngleGeometry, mConfig.getName());
         break;
     case Configuration::eScalarEntityDistanceFeature:
         ScalarEntityDistance::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityDistanceFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityDistanceGeometry, mConfig.getName());
         break;
     case Configuration::eScalarEntityMeasurementSeriesFeature:
         ScalarEntityMeasurementSeries::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityMeasurementSeriesFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityMeasurementSeriesGeometry, mConfig.getName());
         break;
     case Configuration::eScalarEntityTemperatureFeature:
         ScalarEntityTemperature::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureGeometry, mConfig.getName());
         break;
     case Configuration::eSphereFeature:
         Sphere::defaultMeasurementConfig = mConfig;
-        SystemDbManager::setDefaultMeasurementConfig(Configuration::eSphereFeature, mConfig.getName());
+        SystemDbManager::setDefaultMeasurementConfig(Configuration::eSphereGeometry, mConfig.getName());
         break;
     }
 
@@ -340,7 +340,8 @@ SensorConfiguration OiConfigState::createConfigFromSensor(QString pluginName, QS
     SensorConfiguration sConfig;
 
     //load sensor plugin
-    QString path = SystemDbManager::getPluginFilePath(sensorName, pluginName);
+    QString path;
+    SystemDbManager::getSensorPluginFilePath(path, pluginName, sensorName);
     Sensor *mySensor = PluginLoader::loadSensorPlugin(path, sensorName);
 
     if(mySensor == NULL){
@@ -662,37 +663,37 @@ void OiConfigState::loadSavedMeasurementConfigs(){
 
     //get default measurement configs
     QString mConfigName = "";
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eCircleFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eCircleGeometry);
     Circle::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eConeFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eConeGeometry);
     Cone::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eCylinderFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eCylinderGeometry);
     Cylinder::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eEllipsoidFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eEllipsoidGeometry);
     Ellipsoid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eHyperboloidFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eHyperboloidGeometry);
     Hyperboloid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eLineFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eLineGeometry);
     Line::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eNurbsFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eNurbsGeometry);
     Nurbs::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eParaboloidFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eParaboloidGeometry);
     Paraboloid::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::ePlaneFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::ePlaneGeometry);
     Plane::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::ePointFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::ePointGeometry);
     Point::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::ePointCloudFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::ePointCloudGeometry);
     PointCloud::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityAngleFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityAngleGeometry);
     ScalarEntityAngle::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityDistanceFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityDistanceGeometry);
     ScalarEntityDistance::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityMeasurementSeriesFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityMeasurementSeriesGeometry);
     ScalarEntityMeasurementSeries::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eScalarEntityTemperatureGeometry);
     ScalarEntityTemperature::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
-    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eSphereFeature);
+    mConfigName = SystemDbManager::getDefaultMeasurementConfig(Configuration::eSphereGeometry);
     Sphere::defaultMeasurementConfig = OiConfigState::getMeasurementConfig(mConfigName);
 
     //set measurement config names model
@@ -763,7 +764,8 @@ void OiConfigState::loadSavedSensorConfigs(){
         sConfigNames.append(savedConfig.getName());
 
         //create sensor object and add it to sensor config
-        QString path = SystemDbManager::getPluginFilePath(savedConfig.sensorName, savedConfig.pluginName);
+        QString path;
+        SystemDbManager::getSensorPluginFilePath(path, savedConfig.pluginName, savedConfig.sensorName);
         Sensor *mySensor = PluginLoader::loadSensorPlugin(path, savedConfig.sensorName);
         if(mySensor != NULL){
             savedConfig.mySensor = mySensor;

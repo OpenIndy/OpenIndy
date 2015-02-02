@@ -144,7 +144,6 @@ SOURCES += \
     ui/trafoparamdelegate.cpp \
     ui/plugintreeviewmodel.cpp \
     ui/plugintreeitem.cpp \
-    controller/featureattributesexchange.cpp \
     controller/nominalattributeexchange.cpp \
     controller/displayattribute.cpp \
     src/sensorlistener.cpp \
@@ -195,7 +194,8 @@ SOURCES += \
     ui/featuretableproxymodel.cpp \
     controller/networking/oiwebsocket.cpp \
     controller/networking/oiwebsocketserver.cpp \
-    ui/createfeaturedialog.cpp
+    ui/createfeaturedialog.cpp \
+    controller/featureattributes.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -299,7 +299,6 @@ HEADERS  += \
     ui/trafoparamdelegate.h \
     ui/plugintreeviewmodel.h \
     ui/plugintreeitem.h \
-    controller/featureattributesexchange.h \
     controller/nominalattributeexchange.h \
     controller/displayattribute.h \
     src/sensorlistener.h \
@@ -357,7 +356,8 @@ HEADERS  += \
     ui/featuretableproxymodel.h \
     controller/networking/oiwebsocket.h \
     controller/networking/oiwebsocketserver.h \
-    ui/createfeaturedialog.h
+    ui/createfeaturedialog.h \
+    controller/featureattributes.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

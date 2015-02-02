@@ -434,7 +434,7 @@ void OiRequestHandler::measure(OiRequestResponse *request){
 
         }else{
 
-            QString result;
+            /*QString result;
             FunctionPlugin plugin = SystemDbManager::getDefaultFunction(OiFeatureState::getActiveFeature()->getTypeOfFeature());
             if(plugin.name.compare("") != 0){
                 result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
@@ -454,7 +454,7 @@ void OiRequestHandler::measure(OiRequestResponse *request){
             fae.isMovement = false;
             fae.nominal = false;
             fae.nominalSystem = NULL;
-            fae.startSystem = NULL;
+            fae.startSystem = NULL;*/
 
             /*int fType = FeatureUpdater::addFeature(fae, mConfig);
             if(fType != OiFeatureState::getActiveFeature()->getTypeOfFeature()){

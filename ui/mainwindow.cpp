@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->assignModels();
 
     //connect controller to main window
-    this->connectController();
+    this->connectDialogs();
 
     //set up dialogs
     this->initDialogs();
@@ -130,14 +130,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
  * \brief MainWindow::setConnects
  * Connect Controller and View
  */
-void MainWindow::connectController(){
+void MainWindow::connectDialogs(){
 
-    //#####################################################
-    //connect signals in controller to slots in main window
-    //#####################################################
+    //####################################################
+    //connect signals in dialogs to signals in main window
+    //####################################################
 
-
-
+    //create feature dialog
+    QObject::connect(&this->createFeatureDlg, SIGNAL(addFeatures(const FeatureAttributes&)), this, SIGNAL(addFeatures(const FeatureAttributes&)), Qt::DirectConnection);
 
 
 
@@ -283,6 +283,15 @@ void MainWindow::connectController(){
     //OiTools
     //connect(&this->control,SIGNAL(openOiToolWidget(OiTool*)),this,SLOT(showOiToolWidget(OiTool*)));
 */
+}
+
+/*!
+ * \brief MainWindow::connectController
+ */
+void MainWindow::connectController(){
+
+    QObject::connect(this, SIGNAL(addFeatures(const FeatureAttributes&)), &this->control, SLOT(addFeatures(const FeatureAttributes&)));
+
 }
 
 /*!
@@ -1019,7 +1028,7 @@ void MainWindow::initializeActions(){
  */
 void MainWindow::createFeature(){
 
-    try{
+    /*try{
 
         if(this->spinBoxNumber->value()!=0){
 
@@ -1046,13 +1055,13 @@ void MainWindow::createFeature(){
 
             FeatureAttributes featureAttributes;
             featureAttributes.count = count;
-            featureAttributes.featureType = featureType;
+            featureAttributes.typeOfFeature = featureType;
             featureAttributes.name = name;
             featureAttributes.group = group;
             featureAttributes.function = "";
-            featureAttributes.actual = actual;
-            featureAttributes.nominal = nominal;
-            featureAttributes.common = comPoint;
+            featureAttributes.isActual = actual;
+            featureAttributes.isNominal = nominal;
+            featureAttributes.isCommon = comPoint;
             featureAttributes.nominalSystem = nominalSystem;
 
             control.addFeature(featureAttributes);
@@ -1062,7 +1071,7 @@ void MainWindow::createFeature(){
     }catch(std::exception e){
 
     }
-    this->defaultCreateFeatureSettings();
+    this->defaultCreateFeatureSettings();*/
 }
 
 /*!
@@ -1992,7 +2001,7 @@ void MainWindow::resizeTableView()
  */
 void MainWindow::createOiToolActions()
 {
-    QMultiMap<QString,QString> oiTools = control.getOiTools();
+    /*QMultiMap<QString,QString> oiTools = control.getOiTools();
 
     QList<QString> pluginNames = oiTools.keys();
 
@@ -2017,7 +2026,7 @@ void MainWindow::createOiToolActions()
             pluginMenu->addAction(a);
         }
 
-    }
+    }*/
 
 }
 
@@ -2062,8 +2071,8 @@ QDir appDir(qApp->applicationDirPath());
  * After a create feature button was clicked this function is called to update and display the create feature dialog
  * \param featureType
  */
-void MainWindow::showCreateFeatureDialog(Configuration::FeatureTypes featureType){
-    //this->cFeatureDialog.setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
+void MainWindow::showCreateFeatureDialog(const Configuration::FeatureTypes &featureType){
+    this->createFeatureDlg.setFeatureType(featureType);
     this->createFeatureDlg.show();
 }
 

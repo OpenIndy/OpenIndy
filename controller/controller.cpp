@@ -70,14 +70,23 @@ void Controller::setActiveStation(const int &featureId)
 
 }
 
-void Controller::setActiveCoordinateSystem(const int &featureId)
-{
-
+/*!
+ * \brief Controller::setActiveCoordinateSystem
+ * \param featureId
+ */
+void Controller::setActiveCoordinateSystem(const int &featureId){
+    OiFeatureState::activeCoordinateSystemChanged(featureId);
 }
 
-void Controller::addFeatures(const FeatureAttributes &attributes)
-{
-
+/*!
+ * \brief Controller::addFeatures
+ * Add one or more features defined by the given attributes
+ * \param attributes
+ */
+void Controller::addFeatures(const FeatureAttributes &attributes){
+    if(!OiFeatureState::addFeatures(attributes)){
+        Console::addLine("feature creation failed");
+    }
 }
 
 void Controller::removeFeature(const int &featureId)
@@ -495,16 +504,16 @@ void Controller::connectModels(){
  */
 bool Controller::createDefaultProject(){
 
-    if(OiFeatureState::getFeatureCount() == 0){
+    /*if(OiFeatureState::getFeatureCount() == 0){
 
         OiProjectData::setActiveProject("OpenIndyTest");
 
         //create PART and STATION01 as default
         FeatureAttributes partAttributes, stationAttributes;
-        partAttributes.featureType = Configuration::eCoordinateSystemFeature;
+        partAttributes.typeOfFeature = Configuration::eCoordinateSystemFeature;
         partAttributes.name = "PART";
         partAttributes.count = 1;
-        stationAttributes.featureType = Configuration::eStationFeature;
+        stationAttributes.typeOfFeature = Configuration::eStationFeature;
         stationAttributes.name = "STATION01";
         stationAttributes.count = 1;
         FeatureWrapper *part = OiFeatureState::addFeature(partAttributes);
@@ -525,7 +534,7 @@ bool Controller::createDefaultProject(){
 
     }else{
         return false;
-    }
+    }*/
 
     return true;
 
@@ -545,7 +554,7 @@ void Controller::addFeature(FeatureAttributes fae){
 
     //get default measurement config depending on the feature type of the feature to be created
     MeasurementConfig mConfig;
-    switch(fae.featureType){
+    switch(fae.typeOfFeature){
     case Configuration::eCircleFeature:
         mConfig = Circle::defaultMeasurementConfig;
         break;
@@ -755,7 +764,7 @@ void Controller::savePluginData(PluginMetaData* metaInfo){
         QList<OiExchangeSimpleAscii*> simpleAsciiList = PluginLoader::loadOiExchangeSimpleAsciiPlugins(metaInfo->path);
         QList<OiExchangeDefinedFormat*> definedFormatList = PluginLoader::loadOiExchangeDefinedFormatPlugins(metaInfo->path);
 
-        SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList,toolList, simpleAsciiList, definedFormatList);
+        //SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList,toolList, simpleAsciiList, definedFormatList);
 
     }
 }
@@ -1746,14 +1755,14 @@ void Controller::sendSensorState(int sState, QString msg)
     emit setSensorState(sState,msg);
 }
 
-QMultiMap<QString, QString> Controller::getOiTools()
+/*QMultiMap<QString, QString> Controller::getOiTools()
 {
     return SystemDbManager::getAvailableOiTools();
-}
+}*/
 
 void Controller::loadOiToolWidget(QString pluginName, QString toolName)
 {
-    QString pluginPath = SystemDbManager::getPluginFilePath(toolName,pluginName);
+    /*QString pluginPath = SystemDbManager::getPluginFilePath(toolName,pluginName);
 
     OiTool* oiToolWidget = PluginLoader::loadOiToolPlugin(pluginPath,toolName);
 
@@ -1780,12 +1789,12 @@ void Controller::loadOiToolWidget(QString pluginName, QString toolName)
         oiToolWidget->setOiJob(jobState);
 
         emit openOiToolWidget(oiToolWidget);
-    }
+    }*/
 }
 
 bool Controller::generateActualForNominal(FeatureWrapper *f)
 {
-    if(f==NULL || f->getGeometry() == NULL){
+    /*if(f==NULL || f->getGeometry() == NULL){
         return false;
     }
 
@@ -1795,16 +1804,16 @@ bool Controller::generateActualForNominal(FeatureWrapper *f)
         FeatureAttributes fae;
         MeasurementConfig mConfig;
 
-        fae.actual = true;
-        fae.common = false;
+        fae.isActual = true;
+        fae.isCommon = false;
         fae.count = 1;
         fae.name = f->getGeometry()->getFeatureName();
         fae.destSystem = NULL;
-        fae.featureType = f->getTypeOfFeature();
+        fae.typeOfFeature = f->getTypeOfFeature();
         fae.function = this->getDefaultFunction(f->getTypeOfFeature());
         fae.group = f->getGeometry()->getGroupName();
         fae.isMovement = false;
-        fae.nominal = false;
+        fae.isNominal = false;
         fae.nominalSystem = NULL;
         fae.startSystem = NULL;
 
@@ -1813,7 +1822,7 @@ bool Controller::generateActualForNominal(FeatureWrapper *f)
     }
 
     f->getGeometry()->getMyActual()->setActiveFeatureState(true);
-
+*/
     return true;
 
 }
@@ -1977,10 +1986,10 @@ void Controller::deleteFeaturesCallback(bool command){
  * \return
  */
 bool Controller::checkPluginAvailability(Configuration::FeatureTypes typeOfFeature){
-    QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
+    /*QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
     if(availableGeometries.contains(QString(Configuration::getFeatureTypeString(typeOfFeature)))){
         return true;
-    }
+    }*/
     return false;
 }
 
@@ -1990,7 +1999,7 @@ bool Controller::checkPluginAvailability(Configuration::FeatureTypes typeOfFeatu
  * \param featureType
  * \return
  */
-QStringList Controller::getAvailableCreateFunctions(Configuration::FeatureTypes featureType){
+/*QStringList Controller::getAvailableCreateFunctions(Configuration::FeatureTypes featureType){
     QStringList result;
 
     //query database for all available fit and construct functions of featureType
@@ -2007,7 +2016,7 @@ QStringList Controller::getAvailableCreateFunctions(Configuration::FeatureTypes 
     }
 
     return result;
-}
+}*/
 
 /*!
  * \brief Controller::getDefaultFunction
@@ -2018,10 +2027,10 @@ QStringList Controller::getAvailableCreateFunctions(Configuration::FeatureTypes 
 QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
     QString result;
 
-    FunctionPlugin plugin = SystemDbManager::getDefaultFunction(featureType);
+    /*FunctionPlugin plugin = SystemDbManager::getDefaultFunction(featureType);
     if(plugin.name.compare("") != 0){
         result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
-    }
+    }*/
 
     return result;
 }

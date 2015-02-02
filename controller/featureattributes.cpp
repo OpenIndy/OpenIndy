@@ -1,4 +1,4 @@
-#include "featureattributesexchange.h"
+#include "featureattributes.h"
 
 /*!
  * \brief FeatureAttributesExchange is a class to exchange the values of attributes of features.
@@ -8,15 +8,9 @@
 FeatureAttributes::FeatureAttributes()
 {
     this->count = 0;
-    this->name = "";
-    this->group = "";
-    this->actual = false;
-    this->nominal = false;
-    this->common = false;
-    this->nominalSystem = NULL;
-    this->startSystem = NULL;
-    this->destSystem = NULL;
-    this->function = "";
+    this->isActual = false;
+    this->isNominal = false;
+    this->isCommon = false;
     this->isMovement = false;
 }
 

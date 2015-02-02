@@ -10,7 +10,7 @@
 #include "function.h"
 #include "pi_systemtransformation.h"
 #include "sortlistbyname.h"
-#include "featureattributesexchange.h"
+#include "featureattributes.h"
 #include "console.h"
 #include "systemdbmanager.h"
 #include "pluginloader.h"

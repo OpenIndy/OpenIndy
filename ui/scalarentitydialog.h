@@ -6,7 +6,7 @@
 #include "featurewrapper.h"
 #include <QShowEvent>
 #include <QDesktopWidget>
-#include "featureattributesexchange.h"
+#include "featureattributes.h"
 #include "oifeaturestate.h"
 
 namespace Ui {

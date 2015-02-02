@@ -296,7 +296,7 @@ void ImportNominalDialog::on_comboBox_plugin_sa_currentIndexChanged(const QStrin
  */
 void ImportNominalDialog::on_comboBox_exchange_sa_currentIndexChanged(const QString &exchangeMethod){
 
-    OiExchangeSimpleAscii *exchange = PluginLoader::loadOiExchangeSimpleAsciiPlugin(
+    /*OiExchangeSimpleAscii *exchange = PluginLoader::loadOiExchangeSimpleAsciiPlugin(
                 SystemDbManager::getPluginFilePath(this->ui->comboBox_exchange_sa->currentText(), this->ui->comboBox_plugin_sa->currentText()), this->ui->comboBox_exchange_sa->currentText());
 
     if(exchange == NULL){
@@ -309,7 +309,7 @@ void ImportNominalDialog::on_comboBox_exchange_sa_currentIndexChanged(const QStr
         model->setFilter(exchange->getSupportedGeometries());
     }
 
-    this->updatePreview();
+    this->updatePreview();*/
 
 }
 
@@ -357,7 +357,7 @@ OiExchangeObject *ImportNominalDialog::getExchangeObject(){
  */
 OiExchangeSimpleAscii *ImportNominalDialog::getExchangePlugin(){
 
-    OiExchangeSimpleAscii *exchange = PluginLoader::loadOiExchangeSimpleAsciiPlugin(
+    /*OiExchangeSimpleAscii *exchange = PluginLoader::loadOiExchangeSimpleAsciiPlugin(
                 SystemDbManager::getPluginFilePath(this->ui->comboBox_exchange_sa->currentText(), this->ui->comboBox_plugin_sa->currentText()), this->ui->comboBox_exchange_sa->currentText());
 
     if(exchange == NULL){
@@ -388,7 +388,9 @@ OiExchangeSimpleAscii *ImportNominalDialog::getExchangePlugin(){
     selectedUnits.insert(UnitConverter::eAngular, UnitConverter::getUnitType(this->ui->comboBox_temperature_sa->currentText()));
     exchange->setUnits(selectedUnits);
 
-    return exchange;
+    return exchange;*/
+
+    return NULL;
 
 }
 

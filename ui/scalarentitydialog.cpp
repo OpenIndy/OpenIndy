@@ -74,14 +74,14 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
 
         FeatureAttributes featureAttributes;
         featureAttributes.count = count;
-        featureAttributes.featureType = featureType;
+        featureAttributes.typeOfFeature = featureType;
         featureAttributes.name = name;
         featureAttributes.group = group;
-        featureAttributes.function = function;
-        featureAttributes.actual = actual;
-        featureAttributes.nominal = nominal;
-        featureAttributes.common = comPoint;
-        featureAttributes.nominalSystem = nominalSystem;
+        //featureAttributes.function = function;
+        featureAttributes.isActual = actual;
+        featureAttributes.isNominal = nominal;
+        featureAttributes.isCommon = comPoint;
+        //featureAttributes.nominalSystem = nominalSystem;
 
         emit createFeature(featureAttributes);
 

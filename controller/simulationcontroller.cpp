@@ -25,7 +25,7 @@ void SimulationController::setFeatureUpdater(FeatureUpdater *f)
 
 void SimulationController::setUpSimulations()
 {
-    this->simulations = SystemDbManager::getAvailableSimulationPlugins();
+    /*this->simulations = SystemDbManager::getAvailableSimulationPlugins();
 
     QStringList simulationNames;
 
@@ -33,7 +33,7 @@ void SimulationController::setUpSimulations()
         simulationNames.append(p.name);
     }
 
-    this->availableSimulations->setStringList(simulationNames);
+    this->availableSimulations->setStringList(simulationNames);*/
 }
 
 void SimulationController::recalcAll()
@@ -256,9 +256,9 @@ void SimulationController::setUpCorrelations(FeatureWrapper *f)
 
 void SimulationController::setSimulationAt(int i)
 {
-    SimulationPlugin p = this->simulations.at(i);
+    /*SimulationPlugin p = this->simulations.at(i);
 
     QString filePath = SystemDbManager::getPluginFilePath(p.name,p.pluginName);
 
-    actualSimulation = PluginLoader::loadSimulationPlugin(filePath,p.name);
+    actualSimulation = PluginLoader::loadSimulationPlugin(filePath,p.name);*/
 }

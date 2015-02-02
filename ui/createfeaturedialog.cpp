@@ -8,33 +8,188 @@
 CreateFeatureDialog::CreateFeatureDialog(QWidget *parent) :
     QDialog(parent), ui(new Ui::CreateFeatureDialog)
 {
-    ui->setupUi(this);
-    initGUI();
+    this->ui->setupUi(this);
+    this->initGUI();
+    this->initModels();
 }
 
 /*!
  * \brief CreateFeature destructor.
  */
-CreateFeatureDialog::~CreateFeatureDialog()
-{
-    delete ui;
+CreateFeatureDialog::~CreateFeatureDialog(){
+    delete this->ui;
 }
 
 /*!
- * \brief CreateFeature::setFeatureType
+ * \brief CreateFeatureDialog::setFeatureType
  * \param typeOfFeature
  */
-void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeature){
+void CreateFeatureDialog::setFeatureType(const Configuration::FeatureTypes &typeOfFeature){
     this->typeOfFeature = typeOfFeature;
 }
 
 /*!
- * \brief receiveFeatureType enables all gui elements and functions for the selected feature type.
- * Enables or disables some GUI elemts depending from the feature type. The feature type is set by the selected feature in the
- * combobox in the main application or by clicking on a create feature button (e.g. the create point button) in the toolbar of the
- * main application.
- * \param Configuration::FeatureTypes fT
+ * \brief CreateFeatureDialog::showEvent
+ * \param event
  */
+void CreateFeatureDialog::showEvent(QShowEvent *event){
+    this->initGUI();
+    this->initFunctionsModel();
+    event->accept();
+}
+
+/*!
+ * \brief CreateFeatureDialog::initGUI
+ * Set up GUI based on the selected type of feature
+ */
+void CreateFeatureDialog::initGUI(){
+
+    //general GUI init
+    this->ui->lineEdit_name->setText("");
+    this->ui->spinBox_count->setValue(1);
+
+    //GUI inits based on type of feature
+    if(this->typeOfFeature == Configuration::eTrafoParamFeature){
+
+        //set visibility
+        this->ui->label_startSystem->setVisible(true);
+        this->ui->comboBox_startSystem->setVisible(true);
+        this->ui->label_destinationSystem->setVisible(true);
+        this->ui->comboBox_destinationSystem->setVisible(true);
+        this->ui->label_function->setVisible(false);
+        this->ui->comboBox_function->setVisible(false);
+        this->ui->label_nominalSystem->setVisible(false);
+        this->ui->comboBox_nominalSystem->setVisible(false);
+        this->ui->checkBox_isActual->setVisible(false);
+        this->ui->checkBox_isNominal->setVisible(false);
+        this->ui->checkBox_isCommon->setVisible(false);
+        this->ui->checkBox_isMovement->setVisible(true);
+
+        //set checked state
+        this->ui->checkBox_isMovement->setChecked(false);
+
+    }else if(this->typeOfFeature == Configuration::eStationFeature ||
+             this->typeOfFeature == Configuration::eCoordinateSystemFeature){
+
+        //set visibility
+        this->ui->label_startSystem->setVisible(false);
+        this->ui->comboBox_startSystem->setVisible(false);
+        this->ui->label_destinationSystem->setVisible(false);
+        this->ui->comboBox_destinationSystem->setVisible(false);
+        this->ui->label_function->setVisible(false);
+        this->ui->comboBox_function->setVisible(false);
+        this->ui->label_nominalSystem->setVisible(false);
+        this->ui->comboBox_nominalSystem->setVisible(false);
+        this->ui->checkBox_isActual->setVisible(false);
+        this->ui->checkBox_isNominal->setVisible(false);
+        this->ui->checkBox_isCommon->setVisible(false);
+        this->ui->checkBox_isMovement->setVisible(false);
+
+    }else{
+
+        //set visibility
+        this->ui->label_startSystem->setVisible(false);
+        this->ui->comboBox_startSystem->setVisible(false);
+        this->ui->label_destinationSystem->setVisible(false);
+        this->ui->comboBox_destinationSystem->setVisible(false);
+        this->ui->label_function->setVisible(true);
+        this->ui->comboBox_function->setVisible(true);
+        this->ui->label_nominalSystem->setVisible(true);
+        this->ui->comboBox_nominalSystem->setVisible(true);
+        this->ui->checkBox_isActual->setVisible(true);
+        this->ui->checkBox_isNominal->setVisible(true);
+        this->ui->checkBox_isCommon->setVisible(true);
+        this->ui->checkBox_isMovement->setVisible(false);
+
+        //set checked state
+        this->ui->checkBox_isActual->setChecked(true);
+        this->ui->checkBox_isNominal->setChecked(false);
+        this->ui->checkBox_isCommon->setChecked(false);
+
+        //set function model based on selected feature type
+
+    }
+
+}
+
+/*!
+ * \brief CreateFeatureDialog::initModels
+ */
+void CreateFeatureDialog::initModels(){
+
+    this->ui->comboBox_startSystem->setModel(&OiModelManager::getCoordinateSystemsModel());
+    this->ui->comboBox_destinationSystem->setModel(&OiModelManager::getCoordinateSystemsModel());
+    this->ui->comboBox_nominalSystem->setModel(&OiModelManager::getCoordinateSystemsModel());
+
+}
+
+/*!
+ * \brief CreateFeatureDialog::setFunctionsModel
+ * Sets the model of the function combo box and selects the default function of the specified feature type
+ */
+void CreateFeatureDialog::initFunctionsModel(){
+
+    switch(this->typeOfFeature){
+    case Configuration::ePointFeature:
+        break;
+    case Configuration::eLineFeature:
+        break;
+    case Configuration::ePlaneFeature:
+        break;
+    case Configuration::eCircleFeature:
+        break;
+    case Configuration::eSphereFeature:
+        break;
+    case Configuration::ePointCloudFeature:
+        break;
+    case Configuration::eConeFeature:
+        break;
+    case Configuration::eCylinderFeature:
+        break;
+    case Configuration::eEllipsoidFeature:
+        break;
+    case Configuration::eParaboloidFeature:
+        break;
+    case Configuration::eHyperboloidFeature:
+        break;
+    case Configuration::eNurbsFeature:
+        break;
+    case Configuration::eScalarEntityAngleFeature:
+        break;
+    case Configuration::eScalarEntityDistanceFeature:
+        break;
+    case Configuration::eScalarEntityMeasurementSeriesFeature:
+        break;
+    case Configuration::eScalarEntityTemperatureFeature:
+        break;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeature){
+    this->typeOfFeature = typeOfFeature;
+}
+
+
 /*void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
     this->typeOfFeature = fT;
 
@@ -307,13 +462,9 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
     }
 
     initGUI();
-}*/
+}
 
-/*!
- * \brief create feature.
- * Saves the values set up in the GUI and emits them to the create feature function in the controller, that crates the feature,
- * adds it to the features list and displays it in the table model.
- */
+
 void CreateFeatureDialog::on_toolButton_create_clicked()
 {
     if(ui->spinBox_count->value()>0){
@@ -429,17 +580,14 @@ void CreateFeatureDialog::on_toolButton_create_clicked()
     }
 
 }
-/*!
- * \brief closes this window without saving values or creating features.
- */
+
+
 void CreateFeatureDialog::on_toolButton_cancel_clicked()
 {
     this->close();
 }
 
-/*!
- * \brief initiates the gui and fills the coordinate system comboboxes with availables coordinate systems.
- */
+
 void CreateFeatureDialog::initGUI(){
 
     ui->comboBox_destinationSystem->clear();
@@ -467,10 +615,7 @@ void CreateFeatureDialog::initGUI(){
     }
 }
 
-/*!
- * \brief this function is called when the nominal checkboxes gets toggled and generates specific gui elements for each case.
- * \param bool checked
- */
+
 void CreateFeatureDialog::on_checkBox_Nominal_toggled(bool checked)
 {
     if(checked){
@@ -482,42 +627,27 @@ void CreateFeatureDialog::on_checkBox_Nominal_toggled(bool checked)
     }
 }
 
-/*!
- * \brief calls the measurement configuration window for creating a config.
- * This config will be saved for this feature and all following features. It can be changed via the main application.
- */
+
 void CreateFeatureDialog::on_toolButton_mConfig_clicked()
 {
     emit createFeatureMConfig(this->typeOfFeature);
 }
 
-/*!
- * \brief CreateFeature::availableGroupsChanged
- * Update group combobox
- * \param myGroups
- */
-/*void CreateFeature::availableGroupsChanged(QStringList myGroups){
+
+void CreateFeature::availableGroupsChanged(QStringList myGroups){
     this->ui->comboBox_group->clear();
     this->ui->comboBox_group->clearEditText();
     this->ui->comboBox_group->addItems(myGroups);
-}*/
+}
 
-/*!
- * \brief CreateFeature::setAvailableFunctions
- * Assign all available create functions to the function combo box and select default value
- * \param functions
- * \param defaultFunction
- */
-/*void CreateFeature::setAvailableFunctions(QStringList functions, QString defaultFunction){
+
+void CreateFeature::setAvailableFunctions(QStringList functions, QString defaultFunction){
     this->ui->comboBox_function->clear();
     this->ui->comboBox_function->addItems(functions);
     this->ui->comboBox_function->setCurrentText(defaultFunction);
-}*/
+}
 
-/*!
- * \brief CreateFeature::showEvent
- * \param event
- */
+
 void CreateFeatureDialog::showEvent(QShowEvent *event){
 
     //put the dialog in the screen center
@@ -527,10 +657,7 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
 
 }
 
-/*!
- * \brief CreateFeature::on_checkBox_Actual_toggled
- * \param checked
- */
+
 void CreateFeatureDialog::on_checkBox_Actual_toggled(bool checked)
 {
     if(checked){
@@ -574,4 +701,66 @@ void CreateFeatureDialog::on_comboBox_destinationSystem_currentIndexChanged(cons
     if(ui->checkBox_movement->isChecked()){
         ui->comboBox_startSystem->setCurrentText(arg1);
     }
+}*/
+
+/*!
+ * \brief CreateFeatureDialog::on_toolButton_cancel_clicked
+ */
+void CreateFeatureDialog::on_toolButton_cancel_clicked(){
+    this->close();
+}
+
+/*!
+ * \brief CreateFeatureDialog::on_toolButton_create_clicked
+ */
+void CreateFeatureDialog::on_toolButton_create_clicked(){
+    FeatureAttributes attributes;
+    this->featureAttributesFromGUI(attributes);
+    emit this->addFeatures(attributes);
+    this->close();
+}
+
+/*!
+ * \brief CreateFeatureDialog::on_toolButton_mConfig_clicked
+ */
+void CreateFeatureDialog::on_toolButton_mConfig_clicked(){
+
+}
+
+/*!
+ * \brief CreateFeatureDialog::featureAttributesFromGUI
+ * \param attributes
+ */
+void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes){
+
+    //fill general attributes
+    attributes.typeOfFeature = this->typeOfFeature;
+    attributes.count = this->ui->spinBox_count->value();
+    attributes.name = this->ui->lineEdit_name->text();
+    attributes.group = this->ui->comboBox_group->currentText();
+
+    //fill feature type specific attributes
+    if(this->typeOfFeature == Configuration::eTrafoParamFeature){
+
+        attributes.startSystem = this->ui->comboBox_startSystem->currentText();
+        attributes.destinationSystem = this->ui->comboBox_destinationSystem->currentText();
+        attributes.isMovement = this->ui->checkBox_isMovement->isChecked();
+
+    }else if(this->typeOfFeature != Configuration::eCoordinateSystemFeature
+             && this->typeOfFeature != Configuration::eStationFeature){
+
+        attributes.isActual = this->ui->checkBox_isActual->isChecked();
+        attributes.isNominal = this->ui->checkBox_isNominal->isChecked();
+        attributes.isCommon = this->ui->checkBox_isCommon->isChecked();
+        attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
+
+
+        /*
+        attributes.functionPlugin.first = this->ui->comboBox_function
+        attributes.functionPlugin.second = this->ui->checkBox_isActual->isChecked();
+        */
+        //TODO: get function and plugin from model
+
+    }
+
 }

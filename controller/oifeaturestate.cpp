@@ -41,11 +41,42 @@ OiFeatureState *OiFeatureState::getInstance(){
 
 /*!
  * \brief OiFeatureState::getFeatureCount
- * Returns the number of features
  * \return
  */
 int OiFeatureState::getFeatureCount(){
     return OiFeatureState::myFeatureContainer.getFeatureCount();
+}
+
+/*!
+ * \brief OiFeatureState::getStationCount
+ * \return
+ */
+int OiFeatureState::getStationCount(){
+    return OiFeatureState::myFeatureContainer.getStationCount();
+}
+
+/*!
+ * \brief OiFeatureState::getCoordinateSystemCount
+ * \return
+ */
+int OiFeatureState::getCoordinateSystemCount(){
+    return OiFeatureState::myFeatureContainer.getCoordinateSystemCount();
+}
+
+/*!
+ * \brief OiFeatureState::getGeometryCount
+ * \return
+ */
+int OiFeatureState::getGeometryCount(){
+    return OiFeatureState::getGeometryCount();
+}
+
+/*!
+ * \brief OiFeatureState::getTrafoParamCount
+ * \return
+ */
+int OiFeatureState::getTrafoParamCount(){
+    return OiFeatureState::getTrafoParamCount();
 }
 
 /*!
@@ -90,12 +121,42 @@ const QList<FeatureWrapper *> &OiFeatureState::getGeometries(){
 }
 
 /*!
+ * \brief OiFeatureState::makeActiveFeature
+ * \param featureId
+ * \return
+ */
+bool OiFeatureState::makeActiveFeature(const int &featureId){
+    FeatureWrapper *myFeature = OiFeatureState::getFeature(featureId);
+    if(myFeature ){
+
+    }
+}
+
+/*!
+ * \brief OiFeatureState::makeActiveStation
+ * \param featureId
+ * \return
+ */
+bool OiFeatureState::makeActiveStation(const int &featureId){
+
+}
+
+/*!
+ * \brief OiFeatureState::makeActiveCoordinateSystem
+ * \param featureId
+ * \return
+ */
+bool OiFeatureState::makeActiveCoordinateSystem(const int &featureId){
+
+}
+
+/*!
  * \brief OiFeatureState::getFeaturesOfGroup
  * Get all features of a special group
  * \param group
  * \return
  */
-QList<FeatureWrapper *> OiFeatureState::getFeaturesByGroup(QString group){
+QList<FeatureWrapper *> OiFeatureState::getFeaturesByGroup(const QString &group){
 
     QList<FeatureWrapper *> features;
 
@@ -114,7 +175,7 @@ QList<FeatureWrapper *> OiFeatureState::getFeaturesByGroup(QString group){
  * \param name
  * \return
  */
-QList<FeatureWrapper *> OiFeatureState::getFeaturesByName(QString name){
+QList<FeatureWrapper *> OiFeatureState::getFeaturesByName(const QString &name){
     return OiFeatureState::myFeatureContainer.getFeaturesByName(name);
 }
 
@@ -175,7 +236,7 @@ void OiFeatureState::setActiveGroup(QString group){
  * \param featureId
  * \return
  */
-FeatureWrapper *OiFeatureState::getFeature(int featureId){
+FeatureWrapper *OiFeatureState::getFeature(const int &featureId){
     return OiFeatureState::myFeatureContainer.getFeatureById(featureId);
 }
 
@@ -184,20 +245,20 @@ FeatureWrapper *OiFeatureState::getFeature(int featureId){
  * \param name
  * \return
  */
-CoordinateSystem *OiFeatureState::getNominalSystem(QString name){
+/*CoordinateSystem *OiFeatureState::getNominalSystem(QString name){
     foreach(CoordinateSystem *c, OiFeatureState::myFeatureContainer.getCoordinateSystemsList()){
         if(c != NULL && c->getFeatureName().compare(name) == 0){
             return c;
         }
     }
     return NULL;
-}
+}*/
 
 /*!
  * \brief OiFeatureState::resetFeatureLists
  * Delete all OpenIndy features and clear all feature lists
  */
-void OiFeatureState::resetFeatureLists(){
+/*void OiFeatureState::resetFeatureLists(){
 
     //reset active states
     myActiveFeature = NULL;
@@ -213,14 +274,9 @@ void OiFeatureState::resetFeatureLists(){
 
     OiFeatureState::getInstance()->emitSignal(OiFeatureState::eFeatureSetChanged);
 
-}
+}*/
 
-/*!
- * \brief OiFeatureState::addFeature
- * Creates a new feature and adds it to the list of features. A pointer to that new feature is returned
- * \param myFeatureType
- * \return
- */
+/*
 FeatureWrapper *OiFeatureState::addFeature(FeatureAttributes attributes){
     try{
 
@@ -241,8 +297,8 @@ FeatureWrapper *OiFeatureState::addFeature(FeatureAttributes attributes){
             }
 
             OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
-            if(attributes.featureType == Configuration::eCoordinateSystemFeature
-                    || attributes.featureType == Configuration::eStationFeature){
+            if(attributes.typeOfFeature == Configuration::eCoordinateSystemFeature
+                    || attributes.typeOfFeature == Configuration::eStationFeature){
                 OiFeatureState::getInstance()->emitSignal(eCoordSysSetChanged);
             }
 
@@ -256,7 +312,7 @@ FeatureWrapper *OiFeatureState::addFeature(FeatureAttributes attributes){
         Console::addLine(e.what());
         return NULL;
     }
-}
+}*/
 
 /*!
  * \brief OiFeatureState::addFeature
@@ -336,7 +392,7 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
  * \param attributes
  * \return
  */
-QList<FeatureWrapper *> OiFeatureState::addFeatures(FeatureAttributes attributes){
+QList<FeatureWrapper *> OiFeatureState::addFeatures(const FeatureAttributes &attributes){
     try{
 
         QList<FeatureWrapper *> result;
@@ -355,8 +411,8 @@ QList<FeatureWrapper *> OiFeatureState::addFeatures(FeatureAttributes attributes
         }
 
         OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
-        if(attributes.featureType == Configuration::eCoordinateSystemFeature
-                || attributes.featureType == Configuration::eStationFeature){
+        if(attributes.typeOfFeature == Configuration::eCoordinateSystemFeature
+                || attributes.typeOfFeature == Configuration::eStationFeature){
             OiFeatureState::getInstance()->emitSignal(eCoordSysSetChanged);
         }
 
@@ -595,11 +651,11 @@ QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributes &
         int index;
         OiFeatureState::createFeatureName(name, index, attributes.name, attributes.count);
 
-        bool nominal = attributes.nominal;
+        bool nominal = attributes.isNominal;
 
         int numIterations = 1;
 
-        if(attributes.nominal && attributes.actual && Configuration::getIsGeometry(attributes.featureType)){
+        if(attributes.isNominal && attributes.isActual && Configuration::getIsGeometry(attributes.typeOfFeature)){
             numIterations++;
         }
 
@@ -610,7 +666,7 @@ QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributes &
 
                 //create feature + feature wrapper and set measurement config
                 FeatureWrapper *myFeature = new FeatureWrapper();
-                switch(attributes.featureType){
+                switch(attributes.typeOfFeature){
                 case Configuration::ePointFeature: {
                     Point *myPoint = new Point(nominal);
                     myPoint->setMeasurementConfig(Point::defaultMeasurementConfig);
@@ -680,7 +736,7 @@ QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributes &
                     myFeature->setCoordinateSystem(myCoordinateSystem);
                     break;
                 }case Configuration::eTrafoParamFeature:{
-                    TrafoParam *myTrafoParam = new TrafoParam();
+                    /*TrafoParam *myTrafoParam = new TrafoParam();
                     myTrafoParam->setCoordinateSystems(attributes.startSystem, attributes.destSystem);
                     myTrafoParam->setIsMovement(attributes.isMovement);
                     for(int i=0; i<OiFeatureState::getCoordinateSystems().size();i++){
@@ -700,7 +756,7 @@ QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributes &
                         }
                     }
                     myFeature->setTrafoParam(myTrafoParam);
-                    break;
+                    break;*/
                 }case Configuration::eScalarEntityAngleFeature:{
                     ScalarEntityAngle *myAngle = new ScalarEntityAngle(nominal);
                     myAngle->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
@@ -733,9 +789,9 @@ QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributes &
                 myFeature->getFeature()->setFeatureName(featureName);
                 myFeature->getFeature()->setGroupName(attributes.group);
                 if(myFeature->getGeometry() != NULL){
-                    myFeature->getGeometry()->setCommonState(attributes.common);
+                    myFeature->getGeometry()->setCommonState(attributes.isCommon);
                     if(myFeature->getGeometry()->getIsNominal()){
-                        myFeature->getGeometry()->setNominalSystem(attributes.nominalSystem);
+                        //myFeature->getGeometry()->setNominalSystem(attributes.nominalSystem);
                     }
                 }
 
@@ -752,8 +808,9 @@ QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributes &
 
                 //set function
                 if(!nominal){
-                    QString filePath = SystemDbManager::getPluginFilePath(attributes.function, attributes.plugin);
-                    Function *checkFunction = PluginLoader::loadFunctionPlugin(filePath, attributes.function);
+                    QString filePath;
+                    SystemDbManager::getFunctionPluginFilePath(filePath, attributes.functionPlugin.first, attributes.functionPlugin.second);
+                    Function *checkFunction = PluginLoader::loadFunctionPlugin(filePath, attributes.functionPlugin.second);
 
                     myFeature->getFeature()->addFunction(checkFunction);
                 }

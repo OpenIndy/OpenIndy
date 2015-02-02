@@ -14,7 +14,7 @@ void PluginTreeViewModel::refreshModel(){
     this->rootItem->deleteChildren();
 
     //query database for available plugins
-    QList<Plugin> myPlugins = SystemDbManager::getAvailablePlugins();
+    QList<Plugin> myPlugins;// = SystemDbManager::getAvailablePlugins();
 
     //create tree view hierarchy
     foreach(Plugin myPlugin, myPlugins){

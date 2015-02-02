@@ -23,7 +23,6 @@ CREATE TABLE functionPlugin (
 	FOREIGN KEY (plugin_id) REFERENCES plugin(id)
 );
 
-
 -- alle sensor configs die im config Ordner gespeichert sind
 CREATE TABLE sensorConfig (
 	id integer PRIMARY KEY autoincrement,

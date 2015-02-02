@@ -7,39 +7,49 @@
 #include <QList>
 #include <QDir>
 #include <QMultiMap>
+#include <QPointer>
 
 #include "pluginmetadata.h"
 #include "oimetadata.h"
 #include "console.h"
 #include "configuration.h"
 
-struct FunctionPlugin{
+//! base class for all plugin types
+class SpecialPlugin{
+public:
     int id;
     QString iid;
     QString name;
     QString description;
     QString pluginName;
+};
+
+//! function plugins
+class FunctionPlugin : public SpecialPlugin{
+public:
     QList<Configuration::FeatureTypes> applicableFor;
     QList<Configuration::ElementTypes> neededElements;
 };
 
-struct SensorPlugin{
-    int id;
-    QString iid;
-    QString name;
-    QString description;
-    QString pluginName;
+//! sensor plugins
+class SensorPlugin : public SpecialPlugin{
 };
 
-struct SimulationPlugin{
-    int id;
-    QString iid;
-    QString name;
-    QString description;
-    QString pluginName;
+//! simulation plugins
+class SimulationPlugin : public SpecialPlugin{
 };
 
-struct Plugin{
+//! tool plugins
+class OiToolPlugin : public SpecialPlugin{
+};
+
+//! exchange plugins
+class OiExchangePlugin : public SpecialPlugin{
+};
+
+//! class that holds information about an OpenIndy plugin
+class Plugin{
+public:
     int id;
     QString iid;
     QString name;
@@ -55,35 +65,54 @@ struct Plugin{
     QList<FunctionPlugin> myFunctions;
     QList<SimulationPlugin> mySimulations;
     QList<SensorPlugin> mySensors;
+    QList<OiToolPlugin> myTools;
 };
 
+//! database interface class
 class SystemDbManager
 {
 public:
-    static int savePlugin(PluginMetaData *metaInfo, QList<Function*> functions, QList<Sensor*> sensors,
-                          QList<NetworkAdjustment*> networkAdjustments,QList<SimulationModel*> simulationList,
-                          QList<OiTool*>toolList, QList<OiExchangeSimpleAscii*> simpleAsciiList,
-                          QList<OiExchangeDefinedFormat*> definedFormatList);
-    static bool deletePlugin(int id);
+    //TODO QPointer const ?
 
-    static bool getCreateFunctionModel(QSqlQueryModel *sqlModel, Configuration::FeatureTypes ft);
-    static bool getChangeFunctionModel(QSqlQueryModel *sqlModel, Configuration::FeatureTypes ft);
-    static bool getNeededElements(QSqlQueryModel *sqlModel, int id);
+    //##################################
+    //public functions to query database
+    //##################################
 
-    static bool getLaserTrackerModel(QSqlQueryModel *sqlModel);
-    static bool getTotalStationModel(QSqlQueryModel *sqlModel);
-    static bool getUndefinedSensorModel(QSqlQueryModel *sqlModel);
+    //add or remove plugins
+    static bool savePlugin(const Plugin &plugin);
+    static bool deletePlugin(const Plugin &plugin);
+    static bool deletePlugin(const QString &iid);
 
-    static bool addMeasurementConfig(QString name);
-    static bool removeMeasurementConfig(QString name);
-    static QString getDefaultMeasurementConfig(Configuration::FeatureTypes geomType);
-    static bool setDefaultMeasurementConfig(Configuration::FeatureTypes geomType, QString name);
+    //get sql models (function)
+    static bool getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const Configuration::FeatureTypes &typeOfFeature);
+    static bool getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const Configuration::FeatureTypes &typeOfFeature);
+    static bool getNeededElementsModel(QPointer<QSqlQueryModel> &sqlModel, const FunctionPlugin &functionPlugin);
 
-    static bool addSensorConfig(QString name);
-    static bool removeSensorConfig(QString name);
+    //get sql models (sensor)
+    static bool getLaserTrackerModel(QPointer<QSqlQueryModel> &sqlModel);
+    static bool getTotalStationModel(QPointer<QSqlQueryModel> &sqlModel);
+    static bool getUndefinedSensorModel(QPointer<QSqlQueryModel> &sqlModel);
+
+    //add or remove measurement configs
+    static bool addMeasurementConfig(const QString &name);
+    static bool removeMeasurementConfig(const QString &name);
+    static QString getDefaultMeasurementConfig(const Configuration::GeometryTypes &typeOfGeometry);
+    static bool setDefaultMeasurementConfig(const Configuration::GeometryTypes &typeOfGeometry, const QString &name);
+
+    //add or remove sensor configs
+    static bool addSensorConfig(const QString &name);
+    static bool removeSensorConfig(const QString &name);
     static QString getDefaultSensorConfig();
-    static bool setDefaultSensorConfig(QString name);
+    static bool setDefaultSensorConfig(const QString &name);
 
+    //get the file path of a plugin
+    static bool getSensorPluginFilePath(QString &filePath, const QString &pluginName, const QString &sensorName);
+    static bool getFunctionPluginFilePath(QString &filePath, const QString &pluginName, const QString &functionName);
+    //bool getPluginFilePath(QString &filePath, const QString &pluginName, const QString &sensorName);
+    //bool getPluginFilePath(QString &filePath, const QString &pluginName, const QString &sensorName);
+
+
+/*
     static QString getPluginFilePath(QString name, QString plugin);
 
     static QStringList getSupportedGeometries();
@@ -103,6 +132,7 @@ public:
 
     static QMultiMap<QString,QString> getAvailableSimpleAsciiExchangePlugins();
     static QMultiMap<QString,QString> getAvailableDefinedFormatExchangePlugins();
+*/
 
 private:
     static QSqlDatabase db;

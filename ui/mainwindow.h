@@ -53,7 +53,7 @@
 #include <QtXml>
 
 #include "featuretablemodel.h"
-#include "featureattributesexchange.h"
+#include "featureattributes.h"
 #include "guiconfiguration.h"
 
 #include "oifeaturestate.h"
@@ -139,7 +139,7 @@ private slots:
     void on_actionCreate_circle_triggered();
 
     //show create feature dialogs
-    void showCreateFeatureDialog(Configuration::FeatureTypes featureType);
+    void showCreateFeatureDialog(const Configuration::FeatureTypes &featureType);
     void showScalarEntityDialog(Configuration::FeatureTypes featureType);
 
     //save and load project actions
@@ -173,11 +173,12 @@ private:
 
     Controller control;
 
-    //####################################
-    //set up models and connect controller
-    //####################################
+    //#################################
+    //set up models and connect dialogs
+    //#################################
 
     void assignModels();
+    void connectDialogs();
     void connectController();
 
     //#################

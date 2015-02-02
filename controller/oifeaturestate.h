@@ -16,7 +16,7 @@
 #include "oiconfigstate.h"
 #include "oijob.h"
 #include "oijobstate.h"
-#include "featureattributesexchange.h"
+#include "featureattributes.h"
 
 using namespace std;
 
@@ -36,95 +36,140 @@ private:
 public:
     static OiFeatureState *getInstance();
 
+    //###############################################################################
+    //public functions to access the current feature state from everywhere in OpenIny
+    //###############################################################################
+
+    //number of features
     static int getFeatureCount();
+    static int getStationCount();
+    static int getCoordinateSystemCount();
+    static int getGeometryCount();
+    static int getTrafoParamCount();
 
+    //access feature lists
     static const QList<FeatureWrapper *> &getFeatures();
-    static QList<FeatureWrapper *> getFeaturesByName(QString name);
-    static QList<FeatureWrapper *> getFeaturesByGroup(QString group);
-    static FeatureWrapper *getFeature(int featureId);
-
     static const QList<Station *> &getStations();
     static const QList<CoordinateSystem *> &getCoordinateSystems();
     static const QList<TrafoParam *> &getTransformationParameters();
     static const QList<FeatureWrapper *> &getGeometries();
 
-    static FeatureWrapper *addFeature(FeatureAttributes attributes);
+    //activate features
+    static bool makeActiveFeature(const int &featureId);
+    static bool makeActiveStation(const int &featureId);
+    static bool makeActiveCoordinateSystem(const int &featureId);
+
+    //access specific features
+    static QList<FeatureWrapper *> getFeaturesByName(const QString &name);
+    static QList<FeatureWrapper *> getFeaturesByGroup(const QString &group);
+    static FeatureWrapper *getFeature(const int &featureId);
+
+    //add feature(s)
+    static QList<FeatureWrapper *> addFeatures(const FeatureAttributes &attributes);
     static bool addFeature(FeatureWrapper *myFeature);
-    static QList<FeatureWrapper *> addFeatures(FeatureAttributes attributes);
     static bool addFeatures(const QList<FeatureWrapper *> &myFeatures);
 
+    /*static FeatureWrapper *addFeature(FeatureAttributes attributes);
+    static bool addFeature(FeatureWrapper *myFeature);
+    static QList<FeatureWrapper *> addFeatures(FeatureAttributes attributes);
+    static bool addFeatures(const QList<FeatureWrapper *> &myFeatures);*/
+
+    //remove feature(s)
     static bool removeFeature(FeatureWrapper *myFeature);
 
+    //access active features
     static FeatureWrapper* getActiveFeature();
     static Station* getActiveStation();
     static CoordinateSystem* getActiveCoordinateSystem();
 
+    //get or set feature groups
     static const QMap<QString, int> getAvailableGroups();
-
     static QString getActiveGroup();
     static void setActiveGroup(QString group);
 
-    static CoordinateSystem *getNominalSystem(QString name);
 
-    static void resetFeatureLists();
+    //static CoordinateSystem *getNominalSystem(QString name);
+    //static void resetFeatureLists();
 
-    static bool validateFeatureName(Configuration::FeatureTypes featureType, QString featureName,
-                                    bool isNominal = false, CoordinateSystem *myNomSys = NULL);
 
 signals:
-    void activeFeatureChanged(); //emitted when active feature has changed
-    void activeStationChanged(); //emitted when active station has changed
-    void activeCoordinateSystemChanged(); //emitted when display coordinate system has changed
 
-    void featureSetChanged(); //emitted when features were created or deleted
-    void coordSystemSetChanged(); //emitted when coordinate systems (nominal or station) where created or deleted
+    //##############################################
+    //signals to inform about OpenIndy state changes
+    //##############################################
 
-    void availableGroupsChanged(); //emitted when the set of groups which features belong to has changed
+    //active feature changes
+    void activeFeatureChanged();
+    void activeStationChanged();
+    void activeCoordinateSystemChanged();
 
-    void featureAttributesChanged(); //emitted when a feature's attributes like name, comment etc. have changed
-    void featureFunctionsChanged(); //emitted when a features's functions have changed
+    //feature(s) added or removed
+    void featureSetChanged();
+    void coordSystemSetChanged();
 
-    void geometryObservationsChanged(); //emitted when observations were added or removed
-    void geometryMeasurementConfigChanged(); //emitted when measurement config was set
+    //group(s) added or removed
+    void availableGroupsChanged();
 
-    void systemNominalsChanged(); //emitted when nominals where added or removed from a coordinate system
+    //general feature attributes changed
+    void featureAttributesChanged();
+    void featureFunctionsChanged();
 
-    void systemObservationsAdded(); //emitted when observations were added to a coordinate system
+    //geometry specific attributes changed
+    void geometryObservationsChanged();
+    void geometryMeasurementConfigChanged();
+
+    //coordinate system specific attributes changed
+    void systemNominalsChanged();
+    void systemObservationsAdded();
 
 private slots:
-    void setActiveFeature(const int &featureId); //is called when a feature becomes the active feature
-    void setActiveStation(const int &featureId); //is called when a station becomes the active station
-    void setActiveCoordinateSystem(const int &featureId); //is called when a coordinate system becomes the display system
 
-    void setFeatureGroup(const int &featureId); //is called when the group attribute of a feature is changed
-    void setFeatureName(const int &featureId, const QString &oldName); //is called when the name of a feature is changed
-    void setFeatureComment(const int &featureId); //is called when the comment of a feature is changed
-    void setFeatureFunctions(const int &featureId); //is called when the list of functions of a feature was edited
+    //###########################################################################
+    //internal slots that are called when a feature changes (or is added/removed)
+    //###########################################################################
 
-    void setGeometryActual(const int &featureId); //is called when the actual geometry of a nominal is set
-    void setGeometryNominals(const int &featureId); //is called when a nominal was added or removed from an actual geometry
-    void setGeometryObservations(const int &featureId); //is called when an observations was added or removed from a geometry
-    void setGeometryMeasurementConfig(const int &featureId); //is called when the measurement config of a geometry has changed
+    //active feature changes
+    void setActiveFeature(const int &featureId);
+    void setActiveStation(const int &featureId);
+    void setActiveCoordinateSystem(const int &featureId);
 
-    void setSystemsNominals(const int &featureId); //is called when a nominal was added to a nominal coordinate system
+    //general feature attributes changed
+    void setFeatureGroup(const int &featureId);
+    void setFeatureName(const int &featureId, const QString &oldName);
+    void setFeatureComment(const int &featureId);
+    void setFeatureFunctions(const int &featureId);
 
-    void removeFeature(const int &featureId); //is called when the destructor of a feature is entered
+    //geometry specific attributes changed
+    void setGeometryActual(const int &featureId);
+    void setGeometryNominals(const int &featureId);
+    void setGeometryObservations(const int &featureId);
+    void setGeometryMeasurementConfig(const int &featureId);
 
-    void addPCSegmentAsFeature(FeatureWrapper *segment);
-
+    //coordinate system specific attributes changed
+    void setSystemsNominals(const int &featureId);
     void setSystemObservations(const int &featureId, const int &obsId);
+
+    void removeFeature(const int &featureId);
+    void addPCSegmentAsFeature(FeatureWrapper *segment);
 
 private:
     static OiFeatureState *myFeatureState;
 
-    static FeatureContainer myFeatureContainer; //container that holds all features as lists and maps
+    //container that holds all features as lists and maps
+    static FeatureContainer myFeatureContainer;
 
-    static FeatureWrapper *myActiveFeature; //the currently selected feature in table view
-    static Station *myActiveStation; //the currently selected station
-    static CoordinateSystem *myActiveCoordinateSystem; //the currently selected display coordinate system
+    //active features
+    static FeatureWrapper *myActiveFeature;
+    static Station *myActiveStation;
+    static CoordinateSystem *myActiveCoordinateSystem;
 
-    static QMap<QString, int> myAvailableGroups; //map of all available groups with number of assigned features
-    static QString myActiveGroup; //currently selected feature group
+    //groups
+    static QMap<QString, int> myAvailableGroups;
+    static QString myActiveGroup;
+
+
+    static bool validateFeatureName(Configuration::FeatureTypes featureType, QString featureName,
+                                    bool isNominal = false, CoordinateSystem *myNomSys = NULL);
 
     static bool groupsToBeUpdated;
 
