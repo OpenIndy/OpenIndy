@@ -27,7 +27,7 @@ bool sortID(FeatureWrapper *f1, FeatureWrapper *f2){
  * Returns a new or the previously created instance of this class
  * \return
  */
-OiFeatureState *OiFeatureState::getInstance(){
+const OiFeatureState *OiFeatureState::getInstance(){
     if(OiFeatureState::myFeatureState == NULL){
         OiFeatureState::myFeatureState = new OiFeatureState();
     }

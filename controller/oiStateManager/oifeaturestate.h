@@ -45,7 +45,7 @@ private:
     explicit OiFeatureState(QObject *parent = 0);
 
 public:
-    static OiFeatureState *getInstance();
+    static const OiFeatureState *getInstance();
 
     //################################################################################
     //public functions to access the current feature state from everywhere in OpenIndy

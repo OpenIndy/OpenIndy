@@ -25,6 +25,7 @@ struct sensorInfo{
     QString plugin;
 };
 
+//TODO delete this class
 
 
 class ElementDependencies

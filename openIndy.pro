@@ -197,7 +197,8 @@ SOURCES += \
     controller/oiStateManager/featurecontainer.cpp \
     controller/oiStateManager/featureupdater.cpp \
     controller/oiStateManager/oiconfigstate.cpp \
-    controller/oiStateManager/oifeaturestate.cpp
+    controller/oiStateManager/oifeaturestate.cpp \
+    src/oiemitter/oifeaturestateemitter.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -360,7 +361,8 @@ HEADERS  += \
     controller/oiStateManager/featurecontainer.h \
     controller/oiStateManager/featureupdater.h \
     controller/oiStateManager/oiconfigstate.h \
-    controller/oiStateManager/oifeaturestate.h
+    controller/oiStateManager/oifeaturestate.h \
+    src/oiemitter/oifeaturestateemitter.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
