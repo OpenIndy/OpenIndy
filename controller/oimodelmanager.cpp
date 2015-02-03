@@ -683,7 +683,7 @@ void OiModelManager::initUnitModels(){
  */
 void OiModelManager::initGroupNameModels(){
 
-    QStringList availableGroups = OiFeatureState::getAvailableGroups().keys();
+    QStringList availableGroups = OiFeatureState::getAvailableGroups();
     availableGroups.push_front("");
     OiModelManager::groupNamesModel.setStringList(availableGroups);
 

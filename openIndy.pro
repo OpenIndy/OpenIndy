@@ -38,14 +38,15 @@ INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/controller/networking
+INCLUDEPATH += $$PWD/controller/oiStateManager
+INCLUDEPATH += $$PWD/controller/oiDataExchange
 INCLUDEPATH += $$PWD/src/geometry
 INCLUDEPATH += $$PWD/src/oiemitter
 INCLUDEPATH += $$PWD/src/plugin
 INCLUDEPATH += $$PWD/src/plugin/oitool
 INCLUDEPATH += $$PWD/src/simulation
-INCLUDEPATH += $$PWD/controller/oiDataExchange
-INCLUDEPATH += $$PWD/lib/openIndyLib/include
 INCLUDEPATH += $$PWD/src/plugin/oiexchange
+INCLUDEPATH += $$PWD/lib/openIndyLib/include
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/release/ -lopenIndyLib
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/debug/ -lopenIndyLib
@@ -124,7 +125,6 @@ SOURCES += \
     ui/nominaldatadialog.cpp \
     ui/featuregraphicstreeviewproxymodel.cpp \
     ui/functionstatistic.cpp \
-    controller/featureupdater.cpp \
     controller/sortlistbyname.cpp \
     src/residual.cpp \
     ui/usedelementsmodel.cpp \
@@ -150,7 +150,6 @@ SOURCES += \
     controller/guiconfiguration.cpp \
     ui/plugininfowidget.cpp \
     ui/oisimulationwidget.cpp \
-    controller/oifeaturestate.cpp \
     controller/trafocontroller.cpp \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
@@ -169,7 +168,6 @@ SOURCES += \
     src/simulation/simulationdata.cpp \
     ui/oimultiselectionmodel.cpp \
     ui/oiloadingdialog.cpp \
-    controller/oiconfigstate.cpp \
     controller/networking/oiserver.cpp \
     controller/networking/oinetworkconnection.cpp \
     controller/networking/oirequesthandler.cpp \
@@ -195,7 +193,11 @@ SOURCES += \
     controller/networking/oiwebsocket.cpp \
     controller/networking/oiwebsocketserver.cpp \
     ui/createfeaturedialog.cpp \
-    controller/featureattributes.cpp
+    controller/featureattributes.cpp \
+    controller/oiStateManager/featurecontainer.cpp \
+    controller/oiStateManager/featureupdater.cpp \
+    controller/oiStateManager/oiconfigstate.cpp \
+    controller/oiStateManager/oifeaturestate.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -279,7 +281,6 @@ HEADERS  += \
     ui/nominaldatadialog.h \
     ui/featuregraphicstreeviewproxymodel.h \
     ui/functionstatistic.h \
-    controller/featureupdater.h \
     controller/sortlistbyname.h \
     src/residual.h \
     ui/usedelementsmodel.h \
@@ -305,7 +306,6 @@ HEADERS  += \
     controller/guiconfiguration.h \
     ui/plugininfowidget.h \
     ui/oisimulationwidget.h \
-    controller/oifeaturestate.h \
     controller/trafocontroller.h \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
@@ -326,7 +326,6 @@ HEADERS  += \
     src/plugin/pi_generatefeaturefunction.h \
     ui/oimultiselectionmodel.h \
     ui/oiloadingdialog.h \
-    controller/oiconfigstate.h \
     controller/networking/oiserver.h \
     controller/networking/oinetworkconnection.h \
     controller/networking/oirequesthandler.h \
@@ -357,7 +356,11 @@ HEADERS  += \
     controller/networking/oiwebsocket.h \
     controller/networking/oiwebsocketserver.h \
     ui/createfeaturedialog.h \
-    controller/featureattributes.h
+    controller/featureattributes.h \
+    controller/oiStateManager/featurecontainer.h \
+    controller/oiStateManager/featureupdater.h \
+    controller/oiStateManager/oiconfigstate.h \
+    controller/oiStateManager/oifeaturestate.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

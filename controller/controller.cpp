@@ -75,7 +75,7 @@ void Controller::setActiveStation(const int &featureId)
  * \param featureId
  */
 void Controller::setActiveCoordinateSystem(const int &featureId){
-    OiFeatureState::activeCoordinateSystemChanged(featureId);
+    OiFeatureState::activateCoordinateSystem(featureId);
 }
 
 /*!
@@ -84,9 +84,8 @@ void Controller::setActiveCoordinateSystem(const int &featureId){
  * \param attributes
  */
 void Controller::addFeatures(const FeatureAttributes &attributes){
-    if(!OiFeatureState::addFeatures(attributes)){
-        Console::addLine("feature creation failed");
-    }
+    OiFeatureState::addFeatures(attributes);
+    Console::addLine("feature creation failed");
 }
 
 void Controller::removeFeature(const int &featureId)
@@ -550,7 +549,7 @@ bool Controller::createDefaultProject(){
  * \param actualNominal
  * \param isCommonPoint
  */
-void Controller::addFeature(FeatureAttributes fae){
+/*void Controller::addFeature(FeatureAttributes fae){
 
     //get default measurement config depending on the feature type of the feature to be created
     MeasurementConfig mConfig;
@@ -607,10 +606,7 @@ void Controller::addFeature(FeatureAttributes fae){
 
     OiFeatureState::addFeatures(fae);
 
-    /*int fType = FeatureUpdater::addFeature(fae, mConfig);
-    if(fType == Configuration::eStationFeature && fType == Configuration::eCoordinateSystemFeature){
-        emit CoordSystemsModelChanged();
-    }*/
+
 
     //refresh feature tree view models
     //this->featureTreeViewModel->refreshModel();
@@ -621,7 +617,7 @@ void Controller::addFeature(FeatureAttributes fae){
 
     //refresh feature tree view models
     //this->featureTreeViewModel->refreshModel();
-}
+}*/
 
 /*!
  * \brief Controller::startCustomAction calls the custom action of the sensor.
@@ -638,7 +634,7 @@ void Controller::addFeature(FeatureAttributes fae){
     OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
 }*/
 
-void Controller::emitShowWatchWindow()
+/*void Controller::emitShowWatchWindow()
 {
     emit this->showWatchWindow();
 }
@@ -646,9 +642,9 @@ void Controller::emitShowWatchWindow()
 void Controller::emitCloseWatchWindow()
 {
     emit this->closeWatchWindow();
-}
+}*/
 
-void Controller::recalcAll()
+void Controller::recalcFeatures()
 {
    this->myFeatureUpdater->recalcAll();
    emit refreshGUI();
@@ -700,7 +696,7 @@ void Controller::recalcTrafoParam(const int &featureId){
  * this function changes the active station to the given one and set the sensor object to the new one.
  * \param setSensor
  */
-void Controller::changeActiveStation(bool setSensor){
+/*void Controller::changeActiveStation(bool setSensor){
 
     if(OiFeatureState::getActiveStation() == NULL){
         Console::addLine("no active station");
@@ -712,9 +708,6 @@ void Controller::changeActiveStation(bool setSensor){
 
     if(OiFeatureState::getActiveFeature()->getStation() != NULL){
 
-        /*if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-            this->startDisconnect();
-        }*/
 
         disconnect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
 
@@ -732,19 +725,19 @@ void Controller::changeActiveStation(bool setSensor){
     emit changedStation();
     emit refreshGUI();
     }
-}
+}*/
 
 /*!
  * \brief Controller::showResults
  * After a sensor action finish, this funtion is called, to show the result in the console.
  * \param b
  */
-void Controller::showResults(bool b){
+/*void Controller::showResults(bool b){
     if(b){
         Console::addLine("sensor action completed");
         Console::addLine("count observation: ", OiFeatureState::getActiveStation()->coordSys->getObservations().size());
     }
-}
+}*/
 
 /*!
  * \brief Controller::savePluginData
@@ -775,7 +768,7 @@ void Controller::savePluginData(PluginMetaData* metaInfo){
  * So it can be used for measuring and other actions.
  * \param index
  */
-void Controller::setSelectedFeature(int featureIndex){
+/*void Controller::setSelectedFeature(int featureIndex){
     try{
 
         //if a new feature was selected
@@ -803,7 +796,7 @@ void Controller::setSelectedFeature(int featureIndex){
     }catch(exception &e){
         Console::addLine(e.what());
     }
-}
+}*/
 
 /*!
  * \brief Controller::receiveSensorConfiguration
@@ -908,7 +901,7 @@ bool Controller::checkSensorValid(){
     }
 }
 
-void Controller::setActiveCoordSystem(QString CoordSysName){
+/*void Controller::setActiveCoordSystem(QString CoordSysName){
 
     qDebug() << CoordSysName;
     for(int i=0; i<OiFeatureState::getFeatures().size();i++){
@@ -937,7 +930,7 @@ void Controller::setActiveCoordSystem(QString CoordSysName){
 
     //update table view for all features
     emit this->refreshGUI();
-}
+}*/
 
 /*!
  * \brief Controller::changeFunctionTreeViewModel
@@ -1663,7 +1656,7 @@ bool Controller::receiveRequestResult(OiRequestResponse *request){
                 qDebug() << request->response.toString();
 
                 //recalc all features after loading
-                this->recalcAll();
+                this->recalcFeatures();
 
                 //this->tblModel->updateModel();
 
@@ -2039,6 +2032,6 @@ QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
  * \brief Controller::setActiveGroup
  * \param group
  */
-void Controller::setActiveGroup(QString group){
+void Controller::setActiveGroup(const QString &group){
     OiFeatureState::setActiveGroup(group);
 }

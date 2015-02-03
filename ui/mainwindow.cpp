@@ -1694,10 +1694,10 @@ void MainWindow::on_actionActivate_station_triggered()
 
     switch (ret2) {
     case QMessageBox::Yes:
-        this->control.changeActiveStation(true);
+        //this->control.changeActiveStation(true);
         break;
     case QMessageBox::No:
-        this->control.changeActiveStation(false);
+        //this->control.changeActiveStation(false);
         break;
     default:
         break;
@@ -2104,9 +2104,9 @@ void MainWindow::clearCustomWidgets()
 void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1){
     if(arg1.compare("") != 0){
         if(OiFeatureState::getActiveCoordinateSystem() != NULL && arg1.compare(OiFeatureState::getActiveCoordinateSystem()->getFeatureName()) != 0){
-            this->control.setActiveCoordSystem(arg1);
+            //this->control.setActiveCoordSystem(arg1);
         }else if(OiFeatureState::getActiveCoordinateSystem() == NULL){
-            this->control.setActiveCoordSystem(arg1);
+            //this->control.setActiveCoordSystem(arg1);
         }
     }else if(OiFeatureState::getActiveCoordinateSystem() != NULL){
         this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());

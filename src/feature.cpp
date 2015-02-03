@@ -109,8 +109,9 @@ QString Feature::getGroupName() const{
  */
 void Feature::setGroupName(QString group){
     if(this->group.compare(group) != 0){
+        QString oldGroup = this->group;
         this->group = group;
-        emit this->featureGroupChanged(this->id);
+        emit this->featureGroupChanged(this->id, oldGroup);
     }
 }
 

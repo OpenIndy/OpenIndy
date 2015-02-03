@@ -96,7 +96,7 @@ public:
 
 signals:
     void featureNameChanged(int featureId, QString oldName);
-    void featureGroupChanged(int featureId);
+    void featureGroupChanged(int featureId, QString oldGroup);
     void featureCommentChanged(int featureId);
     void featureIsUpdatedChanged(int featureId);
     void featureIsSolvedChanged(int featureId);

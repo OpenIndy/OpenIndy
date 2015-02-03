@@ -147,13 +147,17 @@ public slots:
     void startCustomAction(const QString &s);
 
     //recalculation of features
-    void recalcAll();
+    void recalcFeatures();
     void recalcActiveFeature();
     void recalcFeature(const int &featureId);
     void recalcTrafoParam(const int &featureId);
 
+    //save or load OpenIndy projects
     bool saveProject();
     bool loadProject(const QString &projectName, QIODevice *myDevice);
+
+    //feature group changes
+    void setActiveGroup(const QString &group);
 
 private slots:
 
@@ -223,23 +227,23 @@ signals:
     void closeWatchWindow();
 
 public slots:
-    void setActiveGroup(QString group);
+
 
     void getNominalValues(NominalAttributeExchange nominalValue);
     int checkActiveFeatureIndex(int current, int index);
 
-    void setActiveCoordSystem(QString CoordSysName);
-    void addFeature(FeatureAttributes fae);
+    //void setActiveCoordSystem(QString CoordSysName);
+    //void addFeature(FeatureAttributes fae);
 
-    void emitShowWatchWindow();
-    void emitCloseWatchWindow();
+    //void emitShowWatchWindow();
+    //void emitCloseWatchWindow();
 
-    void changeActiveStation(bool setSensor);
-    void showResults(bool);
+    //void changeActiveStation(bool setSensor);
+    //void showResults(bool);
 
     void savePluginData(PluginMetaData* metaInfo);
 
-    void setSelectedFeature(int featureIndex);
+    //void setSelectedFeature(int featureIndex);
     void receiveSensorConfiguration(SensorConfiguration sc, bool connect);
 
     void createFunction(int index);
