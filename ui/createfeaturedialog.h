@@ -1,5 +1,5 @@
-#ifndef CREATEFEATURE_H
-#define CREATEFEATURE_H
+#ifndef CREATEFEATUREDIALOG_H
+#define CREATEFEATUREDIALOG_H
 
 #include <QDialog>
 #include <QShowEvent>
@@ -10,18 +10,18 @@
 #include "oifeaturestate.h"
 
 namespace Ui {
-class CreateFeature;
+class CreateFeatureDialog;
 }
 /*!
  * \brief This class contains all functions for creating features except scalar entities.
  */
-class CreateFeature : public QDialog
+class CreateFeatureDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit CreateFeature(QWidget *parent = 0);
-    ~CreateFeature();
+    explicit CreateFeatureDialog(QWidget *parent = 0);
+    ~CreateFeatureDialog();
 
     void setFeatureType(Configuration::FeatureTypes typeOfFeature);
 
@@ -33,7 +33,7 @@ public:
 
 signals:
 
-    void createFeature(FeatureAttributesExchange fae);
+    void createFeature(FeatureAttributes fae);
     void createFeatureMConfig(Configuration::FeatureTypes typeOfFeature);
 
     void trafoParamCreated();
@@ -53,7 +53,7 @@ private slots:
     void on_comboBox_destinationSystem_currentIndexChanged(const QString &arg1);
 
 private:
-    Ui::CreateFeature *ui;
+    Ui::CreateFeatureDialog *ui;
 
     Configuration::FeatureTypes typeOfFeature;
 
@@ -61,4 +61,4 @@ private:
     void initGUI();
 };
 
-#endif // CREATEFEATURE_H
+#endif // CREATEFEATUREDIALOG_H

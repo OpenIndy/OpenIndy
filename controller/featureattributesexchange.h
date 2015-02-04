@@ -5,10 +5,10 @@
 #include "configuration.h"
 #include "coordinatesystem.h"
 
-class FeatureAttributesExchange
+class FeatureAttributes
 {
 public:
-    FeatureAttributesExchange();
+    FeatureAttributes();
 
     int count;
     Configuration::FeatureTypes featureType;

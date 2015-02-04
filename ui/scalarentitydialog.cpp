@@ -72,7 +72,7 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
             }
         }
 
-        FeatureAttributesExchange featureAttributes;
+        FeatureAttributes featureAttributes;
         featureAttributes.count = count;
         featureAttributes.featureType = featureType;
         featureAttributes.name = name;

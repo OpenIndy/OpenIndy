@@ -26,7 +26,7 @@ public:
 
 signals:
 
-    void createFeature(FeatureAttributesExchange fae);
+    void createFeature(FeatureAttributes fae);
 
     void createFeatureMConfig(Configuration::FeatureTypes typeOfFeature);
 

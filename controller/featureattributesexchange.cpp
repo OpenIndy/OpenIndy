@@ -5,7 +5,7 @@
  * Using this class avoids a big number of input parameters of functions. Instead use only this class als input
  * parameter and fill its attributes.
  */
-FeatureAttributesExchange::FeatureAttributesExchange()
+FeatureAttributes::FeatureAttributes()
 {
     this->count = 0;
     this->name = "";

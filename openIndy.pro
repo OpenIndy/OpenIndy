@@ -65,7 +65,6 @@ SOURCES += \
     ui/measurementconfigdialog.cpp \
     ui/mainwindow.cpp \
     ui/main.cpp \
-    ui/createfeature.cpp \
     controller/systemdbmanager.cpp \
     controller/pluginloader.cpp \
     controller/controller.cpp \
@@ -193,9 +192,10 @@ SOURCES += \
     ui/oisimpleasciiexchangemodel.cpp \
     ui/geometrytypesproxymodel.cpp \
     ui/featuretablemodel.cpp \
-    ui/featuretableproxymodel.cpp
+    ui/featuretableproxymodel.cpp \
     controller/networking/oiwebsocket.cpp \
-    controller/networking/oiwebsocketserver.cpp
+    controller/networking/oiwebsocketserver.cpp \
+    ui/createfeaturedialog.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -203,7 +203,6 @@ HEADERS  += \
     ui/pluginloaderdialog.h \
     ui/measurementconfigdialog.h \
     ui/mainwindow.h \
-    ui/createfeature.h \
     controller/systemdbmanager.h \
     controller/pluginloader.h \
     controller/controller.h \
@@ -355,15 +354,15 @@ HEADERS  += \
     ui/oisimpleasciiexchangemodel.h \
     ui/geometrytypesproxymodel.h \
     ui/featuretablemodel.h \
-    ui/featuretableproxymodel.h
+    ui/featuretableproxymodel.h \
     controller/networking/oiwebsocket.h \
-    controller/networking/oiwebsocketserver.h
+    controller/networking/oiwebsocketserver.h \
+    ui/createfeaturedialog.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \
     ui/watchwindow.ui \
     ui/pluginloaderdialog.ui \
-    ui/createfeature.ui \
     ui/sensorplugindialog.ui \
     ui/functionpluginloader.ui \
     ui/sensorinfodialog.ui \
@@ -378,6 +377,7 @@ FORMS    += ui/mainwindow.ui \
     ui/realtimedatadialog.ui \
     ui/oiloadingdialog.ui \
     ui/exportnominaldialog.ui \
-    ui/importnominaldialog.ui
+    ui/importnominaldialog.ui \
+    ui/createfeaturedialog.ui
 
 

@@ -221,7 +221,7 @@ void OiFeatureState::resetFeatureLists(){
  * \param myFeatureType
  * \return
  */
-FeatureWrapper *OiFeatureState::addFeature(FeatureAttributesExchange attributes){
+FeatureWrapper *OiFeatureState::addFeature(FeatureAttributes attributes){
     try{
 
         QList<FeatureWrapper *> myFeatures = OiFeatureState::createFeatures(attributes);
@@ -336,7 +336,7 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
  * \param attributes
  * \return
  */
-QList<FeatureWrapper *> OiFeatureState::addFeatures(FeatureAttributesExchange attributes){
+QList<FeatureWrapper *> OiFeatureState::addFeatures(FeatureAttributes attributes){
     try{
 
         QList<FeatureWrapper *> result;
@@ -584,7 +584,7 @@ void OiFeatureState::updateAvailableGroups(){
  * \param attributes
  * \return
  */
-QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributesExchange &attributes){
+QList<FeatureWrapper *> OiFeatureState::createFeatures(const FeatureAttributes &attributes){
 
     QList<FeatureWrapper *> result;
 
@@ -954,7 +954,7 @@ bool OiFeatureState::validateFeatureName(Configuration::FeatureTypes featureType
  * \brief OiFeatureState::setActiveFeature
  * \param featureId
  */
-void OiFeatureState::setActiveFeature(int featureId){
+void OiFeatureState::setActiveFeature(const int &featureId){
     try{
 
         //get the feature with id featureId
@@ -994,7 +994,7 @@ void OiFeatureState::setActiveFeature(int featureId){
  * \brief OiFeatureState::setActiveStation
  * \param featureId
  */
-void OiFeatureState::setActiveStation(int featureId){
+void OiFeatureState::setActiveStation(const int &featureId){
     try{
 
         //get the station with id featureId
@@ -1034,7 +1034,7 @@ void OiFeatureState::setActiveStation(int featureId){
  * \brief OiFeatureState::setActiveCoordinateSystem
  * \param featureId
  */
-void OiFeatureState::setActiveCoordinateSystem(int featureId){
+void OiFeatureState::setActiveCoordinateSystem(const int &featureId){
     try{
 
         //get the coordinate system with id featureId
@@ -1098,7 +1098,7 @@ void OiFeatureState::setActiveCoordinateSystem(int featureId){
  * \brief OiFeatureState::setFeatureGroups
  * \param featureId
  */
-void OiFeatureState::setFeatureGroup(int featureId){
+void OiFeatureState::setFeatureGroup(const int &featureId){
     OiFeatureState::updateAvailableGroups();
     OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
 }
@@ -1108,7 +1108,7 @@ void OiFeatureState::setFeatureGroup(int featureId){
  * \param featureId
  * \param oldName
  */
-void OiFeatureState::setFeatureName(int featureId, QString oldName){
+void OiFeatureState::setFeatureName(const int &featureId, const QString &oldName){
     OiFeatureState::getInstance()->emitSignal(eFeatureAttributesChanged);
 }
 
@@ -1116,7 +1116,7 @@ void OiFeatureState::setFeatureName(int featureId, QString oldName){
  * \brief OiFeatureState::setFeatureComment
  * \param featureId
  */
-void OiFeatureState::setFeatureComment(int featureId){
+void OiFeatureState::setFeatureComment(const int &featureId){
     OiFeatureState::getInstance()->emitSignal(eFeatureAttributesChanged);
 }
 
@@ -1124,7 +1124,7 @@ void OiFeatureState::setFeatureComment(int featureId){
  * \brief OiFeatureState::setFeatureFunctions
  * \param featureId
  */
-void OiFeatureState::setFeatureFunctions(int featureId){
+void OiFeatureState::setFeatureFunctions(const int &featureId){
     OiFeatureState::getInstance()->emitSignal(eFeatureFunctionsChanged);
 }
 
@@ -1132,7 +1132,7 @@ void OiFeatureState::setFeatureFunctions(int featureId){
  * \brief OiFeatureState::setGeometryActual
  * \param featureId
  */
-void OiFeatureState::setGeometryActual(int featureId){
+void OiFeatureState::setGeometryActual(const int &featureId){
     try{
 
         FeatureWrapper *myNominal = OiFeatureState::getFeature(featureId);
@@ -1219,7 +1219,7 @@ void OiFeatureState::setGeometryActual(int featureId){
  * \brief OiFeatureState::setGeometryNominals
  * \param featureId
  */
-void OiFeatureState::setGeometryNominals(int featureId){
+void OiFeatureState::setGeometryNominals(const int &featureId){
     OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
 }
 
@@ -1227,7 +1227,7 @@ void OiFeatureState::setGeometryNominals(int featureId){
  * \brief OiFeatureState::setGeometryObservations
  * \param featureId
  */
-void OiFeatureState::setGeometryObservations(int featureId){
+void OiFeatureState::setGeometryObservations(const int &featureId){
     OiFeatureState::getInstance()->emitSignal(eGeomObservationsChanged);
 }
 
@@ -1235,7 +1235,7 @@ void OiFeatureState::setGeometryObservations(int featureId){
  * \brief OiFeatureState::setGeometryMeasurementConfig
  * \param featureId
  */
-void OiFeatureState::setGeometryMeasurementConfig(int featureId){
+void OiFeatureState::setGeometryMeasurementConfig(const int &featureId){
     OiFeatureState::getInstance()->emitSignal(eGeomMeasurementConfigChanged);
 }
 
@@ -1243,7 +1243,7 @@ void OiFeatureState::setGeometryMeasurementConfig(int featureId){
  * \brief OiFeatureState::setSystemsNominals
  * \param featureId
  */
-void OiFeatureState::setSystemsNominals(int featureId){
+void OiFeatureState::setSystemsNominals(const int &featureId){
     try{
 
         /*int featureIndex = OiFeatureState::getFeatureListIndex(featureId);
@@ -1273,10 +1273,9 @@ void OiFeatureState::setSystemsNominals(int featureId){
  * Remove a feature from lists and map
  * \param featureId
  */
-void OiFeatureState::removeFeature(int featureId){
+void OiFeatureState::removeFeature(const int &featureId){
     OiFeatureState::myFeatureContainer.removeFeature(featureId);
 }
-
 /*!
  * \brief OiFeatureState::addPCSegmentAsFeature
  * Add a segment, detected from a point cloud to the list of features in OpenIndy
@@ -1287,5 +1286,14 @@ void OiFeatureState::addPCSegmentAsFeature(FeatureWrapper *segment){
     qDebug() << "pc segment as feature featurestate";
 
     OiFeatureState::addFeature(segment);
+
+}
+
+/*!
+ * \brief OiFeatureState::setSystemObservations
+ * \param featureId
+ * \param obsId
+ */
+void OiFeatureState::setSystemObservations(const int &featureId, const int &obsId){
 
 }

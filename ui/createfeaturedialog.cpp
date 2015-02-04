@@ -1,12 +1,12 @@
-#include "createfeature.h"
-#include "ui_createfeature.h"
+#include "createfeaturedialog.h"
+#include "ui_createfeaturedialog.h"
 
 /*!
  * \brief CreateFeature constructor. Initiates the gui.
  * \param parent
  */
-CreateFeature::CreateFeature(QWidget *parent) :
-    QDialog(parent), ui(new Ui::CreateFeature)
+CreateFeatureDialog::CreateFeatureDialog(QWidget *parent) :
+    QDialog(parent), ui(new Ui::CreateFeatureDialog)
 {
     ui->setupUi(this);
     initGUI();
@@ -15,7 +15,7 @@ CreateFeature::CreateFeature(QWidget *parent) :
 /*!
  * \brief CreateFeature destructor.
  */
-CreateFeature::~CreateFeature()
+CreateFeatureDialog::~CreateFeatureDialog()
 {
     delete ui;
 }
@@ -24,7 +24,7 @@ CreateFeature::~CreateFeature()
  * \brief CreateFeature::setFeatureType
  * \param typeOfFeature
  */
-void CreateFeature::setFeatureType(Configuration::FeatureTypes typeOfFeature){
+void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeature){
     this->typeOfFeature = typeOfFeature;
 }
 
@@ -314,7 +314,7 @@ void CreateFeature::setFeatureType(Configuration::FeatureTypes typeOfFeature){
  * Saves the values set up in the GUI and emits them to the create feature function in the controller, that crates the feature,
  * adds it to the features list and displays it in the table model.
  */
-void CreateFeature::on_toolButton_create_clicked()
+void CreateFeatureDialog::on_toolButton_create_clicked()
 {
     if(ui->spinBox_count->value()>0){
 
@@ -362,7 +362,7 @@ void CreateFeature::on_toolButton_create_clicked()
                 }
             }
 
-            FeatureAttributesExchange featureAttributes;
+            FeatureAttributes featureAttributes;
             featureAttributes.count = count;
             featureAttributes.featureType = featureType;
             featureAttributes.name = name;
@@ -403,7 +403,7 @@ void CreateFeature::on_toolButton_create_clicked()
                 if(isMovement){
                     from = to;
                 }
-                FeatureAttributesExchange featureAttributes;
+                FeatureAttributes featureAttributes;
                 featureAttributes.count = count;
                 featureAttributes.featureType = featureType;
                 featureAttributes.name = name;
@@ -432,7 +432,7 @@ void CreateFeature::on_toolButton_create_clicked()
 /*!
  * \brief closes this window without saving values or creating features.
  */
-void CreateFeature::on_toolButton_cancel_clicked()
+void CreateFeatureDialog::on_toolButton_cancel_clicked()
 {
     this->close();
 }
@@ -440,7 +440,7 @@ void CreateFeature::on_toolButton_cancel_clicked()
 /*!
  * \brief initiates the gui and fills the coordinate system comboboxes with availables coordinate systems.
  */
-void CreateFeature::initGUI(){
+void CreateFeatureDialog::initGUI(){
 
     ui->comboBox_destinationSystem->clear();
     ui->comboBox_startSystem->clear();
@@ -471,7 +471,7 @@ void CreateFeature::initGUI(){
  * \brief this function is called when the nominal checkboxes gets toggled and generates specific gui elements for each case.
  * \param bool checked
  */
-void CreateFeature::on_checkBox_Nominal_toggled(bool checked)
+void CreateFeatureDialog::on_checkBox_Nominal_toggled(bool checked)
 {
     if(checked){
         ui->label_nominalSystem->setVisible(true);
@@ -486,7 +486,7 @@ void CreateFeature::on_checkBox_Nominal_toggled(bool checked)
  * \brief calls the measurement configuration window for creating a config.
  * This config will be saved for this feature and all following features. It can be changed via the main application.
  */
-void CreateFeature::on_toolButton_mConfig_clicked()
+void CreateFeatureDialog::on_toolButton_mConfig_clicked()
 {
     emit createFeatureMConfig(this->typeOfFeature);
 }
@@ -496,11 +496,11 @@ void CreateFeature::on_toolButton_mConfig_clicked()
  * Update group combobox
  * \param myGroups
  */
-void CreateFeature::availableGroupsChanged(QStringList myGroups){
+/*void CreateFeature::availableGroupsChanged(QStringList myGroups){
     this->ui->comboBox_group->clear();
     this->ui->comboBox_group->clearEditText();
     this->ui->comboBox_group->addItems(myGroups);
-}
+}*/
 
 /*!
  * \brief CreateFeature::setAvailableFunctions
@@ -508,17 +508,17 @@ void CreateFeature::availableGroupsChanged(QStringList myGroups){
  * \param functions
  * \param defaultFunction
  */
-void CreateFeature::setAvailableFunctions(QStringList functions, QString defaultFunction){
+/*void CreateFeature::setAvailableFunctions(QStringList functions, QString defaultFunction){
     this->ui->comboBox_function->clear();
     this->ui->comboBox_function->addItems(functions);
     this->ui->comboBox_function->setCurrentText(defaultFunction);
-}
+}*/
 
 /*!
  * \brief CreateFeature::showEvent
  * \param event
  */
-void CreateFeature::showEvent(QShowEvent *event){
+void CreateFeatureDialog::showEvent(QShowEvent *event){
 
     //put the dialog in the screen center
     const QRect screen = QApplication::desktop()->screenGeometry();
@@ -531,7 +531,7 @@ void CreateFeature::showEvent(QShowEvent *event){
  * \brief CreateFeature::on_checkBox_Actual_toggled
  * \param checked
  */
-void CreateFeature::on_checkBox_Actual_toggled(bool checked)
+void CreateFeatureDialog::on_checkBox_Actual_toggled(bool checked)
 {
     if(checked){
         this->ui->comboBox_function->setEnabled(true);
@@ -540,7 +540,7 @@ void CreateFeature::on_checkBox_Actual_toggled(bool checked)
     }
 }
 
-void CreateFeature::on_checkBox_movement_toggled(bool checked)
+void CreateFeatureDialog::on_checkBox_movement_toggled(bool checked)
 {
     if(checked){
         ui->comboBox_startSystem->setEnabled(false);
@@ -569,7 +569,7 @@ void CreateFeature::on_checkBox_movement_toggled(bool checked)
     }
 }
 
-void CreateFeature::on_comboBox_destinationSystem_currentIndexChanged(const QString &arg1)
+void CreateFeatureDialog::on_comboBox_destinationSystem_currentIndexChanged(const QString &arg1)
 {
     if(ui->checkBox_movement->isChecked()){
         ui->comboBox_startSystem->setCurrentText(arg1);
