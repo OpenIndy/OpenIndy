@@ -12,7 +12,6 @@
 
 #include "systemdbmanager.h"
 #include "oifeaturestate.h"
-#include "unitconverter.h"
 #include "configuration.h"
 
 #include "geometrytypesproxymodel.h"

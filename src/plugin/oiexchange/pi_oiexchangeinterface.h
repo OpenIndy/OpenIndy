@@ -66,9 +66,9 @@ public:
      * Set the units used for im- or export
      * \param units
      */
-    void setUnits(QMap<UnitConverter::dimensionType, UnitConverter::unitType> units){
+    /*void setUnits(QMap<OiUnitConverter::DimensionType, OiUnitConverter::UnitType> units){
         this->units = units;
-    }
+    }*/
 
     /*!
      * \brief setNominalSystem
@@ -123,7 +123,7 @@ signals:
 
 protected:
     bool exportObservations; //true if only the observations of the selected geometries shall be exported
-    QMap<UnitConverter::dimensionType, UnitConverter::unitType> units; //units used for im- or export
+    //QMap<OiUnitConverter::DimensionType, OiUnitConverter::UnitType> units; //units used for im- or export
     CoordinateSystem* nominalCoordSys; //nominal coordinate system the imported geometries are referenced to
     QString groupName; //group that the imported nominals shall be added to
 

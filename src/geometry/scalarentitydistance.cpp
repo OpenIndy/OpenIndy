@@ -155,12 +155,13 @@ QString ScalarEntityDistance::getDisplayMConfig() const{
 QString ScalarEntityDistance::getDisplayStdDev() const{
 
     if(this->myStatistic.isValid){
-        return QString::number(this->myStatistic.stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    }else{
-        return "-/-";
+        //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
+    return "-/-";
+
 }
 
 QString ScalarEntityDistance::getDisplayScalarDistanceValue() const{
-    return QString::number(this->distance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    return "";
+    //return QString::number(this->distance*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }

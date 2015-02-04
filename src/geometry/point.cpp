@@ -131,7 +131,11 @@ bool Point::saveSimulationData()
 
 QString Point::getDisplayX(bool showDiff) const{
 
-    QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->xyz.getAt(0);
+    this->convertMetricValue(displayValue);
+    QString value = QString::number(displayValue, 'f', this->getMetricDigits());
+
+    //QString value = QString::number(this->xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     qDebug() << "value=" << value;
 
@@ -144,7 +148,11 @@ QString Point::getDisplayX(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(0)-g->getXYZ().getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   displayValue = this->xyz.getAt(0)-g->getXYZ().getAt(0);
+                   this->convertMetricValue(displayValue);
+                   QString diff = QString::number(displayValue, 'f', this->getMetricDigits());
+
+                   //QString diff = QString::number((this->xyz.getAt(0)-g->getXYZ().getAt(0))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
@@ -157,7 +165,11 @@ QString Point::getDisplayX(bool showDiff) const{
 
 QString Point::getDisplayY(bool showDiff) const{
 
-    QString value = QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->xyz.getAt(1);
+    this->convertMetricValue(displayValue);
+    QString value = QString::number(displayValue, 'f', this->getMetricDigits());
+
+    //QString value = QString::number(this->xyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -168,7 +180,11 @@ QString Point::getDisplayY(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(1)-g->getXYZ().getAt(1))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   displayValue = this->xyz.getAt(1)-g->getXYZ().getAt(1);
+                   this->convertMetricValue(displayValue);
+                   QString diff = QString::number(displayValue, 'f', this->getMetricDigits());
+
+                   //QString diff = QString::number((this->xyz.getAt(1)-g->getXYZ().getAt(1))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
@@ -179,7 +195,12 @@ QString Point::getDisplayY(bool showDiff) const{
 }
 
 QString Point::getDisplayZ(bool showDiff) const{
-    QString value = QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    double displayValue = this->xyz.getAt(2);
+    this->convertMetricValue(displayValue);
+    QString value = QString::number(displayValue, 'f', this->getMetricDigits());
+
+    //QString value = QString::number(this->xyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -190,7 +211,11 @@ QString Point::getDisplayZ(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(2)-g->getXYZ().getAt(2))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   displayValue = this->xyz.getAt(2)-g->getXYZ().getAt(2);
+                   this->convertMetricValue(displayValue);
+                   QString diff = QString::number(displayValue, 'f', this->getMetricDigits());
+
+                   //QString diff = QString::number((this->xyz.getAt(2)-g->getXYZ().getAt(2))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
@@ -223,8 +248,8 @@ QString Point::getDisplayMConfig() const{
 QString Point::getDisplayStdDev() const{
 
     if(this->myStatistic.isValid){
-        return QString::number(this->myStatistic.stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    }else{
-        return "-/-";
+        //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
+    return "-/-";
+
 }

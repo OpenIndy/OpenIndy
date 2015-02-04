@@ -228,10 +228,10 @@ void Histogram::mouseMoveEvent(QMouseEvent *event)
         X = minFrequency+(X/frequencyScale);
         Y = Y/errorScale;
 
-        QString x = QString::number(X,'f',1);
-        QString y = QString::number(Y*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+        /*QString x = QString::number(X,'f',1);
+        QString y = QString::number(Y*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
-        QToolTip::showText(event->globalPos(),QString("x:"+x+","+"y:"+y),this);
+        QToolTip::showText(event->globalPos(),QString("x:"+x+","+"y:"+y),this);*/
     }
 }
 
@@ -644,8 +644,8 @@ void Histogram::prepareX()
             a.actual = actualFeature->getGeometry()->getXYZ().getAt(0);
             a.maxError = simData.uncertaintyX.maxValue-simData.uncertaintyX.expectation;
             a.minError = simData.uncertaintyX.minValue-simData.uncertaintyX.expectation;
-            a.unitMultiplier= UnitConverter::getDistanceMultiplier();
-            a.unitDigits = UnitConverter::distanceDigits;    
+            //a.unitMultiplier= OiUnitConverter::getDistanceMultiplier();
+            //a.unitDigits = OiUnitConverter::distanceDigits;
 
 
             this->addErrorAttribute(a,simData.uncertaintyX.values);
@@ -653,8 +653,8 @@ void Histogram::prepareX()
 
     }
 
-    unitMultiplier = UnitConverter::getDistanceMultiplier();
-    unitDigits = UnitConverter::distanceDigits;
+    //unitMultiplier = OiUnitConverter::getDistanceMultiplier();
+    //unitDigits = OiUnitConverter::distanceDigits;
 
 
 }
@@ -684,8 +684,8 @@ void Histogram::prepareY()
 
             this->setUpExpectationPoints(h);
 
-            unitMultiplier = UnitConverter::getDistanceMultiplier();
-            unitDigits = UnitConverter::distanceDigits;
+            //unitMultiplier = OiUnitConverter::getDistanceMultiplier();
+            //unitDigits = OiUnitConverter::distanceDigits;
 
     }else{
 
@@ -699,16 +699,16 @@ void Histogram::prepareY()
             a.actual = actualFeature->getGeometry()->getXYZ().getAt(1);
             a.maxError = simData.uncertaintyY.maxValue-simData.uncertaintyY.expectation;
             a.minError = simData.uncertaintyY.minValue-simData.uncertaintyY.expectation;
-            a.unitMultiplier= UnitConverter::getDistanceMultiplier();
-            a.unitDigits = UnitConverter::distanceDigits;
+            //a.unitMultiplier= OiUnitConverter::getDistanceMultiplier();
+            //a.unitDigits = OiUnitConverter::distanceDigits;
 
             this->addErrorAttribute(a,simData.uncertaintyY.values);
         }
 
     }
 
-    unitMultiplier = UnitConverter::getDistanceMultiplier();
-    unitDigits = UnitConverter::distanceDigits;
+    //unitMultiplier = OiUnitConverter::getDistanceMultiplier();
+    //unitDigits = OiUnitConverter::distanceDigits;
 }
 
 void Histogram::prepareZ()
@@ -735,8 +735,8 @@ void Histogram::prepareZ()
 
             this->setUpExpectationPoints(h);
 
-            unitMultiplier = UnitConverter::getDistanceMultiplier();
-            unitDigits = UnitConverter::distanceDigits;
+            //unitMultiplier = OiUnitConverter::getDistanceMultiplier();
+            //unitDigits = OiUnitConverter::distanceDigits;
     }else{
 
         if(this->typeOfUnit == "position"){
@@ -749,16 +749,16 @@ void Histogram::prepareZ()
             a.actual = actualFeature->getGeometry()->getXYZ().getAt(2);
             a.maxError = simData.uncertaintyZ.maxValue-simData.uncertaintyZ.expectation;
             a.minError = simData.uncertaintyZ.minValue-simData.uncertaintyZ.expectation;
-            a.unitMultiplier= UnitConverter::getDistanceMultiplier();
-            a.unitDigits = UnitConverter::distanceDigits;
+            //a.unitMultiplier= OiUnitConverter::getDistanceMultiplier();
+            //a.unitDigits = OiUnitConverter::distanceDigits;
 
             this->addErrorAttribute(a,simData.uncertaintyZ.values);
         }
 
     }
 
-    unitMultiplier = UnitConverter::getDistanceMultiplier();
-    unitDigits = UnitConverter::distanceDigits;
+    //unitMultiplier = OiUnitConverter::getDistanceMultiplier();
+    //unitDigits = OiUnitConverter::distanceDigits;
 }
 
 void Histogram::prepareI()
@@ -938,8 +938,8 @@ void Histogram::prepareRadius()
 
             this->setUpExpectationPoints(h);
 
-            unitMultiplier = UnitConverter::getDistanceMultiplier();
-            unitDigits = UnitConverter::distanceDigits;
+            //unitMultiplier = OiUnitConverter::getDistanceMultiplier();
+            //unitDigits = OiUnitConverter::distanceDigits;
     }else{
 
         if(this->typeOfUnit == "position"){
@@ -952,16 +952,16 @@ void Histogram::prepareRadius()
             a.actual = actualFeature->getGeometry()->getRadius();
             a.maxError = simData.uncertaintyRadius.maxValue-simData.uncertaintyRadius.expectation;
             a.minError = simData.uncertaintyRadius.minValue-simData.uncertaintyRadius.expectation;
-            a.unitMultiplier= UnitConverter::getDistanceMultiplier();
-            a.unitDigits = UnitConverter::distanceDigits;
+            //a.unitMultiplier= OiUnitConverter::getDistanceMultiplier();
+            //a.unitDigits = OiUnitConverter::distanceDigits;
 
             this->addErrorAttribute(a,simData.uncertaintyRadius.values);
         }
 
     }
 
-    unitMultiplier = UnitConverter::getDistanceMultiplier();
-    unitDigits = UnitConverter::distanceDigits;
+    //unitMultiplier = OiUnitConverter::getDistanceMultiplier();
+    //unitDigits = OiUnitConverter::distanceDigits;
 }
 
 void Histogram::prepareScalar()
@@ -994,6 +994,6 @@ void Histogram::prepareScalar()
 
     }
 
-    unitMultiplier = UnitConverter::getDistanceMultiplier();
-    unitDigits = UnitConverter::distanceDigits;
+    //unitMultiplier = OiUnitConverter::getDistanceMultiplier();
+    //unitDigits = OiUnitConverter::distanceDigits;
 }

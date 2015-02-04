@@ -1594,26 +1594,32 @@ bool Controller::loadProject(const QString &projectName, QIODevice *myDevice){
 
 }
 
+/*!
+ * \brief Controller::connectStateChanges
+ */
 void Controller::connectStateChanges(){
 
     //##########################################
     //connect OiFeatureState (signal forwarding)
     //##########################################
 
+    //features added or removed
     QObject::connect(myFeatureState, SIGNAL(featureSetChanged()), this, SIGNAL(featureSetChanged()), Qt::DirectConnection);
     QObject::connect(myFeatureState, SIGNAL(coordSystemSetChanged()), this, SIGNAL(coordSystemSetChanged()), Qt::DirectConnection);
 
-    QObject::connect(myFeatureState, SIGNAL(featureAttributesChanged()), this, SIGNAL(featureAttributesChanged()), Qt::DirectConnection);
-    QObject::connect(myFeatureState, SIGNAL(activeFeatureChanged()), this, SIGNAL(activeFeatureChanged()), Qt::DirectConnection);
-
-    QObject::connect(myFeatureState, SIGNAL(geometryObservationsChanged()), this, SIGNAL(geometryObservationsChanged()), Qt::DirectConnection);
-    QObject::connect(myFeatureState, SIGNAL(geometryMeasurementConfigChanged()), this, SIGNAL(geometryMeasurementConfigChanged()), Qt::DirectConnection);
-
+    //active states changed
     QObject::connect(myFeatureState, SIGNAL(activeFeatureChanged()), this, SIGNAL(activeFeatureChanged()), Qt::DirectConnection);
     QObject::connect(myFeatureState, SIGNAL(activeStationChanged()), this, SIGNAL(activeStationChanged()), Qt::DirectConnection);
     QObject::connect(myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this, SIGNAL(activeCoordinateSystemChanged()), Qt::DirectConnection);
-    QObject::connect(myFeatureState, SIGNAL(activeGroupChanged()), this, SIGNAL(activeGroupChanged()), Qt::DirectConnection);
 
+    //feature attributes changed
+    QObject::connect(myFeatureState, SIGNAL(featureAttributesChanged()), this, SIGNAL(featureAttributesChanged()), Qt::DirectConnection);
+    QObject::connect(myFeatureState, SIGNAL(activeFeatureChanged()), this, SIGNAL(activeFeatureChanged()), Qt::DirectConnection);
+    QObject::connect(myFeatureState, SIGNAL(geometryObservationsChanged()), this, SIGNAL(geometryObservationsChanged()), Qt::DirectConnection);
+    QObject::connect(myFeatureState, SIGNAL(geometryMeasurementConfigChanged()), this, SIGNAL(geometryMeasurementConfigChanged()), Qt::DirectConnection);
+
+    //feature groups
+    QObject::connect(myFeatureState, SIGNAL(activeGroupChanged()), this, SIGNAL(activeGroupChanged()), Qt::DirectConnection);
     QObject::connect(myFeatureState, SIGNAL(availableGroupNamesChanged()), this, SIGNAL(availableGroupNamesChanged()), Qt::DirectConnection);
 
 }

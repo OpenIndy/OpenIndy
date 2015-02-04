@@ -44,6 +44,7 @@ WatchWindow::~WatchWindow()
  */
 void WatchWindow::setLCDNumber(QVariantMap m){
 
+    /*
     //change display, depending on checked setting checkboxes.
     iniGUI();
 
@@ -85,7 +86,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
 
                 double distR3 = qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2));
 
-                double tolerance = this->attributeTolerance.value("d3D")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+                double tolerance = this->attributeTolerance.value("d3D")->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
 
                 if(qFabs(distR3) >= qFabs(tolerance)){
                     streamData.value("d3D")->setPalette(Qt::red);
@@ -93,7 +94,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                     streamData.value("d3D")->setPalette(Qt::green);
                 }
                 QString lName = "<p align=\"left\">d3D</p>";
-                QString lValue = "<p align=\"right\">" + QString::number(distR3*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+                QString lValue = "<p align=\"right\">" + QString::number(distR3*OiUnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
                 QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                 streamData.value("d3D")->setText(table);
@@ -133,7 +134,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             dDist = featureValues.getAt(2) - trackerValues.getAt(2);
         }
 
-        double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+        double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
 
         if(qFabs(dDist) >= qFabs(tolerance)){
             streamData.value("distance")->setPalette(Qt::red);
@@ -141,7 +142,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             streamData.value("distance")->setPalette(Qt::green);
         }
         QString lName = "<p align=\"left\">distance</p>";
-        QString lValue = "<p align=\"right\">" + QString::number(dDist*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+        QString lValue = "<p align=\"right\">" + QString::number(dDist*OiUnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
         QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
         streamData.value("distance")->setText(table);
@@ -161,7 +162,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             streamData.value("across")->setPalette(Qt::green);
         }
         lName = "<p align=\"left\">across</p>";
-        lValue = "<p align=\"right\">" + QString::number(dAcross*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+        lValue = "<p align=\"right\">" + QString::number(dAcross*OiUnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
         table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
         streamData.value("across")->setText(table);
@@ -184,7 +185,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
             streamData.value("dH")->setPalette(Qt::green);
         }
         lName = "<p align=\"left\">dH</p>";
-        lValue = "<p align=\"right\">" + QString::number(dH*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+        lValue = "<p align=\"right\">" + QString::number(dH*OiUnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
         table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table";
 
         streamData.value("dH")->setText(table);
@@ -228,7 +229,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 dX = featureX - trackerXYZ.getAt(0);
                             }
 
-                            double tolerance = this->attributeTolerance.value("x")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+                            double tolerance = this->attributeTolerance.value("x")->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
 
                             if(qFabs(dX) >= qFabs(tolerance)){
                                 streamData.value("x")->setPalette(Qt::red);
@@ -236,7 +237,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 streamData.value("x")->setPalette(Qt::green);
                             }
                             QString lName = "<p align=\"left\">x</p>";
-                            QString lValue = "<p align=\"right\">" + QString::number(dX*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+                            QString lValue = "<p align=\"right\">" + QString::number(dX*OiUnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
                             QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                             streamData.value("x")->setText(table);
@@ -255,7 +256,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 dY = featureY - trackerXYZ.getAt(1);
                             }
 
-                            double tolerance = this->attributeTolerance.value("y")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+                            double tolerance = this->attributeTolerance.value("y")->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
 
                             if(qFabs(dY) >= qFabs(tolerance)){
                                 streamData.value("y")->setPalette(Qt::red);
@@ -263,7 +264,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 streamData.value("y")->setPalette(Qt::green);
                             }
                             QString lName = "<p align=\"left\">y</p>";
-                            QString lValue = "<p align=\"right\">" + QString::number(dY*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+                            QString lValue = "<p align=\"right\">" + QString::number(dY*OiUnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
                             QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                             streamData.value("y")->setText(table);
@@ -282,7 +283,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 dZ = featureZ - trackerXYZ.getAt(2);
                             }
 
-                            double tolerance = this->attributeTolerance.value("z")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+                            double tolerance = this->attributeTolerance.value("z")->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
 
                             if(qFabs(dZ) >= qFabs(tolerance)){
                                 streamData.value("z")->setPalette(Qt::red);
@@ -290,7 +291,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                 streamData.value("z")->setPalette(Qt::green);
                             }
                             QString lName = "<p align=\"left\">z</p>";
-                            QString lValue = "<p align=\"right\">" + QString::number(dZ*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+                            QString lValue = "<p align=\"right\">" + QString::number(dZ*OiUnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
                             QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                             streamData.value("z")->setText(table);
@@ -346,7 +347,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     dAZ = FeatureAZ - trackerValues.getAt(0);
                                 }
 
-                                double tolerance = this->attributeTolerance.value("azimuth")->text().toDouble()/UnitConverter::getAngleMultiplier();
+                                double tolerance = this->attributeTolerance.value("azimuth")->text().toDouble()/OiUnitConverter::getAngleMultiplier();
 
                                 if(qFabs(dAZ) >= qFabs(tolerance)){
                                     streamData.value("azimuth")->setPalette(Qt::red);
@@ -354,7 +355,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     streamData.value("azimuth")->setPalette(Qt::green);
                                 }
                                 QString lName = "<p align=\"left\">azimuth</p>";
-                                QString lValue = "<p align=\"right\">" + QString::number(dAZ*UnitConverter::getAngleMultiplier(),'f',numberOfDigits) + "</p>";
+                                QString lValue = "<p align=\"right\">" + QString::number(dAZ*OiUnitConverter::getAngleMultiplier(),'f',numberOfDigits) + "</p>";
                                 QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                                 streamData.value("azimuth")->setText(table);
@@ -375,7 +376,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     dZE = FeatureZE - trackerValues.getAt(1);
                                 }
 
-                                double tolerance = this->attributeTolerance.value("zenith")->text().toDouble()/UnitConverter::getAngleMultiplier();
+                                double tolerance = this->attributeTolerance.value("zenith")->text().toDouble()/OiUnitConverter::getAngleMultiplier();
 
                                 if(qFabs(dZE) >= qFabs(tolerance)){
                                     streamData.value("zenith")->setPalette(Qt::red);
@@ -383,7 +384,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     streamData.value("zenith")->setPalette(Qt::green);
                                 }
                                 QString lName = "<p align=\"left\">zenith</p>";
-                                QString lValue = "<p align=\"right\">" + QString::number(dZE*UnitConverter::getAngleMultiplier(),'f',numberOfDigits) + "</p>";
+                                QString lValue = "<p align=\"right\">" + QString::number(dZE*OiUnitConverter::getAngleMultiplier(),'f',numberOfDigits) + "</p>";
                                 QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                                 streamData.value("zenith")->setText(table);
@@ -404,7 +405,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     dDIS = FeatureDIS - trackerValues.getAt(2);
                                 }
 
-                                double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/UnitConverter::getDistanceMultiplier();
+                                double tolerance = this->attributeTolerance.value("distance")->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
 
                                 if(qFabs(dDIS) >= qFabs(tolerance)){
                                     streamData.value("distance")->setPalette(Qt::red);
@@ -412,7 +413,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                                     streamData.value("distance")->setPalette(Qt::green);
                                 }
                                 QString lName = "<p align=\"left\">distance</p>";
-                                QString lValue = "<p align=\"right\">" + QString::number(dDIS*UnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
+                                QString lValue = "<p align=\"right\">" + QString::number(dDIS*OiUnitConverter::getDistanceMultiplier(),'f',numberOfDigits) + "</p>";
                                 QString table = "<table width=\"100%\"> <tr> <td width=\"50%\">" + lName + "</td> <td width=\"50%\">" + lValue + "</td> </tr></table>";
 
                                 streamData.value("distance")->setText(table);
@@ -443,7 +444,7 @@ void WatchWindow::setLCDNumber(QVariantMap m){
                 }
             }
         }
-    }
+    }*/
 }
 
 /*!
@@ -800,7 +801,7 @@ void WatchWindow::initSuppReadings()
 
 void WatchWindow::getAttributes(QStringList l)
 {
-    stopStream();
+    /*stopStream();
 
 
     if(listener->isCheckBoxReady){
@@ -877,7 +878,7 @@ void WatchWindow::getAttributes(QStringList l)
                 this->checkboxes.append(cb);
 
                 QLabel *lab = new QLabel();
-                lab->setText(QString("tolerance d3D %1").arg(UnitConverter::getDistanceUnitString()));
+                lab->setText(QString("tolerance d3D %1").arg(OiUnitConverter::getDistanceUnitString()));
                 attributeLabels.append(lab);
 
                 QLineEdit *le = new QLineEdit();
@@ -903,7 +904,7 @@ void WatchWindow::getAttributes(QStringList l)
 
     iniGUI();
 
-    startStream();
+    startStream();*/
 }
 
 
@@ -989,20 +990,20 @@ bool WatchWindow::checkFeatureValid()
 
 QString WatchWindow::getUnitString(QString attribute)
 {
-    if(attribute == "x"){
-        return UnitConverter::getDistanceUnitString();
+    /*if(attribute == "x"){
+        return OiUnitConverter::getDistanceUnitString();
     }else if(attribute == "y"){
-        return UnitConverter::getDistanceUnitString();
+        return OiUnitConverter::getDistanceUnitString();
     }else if(attribute == "z"){
-        return UnitConverter::getDistanceUnitString();
+        return OiUnitConverter::getDistanceUnitString();
     }else if(attribute == "azimuth"){
-        return UnitConverter::getAngleUnitString();
+        return OiUnitConverter::getAngleUnitString();
     }else if(attribute == "zenith"){
-        return UnitConverter::getAngleUnitString();
+        return OiUnitConverter::getAngleUnitString();
     }else if(attribute == "distance"){
-        return UnitConverter::getDistanceUnitString();
+        return OiUnitConverter::getDistanceUnitString();
     }else if(attribute == "temperature"){
-        return UnitConverter::getTemperatureUnitString();
-    }
+        return OiUnitConverter::getTemperatureUnitString();
+    }*/
     return "";
 }

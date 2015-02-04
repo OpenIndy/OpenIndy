@@ -6,7 +6,6 @@
 #include "feature.h"
 #include "oivec.h"
 #include "oimat.h"
-#include "unitconverter.h"
 
 class CoordinateSystem;
 class Statistic;

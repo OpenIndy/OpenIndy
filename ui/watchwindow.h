@@ -11,7 +11,6 @@
 #include <QLabel>
 #include <QLCDNumber>
 #include <QVBoxLayout>
-#include "unitconverter.h"
 #include "oifeaturestate.h"
 #include <QCheckBox>
 #include "watchwindowlistener.h"

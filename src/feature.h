@@ -9,7 +9,6 @@
 
 #include "element.h"
 #include "configuration.h"
-#include "unitconverter.h"
 
 class FeatureWrapper;
 class Function;

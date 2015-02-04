@@ -2,7 +2,6 @@
 #define UNCERTAINTYCOMPONENT_H
 
 #include <QStringList>
-#include <unitconverter.h>
 
 /*!
  * \brief The UncertaintyComponent class

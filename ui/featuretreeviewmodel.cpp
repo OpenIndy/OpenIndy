@@ -371,20 +371,20 @@ void FeatureTreeViewModel::appendObservation(FeatureTreeItem *root, Observation 
     geom_observation->appendChild( new FeatureTreeItem(obs->myReading->measuredAt.toString()) );
     geom_observation->appendChild( new FeatureTreeItem(obs->myStation->getFeatureName()) );
     geom_observation->appendChild( new FeatureTreeItem(obs->getIsSolved()?"valid: true":"valid: false") );
-    if(obs->getIsSolved()){
-        FeatureTreeItem *x = new FeatureTreeItem( QString("x: %1 %2").arg( QString::number(obs->myXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),
-                                                                 'f',UnitConverter::distanceDigits) )
-                                                    .arg( UnitConverter::getDistanceUnitString() ) );
-        FeatureTreeItem *y = new FeatureTreeItem( QString("y: %1 %2").arg( QString::number(obs->myXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),
-                                                                 'f',UnitConverter::distanceDigits) )
-                                                    .arg( UnitConverter::getDistanceUnitString() ) );
-        FeatureTreeItem *z = new FeatureTreeItem( QString("z: %1 %2").arg( QString::number(obs->myXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),
-                                                                 'f',UnitConverter::distanceDigits) )
-                                                    .arg( UnitConverter::getDistanceUnitString() ) );
+    /*if(obs->getIsSolved()){
+        FeatureTreeItem *x = new FeatureTreeItem( QString("x: %1 %2").arg( QString::number(obs->myXyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),
+                                                                 'f',OiUnitConverter::distanceDigits) )
+                                                    .arg( OiUnitConverter::getDistanceUnitString() ) );
+        FeatureTreeItem *y = new FeatureTreeItem( QString("y: %1 %2").arg( QString::number(obs->myXyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),
+                                                                 'f',OiUnitConverter::distanceDigits) )
+                                                    .arg( OiUnitConverter::getDistanceUnitString() ) );
+        FeatureTreeItem *z = new FeatureTreeItem( QString("z: %1 %2").arg( QString::number(obs->myXyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),
+                                                                 'f',OiUnitConverter::distanceDigits) )
+                                                    .arg( OiUnitConverter::getDistanceUnitString() ) );
         geom_observation->appendChild(x);
         geom_observation->appendChild(y);
         geom_observation->appendChild(z);
-    }
+    }*/
     geom_observation->setObservation(obs);
 }
 
@@ -400,62 +400,62 @@ void FeatureTreeViewModel::appendReading(FeatureTreeItem *root, Observation *obs
     geom_reading->appendChild( new FeatureTreeItem(obs->myStation->getFeatureName()) );
     geom_reading->appendChild( new FeatureTreeItem(obs->getIsSolved()?"valid: true":"valid: false") );
     if(obs->getIsSolved()){
-        if(obs->myReading->typeofReading == Configuration::eDistance){
+        /*if(obs->myReading->typeofReading == Configuration::eDistance){
             FeatureTreeItem *distance = new FeatureTreeItem( QString("distance: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rDistance.distance*UnitConverter::getDistanceMultiplier(),
-                                                                     'f',UnitConverter::distanceDigits) )
-                                                         .arg( UnitConverter::getDistanceUnitString() ) );
+                                                         .arg( QString::number(obs->myReading->rDistance.distance*OiUnitConverter::getDistanceMultiplier(),
+                                                                     'f',OiUnitConverter::distanceDigits) )
+                                                         .arg( OiUnitConverter::getDistanceUnitString() ) );
             geom_reading->appendChild(distance);
         }else if(obs->myReading->typeofReading == Configuration::eDirection){
             FeatureTreeItem *azimuth = new FeatureTreeItem( QString("azimuth: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rDirection.azimuth*UnitConverter::getAngleMultiplier(),
-                                                                     'f',UnitConverter::angleDigits) )
-                                                         .arg( UnitConverter::getAngleUnitString() ) );
+                                                         .arg( QString::number(obs->myReading->rDirection.azimuth*OiUnitConverter::getAngleMultiplier(),
+                                                                     'f',OiUnitConverter::angleDigits) )
+                                                         .arg( OiUnitConverter::getAngleUnitString() ) );
             FeatureTreeItem *zenith = new FeatureTreeItem( QString("zenith: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rDirection.zenith*UnitConverter::getAngleMultiplier(),
-                                                                     'f',UnitConverter::angleDigits) )
-                                                         .arg( UnitConverter::getAngleUnitString() ) );
+                                                         .arg( QString::number(obs->myReading->rDirection.zenith*OiUnitConverter::getAngleMultiplier(),
+                                                                     'f',OiUnitConverter::angleDigits) )
+                                                         .arg( OiUnitConverter::getAngleUnitString() ) );
             geom_reading->appendChild(azimuth);
             geom_reading->appendChild(zenith);
         }else if(obs->myReading->typeofReading == Configuration::ePolar){
             FeatureTreeItem *azimuth = new FeatureTreeItem( QString("azimuth: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rPolar.azimuth*UnitConverter::getAngleMultiplier(),
-                                                                     'f',UnitConverter::angleDigits) )
-                                                         .arg( UnitConverter::getAngleUnitString() ) );
+                                                         .arg( QString::number(obs->myReading->rPolar.azimuth*OiUnitConverter::getAngleMultiplier(),
+                                                                     'f',OiUnitConverter::angleDigits) )
+                                                         .arg( OiUnitConverter::getAngleUnitString() ) );
             FeatureTreeItem *zenith = new FeatureTreeItem( QString("zenith: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rPolar.zenith*UnitConverter::getAngleMultiplier(),
-                                                                     'f',UnitConverter::angleDigits) )
-                                                         .arg( UnitConverter::getAngleUnitString() ) );
+                                                         .arg( QString::number(obs->myReading->rPolar.zenith*OiUnitConverter::getAngleMultiplier(),
+                                                                     'f',OiUnitConverter::angleDigits) )
+                                                         .arg( OiUnitConverter::getAngleUnitString() ) );
             FeatureTreeItem *distance = new FeatureTreeItem( QString("distance: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rPolar.distance*UnitConverter::getDistanceMultiplier(),
-                                                                     'f',UnitConverter::distanceDigits) )
-                                                         .arg( UnitConverter::getDistanceUnitString() ) );
+                                                         .arg( QString::number(obs->myReading->rPolar.distance*OiUnitConverter::getDistanceMultiplier(),
+                                                                     'f',OiUnitConverter::distanceDigits) )
+                                                         .arg( OiUnitConverter::getDistanceUnitString() ) );
             geom_reading->appendChild(azimuth);
             geom_reading->appendChild(zenith);
             geom_reading->appendChild(distance);
         }else if(obs->myReading->typeofReading == Configuration::eCartesian){
             FeatureTreeItem *x = new FeatureTreeItem( QString("x: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rCartesian.xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),
-                                                                     'f',UnitConverter::distanceDigits) )
-                                                         .arg( UnitConverter::getDistanceUnitString() ) );
+                                                         .arg( QString::number(obs->myReading->rCartesian.xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),
+                                                                     'f',OiUnitConverter::distanceDigits) )
+                                                         .arg( OiUnitConverter::getDistanceUnitString() ) );
             FeatureTreeItem *y = new FeatureTreeItem( QString("y: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rCartesian.xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),
-                                                                     'f',UnitConverter::distanceDigits) )
-                                                         .arg( UnitConverter::getDistanceUnitString() ) );
+                                                         .arg( QString::number(obs->myReading->rCartesian.xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),
+                                                                     'f',OiUnitConverter::distanceDigits) )
+                                                         .arg( OiUnitConverter::getDistanceUnitString() ) );
             FeatureTreeItem *z = new FeatureTreeItem( QString("z: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rCartesian.xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),
-                                                                     'f',UnitConverter::distanceDigits) )
-                                                         .arg( UnitConverter::getDistanceUnitString() ) );
+                                                         .arg( QString::number(obs->myReading->rCartesian.xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),
+                                                                     'f',OiUnitConverter::distanceDigits) )
+                                                         .arg( OiUnitConverter::getDistanceUnitString() ) );
             geom_reading->appendChild(x);
             geom_reading->appendChild(y);
             geom_reading->appendChild(z);
         }else if(obs->myReading->typeofReading == Configuration::eTemperatur){
             FeatureTreeItem *temperature = new FeatureTreeItem( QString("temperature: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rTemperature.tempDeg*UnitConverter::getDistanceMultiplier(),
-                                                                     'f',UnitConverter::temperatureDigits) )
-                                                         .arg( UnitConverter::getTemperatureUnitString() ) );
+                                                         .arg( QString::number(obs->myReading->rTemperature.tempDeg*OiUnitConverter::getDistanceMultiplier(),
+                                                                     'f',OiUnitConverter::temperatureDigits) )
+                                                         .arg( OiUnitConverter::getTemperatureUnitString() ) );
             geom_reading->appendChild(temperature);
-        }
+        }*/
     }
     geom_reading->setReading(obs->myReading);
 }

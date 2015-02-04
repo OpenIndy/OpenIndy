@@ -61,18 +61,18 @@ QVariant FunctionStatistic::data(const QModelIndex &index, int role) const{
                 if(index.column() == 0){
                     return this->ElementIDs.at(index.row());
                 }else{
-                    if(this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residualUnitType.value(keyName) == UnitConverter::eMetric){
+                    /*if(this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residualUnitType.value(keyName) == OiUnitConverter::eMetric){
                         double value = (double) this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residual.value(keyName);
-                        return QString::number(value*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                        return QString::number(value*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                     }
-                    if(this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residualUnitType.value(keyName) == UnitConverter::eAngular){
+                    if(this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residualUnitType.value(keyName) == OiUnitConverter::eAngular){
                         double value = (double) this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residual.value(keyName);
-                        return QString::number(value*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                        return QString::number(value*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
                     }
-                    if(this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residualUnitType.value(keyName) == UnitConverter::eTemperature){
+                    if(this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residualUnitType.value(keyName) == OiUnitConverter::eTemperature){
                         double value = (double) this->selectedFunction->getStatistic().displayResiduals.at(index.row()).residual.value(keyName);
-                        return QString::number(UnitConverter::getTemperature(value),'f',UnitConverter::temperatureDigits);
-                    }
+                        return QString::number(OiUnitConverter::getTemperature(value),'f',OiUnitConverter::temperatureDigits);
+                    }*/
                 }
             }
         }
@@ -118,7 +118,7 @@ void FunctionStatistic::updateModel(){
  */
 void FunctionStatistic::getKeys(){
 
-    if(this->selectedFunction != NULL){
+    /*if(this->selectedFunction != NULL){
 
         this->residualName.clear();
         this->originalResidualName.clear();
@@ -132,23 +132,23 @@ void FunctionStatistic::getKeys(){
 
             for(int i=0; i<r.at(k).residualName.size();i++){
 
-                if(r.at(k).residualUnitType.value(r.at(k).residualName.at(i)) == UnitConverter::eMetric){
-                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i)+  UnitConverter::getDistanceUnitString()))){
-                        this->residualName.append(QString(r.at(k).residualName.at(i) + UnitConverter::getDistanceUnitString()));
+                if(r.at(k).residualUnitType.value(r.at(k).residualName.at(i)) == OiUnitConverter::eMetric){
+                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i)+  OiUnitConverter::getDistanceUnitString()))){
+                        this->residualName.append(QString(r.at(k).residualName.at(i) + OiUnitConverter::getDistanceUnitString()));
                         this->originalResidualName.append(QString(r.at(k).residualName.at(i)));
                     }
 
                 }
-                if(r.at(k).residualUnitType.value(r.at(k).residualName.at(i)) == UnitConverter::eAngular){
-                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i) + UnitConverter::getAngleUnitString()))){
-                        this->residualName.append(QString(r.at(k).residualName.at(i) + UnitConverter::getAngleUnitString()));
+                if(r.at(k).residualUnitType.value(r.at(k).residualName.at(i)) == OiUnitConverter::eAngular){
+                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i) + OiUnitConverter::getAngleUnitString()))){
+                        this->residualName.append(QString(r.at(k).residualName.at(i) + OiUnitConverter::getAngleUnitString()));
                         this->originalResidualName.append(QString(r.at(k).residualName.at(i)));
                     }
 
                 }
-                if(r.at(k).residualUnitType.value(r.at(k).residualName.at(i)) == UnitConverter::eTemperature){
-                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i) + UnitConverter::getTemperatureUnitString()))){
-                        this->residualName.append(QString(r.at(k).residualName.at(i) + UnitConverter::getTemperatureUnitString()));
+                if(r.at(k).residualUnitType.value(r.at(k).residualName.at(i)) == OiUnitConverter::eTemperature){
+                    if(!this->residualName.contains(QString(r.at(k).residualName.at(i) + OiUnitConverter::getTemperatureUnitString()))){
+                        this->residualName.append(QString(r.at(k).residualName.at(i) + OiUnitConverter::getTemperatureUnitString()));
                         this->originalResidualName.append(QString(r.at(k).residualName.at(i)));
                     }
 
@@ -158,7 +158,7 @@ void FunctionStatistic::getKeys(){
     }else{
         this->residualName.clear();
         this->originalResidualName.clear();
-    }
+    }*/
 }
 
 /*!

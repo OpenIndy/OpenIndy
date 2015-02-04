@@ -154,7 +154,7 @@ bool Plane::saveSimulationData()
 
 QString Plane::getDisplayX(bool showDiff) const{
 
-    QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    /*QString value = QString::number(this->xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -165,20 +165,21 @@ QString Plane::getDisplayX(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(0)-g->getXYZ().getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   QString diff = QString::number((this->xyz.getAt(0)-g->getXYZ().getAt(0))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
        }
     }
 
-    return value;
+    return value;*/
+    return "";
 
 }
 
 QString Plane::getDisplayY(bool showDiff) const{
 
-    QString value = QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    /*QString value = QString::number(this->xyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -189,18 +190,19 @@ QString Plane::getDisplayY(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(1)-g->getXYZ().getAt(1))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   QString diff = QString::number((this->xyz.getAt(1)-g->getXYZ().getAt(1))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
        }
     }
 
-    return value;
+    return value;*/
+    return "";
 }
 
 QString Plane::getDisplayZ(bool showDiff) const{
-    QString value = QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    /*QString value = QString::number(this->xyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -211,18 +213,19 @@ QString Plane::getDisplayZ(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(2)-g->getXYZ().getAt(2))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   QString diff = QString::number((this->xyz.getAt(2)-g->getXYZ().getAt(2))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
        }
     }
 
-    return value;
+    return value;*/
+    return "";
 }
 
 QString Plane::getDisplayI(bool showDiff) const{
-    QString value = QString::number(this->ijk.getAt(0),'f',6);
+    /*QString value = QString::number(this->ijk.getAt(0),'f',6);
 
     if(!showDiff){
         return value;
@@ -240,11 +243,12 @@ QString Plane::getDisplayI(bool showDiff) const{
         }
     }
 
-    return value;
+    return value;*/
+    return "";
 }
 
 QString Plane::getDisplayJ(bool showDiff) const{
-    QString value = QString::number(this->ijk.getAt(1),'f',6);
+    /*QString value = QString::number(this->ijk.getAt(1),'f',6);
 
     if(!showDiff){
         return value;
@@ -262,7 +266,8 @@ QString Plane::getDisplayJ(bool showDiff) const{
         }
     }
 
-    return value;
+    return value;*/
+    return "";
 }
 
 QString Plane::getDisplayK(bool showDiff) const{
@@ -310,8 +315,8 @@ QString Plane::getDisplayMConfig() const{
 QString Plane::getDisplayStdDev() const{
 
     if(this->myStatistic.isValid){
-        return QString::number(this->myStatistic.stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    }else{
-        return "-/-";
+        //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
+    return "-/-";
+
 }

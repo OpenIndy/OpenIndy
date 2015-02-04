@@ -67,7 +67,7 @@ signals:
     void coordSysIsActiveChanged(const int &featureId);
 
 private:
-    OiFeatureStateEmitter *myStateEmitter;
+    static OiFeatureStateEmitter *myStateEmitter;
 
     //######################################################################
     //methods called by the different elements to inform about state changes

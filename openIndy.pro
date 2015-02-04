@@ -111,7 +111,6 @@ SOURCES += \
     src/geometry/scalarentityangle.cpp \
     src/geometry/scalarentitydistance.cpp \
     ui/movementdialog.cpp \
-    src/unitconverter.cpp \
     ui/settingsdialog.cpp \
     ui/oiGraphixFactory/oigraphix_plane.cpp \
     ui/oiGraphixFactory/oigraphix_point.cpp \
@@ -198,7 +197,8 @@ SOURCES += \
     controller/oiStateManager/featureupdater.cpp \
     controller/oiStateManager/oiconfigstate.cpp \
     controller/oiStateManager/oifeaturestate.cpp \
-    src/oiemitter/oifeaturestateemitter.cpp
+    src/oiemitter/oifeaturestateemitter.cpp \
+    controller/oiStateManager/oiunitconverter.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -268,7 +268,6 @@ HEADERS  += \
     src/geometry/scalarentityangle.h \
     src/geometry/scalarentitydistance.h  \
     ui/movementdialog.h \
-    src/unitconverter.h \
     ui/settingsdialog.h  \
     ui/oiGraphixFactory/oigraphix_plane.h \
     ui/oiGraphixFactory/oigraphix_point.h \
@@ -362,7 +361,8 @@ HEADERS  += \
     controller/oiStateManager/featureupdater.h \
     controller/oiStateManager/oiconfigstate.h \
     controller/oiStateManager/oifeaturestate.h \
-    src/oiemitter/oifeaturestateemitter.h
+    src/oiemitter/oifeaturestateemitter.h \
+    controller/oiStateManager/oiunitconverter.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

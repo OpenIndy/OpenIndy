@@ -178,12 +178,13 @@ QString ScalarEntityAngle::getDisplayMConfig() const{
 QString ScalarEntityAngle::getDisplayStdDev() const{
 
     if(this->myStatistic.isValid){
-        return QString::number(this->myStatistic.stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    }else{
-        return "-/-";
+        //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
+    return "-/-";
+
 }
 
 QString ScalarEntityAngle::getDisplayScalarAngleValue() const{
-    return QString::number(this->angle*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+    return "";
+    //return QString::number(this->angle*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
 }

@@ -8,7 +8,6 @@
 #include "function.h"
 #include "functionstatistic.h"
 #include "matrixmodel.h"
-#include "unitconverter.h"
 #include "observationproxymodel.h"
 #include "readingproxymodel.h"
 

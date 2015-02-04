@@ -309,12 +309,9 @@ void OiSimulationWidget::setSettings()
 
 void OiSimulationWidget::setResultList(FeatureWrapper *f,QString attributeToDraw)
 {
-
+/*
     QStringList result;
 
-    /*foreach(double d, f->getGeometry()->getSimulationData().uncertaintyX.values){
-        result.append(QString::number(d));
-    }*/
 
     QList<double> tmpXList = f->getGeometry()->getSimulationData().uncertaintyX.values;
     QList<double> tmpYList = f->getGeometry()->getSimulationData().uncertaintyY.values;
@@ -330,16 +327,16 @@ void OiSimulationWidget::setResultList(FeatureWrapper *f,QString attributeToDraw
         double y = tmpYList.at(i);
         double z = tmpZList.at(i);
 
-        QString X = QString::number(x*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-        QString Y = QString::number(y*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-        QString Z = QString::number(z*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+        QString X = QString::number(x*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
+        QString Y = QString::number(y*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
+        QString Z = QString::number(z*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
         result.append("xyz "+X+";"+Y+";"+Z);
     }
 
     resultModel->setStringList(result);
 
-    ui->listView_result->setModel(resultModel);
+    ui->listView_result->setModel(resultModel);*/
 }
 
 void OiSimulationWidget::on_comboBox_typeOfUnit_currentTextChanged(const QString &arg1)

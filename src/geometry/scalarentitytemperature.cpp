@@ -139,12 +139,13 @@ QString ScalarEntityTemperature::getDisplayMConfig() const{
 QString ScalarEntityTemperature::getDisplayStdDev() const{
 
     if(this->myStatistic.isValid){
-        return QString::number(this->myStatistic.stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    }else{
-        return "-/-";
+        //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
+    return "-/-";
+
 }
 
 QString ScalarEntityTemperature::getDisplayScalarTemperatureValue() const{
-    return QString::number(UnitConverter::getTemperature(this->temperature),'f',UnitConverter::temperatureDigits);
+    return "";
+    //return QString::number(OiUnitConverter::getTemperature(this->temperature),'f',OiUnitConverter::temperatureDigits);
 }

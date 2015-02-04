@@ -4,8 +4,6 @@
 #include <QObject>
 #include <QtXml>
 
-#include "elementdependencies.h"
-
 /*!
  * \brief The Element class
  */
@@ -30,6 +28,16 @@ signals:
 
 protected:
     int id;
+
+    //TODO make protected and friend of OiFeatureState
+public:
+    void (&convertMetricValue)(double&);
+    void (&convertAngularValue)(double&);
+    void (&convertTemperatureValue)(double&);
+
+    unsigned int (&getMetricDigits)();
+    unsigned int (&getAngularDigits)();
+    unsigned int (&getTemperatureDigits)();
 };
 
 #endif // ELEMENT_H

@@ -191,13 +191,16 @@ bool PointCloud::saveSimulationData()
 //TODO change functions with unitconverter and String format
 
 QString PointCloud::getDisplayX(bool showDiff) const{
-    return QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    return "";
+    //return QString::number(this->xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString PointCloud::getDisplayY(bool showDiff) const{
-    return QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    return "";
+    //return QString::number(this->xyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString PointCloud::getDisplayZ(bool showDiff) const{
-    return QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    return "";
+    //return QString::number(this->xyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }

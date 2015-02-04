@@ -355,19 +355,22 @@ bool OiFeatureState::addFeature(FeatureWrapper *myFeature){
         myFeature->getGeometry()->getNominalSystem()->addNominal(myFeature);
     }
 
+    //add UnitConverter to feature
+    //myFeature->getFeature()->convertMetricValue = &OiUnitConverter::convertMetricValue;
+
     //connect the feature's signals to slots in OiFeatureState
     OiFeatureState::connectFeature(myFeature);
 
     //if a group is set for the new feature emit the group changed signal
     if(myFeature->getFeature()->getGroupName().compare("") != 0
             && !FeatureContainer::getFeatureGroupList().contains(myFeature->getFeature()->getGroupName())){
-        OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
+        OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
     }
 
-    OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+    OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
     if(myFeature->getTypeOfFeature() == Configuration::eCoordinateSystemFeature
             || myFeature->getTypeOfFeature() == Configuration::eStationFeature){
-        OiFeatureState::getInstance()->emitSignal(eCoordSysSetChanged);
+        OiFeatureState::myFeatureState->emitSignal(eCoordSysSetChanged);
     }
 
     return true;
@@ -387,13 +390,13 @@ QList<FeatureWrapper *> OiFeatureState::addFeatures(const FeatureAttributes &att
 
     //if a group is set for the new feature emit the group changed signal
     if(attributes.group.compare("") != 0 && !FeatureContainer::getFeatureGroupList().contains(attributes.group)){
-        OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
+        OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
     }
 
-    OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+    OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
     if(attributes.typeOfFeature == Configuration::eCoordinateSystemFeature
             || attributes.typeOfFeature == Configuration::eStationFeature){
-        OiFeatureState::getInstance()->emitSignal(eCoordSysSetChanged);
+        OiFeatureState::myFeatureState->emitSignal(eCoordSysSetChanged);
     }
 
     return result;
@@ -449,17 +452,17 @@ bool OiFeatureState::addFeatures(const QList<FeatureWrapper *> &myFeatures){
         //if a group is set for the new feature emit the group changed signal
         if(myFeature->getFeature()->getGroupName().compare("") != 0
                 && !FeatureContainer::getFeatureGroupList().contains(myFeature->getFeature()->getGroupName())){
-            OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
+            OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
         }
 
         if(myFeature->getTypeOfFeature() == Configuration::eCoordinateSystemFeature
                 || myFeature->getTypeOfFeature() == Configuration::eStationFeature){
-            OiFeatureState::getInstance()->emitSignal(eCoordSysSetChanged);
+            OiFeatureState::myFeatureState->emitSignal(eCoordSysSetChanged);
         }
 
     }
 
-    OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+    OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
 
     return true;
 
@@ -481,29 +484,29 @@ bool OiFeatureState::removeFeature(FeatureWrapper *myFeature){
         if(OiFeatureState::myActiveCoordinateSystem != NULL
                 && OiFeatureState::myActiveCoordinateSystem->getId() == myFeature->getFeature()->getId()){
             OiFeatureState::myActiveCoordinateSystem = NULL;
-            OiFeatureState::getInstance()->emitSignal(eActiveCoordinateSystemChanged);
+            OiFeatureState::myFeatureState->emitSignal(eActiveCoordinateSystemChanged);
         }
         if(OiFeatureState::myActiveStation != NULL
                 && OiFeatureState::myActiveStation->getId() == myFeature->getFeature()->getId()){
             OiFeatureState::myActiveStation = NULL;
-            OiFeatureState::getInstance()->emitSignal(eActiveStationChanged);
+            OiFeatureState::myFeatureState->emitSignal(eActiveStationChanged);
         }
         if(OiFeatureState::myActiveFeature != NULL && OiFeatureState::myActiveFeature->getFeature() != NULL
                 && OiFeatureState::myActiveFeature->getFeature()->getId() == myFeature->getFeature()->getId()){
             OiFeatureState::myActiveFeature = NULL;
-            OiFeatureState::getInstance()->emitSignal(eActiveFeatureChanged);
+            OiFeatureState::myFeatureState->emitSignal(eActiveFeatureChanged);
         }
 
         //remove group from groups map if needed
         if(myFeature->getFeature()->getGroupName().compare("") != 0
                 && FeatureContainer::getFeaturesByGroup(myFeature->getFeature()->getGroupName()).size() <= 1){
-            OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
+            OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
         }
 
         //remove feature from list of features and delete it
         FeatureContainer::removeAndDeleteFeature(myFeature->getFeature()->getId());
 
-        OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+        OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
 
         return true;
 
@@ -933,7 +936,7 @@ void OiFeatureState::setActiveFeature(const int &featureId){
             }
 
             //emit signal to inform that active feature has changed
-            OiFeatureState::getInstance()->emitSignal(eActiveFeatureChanged);
+            OiFeatureState::myFeatureState->emitSignal(eActiveFeatureChanged);
 
         }
 
@@ -973,7 +976,7 @@ void OiFeatureState::setActiveStation(const int &featureId){
             }
 
             //emit signal to inform that active station has changed
-            OiFeatureState::getInstance()->emitSignal(eActiveStationChanged);
+            OiFeatureState::myFeatureState->emitSignal(eActiveStationChanged);
 
         }
 
@@ -1037,7 +1040,7 @@ void OiFeatureState::setActiveCoordinateSystem(const int &featureId){
             }
 
             //emit signal to inform that active coordinate system has changed
-            OiFeatureState::getInstance()->emitSignal(eActiveCoordinateSystemChanged);
+            OiFeatureState::myFeatureState->emitSignal(eActiveCoordinateSystemChanged);
 
         }
 
@@ -1053,7 +1056,7 @@ void OiFeatureState::setActiveCoordinateSystem(const int &featureId){
  */
 void OiFeatureState::setFeatureGroup(const int &featureId, const QString &oldGroup){
     FeatureContainer::featureGroupChanged(featureId, oldGroup);
-    OiFeatureState::getInstance()->emitSignal(eAvailableGroupsChanged);
+    OiFeatureState::myFeatureState->emitSignal(eAvailableGroupsChanged);
 }
 
 /*!
@@ -1063,7 +1066,7 @@ void OiFeatureState::setFeatureGroup(const int &featureId, const QString &oldGro
  */
 void OiFeatureState::setFeatureName(const int &featureId, const QString &oldName){
     FeatureContainer::featureNameChanged(featureId, oldName);
-    OiFeatureState::getInstance()->emitSignal(eFeatureAttributesChanged);
+    OiFeatureState::myFeatureState->emitSignal(eFeatureAttributesChanged);
 }
 
 /*!
@@ -1071,7 +1074,7 @@ void OiFeatureState::setFeatureName(const int &featureId, const QString &oldName
  * \param featureId
  */
 void OiFeatureState::setFeatureComment(const int &featureId){
-    OiFeatureState::getInstance()->emitSignal(eFeatureAttributesChanged);
+    OiFeatureState::myFeatureState->emitSignal(eFeatureAttributesChanged);
 }
 
 /*!
@@ -1079,7 +1082,7 @@ void OiFeatureState::setFeatureComment(const int &featureId){
  * \param featureId
  */
 void OiFeatureState::setFeatureFunctions(const int &featureId){
-    OiFeatureState::getInstance()->emitSignal(eFeatureFunctionsChanged);
+    OiFeatureState::myFeatureState->emitSignal(eFeatureFunctionsChanged);
 }
 
 /*!
@@ -1162,7 +1165,7 @@ void OiFeatureState::setGeometryActual(const int &featureId){
             break;
         }*/
 
-        OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+        OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -1174,7 +1177,7 @@ void OiFeatureState::setGeometryActual(const int &featureId){
  * \param featureId
  */
 void OiFeatureState::setGeometryNominals(const int &featureId){
-    OiFeatureState::getInstance()->emitSignal(eFeatureSetChanged);
+    OiFeatureState::myFeatureState->emitSignal(eFeatureSetChanged);
 }
 
 /*!
@@ -1182,7 +1185,7 @@ void OiFeatureState::setGeometryNominals(const int &featureId){
  * \param featureId
  */
 void OiFeatureState::setGeometryObservations(const int &featureId){
-    OiFeatureState::getInstance()->emitSignal(eGeomObservationsChanged);
+    OiFeatureState::myFeatureState->emitSignal(eGeomObservationsChanged);
 }
 
 /*!
@@ -1190,7 +1193,7 @@ void OiFeatureState::setGeometryObservations(const int &featureId){
  * \param featureId
  */
 void OiFeatureState::setGeometryMeasurementConfig(const int &featureId){
-    OiFeatureState::getInstance()->emitSignal(eGeomMeasurementConfigChanged);
+    OiFeatureState::myFeatureState->emitSignal(eGeomMeasurementConfigChanged);
 }
 
 /*!

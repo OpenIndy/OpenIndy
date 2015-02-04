@@ -15,7 +15,6 @@
 #include <QDesktopWidget>
 #include <QMessageBox>
 #include "featurewrapper.h"
-#include "unitconverter.h"
 #include "oifeaturestate.h"
 
 namespace Ui {

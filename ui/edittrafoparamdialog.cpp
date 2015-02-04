@@ -70,15 +70,15 @@ void EditTrafoparamDialog::on_toolButton_ok_clicked()
  */
 void EditTrafoparamDialog::initGUI()
 {
-    ui->label_rotationX->setText(QString("rotation x " + UnitConverter::getAngleUnitString()));
-    ui->label_rotationY->setText(QString("rotation y " + UnitConverter::getAngleUnitString()));
-    ui->label_rotationZ->setText(QString("rotation z " + UnitConverter::getAngleUnitString()));
+    /*ui->label_rotationX->setText(QString("rotation x " + OiUnitConverter::getAngleUnitString()));
+    ui->label_rotationY->setText(QString("rotation y " + OiUnitConverter::getAngleUnitString()));
+    ui->label_rotationZ->setText(QString("rotation z " + OiUnitConverter::getAngleUnitString()));
     ui->label_scaleX->setText(QString("scale x"));
     ui->label_scaleY->setText(QString("scale y"));
     ui->label_scaleZ->setText(QString("scale z"));
-    ui->label_translationX->setText(QString("translation x " + UnitConverter::getDistanceUnitString()));
-    ui->label_translationY->setText(QString("translation y " + UnitConverter::getDistanceUnitString()));
-    ui->label_translationZ->setText(QString("translation z " + UnitConverter::getDistanceUnitString()));
+    ui->label_translationX->setText(QString("translation x " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_translationY->setText(QString("translation y " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_translationZ->setText(QString("translation z " + OiUnitConverter::getDistanceUnitString()));
 
     ui->comboBox_displayedFunction->clear();
 
@@ -88,30 +88,30 @@ void EditTrafoparamDialog::initGUI()
 
     this->setWindowTitle(QString("edit transformation parameter of: " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
 
-    ui->lineEdit_translationX->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getTranslation().getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-    ui->lineEdit_translationY->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getTranslation().getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-    ui->lineEdit_translationZ->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getTranslation().getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-    ui->lineEdit_rotationX->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getRotation().getAt(0)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
-    ui->lineEdit_rotationY->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getRotation().getAt(1)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
-    ui->lineEdit_rotationZ->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getRotation().getAt(2)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits));
+    ui->lineEdit_translationX->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getTranslation().getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
+    ui->lineEdit_translationY->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getTranslation().getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
+    ui->lineEdit_translationZ->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getTranslation().getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
+    ui->lineEdit_rotationX->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getRotation().getAt(0)*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits));
+    ui->lineEdit_rotationY->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getRotation().getAt(1)*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits));
+    ui->lineEdit_rotationZ->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getRotation().getAt(2)*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits));
     ui->lineEdit_scaleX->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getScale().getAt(0),'f',6));
     ui->lineEdit_scaleY->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getScale().getAt(1),'f',6));
     ui->lineEdit_scaleZ->setText(QString::number(OiFeatureState::getActiveFeature()->getTrafoParam()->getScale().getAt(2),'f',6));
-
+*/
 }
 
 /*!
  * \brief Saves the specified values edited in the line edits.
  */
 void EditTrafoparamDialog::getValues()
-{
+{/*
     double tx, ty, tz, rx, ry, rz, sx, sy, sz;
-    tx = ui->lineEdit_translationX->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    ty = ui->lineEdit_translationY->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    tz = ui->lineEdit_translationZ->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    rx = ui->lineEdit_rotationX->text().toDouble()/UnitConverter::getAngleMultiplier();
-    ry = ui->lineEdit_rotationY->text().toDouble()/UnitConverter::getAngleMultiplier();
-    rz = ui->lineEdit_rotationZ->text().toDouble()/UnitConverter::getAngleMultiplier();
+    tx = ui->lineEdit_translationX->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
+    ty = ui->lineEdit_translationY->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
+    tz = ui->lineEdit_translationZ->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
+    rx = ui->lineEdit_rotationX->text().toDouble()/OiUnitConverter::getAngleMultiplier();
+    ry = ui->lineEdit_rotationY->text().toDouble()/OiUnitConverter::getAngleMultiplier();
+    rz = ui->lineEdit_rotationZ->text().toDouble()/OiUnitConverter::getAngleMultiplier();
 
     if(ui->checkBox_identicalScale->isChecked()){
         sx = ui->lineEdit_scaleX->text().toDouble();
@@ -127,7 +127,7 @@ void EditTrafoparamDialog::getValues()
     OiMat t = this->getTranslationMatrix(tx,ty,tz);
     OiMat s = this->getScaleMatrix(sx,sy,sz);
 
-    OiFeatureState::getActiveFeature()->getTrafoParam()->setHomogenMatrix(r, t, s);
+    OiFeatureState::getActiveFeature()->getTrafoParam()->setHomogenMatrix(r, t, s);*/
 }
 
 /*!

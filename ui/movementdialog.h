@@ -7,7 +7,6 @@
 #include <QDesktopWidget>
 #include "configuration.h"
 #include "reading.h"
-#include "unitconverter.h"
 
 namespace Ui {
 class MovementDialog;

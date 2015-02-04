@@ -140,10 +140,10 @@ QString ScalarEntityMeasurementSeries::getDisplayMConfig() const{
 QString ScalarEntityMeasurementSeries::getDisplayStdDev() const{
 
     if(this->myStatistic.isValid){
-        return QString::number(this->myStatistic.stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    }else{
-        return "-/-";
+        //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
+    return "-/-";
+
 }
 
 QString ScalarEntityMeasurementSeries::getDisplayScalarMeasurementSeriesValue() const{

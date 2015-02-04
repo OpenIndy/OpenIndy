@@ -632,7 +632,7 @@ void SensorPluginDialog::disableAccuracyElements()
  * Sets the accuracy values of the selected sensor config in the GUI
  */
 void SensorPluginDialog::setAccuracyFromConfig(){
-
+/*
     if(this->selectedSConfig.mySensor == NULL){
         return;
     }
@@ -656,11 +656,11 @@ void SensorPluginDialog::setAccuracyFromConfig(){
 
             //display config values
             this->ui->lineEdit_sigmaAzimuth->setText(QString::number(this->selectedSConfig.sigma.sigmaAzimuth,
-                                                                     'f', UnitConverter::angleDigits));
+                                                                     'f', OiUnitConverter::angleDigits));
             this->ui->lineEdit_sigmaZenith->setText(QString::number(this->selectedSConfig.sigma.sigmaZenith,
-                                                                    'f', UnitConverter::angleDigits));
+                                                                    'f', OiUnitConverter::angleDigits));
             this->ui->lineEdit_sigmaDistance->setText(QString::number(this->selectedSConfig.sigma.sigmaDistance,
-                                                                      'f', UnitConverter::distanceDigits));
+                                                                      'f', OiUnitConverter::distanceDigits));
 
             break;
 
@@ -676,11 +676,11 @@ void SensorPluginDialog::setAccuracyFromConfig(){
 
             //display config values
             this->ui->lineEdit_sigmaX->setText(QString::number(this->selectedSConfig.sigma.sigmaXyz.getAt(0),
-                                                                     'f', UnitConverter::distanceDigits));
+                                                                     'f', OiUnitConverter::distanceDigits));
             this->ui->lineEdit_sigmaY->setText(QString::number(this->selectedSConfig.sigma.sigmaXyz.getAt(1),
-                                                                     'f', UnitConverter::distanceDigits));
+                                                                     'f', OiUnitConverter::distanceDigits));
             this->ui->lineEdit_sigmaZ->setText(QString::number(this->selectedSConfig.sigma.sigmaXyz.getAt(2),
-                                                                     'f', UnitConverter::distanceDigits));
+                                                                     'f', OiUnitConverter::distanceDigits));
 
             break;
 
@@ -694,9 +694,9 @@ void SensorPluginDialog::setAccuracyFromConfig(){
 
             //display config values
             this->ui->lineEdit_sigmaAzimuth->setText(QString::number(this->selectedSConfig.sigma.sigmaAzimuth,
-                                                                     'f', UnitConverter::angleDigits));
+                                                                     'f', OiUnitConverter::angleDigits));
             this->ui->lineEdit_sigmaZenith->setText(QString::number(this->selectedSConfig.sigma.sigmaZenith,
-                                                                     'f', UnitConverter::angleDigits));
+                                                                     'f', OiUnitConverter::angleDigits));
 
             break;
 
@@ -708,7 +708,7 @@ void SensorPluginDialog::setAccuracyFromConfig(){
 
             //display config values
             this->ui->lineEdit_sigmaDistance->setText(QString::number(this->selectedSConfig.sigma.sigmaDistance,
-                                                                     'f', UnitConverter::distanceDigits));
+                                                                     'f', OiUnitConverter::distanceDigits));
 
             break;
 
@@ -720,7 +720,7 @@ void SensorPluginDialog::setAccuracyFromConfig(){
 
             //display config values
             this->ui->lineEdit_sigmaTemp->setText(QString::number(this->selectedSConfig.sigma.sigmaTemp,
-                                                                     'f', UnitConverter::temperatureDigits));
+                                                                     'f', OiUnitConverter::temperatureDigits));
 
             break;
 
@@ -734,9 +734,9 @@ void SensorPluginDialog::setAccuracyFromConfig(){
 
             //display config values
             this->ui->lineEdit_sigmaAngleXZ->setText(QString::number(this->selectedSConfig.sigma.sigmaAngleXZ,
-                                                                     'f', UnitConverter::angleDigits));
+                                                                     'f', OiUnitConverter::angleDigits));
             this->ui->lineEdit_sigmaAngleYZ->setText(QString::number(this->selectedSConfig.sigma.sigmaAngleYZ,
-                                                                     'f', UnitConverter::angleDigits));
+                                                                     'f', OiUnitConverter::angleDigits));
 
             break;
 
@@ -752,7 +752,7 @@ void SensorPluginDialog::setAccuracyFromConfig(){
                 QLabel *l = new QLabel();
                 l->setText(sigmaIterator.key());
                 QLineEdit *le = new QLineEdit();
-                le->setText(QString::number(sigmaIterator.value(), 'f', UnitConverter::dimensionLessDigits));
+                le->setText(QString::number(sigmaIterator.value(), 'f', OiUnitConverter::dimensionLessDigits));
 
                 //create layout for both GUI elements
                 QHBoxLayout *layout = new QHBoxLayout();
@@ -779,7 +779,7 @@ void SensorPluginDialog::setAccuracyFromConfig(){
         }
 
     }
-
+*/
 }
 
 /*!
@@ -889,7 +889,7 @@ void SensorPluginDialog::destructDynamicGUI(){
  * Set special sensor parameters from selected sensor config
  */
 void SensorPluginDialog::setSensorParametersFromConfig(){
-
+/*
     //set integer parameters
     QMap<QString, int> intParams = this->selectedSConfig.integerParameter;
     QMapIterator<QString, int> intParamsIterator(intParams);
@@ -929,7 +929,7 @@ void SensorPluginDialog::setSensorParametersFromConfig(){
         QLabel *l = new QLabel();
         l->setText(doubleParamsIterator.key());
         QLineEdit *le = new QLineEdit();
-        le->setText(QString::number(doubleParamsIterator.value(), 'f', UnitConverter::dimensionLessDigits));
+        le->setText(QString::number(doubleParamsIterator.value(), 'f', OiUnitConverter::dimensionLessDigits));
 
         //create layout for GUI elements
         QHBoxLayout *layout = new QHBoxLayout();
@@ -991,7 +991,7 @@ void SensorPluginDialog::setSensorParametersFromConfig(){
 
     //add the layout with all sensor parameters to the GUI
     this->ui->tab_sensorConfiguration->setLayout(this->masterSensorConfigLayout);
-
+*/
 }
 
 /*!
@@ -1095,17 +1095,17 @@ void SensorPluginDialog::setSensorParametersFromGUI(){
  * Sets the labels for each accuracy value and its unit
  */
 void SensorPluginDialog::setLabelUnits(){
-
-    ui->label_sigmaAngleXZ->setText(QString("sigma angle XZ "+ UnitConverter::getAngleUnitString()));
-    ui->label_sigmaAngleYZ->setText(QString("sigma angle YZ " + UnitConverter::getAngleUnitString()));
-    ui->label_sigmaAzimuth->setText(QString("sigma azimuth "+ UnitConverter::getAngleUnitString()));
-    ui->label_sigmaDistance->setText(QString("sigma distance " + UnitConverter::getDistanceUnitString()));
-    ui->label_sigmaTemp->setText(QString("sigma temperature " + UnitConverter::getTemperatureUnitString()));
-    ui->label_sigmaX->setText(QString("sigma x " + UnitConverter::getDistanceUnitString()));
-    ui->label_sigmaY->setText(QString("sigma y " + UnitConverter::getDistanceUnitString()));
-    ui->label_sigmaZ->setText(QString("sigma z " + UnitConverter::getDistanceUnitString()));
-    ui->label_sigmaZenith->setText(QString("sigma zenith " + UnitConverter::getAngleUnitString()));
-
+/*
+    ui->label_sigmaAngleXZ->setText(QString("sigma angle XZ "+ OiUnitConverter::getAngleUnitString()));
+    ui->label_sigmaAngleYZ->setText(QString("sigma angle YZ " + OiUnitConverter::getAngleUnitString()));
+    ui->label_sigmaAzimuth->setText(QString("sigma azimuth "+ OiUnitConverter::getAngleUnitString()));
+    ui->label_sigmaDistance->setText(QString("sigma distance " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_sigmaTemp->setText(QString("sigma temperature " + OiUnitConverter::getTemperatureUnitString()));
+    ui->label_sigmaX->setText(QString("sigma x " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_sigmaY->setText(QString("sigma y " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_sigmaZ->setText(QString("sigma z " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_sigmaZenith->setText(QString("sigma zenith " + OiUnitConverter::getAngleUnitString()));
+*/
 }
 
 /*!

@@ -90,22 +90,22 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return instrument;
                 break;
             case 4:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.azimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.azimuth*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
                 break;
             case 5:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.zenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.zenith*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
                 break;
             case 6:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.distance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.distance*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                 break;
             case 7:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaAzimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaAzimuth*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
                 break;
             case 8:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaZenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaZenith*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
                 break;
             case 9:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaDistance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rPolar.sigmaDistance*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                 break;
             case 10:
                 return "-/-";
@@ -198,22 +198,22 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 10:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                 break;
             case 11:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                 break;
             case 12:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.xyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                 break;
             case 13:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                 break;
             case 14:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                 break;
             case 15:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rCartesian.sigmaXyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                 break;
             case 16:
                 return Configuration::getSight(geom->getObservations().at(index.row())->myReading->face);
@@ -276,7 +276,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 6:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rDistance.distance * UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rDistance.distance * OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                 break;
             case 7:
                 return "-/-";
@@ -285,7 +285,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 9:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rDistance.sigmaDistance*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rDistance.sigmaDistance*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                 break;
             case 10:
                 return "-/-";
@@ -360,19 +360,19 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return instrument;
                 break;
             case 4:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.azimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.azimuth*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
                 break;
             case 5:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.zenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.zenith*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
                 break;
             case 6:
                 return "-/-";
                 break;
             case 7:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.sigmaAzimuth*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.sigmaAzimuth*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
                 break;
             case 8:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.sigmaZenith*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rDirection.sigmaZenith*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
                 break;
             case 9:
                 return "-/-";
@@ -489,13 +489,13 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 17:
-                return QString::number(UnitConverter::getTemperature(geom->getObservations().at(index.row())->myReading->rTemperature.tempDeg),'f',UnitConverter::temperatureDigits);
+                //return QString::number(OiUnitConverter::getTemperature(geom->getObservations().at(index.row())->myReading->rTemperature.tempDeg),'f',OiUnitConverter::temperatureDigits);
                 break;
             case 18:
-                return QString(geom->getObservations().at(index.row())->myReading->rTemperature.isValid?"true":"false");
+                //return QString(geom->getObservations().at(index.row())->myReading->rTemperature.isValid?"true":"false");
                 break;
             case 19:
-                return QString::number(UnitConverter::getTemperature(geom->getObservations().at(index.row())->myReading->rTemperature.sigmaTempDeg),'f',UnitConverter::temperatureDigits);
+                //return QString::number(OiUnitConverter::getTemperature(geom->getObservations().at(index.row())->myReading->rTemperature.sigmaTempDeg),'f',OiUnitConverter::temperatureDigits);
                 break;
             case 20:
                 return "-/-";
@@ -594,22 +594,22 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
                 return "-/-";
                 break;
             case 22:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.RX,'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.RX,'f',OiUnitConverter::angleDigits);
                 break;
             case 23:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.RY,'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.RY,'f',OiUnitConverter::angleDigits);
                 break;
             case 24:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.RZ,'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.RZ,'f',OiUnitConverter::angleDigits);
                 break;
             case 25:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.sigmaRX,'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.sigmaRX,'f',OiUnitConverter::angleDigits);
                 break;
             case 26:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.sigmaRY,'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.sigmaRY,'f',OiUnitConverter::angleDigits);
                 break;
             case 27:
-                return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.sigmaRZ,'f',UnitConverter::angleDigits);
+                //return QString::number(geom->getObservations().at(index.row())->myReading->rLevel.sigmaRZ,'f',OiUnitConverter::angleDigits);
                 break;
             default:
                 break;

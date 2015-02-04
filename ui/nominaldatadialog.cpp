@@ -25,16 +25,16 @@ NominalDataDialog::~NominalDataDialog()
 void NominalDataDialog::on_toolButton_ok_clicked()
 {
     NominalAttributeExchange nominalValue;
-    nominalValue.nomX = ui->lineEdit_nominalX->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    nominalValue.nomY = ui->lineEdit_nominalY->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    nominalValue.nomZ = ui->lineEdit_nominalZ->text().toDouble()/UnitConverter::getDistanceMultiplier();
+    //nominalValue.nomX = ui->lineEdit_nominalX->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
+    //nominalValue.nomY = ui->lineEdit_nominalY->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
+    //nominalValue.nomZ = ui->lineEdit_nominalZ->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
     nominalValue.nomI = ui->lineEdit_nominalI->text().toDouble();
     nominalValue.nomJ = ui->lineEdit_nominalJ->text().toDouble();
     nominalValue.nomK = ui->lineEdit_nominalK->text().toDouble();
-    nominalValue.nomR = ui->lineEdit_nominalR->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    nominalValue.nomSDE = ui->lineEdit_nominalSDE->text().toDouble()/UnitConverter::getDistanceMultiplier();
-    nominalValue.nomSAE = ui->lineEdit_nominalSAE->text().toDouble()/UnitConverter::getAngleMultiplier();
-    nominalValue.nomSTE = UnitConverter::getReverseTemperature(ui->lineEdit_nominalTemperature->text().toDouble());
+    //nominalValue.nomR = ui->lineEdit_nominalR->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
+    //nominalValue.nomSDE = ui->lineEdit_nominalSDE->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
+    //nominalValue.nomSAE = ui->lineEdit_nominalSAE->text().toDouble()/OiUnitConverter::getAngleMultiplier();
+    //nominalValue.nomSTE = OiUnitConverter::getReverseTemperature(ui->lineEdit_nominalTemperature->text().toDouble());
     nominalValue.nomSMSE = ui->lineEdit_nominalMeasurementSeries->text().toDouble();
 
     emit sendNominalValues(nominalValue);
@@ -58,13 +58,13 @@ void NominalDataDialog::setLabelText()
     ui->label_nominalJ->setText(QString("nominal J value"));
     ui->label_nominalK->setText(QString("nominal K value"));
     ui->label_nominalMeasurementSeries->setText(QString("nominal measurement series"));
-    ui->label_nominalR->setText(QString("nominal radius value " + UnitConverter::getDistanceUnitString()));
-    ui->label_nominalSAE->setText(QString("nominal scalar entity angle value " + UnitConverter::getAngleUnitString()));
-    ui->label_nominalSDE->setText(QString("nominal scalar distance value " + UnitConverter::getDistanceUnitString()));
-    ui->label_nominalTemperature->setText(QString("nominal scalar entity temperature value " + UnitConverter::getTemperatureUnitString()));
-    ui->label_nominalX->setText(QString("nominal X value " + UnitConverter::getDistanceUnitString()));
-    ui->label_nominalY->setText(QString("nominal Y value " + UnitConverter::getDistanceUnitString()));
-    ui->label_nominalZ->setText(QString("nominal Z value " + UnitConverter::getDistanceUnitString()));
+    //ui->label_nominalR->setText(QString("nominal radius value " + OiUnitConverter::getDistanceUnitString()));
+    //ui->label_nominalSAE->setText(QString("nominal scalar entity angle value " + OiUnitConverter::getAngleUnitString()));
+    //ui->label_nominalSDE->setText(QString("nominal scalar distance value " + OiUnitConverter::getDistanceUnitString()));
+    //ui->label_nominalTemperature->setText(QString("nominal scalar entity temperature value " + OiUnitConverter::getTemperatureUnitString()));
+    //ui->label_nominalX->setText(QString("nominal X value " + OiUnitConverter::getDistanceUnitString()));
+    //ui->label_nominalY->setText(QString("nominal Y value " + OiUnitConverter::getDistanceUnitString()));
+    //ui->label_nominalZ->setText(QString("nominal Z value " + OiUnitConverter::getDistanceUnitString()));
 }
 
 void NominalDataDialog::showEvent(QShowEvent *event)
@@ -331,9 +331,9 @@ void NominalDataDialog::fillGUI(){
 
     switch (OiFeatureState::getActiveFeature()->getTypeOfFeature()) {
     case Configuration::ePointFeature:
-        ui->lineEdit_nominalX->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-        ui->lineEdit_nominalY->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
-        ui->lineEdit_nominalZ->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits));
+        //ui->lineEdit_nominalX->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
+        //ui->lineEdit_nominalY->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
+        //ui->lineEdit_nominalZ->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
         ui->lineEdit_nominalI->setText("");
         ui->lineEdit_nominalJ->setText("");
         ui->lineEdit_nominalK->setText("");
@@ -383,7 +383,7 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalK->setText("");
         break;
     case Configuration::eScalarEntityAngleFeature:
-        ui->lineEdit_nominalSAE->setText(QString::number(OiFeatureState::getActiveFeature()->getScalarEntityAngle()->getAngle()*UnitConverter::getAngleMultiplier(),'f',6));
+        //ui->lineEdit_nominalSAE->setText(QString::number(OiFeatureState::getActiveFeature()->getScalarEntityAngle()->getAngle()*OiUnitConverter::getAngleMultiplier(),'f',6));
         ui->lineEdit_nominalI->setText("");
         ui->lineEdit_nominalJ->setText("");
         ui->lineEdit_nominalK->setText("");
@@ -396,7 +396,7 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalZ->setText("");
         break;
     case Configuration::eScalarEntityDistanceFeature:
-        ui->lineEdit_nominalSDE->setText(QString::number(OiFeatureState::getActiveFeature()->getScalarEntityDistance()->getDistance()*UnitConverter::getDistanceMultiplier(),'f',6));
+        //ui->lineEdit_nominalSDE->setText(QString::number(OiFeatureState::getActiveFeature()->getScalarEntityDistance()->getDistance()*OiUnitConverter::getDistanceMultiplier(),'f',6));
         ui->lineEdit_nominalI->setText("");
         ui->lineEdit_nominalJ->setText("");
         ui->lineEdit_nominalK->setText("");
@@ -415,7 +415,7 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalMeasurementSeries->setText("");
         ui->lineEdit_nominalR->setText("");
         ui->lineEdit_nominalSAE->setText("");
-        ui->lineEdit_nominalTemperature->setText(QString::number(UnitConverter::getTemperature(OiFeatureState::getActiveFeature()->getScalarEntityTemperature()->getTemperature()),'f',UnitConverter::temperatureDigits));
+        //ui->lineEdit_nominalTemperature->setText(QString::number(OiUnitConverter::getTemperature(OiFeatureState::getActiveFeature()->getScalarEntityTemperature()->getTemperature()),'f',OiUnitConverter::temperatureDigits));
         ui->lineEdit_nominalX->setText("");
         ui->lineEdit_nominalY->setText("");
         ui->lineEdit_nominalZ->setText("");

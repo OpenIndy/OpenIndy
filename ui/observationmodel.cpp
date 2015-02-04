@@ -74,31 +74,31 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
             return targetgeoms;
             break;
         case 3:
-            return QString::number((geom->getObservations().at(index.row())->myXyz.getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+            //return QString::number((geom->getObservations().at(index.row())->myXyz.getAt(0))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
             break;
         case 4:
-            return QString::number(geom->getObservations().at(index.row())->myXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+            //return QString::number(geom->getObservations().at(index.row())->myXyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
             break;
         case 5:
-            return QString::number(geom->getObservations().at(index.row())->myXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+            //return QString::number(geom->getObservations().at(index.row())->myXyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
             break;
         case 6:
-            return QString(geom->getObservations().at(index.row())->getIsValid()?"true":"false");
+            //return QString(geom->getObservations().at(index.row())->getIsValid()?"true":"false");
             break;
         case 7:
-            return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+            //return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
             break;
         case 8:
-            return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+            //return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
             break;
         case 9:
-            return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+            //return QString::number(geom->getObservations().at(index.row())->sigmaXyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
             break;
         case 10:
-            return QString(geom->getObservations().at(index.row())->getIsSolved()?"true":"false");
+            //return QString(geom->getObservations().at(index.row())->getIsSolved()?"true":"false");
             break;
         case 11:
-            return geom->getObservations().at(index.row())->getIsUsed();
+            //return geom->getObservations().at(index.row())->getIsUsed();
             break;
         default:
             break;

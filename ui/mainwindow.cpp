@@ -1499,43 +1499,43 @@ void MainWindow::on_actionSet_function_triggered(){
  * \brief setUpStatusBar displays the current unit settings in the mainwindow status bar.
  */
 void MainWindow::setUpStatusBar(){
-
+/*
     QString statusText = "";
 
-    switch (UnitConverter::distanceType) {
-    case UnitConverter::eMETER:
+    switch (OiUnitConverter::distanceType) {
+    case OiUnitConverter::eMeter:
         statusText += "metric unit: meters   ";
         break;
-    case UnitConverter::eMILLIMETER:
+    case OiUnitConverter::eMillimeter:
         statusText += "metric unit: millimeters   ";
         break;
     default:
         break;
     }
 
-    switch (UnitConverter::angleType) {
-    case UnitConverter::eGON:
+    switch (OiUnitConverter::angleType) {
+    case OiUnitConverter::eGon:
         statusText += "angle unit: gon   ";
         break;
-    case UnitConverter::eRADIANT:
+    case OiUnitConverter::eRadiant:
         statusText += "angle unit: radiant   ";
         break;
-    case UnitConverter::eDECIMALDEGREE:
+    case OiUnitConverter::eDecimalDegree:
         statusText += "angle unit: decimal degree   ";
         break;
     default:
         break;
     }
 
-    switch (UnitConverter::temperatureType) {
-    case UnitConverter::eGRAD:
+    switch (OiUnitConverter::temperatureType) {
+    case OiUnitConverter::eGRAD:
         statusText += "temperature unit: degree";
         break;
     default:
         break;
     }
 
-    ui->statusBar->showMessage(statusText,0);
+    ui->statusBar->showMessage(statusText,0);*/
 }
 
 /*!

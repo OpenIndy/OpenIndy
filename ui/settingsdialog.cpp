@@ -58,28 +58,28 @@ void SettingsDialog::on_pushButton_cancel_clicked()
  * \brief initGUI
  */
 void SettingsDialog::initGUI(){
-
+/*
     this->ui->checkBox_differences->setChecked(false);
     this->ui->checkBox_differences->setToolTip("show differences between actual and nominal feature");
 
-    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"decimal degree",UnitConverter::eDECIMALDEGREE);
-    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"gon",UnitConverter::eGON);
-    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"radiant",UnitConverter::eRADIANT);
-    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"arc seconds",UnitConverter::eArcSeconds);
-    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"mrad",UnitConverter::eMilliRadians);
+    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"decimal degree",OiUnitConverter::eDecimalDegree);
+    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"gon",OiUnitConverter::eGon);
+    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"radiant",OiUnitConverter::eRadiant);
+    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"arc seconds",OiUnitConverter::eArcSeconds);
+    ui->comboBox_angleType->insertItem(ui->comboBox_angleType->count(),"mrad",OiUnitConverter::eMilliRadians);
 
-    ui->comboBox_distanceType->insertItem(ui->comboBox_distanceType->count(),"meter",UnitConverter::eMETER);
-    ui->comboBox_distanceType->insertItem(ui->comboBox_distanceType->count(),"millimeter",UnitConverter::eMILLIMETER);
-    ui->comboBox_distanceType->insertItem(ui->comboBox_distanceType->count(),"inch",UnitConverter::eInch);
+    ui->comboBox_distanceType->insertItem(ui->comboBox_distanceType->count(),"meter",OiUnitConverter::eMeter);
+    ui->comboBox_distanceType->insertItem(ui->comboBox_distanceType->count(),"millimeter",OiUnitConverter::eMillimeter);
+    ui->comboBox_distanceType->insertItem(ui->comboBox_distanceType->count(),"inch",OiUnitConverter::eInch);
 
-    ui->comboBox_temperatureType->insertItem(ui->comboBox_temperatureType->count(),"degree",UnitConverter::eGRAD);
-    ui->comboBox_temperatureType->insertItem(ui->comboBox_temperatureType->count(),"Kelvin",UnitConverter::eKelvin);
-    ui->comboBox_temperatureType->insertItem(ui->comboBox_temperatureType->count(),"Fahrenheit",UnitConverter::eFahrenheit);
+    ui->comboBox_temperatureType->insertItem(ui->comboBox_temperatureType->count(),"degree",OiUnitConverter::eGRAD);
+    ui->comboBox_temperatureType->insertItem(ui->comboBox_temperatureType->count(),"Kelvin",OiUnitConverter::eKelvin);
+    ui->comboBox_temperatureType->insertItem(ui->comboBox_temperatureType->count(),"Fahrenheit",OiUnitConverter::eFahrenheit);
 
-    ui->lineEdit_angleDigits->setText(QString::number(UnitConverter::angleDigits));
-    ui->lineEdit_distanceDigits->setText(QString::number(UnitConverter::distanceDigits));
-    ui->lineEdit_temperatureDigits->setText(QString::number(UnitConverter::temperatureDigits));
-
+    ui->lineEdit_angleDigits->setText(QString::number(OiUnitConverter::angleDigits));
+    ui->lineEdit_distanceDigits->setText(QString::number(OiUnitConverter::distanceDigits));
+    ui->lineEdit_temperatureDigits->setText(QString::number(OiUnitConverter::temperatureDigits));
+*/
 }
 
 /*!
@@ -87,23 +87,23 @@ void SettingsDialog::initGUI(){
  * \param event
  */
 void SettingsDialog::showEvent(QShowEvent *event){
-    //Put the dialog in the screen center
+/*    //Put the dialog in the screen center
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
 
-    ui->lineEdit_angleDigits->setText(QString::number(UnitConverter::angleDigits));
-    ui->lineEdit_distanceDigits->setText(QString::number(UnitConverter::distanceDigits));
-    ui->lineEdit_temperatureDigits->setText(QString::number(UnitConverter::temperatureDigits));
+    ui->lineEdit_angleDigits->setText(QString::number(OiUnitConverter::angleDigits));
+    ui->lineEdit_distanceDigits->setText(QString::number(OiUnitConverter::distanceDigits));
+    ui->lineEdit_temperatureDigits->setText(QString::number(OiUnitConverter::temperatureDigits));
 
-    ui->comboBox_angleType->setCurrentIndex(ui->comboBox_angleType->findData(UnitConverter::angleType));
-    ui->comboBox_distanceType->setCurrentIndex(ui->comboBox_distanceType->findData(UnitConverter::distanceType));
-    ui->comboBox_temperatureType->setCurrentIndex(ui->comboBox_temperatureType->findData(UnitConverter::temperatureType));
+    ui->comboBox_angleType->setCurrentIndex(ui->comboBox_angleType->findData(OiUnitConverter::angleType));
+    ui->comboBox_distanceType->setCurrentIndex(ui->comboBox_distanceType->findData(OiUnitConverter::distanceType));
+    ui->comboBox_temperatureType->setCurrentIndex(ui->comboBox_temperatureType->findData(OiUnitConverter::temperatureType));
 
     ui->checkBox_differences->setChecked(GUIConfiguration::getShowDifferences());
 
     displayFeatureColumns();
     displayTrafoParamColumns();
-    event->accept();
+    event->accept();*/
 }
 
 /*!
@@ -123,15 +123,15 @@ void SettingsDialog::closeEvent(QCloseEvent *event)
  * \brief saveSettings saves the current settings made in the dialog
  */
 void SettingsDialog::saveSettings(){
+/*
+    OiUnitConverter::angleDigits = ui->lineEdit_angleDigits->text().toInt();
+    OiUnitConverter::distanceDigits = ui->lineEdit_distanceDigits->text().toInt();
+    OiUnitConverter::temperatureDigits = ui->lineEdit_temperatureDigits->text().toInt();
+    OiUnitConverter::setAngleUnit(static_cast<OiUnitConverter::UnitType>(ui->comboBox_angleType->itemData(ui->comboBox_angleType->currentIndex()).toInt()));
+    OiUnitConverter::setDistanceUnit(static_cast<OiUnitConverter::UnitType>(ui->comboBox_distanceType->itemData(ui->comboBox_distanceType->currentIndex()).toInt()));
+    OiUnitConverter::setTemperatureUnit(static_cast<OiUnitConverter::UnitType>(ui->comboBox_temperatureType->itemData(ui->comboBox_temperatureType->currentIndex()).toInt()));
 
-    UnitConverter::angleDigits = ui->lineEdit_angleDigits->text().toInt();
-    UnitConverter::distanceDigits = ui->lineEdit_distanceDigits->text().toInt();
-    UnitConverter::temperatureDigits = ui->lineEdit_temperatureDigits->text().toInt();
-    UnitConverter::setAngleUnit(static_cast<UnitConverter::unitType>(ui->comboBox_angleType->itemData(ui->comboBox_angleType->currentIndex()).toInt()));
-    UnitConverter::setDistanceUnit(static_cast<UnitConverter::unitType>(ui->comboBox_distanceType->itemData(ui->comboBox_distanceType->currentIndex()).toInt()));
-    UnitConverter::setTemperatureUnit(static_cast<UnitConverter::unitType>(ui->comboBox_temperatureType->itemData(ui->comboBox_temperatureType->currentIndex()).toInt()));
-
-    GUIConfiguration::setShowDifferences(this->ui->checkBox_differences->isChecked());
+    GUIConfiguration::setShowDifferences(this->ui->checkBox_differences->isChecked());*/
 }
 
 /*!

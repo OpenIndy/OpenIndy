@@ -3,9 +3,9 @@
 
 #include <QObject>
 #include <QStringList>
-#include "unitconverter.h"
 #include "displayattribute.h"
 #include "configuration.h"
+#include "oiunitconverter.h"
 
 /*!
  * \brief The GUIConfiguration class configures and sets up gui elements.

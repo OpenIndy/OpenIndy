@@ -144,7 +144,11 @@ bool Sphere::saveSimulationData()
 
 QString Sphere::getDisplayX(bool showDiff) const{
 
-    QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->xyz.getAt(0);
+    this->convertMetricValue(displayValue);
+    QString value = QString::number(displayValue, 'f', this->getMetricDigits());
+
+    //QString value = QString::number(this->xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -155,7 +159,11 @@ QString Sphere::getDisplayX(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(0)-g->getXYZ().getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   displayValue = this->xyz.getAt(0)-g->getXYZ().getAt(0);
+                   this->convertMetricValue(displayValue);
+                   QString diff = QString::number(displayValue, 'f', this->getMetricDigits());
+
+                   //QString diff = QString::number((this->xyz.getAt(0)-g->getXYZ().getAt(0))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
@@ -168,7 +176,11 @@ QString Sphere::getDisplayX(bool showDiff) const{
 
 QString Sphere::getDisplayY(bool showDiff) const{
 
-    QString value = QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->xyz.getAt(1);
+    this->convertMetricValue(displayValue);
+    QString value = QString::number(displayValue, 'f', this->getMetricDigits());
+
+    //QString value = QString::number(this->xyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -179,7 +191,11 @@ QString Sphere::getDisplayY(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(1)-g->getXYZ().getAt(1))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   displayValue = this->xyz.getAt(1)-g->getXYZ().getAt(1);
+                   this->convertMetricValue(displayValue);
+                   QString diff = QString::number(displayValue, 'f', this->getMetricDigits());
+
+                   //QString diff = QString::number((this->xyz.getAt(1)-g->getXYZ().getAt(1))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
@@ -190,7 +206,12 @@ QString Sphere::getDisplayY(bool showDiff) const{
 }
 
 QString Sphere::getDisplayZ(bool showDiff) const{
-    QString value = QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+
+    double displayValue = this->xyz.getAt(2);
+    this->convertMetricValue(displayValue);
+    QString value = QString::number(displayValue, 'f', this->getMetricDigits());
+
+    //QString value = QString::number(this->xyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -201,7 +222,11 @@ QString Sphere::getDisplayZ(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(2)-g->getXYZ().getAt(2))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   displayValue = this->xyz.getAt(2)-g->getXYZ().getAt(2);
+                   this->convertMetricValue(displayValue);
+                   QString diff = QString::number(displayValue, 'f', this->getMetricDigits());
+
+                   //QString diff = QString::number((this->xyz.getAt(2)-g->getXYZ().getAt(2))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
@@ -213,7 +238,12 @@ QString Sphere::getDisplayZ(bool showDiff) const{
 
 QString Sphere::getDisplayRadius(bool showDiff) const{
 
-    QString value = QString::number(this->radius*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->radius;
+    this->convertMetricValue(displayValue);
+    QString value = QString::number(displayValue, 'f', this->getMetricDigits());
+
+
+    //QString value = QString::number(this->radius*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -224,7 +254,11 @@ QString Sphere::getDisplayRadius(bool showDiff) const{
             foreach (Geometry *g, this->nominals) {
                 if(g != NULL && g->getIsSolved()){
 
-                    QString diff = QString::number((this->radius - g->getRadius())*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                    displayValue = this->radius - g->getRadius();
+                    this->convertMetricValue(displayValue);
+                    QString diff = QString::number(displayValue, 'f', this->getMetricDigits());
+
+                    //QString diff = QString::number((this->radius - g->getRadius())*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                     return QString(value + " (" + diff + ")" );
                 }
             }
@@ -256,8 +290,7 @@ QString Sphere::getDisplayMConfig() const{
 QString Sphere::getDisplayStdDev() const{
 
     if(this->myStatistic.isValid){
-        return QString::number(this->myStatistic.stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    }else{
-        return "-/-";
+        //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
+    return "-/-";
 }

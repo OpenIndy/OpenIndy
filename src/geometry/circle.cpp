@@ -155,7 +155,7 @@ bool Circle::fromOpenIndyXML(QDomElement &xmlElem){
 
 QString Circle::getDisplayX(bool showDiff) const{
 
-    QString value = QString::number(this->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    /*QString value = QString::number(this->xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -166,20 +166,21 @@ QString Circle::getDisplayX(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(0)-g->getXYZ().getAt(0))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   QString diff = QString::number((this->xyz.getAt(0)-g->getXYZ().getAt(0))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
        }
     }
 
-    return value;
+    return value;*/
+    return "";
 
 }
 
 QString Circle::getDisplayY(bool showDiff) const{
 
-    QString value = QString::number(this->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    /*QString value = QString::number(this->xyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -190,18 +191,19 @@ QString Circle::getDisplayY(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(1)-g->getXYZ().getAt(1))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   QString diff = QString::number((this->xyz.getAt(1)-g->getXYZ().getAt(1))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
        }
     }
 
-    return value;
+    return value;*/
+    return "";
 }
 
 QString Circle::getDisplayZ(bool showDiff) const{
-    QString value = QString::number(this->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    /*QString value = QString::number(this->xyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -212,20 +214,21 @@ QString Circle::getDisplayZ(bool showDiff) const{
            foreach(Geometry *g, this->nominals){
                if(g != NULL && g->getIsSolved()){
 
-                   QString diff = QString::number((this->xyz.getAt(2)-g->getXYZ().getAt(2))*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                   QString diff = QString::number((this->xyz.getAt(2)-g->getXYZ().getAt(2))*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                    return QString(value + " (" + diff + ")");
                }
            }
        }
     }
 
-    return value;
+    return value;*/
+    return "";
 }
 
 QString Circle::getDisplayRadius(bool showDiff) const{
     //return QString::number(this->radius*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
 
-    QString value = QString::number(this->radius*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    /*QString value = QString::number(this->radius*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 
     if(!showDiff){
         return value;
@@ -236,14 +239,15 @@ QString Circle::getDisplayRadius(bool showDiff) const{
             foreach (Geometry *g, this->nominals) {
                 if(g != NULL && g->getIsSolved()){
 
-                    QString diff = QString::number((this->radius - g->getRadius())*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+                    QString diff = QString::number((this->radius - g->getRadius())*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
                     return QString(value + " (" + diff + ")" );
                 }
             }
         }
     }
 
-    return value;
+    return value;*/
+    return "";
 }
 
 QString Circle::getDisplayIsCommon() const{
@@ -268,10 +272,9 @@ QString Circle::getDisplayMConfig() const{
 QString Circle::getDisplayStdDev() const{
 
     if(this->myStatistic.isValid){
-        return QString::number(this->myStatistic.stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    }else{
-        return "-/-";
+        //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
+    return "-/-";
 }
 
 QString Circle::getDisplayI(bool showDiff) const{

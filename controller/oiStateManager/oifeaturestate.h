@@ -10,6 +10,7 @@
 #include "featurecontainer.h"
 #include "featureattributes.h"
 #include "oiconfigstate.h"
+#include "oiunitconverter.h"
 
 /*
 #include <QObject>

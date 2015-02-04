@@ -6,7 +6,6 @@
 #include <QObject>
 #include <QApplication>
 
-#include "unitconverter.h"
 #include "pi_oiexchangesimpleascii.h"
 #include "pi_oiexchangedefinedformat.h"
 #include "oiloadingdialog.h"

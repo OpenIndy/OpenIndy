@@ -378,15 +378,24 @@ void CoordinateSystem::recalc(){
 }
 
 QString CoordinateSystem::getDisplayX() const{
-    return QString::number(this->origin.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->origin.getAt(0);
+    this->convertMetricValue(displayValue);
+    return QString::number(displayValue, 'f', 2);
+    //return QString::number(this->origin.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString CoordinateSystem::getDisplayY() const{
-    return QString::number(this->origin.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->origin.getAt(1);
+    this->convertMetricValue(displayValue);
+    return QString::number(displayValue, 'f', 2);
+    //return QString::number(this->origin.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString CoordinateSystem::getDisplayZ() const{
-    return QString::number(this->origin.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->origin.getAt(2);
+    this->convertMetricValue(displayValue);
+    return QString::number(displayValue, 'f', 2);
+    //return QString::number(this->origin.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString CoordinateSystem::getDisplaySolved() const{
@@ -395,17 +404,26 @@ QString CoordinateSystem::getDisplaySolved() const{
 
 QString CoordinateSystem::getDisplayExpansionOriginX() const
 {
-    return QString::number(this->expansionOrigin.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->expansionOrigin.getAt(0);
+    this->convertMetricValue(displayValue);
+    return QString::number(displayValue, 'f', 2);
+    //return QString::number(this->expansionOrigin.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString CoordinateSystem::getDisplayExpansionOriginY() const
 {
-    return QString::number(this->expansionOrigin.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->expansionOrigin.getAt(1);
+    this->convertMetricValue(displayValue);
+    return QString::number(displayValue, 'f', 2);
+    //return QString::number(this->expansionOrigin.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString CoordinateSystem::getDisplayExpansionOriginZ() const
 {
-    return QString::number(this->expansionOrigin.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->expansionOrigin.getAt(2);
+    this->convertMetricValue(displayValue);
+    return QString::number(displayValue, 'f', 2);
+    //return QString::number(this->expansionOrigin.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 /*!

@@ -8,7 +8,6 @@
 #include <QCheckBox>
 #include <QStringListModel>
 #include <QDesktopWidget>
-#include "unitconverter.h"
 #include "plugintreeviewmodel.h"
 #include "guiconfiguration.h"
 #include "plugininfowidget.h"

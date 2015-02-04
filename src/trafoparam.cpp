@@ -88,7 +88,7 @@ bool TrafoParam::setHomogenMatrix(OiMat rotation, OiMat translation, OiMat scale
         r.setAt(1, qAsin(rotation.getAt(2,0))); //beta
         r.setAt(2, qAtan2(-rotation.getAt(1,0), rotation.getAt(0,0))); //gamma
         if( qFabs(qCos(r.getAt(1)) * qCos(r.getAt(2))) - qFabs(rotation.getAt(0,0)) > 0.01 ){
-            r.setAt(1, PI - r.getAt(1));
+            r.setAt(1, 3.141592653589793 - r.getAt(1));
         }
 
         this->translation = t;
@@ -399,32 +399,50 @@ QString TrafoParam::getDisplayDestinationSystem() const{
 
 QString TrafoParam::getDisplayTranslationX() const
 {
-    return QString::number(this->translation.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->translation.getAt(0);
+    this->convertMetricValue(displayValue);
+    return QString::number(displayValue, 'f', this->getMetricDigits());
+    //return QString::number(this->translation.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString TrafoParam::getDisplayTranslationY() const
 {
-    return QString::number(this->translation.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->translation.getAt(0);
+    this->convertMetricValue(displayValue);
+    return QString::number(displayValue, 'f', this->getMetricDigits());
+    //return QString::number(this->translation.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString TrafoParam::getDisplayTranslationZ() const
 {
-    return QString::number(this->translation.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    double displayValue = this->translation.getAt(2);
+    this->convertMetricValue(displayValue);
+    return QString::number(displayValue, 'f', this->getMetricDigits());
+    //return QString::number(this->translation.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString TrafoParam::getDisplayRotationX() const
 {
-    return QString::number(this->rotation.getAt(0)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+    double displayValue = this->rotation.getAt(0);
+    this->convertAngularValue(displayValue);
+    return QString::number(displayValue, 'f', this->getAngularDigits());
+    //return QString::number(this->rotation.getAt(0)*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
 }
 
 QString TrafoParam::getDisplayRotationY() const
 {
-    return QString::number(this->rotation.getAt(1)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+    double displayValue = this->rotation.getAt(1);
+    this->convertAngularValue(displayValue);
+    return QString::number(displayValue, 'f', this->getAngularDigits());
+    //return QString::number(this->rotation.getAt(1)*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
 }
 
 QString TrafoParam::getDisplayRotationZ() const
 {
-    return QString::number(this->rotation.getAt(2)*UnitConverter::getAngleMultiplier(),'f',UnitConverter::angleDigits);
+    double displayValue = this->rotation.getAt(2);
+    this->convertAngularValue(displayValue);
+    return QString::number(displayValue, 'f', this->getAngularDigits());
+    //return QString::number(this->rotation.getAt(2)*OiUnitConverter::getAngleMultiplier(),'f',OiUnitConverter::angleDigits);
 }
 
 QString TrafoParam::getDisplayScaleX() const
@@ -455,7 +473,7 @@ QString TrafoParam::getDisplayTime() const
 QString TrafoParam::getDisplayStdDev() const
 {
     if(this->myStatistic != NULL && this->myStatistic->isValid){
-        return QString::number(this->myStatistic->stdev*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+        //return QString::number(this->myStatistic->stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
     return "statistic not valid";
 }

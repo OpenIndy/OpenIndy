@@ -170,7 +170,7 @@ private:
     //instances of manager classes to take care of OpenIndy state changes
     //###################################################################
 
-    OiFeatureState *myFeatureState;
+    const OiFeatureState *myFeatureState;
     FeatureUpdater *myFeatureUpdater;
     OiConfigState *myConfigState;
     OiModelManager *myModelManager;

@@ -21,7 +21,6 @@
 #include "console.h"
 #include "sensorconfiguration.h"
 #include "sensor.h"
-#include "unitconverter.h"
 #include "oiconfigstate.h"
 #include "oimodelmanager.h"
 

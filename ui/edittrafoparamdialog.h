@@ -6,7 +6,6 @@
 #include <QShowEvent>
 #include <QDesktopWidget>
 #include "featurewrapper.h"
-#include "unitconverter.h"
 #include "functionstatistic.h"
 #include "matrixmodel.h"
 #include "oifeaturestate.h"

@@ -356,17 +356,20 @@ void Station::emitStartDisconnect() const{
 
 QString Station::getDisplayX() const{
     //return QString::number(this->position->xyz.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    return QString::number(this->coordSys->origin.getAt(0)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    return "";
+    //return QString::number(this->coordSys->origin.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString Station::getDisplayY() const{
+    return "";
     //return QString::number(this->position->xyz.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    return QString::number(this->coordSys->origin.getAt(1)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    //return QString::number(this->coordSys->origin.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString Station::getDisplayZ() const{
     //return QString::number(this->position->xyz.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    return QString::number(this->coordSys->origin.getAt(2)*UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
+    return "";
+    //return QString::number(this->coordSys->origin.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
 QString Station::getDisplayIsCommon() const{
@@ -388,10 +391,9 @@ QString Station::getDisplayMConfig() const{
 QString Station::getDisplayStdDev() const{
 
     if(this->position->getStatistic().isValid){
-        return QString::number(this->position->getStatistic().stdev * UnitConverter::getDistanceMultiplier(),'f',UnitConverter::distanceDigits);
-    }else{
-        return "-/-";
+        //return QString::number(this->position->getStatistic().stdev * OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
+    return "-/-";
 }
 
 void Station::writeToConsole(QString msg){

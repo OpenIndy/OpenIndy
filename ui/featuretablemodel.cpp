@@ -397,21 +397,21 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         if(myFeature->getCoordinateSystem() == NULL){
             return false;
         }
-        myFeature->getCoordinateSystem()->setExpansionOriginX(value.toDouble()/UnitConverter::getDistanceMultiplier());
+        //myFeature->getCoordinateSystem()->setExpansionOriginX(value.toDouble()/OiUnitConverter::getDistanceMultiplier());
 
     }else if(index.column() == 23){ //expansion origin y
 
         if(myFeature->getCoordinateSystem() == NULL){
             return false;
         }
-        myFeature->getCoordinateSystem()->setExpansionOriginY(value.toDouble()/UnitConverter::getDistanceMultiplier());
+        //myFeature->getCoordinateSystem()->setExpansionOriginY(value.toDouble()/OiUnitConverter::getDistanceMultiplier());
 
     }else if(index.column() == 24){ //expansion origin z
 
         if(myFeature->getCoordinateSystem() == NULL){
             return false;
         }
-        myFeature->getCoordinateSystem()->setExpansionOriginZ(value.toDouble()/UnitConverter::getDistanceMultiplier());
+        //myFeature->getCoordinateSystem()->setExpansionOriginZ(value.toDouble()/OiUnitConverter::getDistanceMultiplier());
 
     }
 

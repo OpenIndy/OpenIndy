@@ -94,25 +94,25 @@ void StationInfoDialog::initGUI()
  */
 void StationInfoDialog::getSensorConfiguration()
 {
-    ui->label_sigmaAzimuth->setText(QString("sigma azimuth " + UnitConverter::getAngleUnitString()));
-    ui->label_sigmaDistance->setText(QString("sigma distance " + UnitConverter::getDistanceUnitString()));
-    ui->label_sigmaTemperature->setText(QString("sigma temperature " + UnitConverter::getTemperatureUnitString()));
-    ui->label_sigmaX->setText(QString("sigma x " + UnitConverter::getDistanceUnitString()));
-    ui->label_sigmaXZ->setText(QString("sigma xz " + UnitConverter::getAngleUnitString()));
-    ui->label_sigmaY->setText(QString("sigma y " + UnitConverter::getDistanceUnitString()));
-    ui->label_sigmaYZ->setText(QString("sigma yz " + UnitConverter::getDistanceUnitString()));
-    ui->label_sigmaZ->setText(QString("sigma z " + UnitConverter::getDistanceUnitString()));
-    ui->label_sigmaZenith->setText(QString("sigma zenith " + UnitConverter::getAngleUnitString()));
+    /*ui->label_sigmaAzimuth->setText(QString("sigma azimuth " + OiUnitConverter::getAngleUnitString()));
+    ui->label_sigmaDistance->setText(QString("sigma distance " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_sigmaTemperature->setText(QString("sigma temperature " + OiUnitConverter::getTemperatureUnitString()));
+    ui->label_sigmaX->setText(QString("sigma x " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_sigmaXZ->setText(QString("sigma xz " + OiUnitConverter::getAngleUnitString()));
+    ui->label_sigmaY->setText(QString("sigma y " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_sigmaYZ->setText(QString("sigma yz " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_sigmaZ->setText(QString("sigma z " + OiUnitConverter::getDistanceUnitString()));
+    ui->label_sigmaZenith->setText(QString("sigma zenith " + OiUnitConverter::getAngleUnitString()));
 
-    ui->lineEdit_sigmaAzimuth->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaAzimuth*UnitConverter::getAngleMultiplier()));
-    ui->lineEdit_sigmaDistance->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaDistance*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaZenith->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaZenith*UnitConverter::getAngleMultiplier()));
-    ui->lineEdit_sigmaTemperature->setText(QString::number(UnitConverter::getTemperature(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaTemp)));
-    ui->lineEdit_sigmaX->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaXyz.getAt(0)*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaY->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaXyz.getAt(1)*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaXyz.getAt(2)*UnitConverter::getDistanceMultiplier()));
-    ui->lineEdit_sigmaXZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaAngleXZ*UnitConverter::getAngleMultiplier()));
-    ui->lineEdit_sigmaYZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaAngleYZ*UnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaAzimuth->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaAzimuth*OiUnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaDistance->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaDistance*OiUnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaZenith->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaZenith*OiUnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaTemperature->setText(QString::number(OiUnitConverter::getTemperature(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaTemp)));
+    ui->lineEdit_sigmaX->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaXyz.getAt(0)*OiUnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaY->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaXyz.getAt(1)*OiUnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaXyz.getAt(2)*OiUnitConverter::getDistanceMultiplier()));
+    ui->lineEdit_sigmaXZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaAngleXZ*OiUnitConverter::getAngleMultiplier()));
+    ui->lineEdit_sigmaYZ->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaAngleYZ*OiUnitConverter::getAngleMultiplier()));*/
 }
 
 /*!

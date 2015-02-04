@@ -8,8 +8,6 @@
 #include <QDebug>
 #include <QtGui/QPixmap>
 
-#include "unitconverter.h"
-
 /*!
  * \brief The Configuration class
  * This class includes all enums used in the openIndy project. So the enum decleration ist

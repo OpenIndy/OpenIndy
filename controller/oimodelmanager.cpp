@@ -654,27 +654,27 @@ void OiModelManager::initCoordinateSystemModels(){
 void OiModelManager::initUnitModels(){
 
     //distance units
-    QStringList distanceUnits;
-    distanceUnits.append(UnitConverter::getUnitString(UnitConverter::eMETER));
-    distanceUnits.append(UnitConverter::getUnitString(UnitConverter::eMILLIMETER));
-    distanceUnits.append(UnitConverter::getUnitString(UnitConverter::eInch));
+    /*QStringList distanceUnits;
+    distanceUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eMeter));
+    distanceUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eMillimeter));
+    distanceUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eInch));
     OiModelManager::distanceUnitsModel.setStringList(distanceUnits);
 
     //angle units
     QStringList angleUnits;
-    angleUnits.append(UnitConverter::getUnitString(UnitConverter::eDECIMALDEGREE));
-    angleUnits.append(UnitConverter::getUnitString(UnitConverter::eGON));
-    angleUnits.append(UnitConverter::getUnitString(UnitConverter::eRADIANT));
-    angleUnits.append(UnitConverter::getUnitString(UnitConverter::eMilliRadians));
-    angleUnits.append(UnitConverter::getUnitString(UnitConverter::eArcSeconds));
+    angleUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eDecimalDegree));
+    angleUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eGon));
+    angleUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eRadiant));
+    angleUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eMilliRadians));
+    angleUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eArcSeconds));
     OiModelManager::angleUnitsModel.setStringList(angleUnits);
 
     //temperature units
     QStringList temperatureUnits;
-    temperatureUnits.append(UnitConverter::getUnitString(UnitConverter::eGRAD));
-    temperatureUnits.append(UnitConverter::getUnitString(UnitConverter::eKelvin));
-    temperatureUnits.append(UnitConverter::getUnitString(UnitConverter::eFahrenheit));
-    OiModelManager::temperatureUnitsModel.setStringList(temperatureUnits);
+    temperatureUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eGRAD));
+    temperatureUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eKelvin));
+    temperatureUnits.append(OiUnitConverter::getUnitString(OiUnitConverter::eFahrenheit));
+    OiModelManager::temperatureUnitsModel.setStringList(temperatureUnits);*/
 
 }
 
