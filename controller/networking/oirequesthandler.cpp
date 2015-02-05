@@ -26,6 +26,12 @@ OiRequestHandler *OiRequestHandler::getInstance(){
 
 void OiRequestHandler::clearTasks(){
 
+    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL
+            && OiFeatureState::getActiveStation()->sensorPad->instrumentListener != NULL){
+        disconnect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener, SIGNAL(sendReadingMap(QVariantMap)),
+                OiRequestHandler::myRequestHandler, SLOT(receiveWatchWindowData(QVariantMap)));
+    }
+
     OiRequestHandler::myRequestHandler->myWatchWindowTask.taskInProcess = false;
     OiRequestHandler::myRequestHandler->myWatchWindowTask.request = NULL;
     OiRequestHandler::myRequestHandler->myMeasurementTask.taskInProcess = false;
@@ -555,16 +561,16 @@ void OiRequestHandler::startWatchwindow(OiRequestResponse *request){
             && OiFeatureState::getActiveStation()->sensorPad->instrumentListener != NULL
             && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
 
+        //save active watch window task
+        this->myWatchWindowTask.taskInProcess = true;
+        this->myWatchWindowTask.request = request;
+
         //connect the reading stream to the request handler
         connect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener, SIGNAL(sendReadingMap(QVariantMap)),
                 this, SLOT(receiveWatchWindowData(QVariantMap)));
 
         //start watch window
         OiFeatureState::getActiveStation()->emitStartReadingStream(myReadingType); //TODO Übergabeparameter
-
-        //save active watch window task
-        this->myWatchWindowTask.taskInProcess = true;
-        this->myWatchWindowTask.request = request;
 
     }else{
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveStation);
