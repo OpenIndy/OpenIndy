@@ -51,6 +51,9 @@ void OiWebSocketServer::incomingConnection(){
 
     Console::addLine("Connecting to client " + QString::number(myConnection->getInternalRef()) + " ...");
 
+    //reset current tasks
+    OiRequestHandler::clearTasks();
+
     connect(myConnection, SIGNAL(finished()), myConnection, SLOT(deleteLater()));
     connect(myConnection, SIGNAL(sendRequest(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveRequest(OiRequestResponse*)));
 

@@ -23,6 +23,8 @@ bool OiWebSocket::setSocket(QWebSocket *mySocket){
 
     this->socket = mySocket;
     connect(this->socket, SIGNAL(textMessageReceived(QString)), this, SLOT(readMessage(QString)));
+    connect(this->socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+    connect(this->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(stateChanged(QAbstractSocket::SocketState)));
     return true;
 
 }
@@ -61,5 +63,20 @@ void OiWebSocket::readMessage(QString msg){
     request->request.setContent(msg);
 
     emit this->sendRequest(request);
+
+}
+
+/*!
+ * \brief OiWebSocket::socketDisconnected
+ */
+void OiWebSocket::socketDisconnected(){
+
+    qDebug() << "socket disconnected";
+
+}
+
+void OiWebSocket::stateChanged(QAbstractSocket::SocketState){
+
+    qDebug() << "socket state changed";
 
 }

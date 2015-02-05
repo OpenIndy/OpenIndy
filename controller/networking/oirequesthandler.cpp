@@ -24,6 +24,15 @@ OiRequestHandler *OiRequestHandler::getInstance(){
     return OiRequestHandler::myRequestHandler;
 }
 
+void OiRequestHandler::clearTasks(){
+
+    OiRequestHandler::myRequestHandler->myWatchWindowTask.taskInProcess = false;
+    OiRequestHandler::myRequestHandler->myWatchWindowTask.request = NULL;
+    OiRequestHandler::myRequestHandler->myMeasurementTask.taskInProcess = false;
+    OiRequestHandler::myRequestHandler->myMeasurementTask.request = NULL;
+
+}
+
 /*!
  * \brief OiRequestHandler::receiveRequest
  * Parses a XML request and calls the corresponding method to do the requested task
@@ -543,7 +552,8 @@ void OiRequestHandler::startWatchwindow(OiRequestResponse *request){
     }
 
     if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL
-            && OiFeatureState::getActiveStation()->sensorPad->instrumentListener != NULL){
+            && OiFeatureState::getActiveStation()->sensorPad->instrumentListener != NULL
+            && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
 
         //connect the reading stream to the request handler
         connect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener, SIGNAL(sendReadingMap(QVariantMap)),

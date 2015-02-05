@@ -35,6 +35,8 @@ private:
 public:
     static OiRequestHandler *getInstance();
 
+    static void clearTasks();
+
 public slots:
     bool receiveRequest(OiRequestResponse *request);
 
