@@ -14,6 +14,9 @@ PseudoTracker::PseudoTracker(){
     isConnected = false;
     side = 1;
 
+    this->lastReading.first = Configuration::eCartesian;
+    this->lastReading.second = NULL;
+
 }
 
 /*!
@@ -393,44 +396,46 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
 
     QVariantMap m;
 
-    Reading r;
+    Reading *r = new Reading();
 
     switch (streamFormat) {
     case Configuration::ePolar:
 
-        r.rPolar.azimuth = myAzimuth;
-        r.rPolar.zenith = myZenith;
-        r.rPolar.distance = myDistance;
-        r.rPolar.isValid = true;
+        r->rPolar.azimuth = myAzimuth;
+        r->rPolar.zenith = myZenith;
+        r->rPolar.distance = myDistance;
+        r->rPolar.isValid = true;
 
-        r.typeofReading = Configuration::ePolar;
-        this->noisyPolarReading(&r);
+        r->typeofReading = Configuration::ePolar;
+        this->noisyPolarReading(r);
 
-        azimuth = r.rPolar.azimuth;
-        zenith = r.rPolar.zenith;
-        distance = r.rPolar.distance;
+        azimuth = r->rPolar.azimuth;
+        zenith = r->rPolar.zenith;
+        distance = r->rPolar.distance;
 
         m.insert("azimuth",azimuth);
         m.insert("zenith",zenith);
         m.insert("distance",distance);
 
+        r->toCartesian();
+
         break;
     case Configuration::eCartesian:
 
-        r.rPolar.azimuth = myAzimuth;
-        r.rPolar.zenith = myZenith;
-        r.rPolar.distance = myDistance;
-        r.rPolar.isValid = true;
-        r.typeofReading = Configuration::ePolar;
+        r->rPolar.azimuth = myAzimuth;
+        r->rPolar.zenith = myZenith;
+        r->rPolar.distance = myDistance;
+        r->rPolar.isValid = true;
+        r->typeofReading = Configuration::ePolar;
 
-        this->noisyPolarReading(&r);
+        this->noisyPolarReading(r);
 
-        r.typeofReading = Configuration::eCartesian;
-        r.toCartesian();
+        r->typeofReading = Configuration::eCartesian;
+        r->toCartesian();
 
-        x =r.rCartesian.xyz.getAt(0);
-        y =r.rCartesian.xyz.getAt(1);
-        z =r.rCartesian.xyz.getAt(2);
+        x =r->rCartesian.xyz.getAt(0);
+        y =r->rCartesian.xyz.getAt(1);
+        z =r->rCartesian.xyz.getAt(2);
 
         m.insert("x",x);
         m.insert("y",y);
@@ -439,26 +444,26 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
         break;
     case Configuration::eDistance:
 
-        r.rDistance.distance = myDistance;
-        r.rDistance.isValid = true;
+        r->rDistance.distance = myDistance;
+        r->rDistance.isValid = true;
 
-        r.typeofReading = Configuration::eDistance;
+        r->typeofReading = Configuration::eDistance;
 
-        distance = r.rDistance.distance;
+        distance = r->rDistance.distance;
 
         m.insert("distance",distance);
 
         break;
     case Configuration::eDirection:
 
-        r.rDirection.azimuth = myAzimuth;
-        r.rDirection.zenith = myZenith;
-        r.rDirection.isValid = true;
+        r->rDirection.azimuth = myAzimuth;
+        r->rDirection.zenith = myZenith;
+        r->rDirection.isValid = true;
 
-        r.typeofReading = Configuration::eDirection;
+        r->typeofReading = Configuration::eDirection;
 
-        azimuth = r.rDirection.azimuth;
-        zenith = r.rDirection.zenith;
+        azimuth = r->rDirection.azimuth;
+        zenith = r->rDirection.zenith;
 
         m.insert("azimuth",azimuth);
         m.insert("zenith",zenith);
@@ -474,10 +479,8 @@ QVariantMap PseudoTracker::readingStream(Configuration::ReadingTypes streamForma
         break;
     }
 
-    this->lastReading.first = r.typeofReading;
-    Reading *myReading = new Reading();
-    *myReading = r;
-    this->lastReading.second = myReading;
+    this->lastReading.first = r->typeofReading;
+    this->lastReading.second = r;
 
     QThread::msleep(300);
 

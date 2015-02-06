@@ -764,6 +764,12 @@ void OiRequestHandler::receiveWatchWindowData(QVariantMap data){
  */
 void OiRequestHandler::measurementFinished(bool success){
 
+    if(this->myMeasurementTask.request == NULL
+            || OiFeatureState::getActiveStation() == NULL
+            || OiFeatureState::getActiveStation()->sensorPad == NULL){
+        return;
+    }
+
     disconnect(OiFeatureState::getActiveStation()->sensorPad, SIGNAL(commandFinished(bool)), this, SLOT(measurementFinished(bool)));
 
     this->myMeasurementTask.taskInProcess = false;
