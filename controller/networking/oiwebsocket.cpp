@@ -66,9 +66,7 @@ void OiWebSocket::readMessage(QString msg){
 
 }
 
-/*!
- * \brief OiWebSocket::socketDisconnected
- */
+/*
 void OiWebSocket::socketDisconnected(){
 
     qDebug() << "socket disconnected";
@@ -79,4 +77,4 @@ void OiWebSocket::stateChanged(QAbstractSocket::SocketState){
 
     qDebug() << "socket state changed";
 
-}
+}*/

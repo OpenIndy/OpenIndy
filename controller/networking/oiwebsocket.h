@@ -28,8 +28,8 @@ public slots:
 private slots:
     void readMessage(QString msg);
 
-    void socketDisconnected();
-    void stateChanged(QAbstractSocket::SocketState);
+    //void socketDisconnected();
+    //void stateChanged(QAbstractSocket::SocketState);
 
 private:
     QWebSocket* socket;
