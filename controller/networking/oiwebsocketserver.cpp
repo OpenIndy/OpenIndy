@@ -1,7 +1,7 @@
 #include "oiwebsocketserver.h"
 
 OiWebSocketServer::OiWebSocketServer(QObject *parent) :
-    QWebSocketServer("", QWebSocketServer::NonSecureMode, parent)
+    QWebSocketServer("openindy", QWebSocketServer::NonSecureMode, parent)
 {
     connect(OiRequestHandler::getInstance(), SIGNAL(sendResponse(OiRequestResponse*)), this, SLOT(receiveResponse(OiRequestResponse*)));
     connect(this, SIGNAL(newConnection()), this, SLOT(incomingConnection()));
