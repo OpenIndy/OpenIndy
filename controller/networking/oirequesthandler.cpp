@@ -78,6 +78,7 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse *request){
         }else if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eStopWatchwindow){
             this->stopWatchwindow(request);
         }else if(request->request.documentElement().attribute("id", "-1").toInt() == OiRequestResponse::eOiToolRequest){
+            request->myRequestType = OiRequestResponse::eOiToolRequest;
             emit this->sendOiToolRequest(request);
         }else{
 
@@ -740,6 +741,11 @@ void OiRequestHandler::receiveWatchWindowData(QVariantMap data){
     QDomElement featureTag = this->myWatchWindowTask.request->response.createElement("geometry");
     featureTag.setAttribute("id", OiFeatureState::getActiveFeature()->getFeature()->getId());
     featureTag.setAttribute("name", OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
+    if(OiFeatureState::getActiveFeature()->getGeometry()->getMyActual() != NULL){
+        featureTag.setAttribute("obs", OiFeatureState::getActiveFeature()->getGeometry()->getMyActual()->getDisplayObs());
+    }else{
+        featureTag.setAttribute("obs", OiFeatureState::getActiveFeature()->getGeometry()->getDisplayObs());
+    }
 
     //create tag with watch window data
     QDomElement wwTag = this->myWatchWindowTask.request->response.createElement("cartesian");
