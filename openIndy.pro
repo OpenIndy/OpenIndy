@@ -36,6 +36,8 @@ linux: LIBS = -lGLU
 
 INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/ui
+INCLUDEPATH += $$PWD/ui/models
+INCLUDEPATH += $$PWD/ui/delegates
 INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/controller/networking
 INCLUDEPATH += $$PWD/controller/oiStateManager
@@ -120,7 +122,7 @@ SOURCES += \
     ui/featuretreeviewmodel.cpp \
     ui/featuretreeitem.cpp \
     ui/availableelementstreeviewproxymodel.cpp \
-    ui/trafoparamproxymodel.cpp \
+    ui/models/trafoparamproxymodel.cpp \
     ui/nominaldatadialog.cpp \
     ui/featuregraphicstreeviewproxymodel.cpp \
     ui/functionstatistic.cpp \
@@ -139,8 +141,8 @@ SOURCES += \
     ui/customparameterwidget.cpp \
     src/elementdependencies.cpp \
     controller/deletefeaturesfunctor.cpp \
-    ui/featureoverviewdelegate.cpp \
-    ui/trafoparamdelegate.cpp \
+    ui/delegates/featureoverviewdelegate.cpp \
+    ui/delegates/trafoparamdelegate.cpp \
     ui/plugintreeviewmodel.cpp \
     ui/plugintreeitem.cpp \
     controller/nominalattributeexchange.cpp \
@@ -187,8 +189,8 @@ SOURCES += \
     controller/oimodelmanager.cpp \
     ui/oisimpleasciiexchangemodel.cpp \
     ui/geometrytypesproxymodel.cpp \
-    ui/featuretablemodel.cpp \
-    ui/featuretableproxymodel.cpp \
+    ui/models/featuretablemodel.cpp \
+    ui/models/featuretableproxymodel.cpp \
     controller/networking/oiwebsocket.cpp \
     controller/networking/oiwebsocketserver.cpp \
     ui/createfeaturedialog.cpp \
@@ -277,7 +279,7 @@ HEADERS  += \
     ui/featuretreeviewmodel.h \
     ui/featuretreeitem.h \
     ui/availableelementstreeviewproxymodel.h \
-    ui/trafoparamproxymodel.h \
+    ui/models/trafoparamproxymodel.h \
     ui/nominaldatadialog.h \
     ui/featuregraphicstreeviewproxymodel.h \
     ui/functionstatistic.h \
@@ -296,8 +298,8 @@ HEADERS  += \
     src/elementdependencies.h \
     controller/oifunctor.h \
     controller/deletefeaturesfunctor.h \
-    ui/featureoverviewdelegate.h \
-    ui/trafoparamdelegate.h \
+    ui/delegates/featureoverviewdelegate.h \
+    ui/delegates/trafoparamdelegate.h \
     ui/plugintreeviewmodel.h \
     ui/plugintreeitem.h \
     controller/nominalattributeexchange.h \
@@ -351,8 +353,8 @@ HEADERS  += \
     controller/oimodelmanager.h \
     ui/oisimpleasciiexchangemodel.h \
     ui/geometrytypesproxymodel.h \
-    ui/featuretablemodel.h \
-    ui/featuretableproxymodel.h \
+    ui/models/featuretablemodel.h \
+    ui/models/featuretableproxymodel.h \
     controller/networking/oiwebsocket.h \
     controller/networking/oiwebsocketserver.h \
     ui/createfeaturedialog.h \
