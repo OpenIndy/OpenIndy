@@ -173,7 +173,30 @@ int FeatureUpdater::addFeature(FeatureAttributesExchange fae, MeasurementConfig 
  */
 QStringList FeatureUpdater::ConstructFeatureName(QString name, int count)
 {
+
     QStringList featureNames;
+
+    for(int k = 0; k < count; k++){
+
+        QString featureName;
+
+        if(k == 0){
+            featureName = name;
+        }else{
+            featureName = name + QString::number(k);
+        }
+
+        featureNames.append(featureName);
+
+    }
+
+    return featureNames;
+
+
+
+    //old implementation where a 0 in the feature name disappears
+
+    /*QStringList featureNames;
 
     for(int k=0; k<count;k++){
         QString featureName;
@@ -201,7 +224,7 @@ QStringList FeatureUpdater::ConstructFeatureName(QString name, int count)
         }
         featureNames.append(featureName);
     }
-    return featureNames;
+    return featureNames;*/
 }
 
 /*!
