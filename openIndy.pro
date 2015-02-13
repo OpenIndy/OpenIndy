@@ -49,6 +49,7 @@ INCLUDEPATH += $$PWD/src/plugin/oitool
 INCLUDEPATH += $$PWD/src/simulation
 INCLUDEPATH += $$PWD/src/plugin/oiexchange
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
+INCLUDEPATH += $$PWD/models
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/release/ -lopenIndyLib
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/debug/ -lopenIndyLib
@@ -106,8 +107,8 @@ SOURCES += \
     ui/glwidget.cpp \
     src/sensorconfiguration.cpp \
     ui/featuredata.cpp \
-    ui/observationmodel.cpp \
-    ui/readingmodel.cpp \
+    models/observationmodel.cpp \
+    models/readingmodel.cpp \
     ui/oiGraphixFactory/oigraphix_sphere.cpp \
     ui/oiGraphixFactory/oigraphix.cpp \
     src/geometry/scalarentityangle.cpp \
@@ -119,18 +120,18 @@ SOURCES += \
     ui/oiGraphixFactory/oigraphix_line.cpp \
     ui/oiGraphixFactory/oigraphix_station.cpp \
     ui/scalarentitydialog.cpp \
-    ui/featuretreeviewmodel.cpp \
-    ui/featuretreeitem.cpp \
-    ui/availableelementstreeviewproxymodel.cpp \
-    ui/models/trafoparamproxymodel.cpp \
+    models/featuretreeviewmodel.cpp \
+    models/featuretreeitem.cpp \
+    models/availableelementstreeviewproxymodel.cpp \
+    models/trafoparamproxymodel.cpp \
     ui/nominaldatadialog.cpp \
-    ui/featuregraphicstreeviewproxymodel.cpp \
+    models/featuregraphicstreeviewproxymodel.cpp \
     ui/functionstatistic.cpp \
     controller/sortlistbyname.cpp \
     src/residual.cpp \
-    ui/usedelementsmodel.cpp \
+    models/usedelementsmodel.cpp \
     ui/edittrafoparamdialog.cpp \
-    ui/matrixmodel.cpp \
+    models/matrixmodel.cpp \
     src/function.cpp \
     controller/oiDataExchange/oidataexchanger.cpp \
     controller/oiDataExchange/oiprojectdata.cpp \
@@ -143,8 +144,8 @@ SOURCES += \
     controller/deletefeaturesfunctor.cpp \
     ui/delegates/featureoverviewdelegate.cpp \
     ui/delegates/trafoparamdelegate.cpp \
-    ui/plugintreeviewmodel.cpp \
-    ui/plugintreeitem.cpp \
+    models/plugintreeviewmodel.cpp \
+    models/plugintreeitem.cpp \
     controller/nominalattributeexchange.cpp \
     controller/displayattribute.cpp \
     src/sensorlistener.cpp \
@@ -163,22 +164,22 @@ SOURCES += \
     src/simulation/uncertaintycomponent.cpp \
     controller/simulationcontroller.cpp \
     ui/histogram.cpp \
-    ui/simulationerrortablemodel.cpp \
-    ui/simulationdelegate.cpp \
-    ui/simulationtreeviewmodel.cpp \
+    models/simulationerrortablemodel.cpp \
+    ui/delegates/simulationdelegate.cpp \
+    models/simulationtreeviewmodel.cpp \
     src/simulation/simulationdata.cpp \
-    ui/oimultiselectionmodel.cpp \
+    models/oimultiselectionmodel.cpp \
     ui/oiloadingdialog.cpp \
     controller/networking/oiserver.cpp \
     controller/networking/oinetworkconnection.cpp \
     controller/networking/oirequesthandler.cpp \
     src/oirequestresponse.cpp \
-    ui/pointfeaturemodel.cpp \
-    ui/pointfeaturefiltermodel.cpp \
-    ui/observationproxymodel.cpp \
-    ui/readingproxymodel.cpp \
+    models/pointfeaturemodel.cpp \
+    models/pointfeaturefiltermodel.cpp \
+    models/observationproxymodel.cpp \
+    models/readingproxymodel.cpp \
     controller/plugincopier.cpp \
-    ui/observationdelegate.cpp \
+    ui/delegates/observationdelegate.cpp \
     src/plugin/oitool/oijob.cpp \
     ui/oitoolaction.cpp \
     src/plugin/oiexchange/oiexchangeobject.cpp \
@@ -187,10 +188,10 @@ SOURCES += \
     ui/importnominaldialog.cpp \
     src/oiemitter/oiexchangeemitter.cpp \
     controller/oimodelmanager.cpp \
-    ui/oisimpleasciiexchangemodel.cpp \
-    ui/geometrytypesproxymodel.cpp \
-    ui/models/featuretablemodel.cpp \
-    ui/models/featuretableproxymodel.cpp \
+    models/oisimpleasciiexchangemodel.cpp \
+    models/geometrytypesproxymodel.cpp \
+    models/featuretablemodel.cpp \
+    models/featuretableproxymodel.cpp \
     controller/networking/oiwebsocket.cpp \
     controller/networking/oiwebsocketserver.cpp \
     ui/createfeaturedialog.cpp \
@@ -256,8 +257,8 @@ HEADERS  += \
     ui/glwidget.h \
     src/sensorconfiguration.h \
     ui/featuredata.h \
-    ui/observationmodel.h \
-    ui/readingmodel.h \
+    models/observationmodel.h \
+    models/readingmodel.h \
     src/plugin/pi_oiplugin.h \
     lib/openIndyLib/include/oivec.h \
     lib/openIndyLib/include/oimat.h \
@@ -276,18 +277,18 @@ HEADERS  += \
     ui/oiGraphixFactory/oigraphix_line.h \
     ui/oiGraphixFactory/oigraphix_station.h \
     ui/scalarentitydialog.h \
-    ui/featuretreeviewmodel.h \
-    ui/featuretreeitem.h \
-    ui/availableelementstreeviewproxymodel.h \
-    ui/models/trafoparamproxymodel.h \
+    models/featuretreeviewmodel.h \
+    models/featuretreeitem.h \
+    models/availableelementstreeviewproxymodel.h \
+    models/trafoparamproxymodel.h \
     ui/nominaldatadialog.h \
-    ui/featuregraphicstreeviewproxymodel.h \
+    models/featuregraphicstreeviewproxymodel.h \
     ui/functionstatistic.h \
     controller/sortlistbyname.h \
     src/residual.h \
-    ui/usedelementsmodel.h \
+    models/usedelementsmodel.h \
     ui/edittrafoparamdialog.h \
-    ui/matrixmodel.h \
+    models/matrixmodel.h \
     controller/oiDataExchange/oidataexchanger.h \
     controller/oiDataExchange/oiprojectdata.h \
     controller/oiDataExchange/oiprojectexchanger.h \
@@ -300,8 +301,8 @@ HEADERS  += \
     controller/deletefeaturesfunctor.h \
     ui/delegates/featureoverviewdelegate.h \
     ui/delegates/trafoparamdelegate.h \
-    ui/plugintreeviewmodel.h \
-    ui/plugintreeitem.h \
+    models/plugintreeviewmodel.h \
+    models/plugintreeitem.h \
     controller/nominalattributeexchange.h \
     controller/displayattribute.h \
     src/sensorlistener.h \
@@ -321,23 +322,23 @@ HEADERS  += \
     src/simulation/uncertaintycomponent.h \
     controller/simulationcontroller.h \
     ui/histogram.h \
-    ui/simulationerrortablemodel.h \
-    ui/simulationdelegate.h \
-    ui/simulationtreeviewmodel.h \
+    models/simulationerrortablemodel.h \
+    ui/delegates/simulationdelegate.h \
+    models/simulationtreeviewmodel.h \
     src/simulation/simulationdata.h \
     src/plugin/pi_generatefeaturefunction.h \
-    ui/oimultiselectionmodel.h \
+    models/oimultiselectionmodel.h \
     ui/oiloadingdialog.h \
     controller/networking/oiserver.h \
     controller/networking/oinetworkconnection.h \
     controller/networking/oirequesthandler.h \
     src/oirequestresponse.h \
-    ui/pointfeaturemodel.h \
-    ui/pointfeaturefiltermodel.h \
-    ui/observationproxymodel.h \
-    ui/readingproxymodel.h \
+    models/pointfeaturemodel.h \
+    models/pointfeaturefiltermodel.h \
+    models/observationproxymodel.h \
+    models/readingproxymodel.h \
     controller/plugincopier.h \
-    ui/observationdelegate.h \
+    ui/delegates/observationdelegate.h \
     src/plugin/oitool/pi_oitool.h \
     src/plugin/oitool/oijob.h \
     ui/oitoolaction.h \
@@ -351,10 +352,10 @@ HEADERS  += \
     src/oiemitter/oiexchangeemitter.h \
     src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
     controller/oimodelmanager.h \
-    ui/oisimpleasciiexchangemodel.h \
-    ui/geometrytypesproxymodel.h \
-    ui/models/featuretablemodel.h \
-    ui/models/featuretableproxymodel.h \
+    models/oisimpleasciiexchangemodel.h \
+    models/geometrytypesproxymodel.h \
+    models/featuretablemodel.h \
+    models/featuretableproxymodel.h \
     controller/networking/oiwebsocket.h \
     controller/networking/oiwebsocketserver.h \
     ui/createfeaturedialog.h \
@@ -364,7 +365,8 @@ HEADERS  += \
     controller/oiStateManager/oiconfigstate.h \
     controller/oiStateManager/oifeaturestate.h \
     src/oiemitter/oifeaturestateemitter.h \
-    controller/oiStateManager/oiunitconverter.h
+    controller/oiStateManager/oiunitconverter.h \
+    src/types.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

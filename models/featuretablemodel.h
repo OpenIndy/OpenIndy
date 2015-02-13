@@ -1,18 +1,25 @@
 #ifndef TABLEMODEL_H
 #define TABLEMODEL_H
 
+#include <QObject>
 #include <QAbstractTableModel>
-#include <QList>
+
 #include "feature.h"
 #include "featurewrapper.h"
+#include "oifeaturestate.h"
+#include "guiconfiguration.h"
+
+/*
+
 #include "coordinatesystem.h"
 #include "function.h"
 #include <QStringList>
 #include <QColor>
 #include <QFont>
 #include "featureupdater.h"
-#include "guiconfiguration.h"
-#include "oifeaturestate.h"
+
+
+*/
 
 class FeatureTableModel : public QAbstractTableModel
 {
@@ -20,6 +27,7 @@ class FeatureTableModel : public QAbstractTableModel
 
 public:
     explicit FeatureTableModel(QObject *parent = 0);
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;

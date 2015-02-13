@@ -24,6 +24,8 @@
 #include "featuregraphicstreeviewproxymodel.h"
 #include "plugintreeviewmodel.h"
 
+#include "featureupdater.h"
+
 class OiModelManager : public QObject
 {
     Q_OBJECT
