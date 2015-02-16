@@ -155,8 +155,8 @@ void OiRequestHandler::getActiveFeature(OiRequestResponse *request){
     this->prepareResponse(request);
 
     QDomElement response = request->response.createElement("activeFeature");
-    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
-        response.setAttribute("ref", OiFeatureState::getActiveFeature()->getFeature()->getId());
+    if(OiJob::getActiveFeature() != NULL && OiJob::getActiveFeature()->getFeature() != NULL){
+        response.setAttribute("ref", OiJob::getActiveFeature()->getFeature()->getId());
     }else{
         response.setAttribute("ref", -1);
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveFeature);
@@ -181,7 +181,7 @@ void OiRequestHandler::setActiveFeature(OiRequestResponse *request){
     //set the active feature
     QDomElement activeFeature = request->request.documentElement().firstChildElement("activeFeature");
     if(!activeFeature.isNull() && activeFeature.hasAttribute("ref")){
-        FeatureWrapper *myFeature = OiFeatureState::getFeature(activeFeature.attribute("ref").toInt());
+        FeatureWrapper *myFeature = OiJob::getFeature(activeFeature.attribute("ref").toInt());
         if(myFeature != NULL && myFeature->getFeature() != NULL){
             myFeature->getFeature()->setActiveFeatureState(true);
         }else{
@@ -193,8 +193,8 @@ void OiRequestHandler::setActiveFeature(OiRequestResponse *request){
 
     //add the new active feature to XML response
     QDomElement response = request->response.createElement("activeFeature");
-    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
-        response.setAttribute("ref", OiFeatureState::getActiveFeature()->getFeature()->getId());
+    if(OiJob::getActiveFeature() != NULL && OiJob::getActiveFeature()->getFeature() != NULL){
+        response.setAttribute("ref", OiJob::getActiveFeature()->getFeature()->getId());
     }else{
         response.setAttribute("ref", -1);
     }
@@ -215,8 +215,8 @@ void OiRequestHandler::getActiveStation(OiRequestResponse *request){
     this->prepareResponse(request);
 
     QDomElement response = request->response.createElement("activeStation");
-    if(OiFeatureState::getActiveStation() != NULL){
-        response.setAttribute("ref", OiFeatureState::getActiveStation()->getId());
+    if(OiJob::getActiveStation() != NULL){
+        response.setAttribute("ref", OiJob::getActiveStation()->getId());
     }else{
         response.setAttribute("ref", -1);
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveStation);
@@ -241,7 +241,7 @@ void OiRequestHandler::setActiveStation(OiRequestResponse *request){
     //set the active station
     QDomElement activeStation = request->request.documentElement().firstChildElement("activeStation");
     if(!activeStation.isNull() && activeStation.hasAttribute("ref")){
-        FeatureWrapper *myFeature = OiFeatureState::getFeature(activeStation.attribute("ref").toInt());
+        FeatureWrapper *myFeature = OiJob::getFeature(activeStation.attribute("ref").toInt());
         if(myFeature != NULL && myFeature->getStation() != NULL){
             myFeature->getStation()->setActiveStationState(true);
         }else{
@@ -253,8 +253,8 @@ void OiRequestHandler::setActiveStation(OiRequestResponse *request){
 
     //add the new active station to XML response
     QDomElement response = request->response.createElement("activeStation");
-    if(OiFeatureState::getActiveStation() != NULL){
-        response.setAttribute("ref", OiFeatureState::getActiveStation()->getId());
+    if(OiJob::getActiveStation() != NULL){
+        response.setAttribute("ref", OiJob::getActiveStation()->getId());
     }else{
         response.setAttribute("ref", -1);
     }
@@ -275,8 +275,8 @@ void OiRequestHandler::getActiveCoordinateSystem(OiRequestResponse *request){
     this->prepareResponse(request);
 
     QDomElement response = request->response.createElement("activeCoordinateSystem");
-    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
-        response.setAttribute("ref", OiFeatureState::getActiveCoordinateSystem()->getId());
+    if(OiJob::getActiveCoordinateSystem() != NULL){
+        response.setAttribute("ref", OiJob::getActiveCoordinateSystem()->getId());
     }else{
         response.setAttribute("ref", -1);
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveCoordinateSystem);
@@ -301,7 +301,7 @@ void OiRequestHandler::setActiveCoordinateSystem(OiRequestResponse *request){
     //set the active coordinate system
     QDomElement activeCoordinateSystem = request->request.documentElement().firstChildElement("activeCoordinateSystem");
     if(!activeCoordinateSystem.isNull() && activeCoordinateSystem.hasAttribute("ref")){
-        FeatureWrapper *myFeature = OiFeatureState::getFeature(activeCoordinateSystem.attribute("ref").toInt());
+        FeatureWrapper *myFeature = OiJob::getFeature(activeCoordinateSystem.attribute("ref").toInt());
         if(myFeature != NULL && myFeature->getCoordinateSystem() != NULL){
             myFeature->getCoordinateSystem()->setActiveCoordinateSystemState(true);
         }else{
@@ -313,8 +313,8 @@ void OiRequestHandler::setActiveCoordinateSystem(OiRequestResponse *request){
 
     //add the new active coordinate system to XML response
     QDomElement response = request->response.createElement("activeCoordinateSystem");
-    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
-        response.setAttribute("ref", OiFeatureState::getActiveCoordinateSystem()->getId());
+    if(OiJob::getActiveCoordinateSystem() != NULL){
+        response.setAttribute("ref", OiJob::getActiveCoordinateSystem()->getId());
     }else{
         response.setAttribute("ref", -1);
     }
@@ -335,28 +335,28 @@ void OiRequestHandler::aim(OiRequestResponse *request){
     this->prepareResponse(request);
 
     //check if active feature is valid
-    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+    if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL){
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveFeature);
         emit this->sendResponse(request);
         return;
     }
 
     //check if sensor is valid
-    if(OiFeatureState::getActiveStation() == NULL || OiFeatureState::getActiveStation()->coordSys == NULL){
+    if(OiJob::getActiveStation() == NULL || OiJob::getActiveStation()->coordSys == NULL){
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveStation);
         emit this->sendResponse(request);
         return;
     }
 
     //check if active coordinate system is valid
-    if(OiFeatureState::getActiveCoordinateSystem() == NULL){
+    if(OiJob::getActiveCoordinateSystem() == NULL){
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveCoordinateSystem);
         emit this->sendResponse(request);
         return;
     }
 
     //get XYZ coordinates of the active feature
-    OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+    OiVec xyz = OiJob::getActiveFeature()->getGeometry()->getXYZ();
     if(xyz.getSize() < 3){
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveFeature);
         emit this->sendResponse(request);
@@ -367,13 +367,13 @@ void OiRequestHandler::aim(OiRequestResponse *request){
     OiVec polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
 
     //if the station system and the active system are not the same the polar elements have to be converted
-    if(OiFeatureState::getActiveStation()->coordSys != OiFeatureState::getActiveCoordinateSystem()){
+    if(OiJob::getActiveStation()->coordSys != OiJob::getActiveCoordinateSystem()){
 
         //get homogeneous matrix (from station system to active system)
         int success = false;
-        QList<TrafoParam *> trafoParams = OiFeatureState::getActiveStation()->coordSys->getTransformationParameters();
+        QList<TrafoParam *> trafoParams = OiJob::getActiveStation()->coordSys->getTransformationParameters();
         foreach(TrafoParam *tp, trafoParams){
-            if(tp != NULL && tp->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
+            if(tp != NULL && tp->getDestinationSystem() == OiJob::getActiveCoordinateSystem()){
                 OiMat t = tp->getHomogenMatrix();
                 if(t.getColCount() == 4 && t.getRowCount() == 4){
                     xyz = t.inv() * xyz;
@@ -394,7 +394,7 @@ void OiRequestHandler::aim(OiRequestResponse *request){
     }
 
     //start aiming the active feature
-    OiFeatureState::getActiveStation()->emitStartMove(polarElements.getAt(0), polarElements.getAt(1), polarElements.getAt(2), false);
+    OiJob::getActiveStation()->emitStartMove(polarElements.getAt(0), polarElements.getAt(1), polarElements.getAt(2), false);
 
     emit this->sendResponse(request);
 
@@ -414,23 +414,23 @@ void OiRequestHandler::measure(OiRequestResponse *request){
     request->myRequestType = OiRequestResponse::eMeasure;
     this->prepareResponse(request);
 
-    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+    if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL){
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveFeature);
         emit this->sendResponse(request);
         return;
     }
 
-    if(OiFeatureState::getActiveStation() == NULL || OiFeatureState::getActiveStation()->sensorPad == NULL
-            || (OiFeatureState::getActiveStation()->sensorPad != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument == NULL)){
+    if(OiJob::getActiveStation() == NULL || OiJob::getActiveStation()->sensorPad == NULL
+            || (OiJob::getActiveStation()->sensorPad != NULL && OiJob::getActiveStation()->sensorPad->instrument == NULL)){
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveStation);
         emit this->sendResponse(request);
         return;
     }
 
     //if active feature is a nominal create a corresponding actual
-    if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
+    if(OiJob::getActiveFeature()->getGeometry()->getIsNominal()){
 
-        if(OiFeatureState::getActiveFeature()->getGeometry()->getMyActual() != NULL){
+        if(OiJob::getActiveFeature()->getGeometry()->getMyActual() != NULL){
 
         }else{
 
@@ -462,7 +462,7 @@ void OiRequestHandler::measure(OiRequestResponse *request){
             }*/
 
         }
-        OiFeatureState::getActiveFeature()->getGeometry()->getMyActual()->setActiveFeatureState(true);
+        OiJob::getActiveFeature()->getGeometry()->getMyActual()->setActiveFeatureState(true);
 
     }
 
@@ -478,22 +478,22 @@ void OiRequestHandler::measure(OiRequestResponse *request){
             //measure the active feature and set measurement task
             this->myMeasurementTask.request = request;
             this->myMeasurementTask.taskInProcess = true;
-            connect(OiFeatureState::getActiveStation()->sensorPad, SIGNAL(commandFinished(bool)), this, SLOT(measurementFinished(bool)));
-            OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), OiFeatureState::getActiveCoordinateSystem() == OiFeatureState::getActiveStation()->coordSys);
+            connect(OiJob::getActiveStation()->sensorPad, SIGNAL(commandFinished(bool)), this, SLOT(measurementFinished(bool)));
+            OiJob::getActiveStation()->emitStartMeasure(OiJob::getActiveFeature()->getGeometry(), OiJob::getActiveCoordinateSystem() == OiJob::getActiveStation()->coordSys);
             return;
 
         }else{ //use last reading instead of performing a measurement
 
             bool checkActiveCoordSys = false;
-            if (OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+            if (OiJob::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
                 checkActiveCoordSys = true;
             }
 
-            QPair<Configuration::ReadingTypes, Reading*> lastReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getLastReading();
+            QPair<Configuration::ReadingTypes, Reading*> lastReading = OiJob::getActiveStation()->sensorPad->instrument->getLastReading();
 
             Reading *r = new Reading();
             *r = *lastReading.second;
-            OiFeatureState::getActiveStation()->sensorPad->addReading(r, OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
+            OiJob::getActiveStation()->sensorPad->addReading(r, OiJob::getActiveFeature()->getGeometry(), checkActiveCoordSys);
 
         }
 
@@ -536,21 +536,21 @@ void OiRequestHandler::startWatchwindow(OiRequestResponse *request){
     }
 
     //check if active feature exists
-    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+    if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL){
         request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveFeature);
         emit this->sendResponse(request);
         return;
     }
 
-    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL
-            && OiFeatureState::getActiveStation()->sensorPad->instrumentListener != NULL){
+    if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad != NULL
+            && OiJob::getActiveStation()->sensorPad->instrumentListener != NULL){
 
         //connect the reading stream to the request handler
-        connect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener, SIGNAL(sendReadingMap(QVariantMap)),
+        connect(OiJob::getActiveStation()->sensorPad->instrumentListener, SIGNAL(sendReadingMap(QVariantMap)),
                 this, SLOT(receiveWatchWindowData(QVariantMap)));
 
         //start watch window
-        OiFeatureState::getActiveStation()->emitStartReadingStream(myReadingType); //TODO Übergabeparameter
+        OiJob::getActiveStation()->emitStartReadingStream(myReadingType); //TODO Übergabeparameter
 
         //save active watch window task
         this->myWatchWindowTask.taskInProcess = true;
@@ -582,15 +582,15 @@ void OiRequestHandler::stopWatchwindow(OiRequestResponse *request){
     request->myRequestType = OiRequestResponse::eStopWatchwindow;
     this->prepareResponse(request);
 
-    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL
-            && OiFeatureState::getActiveStation()->sensorPad->instrumentListener != NULL){
+    if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad != NULL
+            && OiJob::getActiveStation()->sensorPad->instrumentListener != NULL){
 
         //disconnect the reading stream from the request handler
-        disconnect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener, SIGNAL(sendReadingMap(QVariantMap)),
+        disconnect(OiJob::getActiveStation()->sensorPad->instrumentListener, SIGNAL(sendReadingMap(QVariantMap)),
                 this, SLOT(receiveWatchWindowData(QVariantMap)));
 
         //stop watch window
-        OiFeatureState::getActiveStation()->stopReadingStream();
+        OiJob::getActiveStation()->stopReadingStream();
 
         //reset active watch window task
         this->myWatchWindowTask.taskInProcess = false;
@@ -628,10 +628,10 @@ void OiRequestHandler::prepareResponse(OiRequestResponse *request){
 bool OiRequestHandler::buildWatchWindowMessage(QDomElement &wwTag, int readingType, QVariantMap streamData){
 
     //get xyz of active geometry
-    OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+    OiVec xyz = OiJob::getActiveFeature()->getGeometry()->getXYZ();
 
     //get and transform sensor stream data
-    switch(OiFeatureState::getActiveStation()->getReadingStreamType()){
+    switch(OiJob::getActiveStation()->getReadingStreamType()){
     case Configuration::eCartesian:{
 
         //check if x, y, z are available
@@ -647,8 +647,8 @@ bool OiRequestHandler::buildWatchWindowMessage(QDomElement &wwTag, int readingTy
         streamXyz.setAt(3, 1.0);
 
         //get trafo params and transform sensor xyz
-        if(!OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
-            QList<TrafoParam*> trafoParams = OiFeatureState::getActiveStation()->coordSys->getTransformationParameters(OiFeatureState::getActiveCoordinateSystem());
+        if(!OiJob::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+            QList<TrafoParam*> trafoParams = OiJob::getActiveStation()->coordSys->getTransformationParameters(OiJob::getActiveCoordinateSystem());
             if(trafoParams.size() == 0){
                 return false;
             }
@@ -707,14 +707,14 @@ void OiRequestHandler::receiveWatchWindowData(QVariantMap data){
     }
 
     //check if active feature exists and is a geometry
-    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+    if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL){
         this->myWatchWindowTask.request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eWrongFormat);
         emit this->sendResponse(this->myWatchWindowTask.request);
         return;
     }
 
     //check if active station exists
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         this->myWatchWindowTask.request->response.documentElement().setAttribute("errorCode", OiRequestResponse::eWrongFormat);
         emit this->sendResponse(this->myWatchWindowTask.request);
         return;
@@ -722,8 +722,8 @@ void OiRequestHandler::receiveWatchWindowData(QVariantMap data){
 
     //create feature info tag
     QDomElement featureTag = this->myWatchWindowTask.request->response.createElement("geometry");
-    featureTag.setAttribute("id", OiFeatureState::getActiveFeature()->getFeature()->getId());
-    featureTag.setAttribute("name", OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
+    featureTag.setAttribute("id", OiJob::getActiveFeature()->getFeature()->getId());
+    featureTag.setAttribute("name", OiJob::getActiveFeature()->getFeature()->getFeatureName());
 
     //create tag with watch window data
     QDomElement wwTag = this->myWatchWindowTask.request->response.createElement("cartesian");
@@ -748,7 +748,7 @@ void OiRequestHandler::receiveWatchWindowData(QVariantMap data){
  */
 void OiRequestHandler::measurementFinished(bool success){
 
-    disconnect(OiFeatureState::getActiveStation()->sensorPad, SIGNAL(commandFinished(bool)), this, SLOT(measurementFinished(bool)));
+    disconnect(OiJob::getActiveStation()->sensorPad, SIGNAL(commandFinished(bool)), this, SLOT(measurementFinished(bool)));
 
     this->myMeasurementTask.taskInProcess = false;
 

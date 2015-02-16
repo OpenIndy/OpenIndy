@@ -98,9 +98,9 @@ void NominalDataDialog::showEvent(QShowEvent *event)
 
     this->setLabelText();
 
-    this->setWindowTitle(QString("nominal data of " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
+    this->setWindowTitle(QString("nominal data of " + OiJob::getActiveFeature()->getFeature()->getFeatureName()));
 
-    switch (OiFeatureState::getActiveFeature()->getTypeOfFeature()) {
+    switch (OiJob::getActiveFeature()->getTypeOfFeature()) {
     case Configuration::ePointFeature:
         ui->label_nominalI->setEnabled(false);
         ui->label_nominalJ->setEnabled(false);
@@ -329,7 +329,7 @@ void NominalDataDialog::showEvent(QShowEvent *event)
  */
 void NominalDataDialog::fillGUI(){
 
-    switch (OiFeatureState::getActiveFeature()->getTypeOfFeature()) {
+    switch (OiJob::getActiveFeature()->getTypeOfFeature()) {
     case Configuration::ePointFeature:
         //ui->lineEdit_nominalX->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
         //ui->lineEdit_nominalY->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
@@ -344,12 +344,12 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalTemperature->setText("");
         break;
     case Configuration::ePlaneFeature:
-        ui->lineEdit_nominalX->setText(QString::number(OiFeatureState::getActiveFeature()->getPlane()->xyz.getAt(0),'f',6));
-        ui->lineEdit_nominalY->setText(QString::number(OiFeatureState::getActiveFeature()->getPlane()->xyz.getAt(1),'f',6));
-        ui->lineEdit_nominalZ->setText(QString::number(OiFeatureState::getActiveFeature()->getPlane()->xyz.getAt(2),'f',6));
-        ui->lineEdit_nominalI->setText(QString::number(OiFeatureState::getActiveFeature()->getPlane()->ijk.getAt(0),'f',6));
-        ui->lineEdit_nominalJ->setText(QString::number(OiFeatureState::getActiveFeature()->getPlane()->ijk.getAt(1),'f',6));
-        ui->lineEdit_nominalK->setText(QString::number(OiFeatureState::getActiveFeature()->getPlane()->ijk.getAt(2),'f',6));
+        ui->lineEdit_nominalX->setText(QString::number(OiJob::getActiveFeature()->getPlane()->xyz.getAt(0),'f',6));
+        ui->lineEdit_nominalY->setText(QString::number(OiJob::getActiveFeature()->getPlane()->xyz.getAt(1),'f',6));
+        ui->lineEdit_nominalZ->setText(QString::number(OiJob::getActiveFeature()->getPlane()->xyz.getAt(2),'f',6));
+        ui->lineEdit_nominalI->setText(QString::number(OiJob::getActiveFeature()->getPlane()->ijk.getAt(0),'f',6));
+        ui->lineEdit_nominalJ->setText(QString::number(OiJob::getActiveFeature()->getPlane()->ijk.getAt(1),'f',6));
+        ui->lineEdit_nominalK->setText(QString::number(OiJob::getActiveFeature()->getPlane()->ijk.getAt(2),'f',6));
         ui->lineEdit_nominalMeasurementSeries->setText("");
         ui->lineEdit_nominalR->setText("");
         ui->lineEdit_nominalSAE->setText("");
@@ -357,12 +357,12 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalTemperature->setText("");
         break;
     case Configuration::eLineFeature:
-        ui->lineEdit_nominalX->setText(QString::number(OiFeatureState::getActiveFeature()->getLine()->xyz.getAt(0),'f',6));
-        ui->lineEdit_nominalY->setText(QString::number(OiFeatureState::getActiveFeature()->getLine()->xyz.getAt(1),'f',6));
-        ui->lineEdit_nominalZ->setText(QString::number(OiFeatureState::getActiveFeature()->getLine()->xyz.getAt(2),'f',6));
-        ui->lineEdit_nominalI->setText(QString::number(OiFeatureState::getActiveFeature()->getLine()->ijk.getAt(0),'f',6));
-        ui->lineEdit_nominalJ->setText(QString::number(OiFeatureState::getActiveFeature()->getLine()->ijk.getAt(1),'f',6));
-        ui->lineEdit_nominalK->setText(QString::number(OiFeatureState::getActiveFeature()->getLine()->ijk.getAt(2),'f',6));
+        ui->lineEdit_nominalX->setText(QString::number(OiJob::getActiveFeature()->getLine()->xyz.getAt(0),'f',6));
+        ui->lineEdit_nominalY->setText(QString::number(OiJob::getActiveFeature()->getLine()->xyz.getAt(1),'f',6));
+        ui->lineEdit_nominalZ->setText(QString::number(OiJob::getActiveFeature()->getLine()->xyz.getAt(2),'f',6));
+        ui->lineEdit_nominalI->setText(QString::number(OiJob::getActiveFeature()->getLine()->ijk.getAt(0),'f',6));
+        ui->lineEdit_nominalJ->setText(QString::number(OiJob::getActiveFeature()->getLine()->ijk.getAt(1),'f',6));
+        ui->lineEdit_nominalK->setText(QString::number(OiJob::getActiveFeature()->getLine()->ijk.getAt(2),'f',6));
         ui->lineEdit_nominalMeasurementSeries->setText("");
         ui->lineEdit_nominalR->setText("");
         ui->lineEdit_nominalSAE->setText("");
@@ -370,10 +370,10 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalTemperature->setText("");
         break;
     case Configuration::eSphereFeature:
-        ui->lineEdit_nominalX->setText(QString::number(OiFeatureState::getActiveFeature()->getSphere()->xyz.getAt(0),'f',6));
-        ui->lineEdit_nominalY->setText(QString::number(OiFeatureState::getActiveFeature()->getSphere()->xyz.getAt(1),'f',6));
-        ui->lineEdit_nominalZ->setText(QString::number(OiFeatureState::getActiveFeature()->getSphere()->xyz.getAt(2),'f',6));
-        ui->lineEdit_nominalR->setText(QString::number(OiFeatureState::getActiveFeature()->getSphere()->radius,'f',6));
+        ui->lineEdit_nominalX->setText(QString::number(OiJob::getActiveFeature()->getSphere()->xyz.getAt(0),'f',6));
+        ui->lineEdit_nominalY->setText(QString::number(OiJob::getActiveFeature()->getSphere()->xyz.getAt(1),'f',6));
+        ui->lineEdit_nominalZ->setText(QString::number(OiJob::getActiveFeature()->getSphere()->xyz.getAt(2),'f',6));
+        ui->lineEdit_nominalR->setText(QString::number(OiJob::getActiveFeature()->getSphere()->radius,'f',6));
         ui->lineEdit_nominalMeasurementSeries->setText("");
         ui->lineEdit_nominalSAE->setText("");
         ui->lineEdit_nominalSDE->setText("");
@@ -425,7 +425,7 @@ void NominalDataDialog::fillGUI(){
         ui->lineEdit_nominalI->setText("");
         ui->lineEdit_nominalJ->setText("");
         ui->lineEdit_nominalK->setText("");
-        ui->lineEdit_nominalMeasurementSeries->setText(QString::number(OiFeatureState::getActiveFeature()->getScalarEntityMeasurementSeries()->getSeriesValue(),'f',6));
+        ui->lineEdit_nominalMeasurementSeries->setText(QString::number(OiJob::getActiveFeature()->getScalarEntityMeasurementSeries()->getSeriesValue(),'f',6));
         ui->lineEdit_nominalR->setText("");
         ui->lineEdit_nominalSAE->setText("");
         ui->lineEdit_nominalTemperature->setText("");

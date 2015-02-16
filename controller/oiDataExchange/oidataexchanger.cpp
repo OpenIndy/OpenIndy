@@ -163,7 +163,7 @@ void OiDataExchanger::runDataExchange(){
             }
             myFeature->getGeometry()->setIsSolved(true);
         }
-        OiFeatureState::addFeatures(this->currentTask.projectData.features);
+        OiJob::addFeatures(this->currentTask.projectData.features);
     }
 
 

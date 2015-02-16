@@ -47,14 +47,14 @@ void SimulationController::recalcAll()
     u.humanUncertainties = humanErrorModel->getErrors();
     actualSimulation->setGivenUncertainties(u);
 
-    foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
+    foreach(FeatureWrapper *f, OiJob::getFeatures()){
         if(f->getGeometry() != NULL){
             f->getGeometry()->resetSimulationData();
         }
     }
 
     QMap<Station*,OiMat> matrices;
-    foreach(Station *s, OiFeatureState::getStations()){
+    foreach(Station *s, OiJob::getStations()){
        OiMat A = myUpdater->trafoControl.getTransformationMatrix(s->coordSys);
        if(A.getRowCount()==4 && A.getColCount() == 4){
            matrices.insert(s,A);
@@ -67,7 +67,7 @@ void SimulationController::recalcAll()
 
         newIteration = true;
 
-        foreach(Station *s, OiFeatureState::getStations()){
+        foreach(Station *s, OiJob::getStations()){
             foreach(Observation *o, s->coordSys->getObservations()){
 
                 o->myReading->restoreBackup();
@@ -85,7 +85,7 @@ void SimulationController::recalcAll()
         myUpdater->recalcAll();
 
         if(i < this->iterations){
-            foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
+            foreach(FeatureWrapper *f, OiJob::getFeatures()){
                 if(f->getGeometry() != NULL){
                     f->getGeometry()->saveSimulationData();
                 }
@@ -95,7 +95,7 @@ void SimulationController::recalcAll()
         emit counter(i);
     }
 
-    foreach(FeatureWrapper *f, OiFeatureState::getFeatures()){
+    foreach(FeatureWrapper *f, OiJob::getFeatures()){
         if(f->getPoint() != NULL){
             actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyX);
             actualSimulation->analyseSimulationData(f->getGeometry()->getSimulationData().uncertaintyY);

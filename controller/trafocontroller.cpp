@@ -22,11 +22,11 @@ void TrafoController::transformNewObservations(Observation *obs)
 {
 
     //not used yet!!!
-    if(obs->myStation->coordSys != OiFeatureState::getActiveCoordinateSystem()){
-        TrafoParam *tp = findTrafoParam(obs->myStation->coordSys,OiFeatureState::getActiveCoordinateSystem());
+    if(obs->myStation->coordSys != OiJob::getActiveCoordinateSystem()){
+        TrafoParam *tp = findTrafoParam(obs->myStation->coordSys,OiJob::getActiveCoordinateSystem());
         if(tp != NULL){
             OiMat t;
-            if(tp->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){
+            if(tp->getDestinationSystem() == OiJob::getActiveCoordinateSystem()){
                 t = tp->getHomogenMatrix();
             }else{
                 t = tp->getHomogenMatrix().inv();
@@ -56,7 +56,7 @@ bool TrafoController::transformObservations(CoordinateSystem *from)
 {
     if(from != NULL){
 
-        if(from == OiFeatureState::getActiveCoordinateSystem()){
+        if(from == OiJob::getActiveCoordinateSystem()){
             //set observations valid, because start system is also destination system.
             //No transformation required
             setObservationState(from,true);
@@ -175,9 +175,9 @@ QList<TrafoParam *> TrafoController::sortMovements(QList<TrafoParam *> movements
 void TrafoController::CheckToApplyMovements(CoordinateSystem *from)
 {
     //check if active system is a PART
-    if(OiFeatureState::getCoordinateSystems().contains(OiFeatureState::getActiveCoordinateSystem())){
+    if(OiJob::getCoordinateSystems().contains(OiJob::getActiveCoordinateSystem())){
 
-        QList<Station*> stations = OiFeatureState::getStations();
+        QList<Station*> stations = OiJob::getStations();
 
         for(int i=0;i<stations.size();i++){
             //check if from is a station with observations
@@ -228,7 +228,7 @@ void TrafoController::applyMovements(QList<TrafoParam*> movements, CoordinateSys
     If the real origin of expansion is different from the simulated one, the correction of temperature expansion
     will not be correct and cannot compensate the complete expansion.
     */
-    OiVec expansionOrigin = OiFeatureState::getActiveCoordinateSystem()->getExpansionOrigin();
+    OiVec expansionOrigin = OiJob::getActiveCoordinateSystem()->getExpansionOrigin();
     expansionOrigin.setAt(3,1.0);
 
     for(int i=0; i< movements.size();i++){ //iterate through all movements for this station
@@ -316,7 +316,7 @@ OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
     OiMat trafoMat;
 
    //get transformation parameters to transform
-   TrafoParam *tp = findTrafoParam(from, OiFeatureState::getActiveCoordinateSystem());
+   TrafoParam *tp = findTrafoParam(from, OiJob::getActiveCoordinateSystem());
 
    if(tp != NULL && tp->getIsUsed()){
        //estimate start and destination system of trafo parameter
@@ -345,7 +345,7 @@ OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
                    //watch if the trafo param is active and can  be used in the chain
                    if(t->getisDatumTrafo() && t->getIsUsed()){
                        //check if the start system is the active system
-                       if(t->getStartSystem() == OiFeatureState::getActiveCoordinateSystem()){
+                       if(t->getStartSystem() == OiJob::getActiveCoordinateSystem()){
 
                            OiMat tt = t->getHomogenMatrix().inv();
                            OiMat ttp;
@@ -361,7 +361,7 @@ OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
                            return trafoMat;
 
                         //else if the destination system is the active system
-                       }else if(t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){//check if the destination system is the active system
+                       }else if(t->getDestinationSystem() == OiJob::getActiveCoordinateSystem()){//check if the destination system is the active system
 
                            OiMat tt = t->getHomogenMatrix();
                            OiMat ttp;
@@ -382,7 +382,7 @@ OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
                    //watch if the trafo param is active and can  be used in the chain
                    if(t->getisDatumTrafo() && t->getIsUsed()){
                        //check if start system is the active system
-                       if(t->getStartSystem() == OiFeatureState::getActiveCoordinateSystem()){
+                       if(t->getStartSystem() == OiJob::getActiveCoordinateSystem()){
 
                            OiMat tt = t->getHomogenMatrix().inv();
                            OiMat ttp;
@@ -398,7 +398,7 @@ OiMat TrafoController::getTransformationMatrix(CoordinateSystem *from)
                            return trafoMat;
 
                         //else if the destination system is the active system
-                       }else if(t->getDestinationSystem() == OiFeatureState::getActiveCoordinateSystem()){//check if destination system is the active system
+                       }else if(t->getDestinationSystem() == OiJob::getActiveCoordinateSystem()){//check if destination system is the active system
 
                            OiMat tt = t->getHomogenMatrix();
                            OiMat ttp;

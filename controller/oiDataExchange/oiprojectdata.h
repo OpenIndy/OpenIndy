@@ -6,7 +6,7 @@
 
 #include "featurewrapper.h"
 #include "console.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 //#include "oiprojectexchanger.h"
 
 /*!

@@ -16,7 +16,7 @@ Controller::Controller(QObject *parent) :
     Console::c = c;
 
     //get pointer to state objects
-    this->myFeatureState = OiFeatureState::getInstance();
+    this->myFeatureState = OiJob::getInstance();
     this->myConfigState = OiConfigState::getInstance();
     this->myModelManager = OiModelManager::getInstance();
 
@@ -50,7 +50,7 @@ Controller::Controller(QObject *parent) :
 void Controller::setActiveFeature(const int &featureId){
 
 	//get the selected feature by its id
-    FeatureWrapper *selectedFeature = OiFeatureState::getFeature(featureId);
+    FeatureWrapper *selectedFeature = OiJob::getFeature(featureId);
 	
 	//check if the selected feature exists
     if(selectedFeature == NULL || selectedFeature->getFeature() == NULL){
@@ -75,7 +75,7 @@ void Controller::setActiveStation(const int &featureId)
  * \param featureId
  */
 void Controller::setActiveCoordinateSystem(const int &featureId){
-    OiFeatureState::activateCoordinateSystem(featureId);
+    OiJob::activateCoordinateSystem(featureId);
 }
 
 /*!
@@ -84,7 +84,7 @@ void Controller::setActiveCoordinateSystem(const int &featureId){
  * \param attributes
  */
 void Controller::addFeatures(const FeatureAttributes &attributes){
-    OiFeatureState::addFeatures(attributes);
+    OiJob::addFeatures(attributes);
     Console::addLine("feature creation failed");
 }
 
@@ -100,79 +100,79 @@ void Controller::removeFeature(const int &featureId)
  */
 void Controller::startMeasurement(){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
-    }else if(OiFeatureState::getActiveFeature() == NULL){
+    }else if(OiJob::getActiveFeature() == NULL){
         Console::addLine("no active feature");
         return;
     }
 
     bool checkActiveCoordSys = false;
 
-    if (OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+    if (OiJob::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
         checkActiveCoordSys = true;
     }
 
     if(checkSensorValid() && checkFeatureValid()){
 
-        if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
-            if(!this->generateActualForNominal(OiFeatureState::getActiveFeature())){
+        if(OiJob::getActiveFeature()->getGeometry()->getIsNominal()){
+            if(!this->generateActualForNominal(OiJob::getActiveFeature())){
                 Console::addLine("can not create actual for nominal feature");
                 return;
             }
         }
-        switch (OiFeatureState::getActiveFeature()->getTypeOfFeature()) {
+        switch (OiJob::getActiveFeature()->getTypeOfFeature()) {
         case Configuration::ePlaneFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Plane::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Plane::defaultMeasurementConfig);
             break;
         case Configuration::ePointFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Point::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Point::defaultMeasurementConfig);
             break;
         case Configuration::eLineFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Line::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Line::defaultMeasurementConfig);
             break;
         case Configuration::eSphereFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Sphere::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Sphere::defaultMeasurementConfig);
             break;
         case Configuration::eScalarEntityAngleFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
             break;
         case Configuration::eScalarEntityDistanceFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
             break;
         case Configuration::eCircleFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Circle::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Circle::defaultMeasurementConfig);
             break;
         case Configuration::eConeFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Cone::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Cone::defaultMeasurementConfig);
             break;
         case Configuration::eCylinderFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Cylinder::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Cylinder::defaultMeasurementConfig);
             break;
         case Configuration::eEllipsoidFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
             break;
         case Configuration::eHyperboloidFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
             break;
         case Configuration::eParaboloidFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
             break;
         case Configuration::eNurbsFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(Nurbs::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Nurbs::defaultMeasurementConfig);
             break;
         case Configuration::ePointCloudFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(PointCloud::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(PointCloud::defaultMeasurementConfig);
             break;
         case Configuration::eScalarEntityTemperatureFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
             break;
         case Configuration::eScalarEntityMeasurementSeriesFeature:
-            OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
+            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
             break;
         }
-        OiFeatureState::getActiveStation()->emitStartMeasure(OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
+        OiJob::getActiveStation()->emitStartMeasure(OiJob::getActiveFeature()->getGeometry(), checkActiveCoordSys);
 
         emit sensorWorks("measuring...");
     }
@@ -184,34 +184,34 @@ void Controller::startMeasurement(){
  */
 void Controller::addMeasurement(){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
-    }else if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+    }else if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL){
         Console::addLine("no active feature");
         return;
     }
 
     bool checkActiveCoordSys = false;
 
-    if (OiFeatureState::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
+    if (OiJob::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
         checkActiveCoordSys = true;
     }
 
     if(checkSensorValid() && checkFeatureValid()){
 
-        if(OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
-            if(!this->generateActualForNominal(OiFeatureState::getActiveFeature())){
+        if(OiJob::getActiveFeature()->getGeometry()->getIsNominal()){
+            if(!this->generateActualForNominal(OiJob::getActiveFeature())){
                 Console::addLine("can not create actual for nominal feature");
                 return;
             }
         }
 
-        QPair<Configuration::ReadingTypes, Reading*> lastReading = OiFeatureState::getActiveStation()->sensorPad->instrument->getLastReading();
+        QPair<Configuration::ReadingTypes, Reading*> lastReading = OiJob::getActiveStation()->sensorPad->instrument->getLastReading();
 
         Reading *r = new Reading();
         *r = *lastReading.second;
-        OiFeatureState::getActiveStation()->sensorPad->addReading(r, OiFeatureState::getActiveFeature()->getGeometry(), checkActiveCoordSys);
+        OiJob::getActiveStation()->sensorPad->addReading(r, OiJob::getActiveFeature()->getGeometry(), checkActiveCoordSys);
 
     }
 
@@ -223,17 +223,17 @@ void Controller::addMeasurement(){
  */
 void Controller::startMove(Reading *parameter){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
 
     //TODO check function
     if (parameter->typeofReading == Configuration::ePolar){
-        OiFeatureState::getActiveStation()->emitStartMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
+        OiJob::getActiveStation()->emitStartMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
         emit sensorWorks("moving...");
     }else if (parameter->typeofReading == Configuration::eCartesian){
-        OiFeatureState::getActiveStation()->emitStartMove(parameter->rCartesian.xyz.getAt(0),parameter->rCartesian.xyz.getAt(1),parameter->rCartesian.xyz.getAt(2));
+        OiJob::getActiveStation()->emitStartMove(parameter->rCartesian.xyz.getAt(0),parameter->rCartesian.xyz.getAt(1),parameter->rCartesian.xyz.getAt(2));
         emit sensorWorks("moving...");
     }
 
@@ -242,29 +242,29 @@ void Controller::startMove(Reading *parameter){
 
 void Controller::startAim(){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
-    }else if(OiFeatureState::getActiveFeature() == NULL){
+    }else if(OiJob::getActiveFeature() == NULL){
         Console::addLine("no active feature");
         return;
     }
 
-    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && !OiFeatureState::getActiveFeature()->getGeometry()->getIsSolved()){
+    if(OiJob::getActiveFeature()->getGeometry() != NULL && !OiJob::getActiveFeature()->getGeometry()->getIsSolved()){
         Console::addLine("Cannot aim a unsolved feature.");
         return;
     }
     if(checkFeatureValid() && checkSensorValid()){
 
-        OiVec xyz = OiFeatureState::getActiveFeature()->getGeometry()->getXYZ();
+        OiVec xyz = OiJob::getActiveFeature()->getGeometry()->getXYZ();
         if(xyz.getSize() < 3){
             return;
         }
         OiVec polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
-        if(OiFeatureState::getActiveStation()->coordSys != OiFeatureState::getActiveCoordinateSystem()){
+        if(OiJob::getActiveStation()->coordSys != OiJob::getActiveCoordinateSystem()){
 
             //get homogeneous matrix from "from- coordsys" to active coord system
-            OiMat t = FeatureUpdater::trafoControl.getTransformationMatrix(OiFeatureState::getActiveStation()->coordSys);
+            OiMat t = FeatureUpdater::trafoControl.getTransformationMatrix(OiJob::getActiveStation()->coordSys);
             //if matrix is valid
             if(t.getColCount() == 4 && t.getRowCount() == 4){
                 OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
@@ -298,7 +298,7 @@ void Controller::startAim(){
 
         }
 
-        OiFeatureState::getActiveStation()->emitStartMove(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2),false);
+        OiJob::getActiveStation()->emitStartMove(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2),false);
         emit sensorWorks("moving...");
     }
 
@@ -310,11 +310,11 @@ void Controller::startAim(){
  */
 void Controller::startConnect(){
 
-    if(OiFeatureState::getActiveStation() != NULL){
-        if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-            OiFeatureState::getActiveStation()->emitStartConnect(OiFeatureState::getActiveStation()->getInstrumentConfig().connConfig);
+    if(OiJob::getActiveStation() != NULL){
+        if(OiJob::getActiveStation()->sensorPad->instrument != NULL){
+            OiJob::getActiveStation()->emitStartConnect(OiJob::getActiveStation()->getInstrumentConfig().connConfig);
             emit sensorWorks("connecting...");
-            OiSensorEmitter *s = OiFeatureState::getActiveStation()->getActiveSensorEmitter();
+            OiSensorEmitter *s = OiJob::getActiveStation()->getActiveSensorEmitter();
             connect(s,SIGNAL(sendConnectionStat(bool)),this,SLOT(sendIsConnected(bool)));
             connect(s,SIGNAL(sendIsReadyForMeasurement(int,QString)),this,SLOT(sendSensorState(int,QString)));
         }else{
@@ -330,16 +330,16 @@ void Controller::startConnect(){
  */
 void Controller::startDisconnect(){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
 
     if(checkSensorValid()){
-        OiSensorEmitter *s = OiFeatureState::getActiveStation()->getActiveSensorEmitter();
+        OiSensorEmitter *s = OiJob::getActiveStation()->getActiveSensorEmitter();
         disconnect(s,SIGNAL(sendConnectionStat(bool)),this,SLOT(sendIsConnected(bool)));
         disconnect(s,SIGNAL(sendIsReadyForMeasurement(int,QString)),this,SLOT(sendSensorState(int,QString)));
-        OiFeatureState::getActiveStation()->emitStartDisconnect();
+        OiJob::getActiveStation()->emitStartDisconnect();
         emit sensorWorks("disconnecting...");
         emit sensorDisconnected();
     }
@@ -351,13 +351,13 @@ void Controller::startDisconnect(){
  */
 void Controller::startToggleSight(){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
 
     if(checkSensorValid()){
-        OiFeatureState::getActiveStation()->emitStartToggleSight();
+        OiJob::getActiveStation()->emitStartToggleSight();
         emit sensorWorks("toggle sight...");
     }
 }
@@ -368,13 +368,13 @@ void Controller::startToggleSight(){
  */
 void Controller::startInitialize(){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
 
     if(checkSensorValid()){
-        OiFeatureState::getActiveStation()->emitStartInitialize();
+        OiJob::getActiveStation()->emitStartInitialize();
         emit sensorWorks("initialize...");
     }
 }
@@ -385,13 +385,13 @@ void Controller::startInitialize(){
  */
 void Controller::startHome(){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
 
     if(checkSensorValid()){
-        OiFeatureState::getActiveStation()->emitStartHome();
+        OiJob::getActiveStation()->emitStartHome();
         emit sensorWorks("home...");
     }
 }
@@ -402,13 +402,13 @@ void Controller::startHome(){
  */
 void Controller::startCompensation(){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
 
     if(checkSensorValid()){
-        OiFeatureState::getActiveStation()->emitStartCompensation();
+        OiJob::getActiveStation()->emitStartCompensation();
         emit sensorWorks("compensation...");
     }
 }
@@ -419,13 +419,13 @@ void Controller::startCompensation(){
  */
 void Controller::startChangeMotorState(){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
 
     if(checkSensorValid()){
-        OiFeatureState::getActiveStation()->emitStartMotorState();
+        OiJob::getActiveStation()->emitStartMotorState();
         emit sensorWorks("change motor state...");
     }
 }
@@ -436,13 +436,13 @@ void Controller::startChangeMotorState(){
  */
 void Controller::startCustomAction(const QString &s)
 {
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
 
     emit sensorWorks(s);
-    OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
+    OiJob::getActiveStation()->emitSelfDefinedAction(s);
 }
 
 
@@ -484,7 +484,7 @@ void Controller::connectModels(){
         connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this, SLOT(setUpCoordinateSystemsModel()));
 
         //save project each time when observations were added
-        connect(OiFeatureState::getInstance(), SIGNAL(systemObservationsAdded()), this, SLOT(saveProject()));
+        connect(OiJob::getInstance(), SIGNAL(systemObservationsAdded()), this, SLOT(saveProject()));
 
         //connect(this, SIGNAL(refreshGUI()), this->tblModel, SLOT(updateModel()));
 
@@ -804,20 +804,20 @@ void Controller::savePluginData(PluginMetaData* metaInfo){
  */
 void Controller::receiveSensorConfiguration(SensorConfiguration sc, bool connect){
 
-    if(OiFeatureState::getActiveStation() == NULL){
+    if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
 
-    OiFeatureState::getActiveStation()->sensorPad->instrument = sc.mySensor;
-    QObject::connect(&OiFeatureState::getActiveStation()->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
+    OiJob::getActiveStation()->sensorPad->instrument = sc.mySensor;
+    QObject::connect(&OiJob::getActiveStation()->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
     updateFeatureMConfig();
 
     if(connect){
-        OiFeatureState::getActiveStation()->setInstrumentConfig(sc);
+        OiJob::getActiveStation()->setInstrumentConfig(sc);
         this->startConnect();
     }else{
-        OiFeatureState::getActiveStation()->setInstrumentConfig(sc);
+        OiJob::getActiveStation()->setInstrumentConfig(sc);
     }
 
 }
@@ -855,8 +855,8 @@ void Controller::createFunction(int index){
  * \param index
  */
 void Controller::deleteFunctionFromFeature(int index){
-    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
-        Feature *activeFeature = OiFeatureState::getActiveFeature()->getFeature();
+    if(OiJob::getActiveFeature() != NULL && OiJob::getActiveFeature()->getFeature() != NULL){
+        Feature *activeFeature = OiJob::getActiveFeature()->getFeature();
         if(activeFeature->getFunctions().size() > index){
             //the first function of a feature can only be deleted if it is the only function
             if(activeFeature->getFunctions().size() > 1 && index == 0){
@@ -873,8 +873,8 @@ void Controller::deleteFunctionFromFeature(int index){
 }
 
 bool Controller::checkFeatureValid(){
-    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
-        if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry() != OiFeatureState::getActiveStation()->position){
+    if(OiJob::getActiveFeature() != NULL && OiJob::getActiveFeature()->getFeature() != NULL){
+        if(OiJob::getActiveFeature()->getGeometry() != NULL && OiJob::getActiveFeature()->getGeometry() != OiJob::getActiveStation()->position){
             return true;
         }else{
             Console::addLine("you cannot measure this feature");
@@ -888,8 +888,8 @@ bool Controller::checkFeatureValid(){
 
 bool Controller::checkSensorValid(){
 
-    if(OiFeatureState::getActiveStation() != NULL){
-        if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+    if(OiJob::getActiveStation() != NULL){
+        if(OiJob::getActiveStation()->sensorPad->instrument != NULL){
             return true;
         }else{
             Console::addLine("sensor not connected");
@@ -1190,10 +1190,10 @@ bool Controller::checkSensorValid(){
  * \param elementIndex
  */
 void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex, int elementIndex){
-    if(element != NULL && functionIndex >= 0 && elementIndex >= 0 && OiFeatureState::getActiveFeature() != NULL){
+    if(element != NULL && functionIndex >= 0 && elementIndex >= 0 && OiJob::getActiveFeature() != NULL){
         //check circle warning recursively
         if(element->getIsFeature() && element->getFeature() != NULL && element->getFeature()->getFeature() != NULL
-                && this->checkCircleWarning(OiFeatureState::getActiveFeature()->getFeature(), element->getFeature()->getFeature())){
+                && this->checkCircleWarning(OiJob::getActiveFeature()->getFeature(), element->getFeature()->getFeature())){
             Console::addLine(QString("%1 %2")
                              .arg("You cannot use a feature for the calculation, which itself is directly or indirectly")
                              .arg("dependent on the feature to be calculated."));
@@ -1203,7 +1203,7 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
             return;
         }
         //get pointer to active feature and add used element
-        Feature *feature = OiFeatureState::getActiveFeature()->getFeature();
+        Feature *feature = OiJob::getActiveFeature()->getFeature();
         if(feature->getFunctions().size() > functionIndex && feature->getFunctions().at(functionIndex)->getNeededElements().size() > elementIndex){
             if(element->getIsFeature() && element->getFeature() != NULL && element->getFeature()->getFeature() != NULL){
                 switch(element->getFeature()->getTypeOfFeature()){
@@ -1270,7 +1270,7 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
                 }
                 //set usedFor and previouslyNeeded for active feature and used element
                 feature->previouslyNeeded.append(element->getFeature());
-                element->getFeature()->getFeature()->usedFor.append(OiFeatureState::getActiveFeature());
+                element->getFeature()->getFeature()->usedFor.append(OiJob::getActiveFeature());
             }else if(element->getIsReading() && element->getReading() != NULL){
                 switch(element->getReading()->typeofReading){
                     case Configuration::eCartesian:
@@ -1299,7 +1299,7 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
                 feature->getFunctions().at(functionIndex)->addObservation(element->getObservation(), elementIndex);
 
                 //if feature is a geometry add the observation to the list of observations in class geometry
-                Geometry *geom = OiFeatureState::getActiveFeature()->getGeometry();
+                Geometry *geom = OiJob::getActiveFeature()->getGeometry();
                 if(geom != NULL){
                     geom->addObservation(element->getObservation());
                     geom->getObservations().last()->myTargetGeometries.append(geom);
@@ -1318,8 +1318,8 @@ void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex
  * \param elementIndex
  */
 void Controller::removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex){
-    if(element != NULL && functionIndex >= 0 && OiFeatureState::getActiveFeature() != NULL){
-        Feature *feature = OiFeatureState::getActiveFeature()->getFeature();
+    if(element != NULL && functionIndex >= 0 && OiJob::getActiveFeature() != NULL){
+        Feature *feature = OiJob::getActiveFeature()->getFeature();
         if(feature->getFunctions().size() > functionIndex && feature->getFunctions().at(functionIndex) != NULL){
             if(element->getIsFeature() && element->getFeature() != NULL && element->getFeature()->getFeature() != NULL){
                 switch(element->getFeature()->getTypeOfFeature()){
@@ -1376,11 +1376,11 @@ void Controller::removeElementFromFunction(FeatureTreeItem *element, int functio
                 }
                 //set usedFor and previouslyNeeded for active feature and used element
                 feature->previouslyNeeded.removeOne(element->getFeature());
-                element->getFeature()->getFeature()->usedFor.removeOne(OiFeatureState::getActiveFeature());
+                element->getFeature()->getFeature()->usedFor.removeOne(OiJob::getActiveFeature());
             }else if(element->getIsObservation() && element->getObservation() != NULL){
                 feature->getFunctions().at(functionIndex)->removeObservation(element->getObservation()->getId());
-                if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-                    element->getObservation()->myTargetGeometries.removeOne(OiFeatureState::getActiveFeature()->getGeometry());
+                if(OiJob::getActiveFeature()->getGeometry() != NULL){
+                    element->getObservation()->myTargetGeometries.removeOne(OiJob::getActiveFeature()->getGeometry());
                 }
             }else if(element->getIsReading() && element->getReading() != NULL){
                 switch(element->getReading()->typeofReading){
@@ -1435,7 +1435,7 @@ int Controller::checkActiveFeatureIndex(int current, int index){
     int featureIndex = 0;
 
     for (current; current <= index; current++){
-        if(OiFeatureState::getFeatures().at(current)->getTrafoParam() != NULL){
+        if(OiJob::getFeatures().at(current)->getTrafoParam() != NULL){
             trafoParamCount += 1;
         }
     }
@@ -1454,45 +1454,45 @@ int Controller::checkActiveFeatureIndex(int current, int index){
  */
 void Controller::getNominalValues(NominalAttributeExchange nominalValue){
 
-    switch (OiFeatureState::getActiveFeature()->getTypeOfFeature()) {
+    switch (OiJob::getActiveFeature()->getTypeOfFeature()) {
     case Configuration::ePointFeature:
-        OiFeatureState::getActiveFeature()->getPoint()->xyz.setAt(0,nominalValue.nomX);
-        OiFeatureState::getActiveFeature()->getPoint()->xyz.setAt(1,nominalValue.nomY);
-        OiFeatureState::getActiveFeature()->getPoint()->xyz.setAt(2,nominalValue.nomZ);
+        OiJob::getActiveFeature()->getPoint()->xyz.setAt(0,nominalValue.nomX);
+        OiJob::getActiveFeature()->getPoint()->xyz.setAt(1,nominalValue.nomY);
+        OiJob::getActiveFeature()->getPoint()->xyz.setAt(2,nominalValue.nomZ);
         break;
     case Configuration::ePlaneFeature:
-        OiFeatureState::getActiveFeature()->getPlane()->xyz.setAt(0,nominalValue.nomX);
-        OiFeatureState::getActiveFeature()->getPlane()->xyz.setAt(1,nominalValue.nomY);
-        OiFeatureState::getActiveFeature()->getPlane()->xyz.setAt(2,nominalValue.nomZ);
-        OiFeatureState::getActiveFeature()->getPlane()->ijk.setAt(0,nominalValue.nomI);
-        OiFeatureState::getActiveFeature()->getPlane()->ijk.setAt(1,nominalValue.nomJ);
-        OiFeatureState::getActiveFeature()->getPlane()->ijk.setAt(2,nominalValue.nomK);
+        OiJob::getActiveFeature()->getPlane()->xyz.setAt(0,nominalValue.nomX);
+        OiJob::getActiveFeature()->getPlane()->xyz.setAt(1,nominalValue.nomY);
+        OiJob::getActiveFeature()->getPlane()->xyz.setAt(2,nominalValue.nomZ);
+        OiJob::getActiveFeature()->getPlane()->ijk.setAt(0,nominalValue.nomI);
+        OiJob::getActiveFeature()->getPlane()->ijk.setAt(1,nominalValue.nomJ);
+        OiJob::getActiveFeature()->getPlane()->ijk.setAt(2,nominalValue.nomK);
         break;
     case Configuration::eLineFeature:
-        OiFeatureState::getActiveFeature()->getLine()->xyz.setAt(0,nominalValue.nomX);
-        OiFeatureState::getActiveFeature()->getLine()->xyz.setAt(1,nominalValue.nomY);
-        OiFeatureState::getActiveFeature()->getLine()->xyz.setAt(2,nominalValue.nomZ);
-        OiFeatureState::getActiveFeature()->getLine()->ijk.setAt(0,nominalValue.nomI);
-        OiFeatureState::getActiveFeature()->getLine()->ijk.setAt(1,nominalValue.nomJ);
-        OiFeatureState::getActiveFeature()->getLine()->ijk.setAt(2,nominalValue.nomK);
+        OiJob::getActiveFeature()->getLine()->xyz.setAt(0,nominalValue.nomX);
+        OiJob::getActiveFeature()->getLine()->xyz.setAt(1,nominalValue.nomY);
+        OiJob::getActiveFeature()->getLine()->xyz.setAt(2,nominalValue.nomZ);
+        OiJob::getActiveFeature()->getLine()->ijk.setAt(0,nominalValue.nomI);
+        OiJob::getActiveFeature()->getLine()->ijk.setAt(1,nominalValue.nomJ);
+        OiJob::getActiveFeature()->getLine()->ijk.setAt(2,nominalValue.nomK);
         break;
     case Configuration::eSphereFeature:
-        OiFeatureState::getActiveFeature()->getSphere()->xyz.setAt(0,nominalValue.nomX);
-        OiFeatureState::getActiveFeature()->getSphere()->xyz.setAt(1,nominalValue.nomY);
-        OiFeatureState::getActiveFeature()->getSphere()->xyz.setAt(2,nominalValue.nomZ);
-        OiFeatureState::getActiveFeature()->getSphere()->radius = nominalValue.nomR;
+        OiJob::getActiveFeature()->getSphere()->xyz.setAt(0,nominalValue.nomX);
+        OiJob::getActiveFeature()->getSphere()->xyz.setAt(1,nominalValue.nomY);
+        OiJob::getActiveFeature()->getSphere()->xyz.setAt(2,nominalValue.nomZ);
+        OiJob::getActiveFeature()->getSphere()->radius = nominalValue.nomR;
         break;
     case Configuration::eScalarEntityAngleFeature:
-        OiFeatureState::getActiveFeature()->getScalarEntityAngle()->setAngle(nominalValue.nomSAE);
+        OiJob::getActiveFeature()->getScalarEntityAngle()->setAngle(nominalValue.nomSAE);
         break;
     case Configuration::eScalarEntityDistanceFeature:
-        OiFeatureState::getActiveFeature()->getScalarEntityDistance()->setDistance(nominalValue.nomSDE);
+        OiJob::getActiveFeature()->getScalarEntityDistance()->setDistance(nominalValue.nomSDE);
         break;
     case Configuration::eScalarEntityTemperatureFeature:
-        OiFeatureState::getActiveFeature()->getScalarEntityTemperature()->setTemperature(nominalValue.nomSTE);
+        OiJob::getActiveFeature()->getScalarEntityTemperature()->setTemperature(nominalValue.nomSTE);
         break;
     case Configuration::eScalarEntityMeasurementSeriesFeature:
-        OiFeatureState::getActiveFeature()->getScalarEntityMeasurementSeries()->setSeriesValue(nominalValue.nomSMSE);
+        OiJob::getActiveFeature()->getScalarEntityMeasurementSeries()->setSeriesValue(nominalValue.nomSMSE);
         break;
     default:
         break;
@@ -1506,9 +1506,9 @@ void Controller::getNominalValues(NominalAttributeExchange nominalValue){
  * \param config
  */
 void Controller::setFunctionConfiguration(int functionIndex, FunctionConfiguration config){
-    if(OiFeatureState::getActiveFeature() != NULL && functionIndex >= 0 &&
-            OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex){
-        OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->setFunctionConfiguration(config);
+    if(OiJob::getActiveFeature() != NULL && functionIndex >= 0 &&
+            OiJob::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex){
+        OiJob::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->setFunctionConfiguration(config);
     }
 }
 
@@ -1696,11 +1696,11 @@ void Controller::printToConsole(QString message){
  */
 void Controller::updateFeatureMConfig()
 {
-    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL &&
-            OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL &&
-            OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->size() >0){
+    if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad->instrument != NULL &&
+            OiJob::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL &&
+            OiJob::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->size() >0){
 
-        QList<Configuration::ReadingTypes> readingTypes = *OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
+        QList<Configuration::ReadingTypes> readingTypes = *OiJob::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
 
         //Check and edit lastMConfig
         /*bool contains = false;
@@ -1840,17 +1840,17 @@ void Controller::deleteFeatures(QList<FeatureWrapper*> myFeatures){
     bool activeCheck = true; //the active station cannot be deleted
     bool displayCheck = true; //the display coordinate system cannot be deleted
     foreach(FeatureWrapper *f, this->featuresToDelete){
-        if(f->getStation() != NULL && f->getStation() == OiFeatureState::getActiveStation()){ //do not delete active station
+        if(f->getStation() != NULL && f->getStation() == OiJob::getActiveStation()){ //do not delete active station
             activeCheck = false;
             break;
-        }else if(f->getCoordinateSystem() != NULL && f->getCoordinateSystem() == OiFeatureState::getActiveCoordinateSystem()){ //do not delete display coordinate system
+        }else if(f->getCoordinateSystem() != NULL && f->getCoordinateSystem() == OiJob::getActiveCoordinateSystem()){ //do not delete display coordinate system
             displayCheck = false;
             break;
         }else if(f->getStation() != NULL || f->getCoordinateSystem() != NULL){
             countCoordSys++;
         }
     }
-    if(countCoordSys >= (OiFeatureState::getStations().size() + OiFeatureState::getCoordinateSystems().size())){
+    if(countCoordSys >= (OiJob::getStations().size() + OiJob::getCoordinateSystems().size())){
         countCheck = false;
     }
 
@@ -1894,7 +1894,7 @@ void Controller::deleteFeaturesCallback(bool command){
 
                 //clear active feature and set it to active station
                 if(delFeature->getFeature()->getIsActiveFeature()){
-                    foreach(Station *myStation, OiFeatureState::getStations()){
+                    foreach(Station *myStation, OiJob::getStations()){
                         if(myStation != NULL && myStation->getIsActiveStation()){
                             myStation->setActiveFeatureState(true);
                             break;
@@ -1903,7 +1903,7 @@ void Controller::deleteFeaturesCallback(bool command){
                 }
 
                 //remove the feature and all dependencies
-                OiFeatureState::removeFeature(delFeature);
+                OiJob::removeFeature(delFeature);
 
                 //remove feature from lists
                 /*OiFeatureState::
@@ -2039,5 +2039,5 @@ QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
  * \param group
  */
 void Controller::setActiveGroup(const QString &group){
-    OiFeatureState::setActiveGroup(group);
+    OiJob::setActiveGroup(group);
 }

@@ -103,13 +103,13 @@ void FeatureUpdater::recalcTrafoParam(TrafoParam *tp){
  */
 void FeatureUpdater::recalcFeatureSet(){
     //set all features to not have been updated
-    foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
+    foreach(FeatureWrapper *feature, OiJob::getFeatures()){
         if(feature != NULL && feature->getFeature() != NULL){
             feature->getFeature()->setIsUpdated(false);
         }
     }
     //recalc recursively
-    foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
+    foreach(FeatureWrapper *feature, OiJob::getFeatures()){
         if(feature != NULL && feature->getFeature() != NULL){
             if(!feature->getFeature()->getIsUpdated() && feature->getTrafoParam() == NULL){
                 this->recalcFeature(feature->getFeature());
@@ -129,20 +129,20 @@ void FeatureUpdater::recalcFeatureSet(){
 void FeatureUpdater::switchCoordinateSystem(CoordinateSystem *to){
     if(to != NULL){
         //transform all observations to current coordinate system
-        foreach(CoordinateSystem* cs, OiFeatureState::getCoordinateSystems()){
+        foreach(CoordinateSystem* cs, OiJob::getCoordinateSystems()){
             if(cs != NULL){
                 //cs->transformObservations(to);
                 trafoControl.transformObservations(cs);
             }
         }
-        foreach(Station* s, OiFeatureState::getStations()){
+        foreach(Station* s, OiJob::getStations()){
             if(s != NULL && s->coordSys != NULL){
                 //s->coordSys->transformObservations(to);
                 trafoControl.transformObservations(s->coordSys);
             }
         }
         //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
-        foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
+        foreach(FeatureWrapper *feature, OiJob::getFeatures()){
             if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()
                     && feature->getGeometry()->getNominalSystem() != to){
                 feature->getGeometry()->setIsSolved(false);
@@ -165,7 +165,7 @@ void FeatureUpdater::switchCoordinateSystem(CoordinateSystem *to){
 void FeatureUpdater::switchCoordinateSystemWithoutTransformation(CoordinateSystem *to){
     if(to != NULL){
         //set all observation to target coordinate system
-        foreach(CoordinateSystem* cs, OiFeatureState::getCoordinateSystems()){
+        foreach(CoordinateSystem* cs, OiJob::getCoordinateSystems()){
             if(cs != NULL){
                 if(cs == to){ //if cs is the target coordinate system
                     //cs->setObservationState(true);
@@ -176,7 +176,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(CoordinateSyste
                 }
             }
         }
-        foreach(Station* s, OiFeatureState::getStations()){
+        foreach(Station* s, OiJob::getStations()){
             if(s != NULL && s->coordSys != NULL){
                 if(s->coordSys == to){ //if cs is the target coordinate system
                     //s->coordSys->setObservationState(true);
@@ -188,7 +188,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(CoordinateSyste
             }
         }
         //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
-        foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
+        foreach(FeatureWrapper *feature, OiJob::getFeatures()){
             if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()
                     && feature->getGeometry()->getNominalSystem() != to){
                 feature->getGeometry()->setIsSolved(false);
@@ -208,7 +208,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(CoordinateSyste
  */
 void FeatureUpdater::switchCoordinateSystemWithoutMovement(CoordinateSystem *to)
 {
-    foreach (CoordinateSystem *cs, OiFeatureState::getCoordinateSystems()) {
+    foreach (CoordinateSystem *cs, OiJob::getCoordinateSystems()) {
         if(cs != NULL){
             if(cs == to){
                 trafoControl.setObservationState(cs,true);
@@ -218,7 +218,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutMovement(CoordinateSystem *to)
         }
     }
 
-    foreach (Station *s, OiFeatureState::getStations()) {
+    foreach (Station *s, OiJob::getStations()) {
         if(s != NULL && s->coordSys != NULL){
             if(s->coordSys == to){
                 trafoControl.setObservationState(s->coordSys,true);
@@ -229,7 +229,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutMovement(CoordinateSystem *to)
     }
 
     //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
-    foreach(FeatureWrapper *feature, OiFeatureState::getFeatures()){
+    foreach(FeatureWrapper *feature, OiJob::getFeatures()){
         if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()
                 && feature->getGeometry()->getNominalSystem() != to){
             feature->getGeometry()->setIsSolved(false);
@@ -260,7 +260,7 @@ void FeatureUpdater::recalcAll()
 {
     QMap<int,bool> solvedSystems;
 
-    foreach(CoordinateSystem *c, OiFeatureState::getCoordinateSystems()){
+    foreach(CoordinateSystem *c, OiJob::getCoordinateSystems()){
         foreach(TrafoParam *t, c->getTransformationParameters()){
             if(!solvedSystems.contains(t->getId())){
                FeatureUpdater::recalcTrafoParam(t);
@@ -269,7 +269,7 @@ void FeatureUpdater::recalcAll()
         }
     }
 
-    foreach(Station *s, OiFeatureState::getStations()){
+    foreach(Station *s, OiJob::getStations()){
         foreach(TrafoParam *t, s->coordSys->getTransformationParameters()){
             if(!solvedSystems.contains(t->getId())){
                FeatureUpdater::recalcTrafoParam(t);
@@ -489,7 +489,7 @@ void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, Tr
 
         //if coord sys needs to be re-switched
         if(!actualSystem->getIsActiveCoordinateSystem()){
-            this->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
+            this->switchCoordinateSystem(OiJob::getActiveCoordinateSystem());
         }
     }
 }
@@ -602,7 +602,7 @@ void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, Tr
 
     //if coord sys needs to be re-switched
     if(!tp->getDestinationSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
+        this->switchCoordinateSystem(OiJob::getActiveCoordinateSystem());
     }
 }
 
@@ -620,7 +620,7 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
     SortListByName mySorter;
 
     //can only be calculated when active coord system is a PART
-    this->switchCoordinateSystemWithoutMovement(OiFeatureState::getActiveCoordinateSystem());
+    this->switchCoordinateSystemWithoutMovement(OiJob::getActiveCoordinateSystem());
 
     QDateTime startTime;
 
@@ -692,7 +692,7 @@ void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *functi
 
     //if coord sys needs to be re-switched
     if(!tp->getStartSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
+        this->switchCoordinateSystem(OiJob::getActiveCoordinateSystem());
     }
 
     //recalc featureSet, because some observations are disabled. So the feature uses all its observations again now

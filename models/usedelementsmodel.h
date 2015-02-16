@@ -6,7 +6,7 @@
 #include <QPixmap>
 #include <QList>
 
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 #include "featuretreeitem.h"
 #include "function.h"
 

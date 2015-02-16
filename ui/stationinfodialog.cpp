@@ -23,10 +23,10 @@ void StationInfoDialog::showEvent(QShowEvent *event)
     ui->checkBox_connectionChanged->setChecked(false);
 
     ui->label_activeSensor->setText("no sensor connected");
-    this->setWindowTitle(QString("information abaout " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
-    if(OiFeatureState::getActiveFeature()->getStation() != NULL && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL){
-        ui->label_activeSensor->setText(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getMetaData()->name);
-        ui->lineEdit_configName->setText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().getName());
+    this->setWindowTitle(QString("information abaout " + OiJob::getActiveFeature()->getFeature()->getFeatureName()));
+    if(OiJob::getActiveFeature()->getStation() != NULL && OiJob::getActiveFeature()->getStation()->sensorPad->instrument != NULL){
+        ui->label_activeSensor->setText(OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getMetaData()->name);
+        ui->lineEdit_configName->setText(OiJob::getActiveFeature()->getStation()->getInstrumentConfig().getName());
         getReadingType();
         getSensorConfiguration();
         getSensorParameters();
@@ -48,12 +48,12 @@ void StationInfoDialog::closeEvent(QCloseEvent *event)
 void StationInfoDialog::on_toolButton_ok_clicked()
 {
     if(ui->checkBox_connectionChanged->isChecked()){
-        if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getConnectionState()){
+        if(OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getConnectionState()){
             emit disconnectSensor();
         }
         //OiFeatureState::getActiveFeature()->getStation()->startDisconnect();
         initSensorConfiguration();
-        OiFeatureState::getActiveFeature()->getStation()->setInstrumentConfig(this->sensorConfig);
+        OiJob::getActiveFeature()->getStation()->setInstrumentConfig(this->sensorConfig);
 
         QMessageBox msgBox;
         msgBox.setText("Sensor disconnected, because connection config changed.");
@@ -75,7 +75,7 @@ void StationInfoDialog::on_toolButton_ok_clicked()
 
     }else{
         initSensorConfiguration();
-        OiFeatureState::getActiveFeature()->getStation()->setInstrumentConfig(this->sensorConfig);
+        OiJob::getActiveFeature()->getStation()->setInstrumentConfig(this->sensorConfig);
     }
     this->close();
 }
@@ -120,10 +120,10 @@ void StationInfoDialog::getSensorConfiguration()
  */
 void StationInfoDialog::getReadingType()
 {
-    if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL
-            && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
+    if(OiJob::getActiveFeature()->getStation()->sensorPad->instrument != NULL
+            && OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
 
-        QList<Configuration::ReadingTypes> readingTypes = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getSupportedReadingTypes();
+        QList<Configuration::ReadingTypes> readingTypes = *OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getSupportedReadingTypes();
 
         for(int i=0; i<readingTypes.size();i++){
 
@@ -168,11 +168,11 @@ void StationInfoDialog::getReadingType()
                 break;
             case Configuration::eUndefined:
 
-                if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getDefaultAccuracy() != NULL){
+                if(OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getDefaultAccuracy() != NULL){
 
-                    ui->toolBox_accuracy->setItemText(4,OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getUndefinedReadingName());
+                    ui->toolBox_accuracy->setItemText(4,OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getUndefinedReadingName());
 
-                    QMap<QString, double> undefSigma = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getDefaultAccuracy();
+                    QMap<QString, double> undefSigma = *OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getDefaultAccuracy();
 
                     QMapIterator<QString, double> j(undefSigma);
                     while(j.hasNext()){
@@ -182,7 +182,7 @@ void StationInfoDialog::getReadingType()
                         l->setText(j.key());
                         QLineEdit *le = new QLineEdit();
                         //le->setText(QString::number(j.value()));
-                        le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaUndefined.value(j.key())));
+                        le->setText(QString::number(OiJob::getActiveFeature()->getStation()->getInstrumentConfig().sigma.sigmaUndefined.value(j.key())));
 
                         QHBoxLayout *layout = new QHBoxLayout();
                         layout->addWidget(l);
@@ -239,9 +239,9 @@ void StationInfoDialog::disableAccuracyElements()
  */
 void StationInfoDialog::getSensorParameters()
 {
-    if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getDoubleParameter() != NULL){
+    if(OiJob::getActiveFeature()->getStation()->sensorPad->instrument != NULL && OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getDoubleParameter() != NULL){
 
-        QMap<QString, double> doubleparam = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getDoubleParameter();
+        QMap<QString, double> doubleparam = *OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getDoubleParameter();
 
         QMapIterator<QString, double> j(doubleparam);
         while(j.hasNext()){
@@ -251,7 +251,7 @@ void StationInfoDialog::getSensorParameters()
             l->setText(j.key());
             QLineEdit *le = new QLineEdit();
             //le->setText(QString::number(j.value()));
-            le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().doubleParameter.value(j.key())));
+            le->setText(QString::number(OiJob::getActiveFeature()->getStation()->getInstrumentConfig().doubleParameter.value(j.key())));
 
             QHBoxLayout *layout = new QHBoxLayout();
             layout->addWidget(l);
@@ -267,9 +267,9 @@ void StationInfoDialog::getSensorParameters()
         }
     }
 
-    if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getIntegerParameter() != NULL){
+    if(OiJob::getActiveFeature()->getStation()->sensorPad->instrument != NULL && OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getIntegerParameter() != NULL){
 
-        QMap<QString, int> intParameter = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getIntegerParameter();
+        QMap<QString, int> intParameter = *OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getIntegerParameter();
 
         QMapIterator<QString, int> k(intParameter);
         while(k.hasNext()){
@@ -279,7 +279,7 @@ void StationInfoDialog::getSensorParameters()
             l->setText(k.key());
             QLineEdit *le = new QLineEdit();
             //le->setText(QString::number(k.value()));
-            le->setText(QString::number(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().integerParameter.value(k.key())));
+            le->setText(QString::number(OiJob::getActiveFeature()->getStation()->getInstrumentConfig().integerParameter.value(k.key())));
 
             QHBoxLayout *layout = new QHBoxLayout();
             layout->addWidget(l);
@@ -295,9 +295,9 @@ void StationInfoDialog::getSensorParameters()
         }
     }
 
-    if(OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument != NULL && OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getStringParameter() != NULL){
+    if(OiJob::getActiveFeature()->getStation()->sensorPad->instrument != NULL && OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getStringParameter() != NULL){
 
-        QMap<QString,QStringList> strParameter = *OiFeatureState::getActiveFeature()->getStation()->sensorPad->instrument->getStringParameter();
+        QMap<QString,QStringList> strParameter = *OiJob::getActiveFeature()->getStation()->sensorPad->instrument->getStringParameter();
 
         QMapIterator<QString,QStringList> m(strParameter);
         while(m.hasNext()){
@@ -309,7 +309,7 @@ void StationInfoDialog::getSensorParameters()
             for(int a=0;a< m.value().size();a++){
                 cb->addItem(m.value().at(a));
             }
-            cb->setCurrentIndex(cb->findText(OiFeatureState::getActiveFeature()->getStation()->getInstrumentConfig().stringParameter.value(m.key())));
+            cb->setCurrentIndex(cb->findText(OiJob::getActiveFeature()->getStation()->getInstrumentConfig().stringParameter.value(m.key())));
 
             QHBoxLayout *layout = new QHBoxLayout();
             layout->addWidget(l);
@@ -613,5 +613,5 @@ void StationInfoDialog::on_comboBox_connectiontype_currentIndexChanged(const QSt
  */
 void StationInfoDialog::on_toolButton_pointProperties_clicked()
 {
-    emit showStationGeomProperties(OiFeatureState::getActiveFeature());
+    emit showStationGeomProperties(OiJob::getActiveFeature());
 }

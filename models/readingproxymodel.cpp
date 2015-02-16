@@ -39,15 +39,15 @@ bool ReadingProxyModel::filterAcceptsRow(int source_row, const QModelIndex &sour
 
     Geometry *geom = NULL;
 
-    if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
+    if(OiJob::getActiveFeature()->getFeature() == NULL){
         return false;
     }
     //get geometry of feature
-    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-        geom = OiFeatureState::getActiveFeature()->getGeometry();
+    if(OiJob::getActiveFeature()->getGeometry() != NULL){
+        geom = OiJob::getActiveFeature()->getGeometry();
     //get geometry of station position
-    }else if(OiFeatureState::getActiveFeature()->getStation() != NULL){
-        geom = OiFeatureState::getActiveFeature()->getStation()->position;
+    }else if(OiJob::getActiveFeature()->getStation() != NULL){
+        geom = OiJob::getActiveFeature()->getStation()->position;
     }else{
         return false;
     }

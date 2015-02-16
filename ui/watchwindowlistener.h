@@ -7,7 +7,7 @@
 #include <QVariantMap>
 #include <QVariant>
 #include <QThread>
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 
 class WatchWindowListener : public QObject
 {

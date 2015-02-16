@@ -18,18 +18,18 @@ FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
  */
 bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
 
-    if(OiFeatureState::getFeatures().size() <= source_row){
+    if(OiJob::getFeatures().size() <= source_row){
         return false;
     }
 
-    if(OiFeatureState::getActiveGroup().compare("All Groups") == 0){
-        if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL){
+    if(OiJob::getActiveGroup().compare("All Groups") == 0){
+        if(OiJob::getFeatures().at(source_row)->getTrafoParam() != NULL){
             return false;
         }else{
             return true;
         }
     }else{
-        if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL || OiFeatureState::getFeatures().at(source_row)->getFeature()->getGroupName().compare(OiFeatureState::getActiveGroup()) != 0){
+        if(OiJob::getFeatures().at(source_row)->getTrafoParam() != NULL || OiJob::getFeatures().at(source_row)->getFeature()->getGroupName().compare(OiJob::getActiveGroup()) != 0){
             return false;
         }else{
             return true;
@@ -58,8 +58,8 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
     QString leftName = "", rightName = "";
     int leftId = 0, rightId = 0;
     bool leftNominal = false, rightNominal = false;
-    FeatureWrapper *leftFeature = OiFeatureState::getFeatures().at(leftIndex);
-    FeatureWrapper *rightFeature = OiFeatureState::getFeatures().at(rightIndex);
+    FeatureWrapper *leftFeature = OiJob::getFeatures().at(leftIndex);
+    FeatureWrapper *rightFeature = OiJob::getFeatures().at(rightIndex);
     if(leftFeature != NULL && leftFeature->getFeature() != NULL
             && rightFeature != NULL && rightFeature->getFeature() != NULL){
         leftName = leftFeature->getFeature()->getFeatureName();
@@ -88,8 +88,8 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
         //get smallest id of features with equal name
         int leftSmallestId = -1;
         int rightSmallestId = -1;
-        QList<FeatureWrapper *> leftFeatures = OiFeatureState::getFeaturesByName(leftName);
-        QList<FeatureWrapper *> rightFeatures = OiFeatureState::getFeaturesByName(rightName);
+        QList<FeatureWrapper *> leftFeatures = OiJob::getFeaturesByName(leftName);
+        QList<FeatureWrapper *> rightFeatures = OiJob::getFeaturesByName(rightName);
         for(int i = 0; i < leftFeatures.size(); i++){
             if(leftSmallestId == -1 || leftFeatures.at(i)->getFeature()->getId() < leftSmallestId){
                 leftSmallestId = leftFeatures.at(i)->getFeature()->getId();
@@ -161,8 +161,8 @@ QList<FeatureWrapper*> FeatureTableProxyModel::getFeaturesAtIndices(QModelIndexL
         if(sourceModelIndex.row() >= 0){
             position = sourceModelIndex.row();
         }
-        if(OiFeatureState::getFeatures().size() > position && position >= 0){
-            FeatureWrapper *myFeature = OiFeatureState::getFeatures().at(position);
+        if(OiJob::getFeatures().size() > position && position >= 0){
+            FeatureWrapper *myFeature = OiJob::getFeatures().at(position);
             result.append(myFeature);
         }
     }

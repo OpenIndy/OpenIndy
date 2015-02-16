@@ -1,15 +1,5 @@
 #include "featurecontainer.h"
 
-//initialize static variables
-QList<FeatureWrapper *> FeatureContainer::myFeaturesList;
-QList<CoordinateSystem *> FeatureContainer::myCoordinateSystemsList;
-QList<Station *> FeatureContainer::myStationsList;
-QList<TrafoParam *> FeatureContainer::myTransformationParametersList;
-QList<FeatureWrapper *> FeatureContainer::myGeometriesList;
-QMap<int, FeatureWrapper *> FeatureContainer::myFeaturesIdMap;
-QMultiMap<QString, FeatureWrapper *> FeatureContainer::myFeaturesNameMap;
-QMultiMap<QString, FeatureWrapper *> FeatureContainer::myFeaturesGroupMap;
-
 /*!
  * \brief FeatureContainer::getFeaturesList
  * \return
@@ -23,7 +13,7 @@ FeatureContainer::FeatureContainer(){
  * \return
  */
 QList<FeatureWrapper *> &FeatureContainer::getFeaturesList(){
-    return FeatureContainer::myFeaturesList;
+    return this->myFeaturesList;
 }
 
 /*!
@@ -31,7 +21,7 @@ QList<FeatureWrapper *> &FeatureContainer::getFeaturesList(){
  * \return
  */
 QList<CoordinateSystem *> &FeatureContainer::getCoordinateSystemsList(){
-    return FeatureContainer::myCoordinateSystemsList;
+    return this->myCoordinateSystemsList;
 }
 
 /*!
@@ -39,7 +29,7 @@ QList<CoordinateSystem *> &FeatureContainer::getCoordinateSystemsList(){
  * \return
  */
 QList<Station *> &FeatureContainer::getStationsList(){
-    return FeatureContainer::myStationsList;
+    return this->myStationsList;
 }
 
 /*!
@@ -47,7 +37,7 @@ QList<Station *> &FeatureContainer::getStationsList(){
  * \return
  */
 QList<TrafoParam *> &FeatureContainer::getTransformationParametersList(){
-    return FeatureContainer::myTransformationParametersList;
+    return this->myTransformationParametersList;
 }
 
 /*!
@@ -55,7 +45,7 @@ QList<TrafoParam *> &FeatureContainer::getTransformationParametersList(){
  * \return
  */
 QList<FeatureWrapper *> &FeatureContainer::getGeometriesList(){
-    return FeatureContainer::myGeometriesList;
+    return this->myGeometriesList;
 }
 
 /*!
@@ -63,7 +53,7 @@ QList<FeatureWrapper *> &FeatureContainer::getGeometriesList(){
  * \return
  */
 QList<int> FeatureContainer::getFeatureIdList(){
-    return FeatureContainer::myFeaturesIdMap.keys();
+    return this->myFeaturesIdMap.keys();
 }
 
 /*!
@@ -71,7 +61,7 @@ QList<int> FeatureContainer::getFeatureIdList(){
  * \return
  */
 QStringList FeatureContainer::getFeatureNameList(){
-    return FeatureContainer::myFeaturesNameMap.keys();
+    return this->myFeaturesNameMap.keys();
 }
 
 /*!
@@ -79,7 +69,7 @@ QStringList FeatureContainer::getFeatureNameList(){
  * \return
  */
 QStringList FeatureContainer::getFeatureGroupList(){
-    return FeatureContainer::myFeaturesGroupMap.keys();
+    return this->myFeaturesGroupMap.keys();
 }
 
 /*!
@@ -88,7 +78,7 @@ QStringList FeatureContainer::getFeatureGroupList(){
  * \return
  */
 FeatureWrapper *FeatureContainer::getFeatureById(const int &featureId){
-    return FeatureContainer::myFeaturesIdMap.value(featureId, NULL);
+    return this->myFeaturesIdMap.value(featureId, NULL);
 }
 
 /*!
@@ -97,7 +87,7 @@ FeatureWrapper *FeatureContainer::getFeatureById(const int &featureId){
  * \return
  */
 QList<FeatureWrapper *> FeatureContainer::getFeaturesByName(const QString &name){
-    return FeatureContainer::myFeaturesNameMap.values(name);
+    return this->myFeaturesNameMap.values(name);
 }
 
 /*!
@@ -106,7 +96,7 @@ QList<FeatureWrapper *> FeatureContainer::getFeaturesByName(const QString &name)
  * \return
  */
 QList<FeatureWrapper *> FeatureContainer::getFeaturesByGroup(const QString &group){
-    return FeatureContainer::myFeaturesGroupMap.values(group);
+    return this->myFeaturesGroupMap.values(group);
 }
 
 /*!
@@ -114,7 +104,7 @@ QList<FeatureWrapper *> FeatureContainer::getFeaturesByGroup(const QString &grou
  * \return
  */
 int FeatureContainer::getFeatureCount(){
-    return FeatureContainer::myFeaturesList.size();
+    return this->myFeaturesList.size();
 }
 
 /*!
@@ -122,7 +112,7 @@ int FeatureContainer::getFeatureCount(){
  * \return
  */
 int FeatureContainer::getStationCount(){
-    return FeatureContainer::myStationsList.size();
+    return this->myStationsList.size();
 }
 
 /*!
@@ -130,7 +120,7 @@ int FeatureContainer::getStationCount(){
  * \return
  */
 int FeatureContainer::getCoordinateSystemCount(){
-    return FeatureContainer::myCoordinateSystemsList.size();
+    return this->myCoordinateSystemsList.size();
 }
 
 /*!
@@ -138,7 +128,7 @@ int FeatureContainer::getCoordinateSystemCount(){
  * \return
  */
 int FeatureContainer::getTransformationParameterCount(){
-    return FeatureContainer::myTransformationParametersList.size();
+    return this->myTransformationParametersList.size();
 }
 
 /*!
@@ -146,7 +136,7 @@ int FeatureContainer::getTransformationParameterCount(){
  * \return
  */
 int FeatureContainer::getGeometryCount(){
-    return FeatureContainer::myGeometriesList.size();
+    return this->myGeometriesList.size();
 }
 
 /*!
@@ -167,24 +157,24 @@ bool FeatureContainer::addFeature(FeatureWrapper *myFeature){
     }
 
     //add the feature to the feature lists and maps
-    FeatureContainer::myFeaturesList.append(myFeature);
-    FeatureContainer::myFeaturesIdMap.insert(myFeature->getFeature()->getId(), myFeature);
-    FeatureContainer::myFeaturesNameMap.insert(myFeature->getFeature()->getFeatureName(), myFeature);
+    this->myFeaturesList.append(myFeature);
+    this->myFeaturesIdMap.insert(myFeature->getFeature()->getId(), myFeature);
+    this->myFeaturesNameMap.insert(myFeature->getFeature()->getFeatureName(), myFeature);
     if(myFeature->getFeature()->getGroupName().compare("") != 0){
-        FeatureContainer::myFeaturesGroupMap.insert(myFeature->getFeature()->getGroupName(), myFeature);
+        this->myFeaturesGroupMap.insert(myFeature->getFeature()->getGroupName(), myFeature);
     }
     switch(myFeature->getTypeOfFeature()){
     case Configuration::eCoordinateSystemFeature:
-        FeatureContainer::myCoordinateSystemsList.append(myFeature->getCoordinateSystem());
+        this->myCoordinateSystemsList.append(myFeature->getCoordinateSystem());
         break;
     case Configuration::eStationFeature:
-        FeatureContainer::myStationsList.append(myFeature->getStation());
+        this->myStationsList.append(myFeature->getStation());
         break;
     case Configuration::eTrafoParamFeature:
-        FeatureContainer::myTransformationParametersList.append(myFeature->getTrafoParam());
+        this->myTransformationParametersList.append(myFeature->getTrafoParam());
         break;
     default:
-        FeatureContainer::myGeometriesList.append(myFeature);
+        this->myGeometriesList.append(myFeature);
         break;
     }
 
@@ -199,7 +189,7 @@ bool FeatureContainer::addFeature(FeatureWrapper *myFeature){
  */
 bool FeatureContainer::removeAndDeleteFeature(const int &featureId){
 
-    FeatureWrapper *myFeature = FeatureContainer::myFeaturesIdMap.value(featureId);
+    FeatureWrapper *myFeature = this->myFeaturesIdMap.value(featureId);
     if(FeatureContainer::removeFeature(featureId)){
         delete myFeature->getFeature();
         delete myFeature;
@@ -217,11 +207,11 @@ bool FeatureContainer::removeAndDeleteFeature(const int &featureId){
 bool FeatureContainer::removeFeature(const int &featureId){
 
     //check if the feature exists
-    if(!FeatureContainer::myFeaturesIdMap.contains(featureId)){
+    if(!this->myFeaturesIdMap.contains(featureId)){
         return false;
     }
 
-    FeatureWrapper *myFeature = FeatureContainer::myFeaturesIdMap.value(featureId);
+    FeatureWrapper *myFeature = this->myFeaturesIdMap.value(featureId);
 
     //check if the feature is valid
     if(myFeature == NULL || myFeature->getFeature() == NULL){
@@ -229,24 +219,24 @@ bool FeatureContainer::removeFeature(const int &featureId){
     }
 
     //remove the feature from lists and map
-    FeatureContainer::myFeaturesList.removeOne(myFeature);
-    FeatureContainer::myFeaturesIdMap.remove(featureId);
-    FeatureContainer::myFeaturesNameMap.remove(myFeature->getFeature()->getFeatureName(), myFeature);
+    this->myFeaturesList.removeOne(myFeature);
+    this->myFeaturesIdMap.remove(featureId);
+    this->myFeaturesNameMap.remove(myFeature->getFeature()->getFeatureName(), myFeature);
     if(myFeature->getFeature()->getGroupName().compare("") != 0){
-        FeatureContainer::myFeaturesGroupMap.remove(myFeature->getFeature()->getGroupName(), myFeature);
+        this->myFeaturesGroupMap.remove(myFeature->getFeature()->getGroupName(), myFeature);
     }
     switch(myFeature->getTypeOfFeature()){
     case Configuration::eCoordinateSystemFeature:
-        FeatureContainer::myCoordinateSystemsList.removeOne(myFeature->getCoordinateSystem());
+        this->myCoordinateSystemsList.removeOne(myFeature->getCoordinateSystem());
         break;
     case Configuration::eStationFeature:
-        FeatureContainer::myStationsList.removeOne(myFeature->getStation());
+        this->myStationsList.removeOne(myFeature->getStation());
         break;
     case Configuration::eTrafoParamFeature:
-        FeatureContainer::myTransformationParametersList.removeOne(myFeature->getTrafoParam());
+        this->myTransformationParametersList.removeOne(myFeature->getTrafoParam());
         break;
     default:
-        FeatureContainer::myGeometriesList.removeOne(myFeature);
+        this->myGeometriesList.removeOne(myFeature);
         break;
     }
 
@@ -262,7 +252,7 @@ bool FeatureContainer::removeFeature(const int &featureId){
  */
 bool FeatureContainer::featureNameChanged(const int &featureId, const QString &oldName){
 
-    FeatureWrapper *myFeature = FeatureContainer::myFeaturesIdMap.value(featureId, NULL);
+    FeatureWrapper *myFeature = this->myFeaturesIdMap.value(featureId, NULL);
 
     //if the feature is not valid
     if(myFeature == NULL || myFeature->getFeature() == NULL){
@@ -270,10 +260,10 @@ bool FeatureContainer::featureNameChanged(const int &featureId, const QString &o
     }
 
     //remove and re-add the feature
-    int numRemoved = FeatureContainer::myFeaturesNameMap.remove(oldName, myFeature);
+    int numRemoved = this->myFeaturesNameMap.remove(oldName, myFeature);
 
     if(numRemoved == 1){
-        FeatureContainer::myFeaturesNameMap.insert(myFeature->getFeature()->getFeatureName(), myFeature);
+        this->myFeaturesNameMap.insert(myFeature->getFeature()->getFeatureName(), myFeature);
         return true;
     }
     return false;
@@ -288,7 +278,7 @@ bool FeatureContainer::featureNameChanged(const int &featureId, const QString &o
  */
 bool FeatureContainer::featureGroupChanged(const int &featureId, const QString &oldGroup){
 
-    FeatureWrapper *myFeature = FeatureContainer::myFeaturesIdMap.value(featureId, NULL);
+    FeatureWrapper *myFeature = this->myFeaturesIdMap.value(featureId, NULL);
 
     //if the feature is not valid
     if(myFeature == NULL || myFeature->getFeature() == NULL){
@@ -297,10 +287,10 @@ bool FeatureContainer::featureGroupChanged(const int &featureId, const QString &
 
     //remove and re-add the feature
     if(oldGroup.compare("") != 0){
-        FeatureContainer::myFeaturesGroupMap.remove(oldGroup, myFeature);
+        this->myFeaturesGroupMap.remove(oldGroup, myFeature);
     }
     if(myFeature->getFeature()->getGroupName().compare("") != 0){
-        FeatureContainer::myFeaturesGroupMap.insert(myFeature->getFeature()->getGroupName(), myFeature);
+        this->myFeaturesGroupMap.insert(myFeature->getFeature()->getGroupName(), myFeature);
         return true;
     }
     return false;

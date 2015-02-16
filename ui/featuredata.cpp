@@ -103,7 +103,7 @@ void FeatureData::initGUI(){
 
     this->displayUsedReadings();
 
-    this->setWindowTitle(QString("information abaout " + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
+    this->setWindowTitle(QString("information abaout " + OiJob::getActiveFeature()->getFeature()->getFeatureName()));
 
     ui->tableView_observation->setModel(this->observationOverviewModel);
     ui->tableView_readings->setModel(this->readingOverviewModel);
@@ -119,8 +119,8 @@ void FeatureData::initGUI(){
 
     ui->comboBox_displayedFunction->clear();
 
-    for(int i=0; i<OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size();i++){
-        ui->comboBox_displayedFunction->addItem(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(i)->getMetaData()->name);
+    for(int i=0; i<OiJob::getActiveFeature()->getFeature()->getFunctions().size();i++){
+        ui->comboBox_displayedFunction->addItem(OiJob::getActiveFeature()->getFeature()->getFunctions().at(i)->getMetaData()->name);
     }
 
     this->updateModels();
@@ -148,17 +148,17 @@ void FeatureData::on_comboBox_displayedFunction_currentIndexChanged(const QStrin
         ui->tableView_qxxAposteriori->setModel(qxxModel);
         ui->tableView_sxxApriori->setModel(sxxModel);
 
-        if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size()>0){
+        if(OiJob::getActiveFeature()->getFeature()->getFunctions().size()>0){
             ui->textBrowser_protocol->clear();
 
-            for(int i=0; i<OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getResultProtocol().size();i++){
-                ui->textBrowser_protocol->append(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getResultProtocol().at(i));
+            for(int i=0; i<OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getResultProtocol().size();i++){
+                ui->textBrowser_protocol->append(OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getResultProtocol().at(i));
             }
 
-            if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().isValid){
-                OiMat tmpQxxOriginal = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().qxx;
-                double tmps0aposteriori = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_aposteriori;
-                double tmps0apriori = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_apriori;
+            if(OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().isValid){
+                OiMat tmpQxxOriginal = OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().qxx;
+                double tmps0aposteriori = OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_aposteriori;
+                double tmps0apriori = OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_apriori;
 
 
                 OiMat tmpQxx = (tmps0aposteriori*tmps0aposteriori)*tmpQxxOriginal;
@@ -167,14 +167,14 @@ void FeatureData::on_comboBox_displayedFunction_currentIndexChanged(const QStrin
 
                 qxxModel->updateModel(tmpQxx);
                 sxxModel->updateModel(tmpSxx);
-                ui->label_s0aposterioriValue->setText(QString::number(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_aposteriori,'f',6));
-                ui->label_s0aprioriValue->setText(QString::number(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_apriori,'f',6));
+                ui->label_s0aposterioriValue->setText(QString::number(OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_aposteriori,'f',6));
+                ui->label_s0aprioriValue->setText(QString::number(OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().s0_apriori,'f',6));
             }
         }
 
-        if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getFeatureOrder().size() > 0){
+        if(OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getFeatureOrder().size() > 0){
 
-            fModel->setFunction(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction));
+            fModel->setFunction(OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction));
             ui->tableView_displayedfunctionStatistic->setModel(fModel);
             fModel->updateModel();
         }else{
@@ -205,10 +205,10 @@ void FeatureData::displayUsedReadings()
 
     Geometry *geom = NULL;
 
-    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-        geom = OiFeatureState::getActiveFeature()->getGeometry();
-    }else if(OiFeatureState::getActiveFeature()->getStation() != NULL){
-        geom = OiFeatureState::getActiveFeature()->getStation()->position;
+    if(OiJob::getActiveFeature()->getGeometry() != NULL){
+        geom = OiJob::getActiveFeature()->getGeometry();
+    }else if(OiJob::getActiveFeature()->getStation() != NULL){
+        geom = OiJob::getActiveFeature()->getStation()->position;
     }
 
     if(geom != NULL){

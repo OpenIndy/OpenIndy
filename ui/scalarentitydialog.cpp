@@ -31,10 +31,10 @@ void ScalarEntityDialog::initGUI(){
 
     ui->comboBox_nominalSystem->clear();
 
-    if(OiFeatureState::getFeatureCount() !=0){
-        for(int i=0; i<OiFeatureState::getFeatures().size();i++){
-            if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL){
-                ui->comboBox_nominalSystem->addItem(OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
+    if(OiJob::getFeatureCount() !=0){
+        for(int i=0; i<OiJob::getFeatures().size();i++){
+            if(OiJob::getFeatures().at(i)->getCoordinateSystem() != NULL){
+                ui->comboBox_nominalSystem->addItem(OiJob::getFeatures().at(i)->getCoordinateSystem()->getFeatureName());
             }
 
         }
@@ -60,14 +60,14 @@ void ScalarEntityDialog::on_pushButton_ok_clicked()
         QString function = this->ui->comboBox_function->currentText();
 
         if(nominal){
-            for(int k=0; k<OiFeatureState::getFeatureCount();k++){
-                if(OiFeatureState::getFeatures().at(k)->getCoordinateSystem() != NULL &&
-                        ui->comboBox_nominalSystem->currentText() == OiFeatureState::getFeatures().at(k)->getCoordinateSystem()->getFeatureName()){
-                    nominalSystem = OiFeatureState::getFeatures().at(k)->getCoordinateSystem();
+            for(int k=0; k<OiJob::getFeatureCount();k++){
+                if(OiJob::getFeatures().at(k)->getCoordinateSystem() != NULL &&
+                        ui->comboBox_nominalSystem->currentText() == OiJob::getFeatures().at(k)->getCoordinateSystem()->getFeatureName()){
+                    nominalSystem = OiJob::getFeatures().at(k)->getCoordinateSystem();
                 }
-                if(OiFeatureState::getFeatures().at(k)->getStation() != NULL &&
-                        ui->comboBox_nominalSystem->currentText() == OiFeatureState::getFeatures().at(k)->getStation()->getFeatureName()){
-                    nominalSystem = OiFeatureState::getFeatures().at(k)->getStation()->coordSys;
+                if(OiJob::getFeatures().at(k)->getStation() != NULL &&
+                        ui->comboBox_nominalSystem->currentText() == OiJob::getFeatures().at(k)->getStation()->getFeatureName()){
+                    nominalSystem = OiJob::getFeatures().at(k)->getStation()->coordSys;
                 }
             }
         }

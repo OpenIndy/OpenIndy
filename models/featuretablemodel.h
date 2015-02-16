@@ -2,24 +2,13 @@
 #define TABLEMODEL_H
 
 #include <QObject>
+#include <QPointer>
 #include <QAbstractTableModel>
 
 #include "feature.h"
 #include "featurewrapper.h"
-#include "oifeaturestate.h"
 #include "guiconfiguration.h"
-
-/*
-
-#include "coordinatesystem.h"
-#include "function.h"
-#include <QStringList>
-#include <QColor>
-#include <QFont>
-#include "featureupdater.h"
-
-
-*/
+#include "oijob.h"
 
 class FeatureTableModel : public QAbstractTableModel
 {
@@ -41,6 +30,9 @@ signals:
     
 public slots:
     void updateModel();
+
+private:
+
     
 };
 

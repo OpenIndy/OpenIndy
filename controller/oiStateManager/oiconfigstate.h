@@ -11,14 +11,14 @@
 #include "measurementconfig.h"
 #include "sensorconfiguration.h"
 #include "featurewrapper.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 #include "systemdbmanager.h"
 #include "pluginloader.h"
 
 class OiConfigState : public QObject
 {
     Q_OBJECT
-    friend class OiFeatureState;
+    friend class OiJob;
 private:
     explicit OiConfigState(QObject *parent = 0);
 

@@ -222,9 +222,9 @@ void FunctionPluginLoader::showEvent(QShowEvent *event)
     this->move( screen.center() - this->rect().center() );
 
     //if there is an active feature
-    if(OiFeatureState::getActiveFeature() != NULL){
+    if(OiJob::getActiveFeature() != NULL){
         this->setWindowTitle(QString("function plugin loader - active feature: %1")
-                             .arg(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()));
+                             .arg(OiJob::getActiveFeature()->getFeature()->getFeatureName()));
 
         event->accept();
     }

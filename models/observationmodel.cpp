@@ -11,15 +11,15 @@ ObservationModel::ObservationModel(QObject *parent ) :
  */
 int ObservationModel::rowCount(const QModelIndex& ) const{
 
-    if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
+    if(OiJob::getActiveFeature()->getFeature() == NULL){
         return 0;
     }
 
-    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size() > 0){
-        return OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size();
+    if(OiJob::getActiveFeature()->getGeometry() != NULL && OiJob::getActiveFeature()->getGeometry()->getObservations().size() > 0){
+        return OiJob::getActiveFeature()->getGeometry()->getObservations().size();
     }
-    if(OiFeatureState::getActiveFeature()->getStation() != NULL && OiFeatureState::getActiveFeature()->getStation()->position->getObservations().size() >0){
-        return OiFeatureState::getActiveFeature()->getStation()->position->getObservations().size();
+    if(OiJob::getActiveFeature()->getStation() != NULL && OiJob::getActiveFeature()->getStation()->position->getObservations().size() >0){
+        return OiJob::getActiveFeature()->getStation()->position->getObservations().size();
     }
     return 0;
 }
@@ -41,7 +41,7 @@ int ObservationModel::columnCount(const QModelIndex &parent) const{
  */
 QVariant ObservationModel::data(const QModelIndex &index, int role) const{
 
-    if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
+    if(OiJob::getActiveFeature()->getFeature() == NULL){
         return QVariant();
     }
 
@@ -51,10 +51,10 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
     Geometry *geom = NULL;
     QString targetgeoms;
 
-    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-        geom = OiFeatureState::getActiveFeature()->getGeometry();
-    }else if(OiFeatureState::getActiveFeature()->getStation() != NULL){
-        geom = OiFeatureState::getActiveFeature()->getStation()->position;
+    if(OiJob::getActiveFeature()->getGeometry() != NULL){
+        geom = OiJob::getActiveFeature()->getGeometry();
+    }else if(OiJob::getActiveFeature()->getStation() != NULL){
+        geom = OiJob::getActiveFeature()->getStation()->position;
     }
 
     if(Qt::DisplayRole == role){
@@ -153,9 +153,9 @@ bool ObservationModel::setData(const QModelIndex &index, const QVariant &value, 
         return false;
     }
 
-    if(OiFeatureState::getActiveFeature() != NULL){
+    if(OiJob::getActiveFeature() != NULL){
         if(index.column() == 11){ //use state of observation
-            OiFeatureState::getActiveFeature()->getGeometry()->getObservations().at(index.row())->setIsUsed(value.toBool());
+            OiJob::getActiveFeature()->getGeometry()->getObservations().at(index.row())->setIsUsed(value.toBool());
             emit recalcFeature();
         }
         return true;

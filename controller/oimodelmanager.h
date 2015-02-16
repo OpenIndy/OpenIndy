@@ -2,6 +2,15 @@
 #define OIMODELMANAGER_H
 
 #include <QObject>
+#include <QPointer>
+
+#include "oijob.h"
+
+
+
+
+
+
 #include <QMap>
 #include <QAbstractItemModel>
 #include <QStandardItemModel>
@@ -11,7 +20,7 @@
 #include <QNetworkInterface>
 
 #include "systemdbmanager.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 #include "configuration.h"
 
 #include "geometrytypesproxymodel.h"
@@ -29,11 +38,18 @@
 class OiModelManager : public QObject
 {
     Q_OBJECT
+
 private:
     explicit OiModelManager(QObject *parent = 0);
 
 public:
-    static OiModelManager *getInstance();
+
+    //############################
+    //get or set the current OiJob
+    //############################
+
+    static const QPointer<OiJob> &getCurrentJob();
+    static void setCurrentJob(const QPointer<OiJob> &job);
 
     //#########################################
     //static models (models that may be reused)
@@ -97,7 +113,8 @@ private slots:
     void featuresRecalculated();
 
 private:
-    static OiModelManager *myInstance;
+
+    QPointer<OiJob> currentJob;
 
     //model instances
     static QStringListModel pluginNamesModel;

@@ -11,15 +11,15 @@ ReadingModel::ReadingModel(QObject *parent) :
  */
 int ReadingModel::rowCount(const QModelIndex& ) const{
 
-    if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
+    if(OiJob::getActiveFeature()->getFeature() == NULL){
         return 0;
     }
 
-    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size() > 0){
-        return OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size();
+    if(OiJob::getActiveFeature()->getGeometry() != NULL && OiJob::getActiveFeature()->getGeometry()->getObservations().size() > 0){
+        return OiJob::getActiveFeature()->getGeometry()->getObservations().size();
     }
-    if(OiFeatureState::getActiveFeature()->getStation() != NULL && OiFeatureState::getActiveFeature()->getStation()->position->getObservations().size() >0){
-        return OiFeatureState::getActiveFeature()->getStation()->position->getObservations().size();
+    if(OiJob::getActiveFeature()->getStation() != NULL && OiJob::getActiveFeature()->getStation()->position->getObservations().size() >0){
+        return OiJob::getActiveFeature()->getStation()->position->getObservations().size();
     }
     return 0;
 }
@@ -41,7 +41,7 @@ int ReadingModel::columnCount(const QModelIndex &parent) const{
  */
 QVariant ReadingModel::data(const QModelIndex &index, int role) const{
 
-    if(OiFeatureState::getActiveFeature()->getFeature() == NULL){
+    if(OiJob::getActiveFeature()->getFeature() == NULL){
         return QVariant();
     }
 
@@ -50,10 +50,10 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
 
     Geometry *geom = NULL;
 
-    if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
-        geom = OiFeatureState::getActiveFeature()->getGeometry();
-    }else if(OiFeatureState::getActiveFeature()->getStation() != NULL){
-        geom = OiFeatureState::getActiveFeature()->getStation()->position;
+    if(OiJob::getActiveFeature()->getGeometry() != NULL){
+        geom = OiJob::getActiveFeature()->getGeometry();
+    }else if(OiJob::getActiveFeature()->getStation() != NULL){
+        geom = OiJob::getActiveFeature()->getStation()->position;
     }
 
     if(geom == NULL){

@@ -104,21 +104,14 @@ SOURCES += \
     ui/sensorinfodialog.cpp \
     src/featurewrapper.cpp \
     src/station.cpp \
-    ui/glwidget.cpp \
     src/sensorconfiguration.cpp \
     ui/featuredata.cpp \
     models/observationmodel.cpp \
     models/readingmodel.cpp \
-    ui/oiGraphixFactory/oigraphix_sphere.cpp \
-    ui/oiGraphixFactory/oigraphix.cpp \
     src/geometry/scalarentityangle.cpp \
     src/geometry/scalarentitydistance.cpp \
     ui/movementdialog.cpp \
     ui/settingsdialog.cpp \
-    ui/oiGraphixFactory/oigraphix_plane.cpp \
-    ui/oiGraphixFactory/oigraphix_point.cpp \
-    ui/oiGraphixFactory/oigraphix_line.cpp \
-    ui/oiGraphixFactory/oigraphix_station.cpp \
     ui/scalarentitydialog.cpp \
     models/featuretreeviewmodel.cpp \
     models/featuretreeitem.cpp \
@@ -155,7 +148,6 @@ SOURCES += \
     controller/trafocontroller.cpp \
     ui/stationinfodialog.cpp \
     ui/realtimedatadialog.cpp \
-    ui/oiGraphixFactory/oigraphix_pointcloud.cpp \
     ui/watchwindowlistener.cpp \
     src/oiemitter/oifunctionemitter.cpp \
     src/oiemitter/oisensoremitter.cpp \
@@ -180,11 +172,11 @@ SOURCES += \
     models/readingproxymodel.cpp \
     controller/plugincopier.cpp \
     ui/delegates/observationdelegate.cpp \
-    src/plugin/oitool/oijob.cpp \
+    #src/plugin/oitool/oijob.cpp \
     ui/oitoolaction.cpp \
     src/plugin/oiexchange/oiexchangeobject.cpp \
     ui/exportnominaldialog.cpp \
-    controller/oijobstate.cpp \
+    #controller/oijobstate.cpp \
     ui/importnominaldialog.cpp \
     src/oiemitter/oiexchangeemitter.cpp \
     controller/oimodelmanager.cpp \
@@ -199,9 +191,9 @@ SOURCES += \
     controller/oiStateManager/featurecontainer.cpp \
     controller/oiStateManager/featureupdater.cpp \
     controller/oiStateManager/oiconfigstate.cpp \
-    controller/oiStateManager/oifeaturestate.cpp \
     src/oiemitter/oifeaturestateemitter.cpp \
-    controller/oiStateManager/oiunitconverter.cpp
+    controller/oiStateManager/oiunitconverter.cpp \
+    controller/oiStateManager/oijob.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -254,7 +246,6 @@ HEADERS  += \
     ui/sensorinfodialog.h \
     src/featurewrapper.h \
     src/station.h \
-    ui/glwidget.h \
     src/sensorconfiguration.h \
     ui/featuredata.h \
     models/observationmodel.h \
@@ -265,17 +256,10 @@ HEADERS  += \
     lib/openIndyLib/include/linearalgebra.h \
     lib/openIndyLib/include/global.h \
     lib/openIndyLib/include/chooselalib.h \
-    ui/oiGraphixFactory/oigraphix_sphere.h \
-    ui/oiGraphixFactory/oigraphix_geometry.h \
-    ui/oiGraphixFactory/oigraphix.h \
     src/geometry/scalarentityangle.h \
     src/geometry/scalarentitydistance.h  \
     ui/movementdialog.h \
     ui/settingsdialog.h  \
-    ui/oiGraphixFactory/oigraphix_plane.h \
-    ui/oiGraphixFactory/oigraphix_point.h \
-    ui/oiGraphixFactory/oigraphix_line.h \
-    ui/oiGraphixFactory/oigraphix_station.h \
     ui/scalarentitydialog.h \
     models/featuretreeviewmodel.h \
     models/featuretreeitem.h \
@@ -312,7 +296,6 @@ HEADERS  += \
     controller/trafocontroller.h \
     ui/stationinfodialog.h \
     ui/realtimedatadialog.h \
-    ui/oiGraphixFactory/oigraphix_pointcloud.h \
     ui/watchwindowlistener.h \
     src/oiemitter/oifunctionemitter.h \
     src/oiemitter/oisensoremitter.h \
@@ -340,14 +323,14 @@ HEADERS  += \
     controller/plugincopier.h \
     ui/delegates/observationdelegate.h \
     src/plugin/oitool/pi_oitool.h \
-    src/plugin/oitool/oijob.h \
+    #src/plugin/oitool/oijob.h \
     ui/oitoolaction.h \
     src/plugin/oiexchange/oiexchangeascii.h \
     src/plugin/oiexchange/oiexchangeobject.h \
     src/plugin/oiexchange/pi_oiexchangeinterface.h \
     src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
     ui/exportnominaldialog.h \
-    controller/oijobstate.h \
+    #controller/oijobstate.h \
     ui/importnominaldialog.h \
     src/oiemitter/oiexchangeemitter.h \
     src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
@@ -363,10 +346,10 @@ HEADERS  += \
     controller/oiStateManager/featurecontainer.h \
     controller/oiStateManager/featureupdater.h \
     controller/oiStateManager/oiconfigstate.h \
-    controller/oiStateManager/oifeaturestate.h \
     src/oiemitter/oifeaturestateemitter.h \
     controller/oiStateManager/oiunitconverter.h \
-    src/types.h
+    src/types.h \
+    controller/oiStateManager/oijob.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

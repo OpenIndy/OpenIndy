@@ -227,12 +227,12 @@ void MeasurementConfigDialog::initGUI(){
     }
 
     //set available reading types
-    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-        if(OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
+    if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad->instrument != NULL){
+        if(OiJob::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL){
 
             ui->comboBox_typeOfReading->clear();
 
-            QList<Configuration::ReadingTypes> readingTypes = *OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
+            QList<Configuration::ReadingTypes> readingTypes = *OiJob::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
             for(int i=0; i< readingTypes.size();i++){
                 switch (readingTypes.at(i)) {
                 case Configuration::ePolar:
@@ -254,7 +254,7 @@ void MeasurementConfigDialog::initGUI(){
                     ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),Configuration::sLevel,Configuration::eLevel);
                     break;
                 case Configuration::eUndefined:
-                    ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),OiFeatureState::getActiveStation()->sensorPad->instrument->getUndefinedReadingName(),Configuration::eUndefined);
+                    ui->comboBox_typeOfReading->insertItem(ui->comboBox_typeOfReading->count(),OiJob::getActiveStation()->sensorPad->instrument->getUndefinedReadingName(),Configuration::eUndefined);
                     break;
                 default:
                     break;

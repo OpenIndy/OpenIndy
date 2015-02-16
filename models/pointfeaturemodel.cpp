@@ -13,7 +13,7 @@ int PointFeatureModel::rowCount(const QModelIndex &parent) const{
 
     int rowCount = 0;
 
-    QList<FeatureWrapper *> geometries = OiFeatureState::getGeometries();
+    QList<FeatureWrapper *> geometries = OiJob::getGeometries();
     foreach(FeatureWrapper *fw, geometries){
         if(fw != NULL && fw->getPoint() != NULL){
             rowCount++;
@@ -39,7 +39,7 @@ QVariant PointFeatureModel::data(const QModelIndex &index, int role) const{
     if(role == Qt::DisplayRole){
 
         int currentIndex = 0;
-        QList<FeatureWrapper *> geometries = OiFeatureState::getGeometries();
+        QList<FeatureWrapper *> geometries = OiJob::getGeometries();
         foreach(FeatureWrapper *fw, geometries){
             if(fw != NULL && fw->getPoint() != NULL){
                 if(currentIndex == index.row()){

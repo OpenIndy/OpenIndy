@@ -5,7 +5,7 @@
 
 #include "featurewrapper.h"
 #include "guiconfiguration.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 
 /*!
  * \brief The FeatureTableProxyModel class  is a proxy model that filters all relevant feature attributes.

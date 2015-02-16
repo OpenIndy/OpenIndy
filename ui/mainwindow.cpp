@@ -116,8 +116,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-        OiFeatureState::getActiveStation()->sensorPad->instrument->disconnectSensor();
+    if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad->instrument != NULL){
+        OiJob::getActiveStation()->sensorPad->instrument->disconnectSensor();
     }
 
     //also close all open dialogs when closing mainwindow
@@ -364,8 +364,8 @@ void MainWindow::assignModels(){
  */
 void MainWindow::checkControlPadVisible()
 {
-    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL){
-        if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument->getConnectionState()){
+    if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad != NULL){
+        if(OiJob::getActiveStation()->sensorPad->instrument != NULL && OiJob::getActiveStation()->sensorPad->instrument->getConnectionState()){
 
             if(ui->toolBar_ControlPad->isHidden()){
                 ui->toolBar_ControlPad->show();
@@ -380,32 +380,32 @@ void MainWindow::checkControlPadVisible()
  */
 void MainWindow::setUpControlPad()
 {
-    if(OiFeatureState::getActiveStation() == NULL || OiFeatureState::getActiveStation()->sensorPad == NULL
-            || OiFeatureState::getActiveStation()->sensorPad->instrument == NULL){
+    if(OiJob::getActiveStation() == NULL || OiJob::getActiveStation()->sensorPad == NULL
+            || OiJob::getActiveStation()->sensorPad->instrument == NULL){
         return;
     }
 
     //if(OiFeatureState::getActiveStation()->getInstrumentConfig() !=NULL){
 
-        QString sensorName = OiFeatureState::getActiveStation()->sensorPad->instrument->getMetaData()->name;
+        QString sensorName = OiJob::getActiveStation()->sensorPad->instrument->getMetaData()->name;
         labelSensorControlName->setText(sensorName);
 
-        if(OiFeatureState::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eLaserTracker){ //laser tracker
+        if(OiJob::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eLaserTracker){ //laser tracker
             setupLaserTrackerPad();
 
-        }else if(OiFeatureState::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eTotalStation){ //total station
+        }else if(OiJob::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eTotalStation){ //total station
             setupTotalStationPad();
 
         }else{ //any sensor
             setupSensorPad();
         }
 
-        if(OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+        if(OiJob::getActiveStation()->sensorPad->instrument != NULL){
             //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
             signalMapper = new QSignalMapper();
             connect(signalMapper,SIGNAL(mapped(QString)),&control,SLOT(startCustomAction(QString)));
             //connect(&control.activeStation->sensorPad->instrument->myEmitter,SIGNAL(sendCustomSensorAction(QString)),&control,SLOT(startCustomAction(QString)));
-            QStringList customActionStrings = OiFeatureState::getActiveStation()->sensorPad->instrument->selfDefinedActions();
+            QStringList customActionStrings = OiJob::getActiveStation()->sensorPad->instrument->selfDefinedActions();
             this->clearCustomWidgets();
             for(int i=0; i<customActionStrings.size();i++){
                 QAction *sep = new QAction(0);
@@ -656,8 +656,8 @@ void MainWindow::setupCreateFeature(){
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"pointcloud",Configuration::ePointCloudFeature);
     this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"circle",Configuration::eCircleFeature);
 
-    for(int i=0; i<OiFeatureState::getCoordinateSystems().size();i++){
-        this->comboBoxNominalSystem->addItem(OiFeatureState::getCoordinateSystems().at(i)->getFeatureName());
+    for(int i=0; i<OiJob::getCoordinateSystems().size();i++){
+        this->comboBoxNominalSystem->addItem(OiJob::getCoordinateSystems().at(i)->getFeatureName());
     }
 
     this->defaultCreateFeatureSettings();
@@ -794,12 +794,12 @@ void MainWindow::on_actionMeasurement_Configuration_triggered()
         mConfigDialog.show();
     }*/
 
-    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL
-            || OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
+    if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL
+            || OiJob::getActiveFeature()->getGeometry()->getIsNominal()){
         return;
     }
 
-    MeasurementConfig defaultConfig = OiFeatureState::getActiveFeature()->getGeometry()->getMeasurementConfig();
+    MeasurementConfig defaultConfig = OiJob::getActiveFeature()->getGeometry()->getMeasurementConfig();
 
     this->mConfigDialog.setMeasurementConfig(defaultConfig);
 
@@ -1314,8 +1314,8 @@ void MainWindow::handleTableViewClicked(const QModelIndex &index){
 
     //check if there is a valid feature at that index
     FeatureWrapper *selectedFeature = NULL;
-    if(OiFeatureState::getFeatureCount() > sourceIndex.row()){
-        selectedFeature = OiFeatureState::getFeatures().at(sourceIndex.row());
+    if(OiJob::getFeatureCount() > sourceIndex.row()){
+        selectedFeature = OiJob::getFeatures().at(sourceIndex.row());
     }
     if(selectedFeature == NULL || selectedFeature->getFeature() == NULL){
         return;
@@ -1361,8 +1361,8 @@ void MainWindow::handleTrafoParamClicked(const QModelIndex &index){
 
     //check if there is a valid feature at that index
     FeatureWrapper *selectedFeature = NULL;
-    if(OiFeatureState::getFeatureCount() > sourceIndex.row()){
-        selectedFeature = OiFeatureState::getFeatures().at(sourceIndex.row());
+    if(OiJob::getFeatureCount() > sourceIndex.row()){
+        selectedFeature = OiJob::getFeatures().at(sourceIndex.row());
     }
     if(selectedFeature == NULL || selectedFeature->getFeature() == NULL){
         return;
@@ -1459,7 +1459,7 @@ void MainWindow::handleViewDoubleClick(int index)
  * Sets the plugins model and the function treeview model to the class.
  */
 void MainWindow::on_actionSet_function_triggered(){
-    if(OiFeatureState::getActiveFeature() != NULL){
+    if(OiJob::getActiveFeature() != NULL){
         //get models from database
         //this->control.setFunction();
         //send models to function plugin loader
@@ -1592,8 +1592,8 @@ void MainWindow::on_actionSave_as_triggered(){
  * \brief changedStation makes some new connects after changing a station
  */
 void MainWindow::changedStation(){
-    connect(OiFeatureState::getActiveStation()->sensorPad, SIGNAL(recalcFeature(Feature*)), &control, SLOT(recalcFeature(Feature*)));
-    connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),&sInfoDialog,SLOT(hideInfo(bool)));
+    connect(OiJob::getActiveStation()->sensorPad, SIGNAL(recalcFeature(Feature*)), &control, SLOT(recalcFeature(Feature*)));
+    connect(OiJob::getActiveStation(),SIGNAL(actionFinished(bool)),&sInfoDialog,SLOT(hideInfo(bool)));
 }
 
 /*!
@@ -1750,11 +1750,11 @@ void MainWindow::featureContextMenu(const QPoint &point){
             myFeatures = tableModel->getFeaturesAtIndices(myIndexList);
         }
     }
-    if(OiFeatureState::getActiveFeature() != NULL
-            && OiFeatureState::getActiveFeature()->getTypeOfFeature() != Configuration::eCoordinateSystemFeature
+    if(OiJob::getActiveFeature() != NULL
+            && OiJob::getActiveFeature()->getTypeOfFeature() != Configuration::eCoordinateSystemFeature
             && myFeatures.size() == 1 && myFeatures.at(0) != NULL && myFeatures.at(0)->getFeature() != NULL
-            && myFeatures.at(0)->getFeature()->getId() == OiFeatureState::getActiveFeature()->getFeature()->getId()){
-        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName()), this, SLOT(showProperties(bool)));
+            && myFeatures.at(0)->getFeature()->getId() == OiJob::getActiveFeature()->getFeature()->getId()){
+        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(OiJob::getActiveFeature()->getFeature()->getFeatureName()), this, SLOT(showProperties(bool)));
     }
 
     menu->exec(this->ui->tableView_data->mapToGlobal(point));
@@ -1799,16 +1799,16 @@ void MainWindow::deleteFeatures(bool checked){
  */
 void MainWindow::showProperties(bool checked){
     //show dialog dependent on which type of feature was clicked
-    if(OiFeatureState::getActiveFeature() != NULL){
-        if(OiFeatureState::getActiveFeature()->getTypeOfFeature() == Configuration::eTrafoParamFeature){
+    if(OiJob::getActiveFeature() != NULL){
+        if(OiJob::getActiveFeature()->getTypeOfFeature() == Configuration::eTrafoParamFeature){
             trafoParamDialog.show();
-        }else if(OiFeatureState::getActiveFeature()->getGeometry() != NULL && OiFeatureState::getActiveFeature()->getGeometry()->getIsNominal()){
+        }else if(OiJob::getActiveFeature()->getGeometry() != NULL && OiJob::getActiveFeature()->getGeometry()->getIsNominal()){
             //emit sendActiveNominalfeature(OiFeatureState::getActiveFeature());
             nominalDialog.show();
-        }else if(OiFeatureState::getActiveFeature()->getStation() != NULL){
+        }else if(OiJob::getActiveFeature()->getStation() != NULL){
             //stationDialog.getActiveFeature(this->control.activeFeature);
             stationDialog.show();
-        }else if(OiFeatureState::getActiveFeature()->getCoordinateSystem() == NULL){
+        }else if(OiJob::getActiveFeature()->getCoordinateSystem() == NULL){
             //fDataDialog.getActiveFeature(this->control.activeFeature);
             fDataDialog.show();
         }
@@ -1884,10 +1884,10 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
     FeatureTableProxyModel *model = &OiModelManager::getFeatureTableProxyModel();
     if(model != NULL){
         if(arg1.compare("") != 0){
-            OiFeatureState::setActiveGroup(arg1);
+            OiJob::setActiveGroup(arg1);
         }
-        if(this->ui->comboBox_groups->currentText().compare(OiFeatureState::getActiveGroup()) != 0){
-            this->ui->comboBox_groups->setCurrentText(OiFeatureState::getActiveGroup());
+        if(this->ui->comboBox_groups->currentText().compare(OiJob::getActiveGroup()) != 0){
+            this->ui->comboBox_groups->setCurrentText(OiJob::getActiveGroup());
         }
         //this->control.tblModel->updateModel();
         model->activeGroupChanged();
@@ -2103,13 +2103,13 @@ void MainWindow::clearCustomWidgets()
  */
 void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1){
     if(arg1.compare("") != 0){
-        if(OiFeatureState::getActiveCoordinateSystem() != NULL && arg1.compare(OiFeatureState::getActiveCoordinateSystem()->getFeatureName()) != 0){
+        if(OiJob::getActiveCoordinateSystem() != NULL && arg1.compare(OiJob::getActiveCoordinateSystem()->getFeatureName()) != 0){
             //this->control.setActiveCoordSystem(arg1);
-        }else if(OiFeatureState::getActiveCoordinateSystem() == NULL){
+        }else if(OiJob::getActiveCoordinateSystem() == NULL){
             //this->control.setActiveCoordSystem(arg1);
         }
-    }else if(OiFeatureState::getActiveCoordinateSystem() != NULL){
-        this->ui->comboBox_activeCoordSystem->setCurrentText(OiFeatureState::getActiveCoordinateSystem()->getFeatureName());
+    }else if(OiJob::getActiveCoordinateSystem() != NULL){
+        this->ui->comboBox_activeCoordSystem->setCurrentText(OiJob::getActiveCoordinateSystem()->getFeatureName());
     }else{
         this->ui->comboBox_activeCoordSystem->setCurrentText("");
     }
@@ -2238,7 +2238,7 @@ void MainWindow::on_action_exportSensorConfigs_triggered(){
  */
 void MainWindow::setMeasurementConfig(MeasurementConfig mConfig){
 
-    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getGeometry() == NULL){
+    if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL){
         return;
     }
 
@@ -2247,10 +2247,10 @@ void MainWindow::setMeasurementConfig(MeasurementConfig mConfig){
     }
 
     //set measurement config of the active feature
-    OiFeatureState::getActiveFeature()->getGeometry()->setMeasurementConfig(mConfig);
+    OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(mConfig);
 
     //set mConfig as default for the feature type of the active feature
-    OiConfigState::setDefaultMeasurementConfig(mConfig, OiFeatureState::getActiveFeature()->getTypeOfFeature());
+    OiConfigState::setDefaultMeasurementConfig(mConfig, OiJob::getActiveFeature()->getTypeOfFeature());
 
     disconnect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
                this, SLOT(setMeasurementConfig(MeasurementConfig)));
@@ -2314,9 +2314,9 @@ void MainWindow::selectionChangedByKeyboard(QModelIndex newIdx, QModelIndex oldI
  */
 void MainWindow::setMagnifyValues()
 {
-    if(OiFeatureState::getActiveFeature() != NULL){
-        this->ui->label_featName->setText(OiFeatureState::getActiveFeature()->getFeature()->getFeatureName());
-        this->ui->label_featActNom->setText(OiFeatureState::getActiveFeature()->getFeature()->getDisplayIsNominal());
+    if(OiJob::getActiveFeature() != NULL){
+        this->ui->label_featName->setText(OiJob::getActiveFeature()->getFeature()->getFeatureName());
+        this->ui->label_featActNom->setText(OiJob::getActiveFeature()->getFeature()->getDisplayIsNominal());
     }
 
     //resize labels to maximum

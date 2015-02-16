@@ -183,7 +183,7 @@ void FeatureTreeViewModel::refreshModel(){
 
     QList<FeatureWrapper*> points, lines, planes, spheres, stations, coordinateSystems, trafoParams, angles, distances,
             circles, cones, cylinders, ellipsoids, hyperboloids, nurbs, paraboloids, pointClouds, temperatures;
-    foreach(FeatureWrapper *wrapper, OiFeatureState::getFeatures()){
+    foreach(FeatureWrapper *wrapper, OiJob::getFeatures()){
         if(wrapper->getGeometry() != NULL){ //if current feature wrapper contains a geometry
             if(wrapper->getPoint() != NULL){
                 points.append(wrapper);

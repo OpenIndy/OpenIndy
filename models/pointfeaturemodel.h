@@ -4,7 +4,7 @@
 #include <QAbstractListModel>
 
 #include "featurewrapper.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 
 class PointFeatureModel : public QAbstractListModel
 {

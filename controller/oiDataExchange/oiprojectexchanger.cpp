@@ -39,11 +39,11 @@ QDomDocument OiProjectExchanger::saveProject(){
     QDomElement activeSystem = project.createElement("activeCoordinateSystem");
     QDomElement activeStation = project.createElement("activeStation");
     int activeSystemId, activeStationId = -1;
-    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
-        activeSystemId = OiFeatureState::getActiveCoordinateSystem()->getId();
+    if(OiJob::getActiveCoordinateSystem() != NULL){
+        activeSystemId = OiJob::getActiveCoordinateSystem()->getId();
     }
-    if(OiFeatureState::getActiveStation() != NULL){
-        activeStationId = OiFeatureState::getActiveStation()->getId();
+    if(OiJob::getActiveStation() != NULL){
+        activeStationId = OiJob::getActiveStation()->getId();
     }
     activeSystem.setAttribute("ref", activeSystemId);
     activeStation.setAttribute("ref", activeStationId);
@@ -52,7 +52,7 @@ QDomDocument OiProjectExchanger::saveProject(){
 
     //add stations
     QDomElement stations = project.createElement("stations");
-    foreach(Station *s, OiFeatureState::getStations()){
+    foreach(Station *s, OiJob::getStations()){
         if(s != NULL){
             QDomElement station = s->toOpenIndyXML(project);
             if(!station.isNull()){
@@ -64,7 +64,7 @@ QDomDocument OiProjectExchanger::saveProject(){
 
     //add coordinate systems (nominal + station systems)
     QDomElement coordinateSystems = project.createElement("coordinateSystems");
-    foreach(CoordinateSystem *c, OiFeatureState::getCoordinateSystems()){
+    foreach(CoordinateSystem *c, OiJob::getCoordinateSystems()){
         if(c != NULL){
             QDomElement coordinateSystem = c->toOpenIndyXML(project);
             if(!coordinateSystem.isNull()){
@@ -72,7 +72,7 @@ QDomDocument OiProjectExchanger::saveProject(){
             }
         }
     }
-    foreach(Station *s, OiFeatureState::getStations()){
+    foreach(Station *s, OiJob::getStations()){
         if(s != NULL && s->coordSys != NULL){
             QDomElement coordinateSystem = s->coordSys->toOpenIndyXML(project);
             if(!coordinateSystem.isNull()){
@@ -84,7 +84,7 @@ QDomDocument OiProjectExchanger::saveProject(){
 
     //add trafo params
     QDomElement trafoParams = project.createElement("transformationParameters");
-    foreach(TrafoParam *tp, OiFeatureState::getTransformationParameters()){
+    foreach(TrafoParam *tp, OiJob::getTransformationParameters()){
         if(tp != NULL){
             QDomElement trafoParam = tp->toOpenIndyXML(project);
             if(!trafoParam.isNull()){
@@ -96,7 +96,7 @@ QDomDocument OiProjectExchanger::saveProject(){
 
     //add geometries
     QDomElement geometries = project.createElement("geometries");
-    foreach(FeatureWrapper *geom, OiFeatureState::getGeometries()){ //normal geometries
+    foreach(FeatureWrapper *geom, OiJob::getGeometries()){ //normal geometries
         if(geom != NULL){
             QDomElement geometry = geom->getGeometry()->toOpenIndyXML(project);
             if(!geometry.isNull()){
@@ -104,7 +104,7 @@ QDomDocument OiProjectExchanger::saveProject(){
             }
         }
     }
-    foreach(Station *s, OiFeatureState::getStations()){ //station points
+    foreach(Station *s, OiJob::getStations()){ //station points
         if(s != NULL && s->position != NULL){
             QDomElement geometry = s->position->toOpenIndyXML(project);
             if(!geometry.isNull()){
@@ -116,7 +116,7 @@ QDomDocument OiProjectExchanger::saveProject(){
 
     //add observations (search the station coordinate systems for observations)
     QDomElement observations = project.createElement("observations");
-    foreach(Station *s, OiFeatureState::getStations()){
+    foreach(Station *s, OiJob::getStations()){
         if(s != NULL && s->coordSys != NULL && s->coordSys->getObservations().size() > 0){
             foreach(Observation *obs, s->coordSys->getObservations()){
                 if(obs != NULL){
@@ -203,22 +203,22 @@ bool OiProjectExchanger::loadProject(const QDomDocument &project){
 
     //add loaded features to OiFeatureState
     foreach(FeatureWrapper *station, OiProjectExchanger::myStations){
-        OiFeatureState::addFeature(station);
+        OiJob::addFeature(station);
         if(station->getStation()->position != NULL){
             OiProjectExchanger::stationPoints.append(station->getStation()->position->getId());
         }
     }
     foreach(FeatureWrapper *system, OiProjectExchanger::myCoordinateSystems){
         if(!system->getCoordinateSystem()->isStationSystem){
-            OiFeatureState::addFeature(system);
+            OiJob::addFeature(system);
         }
     }
     foreach(FeatureWrapper *trafoParam, OiProjectExchanger::myTransformationParameters){
-        OiFeatureState::addFeature(trafoParam);
+        OiJob::addFeature(trafoParam);
     }
     foreach(FeatureWrapper *geometry, OiProjectExchanger::myGeometries){
         if(!OiProjectExchanger::stationPoints.contains(geometry->getGeometry()->getId())){
-            OiFeatureState::addFeature(geometry);
+            OiJob::addFeature(geometry);
         }
     }
 

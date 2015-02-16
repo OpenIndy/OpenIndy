@@ -201,11 +201,11 @@ void UsedElementsModel::updateModel(int functionIndex, int elementIndex){
     this->removeAllElements();
 
     //check if active feature is valid
-    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getFeature() == NULL){
+    if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getFeature() == NULL){
         this->refreshModel();
         return;
     }
-    FeatureWrapper *myFeature = OiFeatureState::getActiveFeature();
+    FeatureWrapper *myFeature = OiJob::getActiveFeature();
 
     //check if a function exists at functionIndex and has needed elements at elementIndex
     if(myFeature->getFeature()->getFunctions().size() <= functionIndex

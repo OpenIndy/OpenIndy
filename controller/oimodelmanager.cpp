@@ -37,16 +37,21 @@ OiModelManager::OiModelManager(QObject *parent) : QObject(parent){
 }
 
 /*!
- * \brief OiModelManager::getInstance
+ * \brief OiModelManager::getCurrentJob
  * \return
  */
-OiModelManager *OiModelManager::getInstance(){
-    if(OiModelManager::myInstance == NULL){
-        OiModelManager::myInstance = new OiModelManager();
-        OiModelManager::myInstance->initModels();
-        OiModelManager::myInstance->connectModels();
+const QPointer<OiJob> &OiModelManager::getCurrentJob(){
+    return OiModelManager::currentJob;
+}
+
+/*!
+ * \brief OiModelManager::setCurrentJob
+ * \param job
+ */
+void OiModelManager::setCurrentJob(const QPointer<OiJob> &job){
+    if(!job.isNull()){
+        OiModelManager::currentJob = job;
     }
-    return OiModelManager::myInstance;
 }
 
 /*!
@@ -188,7 +193,7 @@ UsedElementsModel *OiModelManager::getUsedElementsModel(int functionIndex, int e
 QStandardItemModel *OiModelManager::getFunctionTreeViewModel(){
 
     //check if active feature is valid
-    if(OiFeatureState::getActiveFeature() == NULL || OiFeatureState::getActiveFeature()->getFeature() == NULL){
+    if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getFeature() == NULL){
         return NULL;
     }
 
@@ -197,7 +202,7 @@ QStandardItemModel *OiModelManager::getFunctionTreeViewModel(){
     functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
 
     QStandardItem *rootItem = functionTreeViewModel->invisibleRootItem();
-    foreach(Function *f, OiFeatureState::getActiveFeature()->getFeature()->getFunctions()){
+    foreach(Function *f, OiJob::getActiveFeature()->getFeature()->getFunctions()){
 
         if(f == NULL){
             continue;
@@ -493,16 +498,16 @@ void OiModelManager::initModels(){
  */
 void OiModelManager::connectModels(){
 
-    connect(OiFeatureState::getInstance(), SIGNAL(featureSetChanged()), this, SLOT(featureSetChanged()), Qt::DirectConnection);
-    connect(OiFeatureState::getInstance(), SIGNAL(activeFeatureChanged()), this, SLOT(activeFeatureChanged()), Qt::DirectConnection);
-    connect(OiFeatureState::getInstance(), SIGNAL(activeCoordinateSystemChanged()), this, SLOT(activeCoordinateSystemChanged()), Qt::DirectConnection);
-    connect(OiFeatureState::getInstance(), SIGNAL(activeStationChanged()), this, SLOT(activeStationChanged()), Qt::DirectConnection);
+    connect(OiJob::getInstance(), SIGNAL(featureSetChanged()), this, SLOT(featureSetChanged()), Qt::DirectConnection);
+    connect(OiJob::getInstance(), SIGNAL(activeFeatureChanged()), this, SLOT(activeFeatureChanged()), Qt::DirectConnection);
+    connect(OiJob::getInstance(), SIGNAL(activeCoordinateSystemChanged()), this, SLOT(activeCoordinateSystemChanged()), Qt::DirectConnection);
+    connect(OiJob::getInstance(), SIGNAL(activeStationChanged()), this, SLOT(activeStationChanged()), Qt::DirectConnection);
 
     connect(FeatureUpdater::getInstance(), SIGNAL(featuresRecalculated()), this, SLOT(featuresRecalculated()), Qt::DirectConnection);
 
-    connect(OiFeatureState::getInstance(), SIGNAL(availableGroupsChanged()), this, SLOT(availableGroupsChanged()), Qt::DirectConnection);
+    connect(OiJob::getInstance(), SIGNAL(availableGroupsChanged()), this, SLOT(availableGroupsChanged()), Qt::DirectConnection);
 
-    connect(OiFeatureState::getInstance(), SIGNAL(coordSystemSetChanged()), this, SLOT(coordSystemSetChanged()), Qt::DirectConnection);
+    connect(OiJob::getInstance(), SIGNAL(coordSystemSetChanged()), this, SLOT(coordSystemSetChanged()), Qt::DirectConnection);
 
 }
 
@@ -634,12 +639,12 @@ void OiModelManager::initCoordinateSystemModels(){
 
     QStringList coordinateSystems;
     QStringList nominalSystems;
-    QList<CoordinateSystem *> mySystems = OiFeatureState::getCoordinateSystems();
+    QList<CoordinateSystem *> mySystems = OiJob::getCoordinateSystems();
     foreach(CoordinateSystem *c, mySystems){
         nominalSystems.append(c->getFeatureName());
         coordinateSystems.append(c->getFeatureName());
     }
-    QList<Station *> myStations = OiFeatureState::getStations();
+    QList<Station *> myStations = OiJob::getStations();
     foreach(Station *s, myStations){
         coordinateSystems.append(s->getFeatureName());
     }
@@ -683,7 +688,7 @@ void OiModelManager::initUnitModels(){
  */
 void OiModelManager::initGroupNameModels(){
 
-    QStringList availableGroups = OiFeatureState::getAvailableGroups();
+    QStringList availableGroups = OiJob::getAvailableGroups();
     availableGroups.push_front("");
     OiModelManager::groupNamesModel.setStringList(availableGroups);
 

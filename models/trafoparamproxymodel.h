@@ -5,7 +5,7 @@
 
 #include "featurewrapper.h"
 #include "guiconfiguration.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 
 class TrafoParamProxyModel : public QSortFilterProxyModel
 {

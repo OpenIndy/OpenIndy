@@ -14,7 +14,7 @@
 #include "console.h"
 #include "systemdbmanager.h"
 #include "pluginloader.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 #include "trafocontroller.h"
 
 class FeatureUpdater : public QObject

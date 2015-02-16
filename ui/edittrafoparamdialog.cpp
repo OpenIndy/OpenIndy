@@ -156,7 +156,7 @@ void EditTrafoparamDialog::on_comboBox_displayedFunction_currentIndexChanged(con
     if(currentFunction != -1){
 
         ui->textBrowser_statistic->clear();
-        QStringList protocol =  OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getResultProtocol();
+        QStringList protocol =  OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getResultProtocol();
         for(int i= 0;i<protocol.size();i++){
             ui->textBrowser_statistic->append(protocol.at(i));
         }
@@ -169,14 +169,14 @@ void EditTrafoparamDialog::on_comboBox_displayedFunction_currentIndexChanged(con
         mModel = new MatrixModel();
         ui->tableView_qxx->setModel(mModel);
 
-        if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size()>0){
-            if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().isValid){
-                mModel->updateModel(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().qxx);
+        if(OiJob::getActiveFeature()->getFeature()->getFunctions().size()>0){
+            if(OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().isValid){
+                mModel->updateModel(OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getStatistic().qxx);
             }
         }
 
-        if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getFeatureOrder().size()>0){
-            fModel->setFunction(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(currentFunction));
+        if(OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction)->getFeatureOrder().size()>0){
+            fModel->setFunction(OiJob::getActiveFeature()->getFeature()->getFunctions().at(currentFunction));
             ui->tableView_statistic->setModel(fModel);
             fModel->updateModel();
         }else{

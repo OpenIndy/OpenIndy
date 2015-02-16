@@ -6,7 +6,7 @@
 #include <QPixmap>
 
 #include "featuretreeitem.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 
 class FeatureTreeViewModel : public QAbstractItemModel
 {

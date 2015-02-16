@@ -479,24 +479,24 @@ void WatchWindow::iniGUI()
     int labelCount = 0;
 
     //display feature name
-    if(OiFeatureState::getActiveFeature() != NULL){
+    if(OiJob::getActiveFeature() != NULL){
         QLabel *featureName;
         featureName = new QLabel();
         featureName->setFont(f);
 
-        if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+        if(OiJob::getActiveFeature()->getGeometry() != NULL){
 
-            QString name ="<p align=\"center\">" + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "</p>";
-            QString actNom = "<p align=\"center\"(>" + OiFeatureState::getActiveFeature()->getFeature()->getDisplayIsNominal() + "<)/p>";
-            QString obs = "<p align=\"center\">obs: " + QString::number(OiFeatureState::getActiveFeature()->getGeometry()->getObservations().size()) + "</p>";
+            QString name ="<p align=\"center\">" + OiJob::getActiveFeature()->getFeature()->getFeatureName() + "</p>";
+            QString actNom = "<p align=\"center\"(>" + OiJob::getActiveFeature()->getFeature()->getDisplayIsNominal() + "<)/p>";
+            QString obs = "<p align=\"center\">obs: " + QString::number(OiJob::getActiveFeature()->getGeometry()->getObservations().size()) + "</p>";
             QString featName = "";
 
             featName ="<table width=\"100%\"> <tr> <td>" + name + "</td> <td>" + actNom + "</td> <td>" + obs + "</td> </tr> </table>";
             featureName->setText(featName);
 
         }else{
-            QString name ="<p align=\"center\">" + OiFeatureState::getActiveFeature()->getFeature()->getFeatureName() + "</p>";
-            QString actNom = "<p align=\"center\">" + OiFeatureState::getActiveFeature()->getFeature()->getDisplayIsNominal() + "</p>";
+            QString name ="<p align=\"center\">" + OiJob::getActiveFeature()->getFeature()->getFeatureName() + "</p>";
+            QString actNom = "<p align=\"center\">" + OiJob::getActiveFeature()->getFeature()->getDisplayIsNominal() + "</p>";
             QString featName = "";
 
             featName ="<table width=\"100%\"> <tr> <td>" + name + "</td> <td>" + actNom + "</td> </tr> </table>";
@@ -701,10 +701,10 @@ void WatchWindow::closeEvent(QCloseEvent *e)
     }
     this->isVisible = false;
 
-    OiFeatureState::getActiveStation()->emitStopReadingStream();
+    OiJob::getActiveStation()->emitStopReadingStream();
     streamData.clear();
 
-    disconnect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this->listener,SLOT(setLCDNumber(QVariantMap)));
+    disconnect(OiJob::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this->listener,SLOT(setLCDNumber(QVariantMap)));
 
     delete masterLayout;
     masterLayout = NULL;
@@ -735,8 +735,8 @@ void WatchWindow::showEvent(QShowEvent *event)
     ui->comboBox_polarMode->setVisible(false);
     ui->label_polarMode->setVisible(false);
 
-    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
-        connect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this->listener,SLOT(setLCDNumber(QVariantMap)));
+    if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad->instrument != NULL){
+        connect(OiJob::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendReadingMap(QVariantMap)),this->listener,SLOT(setLCDNumber(QVariantMap)));
 
         initSuppReadings();
 
@@ -751,7 +751,7 @@ void WatchWindow::initSuppReadings()
 {
     ui->comboBox_suppReadings->clear();
 
-    QList<Configuration::ReadingTypes> *rTypes = OiFeatureState::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
+    QList<Configuration::ReadingTypes> *rTypes = OiJob::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
 
     if(rTypes == NULL){
         return;
@@ -960,7 +960,7 @@ void WatchWindow::on_comboBox_suppReadings_currentIndexChanged(const QString &ar
 
 void WatchWindow::stopStream()
 {
-    OiFeatureState::getActiveStation()->emitStopReadingStream();
+    OiJob::getActiveStation()->emitStopReadingStream();
 
     listenerThread.quit();
 
@@ -971,15 +971,15 @@ void WatchWindow::stopStream()
 
 void WatchWindow::startStream()
 {
-    OiFeatureState::getActiveStation()->emitStartReadingStream(activeReadingType);
+    OiJob::getActiveStation()->emitStartReadingStream(activeReadingType);
 
     listenerThread.start();
 }
 
 bool WatchWindow::checkFeatureValid()
 {
-    if(OiFeatureState::getActiveFeature() != NULL){
-        if(OiFeatureState::getActiveFeature()->getGeometry() != NULL){
+    if(OiJob::getActiveFeature() != NULL){
+        if(OiJob::getActiveFeature()->getGeometry() != NULL){
             return true;
         }else{
             return false;

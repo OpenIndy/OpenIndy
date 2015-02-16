@@ -4,7 +4,7 @@
 #include <QObject>
 #include "observation.h"
 #include "function.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 
 /*!
  * \brief The TrafoController class handles all transformations and corrections caused by movements (temperature compensation)

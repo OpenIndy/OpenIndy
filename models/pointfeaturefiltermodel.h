@@ -5,7 +5,7 @@
 #include <QString>
 
 #include "featurewrapper.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 
 class PointFeatureFilterModel : public QSortFilterProxyModel
 {

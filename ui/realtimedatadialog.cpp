@@ -15,10 +15,10 @@ RealTimeDataDialog::~RealTimeDataDialog()
 
 void RealTimeDataDialog::closeEvent(QCloseEvent *event)
 {
-    OiFeatureState::getActiveStation()->emitStopSensorStatsStream();
+    OiJob::getActiveStation()->emitStopSensorStatsStream();
 
     qRegisterMetaType<streamData>("streamData");
-    disconnect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendSensorStats(streamData)),
+    disconnect(OiJob::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendSensorStats(streamData)),
             this,SLOT(getRTData(streamData)));
     event->accept();
 }
@@ -29,21 +29,21 @@ void RealTimeDataDialog::showEvent(QShowEvent *event)
     ui->label_sensorName->setText("no active sensor");
     ui->listView_RTData->setModel(NULL);
     if(checkSensorValid()){
-        ui->label_sensorName->setText(OiFeatureState::getActiveStation()->sensorPad->instrument->getMetaData()->name);
+        ui->label_sensorName->setText(OiJob::getActiveStation()->sensorPad->instrument->getMetaData()->name);
 
 
         qRegisterMetaType<streamData>("streamData");
-        connect(OiFeatureState::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendSensorStats(streamData)),
+        connect(OiJob::getActiveStation()->sensorPad->instrumentListener,SIGNAL(sendSensorStats(streamData)),
                 this,SLOT(getRTData(streamData)));
-        OiFeatureState::getActiveStation()->emitStartSensorStatsStream();
+        OiJob::getActiveStation()->emitStartSensorStatsStream();
     }
     event->accept();
 }
 
 bool RealTimeDataDialog::checkSensorValid()
 {
-    if(OiFeatureState::getActiveStation() != NULL && OiFeatureState::getActiveStation()->sensorPad != NULL &&
-            OiFeatureState::getActiveStation()->sensorPad->instrument != NULL){
+    if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad != NULL &&
+            OiJob::getActiveStation()->sensorPad->instrument != NULL){
         return true;
     }else{
         return false;

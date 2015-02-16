@@ -20,7 +20,7 @@ QVariant PointFeatureFilterModel::data(const QModelIndex &index, int role) const
     if(role == Qt::DisplayRole){
 
         int currentIndex = 0;
-        QList<FeatureWrapper *> geometries = OiFeatureState::getGeometries();
+        QList<FeatureWrapper *> geometries = OiJob::getGeometries();
         foreach(FeatureWrapper *fw, geometries){
             if(fw != NULL && fw->getPoint() != NULL && (this->filterGroup.compare("All groups") == 0
                                                         || fw->getPoint()->getGroupName().compare(this->filterGroup) == 0)){
@@ -54,7 +54,7 @@ QList<FeatureWrapper *> PointFeatureFilterModel::getSelectedPoints(QModelIndexLi
 
     QList<FeatureWrapper *> result;
 
-    QList<FeatureWrapper *> geometries = OiFeatureState::getGeometries();
+    QList<FeatureWrapper *> geometries = OiJob::getGeometries();
 
     int currentIndex = 0;
     foreach(FeatureWrapper *fw, geometries){

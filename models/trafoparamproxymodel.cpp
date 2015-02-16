@@ -7,7 +7,7 @@ TrafoParamProxyModel::TrafoParamProxyModel(QObject *parent) :
 
 bool TrafoParamProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
     //return true;
-    if(OiFeatureState::getFeatures().at(source_row)->getTrafoParam() != NULL){
+    if(OiJob::getFeatures().at(source_row)->getTrafoParam() != NULL){
         return true;
     }else{
         return false;
@@ -46,8 +46,8 @@ QList<FeatureWrapper*> TrafoParamProxyModel::getFeaturesAtIndices(QModelIndexLis
         if(sourceModelIndex.row() >= 0){
             position = sourceModelIndex.row();
         }
-        if(OiFeatureState::getFeatures().size() > position && position >= 0){
-            FeatureWrapper *myFeature = OiFeatureState::getFeatures().at(position);
+        if(OiJob::getFeatures().size() > position && position >= 0){
+            FeatureWrapper *myFeature = OiJob::getFeatures().at(position);
             result.append(myFeature);
         }
     }

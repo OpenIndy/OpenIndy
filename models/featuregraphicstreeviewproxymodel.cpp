@@ -43,7 +43,7 @@ QVariant FeatureGraphicsTreeViewProxyModel::data(const QModelIndex &index, int r
         if(source_index.isValid()){
             FeatureTreeItem *item = static_cast<FeatureTreeItem*>(source_index.internalPointer());
             if(item != NULL && item->getIsFeature()){
-                if(OiFeatureState::getActiveFeature() != NULL && item->getFeature()->getFeature() == OiFeatureState::getActiveFeature()->getFeature()){
+                if(OiJob::getActiveFeature() != NULL && item->getFeature()->getFeature() == OiJob::getActiveFeature()->getFeature()){
                    return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
                 }
                 if(item->getFeature()->getStation() != NULL){

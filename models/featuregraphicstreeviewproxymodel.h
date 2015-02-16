@@ -6,7 +6,7 @@
 
 #include "featuretreeitem.h"
 #include "featurewrapper.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 
 class FeatureGraphicsTreeViewProxyModel : public QSortFilterProxyModel
 {

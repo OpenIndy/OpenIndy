@@ -1,8 +1,20 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <QDebug>
 #include <QObject>
+#include <QPointer>
+
+#include "oijob.h"
+
+
+
+
+
+
+
+
+
+#include <QDebug>
 #include <QList>
 #include <QThread>
 #include <QMap>
@@ -57,7 +69,7 @@
 #include "featureattributes.h"
 #include "nominalattributeexchange.h"
 
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 #include "oiprojectdata.h"
 #include "oiprojectexchanger.h"
 
@@ -92,9 +104,9 @@ public:
 
 signals:
 
-    //##################################################
-    //signals to inform GUI about OiFeatureState changes
-    //##################################################
+    //######################################################
+    //signals to inform GUI about changes in the current job
+    //######################################################
 
     //feature set changed
     void featureSetChanged();
@@ -166,11 +178,13 @@ private slots:
 
 private:
 
+    QPointer<OiJob> currentJob;
+
     //###################################################################
     //instances of manager classes to take care of OpenIndy state changes
     //###################################################################
 
-    const OiFeatureState *myFeatureState;
+    //const OiJob *myFeatureState;
     FeatureUpdater *myFeatureUpdater;
     OiConfigState *myConfigState;
     OiModelManager *myModelManager;

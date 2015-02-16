@@ -6,7 +6,7 @@
 #include <QThread>
 
 #include "oirequestresponse.h"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 #include "featurewrapper.h"
 #include "oiprojectexchanger.h"
 #include "station.h"

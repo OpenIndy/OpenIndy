@@ -16,8 +16,8 @@ FeatureTableModel::FeatureTableModel(QObject *parent) : QAbstractTableModel(pare
  * \return
  */
 int FeatureTableModel::rowCount(const QModelIndex& ) const{
-    if(OiFeatureState::getFeatureCount() > 0){
-        return OiFeatureState::getFeatureCount();
+    if(OiJob::getFeatureCount() > 0){
+        return OiJob::getFeatureCount();
     }
     return 0;
 }
@@ -50,8 +50,8 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
 
         //get the feature to display at row index.row()
         FeatureWrapper *currentFeature = NULL;
-        if(OiFeatureState::getFeatureCount() > index.row()){
-            currentFeature = OiFeatureState::getFeatures().at(index.row());
+        if(OiJob::getFeatureCount() > index.row()){
+            currentFeature = OiJob::getFeatures().at(index.row());
         }
 
 		//check the feature
@@ -319,7 +319,7 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex & index) const{
 bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & value, int role){
 
     //get the active feature
-    FeatureWrapper *myFeature = OiFeatureState::getActiveFeature();
+    FeatureWrapper *myFeature = OiJob::getActiveFeature();
     if(myFeature == NULL || myFeature->getFeature() == NULL){
         return false;
     }

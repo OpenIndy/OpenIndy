@@ -5,7 +5,7 @@
 #include "feature.h"
 #include "featurewrapper.h"
 #include "QStringList"
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 #include "guiconfiguration.h"
 
 /*!
