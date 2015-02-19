@@ -38,10 +38,11 @@ private:
     QStringList getFeatureNameList();
     QStringList getFeatureGroupList();
 
-    //getter to access features by id or name
+    //getter to access features by id, name, group or type
     FeatureWrapper *getFeatureById(const int &featureId);
     QList<FeatureWrapper *> getFeaturesByName(const QString &name);
     QList<FeatureWrapper *> getFeaturesByGroup(const QString &group);
+    QList<FeatureWrapper *> getFeaturesByType(const Configuration::FeatureTypes &type);
 
     //getter to get the number of available features
     int getFeatureCount();
@@ -72,6 +73,7 @@ private:
     QMap<int, FeatureWrapper *> myFeaturesIdMap; //map of all features in OpenIndy with their id as key
     QMultiMap<QString, FeatureWrapper *> myFeaturesNameMap; //map of all features in OpenIndy with their name as key
     QMultiMap<QString, FeatureWrapper *> myFeaturesGroupMap; //map of all features in OpenIndy with their group as key
+    QMultiMap<Configuration::FeatureTypes, FeatureWrapper *> myFeaturesTypeMap; // map of all features in OpenIndy with their type as key
 
 };
 

@@ -2,22 +2,24 @@
 #define TRAFOPARAMPROXYMODEL_H
 
 #include <QSortFilterProxyModel>
+#include <QPointer>
 
+#include "featuretablemodel.h"
 #include "featurewrapper.h"
 #include "guiconfiguration.h"
-//#include "oifeaturestate.h"
+#include "oijob.h"
 
 class TrafoParamProxyModel : public QSortFilterProxyModel
 {
-public:
+    Q_OBJECT
 
+public:
     explicit TrafoParamProxyModel(QObject *parent = 0);
 
-    QList<FeatureWrapper*> getFeaturesAtIndices(QModelIndexList &indices);
-
 protected:
-    bool filterAcceptsColumn ( int source_column, const QModelIndex & source_parent ) const;
-    bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
+    bool filterAcceptsColumn ( int source_column, const QModelIndex & source_parent) const;
+    bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent) const;
+
 };
 
 #endif // TRAFOPARAMPROXYMODEL_H

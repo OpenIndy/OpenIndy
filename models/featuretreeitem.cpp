@@ -10,6 +10,10 @@ FeatureTreeItem::FeatureTreeItem(QVariant display)
     this->index = 0;
 }
 
+/*!
+ * \brief FeatureTreeItem::~FeatureTreeItem
+ * Deletes this item and all its children
+ */
 FeatureTreeItem::~FeatureTreeItem(){
     this->deleteChildren();
 }

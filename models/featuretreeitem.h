@@ -1,13 +1,19 @@
 #ifndef FEATURETREEITEM_H
 #define FEATURETREEITEM_H
 
+#include <QObject>
+#include <QPointer>
+
 #include "featurewrapper.h"
 #include "observation.h"
 #include "reading.h"
 #include "configuration.h"
 
-class FeatureTreeItem
+//! class that holds an item in a featetreeviewmodel
+class FeatureTreeItem : public QObject
 {
+    Q_OBJECT
+
 public:
     FeatureTreeItem(QVariant display);
     ~FeatureTreeItem();

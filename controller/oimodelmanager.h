@@ -116,7 +116,19 @@ private:
 
     QPointer<OiJob> currentJob;
 
-    //model instances
+    //#############
+    //static models
+    //#############
+
+    //general feature models
+    static FeatureTableModel featureTableModel;
+    static FeatureTableProxyModel featureTableProxyModel;
+    static TrafoParamProxyModel trafoParamProxyModel;
+    static FeatureTreeViewModel featureTreeViewModel;
+
+
+
+
     static QStringListModel pluginNamesModel;
     static QStringListModel coordinateSystemsModel;
     static QStringListModel nominalSystemsModel;
@@ -133,10 +145,10 @@ private:
     static QStringListModel angleUnitsModel;
     static QStringListModel temperatureUnitsModel;
     static QStringListModel groupNamesModel;
-    static FeatureTableModel featureTableModel;
-    static FeatureTableProxyModel featureTableProxyModel;
-    static TrafoParamProxyModel trafoParamProxyModel;
-    static FeatureTreeViewModel featureTreeViewModel;
+
+
+
+
     static FeatureGraphicsTreeViewProxyModel featureGraphicsModel;
     static PluginTreeViewModel pluginTreeViewModel;
     static QSqlQueryModel createFeatureFunctionsModel;

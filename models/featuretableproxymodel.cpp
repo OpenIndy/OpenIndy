@@ -1,49 +1,66 @@
 #include "featuretableproxymodel.h"
 
-/*!
- * \brief FeatureOvserviewProxyModel constructor
- * \param QList<FeatureWrapper*> &features
- * \param parent
- */
 FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent)
 {
 }
 
 /*!
- * \brief filterAcceptsRow function that filters all relevant feature types. Transformation parameters will not be displayed
+ * \brief FeatureTableProxyModel::filterAcceptsRow
+ * Filter features by group name and feature type
  * \param source_row
  * \param source_parent
  * \return
  */
 bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
 
-    if(OiJob::getFeatures().size() <= source_row){
+    //get and cast source model
+    FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
+    if(source_model == NULL){
         return false;
     }
 
-    if(OiJob::getActiveGroup().compare("All Groups") == 0){
-        if(OiJob::getFeatures().at(source_row)->getTrafoParam() != NULL){
-            return false;
-        }else{
-            return true;
-        }
-    }else{
-        if(OiJob::getFeatures().at(source_row)->getTrafoParam() != NULL || OiJob::getFeatures().at(source_row)->getFeature()->getGroupName().compare(OiJob::getActiveGroup()) != 0){
-            return false;
-        }else{
-            return true;
-        }
+    //check if job is set
+    if(source_model->getCurrentJob().isNull()){
+        return false;
     }
+
+    //check if the feature at index source_row exists
+    if(source_model->getCurrentJob()->getFeatureCount() <= source_row){
+        return false;
+    }
+
+    //if the feature is a trafo param reject it
+    if(source_model->getCurrentJob()->getFeatures().at(source_row)->getTrafoParam() != NULL){
+        return false;
+    }
+
+    //filter by group name
+    if(source_model->getCurrentJob()->getActiveGroup().compare("") == 0){
+        return true;
+    }else{
+        if(source_model->getCurrentJob()->getFeatures().at(source_row)->getFeature()->getGroupName().compare(source_model->getCurrentJob()->getActiveGroup()) == 0){
+            return true;
+        }
+        return false;
+    }
+
 }
 
 /*!
- * \brief FeatureOverviewProxyModel::lessThan
+ * \brief FeatureTableProxyModel::lessThan
+ * Sort features by id and put nominals to actuals
  * \param left
  * \param right
  * \return
  */
 bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
+
+    //get and cast source model
+    FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
+    if(source_model == NULL){
+        return false;
+    }
 
     //check indexes
     if(!left.isValid() || !right.isValid()){
@@ -58,8 +75,8 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
     QString leftName = "", rightName = "";
     int leftId = 0, rightId = 0;
     bool leftNominal = false, rightNominal = false;
-    FeatureWrapper *leftFeature = OiJob::getFeatures().at(leftIndex);
-    FeatureWrapper *rightFeature = OiJob::getFeatures().at(rightIndex);
+    FeatureWrapper *leftFeature = source_model->getCurrentJob()->getFeatures().at(leftIndex);
+    FeatureWrapper *rightFeature = source_model->getCurrentJob()->getFeatures().at(rightIndex);
     if(leftFeature != NULL && leftFeature->getFeature() != NULL
             && rightFeature != NULL && rightFeature->getFeature() != NULL){
         leftName = leftFeature->getFeature()->getFeatureName();
@@ -88,8 +105,8 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
         //get smallest id of features with equal name
         int leftSmallestId = -1;
         int rightSmallestId = -1;
-        QList<FeatureWrapper *> leftFeatures = OiJob::getFeaturesByName(leftName);
-        QList<FeatureWrapper *> rightFeatures = OiJob::getFeaturesByName(rightName);
+        QList<FeatureWrapper *> leftFeatures = source_model->getCurrentJob()->getFeaturesByName(leftName);
+        QList<FeatureWrapper *> rightFeatures = source_model->getCurrentJob()->getFeaturesByName(rightName);
         for(int i = 0; i < leftFeatures.size(); i++){
             if(leftSmallestId == -1 || leftFeatures.at(i)->getFeature()->getId() < leftSmallestId){
                 leftSmallestId = leftFeatures.at(i)->getFeature()->getId();
@@ -107,72 +124,17 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
 
 }
 
-void FeatureTableProxyModel::sortNominalToActual()
-{/*
-    int row = 2;
-    for(int i=0; i<row-1;i++){
-        if(row < 0){
-            return;
-        }
-        if(this->features.at(row)->getFeature()->name.compare(this->features.at(i)->getFeature()->name)==0){
-            if(this->features.at(row)->getGeometry() != NULL && this->features.at(row)->getGeometry()->isNominal){
-                beginMoveRows(this->parent,i,i,this->parent,row+1);
-            }else if(this->features.at(i)->getGeometry() != NULL && this->features.at(i)->getGeometry()->isNominal){
-                beginMoveRows(this->parent,row,row,this->parent,i+1);
-            }
-        }
-    }*/
-}
-
 /*!
- * \brief filterAcceptsColumn function that filters all relevant attributes for the displayed feature types.
+ * \brief FeatureTableProxyModel::filterAcceptsColumn
  * \param source_column
  * \param source_parent
  * \return
  */
 bool FeatureTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
-    /*if(source_column == 19 || source_column == 20 || source_column == 21 || source_column == 22 || source_column == 23
-            || source_column == 24 || source_column == 25 || source_column == 26 || source_column == 27
-            || source_column == 28 || source_column == 29){
-        return false;
-    }else{
-        return true;
-    }*/
     QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::featureAttributes,GUIConfiguration::allAttributes);
     if(displayColumns.contains(source_column)){
         return true;
     }else{
         return false;
     }
-}
-
-/*!
- * \brief FeatureOvserviewProxyModel::getFeatureAtIndex
- * Get all selected features
- * \param indices
- * \return
- */
-QList<FeatureWrapper*> FeatureTableProxyModel::getFeaturesAtIndices(QModelIndexList &indices){
-    QList<FeatureWrapper*> result;
-
-    foreach(QModelIndex idx, indices){
-        int position = -1;
-        QModelIndex sourceModelIndex = this->mapToSource(idx); //get model index from source model
-        if(sourceModelIndex.row() >= 0){
-            position = sourceModelIndex.row();
-        }
-        if(OiJob::getFeatures().size() > position && position >= 0){
-            FeatureWrapper *myFeature = OiJob::getFeatures().at(position);
-            result.append(myFeature);
-        }
-    }
-
-    return result;
-}
-
-/*!
- * \brief FeatureOvserviewProxyModel::activeGroupChanged
- */
-void FeatureTableProxyModel::activeGroupChanged(){
-    this->invalidateFilter();
 }

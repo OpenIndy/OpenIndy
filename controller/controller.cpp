@@ -16,9 +16,7 @@ Controller::Controller(QObject *parent) :
     Console::c = c;
 
     //get pointer to state objects
-    this->myFeatureState = OiJob::getInstance();
     this->myConfigState = OiConfigState::getInstance();
-    this->myModelManager = OiModelManager::getInstance();
 
     this->myDeleteFeaturesCallback = new DeleteFeaturesFunctor();
     this->myDeleteFeaturesCallback->c = this;

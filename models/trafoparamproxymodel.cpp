@@ -5,52 +5,53 @@ TrafoParamProxyModel::TrafoParamProxyModel(QObject *parent) :
 {
 }
 
+/*!
+ * \brief TrafoParamProxyModel::filterAcceptsRow
+ * \param source_row
+ * \param source_parent
+ * \return
+ */
 bool TrafoParamProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
-    //return true;
-    if(OiJob::getFeatures().at(source_row)->getTrafoParam() != NULL){
-        return true;
-    }else{
+
+    //get and cast source model
+    FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
+    if(source_model == NULL){
         return false;
     }
-}
 
-bool TrafoParamProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
-    /*if(source_column == 0 || source_column == 1 || source_column == 7 || source_column == 9
-            || source_column == 19 || source_column == 20 || source_column == 21 || source_column == 22 || source_column == 23
-            || source_column == 24 || source_column == 25 || source_column == 26 || source_column == 27 || source_column == 28
-            || source_column == 29 || source_column == 32){
-        return true;
-    }else{
+    //check if current job is set
+    if(source_model->getCurrentJob().isNull()){
         return false;
-    }*/
-    QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::trafoParamAttributes,GUIConfiguration::allAttributes);
-    if(displayColumns.contains(source_column)){
-        return true;
+    }
+
+    //filter by group name and feature type
+    if(source_model->getCurrentJob()->getFeatures().at(source_row)->getTrafoParam() != NULL){
+
+        if(source_model->getCurrentJob()->getActiveGroup().compare("") == 0){
+            return true;
+        }
+
+        if(source_model->getCurrentJob()->getFeatures().at(source_row)->getFeature()->getGroupName().compare(source_model->getCurrentJob()->getActiveGroup()) == 0){
+            return true;
+        }
+        return false;
+
     }else{
         return false;
     }
 }
 
 /*!
- * \brief TrafoParamProxyModel::getFeaturesAtIndices
- * Get all selected features
- * \param indices
+ * \brief TrafoParamProxyModel::filterAcceptsColumn
+ * \param source_column
+ * \param source_parent
  * \return
  */
-QList<FeatureWrapper*> TrafoParamProxyModel::getFeaturesAtIndices(QModelIndexList &indices){
-    QList<FeatureWrapper*> result;
-
-    foreach(QModelIndex idx, indices){
-        int position = -1;
-        QModelIndex sourceModelIndex = this->mapToSource(idx); //get model index from source model
-        if(sourceModelIndex.row() >= 0){
-            position = sourceModelIndex.row();
-        }
-        if(OiJob::getFeatures().size() > position && position >= 0){
-            FeatureWrapper *myFeature = OiJob::getFeatures().at(position);
-            result.append(myFeature);
-        }
+bool TrafoParamProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
+    QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::trafoParamAttributes,GUIConfiguration::allAttributes);
+    if(displayColumns.contains(source_column)){
+        return true;
+    }else{
+        return false;
     }
-
-    return result;
 }

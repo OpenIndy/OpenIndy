@@ -46,6 +46,7 @@ public:
     QList<FeatureWrapper *> getFeaturesByName(const QString &name);
     QList<FeatureWrapper *> getFeaturesByGroup(const QString &group);
     FeatureWrapper *getFeature(const int &featureId);
+    QList<FeatureWrapper *> getFeaturesByFeatureType(const Configuration::FeatureTypes &type);
 
     //add feature(s)
     QList<FeatureWrapper *> addFeatures(const FeatureAttributes &attributes);

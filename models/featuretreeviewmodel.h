@@ -4,14 +4,16 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QPixmap>
+#include <QPointer>
 
 #include "featuretreeitem.h"
-//#include "oifeaturestate.h"
+#include "oijob.h"
 
 class FeatureTreeViewModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
+    explicit FeatureTreeViewModel(QPointer<OiJob> job, QObject *parent = 0);
     explicit FeatureTreeViewModel(QObject *parent = 0);
 
     QModelIndex	index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
@@ -26,7 +28,8 @@ public slots:
     void refreshModel();
 
 private:
-    FeatureTreeItem *rootItem;
+    QPointer<OiJob> currentJob;
+    QPointer<FeatureTreeItem> rootItem;
 
     void appendGeometries(FeatureTreeItem *root, QList<FeatureWrapper*> geometries, QString geomType);
     void appendCoordinateSystems(FeatureTreeItem *root, QList<FeatureWrapper*> coordinateSystems);

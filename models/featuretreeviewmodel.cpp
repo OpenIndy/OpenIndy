@@ -1,8 +1,16 @@
 #include "featuretreeviewmodel.h"
 
-FeatureTreeViewModel::FeatureTreeViewModel(QObject *parent) : QAbstractItemModel(parent){
-    this->rootItem = new FeatureTreeItem("available elements");
-    //this->refreshModel();
+FeatureTreeViewModel::FeatureTreeViewModel(QPointer<OiJob> job, QObject *parent) : QAbstractItemModel(parent){
+
+    this->rootItem = new FeatureTreeItem("features");
+    this->currentJob = job;
+
+}
+
+FeatureTreeViewModel::FeatureTreeViewModel(QObject *parent){
+
+    this->rootItem = new FeatureTreeItem("features");
+
 }
 
 /*!
@@ -179,6 +187,26 @@ FeatureTreeItem* FeatureTreeViewModel::getRootItem() const{
  * Set up the tree view hierarchy
  */
 void FeatureTreeViewModel::refreshModel(){
+
+    //check if a job is set and the root (header) item exists
+    if(this->currentJob.isNull() || this->rootItem.isNull()){
+        return;
+    }
+
+    //delete old tree hierarchy
+    this->rootItem->deleteChildren();
+
+
+
+
+
+
+
+
+
+
+
+
     this->rootItem->deleteChildren();
 
     QList<FeatureWrapper*> points, lines, planes, spheres, stations, coordinateSystems, trafoParams, angles, distances,

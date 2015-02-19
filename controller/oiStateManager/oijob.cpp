@@ -215,6 +215,15 @@ FeatureWrapper *OiJob::getFeature(const int &featureId){
 }
 
 /*!
+ * \brief OiJob::getFeaturesByFeatureType
+ * \param type
+ * \return
+ */
+QList<FeatureWrapper *> OiJob::getFeaturesByFeatureType(const Configuration::FeatureTypes &type){
+
+}
+
+/*!
  * \brief OiFeatureState::getNominalSystem
  * \param name
  * \return
