@@ -50,6 +50,7 @@ INCLUDEPATH += $$PWD/src/simulation
 INCLUDEPATH += $$PWD/src/plugin/oiexchange
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
 INCLUDEPATH += $$PWD/models
+INCLUDEPATH += $$PWD/src/util
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/release/ -lopenIndyLib
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/debug/ -lopenIndyLib
@@ -193,7 +194,8 @@ SOURCES += \
     controller/oiStateManager/oiconfigstate.cpp \
     src/oiemitter/oifeaturestateemitter.cpp \
     controller/oiStateManager/oiunitconverter.cpp \
-    controller/oiStateManager/oijob.cpp
+    controller/oiStateManager/oijob.cpp \
+    src/util/util.cpp
 
 HEADERS  += \
     ui/watchwindow.h \
@@ -348,8 +350,9 @@ HEADERS  += \
     controller/oiStateManager/oiconfigstate.h \
     src/oiemitter/oifeaturestateemitter.h \
     controller/oiStateManager/oiunitconverter.h \
-    src/types.h \
-    controller/oiStateManager/oijob.h
+    src/util/types.h \
+    controller/oiStateManager/oijob.h \
+    src/util/util.h
 
 FORMS    += ui/mainwindow.ui \
     ui/measurementconfigdialog.ui \

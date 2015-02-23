@@ -362,7 +362,7 @@ bool FeatureTreeItem::getHasReadingTemperature(){
  * \brief FeatureTreeItem::appendChild
  * \param child
  */
-void FeatureTreeItem::appendChild(FeatureTreeItem *child){
+void FeatureTreeItem::appendChild(QPointer<FeatureTreeItem> child){
     child->setIndex(this->children.size());
     child->setParent(this);
     this->children.append(child);
@@ -374,7 +374,7 @@ void FeatureTreeItem::appendChild(FeatureTreeItem *child){
  * \param index
  * \return
  */
-FeatureTreeItem* FeatureTreeItem::getChild(int index){
+QPointer<FeatureTreeItem> FeatureTreeItem::getChild(int index){
     if(this->childCount > index){
         return this->children.at(index);
     }
@@ -445,7 +445,7 @@ bool FeatureTreeItem::hasParent(){
  * \brief FeatureTreeItem::setParent
  * \param parent
  */
-void FeatureTreeItem::setParent(FeatureTreeItem *parent){
+void FeatureTreeItem::setParent(QPointer<FeatureTreeItem> parent){
     this->parent = parent;
 }
 

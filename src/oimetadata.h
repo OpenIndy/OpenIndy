@@ -56,6 +56,7 @@ private:
     static bool findIID(QString iid);
     //static int generateId();
 
+
 };
 
 #endif // OIMETADATA_H

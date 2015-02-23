@@ -26,9 +26,9 @@ public:
 
     QPointer<OiJob> getCurrentJob();
 
-signals:
+/*signals:
     void groupNameChanged(QString oldValue, QString nweValue);
-    void resizeTable();
+    void resizeTable();*/
     
 public slots:
     void updateModel();

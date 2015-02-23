@@ -1,13 +1,15 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <QString>
+#include <QStringList>
+
 //#######################
 //available element types
 //#######################
 
 //! all OpenIndy element types
 enum ElementTypes{
-    eUndefinedElement,
     ePointElement,
     eLineElement,
     ePlaneElement,
@@ -33,7 +35,8 @@ enum ElementTypes{
     eReadingDirectionElement,
     eReadingTemperatureElement,
     eReadingLevelElement,
-    eScalarEntityMeasurementSeriesElement
+    eScalarEntityMeasurementSeriesElement,
+    eUndefinedElement
 };
 
 //! all OpenIndy feature types
@@ -56,7 +59,8 @@ enum FeatureTypes{
     eScalarEntityAngleFeature,
     eScalarEntityDistanceFeature,
     eScalarEntityTemperatureFeature,
-    eScalarEntityMeasurementSeriesFeature
+    eScalarEntityMeasurementSeriesFeature,
+    eUndefinedFeature
 };
 
 //! all OpenIndy geometry types
@@ -76,8 +80,8 @@ enum GeometryTypes{
     eScalarEntityAngleGeometry,
     eScalarEntityDistanceGeometry,
     eScalarEntityTemperatureGeometry,
-    eScalarEntityMeasurementSeriesGeometry
+    eScalarEntityMeasurementSeriesGeometry,
+    eUndefinedGeometry
 };
-
 
 #endif // TYPES_H

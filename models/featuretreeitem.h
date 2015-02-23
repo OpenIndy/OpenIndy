@@ -45,16 +45,16 @@ public:
     void setHasReadingTemperature(bool hasReadingTemperature);
     bool getHasReadingTemperature();
 
-    void appendChild(FeatureTreeItem *child);
-    FeatureTreeItem* getChild(int index);
+    void appendChild(QPointer<FeatureTreeItem> child);
+    QPointer<FeatureTreeItem> getChild(int index);
     void removeChild(int index);
     void deleteChildren();
     int getChildCount();
     void setIndex(int index);
     int getIndex();
     bool hasParent();
-    void setParent(FeatureTreeItem *parent);
-    FeatureTreeItem* getParent();
+    void setParent(QPointer<FeatureTreeItem> parent);
+    QPointer<FeatureTreeItem> getParent();
 
     QVariant getDisplayValue();
 
@@ -80,8 +80,8 @@ private:
     bool hasLevelReading;
     bool hasTemperatureReading;
 
-    QList<FeatureTreeItem*> children;
-    FeatureTreeItem* parent;
+    QList< QPointer<FeatureTreeItem> > children;
+    QPointer<FeatureTreeItem> parent;
 
     int index;
     int childCount;
