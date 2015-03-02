@@ -4,98 +4,99 @@
 #include <QObject>
 #include <QPointer>
 
-#include "oijob.h"
-
-
-
-
-
-
-
-
-
-#include <QDebug>
-#include <QList>
-#include <QThread>
-#include <QMap>
-#include <QtSql/QSqlQueryModel>
-#include <QStandardItemModel>
-#include <QDir>
-#include <QApplication>
-#include <QStringListModel>
-#include <QDomDocument>
-#include <QWidget>
-
-#include "configuration.h"
-#include "console.h"
-#include "featuretablemodel.h"
-#include "measurementconfig.h"
-#include "pluginloader.h"
-#include "oimetadata.h"
-#include "systemdbmanager.h"
-
-#include "featuretreeviewmodel.h"
-#include "availableelementstreeviewproxymodel.h"
-#include "featuregraphicstreeviewproxymodel.h"
-#include "usedelementsmodel.h"
-
-#include "point.h"
-#include "pointcloud.h"
-#include "plane.h"
-#include "line.h"
-#include "sphere.h"
-#include "trafoparam.h"
-
-#include "featurewrapper.h"
-#include "scalarentityangle.h"
-#include "scalarentitydistance.h"
-#include "scalarentitytemperature.h"
-#include "scalarentitymeasurementseries.h"
-
-#include "featuretableproxymodel.h"
-#include "trafoparamproxymodel.h"
-#include "featuretreeitem.h"
-
-#include "plugintreeviewmodel.h"
-
-#include "featureupdater.h"
-
-#include "oiprojectdata.h"
-
-#include "oiemitter.h"
-
-#include "deletefeaturesfunctor.h"
-
 #include "featureattributes.h"
-#include "nominalattributeexchange.h"
-
-//#include "oifeaturestate.h"
-#include "oiprojectdata.h"
-#include "oiprojectexchanger.h"
-
-#include "oiserver.h"
-#include "oiwebsocketserver.h"
-#include "oirequesthandler.h"
-
-#include "pointfeaturemodel.h"
-#include "pointfeaturefiltermodel.h"
-
-#include "pi_oiexchangedefinedformat.h"
-#include "pi_oiexchangesimpleascii.h"
-
+#include "reading.h"
+#include "observation.h"
+#include "featurewrapper.h"
+#include "oijob.h"
+#include "featureupdater.h"
 #include "oimodelmanager.h"
 
-class Feature;
-class CoordinateSystem;
-class Station;
-class LaserTracker;
 
-/*!
- * \brief The Controller class
- *
- * This class handles all controlls and is the interface for the GUI. GUI elements only need to
- * call functions from the controller.
- */
+
+
+
+
+
+
+
+//#include <QDebug>
+//#include <QList>
+//#include <QThread>
+//#include <QMap>
+//#include <QtSql/QSqlQueryModel>
+//#include <QStandardItemModel>
+//#include <QDir>
+//#include <QApplication>
+//#include <QStringListModel>
+//#include <QDomDocument>
+//#include <QWidget>
+
+//#include "configuration.h"
+//#include "console.h"
+//#include "featuretablemodel.h"
+//#include "measurementconfig.h"
+//#include "pluginloader.h"
+//#include "oimetadata.h"
+//#include "systemdbmanager.h"
+
+//#include "featuretreeviewmodel.h"
+//#include "availableelementstreeviewproxymodel.h"
+//#include "featuregraphicstreeviewproxymodel.h"
+//#include "usedelementsmodel.h"
+
+//#include "point.h"
+//#include "pointcloud.h"
+//#include "plane.h"
+//#include "line.h"
+//#include "sphere.h"
+//#include "trafoparam.h"
+
+//#include "featurewrapper.h"
+//#include "scalarentityangle.h"
+//#include "scalarentitydistance.h"
+//#include "scalarentitytemperature.h"
+//#include "scalarentitymeasurementseries.h"
+
+//#include "featuretableproxymodel.h"
+//#include "trafoparamproxymodel.h"
+//#include "featuretreeitem.h"
+
+//#include "plugintreeviewmodel.h"
+
+//#include "featureupdater.h"
+
+//#include "oiprojectdata.h"
+
+//#include "oiemitter.h"
+
+//#include "deletefeaturesfunctor.h"
+
+//#include "featureattributes.h"
+//#include "nominalattributeexchange.h"
+
+//#include "oifeaturestate.h"
+//#include "oiprojectdata.h"
+//#include "oiprojectexchanger.h"
+
+//#include "oiserver.h"
+//#include "oiwebsocketserver.h"
+//#include "oirequesthandler.h"
+
+//#include "pointfeaturemodel.h"
+//#include "pointfeaturefiltermodel.h"
+
+//#include "pi_oiexchangedefinedformat.h"
+//#include "pi_oiexchangesimpleascii.h"
+
+//#include "oimodelmanager.h"
+
+//class Feature;
+//class CoordinateSystem;
+//class Station;
+//class LaserTracker;
+
+//! \brief The Controller class
 class Controller : public QObject
 {
     Q_OBJECT
@@ -180,6 +181,9 @@ private:
 
     QPointer<OiJob> currentJob;
 
+
+
+    /*
     //###################################################################
     //instances of manager classes to take care of OpenIndy state changes
     //###################################################################
@@ -200,8 +204,8 @@ public:
     //QStringList getAvailableCreateFunctions(Configuration::FeatureTypes featureType); //all fit & construct functions for a feature type
     QString getDefaultFunction(Configuration::FeatureTypes featureType); //the default function or empty string for a feature type
 
-    OiServer *openIndyServer;
-    OiWebSocketServer *openIndyWebSocketServer;
+    //OiServer *openIndyServer;
+    //OiWebSocketServer *openIndyWebSocketServer;
 
 signals:
     void changedStation();
@@ -305,7 +309,7 @@ private:
 
     QList<FeatureWrapper*> featuresToDelete;
 
-    DeleteFeaturesFunctor *myDeleteFeaturesCallback;
+    DeleteFeaturesFunctor *myDeleteFeaturesCallback;*/
 };
 
 #endif // CONTROLLER_H

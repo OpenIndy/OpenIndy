@@ -2,43 +2,59 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QDir>
+
+#include "controller.h"
+#include "featureattributes.h"
+
+
+#include "reading.h"
+
+
+
+
+
+
+
+
+
+
+/*#include <QDir>
 #include <QPluginLoader>
 #include <QDebug>
 #include <QMessageBox>
 #include <QPoint>
 #include <QKeyEvent>
 #include <QClipboard>
-#include <QtAlgorithms>
+#include <QtAlgorithms>*/
 
-#include "controller.h"
-#include "station.h"
-#include "measurementconfigdialog.h"
-#include "movementdialog.h"
-#include "watchwindow.h"
-#include "pluginloader.h"
-#include "pluginloaderdialog.h"
-#include "createfeaturedialog.h"
-#include "sensorplugindialog.h"
-#include "functionpluginloader.h"
-#include "sensorinfodialog.h"
-#include "featuredata.h"
-#include "settingsdialog.h"
-#include "scalarentitydialog.h"
-#include "importnominaldialog.h"
-#include "exportnominaldialog.h"
-#include "nominaldatadialog.h"
-#include "edittrafoparamdialog.h"
-#include "oiprojectexchanger.h"
-#include "stationinfodialog.h"
-#include "realtimedatadialog.h"
+//#include "controller.h"
+//#include "station.h"
+//#include "measurementconfigdialog.h"
+//#include "movementdialog.h"
+//#include "watchwindow.h"
+//#include "pluginloader.h"
+//#include "pluginloaderdialog.h"
+//#include "createfeaturedialog.h"
+//#include "sensorplugindialog.h"
+//#include "functionpluginloader.h"
+//#include "sensorinfodialog.h"
+//#include "featuredata.h"
+//#include "settingsdialog.h"
+//#include "scalarentitydialog.h"
+//#include "importnominaldialog.h"
+//#include "exportnominaldialog.h"
+//#include "nominaldatadialog.h"
+//#include "edittrafoparamdialog.h"
+//#include "oiprojectexchanger.h"
+//#include "stationinfodialog.h"
+//#include "realtimedatadialog.h"
 
-#include "featureoverviewdelegate.h"
-#include "trafoparamdelegate.h"
+//#include "featureoverviewdelegate.h"
+//#include "trafoparamdelegate.h"
 
-#include "oisimulationwidget.h"
+//#include "oisimulationwidget.h"
 
-#include <QComboBox>
+/*#include <QComboBox>
 #include <QCheckBox>
 #include <QLabel>
 #include <QSpinBox>
@@ -54,11 +70,11 @@
 
 #include "featuretablemodel.h"
 #include "featureattributes.h"
-#include "guiconfiguration.h"
+#include "guiconfiguration.h"*/
 
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 
-#include "oitoolaction.h"
+//#include "oitoolaction.h"
 
 namespace Ui {
 class MainWindow;
@@ -192,6 +208,8 @@ private:
     //OpenIndy dialogs and widgets
     //############################
 
+
+    /*
     CreateFeatureDialog createFeatureDlg;
 
 
@@ -296,7 +314,7 @@ private:
     QAction *cPsep10;
 
 
-
+*/
 signals:
 
     /*
@@ -313,7 +331,7 @@ signals:
     //void startStakeOut(QDomDocument request); //emitted when the user has configured a stake out task
     //void nextStakeOutGeometry(); //emitted when the next geometry has to be selected
 */
-
+/*
     void watchWindowKeyPressed(Qt::Key key);
 
 public slots:
@@ -461,7 +479,7 @@ private:
 
     void checkControlPadVisible();
 
-    void setUpControlPad();
+    void setUpControlPad();*/
 };
 
 #endif // MAINWINDOW_H

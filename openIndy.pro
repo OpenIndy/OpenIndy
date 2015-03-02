@@ -64,10 +64,10 @@ INCLUDEPATH += $$PWD/lib/openIndyLib/bin/release
 DEPENDPATH += $$PWD/lib/openIndyLib/bin/release
 
 SOURCES += \
-    ui/watchwindow.cpp \
-    ui/sensorplugindialog.cpp \
-    ui/pluginloaderdialog.cpp \
-    ui/measurementconfigdialog.cpp \
+    #ui/watchwindow.cpp \
+    #ui/sensorplugindialog.cpp \
+    #ui/pluginloaderdialog.cpp \
+    #ui/measurementconfigdialog.cpp \
     ui/mainwindow.cpp \
     ui/main.cpp \
     controller/systemdbmanager.cpp \
@@ -100,93 +100,93 @@ SOURCES += \
     src/geometry/cylinder.cpp \
     src/geometry/cone.cpp \
     src/geometry/circle.cpp \
-    ui/functionpluginloader.cpp \
+    #ui/functionpluginloader.cpp \
     src/connectionconfig.cpp \
-    ui/sensorinfodialog.cpp \
+    #ui/sensorinfodialog.cpp \
     src/featurewrapper.cpp \
     src/station.cpp \
     src/sensorconfiguration.cpp \
-    ui/featuredata.cpp \
-    models/observationmodel.cpp \
-    models/readingmodel.cpp \
+    #ui/featuredata.cpp \
+    #models/observationmodel.cpp \
+    #models/readingmodel.cpp \
     src/geometry/scalarentityangle.cpp \
     src/geometry/scalarentitydistance.cpp \
-    ui/movementdialog.cpp \
-    ui/settingsdialog.cpp \
-    ui/scalarentitydialog.cpp \
+    #ui/movementdialog.cpp \
+    #ui/settingsdialog.cpp \
+    #ui/scalarentitydialog.cpp \
     models/featuretreeviewmodel.cpp \
     models/featuretreeitem.cpp \
     models/availableelementstreeviewproxymodel.cpp \
     models/trafoparamproxymodel.cpp \
-    ui/nominaldatadialog.cpp \
-    models/featuregraphicstreeviewproxymodel.cpp \
-    ui/functionstatistic.cpp \
+    #ui/nominaldatadialog.cpp \
+    #models/featuregraphicstreeviewproxymodel.cpp \
+    #ui/functionstatistic.cpp \
     controller/sortlistbyname.cpp \
     src/residual.cpp \
-    models/usedelementsmodel.cpp \
-    ui/edittrafoparamdialog.cpp \
-    models/matrixmodel.cpp \
+    #models/usedelementsmodel.cpp \
+    #ui/edittrafoparamdialog.cpp \
+    #models/matrixmodel.cpp \
     src/function.cpp \
     controller/oiDataExchange/oidataexchanger.cpp \
     controller/oiDataExchange/oiprojectdata.cpp \
     controller/oiDataExchange/oiprojectexchanger.cpp \
-    src/functionconfiguration.cpp \
+    #src/functionconfiguration.cpp \
     src/geometry/scalarentitytemperature.cpp \
     src/geometry/scalarentitymeasurementseries.cpp \
-    ui/customparameterwidget.cpp \
+    #ui/customparameterwidget.cpp \
     src/elementdependencies.cpp \
-    controller/deletefeaturesfunctor.cpp \
+    #controller/deletefeaturesfunctor.cpp \
     ui/delegates/featureoverviewdelegate.cpp \
     ui/delegates/trafoparamdelegate.cpp \
-    models/plugintreeviewmodel.cpp \
-    models/plugintreeitem.cpp \
-    controller/nominalattributeexchange.cpp \
-    controller/displayattribute.cpp \
+    #models/plugintreeviewmodel.cpp \
+    #models/plugintreeitem.cpp \
+    #controller/nominalattributeexchange.cpp \
+    #controller/displayattribute.cpp \
     src/sensorlistener.cpp \
     controller/guiconfiguration.cpp \
-    ui/plugininfowidget.cpp \
-    ui/oisimulationwidget.cpp \
-    controller/trafocontroller.cpp \
-    ui/stationinfodialog.cpp \
-    ui/realtimedatadialog.cpp \
-    ui/watchwindowlistener.cpp \
+    #ui/plugininfowidget.cpp \
+    #ui/oisimulationwidget.cpp \
+    #controller/trafocontroller.cpp \
+    #ui/stationinfodialog.cpp \
+    #ui/realtimedatadialog.cpp \
+    #ui/watchwindowlistener.cpp \
     src/oiemitter/oifunctionemitter.cpp \
     src/oiemitter/oisensoremitter.cpp \
     src/oiemitter/oisimulationemitter.cpp \
     src/oiemitter/oinetworkadjustmentemitter.cpp \
     src/simulation/uncertaintycomponent.cpp \
-    controller/simulationcontroller.cpp \
-    ui/histogram.cpp \
-    models/simulationerrortablemodel.cpp \
-    ui/delegates/simulationdelegate.cpp \
-    models/simulationtreeviewmodel.cpp \
+    #controller/simulationcontroller.cpp \
+    #ui/histogram.cpp \
+    #models/simulationerrortablemodel.cpp \
+    #ui/delegates/simulationdelegate.cpp \
+    #models/simulationtreeviewmodel.cpp \
     src/simulation/simulationdata.cpp \
-    models/oimultiselectionmodel.cpp \
-    ui/oiloadingdialog.cpp \
-    controller/networking/oiserver.cpp \
-    controller/networking/oinetworkconnection.cpp \
-    controller/networking/oirequesthandler.cpp \
+    #models/oimultiselectionmodel.cpp \
+    #ui/oiloadingdialog.cpp \
+    #controller/networking/oiserver.cpp \
+    #controller/networking/oinetworkconnection.cpp \
+    #controller/networking/oirequesthandler.cpp \
     src/oirequestresponse.cpp \
-    models/pointfeaturemodel.cpp \
-    models/pointfeaturefiltermodel.cpp \
-    models/observationproxymodel.cpp \
-    models/readingproxymodel.cpp \
-    controller/plugincopier.cpp \
-    ui/delegates/observationdelegate.cpp \
+    #models/pointfeaturemodel.cpp \
+    #models/pointfeaturefiltermodel.cpp \
+    #models/observationproxymodel.cpp \
+    #models/readingproxymodel.cpp \
+    #controller/plugincopier.cpp \
+    #ui/delegates/observationdelegate.cpp \
     #src/plugin/oitool/oijob.cpp \
-    ui/oitoolaction.cpp \
+    #ui/oitoolaction.cpp \
     src/plugin/oiexchange/oiexchangeobject.cpp \
-    ui/exportnominaldialog.cpp \
+    #ui/exportnominaldialog.cpp \
     #controller/oijobstate.cpp \
-    ui/importnominaldialog.cpp \
+    #ui/importnominaldialog.cpp \
     src/oiemitter/oiexchangeemitter.cpp \
     controller/oimodelmanager.cpp \
-    models/oisimpleasciiexchangemodel.cpp \
-    models/geometrytypesproxymodel.cpp \
+    #models/oisimpleasciiexchangemodel.cpp \
+    #models/geometrytypesproxymodel.cpp \
     models/featuretablemodel.cpp \
     models/featuretableproxymodel.cpp \
-    controller/networking/oiwebsocket.cpp \
-    controller/networking/oiwebsocketserver.cpp \
+    #controller/networking/oiwebsocket.cpp \
+    #controller/networking/oiwebsocketserver.cpp \
     ui/createfeaturedialog.cpp \
     controller/featureattributes.cpp \
     controller/oiStateManager/featurecontainer.cpp \
@@ -198,10 +198,10 @@ SOURCES += \
     src/util/util.cpp
 
 HEADERS  += \
-    ui/watchwindow.h \
-    ui/sensorplugindialog.h \
+    #ui/watchwindow.h \
+    #ui/sensorplugindialog.h \
     ui/pluginloaderdialog.h \
-    ui/measurementconfigdialog.h \
+    #ui/measurementconfigdialog.h \
     ui/mainwindow.h \
     controller/systemdbmanager.h \
     controller/pluginloader.h \
@@ -243,15 +243,15 @@ HEADERS  += \
     src/geometry/cylinder.h \
     src/geometry/cone.h \
     src/geometry/circle.h \
-    ui/functionpluginloader.h \
+    #ui/functionpluginloader.h \
     src/connectionconfig.h \
-    ui/sensorinfodialog.h \
+    #ui/sensorinfodialog.h \
     src/featurewrapper.h \
     src/station.h \
     src/sensorconfiguration.h \
-    ui/featuredata.h \
-    models/observationmodel.h \
-    models/readingmodel.h \
+    #ui/featuredata.h \
+    #models/observationmodel.h \
+    #models/readingmodel.h \
     src/plugin/pi_oiplugin.h \
     lib/openIndyLib/include/oivec.h \
     lib/openIndyLib/include/oimat.h \
@@ -260,89 +260,89 @@ HEADERS  += \
     lib/openIndyLib/include/chooselalib.h \
     src/geometry/scalarentityangle.h \
     src/geometry/scalarentitydistance.h  \
-    ui/movementdialog.h \
-    ui/settingsdialog.h  \
-    ui/scalarentitydialog.h \
+    #ui/movementdialog.h \
+    #ui/settingsdialog.h  \
+    #ui/scalarentitydialog.h \
     models/featuretreeviewmodel.h \
     models/featuretreeitem.h \
     models/availableelementstreeviewproxymodel.h \
     models/trafoparamproxymodel.h \
     ui/nominaldatadialog.h \
-    models/featuregraphicstreeviewproxymodel.h \
-    ui/functionstatistic.h \
+    #models/featuregraphicstreeviewproxymodel.h \
+    #ui/functionstatistic.h \
     controller/sortlistbyname.h \
     src/residual.h \
-    models/usedelementsmodel.h \
-    ui/edittrafoparamdialog.h \
-    models/matrixmodel.h \
-    controller/oiDataExchange/oidataexchanger.h \
-    controller/oiDataExchange/oiprojectdata.h \
-    controller/oiDataExchange/oiprojectexchanger.h \
+    #models/usedelementsmodel.h \
+    #ui/edittrafoparamdialog.h \
+    #models/matrixmodel.h \
+    #controller/oiDataExchange/oidataexchanger.h \
+    #controller/oiDataExchange/oiprojectdata.h \
+    #controller/oiDataExchange/oiprojectexchanger.h \
     src/functionconfiguration.h \
     src/geometry/scalarentitytemperature.h \
     src/geometry/scalarentitymeasurementseries.h \
-    ui/customparameterwidget.h \
+    #ui/customparameterwidget.h \
     src/elementdependencies.h \
-    controller/oifunctor.h \
-    controller/deletefeaturesfunctor.h \
+    #controller/oifunctor.h \
+    #controller/deletefeaturesfunctor.h \
     ui/delegates/featureoverviewdelegate.h \
     ui/delegates/trafoparamdelegate.h \
-    models/plugintreeviewmodel.h \
-    models/plugintreeitem.h \
-    controller/nominalattributeexchange.h \
-    controller/displayattribute.h \
+    #models/plugintreeviewmodel.h \
+    #models/plugintreeitem.h \
+    #controller/nominalattributeexchange.h \
+    #controller/displayattribute.h \
     src/sensorlistener.h \
     controller/guiconfiguration.h \
-    ui/plugininfowidget.h \
-    ui/oisimulationwidget.h \
-    controller/trafocontroller.h \
-    ui/stationinfodialog.h \
-    ui/realtimedatadialog.h \
-    ui/watchwindowlistener.h \
+    #ui/plugininfowidget.h \
+    #ui/oisimulationwidget.h \
+    #controller/trafocontroller.h \
+    #ui/stationinfodialog.h \
+    #ui/realtimedatadialog.h \
+    #ui/watchwindowlistener.h \
     src/oiemitter/oifunctionemitter.h \
     src/oiemitter/oisensoremitter.h \
     src/oiemitter/oisimulationemitter.h \
     src/oiemitter/oinetworkadjustmentemitter.h \
     src/simulation/simulationmodel.h \
     src/simulation/uncertaintycomponent.h \
-    controller/simulationcontroller.h \
-    ui/histogram.h \
-    models/simulationerrortablemodel.h \
-    ui/delegates/simulationdelegate.h \
-    models/simulationtreeviewmodel.h \
+    #controller/simulationcontroller.h \
+    #ui/histogram.h \
+    #models/simulationerrortablemodel.h \
+    #ui/delegates/simulationdelegate.h \
+    #models/simulationtreeviewmodel.h \
     src/simulation/simulationdata.h \
     src/plugin/pi_generatefeaturefunction.h \
-    models/oimultiselectionmodel.h \
-    ui/oiloadingdialog.h \
-    controller/networking/oiserver.h \
-    controller/networking/oinetworkconnection.h \
-    controller/networking/oirequesthandler.h \
+    #models/oimultiselectionmodel.h \
+    #ui/oiloadingdialog.h \
+    #controller/networking/oiserver.h \
+    #controller/networking/oinetworkconnection.h \
+    #controller/networking/oirequesthandler.h \
     src/oirequestresponse.h \
-    models/pointfeaturemodel.h \
-    models/pointfeaturefiltermodel.h \
-    models/observationproxymodel.h \
-    models/readingproxymodel.h \
-    controller/plugincopier.h \
-    ui/delegates/observationdelegate.h \
+    #models/pointfeaturemodel.h \
+    #models/pointfeaturefiltermodel.h \
+    #models/observationproxymodel.h \
+    #models/readingproxymodel.h \
+    #controller/plugincopier.h \
+    #ui/delegates/observationdelegate.h \
     src/plugin/oitool/pi_oitool.h \
     #src/plugin/oitool/oijob.h \
-    ui/oitoolaction.h \
+    #ui/oitoolaction.h \
     src/plugin/oiexchange/oiexchangeascii.h \
     src/plugin/oiexchange/oiexchangeobject.h \
     src/plugin/oiexchange/pi_oiexchangeinterface.h \
     src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
-    ui/exportnominaldialog.h \
+    #ui/exportnominaldialog.h \
     #controller/oijobstate.h \
-    ui/importnominaldialog.h \
+    #ui/importnominaldialog.h \
     src/oiemitter/oiexchangeemitter.h \
     src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
     controller/oimodelmanager.h \
-    models/oisimpleasciiexchangemodel.h \
-    models/geometrytypesproxymodel.h \
+    #models/oisimpleasciiexchangemodel.h \
+    #models/geometrytypesproxymodel.h \
     models/featuretablemodel.h \
     models/featuretableproxymodel.h \
-    controller/networking/oiwebsocket.h \
-    controller/networking/oiwebsocketserver.h \
+    #controller/networking/oiwebsocket.h \
+    #controller/networking/oiwebsocketserver.h \
     ui/createfeaturedialog.h \
     controller/featureattributes.h \
     controller/oiStateManager/featurecontainer.h \
@@ -355,24 +355,24 @@ HEADERS  += \
     src/util/util.h
 
 FORMS    += ui/mainwindow.ui \
-    ui/measurementconfigdialog.ui \
-    ui/watchwindow.ui \
-    ui/pluginloaderdialog.ui \
-    ui/sensorplugindialog.ui \
-    ui/functionpluginloader.ui \
-    ui/sensorinfodialog.ui \
-    ui/featuredata.ui \
-    ui/movementdialog.ui \
-    ui/settingsdialog.ui \
-    ui/scalarentitydialog.ui \
-    ui/nominaldatadialog.ui \
-    ui/edittrafoparamdialog.ui \
-    ui/oisimulationwidget.ui \
-    ui/stationinfodialog.ui \
-    ui/realtimedatadialog.ui \
-    ui/oiloadingdialog.ui \
-    ui/exportnominaldialog.ui \
-    ui/importnominaldialog.ui \
+    #ui/measurementconfigdialog.ui \
+    #ui/watchwindow.ui \
+    #ui/pluginloaderdialog.ui \
+    #ui/sensorplugindialog.ui \
+    #ui/functionpluginloader.ui \
+    #ui/sensorinfodialog.ui \
+    #ui/featuredata.ui \
+    #ui/movementdialog.ui \
+    #ui/settingsdialog.ui \
+    #ui/scalarentitydialog.ui \
+    #ui/nominaldatadialog.ui \
+    #ui/edittrafoparamdialog.ui \
+    #ui/oisimulationwidget.ui \
+    #ui/stationinfodialog.ui \
+    #ui/realtimedatadialog.ui \
+    #ui/oiloadingdialog.ui \
+    #ui/exportnominaldialog.ui \
+    #ui/importnominaldialog.ui \
     ui/createfeaturedialog.ui
 
 

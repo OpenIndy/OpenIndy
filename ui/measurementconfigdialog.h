@@ -12,7 +12,7 @@
 #include <QShowEvent>
 #include <QDesktopWidget>
 
-#include "oifeaturestate.h"
+//#include "oifeaturestate.h"
 #include "oiconfigstate.h"
 
 namespace Ui {

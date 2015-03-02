@@ -9,7 +9,7 @@
 #include "pi_oiexchangesimpleascii.h"
 #include "pi_oiexchangedefinedformat.h"
 #include "oiloadingdialog.h"
-//#include "oifeaturestate.h"
+#include "oijob.h"
 
 struct ImExportTask{
     bool isImport;

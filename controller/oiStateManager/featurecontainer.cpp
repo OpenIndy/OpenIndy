@@ -104,7 +104,7 @@ QList<FeatureWrapper *> FeatureContainer::getFeaturesByGroup(const QString &grou
  * \param type
  * \return
  */
-QList<FeatureWrapper *> FeatureContainer::getFeaturesByType(const Configuration::FeatureTypes &type){
+QList<FeatureWrapper *> FeatureContainer::getFeaturesByType(const FeatureTypes &type){
     return this->myFeaturesTypeMap.values(type);
 }
 

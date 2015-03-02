@@ -20,7 +20,7 @@ QDomDocument OiProjectExchanger::saveProject(){
 
     QDomDocument project;
 
-    if(!OiProjectData::getIsValid()){
+    /*if(!OiProjectData::getIsValid()){
         Console::addLine("No project available");
         return project;
     }
@@ -158,7 +158,7 @@ QDomDocument OiProjectExchanger::saveProject(){
     }
     configs.appendChild(sensorConfigs);
 
-    root.appendChild(configs);
+    root.appendChild(configs);*/
 
     return project;
 
@@ -171,6 +171,7 @@ QDomDocument OiProjectExchanger::saveProject(){
  */
 bool OiProjectExchanger::loadProject(const QDomDocument &project){
 
+    /*
     //delete old features (from a previous project)
     //OiFeatureState::resetFeatureLists();
 
@@ -253,7 +254,7 @@ bool OiProjectExchanger::loadProject(const QDomDocument &project){
 
     //set configuration max id to a high unique value
     Configuration::idCount = project.documentElement().attribute("idCount").toInt() + 1;
-
+*/
     return true;
 
 }

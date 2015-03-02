@@ -12,7 +12,7 @@
 Controller::Controller(QObject *parent) :
     QObject(parent)
 {
-    c = new Console(0);
+    /*c = new Console(0);
     Console::c = c;
 
     //get pointer to state objects
@@ -38,7 +38,7 @@ Controller::Controller(QObject *parent) :
     openIndyWebSocketServer = new OiWebSocketServer();
     openIndyWebSocketServer->startServer();
     //connect(openIndyServer, SIGNAL(getProject(OiProjectData*)), this, SLOT(handleRemoteCommand(OiProjectData*)));
-
+*/
 }
 
 /*!
@@ -46,7 +46,7 @@ Controller::Controller(QObject *parent) :
  * \param featureId
  */
 void Controller::setActiveFeature(const int &featureId){
-
+/*
 	//get the selected feature by its id
     FeatureWrapper *selectedFeature = OiJob::getFeature(featureId);
 	
@@ -60,7 +60,7 @@ void Controller::setActiveFeature(const int &featureId){
     if(!selectedFeature->getFeature()->getIsActiveFeature()){
         selectedFeature->getFeature()->setActiveFeatureState(true);
     }
-
+*/
 }
 
 void Controller::setActiveStation(const int &featureId)
@@ -73,7 +73,7 @@ void Controller::setActiveStation(const int &featureId)
  * \param featureId
  */
 void Controller::setActiveCoordinateSystem(const int &featureId){
-    OiJob::activateCoordinateSystem(featureId);
+    //OiJob::activateCoordinateSystem(featureId);
 }
 
 /*!
@@ -82,8 +82,8 @@ void Controller::setActiveCoordinateSystem(const int &featureId){
  * \param attributes
  */
 void Controller::addFeatures(const FeatureAttributes &attributes){
-    OiJob::addFeatures(attributes);
-    Console::addLine("feature creation failed");
+    //OiJob::addFeatures(attributes);
+    //Console::addLine("feature creation failed");
 }
 
 void Controller::removeFeature(const int &featureId)
@@ -97,7 +97,7 @@ void Controller::removeFeature(const int &featureId)
  * After checking some conditions, it calls the measure function of the active sensor.
  */
 void Controller::startMeasurement(){
-
+/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
@@ -173,7 +173,7 @@ void Controller::startMeasurement(){
         OiJob::getActiveStation()->emitStartMeasure(OiJob::getActiveFeature()->getGeometry(), checkActiveCoordSys);
 
         emit sensorWorks("measuring...");
-    }
+    }*/
 }
 
 /*!
@@ -181,7 +181,7 @@ void Controller::startMeasurement(){
  * Add the last reading of current sensor to the active feature as an observations
  */
 void Controller::addMeasurement(){
-
+/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
@@ -212,7 +212,7 @@ void Controller::addMeasurement(){
         OiJob::getActiveStation()->sensorPad->addReading(r, OiJob::getActiveFeature()->getGeometry(), checkActiveCoordSys);
 
     }
-
+*/
 }
 
 /*!
@@ -220,7 +220,7 @@ void Controller::addMeasurement(){
  * After checking some conditions, it calls the move function of the active sensor.
  */
 void Controller::startMove(Reading *parameter){
-
+/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
@@ -234,12 +234,12 @@ void Controller::startMove(Reading *parameter){
         OiJob::getActiveStation()->emitStartMove(parameter->rCartesian.xyz.getAt(0),parameter->rCartesian.xyz.getAt(1),parameter->rCartesian.xyz.getAt(2));
         emit sensorWorks("moving...");
     }
-
+*/
 }
 
 
 void Controller::startAim(){
-
+/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
@@ -293,13 +293,13 @@ void Controller::startAim(){
                 xyz = t * xyz;
                 polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
             }*/
-
+/*
         }
 
         OiJob::getActiveStation()->emitStartMove(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2),false);
         emit sensorWorks("moving...");
     }
-
+*/
 }
 
 /*!
@@ -307,7 +307,7 @@ void Controller::startAim(){
  * After checking some conditions, it calls the connect function of the active sensor.
  */
 void Controller::startConnect(){
-
+/*
     if(OiJob::getActiveStation() != NULL){
         if(OiJob::getActiveStation()->sensorPad->instrument != NULL){
             OiJob::getActiveStation()->emitStartConnect(OiJob::getActiveStation()->getInstrumentConfig().connConfig);
@@ -320,14 +320,14 @@ void Controller::startConnect(){
         }
     }else{
         Console::addLine("no active station");
-    }
+    }*/
 }
 /*!
  * \brief Controller::startDisconnect
  * After checking some conditions, it calls the disconnect function of the active sensor.
  */
 void Controller::startDisconnect(){
-
+/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
@@ -340,7 +340,7 @@ void Controller::startDisconnect(){
         OiJob::getActiveStation()->emitStartDisconnect();
         emit sensorWorks("disconnecting...");
         emit sensorDisconnected();
-    }
+    }*/
 }
 
 /*!
@@ -348,7 +348,7 @@ void Controller::startDisconnect(){
  * After checking some conditions, it calls the toggle sight function of the active sensor.
  */
 void Controller::startToggleSight(){
-
+/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
@@ -357,7 +357,7 @@ void Controller::startToggleSight(){
     if(checkSensorValid()){
         OiJob::getActiveStation()->emitStartToggleSight();
         emit sensorWorks("toggle sight...");
-    }
+    }*/
 }
 
 /*!
@@ -365,7 +365,7 @@ void Controller::startToggleSight(){
  * After checking some conditions, it calls the initialize function of the active sensor.
  */
 void Controller::startInitialize(){
-
+/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
@@ -374,7 +374,7 @@ void Controller::startInitialize(){
     if(checkSensorValid()){
         OiJob::getActiveStation()->emitStartInitialize();
         emit sensorWorks("initialize...");
-    }
+    }*/
 }
 
 /*!
@@ -382,7 +382,7 @@ void Controller::startInitialize(){
  * After checking some conditions, it calls the home function of the active sensor.
  */
 void Controller::startHome(){
-
+/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
@@ -391,7 +391,7 @@ void Controller::startHome(){
     if(checkSensorValid()){
         OiJob::getActiveStation()->emitStartHome();
         emit sensorWorks("home...");
-    }
+    }*/
 }
 
 /*!
@@ -399,7 +399,7 @@ void Controller::startHome(){
  * After checking some conditions, it calls the compensation function of the active sensor.
  */
 void Controller::startCompensation(){
-
+/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
@@ -408,7 +408,7 @@ void Controller::startCompensation(){
     if(checkSensorValid()){
         OiJob::getActiveStation()->emitStartCompensation();
         emit sensorWorks("compensation...");
-    }
+    }*/
 }
 
 /*!
@@ -416,7 +416,7 @@ void Controller::startCompensation(){
  * After checking some conditions, it calls the change motor state function of the active sensor.
  */
 void Controller::startChangeMotorState(){
-
+/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
@@ -425,7 +425,7 @@ void Controller::startChangeMotorState(){
     if(checkSensorValid()){
         OiJob::getActiveStation()->emitStartMotorState();
         emit sensorWorks("change motor state...");
-    }
+    }*/
 }
 
 /*!
@@ -433,1609 +433,12 @@ void Controller::startChangeMotorState(){
  * \param s
  */
 void Controller::startCustomAction(const QString &s)
-{
+{/*
     if(OiJob::getActiveStation() == NULL){
         Console::addLine("no active station");
         return;
     }
 
     emit sensorWorks(s);
-    OiJob::getActiveStation()->emitSelfDefinedAction(s);
-}
-
-
-
-
-
-
-
-
-
-
-
-/*!
- * \brief Controller::connectModels
- * Update models when a corresponding signal is emittet from OiFeatureState
- */
-void Controller::connectModels(){
-    try{
-	
-	
-		//update table model when one or more features change
-        //connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->tblModel, SLOT(updateModel()));
-        //connect(this->myFeatureState, SIGNAL(activeFeatureChanged()), this->tblModel, SLOT(updateModel()));
-        //connect(this->myFeatureState, SIGNAL(activeStationChanged()), this->tblModel, SLOT(updateModel()));
-        connect(this->myFeatureState, SIGNAL(geometryObservationsChanged()), this, SLOT(recalcActiveFeature()), Qt::DirectConnection);
-        connect(this->myFeatureState, SIGNAL(systemObservationsAdded()), this, SLOT(recalcActiveFeature()), Qt::DirectConnection);
-        //connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this->tblModel, SLOT(updateModel()));
-
-		connect(this->myFeatureState, SIGNAL(featureFunctionsChanged()), this, SLOT(changeFunctionTreeViewModel()));
-		
-        //update feature groups model when a group is added or removed
-        connect(this->myFeatureState, SIGNAL(availableGroupsChanged()), this, SLOT(setUpFeatureGroupsModel()));
-
-        //update feature tree view model which is used in function plugin loader
-        //connect(this->myFeatureState, SIGNAL(featureSetChanged()), this->featureTreeViewModel, SLOT(refreshModel()));
-
-        //update coordinate systems model
-        connect(this->myFeatureState, SIGNAL(featureSetChanged()), this, SLOT(setUpCoordinateSystemsModel()));
-        connect(this->myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this, SLOT(setUpCoordinateSystemsModel()));
-
-        //save project each time when observations were added
-        connect(OiJob::getInstance(), SIGNAL(systemObservationsAdded()), this, SLOT(saveProject()));
-
-        //connect(this, SIGNAL(refreshGUI()), this->tblModel, SLOT(updateModel()));
-
-        //send save or load project task to OiRequestHandler & listen to his answers
-        connect(this, SIGNAL(sendXmlRequest(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveRequest(OiRequestResponse*)));
-        connect(OiRequestHandler::getInstance(), SIGNAL(sendResponse(OiRequestResponse*)), this, SLOT(receiveRequestResult(OiRequestResponse*)));
-
-    }catch(exception &e){
-        Console::addLine(e.what());
-    }
-}
-
-/*!
- * \brief Controller::createDefaultFeatures
- * Create a station and the PART system as default features when starting OpenIndy
- */
-bool Controller::createDefaultProject(){
-
-    /*if(OiFeatureState::getFeatureCount() == 0){
-
-        OiProjectData::setActiveProject("OpenIndyTest");
-
-        //create PART and STATION01 as default
-        FeatureAttributes partAttributes, stationAttributes;
-        partAttributes.typeOfFeature = Configuration::eCoordinateSystemFeature;
-        partAttributes.name = "PART";
-        partAttributes.count = 1;
-        stationAttributes.typeOfFeature = Configuration::eStationFeature;
-        stationAttributes.name = "STATION01";
-        stationAttributes.count = 1;
-        FeatureWrapper *part = OiFeatureState::addFeature(partAttributes);
-        FeatureWrapper *station01 = OiFeatureState::addFeature(stationAttributes);
-
-        if(part == NULL || station01 == NULL){
-            return false;
-        }
-
-        //set position parameter for STATION01
-        station01->getStation()->position->setCommonState(false);
-
-        //set STATION01's station system as active station
-        station01->getStation()->setActiveStationState(true);
-
-        //set PART as active coordinate system
-        part->getCoordinateSystem()->setActiveCoordinateSystemState(true);
-
-    }else{
-        return false;
-    }*/
-
-    return true;
-
-}
-
-/*!
- * \brief Controller::addFeature
- * Creates new features with given parameters. After creating, the features are set to the feature wrapper and added
- * to the feature list in the controller.
- * \param count
- * \param featureType
- * \param name
- * \param actualNominal
- * \param isCommonPoint
- */
-/*void Controller::addFeature(FeatureAttributes fae){
-
-    //get default measurement config depending on the feature type of the feature to be created
-    MeasurementConfig mConfig;
-    switch(fae.typeOfFeature){
-    case Configuration::eCircleFeature:
-        mConfig = Circle::defaultMeasurementConfig;
-        break;
-    case Configuration::eConeFeature:
-        mConfig = Cone::defaultMeasurementConfig;
-        break;
-    case Configuration::eCylinderFeature:
-        mConfig = Cylinder::defaultMeasurementConfig;
-        break;
-    case Configuration::eEllipsoidFeature:
-        mConfig = Ellipsoid::defaultMeasurementConfig;
-        break;
-    case Configuration::eHyperboloidFeature:
-        mConfig = Hyperboloid::defaultMeasurementConfig;
-        break;
-    case Configuration::eLineFeature:
-        mConfig = Line::defaultMeasurementConfig;
-        break;
-    case Configuration::eNurbsFeature:
-        mConfig = Nurbs::defaultMeasurementConfig;
-        break;
-    case Configuration::eParaboloidFeature:
-        mConfig = Paraboloid::defaultMeasurementConfig;
-        break;
-    case Configuration::ePlaneFeature:
-        mConfig = Plane::defaultMeasurementConfig;
-        break;
-    case Configuration::ePointFeature:
-        mConfig = Point::defaultMeasurementConfig;
-        break;
-    case Configuration::ePointCloudFeature:
-        mConfig = PointCloud::defaultMeasurementConfig;
-        break;
-    case Configuration::eScalarEntityAngleFeature:
-        mConfig = ScalarEntityAngle::defaultMeasurementConfig;
-        break;
-    case Configuration::eScalarEntityDistanceFeature:
-        mConfig = ScalarEntityDistance::defaultMeasurementConfig;
-        break;
-    case Configuration::eScalarEntityMeasurementSeriesFeature:
-        mConfig = ScalarEntityMeasurementSeries::defaultMeasurementConfig;
-        break;
-    case Configuration::eScalarEntityTemperatureFeature:
-        mConfig = ScalarEntityTemperature::defaultMeasurementConfig;
-        break;
-    case Configuration::eSphereFeature:
-        mConfig = Sphere::defaultMeasurementConfig;
-        break;
-    }
-
-    OiFeatureState::addFeatures(fae);
-
-
-
-    //refresh feature tree view models
-    //this->featureTreeViewModel->refreshModel();
-
-
-    //emit refreshGUI();
-    //emit featureAdded();
-
-    //refresh feature tree view models
-    //this->featureTreeViewModel->refreshModel();
-}*/
-
-/*!
- * \brief Controller::startCustomAction calls the custom action of the sensor.
- * \param s
- */
-/*void Controller::startCustomAction(QString s)
-{
-    if(OiFeatureState::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }
-
-    emit sensorWorks("custom action: " + s);
-    OiFeatureState::getActiveStation()->emitSelfDefinedAction(s);
-}*/
-
-/*void Controller::emitShowWatchWindow()
-{
-    emit this->showWatchWindow();
-}
-
-void Controller::emitCloseWatchWindow()
-{
-    emit this->closeWatchWindow();
-}*/
-
-void Controller::recalcFeatures()
-{
-   this->myFeatureUpdater->recalcAll();
-   emit refreshGUI();
-}
-
-/*!
- * \brief Controller::recalcActiveFeature
- * Call recalcFeature function for active feature
- */
-void Controller::recalcActiveFeature(){
-    /*if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getTrafoParam() != NULL){
-        this->recalcTrafoParam(OiFeatureState::getActiveFeature()->getTrafoParam());
-    }else if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
-        this->recalcFeature(OiFeatureState::getActiveFeature()->getFeature());
-    }
-    emit this->refreshGUI();*/
-}
-
-/*!
- * \brief Controller::recalcFeature
- * Recalcs the given feature
- * \param f
- */
-void Controller::recalcFeature(const int &featureId){
-    /*//start recalcing
-    this->myFeatureUpdater->recalcFeature(f);
-    //refresh feature tree view models
-
-    //this->featureTreeViewModel->refreshModel();
-
-    emit this->refreshGUI();*/
-
-}
-
-/*!
- * \brief Controller::recalcTrafoParam
- * Recalcs the given trafo param
- * \param tp
- */
-void Controller::recalcTrafoParam(const int &featureId){
-    /*//start recalcing
-    this->myFeatureUpdater->recalcTrafoParam(featureId);
-    //refresh feature tree view models
-    //this->featureTreeViewModel->refreshModel();*/
-}
-
-/*!
- * \brief Controller::changeActiveStation
- * this function changes the active station to the given one and set the sensor object to the new one.
- * \param setSensor
- */
-/*void Controller::changeActiveStation(bool setSensor){
-
-    if(OiFeatureState::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }else if(OiFeatureState::getActiveFeature() == NULL){
-        Console::addLine("no active feature");
-        return;
-    }
-
-    if(OiFeatureState::getActiveFeature()->getStation() != NULL){
-
-
-        disconnect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
-
-        if(setSensor){
-            OiFeatureState::getActiveStation()->sensorPad->copyMe(OiFeatureState::getActiveFeature()->getStation()->sensorPad);
-            //OiFeatureState::getActiveFeature()->getStation()->sensorPad = OiFeatureState::getActiveStation()->sensorPad;
-            //OiFeatureState::getActiveFeature()->getStation()->setInstrumentConfig(OiFeatureState::getActiveStation()->getInstrumentConfig());
-            OiFeatureState::getActiveFeature()->getStation()->setActiveStationState(true);
-            //this->startConnect();
-        }else{
-            OiFeatureState::getActiveFeature()->getStation()->setActiveStationState(true);
-        }
-
-    connect(OiFeatureState::getActiveStation(),SIGNAL(actionFinished(bool)),this,SLOT(showResults(bool)));
-    emit changedStation();
-    emit refreshGUI();
-    }
-}*/
-
-/*!
- * \brief Controller::showResults
- * After a sensor action finish, this funtion is called, to show the result in the console.
- * \param b
- */
-/*void Controller::showResults(bool b){
-    if(b){
-        Console::addLine("sensor action completed");
-        Console::addLine("count observation: ", OiFeatureState::getActiveStation()->coordSys->getObservations().size());
-    }
-}*/
-
-/*!
- * \brief Controller::savePluginData
- * This function saves the plugin data and meta data in the database of openIndy.
- * So the plugin can be chosen in runtime out of all available plugins in the database.
- * \param metaInfo
- */
-void Controller::savePluginData(PluginMetaData* metaInfo){
-
-    if (!metaInfo->alreadyExists){
-
-        QList<Sensor*> sensorList = PluginLoader::loadSensorPlugins(metaInfo->path);
-        QList<Function*> functionList = PluginLoader::loadFunctionPlugins(metaInfo->path);
-        QList<NetworkAdjustment*> networkAdjustmentList = PluginLoader::loadNetworkAdjustmentPlugins(metaInfo->path);
-        QList<SimulationModel*> simulationList = PluginLoader::loadSimulationPlugins(metaInfo->path);
-        QList<OiTool*> toolList = PluginLoader::loadOiToolPlugins(metaInfo->path);
-        QList<OiExchangeSimpleAscii*> simpleAsciiList = PluginLoader::loadOiExchangeSimpleAsciiPlugins(metaInfo->path);
-        QList<OiExchangeDefinedFormat*> definedFormatList = PluginLoader::loadOiExchangeDefinedFormatPlugins(metaInfo->path);
-
-        //SystemDbManager::savePlugin(metaInfo, functionList, sensorList, networkAdjustmentList,simulationList,toolList, simpleAsciiList, definedFormatList);
-
-    }
-}
-
-/*!
- * \brief Controller::getSelectedFeature
- * Sets up the selected feature from the tableview as active feature.
- * So it can be used for measuring and other actions.
- * \param index
- */
-/*void Controller::setSelectedFeature(int featureIndex){
-    try{
-
-        //if a new feature was selected
-        if(OiFeatureState::getFeatures().at(featureIndex) != NULL && OiFeatureState::getFeatures().at(featureIndex)->getFeature() != NULL
-                && !OiFeatureState::getFeatures().at(featureIndex)->getFeature()->getIsActiveFeature()){
-            //this->changeUsedElementsModel(-1, -1);
-
-            //set the selected feature as active feature
-            OiFeatureState::getFeatures().at(featureIndex)->getFeature()->setActiveFeatureState(true);
-
-            //send the actual position of the active feature
-            if(OiFeatureState::getActiveFeature()->getGeometry()!= NULL){
-                double x  = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayX(false).toDouble();
-                double y = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayY(false).toDouble();
-                double z = OiFeatureState::getActiveFeature()->getGeometry()->getDisplayZ(false).toDouble();
-
-                emit sendPositionOfActiveFeature(x,  y,  z);
-            }
-
-        }
-        //emit refreshGUI();
-        //set up tree view model with all functions of selected feature
-        //this->changeFunctionTreeViewModel();
-
-    }catch(exception &e){
-        Console::addLine(e.what());
-    }
-}*/
-
-/*!
- * \brief Controller::receiveSensorConfiguration
- * \param sc
- */
-void Controller::receiveSensorConfiguration(SensorConfiguration sc, bool connect){
-
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }
-
-    OiJob::getActiveStation()->sensorPad->instrument = sc.mySensor;
-    QObject::connect(&OiJob::getActiveStation()->sensorPad->instrument->myEmitter,SIGNAL(sendString(QString)),this,SLOT(printToConsole(QString)));
-    updateFeatureMConfig();
-
-    if(connect){
-        OiJob::getActiveStation()->setInstrumentConfig(sc);
-        this->startConnect();
-    }else{
-        OiJob::getActiveStation()->setInstrumentConfig(sc);
-    }
-
-}
-
-/*!
- * \brief Controller::createFunction
- * Creates an instance of the selected function and adds it to the function list of the active and selected feature.
- * \param index
- */
-void Controller::createFunction(int index){
-    qDebug() << "creat func";
-    qDebug() << index;
-    //qDebug() << this->pluginsModel->record(index).value("file_path").toString();
-    /*QString path = pluginsModel->record(index).value("file_path").toString();
-    QString name = pluginsModel->record(index).value("name").toString();
-    if(OiFeatureState::getActiveFeature() != NULL && OiFeatureState::getActiveFeature()->getFeature() != NULL){
-        //if the active feature is not a nominal geometry
-            //create function and connect OiFunctionEmitter to console
-            Function *newFunction = PluginLoader::loadFunctionPlugin(path,name);
-            if(newFunction != NULL){
-                connect(&newFunction->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(printToConsole(QString)));
-                OiFeatureState::getActiveFeature()->getFeature()->addFunction(newFunction);
-            }
-            //set up tree view model with all functions of selected feature
-            //this->changeFunctionTreeViewModel();
-            //set up available functions for the active feature
-            this->setFunction();
-
-    }*/
-}
-
-/*!
- * \brief Controller::deleteFunctionFromFeature
- * Delete the function at the specified index from the active feature
- * \param index
- */
-void Controller::deleteFunctionFromFeature(int index){
-    if(OiJob::getActiveFeature() != NULL && OiJob::getActiveFeature()->getFeature() != NULL){
-        Feature *activeFeature = OiJob::getActiveFeature()->getFeature();
-        if(activeFeature->getFunctions().size() > index){
-            //the first function of a feature can only be deleted if it is the only function
-            if(activeFeature->getFunctions().size() > 1 && index == 0){
-                Console::addLine("Cannot delete the function of a feature that defines it!");
-            }else{
-                activeFeature->removeFunction(index);
-                //set up tree view model with all functions of selected feature
-                //this->changeFunctionTreeViewModel();
-                //set up available functions for the active feature
-                //this->setFunction();
-            }
-        }
-    }
-}
-
-bool Controller::checkFeatureValid(){
-    if(OiJob::getActiveFeature() != NULL && OiJob::getActiveFeature()->getFeature() != NULL){
-        if(OiJob::getActiveFeature()->getGeometry() != NULL && OiJob::getActiveFeature()->getGeometry() != OiJob::getActiveStation()->position){
-            return true;
-        }else{
-            Console::addLine("you cannot measure this feature");
-            return false;
-        }
-    }else{
-        Console::addLine("no feature selected");
-        return false;
-    }
-}
-
-bool Controller::checkSensorValid(){
-
-    if(OiJob::getActiveStation() != NULL){
-        if(OiJob::getActiveStation()->sensorPad->instrument != NULL){
-            return true;
-        }else{
-            Console::addLine("sensor not connected");
-            return false;
-        }
-    }else{
-        Console::addLine("no active station");
-        return false;
-    }
-}
-
-/*void Controller::setActiveCoordSystem(QString CoordSysName){
-
-    qDebug() << CoordSysName;
-    for(int i=0; i<OiFeatureState::getFeatures().size();i++){
-
-        FeatureWrapper *fw = OiFeatureState::getFeatures().at(i);
-
-        if(OiFeatureState::getFeatures().at(i)->getCoordinateSystem() != NULL && OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->getFeatureName() == CoordSysName){
-            OiFeatureState::getFeatures().at(i)->getCoordinateSystem()->setActiveCoordinateSystemState(true);
-            break;
-        }
-        if(OiFeatureState::getFeatures().at(i)->getStation() != NULL &&
-                OiFeatureState::getFeatures().at(i)->getStation()->coordSys != NULL &&
-                OiFeatureState::getFeatures().at(i)->getStation()->getFeatureName() == CoordSysName){
-            OiFeatureState::getFeatures().at(i)->getStation()->coordSys->setActiveCoordinateSystemState(true);
-            break;
-        }
-
-    }
-
-    if(OiFeatureState::getActiveCoordinateSystem() != NULL){
-
-        //transform observations to current system and recalc all features
-        this->myFeatureUpdater->switchCoordinateSystem(OiFeatureState::getActiveCoordinateSystem());
-
-    }
-
-    //update table view for all features
-    emit this->refreshGUI();
-}*/
-
-/*!
- * \brief Controller::changeFunctionTreeViewModel
- * Update model for tree view with all functions of selected feature
- */
-/*void Controller::changeFunctionTreeViewModel(){
-    this->functionTreeViewModel->clear();
-    this->functionTreeViewModel->setHorizontalHeaderItem(0, new QStandardItem("functions"));
-    QStandardItem *rootItem = this->functionTreeViewModel->invisibleRootItem();
-    if(OiFeatureState::getActiveFeature() != NULL){
-        foreach(Function *f, OiFeatureState::getActiveFeature()->getFeature()->getFunctions()){
-            if(f != NULL){
-                QStandardItem *function = new QStandardItem(f->getMetaData()->name);
-                foreach(InputParams param, f->getNeededElements()){
-                    if(param.infinite){
-                        QStandardItem *element = new QStandardItem(QString("n %1s").arg(Configuration::getElementTypeString(param.typeOfElement)));
-                        function->appendRow(element);
-                    }else{
-                        QStandardItem *element = new QStandardItem(QString("1 %1").arg(Configuration::getElementTypeString(param.typeOfElement)));
-                        function->appendRow(element);
-                    }
-                }
-                rootItem->appendRow(function);
-            }
-        }
-    }
-}*/
-
-/*!
- * \brief Controller::changeUsedElementsModel
- * Update model for listview with used elements
- * \param functionIndex
- * \param elementIndex
- */
-/*void Controller::changeUsedElementsModel(int functionIndex, int elementIndex){
-    this->usedElementsModel->removeAllElements();
-
-    if(functionIndex >= 0 && elementIndex >= 0 && OiFeatureState::getActiveFeature() != NULL
-            && OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex
-            && OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().size() > elementIndex){
-        //get function at functionIndex of active feature
-        Function *func = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex);
-        QMap<int, QList<InputFeature> > featureOrder = func->getFeatureOrder();
-        QMap<int, QList<InputFeature> >::iterator idx = featureOrder.find(elementIndex);
-        if(idx != featureOrder.end() && idx.value().size() > 0){ //if the list with elements is not empty
-            QList<InputFeature> featurePosition = idx.value(); //elements of function at elementIndex
-            switch(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement){
-                case Configuration::ePointElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        Point *p = func->getPoint(featurePosition.at(i).id);
-                        if(p != NULL){
-                            FeatureWrapper *pointWrapper = new FeatureWrapper();
-                            pointWrapper->setPoint(p);
-                            FeatureTreeItem *point = new FeatureTreeItem(p->getFeatureName());
-                            point->setFeature(pointWrapper);
-                            this->usedElementsModel->addElement(point);
-                        }
-                    }
-                    break;
-                case Configuration::eLineElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        Line *l = func->getLine(featurePosition.at(i).id);
-                        if(l != NULL){
-                            FeatureWrapper *lineWrapper = new FeatureWrapper();
-                            lineWrapper->setLine(l);
-                            FeatureTreeItem *line = new FeatureTreeItem(l->getFeatureName());
-                            line->setFeature(lineWrapper);
-                            this->usedElementsModel->addElement(line);
-                        }
-                    }
-                    break;
-                case Configuration::ePlaneElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        Plane *p = func->getPlane(featurePosition.at(i).id);
-                        if(p != NULL){
-                            FeatureWrapper *planeWrapper = new FeatureWrapper();
-                            planeWrapper->setPlane(p);
-                            FeatureTreeItem *plane = new FeatureTreeItem(p->getFeatureName());
-                            plane->setFeature(planeWrapper);
-                            this->usedElementsModel->addElement(plane);
-                        }
-                    }
-                    break;
-                case Configuration::eSphereElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        Sphere *s = func->getSphere(featurePosition.at(i).id);
-                        if(s != NULL){
-                            FeatureWrapper *sphereWrapper = new FeatureWrapper();
-                            sphereWrapper->setSphere(s);
-                            FeatureTreeItem *sphere = new FeatureTreeItem(s->getFeatureName());
-                            sphere->setFeature(sphereWrapper);
-                            this->usedElementsModel->addElement(sphere);
-                        }
-                    }
-                    break;
-                case Configuration::eScalarEntityAngleElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        ScalarEntityAngle *s = func->getScalarEntityAngle(featurePosition.at(i).id);
-                        if(s != NULL){
-                            FeatureWrapper *angleWrapper = new FeatureWrapper();
-                            angleWrapper->setScalarEntityAngle(s);
-                            FeatureTreeItem *angle = new FeatureTreeItem(s->getFeatureName());
-                            angle->setFeature(angleWrapper);
-                            this->usedElementsModel->addElement(angle);
-                        }
-                    }
-                    break;
-                case Configuration::eScalarEntityDistanceElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        ScalarEntityDistance *s = func->getScalarEntityDistance(featurePosition.at(i).id);
-                        if(s != NULL){
-                            FeatureWrapper *distanceWrapper = new FeatureWrapper();
-                            distanceWrapper->setScalarEntityDistance(s);
-                            FeatureTreeItem *distance = new FeatureTreeItem(s->getFeatureName());
-                            distance->setFeature(distanceWrapper);
-                            this->usedElementsModel->addElement(distance);
-                        }
-                    }
-                    break;
-                case Configuration::eTrafoParamElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        TrafoParam *tp = func->getTrafoParam(featurePosition.at(i).id);
-                        if(tp != NULL){
-                            FeatureWrapper *trafoParamWrapper = new FeatureWrapper();
-                            trafoParamWrapper->setTrafoParam(tp);
-                            FeatureTreeItem *trafoParam = new FeatureTreeItem(tp->getFeatureName());
-                            trafoParam->setFeature(trafoParamWrapper);
-                            this->usedElementsModel->addElement(trafoParam);
-                        }
-                    }
-                    break;
-                case Configuration::eCoordinateSystemElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        CoordinateSystem *cs = func->getCoordinateSystem(featurePosition.at(i).id);
-                        if(cs != NULL){
-                            FeatureWrapper *coordinateSystemWrapper = new FeatureWrapper();
-                            coordinateSystemWrapper->setCoordinateSystem(cs);
-                            FeatureTreeItem *coordinateSystem = new FeatureTreeItem(cs->getFeatureName());
-                            coordinateSystem->setFeature(coordinateSystemWrapper);
-                            this->usedElementsModel->addElement(coordinateSystem);
-                        }
-                    }
-                    break;
-                case Configuration::eStationElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        Station *s = func->getStation(featurePosition.at(i).id);
-                        if(s != NULL){
-                            FeatureWrapper *stationWrapper = new FeatureWrapper();
-                            stationWrapper->setStation(s);
-                            FeatureTreeItem *station = new FeatureTreeItem(s->getFeatureName());
-                            station->setFeature(stationWrapper);
-                            this->usedElementsModel->addElement(station);
-                        }
-                    }
-                    break;
-                case Configuration::eObservationElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        Observation *o = func->getObservation(featurePosition.at(i).id);
-                        if(o != NULL && o->myReading != NULL){
-                            FeatureTreeItem *observation = new FeatureTreeItem(QString::number(o->getId()));
-                            observation->setObservation(o);
-                            this->usedElementsModel->addElement(observation);
-                        }
-                    }
-                    break;
-                case Configuration::eReadingCartesianElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        Reading *r = func->getReadingCartesian(featurePosition.at(i).id);
-                        if(r != NULL){
-                            FeatureTreeItem *reading = new FeatureTreeItem(r->measuredAt.toString());
-                            reading->setReading(r);
-                            this->usedElementsModel->addElement(reading);
-                        }
-                    }
-                    break;
-                case Configuration::eReadingDirectionElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        Reading *r = func->getReadingDirection(featurePosition.at(i).id);
-                        if(r != NULL){
-                            FeatureTreeItem *reading = new FeatureTreeItem(r->measuredAt.toString());
-                            reading->setReading(r);
-                            this->usedElementsModel->addElement(reading);
-                        }
-                    }
-                    break;
-                case Configuration::eReadingDistanceElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        Reading *r = func->getReadingDistance(featurePosition.at(i).id);
-                        if(r != NULL){
-                            FeatureTreeItem *reading = new FeatureTreeItem(r->measuredAt.toString());
-                            reading->setReading(r);
-                            this->usedElementsModel->addElement(reading);
-                        }
-                    }
-                    break;
-                case Configuration::eReadingPolarElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        Reading *r = func->getReadingPolar(featurePosition.at(i).id);
-                        if(r != NULL){
-                            FeatureTreeItem *reading = new FeatureTreeItem(r->measuredAt.toString());
-                            reading->setReading(r);
-                            this->usedElementsModel->addElement(reading);
-                        }
-                    }
-                    break;
-                case Configuration::eScalarEntityTemperatureElement:
-                    for(int i = 0; i < featurePosition.size(); i++){
-                        ScalarEntityTemperature *s = func->getScalarEntityTemperature(featurePosition.at(i).id);
-                        if(s != NULL){
-                            FeatureWrapper *temperatureWrapper = new FeatureWrapper();
-                            temperatureWrapper->setScalarEntityTemperature(s);
-                            FeatureTreeItem *temperature = new FeatureTreeItem(s->getFeatureName());
-                            temperature->setFeature(temperatureWrapper);
-                            this->usedElementsModel->addElement(temperature);
-                        }
-                    }
-                    break;
-            }
-        }
-    }
-
-    this->usedElementsModel->refreshModel();
-}*/
-
-/*!
- * \brief Controller::setSelectedFunction
- * Receive selected function from function plugin loader dialog
- * \param index
- * \param neededElement
- */
-/*void Controller::setSelectedFunction(int functionIndex, int neededElementIndex){
-    if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex && functionIndex >= 0){ //if function index is valid
-        if(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements().size() > neededElementIndex
-                && neededElementIndex >= 0){ //if needed element index is valid
-            emit this->sendFunctionDescription(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements()
-                                               .at(neededElementIndex).description);
-            emit this->sendAvailableElementsFilter(OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->getNeededElements()
-                                                   .at(neededElementIndex).typeOfElement, false);
-        }else{ //if function itself was clicked
-            Function *func = OiFeatureState::getActiveFeature()->getFeature()->getFunctions().at(functionIndex);
-            emit this->sendFunctionDescription(func->getMetaData()->description);
-            emit this->sendAvailableElementsFilter(Configuration::eUndefinedElement, true);
-            emit this->sendExtraParameterForFunction(func->getIntegerParameter(), func->getDoubleParameter(), func->getStringParameter(), func->getFunctionConfiguration());
-        }
-    }else{
-        emit this->sendAvailableElementsFilter(Configuration::eUndefinedElement, true);
-    }
-    //re-build used elements model
-    this->changeUsedElementsModel(functionIndex, neededElementIndex);
-}*/
-
-/*!
- * \brief Controller::addElement2Function
- * Add element to the active function at index
- * \param element
- * \param functionIndex
- * \param elementIndex
- */
-void Controller::addElement2Function(FeatureTreeItem *element, int functionIndex, int elementIndex){
-    if(element != NULL && functionIndex >= 0 && elementIndex >= 0 && OiJob::getActiveFeature() != NULL){
-        //check circle warning recursively
-        if(element->getIsFeature() && element->getFeature() != NULL && element->getFeature()->getFeature() != NULL
-                && this->checkCircleWarning(OiJob::getActiveFeature()->getFeature(), element->getFeature()->getFeature())){
-            Console::addLine(QString("%1 %2")
-                             .arg("You cannot use a feature for the calculation, which itself is directly or indirectly")
-                             .arg("dependent on the feature to be calculated."));
-            emit this->showMessageBox("circle warning", QString("%1 %2")
-                                      .arg("You cannot use a feature for the calculation, which itself is directly or indirectly")
-                                      .arg("dependent on the feature to be calculated."));
-            return;
-        }
-        //get pointer to active feature and add used element
-        Feature *feature = OiJob::getActiveFeature()->getFeature();
-        if(feature->getFunctions().size() > functionIndex && feature->getFunctions().at(functionIndex)->getNeededElements().size() > elementIndex){
-            if(element->getIsFeature() && element->getFeature() != NULL && element->getFeature()->getFeature() != NULL){
-                switch(element->getFeature()->getTypeOfFeature()){
-                    case Configuration::ePointFeature:
-                        if(element->getFeature()->getPoint() != NULL
-                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::ePointElement){
-                            feature->getFunctions().at(functionIndex)->addPoint(element->getFeature()->getPoint(), elementIndex);
-                        }
-                        break;
-                    case Configuration::eLineFeature:
-                        if(element->getFeature()->getLine() != NULL
-                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eLineElement){
-                            feature->getFunctions().at(functionIndex)->addLine(element->getFeature()->getLine(), elementIndex);
-                        }
-                        break;
-                    case Configuration::ePlaneFeature:
-                        if(element->getFeature()->getPlane() != NULL
-                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::ePlaneElement){
-                            feature->getFunctions().at(functionIndex)->addPlane(element->getFeature()->getPlane(), elementIndex);
-                        }
-                        break;
-                    case Configuration::eSphereFeature:
-                        if(element->getFeature()->getSphere() != NULL
-                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eSphereElement){
-                            feature->getFunctions().at(functionIndex)->addSphere(element->getFeature()->getSphere(), elementIndex);
-                        }
-                        break;
-                    case Configuration::eStationFeature:
-                        if(element->getFeature()->getStation() != NULL
-                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eStationElement){
-                            feature->getFunctions().at(functionIndex)->addStation(element->getFeature()->getStation(), elementIndex);
-                        }
-                        break;
-                    case Configuration::eCoordinateSystemFeature:
-                        if(element->getFeature()->getCoordinateSystem() != NULL
-                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eCoordinateSystemElement){
-                            feature->getFunctions().at(functionIndex)->addCoordSystem(element->getFeature()->getCoordinateSystem(), elementIndex);
-                        }
-                        break;
-                    case Configuration::eTrafoParamFeature:
-                        if(element->getFeature()->getTrafoParam() != NULL
-                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eTrafoParamElement){
-                            feature->getFunctions().at(functionIndex)->addTrafoParam(element->getFeature()->getTrafoParam(), elementIndex);
-                        }
-                        break;
-                    case Configuration::eScalarEntityAngleFeature:
-                        if(element->getFeature()->getScalarEntityAngle() != NULL
-                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityAngleElement){
-                            feature->getFunctions().at(functionIndex)->addScalarEntityAngle(element->getFeature()->getScalarEntityAngle(), elementIndex);
-                        }
-                        break;
-                    case Configuration::eScalarEntityDistanceFeature:
-                        if(element->getFeature()->getScalarEntityDistance() != NULL
-                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityDistanceElement){
-                            feature->getFunctions().at(functionIndex)->addScalarEntityDistance(element->getFeature()->getScalarEntityDistance(), elementIndex);
-                        }
-                        break;
-                    case Configuration::eScalarEntityTemperatureFeature:
-                        if(element->getFeature()->getScalarEntityTemperature() != NULL
-                                && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eScalarEntityTemperatureElement){
-                            feature->getFunctions().at(functionIndex)->addScalarEntityTemperature(element->getFeature()->getScalarEntityTemperature(), elementIndex);
-                        }
-                        break;
-                }
-                //set usedFor and previouslyNeeded for active feature and used element
-                feature->previouslyNeeded.append(element->getFeature());
-                element->getFeature()->getFeature()->usedFor.append(OiJob::getActiveFeature());
-            }else if(element->getIsReading() && element->getReading() != NULL){
-                switch(element->getReading()->typeofReading){
-                    case Configuration::eCartesian:
-                        if(feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingCartesianElement){
-                            feature->getFunctions().at(functionIndex)->addReadingCartesian(element->getReading(), elementIndex);
-                        }
-                        break;
-                    case Configuration::ePolar:
-                        if(feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingPolarElement){
-                            feature->getFunctions().at(functionIndex)->addReadingPolar(element->getReading(), elementIndex);
-                        }
-                        break;
-                    case Configuration::eDistance:
-                        if(feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingDistanceElement){
-                            feature->getFunctions().at(functionIndex)->addReadingDistance(element->getReading(), elementIndex);
-                        }
-                        break;
-                    case Configuration::eDirection:
-                        if(feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eReadingDirectionElement){
-                            feature->getFunctions().at(functionIndex)->addReadingDirection(element->getReading(), elementIndex);
-                        }
-                        break;
-                }
-            }else if(element->getIsObservation() && element->getObservation() != NULL
-                     && feature->getFunctions().at(functionIndex)->getNeededElements().at(elementIndex).typeOfElement == Configuration::eObservationElement){
-                feature->getFunctions().at(functionIndex)->addObservation(element->getObservation(), elementIndex);
-
-                //if feature is a geometry add the observation to the list of observations in class geometry
-                Geometry *geom = OiJob::getActiveFeature()->getGeometry();
-                if(geom != NULL){
-                    geom->addObservation(element->getObservation());
-                    geom->getObservations().last()->myTargetGeometries.append(geom);
-                }
-            }
-        }
-        //this->changeUsedElementsModel(functionIndex, elementIndex);
-    }
-}
-
-/*!
- * \brief Controller::removeElementFromFunction
- * Remove element from the active function at elementIndex
- * \param element
- * \param functionIndex
- * \param elementIndex
- */
-void Controller::removeElementFromFunction(FeatureTreeItem *element, int functionIndex, int elementIndex){
-    if(element != NULL && functionIndex >= 0 && OiJob::getActiveFeature() != NULL){
-        Feature *feature = OiJob::getActiveFeature()->getFeature();
-        if(feature->getFunctions().size() > functionIndex && feature->getFunctions().at(functionIndex) != NULL){
-            if(element->getIsFeature() && element->getFeature() != NULL && element->getFeature()->getFeature() != NULL){
-                switch(element->getFeature()->getTypeOfFeature()){
-                    case Configuration::ePointFeature:
-                        if(element->getFeature()->getPoint() != NULL){
-                            feature->getFunctions().at(functionIndex)->removePoint(element->getFeature()->getFeature()->getId());
-                        }
-                        break;
-                    case Configuration::eLineFeature:
-                        if(element->getFeature()->getLine() != NULL){
-                            feature->getFunctions().at(functionIndex)->removeLine(element->getFeature()->getFeature()->getId());
-                        }
-                        break;
-                    case Configuration::ePlaneFeature:
-                        if(element->getFeature()->getPlane() != NULL){
-                            feature->getFunctions().at(functionIndex)->removePlane(element->getFeature()->getFeature()->getId());
-                        }
-                        break;
-                    case Configuration::eSphereFeature:
-                        if(element->getFeature()->getSphere() != NULL){
-                            feature->getFunctions().at(functionIndex)->removeSphere(element->getFeature()->getFeature()->getId());
-                        }
-                        break;
-                    case Configuration::eStationFeature:
-                        if(element->getFeature()->getStation() != NULL){
-                            feature->getFunctions().at(functionIndex)->removeStation(element->getFeature()->getFeature()->getId());
-                        }
-                        break;
-                    case Configuration::eCoordinateSystemFeature:
-                        if(element->getFeature()->getCoordinateSystem() != NULL){
-                            feature->getFunctions().at(functionIndex)->removeCoordSystem(element->getFeature()->getFeature()->getId());
-                        }
-                        break;
-                    case Configuration::eTrafoParamFeature:
-                        if(element->getFeature()->getTrafoParam() != NULL){
-                            feature->getFunctions().at(functionIndex)->removeTrafoParam(element->getFeature()->getFeature()->getId());
-                        }
-                        break;
-                    case Configuration::eScalarEntityAngleFeature:
-                        if(element->getFeature()->getScalarEntityAngle() != NULL){
-                            feature->getFunctions().at(functionIndex)->removeScalarEntityAngle(element->getFeature()->getFeature()->getId());
-                        }
-                        break;
-                    case Configuration::eScalarEntityDistanceFeature:
-                        if(element->getFeature()->getScalarEntityDistance() != NULL){
-                            feature->getFunctions().at(functionIndex)->removeScalarEntityDistance(element->getFeature()->getFeature()->getId());
-                        }
-                        break;
-                    case Configuration::eScalarEntityTemperatureFeature:
-                        if(element->getFeature()->getScalarEntityTemperature() != NULL){
-                            feature->getFunctions().at(functionIndex)->removeScalarEntityTemperature(element->getFeature()->getFeature()->getId());
-                        }
-                        break;
-                }
-                //set usedFor and previouslyNeeded for active feature and used element
-                feature->previouslyNeeded.removeOne(element->getFeature());
-                element->getFeature()->getFeature()->usedFor.removeOne(OiJob::getActiveFeature());
-            }else if(element->getIsObservation() && element->getObservation() != NULL){
-                feature->getFunctions().at(functionIndex)->removeObservation(element->getObservation()->getId());
-                if(OiJob::getActiveFeature()->getGeometry() != NULL){
-                    element->getObservation()->myTargetGeometries.removeOne(OiJob::getActiveFeature()->getGeometry());
-                }
-            }else if(element->getIsReading() && element->getReading() != NULL){
-                switch(element->getReading()->typeofReading){
-                    case Configuration::eCartesian:
-                        feature->getFunctions().at(functionIndex)->removeReadingCartesian(element->getReading()->id);
-                    case Configuration::eDirection:
-                        feature->getFunctions().at(functionIndex)->removeReadingDirection(element->getReading()->id);
-                    case Configuration::eDistance:
-                        feature->getFunctions().at(functionIndex)->removeReadingDistance(element->getReading()->id);
-                    case Configuration::ePolar:
-                        feature->getFunctions().at(functionIndex)->removeReadingPolar(element->getReading()->id);
-                }
-            }
-            //this->changeUsedElementsModel(functionIndex, elementIndex);
-        }
-
-    }
-}
-
-/*!
- * \brief Controller::checkCircleWarning
- * Checks wether there is a circular reference. If so this function returns true, otherwise false.
- * \param activeFeature
- * \param usedForActiveFeature
- * \return
- */
-bool Controller::checkCircleWarning(Feature *activeFeature, Feature *usedForActiveFeature){
-    if(activeFeature != NULL && usedForActiveFeature != NULL){
-        //if activeFeature and usedForActiveFeature are equal
-        if(activeFeature->getId() == usedForActiveFeature->getId()){
-            return true;
-        }
-        //if active feature is in list of previously needed features of usedForActiveFeature
-        foreach(FeatureWrapper *f, usedForActiveFeature->previouslyNeeded){
-            if(f != NULL && f->getFeature() != NULL){
-                if(f->getFeature()->getId() == activeFeature->getId()){
-                    return true;
-                }else if(f->getFeature()->previouslyNeeded.size() > 0 && this->checkCircleWarning(activeFeature, f->getFeature())){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    return true;
-}
-
-int Controller::checkActiveFeatureIndex(int current, int index){
-
-    //int tmpIndex = index;
-    int trafoParamCount = 0;
-    int featureIndex = 0;
-
-    for (current; current <= index; current++){
-        if(OiJob::getFeatures().at(current)->getTrafoParam() != NULL){
-            trafoParamCount += 1;
-        }
-    }
-    featureIndex += trafoParamCount;
-    if( trafoParamCount > 0){
-        featureIndex += checkActiveFeatureIndex(index+1, index+trafoParamCount);
-    }
-
-    return featureIndex;
-}
-
-/*!
- * \brief getNominalValues sets the attributes of the selected feature to the specified values.
- * It uses the exchange object for nominal data
- * \param nominalValue
- */
-void Controller::getNominalValues(NominalAttributeExchange nominalValue){
-
-    switch (OiJob::getActiveFeature()->getTypeOfFeature()) {
-    case Configuration::ePointFeature:
-        OiJob::getActiveFeature()->getPoint()->xyz.setAt(0,nominalValue.nomX);
-        OiJob::getActiveFeature()->getPoint()->xyz.setAt(1,nominalValue.nomY);
-        OiJob::getActiveFeature()->getPoint()->xyz.setAt(2,nominalValue.nomZ);
-        break;
-    case Configuration::ePlaneFeature:
-        OiJob::getActiveFeature()->getPlane()->xyz.setAt(0,nominalValue.nomX);
-        OiJob::getActiveFeature()->getPlane()->xyz.setAt(1,nominalValue.nomY);
-        OiJob::getActiveFeature()->getPlane()->xyz.setAt(2,nominalValue.nomZ);
-        OiJob::getActiveFeature()->getPlane()->ijk.setAt(0,nominalValue.nomI);
-        OiJob::getActiveFeature()->getPlane()->ijk.setAt(1,nominalValue.nomJ);
-        OiJob::getActiveFeature()->getPlane()->ijk.setAt(2,nominalValue.nomK);
-        break;
-    case Configuration::eLineFeature:
-        OiJob::getActiveFeature()->getLine()->xyz.setAt(0,nominalValue.nomX);
-        OiJob::getActiveFeature()->getLine()->xyz.setAt(1,nominalValue.nomY);
-        OiJob::getActiveFeature()->getLine()->xyz.setAt(2,nominalValue.nomZ);
-        OiJob::getActiveFeature()->getLine()->ijk.setAt(0,nominalValue.nomI);
-        OiJob::getActiveFeature()->getLine()->ijk.setAt(1,nominalValue.nomJ);
-        OiJob::getActiveFeature()->getLine()->ijk.setAt(2,nominalValue.nomK);
-        break;
-    case Configuration::eSphereFeature:
-        OiJob::getActiveFeature()->getSphere()->xyz.setAt(0,nominalValue.nomX);
-        OiJob::getActiveFeature()->getSphere()->xyz.setAt(1,nominalValue.nomY);
-        OiJob::getActiveFeature()->getSphere()->xyz.setAt(2,nominalValue.nomZ);
-        OiJob::getActiveFeature()->getSphere()->radius = nominalValue.nomR;
-        break;
-    case Configuration::eScalarEntityAngleFeature:
-        OiJob::getActiveFeature()->getScalarEntityAngle()->setAngle(nominalValue.nomSAE);
-        break;
-    case Configuration::eScalarEntityDistanceFeature:
-        OiJob::getActiveFeature()->getScalarEntityDistance()->setDistance(nominalValue.nomSDE);
-        break;
-    case Configuration::eScalarEntityTemperatureFeature:
-        OiJob::getActiveFeature()->getScalarEntityTemperature()->setTemperature(nominalValue.nomSTE);
-        break;
-    case Configuration::eScalarEntityMeasurementSeriesFeature:
-        OiJob::getActiveFeature()->getScalarEntityMeasurementSeries()->setSeriesValue(nominalValue.nomSMSE);
-        break;
-    default:
-        break;
-    }
-}
-
-/*!
- * \brief Controller::setFunctionConfiguration
- * Set function configuration for the function at functionIndex of active feature
- * \param functionIndex
- * \param config
- */
-void Controller::setFunctionConfiguration(int functionIndex, FunctionConfiguration config){
-    if(OiJob::getActiveFeature() != NULL && functionIndex >= 0 &&
-            OiJob::getActiveFeature()->getFeature()->getFunctions().size() > functionIndex){
-        OiJob::getActiveFeature()->getFeature()->getFunctions().at(functionIndex)->setFunctionConfiguration(config);
-    }
-}
-
-/*!
- * \brief Controller::saveProject
- * Save the current project
- * \param projectData
- * \return
- */
-bool Controller::saveProject(){
-    try{
-
-        if(OiProjectData::getIsValid()){
-            if(OiProjectData::getIsSaved()){
-
-                OiRequestResponse *request;
-                request = new OiRequestResponse();
-                request->requesterId = Configuration::generateID();
-                this->lastRequestId = request->requesterId;
-
-                QDomElement root = request->request.createElement("OiRequest");
-                root.setAttribute("id", OiRequestResponse::eGetProject);
-                request->request.appendChild(root);
-
-                emit this->sendXmlRequest(request);
-
-            }else{
-                Console::addLine("The project has already been saved");
-                return false;
-            }
-        }else{
-            Console::addLine("The project has no name or no device is selected");
-            return false;
-        }
-
-    }catch(exception &e){
-        Console::addLine(e.what());
-        return false;
-    }
-}
-
-/*!
- * \brief Controller::loadProject
- * \param projectName
- * \param myDevice
- * \return
- */
-bool Controller::loadProject(const QString &projectName, QIODevice *myDevice){
-
-    //TODO check if an active project is set
-
-    //set active project
-    OiProjectData::setActiveProject(projectName, myDevice);
-
-    OiRequestResponse *request;
-    request = new OiRequestResponse();
-    request->requesterId = Configuration::generateID();
-    this->lastRequestId = request->requesterId;
-
-    QDomElement root = request->request.createElement("OiRequest");
-    root.setAttribute("id", OiRequestResponse::eSetProject);
-    request->request.appendChild(root);
-
-    emit this->sendXmlRequest(request);
-
-    //TODO delete old request objects
-
-    /*
-
-    //delete all features
-    OiFeatureState::resetFeatureLists();
-
-    bool result = OiProjectExchanger::loadProject(projectData);
-
-    //recalc all features after loading
-    this->recalcAll();
-
-    this->tblModel->updateModel();
-
-    return result;*/
-
-    return true;
-
-}
-
-/*!
- * \brief Controller::connectStateChanges
- */
-void Controller::connectStateChanges(){
-
-    //##########################################
-    //connect OiFeatureState (signal forwarding)
-    //##########################################
-
-    //features added or removed
-    QObject::connect(myFeatureState, SIGNAL(featureSetChanged()), this, SIGNAL(featureSetChanged()), Qt::DirectConnection);
-    QObject::connect(myFeatureState, SIGNAL(coordSystemSetChanged()), this, SIGNAL(coordSystemSetChanged()), Qt::DirectConnection);
-
-    //active states changed
-    QObject::connect(myFeatureState, SIGNAL(activeFeatureChanged()), this, SIGNAL(activeFeatureChanged()), Qt::DirectConnection);
-    QObject::connect(myFeatureState, SIGNAL(activeStationChanged()), this, SIGNAL(activeStationChanged()), Qt::DirectConnection);
-    QObject::connect(myFeatureState, SIGNAL(activeCoordinateSystemChanged()), this, SIGNAL(activeCoordinateSystemChanged()), Qt::DirectConnection);
-
-    //feature attributes changed
-    QObject::connect(myFeatureState, SIGNAL(featureAttributesChanged()), this, SIGNAL(featureAttributesChanged()), Qt::DirectConnection);
-    QObject::connect(myFeatureState, SIGNAL(activeFeatureChanged()), this, SIGNAL(activeFeatureChanged()), Qt::DirectConnection);
-    QObject::connect(myFeatureState, SIGNAL(geometryObservationsChanged()), this, SIGNAL(geometryObservationsChanged()), Qt::DirectConnection);
-    QObject::connect(myFeatureState, SIGNAL(geometryMeasurementConfigChanged()), this, SIGNAL(geometryMeasurementConfigChanged()), Qt::DirectConnection);
-
-    //feature groups
-    QObject::connect(myFeatureState, SIGNAL(activeGroupChanged()), this, SIGNAL(activeGroupChanged()), Qt::DirectConnection);
-    QObject::connect(myFeatureState, SIGNAL(availableGroupNamesChanged()), this, SIGNAL(availableGroupNamesChanged()), Qt::DirectConnection);
-
-}
-
-/*!
- * \brief Controller::receiveRequestResult
- * Is called whenever a request was finished by OiRequestHandler and the response is available
- * \param request
- * \return
- */
-bool Controller::receiveRequestResult(OiRequestResponse *request){
-    try{
-
-        if(request != NULL && request->requesterId == this->lastRequestId && !request->response.isNull()){
-
-            switch(request->myRequestType){
-            case OiRequestResponse::eGetProject:
-
-                //save xml in file
-                if(OiProjectData::getDevice() != NULL){
-
-                    //create new document to remove OiResponse tag
-                    QDomDocument project;
-                    project.appendChild(project.importNode(request->response.documentElement().firstChildElement("oiProjectData"), true));
-
-                    OiProjectData::getDevice()->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-
-                    QTextStream stream(OiProjectData::getDevice());
-                    project.save(stream, 4);
-
-                    OiProjectData::getDevice()->close();
-
-                    //emit this->showMessageBox(OiProjectData::getProjectName(), "OpenIndy project successfully stored.");
-                    Console::addLine("OpenIndy project successfully stored.");
-
-                }
-
-                break;
-            case OiRequestResponse::eSetProject:
-                qDebug() << request->response.toString();
-
-                //recalc all features after loading
-                this->recalcFeatures();
-
-                //this->tblModel->updateModel();
-
-                break;
-            }
-
-            this->lastRequestId = -1;
-
-            return true;
-
-        }
-
-        return false;
-
-    }catch(exception &e){
-        Console::addLine(e.what());
-    }
-}
-
-/*!
- * \brief Controller::printToConsole
- * Connected to a functions oiemitter a plugin can print a text to the console
- * \param message
- */
-void Controller::printToConsole(QString message){
-    Console::addLine(message);
-}
-
-/*!
- * \brief updateFeatureMConfig checks the previously set measurement configurations for supported reading types
- */
-void Controller::updateFeatureMConfig()
-{
-    if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad->instrument != NULL &&
-            OiJob::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes() != NULL &&
-            OiJob::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes()->size() >0){
-
-        QList<Configuration::ReadingTypes> readingTypes = *OiJob::getActiveStation()->sensorPad->instrument->getSupportedReadingTypes();
-
-        //Check and edit lastMConfig
-        /*bool contains = false;
-        for(int i=0; i< readingTypes.size();i++){
-            if(this->lastmConfig.typeOfReading == readingTypes.at(i)){
-                contains = true;
-            }
-        }
-        if(!contains){
-            this->lastmConfig.typeOfReading = readingTypes.at(0);
-        }*/
-
-        //check and edit previous mconfigs
-        /*for(int k=0; k<OiFeatureState::getFeatures().size();k++){
-            contains = false;
-            if(OiFeatureState::getFeatures().at(k)->getGeometry() != NULL){
-                for(int m=0;m<readingTypes.size();m++){
-                    if(OiFeatureState::getFeatures().at(k)->getGeometry()->getMeasurementConfig().typeOfReading == readingTypes.at(m)){
-                        contains = true;
-                    }
-                }
-                if(!contains){
-                    MeasurementConfig myConfig = OiFeatureState::getFeatures().at(k)->getGeometry()->getMeasurementConfig();
-                    myConfig.typeOfReading = this->lastmConfig.typeOfReading;
-                    OiFeatureState::getFeatures().at(k)->getGeometry()->setMeasurementConfig(myConfig);
-                }
-            }
-            if(OiFeatureState::getFeatures().at(k)->getStation() != NULL){
-                for(int n=0; n<readingTypes.size();n++){
-                    if(OiFeatureState::getFeatures().at(k)->getStation()->position->getMeasurementConfig().typeOfReading == readingTypes.at(n)){
-                        contains = true;
-                    }
-                }
-                if(!contains){
-                    MeasurementConfig myConfig = OiFeatureState::getFeatures().at(k)->getStation()->position->getMeasurementConfig();
-                    myConfig.typeOfReading = this->lastmConfig.typeOfReading;
-                    OiFeatureState::getFeatures().at(k)->getStation()->position->setMeasurementConfig(myConfig);
-                }
-            }
-        }*/
-    }
-}
-
-void Controller::sendIsConnected(bool b)
-{
-    emit isConnected(b);
-}
-
-void Controller::sendSensorState(int sState, QString msg)
-{
-    emit setSensorState(sState,msg);
-}
-
-/*QMultiMap<QString, QString> Controller::getOiTools()
-{
-    return SystemDbManager::getAvailableOiTools();
-}*/
-
-void Controller::loadOiToolWidget(QString pluginName, QString toolName)
-{
-    /*QString pluginPath = SystemDbManager::getPluginFilePath(toolName,pluginName);
-
-    OiTool* oiToolWidget = PluginLoader::loadOiToolPlugin(pluginPath,toolName);
-
-    if(oiToolWidget != NULL){
-
-        OiJob *jobState = new OiJobState();
-
-        connect(OiFeatureState::getInstance(),SIGNAL(activeFeatureChanged()),jobState,SLOT(emitActiveFeatureChanged()));
-        connect(OiFeatureState::getInstance(),SIGNAL(activeStationChanged()),jobState,SLOT(emitActiveStationChanged()));
-        connect(OiFeatureState::getInstance(),SIGNAL(activeCoordinateSystemChanged()),jobState,SLOT(emitActiveCoordinateSystemChanged()));
-        connect(OiFeatureState::getInstance(),SIGNAL(featureSetChanged()),jobState,SLOT(emitFeatureSetChanged()));
-        connect(OiFeatureState::getInstance(),SIGNAL(featureAttributesChanged()),jobState,SLOT(emitFeatureAttributesChanged()));
-        connect(OiFeatureState::getInstance(),SIGNAL(geometryObservationsChanged()),jobState,SLOT(emitGeometryObservationsChanged()));
-        connect(OiFeatureState::getInstance(),SIGNAL(featureFunctionsChanged()),jobState,SLOT(emitFeatureFunctionsChanged()));
-        connect(OiFeatureState::getInstance(),SIGNAL(coordSystemSetChanged()),jobState,SLOT(emitCoordSystemSetChanged()));
-
-        connect(jobState, SIGNAL(startAim()), this, SLOT(startAim()));
-        connect(jobState, SIGNAL(showWatchWindow()), this, SLOT(emitShowWatchWindow()));
-        connect(jobState,SIGNAL(closeWatchWindow()), this, SLOT(emitCloseWatchWindow()));
-
-        connect(OiRequestHandler::getInstance(), SIGNAL(sendOiToolRequest(OiRequestResponse*)), oiToolWidget, SLOT(customXMLRequest(OiRequestResponse*)));
-        connect(oiToolWidget, SIGNAL(sendCustomXMLResponse(OiRequestResponse*)), OiRequestHandler::getInstance(), SLOT(receiveOiToolResponse(OiRequestResponse*)));
-
-        oiToolWidget->setOiJob(jobState);
-
-        emit openOiToolWidget(oiToolWidget);
-    }*/
-}
-
-bool Controller::generateActualForNominal(FeatureWrapper *f)
-{
-    /*if(f==NULL || f->getGeometry() == NULL){
-        return false;
-    }
-
-    if(f->getGeometry()->getMyActual() != NULL){
-
-    }else{
-        FeatureAttributes fae;
-        MeasurementConfig mConfig;
-
-        fae.isActual = true;
-        fae.isCommon = false;
-        fae.count = 1;
-        fae.name = f->getGeometry()->getFeatureName();
-        fae.destSystem = NULL;
-        fae.typeOfFeature = f->getTypeOfFeature();
-        fae.function = this->getDefaultFunction(f->getTypeOfFeature());
-        fae.group = f->getGeometry()->getGroupName();
-        fae.isMovement = false;
-        fae.isNominal = false;
-        fae.nominalSystem = NULL;
-        fae.startSystem = NULL;
-
-        OiFeatureState::addFeature(fae);
-
-    }
-
-    f->getGeometry()->getMyActual()->setActiveFeatureState(true);
-*/
-    return true;
-
-}
-
-/*!
- * \brief Controller::deleteFeature
- * Delete the specified feature if possible
- * \param myFeature
- */
-void Controller::deleteFeatures(QList<FeatureWrapper*> myFeatures){
-    this->featuresToDelete = myFeatures;
-
-    //check if delete task is valid
-    int countCoordSys = 0;
-    bool countCheck = true; //at least one coordinate system has to exist
-    bool activeCheck = true; //the active station cannot be deleted
-    bool displayCheck = true; //the display coordinate system cannot be deleted
-    foreach(FeatureWrapper *f, this->featuresToDelete){
-        if(f->getStation() != NULL && f->getStation() == OiJob::getActiveStation()){ //do not delete active station
-            activeCheck = false;
-            break;
-        }else if(f->getCoordinateSystem() != NULL && f->getCoordinateSystem() == OiJob::getActiveCoordinateSystem()){ //do not delete display coordinate system
-            displayCheck = false;
-            break;
-        }else if(f->getStation() != NULL || f->getCoordinateSystem() != NULL){
-            countCoordSys++;
-        }
-    }
-    if(countCoordSys >= (OiJob::getStations().size() + OiJob::getCoordinateSystems().size())){
-        countCheck = false;
-    }
-
-    if(activeCheck && countCheck && displayCheck){ //if delete task is valid
-
-        if(myFeatures.size() == 1){
-            emit this->showMessageBoxForDecision("Delete features", QString("%1 %2 %3").arg("You have selected")
-                                                 .arg(myFeatures.size())
-                                                 .arg("feature. Do you really want to delete it, including all dependencies?"), this->myDeleteFeaturesCallback);
-        }else{
-            emit this->showMessageBoxForDecision("Delete features", QString("%1 %2 %3").arg("You have selected")
-                                                 .arg(myFeatures.size())
-                                                 .arg("features. Do you really want to delete them, including all dependencies?"), this->myDeleteFeaturesCallback);
-        }
-
-    }else{ //delete task is not valid
-
-        if(activeCheck == false){
-            emit this->showMessageBox("Delete error", "You cannot delete the active station!");
-        }else if(displayCheck == false){
-            emit this->showMessageBox("Delete error", "You cannot delete the display coordinate system!");
-        }else{
-            emit this->showMessageBox("Delete error", "At least one coordinate system has to exist!");
-        }
-
-    }
-}
-
-/*!
- * \brief Controller::deleteFeatureCallback
- * Is called after the user has decided wether to delete a feature with dependencies or not
- * \param command
- */
-void Controller::deleteFeaturesCallback(bool command){
-    //TODO create a backup file before deleting features
-
-    if(command){ //if user decided to delete the selected features
-
-        foreach(FeatureWrapper *delFeature, this->featuresToDelete){
-            if(delFeature != NULL && delFeature->getFeature() != NULL){
-
-                //clear active feature and set it to active station
-                if(delFeature->getFeature()->getIsActiveFeature()){
-                    foreach(Station *myStation, OiJob::getStations()){
-                        if(myStation != NULL && myStation->getIsActiveStation()){
-                            myStation->setActiveFeatureState(true);
-                            break;
-                        }
-                    }
-                }
-
-                //remove the feature and all dependencies
-                OiJob::removeFeature(delFeature);
-
-                //remove feature from lists
-                /*OiFeatureState::
-                this->features.removeOne(delFeature);
-                if(delFeature->getStation() != NULL){
-                    this->stations.removeOne(delFeature->getStation());
-                    //remove corresponding trafo param set
-                    if(delFeature->getStation()->coordSys != NULL){
-                        foreach(TrafoParam *myTrafo, delFeature->getStation()->coordSys->trafoParams){
-                            if(myTrafo != NULL){
-                                int index = -1;
-                                for(int i = 0; i < this->features.size(); i++){
-                                    if(this->features.at(i) != NULL && this->features.at(i)->getTrafoParam() != NULL
-                                            && this->features.at(i)->getTrafoParam()->id == myTrafo->id){
-                                        index = i;
-                                        break;
-                                    }
-                                }
-                                if(index >= 0){
-                                    this->features.removeAt(index);
-                                }
-                            }
-                        }
-                    }
-                }else if(delFeature->getCoordinateSystem() != NULL){
-                    this->coordSys.removeOne(delFeature->getCoordinateSystem());
-                    //remove corresponding trafo param set
-                    foreach(TrafoParam *myTrafo, delFeature->getCoordinateSystem()->trafoParams){
-                        if(myTrafo != NULL){
-                            int index = -1;
-                            for(int i = 0; i < this->features.size(); i++){
-                                if(this->features.at(i) != NULL && this->features.at(i)->getTrafoParam() != NULL
-                                        && this->features.at(i)->getTrafoParam()->id == myTrafo->id){
-                                    index = i;
-                                    break;
-                                }
-                            }
-                            if(index >= 0){
-                                this->features.removeAt(index);
-                            }
-                        }
-                    }
-                }*/
-
-                //update group name map for combo boxes
-                /*QString group = delFeature->getFeature()->group;
-                if(this->availableGroups.contains(group)){
-                    int count = this->availableGroups.find(group).value();
-                    if(count <= 1){
-                        this->availableGroups.remove(group);
-                    }else{
-                        this->availableGroups.insert(group, count-1);
-                    }
-                }*/
-
-                //delete feature
-                //this->myFeatureUpdater.deleteFeature(delFeature);
-
-            }
-        }
-
-        //recalc all features because some of the features maybe depent on the deleted features
-        this->myFeatureUpdater->recalcFeatureSet();
-
-        //refresh feature tree view models
-        //this->featureTreeViewModel->refreshModel();
-
-        //emit this->refreshGUI();
-        //emit this->availableGroupsChanged(this->availableGroups);
-        //emit this->resetFeatureSelection();
-
-    }
-}
-
-/*!
- * \brief Controller::checkPluginAvailability
- * Check wether there are one or more plugins for a specified feature type
- * \param typeOfFeature
- * \return
- */
-bool Controller::checkPluginAvailability(Configuration::FeatureTypes typeOfFeature){
-    /*QStringList availableGeometries = SystemDbManager::getSupportedGeometries();
-    if(availableGeometries.contains(QString(Configuration::getFeatureTypeString(typeOfFeature)))){
-        return true;
-    }*/
-    return false;
-}
-
-/*!
- * \brief Controller::getAvailableCreateFunctions
- * Returns a list of all available fit and create functions of the specified feature type
- * \param featureType
- * \return
- */
-/*QStringList Controller::getAvailableCreateFunctions(Configuration::FeatureTypes featureType){
-    QStringList result;
-
-    //query database for all available fit and construct functions of featureType
-    QList<FunctionPlugin> fitFunctions = SystemDbManager::getAvailableFitFunctions(featureType);
-    QList<FunctionPlugin> createFunctions = SystemDbManager::getAvailableConstructFunctions(featureType);
-
-    //add the function names to the result list
-    result.append("");
-    foreach(FunctionPlugin plugin, fitFunctions){
-        result.append(QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName));
-    }
-    foreach(FunctionPlugin plugin, createFunctions){
-        result.append(QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName));
-    }
-
-    return result;
-}*/
-
-/*!
- * \brief Controller::getDefaultFunction
- * Returns the default function of the specified feature type or an empty string if no default function is available
- * \param featureType
- * \return
- */
-QString Controller::getDefaultFunction(Configuration::FeatureTypes featureType){
-    QString result;
-
-    /*FunctionPlugin plugin = SystemDbManager::getDefaultFunction(featureType);
-    if(plugin.name.compare("") != 0){
-        result = QString("%1 [%2]").arg(plugin.name).arg(plugin.pluginName);
-    }*/
-
-    return result;
-}
-
-/*!
- * \brief Controller::setActiveGroup
- * \param group
- */
-void Controller::setActiveGroup(const QString &group){
-    OiJob::setActiveGroup(group);
+    OiJob::getActiveStation()->emitSelfDefinedAction(s);*/
 }

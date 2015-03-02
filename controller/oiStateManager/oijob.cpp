@@ -219,8 +219,8 @@ FeatureWrapper *OiJob::getFeature(const int &featureId){
  * \param type
  * \return
  */
-QList<FeatureWrapper *> OiJob::getFeaturesByFeatureType(const Configuration::FeatureTypes &type){
-
+QList<FeatureWrapper *> OiJob::getFeaturesByFeatureType(const FeatureTypes &type){
+    return this->myFeatureContainer.getFeaturesByType(type);
 }
 
 /*!

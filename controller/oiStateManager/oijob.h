@@ -11,6 +11,7 @@
 #include "featureattributes.h"
 #include "oiconfigstate.h"
 #include "oiunitconverter.h"
+#include "types.h"
 
 class OiJob : public QObject
 {
@@ -46,7 +47,7 @@ public:
     QList<FeatureWrapper *> getFeaturesByName(const QString &name);
     QList<FeatureWrapper *> getFeaturesByGroup(const QString &group);
     FeatureWrapper *getFeature(const int &featureId);
-    QList<FeatureWrapper *> getFeaturesByFeatureType(const Configuration::FeatureTypes &type);
+    QList<FeatureWrapper *> getFeaturesByFeatureType(const FeatureTypes &type);
 
     //add feature(s)
     QList<FeatureWrapper *> addFeatures(const FeatureAttributes &attributes);

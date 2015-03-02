@@ -8,6 +8,8 @@
 
 #include "featuretreeitem.h"
 #include "oijob.h"
+#include "types.h"
+#include "util.h"
 
 class FeatureTreeViewModel : public QAbstractItemModel
 {
@@ -31,13 +33,13 @@ private:
     QPointer<OiJob> currentJob;
     QPointer<FeatureTreeItem> rootItem;
 
-    void appendGeometries(FeatureTreeItem *root, QList<FeatureWrapper*> geometries, QString geomType);
-    void appendCoordinateSystems(FeatureTreeItem *root, QList<FeatureWrapper*> coordinateSystems);
-    void appendStations(FeatureTreeItem *root, QList<FeatureWrapper*> stations);
-    void appendTrafoParams(FeatureTreeItem *root, QList<FeatureWrapper*> trafoParams);
+    void appendGeometries(const QList<FeatureWrapper*> &geometries, const FeatureTypes &type);
+    void appendCoordinateSystems(const QList<FeatureWrapper*> &coordinateSystems);
+    void appendStations(const QList<FeatureWrapper*> &stations);
+    void appendTrafoParams(const QList<FeatureWrapper*> &trafoParams);
 
-    void appendObservation(FeatureTreeItem *root, Observation *obs);
-    void appendReading(FeatureTreeItem *root, Observation *obs);
+    void appendObservation(const QPointer<FeatureTreeItem> &parent, Observation *obs);
+    void appendReading(const QPointer<FeatureTreeItem> &parent, Observation *obs);
 
 };
 

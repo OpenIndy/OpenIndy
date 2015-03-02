@@ -453,7 +453,7 @@ void FeatureTreeItem::setParent(QPointer<FeatureTreeItem> parent){
  * \brief FeatureTreeItem::getParent
  * \return
  */
-FeatureTreeItem* FeatureTreeItem::getParent(){
+QPointer<FeatureTreeItem> FeatureTreeItem::getParent(){
     return this->parent;
 }
 

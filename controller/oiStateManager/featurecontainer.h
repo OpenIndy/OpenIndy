@@ -11,6 +11,7 @@
 #include "coordinatesystem.h"
 #include "station.h"
 #include "trafoparam.h"
+#include "types.h"
 
 class OiJob;
 
@@ -42,7 +43,7 @@ private:
     FeatureWrapper *getFeatureById(const int &featureId);
     QList<FeatureWrapper *> getFeaturesByName(const QString &name);
     QList<FeatureWrapper *> getFeaturesByGroup(const QString &group);
-    QList<FeatureWrapper *> getFeaturesByType(const Configuration::FeatureTypes &type);
+    QList<FeatureWrapper *> getFeaturesByType(const FeatureTypes &type);
 
     //getter to get the number of available features
     int getFeatureCount();

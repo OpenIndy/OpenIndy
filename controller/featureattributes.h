@@ -4,7 +4,7 @@
 #include <QString>
 #include <QPair>
 
-#include "configuration.h"
+#include "types.h"
 
 //! Helper class that is used when creating new features to specify their attributes
 class FeatureAttributes
@@ -13,7 +13,7 @@ public:
     FeatureAttributes();
 
     //general attributes
-    Configuration::FeatureTypes typeOfFeature;
+    FeatureTypes typeOfFeature;
     QString name;
     QString group;
     int count;

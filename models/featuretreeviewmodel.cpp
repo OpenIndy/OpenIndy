@@ -193,86 +193,48 @@ void FeatureTreeViewModel::refreshModel(){
         return;
     }
 
-    //delete old tree hierarchy
+    //delete the old tree hierarchy
     this->rootItem->deleteChildren();
 
+    //add all stations, coordinate systems and trafo params to the tree hierarchy
+    QList<FeatureWrapper *> stations = this->currentJob->getFeaturesByFeatureType(eStationFeature);
+    this->appendStations(stations);
+    QList<FeatureWrapper *> coordinateSystems = this->currentJob->getFeaturesByFeatureType(eStationFeature);
+    this->appendStations(coordinateSystems);
+    QList<FeatureWrapper *> trafoParams = this->currentJob->getFeaturesByFeatureType(eStationFeature);
+    this->appendStations(trafoParams);
 
-
-
-
-
-
-
-
-
-
-
-    this->rootItem->deleteChildren();
-
-    QList<FeatureWrapper*> points, lines, planes, spheres, stations, coordinateSystems, trafoParams, angles, distances,
-            circles, cones, cylinders, ellipsoids, hyperboloids, nurbs, paraboloids, pointClouds, temperatures;
-    foreach(FeatureWrapper *wrapper, OiJob::getFeatures()){
-        if(wrapper->getGeometry() != NULL){ //if current feature wrapper contains a geometry
-            if(wrapper->getPoint() != NULL){
-                points.append(wrapper);
-            }else if(wrapper->getLine() != NULL){
-                lines.append(wrapper);
-            }else if(wrapper->getPlane() != NULL){
-                planes.append(wrapper);
-            }else if(wrapper->getSphere() != NULL){
-                spheres.append(wrapper);
-            }else if(wrapper->getScalarEntityAngle() != NULL){
-                angles.append(wrapper);
-            }else if(wrapper->getScalarEntityDistance() != NULL){
-                distances.append(wrapper);
-            }else if(wrapper->getCircle() != NULL){
-                circles.append(wrapper);
-            }else if(wrapper->getCone() != NULL){
-                cones.append(wrapper);
-            }else if(wrapper->getCylinder() != NULL){
-                cylinders.append(wrapper);
-            }else if(wrapper->getEllipsoid() != NULL){
-                ellipsoids.append(wrapper);
-            }else if(wrapper->getHyperboloid() != NULL){
-                hyperboloids.append(wrapper);
-            }else if(wrapper->getNurbs() != NULL){
-                nurbs.append(wrapper);
-            }else if(wrapper->getParaboloid() != NULL){
-                paraboloids.append(wrapper);
-            }else if(wrapper->getPointCloud() != NULL){
-                pointClouds.append(wrapper);
-            }else if(wrapper->getScalarEntityTemperature() != NULL){
-                temperatures.append(wrapper);
-            }
-        }else if(wrapper->getFeature() != NULL){ //if current feature wrapper contains a feature
-            if(wrapper->getCoordinateSystem() != NULL){
-                coordinateSystems.append(wrapper);
-            }else if(wrapper->getStation() != NULL){
-                stations.append(wrapper);
-            }else if(wrapper->getTrafoParam() != NULL){
-                trafoParams.append(wrapper);
-            }
-        }
-    }
-
-    if(points.size() > 0){ this->appendGeometries(this->rootItem, points, "points:"); }
-    if(lines.size() > 0){ this->appendGeometries(this->rootItem, lines, "lines:"); }
-    if(spheres.size() > 0){ this->appendGeometries(this->rootItem, spheres, "spheres:"); }
-    if(planes.size() > 0){ this->appendGeometries(this->rootItem, planes, "planes:"); }
-    if(angles.size() > 0){ this->appendGeometries(this->rootItem, angles, "angles:"); }
-    if(distances.size() > 0){ this->appendGeometries(this->rootItem, distances, "distances:"); }
-    if(temperatures.size() > 0){ this->appendGeometries(this->rootItem, temperatures, "temperatures:"); }
-    if(circles.size() > 0){ this->appendGeometries(this->rootItem, circles, "circles:"); }
-    if(cylinders.size() > 0){ this->appendGeometries(this->rootItem, cylinders, "cylinders:"); }
-    if(cones.size() > 0){ this->appendGeometries(this->rootItem, cones, "cones:"); }
-    if(ellipsoids.size() > 0){ this->appendGeometries(this->rootItem, ellipsoids, "ellipsoids:"); }
-    if(hyperboloids.size() > 0){ this->appendGeometries(this->rootItem, hyperboloids, "hyperboloids:"); }
-    if(nurbs.size() > 0){ this->appendGeometries(this->rootItem, nurbs, "nurbs:"); }
-    if(paraboloids.size() > 0){ this->appendGeometries(this->rootItem, paraboloids, "paraboloids:"); }
-    if(pointClouds.size() > 0){ this->appendGeometries(this->rootItem, pointClouds, "point clouds:"); }
-    if(coordinateSystems.size() > 0){ this->appendCoordinateSystems(this->rootItem, coordinateSystems); }
-    if(stations.size() > 0){ this->appendStations(this->rootItem, stations); }
-    if(trafoParams.size() > 0){ this->appendTrafoParams(this->rootItem, trafoParams); }
+    //add all geometries to the tree hierarchy
+    QList<FeatureWrapper *> points = this->currentJob->getFeaturesByFeatureType(ePointFeature);
+    this->appendGeometries(points, ePointFeature);
+    QList<FeatureWrapper *> lines = this->currentJob->getFeaturesByFeatureType(eLineFeature);
+    this->appendGeometries(lines, ePointFeature);
+    QList<FeatureWrapper *> planes = this->currentJob->getFeaturesByFeatureType(ePlaneFeature);
+    this->appendGeometries(planes, ePointFeature);
+    QList<FeatureWrapper *> spheres = this->currentJob->getFeaturesByFeatureType(eSphereFeature);
+    this->appendGeometries(spheres, ePointFeature);
+    QList<FeatureWrapper *> circles = this->currentJob->getFeaturesByFeatureType(eCircleFeature);
+    this->appendGeometries(circles, ePointFeature);
+    QList<FeatureWrapper *> ellipsoids = this->currentJob->getFeaturesByFeatureType(eEllipsoidFeature);
+    this->appendGeometries(ellipsoids, ePointFeature);
+    QList<FeatureWrapper *> paraboloids = this->currentJob->getFeaturesByFeatureType(eParaboloidFeature);
+    this->appendGeometries(paraboloids, ePointFeature);
+    QList<FeatureWrapper *> hyperboloids = this->currentJob->getFeaturesByFeatureType(eHyperboloidFeature);
+    this->appendGeometries(hyperboloids, ePointFeature);
+    QList<FeatureWrapper *> angles = this->currentJob->getFeaturesByFeatureType(eScalarEntityAngleFeature);
+    this->appendGeometries(angles, ePointFeature);
+    QList<FeatureWrapper *> distances = this->currentJob->getFeaturesByFeatureType(eScalarEntityDistanceFeature);
+    this->appendGeometries(distances, ePointFeature);
+    QList<FeatureWrapper *> temperatures = this->currentJob->getFeaturesByFeatureType(eScalarEntityTemperatureFeature);
+    this->appendGeometries(temperatures, ePointFeature);
+    QList<FeatureWrapper *> pointclouds = this->currentJob->getFeaturesByFeatureType(ePointCloudFeature);
+    this->appendGeometries(pointclouds, ePointFeature);
+    QList<FeatureWrapper *> nurbs = this->currentJob->getFeaturesByFeatureType(eNurbsFeature);
+    this->appendGeometries(nurbs, ePointFeature);
+    QList<FeatureWrapper *> cones = this->currentJob->getFeaturesByFeatureType(eConeFeature);
+    this->appendGeometries(cones, ePointFeature);
+    QList<FeatureWrapper *> cylinders = this->currentJob->getFeaturesByFeatureType(eCylinderFeature);
+    this->appendGeometries(cylinders, ePointFeature);
 
     emit this->beginResetModel();
     emit this->endResetModel();
@@ -283,75 +245,126 @@ void FeatureTreeViewModel::refreshModel(){
 
 /*!
  * \brief FeatureTreeViewModel::appendGeometries
- * \param root
  * \param geometries
- * \param geomType
+ * \param type
  */
-void FeatureTreeViewModel::appendGeometries(FeatureTreeItem *root, QList<FeatureWrapper*> geometries, QString geomType){
-    FeatureTreeItem *item = new FeatureTreeItem(geomType);
-    root->appendChild(item);
-    for(int i = 0; i < geometries.size(); i++){
-        if(geometries.at(i) == NULL || geometries.at(i)->getGeometry() == NULL
-                || (geometries.at(i)->getGeometry()->getIsNominal() && geometries.at(i)->getGeometry()->getNominalSystem() == NULL)){
+void FeatureTreeViewModel::appendGeometries(const QList<FeatureWrapper*> &geometries, const FeatureTypes &type){
+
+    //check if root item is valid
+    if(this->rootItem.isNull()){
+        return;
+    }
+
+    //create header item
+    QPointer<FeatureTreeItem> item = new FeatureTreeItem(getFeatureTypeName(type));
+    this->rootItem->appendChild(item);
+
+    //add all geometries
+    foreach(FeatureWrapper *geom, geometries){
+
+        //check the geometry
+        if(geom == NULL || geom->getGeometry() == NULL || (geom->getGeometry()->getIsNominal() && geom->getGeometry()->getNominalSystem() == NULL)){
             continue;
         }
-        QString geomHeader = QString("%1 - %2").arg(geometries.at(i)->getGeometry()->getFeatureName())
-                .arg(geometries.at(i)->getGeometry()->getIsNominal()?QString("nominal (%1)")
+
+        //create item for the geometry
+        QString geomHeader = QString("%1 - %2").arg(geom->getGeometry()->getFeatureName())
+                .arg(geom->getGeometry()->getIsNominal()?QString("nominal (%1)")
                                                                    .arg(geometries.at(i)->getGeometry()->getNominalSystem()->getFeatureName()):"actual");
-        FeatureTreeItem *geom = new FeatureTreeItem(geomHeader);
-        item->appendChild(geom);
-        FeatureTreeItem *geom_observations = new FeatureTreeItem("observations:");
-        FeatureTreeItem *geom_readings = new FeatureTreeItem("readings:");
-        geom->appendChild(geom_observations);
-        geom->appendChild(geom_readings);
-        for(int j = 0; j < geometries.at(i)->getGeometry()->getObservations().size(); j++){
-            Observation *obs = geometries.at(i)->getGeometry()->getObservations().at(j);
+        QPointer<FeatureTreeItem> geomItem = new FeatureTreeItem(geomHeader);
+        item->appendChild(geomItem);
+
+        //add observations and readings
+        QPointer<FeatureTreeItem> observations = new FeatureTreeItem("observations");
+        QPointer<FeatureTreeItem> readings = new FeatureTreeItem("readings");
+        geomItem->appendChild(observations);
+        geomItem->appendChild(readings);
+        for(int j = 0; j < geom->getGeometry()->getObservations().size(); j++){
+            Observation *obs = geom->getGeometry()->getObservations().at(j);
             if(obs != NULL && obs->myReading != NULL){
                 if(obs->myStation != NULL){
-                    this->appendObservation(geom_observations, obs);
-                    this->appendReading(geom_readings, obs);
+                    this->appendObservation(observations, obs);
+                    this->appendReading(readings, obs);
                 }
             }
         }
-        geom->setFeature(geometries.at(i));
+
+        //add the feature to the tree item
+        geomItem->setFeature(geom);
+
     }
+
 }
 
 /*!
- * \brief FeatureTreeViewModel::appendCoordinateSystem
- * \param root
+ * \brief FeatureTreeViewModel::appendCoordinateSystems
  * \param coordinateSystems
  */
-void FeatureTreeViewModel::appendCoordinateSystems(FeatureTreeItem *root, QList<FeatureWrapper*> coordinateSystems){
-    FeatureTreeItem *item = new FeatureTreeItem("coordinate systems:");
-    root->appendChild(item);
-    for(int i = 0; i < coordinateSystems.size(); i++){
-        FeatureTreeItem *coordSys = new FeatureTreeItem(coordinateSystems.at(i)->getCoordinateSystem()->getFeatureName());
-        item->appendChild(coordSys);
-        coordSys->setFeature(coordinateSystems.at(i));
+void FeatureTreeViewModel::appendCoordinateSystems(const QList<FeatureWrapper *> &coordinateSystems){
+
+    //check if root item is valid
+    if(this->rootItem.isNull()){
+        return;
     }
+
+    //create header item
+    QPointer<FeatureTreeItem> item = new FeatureTreeItem(eCoordinateSystemFeature);
+    this->rootItem->appendChild(item);
+
+    //add all coordinate systems
+    foreach(FeatureWrapper *system, coordinateSystems){
+
+        //check the coordinate system
+        if(system == NULL || system->getCoordinateSystem() == NULL){
+            continue;
+        }
+
+        //create item for the coordinate system
+        QPointer<FeatureTreeItem> systemItem = new FeatureTreeItem(system->getCoordinateSystem()->getFeatureName());
+        item->appendChild(systemItem);
+
+        //add the feature to the tree item
+        systemItem->setFeature(system);
+
+    }
+
 }
 
 /*!
  * \brief FeatureTreeViewModel::appendStations
- * \param root
  * \param stations
  */
-void FeatureTreeViewModel::appendStations(FeatureTreeItem *root, QList<FeatureWrapper *> stations){
-    FeatureTreeItem *item = new FeatureTreeItem("stations:");
-    root->appendChild(item);
-    for(int i = 0; i < stations.size(); i++){ //go through all stations
-        FeatureTreeItem *station = new FeatureTreeItem(stations.at(i)->getStation()->getFeatureName());
-        item->appendChild(station);
+void FeatureTreeViewModel::appendStations(const QList<FeatureWrapper *> &stations){
+
+    //check if root item is valid
+    if(this->rootItem.isNull()){
+        return;
+    }
+
+    //create header item
+    QPointer<FeatureTreeItem> item = new FeatureTreeItem(eStationFeature);
+    this->rootItem->appendChild(item);
+
+    //add all stations
+    foreach(FeatureWrapper *station, stations){
+
+        //check the station
+        if(station == NULL || station->getStation() == NULL){
+            continue;
+        }
+
+        //create item for the coordinate system
+        QPointer<FeatureTreeItem> stationItem = new FeatureTreeItem(station->getStation()->getFeatureName());
+        item->appendChild(stationItem);
 
         //check wether there are observations to the current station
-        FeatureTreeItem *station_observations = new FeatureTreeItem("observations:");
-        FeatureTreeItem *station_readings = new FeatureTreeItem("readings:");
+        QPointer<FeatureTreeItem> station_observations = new FeatureTreeItem("observations:");
+        QPointer<FeatureTreeItem> station_readings = new FeatureTreeItem("readings:");
         station->appendChild(station_observations);
         station->appendChild(station_readings);
-        if(stations.at(i)->getStation()->position != NULL){
-            for(int j = 0; j < stations.at(i)->getStation()->position->getObservations().size(); j++){
-                Observation *obs = stations.at(i)->getStation()->position->getObservations().at(j);
+        if(station->getStation()->position != NULL){
+            for(int j = 0; j < station->getStation()->position->getObservations().size(); j++){
+                Observation *obs = station->getStation()->position->getObservations().at(j);
                 if(obs != NULL && obs->myReading != NULL){
                     if(obs->myStation != NULL){
                         this->appendObservation(station_observations, obs);
@@ -361,129 +374,115 @@ void FeatureTreeViewModel::appendStations(FeatureTreeItem *root, QList<FeatureWr
             }
         }
 
-        station->setFeature(stations.at(i));
+        //add the feature to the tree item
+        systemItem->setFeature(station);
+
     }
 
 }
 
 /*!
- * \brief FeatureTreeViewModel::appendTrafoParam
- * \param root
- * \param trafoparams
+ * \brief FeatureTreeViewModel::appendTrafoParams
+ * \param trafoParams
  */
-void FeatureTreeViewModel::appendTrafoParams(FeatureTreeItem *root, QList<FeatureWrapper*> trafoParams){
-    FeatureTreeItem *item = new FeatureTreeItem("transformation parameter sets:");
-    root->appendChild(item);
-    for(int i = 0; i < trafoParams.size(); i++){
-        FeatureTreeItem *trafoParam = new FeatureTreeItem(trafoParams.at(i)->getTrafoParam()->getFeatureName());
-        item->appendChild(trafoParam);
-        if(trafoParams.at(i)->getTrafoParam()->getStartSystem() != NULL && trafoParams.at(i)->getTrafoParam()->getDestinationSystem() != NULL){
-            FeatureTreeItem *from = new FeatureTreeItem( QString("from: %1").arg(trafoParams.at(i)->getTrafoParam()->getStartSystem()->getFeatureName()) );
-            FeatureTreeItem *to = new FeatureTreeItem( QString("to: %1").arg(trafoParams.at(i)->getTrafoParam()->getDestinationSystem()->getFeatureName()) );
+void FeatureTreeViewModel::appendTrafoParams(const QList<FeatureWrapper *> &trafoParams){
+
+    //check if root item is valid
+    if(this->rootItem.isNull()){
+        return;
+    }
+
+    //create header item
+    QPointer<FeatureTreeItem> item = new FeatureTreeItem(eTrafoParamFeature);
+    this->rootItem->appendChild(item);
+
+    //add all trafo params
+    foreach(FeatureWrapper *trafoParam, trafoParams){
+
+        //check the trafo param
+        if(trafoParam == NULL || trafoParam->getTrafoParam() == NULL){
+            continue;
+        }
+
+        //create item for the trafo param
+        QPointer<FeatureTreeItem> trafoParamItem = new FeatureTreeItem(trafoParam->getTrafoParam()->getFeatureName());
+        item->appendChild(trafoParamItem);
+
+        //add start and destination system
+        if(trafoParam->getTrafoParam()->getStartSystem() != NULL && trafoParam->getTrafoParam()->getDestinationSystem() != NULL){
+            QPointer<FeatureTreeItem> from = new FeatureTreeItem( QString("from: %1").arg(trafoParam->getTrafoParam()->getStartSystem()->getFeatureName()) );
+            QPointer<FeatureTreeItem> to = new FeatureTreeItem( QString("to: %1").arg(trafoParam->getTrafoParam()->getDestinationSystem()->getFeatureName()) );
             trafoParam->appendChild(from);
             trafoParam->appendChild(to);
         }
-        trafoParam->setFeature(trafoParams.at(i));
+
+        //add the feature to the tree item
+        trafoParamItem->setFeature(trafoParam);
+
     }
 
 }
 
 /*!
  * \brief FeatureTreeViewModel::appendObservation
- * \param root
+ * \param parent
  * \param obs
  */
-void FeatureTreeViewModel::appendObservation(FeatureTreeItem *root, Observation *obs){
-    FeatureTreeItem *geom_observation = new FeatureTreeItem(QString::number(obs->getId()));
-    root->appendChild(geom_observation);
-    geom_observation->appendChild( new FeatureTreeItem(obs->myReading->measuredAt.toString()) );
-    geom_observation->appendChild( new FeatureTreeItem(obs->myStation->getFeatureName()) );
-    geom_observation->appendChild( new FeatureTreeItem(obs->getIsSolved()?"valid: true":"valid: false") );
-    /*if(obs->getIsSolved()){
-        FeatureTreeItem *x = new FeatureTreeItem( QString("x: %1 %2").arg( QString::number(obs->myXyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),
-                                                                 'f',OiUnitConverter::distanceDigits) )
-                                                    .arg( OiUnitConverter::getDistanceUnitString() ) );
-        FeatureTreeItem *y = new FeatureTreeItem( QString("y: %1 %2").arg( QString::number(obs->myXyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),
-                                                                 'f',OiUnitConverter::distanceDigits) )
-                                                    .arg( OiUnitConverter::getDistanceUnitString() ) );
-        FeatureTreeItem *z = new FeatureTreeItem( QString("z: %1 %2").arg( QString::number(obs->myXyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),
-                                                                 'f',OiUnitConverter::distanceDigits) )
-                                                    .arg( OiUnitConverter::getDistanceUnitString() ) );
-        geom_observation->appendChild(x);
-        geom_observation->appendChild(y);
-        geom_observation->appendChild(z);
-    }*/
-    geom_observation->setObservation(obs);
+void FeatureTreeViewModel::appendObservation(const QPointer<FeatureTreeItem> &parent, Observation *obs){
+
+    //check parent and observation
+    if(parent.isNull() || obs == NULL || obs->myReading == NULL || obs->myStation == NULL){
+        return;
+    }
+
+    //create observation item
+    QPointer<FeatureTreeItem> observation = new FeatureTreeItem(QString::number(obs->getId()));
+    parent->appendChild(observation);
+
+    //create meta information items
+    QPointer<FeatureTreeItem> measuredAt = new FeatureTreeItem(obs->myReading->measuredAt.toString());
+    observation->appendChild(measuredAt);
+    QPointer<FeatureTreeItem> station = new FeatureTreeItem(obs->myStation->getFeatureName());
+    observation->appendChild(measuredAt);
+    QPointer<FeatureTreeItem> isSolved = new FeatureTreeItem(obs->getIsSolved()?"valid: true":"valid: false");
+    observation->appendChild(measuredAt);
+    observation->appendChild(measuredAt);
+    observation->appendChild(station);
+    observation->appendChild(isSolved);
+
+    //add the observation to the parent item
+    observation->setObservation(obs);
+
 }
 
 /*!
  * \brief FeatureTreeViewModel::appendReading
- * \param root
+ * \param parent
  * \param obs
  */
-void FeatureTreeViewModel::appendReading(FeatureTreeItem *root, Observation *obs){
-    FeatureTreeItem *geom_reading = new FeatureTreeItem(QString::number(obs->myReading->id));
-    root->appendChild(geom_reading);
-    geom_reading->appendChild( new FeatureTreeItem(obs->myReading->measuredAt.toString()) );
-    geom_reading->appendChild( new FeatureTreeItem(obs->myStation->getFeatureName()) );
-    geom_reading->appendChild( new FeatureTreeItem(obs->getIsSolved()?"valid: true":"valid: false") );
-    if(obs->getIsSolved()){
-        /*if(obs->myReading->typeofReading == Configuration::eDistance){
-            FeatureTreeItem *distance = new FeatureTreeItem( QString("distance: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rDistance.distance*OiUnitConverter::getDistanceMultiplier(),
-                                                                     'f',OiUnitConverter::distanceDigits) )
-                                                         .arg( OiUnitConverter::getDistanceUnitString() ) );
-            geom_reading->appendChild(distance);
-        }else if(obs->myReading->typeofReading == Configuration::eDirection){
-            FeatureTreeItem *azimuth = new FeatureTreeItem( QString("azimuth: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rDirection.azimuth*OiUnitConverter::getAngleMultiplier(),
-                                                                     'f',OiUnitConverter::angleDigits) )
-                                                         .arg( OiUnitConverter::getAngleUnitString() ) );
-            FeatureTreeItem *zenith = new FeatureTreeItem( QString("zenith: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rDirection.zenith*OiUnitConverter::getAngleMultiplier(),
-                                                                     'f',OiUnitConverter::angleDigits) )
-                                                         .arg( OiUnitConverter::getAngleUnitString() ) );
-            geom_reading->appendChild(azimuth);
-            geom_reading->appendChild(zenith);
-        }else if(obs->myReading->typeofReading == Configuration::ePolar){
-            FeatureTreeItem *azimuth = new FeatureTreeItem( QString("azimuth: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rPolar.azimuth*OiUnitConverter::getAngleMultiplier(),
-                                                                     'f',OiUnitConverter::angleDigits) )
-                                                         .arg( OiUnitConverter::getAngleUnitString() ) );
-            FeatureTreeItem *zenith = new FeatureTreeItem( QString("zenith: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rPolar.zenith*OiUnitConverter::getAngleMultiplier(),
-                                                                     'f',OiUnitConverter::angleDigits) )
-                                                         .arg( OiUnitConverter::getAngleUnitString() ) );
-            FeatureTreeItem *distance = new FeatureTreeItem( QString("distance: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rPolar.distance*OiUnitConverter::getDistanceMultiplier(),
-                                                                     'f',OiUnitConverter::distanceDigits) )
-                                                         .arg( OiUnitConverter::getDistanceUnitString() ) );
-            geom_reading->appendChild(azimuth);
-            geom_reading->appendChild(zenith);
-            geom_reading->appendChild(distance);
-        }else if(obs->myReading->typeofReading == Configuration::eCartesian){
-            FeatureTreeItem *x = new FeatureTreeItem( QString("x: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rCartesian.xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),
-                                                                     'f',OiUnitConverter::distanceDigits) )
-                                                         .arg( OiUnitConverter::getDistanceUnitString() ) );
-            FeatureTreeItem *y = new FeatureTreeItem( QString("y: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rCartesian.xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),
-                                                                     'f',OiUnitConverter::distanceDigits) )
-                                                         .arg( OiUnitConverter::getDistanceUnitString() ) );
-            FeatureTreeItem *z = new FeatureTreeItem( QString("z: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rCartesian.xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),
-                                                                     'f',OiUnitConverter::distanceDigits) )
-                                                         .arg( OiUnitConverter::getDistanceUnitString() ) );
-            geom_reading->appendChild(x);
-            geom_reading->appendChild(y);
-            geom_reading->appendChild(z);
-        }else if(obs->myReading->typeofReading == Configuration::eTemperatur){
-            FeatureTreeItem *temperature = new FeatureTreeItem( QString("temperature: %1 %2")
-                                                         .arg( QString::number(obs->myReading->rTemperature.tempDeg*OiUnitConverter::getDistanceMultiplier(),
-                                                                     'f',OiUnitConverter::temperatureDigits) )
-                                                         .arg( OiUnitConverter::getTemperatureUnitString() ) );
-            geom_reading->appendChild(temperature);
-        }*/
+void FeatureTreeViewModel::appendReading(const QPointer<FeatureTreeItem> &parent, Observation *obs){
+
+    //check parent and observation
+    if(parent.isNull() || obs == NULL || obs->myReading == NULL || obs->myStation == NULL){
+        return;
     }
-    geom_reading->setReading(obs->myReading);
+
+    //create observation item
+    QPointer<FeatureTreeItem> reading = new FeatureTreeItem(QString::number(obs->myReading->id));
+    parent->appendChild(reading);
+
+    //create meta information items
+    QPointer<FeatureTreeItem> measuredAt = new FeatureTreeItem(obs->myReading->measuredAt.toString());
+    observation->appendChild(measuredAt);
+    QPointer<FeatureTreeItem> station = new FeatureTreeItem(obs->myStation->getFeatureName());
+    observation->appendChild(measuredAt);
+    QPointer<FeatureTreeItem> isSolved = new FeatureTreeItem(obs->getIsSolved()?"valid: true":"valid: false");
+    observation->appendChild(measuredAt);
+    observation->appendChild(measuredAt);
+    observation->appendChild(station);
+    observation->appendChild(isSolved);
+
+    //add the reading to the parent item
+    reading->setReading(obs->myReading);
+
 }

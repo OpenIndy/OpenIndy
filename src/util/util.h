@@ -7,121 +7,6 @@
 
 #include "types.h"
 
-//#######################################
-//global functions to query element types
-//#######################################
-
-/*!
- * \brief getElementTypeName
- * \param type
- * \return
- */
-QString getElementTypeName(const ElementTypes &type){
-
-    //fill helper maps if not yet done
-    if(!internal::isInit){
-        internal::initMaps();
-    }
-
-    //get the corresponding element name
-    if(internal::elementTypesMap.contains(type)){
-        return internal::elementTypesMap.value(type);
-    }
-    return "undefined";
-
-}
-
-/*!
- * \brief getElementTypeEnum
- * \param name
- * \return
- */
-ElementTypes getElementTypeEnum(const QString &name){
-
-    //fill helper maps if not yet done
-    if(!internal::isInit){
-        internal::initMaps();
-    }
-
-    //get the corresponding element enum value
-    return internal::elementTypesMap.key(name, eUndefinedElement);
-
-}
-
-/*!
- * \brief getFeatureTypeName
- * \param type
- * \return
- */
-QString getFeatureTypeName(const FeatureTypes &type){
-
-    //fill helper maps if not yet done
-    if(!internal::isInit){
-        internal::initMaps();
-    }
-
-    //get the corresponding feature name
-    if(internal::featureTypesMap.contains(type)){
-        return internal::featureTypesMap.value(type);
-    }
-    return "undefined";
-
-}
-
-/*!
- * \brief getElementTypeEnum
- * \param name
- * \return
- */
-FeatureTypes getElementTypeEnum(const QString &name){
-
-    //fill helper maps if not yet done
-    if(!internal::isInit){
-        internal::initMaps();
-    }
-
-    //get the corresponding feature enum value
-    return internal::featureTypesMap.key(name, eUndefinedFeature);
-
-}
-
-/*!
- * \brief getGeometryTypeName
- * \param type
- * \return
- */
-QString getGeometryTypeName(const GeometryTypes &type){
-
-    //fill helper maps if not yet done
-    if(!internal::isInit){
-        internal::initMaps();
-    }
-
-    //get the corresponding geometry name
-    if(internal::geometryTypesMap.contains(type)){
-        return internal::geometryTypesMap.value(type);
-    }
-    return "undefined";
-
-}
-
-/*!
- * \brief getGeometryTypeEnum
- * \param name
- * \return
- */
-GeometryTypes getGeometryTypeEnum(const QString &name){
-
-    //fill helper maps if not yet done
-    if(!internal::isInit){
-        internal::initMaps();
-    }
-
-    //get the corresponding geometry enum value
-    return internal::geometryTypesMap.key(name, eUndefinedGeometry);
-
-}
-
 //#################################################
 //maps with element enums and corresponding strings
 //#################################################
@@ -212,6 +97,121 @@ void initMaps(){
     geometryTypesMap.insert(eScalarEntityMeasurementSeriesGeometry, "measurement series");
 
     isInit = true;
+
+}
+
+//#######################################
+//global functions to query element types
+//#######################################
+
+/*!
+ * \brief getElementTypeName
+ * \param type
+ * \return
+ */
+QString getElementTypeName(const ElementTypes &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::initMaps();
+    }
+
+    //get the corresponding element name
+    if(internal::elementTypesMap.contains(type)){
+        return internal::elementTypesMap.value(type);
+    }
+    return "undefined";
+
+}
+
+/*!
+ * \brief getElementTypeEnum
+ * \param name
+ * \return
+ */
+ElementTypes getElementTypeEnum(const QString &name){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::initMaps();
+    }
+
+    //get the corresponding element enum value
+    return internal::elementTypesMap.key(name, eUndefinedElement);
+
+}
+
+/*!
+ * \brief getFeatureTypeName
+ * \param type
+ * \return
+ */
+QString getFeatureTypeName(const FeatureTypes &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::initMaps();
+    }
+
+    //get the corresponding feature name
+    if(internal::featureTypesMap.contains(type)){
+        return internal::featureTypesMap.value(type);
+    }
+    return "undefined";
+
+}
+
+/*!
+ * \brief getFeatureTypeEnum
+ * \param name
+ * \return
+ */
+FeatureTypes getFeatureTypeEnum(const QString &name){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::initMaps();
+    }
+
+    //get the corresponding feature enum value
+    return internal::featureTypesMap.key(name, eUndefinedFeature);
+
+}
+
+/*!
+ * \brief getGeometryTypeName
+ * \param type
+ * \return
+ */
+QString getGeometryTypeName(const GeometryTypes &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::initMaps();
+    }
+
+    //get the corresponding geometry name
+    if(internal::geometryTypesMap.contains(type)){
+        return internal::geometryTypesMap.value(type);
+    }
+    return "undefined";
+
+}
+
+/*!
+ * \brief getGeometryTypeEnum
+ * \param name
+ * \return
+ */
+GeometryTypes getGeometryTypeEnum(const QString &name){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::initMaps();
+    }
+
+    //get the corresponding geometry enum value
+    return internal::geometryTypesMap.key(name, eUndefinedGeometry);
 
 }
 
