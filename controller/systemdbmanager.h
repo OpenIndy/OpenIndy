@@ -12,7 +12,6 @@
 #include "pluginmetadata.h"
 #include "oimetadata.h"
 #include "console.h"
-#include "configuration.h"
 
 //! base class for all plugin types
 class SpecialPlugin{
@@ -27,8 +26,8 @@ public:
 //! function plugins
 class FunctionPlugin : public SpecialPlugin{
 public:
-    QList<Configuration::FeatureTypes> applicableFor;
-    QList<Configuration::ElementTypes> neededElements;
+    QList<FeatureTypes> applicableFor;
+    QList<ElementTypes> neededElements;
 };
 
 //! sensor plugins
@@ -84,8 +83,8 @@ public:
     static bool deletePlugin(const QString &iid);
 
     //get sql models (function)
-    static bool getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const Configuration::FeatureTypes &typeOfFeature);
-    static bool getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const Configuration::FeatureTypes &typeOfFeature);
+    static bool getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const FeatureTypes &typeOfFeature);
+    static bool getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const FeatureTypes &typeOfFeature);
     static bool getNeededElementsModel(QPointer<QSqlQueryModel> &sqlModel, const FunctionPlugin &functionPlugin);
 
     //get sql models (sensor)
@@ -96,8 +95,8 @@ public:
     //add or remove measurement configs
     static bool addMeasurementConfig(const QString &name);
     static bool removeMeasurementConfig(const QString &name);
-    static QString getDefaultMeasurementConfig(const Configuration::GeometryTypes &typeOfGeometry);
-    static bool setDefaultMeasurementConfig(const Configuration::GeometryTypes &typeOfGeometry, const QString &name);
+    static QString getDefaultMeasurementConfig(const GeometryTypes &typeOfGeometry);
+    static bool setDefaultMeasurementConfig(const GeometryTypes &typeOfGeometry, const QString &name);
 
     //add or remove sensor configs
     static bool addSensorConfig(const QString &name);
@@ -120,13 +119,13 @@ public:
     static QList<Plugin> getAvailablePlugins();
     static QStringList getAvailablePluginNames();
 
-    static FunctionPlugin getDefaultFunction(Configuration::FeatureTypes featureType);
-    static QList<FunctionPlugin> getAvailableFitFunctions(Configuration::FeatureTypes featureType);
-    static QList<FunctionPlugin> getAvailableConstructFunctions(Configuration::FeatureTypes featureType);
+    static FunctionPlugin getDefaultFunction(FeatureTypes featureType);
+    static QList<FunctionPlugin> getAvailableFitFunctions(FeatureTypes featureType);
+    static QList<FunctionPlugin> getAvailableConstructFunctions(FeatureTypes featureType);
 
     static QList<SimulationPlugin> getAvailableSimulationPlugins();
 
-    static void saveDefaultFunction(Configuration::FeatureTypes featureType, QString function, QString plugin);
+    static void saveDefaultFunction(FeatureTypes featureType, QString function, QString plugin);
 
     static QMultiMap<QString,QString> getAvailableOiTools();
 

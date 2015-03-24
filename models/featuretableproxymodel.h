@@ -6,7 +6,6 @@
 
 #include "featuretablemodel.h"
 #include "featurewrapper.h"
-#include "guiconfiguration.h"
 #include "oijob.h"
 
 //! model that holds all features except trafo params and filters by selected group name

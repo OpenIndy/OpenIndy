@@ -11,7 +11,7 @@ MeasurementConfig::MeasurementConfig(){
     this->timeInterval = 0;
     this->distanceInterval = 0.0;
     //this->typeOfReading = static_cast<Configuration::ReadingTypes>(-1);
-    this->typeOfReading = Configuration::ePolar;
+    this->typeOfReading = ePolarReading;
     this->isSaved = false;
 
 }
@@ -121,7 +121,7 @@ bool MeasurementConfig::fromOpenIndyXML(QDomElement &xmlElem){
     this->distanceDependent = xmlElem.attribute("distanceDependent").toInt();
     this->timeInterval = xmlElem.attribute("timeInterval").toLong();
     this->distanceInterval = xmlElem.attribute("distanceInterval").toDouble();
-    this->typeOfReading = (Configuration::ReadingTypes)xmlElem.attribute("typeOfReading").toInt();
+    this->typeOfReading = (ReadingTypes)xmlElem.attribute("typeOfReading").toInt();
 
     return true;
 

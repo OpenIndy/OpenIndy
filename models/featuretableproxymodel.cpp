@@ -131,10 +131,11 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
  * \return
  */
 bool FeatureTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
-    QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::featureAttributes,GUIConfiguration::allAttributes);
+    /*QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::featureAttributes,GUIConfiguration::allAttributes);
     if(displayColumns.contains(source_column)){
         return true;
     }else{
         return false;
-    }
+    }*/
+    return true;
 }

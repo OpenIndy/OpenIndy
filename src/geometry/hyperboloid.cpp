@@ -6,7 +6,7 @@ MeasurementConfig Hyperboloid::defaultMeasurementConfig;
 
 Hyperboloid::Hyperboloid(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -59,7 +59,7 @@ QDomElement Hyperboloid::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return hyperboloid;
     }
 
-    hyperboloid.setAttribute("type", Configuration::sHyperboloid);
+    hyperboloid.setAttribute("type", getGeometryTypeName(eHyperboloidGeometry));
 
     return hyperboloid;
 

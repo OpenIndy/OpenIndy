@@ -1,6 +1,6 @@
 #include "featurewrapper.h"
 
-FeatureWrapper::FeatureWrapper()
+FeatureWrapper::FeatureWrapper(QObject *parent) : QObject(parent)
 {
     this->myFeature = NULL;
     this->myGeometry = NULL;
@@ -29,10 +29,10 @@ FeatureWrapper::FeatureWrapper()
 }
 
 /*!
- * \brief FeatureWrapper::getTypeOfFeature
+ * \brief FeatureWrapper::getFeatureTypeEnum
  * \return
  */
-Configuration::FeatureTypes FeatureWrapper::getTypeOfFeature(){
+FeatureTypes FeatureWrapper::getFeatureTypeEnum() const{
     return this->typeOfFeature;
 }
 
@@ -40,7 +40,7 @@ Configuration::FeatureTypes FeatureWrapper::getTypeOfFeature(){
  * \brief FeatureWrapper::getFeature
  * \return
  */
-Feature* FeatureWrapper::getFeature(){
+QPointer<Feature> FeatureWrapper::getFeature() const{
     return this->myFeature;
 }
 
@@ -48,7 +48,7 @@ Feature* FeatureWrapper::getFeature(){
  * \brief FeatureWrapper::getGeometry
  * \return
  */
-Geometry* FeatureWrapper::getGeometry(){
+QPointer<Geometry> FeatureWrapper::getGeometry() const{
     return this->myGeometry;
 }
 
@@ -56,7 +56,7 @@ Geometry* FeatureWrapper::getGeometry(){
  * \brief FeatureWrapper::getCoordinateSystem
  * \return
  */
-CoordinateSystem* FeatureWrapper::getCoordinateSystem(){
+QPointer<CoordinateSystem> FeatureWrapper::getCoordinateSystem() const{
     return this->myCoordinateSystem;
 }
 
@@ -64,7 +64,7 @@ CoordinateSystem* FeatureWrapper::getCoordinateSystem(){
  * \brief FeatureWrapper::getTrafoParam
  * \return
  */
-TrafoParam* FeatureWrapper::getTrafoParam(){
+QPointer<TrafoParam> FeatureWrapper::getTrafoParam() const{
     return this->myTrafoParam;
 }
 
@@ -72,7 +72,7 @@ TrafoParam* FeatureWrapper::getTrafoParam(){
  * \brief FeatureWrapper::getStation
  * \return
  */
-Station* FeatureWrapper::getStation(){
+QPointer<Station> FeatureWrapper::getStation() const{
     return this->myStation;
 }
 
@@ -80,7 +80,7 @@ Station* FeatureWrapper::getStation(){
  * \brief FeatureWrapper::getPoint
  * \return
  */
-Point* FeatureWrapper::getPoint(){
+QPointer<Point> FeatureWrapper::getPoint() const{
     return this->myPoint;
 }
 
@@ -88,7 +88,7 @@ Point* FeatureWrapper::getPoint(){
  * \brief FeatureWrapper::getLine
  * \return
  */
-Line* FeatureWrapper::getLine(){
+QPointer<Line> FeatureWrapper::getLine() const{
     return this->myLine;
 }
 
@@ -96,7 +96,7 @@ Line* FeatureWrapper::getLine(){
  * \brief FeatureWrapper::getPlane
  * \return
  */
-Plane* FeatureWrapper::getPlane(){
+QPointer<Plane> FeatureWrapper::getPlane() const{
     return this->myPlane;
 }
 
@@ -104,7 +104,7 @@ Plane* FeatureWrapper::getPlane(){
  * \brief FeatureWrapper::getSphere
  * \return
  */
-Sphere* FeatureWrapper::getSphere(){
+QPointer<Sphere> FeatureWrapper::getSphere() const{
     return this->mySphere;
 }
 
@@ -112,7 +112,7 @@ Sphere* FeatureWrapper::getSphere(){
  * \brief FeatureWrapper::getCircle
  * \return
  */
-Circle* FeatureWrapper::getCircle(){
+QPointer<Circle> FeatureWrapper::getCircle() const{
     return this->myCircle;
 }
 
@@ -120,7 +120,7 @@ Circle* FeatureWrapper::getCircle(){
  * \brief FeatureWrapper::getCone
  * \return
  */
-Cone* FeatureWrapper::getCone(){
+QPointer<Cone> FeatureWrapper::getCone() const{
     return this->myCone;
 }
 
@@ -128,7 +128,7 @@ Cone* FeatureWrapper::getCone(){
  * \brief FeatureWrapper::getCylinder
  * \return
  */
-Cylinder* FeatureWrapper::getCylinder(){
+QPointer<Cylinder> FeatureWrapper::getCylinder() const{
     return this->myCylinder;
 }
 
@@ -136,7 +136,7 @@ Cylinder* FeatureWrapper::getCylinder(){
  * \brief FeatureWrapper::getEllipsoid
  * \return
  */
-Ellipsoid* FeatureWrapper::getEllipsoid(){
+QPointer<Ellipsoid> FeatureWrapper::getEllipsoid() const{
     return this->myEllipsoid;
 }
 
@@ -144,7 +144,7 @@ Ellipsoid* FeatureWrapper::getEllipsoid(){
  * \brief FeatureWrapper::getHyperboloid
  * \return
  */
-Hyperboloid* FeatureWrapper::getHyperboloid(){
+QPointer<Hyperboloid> FeatureWrapper::getHyperboloid() const{
     return this->myHyperboloid;
 }
 
@@ -152,7 +152,7 @@ Hyperboloid* FeatureWrapper::getHyperboloid(){
  * \brief FeatureWrapper::getParaboloid
  * \return
  */
-Paraboloid* FeatureWrapper::getParaboloid(){
+QPointer<Paraboloid> FeatureWrapper::getParaboloid() const{
     return this->myParaboloid;
 }
 
@@ -160,7 +160,7 @@ Paraboloid* FeatureWrapper::getParaboloid(){
  * \brief FeatureWrapper::getPointCloud
  * \return
  */
-PointCloud* FeatureWrapper::getPointCloud(){
+QPointer<PointCloud> FeatureWrapper::getPointCloud() const{
     return this->myPointCloud;
 }
 
@@ -168,7 +168,7 @@ PointCloud* FeatureWrapper::getPointCloud(){
  * \brief FeatureWrapper::getNurbs
  * \return
  */
-Nurbs* FeatureWrapper::getNurbs(){
+QPointer<Nurbs> FeatureWrapper::getNurbs() const{
     return this->myNurbs;
 }
 
@@ -176,7 +176,7 @@ Nurbs* FeatureWrapper::getNurbs(){
  * \brief FeatureWrapper::getScalarEntityAngle
  * \return
  */
-ScalarEntityAngle* FeatureWrapper::getScalarEntityAngle(){
+QPointer<ScalarEntityAngle> FeatureWrapper::getScalarEntityAngle() const{
     return this->myScalarEntityAngle;
 }
 
@@ -184,7 +184,7 @@ ScalarEntityAngle* FeatureWrapper::getScalarEntityAngle(){
  * \brief FeatureWrapper::getScalarEntityDistance
  * \return
  */
-ScalarEntityDistance* FeatureWrapper::getScalarEntityDistance(){
+QPointer<ScalarEntityDistance> FeatureWrapper::getScalarEntityDistance() const{
     return this->myScalarEntityDistance;
 }
 
@@ -192,7 +192,7 @@ ScalarEntityDistance* FeatureWrapper::getScalarEntityDistance(){
  * \brief FeatureWrapper::getScalarEntityTemperature
  * \return
  */
-ScalarEntityTemperature* FeatureWrapper::getScalarEntityTemperature(){
+QPointer<ScalarEntityTemperature> FeatureWrapper::getScalarEntityTemperature() const{
     return this->myScalarEntityTemperature;
 }
 
@@ -200,7 +200,7 @@ ScalarEntityTemperature* FeatureWrapper::getScalarEntityTemperature(){
  * \brief FeatureWrapper::getScalarEntityMeasurementSeries
  * \return
  */
-ScalarEntityMeasurementSeries* FeatureWrapper::getScalarEntityMeasurementSeries(){
+QPointer<ScalarEntityMeasurementSeries> FeatureWrapper::getScalarEntityMeasurementSeries() const{
     return this->myScalarEntityMeasurementSeries;
 }
 
@@ -208,11 +208,11 @@ ScalarEntityMeasurementSeries* FeatureWrapper::getScalarEntityMeasurementSeries(
  * \brief FeatureWrapper::setCoordinateSystem
  * \param coordSys
  */
-void FeatureWrapper::setCoordinateSystem(CoordinateSystem *coordSys){
-    if(coordSys != NULL){
-        this->myFeature = coordSys;
-        this->myCoordinateSystem= coordSys;
-        this->typeOfFeature = Configuration::eCoordinateSystemFeature;
+void FeatureWrapper::setCoordinateSystem(const QPointer<CoordinateSystem> &coordSystem){
+    if(!coordSystem.isNull()){
+        this->myFeature = coordSystem;
+        this->myCoordinateSystem = coordSystem;
+        this->typeOfFeature = eCoordinateSystemFeature;
     }
 }
 
@@ -220,11 +220,11 @@ void FeatureWrapper::setCoordinateSystem(CoordinateSystem *coordSys){
  * \brief FeatureWrapper::setTrafoParam
  * \param trafoPara
  */
-void FeatureWrapper::setTrafoParam(TrafoParam *trafoPara){
-    if(trafoPara != NULL){
+void FeatureWrapper::setTrafoParam(const QPointer<TrafoParam> &trafoPara){
+    if(!trafoPara.isNull()){
         this->myFeature = trafoPara;
         this->myTrafoParam = trafoPara;
-        this->typeOfFeature = Configuration::eTrafoParamFeature;
+        this->typeOfFeature = eTrafoParamFeature;
     }
 }
 
@@ -232,11 +232,11 @@ void FeatureWrapper::setTrafoParam(TrafoParam *trafoPara){
  * \brief FeatureWrapper::setStation
  * \param s
  */
-void FeatureWrapper::setStation(Station *s){
-    if(s != NULL){
-        this->myFeature = s;
-        this->myStation = s;
-        this->typeOfFeature = Configuration::eStationFeature;
+void FeatureWrapper::setStation(const QPointer<Station> &station){
+    if(!station.isNull()){
+        this->myFeature = station;
+        this->myStation = station;
+        this->typeOfFeature = eStationFeature;
     }
 }
 
@@ -244,12 +244,12 @@ void FeatureWrapper::setStation(Station *s){
  * \brief FeatureWrapper::setPoint
  * \param p
  */
-void FeatureWrapper::setPoint(Point *p){
-    if(p != NULL){
-        this->myFeature = p;
-        this->myGeometry = p;
-        this->myPoint = p;
-        this->typeOfFeature = Configuration::ePointFeature;
+void FeatureWrapper::setPoint(const QPointer<Point> &point){
+    if(!point.isNull()){
+        this->myFeature = point;
+        this->myGeometry = point;
+        this->myPoint = point;
+        this->typeOfFeature = ePointFeature;
     }
 }
 
@@ -257,12 +257,12 @@ void FeatureWrapper::setPoint(Point *p){
  * \brief FeatureWrapper::setLine
  * \param l
  */
-void FeatureWrapper::setLine(Line *l){
-    if(l != NULL){
-        this->myFeature = l;
-        this->myGeometry = l;
-        this->myLine = l;
-        this->typeOfFeature = Configuration::eLineFeature;
+void FeatureWrapper::setLine(const QPointer<Line> &line){
+    if(!line.isNull()){
+        this->myFeature = line;
+        this->myGeometry = line;
+        this->myLine = line;
+        this->typeOfFeature = eLineFeature;
     }
 }
 
@@ -270,12 +270,12 @@ void FeatureWrapper::setLine(Line *l){
  * \brief FeatureWrapper::setPlane
  * \param p
  */
-void FeatureWrapper::setPlane(Plane *p){
-    if(p != NULL){
-        this->myFeature = p;
-        this->myGeometry = p;
-        this->myPlane = p;
-        this->typeOfFeature = Configuration::ePlaneFeature;
+void FeatureWrapper::setPlane(const QPointer<Plane> &plane){
+    if(!plane.isNull()){
+        this->myFeature = plane;
+        this->myGeometry = plane;
+        this->myPlane = plane;
+        this->typeOfFeature = ePlaneFeature;
     }
 }
 
@@ -283,12 +283,12 @@ void FeatureWrapper::setPlane(Plane *p){
  * \brief FeatureWrapper::setSphere
  * \param s
  */
-void FeatureWrapper::setSphere(Sphere *s){
-    if(s != NULL){
-        this->myFeature = s;
-        this->myGeometry = s;
-        this->mySphere = s;
-        this->typeOfFeature = Configuration::eSphereFeature;
+void FeatureWrapper::setSphere(const QPointer<Sphere> &sphere){
+    if(!sphere.isNull()){
+        this->myFeature = sphere;
+        this->myGeometry = sphere;
+        this->mySphere = sphere;
+        this->typeOfFeature = eSphereFeature;
     }
 }
 
@@ -296,12 +296,12 @@ void FeatureWrapper::setSphere(Sphere *s){
  * \brief FeatureWrapper::setCircle
  * \param c
  */
-void FeatureWrapper::setCircle(Circle *c){
-    if(c != NULL){
-        this->myFeature = c;
-        this->myGeometry = c;
-        this->myCircle = c;
-        this->typeOfFeature = Configuration::eCircleFeature;
+void FeatureWrapper::setCircle(const QPointer<Circle> &circle){
+    if(!circle.isNull()){
+        this->myFeature = circle;
+        this->myGeometry = circle;
+        this->myCircle = circle;
+        this->typeOfFeature = eCircleFeature;
     }
 }
 
@@ -309,12 +309,12 @@ void FeatureWrapper::setCircle(Circle *c){
  * \brief FeatureWrapper::setCone
  * \param c
  */
-void FeatureWrapper::setCone(Cone *c){
-    if(c != NULL){
-        this->myFeature = c;
-        this->myGeometry = c;
-        this->myCone = c;
-        this->typeOfFeature = Configuration::eConeFeature;
+void FeatureWrapper::setCone(const QPointer<Cone> &cone){
+    if(!cone.isNull()){
+        this->myFeature = cone;
+        this->myGeometry = cone;
+        this->myCone = cone;
+        this->typeOfFeature = eConeFeature;
     }
 }
 
@@ -322,12 +322,12 @@ void FeatureWrapper::setCone(Cone *c){
  * \brief FeatureWrapper::setCylinder
  * \param c
  */
-void FeatureWrapper::setCylinder(Cylinder *c){
-    if(c != NULL){
-        this->myFeature = c;
-        this->myGeometry = c;
-        this->myCylinder = c;
-        this->typeOfFeature = Configuration::eCylinderFeature;
+void FeatureWrapper::setCylinder(const QPointer<Cylinder> &cylinder){
+    if(!cylinder.isNull()){
+        this->myFeature = cylinder;
+        this->myGeometry = cylinder;
+        this->myCylinder = cylinder;
+        this->typeOfFeature = eCylinderFeature;
     }
 }
 
@@ -335,12 +335,12 @@ void FeatureWrapper::setCylinder(Cylinder *c){
  * \brief FeatureWrapper::setEllipsoid
  * \param e
  */
-void FeatureWrapper::setEllipsoid(Ellipsoid *e){
-    if(e != NULL){
-        this->myFeature = e;
-        this->myGeometry = e;
-        this->myEllipsoid = e;
-        this->typeOfFeature = Configuration::eEllipsoidFeature;
+void FeatureWrapper::setEllipsoid(const QPointer<Ellipsoid> &ellipsoid){
+    if(!ellipsoid.isNull()){
+        this->myFeature = ellipsoid;
+        this->myGeometry = ellipsoid;
+        this->myEllipsoid = ellipsoid;
+        this->typeOfFeature = eEllipsoidFeature;
     }
 }
 
@@ -348,12 +348,12 @@ void FeatureWrapper::setEllipsoid(Ellipsoid *e){
  * \brief FeatureWrapper::setHyperboloid
  * \param h
  */
-void FeatureWrapper::setHyperboloid(Hyperboloid *h){
-    if(h != NULL){
-        this->myFeature = h;
-        this->myGeometry = h;
-        this->myHyperboloid = h;
-        this->typeOfFeature = Configuration::eHyperboloidFeature;
+void FeatureWrapper::setHyperboloid(const QPointer<Hyperboloid> &hyperboloid){
+    if(!hyperboloid.isNull()){
+        this->myFeature = hyperboloid;
+        this->myGeometry = hyperboloid;
+        this->myHyperboloid = hyperboloid;
+        this->typeOfFeature = eHyperboloidFeature;
     }
 }
 
@@ -361,12 +361,12 @@ void FeatureWrapper::setHyperboloid(Hyperboloid *h){
  * \brief FeatureWrapper::setParaboloid
  * \param p
  */
-void FeatureWrapper::setParaboloid(Paraboloid *p){
-    if(p != NULL){
-        this->myFeature = p;
-        this->myGeometry = p;
-        this->myParaboloid = p;
-        this->typeOfFeature = Configuration::eParaboloidFeature;
+void FeatureWrapper::setParaboloid(const QPointer<Paraboloid> &paraboloid){
+    if(!paraboloid.isNull()){
+        this->myFeature = paraboloid;
+        this->myGeometry = paraboloid;
+        this->myParaboloid = paraboloid;
+        this->typeOfFeature = eParaboloidFeature;
     }
 }
 
@@ -374,12 +374,12 @@ void FeatureWrapper::setParaboloid(Paraboloid *p){
  * \brief FeatureWrapper::setPointCloud
  * \param p
  */
-void FeatureWrapper::setPointCloud(PointCloud *p){
-    if(p != NULL){
-        this->myFeature = p;
-        this->myGeometry = p;
-        this->myPointCloud = p;
-        this->typeOfFeature = Configuration::ePointCloudFeature;
+void FeatureWrapper::setPointCloud(const QPointer<PointCloud> &pointCloud){
+    if(!pointCloud.isNull()){
+        this->myFeature = pointCloud;
+        this->myGeometry = pointCloud;
+        this->myPointCloud = pointCloud;
+        this->typeOfFeature = ePointCloudFeature;
     }
 }
 
@@ -387,12 +387,12 @@ void FeatureWrapper::setPointCloud(PointCloud *p){
  * \brief FeatureWrapper::setNurbs
  * \param n
  */
-void FeatureWrapper::setNurbs(Nurbs *n){
-    if(n != NULL){
-        this->myFeature = n;
-        this->myGeometry = n;
-        this->myNurbs = n;
-        this->typeOfFeature = Configuration::eNurbsFeature;
+void FeatureWrapper::setNurbs(const QPointer<Nurbs> &nurbs){
+    if(!nurbs.isNull()){
+        this->myFeature = nurbs;
+        this->myGeometry = nurbs;
+        this->myNurbs = nurbs;
+        this->typeOfFeature = eNurbsFeature;
     }
 }
 
@@ -400,12 +400,12 @@ void FeatureWrapper::setNurbs(Nurbs *n){
  * \brief FeatureWrapper::setScalarEntityAngle
  * \param sEA
  */
-void FeatureWrapper::setScalarEntityAngle(ScalarEntityAngle *sEA){
-    if(sEA != NULL){
-        this->myFeature = sEA;
-        this->myGeometry = sEA;
-        this->myScalarEntityAngle = sEA;
-        this->typeOfFeature = Configuration::eScalarEntityAngleFeature;
+void FeatureWrapper::setScalarEntityAngle(const QPointer<ScalarEntityAngle> &angle){
+    if(!angle.isNull()){
+        this->myFeature = angle;
+        this->myGeometry = angle;
+        this->myScalarEntityAngle = angle;
+        this->typeOfFeature = eScalarEntityAngleFeature;
     }
 }
 
@@ -413,12 +413,12 @@ void FeatureWrapper::setScalarEntityAngle(ScalarEntityAngle *sEA){
  * \brief FeatureWrapper::setScalarEntityDistance
  * \param sED
  */
-void FeatureWrapper::setScalarEntityDistance(ScalarEntityDistance *sED){
-    if(sED != NULL){
-        this->myFeature = sED;
-        this->myGeometry = sED;
-        this->myScalarEntityDistance = sED;
-        this->typeOfFeature = Configuration::eScalarEntityDistanceFeature;
+void FeatureWrapper::setScalarEntityDistance(const QPointer<ScalarEntityDistance> &distance){
+    if(!distance.isNull()){
+        this->myFeature = distance;
+        this->myGeometry = distance;
+        this->myScalarEntityDistance = distance;
+        this->typeOfFeature = eScalarEntityDistanceFeature;
     }
 }
 
@@ -426,12 +426,12 @@ void FeatureWrapper::setScalarEntityDistance(ScalarEntityDistance *sED){
  * \brief FeatureWrapper::setScalarEntityTemperature
  * \param SET
  */
-void FeatureWrapper::setScalarEntityTemperature(ScalarEntityTemperature *SET){
-    if(SET != NULL){
-        this->myFeature = SET;
-        this->myGeometry = SET;
-        this->myScalarEntityTemperature = SET;
-        this->typeOfFeature = Configuration::eScalarEntityTemperatureFeature;
+void FeatureWrapper::setScalarEntityTemperature(const QPointer<ScalarEntityTemperature> &temperature){
+    if(!temperature.isNull()){
+        this->myFeature = temperature;
+        this->myGeometry = temperature;
+        this->myScalarEntityTemperature = temperature;
+        this->typeOfFeature = eScalarEntityTemperatureFeature;
     }
 }
 
@@ -439,80 +439,19 @@ void FeatureWrapper::setScalarEntityTemperature(ScalarEntityTemperature *SET){
  * \brief FeatureWrapper::setScalarEntityMeasurementSeries
  * \param SEMS
  */
-void FeatureWrapper::setScalarEntityMeasurementSeries(ScalarEntityMeasurementSeries *SEMS){
-    if(SEMS != NULL){
-        this->myFeature = SEMS;
-        this->myGeometry = SEMS;
-        this->myScalarEntityMeasurementSeries = SEMS;
-        this->typeOfFeature = Configuration::eScalarEntityMeasurementSeriesFeature;
+void FeatureWrapper::setScalarEntityMeasurementSeries(const QPointer<ScalarEntityMeasurementSeries> &measurementSeries){
+    if(!measurementSeries.isNull()){
+        this->myFeature = measurementSeries;
+        this->myGeometry = measurementSeries;
+        this->myScalarEntityMeasurementSeries = measurementSeries;
+        this->typeOfFeature = eScalarEntityMeasurementSeriesFeature;
     }
 }
 
 /*!
- * \brief FeatureWrapper::returnFeatureType
+ * \brief FeatureWrapper::getFeatureTypeString
  * \return
  */
-QString FeatureWrapper::returnFeatureType() const{
-    switch (this->typeOfFeature) {
-    case Configuration::ePlaneFeature:
-        return Configuration::sPlane;
-        break;
-    case Configuration::ePointFeature:
-        return Configuration::sPoint ;
-        break;
-    case Configuration::eLineFeature:
-        return Configuration::sLine;
-        break;
-    case Configuration::eStationFeature:
-        return Configuration::sStation;
-        break;
-    case Configuration::eCoordinateSystemFeature:
-        return Configuration::sCoordinatesystem;
-        break;
-    case Configuration::eSphereFeature:
-        return Configuration::sSphere;
-        break;
-    case Configuration::eScalarEntityAngleFeature:
-        return Configuration::sEntitiyAngle;
-        break;
-    case Configuration::eScalarEntityDistanceFeature:
-        return Configuration::sEntityDistance;
-         break;
-    case Configuration::eTrafoParamFeature:
-        return Configuration::sTrafoParam;
-        break;
-    case Configuration::eCircleFeature:
-        return Configuration::sCircle;
-        break;
-    case Configuration::eConeFeature:
-        return Configuration::sCone;
-        break;
-    case Configuration::eCylinderFeature:
-        return Configuration::sCylinder;
-        break;
-    case Configuration::eEllipsoidFeature:
-        return Configuration::sEllipsoid;
-        break;
-    case Configuration::eHyperboloidFeature:
-        return Configuration::sHyperboloid;
-        break;
-    case Configuration::eParaboloidFeature:
-        return Configuration::sParaboloid;
-        break;
-    case Configuration::eNurbsFeature:
-        return Configuration::sNurbs;
-        break;
-    case Configuration::ePointCloudFeature:
-        return Configuration::sPointCloud;
-        break;
-    case Configuration::eScalarEntityTemperatureFeature:
-        return Configuration::sEntityTemperature;
-        break;
-    case Configuration::eScalarEntityMeasurementSeriesFeature:
-        return Configuration::sEntityMeasurementSeries;
-        break;
-    default:
-        return "";
-        break;
-    }
+QString FeatureWrapper::getFeatureTypeString() const{
+    return getFeatureTypeName(this->typeOfFeature);
 }

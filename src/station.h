@@ -5,7 +5,6 @@
 #include <QList>
 #include <QThread>
 #include "feature.h"
-#include "configuration.h"
 #include "observation.h"
 #include "sensor.h"
 #include "sensorcontrol.h"
@@ -42,7 +41,7 @@ public:
     bool getIsActiveStation();
     bool setActiveStationState(bool isActiveStation);
 
-    Configuration::ReadingTypes getReadingStreamType();
+    ReadingTypes getReadingStreamType();
 
     Point *position;
 

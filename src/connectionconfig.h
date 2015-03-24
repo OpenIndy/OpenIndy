@@ -3,14 +3,15 @@
 
 #include <QString>
 #include "QtSerialPort/QSerialPort"
-#include "configuration.h"
+
+#include "types.h"
 
 class ConnectionConfig
 {
 public:
     ConnectionConfig();
 
-    Configuration::ConnectionTypes typeOfConnection;
+    ConnectionTypes typeOfConnection;
 
     QString ip;
     QString port;

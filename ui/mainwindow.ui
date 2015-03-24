@@ -110,7 +110,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="table">
        <attribute name="title">
@@ -157,7 +157,7 @@ background-position: center center;</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0,4">
+         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
           <item>
            <widget class="QTreeView" name="treeView_featureOverview"/>
           </item>
@@ -167,9 +167,6 @@ background-position: center center;</string>
              <enum>Qt::Vertical</enum>
             </property>
            </widget>
-          </item>
-          <item>
-           <widget class="GLWidget" name="widget_graphics" native="true"/>
           </item>
          </layout>
         </item>
@@ -969,14 +966,6 @@ color: rgb(255, 255, 255);
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>GLWidget</class>
-   <extends>QWidget</extends>
-   <header>glwidget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="../res/res.qrc"/>
  </resources>

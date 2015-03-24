@@ -13,7 +13,7 @@ SensorConfiguration::SensorConfiguration()
 
 
 /*!
- * \brief SensorConfiguration::getName
+ * \brief SensorgetName
  * \return
  */
 QString SensorConfiguration::getName() const{
@@ -21,7 +21,7 @@ QString SensorConfiguration::getName() const{
 }
 
 /*!
- * \brief SensorConfiguration::getDisplayName
+ * \brief SensorgetDisplayName
  * \return
  */
 QString SensorConfiguration::getDisplayName() const{
@@ -32,7 +32,7 @@ QString SensorConfiguration::getDisplayName() const{
 }
 
 /*!
- * \brief SensorConfiguration::getIsSaved
+ * \brief SensorgetIsSaved
  * \return
  */
 bool SensorConfiguration::getIsSaved() const{
@@ -40,7 +40,7 @@ bool SensorConfiguration::getIsSaved() const{
 }
 
 /*!
- * \brief SensorConfiguration::getIsValid
+ * \brief SensorgetIsValid
  * \return
  */
 bool SensorConfiguration::getIsValid() const{
@@ -51,7 +51,7 @@ bool SensorConfiguration::getIsValid() const{
 }
 
 /*!
- * \brief SensorConfiguration::setName
+ * \brief SensorsetName
  * \param name
  * \return
  */
@@ -64,7 +64,7 @@ bool SensorConfiguration::setName(QString name){
 }
 
 /*!
- * \brief SensorConfiguration::toOpenIndyXML
+ * \brief SensortoOpenIndyXML
  * \param xmlDoc
  * \return
  */
@@ -78,8 +78,8 @@ QDomElement SensorConfiguration::toOpenIndyXML(QDomDocument &xmlDoc) const{
     sConfig.setAttribute("name", this->name);
 
     //get sensor information to know which attributes to save in xml
-    QList<Configuration::ReadingTypes> supportedReadingTypes = *this->mySensor->getSupportedReadingTypes();
-    QList<Configuration::ConnectionTypes> supportedConnectionTypes = *this->mySensor->getConnectionType();
+    QList<ReadingTypes> supportedReadingTypes = *this->mySensor->getSupportedReadingTypes();
+    QList<ConnectionTypes> supportedConnectionTypes = *this->mySensor->getConnectionType();
 
     //save plugin information
     QDomElement pluginInfo = xmlDoc.createElement("plugin");
@@ -90,11 +90,11 @@ QDomElement SensorConfiguration::toOpenIndyXML(QDomDocument &xmlDoc) const{
     //save connection parameters
     QDomElement connParams = xmlDoc.createElement("connection");
     connParams.setAttribute("typeOfConnection", this->connConfig->typeOfConnection);
-    if(supportedConnectionTypes.contains(Configuration::eNetwork)){
+    if(supportedConnectionTypes.contains(eNetworkConnection)){
         connParams.setAttribute("ip", this->connConfig->ip);
         connParams.setAttribute("port", this->connConfig->port);
     }
-    if(supportedConnectionTypes.contains(Configuration::eSerial)){
+    if(supportedConnectionTypes.contains(eSerialConnection)){
         connParams.setAttribute("comPort", this->connConfig->comPort);
         connParams.setAttribute("baudRate", this->connConfig->baudRate);
         connParams.setAttribute("dataBits", this->connConfig->dataBits);
@@ -106,32 +106,32 @@ QDomElement SensorConfiguration::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //save accuracy values
     QDomElement accuracy = xmlDoc.createElement("accuracy");
-    if(supportedReadingTypes.contains(Configuration::eCartesian)){
+    if(supportedReadingTypes.contains(eCartesianReading)){
         accuracy.setAttribute("sigmaX", this->sigma.sigmaXyz.getAt(0));
         accuracy.setAttribute("sigmaY", this->sigma.sigmaXyz.getAt(1));
         accuracy.setAttribute("sigmaZ", this->sigma.sigmaXyz.getAt(2));
     }
-    if(supportedReadingTypes.contains(Configuration::ePolar)){
+    if(supportedReadingTypes.contains(ePolarReading)){
         accuracy.setAttribute("sigmaAzimuth", this->sigma.sigmaAzimuth);
         accuracy.setAttribute("sigmaZenith", this->sigma.sigmaZenith);
         accuracy.setAttribute("sigmaDistance", this->sigma.sigmaDistance);
     }else{
-        if(supportedReadingTypes.contains(Configuration::eDirection)){
+        if(supportedReadingTypes.contains(eDirectionReading)){
             accuracy.setAttribute("sigmaAzimuth", this->sigma.sigmaAzimuth);
             accuracy.setAttribute("sigmaZenith", this->sigma.sigmaZenith);
         }
-        if(supportedReadingTypes.contains(Configuration::eDistance)){
+        if(supportedReadingTypes.contains(eDistanceReading)){
             accuracy.setAttribute("sigmaDistance", this->sigma.sigmaDistance);
         }
     }
-    if(supportedReadingTypes.contains(Configuration::eLevel)){
+    if(supportedReadingTypes.contains(eLevelReading)){
         accuracy.setAttribute("sigmaAngleXZ", this->sigma.sigmaAngleXZ);
         accuracy.setAttribute("sigmaAngleYZ", this->sigma.sigmaAngleYZ);
     }
-    if(supportedReadingTypes.contains(Configuration::eTemperatur)){
+    if(supportedReadingTypes.contains(eTemperatureReading)){
         accuracy.setAttribute("sigmaTemp", this->sigma.sigmaTemp);
     }
-    if(supportedReadingTypes.contains(Configuration::eUndefined)){
+    if(supportedReadingTypes.contains(eUndefinedReading)){
         QDomElement sigmaUndefined = xmlDoc.createElement("sigmaUndefined");
         QStringList params = this->sigma.sigmaUndefined.keys();
         for(int i = 0; i < params.size(); i++){
@@ -185,7 +185,7 @@ QDomElement SensorConfiguration::toOpenIndyXML(QDomDocument &xmlDoc) const{
 }
 
 /*!
- * \brief SensorConfiguration::fromOpenIndyXML
+ * \brief SensorfromOpenIndyXML
  * \param xmlElem
  * \return
  */
@@ -214,7 +214,7 @@ bool SensorConfiguration::fromOpenIndyXML(QDomElement &xmlElem){
         if(!connectionParams.hasAttribute("typeOfConnection")){
             return false;
         }
-        this->connConfig->typeOfConnection = (Configuration::ConnectionTypes)connectionParams.attribute("typeOfConnection").toInt();
+        this->connConfig->typeOfConnection = (ConnectionTypes)connectionParams.attribute("typeOfConnection").toInt();
 
         //set connection attributes
         if(connectionParams.hasAttribute("ip")){ this->connConfig->ip = connectionParams.attribute("ip"); }
@@ -298,7 +298,7 @@ bool SensorConfiguration::fromOpenIndyXML(QDomElement &xmlElem){
 }
 
 /*!
- * \brief SensorConfiguration::setIsSaved
+ * \brief SensorsetIsSaved
  * \param isSaved
  */
 void SensorConfiguration::setIsSaved(bool isSaved){

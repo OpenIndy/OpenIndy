@@ -3,7 +3,6 @@
 
 #include <QString>
 #include <QJsonArray>
-#include "configuration.h"
 #include "pi_oiplugin.h"
 #include "sensor.h"
 #include "pi_lasertracker.h"

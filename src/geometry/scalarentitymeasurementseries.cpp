@@ -6,7 +6,7 @@ MeasurementConfig ScalarEntityMeasurementSeries::defaultMeasurementConfig;
 
 ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -58,7 +58,7 @@ QDomElement ScalarEntityMeasurementSeries::toOpenIndyXML(QDomDocument &xmlDoc) c
         return entityMeasurementSeries;
     }
 
-    entityMeasurementSeries.setAttribute("type", Configuration::sEntityMeasurementSeries);
+    entityMeasurementSeries.setAttribute("type", getGeometryTypeName(eScalarEntityMeasurementSeriesGeometry));
 
     //add series value
     QDomElement seriesValue = xmlDoc.createElement("seriesValue");

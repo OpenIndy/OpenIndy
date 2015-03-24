@@ -6,7 +6,7 @@ MeasurementConfig Plane::defaultMeasurementConfig;
 
 Plane::Plane(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -89,7 +89,7 @@ QDomElement Plane::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return plane;
     }
 
-    plane.setAttribute("type", Configuration::sPlane);
+    plane.setAttribute("type", getGeometryTypeName(ePlaneGeometry));
 
     //add normal vector
     QDomElement ijk = xmlDoc.createElement("spatialDirection");

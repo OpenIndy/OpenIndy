@@ -147,7 +147,7 @@ void SensorControl::move(double azimuth, double zenith, double distance, bool is
     this->dist = distance;
     this->isMoveRelativ = isRelative;
 
-    bool wasSuccessful = instrument->accept(this, Configuration::eMoveAngle);
+    bool wasSuccessful = instrument->accept(this, eMoveAngle);
 
     emit commandFinished(wasSuccessful);
 
@@ -186,7 +186,7 @@ void SensorControl::move(double x, double y, double z){
     this->y_ =y;
     this->z_ =z;
 
-    bool wasSuccessful = instrument->accept(this, Configuration::eMoveXYZ);
+    bool wasSuccessful = instrument->accept(this, eMoveXYZ);
 
     emit commandFinished(wasSuccessful);
 
@@ -210,7 +210,7 @@ void SensorControl::initialize(){
 
     this->myEmitter.sendString("start initialize");
 
-    bool wasSuccessful = instrument->accept(this, Configuration::eInitialize);
+    bool wasSuccessful = instrument->accept(this, eInitialize);
 
     emit commandFinished(wasSuccessful);
 
@@ -232,7 +232,7 @@ void SensorControl::motorState(){
 
     this->myEmitter.sendString("changing motor state");
 
-    bool wasSuccessful = instrument->accept(this, Configuration::eMotorState);
+    bool wasSuccessful = instrument->accept(this, eMotorState);
 
     emit commandFinished(wasSuccessful);
 
@@ -260,7 +260,7 @@ void SensorControl::home(){
 
     this->myEmitter.sendString("set home");
 
-    bool wasSuccessful = instrument->accept(this, Configuration::eHome);
+    bool wasSuccessful = instrument->accept(this, eHome);
 
     emit commandFinished(wasSuccessful);
 
@@ -290,7 +290,7 @@ void SensorControl::toggleSight(){
 
     this->myEmitter.sendString("toggleSight");
 
-    bool wasSuccessful =  instrument->accept(this, Configuration::eToggleSight);
+    bool wasSuccessful =  instrument->accept(this, eToggleSight);
 
     emit commandFinished(wasSuccessful);
 
@@ -314,7 +314,7 @@ void SensorControl::compensation(){
 
     this->myEmitter.sendString("start compensation");
 
-    bool wasSuccessful =  instrument->accept(this, Configuration::eCompensation);
+    bool wasSuccessful =  instrument->accept(this, eCompensation);
 
     emit commandFinished(wasSuccessful);
 
@@ -391,9 +391,9 @@ void SensorControl::addReading(Reading *r, Geometry *geom, bool isActiveCoordSys
  * \brief SensorControl::getTypeOfReadingStream
  * \return
  */
-Configuration::ReadingTypes SensorControl::getTypeOfReadingStream(){
+ReadingTypes SensorControl::getTypeOfReadingStream(){
 
-    return (Configuration::ReadingTypes) this->typeOfReadingStream;
+    return (ReadingTypes) this->typeOfReadingStream;
 
 }
 
@@ -579,12 +579,12 @@ OiEmitter& SensorControl::getOiEmitter(){
  */
 void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSys){
 
-    r->id = Configuration::generateID();
+    //r->id = generateID();
 
     switch(geom->getMeasurementConfig().typeOfReading){
-        case(Configuration::ePolar) :{
+        case(ePolarReading) :{
             //set type
-            r->typeofReading = Configuration::ePolar;
+            r->typeofReading = ePolarReading;
             //set accuracy
             r->rPolar.sigmaAzimuth = myStation->getInstrumentConfig().sigma.sigmaAzimuth;
             r->rPolar.sigmaZenith= myStation->getInstrumentConfig().sigma.sigmaZenith;
@@ -602,15 +602,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
 
             //save observation in geometry
             geom->addObservation(obs);
-            //geom->insertReadingType(Configuration::ePolar,Configuration::sPolar);
+            //geom->insertReadingType(ePolar,sPolar);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
             break;
         }
-        case(Configuration::eDistance) :{
+        case(eDistanceReading) :{
             //set type
-            r->typeofReading = Configuration::eDistance;
+            r->typeofReading = eDistanceReading;
             //set accuracy
             r->rDistance.sigmaDistance = myStation->getInstrumentConfig().sigma.sigmaDistance;
             //store reading in station
@@ -625,15 +625,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             }
             //save observation in geometry
             geom->addObservation(obs);
-            //geom->insertReadingType(Configuration::eDistance,Configuration::sDistance);
+            //geom->insertReadingType(eDistance,sDistance);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
             break;
         }
-        case(Configuration::eDirection) :{
+        case(eDirectionReading) :{
             //set type
-            r->typeofReading =Configuration::eDirection;
+            r->typeofReading =eDirectionReading;
             //set accuracy
             r->rDirection.sigmaAzimuth = myStation->getInstrumentConfig().sigma.sigmaAzimuth;
             r->rDirection.sigmaZenith= myStation->getInstrumentConfig().sigma.sigmaZenith;
@@ -649,15 +649,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             }
             //save observation in geometry
             geom->addObservation(obs);
-            //geom->insertReadingType(Configuration::eDirection,Configuration::sDirection);
+            //geom->insertReadingType(eDirection,sDirection);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
             break;
         }
-        case(Configuration::eCartesian) :{
+        case(eCartesianReading) :{
             //set type
-            r->typeofReading = Configuration::eCartesian;
+            r->typeofReading = eCartesianReading;
             //set accuracy
             r->rCartesian.sigmaXyz = myStation->getInstrumentConfig().sigma.sigmaXyz;
             //store reading in station
@@ -672,15 +672,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
             geom->addObservation(obs);
-            //geom->insertReadingType(Configuration::eCartesian,Configuration::sCartesian);
+            //geom->insertReadingType(eCartesian,sCartesian);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
             break;
         }
-        case(Configuration::eLevel) :{
+        case(eLevelReading) :{
             //set type
-            r->typeofReading = Configuration::eLevel;
+            r->typeofReading = eLevelReading;
             //store reading in station
             this->myStation->readingsLevel.append(r);
             //create observation
@@ -693,15 +693,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
             geom->addObservation(obs);
-            //geom->insertReadingType(Configuration::eLevel,Configuration::sLevel);
+            //geom->insertReadingType(eLevel,sLevel);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
         break;
     }
-        case(Configuration::eTemperatur) :{
+        case(eTemperatureReading) :{
             //set type
-            r->typeofReading = Configuration::eTemperatur;
+            r->typeofReading = eTemperatureReading;
             //store reading in station
             this->myStation->readingsTemperatur.append(r);
             //create observation
@@ -714,15 +714,15 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
             obs->myTargetGeometries.append(geom);
             //save observation in geometry
             geom->addObservation(obs);
-            //geom->insertReadingType(Configuration::eTemperatur,Configuration::sTemperatur);
+            //geom->insertReadingType(eTemperatur,sTemperatur);
             //save observation in station
             this->myStation->coordSys->addObservation(obs);
 
         break;
         }
-        case(Configuration::eUndefined) :{
+        case(eUndefinedReading) :{
                 //set type
-                r->typeofReading = Configuration::eUndefined;
+                r->typeofReading = eUndefinedReading;
                 //store reading in station
                 this->myStation->readingsUndefined.append(r);
                 //create observation
@@ -735,7 +735,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
                 obs->myTargetGeometries.append(geom);
                 //save observation in geometry
                 geom->addObservation(obs);
-                //geom->insertReadingType(Configuration::eUndefined, instrument->getUndefinedReadingName());
+                //geom->insertReadingType(eUndefined, instrument->getUndefinedReadingName());
                 //save observation in station
                 this->myStation->coordSys->addObservation(obs);
 

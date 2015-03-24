@@ -6,8 +6,9 @@
 #include <QtXml>
 
 #include "measurementconfig.h"
-#include "configuration.h"
 #include "oivec.h"
+#include "types.h"
+#include "util.h"
 
 class Sensor;
 class Observation;
@@ -76,7 +77,7 @@ public:
     ~Reading();
 
     int id;
-    Configuration::ReadingTypes typeofReading;
+    ReadingTypes typeofReading;
     QDateTime measuredAt;
     Sensor *instrument;
     Observation *obs;
@@ -92,7 +93,7 @@ public:
     const MeasurementConfig &getMeasurementConfig();
     void setMeasurementConfig(const MeasurementConfig &mConfig);
 
-    Configuration::Faces face;  //shows in which sight it was measured
+    SensorFaces face;  //shows in which sight it was measured
 
     void toCartesian();
     static OiVec toCartesian(double, double, double);

@@ -7,7 +7,7 @@ MeasurementConfig PointCloud::defaultMeasurementConfig;
 
 PointCloud::PointCloud(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -161,7 +161,7 @@ QDomElement PointCloud::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return pointCloud;
     }
 
-    pointCloud.setAttribute("type", Configuration::sPointCloud);
+    pointCloud.setAttribute("type", getGeometryTypeName(ePointCloudGeometry));
 }
 
 /*!

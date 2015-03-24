@@ -5,7 +5,6 @@
 
 #include "mainwindow.h"
 #include "controller.h"
-#include "pluginloader.h"
 #include "sensor.h"
 #include "console.h"
 

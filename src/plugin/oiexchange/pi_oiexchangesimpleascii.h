@@ -42,7 +42,7 @@ public:
      * \param projectData
      * \return
      */
-    virtual QList<OiExchangeSimpleAscii::ColumnType> getDefaultColumnOrder(Configuration::GeometryTypes typeOfGeometry, const OiExchangeObject &projectData) const = 0;
+    virtual QList<OiExchangeSimpleAscii::ColumnType> getDefaultColumnOrder(GeometryTypes typeOfGeometry, const OiExchangeObject &projectData) const = 0;
 
     /*!
      * \brief getFilePreview
@@ -51,7 +51,7 @@ public:
      * \param projectData
      * \return
      */
-    virtual QMap<OiExchangeSimpleAscii::ColumnType, QVariantList> getFilePreview(Configuration::GeometryTypes typeOfGeometry, const OiExchangeObject &projectData) const = 0;
+    virtual QMap<OiExchangeSimpleAscii::ColumnType, QVariantList> getFilePreview(GeometryTypes typeOfGeometry, const OiExchangeObject &projectData) const = 0;
 
     /*!
      * \brief getPossibleColumns
@@ -59,7 +59,7 @@ public:
      * \param typeOfGeometry
      * \return
      */
-    virtual QList<OiExchangeSimpleAscii::ColumnType> getPossibleColumns(Configuration::GeometryTypes typeOfGeometry) const = 0;
+    virtual QList<OiExchangeSimpleAscii::ColumnType> getPossibleColumns(GeometryTypes typeOfGeometry) const = 0;
 
     /*!
      * \brief getSupportedDelimiters
@@ -81,7 +81,7 @@ public:
      * Specify which type of elemen shall be im- or exported
      * \param typeOfElement
      */
-    void setGeometryType(Configuration::GeometryTypes typeOfGeometry){
+    void setGeometryType(GeometryTypes typeOfGeometry){
         this->typeOfGeometry = typeOfGeometry;
     }
 
@@ -105,7 +105,7 @@ public:
 
 protected:
     QList<OiExchangeSimpleAscii::ColumnType> userDefinedColumns; //an ordered list of enum values that specify what to do with each column
-    Configuration::GeometryTypes typeOfGeometry; //specifies which type of geometry shall be im- or exported
+    GeometryTypes typeOfGeometry; //specifies which type of geometry shall be im- or exported
     bool skipFirstLine; //Skip the first line in a file during import / do not write headers to file during export
     QString usedDelimiter; //the delimiter that shall be used when parsing the file
 

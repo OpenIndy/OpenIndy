@@ -2,6 +2,8 @@
 
 OiJob::OiJob(QObject *parent) : QObject(parent){
 
+    this->currentId = 0;
+
 }
 
 /*
@@ -206,6 +208,15 @@ bool OiJob::setActiveGroup(const QString &group){
 }
 
 /*!
+ * \brief OiJob::generateUniqueId
+ * \return
+ */
+int OiJob::generateUniqueId(){
+    this->currentId++;
+    return this->currentId;
+}
+
+/*!
  * \brief OiFeatureState::getFeature
  * \param featureId
  * \return
@@ -311,22 +322,22 @@ bool OiJob::addFeature(FeatureWrapper *myFeature){
 
     //check if feature with this id already exists
     if(this->myFeatureContainer.getFeatureById(myFeature->getFeature()->getId()) != NULL){
-        myFeature->getFeature()->setId(Configuration::generateID());
+        myFeature->getFeature()->setId(this->generateUniqueId());
     }
 
     //check feature's name
     bool nameValid = false;
     if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
-        nameValid = this->validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName(), true, myFeature->getGeometry()->getNominalSystem());
+        nameValid = this->validateFeatureName(myFeature->getFeatureTypeEnum(), myFeature->getFeature()->getFeatureName(), true, myFeature->getGeometry()->getNominalSystem());
     }else{
-        nameValid = this->validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName());
+        nameValid = this->validateFeatureName(myFeature->getFeatureTypeEnum(), myFeature->getFeature()->getFeatureName());
     }
     if(!nameValid){
         QString name = myFeature->getFeature()->getFeatureName();
         if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
-            while(!this->validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"), true, myFeature->getGeometry()->getNominalSystem())){}
+            while(!this->validateFeatureName(myFeature->getFeatureTypeEnum(), name.append("_new"), true, myFeature->getGeometry()->getNominalSystem())){}
         }else{
-            while(!this->validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"))){}
+            while(!this->validateFeatureName(myFeature->getFeatureTypeEnum(), name.append("_new"))){}
         }
         myFeature->getFeature()->setFeatureName(name);
     }
@@ -347,14 +358,14 @@ bool OiJob::addFeature(FeatureWrapper *myFeature){
 
     //if a group is set for the new feature emit the group changed signal
     if(myFeature->getFeature()->getGroupName().compare("") != 0
-            && !FeatureContainer::getFeatureGroupList().contains(myFeature->getFeature()->getGroupName())){
-        this->myFeatureState->emitSignal(eAvailableGroupsChanged);
+            && !myFeatureContainer.getFeatureGroupList().contains(myFeature->getFeature()->getGroupName())){
+        emit this->availableGroupsChanged();
     }
 
-    this->myFeatureState->emitSignal(eFeatureSetChanged);
-    if(myFeature->getTypeOfFeature() == Configuration::eCoordinateSystemFeature
-            || myFeature->getTypeOfFeature() == Configuration::eStationFeature){
-        this->myFeatureState->emitSignal(eCoordSysSetChanged);
+    emit this->featureSetChanged();
+    if(myFeature->getFeatureTypeEnum() == eCoordinateSystemFeature
+            || myFeature->getFeatureTypeEnum() == eStationFeature){
+        emit this->coordSystemSetChanged();
     }
 
     return true;
@@ -373,14 +384,14 @@ QList<FeatureWrapper *> OiJob::addFeatures(const FeatureAttributes &attributes){
     result = this->createFeatures(attributes);
 
     //if a group is set for the new feature emit the group changed signal
-    if(attributes.group.compare("") != 0 && !FeatureContainer::getFeatureGroupList().contains(attributes.group)){
-        this->myFeatureState->emitSignal(eAvailableGroupsChanged);
+    if(attributes.group.compare("") != 0 && !this->myFeatureContainer.getFeatureGroupList().contains(attributes.group)){
+        emit this->availableGroupsChanged();
     }
 
-    this->::myFeatureState->emitSignal(eFeatureSetChanged);
-    if(attributes.typeOfFeature == Configuration::eCoordinateSystemFeature
-            || attributes.typeOfFeature == Configuration::eStationFeature){
-        this->myFeatureState->emitSignal(eCoordSysSetChanged);
+    emit this->featureSetChanged();
+    if(attributes.typeOfFeature == eCoordinateSystemFeature
+            || attributes.typeOfFeature == eStationFeature){
+        emit this->coordSystemSetChanged();
     }
 
     return result;
@@ -401,29 +412,29 @@ bool OiJob::addFeatures(const QList<FeatureWrapper *> &myFeatures){
         }
 
         //check if feature with this id already exists
-        if(FeatureContainer::getFeatureById(myFeature->getFeature()->getId()) != NULL){
-            myFeature->getFeature()->setId(Configuration::generateID());
+        if(this->myFeatureContainer.getFeatureById(myFeature->getFeature()->getId()) != NULL){
+            myFeature->getFeature()->setId(this->generateUniqueId());
         }
 
         //check feature's name
         bool nameValid = false;
         if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
-            nameValid = this->validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName(), true, myFeature->getGeometry()->getNominalSystem());
+            nameValid = this->validateFeatureName(myFeature->getFeatureTypeEnum(), myFeature->getFeature()->getFeatureName(), true, myFeature->getGeometry()->getNominalSystem());
         }else{
-            nameValid = this->validateFeatureName(myFeature->getTypeOfFeature(), myFeature->getFeature()->getFeatureName());
+            nameValid = this->validateFeatureName(myFeature->getFeatureTypeEnum(), myFeature->getFeature()->getFeatureName());
         }
         if(!nameValid){
             QString name = myFeature->getFeature()->getFeatureName();
             if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()){
-                while(!this->validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"), true, myFeature->getGeometry()->getNominalSystem())){}
+                while(!this->validateFeatureName(myFeature->getFeatureTypeEnum(), name.append("_new"), true, myFeature->getGeometry()->getNominalSystem())){}
             }else{
-                while(!this->validateFeatureName(myFeature->getTypeOfFeature(), name.append("_new"))){}
+                while(!this->validateFeatureName(myFeature->getFeatureTypeEnum(), name.append("_new"))){}
             }
             myFeature->getFeature()->setFeatureName(name);
         }
 
         //add the feature to the list of features, stations, coordinate systems, trafo params and geometries
-        FeatureContainer::addFeature(myFeature);
+        this->myFeatureContainer.addFeature(myFeature);
 
         //add nominal to nominal list of coordinate system
         if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getNominalSystem() != NULL){
@@ -435,18 +446,18 @@ bool OiJob::addFeatures(const QList<FeatureWrapper *> &myFeatures){
 
         //if a group is set for the new feature emit the group changed signal
         if(myFeature->getFeature()->getGroupName().compare("") != 0
-                && !FeatureContainer::getFeatureGroupList().contains(myFeature->getFeature()->getGroupName())){
-            this->myFeatureState->emitSignal(eAvailableGroupsChanged);
+                && !this->myFeatureContainer.getFeatureGroupList().contains(myFeature->getFeature()->getGroupName())){
+            emit this->availableGroupsChanged();
         }
 
-        if(myFeature->getTypeOfFeature() == Configuration::eCoordinateSystemFeature
-                || myFeature->getTypeOfFeature() == Configuration::eStationFeature){
-            this->myFeatureState->emitSignal(eCoordSysSetChanged);
+        if(myFeature->getFeatureTypeEnum() == eCoordinateSystemFeature
+                || myFeature->getFeatureTypeEnum() == eStationFeature){
+            emit this->coordSystemSetChanged();
         }
 
     }
 
-    this->myFeatureState->emitSignal(eFeatureSetChanged);
+    emit this->featureSetChanged();
 
     return true;
 
@@ -468,29 +479,29 @@ bool OiJob::removeFeature(FeatureWrapper *myFeature){
         if(this->myActiveCoordinateSystem != NULL
                 && this->myActiveCoordinateSystem->getId() == myFeature->getFeature()->getId()){
             this->myActiveCoordinateSystem = NULL;
-            this->myFeatureState->emitSignal(eActiveCoordinateSystemChanged);
+            emit this->activeCoordinateSystemChanged();
         }
         if(this->myActiveStation != NULL
                 && this->myActiveStation->getId() == myFeature->getFeature()->getId()){
             this->myActiveStation = NULL;
-            this->myFeatureState->emitSignal(eActiveStationChanged);
+            emit this->activeStationChanged();
         }
         if(this->myActiveFeature != NULL && this->myActiveFeature->getFeature() != NULL
                 && this->myActiveFeature->getFeature()->getId() == myFeature->getFeature()->getId()){
             this->myActiveFeature = NULL;
-            this->myFeatureState->emitSignal(eActiveFeatureChanged);
+            emit this->activeFeatureChanged();
         }
 
         //remove group from groups map if needed
         if(myFeature->getFeature()->getGroupName().compare("") != 0
-                && FeatureContainer::getFeaturesByGroup(myFeature->getFeature()->getGroupName()).size() <= 1){
-            this->myFeatureState->emitSignal(eAvailableGroupsChanged);
+                && this->myFeatureContainer.getFeaturesByGroup(myFeature->getFeature()->getGroupName()).size() <= 1){
+            emit this->availableGroupsChanged();
         }
 
         //remove feature from list of features and delete it
-        FeatureContainer::removeAndDeleteFeature(myFeature->getFeature()->getId());
+        this->myFeatureContainer.removeAndDeleteFeature(myFeature->getFeature()->getId());
 
-        this->myFeatureState->emitSignal(eFeatureSetChanged);
+        emit this->featureSetChanged();
 
         return true;
 
@@ -550,7 +561,7 @@ QList<FeatureWrapper *> OiJob::createFeatures(const FeatureAttributes &attribute
 
     int numIterations = 1;
 
-    if(attributes.isNominal && attributes.isActual && Configuration::getIsGeometry(attributes.typeOfFeature)){
+    if(attributes.isNominal && attributes.isActual && getIsGeometry(attributes.typeOfFeature)){
         numIterations++;
     }
 
@@ -562,75 +573,75 @@ QList<FeatureWrapper *> OiJob::createFeatures(const FeatureAttributes &attribute
             //create feature + feature wrapper and set measurement config
             FeatureWrapper *myFeature = new FeatureWrapper();
             switch(attributes.typeOfFeature){
-            case Configuration::ePointFeature: {
+            case ePointFeature: {
                 Point *myPoint = new Point(nominal);
                 myPoint->setMeasurementConfig(Point::defaultMeasurementConfig);
                 myFeature->setPoint(myPoint);
                 break;
-            }case Configuration::eLineFeature: {
+            }case eLineFeature: {
                 Line *myLine = new Line(nominal);
                 myLine->setMeasurementConfig(Line::defaultMeasurementConfig);
                 myFeature->setLine(myLine);
                 break;
-            }case Configuration::ePlaneFeature:{
+            }case ePlaneFeature:{
                 Plane *myPlane = new Plane(nominal);
                 myPlane->setMeasurementConfig(Plane::defaultMeasurementConfig);
                 myFeature->setPlane(myPlane);
                 break;
-            }case Configuration::eSphereFeature:{
+            }case eSphereFeature:{
                 Sphere *mySphere = new Sphere(nominal);
                 mySphere->setMeasurementConfig(Sphere::defaultMeasurementConfig);
                 myFeature->setSphere(mySphere);
                 break;
-            }case Configuration::eCircleFeature:{
+            }case eCircleFeature:{
                 Circle *myCircle = new Circle(nominal);
                 myCircle->setMeasurementConfig(Circle::defaultMeasurementConfig);
                 myFeature->setCircle(myCircle);
                 break;
-            }case Configuration::eConeFeature:{
+            }case eConeFeature:{
                 Cone *myCone = new Cone(nominal);
                 myCone->setMeasurementConfig(Cone::defaultMeasurementConfig);
                 myFeature->setCone(myCone);
                 break;
-            }case Configuration::eCylinderFeature:{
+            }case eCylinderFeature:{
                 Cylinder *myCylinder = new Cylinder(nominal);
                 myCylinder->setMeasurementConfig(Cylinder::defaultMeasurementConfig);
                 myFeature->setCylinder(myCylinder);
                 break;
-            }case Configuration::eEllipsoidFeature:{
+            }case eEllipsoidFeature:{
                 Ellipsoid *myEllipsoid = new Ellipsoid(nominal);
                 myEllipsoid->setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
                 myFeature->setEllipsoid(myEllipsoid);
                 break;
-            }case Configuration::eHyperboloidFeature:{
+            }case eHyperboloidFeature:{
                 Hyperboloid *myHyperboloid = new Hyperboloid(nominal);
                 myHyperboloid->setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
                 myFeature->setHyperboloid(myHyperboloid);
                 break;
-            }case Configuration::eParaboloidFeature:{
+            }case eParaboloidFeature:{
                 Paraboloid *myParaboloid = new Paraboloid(nominal);
                 myParaboloid->setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
                 myFeature->setParaboloid(myParaboloid);
                 break;
-            }case Configuration::ePointCloudFeature:{
+            }case ePointCloudFeature:{
                 PointCloud *myPointCloud = new PointCloud(nominal);
                 myPointCloud->setMeasurementConfig(PointCloud::defaultMeasurementConfig);
                 myFeature->setPointCloud(myPointCloud);
                 break;
-            }case Configuration::eNurbsFeature:{
+            }case eNurbsFeature:{
                 Nurbs *myNurbs = new Nurbs(nominal);
                 myNurbs->setMeasurementConfig(Nurbs::defaultMeasurementConfig);
                 myFeature->setNurbs(myNurbs);
                 break;
-            }case Configuration::eStationFeature:{
+            }case eStationFeature:{
                 Station *myStation = new Station(name);
                 myFeature->setStation(myStation);
                 break;
-            }case Configuration::eCoordinateSystemFeature:{
+            }case eCoordinateSystemFeature:{
                 CoordinateSystem *myCoordinateSystem = new CoordinateSystem();
                 myFeature->setCoordinateSystem(myCoordinateSystem);
                 break;
-            }case Configuration::eTrafoParamFeature:{
+            }case eTrafoParamFeature:{
                 /*TrafoParam *myTrafoParam = new TrafoParam();
                 myTrafoParam->setCoordinateSystems(attributes.startSystem, attributes.destSystem);
                 myTrafoParam->setIsMovement(attributes.isMovement);
@@ -652,22 +663,22 @@ QList<FeatureWrapper *> OiJob::createFeatures(const FeatureAttributes &attribute
                 }
                 myFeature->setTrafoParam(myTrafoParam);
                 break;*/
-            }case Configuration::eScalarEntityAngleFeature:{
+            }case eScalarEntityAngleFeature:{
                 ScalarEntityAngle *myAngle = new ScalarEntityAngle(nominal);
                 myAngle->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
                 myFeature->setScalarEntityAngle(myAngle);
                 break;
-            }case Configuration::eScalarEntityDistanceFeature:{
+            }case eScalarEntityDistanceFeature:{
                 ScalarEntityDistance *myDistance = new ScalarEntityDistance(nominal);
                 myDistance->setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
                 myFeature->setScalarEntityDistance(myDistance);
                 break;
-            }case Configuration::eScalarEntityTemperatureFeature:{
+            }case eScalarEntityTemperatureFeature:{
                 ScalarEntityTemperature *myTemperature = new ScalarEntityTemperature(nominal);
                 myTemperature->setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
                 myFeature->setScalarEntityTemperature(myTemperature);
                 break;
-            }case Configuration::eScalarEntityMeasurementSeriesFeature:{
+            }case eScalarEntityMeasurementSeriesFeature:{
                 ScalarEntityMeasurementSeries *myMeasurementSeries = new ScalarEntityMeasurementSeries(nominal);
                 myMeasurementSeries->setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
                 myFeature->setScalarEntityMeasurementSeries(myMeasurementSeries);
@@ -691,7 +702,7 @@ QList<FeatureWrapper *> OiJob::createFeatures(const FeatureAttributes &attribute
             }
 
             //add the feature to the list of features, stations, coordinate systems, trafo params and geometries
-            FeatureContainer::addFeature(myFeature);
+            this->myFeatureContainer.addFeature(myFeature);
 
             //add nominal to nominal list of coordinate system
             if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getNominalSystem() != NULL){
@@ -753,28 +764,28 @@ void OiJob::connectFeature(FeatureWrapper *myFeature){
 
     //general feature connects
     connect(myFeature->getFeature(), SIGNAL(featureIsActiveChanged(int)),
-            this->getInstance(), SLOT(setActiveFeature(int)), Qt::DirectConnection);
+            this, SLOT(setActiveFeature(int)), Qt::DirectConnection);
     connect(myFeature->getFeature(), SIGNAL(featureGroupChanged(int)),
-            this->getInstance(), SLOT(setFeatureGroup(int)), Qt::DirectConnection);
+            this, SLOT(setFeatureGroup(int)), Qt::DirectConnection);
     connect(myFeature->getFeature(), SIGNAL(featureNameChanged(int,QString)),
-            this->getInstance(), SLOT(setFeatureName(int,QString)), Qt::DirectConnection);
+            this, SLOT(setFeatureName(int,QString)), Qt::DirectConnection);
     connect(myFeature->getFeature(), SIGNAL(featureAboutToBeDeleted(int)),
-            this->getInstance(), SLOT(removeFeature(int)), Qt::DirectConnection);
+            this, SLOT(removeFeature(int)), Qt::DirectConnection);
 
     //geometry specific connects
     if(myFeature->getGeometry() != NULL){
 
         connect(myFeature->getGeometry(), SIGNAL(geomMyObservationsChanged(int)),
-                this->getInstance(), SLOT(setGeometryObservations(int)), Qt::DirectConnection);
+                this, SLOT(setGeometryObservations(int)), Qt::DirectConnection);
         connect(myFeature->getGeometry(), SIGNAL(geomMyActualChanged(int)),
-                this->getInstance(), SLOT(setGeometryActual(int)), Qt::DirectConnection);
+                this, SLOT(setGeometryActual(int)), Qt::DirectConnection);
         connect(myFeature->getGeometry(), SIGNAL(geomMyMeasurementConfigChanged(int)),
-                this->getInstance(), SLOT(setGeometryMeasurementConfig(int)), Qt::DirectConnection);
+                this, SLOT(setGeometryMeasurementConfig(int)), Qt::DirectConnection);
 
         //only for point clouds
         if(myFeature->getPointCloud() != NULL){
             connect(myFeature->getPointCloud(), SIGNAL(pcSegmentAdded(FeatureWrapper*)),
-                    this->getInstance(), SLOT(addPCSegmentAsFeature(FeatureWrapper*)), Qt::DirectConnection);
+                    this, SLOT(addPCSegmentAsFeature(FeatureWrapper*)), Qt::DirectConnection);
         }
 
     }
@@ -783,11 +794,11 @@ void OiJob::connectFeature(FeatureWrapper *myFeature){
     if(myFeature->getStation() != NULL){
 
         connect(myFeature->getStation(), SIGNAL(activeStationChanged(int)),
-                this->getInstance(), SLOT(setActiveStation(int)), Qt::DirectConnection);
+                this, SLOT(setActiveStation(int)), Qt::DirectConnection);
         connect(myFeature->getStation()->coordSys, SIGNAL(activeCoordinateSystemChanged(int)),
-                this->getInstance(), SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
+                this, SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
         connect(myFeature->getStation()->coordSys, SIGNAL(observationsChanged(int, int)),
-                this->getInstance(), SLOT(setSystemObservations(int, int)), Qt::DirectConnection);
+                this, SLOT(setSystemObservations(int, int)), Qt::DirectConnection);
 
     }
 
@@ -795,16 +806,16 @@ void OiJob::connectFeature(FeatureWrapper *myFeature){
     if(myFeature->getCoordinateSystem() != NULL){
 
         connect(myFeature->getCoordinateSystem(), SIGNAL(activeCoordinateSystemChanged(int)),
-                this->getInstance(), SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
+                this, SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
         connect(myFeature->getCoordinateSystem(), SIGNAL(nominalsChanged(int)),
-                this->getInstance(), SLOT(setSystemsNominals(int)), Qt::DirectConnection);
+                this, SLOT(setSystemsNominals(int)), Qt::DirectConnection);
         connect(myFeature->getCoordinateSystem(), SIGNAL(observationsChanged(int, int)),
-                this->getInstance(), SLOT(setSystemObservations(int, int)), Qt::DirectConnection);
+                this, SLOT(setSystemObservations(int, int)), Qt::DirectConnection);
 
     }
 
     //call OiConfigState's connect method
-    OiConfigState::connectFeature(myFeature);
+    //OiConfigState::connectFeature(myFeature);
 
 }
 
@@ -814,12 +825,12 @@ void OiJob::connectFeature(FeatureWrapper *myFeature){
  */
 void OiJob::disconnectFeature(FeatureWrapper *myFeature){
     disconnect(myFeature->getFeature(), SIGNAL(featureIsActiveChanged(int)),
-            this->getInstance(), SLOT(setActiveFeature(int)));
+            this, SLOT(setActiveFeature(int)));
     disconnect(myFeature->getFeature(), SIGNAL(featureGroupChanged(int)),
-               this->getInstance(), SLOT(setFeatureGroup(int)));
+               this, SLOT(setFeatureGroup(int)));
 
     //call OiConfigState's disconnect method
-    OiConfigState::disconnectFeature(myFeature);
+    //OiConfigState::disconnectFeature(myFeature);
 }
 
 /*!
@@ -830,7 +841,7 @@ void OiJob::disconnectFeature(FeatureWrapper *myFeature){
  * \param myNomSys a pointer to the nominal system of the feature (only if isNominal = true)
  * \return
  */
-bool OiJob::validateFeatureName(const Configuration::FeatureTypes &featureType, const QString &featureName, bool isNominal, CoordinateSystem *myNomSys){
+bool OiJob::validateFeatureName(const FeatureTypes &featureType, const QString &featureName, bool isNominal, CoordinateSystem *myNomSys){
 
     //do not accept empty names
     if(featureName.compare("") == 0){
@@ -838,7 +849,7 @@ bool OiJob::validateFeatureName(const Configuration::FeatureTypes &featureType, 
     }
 
     //get a list of all features with name featureName
-    QList<FeatureWrapper *> equalNameFeatures = FeatureContainer::getFeaturesByName(featureName);
+    QList<FeatureWrapper *> equalNameFeatures = this->myFeatureContainer.getFeaturesByName(featureName);
 
     //accept featureName if no other feature with the same name exists
     if(equalNameFeatures.size() == 0){
@@ -853,11 +864,11 @@ bool OiJob::validateFeatureName(const Configuration::FeatureTypes &featureType, 
 
             if(myFeature->getGeometry() != NULL && myFeature->getGeometry()->getIsNominal()
                     && myFeature->getGeometry()->getNominalSystem() == myNomSys
-                    && myFeature->getTypeOfFeature() == featureType){
+                    && myFeature->getFeatureTypeEnum() == featureType){
                 return false;
-            }else if(myFeature->getTypeOfFeature() == Configuration::eCoordinateSystemFeature
-                     || myFeature->getTypeOfFeature() == Configuration::eTrafoParamFeature
-                     || myFeature->getTypeOfFeature() == Configuration::eStationFeature){
+            }else if(myFeature->getFeatureTypeEnum() == eCoordinateSystemFeature
+                     || myFeature->getFeatureTypeEnum() == eTrafoParamFeature
+                     || myFeature->getFeatureTypeEnum() == eStationFeature){
                 return false;
             }
 
@@ -866,15 +877,15 @@ bool OiJob::validateFeatureName(const Configuration::FeatureTypes &featureType, 
     }else{
 
         //reject featureName if a station, coordinate system or trafo param feature shall be added and its name is already used
-        if(featureType == Configuration::eCoordinateSystemFeature || featureType == Configuration::eStationFeature
-                || featureType == Configuration::eTrafoParamFeature){
+        if(featureType == eCoordinateSystemFeature || featureType == eStationFeature
+                || featureType == eTrafoParamFeature){
             return false;
         }
 
         //reject featureName if an actual geometry shall be added with the same name and type
         foreach(FeatureWrapper *myFeature, equalNameFeatures){
             if(myFeature->getGeometry() != NULL && !myFeature->getGeometry()->getIsNominal()
-                    && myFeature->getTypeOfFeature() == featureType){
+                    && myFeature->getFeatureTypeEnum() == featureType){
                 return false;
             }
         }
@@ -893,7 +904,7 @@ void OiJob::setActiveFeature(const int &featureId){
     try{
 
         //get the feature with id featureId
-        FeatureWrapper *myFeature = FeatureContainer::getFeatureById(featureId);
+        FeatureWrapper *myFeature = this->myFeatureContainer.getFeatureById(featureId);
 
         //if no feature exists with that id
         if(myFeature == NULL){
@@ -907,7 +918,7 @@ void OiJob::setActiveFeature(const int &featureId){
             this->myActiveFeature = myFeature;
 
             //... and set isActive of active feature to true and all other feature's isActive property to false
-            foreach(FeatureWrapper *f, FeatureContainer::getFeaturesList()){
+            foreach(FeatureWrapper *f, this->myFeatureContainer.getFeaturesList()){
                 if(f->getFeature()->getId() == featureId){
                     f->getFeature()->setActiveFeatureState(true);
                 }else{
@@ -916,7 +927,7 @@ void OiJob::setActiveFeature(const int &featureId){
             }
 
             //emit signal to inform that active feature has changed
-            this->myFeatureState->emitSignal(eActiveFeatureChanged);
+            emit this->activeFeatureChanged();
 
         }
 
@@ -933,7 +944,7 @@ void OiJob::setActiveStation(const int &featureId){
     try{
 
         //get the station with id featureId
-        FeatureWrapper *myStation = FeatureContainer::getFeatureById(featureId);
+        FeatureWrapper *myStation = this->myFeatureContainer.getFeatureById(featureId);
 
         //if no station exists with that id
         if(myStation == NULL || myStation->getStation() == NULL){
@@ -947,7 +958,7 @@ void OiJob::setActiveStation(const int &featureId){
             this->myActiveStation = myStation->getStation();
 
             //... and set isActiveStation of active station to true and all other station's isActiveStation property to false
-            foreach(Station *s, FeatureContainer::getStationsList()){
+            foreach(Station *s, this->myFeatureContainer.getStationsList()){
                 if(s->getId() == featureId){
                     s->setActiveStationState(true);
                 }else{
@@ -956,7 +967,7 @@ void OiJob::setActiveStation(const int &featureId){
             }
 
             //emit signal to inform that active station has changed
-            this->myFeatureState->emitSignal(eActiveStationChanged);
+            emit this->activeStationChanged();
 
         }
 
@@ -974,7 +985,7 @@ void OiJob::setActiveCoordinateSystem(const int &featureId){
 
         //get the coordinate system with id featureId
         CoordinateSystem *mySystem = NULL;
-        FeatureWrapper *myCoordinateSystem = FeatureContainer::getFeatureById(featureId);
+        FeatureWrapper *myCoordinateSystem = this->myFeatureContainer.getFeatureById(featureId);
 
         if(myCoordinateSystem != NULL){
             mySystem = myCoordinateSystem->getCoordinateSystem();
@@ -984,7 +995,7 @@ void OiJob::setActiveCoordinateSystem(const int &featureId){
         if(myCoordinateSystem == NULL || myCoordinateSystem->getCoordinateSystem() == NULL){
 
             //check if there is a station system with id featureId
-            foreach(Station *s, FeatureContainer::getStationsList()){
+            foreach(Station *s, this->myFeatureContainer.getStationsList()){
                 if(s->coordSys->getId() == featureId){
                     mySystem = s->coordSys;
                     break;
@@ -1004,14 +1015,14 @@ void OiJob::setActiveCoordinateSystem(const int &featureId){
             this->myActiveCoordinateSystem = mySystem;
 
             //set isActiveCoordinateSystem of active system to true and all other system's isActiveCoordinateSystem property to false
-            foreach(CoordinateSystem *c, FeatureContainer::getCoordinateSystemsList()){
+            foreach(CoordinateSystem *c, this->myFeatureContainer.getCoordinateSystemsList()){
                 if(c->getId() == featureId){
                     c->setActiveCoordinateSystemState(true);
                 }else{
                     c->setActiveCoordinateSystemState(false);
                 }
             }
-            foreach(Station *s, FeatureContainer::getStationsList()){
+            foreach(Station *s, this->myFeatureContainer.getStationsList()){
                 if(s->coordSys->getId() == featureId){
                     s->coordSys->setActiveCoordinateSystemState(true);
                 }else{
@@ -1020,7 +1031,7 @@ void OiJob::setActiveCoordinateSystem(const int &featureId){
             }
 
             //emit signal to inform that active coordinate system has changed
-            this->myFeatureState->emitSignal(eActiveCoordinateSystemChanged);
+            emit this->activeCoordinateSystemChanged();
 
         }
 
@@ -1035,8 +1046,8 @@ void OiJob::setActiveCoordinateSystem(const int &featureId){
  * \param oldGroup
  */
 void OiJob::setFeatureGroup(const int &featureId, const QString &oldGroup){
-    FeatureContainer::featureGroupChanged(featureId, oldGroup);
-    this->myFeatureState->emitSignal(eAvailableGroupsChanged);
+    this->myFeatureContainer.featureGroupChanged(featureId, oldGroup);
+    emit this->availableGroupsChanged();
 }
 
 /*!
@@ -1045,8 +1056,8 @@ void OiJob::setFeatureGroup(const int &featureId, const QString &oldGroup){
  * \param oldName
  */
 void OiJob::setFeatureName(const int &featureId, const QString &oldName){
-    FeatureContainer::featureNameChanged(featureId, oldName);
-    this->myFeatureState->emitSignal(eFeatureAttributesChanged);
+    this->myFeatureContainer.featureNameChanged(featureId, oldName);
+    emit this->featureAttributesChanged();
 }
 
 /*!
@@ -1054,7 +1065,7 @@ void OiJob::setFeatureName(const int &featureId, const QString &oldName){
  * \param featureId
  */
 void OiJob::setFeatureComment(const int &featureId){
-    this->myFeatureState->emitSignal(eFeatureAttributesChanged);
+    emit this->featureAttributesChanged();
 }
 
 /*!
@@ -1062,7 +1073,7 @@ void OiJob::setFeatureComment(const int &featureId){
  * \param featureId
  */
 void OiJob::setFeatureFunctions(const int &featureId){
-    this->myFeatureState->emitSignal(eFeatureFunctionsChanged);
+    emit this->featureFunctionsChanged();
 }
 
 /*!
@@ -1145,7 +1156,7 @@ void OiJob::setGeometryActual(const int &featureId){
             break;
         }*/
 
-        this->myFeatureState->emitSignal(eFeatureSetChanged);
+        emit this->featureSetChanged();
 
     }catch(exception &e){
         Console::addLine(e.what());
@@ -1157,7 +1168,7 @@ void OiJob::setGeometryActual(const int &featureId){
  * \param featureId
  */
 void OiJob::setGeometryNominals(const int &featureId){
-    this->myFeatureState->emitSignal(eFeatureSetChanged);
+    emit this->featureSetChanged();
 }
 
 /*!
@@ -1165,7 +1176,7 @@ void OiJob::setGeometryNominals(const int &featureId){
  * \param featureId
  */
 void OiJob::setGeometryObservations(const int &featureId){
-    this->myFeatureState->emitSignal(eGeomObservationsChanged);
+    emit this->geometryObservationsChanged();
 }
 
 /*!
@@ -1173,7 +1184,7 @@ void OiJob::setGeometryObservations(const int &featureId){
  * \param featureId
  */
 void OiJob::setGeometryMeasurementConfig(const int &featureId){
-    this->myFeatureState->emitSignal(eGeomMeasurementConfigChanged);
+    emit this->geometryMeasurementConfigChanged();
 }
 
 /*!
@@ -1211,7 +1222,7 @@ void OiJob::setSystemsNominals(const int &featureId){
  * \param featureId
  */
 void OiJob::removeFeature(const int &featureId){
-    FeatureContainer::removeFeature(featureId);
+    this->myFeatureContainer.removeFeature(featureId);
 }
 /*!
  * \brief OiFeatureState::addPCSegmentAsFeature

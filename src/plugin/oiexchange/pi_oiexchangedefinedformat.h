@@ -26,12 +26,12 @@ public:
      * Specify the types of elements that shall be im- or exported
      * \param usedElementTypes
      */
-    void setUsedElements(QList<Configuration::ElementTypes> usedElementTypes){
+    void setUsedElements(QList<ElementTypes> usedElementTypes){
         this->usedElementTypes = usedElementTypes;
     }
 
 protected:
-    QList<Configuration::ElementTypes> usedElementTypes; //types of elements that shall be im- or exported
+    QList<ElementTypes> usedElementTypes; //types of elements that shall be im- or exported
 };
 
 #define OiExchangeDefinedFormat_iidd "de.openIndy.Plugin.OiExchange.OiExchangeDefinedFormat.v001"

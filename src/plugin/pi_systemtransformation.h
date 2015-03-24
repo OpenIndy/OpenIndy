@@ -22,9 +22,9 @@ public:
      * Only applicable for Transformation Parameter Feature
      * \return
      */
-    QList<Configuration::FeatureTypes> applicableFor() const{
-        QList<Configuration::FeatureTypes> result;
-        result.append(Configuration::eTrafoParamFeature);
+    QList<FeatureTypes> applicableFor() const{
+        QList<FeatureTypes> result;
+        result.append(eTrafoParamFeature);
         return result;
     }
 

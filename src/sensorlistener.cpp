@@ -30,7 +30,7 @@ void SensorListener::sensorReadingStream(int streamFormat)
 {
     isStreamFinished = false;
 
-    Configuration::ReadingTypes readingTyp = (Configuration::ReadingTypes) streamFormat;
+    ReadingTypes readingTyp = (ReadingTypes) streamFormat;
 
     if(instrument != NULL && instrument->getConnectionState()){
         while(isStreamActive){

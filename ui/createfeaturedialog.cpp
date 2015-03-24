@@ -24,7 +24,7 @@ CreateFeatureDialog::~CreateFeatureDialog(){
  * \brief CreateFeatureDialog::setFeatureType
  * \param typeOfFeature
  */
-void CreateFeatureDialog::setFeatureType(const Configuration::FeatureTypes &typeOfFeature){
+void CreateFeatureDialog::setFeatureType(const FeatureTypes &typeOfFeature){
     this->typeOfFeature = typeOfFeature;
 }
 
@@ -49,7 +49,7 @@ void CreateFeatureDialog::initGUI(){
     this->ui->spinBox_count->setValue(1);
 
     //GUI inits based on type of feature
-    if(this->typeOfFeature == Configuration::eTrafoParamFeature){
+    if(this->typeOfFeature == eTrafoParamFeature){
 
         //set visibility
         this->ui->label_startSystem->setVisible(true);
@@ -68,8 +68,8 @@ void CreateFeatureDialog::initGUI(){
         //set checked state
         this->ui->checkBox_isMovement->setChecked(false);
 
-    }else if(this->typeOfFeature == Configuration::eStationFeature ||
-             this->typeOfFeature == Configuration::eCoordinateSystemFeature){
+    }else if(this->typeOfFeature == eStationFeature ||
+             this->typeOfFeature == eCoordinateSystemFeature){
 
         //set visibility
         this->ui->label_startSystem->setVisible(false);
@@ -117,9 +117,9 @@ void CreateFeatureDialog::initGUI(){
  */
 void CreateFeatureDialog::initModels(){
 
-    this->ui->comboBox_startSystem->setModel(&OiModelManager::getCoordinateSystemsModel());
-    this->ui->comboBox_destinationSystem->setModel(&OiModelManager::getCoordinateSystemsModel());
-    this->ui->comboBox_nominalSystem->setModel(&OiModelManager::getCoordinateSystemsModel());
+    //this->ui->comboBox_startSystem->setModel(&OiModelManager::getCoordinateSystemsModel());
+    //this->ui->comboBox_destinationSystem->setModel(&OiModelManager::getCoordinateSystemsModel());
+    //this->ui->comboBox_nominalSystem->setModel(&OiModelManager::getCoordinateSystemsModel());
 
 }
 
@@ -130,37 +130,37 @@ void CreateFeatureDialog::initModels(){
 void CreateFeatureDialog::initFunctionsModel(){
 
     switch(this->typeOfFeature){
-    case Configuration::ePointFeature:
+    case ePointFeature:
         break;
-    case Configuration::eLineFeature:
+    case eLineFeature:
         break;
-    case Configuration::ePlaneFeature:
+    case ePlaneFeature:
         break;
-    case Configuration::eCircleFeature:
+    case eCircleFeature:
         break;
-    case Configuration::eSphereFeature:
+    case eSphereFeature:
         break;
-    case Configuration::ePointCloudFeature:
+    case ePointCloudFeature:
         break;
-    case Configuration::eConeFeature:
+    case eConeFeature:
         break;
-    case Configuration::eCylinderFeature:
+    case eCylinderFeature:
         break;
-    case Configuration::eEllipsoidFeature:
+    case eEllipsoidFeature:
         break;
-    case Configuration::eParaboloidFeature:
+    case eParaboloidFeature:
         break;
-    case Configuration::eHyperboloidFeature:
+    case eHyperboloidFeature:
         break;
-    case Configuration::eNurbsFeature:
+    case eNurbsFeature:
         break;
-    case Configuration::eScalarEntityAngleFeature:
+    case eScalarEntityAngleFeature:
         break;
-    case Configuration::eScalarEntityDistanceFeature:
+    case eScalarEntityDistanceFeature:
         break;
-    case Configuration::eScalarEntityMeasurementSeriesFeature:
+    case eScalarEntityMeasurementSeriesFeature:
         break;
-    case Configuration::eScalarEntityTemperatureFeature:
+    case eScalarEntityTemperatureFeature:
         break;
     }
 
@@ -185,18 +185,18 @@ void CreateFeatureDialog::initFunctionsModel(){
 
 /*
 
-void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeature){
+void CreateFeatureDialog::setFeatureType(FeatureTypes typeOfFeature){
     this->typeOfFeature = typeOfFeature;
 }
 
 
-/*void CreateFeature::receiveFeatureType(Configuration::FeatureTypes fT){
+/*void CreateFeature::receiveFeatureType(FeatureTypes fT){
     this->typeOfFeature = fT;
 
     initGUI();
 
     switch(typeOfFeature){
-    case Configuration::eCoordinateSystemFeature:{
+    case eCoordinateSystemFeature:{
         ui->toolButton_mConfig->setVisible(false);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -214,7 +214,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         this->setWindowTitle("create coordinatesystem");
         break;
     }
-    case Configuration::eTrafoParamFeature:{
+    case eTrafoParamFeature:{
         ui->toolButton_mConfig->setVisible(false);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -232,7 +232,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         this->setWindowTitle("create transformation parameter");
         break;
     }
-    case Configuration::ePlaneFeature:
+    case ePlaneFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -248,7 +248,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::ePointFeature:
+    case ePointFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -264,7 +264,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::eLineFeature:
+    case eLineFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -280,7 +280,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::eStationFeature:
+    case eStationFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -298,7 +298,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::eSphereFeature:
+    case eSphereFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -314,7 +314,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::eCylinderFeature:
+    case eCylinderFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -330,7 +330,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::eConeFeature:
+    case eConeFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -346,7 +346,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::eEllipsoidFeature:
+    case eEllipsoidFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -362,7 +362,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::eHyperboloidFeature:
+    case eHyperboloidFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -378,7 +378,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::eParaboloidFeature:
+    case eParaboloidFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -394,7 +394,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::eNurbsFeature:
+    case eNurbsFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -410,7 +410,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::ePointCloudFeature:
+    case ePointCloudFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -426,7 +426,7 @@ void CreateFeatureDialog::setFeatureType(Configuration::FeatureTypes typeOfFeatu
         ui->checkBox_movement->setEnabled(false);
         ui->checkBox_movement->setChecked(false);
         break;
-    case Configuration::eCircleFeature:
+    case eCircleFeature:
         ui->toolButton_mConfig->setVisible(true);
         ui->label_nominalSystem->setVisible(false);
         ui->comboBox_nominalSystem->setVisible(false);
@@ -470,7 +470,7 @@ void CreateFeatureDialog::on_toolButton_create_clicked()
     if(ui->spinBox_count->value()>0){
 
         int count = ui->spinBox_count->value();
-        Configuration::FeatureTypes featureType = this->typeOfFeature;
+        FeatureTypes featureType = this->typeOfFeature;
         QString name = ui->lineEdit_name->text();
         bool isActual = ui->checkBox_Actual->isChecked();
         bool isNominal = ui->checkBox_Nominal->isChecked();
@@ -501,7 +501,7 @@ void CreateFeatureDialog::on_toolButton_create_clicked()
             return;
         }
 
-        if (typeOfFeature != Configuration::eTrafoParamFeature){
+        if (typeOfFeature != eTrafoParamFeature){
 
             if(isNominal){
 
@@ -734,20 +734,20 @@ void CreateFeatureDialog::on_toolButton_mConfig_clicked(){
 void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes){
 
     //fill general attributes
-    attributes.typeOfFeature = this->typeOfFeature;
+    //attributes.typeOfFeature = this->typeOfFeature;
     attributes.count = this->ui->spinBox_count->value();
     attributes.name = this->ui->lineEdit_name->text();
     attributes.group = this->ui->comboBox_group->currentText();
 
     //fill feature type specific attributes
-    if(this->typeOfFeature == Configuration::eTrafoParamFeature){
+    if(this->typeOfFeature == eTrafoParamFeature){
 
         attributes.startSystem = this->ui->comboBox_startSystem->currentText();
         attributes.destinationSystem = this->ui->comboBox_destinationSystem->currentText();
         attributes.isMovement = this->ui->checkBox_isMovement->isChecked();
 
-    }else if(this->typeOfFeature != Configuration::eCoordinateSystemFeature
-             && this->typeOfFeature != Configuration::eStationFeature){
+    }else if(this->typeOfFeature != eCoordinateSystemFeature
+             && this->typeOfFeature != eStationFeature){
 
         attributes.isActual = this->ui->checkBox_isActual->isChecked();
         attributes.isNominal = this->ui->checkBox_isNominal->isChecked();

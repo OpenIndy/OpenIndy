@@ -5,7 +5,6 @@
 #include <QStringList>
 #include <QtXml>
 
-#include "configuration.h"
 #include "point.h"
 #include "line.h"
 #include "plane.h"
@@ -41,7 +40,7 @@
  */
 struct InputParams{
     int index; //index of the input element to get the order
-    Configuration::ElementTypes typeOfElement; //type of the needed input element
+    ElementTypes typeOfElement; //type of the needed input element
     QString description; //optional description for the needed element to show in the GUI
     bool infinite; //only one element or as many features as one wants?
 };
@@ -52,7 +51,7 @@ struct InputParams{
  */
 struct InputFeature{
     int id;
-    Configuration::ElementTypes typeOfElement;
+    ElementTypes typeOfElement;
     bool isUsed;
 };
 
@@ -86,7 +85,7 @@ public:
     virtual bool exec(ScalarEntityMeasurementSeries&);
 
     virtual QList<InputParams> getNeededElements() const = 0;
-    virtual QList<Configuration::FeatureTypes> applicableFor() const = 0;
+    virtual QList<FeatureTypes> applicableFor() const = 0;
     virtual PluginMetaData* getMetaData() const = 0;
 
     virtual QMap<QString, int> getIntegerParameter() const;

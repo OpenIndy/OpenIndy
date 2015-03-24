@@ -25,7 +25,7 @@ QWidget* FeatureOverviewDelegate::createEditor(QWidget *parent, const QStyleOpti
         QVariant q = myTblModel->data(idx,Qt::DisplayRole);
         QString fType = q.toString();
 
-        if(Configuration::getFeatureTypeEnum(fType) == Configuration::eCoordinateSystemFeature){
+        if(getFeatureTypeEnum(fType) == eCoordinateSystemFeature){
             return myEditor;
         }
 

@@ -2,6 +2,7 @@
 #define COORDINATESYSTEM_H
 
 #include <QList>
+#include <QPointer>
 
 #include "featurewrapper.h"
 #include "feature.h"
@@ -21,27 +22,28 @@ class Geometry;
 class CoordinateSystem : public Feature
 {
     Q_OBJECT
+
 public:
     explicit CoordinateSystem(QObject *parent = 0);
     virtual ~CoordinateSystem();
 
-    const QList<Observation *> &getObservations() const;
-    Observation * const getObservation(int observationId) const;
-    bool addObservation(Observation * const observation);
+    const QList< QPointer<Observation> > &getObservations() const;
+    QPointer<Observation> getObservation(const int &observationId) const;
+    bool addObservation(QPointer<Observation> const &observation);
 
-    const QList<TrafoParam *> &getTransformationParameters() const;
-    const QList<TrafoParam *> getTransformationParameters(CoordinateSystem * const to) const;
-    bool addTransformationParameter(TrafoParam * const trafoParam);
-    bool removeTransformationParameter(TrafoParam * const trafoParam);
+    const QList< QPointer<TrafoParam> > &getTransformationParameters() const;
+    const QList< QPointer<TrafoParam> > getTransformationParameters(QPointer<CoordinateSystem> const &to) const;
+    bool addTransformationParameter(QPointer<TrafoParam> const &trafoParam);
+    bool removeTransformationParameter(QPointer<TrafoParam> const &trafoParam);
 
-    const QList<FeatureWrapper *> &getNominals() const;
-    bool addNominal(FeatureWrapper * const nominal);
-    bool addNominals(const QList<FeatureWrapper *> &nominals);
-    bool removeNominal(FeatureWrapper * const nominal);
-    bool removeNominal(int featureId);
+    const QList< QPointer<FeatureWrapper> > &getNominals() const;
+    bool addNominal(QPointer<FeatureWrapper> const &nominal);
+    bool addNominals(const QList< QPointer<FeatureWrapper> > &nominals);
+    bool removeNominal(QPointer<FeatureWrapper> const &nominal);
+    bool removeNominal(const int &featureId);
 
     bool getIsActiveCoordinateSystem() const;
-    void setActiveCoordinateSystemState(bool isActiveCoordinateSystem);
+    void setActiveCoordinateSystemState(const bool &isActiveCoordinateSystem);
 
     OiVec origin;
 
@@ -75,15 +77,15 @@ private:
     OiVec expansionOrigin;
 
 signals:
-    void observationsChanged(int coordId, int obsId);
-    void transformationParametersChanged(int coordId);
-    void nominalsChanged(int coordId);
-    void activeCoordinateSystemChanged(int coordId);
+    void observationsChanged(const int &coordId, const int &obsId);
+    void transformationParametersChanged(const int &coordId);
+    void nominalsChanged(const int &coordId);
+    void activeCoordinateSystemChanged(const int &coordId);
 
 protected:
-    QList<Observation*> observations;
-    QList<TrafoParam*> trafoParams;
-    QList<FeatureWrapper*> nominals;
+    QList< QPointer<Observation> > observations;
+    QList< QPointer<TrafoParam> > trafoParams;
+    QList< QPointer<FeatureWrapper> > nominals;
 
     bool isActiveCoordinateSystem;
 };

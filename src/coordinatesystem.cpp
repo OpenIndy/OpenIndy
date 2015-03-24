@@ -6,7 +6,7 @@
 #include "point.h"
 
 CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), origin(4),expansionOrigin(4){
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->isUpdated = false;
     this->isDrawn = true;
     this->expansionOrigin.setAt(3,1.0);
@@ -48,7 +48,7 @@ CoordinateSystem::~CoordinateSystem(){
  * \brief CoordinateSystem::getObservations
  * \return
  */
-const QList<Observation *> &CoordinateSystem::getObservations() const{
+const QList<QPointer<Observation> > &CoordinateSystem::getObservations() const{
     return this->observations;
 }
 
@@ -57,19 +57,18 @@ const QList<Observation *> &CoordinateSystem::getObservations() const{
  * \param observationId
  * \return
  */
-Observation * const CoordinateSystem::getObservation(int observationId) const{
+QPointer<Observation> CoordinateSystem::getObservation(const int &observationId) const{
     try{
 
-        foreach(Observation * obs, this->observations){
-            if(obs != NULL && obs->getId() == observationId){
+        foreach(QPointer<Observation> obs, this->observations){
+            if(!obs.isNull() && obs->getId() == observationId){
                 return obs;
             }
         }
-        return NULL;
+        return QPointer<Observation>();
 
     }catch(exception &e){
-
-        return NULL;
+        return QPointer<Observation>();
     }
 }
 
@@ -78,10 +77,10 @@ Observation * const CoordinateSystem::getObservation(int observationId) const{
  * \param observation
  * \return
  */
-bool CoordinateSystem::addObservation(Observation * const observation){
+bool CoordinateSystem::addObservation(const QPointer<Observation> &observation){
     try{
 
-        if(observation != NULL){
+        if(!observation.isNull()){
             this->observations.append(observation);
             emit this->observationsChanged(this->id, observation->getId());
             return true;
@@ -98,7 +97,7 @@ bool CoordinateSystem::addObservation(Observation * const observation){
  * \brief CoordinateSystem::getTransformationParameter
  * \return
  */
-const QList<TrafoParam *> &CoordinateSystem::getTransformationParameters() const{
+const QList<QPointer<TrafoParam> > &CoordinateSystem::getTransformationParameters() const{
     return this->trafoParams;
 }
 
@@ -107,13 +106,13 @@ const QList<TrafoParam *> &CoordinateSystem::getTransformationParameters() const
  * \param to
  * \return
  */
-const QList<TrafoParam *> CoordinateSystem::getTransformationParameters(CoordinateSystem * const to) const{
+const QList< QPointer<TrafoParam> > CoordinateSystem::getTransformationParameters(QPointer<CoordinateSystem> const &to) const{
     try{
 
-        QList<TrafoParam *> result;
+        QList< QPointer<TrafoParam> > result;
 
-        foreach(TrafoParam *trafo, this->trafoParams){
-            if(trafo != NULL && to != NULL){
+        foreach(QPointer<TrafoParam> trafo, this->trafoParams){
+            if(!trafo.isNull() && !to.isNull()){
                 if(trafo->getDestinationSystem()->getId() == to->getId() || trafo->getStartSystem()->getId() == to->getId()){
                    result.append(trafo);
                 }
@@ -123,7 +122,7 @@ const QList<TrafoParam *> CoordinateSystem::getTransformationParameters(Coordina
         return result;
 
     }catch(exception &e){
-        QList<TrafoParam *> result;
+        QList< QPointer<TrafoParam> > result;
         return result;
     }
 }
@@ -133,10 +132,10 @@ const QList<TrafoParam *> CoordinateSystem::getTransformationParameters(Coordina
  * \param trafoParam
  * \return
  */
-bool CoordinateSystem::addTransformationParameter(TrafoParam * const trafoParam){
+bool CoordinateSystem::addTransformationParameter(const QPointer<TrafoParam> &trafoParam){
     try{
 
-        if(trafoParam != NULL){
+        if(!trafoParam.isNull()){
             this->trafoParams.append(trafoParam);
             emit this->transformationParametersChanged(this->id);
             return true;
@@ -154,10 +153,10 @@ bool CoordinateSystem::addTransformationParameter(TrafoParam * const trafoParam)
  * \param trafoParam
  * \return
  */
-bool CoordinateSystem::removeTransformationParameter(TrafoParam * const trafoParam){
+bool CoordinateSystem::removeTransformationParameter(const QPointer<TrafoParam> &trafoParam){
     try{
 
-        if(trafoParam != NULL){
+        if(!trafoParam.isNull()){
             int removeIndex = -1;
             for(int i = 0; i < this->trafoParams.size(); i++){
                 if(this->trafoParams.at(i) != NULL && this->trafoParams.at(i)->getId() == trafoParam->getId()){
@@ -183,7 +182,7 @@ bool CoordinateSystem::removeTransformationParameter(TrafoParam * const trafoPar
  * \brief CoordinateSystem::getNominals
  * \return
  */
-const QList<FeatureWrapper *> &CoordinateSystem::getNominals() const{
+const QList<QPointer<FeatureWrapper> > &CoordinateSystem::getNominals() const{
     return this->nominals;
 }
 
@@ -198,13 +197,13 @@ const QList<FeatureWrapper *> &CoordinateSystem::getNominals() const{
  * \param nominal
  * \return
  */
-bool CoordinateSystem::addNominal(FeatureWrapper * const nominal){
+bool CoordinateSystem::addNominal(const QPointer<FeatureWrapper> &nominal){
     try{
 
-        if(nominal != NULL && nominal->getGeometry() != NULL){
+        if(!nominal.isNull() && !nominal->getGeometry().isNull()){
 
             if(nominal->getGeometry()->getFeatureName().compare("") == 0){
-                nominal->getGeometry()->setFeatureName(QString("%1").arg(Configuration::generateID()));
+                //nominal->getGeometry()->setFeatureName(QString("%1").arg(Configuration::generateID()));
             }
 
             nominal->getGeometry()->setNominalSystem(this);
@@ -227,12 +226,12 @@ bool CoordinateSystem::addNominal(FeatureWrapper * const nominal){
  * \param nominals
  * \return
  */
-bool CoordinateSystem::addNominals(const QList<FeatureWrapper *> &nominals){
+bool CoordinateSystem::addNominals(const QList< QPointer<FeatureWrapper> > &nominals){
     try{
 
         if(nominals.size() > 0){
 
-            foreach(FeatureWrapper *geom, nominals){
+            foreach(const QPointer<FeatureWrapper> &geom, nominals){
                 geom->getGeometry()->setNominalSystem(this);
                 geom->getGeometry()->setIsSolved(true);
                 geom->setCoordinateSystem(this);
@@ -255,10 +254,10 @@ bool CoordinateSystem::addNominals(const QList<FeatureWrapper *> &nominals){
  * \param nominal
  * \return
  */
-bool CoordinateSystem::removeNominal(FeatureWrapper * const nominal){
+bool CoordinateSystem::removeNominal(const QPointer<FeatureWrapper> &nominal){
     try{
 
-        if(nominal != NULL && nominal->getGeometry() != NULL){
+        if(!nominal.isNull() && !nominal->getGeometry().isNull()){
             int removeIndex = -1;
             for(int i = 0; i < this->nominals.size(); i++){
                 if(this->nominals.at(i) != NULL && this->nominals.at(i)->getGeometry() != NULL
@@ -286,7 +285,7 @@ bool CoordinateSystem::removeNominal(FeatureWrapper * const nominal){
  * \param featureId
  * \return
  */
-bool CoordinateSystem::removeNominal(int featureId){
+bool CoordinateSystem::removeNominal(const int &featureId){
     try{
 
         int removeIndex = -1;
@@ -321,7 +320,7 @@ bool CoordinateSystem::getIsActiveCoordinateSystem() const{
 /*!
  * \brief CoordinateSystem::setActiveCoordinateSystemState
  */
-void CoordinateSystem::setActiveCoordinateSystemState(bool isActiveCoordinateSystem){
+void CoordinateSystem::setActiveCoordinateSystemState(const bool &isActiveCoordinateSystem){
     if(this->isActiveCoordinateSystem != isActiveCoordinateSystem){
         this->isActiveCoordinateSystem = isActiveCoordinateSystem;
         emit this->activeCoordinateSystemChanged(this->id);

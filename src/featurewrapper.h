@@ -1,7 +1,9 @@
 #ifndef FEATUREWRAPPER_H
 #define FEATUREWRAPPER_H
 
-#include "configuration.h"
+#include <QObject>
+#include <QPointer>
+
 #include "feature.h"
 #include "geometry.h"
 #include "coordinatesystem.h"
@@ -24,87 +26,109 @@
 #include "scalarentitytemperature.h"
 #include "scalarentitymeasurementseries.h"
 
-
-class FeatureWrapper
+class FeatureWrapper : public QObject
 {
+    Q_OBJECT
+
 public:
-    FeatureWrapper();
+    explicit FeatureWrapper(QObject *parent = 0);
+
+public:
+
+    //################
+    //type information
+    //################
+
+    QString getFeatureTypeString() const;
+    FeatureTypes getFeatureTypeEnum() const;
+
+    //###################
+    //get feature pointer
+    //###################
+
+    QPointer<Feature> getFeature() const;
+    QPointer<Geometry> getGeometry() const;
+
+    QPointer<CoordinateSystem> getCoordinateSystem() const;
+    QPointer<TrafoParam> getTrafoParam() const;
+    QPointer<Station> getStation() const;
+
+    QPointer<Point> getPoint() const;
+    QPointer<Line> getLine() const;
+    QPointer<Plane> getPlane() const;
+    QPointer<Sphere> getSphere() const;
+    QPointer<Circle> getCircle() const;
+    QPointer<Cone> getCone() const;
+    QPointer<Cylinder> getCylinder() const;
+    QPointer<Ellipsoid> getEllipsoid() const;
+    QPointer<Hyperboloid> getHyperboloid() const;
+    QPointer<Paraboloid> getParaboloid() const;
+    QPointer<PointCloud> getPointCloud() const;
+    QPointer<Nurbs> getNurbs() const;
+
+    QPointer<ScalarEntityAngle> getScalarEntityAngle() const;
+    QPointer<ScalarEntityDistance> getScalarEntityDistance() const;
+    QPointer<ScalarEntityTemperature> getScalarEntityTemperature() const;
+    QPointer<ScalarEntityMeasurementSeries> getScalarEntityMeasurementSeries() const;
+
+    //###################
+    //set feature pointer
+    //###################
+
+    void setCoordinateSystem(const QPointer<CoordinateSystem> &coordSystem);
+    void setTrafoParam(const QPointer<TrafoParam> &trafoPara);
+    void setStation(const QPointer<Station> &station);
+
+    void setPoint(const QPointer<Point> &point);
+    void setLine(const QPointer<Line> &line);
+    void setPlane(const QPointer<Plane> &plane);
+    void setSphere(const QPointer<Sphere> &sphere);
+    void setCircle(const QPointer<Circle> &circle);
+    void setCone(const QPointer<Cone> &cone);
+    void setCylinder(const QPointer<Cylinder> &cylinder);
+    void setEllipsoid(const QPointer<Ellipsoid> &ellipsoid);
+    void setHyperboloid(const QPointer<Hyperboloid> &hyperboloid);
+    void setParaboloid(const QPointer<Paraboloid> &paraboloid);
+    void setPointCloud(const QPointer<PointCloud> &pointCloud);
+    void setNurbs(const QPointer<Nurbs> &nurbs);
+
+    void setScalarEntityAngle(const QPointer<ScalarEntityAngle> &angle);
+    void setScalarEntityDistance(const QPointer<ScalarEntityDistance> &distance);
+    void setScalarEntityTemperature(const QPointer<ScalarEntityTemperature> &temperature);
+    void setScalarEntityMeasurementSeries(const QPointer<ScalarEntityMeasurementSeries> &measurementSeries);
 
 private:
-    Feature *myFeature;
-    Geometry *myGeometry;
 
-    CoordinateSystem *myCoordinateSystem;
-    TrafoParam *myTrafoParam;
+    //#################################################################
+    //private feature pointer that hold a feature or are set to invalid
+    //#################################################################
 
-    Station *myStation;
+    QPointer<Feature> myFeature;
+    QPointer<Geometry> myGeometry;
 
-    Point *myPoint;
-    Line *myLine;
-    Plane *myPlane;
-    Sphere *mySphere;
-    Circle *myCircle;
-    Cone *myCone;
-    Cylinder *myCylinder;
-    Ellipsoid *myEllipsoid;
-    Hyperboloid *myHyperboloid;
-    Paraboloid *myParaboloid;
-    PointCloud *myPointCloud;
-    Nurbs *myNurbs;
-    ScalarEntityAngle *myScalarEntityAngle;
-    ScalarEntityDistance *myScalarEntityDistance;
-    ScalarEntityTemperature *myScalarEntityTemperature;
-    ScalarEntityMeasurementSeries *myScalarEntityMeasurementSeries;
+    QPointer<CoordinateSystem> myCoordinateSystem;
+    QPointer<TrafoParam> myTrafoParam;
 
-    Configuration::FeatureTypes typeOfFeature;
+    QPointer<Station> myStation;
 
-public:
-    QString returnFeatureType() const;
+    QPointer<Point> myPoint;
+    QPointer<Line> myLine;
+    QPointer<Plane> myPlane;
+    QPointer<Sphere> mySphere;
+    QPointer<Circle> myCircle;
+    QPointer<Cone> myCone;
+    QPointer<Cylinder> myCylinder;
+    QPointer<Ellipsoid> myEllipsoid;
+    QPointer<Hyperboloid> myHyperboloid;
+    QPointer<Paraboloid> myParaboloid;
+    QPointer<PointCloud> myPointCloud;
+    QPointer<Nurbs> myNurbs;
+    QPointer<ScalarEntityAngle> myScalarEntityAngle;
+    QPointer<ScalarEntityDistance> myScalarEntityDistance;
+    QPointer<ScalarEntityTemperature> myScalarEntityTemperature;
+    QPointer<ScalarEntityMeasurementSeries> myScalarEntityMeasurementSeries;
 
-//getter
-    Configuration::FeatureTypes getTypeOfFeature();
-    Feature* getFeature();
-    Geometry* getGeometry();
-    CoordinateSystem* getCoordinateSystem();
-    TrafoParam* getTrafoParam();
-    Station* getStation();
-    Point* getPoint();
-    Line* getLine();
-    Plane* getPlane();
-    Sphere* getSphere();
-    Circle* getCircle();
-    Cone* getCone();
-    Cylinder* getCylinder();
-    Ellipsoid* getEllipsoid();
-    Hyperboloid* getHyperboloid();
-    Paraboloid* getParaboloid();
-    PointCloud* getPointCloud();
-    Nurbs* getNurbs();
-    ScalarEntityAngle* getScalarEntityAngle();
-    ScalarEntityDistance* getScalarEntityDistance();
-    ScalarEntityTemperature* getScalarEntityTemperature();
-    ScalarEntityMeasurementSeries* getScalarEntityMeasurementSeries();
-
-//setter
-     void setCoordinateSystem(CoordinateSystem *coordSys);
-     void setTrafoParam(TrafoParam *trafoPara);
-     void setStation(Station *s);
-     void setPoint(Point *p);
-     void setLine(Line *l);
-     void setPlane(Plane *p);
-     void setSphere(Sphere *s);
-     void setCircle(Circle *c);
-     void setCone(Cone *c);
-     void setCylinder(Cylinder *c);
-     void setEllipsoid(Ellipsoid *e);
-     void setHyperboloid(Hyperboloid *h);
-     void setParaboloid(Paraboloid *p);
-     void setPointCloud(PointCloud *p);
-     void setNurbs(Nurbs *n);
-     void setScalarEntityAngle(ScalarEntityAngle *sEA);
-     void setScalarEntityDistance(ScalarEntityDistance *sED);
-     void setScalarEntityTemperature(ScalarEntityTemperature *SET);
-     void setScalarEntityMeasurementSeries(ScalarEntityMeasurementSeries *SEMS);
+    FeatureTypes typeOfFeature;
 
 };
 

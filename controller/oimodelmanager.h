@@ -20,20 +20,8 @@
 #include <QNetworkInterface>
 
 #include "systemdbmanager.h"
-//#include "oifeaturestate.h"
-#include "configuration.h"
-
-#include "geometrytypesproxymodel.h"
 #include "featuretablemodel.h"
 #include "featuretableproxymodel.h"
-#include "trafoparamproxymodel.h"
-#include "featuretreeviewmodel.h"
-#include "availableelementstreeviewproxymodel.h"
-#include "usedelementsmodel.h"
-#include "featuregraphicstreeviewproxymodel.h"
-#include "plugintreeviewmodel.h"
-
-#include "featureupdater.h"
 
 class OiModelManager : public QObject
 {
@@ -55,11 +43,19 @@ public:
     //static models (models that may be reused)
     //#########################################
 
+    //general feature models
+    static FeatureTableModel &getFeatureTableModel();
+    static FeatureTableProxyModel &getFeatureTableProxyModel();
+
+
+
+
+    /*
     static QStringListModel &getPluginNamesModel();
-    static PluginTreeViewModel &getPluginTreeViewModel();
+    //static PluginTreeViewModel &getPluginTreeViewModel();
     static QSqlQueryModel &getCreateFunctionsModel();
     static QSqlQueryModel &getChangeFunctionsModel();
-    static QSqlQueryModel &getSensorsModel(Configuration::SensorTypes typeOfSensor);
+    static QSqlQueryModel &getSensorsModel(SensorTypes typeOfSensor);
 
     static QStringListModel &getCoordinateSystemsModel();
     static QStringListModel &getNominalSystemsModel();
@@ -83,38 +79,38 @@ public:
 
     static FeatureTableModel &getFeatureTableModel();
     static FeatureTableProxyModel &getFeatureTableProxyModel();
-    static TrafoParamProxyModel &getTrafoParamProxyModel();
-    static FeatureTreeViewModel &getFeatureTreeViewModel();
-    static FeatureGraphicsTreeViewProxyModel &getFeatureGraphicsModel();
+    //static TrafoParamProxyModel &getTrafoParamProxyModel();
+    //static FeatureTreeViewModel &getFeatureTreeViewModel();
+    //static FeatureGraphicsTreeViewProxyModel &getFeatureGraphicsModel();*/
 
     //##########################################################
     //dynamic models (models that cannot or shall not be shared)
     //##########################################################
 
-    static GeometryTypesProxyModel *getGeometryTypesFilterModel();
+    //static GeometryTypesProxyModel *getGeometryTypesFilterModel();
 
 
 
-    static QStringListModel *getSimpleAsciiExchangePlugins(QString plugin);
+    //static QStringListModel *getSimpleAsciiExchangePlugins(QString plugin);
     //static QStringListModel getDefinedFormatExchangePlugins();
 
-    static AvailableElementsTreeViewProxyModel *getAvailableElementsModel(Configuration::ElementTypes filter);
-    static UsedElementsModel *getUsedElementsModel(int functionIndex, int elementIndex);
+    //static AvailableElementsTreeViewProxyModel *getAvailableElementsModel(Configuration::ElementTypes filter);
+    //static UsedElementsModel *getUsedElementsModel(int functionIndex, int elementIndex);
 
-    static QStandardItemModel *getFunctionTreeViewModel();
+    //static QStandardItemModel *getFunctionTreeViewModel();
 
 private slots:
-    void featureSetChanged();
+    /*void featureSetChanged();
     void activeFeatureChanged();
     void activeStationChanged();
     void activeCoordinateSystemChanged();
     void availableGroupsChanged();
     void coordSystemSetChanged();
-    void featuresRecalculated();
+    void featuresRecalculated();*/
 
 private:
 
-    QPointer<OiJob> currentJob;
+    static QPointer<OiJob> currentJob;
 
     //#############
     //static models
@@ -123,8 +119,29 @@ private:
     //general feature models
     static FeatureTableModel featureTableModel;
     static FeatureTableProxyModel featureTableProxyModel;
-    static TrafoParamProxyModel trafoParamProxyModel;
-    static FeatureTreeViewModel featureTreeViewModel;
+
+
+
+    //initialize and connect all models provided by OiModelManager
+    void initModels();
+
+    /*void connectModels();
+
+    //helper methods to initialize the different model types
+    void initSensorModels();
+    void initCoordinateSystemModels();
+    void initUnitModels();
+    void initGroupNameModels();
+    void initPluginModels();*/
+
+
+
+    /*
+    //general feature models
+    static FeatureTableModel featureTableModel;
+    static FeatureTableProxyModel featureTableProxyModel;
+    //static TrafoParamProxyModel trafoParamProxyModel;
+    //static FeatureTreeViewModel featureTreeViewModel;
 
 
 
@@ -149,27 +166,18 @@ private:
 
 
 
-    static FeatureGraphicsTreeViewProxyModel featureGraphicsModel;
-    static PluginTreeViewModel pluginTreeViewModel;
+    //static FeatureGraphicsTreeViewProxyModel featureGraphicsModel;
+    //static PluginTreeViewModel pluginTreeViewModel;
     static QSqlQueryModel createFeatureFunctionsModel;
     static QSqlQueryModel changeFeatureFunctionsModel;
     static QSqlQueryModel laserTrackerModel;
     static QSqlQueryModel totalStationModel;
     static QSqlQueryModel undefinedSensorModel;
 
-    //initialize and connect all models provided by OiModelManager
-    void initModels();
-    void connectModels();
-
-    //helper methods to initialize the different model types
-    void initSensorModels();
-    void initCoordinateSystemModels();
-    void initUnitModels();
-    void initGroupNameModels();
-    void initPluginModels();
 
 
 
+*/
 
     //TODO think about a way to manage models (delete them when not necessary)
 };

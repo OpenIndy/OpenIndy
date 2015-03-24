@@ -5,7 +5,7 @@ MeasurementConfig Point::defaultMeasurementConfig;
 
 Point::Point(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -86,7 +86,7 @@ QDomElement Point::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return point;
     }
 
-    point.setAttribute("type", Configuration::sPoint);
+    point.setAttribute("type", getGeometryTypeName(ePointGeometry));
 
     return point;
 

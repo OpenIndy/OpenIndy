@@ -9,7 +9,7 @@
 Observation::Observation(Reading *r, Station *s, bool isActiveCoordSys) :
     myReading(r), myStation(s), myXyz(4), myOriginalXyz(4), sigmaXyz(4), isActiveCoordSys(isActiveCoordSys)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     if(r != NULL){
         r->obs = this;
     }
@@ -27,7 +27,7 @@ Observation::Observation(Reading *r, Station *s, bool isActiveCoordSys) :
 Observation::Observation() :
     myReading(NULL), myStation(NULL), myXyz(4), myOriginalXyz(4), sigmaXyz(4)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
 
     //initialize matrices
     myStatistic.qxx = OiMat(4,4);
@@ -167,7 +167,7 @@ void Observation::calcFromReading()
     r = this->myReading;
 
     switch (this->myReading->typeofReading) {
-    case Configuration::ePolar:
+    case ePolarReading:
         //calc obs xyz
         this->myOriginalXyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
         this->myXyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
@@ -182,7 +182,7 @@ void Observation::calcFromReading()
         this->setIsSolved(this->isActiveCoordSys);
 
         break;
-    case Configuration::eCartesian:
+    case eCartesianReading:
         //calc xyz
         this->myOriginalXyz.setAt(0,r->rCartesian.xyz.getAt(0));
         this->myOriginalXyz.setAt(1,r->rCartesian.xyz.getAt(1));
@@ -200,7 +200,7 @@ void Observation::calcFromReading()
         this->setIsSolved(this->isActiveCoordSys);
 
         break;
-    case Configuration::eDirection:
+    case eDirectionReading:
         //created from reading direction
         this->setIsValid(false);
 
@@ -208,7 +208,7 @@ void Observation::calcFromReading()
         this->setIsSolved(this->isActiveCoordSys);
 
         break;
-    case Configuration::eDistance:
+    case eDistanceReading:
         //created from reading distance
         this->setIsValid(false);
 
@@ -216,7 +216,7 @@ void Observation::calcFromReading()
         this->setIsSolved(this->isActiveCoordSys);
 
         break;
-    case Configuration::eTemperatur:
+    case eTemperatureReading:
         //created from reading temperature
         this->setIsValid(false);
 
@@ -224,7 +224,7 @@ void Observation::calcFromReading()
         this->setIsSolved(this->isActiveCoordSys);
 
         break;
-    case Configuration::eLevel:
+    case eLevelReading:
         //created from reading level
         this->setIsValid(false);
 
@@ -232,7 +232,7 @@ void Observation::calcFromReading()
         this->setIsSolved(this->isActiveCoordSys);
 
         break;
-    case Configuration::eUndefined:
+    case eUndefinedReading:
         //created from reading undefined
         this->setIsValid(false);
 
@@ -254,7 +254,7 @@ void Observation::calcFromReading()
  * \brief setIsValid defines if the observation has valid xyz coords created from its reading
  * \param isValid
  */
-void Observation::setIsValid(bool isValid)
+void Observation::setIsValid(const bool &isValid)
 {
     this->isValid = isValid;
 }
@@ -272,7 +272,7 @@ bool Observation::getIsValid()
  * \brief setIsSolved defines if the observation is solved in the current coordinate system
  * \param isSolved
  */
-void Observation::setIsSolved(bool isSolved)
+void Observation::setIsSolved(const bool &isSolved)
 {
     this->isSolved = isSolved;
 }
@@ -290,7 +290,7 @@ bool Observation::getIsSolved()
  * \brief setIsUsed
  * \param use
  */
-void Observation::setIsUsed(bool use)
+void Observation::setIsUsed(const bool &use)
 {
     this->isUsed = use;
 }

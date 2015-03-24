@@ -3,7 +3,6 @@
 
 #include <QtXml>
 
-#include "configuration.h"
 #include "connectionconfig.h"
 #include "oivec.h"
 
@@ -63,7 +62,7 @@ public:
     bool setName(QString name);
 
     ConnectionConfig *connConfig;
-    Configuration::SensorTypes instrumentType;
+    SensorTypes instrumentType;
 
     QMap<QString, int> integerParameter;
     QMap<QString, double> doubleParameter;

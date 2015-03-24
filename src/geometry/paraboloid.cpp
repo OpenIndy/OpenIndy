@@ -6,7 +6,7 @@ MeasurementConfig Paraboloid::defaultMeasurementConfig;
 
 Paraboloid::Paraboloid(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -59,7 +59,7 @@ QDomElement Paraboloid::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return paraboloid;
     }
 
-    paraboloid.setAttribute("type", Configuration::sParaboloid);
+    paraboloid.setAttribute("type", getGeometryTypeName(eParaboloidGeometry));
 
     return paraboloid;
 

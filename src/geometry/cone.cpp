@@ -6,7 +6,7 @@ MeasurementConfig Cone::defaultMeasurementConfig;
 
 Cone::Cone(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4), alpha(0.0)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -80,7 +80,7 @@ QDomElement Cone::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return cone;
     }
 
-    cone.setAttribute("type", Configuration::sCone);
+    cone.setAttribute("type", getGeometryTypeName(eConeGeometry));
 
     return cone;
 

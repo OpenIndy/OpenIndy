@@ -97,7 +97,7 @@ QString Geometry::getDisplayIsNominal() const
  * \brief Geometry::getMyNominals
  * \return
  */
-QList<Geometry *> Geometry::getMyNominals() const{
+const QList<QPointer<Geometry> > &Geometry::getMyNominals() const{
     return this->nominals;
 }
 
@@ -106,8 +106,8 @@ QList<Geometry *> Geometry::getMyNominals() const{
  * \param myNominal
  * \return
  */
-bool Geometry::addNominal(Geometry *myNominal){
-    if(!this->isNominal && myNominal != NULL && myNominal->getIsNominal()){
+bool Geometry::addNominal(const QPointer<Geometry> &myNominal){
+    if(!this->isNominal && !myNominal.isNull() && myNominal->getIsNominal()){
         this->nominals.append(myNominal);
         emit this->geomMyNominalsChanged(this->id);
         return true;
@@ -120,10 +120,10 @@ bool Geometry::addNominal(Geometry *myNominal){
  * \param myNominal
  * \return
  */
-bool Geometry::removeNominal(Geometry *myNominal){
-    if(!this->isNominal && myNominal != NULL && myNominal->getIsNominal()){
+bool Geometry::removeNominal(const QPointer<Geometry> &myNominal){
+    if(!this->isNominal && !myNominal.isNull() && myNominal->getIsNominal()){
         for(unsigned int i = 0; i < this->nominals.size(); i++){
-            if(this->nominals.at(i) != NULL && this->nominals.at(i)->getId() == myNominal->getId()){
+            if(!this->nominals.at(i).isNull() && this->nominals.at(i)->getId() == myNominal->getId()){
                 this->nominals.removeAt(i);
                 emit this->geomMyNominalsChanged(this->id);
                 return true;
@@ -137,7 +137,7 @@ bool Geometry::removeNominal(Geometry *myNominal){
  * \brief Geometry::getMyActual
  * \return
  */
-Geometry *Geometry::getMyActual() const{
+const QPointer<Geometry> &Geometry::getMyActual() const{
     return this->myActual;
 }
 
@@ -146,17 +146,17 @@ Geometry *Geometry::getMyActual() const{
  * \param myActual
  * \return
  */
-bool Geometry::setMyActual(Geometry *myActual){
-    if(this->isNominal && myActual != NULL && !myActual->getIsNominal()){
-        if(this->myActual != NULL && this->myActual->getId() == myActual->getId()){
+bool Geometry::setMyActual(const QPointer<Geometry> &myActual){
+    if(this->isNominal && !myActual.isNull() && !myActual->getIsNominal()){
+        if(!this->myActual.isNull() && this->myActual->getId() == myActual->getId()){
             return false;
         }else{
             this->myActual = myActual;
             emit this->geomMyActualChanged(this->id);
             return true;
         }
-    }else if(myActual == NULL && this->myActual != NULL){
-        this->myActual = NULL;
+    }else if(!myActual.isNull() && !this->myActual.isNull()){
+        this->myActual = QPointer<Geometry>();
         emit this->geomMyActualChanged(this->id);
         return true;
     }
@@ -190,31 +190,7 @@ bool Geometry::addObservation(Observation *obs){
         this->myObservations.append(obs);
 
         //add reading to geom
-        switch (obs->myReading->typeofReading) {
-        case Configuration::ePolar:
-            this->insertReadingType(obs->myReading->typeofReading,Configuration::sPolar);
-            break;
-        case Configuration::eCartesian:
-            this->insertReadingType(obs->myReading->typeofReading,Configuration::sCartesian);
-            break;
-        case Configuration::eDirection:
-            this->insertReadingType(obs->myReading->typeofReading,Configuration::sDirection);
-            break;
-        case Configuration::eDistance:
-            this->insertReadingType(obs->myReading->typeofReading,Configuration::sDistance);
-            break;
-        case Configuration::eLevel:
-            this->insertReadingType(obs->myReading->typeofReading,Configuration::sLevel);
-            break;
-        case Configuration::eTemperatur:
-            this->insertReadingType(obs->myReading->typeofReading,Configuration::sTemperatur);
-            break;
-        case Configuration::eUndefined:
-            this->insertReadingType(obs->myReading->typeofReading,"undefined");
-            break;
-        default:
-            break;
-        }
+        this->insertReadingType(obs->myReading->typeofReading, getReadingTypeName(obs->myReading->typeofReading));
 
         emit this->geomMyObservationsChanged(this->id);
         return true;
@@ -256,7 +232,7 @@ bool Geometry::removeObservation(Observation *obs){
  * \brief Geometry::getNominalSystem
  * \return
  */
-CoordinateSystem *Geometry::getNominalSystem() const{
+const QPointer<CoordinateSystem> &Geometry::getNominalSystem() const{
     return this->myNominalCoordSys;
 }
 
@@ -265,7 +241,7 @@ CoordinateSystem *Geometry::getNominalSystem() const{
  * \param nomSys
  * \return
  */
-bool Geometry::setNominalSystem(CoordinateSystem *nomSys){
+bool Geometry::setNominalSystem(const QPointer<CoordinateSystem> &nomSys){
     if(this->isNominal && nomSys != NULL){
         this->myNominalCoordSys = nomSys;
         emit this->geomMyNominalSystemChanged(this->id);
@@ -308,23 +284,23 @@ QString Geometry::getDisplayObs() const
  * \param readingType
  * \param displayName
  */
-void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QString displayName){
+void Geometry::insertReadingType(ReadingTypes readingType, QString displayName){
 
     //check if enum value is valid. if not return function, else go on with assignment
     switch (readingType) {
-    case Configuration::ePolar:
+    case ePolarReading:
         break;
-    case Configuration::eCartesian:
+    case eCartesianReading:
         break;
-    case Configuration::eDistance:
+    case eDistanceReading:
         break;
-    case Configuration::eDirection:
+    case eDirectionReading:
         break;
-    case Configuration::eTemperatur:
+    case eTemperatureReading:
         break;
-    case Configuration::eLevel:
+    case eLevelReading:
         break;
-    case Configuration::eUndefined:
+    case eUndefinedReading:
         break;
     default:
         //return function if enum value is not valid
@@ -332,7 +308,7 @@ void Geometry::insertReadingType(Configuration::ReadingTypes readingType, QStrin
         break;
     }
 
-    QMap<Configuration::ReadingTypes,QString>::const_iterator i = usedReadingTypes.find(readingType);
+    QMap<ReadingTypes,QString>::const_iterator i = usedReadingTypes.find(readingType);
     //add reading type to list if it is not in there yet
     if (i.key() != readingType) {
         usedReadingTypes.insert(readingType,displayName);
@@ -380,14 +356,14 @@ double Geometry::getScalar() const
  * \brief Geometry::getUsedReadingTypes
  * \return
  */
-QMap<Configuration::ReadingTypes, QString> Geometry::getUsedReadingTypes() const{
+QMap<ReadingTypes, QString> Geometry::getUsedReadingTypes() const{
     return this->usedReadingTypes;
 }
 
 /*!
  * \brief removeReadingType removes the reading type if there is no more observation with this reading type in the geometry list.
  */
-void Geometry::removeReadingType(Configuration::ReadingTypes rType)
+void Geometry::removeReadingType(ReadingTypes rType)
 {
     bool rTypeExists = false;
 

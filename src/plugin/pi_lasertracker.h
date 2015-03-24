@@ -20,22 +20,22 @@ public:
 
     virtual ~LaserTracker(){}
 
-    bool accept(SensorControl* s, Configuration::SensorFunctionalities f){
+    bool accept(SensorControl* s, SensorFunctions f){
 
         switch(f){
-        case(Configuration::eMoveAngle):
+        case(eMoveAngle):
             return this->move(s->az,s->ze,s->dist,s->isMoveRelativ);
-        case(Configuration::eMoveXYZ):
+        case(eMoveXYZ):
             return this->move(s->x_,s->y_,s->z_);
-        case(Configuration::eInitialize):
+        case(eInitialize):
             return this->initialize();
-        case(Configuration::eHome):
+        case(eHome):
             return this->home();
-        case(Configuration::eToggleSight):
+        case(eToggleSight):
             return this->toggleSightOrientation();
-        case(Configuration::eMotorState):
+        case(eMotorState):
             return this->changeMotorState();
-        case(Configuration::eCompensation):
+        case(eCompensation):
             return this->compensation();
         }
         return false;
@@ -45,9 +45,9 @@ public:
 
     //-----get sensor capabilities-----
 
-    virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes() const = 0;
-    virtual QList<Configuration::SensorFunctionalities> getSupportedSensorActions() const = 0;
-    virtual QList<Configuration::ConnectionTypes>* getConnectionType() const = 0;
+    virtual QList<ReadingTypes>* getSupportedReadingTypes() const = 0;
+    virtual QList<SensorFunctions> getSupportedSensorActions() const = 0;
+    virtual QList<ConnectionTypes>* getConnectionType() const = 0;
 
     //get meta data
     virtual PluginMetaData* getMetaData() const = 0;
@@ -84,7 +84,7 @@ public:
     virtual QList<Reading*>measure(MeasurementConfig *mc) = 0;
 
     //! stream
-    virtual QVariantMap readingStream(Configuration::ReadingTypes streamFormat) = 0;
+    virtual QVariantMap readingStream(ReadingTypes streamFormat) = 0;
 
     //! getConnectionState
     virtual bool getConnectionState() = 0;

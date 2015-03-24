@@ -1,8 +1,12 @@
 #include "featuretablemodel.h"
 
-FeatureTableModel::FeatureTableModel(QPointer<OiJob> job, QObject *parent) : QAbstractTableModel(parent){
+FeatureTableModel::FeatureTableModel(const QPointer<OiJob> &job, QObject *parent) : QAbstractTableModel(parent){
 
     this->currentJob = job;
+
+}
+
+FeatureTableModel::FeatureTableModel(QObject *parent) : QAbstractTableModel(parent){
 
 }
 
@@ -23,7 +27,8 @@ int FeatureTableModel::rowCount(const QModelIndex &parent) const{
  * \return
  */
 int FeatureTableModel::columnCount(const QModelIndex &parent) const{
-    return GUIConfiguration::allAttributes.size();
+    //return GUIConfiguration::allAttributes.size();
+    return 0;
 }
 
 /*!
@@ -56,7 +61,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
 
         switch (index.column()) {
         case 0://type
-            return currentFeature->returnFeatureType();
+            return currentFeature->getFeatureTypeEnum();
         case 1://act/nom
             return currentFeature->getFeature()->getDisplayIsNominal();
         case 2://group
@@ -64,29 +69,29 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         case 3://name
             return currentFeature->getFeature()->getFeatureName();
         case 4://x
-            if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+            /*if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
                 return currentFeature->getFeature()->getDisplayX(GUIConfiguration::getShowDifferences());
             }else if(currentFeature->getFeature()->getIsSolved()){
                 return currentFeature->getFeature()->getDisplayX(GUIConfiguration::getShowDifferences());
             }else{
                 return QVariant();
-            }
+            }*/
         case 5://y
-            if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+            /*if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
                 return currentFeature->getFeature()->getDisplayY(GUIConfiguration::getShowDifferences());
             }else if(currentFeature->getFeature()->getIsSolved()){
                 return currentFeature->getFeature()->getDisplayY(GUIConfiguration::getShowDifferences());
             }else{
                 return QVariant();
-            }
+            }*/
         case 6://z
-            if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
+            /*if(currentFeature->getStation() != NULL && currentFeature->getStation()->coordSys->getIsSolved()){
                 return currentFeature->getFeature()->getDisplayZ(GUIConfiguration::getShowDifferences());
             }else if(currentFeature->getFeature()->getIsSolved()){
                 return currentFeature->getFeature()->getDisplayZ(GUIConfiguration::getShowDifferences());
             }else{
                 return QVariant();
-            }
+            }*/
         case 7://stddev
             return currentFeature->getFeature()->getDisplayStdDev();
         case 8://obs
@@ -108,29 +113,29 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         case 12://comment
             return currentFeature->getFeature()->getComment();
         case 13://radius
-            if(currentFeature->getFeature()->getIsSolved()){
+            /*if(currentFeature->getFeature()->getIsSolved()){
                 return currentFeature->getFeature()->getDisplayRadius(GUIConfiguration::getShowDifferences());
             }else{
                 return QVariant();
-            }
+            }*/
         case 14://i
-            if(currentFeature->getFeature()->getIsSolved()){
+            /*if(currentFeature->getFeature()->getIsSolved()){
                 return currentFeature->getFeature()->getDisplayI(GUIConfiguration::getShowDifferences());
             }else{
                 return QVariant();
-            }
+            }*/
         case 15://j
-            if(currentFeature->getFeature()->getIsSolved()){
+            /*if(currentFeature->getFeature()->getIsSolved()){
                 return currentFeature->getFeature()->getDisplayJ(GUIConfiguration::getShowDifferences());
             }else{
                 return QVariant();
-            }
+            }*/
         case 16://k
-            if(currentFeature->getFeature()->getIsSolved()){
+            /*if(currentFeature->getFeature()->getIsSolved()){
                 return currentFeature->getFeature()->getDisplayK(GUIConfiguration::getShowDifferences());
             }else{
                 return QVariant();
-            }
+            }*/
         case 17://com point
             return currentFeature->getFeature()->getDisplayIsCommon();
         case 18://scalar value dist
@@ -200,7 +205,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
     //background role
     if(role == Qt::BackgroundRole){
 
-        //active feature
+        /*//active feature
         if (currentFeature->getFeature()->getIsActiveFeature()){
             return QColor(QColor::fromCmykF(0.59,0.40,0.10,0.10).lighter());
         }
@@ -231,20 +236,20 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         if(currentFeature->getGeometry() != NULL && currentFeature->getGeometry()->getIsNominal()){
             return QColor(QColor::fromRgb(230,230,180));
         }
-
+*/
         return QVariant();
 
     }
 
     //foreground role
     if(role == Qt::ForegroundRole){
-
+/*
         //active station
         if(currentFeature->getTypeOfFeature() == Configuration::eStationFeature
                 && currentFeature->getStation()->getIsActiveStation()){
             return QColor(Qt::white);
         }
-
+*/
         return QVariant();
 
     }
@@ -260,7 +265,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
  */
 QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation, int role) const{
 
-    QStringList m_columns = GUIConfiguration::allAttributes;
+    /*QStringList m_columns = GUIConfiguration::allAttributes;
 
     if((Qt::DisplayRole == role) &&
             (Qt::Horizontal == orientation) &&
@@ -268,7 +273,7 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
             (section < columnCount())){
 
         return m_columns.at(section);
-    }
+    }*/
     return QVariant();
 }
 
@@ -412,4 +417,12 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
  */
 QPointer<OiJob> FeatureTableModel::getCurrentJob(){
     return this->currentJob;
+}
+
+/*!
+ * \brief FeatureTableModel::setCurrentJob
+ * \param job
+ */
+void FeatureTableModel::setCurrentJob(const QPointer<OiJob> &job){
+    this->currentJob = job;
 }

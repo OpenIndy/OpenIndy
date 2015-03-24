@@ -6,7 +6,7 @@ MeasurementConfig ScalarEntityTemperature::defaultMeasurementConfig;
 
 ScalarEntityTemperature::ScalarEntityTemperature(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -57,7 +57,7 @@ QDomElement ScalarEntityTemperature::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return entityTemperature;
     }
 
-    entityTemperature.setAttribute("type", Configuration::sEntityTemperature);
+    entityTemperature.setAttribute("type", getGeometryTypeName(eScalarEntityTemperatureGeometry));
 
     //add temperature
     QDomElement temperature = xmlDoc.createElement("temperature");

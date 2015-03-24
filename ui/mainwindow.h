@@ -155,8 +155,8 @@ private slots:
     void on_actionCreate_circle_triggered();
 
     //show create feature dialogs
-    void showCreateFeatureDialog(const Configuration::FeatureTypes &featureType);
-    void showScalarEntityDialog(Configuration::FeatureTypes featureType);
+    void showCreateFeatureDialog(const FeatureTypes &featureType);
+    void showScalarEntityDialog(FeatureTypes featureType);
 
     //save and load project actions
     void on_actionSave_as_triggered();
@@ -171,19 +171,22 @@ private slots:
     void handleViewDoubleClick(int index);
 
     //open or close dialogs
-    void on_actionControl_pad_triggered();
+    //void on_actionControl_pad_triggered();
     void on_actionMeasurement_Configuration_triggered();
     void on_actionConsole_triggered();
     void on_actionWatch_window_triggered();
     void on_actionLoad_plugins_triggered();
     void on_actionShow_hide_feature_toolbar_triggered();
     void on_actionSet_instrument_triggered();
-    void on_actionSet_function_triggered();
-    void openCreateFeatureMConfig(Configuration::FeatureTypes typeOfFeature);
+    //void on_actionSet_function_triggered();
+    void openCreateFeatureMConfig(FeatureTypes typeOfFeature);
     void on_actionView_settings_triggered();
     void showProperties(bool checked);
 
     void on_actionActivate_station_triggered();
+
+private:
+    Ui::MainWindow *ui;
 
 private:
 
@@ -320,7 +323,7 @@ signals:
     /*
     //void sendActiveNominalfeature(FeatureWrapper *anf);
     void sendConfig(MeasurementConfig);
-    void sendFeatureType(Configuration::FeatureTypes);
+    void sendFeatureType(FeatureTypes);
     void sendSelectedFeature(int featureIndex); //is emitted when a new active feature was selected by the user
     void sendCommandString(QString);
     void getAvailableFunctions();
@@ -475,7 +478,7 @@ private:
     //void getDefaultFeatureHeaderOrder();
     //QStringList lastFeatureHeaderOrder;
 
-    Configuration::FeatureTypes currentCreateFeature;
+    FeatureTypes currentCreateFeature;
 
     void checkControlPadVisible();
 

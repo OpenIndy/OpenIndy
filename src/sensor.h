@@ -11,6 +11,8 @@
 #include "oisensoremitter.h"
 #include "pluginmetadata.h"
 #include "sensorconfiguration.h"
+#include "types.h"
+#include "util.h"
 
 class Reading;
 class MeasurementConfig;
@@ -38,9 +40,9 @@ public:
 
     //-----get sensor capabilities-----
 
-    virtual QList<Configuration::ReadingTypes>* getSupportedReadingTypes() const = 0;
-    virtual QList<Configuration::SensorFunctionalities> getSupportedSensorActions() const = 0;
-    virtual QList<Configuration::ConnectionTypes>* getConnectionType() const = 0;
+    virtual QList<ReadingTypes>* getSupportedReadingTypes() const = 0;
+    virtual QList<SensorFunctions> getSupportedSensorActions() const = 0;
+    virtual QList<ConnectionTypes>* getConnectionType() const = 0;
 
     //! get meta data
     virtual PluginMetaData* getMetaData() const = 0;
@@ -74,7 +76,7 @@ public:
 
     /*! checks given sensor functionality and nd calls the appropriate internal method
      * of the instance*/
-    virtual bool accept(SensorControl*, Configuration::SensorFunctionalities) = 0;
+    virtual bool accept(SensorControl*, SensorFunctions) = 0;
 
     //! abort a running action
     virtual void abortAction() = 0;
@@ -89,7 +91,7 @@ public:
     virtual QList<Reading*> measure(MeasurementConfig*) = 0;
 
     //! stream
-    virtual QVariantMap readingStream(Configuration::ReadingTypes streamFormat) = 0;
+    virtual QVariantMap readingStream(ReadingTypes streamFormat) = 0;
 
     //! getConnectionState
     virtual bool getConnectionState() = 0;
@@ -119,10 +121,10 @@ public:
         //add reading types
         QDomElement readingTypes = xmlDoc.createElement("readingTypes");
         if(this->getSupportedReadingTypes() != NULL){
-            QList<Configuration::ReadingTypes> *types = this->getSupportedReadingTypes();
+            QList<ReadingTypes> *types = this->getSupportedReadingTypes();
             for(int i = 0; i < types->size(); i++){
                 QDomElement readingType = xmlDoc.createElement("type");
-                readingType.setAttribute("name", Configuration::getReadingTypeString(types->at(i)));
+                readingType.setAttribute("name", getReadingTypeName(types->at(i)));
                 readingTypes.appendChild(readingType);
             }
         }
@@ -137,14 +139,14 @@ public:
      * Returns the last reading (measured or streamed) of this sensor
      * \return
      */
-    QPair<Configuration::ReadingTypes, Reading*> getLastReading(){
+    QPair<ReadingTypes, Reading*> getLastReading(){
         return this->lastReading;
     }
 
 protected:
     void writeToConsole(QString s){myEmitter.emitSendString(s);}
 
-    QPair<Configuration::ReadingTypes, Reading*> lastReading;
+    QPair<ReadingTypes, Reading*> lastReading;
 
 };
 

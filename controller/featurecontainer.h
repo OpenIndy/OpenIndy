@@ -74,7 +74,7 @@ private:
     QMap<int, FeatureWrapper *> myFeaturesIdMap; //map of all features in OpenIndy with their id as key
     QMultiMap<QString, FeatureWrapper *> myFeaturesNameMap; //map of all features in OpenIndy with their name as key
     QMultiMap<QString, FeatureWrapper *> myFeaturesGroupMap; //map of all features in OpenIndy with their group as key
-    QMultiMap<Configuration::FeatureTypes, FeatureWrapper *> myFeaturesTypeMap; // map of all features in OpenIndy with their type as key
+    QMultiMap<FeatureTypes, FeatureWrapper *> myFeaturesTypeMap; // map of all features in OpenIndy with their type as key
 
 };
 

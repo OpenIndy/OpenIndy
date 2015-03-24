@@ -6,7 +6,7 @@ MeasurementConfig ScalarEntityAngle::defaultMeasurementConfig;
 
 ScalarEntityAngle::ScalarEntityAngle(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -65,7 +65,7 @@ QDomElement ScalarEntityAngle::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return entityAngle;
     }
 
-    entityAngle.setAttribute("type", Configuration::sEntitiyAngle);
+    entityAngle.setAttribute("type", getGeometryTypeName(eScalarEntityAngleGeometry));
 
     //add angle
     QDomElement angle = xmlDoc.createElement("angle");

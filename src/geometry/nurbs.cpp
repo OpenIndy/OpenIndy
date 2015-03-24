@@ -6,7 +6,7 @@ MeasurementConfig Nurbs::defaultMeasurementConfig;
 
 Nurbs::Nurbs(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -58,7 +58,7 @@ QDomElement Nurbs::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return nurbs;
     }
 
-    nurbs.setAttribute("type", Configuration::sNurbs);
+    nurbs.setAttribute("type", getGeometryTypeName(eNurbsGeometry));
 
     return nurbs;
 

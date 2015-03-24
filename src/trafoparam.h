@@ -28,11 +28,11 @@ public:
     OiVec getScale() const;
     OiVec getQuaternion() const;
 
-    CoordinateSystem * const getStartSystem() const;
-    CoordinateSystem * const getDestinationSystem() const;
-    bool setCoordinateSystems(CoordinateSystem * const from, CoordinateSystem * const to);
+    const QPointer<CoordinateSystem> &getStartSystem() const;
+    const QPointer<CoordinateSystem> &getDestinationSystem() const;
+    bool setCoordinateSystems(const QPointer<CoordinateSystem> &from, const QPointer<CoordinateSystem> &to);
     bool getIsUsed() const;
-    void setIsUsed(bool isUsed);
+    void setIsUsed(const bool &isUsed);
     QDateTime getValidTime();
     void setValidTime(QDateTime validTime);
     bool getIsMovement();
@@ -63,11 +63,11 @@ public:
     QString getDisplayStdDev() const;
 
 signals:
-    void transformationParameterChanged(int tpId);
-    void coordinateSystemsChanged(int tpId);
-    void isUsedChanged(int tpId);
-    void validTimeChanged(int tpId);
-    void isMovementChanged(int tpId);
+    void transformationParameterChanged(const int &tpId);
+    void coordinateSystemsChanged(const int &tpId);
+    void isUsedChanged(const int &tpId);
+    void validTimeChanged(const int &tpId);
+    void isMovementChanged(const int &tpId);
 
 protected:
     OiMat homogenMatrix;
@@ -75,8 +75,8 @@ protected:
     OiVec rotation;
     OiVec scale;
     OiVec quaternion;
-    CoordinateSystem *from;
-    CoordinateSystem *to;
+    QPointer<CoordinateSystem> from;
+    QPointer<CoordinateSystem> to;
     Statistic *myStatistic;
     bool use;
     QDateTime validTime;

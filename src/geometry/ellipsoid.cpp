@@ -6,7 +6,7 @@ MeasurementConfig Ellipsoid::defaultMeasurementConfig;
 
 Ellipsoid::Ellipsoid(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4),a(0.0),b(0.0),c(0.0)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -72,7 +72,7 @@ QDomElement Ellipsoid::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return ellipsoid;
     }
 
-    ellipsoid.setAttribute("type", Configuration::sEllipsoid);
+    ellipsoid.setAttribute("type", getGeometryTypeName(eEllipsoidGeometry));
 
     return ellipsoid;
 

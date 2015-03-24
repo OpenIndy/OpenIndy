@@ -5,9 +5,9 @@
 #include <QPointer>
 #include <QAbstractTableModel>
 
+#include "function.h"
 #include "feature.h"
 #include "featurewrapper.h"
-#include "guiconfiguration.h"
 #include "oijob.h"
 
 class FeatureTableModel : public QAbstractTableModel
@@ -15,7 +15,8 @@ class FeatureTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit FeatureTableModel(QPointer<OiJob> job, QObject *parent = 0);
+    explicit FeatureTableModel(const QPointer<OiJob> &job, QObject *parent = 0);
+    explicit FeatureTableModel(QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
@@ -25,6 +26,7 @@ public:
     bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
 
     QPointer<OiJob> getCurrentJob();
+    void setCurrentJob(const QPointer<OiJob> &job);
 
 /*signals:
     void groupNameChanged(QString oldValue, QString nweValue);

@@ -41,7 +41,7 @@ bool SystemDbManager::deletePlugin(const QString &iid){
  * \param typeOfFeature
  * \return
  */
-bool SystemDbManager::getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const Configuration::FeatureTypes &typeOfFeature){
+bool SystemDbManager::getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const FeatureTypes &typeOfFeature){
 
     if(sqlModel.isNull()){
         return false;
@@ -54,10 +54,10 @@ bool SystemDbManager::getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel
     bool check = false;
     if(SystemDbManager::connect()){
 
-        QString feature = Configuration::getFeatureTypeString(typeOfFeature);
+        QString feature = getFeatureTypeName(typeOfFeature);
 
         QString query;
-        if(typeOfFeature == Configuration::eTrafoParamFeature){ //trafo param is defined by system transformation
+        if(typeOfFeature == eTrafoParamFeature){ //trafo param is defined by system transformation
             query = QString("SELECT fp.name, fp.description, fp.iid, p.file_path FROM elementPlugin AS ep "
                                     "INNER JOIN functionPlugin AS fp ON fp.id = ep.functionPlugin_id "
                                     "INNER JOIN plugin AS p ON p.id = fp.plugin_id "
@@ -93,7 +93,7 @@ bool SystemDbManager::getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel
  * \param typeOfFeature
  * \return
  */
-bool SystemDbManager::getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const Configuration::FeatureTypes &typeOfFeature){
+bool SystemDbManager::getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const FeatureTypes &typeOfFeature){
 
     if(sqlModel.isNull()){
         return false;
@@ -106,7 +106,7 @@ bool SystemDbManager::getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel
     bool check = false;
     if(SystemDbManager::connect()){
 
-        QString feature = Configuration::getFeatureTypeString(typeOfFeature);
+        QString feature = getFeatureTypeName(typeOfFeature);
 
         QString query = QString("SELECT fp.name, fp.description, fp.iid, p.file_path FROM elementPlugin AS ep "
                                 "INNER JOIN functionPlugin AS fp ON fp.id = ep.functionPlugin_id "
@@ -353,14 +353,14 @@ bool SystemDbManager::removeMeasurementConfig(const QString &name){
  * \param geomType
  * \return
  */
-QString SystemDbManager::getDefaultMeasurementConfig(const Configuration::GeometryTypes &typeOfGeometry){
+QString SystemDbManager::getDefaultMeasurementConfig(const GeometryTypes &typeOfGeometry){
 
     QString name;
 
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
 
-        QString geomTypeString = Configuration::getGeometryTypeString(typeOfGeometry);
+        QString geomTypeString = getGeometryTypeName(typeOfGeometry);
 
         QString query = QString("SELECT m.name FROM measurementConfig AS m INNER JOIN element AS e")
                 .append(" ON m.id = e.measurementConfig_id WHERE element_type = '%1'").arg(geomTypeString);
@@ -390,14 +390,14 @@ QString SystemDbManager::getDefaultMeasurementConfig(const Configuration::Geomet
  * \param name
  * \return
  */
-bool SystemDbManager::setDefaultMeasurementConfig(const Configuration::GeometryTypes &typeOfGeometry, const QString &name){
+bool SystemDbManager::setDefaultMeasurementConfig(const GeometryTypes &typeOfGeometry, const QString &name){
 
     bool check = false;
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
 
     if(SystemDbManager::connect()){
 
-        QString geomTypeString = Configuration::getGeometryTypeString(typeOfGeometry);
+        QString geomTypeString = getGeometryTypeName(typeOfGeometry);
 
         QString query;
         QSqlQuery command(SystemDbManager::db);
@@ -876,9 +876,9 @@ void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
     QList<QString> elements;
 
     //get id's of features for which this plugin is applicable
-    QList<Configuration::FeatureTypes> lf = f->applicableFor();
+    QList<FeatureTypes> lf = f->applicableFor();
     for(int i=0; i<lf.size(); i++){
-        elements.append( Configuration::getFeatureTypeString(lf.at(i)) );
+        elements.append( getFeatureTypeName(lf.at(i)) );
     }
     QList<int> applicableFor = SystemDbManager::getElementIds(elements);
 
@@ -887,7 +887,7 @@ void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
     //get id's of elements which this plugin needs to be able to execute
     QList<InputParams> le = f->getNeededElements();
     for(int i=0; i<le.size(); i++){
-        elements.append( Configuration::getElementTypeString(le.at(i).typeOfElement) );
+        elements.append( getElementTypeName(le.at(i).typeOfElement) );
     }
     QList<int> neededElements = SystemDbManager::getElementIds(elements);
 
@@ -975,9 +975,9 @@ void SystemDbManager::saveOiExchangeSimpleAsciiPlugin(int pluginId, OiExchangeSi
 
     //get a list of supported elements
     QList<QString> elementNames;
-    QList<Configuration::GeometryTypes> elementEnums = sa->getSupportedGeometries();
+    QList<GeometryTypes> elementEnums = sa->getSupportedGeometries();
     for(int i = 0; i < elementEnums.size(); i++){
-        elementNames.append(Configuration::getGeometryTypeString(elementEnums.at(i)));
+        elementNames.append(getGeometryTypeName(elementEnums.at(i)));
     }
     QList<int> supportedElements;
     supportedElements = SystemDbManager::getElementIds(elementNames);
@@ -1012,9 +1012,9 @@ void SystemDbManager::saveOiExchangeDefinedFormatPlugin(int pluginId, OiExchange
 
     //get a list of supported elements
     QList<QString> elementNames;
-    QList<Configuration::GeometryTypes> elementEnums = df->getSupportedGeometries();
+    QList<GeometryTypes> elementEnums = df->getSupportedGeometries();
     for(int i = 0; i < elementEnums.size(); i++){
-        elementNames.append(Configuration::getGeometryTypeString(elementEnums.at(i)));
+        elementNames.append(getGeometryTypeName(elementEnums.at(i)));
     }
     QList<int> supportedElements;
     supportedElements = SystemDbManager::getElementIds(elementNames);
@@ -1123,7 +1123,7 @@ QList<Plugin> SystemDbManager::getAvailablePlugins(){
                              .arg(myFunction.id));
                 command2.exec(queryApplicableFor);
                 while(command2.next()){
-                    myFunction.applicableFor.append(Configuration::getFeatureTypeEnum(command2.value("element_type").toString()));
+                    myFunction.applicableFor.append(getFeatureTypeEnum(command2.value("element_type").toString()));
                 }
 
                 //query neededElements elements
@@ -1132,7 +1132,7 @@ QList<Plugin> SystemDbManager::getAvailablePlugins(){
                              .arg(myFunction.id));
                 command2.exec(queryNeededElements);
                 while(command2.next()){
-                    myFunction.neededElements.append(Configuration::getElementTypeEnum(command2.value("element_type").toString()));
+                    myFunction.neededElements.append(getElementTypeEnum(command2.value("element_type").toString()));
                 }
 
                 myPlugin.myFunctions.append(myFunction);
@@ -1205,7 +1205,7 @@ QStringList SystemDbManager::getAvailablePluginNames(){
 }
 
 
-QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::FeatureTypes featureType){
+QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(FeatureTypes featureType){
     QList<FunctionPlugin> result;
 
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
@@ -1219,7 +1219,7 @@ QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::F
                 .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
                 .arg("INNER JOIN element AS e ON e.id = ep.element_id")
                 .arg(QString("e.element_type = \'%1\' AND fp.iid = \'%2\'")
-                     .arg(Configuration::getFeatureTypeString(featureType)).arg(FitFunction_iidd));
+                     .arg(getFeatureTypeName(featureType)).arg(FitFunction_iidd));
 
         command.exec(query);
         while(command.next()){
@@ -1239,7 +1239,7 @@ QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::F
                          .arg(myPlugin.id));
             command2.exec(queryApplicableFor);
             while(command2.next()){
-                myPlugin.applicableFor.append(Configuration::getFeatureTypeEnum(command2.value("element_type").toString()));
+                myPlugin.applicableFor.append(getFeatureTypeEnum(command2.value("element_type").toString()));
             }
 
             //query neededElements elements
@@ -1248,7 +1248,7 @@ QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::F
                          .arg(myPlugin.id));
             command2.exec(queryNeededElements);
             while(command2.next()){
-                myPlugin.neededElements.append(Configuration::getElementTypeEnum(command2.value("element_type").toString()));
+                myPlugin.neededElements.append(getElementTypeEnum(command2.value("element_type").toString()));
             }
 
             result.append(myPlugin);
@@ -1262,7 +1262,7 @@ QList<FunctionPlugin> SystemDbManager::getAvailableFitFunctions(Configuration::F
 }
 
 
-QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(Configuration::FeatureTypes featureType){
+QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(FeatureTypes featureType){
     QList<FunctionPlugin> result;
 
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
@@ -1276,7 +1276,7 @@ QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(Configurat
                 .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
                 .arg("INNER JOIN element AS e ON e.id = ep.element_id")
                 .arg(QString("e.element_type = \'%1\' AND fp.iid = \'%2\'")
-                     .arg(Configuration::getFeatureTypeString(featureType)).arg(ConstructFunction_iidd));
+                     .arg(getFeatureTypeName(featureType)).arg(ConstructFunction_iidd));
 
         command.exec(query);
         while(command.next()){
@@ -1296,7 +1296,7 @@ QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(Configurat
                          .arg(myPlugin.id));
             command2.exec(queryApplicableFor);
             while(command2.next()){
-                myPlugin.applicableFor.append(Configuration::getFeatureTypeEnum(command2.value("element_type").toString()));
+                myPlugin.applicableFor.append(getFeatureTypeEnum(command2.value("element_type").toString()));
             }
 
             //query neededElements elements
@@ -1305,7 +1305,7 @@ QList<FunctionPlugin> SystemDbManager::getAvailableConstructFunctions(Configurat
                          .arg(myPlugin.id));
             command2.exec(queryNeededElements);
             while(command2.next()){
-                myPlugin.neededElements.append(Configuration::getElementTypeEnum(command2.value("element_type").toString()));
+                myPlugin.neededElements.append(getElementTypeEnum(command2.value("element_type").toString()));
             }
 
             result.append(myPlugin);
@@ -1353,7 +1353,7 @@ QList<SimulationPlugin> SystemDbManager::getAvailableSimulationPlugins()
 }
 
 
-FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes featureType){
+FunctionPlugin SystemDbManager::getDefaultFunction(FeatureTypes featureType){
     FunctionPlugin result;
 
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
@@ -1366,7 +1366,7 @@ FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes f
                 .arg("INNER JOIN elementPlugin AS ep ON fp.id = ep.functionPlugin_id")
                 .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
                 .arg("INNER JOIN element AS e ON e.id = ep.element_id")
-                .arg(QString("e.element_type = \'%1\' AND ep.use_as_default = 1").arg(Configuration::getFeatureTypeString(featureType)));
+                .arg(QString("e.element_type = \'%1\' AND ep.use_as_default = 1").arg(getFeatureTypeName(featureType)));
 
         command.exec(query);
         while(command.next()){
@@ -1386,7 +1386,7 @@ FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes f
                          .arg(myPlugin.id));
             command2.exec(queryApplicableFor);
             while(command2.next()){
-                myPlugin.applicableFor.append(Configuration::getFeatureTypeEnum(command2.value("element_type").toString()));
+                myPlugin.applicableFor.append(getFeatureTypeEnum(command2.value("element_type").toString()));
             }
 
             //query neededElements elements
@@ -1395,7 +1395,7 @@ FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes f
                          .arg(myPlugin.id));
             command2.exec(queryNeededElements);
             while(command2.next()){
-                myPlugin.neededElements.append(Configuration::getElementTypeEnum(command2.value("element_type").toString()));
+                myPlugin.neededElements.append(getElementTypeEnum(command2.value("element_type").toString()));
             }
 
             result = myPlugin;
@@ -1410,7 +1410,7 @@ FunctionPlugin SystemDbManager::getDefaultFunction(Configuration::FeatureTypes f
 }
 
 
-void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureType, QString function, QString plugin){
+void SystemDbManager::saveDefaultFunction(FeatureTypes featureType, QString function, QString plugin){
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
 
@@ -1423,7 +1423,7 @@ void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureTyp
             QString query = QString("UPDATE elementPlugin SET use_as_default = 0 WHERE id IN %1")
                     .arg(QString("(SELECT ep.id FROM elementPlugin AS ep %1 %2")
                          .arg("INNER JOIN element AS e ON ep.element_id = e.id")
-                         .arg(QString("WHERE e.element_type = \'%1\')").arg(Configuration::getFeatureTypeString(featureType))));
+                         .arg(QString("WHERE e.element_type = \'%1\')").arg(getFeatureTypeName(featureType))));
 
             if(command.exec(query)){
 
@@ -1434,7 +1434,7 @@ void SystemDbManager::saveDefaultFunction(Configuration::FeatureTypes featureTyp
                              .arg("INNER JOIN functionPlugin AS fp ON ep.functionPlugin_id = fp.id")
                              .arg("INNER JOIN plugin AS p ON fp.plugin_id = p.id")
                              .arg(QString("WHERE e.element_type = \'%1\' AND fp.name = \'%2\' AND p.name = \'%3\')")
-                                  .arg(Configuration::getFeatureTypeString(featureType))
+                                  .arg(getFeatureTypeName(featureType))
                                   .arg(function)
                                   .arg(plugin)));
                 command.exec(query);

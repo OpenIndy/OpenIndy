@@ -12,33 +12,7 @@
 Controller::Controller(QObject *parent) :
     QObject(parent)
 {
-    /*c = new Console(0);
-    Console::c = c;
 
-    //get pointer to state objects
-    this->myConfigState = OiConfigState::getInstance();
-
-    this->myDeleteFeaturesCallback = new DeleteFeaturesFunctor();
-    this->myDeleteFeaturesCallback->c = this;
-
-    //set up models
-    //this->connectModels();
-
-    this->createDefaultProject();
-
-    this->lastRequestId = -1;
-
-
-    connect(PluginLoader::myMetaInfo,SIGNAL(sendMe(PluginMetaData*)),this,SLOT(savePluginData(PluginMetaData*)));
-
-
-    openIndyServer = new OiServer();
-    openIndyServer->startServer();
-
-    openIndyWebSocketServer = new OiWebSocketServer();
-    openIndyWebSocketServer->startServer();
-    //connect(openIndyServer, SIGNAL(getProject(OiProjectData*)), this, SLOT(handleRemoteCommand(OiProjectData*)));
-*/
 }
 
 /*!

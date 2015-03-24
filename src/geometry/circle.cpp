@@ -6,7 +6,7 @@ MeasurementConfig Circle::defaultMeasurementConfig;
 
 Circle::Circle(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4), radius(0.0)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -87,7 +87,7 @@ QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return circle;
     }
 
-    circle.setAttribute("type", Configuration::sCircle);
+    circle.setAttribute("type", getGeometryTypeName(eCircleGeometry));
 
     //add radius
     QDomElement radius = xmlDoc.createElement("radius");

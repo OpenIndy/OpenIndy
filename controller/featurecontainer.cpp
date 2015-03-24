@@ -172,14 +172,14 @@ bool FeatureContainer::addFeature(FeatureWrapper *myFeature){
     if(myFeature->getFeature()->getGroupName().compare("") != 0){
         this->myFeaturesGroupMap.insert(myFeature->getFeature()->getGroupName(), myFeature);
     }
-    switch(myFeature->getTypeOfFeature()){
-    case Configuration::eCoordinateSystemFeature:
+    switch(myFeature->getFeatureTypeEnum()){
+    case eCoordinateSystemFeature:
         this->myCoordinateSystemsList.append(myFeature->getCoordinateSystem());
         break;
-    case Configuration::eStationFeature:
+    case eStationFeature:
         this->myStationsList.append(myFeature->getStation());
         break;
-    case Configuration::eTrafoParamFeature:
+    case eTrafoParamFeature:
         this->myTransformationParametersList.append(myFeature->getTrafoParam());
         break;
     default:
@@ -234,14 +234,14 @@ bool FeatureContainer::removeFeature(const int &featureId){
     if(myFeature->getFeature()->getGroupName().compare("") != 0){
         this->myFeaturesGroupMap.remove(myFeature->getFeature()->getGroupName(), myFeature);
     }
-    switch(myFeature->getTypeOfFeature()){
-    case Configuration::eCoordinateSystemFeature:
+    switch(myFeature->getFeatureTypeEnum()){
+    case eCoordinateSystemFeature:
         this->myCoordinateSystemsList.removeOne(myFeature->getCoordinateSystem());
         break;
-    case Configuration::eStationFeature:
+    case eStationFeature:
         this->myStationsList.removeOne(myFeature->getStation());
         break;
-    case Configuration::eTrafoParamFeature:
+    case eTrafoParamFeature:
         this->myTransformationParametersList.removeOne(myFeature->getTrafoParam());
         break;
     default:

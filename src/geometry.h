@@ -26,28 +26,28 @@ public:
     bool getIsNominal() const;
     QString getDisplayIsNominal() const;
 
-    QList<Geometry *> getMyNominals() const;
-    bool addNominal(Geometry *myNominal);
-    bool removeNominal(Geometry *myNominal);
+    const QList< QPointer<Geometry> > &getMyNominals() const;
+    bool addNominal(const QPointer<Geometry> &myNominal);
+    bool removeNominal(const QPointer<Geometry> &myNominal);
 
-    Geometry *getMyActual() const;
-    bool setMyActual(Geometry *myActual);
+    const QPointer<Geometry> &getMyActual() const;
+    bool setMyActual(const QPointer<Geometry> &myActual);
 
 	QString getDisplayObs() const;
     QList<Observation *> getObservations() const;
     bool addObservation(Observation *obs);
     bool removeObservation(Observation *obs);
 
-    CoordinateSystem *getNominalSystem() const;
-    bool setNominalSystem(CoordinateSystem *nomSys);
+    const QPointer<CoordinateSystem> &getNominalSystem() const;
+    bool setNominalSystem(const QPointer<CoordinateSystem> &nomSys);
 
     virtual OiVec getXYZ() const;
     virtual OiVec getIJK() const;
     virtual double getRadius() const;
     virtual double getScalar() const;
 	
-    QMap<Configuration::ReadingTypes, QString> getUsedReadingTypes() const;
-    void removeReadingType(Configuration::ReadingTypes rType);
+    QMap<ReadingTypes, QString> getUsedReadingTypes() const;
+    void removeReadingType(ReadingTypes rType);
 
     MeasurementConfig getMeasurementConfig() const;
     void setMeasurementConfig(MeasurementConfig myConfig);
@@ -65,29 +65,29 @@ public:
     void resetSimulationData();
 
 private:
-    void insertReadingType(Configuration::ReadingTypes readingType, QString displayName);
+    void insertReadingType(ReadingTypes readingType, QString displayName);
 
 signals:
-    void geomIsCommonChanged(int featureId);
-    void geomMyNominalsChanged(int featureId);
-    void geomMyActualChanged(int featureId);
-    void geomMyObservationsChanged(int featureId);
-    void geomMyNominalSystemChanged(int featureId);
-    void geomMyStatisticChanged(int featureId);
-    void geomMyMeasurementConfigChanged(int featureId);
-    void geomUsedReadingTypesChanged(int featureId);
+    void geomIsCommonChanged(const int &featureId);
+    void geomMyNominalsChanged(const int &featureId);
+    void geomMyActualChanged(const int &featureId);
+    void geomMyObservationsChanged(const int &featureId);
+    void geomMyNominalSystemChanged(const int &featureId);
+    void geomMyStatisticChanged(const int &featureId);
+    void geomMyMeasurementConfigChanged(const int &featureId);
+    void geomUsedReadingTypesChanged(const int &featureId);
 
 protected:
     bool isCommon;
     bool isNominal;
-    QList<Geometry*> nominals;
-    Geometry *myActual;
+    QList< QPointer<Geometry> > nominals;
+    QPointer<Geometry> myActual;
     QList<Observation*> myObservations;
-    CoordinateSystem* myNominalCoordSys;
+    QPointer<CoordinateSystem> myNominalCoordSys;
 
     Statistic myStatistic;
     SimulationData mySimulationData;
-    QMap<Configuration::ReadingTypes, QString> usedReadingTypes;
+    QMap<ReadingTypes, QString> usedReadingTypes;
 
     //current measurement config that is used to create readings until the user selects another one
     MeasurementConfig activeMeasurementConfig; //only for this geometry instance

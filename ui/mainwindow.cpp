@@ -9,7 +9,7 @@
  */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), watchWindow(NULL)
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setDialogsNULL();
 
     //!generate all lists for gui and view modification
-    GUIConfiguration::generateLists();
+    GUIgenerateLists();
 
     initializeActions();
 
@@ -114,7 +114,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+/*void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad->instrument != NULL){
         OiJob::getActiveStation()->sensorPad->instrument->disconnectSensor();
@@ -124,7 +124,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     this->closeAllOpenDialogs();
 
     event->accept();
-}
+}*/
 
 /*!
  * \brief MainWindow::setConnects
@@ -137,7 +137,7 @@ void MainWindow::connectDialogs(){
     //####################################################
 
     //create feature dialog
-    QObject::connect(&this->createFeatureDlg, SIGNAL(addFeatures(const FeatureAttributes&)), this, SIGNAL(addFeatures(const FeatureAttributes&)), Qt::DirectConnection);
+    //QObject::connect(&this->createFeatureDlg, SIGNAL(addFeatures(const FeatureAttributes&)), this, SIGNAL(addFeatures(const FeatureAttributes&)), Qt::DirectConnection);
 
 
 
@@ -220,7 +220,7 @@ void MainWindow::connectDialogs(){
     //connect(this->control.c, SIGNAL(changedList()), this->ui->listView_Console, SLOT(scrollToBottom()));
 
     //enable or disable GUI elements in create feature dialog depending on the active feature's feature type
-    //connect(this, SIGNAL(sendFeatureType(Configuration::FeatureTypes)), this->cFeatureDialog, SLOT(receiveFeatureType(Configuration::FeatureTypes)));
+    //connect(this, SIGNAL(sendFeatureType(FeatureTypes)), this->cFeatureDialog, SLOT(receiveFeatureType(FeatureTypes)));
 
     //inform the Controller when the user has changed the display coordinate system
     //connect(this->ui->comboBox_activeCoordSystem, SIGNAL(currentIndexChanged(QString)), &this->control, SLOT(setActiveCoordSystem(QString)));
@@ -238,13 +238,13 @@ void MainWindow::connectDialogs(){
 
     //create feature connects
     /*connect(this->cFeatureDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
-    connect(this->cFeatureDialog,SIGNAL(createFeatureMConfig(Configuration::FeatureTypes)),this,SLOT(openCreateFeatureMConfig(Configuration::FeatureTypes)));
+    connect(this->cFeatureDialog,SIGNAL(createFeatureMConfig(FeatureTypes)),this,SLOT(openCreateFeatureMConfig(FeatureTypes)));
     connect(this->sEntityDialog,SIGNAL(createFeature(FeatureAttributesExchange)),&this->control,SLOT(addFeature(FeatureAttributesExchange)));
-    connect(this->sEntityDialog,SIGNAL(createFeatureMConfig(Configuration::FeatureTypes)),this,SLOT(openCreateFeatureMConfig(Configuration::FeatureTypes)));
+    connect(this->sEntityDialog,SIGNAL(createFeatureMConfig(FeatureTypes)),this,SLOT(openCreateFeatureMConfig(FeatureTypes)));
     connect(this->cFeatureDialog,SIGNAL(trafoParamCreated()),this,SLOT(trafoParamAdded()));
 */
     //sensor plugin dialog
-    /*connect(&this->sPluginDialog,SIGNAL(sendSensorType(Configuration::SensorTypes)),&this->control,SLOT(setSensorModel(Configuration::SensorTypes)));
+    /*connect(&this->sPluginDialog,SIGNAL(sendSensorType(SensorTypes)),&this->control,SLOT(setSensorModel(SensorTypes)));
     connect(&this->sPluginDialog,SIGNAL(selectedPlugin(int)),&this->control,SLOT(getSelectedPlugin(int)));
     connect(&this->sPluginDialog,SIGNAL(sendSensorConfig(SensorConfiguration,bool)),&this->control,SLOT(receiveSensorConfiguration(SensorConfiguration,bool)));
     connect(&this->control,SIGNAL(sendSQLModel(QSqlQueryModel*)),&this->sPluginDialog,SLOT(receiveModel(QSqlQueryModel*)));
@@ -298,9 +298,9 @@ void MainWindow::connectController(){
  * \brief MainWindow::initFeatureTableView
  */
 void MainWindow::initFeatureTableView(){
-
+/*
     //generate all lists for gui and view modification
-    GUIConfiguration::generateLists();
+    GUIgenerateLists();
 
     //manually update and resize table model (only the first time)
     OiModelManager::getFeatureTableModel().updateModel();
@@ -321,7 +321,7 @@ void MainWindow::initFeatureTableView(){
     //connect table view click events
     connect(this->ui->tableView_data, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTableViewClicked(QModelIndex)));
     connect(this->ui->tableView_trafoParam, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTrafoParamClicked(QModelIndex)));
-
+*/
 }
 
 /*!
@@ -339,7 +339,7 @@ void MainWindow::initDialogs(){
  * Assign the models in the controller to UI-components
  */
 void MainWindow::assignModels(){
-
+/*
     this->ui->listView_Console->setModel(control.c->output);
 
     this->ui->tableView_data->setModel(&OiModelManager::getFeatureTableProxyModel());
@@ -356,13 +356,13 @@ void MainWindow::assignModels(){
     //this->fPluginDialog.receiveUsedElementsModel(this->control.usedElementsModel);
 
     this->setUpDialog.setPluginsModel(&OiModelManager::getPluginTreeViewModel());
-
+*/
 }
 
 /*!
  * \brief checkControlPadVisible sets control pad visible if sensor is connected and a sensor function is called
  */
-void MainWindow::checkControlPadVisible()
+/*void MainWindow::checkControlPadVisible()
 {
     if(OiJob::getActiveStation() != NULL && OiJob::getActiveStation()->sensorPad != NULL){
         if(OiJob::getActiveStation()->sensorPad->instrument != NULL && OiJob::getActiveStation()->sensorPad->instrument->getConnectionState()){
@@ -373,12 +373,12 @@ void MainWindow::checkControlPadVisible()
             }
         }
     }
-}
+}*/
 
 /*!
  * \brief setUpControlPad inits actions on control pad
  */
-void MainWindow::setUpControlPad()
+/*void MainWindow::setUpControlPad()
 {
     if(OiJob::getActiveStation() == NULL || OiJob::getActiveStation()->sensorPad == NULL
             || OiJob::getActiveStation()->sensorPad->instrument == NULL){
@@ -390,10 +390,10 @@ void MainWindow::setUpControlPad()
         QString sensorName = OiJob::getActiveStation()->sensorPad->instrument->getMetaData()->name;
         labelSensorControlName->setText(sensorName);
 
-        if(OiJob::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eLaserTracker){ //laser tracker
+        if(OiJob::getActiveStation()->getInstrumentConfig().instrumentType==eLaserTracker){ //laser tracker
             setupLaserTrackerPad();
 
-        }else if(OiJob::getActiveStation()->getInstrumentConfig().instrumentType==Configuration::eTotalStation){ //total station
+        }else if(OiJob::getActiveStation()->getInstrumentConfig().instrumentType==eTotalStation){ //total station
             setupTotalStationPad();
 
         }else{ //any sensor
@@ -422,7 +422,7 @@ void MainWindow::setUpControlPad()
             }
         }
     //}
-}
+}*/
 
 /*!
  * \brief getDefaultFeatureHeaderOrder stores the default order of the header. Later the user specified order gets saved in the list
@@ -432,10 +432,10 @@ void MainWindow::setUpControlPad()
     lastFeatureHeaderOrder.clear();
 
     //get default order of displayed attributes
-    for(int i=0;i<GUIConfiguration::featureAttributes.size();i++){
+    for(int i=0;i<GUIfeatureAttributes.size();i++){
 
-        if(GUIConfiguration::featureAttributes.at(i)->displayState){
-            lastFeatureHeaderOrder.append(GUIConfiguration::featureAttributes.at(i)->attrName);
+        if(GUIfeatureAttributes.at(i)->displayState){
+            lastFeatureHeaderOrder.append(GUIfeatureAttributes.at(i)->attrName);
         }
     }
 }*/
@@ -446,16 +446,16 @@ void MainWindow::setUpControlPad()
  * selected feature type in the combobox.
  * \param int i
  */
-void MainWindow::ChangeCreateFeatureToolbar(int i)
+/*void MainWindow::ChangeCreateFeatureToolbar(int i)
 {
     this->checkBoxNominal->setChecked(false);
     this->checkBoxActual->setChecked(true);
     this->checkBoxCommonPoint->setChecked(false);
 
-    int featureType = static_cast<Configuration::FeatureTypes>(this->comboBoxFeatureType->itemData(this->comboBoxFeatureType->currentIndex()).toInt());
+    int featureType = static_cast<FeatureTypes>(this->comboBoxFeatureType->itemData(this->comboBoxFeatureType->currentIndex()).toInt());
 
     switch (featureType) {
-    case Configuration::eCoordinateSystemFeature:{
+    case eCoordinateSystemFeature:{
         this->actionMConfig->setEnabled(false);
         this->comboBoxNominalSystem->setEnabled(false);
         this->checkBoxNominal->setEnabled(false);
@@ -465,7 +465,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     }
-    case Configuration::eTrafoParamFeature:{
+    case eTrafoParamFeature:{
         this->actionMConfig->setEnabled(false);
         this->comboBoxNominalSystem->setEnabled(false);
         this->checkBoxNominal->setEnabled(false);
@@ -475,7 +475,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->comboBoxNominalSystem->setEnabled(false);
         break;
     }
-    case Configuration::ePlaneFeature:
+    case ePlaneFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -483,7 +483,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::ePointFeature:
+    case ePointFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -491,7 +491,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::eLineFeature:
+    case eLineFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -499,7 +499,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::eStationFeature:
+    case eStationFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setChecked(false);
@@ -508,7 +508,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::eSphereFeature:
+    case eSphereFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -516,7 +516,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::eCylinderFeature:
+    case eCylinderFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -524,7 +524,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::eConeFeature:
+    case eConeFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -532,7 +532,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::eEllipsoidFeature:
+    case eEllipsoidFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -540,7 +540,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::eHyperboloidFeature:
+    case eHyperboloidFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -548,7 +548,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::eParaboloidFeature:
+    case eParaboloidFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -556,7 +556,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::eNurbsFeature:
+    case eNurbsFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -564,7 +564,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::ePointCloudFeature:
+    case ePointCloudFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -572,7 +572,7 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
         this->checkBoxCommonPoint->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(false);
         break;
-    case Configuration::eCircleFeature:
+    case eCircleFeature:
         this->actionMConfig->setEnabled(true);
         this->comboBoxNominalSystem->setEnabled(true);
         this->checkBoxNominal->setEnabled(true);
@@ -591,27 +591,27 @@ void MainWindow::ChangeCreateFeatureToolbar(int i)
     }
     }
     this->defaultCreateFeatureSettings();
-}
+}*/
 
 /*!
  * \brief CheckBoxNominalToggled function enables or disables the combobox for nominal coordinate systems dependend on the state of the checkbox.
  * \param toggled
  */
-void MainWindow::CheckBoxNominalToggled(bool toggled)
+/*void MainWindow::CheckBoxNominalToggled(bool toggled)
 {
     if(toggled){
         this->comboBoxNominalSystem->setEnabled(true);
     }else{
         this->comboBoxNominalSystem->setEnabled(false);
     }
-}
+}*/
 
 /*!
  * \brief setupCreateFeature function creates and sets upp the create feature toolbar
  * With that toolbar you can create new features and set all needed
  * information for that function.
  */
-void MainWindow::setupCreateFeature(){
+/*void MainWindow::setupCreateFeature(){
 
     this->comboBoxFeatureType->clear();
     this->comboBoxNominalSystem->clear();
@@ -641,32 +641,32 @@ void MainWindow::setupCreateFeature(){
     ui->toolbarCreateFeature->addAction(cFsep7);
     ui->toolbarCreateFeature->addAction(actionCreate);
 
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"point",Configuration::ePointFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"line",Configuration::eLineFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"plane",Configuration::ePlaneFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"sphere",Configuration::eSphereFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"station",Configuration::eStationFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cylinder",Configuration::eCylinderFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cone", Configuration::eConeFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"ellipsoid",Configuration::eEllipsoidFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"hyperboloid",Configuration::eHyperboloidFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"paraboloid",Configuration::eParaboloidFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"nurbs",Configuration::eNurbsFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"pointcloud",Configuration::ePointCloudFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"circle",Configuration::eCircleFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"point",ePointFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"line",eLineFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"plane",ePlaneFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"sphere",eSphereFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"station",eStationFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",eCoordinateSystemFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cylinder",eCylinderFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cone", eConeFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"ellipsoid",eEllipsoidFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"hyperboloid",eHyperboloidFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"paraboloid",eParaboloidFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"nurbs",eNurbsFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"pointcloud",ePointCloudFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"circle",eCircleFeature);
 
     for(int i=0; i<OiJob::getCoordinateSystems().size();i++){
         this->comboBoxNominalSystem->addItem(OiJob::getCoordinateSystems().at(i)->getFeatureName());
     }
 
     this->defaultCreateFeatureSettings();
-}
+}*/
 
 /*!
  * \brief initSensorActions with actions each sensor has
  */
-void MainWindow::initSensorActions()
+/*void MainWindow::initSensorActions()
 {
     ui->toolBar_ControlPad->clear();
     ui->toolBar_ControlPad->addWidget(labelSensorControlName);
@@ -676,12 +676,12 @@ void MainWindow::initSensorActions()
     ui->toolBar_ControlPad->addAction(actionDisconnect);
     ui->toolBar_ControlPad->addAction(cPsep2);
     ui->toolBar_ControlPad->addAction(actionMeasure);
-}
+}*/
 
 /*!
  * \brief initTrackerActions with tracker specific actions
  */
-void MainWindow::initTrackerActions()
+/*void MainWindow::initTrackerActions()
 {
     ui->toolBar_ControlPad->addAction(cPsep3);
     ui->toolBar_ControlPad->addAction(actionInitialize);
@@ -697,12 +697,12 @@ void MainWindow::initTrackerActions()
     ui->toolBar_ControlPad->addAction(actionChangeMotorState);
     ui->toolBar_ControlPad->addAction(cPsep9);
     ui->toolBar_ControlPad->addAction(actionCompensation);
-}
+}*/
 
 /*!
  * \brief initTotalStationActions with total station specific actions
  */
-void MainWindow::initTotalStationActions()
+/*void MainWindow::initTotalStationActions()
 {
     ui->toolBar_ControlPad->addAction(cPsep3);
     ui->toolBar_ControlPad->addAction(actionToggleSightOrientation);
@@ -710,41 +710,41 @@ void MainWindow::initTotalStationActions()
     ui->toolBar_ControlPad->addAction(actionMove);
     ui->toolBar_ControlPad->addAction(cPsep5);
     ui->toolBar_ControlPad->addAction(actionAim);
-}
+}*/
 
 /*!
  * \brief setupSensorPad sets all needed widgets for a standard sensor without any specific actions
  */
-void MainWindow::setupSensorPad()
+/*void MainWindow::setupSensorPad()
 {
     this->initSensorActions();
-}
+}*/
 
 /*!
  * \brief setupLaserTrackerPad adds all needed Widgets to the control pad, if the active sensor is a lasertracker
  * With that label you can control the laser tracker and start measurements.
  */
-void MainWindow::setupLaserTrackerPad(){
+/*void MainWindow::setupLaserTrackerPad(){
 
     this->initSensorActions();
     this->initTrackerActions();
-}
+}*/
 
 /*!
  * \brief setupTotalStationPad adds all needed Widgets to the control pad, if the active sensor is a totalstation
  * With that label you can control the totalstation and start measurements.
  */
-void MainWindow::setupTotalStationPad(){
+/*void MainWindow::setupTotalStationPad(){
 
     this->initSensorActions();
     this->initTotalStationActions();
-}
+}*/
 
 /*!
  * \brief Sets the control pad visible or invisible
  * Also it calls the needed set up function to add all elements for the active sensor.
  */
-void MainWindow::on_actionControl_pad_triggered()
+/*void MainWindow::on_actionControl_pad_triggered()
 {
     if(ui->toolBar_ControlPad->isVisible()){
         ui->toolBar_ControlPad->hide();
@@ -752,7 +752,7 @@ void MainWindow::on_actionControl_pad_triggered()
         ui->toolBar_ControlPad->show();
         this->setUpControlPad();
     }
-}
+}*/
 
 /*!
  * \brief save measurement configuration for selected feature, if the measurement configuration of an existing feature was edited
@@ -794,7 +794,7 @@ void MainWindow::on_actionMeasurement_Configuration_triggered()
         mConfigDialog.show();
     }*/
 
-    if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL
+    /*if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL
             || OiJob::getActiveFeature()->getGeometry()->getIsNominal()){
         return;
     }
@@ -806,7 +806,7 @@ void MainWindow::on_actionMeasurement_Configuration_triggered()
     connect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
                this, SLOT(setMeasurementConfig(MeasurementConfig)));
 
-    this->mConfigDialog.show();
+    this->mConfigDialog.show();*/
 
 }
 
@@ -814,58 +814,58 @@ void MainWindow::on_actionMeasurement_Configuration_triggered()
  * \brief opens the measurement configuration dialog.
  * Open the measurement config dialog to set the default measurement config (when creating a feature)
  */
-void MainWindow::openCreateFeatureMConfig(Configuration::FeatureTypes typeOfFeature){
-
+void MainWindow::openCreateFeatureMConfig(FeatureTypes typeOfFeature){
+/*
     //emit sendConfig(this->control.lastmConfig);
 
     //set the default measurement config as selected mConfig
     switch(typeOfFeature){
-    case Configuration::eCircleFeature:
+    case eCircleFeature:
         this->mConfigDialog.setMeasurementConfig(Circle::defaultMeasurementConfig);
         break;
-    case Configuration::eConeFeature:
+    case eConeFeature:
         this->mConfigDialog.setMeasurementConfig(Cone::defaultMeasurementConfig);
         break;
-    case Configuration::eCylinderFeature:
+    case eCylinderFeature:
         this->mConfigDialog.setMeasurementConfig(Cylinder::defaultMeasurementConfig);
         break;
-    case Configuration::eEllipsoidFeature:
+    case eEllipsoidFeature:
         this->mConfigDialog.setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
         break;
-    case Configuration::eHyperboloidFeature:
+    case eHyperboloidFeature:
         this->mConfigDialog.setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
         break;
-    case Configuration::eLineFeature:
+    case eLineFeature:
         this->mConfigDialog.setMeasurementConfig(Line::defaultMeasurementConfig);
         break;
-    case Configuration::eNurbsFeature:
+    case eNurbsFeature:
         this->mConfigDialog.setMeasurementConfig(Nurbs::defaultMeasurementConfig);
         break;
-    case Configuration::eParaboloidFeature:
+    case eParaboloidFeature:
         this->mConfigDialog.setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
         break;
-    case Configuration::ePlaneFeature:
+    case ePlaneFeature:
         this->mConfigDialog.setMeasurementConfig(Plane::defaultMeasurementConfig);
         break;
-    case Configuration::ePointFeature:
+    case ePointFeature:
         this->mConfigDialog.setMeasurementConfig(Point::defaultMeasurementConfig);
         break;
-    case Configuration::ePointCloudFeature:
+    case ePointCloudFeature:
         this->mConfigDialog.setMeasurementConfig(PointCloud::defaultMeasurementConfig);
         break;
-    case Configuration::eScalarEntityAngleFeature:
+    case eScalarEntityAngleFeature:
         this->mConfigDialog.setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
         break;
-    case Configuration::eScalarEntityDistanceFeature:
+    case eScalarEntityDistanceFeature:
         this->mConfigDialog.setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
         break;
-    case Configuration::eScalarEntityMeasurementSeriesFeature:
+    case eScalarEntityMeasurementSeriesFeature:
         this->mConfigDialog.setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
         break;
-    case Configuration::eScalarEntityTemperatureFeature:
+    case eScalarEntityTemperatureFeature:
         this->mConfigDialog.setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
         break;
-    case Configuration::eSphereFeature:
+    case eSphereFeature:
         this->mConfigDialog.setMeasurementConfig(Sphere::defaultMeasurementConfig);
         break;
     }
@@ -875,7 +875,7 @@ void MainWindow::openCreateFeatureMConfig(Configuration::FeatureTypes typeOfFeat
 
     currentCreateFeature = typeOfFeature;
 
-    this->mConfigDialog.show();
+    this->mConfigDialog.show();*/
 
 }
 
@@ -900,7 +900,7 @@ void MainWindow::on_actionWatch_window_triggered()
 
     //watchWindow = new WatchWindow();
 
-
+/*
     connect(&watchWindow,SIGNAL(startMeasure()),&control,SLOT(startMeasurement()), Qt::DirectConnection);
     connect(&watchWindow, SIGNAL(addMeasurement()), &control, SLOT(addMeasurement()), Qt::DirectConnection);
     connect(&watchWindow, SIGNAL(doSelfDefinedAction(QString)), &control, SLOT(startCustomAction(QString)), Qt::DirectConnection);
@@ -913,14 +913,14 @@ void MainWindow::on_actionWatch_window_triggered()
     watchWindow.activeCoordinateSystem = control.activeCoordinateSystem;
     watchWindow.activeFeature = control.activeFeature;*/
 
-    watchWindow.show();
+//    watchWindow.show();
 
 }
 
 /*!
  * \brief initializeActions
  */
-void MainWindow::initializeActions(){
+/*void MainWindow::initializeActions(){
     //create feature actions
     labelName = new QLabel();
     labelName->setText("name:");
@@ -1021,12 +1021,12 @@ void MainWindow::initializeActions(){
     cPsep9->setSeparator(true);
     cPsep10 = new QAction(0);
     cPsep10->setSeparator(true);
-}
+}*/
 
 /*!
  * \brief createFeature aalls the add/ create feature function of the controller, and gives in the GUI set up information to that function
  */
-void MainWindow::createFeature(){
+//void MainWindow::createFeature(){
 
     /*try{
 
@@ -1035,7 +1035,7 @@ void MainWindow::createFeature(){
             int count = this->spinBoxNumber->value();
             QString name = this->lineEditName->text();
             QString group = this->comboBoxGroup->currentText();
-            Configuration::FeatureTypes featureType = static_cast<Configuration::FeatureTypes>(this->comboBoxFeatureType->itemData(this->comboBoxFeatureType->currentIndex()).toInt());
+            FeatureTypes featureType = static_cast<FeatureTypes>(this->comboBoxFeatureType->itemData(this->comboBoxFeatureType->currentIndex()).toInt());
             bool actual = this->checkBoxActual->isChecked();
             bool nominal = this->checkBoxNominal->isChecked();
             bool comPoint = this->checkBoxCommonPoint->isChecked();
@@ -1072,7 +1072,7 @@ void MainWindow::createFeature(){
 
     }
     this->defaultCreateFeatureSettings();*/
-}
+//}
 
 /*!
  * \brief MainWindow::setActiveCoordinateSystem
@@ -1086,7 +1086,7 @@ void MainWindow::createFeature(){
 
 }*/
 
-void MainWindow::isSensorConnected(bool b)
+/*void MainWindow::isSensorConnected(bool b)
 {
     if(b){
 
@@ -1145,22 +1145,22 @@ void MainWindow::sensorDisconnected()
     ui->actionSensor_real_time_data->setEnabled(false);
     ui->label_SensorMsg->setVisible(false);
     ui->label_SensorMsg->setText("");
-}
+}*/
 
 /*!
  * \brief displays the dialog to load a plugin
  */
 void MainWindow::on_actionLoad_plugins_triggered()
 {
-    pLoadDialog.show();
+    //pLoadDialog.show();
 }
 
 /*!
  * \brief MainWindow::on_actionPlugin_manager_triggered
  */
-void MainWindow::on_actionPlugin_manager_triggered(){
+/*void MainWindow::on_actionPlugin_manager_triggered(){
 
-}
+}*/
 
 /*!
  * \brief shows/ hides the create feature toolbar
@@ -1178,127 +1178,127 @@ void MainWindow::on_actionShow_hide_feature_toolbar_triggered()
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (point).
  */
 void MainWindow::on_actionCreate_point_triggered(){
-    //emit sendFeatureType(Configuration::ePointFeature);
-    this->showCreateFeatureDialog(Configuration::ePointFeature);
+    //emit sendFeatureType(ePointFeature);
+    this->showCreateFeatureDialog(ePointFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (line).
  */
 void MainWindow::on_actionCreate_line_triggered(){
-    //emit sendFeatureType(Configuration::eLineFeature);
-    this->showCreateFeatureDialog(Configuration::eLineFeature);
+    //emit sendFeatureType(eLineFeature);
+    this->showCreateFeatureDialog(eLineFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (plane).
  */
 void MainWindow::on_actionCreate_plane_triggered(){
-    //emit sendFeatureType(Configuration::ePlaneFeature);
-    this->showCreateFeatureDialog(Configuration::ePlaneFeature);
+    //emit sendFeatureType(ePlaneFeature);
+    this->showCreateFeatureDialog(ePlaneFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (sphere).
  */
 void MainWindow::on_actionCreate_sphere_triggered(){
-    //emit sendFeatureType(Configuration::eSphereFeature);
-    this->showCreateFeatureDialog(Configuration::eSphereFeature);
+    //emit sendFeatureType(eSphereFeature);
+    this->showCreateFeatureDialog(eSphereFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (cone).
  */
 void MainWindow::on_actionCreate_cone_triggered(){
-    //emit sendFeatureType(Configuration::eConeFeature);
-    this->showCreateFeatureDialog(Configuration::eConeFeature);
+    //emit sendFeatureType(eConeFeature);
+    this->showCreateFeatureDialog(eConeFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (cylinder).
  */
 void MainWindow::on_actionCreate_cylinder_triggered(){
-    //emit sendFeatureType(Configuration::eCylinderFeature);
-    this->showCreateFeatureDialog(Configuration::eCylinderFeature);
+    //emit sendFeatureType(eCylinderFeature);
+    this->showCreateFeatureDialog(eCylinderFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (ellipsoid).
  */
 void MainWindow::on_actionCreate_ellipsoid_triggered(){
-    //emit sendFeatureType(Configuration::eEllipsoidFeature);
-    this->showCreateFeatureDialog(Configuration::eEllipsoidFeature);
+    //emit sendFeatureType(eEllipsoidFeature);
+    this->showCreateFeatureDialog(eEllipsoidFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (hyperboloid).
  */
 void MainWindow::on_actionCreate_hyperboloid_triggered(){
-    //emit sendFeatureType(Configuration::eHyperboloidFeature);
-    this->showCreateFeatureDialog(Configuration::eHyperboloidFeature);
+    //emit sendFeatureType(eHyperboloidFeature);
+    this->showCreateFeatureDialog(eHyperboloidFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (paraboloid).
  */
 void MainWindow::on_actionCreate_paraboloid_triggered(){
-    //emit sendFeatureType(Configuration::eParaboloidFeature);
-    this->showCreateFeatureDialog(Configuration::eParaboloidFeature);
+    //emit sendFeatureType(eParaboloidFeature);
+    this->showCreateFeatureDialog(eParaboloidFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (nurbs).
  */
 void MainWindow::on_actionCreate_nurbs_triggered(){
-    //emit sendFeatureType(Configuration::eNurbsFeature);
-    this->showCreateFeatureDialog(Configuration::eNurbsFeature);
+    //emit sendFeatureType(eNurbsFeature);
+    this->showCreateFeatureDialog(eNurbsFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (pointcloud).
  */
 void MainWindow::on_actionCreate_pointcloud_triggered(){
-    //emit sendFeatureType(Configuration::ePointCloudFeature);
-    this->showCreateFeatureDialog(Configuration::ePointCloudFeature);
+    //emit sendFeatureType(ePointCloudFeature);
+    this->showCreateFeatureDialog(ePointCloudFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (station).
  */
 void MainWindow::on_actionCreate_station_triggered(){
-    //emit sendFeatureType(Configuration::eStationFeature);
-    this->showCreateFeatureDialog(Configuration::eStationFeature);
+    //emit sendFeatureType(eStationFeature);
+    this->showCreateFeatureDialog(eStationFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (coordinate system).
  */
 void MainWindow::on_actionCreate_coordinatesystem_triggered(){
-    //emit sendFeatureType(Configuration::eCoordinateSystemFeature);
-    this->showCreateFeatureDialog(Configuration::eCoordinateSystemFeature);
+    //emit sendFeatureType(eCoordinateSystemFeature);
+    this->showCreateFeatureDialog(eCoordinateSystemFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (transformation parameters)
  */
 void MainWindow::on_actionCreate_trafoParam_triggered(){
-    //emit sendFeatureType(Configuration::eTrafoParamFeature);
-    this->showCreateFeatureDialog(Configuration::eTrafoParamFeature);
+    //emit sendFeatureType(eTrafoParamFeature);
+    this->showCreateFeatureDialog(eTrafoParamFeature);
 }
 
 /*!
  * \brief opens the dialog for creating a feature and emits the feature type that will be created (circle)
  */
 void MainWindow::on_actionCreate_circle_triggered(){
-    //emit sendFeatureType(Configuration::eCircleFeature);
-    this->showCreateFeatureDialog(Configuration::eCircleFeature);
+    //emit sendFeatureType(eCircleFeature);
+    this->showCreateFeatureDialog(eCircleFeature);
 }
 
 /*!
  * \brief set Instrument. Opens the dialog with all configurations for setting an instrument.
  */
 void MainWindow::on_actionSet_instrument_triggered(){
-    sPluginDialog.show();
+    //sPluginDialog.show();
 }
 
 /*!
@@ -1307,7 +1307,7 @@ void MainWindow::on_actionSet_instrument_triggered(){
  * \param const QModelIndex &idx
  */
 void MainWindow::handleTableViewClicked(const QModelIndex &index){
-
+/*
     //get source index of selected row
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_data->model());
     QModelIndex sourceIndex = model->mapToSource(index);
@@ -1345,7 +1345,7 @@ void MainWindow::handleTableViewClicked(const QModelIndex &index){
     //emit this->sendSelectedFeature(selectedFeature);*/
 
 
-    this->setMagnifyValues();
+    //this->setMagnifyValues();*/
 
 }
 
@@ -1354,7 +1354,7 @@ void MainWindow::handleTableViewClicked(const QModelIndex &index){
  * \param idx
  */
 void MainWindow::handleTrafoParamClicked(const QModelIndex &index){
-
+/*
     //get source index of selected row
     TrafoParamProxyModel *model = static_cast<TrafoParamProxyModel*>(this->ui->tableView_trafoParam->model());
     QModelIndex sourceIndex = model->mapToSource(index);
@@ -1392,7 +1392,7 @@ void MainWindow::handleTrafoParamClicked(const QModelIndex &index){
     //emit this->sendSelectedFeature(selectedFeature);*/
 
 
-    this->setMagnifyValues();
+    //this->setMagnifyValues();
 
 }
 
@@ -1402,7 +1402,7 @@ void MainWindow::handleTrafoParamClicked(const QModelIndex &index){
 void MainWindow::handleViewDoubleClick(int index)
 {
     //if index is not valid (clicking the header) the views get resized
-    this->resizeTableView();
+    //this->resizeTableView();
 }
 
 /*!
@@ -1412,7 +1412,7 @@ void MainWindow::handleViewDoubleClick(int index)
 {
     QStringList userDefOrder;
 
-    userDefOrder = GUIConfiguration::userDefFeatOrder;
+    userDefOrder = GUIuserDefFeatOrder;
 
     //if an attribute is removed or added
     if(userDefOrder.size() != this->lastFeatureHeaderOrder.size()){
@@ -1458,7 +1458,7 @@ void MainWindow::handleViewDoubleClick(int index)
  * \brief Opens the dialog for setting functions to a feature.
  * Sets the plugins model and the function treeview model to the class.
  */
-void MainWindow::on_actionSet_function_triggered(){
+/*void MainWindow::on_actionSet_function_triggered(){
     if(OiJob::getActiveFeature() != NULL){
         //get models from database
         //this->control.setFunction();
@@ -1468,7 +1468,7 @@ void MainWindow::on_actionSet_function_triggered(){
         //show the dialog
         fPluginDialog.show();
     }
-}
+}*/
 
 /*!
  * \brief adds all coordinate systems to the coordinate system combobox.
@@ -1498,7 +1498,7 @@ void MainWindow::on_actionSet_function_triggered(){
 /*!
  * \brief setUpStatusBar displays the current unit settings in the mainwindow status bar.
  */
-void MainWindow::setUpStatusBar(){
+//void MainWindow::setUpStatusBar(){
 /*
     QString statusText = "";
 
@@ -1536,14 +1536,14 @@ void MainWindow::setUpStatusBar(){
     }
 
     ui->statusBar->showMessage(statusText,0);*/
-}
+//}
 
 /*!
  * \brief shows the settings dialog
  */
 void MainWindow::on_actionView_settings_triggered()
 {
-    setUpDialog.show();
+    //setUpDialog.show();
 }
 
 /*!
@@ -1551,7 +1551,7 @@ void MainWindow::on_actionView_settings_triggered()
  */
 void MainWindow::on_actionCreate_scalar_entity_triggered()
 {
-    sEntityDialog.show();
+    //sEntityDialog.show();
 }
 
 /*!
@@ -1566,7 +1566,7 @@ void MainWindow::on_actionCreate_scalar_entity_triggered()
  * \brief saves the current job
  */
 void MainWindow::on_actionSave_as_triggered(){
-    try{
+    /*try{
 
         QString filename = QFileDialog::getSaveFileName(this, "Choose a filename to save under", "oiProject", "xml (*.xml)");
 
@@ -1576,32 +1576,32 @@ void MainWindow::on_actionSave_as_triggered(){
 
         bool isSuccessfull = this->control.saveProject();
 
-        /*if(isSuccessfull){
+        if(isSuccessfull){
             QMessageBox::information(this,"save data", "Saving the data was successful.");
         }else{
             QMessageBox::information(this,"save data", "Saving the data was not successful.");
-        }*/
+        }
 
     }catch(exception &e){
         Console::addLine(e.what());
-    }
+    }*/
 
 }
 
 /*!
  * \brief changedStation makes some new connects after changing a station
  */
-void MainWindow::changedStation(){
+/*void MainWindow::changedStation(){
     connect(OiJob::getActiveStation()->sensorPad, SIGNAL(recalcFeature(Feature*)), &control, SLOT(recalcFeature(Feature*)));
     connect(OiJob::getActiveStation(),SIGNAL(actionFinished(bool)),&sInfoDialog,SLOT(hideInfo(bool)));
-}
+}*/
 
 /*!
  * \brief loads a job
  */
 void MainWindow::on_actionOpen_triggered()
 {
-    QString filename = QFileDialog::getOpenFileName(
+    /*QString filename = QFileDialog::getOpenFileName(
                        this,
                        "Choose a filename to save under",
                        "oiProject",
@@ -1624,7 +1624,7 @@ void MainWindow::on_actionOpen_triggered()
     }*/
 
     //TODO set up sensorpad
-    //this->setupLaserTrackerPad();
+    //this->setupLaserTrackerPad();*/
 
 
 }
@@ -1635,9 +1635,9 @@ void MainWindow::on_actionOpen_triggered()
  * \param QString title
  * \param QString message
  */
-void MainWindow::showMessageBox(QString title, QString message){
+/*void MainWindow::showMessageBox(QString title, QString message){
     QMessageBox::information(NULL, title, message);
-}
+}*/
 
 /*!
  * \brief MainWindow::showMessageBoxForDecision
@@ -1646,7 +1646,7 @@ void MainWindow::showMessageBox(QString title, QString message){
  * \param message
  * \return
  */
-void MainWindow::showMessageBoxForDecision(QString title, QString message, OiFunctor *func){
+/*void MainWindow::showMessageBoxForDecision(QString title, QString message, OiFunctor *func){
     QMessageBox msgBox;
     msgBox.setWindowTitle(title);
     msgBox.setText(message);
@@ -1662,14 +1662,14 @@ void MainWindow::showMessageBoxForDecision(QString title, QString message, OiFun
         result.append(false);
         (*func)(result);
     }
-}
+}*/
 
 /*!
  * \brief activates a station
  */
 void MainWindow::on_actionActivate_station_triggered()
 {
-    QMessageBox msgBox;
+    /*QMessageBox msgBox;
     msgBox.setText("Selected station will be activated and current station will be deactivated!");
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Ok);
@@ -1701,18 +1701,18 @@ void MainWindow::on_actionActivate_station_triggered()
         break;
     default:
         break;
-    }
+    }*/
 }
 
 
-void MainWindow::defaultCreateFeatureSettings()
+/*void MainWindow::defaultCreateFeatureSettings()
 {
     this->lineEditName->setText("");
     this->spinBoxNumber->setValue(1);
     this->checkBoxActual->setChecked(true);
     this->checkBoxCommonPoint->setChecked(false);
     this->checkBoxNominal->setChecked(false);
-}
+}*/
 
 /*!
  * \brief MainWindow::deleteFeatureContextMenu
@@ -1720,7 +1720,7 @@ void MainWindow::defaultCreateFeatureSettings()
  * \param point
  */
 void MainWindow::featureContextMenu(const QPoint &point){
-    //save model indices to delete later
+    /*//save model indices to delete later
     if(this->isTrafoParamSelected){
         this->featuresToDelete = this->ui->tableView_trafoParam->selectionModel()->selectedIndexes();
     }else{
@@ -1751,13 +1751,13 @@ void MainWindow::featureContextMenu(const QPoint &point){
         }
     }
     if(OiJob::getActiveFeature() != NULL
-            && OiJob::getActiveFeature()->getTypeOfFeature() != Configuration::eCoordinateSystemFeature
+            && OiJob::getActiveFeature()->getTypeOfFeature() != eCoordinateSystemFeature
             && myFeatures.size() == 1 && myFeatures.at(0) != NULL && myFeatures.at(0)->getFeature() != NULL
             && myFeatures.at(0)->getFeature()->getId() == OiJob::getActiveFeature()->getFeature()->getId()){
         menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(OiJob::getActiveFeature()->getFeature()->getFeatureName()), this, SLOT(showProperties(bool)));
     }
 
-    menu->exec(this->ui->tableView_data->mapToGlobal(point));
+    menu->exec(this->ui->tableView_data->mapToGlobal(point));*/
 }
 
 /*!
@@ -1765,7 +1765,7 @@ void MainWindow::featureContextMenu(const QPoint &point){
  * Try to delete the features that were marked to delete
  * \param checked
  */
-void MainWindow::deleteFeatures(bool checked){
+/*void MainWindow::deleteFeatures(bool checked){
     if(this->featuresToDelete.size() >= 0){
 
         //create new index list because of multiple indexes for one row
@@ -1790,7 +1790,7 @@ void MainWindow::deleteFeatures(bool checked){
         }
 
     }
-}
+}*/
 
 /*!
  * \brief MainWindow::showProperties
@@ -1799,8 +1799,8 @@ void MainWindow::deleteFeatures(bool checked){
  */
 void MainWindow::showProperties(bool checked){
     //show dialog dependent on which type of feature was clicked
-    if(OiJob::getActiveFeature() != NULL){
-        if(OiJob::getActiveFeature()->getTypeOfFeature() == Configuration::eTrafoParamFeature){
+    /*if(OiJob::getActiveFeature() != NULL){
+        if(OiJob::getActiveFeature()->getTypeOfFeature() == eTrafoParamFeature){
             trafoParamDialog.show();
         }else if(OiJob::getActiveFeature()->getGeometry() != NULL && OiJob::getActiveFeature()->getGeometry()->getIsNominal()){
             //emit sendActiveNominalfeature(OiFeatureState::getActiveFeature());
@@ -1812,17 +1812,17 @@ void MainWindow::showProperties(bool checked){
             //fDataDialog.getActiveFeature(this->control.activeFeature);
             fDataDialog.show();
         }
-    }
+    }*/
 }
 
 /*!
  * \brief MainWindow::resetFeatureSelection
  * Deselect all features in table view
  */
-void MainWindow::resetFeatureSelection(){
+/*void MainWindow::resetFeatureSelection(){
     this->ui->tableView_data->clearSelection();
     this->ui->tableView_trafoParam->clearSelection();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_tableView_data_customContextMenuRequested
@@ -1831,8 +1831,8 @@ void MainWindow::resetFeatureSelection(){
  */
 void MainWindow::on_tableView_data_customContextMenuRequested(const QPoint &pos)
 {
-    this->isTrafoParamSelected = false;
-    this->featureContextMenu(pos);
+    //this->isTrafoParamSelected = false;
+    //this->featureContextMenu(pos);
 }
 
 /*!
@@ -1842,8 +1842,8 @@ void MainWindow::on_tableView_data_customContextMenuRequested(const QPoint &pos)
  */
 void MainWindow::on_tableView_trafoParam_customContextMenuRequested(const QPoint &pos)
 {
-    this->isTrafoParamSelected = true;
-    this->featureContextMenu(pos);
+    //this->isTrafoParamSelected = true;
+    //this->featureContextMenu(pos);
 }
 
 /*!
@@ -1851,7 +1851,7 @@ void MainWindow::on_tableView_trafoParam_customContextMenuRequested(const QPoint
  * Update group-comboBoxes
  * \param availableGroups
  */
-void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
+/*void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
     QStringList groups = availableGroups.keys();
     this->comboBoxGroup->clear();
     this->comboBoxGroup->clearEditText();
@@ -1873,13 +1873,13 @@ void MainWindow::availableGroupsChanged(QMap<QString, int> availableGroups){
         this->ui->comboBox_groups->setCurrentText("All Groups");
         //this->control.tblModel->updateModel();
     }
-}
+}*/
 
 /*!
  * \brief MainWindow::on_comboBox_groups_currentIndexChanged
  * \param arg1
  */
-void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
+/*void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
 {
     FeatureTableProxyModel *model = &OiModelManager::getFeatureTableProxyModel();
     if(model != NULL){
@@ -1892,97 +1892,97 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1)
         //this->control.tblModel->updateModel();
         model->activeGroupChanged();
     }
-}
+}*/
 
 /*!
  * \brief MainWindow::updateGeometryIcons
  * Enable or Disable gemetry buttons dependent on the availability of corresponding plugins
  * \param availableGeometries
  */
-void MainWindow::updateGeometryIcons(QStringList availableGeometries){
+/*void MainWindow::updateGeometryIcons(QStringList availableGeometries){
     this->comboBoxFeatureType->clear();
 
     if(availableGeometries.contains("point")){
         this->ui->actionCreate_point->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"point",Configuration::ePointFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"point",ePointFeature);
     }else{
         this->ui->actionCreate_point->setEnabled(false);
     }
     if(availableGeometries.contains("line")){
         this->ui->actionCreate_line->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"line",Configuration::eLineFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"line",eLineFeature);
     }else{
         this->ui->actionCreate_line->setEnabled(false);
     }
     if(availableGeometries.contains("plane")){
         this->ui->actionCreate_plane->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"plane",Configuration::ePlaneFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"plane",ePlaneFeature);
     }else{
         this->ui->actionCreate_plane->setEnabled(false);
     }
     if(availableGeometries.contains("sphere")){
         this->ui->actionCreate_sphere->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"sphere",Configuration::eSphereFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"sphere",eSphereFeature);
     }else{
         this->ui->actionCreate_sphere->setEnabled(false);
     }
     if(availableGeometries.contains("pointcloud")){
         this->ui->actionCreate_pointcloud->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"pointcloud",Configuration::ePointCloudFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"pointcloud",ePointCloudFeature);
     }else{
         this->ui->actionCreate_pointcloud->setEnabled(false);
     }
     if(availableGeometries.contains("cone")){
         this->ui->actionCreate_cone->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cone", Configuration::eConeFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cone", eConeFeature);
     }else{
         this->ui->actionCreate_cone->setEnabled(false);
     }
     if(availableGeometries.contains("circle")){
         this->ui->actionCreate_circle->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"circle",Configuration::eCircleFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"circle",eCircleFeature);
     }else{
         this->ui->actionCreate_circle->setEnabled(false);
     }
     if(availableGeometries.contains("cylinder")){
         this->ui->actionCreate_cylinder->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cylinder",Configuration::eCylinderFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"cylinder",eCylinderFeature);
     }else{
         this->ui->actionCreate_cylinder->setEnabled(false);
     }
     if(availableGeometries.contains("ellipsoid")){
         this->ui->actionCreate_ellipsoid->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"ellipsoid",Configuration::eEllipsoidFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"ellipsoid",eEllipsoidFeature);
     }else{
         this->ui->actionCreate_ellipsoid->setEnabled(false);
     }
     if(availableGeometries.contains("hyperboloid")){
         this->ui->actionCreate_hyperboloid->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"hyperboloid",Configuration::eHyperboloidFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"hyperboloid",eHyperboloidFeature);
     }else{
         this->ui->actionCreate_hyperboloid->setEnabled(false);
     }
     if(availableGeometries.contains("nurbs")){
         this->ui->actionCreate_nurbs->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"nurbs",Configuration::eNurbsFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"nurbs",eNurbsFeature);
     }else{
         this->ui->actionCreate_nurbs->setEnabled(false);
     }
     if(availableGeometries.contains("paraboloid")){
         this->ui->actionCreate_paraboloid->setEnabled(true);
-        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"paraboloid",Configuration::eParaboloidFeature);
+        this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"paraboloid",eParaboloidFeature);
     }else{
         this->ui->actionCreate_paraboloid->setEnabled(false);
     }
 
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"station",Configuration::eStationFeature);
-    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",Configuration::eCoordinateSystemFeature);
-}
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"station",eStationFeature);
+    this->comboBoxFeatureType->insertItem(this->comboBoxFeatureType->count(),"coordinatesystem",eCoordinateSystemFeature);
+}*/
 
 /*!
  * \brief trafoParamAdded switches to the trafoParam view
  */
-void MainWindow::trafoParamAdded()
+/*void MainWindow::trafoParamAdded()
 {
     ui->tabWidget_views->setCurrentIndex(2);
 }
@@ -1994,13 +1994,13 @@ void MainWindow::resizeTableView()
 
     ui->tableView_trafoParam->resizeColumnsToContents();
     ui->tableView_trafoParam->resizeRowsToContents();
-}
+}*/
 
 /*!
  * \brief MainWindow::createOiToolActions
  */
-void MainWindow::createOiToolActions()
-{
+//void MainWindow::createOiToolActions()
+//{
     /*QMultiMap<QString,QString> oiTools = control.getOiTools();
 
     QList<QString> pluginNames = oiTools.keys();
@@ -2028,19 +2028,19 @@ void MainWindow::createOiToolActions()
 
     }*/
 
-}
+//}
 
 /*!
  * \brief MainWindow::emitWatchWindowKeyPressed
  */
-void MainWindow::emitWatchWindowKeyPressed(Qt::Key key){
+/*void MainWindow::emitWatchWindowKeyPressed(Qt::Key key){
     emit this->watchWindowKeyPressed(key);
-}
+}*/
 
 /*!
  * \brief on_actionShow_help_triggered opens the local help document with the user guide.
  */
-void MainWindow::on_actionShow_help_triggered()
+/*void MainWindow::on_actionShow_help_triggered()
 {
 #ifdef Q_OS_MAC
 QDir appDir(qApp->applicationDirPath());
@@ -2064,16 +2064,16 @@ QDir appDir(qApp->applicationDirPath());
         Console::addLine("cannot open user guide");
     }
 
-}
+}*/
 
 /*!
  * \brief MainWindow::showCreateFeatureDialog
  * After a create feature button was clicked this function is called to update and display the create feature dialog
  * \param featureType
  */
-void MainWindow::showCreateFeatureDialog(const Configuration::FeatureTypes &featureType){
-    this->createFeatureDlg.setFeatureType(featureType);
-    this->createFeatureDlg.show();
+void MainWindow::showCreateFeatureDialog(const FeatureTypes &featureType){
+    //this->createFeatureDlg.setFeatureType(featureType);
+    //this->createFeatureDlg.show();
 }
 
 /*!
@@ -2081,27 +2081,27 @@ void MainWindow::showCreateFeatureDialog(const Configuration::FeatureTypes &feat
  * After a create scalar entity button was clicked this function is called to update and display the create feature dialog
  * \param featureType
  */
-void MainWindow::showScalarEntityDialog(Configuration::FeatureTypes featureType){
+void MainWindow::showScalarEntityDialog(FeatureTypes featureType){
     //this->sEntityDialog.setAvailableFunctions(this->control.getAvailableCreateFunctions(featureType), this->control.getDefaultFunction(featureType));
-    this->sEntityDialog.show();
+    //this->sEntityDialog.show();
 }
 
 /*!
  * \brief clearCustomWidgets deletes all existing custom actions.
  */
-void MainWindow::clearCustomWidgets()
+/*void MainWindow::clearCustomWidgets()
 {
     for(int i=0;i<this->customActions.size();i++){
         delete this->customActions.at(i);
     }
     this->customActions.clear();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged
  * \param arg1
  */
-void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1){
+/*void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1){
     if(arg1.compare("") != 0){
         if(OiJob::getActiveCoordinateSystem() != NULL && arg1.compare(OiJob::getActiveCoordinateSystem()->getFeatureName()) != 0){
             //this->control.setActiveCoordSystem(arg1);
@@ -2113,22 +2113,22 @@ void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString
     }else{
         this->ui->comboBox_activeCoordSystem->setCurrentText("");
     }
-}
+}*/
 
 /*!
  * \brief MainWindow::openStationGeomProperties shows properties and functions of the station geometrie point.
  * \param fw
  */
-void MainWindow::openStationGeomProperties(FeatureWrapper *fw)
+/*void MainWindow::openStationGeomProperties(FeatureWrapper *fw)
 {
     //fDataDialog.getActiveFeature(fw);
     fDataDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionSensor_real_time_data_triggered opens the real time data dialog of the current sensor.
  */
-void MainWindow::on_actionSensor_real_time_data_triggered()
+/*void MainWindow::on_actionSensor_real_time_data_triggered()
 {
     rtDataDialog.show();
 }
@@ -2153,13 +2153,13 @@ void MainWindow::on_treeView_featureOverview_clicked(const QModelIndex &index)
     }
 
 
-}
+}*/
 
 /*!
  * \brief closeAllOpenDialogs (only pointers) at end of openIndy, when closing mainwindow
  */
-void MainWindow::closeAllOpenDialogs()
-{
+//void MainWindow::closeAllOpenDialogs()
+//{
     /*if(this->cFeatureDialog != NULL){
         this->cFeatureDialog->close();
     }
@@ -2169,74 +2169,74 @@ void MainWindow::closeAllOpenDialogs()
     if(this->watchWindow != NULL){
         this->watchWindow->close();
     }*/
-}
+//}
 
 /*!
  * \brief setDialogsNULL sets all pointer dialogs to NULL at programm start.
  */
-void MainWindow::setDialogsNULL()
-{
+//void MainWindow::setDialogsNULL()
+//{
     /*this->cFeatureDialog = NULL;
     this->sEntityDialog = NULL;
     this->watchWindow = NULL;*/
 
-}
+//}
 
-void MainWindow::showOiToolWidget(OiTool *oiToolWidget)
+/*void MainWindow::showOiToolWidget(OiTool *oiToolWidget)
 {
     //disconnect(this, SIGNAL(watchWindowKeyPressed(Qt::Key)), oiToolWidget, SLOT(watchWindowKeyPressed(Qt::Key)));
     connect(this, SIGNAL(watchWindowKeyPressed(Qt::Key)), oiToolWidget, SLOT(watchWindowKeyPressed(Qt::Key)));
     oiToolWidget->show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_action_importNominals_triggered
  */
-void MainWindow::on_action_importNominals_triggered(){
+/*void MainWindow::on_action_importNominals_triggered(){
     this->importNominalDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_action_importMeasurementConfigs_triggered
  */
-void MainWindow::on_action_importMeasurementConfigs_triggered(){
+/*void MainWindow::on_action_importMeasurementConfigs_triggered(){
 
-}
+}*/
 
 /*!
  * \brief MainWindow::on_action_importSensorConfigs_triggered
  */
-void MainWindow::on_action_importSensorConfigs_triggered(){
+/*void MainWindow::on_action_importSensorConfigs_triggered(){
 
-}
+}*/
 
 /*!
  * \brief MainWindow::on_action_exportNominals_triggered
  */
-void MainWindow::on_action_exportNominals_triggered(){
+/*void MainWindow::on_action_exportNominals_triggered(){
     this->exportNominalDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_action_exportMeasurementConfigs_triggered
  */
-void MainWindow::on_action_exportMeasurementConfigs_triggered(){
+/*void MainWindow::on_action_exportMeasurementConfigs_triggered(){
 
-}
+}*/
 
 /*!
  * \brief MainWindow::on_action_exportSensorConfigs_triggered
  */
-void MainWindow::on_action_exportSensorConfigs_triggered(){
+/*void MainWindow::on_action_exportSensorConfigs_triggered(){
 
-}
+}*/
 
 /*!
  * \brief MainWindow::setMeasurementConfig
  * Set the measurement config of the active feature
  * \param mConfig
  */
-void MainWindow::setMeasurementConfig(MeasurementConfig mConfig){
+/*void MainWindow::setMeasurementConfig(MeasurementConfig mConfig){
 
     if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL){
         return;
@@ -2255,13 +2255,13 @@ void MainWindow::setMeasurementConfig(MeasurementConfig mConfig){
     disconnect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
                this, SLOT(setMeasurementConfig(MeasurementConfig)));
 
-}
+}*/
 
 /*!
  * \brief MainWindow::setDefaultMeasurementConfig
  * \param mConfig
  */
-void MainWindow::setDefaultMeasurementConfig(MeasurementConfig mConfig){
+/*void MainWindow::setDefaultMeasurementConfig(MeasurementConfig mConfig){
 
     //set mConfig as default for the feature type of the active feature
     OiConfigState::setDefaultMeasurementConfig(mConfig, this->currentCreateFeature);
@@ -2269,13 +2269,13 @@ void MainWindow::setDefaultMeasurementConfig(MeasurementConfig mConfig){
     disconnect(&this->mConfigDialog, SIGNAL(measurementConfigSelected(MeasurementConfig)),
                this, SLOT(setDefaultMeasurementConfig(MeasurementConfig)));
 
-}
+}*/
 
 /*!
  * \brief keyPressEvent
  * \param e
  */
-void MainWindow::keyPressEvent(QKeyEvent *e)
+/*void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     int key = e->key();
     int modifiers = e->modifiers();
@@ -2296,23 +2296,23 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         //this->checkControlPadVisible();
         this->actionHome->trigger();
     }
-}
+}*/
 
 /*!
  * \brief selectionChangedByKeyboard sets the current feature. Row was changed by pressing keyboard up or down button.
  * \param newIdx
  * \param oldIdx
  */
-void MainWindow::selectionChangedByKeyboard(QModelIndex newIdx, QModelIndex oldIdx)
+/*void MainWindow::selectionChangedByKeyboard(QModelIndex newIdx, QModelIndex oldIdx)
 {
     //get new active feature
     this->handleTableViewClicked(newIdx);
-}
+}*/
 
 /*!
  * \brief setMagnifyValues sets the feature name type actual/nominal and observations to the magnify window
  */
-void MainWindow::setMagnifyValues()
+/*void MainWindow::setMagnifyValues()
 {
     if(OiJob::getActiveFeature() != NULL){
         this->ui->label_featName->setText(OiJob::getActiveFeature()->getFeature()->getFeatureName());
@@ -2356,12 +2356,12 @@ void MainWindow::setMagnifyValues()
     }
 
     ui->label_featName->setFont(f);
-}
+}*/
 
 /*!
  * \brief copyValuesFromView copys the selected values from the view.
  */
-void MainWindow::copyValuesFromView()
+/*void MainWindow::copyValuesFromView()
 {
     //get model and selected rows and columns
     QAbstractItemModel *model = ui->tableView_data->model();
@@ -2434,4 +2434,4 @@ void MainWindow::closeWatchWindow()
 
         watchWindow.close();
 
-}
+}*/

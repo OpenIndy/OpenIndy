@@ -17,7 +17,7 @@ public:
     virtual ~GenerateFeatureFunction(){}
 
     virtual QList<InputParams> getNeededElements() const = 0;
-    virtual QList<Configuration::FeatureTypes> applicableFor() const = 0;
+    virtual QList<FeatureTypes> applicableFor() const = 0;
     virtual PluginMetaData* getMetaData() const = 0;
 
 /*protected:

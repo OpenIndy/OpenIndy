@@ -6,7 +6,7 @@ MeasurementConfig ScalarEntityDistance::defaultMeasurementConfig;
 
 ScalarEntityDistance::ScalarEntityDistance(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -65,7 +65,7 @@ QDomElement ScalarEntityDistance::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return entityDistance;
     }
 
-    entityDistance.setAttribute("type", Configuration::sEntityDistance);
+    entityDistance.setAttribute("type", getGeometryTypeName(eScalarEntityDistanceGeometry));
 
     //add distance
     QDomElement distance = xmlDoc.createElement("distance");

@@ -7,7 +7,6 @@
 #include <QComboBox>
 #include <QDateTimeEdit>
 
-#include "trafoparamproxymodel.h"
 
 class TrafoParamDelegate : public QItemDelegate
 {

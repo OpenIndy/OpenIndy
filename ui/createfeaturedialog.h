@@ -4,10 +4,8 @@
 #include <QDialog>
 #include <QShowEvent>
 
-#include "configuration.h"
 #include "featurewrapper.h"
 #include "featureattributes.h"
-#include "oifeaturestate.h"
 #include "oimodelmanager.h"
 
 namespace Ui {
@@ -22,7 +20,7 @@ public:
     explicit CreateFeatureDialog(QWidget *parent = 0);
     ~CreateFeatureDialog();
 
-    void setFeatureType(const Configuration::FeatureTypes &typeOfFeature);
+    void setFeatureType(const FeatureTypes &typeOfFeature);
 
 signals:
     void addFeatures(const FeatureAttributes &attributes);
@@ -52,14 +50,14 @@ private slots:
 private:
     Ui::CreateFeatureDialog *ui;
 
-    Configuration::FeatureTypes typeOfFeature;
+    FeatureTypes typeOfFeature;
 
 };
 
 
     /*
 
-    void setFeatureType(Configuration::FeatureTypes typeOfFeature);
+    void setFeatureType(FeatureTypes typeOfFeature);
 
 
     //void availableGroupsChanged(QStringList myGroups);
@@ -70,7 +68,7 @@ private:
 signals:
 
     void createFeature(FeatureAttributes fae);
-    void createFeatureMConfig(Configuration::FeatureTypes typeOfFeature);
+    void createFeatureMConfig(FeatureTypes typeOfFeature);
 
     void trafoParamCreated();
 
@@ -78,7 +76,7 @@ private slots:
 
 
 
-    //void receiveFeatureType(Configuration::FeatureTypes);
+    //void receiveFeatureType(FeatureTypes);
 
     void on_toolButton_create_clicked();
     void on_toolButton_cancel_clicked();
@@ -90,7 +88,7 @@ private slots:
 
 
 
-    Configuration::FeatureTypes typeOfFeature;
+    FeatureTypes typeOfFeature;
 
     void showEvent(QShowEvent *event);
     void initGUI();

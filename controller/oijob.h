@@ -9,9 +9,9 @@
 
 #include "featurecontainer.h"
 #include "featureattributes.h"
-#include "oiconfigstate.h"
-#include "oiunitconverter.h"
 #include "types.h"
+#include "util.h"
+#include "console.h"
 
 class OiJob : public QObject
 {
@@ -76,6 +76,7 @@ public:
     //static CoordinateSystem *getNominalSystem(QString name);
     //static void resetFeatureLists();
 
+    int generateUniqueId();
 
 signals:
 
@@ -141,6 +142,8 @@ private slots:
 
 private:
 
+    int currentId;
+
     FeatureContainer myFeatureContainer;
 
     //################################
@@ -162,7 +165,7 @@ private:
     //feature name validation and create feature functions
     QList<FeatureWrapper *> createFeatures(const FeatureAttributes &attributes);
     void createFeatureName(QString &outputName, int &index, QString inputName, int count = 1);
-    bool validateFeatureName(const Configuration::FeatureTypes &featureType, const QString &featureName,
+    bool validateFeatureName(const FeatureTypes &featureType, const QString &featureName,
                                     bool isNominal = false, CoordinateSystem *myNomSys = NULL);
 
     //feature connections

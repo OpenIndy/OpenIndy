@@ -8,7 +8,6 @@
 #include <QtXml>
 
 #include "element.h"
-#include "configuration.h"
 
 class FeatureWrapper;
 class Function;
@@ -24,32 +23,32 @@ public:
     virtual ~Feature();
 
     QString getFeatureName() const;
-    bool setFeatureName(QString name);
+    bool setFeatureName(const QString &name);
 
     QString getGroupName() const;
-    void setGroupName(QString group);
+    void setGroupName(const QString &group);
 
     QString getComment() const;
-    void setComment(QString comment);
+    void setComment(const QString &comment);
 
     bool getIsUpdated() const;
-    void setIsUpdated(bool isUpdated);
+    void setIsUpdated(const bool &isUpdated);
 
     bool getIsSolved() const;
-    void setIsSolved(bool isSolved);
+    void setIsSolved(const bool &isSolved);
 
-    Configuration::eColor getDisplayColor() const;
-    void setDisplayColor(Configuration::eColor displayColor);
+    //Configuration::eColor getDisplayColor() const;
+    //void setDisplayColor(Configuration::eColor displayColor);
 
     bool getIsDrawn() const;
-    void setIsDrawn(bool isDrawn);
+    void setIsDrawn(const bool &isDrawn);
 
     const QList<Function *> getFunctions() const;
     void addFunction(Function *f);
     bool removeFunction(int index);
 
     bool getIsActiveFeature() const;
-    void setActiveFeatureState(bool isActiveFeature);
+    void setActiveFeatureState(const bool &isActiveFeature);
 
     QList<FeatureWrapper*> usedFor; //features which need this feature to recalc
     QList<FeatureWrapper*> previouslyNeeded; //features which are needed to recalc this feature
@@ -94,18 +93,18 @@ public:
     virtual QString getDisplayExpansionOriginZ() const;
 
 signals:
-    void featureNameChanged(int featureId, QString oldName);
-    void featureGroupChanged(int featureId, QString oldGroup);
-    void featureCommentChanged(int featureId);
-    void featureIsUpdatedChanged(int featureId);
-    void featureIsSolvedChanged(int featureId);
-    void featureFunctionListChanged(int featureId);
-    void featureUsedForChanged(int featureId);
-    void featurePreviouslyNeededChanged(int featureId);
-    void featureDisplayColorChanged(int featureId);
-    void featureIsDrawnChanged(int featureId);
-    void featureIsActiveChanged(int featureId);
-    void featureAboutToBeDeleted(int featureId);
+    void featureNameChanged(const int &featureId, const QString &oldName);
+    void featureGroupChanged(const int &featureId, const QString &oldGroup);
+    void featureCommentChanged(const int &featureId);
+    void featureIsUpdatedChanged(const int &featureId);
+    void featureIsSolvedChanged(const int &featureId);
+    void featureFunctionListChanged(const int &featureId);
+    void featureUsedForChanged(const int &featureId);
+    void featurePreviouslyNeededChanged(const int &featureId);
+    void featureDisplayColorChanged(const int &featureId);
+    void featureIsDrawnChanged(const int &featureId);
+    void featureIsActiveChanged(const int &featureId);
+    void featureAboutToBeDeleted(const int &featureId);
 
 protected:
     QString name;
@@ -116,7 +115,7 @@ protected:
     bool isActiveFeature;
     QList<Function*> functionList;
 
-    Configuration::eColor displayColor;
+    //Configuration::eColor displayColor;
     bool isDrawn;
 
 };

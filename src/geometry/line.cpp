@@ -6,7 +6,7 @@ MeasurementConfig Line::defaultMeasurementConfig;
 
 Line::Line(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4), ijk(4)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->myNominalCoordSys = NULL;
     this->isSolved = false;
     this->isUpdated = false;
@@ -89,7 +89,7 @@ QDomElement Line::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return line;
     }
 
-    line.setAttribute("type", Configuration::sLine);
+    line.setAttribute("type", getGeometryTypeName(eLineGeometry));
 
     //add vector of direction
     QDomElement ijk = xmlDoc.createElement("spatialDirection");

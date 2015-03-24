@@ -3,7 +3,7 @@
 
 #include <QtXml>
 
-#include "configuration.h"
+#include "types.h"
 
 class OiConfigState;
 
@@ -48,7 +48,7 @@ public:
     bool distanceDependent; //true if the sensor shall measure in a special distanceInterval (false if not)
     long timeInterval; //time interval in which the sensor shall measure
     double distanceInterval; //distance interval in which the sensor shall measure
-    Configuration::ReadingTypes typeOfReading; //the type of reading which the sensor shall return
+    ReadingTypes typeOfReading; //the type of reading which the sensor shall return
 
     //xml import export
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;

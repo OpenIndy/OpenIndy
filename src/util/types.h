@@ -84,4 +84,48 @@ enum GeometryTypes{
     eUndefinedGeometry
 };
 
+//#######################
+//available reading types
+//#######################
+
+enum ReadingTypes{
+    eDistanceReading,
+    eCartesianReading,
+    ePolarReading,
+    eDirectionReading,
+    eTemperatureReading,
+    eLevelReading,
+    eUndefinedReading
+};
+
+//#####################
+//sensor specific enums
+//#####################
+
+enum SensorTypes{
+    eLaserTracker,
+    eTotalStation,
+    eUndefinedSensor
+};
+
+enum SensorFaces{
+    eFrontSide,
+    eBackSide
+};
+
+enum ConnectionTypes{
+    eNetworkConnection,
+    eSerialConnection
+};
+
+enum SensorFunctions{
+    eMoveAngle,
+    eMoveXYZ,
+    eMotorState,
+    eToggleSight,
+    eInitialize,
+    eHome,
+    eCompensation
+};
+
 #endif // TYPES_H

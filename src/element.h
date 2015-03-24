@@ -18,7 +18,7 @@ public:
     virtual ~Element();
 
     int getId() const;
-    bool setId(int id);
+    bool setId(const int &id);
 
     virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     virtual bool fromOpenIndyXML(QDomElement &xmlElem);

@@ -50,7 +50,7 @@ public:
      * define here which geometry types can be imported or exported by your class
      * \return
      */
-    virtual QList<Configuration::GeometryTypes> getSupportedGeometries() = 0;
+    virtual QList<GeometryTypes> getSupportedGeometries() = 0;
 
     /*!
      * \brief setExportObservations

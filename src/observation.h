@@ -3,8 +3,8 @@
 
 #include <QList>
 #include <math.h>
+
 #include "element.h"
-#include "configuration.h"
 #include "geometry.h"
 #include "oivec.h"
 #include "statistic.h"
@@ -12,11 +12,6 @@
 class Geometry;
 class Reading;
 class Station;
-
-/*!
- * \brief The Observation class
- * Contains all observations derived by a rading.
- */
 
 class Observation : public Element
 {
@@ -44,21 +39,21 @@ public:
 
     void calcFromReading();
 
-    void setIsValid(bool isValid);
+    void setIsValid(const bool &isValid);
     bool getIsValid();
 
-    void setIsSolved(bool isSolved);
+    void setIsSolved(const bool &isSolved);
     bool getIsSolved();
 
-    void setIsUsed(bool use);
+    void setIsUsed(const bool &use);
     bool getIsUsed();
 
     bool getUseState();
 
- private:
+private:
 
     bool isActiveCoordSys; //indicates if the observation coord system is the current
-        //coordinate system at time of creation
+    //coordinate system at time of creation
 
     bool isValid; //defines if the reading can be transformed, without any function, to a xyz observation
 

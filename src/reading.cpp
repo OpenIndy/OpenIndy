@@ -6,7 +6,7 @@
 Reading::Reading()
 {
     this->measuredAt = QDateTime::currentDateTime();
-    this->face = Configuration::eFrontside;
+    this->face = eFrontSide;
     this->obs = NULL;
     this->instrument = NULL;
 }
@@ -169,12 +169,12 @@ QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
     //add reading attributes
     reading.setAttribute("id", this->id);
     reading.setAttribute("time", this->measuredAt.toString(Qt::ISODate));
-    reading.setAttribute("type", Configuration::getReadingTypeString(this->typeofReading));
+    reading.setAttribute("type", getReadingTypeName(this->typeofReading));
 
     //add measurements
     QDomElement measurements = xmlDoc.createElement("measurements");
     switch(this->typeofReading){
-    case Configuration::eCartesian:
+    case eCartesianReading:
         if(this->rCartesian.isValid && this->rCartesian.xyz.getSize() >= 3 && this->rCartesian.sigmaXyz.getSize() >= 3){
             QDomElement x = xmlDoc.createElement("measurement");
             x.setAttribute("type", "x");
@@ -193,7 +193,7 @@ QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
             measurements.appendChild(z);
         }
         break;
-    case Configuration::eDirection:
+    case eDirectionReading:
         if(this->rDirection.isValid){
             QDomElement azimuth = xmlDoc.createElement("measurement");
             azimuth.setAttribute("type", "azimuth");
@@ -207,7 +207,7 @@ QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
             measurements.appendChild(zenith);
         }
         break;
-    case Configuration::eDistance:
+    case eDistanceReading:
         if(this->rDistance.isValid){
             QDomElement distance = xmlDoc.createElement("measurement");
             distance.setAttribute("type", "distance");
@@ -216,7 +216,7 @@ QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
             measurements.appendChild(distance);
         }
         break;
-    case Configuration::ePolar:
+    case ePolarReading:
         if(this->rPolar.isValid){
             QDomElement azimuth = xmlDoc.createElement("measurement");
             azimuth.setAttribute("type", "azimuth");
@@ -235,7 +235,7 @@ QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
             measurements.appendChild(distance);
         }
         break;
-    case Configuration::eTemperatur:
+    case eTemperatureReading:
         if(this->rTemperature.isValid){
             QDomElement temperature = xmlDoc.createElement("measurement");
             temperature.setAttribute("type", "temperature");
@@ -244,7 +244,7 @@ QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
             measurements.appendChild(temperature);
         }
         break;
-    case Configuration::eLevel:
+    case eLevelReading:
         if(this->rLevel.isValid){
             QDomElement rx = xmlDoc.createElement("measurement");
             rx.setAttribute("type", "RX");
@@ -263,7 +263,7 @@ QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
             measurements.appendChild(rz);
         }
         break;
-    case Configuration::eUndefined:
+    case eUndefinedReading:
         if(this->rUndefined.isValid && this->rUndefined.values.size() == this->rUndefined.sigmaValues.size()){
             QList<QString> measurementTypes = this->rUndefined.values.keys();
             foreach(QString type, measurementTypes){
@@ -301,7 +301,7 @@ bool Reading::fromOpenIndyXML(QDomElement &xmlElem){
     }
     this->id = xmlElem.attribute("id").toInt();
     this->measuredAt = QDateTime::fromString(xmlElem.attribute("time"), Qt::ISODate);
-    this->typeofReading = Configuration::getReadingTypeEnum(xmlElem.attribute("type"));
+    this->typeofReading = getReadingTypeEnum(xmlElem.attribute("type"));
 
     //get list of measurements
     QDomElement measurements = xmlElem.firstChildElement("measurements");

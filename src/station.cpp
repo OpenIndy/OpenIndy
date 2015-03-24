@@ -5,7 +5,7 @@ Station::Station(QString name)
 {
     this->name = name;
 
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     position = new Point(false);
     position->setFeatureName(name);
 
@@ -122,7 +122,7 @@ bool Station::setActiveStationState(bool isActiveStation){
     return false;
 }
 
-Configuration::ReadingTypes Station::getReadingStreamType(){
+ReadingTypes Station::getReadingStreamType(){
     return this->sensorPad->getTypeOfReadingStream();
 }
 

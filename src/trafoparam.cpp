@@ -6,7 +6,7 @@
 
 TrafoParam::TrafoParam(QObject *parent) : Feature(parent), homogenMatrix(4, 4), translation(3), rotation(3), scale(3), quaternion(4)
 {
-    this->id = Configuration::generateID();
+    //this->id = Configuration::generateID();
     this->isUpdated = false;
     this->use = false;
     this->validTime = QDateTime::currentDateTime();
@@ -154,7 +154,7 @@ bool TrafoParam::setQuaternion(OiVec quaternion){
  * \brief TrafoParam::getStartSystem
  * \return
  */
-CoordinateSystem * const TrafoParam::getStartSystem() const{
+const QPointer<CoordinateSystem> &TrafoParam::getStartSystem() const{
     return this->from;
 }
 
@@ -162,7 +162,7 @@ CoordinateSystem * const TrafoParam::getStartSystem() const{
  * \brief TrafoParam::getDestinationSystem
  * \return
  */
-CoordinateSystem * const TrafoParam::getDestinationSystem() const{
+const QPointer<CoordinateSystem> &TrafoParam::getDestinationSystem() const{
     return this->to;
 }
 
@@ -172,8 +172,8 @@ CoordinateSystem * const TrafoParam::getDestinationSystem() const{
  * \param to
  * \return
  */
-bool TrafoParam::setCoordinateSystems(CoordinateSystem * const from, CoordinateSystem * const to){
-    if(from != NULL && to != NULL){
+bool TrafoParam::setCoordinateSystems(const QPointer<CoordinateSystem> &from, const QPointer<CoordinateSystem> &to){
+    if(!from.isNull() && !to.isNull()){
         this->from = from;
         this->to = to;
         emit this->coordinateSystemsChanged(this->id);
@@ -194,7 +194,7 @@ bool TrafoParam::getIsUsed() const{
  * \brief TrafoParam::setIsUsed
  * \param isUsed
  */
-void TrafoParam::setIsUsed(bool isUsed){
+void TrafoParam::setIsUsed(const bool &isUsed){
     this->use = isUsed;
     emit this->isUsedChanged(this->id);
 }

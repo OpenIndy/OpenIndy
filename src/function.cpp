@@ -449,7 +449,7 @@ void Function::addStation(Station *s, int position){
     this->stations.append(s);
     InputFeature feature;
     feature.id = s->getId();
-    feature.typeOfElement = Configuration::eStationElement;
+    feature.typeOfElement = eStationElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -528,7 +528,7 @@ void Function::addCoordSystem(CoordinateSystem *c, int position){
     this->coordSystems.append(c);
     InputFeature feature;
     feature.id = c->getId();
-    feature.typeOfElement = Configuration::eCoordinateSystemElement;
+    feature.typeOfElement = eCoordinateSystemElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -607,7 +607,7 @@ void Function::addTrafoParam(TrafoParam *t, int position){
     this->trafoParams.append(t);
     InputFeature feature;
     feature.id = t->getId();
-    feature.typeOfElement = Configuration::eTrafoParamElement;
+    feature.typeOfElement = eTrafoParamElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -686,7 +686,7 @@ void Function::addPoint(Point *p, int position){
     this->points.append(p);
     InputFeature feature;
     feature.id = p->getId();
-    feature.typeOfElement = Configuration::ePointElement;
+    feature.typeOfElement = ePointElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -765,7 +765,7 @@ void Function::addLine(Line *l, int position){
     this->lines.append(l);
     InputFeature feature;
     feature.id = l->getId();
-    feature.typeOfElement = Configuration::eLineElement;
+    feature.typeOfElement = eLineElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -844,7 +844,7 @@ void Function::addPlane(Plane *p, int position){
     this->planes.append(p);
     InputFeature feature;
     feature.id = p->getId();
-    feature.typeOfElement = Configuration::ePlaneElement;
+    feature.typeOfElement = ePlaneElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -923,7 +923,7 @@ void Function::addSphere(Sphere *s, int position){
     this->spheres.append(s);
     InputFeature feature;
     feature.id = s->getId();
-    feature.typeOfElement = Configuration::eSphereElement;
+    feature.typeOfElement = eSphereElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1002,7 +1002,7 @@ void Function::addCircle(Circle *c, int position){
     this->circles.append(c);
     InputFeature feature;
     feature.id = c->getId();
-    feature.typeOfElement = Configuration::eCircleElement;
+    feature.typeOfElement = eCircleElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1081,7 +1081,7 @@ void Function::addCone(Cone *c, int position){
     this->cones.append(c);
     InputFeature feature;
     feature.id = c->getId();
-    feature.typeOfElement = Configuration::eConeElement;
+    feature.typeOfElement = eConeElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1160,7 +1160,7 @@ void Function::addCylinder(Cylinder *c, int position){
     this->cylinders.append(c);
     InputFeature feature;
     feature.id = c->getId();
-    feature.typeOfElement = Configuration::eCylinderElement;
+    feature.typeOfElement = eCylinderElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1239,7 +1239,7 @@ void Function::addEllipsoid(Ellipsoid *e, int position){
     this->ellipsoids.append(e);
     InputFeature feature;
     feature.id = e->getId();
-    feature.typeOfElement = Configuration::eEllipsoidElement;
+    feature.typeOfElement = eEllipsoidElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1318,7 +1318,7 @@ void Function::addParaboloid(Paraboloid *p, int position){
     this->paraboloids.append(p);
     InputFeature feature;
     feature.id = p->getId();
-    feature.typeOfElement = Configuration::eParaboloidElement;
+    feature.typeOfElement = eParaboloidElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1397,7 +1397,7 @@ void Function::addHyperboloid(Hyperboloid *h, int position){
     this->hyperboloids.append(h);
     InputFeature feature;
     feature.id = h->getId();
-    feature.typeOfElement = Configuration::eHyperboloidElement;
+    feature.typeOfElement = eHyperboloidElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1476,7 +1476,7 @@ void Function::addNurb(Nurbs *n, int position){
     this->nurbs.append(n);
     InputFeature feature;
     feature.id = n->getId();
-    feature.typeOfElement = Configuration::eNurbsElement;
+    feature.typeOfElement = eNurbsElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1555,7 +1555,7 @@ void Function::addPointCloud(PointCloud *p, int position){
     this->pointClouds.append(p);
     InputFeature feature;
     feature.id = p->getId();
-    feature.typeOfElement = Configuration::ePointCloudElement;
+    feature.typeOfElement = ePointCloudElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1634,7 +1634,7 @@ void Function::addScalarEntityDistance(ScalarEntityDistance *sed, int position){
     this->scalarEntityDistances.append(sed);
     InputFeature feature;
     feature.id = sed->getId();
-    feature.typeOfElement = Configuration::eScalarEntityDistanceElement;
+    feature.typeOfElement = eScalarEntityDistanceElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1713,7 +1713,7 @@ void Function::addScalarEntityAngle(ScalarEntityAngle *sea, int position){
     this->scalarEntityAngles.append(sea);
     InputFeature feature;
     feature.id = sea->getId();
-    feature.typeOfElement = Configuration::eScalarEntityAngleElement;
+    feature.typeOfElement = eScalarEntityAngleElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1792,7 +1792,7 @@ void Function::addObservation(Observation *o, int position){
     this->observations.append(o);
     InputFeature feature;
     feature.id = o->getId();
-    feature.typeOfElement = Configuration::eObservationElement;
+    feature.typeOfElement = eObservationElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1871,7 +1871,7 @@ void Function::addReadingPolar(Reading *r, int position){
     this->polarReadings.append(r);
     InputFeature feature;
     feature.id = r->id;
-    feature.typeOfElement = Configuration::eReadingPolarElement;
+    feature.typeOfElement = eReadingPolarElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -1950,7 +1950,7 @@ void Function::addReadingDistance(Reading *r, int position){
     this->distanceReadings.append(r);
     InputFeature feature;
     feature.id = r->id;
-    feature.typeOfElement = Configuration::eReadingDistanceElement;
+    feature.typeOfElement = eReadingDistanceElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -2029,7 +2029,7 @@ void Function::addReadingDirection(Reading *r, int position){
     this->directionReadings.append(r);
     InputFeature feature;
     feature.id = r->id;
-    feature.typeOfElement = Configuration::eReadingDirectionElement;
+    feature.typeOfElement = eReadingDirectionElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -2108,7 +2108,7 @@ void Function::addReadingCartesian(Reading *r, int position){
     this->cartesianReadings.append(r);
     InputFeature feature;
     feature.id = r->id;
-    feature.typeOfElement = Configuration::eReadingCartesianElement;
+    feature.typeOfElement = eReadingCartesianElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
@@ -2185,16 +2185,16 @@ QList<Reading*> Function::getCartesianReadings(){
  */
 void Function::addReading(Reading *r, int position){
     switch(r->typeofReading){
-    case Configuration::eCartesian:
+    case eCartesianReading:
         this->addReadingCartesian(r, position);
         break;
-    case Configuration::ePolar:
+    case ePolarReading:
         this->addReadingPolar(r, position);
         break;
-    case Configuration::eDirection:
+    case eDirectionReading:
         this->addReadingDirection(r, position);
         break;
-    case Configuration::eDistance:
+    case eDistanceReading:
         this->addReadingDistance(r, position);
         break;
     }
@@ -2206,61 +2206,61 @@ void Function::addReading(Reading *r, int position){
  * \param position
  */
 void Function::addFeature(FeatureWrapper *feature, int position){
-    switch(feature->getTypeOfFeature()){
-    case Configuration::ePointFeature:
+    switch(feature->getFeatureTypeEnum()){
+    case ePointFeature:
         this->addPoint(feature->getPoint(), position);
         break;
-    case Configuration::eLineFeature:
+    case eLineFeature:
         this->addLine(feature->getLine(), position);
         break;
-    case Configuration::ePlaneFeature:
+    case ePlaneFeature:
         this->addPlane(feature->getPlane(), position);
         break;
-    case Configuration::eCircleFeature:
+    case eCircleFeature:
         this->addCircle(feature->getCircle(), position);
         break;
-    case Configuration::eSphereFeature:
+    case eSphereFeature:
         this->addSphere(feature->getSphere(), position);
         break;
-    case Configuration::eCylinderFeature:
+    case eCylinderFeature:
         this->addCylinder(feature->getCylinder(), position);
         break;
-    case Configuration::eConeFeature:
+    case eConeFeature:
         this->addCone(feature->getCone(), position);
         break;
-    case Configuration::eEllipsoidFeature:
+    case eEllipsoidFeature:
         this->addEllipsoid(feature->getEllipsoid(), position);
         break;
-    case Configuration::eHyperboloidFeature:
+    case eHyperboloidFeature:
         this->addHyperboloid(feature->getHyperboloid(), position);
         break;
-    case Configuration::eParaboloidFeature:
+    case eParaboloidFeature:
         this->addParaboloid(feature->getParaboloid(), position);
         break;
-    case Configuration::ePointCloudFeature:
+    case ePointCloudFeature:
         this->addPointCloud(feature->getPointCloud(), position);
         break;
-    case Configuration::eNurbsFeature:
+    case eNurbsFeature:
         this->addNurb(feature->getNurbs(), position);
         break;
-    case Configuration::eScalarEntityAngleFeature:
+    case eScalarEntityAngleFeature:
         this->addScalarEntityAngle(feature->getScalarEntityAngle(), position);
         break;
-    case Configuration::eScalarEntityDistanceFeature:
+    case eScalarEntityDistanceFeature:
         this->addScalarEntityDistance(feature->getScalarEntityDistance(), position);
         break;
-    case Configuration::eScalarEntityMeasurementSeriesFeature:
+    case eScalarEntityMeasurementSeriesFeature:
         break;
-    case Configuration::eScalarEntityTemperatureFeature:
+    case eScalarEntityTemperatureFeature:
         this->addScalarEntityTemperature(feature->getScalarEntityTemperature(), position);
         break;
-    case Configuration::eStationFeature:
+    case eStationFeature:
         this->addStation(feature->getStation(), position);
         break;
-    case Configuration::eCoordinateSystemFeature:
+    case eCoordinateSystemFeature:
         this->addCoordSystem(feature->getCoordinateSystem(), position);
         break;
-    case Configuration::eTrafoParamFeature:
+    case eTrafoParamFeature:
         this->addTrafoParam(feature->getTrafoParam(), position);
         break;
     }
@@ -2276,7 +2276,7 @@ void Function::addScalarEntityTemperature(ScalarEntityTemperature *SET, int posi
     this->scalarEntityTemperatures.append(SET);
     InputFeature feature;
     feature.id = SET->getId();
-    feature.typeOfElement = Configuration::eScalarEntityTemperatureElement;
+    feature.typeOfElement = eScalarEntityTemperatureElement;
     feature.isUsed = true;
     if(this->featureOrder.contains(position)){
         QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);

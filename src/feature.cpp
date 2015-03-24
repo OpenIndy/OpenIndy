@@ -85,7 +85,7 @@ QString Feature::getFeatureName() const{
  * \param name
  * \return
  */
-bool Feature::setFeatureName(QString name){
+bool Feature::setFeatureName(const QString &name){
     if(this->name.compare(name) != 0){
         QString oldName = this->name;
         this->name = name;
@@ -107,7 +107,7 @@ QString Feature::getGroupName() const{
  * \brief Feature::setGroupName
  * \param group
  */
-void Feature::setGroupName(QString group){
+void Feature::setGroupName(const QString &group){
     if(this->group.compare(group) != 0){
         QString oldGroup = this->group;
         this->group = group;
@@ -127,7 +127,7 @@ QString Feature::getComment() const{
  * \brief Feature::setComment
  * \param comment
  */
-void Feature::setComment(QString comment){
+void Feature::setComment(const QString &comment){
     if(this->comment.compare(comment) != 0){
         this->comment = comment;
         emit this->featureCommentChanged(this->id);
@@ -146,7 +146,7 @@ bool Feature::getIsUpdated() const{
  * \brief Feature::setIsUpdated
  * \param isUpdated
  */
-void Feature::setIsUpdated(bool isUpdated){
+void Feature::setIsUpdated(const bool &isUpdated){
     if(this->isUpdated != isUpdated){
         this->isUpdated = isUpdated;
         emit this->featureIsUpdatedChanged(this->id);
@@ -165,7 +165,7 @@ bool Feature::getIsSolved() const{
  * \brief Feature::setIsSolved
  * \param isSolved
  */
-void Feature::setIsSolved(bool isSolved){
+void Feature::setIsSolved(const bool &isSolved){
     if(this->isSolved != isSolved){
         this->isSolved = isSolved;
         emit this->featureIsSolvedChanged(this->id);
@@ -176,20 +176,20 @@ void Feature::setIsSolved(bool isSolved){
  * \brief Feature::getDisplayColor
  * \return
  */
-Configuration::eColor Feature::getDisplayColor() const{
+/*Configuration::eColor Feature::getDisplayColor() const{
     return displayColor;
-}
+}*/
 
 /*!
  * \brief Feature::setDisplayColor
  * \param displayColor
  */
-void Feature::setDisplayColor(Configuration::eColor displayColor){
+/*void Feature::setDisplayColor(Configuration::eColor displayColor){
     if(this->displayColor != displayColor){
         this->displayColor = displayColor;
         emit this->featureDisplayColorChanged(this->id);
     }
-}
+}*/
 
 /*!
  * \brief Feature::getIsDrawn
@@ -203,7 +203,7 @@ bool Feature::getIsDrawn() const{
  * \brief Feature::setIsDrawn
  * \param isDrawn
  */
-void Feature::setIsDrawn(bool isDrawn){
+void Feature::setIsDrawn(const bool &isDrawn){
     if(this->isDrawn != isDrawn){
         this->isDrawn = isDrawn;
         emit this->featureIsDrawnChanged(this->id);
@@ -263,7 +263,7 @@ bool Feature::getIsActiveFeature() const{
  * \brief Feature::setActiveState
  * \param isActive
  */
-void Feature::setActiveFeatureState(bool isActive){
+void Feature::setActiveFeatureState(const bool &isActive){
     if(this->isActiveFeature != isActive){
         this->isActiveFeature = isActive;
         emit this->featureIsActiveChanged(this->id);
