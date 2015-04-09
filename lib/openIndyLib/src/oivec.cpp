@@ -176,10 +176,8 @@ OiVec& OiVec::operator -=(const OiVec &v){
 
 /*!
  * \brief OiVec::normalize
- * \return
  */
-OiVec OiVec::normalize() const{
-    OiVec n0(this->getSize());
+void OiVec::normalize(){
     double l = 0.0;
     for(int i = 0; i < this->getSize(); i++){
         l += this->getAt(i) * this->getAt(i);
@@ -187,10 +185,9 @@ OiVec OiVec::normalize() const{
     if(l > 0.0){
         l = qSqrt(l);
         for(int i = 0; i < this->getSize(); i++){
-            n0.setAt(i, this->getAt(i) / l);
+            this->setAt(i, this->getAt(i) / l);
         }
     }
-    return n0;
 }
 
 /*!

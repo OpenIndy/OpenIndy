@@ -885,7 +885,7 @@ void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
     elements.clear();
 
     //get id's of elements which this plugin needs to be able to execute
-    QList<InputParams> le = f->getNeededElements();
+    QList<NeededElement> le = f->getNeededElements();
     for(int i=0; i<le.size(); i++){
         elements.append( getElementTypeName(le.at(i).typeOfElement) );
     }
@@ -894,7 +894,7 @@ void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
     if(applicableFor.length() > 0){
         //insert function plugin
         QString query = QString("INSERT INTO functionPlugin (plugin_id, iid, name, description) VALUES (%1, '%2', '%3', '%4')")
-                .arg(pluginId).arg(f->getMetaData()->iid).arg(f->getMetaData()->name).arg(f->getMetaData()->description);
+                .arg(pluginId).arg(f->getMetaData().iid).arg(f->getMetaData().name).arg(f->getMetaData().description);
         QSqlQuery command(SystemDbManager::db);
         command.exec(query);
 

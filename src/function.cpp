@@ -6,7 +6,7 @@
  * \return
  */
 bool Function::exec(Circle &c){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type circle");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type circle");
     return false;
 }
 
@@ -16,7 +16,7 @@ bool Function::exec(Circle &c){
  * \return
  */
 bool Function::exec(Cone &c){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type cone");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type cone");
     return false;
 }
 
@@ -26,7 +26,7 @@ bool Function::exec(Cone &c){
  * \return
  */
 bool Function::exec(Cylinder &c){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type cylinder");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type cylinder");
     return false;
 }
 
@@ -36,7 +36,7 @@ bool Function::exec(Cylinder &c){
  * \return
  */
 bool Function::exec(CoordinateSystem &c){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type point");
     return false;
 }
 
@@ -46,7 +46,7 @@ bool Function::exec(CoordinateSystem &c){
  * \return
  */
 bool Function::exec(Ellipsoid &e){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type ellipsoid");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type ellipsoid");
     return false;
 }
 
@@ -56,7 +56,7 @@ bool Function::exec(Ellipsoid &e){
  * \return
  */
 bool Function::exec(Hyperboloid &h){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type hyperboloid");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type hyperboloid");
     return false;
 }
 
@@ -66,7 +66,7 @@ bool Function::exec(Hyperboloid &h){
  * \return
  */
 bool Function::exec(Line &l){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type line");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type line");
     return false;
 }
 
@@ -76,7 +76,7 @@ bool Function::exec(Line &l){
  * \return
  */
 bool Function::exec(Nurbs &n){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type nurbs");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type nurbs");
     return false;
 }
 
@@ -86,7 +86,7 @@ bool Function::exec(Nurbs &n){
  * \return
  */
 bool Function::exec(Paraboloid &p){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type paraboloid");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type paraboloid");
     return false;
 }
 
@@ -96,7 +96,7 @@ bool Function::exec(Paraboloid &p){
  * \return
  */
 bool Function::exec(Plane &p){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type plane");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type plane");
     return false;
 }
 
@@ -106,7 +106,7 @@ bool Function::exec(Plane &p){
  * \return
  */
 bool Function::exec(Point &p){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type point");
     return false;
 }
 
@@ -116,7 +116,7 @@ bool Function::exec(Point &p){
  * \return
  */
 bool Function::exec(PointCloud &p){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type pointcloud");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type pointcloud");
     return false;
 }
 
@@ -126,7 +126,7 @@ bool Function::exec(PointCloud &p){
  * \return
  */
 bool Function::exec(ScalarEntityAngle &s){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type angle");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type angle");
     return false;
 }
 
@@ -136,7 +136,7 @@ bool Function::exec(ScalarEntityAngle &s){
  * \return
  */
 bool Function::exec(ScalarEntityDistance &s){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type distance");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type distance");
     return false;
 }
 
@@ -145,7 +145,7 @@ bool Function::exec(ScalarEntityDistance &s){
  * \return
  */
 bool Function::exec(ScalarEntityTemperature &s){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type temperature");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type temperature");
     return false;
 }
 
@@ -154,7 +154,7 @@ bool Function::exec(ScalarEntityTemperature &s){
  * \return
  */
 bool Function::exec(ScalarEntityMeasurementSeries &s){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type temperature");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type temperature");
     return false;
 }
 
@@ -164,7 +164,7 @@ bool Function::exec(ScalarEntityMeasurementSeries &s){
  * \return
  */
 bool Function::exec(Sphere &s){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type sphere");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type sphere");
     return false;
 }
 
@@ -174,7 +174,7 @@ bool Function::exec(Sphere &s){
  * \return
  */
 bool Function::exec(Station &s){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type point");
     return false;
 }
 
@@ -184,7 +184,7 @@ bool Function::exec(Station &s){
  * \return
  */
 bool Function::exec(TrafoParam &t){
-    this->writeToConsole("Function \"" + this->getMetaData()->name + "\" not implemented for type point");
+    this->writeToConsole("Function \"" + this->getMetaData().name + "\" not implemented for type point");
     return false;
 }
 
@@ -213,8 +213,8 @@ QMap<QString,double> Function::getDoubleParameter() const{
  * Can be used for custom parameter definition string
  * \return
  */
-QMap<QString, QStringList> Function::getStringParameter() const{
-    QMap<QString, QStringList> result;
+QMultiMap<QString, QString> Function::getStringParameter() const{
+    QMultiMap<QString, QString> result;
     return result;
 }
 
@@ -233,23 +233,23 @@ QStringList Function::getResultProtocol() const{
  * \return
  */
 QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
-
-    if(xmlDoc.isNull() || this->getMetaData() == NULL){
+/*
+    if(xmlDoc.isNull()){
         return QDomElement();
     }
 
     //add function attributes
     QDomElement function = xmlDoc.createElement("function");
-    function.setAttribute("name", this->getMetaData()->name);
-    function.setAttribute("type", this->getMetaData()->iid);
-    function.setAttribute("plugin", this->getMetaData()->pluginName);
+    function.setAttribute("name", this->getMetaData().name);
+    function.setAttribute("type", this->getMetaData().iid);
+    function.setAttribute("plugin", this->getMetaData().pluginName);
 
     //add used elements
     QDomElement inputElements = xmlDoc.createElement("inputElements");
-    QMapIterator<int, QList<InputFeature> > inputIterator(this->getFeatureOrder());
+    QMapIterator<int, QList<InputElement> > inputIterator(this->getFeatureOrder());
     while (inputIterator.hasNext()) {
         inputIterator.next();
-        foreach(InputFeature input, inputIterator.value()){
+        foreach(InputElement input, inputIterator.value()){
             QDomElement inputElement = xmlDoc.createElement("element");
             inputElement.setAttribute("index", inputIterator.key());
             inputElement.setAttribute("type", input.typeOfElement);
@@ -293,7 +293,8 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
     function.appendChild(stringParams);
 
     return function;
-
+*/
+    return QDomElement();
 }
 
 /*!
@@ -302,7 +303,7 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
  * \return
  */
 bool Function::fromOpenIndyXML(QDomElement &xmlElem){
-
+/*
     if(xmlElem.isNull()){
         return false;
     }
@@ -352,41 +353,40 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
     }
 
     return true;
-
+*/
+    return false;
 }
 
 /*!
- * \brief Function::setFunctionConfiguration
- * Set function configuration which contains values for custom parameters
- * \param config
+ * \brief Function::setScalarInputParams
+ * \param params
  */
-void Function::setFunctionConfiguration(FunctionConfiguration config){
-    this->myConfiguration = config;
-    this->myConfiguration.functionConfigSet = true;
+void Function::setScalarInputParams(const ScalarInputParams &params){
+    this->scalarInputParams = params;
+    this->scalarInputParams.isValid = true;
 }
 
 /*!
- * \brief Function::getFunctionConfiguration
- * Get function configuration which contains values for custom parameters
+ * \brief Function::getScalarInputParams
  * \return
  */
-FunctionConfiguration Function::getFunctionConfiguration(){
-    if(!this->myConfiguration.functionConfigSet){ //if function config is queried the first time it is filled with default values
-        this->myConfiguration.intParameter = this->getIntegerParameter();
-        this->myConfiguration.doubleParameter = this->getDoubleParameter();
-        QMap<QString, QStringList> stringParameter = this->getStringParameter();
-        QMapIterator<QString, QStringList> stringIterator(stringParameter);
-        while(stringIterator.hasNext()){
-            stringIterator.next();
-            QString key = static_cast<QString>(stringIterator.key());
-            QStringList value = static_cast<QStringList>(stringIterator.value());
-            if(value.size() > 0){
-                //first value in list is default value
-                this->myConfiguration.stringParameter.insert(key, value.at(0));
-            }
+const ScalarInputParams &Function::getScalarInputParams(){
+
+    //if scalar input params are queried the first time it is filled with default values
+    if(!this->scalarInputParams.isValid){
+
+        this->scalarInputParams.intParameter = this->getIntegerParameter();
+        this->scalarInputParams.doubleParameter = this->getDoubleParameter();
+        QMultiMap<QString, QString> stringParameter = this->getStringParameter();
+        QStringList stringKeys = stringParameter.keys();
+        foreach(const QString &key, stringKeys){
+            this->scalarInputParams.stringParameter.insert(key, stringParameter.values().last());
         }
+
     }
-    return this->myConfiguration;
+
+    return this->scalarInputParams;
+
 }
 
 /*!
@@ -395,12 +395,16 @@ FunctionConfiguration Function::getFunctionConfiguration(){
  * \return
  */
 bool Function::isValid(){
-    QList<InputParams> params = this->getNeededElements();
+    return true;
+    /*
+
+
+    QList<NeededElement> params = this->getNeededElements();
     for(int i = 0; i < params.size(); i++){
         if(this->featureOrder.contains(i)){ //if featureOrder contains needed element i
-            QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
+            QMap<int, QList<InputElement> >::iterator idx = this->featureOrder.find(i);
             if(idx != this->featureOrder.end() && idx.value().size() > 0){ //if the list with elements is not empty
-                QList<InputFeature> featurePosition = idx.value();
+                QList<InputElement> featurePosition = idx.value();
                 for(int j = 0; j < featurePosition.size(); j++){
                     if(featurePosition.at(j).typeOfElement != params.at(i).typeOfElement){ //if the element type is correct
                         return false;
@@ -413,14 +417,14 @@ bool Function::isValid(){
             return false;
         }
     }
-    return true;
+    return true;*/
 }
 
 /*!
  * \brief Function::getFeatureOrder
  * \return
  */
-QMap<int, QList<InputFeature> > Function::getFeatureOrder() const{
+const QMultiMap<int, InputElement> &Function::getFeatureOrder() const{
     return this->featureOrder;
 }
 
@@ -436,33 +440,34 @@ Statistic& Function::getStatistic(){
  * \brief Function::getId
  * \return
  */
-int Function::getId() const{
+const int &Function::getId() const{
     return this->id;
 }
 
 /*!
  * \brief Function::addStation
- * \param s
+ * \param station
  * \param position
  */
-void Function::addStation(Station *s, int position){
-    this->stations.append(s);
-    InputFeature feature;
-    feature.id = s->getId();
-    feature.typeOfElement = eStationElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addStation(const QPointer<Station> &station, const int &position){
+
+    //check the pointer
+    if(station.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->stations.insert(station->getId(), station);
+
+    //create an input element
+    InputElement element;
+    element.id = station->getId();
+    element.typeOfElement = eStationElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -470,44 +475,29 @@ void Function::addStation(Station *s, int position){
  * Remove the station with the specified id from the list of stations (if present)
  * \param id
  */
-void Function::removeStation(int id){
-    foreach(Station *s, this->stations){
-        if(s->getId() == id){
-            this->stations.removeOne(s);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeStation(const int &id){
+
+    //remove element from corresponding map
+    this->stations.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
  * \brief Function::getStation
- * Returns the station with the specified id (if present) or NULL
+ * Returns the station with the specified id (if present) or an empty pointer
  * \param id
  * \return
  */
-Station* Function::getStation(int id){
-    foreach(Station *s, this->stations){
-        if(s->getId() == id){
-            return s;
-        }
-    }
-    return NULL;
+QPointer<Station> Function::getStation(const int &id) const{
+    return stations.value(id, QPointer<Station>());
 }
 
 /*!
@@ -515,33 +505,34 @@ Station* Function::getStation(int id){
  * Returns the complete list of stations
  * \return
  */
-QList<Station*> Function::getStations(){
+const QMap<int, QPointer<Station> > &Function::getStations() const{
     return this->stations;
 }
 
 /*!
  * \brief Function::addCoordSystem
- * \param c
+ * \param coordSys
  * \param position
  */
-void Function::addCoordSystem(CoordinateSystem *c, int position){
-    this->coordSystems.append(c);
-    InputFeature feature;
-    feature.id = c->getId();
-    feature.typeOfElement = eCoordinateSystemElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addCoordSystem(const QPointer<CoordinateSystem> &coordSys, const int &position){
+
+    //check the pointer
+    if(coordSys.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->coordSystems.insert(coordSys->getId(), coordSys);
+
+    //create an input element
+    InputElement element;
+    element.id = coordSys->getId();
+    element.typeOfElement = eCoordinateSystemElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -549,29 +540,19 @@ void Function::addCoordSystem(CoordinateSystem *c, int position){
  * Remove the coordinate system with the specified id from the list of coordinate systems (if present)
  * \param id
  */
-void Function::removeCoordSystem(int id){
-    foreach(CoordinateSystem *c, this->coordSystems){
-        if(c->getId() == id){
-            this->coordSystems.removeOne(c);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeCoordSystem(const int &id){
+
+    //remove element from corresponding map
+    this->coordSystems.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -580,13 +561,8 @@ void Function::removeCoordSystem(int id){
  * \param id
  * \return
  */
-CoordinateSystem* Function::getCoordinateSystem(int id){
-    foreach(CoordinateSystem *cs, this->coordSystems){
-        if(cs->getId() == id){
-            return cs;
-        }
-    }
-    return NULL;
+QPointer<CoordinateSystem> Function::getCoordinateSystem(const int &id) const{
+    return coordSystems.value(id, QPointer<CoordinateSystem>());
 }
 
 /*!
@@ -594,33 +570,34 @@ CoordinateSystem* Function::getCoordinateSystem(int id){
  * Returns the complete list of coordinate systems
  * \return
  */
-QList<CoordinateSystem*> Function::getCoordinateSystems(){
+const QMap<int, QPointer<CoordinateSystem> > &Function::getCoordinateSystems() const{
     return this->coordSystems;
 }
 
 /*!
  * \brief Function::addTrafoParam
- * \param t
+ * \param trafoParam
  * \param position
  */
-void Function::addTrafoParam(TrafoParam *t, int position){
-    this->trafoParams.append(t);
-    InputFeature feature;
-    feature.id = t->getId();
-    feature.typeOfElement = eTrafoParamElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addTrafoParam(const QPointer<TrafoParam> &trafoParam, const int &position){
+
+    //check the pointer
+    if(trafoParam.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->trafoParams.insert(trafoParam->getId(), trafoParam);
+
+    //create an input element
+    InputElement element;
+    element.id = trafoParam->getId();
+    element.typeOfElement = eTrafoParamElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -628,29 +605,19 @@ void Function::addTrafoParam(TrafoParam *t, int position){
  * Remove the transformations parameter with the specified id from the list of transformation parameters (if present)
  * \param id
  */
-void Function::removeTrafoParam(int id){
-    foreach(TrafoParam *t, this->trafoParams){
-        if(t->getId() == id){
-            this->trafoParams.removeOne(t);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeTrafoParam(const int &id){
+
+    //remove element from corresponding map
+    this->trafoParams.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -659,13 +626,8 @@ void Function::removeTrafoParam(int id){
  * \param id
  * \return
  */
-TrafoParam* Function::getTrafoParam(int id){
-    foreach(TrafoParam *t, this->trafoParams){
-        if(t->getId() == id){
-            return t;
-        }
-    }
-    return NULL;
+QPointer<TrafoParam> Function::getTrafoParam(const int &id) const{
+    return trafoParams.value(id, QPointer<TrafoParam>());
 }
 
 /*!
@@ -673,33 +635,34 @@ TrafoParam* Function::getTrafoParam(int id){
  * Returns the complete list of transformation parameters
  * \return
  */
-QList<TrafoParam*> Function::getTrafoParams(){
+const QMap<int, QPointer<TrafoParam> > &Function::getTrafoParams() const{
     return this->trafoParams;
 }
 
 /*!
  * \brief Function::addPoint
- * \param p
+ * \param point
  * \param position
  */
-void Function::addPoint(Point *p, int position){
-    this->points.append(p);
-    InputFeature feature;
-    feature.id = p->getId();
-    feature.typeOfElement = ePointElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addPoint(const QPointer<Point> &point, const int &position){
+
+    //check the pointer
+    if(point.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->points.insert(point->getId(), point);
+
+    //create an input element
+    InputElement element;
+    element.id = point->getId();
+    element.typeOfElement = ePointElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -707,29 +670,19 @@ void Function::addPoint(Point *p, int position){
  * Remove the point with the specified id from the list of points (if present)
  * \param id
  */
-void Function::removePoint(int id){
-    foreach(Point *p, this->points){
-        if(p->getId() == id){
-            this->points.removeOne(p);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removePoint(const int &id){
+
+    //remove element from corresponding map
+    this->points.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -738,13 +691,8 @@ void Function::removePoint(int id){
  * \param id
  * \return
  */
-Point* Function::getPoint(int id){
-    foreach(Point *p, this->points){
-        if(p->getId() == id){
-            return p;
-        }
-    }
-    return NULL;
+QPointer<Point> Function::getPoint(const int &id) const{
+    return points.value(id, QPointer<Point>());
 }
 
 /*!
@@ -752,7 +700,7 @@ Point* Function::getPoint(int id){
  * Returns the complete list of points
  * \return
  */
-QList<Point*> Function::getPoints(){
+const QMap<int, QPointer<Point> > &Function::getPoints() const{
     return this->points;
 }
 
@@ -761,24 +709,25 @@ QList<Point*> Function::getPoints(){
  * \param l
  * \param position
  */
-void Function::addLine(Line *l, int position){
-    this->lines.append(l);
-    InputFeature feature;
-    feature.id = l->getId();
-    feature.typeOfElement = eLineElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addLine(const QPointer<Line> &line, const int &position){
+
+    //check the pointer
+    if(line.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->lines.insert(line->getId(), line);
+
+    //create an input element
+    InputElement element;
+    element.id = line->getId();
+    element.typeOfElement = eLineElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -786,29 +735,19 @@ void Function::addLine(Line *l, int position){
  * Remove the line with the specified id from the list of lines (if present)
  * \param id
  */
-void Function::removeLine(int id){
-    foreach(Line *l, this->lines){
-        if(l->getId() == id){
-            this->lines.removeOne(l);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeLine(const int &id){
+
+    //remove element from corresponding map
+    this->lines.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -817,13 +756,8 @@ void Function::removeLine(int id){
  * \param id
  * \return
  */
-Line* Function::getLine(int id){
-    foreach(Line *l, this->lines){
-        if(l->getId() == id){
-            return l;
-        }
-    }
-    return NULL;
+QPointer<Line> Function::getLine(const int &id) const{
+    return lines.value(id, QPointer<Line>());
 }
 
 /*!
@@ -831,7 +765,7 @@ Line* Function::getLine(int id){
  * Returns the complete list of lines
  * \return
  */
-QList<Line*> Function::getLines(){
+const QMap<int, QPointer<Line> > &Function::getLines() const{
     return this->lines;
 }
 
@@ -840,24 +774,25 @@ QList<Line*> Function::getLines(){
  * \param p
  * \param position
  */
-void Function::addPlane(Plane *p, int position){
-    this->planes.append(p);
-    InputFeature feature;
-    feature.id = p->getId();
-    feature.typeOfElement = ePlaneElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addPlane(const QPointer<Plane> &plane, const int &position){
+
+    //check the pointer
+    if(plane.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->planes.insert(plane->getId(), plane);
+
+    //create an input element
+    InputElement element;
+    element.id = plane->getId();
+    element.typeOfElement = ePlaneElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -865,29 +800,19 @@ void Function::addPlane(Plane *p, int position){
  * Remove the plane with the specified id from the list of planes (if present)
  * \param id
  */
-void Function::removePlane(int id){
-    foreach(Plane *p, this->planes){
-        if(p->getId() == id){
-            this->planes.removeOne(p);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removePlane(const int &id){
+
+    //remove element from corresponding map
+    this->planes.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -896,13 +821,8 @@ void Function::removePlane(int id){
  * \param id
  * \return
  */
-Plane* Function::getPlane(int id){
-    foreach(Plane *p, this->planes){
-        if(p->getId() == id){
-            return p;
-        }
-    }
-    return NULL;
+QPointer<Plane> Function::getPlane(const int &id) const{
+    return planes.value(id, QPointer<Plane>());
 }
 
 /*!
@@ -910,7 +830,7 @@ Plane* Function::getPlane(int id){
  * Returns the complete list of planes
  * \return
  */
-QList<Plane*> Function::getPlanes(){
+const QMap<int, QPointer<Plane> > &Function::getPlanes() const{
     return this->planes;
 }
 
@@ -919,24 +839,25 @@ QList<Plane*> Function::getPlanes(){
  * \param s
  * \param position
  */
-void Function::addSphere(Sphere *s, int position){
-    this->spheres.append(s);
-    InputFeature feature;
-    feature.id = s->getId();
-    feature.typeOfElement = eSphereElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addSphere(const QPointer<Sphere> &sphere, const int &position){
+
+    //check the pointer
+    if(sphere.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->spheres.insert(sphere->getId(), sphere);
+
+    //create an input element
+    InputElement element;
+    element.id = sphere->getId();
+    element.typeOfElement = eSphereElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -944,29 +865,19 @@ void Function::addSphere(Sphere *s, int position){
  * Remove the sphere with the specified id from the list of spheres (if present)
  * \param id
  */
-void Function::removeSphere(int id){
-    foreach(Sphere *s, this->spheres){
-        if(s->getId() == id){
-            this->spheres.removeOne(s);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeSphere(const int &id){
+
+    //remove element from corresponding map
+    this->spheres.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -975,13 +886,8 @@ void Function::removeSphere(int id){
  * \param id
  * \return
  */
-Sphere* Function::getSphere(int id){
-    foreach(Sphere *s, this->spheres){
-        if(s->getId() == id){
-            return s;
-        }
-    }
-    return NULL;
+QPointer<Sphere> Function::getSphere(const int &id) const{
+    return spheres.value(id, QPointer<Sphere>());
 }
 
 /*!
@@ -989,7 +895,7 @@ Sphere* Function::getSphere(int id){
  * Returns the complete list of spheres
  * \return
  */
-QList<Sphere*> Function::getSpheres(){
+const QMap<int, QPointer<Sphere> > &Function::getSpheres() const{
     return this->spheres;
 }
 
@@ -998,24 +904,25 @@ QList<Sphere*> Function::getSpheres(){
  * \param c
  * \param position
  */
-void Function::addCircle(Circle *c, int position){
-    this->circles.append(c);
-    InputFeature feature;
-    feature.id = c->getId();
-    feature.typeOfElement = eCircleElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addCircle(const QPointer<Circle> &circle, const int &position){
+
+    //check the pointer
+    if(circle.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->circles.insert(circle->getId(), circle);
+
+    //create an input element
+    InputElement element;
+    element.id = circle->getId();
+    element.typeOfElement = eCircleElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1023,29 +930,19 @@ void Function::addCircle(Circle *c, int position){
  * Remove the circle with the specified id from the list of circles (if present)
  * \param id
  */
-void Function::removeCircle(int id){
-    foreach(Circle *c, this->circles){
-        if(c->getId() == id){
-            this->circles.removeOne(c);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeCircle(const int &id){
+
+    //remove element from corresponding map
+    this->circles.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1054,13 +951,8 @@ void Function::removeCircle(int id){
  * \param id
  * \return
  */
-Circle* Function::getCircle(int id){
-    foreach(Circle *c, this->circles){
-        if(c->getId() == id){
-            return c;
-        }
-    }
-    return NULL;
+QPointer<Circle> Function::getCircle(const int &id) const{
+    return circles.value(id, QPointer<Circle>());
 }
 
 /*!
@@ -1068,7 +960,7 @@ Circle* Function::getCircle(int id){
  * Returns the complete list of circles
  * \return
  */
-QList<Circle*> Function::getCircles(){
+const QMap<int, QPointer<Circle> > &Function::getCircles() const{
     return this->circles;
 }
 
@@ -1077,24 +969,25 @@ QList<Circle*> Function::getCircles(){
  * \param c
  * \param position
  */
-void Function::addCone(Cone *c, int position){
-    this->cones.append(c);
-    InputFeature feature;
-    feature.id = c->getId();
-    feature.typeOfElement = eConeElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addCone(const QPointer<Cone> &cone, const int &position){
+
+    //check the pointer
+    if(cone.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->cones.insert(cone->getId(), cone);
+
+    //create an input element
+    InputElement element;
+    element.id = cone->getId();
+    element.typeOfElement = eConeElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1102,29 +995,19 @@ void Function::addCone(Cone *c, int position){
  * Remove the cone with the specified id from the list of cones (if present)
  * \param id
  */
-void Function::removeCone(int id){
-    foreach(Cone *c, this->cones){
-        if(c->getId() == id){
-            this->cones.removeOne(c);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeCone(const int &id){
+
+    //remove element from corresponding map
+    this->cones.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1133,13 +1016,8 @@ void Function::removeCone(int id){
  * \param id
  * \return
  */
-Cone* Function::getCone(int id){
-    foreach(Cone *c, this->cones){
-        if(c->getId() == id){
-            return c;
-        }
-    }
-    return NULL;
+QPointer<Cone> Function::getCone(const int &id) const{
+    return cones.value(id, QPointer<Cone>());
 }
 
 /*!
@@ -1147,7 +1025,7 @@ Cone* Function::getCone(int id){
  * Returns the complete list of cones
  * \return
  */
-QList<Cone*> Function::getCones(){
+const QMap<int, QPointer<Cone> > &Function::getCones() const{
     return this->cones;
 }
 
@@ -1156,24 +1034,25 @@ QList<Cone*> Function::getCones(){
  * \param c
  * \param position
  */
-void Function::addCylinder(Cylinder *c, int position){
-    this->cylinders.append(c);
-    InputFeature feature;
-    feature.id = c->getId();
-    feature.typeOfElement = eCylinderElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addCylinder(const QPointer<Cylinder> &cylinder, const int &position){
+
+    //check the pointer
+    if(cylinder.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->cylinders.insert(cylinder->getId(), cylinder);
+
+    //create an input element
+    InputElement element;
+    element.id = cylinder->getId();
+    element.typeOfElement = eCylinderElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1181,29 +1060,19 @@ void Function::addCylinder(Cylinder *c, int position){
  * Remove the cylinder with the specified id from the list of cylinders (if present)
  * \param id
  */
-void Function::removeCylinder(int id){
-    foreach(Cylinder *c, this->cylinders){
-        if(c->getId() == id){
-            this->cylinders.removeOne(c);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeCylinder(const int &id){
+
+    //remove element from corresponding map
+    this->cylinders.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1212,13 +1081,8 @@ void Function::removeCylinder(int id){
  * \param id
  * \return
  */
-Cylinder* Function::getCylinder(int id){
-    foreach(Cylinder *c, this->cylinders){
-        if(c->getId() == id){
-            return c;
-        }
-    }
-    return NULL;
+QPointer<Cylinder> Function::getCylinder(const int &id) const{
+    return cylinders.value(id, QPointer<Cylinder>());
 }
 
 /*!
@@ -1226,7 +1090,7 @@ Cylinder* Function::getCylinder(int id){
  * Returns the complete list of cylinders
  * \return
  */
-QList<Cylinder*> Function::getCylinders(){
+const QMap<int, QPointer<Cylinder> > &Function::getCylinders() const{
     return this->cylinders;
 }
 
@@ -1235,24 +1099,25 @@ QList<Cylinder*> Function::getCylinders(){
  * \param e
  * \param position
  */
-void Function::addEllipsoid(Ellipsoid *e, int position){
-    this->ellipsoids.append(e);
-    InputFeature feature;
-    feature.id = e->getId();
-    feature.typeOfElement = eEllipsoidElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addEllipsoid(const QPointer<Ellipsoid> &ellipsoid, const int &position){
+
+    //check the pointer
+    if(ellipsoid.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->ellipsoids.insert(ellipsoid->getId(), ellipsoid);
+
+    //create an input element
+    InputElement element;
+    element.id = ellipsoid->getId();
+    element.typeOfElement = eEllipsoidElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1260,29 +1125,19 @@ void Function::addEllipsoid(Ellipsoid *e, int position){
  * Remove the ellipsoid with the specified id from the list of ellipsoids (if present)
  * \param id
  */
-void Function::removeEllipsoid(int id){
-    foreach(Ellipsoid *e, this->ellipsoids){
-        if(e->getId() == id){
-            this->ellipsoids.removeOne(e);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeEllipsoid(const int &id){
+
+    //remove element from corresponding map
+    this->ellipsoids.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1291,13 +1146,8 @@ void Function::removeEllipsoid(int id){
  * \param id
  * \return
  */
-Ellipsoid* Function::getEllipsoid(int id){
-    foreach(Ellipsoid *e, this->ellipsoids){
-        if(e->getId() == id){
-            return e;
-        }
-    }
-    return NULL;
+QPointer<Ellipsoid> Function::getEllipsoid(const int &id) const{
+    return ellipsoids.value(id, QPointer<Ellipsoid>());
 }
 
 /*!
@@ -1305,7 +1155,7 @@ Ellipsoid* Function::getEllipsoid(int id){
  * Returns the complete list of ellipsoids
  * \return
  */
-QList<Ellipsoid*> Function::getEllipsoids(){
+const QMap<int, QPointer<Ellipsoid> > &Function::getEllipsoids() const{
     return this->ellipsoids;
 }
 
@@ -1314,24 +1164,25 @@ QList<Ellipsoid*> Function::getEllipsoids(){
  * \param p
  * \param position
  */
-void Function::addParaboloid(Paraboloid *p, int position){
-    this->paraboloids.append(p);
-    InputFeature feature;
-    feature.id = p->getId();
-    feature.typeOfElement = eParaboloidElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addParaboloid(const QPointer<Paraboloid> &paraboloid, const int &position){
+
+    //check the pointer
+    if(paraboloid.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->paraboloids.insert(paraboloid->getId(), paraboloid);
+
+    //create an input element
+    InputElement element;
+    element.id = paraboloid->getId();
+    element.typeOfElement = eParaboloidElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1339,29 +1190,19 @@ void Function::addParaboloid(Paraboloid *p, int position){
  * Remove the paraboloid with the specified id from the list of paraboloids (if present)
  * \param id
  */
-void Function::removeParaboloid(int id){
-    foreach(Paraboloid *p, this->paraboloids){
-        if(p->getId() == id){
-            this->paraboloids.removeOne(p);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeParaboloid(const int &id){
+
+    //remove element from corresponding map
+    this->paraboloids.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1370,13 +1211,8 @@ void Function::removeParaboloid(int id){
  * \param id
  * \return
  */
-Paraboloid* Function::getParaboloid(int id){
-    foreach(Paraboloid *p, this->paraboloids){
-        if(p->getId() == id){
-            return p;
-        }
-    }
-    return NULL;
+QPointer<Paraboloid> Function::getParaboloid(const int &id) const{
+    return paraboloids.value(id, QPointer<Paraboloid>());
 }
 
 /*!
@@ -1384,7 +1220,7 @@ Paraboloid* Function::getParaboloid(int id){
  * Returns the complete list of paraboloids
  * \return
  */
-QList<Paraboloid*> Function::getParaboloids(){
+const QMap<int, QPointer<Paraboloid> > &Function::getParaboloids() const{
     return this->paraboloids;
 }
 
@@ -1393,24 +1229,25 @@ QList<Paraboloid*> Function::getParaboloids(){
  * \param h
  * \param position
  */
-void Function::addHyperboloid(Hyperboloid *h, int position){
-    this->hyperboloids.append(h);
-    InputFeature feature;
-    feature.id = h->getId();
-    feature.typeOfElement = eHyperboloidElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addHyperboloid(const QPointer<Hyperboloid> &hyperboloid, const int &position){
+
+    //check the pointer
+    if(hyperboloid.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->hyperboloids.insert(hyperboloid->getId(), hyperboloid);
+
+    //create an input element
+    InputElement element;
+    element.id = hyperboloid->getId();
+    element.typeOfElement = eHyperboloidElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1418,29 +1255,19 @@ void Function::addHyperboloid(Hyperboloid *h, int position){
  * Remove the hyperboloid with the specified id from the list of hyperboloids (if present)
  * \param id
  */
-void Function::removeHyperboloid(int id){
-    foreach(Hyperboloid *h, this->hyperboloids){
-        if(h->getId() == id){
-            this->hyperboloids.removeOne(h);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeHyperboloid(const int &id){
+
+    //remove element from corresponding map
+    this->hyperboloids.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1449,13 +1276,8 @@ void Function::removeHyperboloid(int id){
  * \param id
  * \return
  */
-Hyperboloid* Function::getHyperboloid(int id){
-    foreach(Hyperboloid *h, this->hyperboloids){
-        if(h->getId() == id){
-            return h;
-        }
-    }
-    return NULL;
+QPointer<Hyperboloid> Function::getHyperboloid(const int &id) const{
+    return hyperboloids.value(id, QPointer<Hyperboloid>());
 }
 
 /*!
@@ -1463,7 +1285,7 @@ Hyperboloid* Function::getHyperboloid(int id){
  * Returns the complete list of hyperboloids
  * \return
  */
-QList<Hyperboloid*> Function::getHyperboloids(){
+const QMap<int, QPointer<Hyperboloid> > &Function::getHyperboloids() const{
     return this->hyperboloids;
 }
 
@@ -1472,24 +1294,25 @@ QList<Hyperboloid*> Function::getHyperboloids(){
  * \param n
  * \param position
  */
-void Function::addNurb(Nurbs *n, int position){
-    this->nurbs.append(n);
-    InputFeature feature;
-    feature.id = n->getId();
-    feature.typeOfElement = eNurbsElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addNurb(const QPointer<Nurbs> &nurbs, const int &position){
+
+    //check the pointer
+    if(nurbs.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->nurbs.insert(nurbs->getId(), nurbs);
+
+    //create an input element
+    InputElement element;
+    element.id = nurbs->getId();
+    element.typeOfElement = eNurbsElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1497,29 +1320,19 @@ void Function::addNurb(Nurbs *n, int position){
  * Remove the nurb with the specified id from the list of nurbs (if present)
  * \param id
  */
-void Function::removeNurb(int id){
-    foreach(Nurbs *n, this->nurbs){
-        if(n->getId() == id){
-            this->nurbs.removeOne(n);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeNurb(const int &id){
+
+    //remove element from corresponding map
+    this->nurbs.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1528,13 +1341,8 @@ void Function::removeNurb(int id){
  * \param id
  * \return
  */
-Nurbs* Function::getNurb(int id){
-    foreach(Nurbs *n, this->nurbs){
-        if(n->getId() == id){
-            return n;
-        }
-    }
-    return NULL;
+QPointer<Nurbs> Function::getNurb(const int &id) const{
+    return nurbs.value(id, QPointer<Nurbs>());
 }
 
 /*!
@@ -1542,7 +1350,7 @@ Nurbs* Function::getNurb(int id){
  * Returns the complete list of nurbs
  * \return
  */
-QList<Nurbs*> Function::getNurbs(){
+const QMap<int, QPointer<Nurbs> > &Function::getNurbs() const{
     return this->nurbs;
 }
 
@@ -1551,24 +1359,25 @@ QList<Nurbs*> Function::getNurbs(){
  * \param p
  * \param position
  */
-void Function::addPointCloud(PointCloud *p, int position){
-    this->pointClouds.append(p);
-    InputFeature feature;
-    feature.id = p->getId();
-    feature.typeOfElement = ePointCloudElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addPointCloud(const QPointer<PointCloud> &pointCloud, const int &position){
+
+    //check the pointer
+    if(pointCloud.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->pointClouds.insert(pointCloud->getId(), pointCloud);
+
+    //create an input element
+    InputElement element;
+    element.id = pointCloud->getId();
+    element.typeOfElement = ePointCloudElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1576,29 +1385,19 @@ void Function::addPointCloud(PointCloud *p, int position){
  * Remove the point cloud with the specified id from the list of point clouds (if present)
  * \param id
  */
-void Function::removePointCloud(int id){
-    foreach(PointCloud *p, this->pointClouds){
-        if(p->getId() == id){
-            this->pointClouds.removeOne(p);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removePointCloud(const int &id){
+
+    //remove element from corresponding map
+    this->pointClouds.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1607,13 +1406,8 @@ void Function::removePointCloud(int id){
  * \param id
  * \return
  */
-PointCloud* Function::getPointCloud(int id){
-    foreach(PointCloud *p, this->pointClouds){
-        if(p->getId() == id){
-            return p;
-        }
-    }
-    return NULL;
+QPointer<PointCloud> Function::getPointCloud(const int &id) const{
+    return pointClouds.value(id, QPointer<PointCloud>());
 }
 
 /*!
@@ -1621,7 +1415,7 @@ PointCloud* Function::getPointCloud(int id){
  * Returns the complete list of point clouds
  * \return
  */
-QList<PointCloud*> Function::getPointClouds(){
+const QMap<int, QPointer<PointCloud> > &Function::getPointClouds() const{
     return this->pointClouds;
 }
 
@@ -1630,24 +1424,25 @@ QList<PointCloud*> Function::getPointClouds(){
  * \param sed
  * \param position
  */
-void Function::addScalarEntityDistance(ScalarEntityDistance *sed, int position){
-    this->scalarEntityDistances.append(sed);
-    InputFeature feature;
-    feature.id = sed->getId();
-    feature.typeOfElement = eScalarEntityDistanceElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addScalarEntityDistance(const QPointer<ScalarEntityDistance> &distance, const int &position){
+
+    //check the pointer
+    if(distance.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->scalarEntityDistances.insert(distance->getId(), distance);
+
+    //create an input element
+    InputElement element;
+    element.id = distance->getId();
+    element.typeOfElement = eScalarEntityDistanceElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1655,29 +1450,19 @@ void Function::addScalarEntityDistance(ScalarEntityDistance *sed, int position){
  * Remove the distance with the specified id from the list of distances (if present)
  * \param id
  */
-void Function::removeScalarEntityDistance(int id){
-    foreach(ScalarEntityDistance *sed, this->scalarEntityDistances){
-        if(sed->getId() == id){
-            this->scalarEntityDistances.removeOne(sed);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeScalarEntityDistance(const int &id){
+
+    //remove element from corresponding map
+    this->scalarEntityDistances.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1686,13 +1471,8 @@ void Function::removeScalarEntityDistance(int id){
  * \param id
  * \return
  */
-ScalarEntityDistance* Function::getScalarEntityDistance(int id){
-    foreach(ScalarEntityDistance *sed, this->scalarEntityDistances){
-        if(sed->getId() == id){
-            return sed;
-        }
-    }
-    return NULL;
+QPointer<ScalarEntityDistance> Function::getScalarEntityDistance(const int &id) const{
+    return scalarEntityDistances.value(id, QPointer<ScalarEntityDistance>());
 }
 
 /*!
@@ -1700,7 +1480,7 @@ ScalarEntityDistance* Function::getScalarEntityDistance(int id){
  * Returns the complete list of distances
  * \return
  */
-QList<ScalarEntityDistance*> Function::getScalarEntityDistances(){
+const QMap<int, QPointer<ScalarEntityDistance> > &Function::getScalarEntityDistances() const{
     return this->scalarEntityDistances;
 }
 
@@ -1709,24 +1489,25 @@ QList<ScalarEntityDistance*> Function::getScalarEntityDistances(){
  * \param sea
  * \param position
  */
-void Function::addScalarEntityAngle(ScalarEntityAngle *sea, int position){
-    this->scalarEntityAngles.append(sea);
-    InputFeature feature;
-    feature.id = sea->getId();
-    feature.typeOfElement = eScalarEntityAngleElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addScalarEntityAngle(const QPointer<ScalarEntityAngle> &angle, const int &position){
+
+    //check the pointer
+    if(angle.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->scalarEntityAngles.insert(angle->getId(), angle);
+
+    //create an input element
+    InputElement element;
+    element.id = angle->getId();
+    element.typeOfElement = eScalarEntityAngleElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1734,29 +1515,19 @@ void Function::addScalarEntityAngle(ScalarEntityAngle *sea, int position){
  * Remove the angle with the specified id from the list of angles (if present)
  * \param id
  */
-void Function::removeScalarEntityAngle(int id){
-    foreach(ScalarEntityAngle *sea, this->scalarEntityAngles){
-        if(sea->getId() == id){
-            this->scalarEntityAngles.removeOne(sea);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeScalarEntityAngle(const int &id){
+
+    //remove element from corresponding map
+    this->scalarEntityAngles.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1765,13 +1536,8 @@ void Function::removeScalarEntityAngle(int id){
  * \param id
  * \return
  */
-ScalarEntityAngle* Function::getScalarEntityAngle(int id){
-    foreach(ScalarEntityAngle *sea, this->scalarEntityAngles){
-        if(sea->getId() == id){
-            return sea;
-        }
-    }
-    return NULL;
+QPointer<ScalarEntityAngle> Function::getScalarEntityAngle(const int &id) const{
+    return scalarEntityAngles.value(id, QPointer<ScalarEntityAngle>());
 }
 
 /*!
@@ -1779,7 +1545,7 @@ ScalarEntityAngle* Function::getScalarEntityAngle(int id){
  * Returns the complete list of angles
  * \return
  */
-QList<ScalarEntityAngle*> Function::getScalarEntityAngles(){
+const QMap<int, QPointer<ScalarEntityAngle> > &Function::getScalarEntityAngles() const{
     return this->scalarEntityAngles;
 }
 
@@ -1788,24 +1554,25 @@ QList<ScalarEntityAngle*> Function::getScalarEntityAngles(){
  * \param o
  * \param position
  */
-void Function::addObservation(Observation *o, int position){
-    this->observations.append(o);
-    InputFeature feature;
-    feature.id = o->getId();
-    feature.typeOfElement = eObservationElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addObservation(const QPointer<Observation> &observation, const int &position){
+
+    //check the pointer
+    if(observation.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->observations.insert(observation->getId(), observation);
+
+    //create an input element
+    InputElement element;
+    element.id = observation->getId();
+    element.typeOfElement = eObservationElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1813,29 +1580,19 @@ void Function::addObservation(Observation *o, int position){
  * Remove the observation with the specified id from the list of observations (if present)
  * \param id
  */
-void Function::removeObservation(int id){
-    foreach(Observation *o, this->observations){
-        if(o->getId() == id){
-            this->observations.removeOne(o);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeObservation(const int &id){
+
+    //remove element from corresponding map
+    this->observations.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1844,13 +1601,8 @@ void Function::removeObservation(int id){
  * \param id
  * \return
  */
-Observation* Function::getObservation(int id){
-    foreach(Observation *o, this->observations){
-        if(o->getId() == id){
-            return o;
-        }
-    }
-    return NULL;
+QPointer<Observation> Function::getObservation(const int &id) const{
+    return observations.value(id, QPointer<Observation>());
 }
 
 /*!
@@ -1858,7 +1610,7 @@ Observation* Function::getObservation(int id){
  * Returns the complete list of observations
  * \return
  */
-QList<Observation*> Function::getObservations(){
+const QMap<int, QPointer<Observation> > &Function::getObservations() const{
     return this->observations;
 }
 
@@ -1867,24 +1619,25 @@ QList<Observation*> Function::getObservations(){
  * \param r
  * \param position
  */
-void Function::addReadingPolar(Reading *r, int position){
-    this->polarReadings.append(r);
-    InputFeature feature;
-    feature.id = r->id;
-    feature.typeOfElement = eReadingPolarElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addReadingPolar(const QPointer<Reading> &reading, const int &position){
+
+    //check the pointer
+    if(reading.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->polarReadings.insert(reading->getId(), reading);
+
+    //create an input element
+    InputElement element;
+    element.id = reading->getId();
+    element.typeOfElement = eReadingPolarElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1892,29 +1645,19 @@ void Function::addReadingPolar(Reading *r, int position){
  * Remove the polar reading with the specified id from the list of polar readings (if present)
  * \param id
  */
-void Function::removeReadingPolar(int id){
-    foreach(Reading *r, this->polarReadings){
-        if(r->id == id){
-            this->polarReadings.removeOne(r);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeReadingPolar(const int &id){
+
+    //remove element from corresponding map
+    this->polarReadings.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -1923,13 +1666,8 @@ void Function::removeReadingPolar(int id){
  * \param id
  * \return
  */
-Reading* Function::getReadingPolar(int id){
-    foreach(Reading *r, this->polarReadings){
-        if(r->id == id){
-            return r;
-        }
-    }
-    return NULL;
+QPointer<Reading> Function::getReadingPolar(const int &id) const{
+    return polarReadings.value(id, QPointer<Reading>());
 }
 
 /*!
@@ -1937,7 +1675,7 @@ Reading* Function::getReadingPolar(int id){
  * Returns the complete list of polar readings
  * \return
  */
-QList<Reading*> Function::getPolarReadings(){
+const QMap<int, QPointer<Reading> > &Function::getPolarReadings() const{
     return this->polarReadings;
 }
 
@@ -1946,24 +1684,25 @@ QList<Reading*> Function::getPolarReadings(){
  * \param r
  * \param position
  */
-void Function::addReadingDistance(Reading *r, int position){
-    this->distanceReadings.append(r);
-    InputFeature feature;
-    feature.id = r->id;
-    feature.typeOfElement = eReadingDistanceElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addReadingDistance(const QPointer<Reading> &reading, const int &position){
+
+    //check the pointer
+    if(reading.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->distanceReadings.insert(reading->getId(), reading);
+
+    //create an input element
+    InputElement element;
+    element.id = reading->getId();
+    element.typeOfElement = eReadingDistanceElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -1971,29 +1710,19 @@ void Function::addReadingDistance(Reading *r, int position){
  * Remove the distance reading with the specified id from the list of distance readings (if present)
  * \param id
  */
-void Function::removeReadingDistance(int id){
-    foreach(Reading *r, this->distanceReadings){
-        if(r->id == id){
-            this->distanceReadings.removeOne(r);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeReadingDistance(const int &id){
+
+    //remove element from corresponding map
+    this->distanceReadings.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -2002,13 +1731,8 @@ void Function::removeReadingDistance(int id){
  * \param id
  * \return
  */
-Reading* Function::getReadingDistance(int id){
-    foreach(Reading *r, this->distanceReadings){
-        if(r->id == id){
-            return r;
-        }
-    }
-    return NULL;
+QPointer<Reading> Function::getReadingDistance(const int &id) const{
+    return distanceReadings.value(id, QPointer<Reading>());
 }
 
 /*!
@@ -2016,7 +1740,7 @@ Reading* Function::getReadingDistance(int id){
  * Returns the complete list of distances readings
  * \return
  */
-QList<Reading*> Function::getDistanceReadings(){
+const QMap<int, QPointer<Reading> > &Function::getDistanceReadings() const{
     return this->distanceReadings;
 }
 
@@ -2025,24 +1749,25 @@ QList<Reading*> Function::getDistanceReadings(){
  * \param r
  * \param position
  */
-void Function::addReadingDirection(Reading *r, int position){
-    this->directionReadings.append(r);
-    InputFeature feature;
-    feature.id = r->id;
-    feature.typeOfElement = eReadingDirectionElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addReadingDirection(const QPointer<Reading> &reading, const int &position){
+
+    //check the pointer
+    if(reading.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->directionReadings.insert(reading->getId(), reading);
+
+    //create an input element
+    InputElement element;
+    element.id = reading->getId();
+    element.typeOfElement = eReadingDirectionElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -2050,29 +1775,19 @@ void Function::addReadingDirection(Reading *r, int position){
  * Remove the direction reading with the specified id from the list of direction readings (if present)
  * \param id
  */
-void Function::removeReadingDirection(int id){
-    foreach(Reading *r, this->directionReadings){
-        if(r->id == id){
-            this->directionReadings.removeOne(r);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeReadingDirection(const int &id){
+
+    //remove element from corresponding map
+    this->directionReadings.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -2081,13 +1796,8 @@ void Function::removeReadingDirection(int id){
  * \param id
  * \return
  */
-Reading* Function::getReadingDirection(int id){
-    foreach(Reading *r, this->directionReadings){
-        if(r->id == id){
-            return r;
-        }
-    }
-    return NULL;
+QPointer<Reading> Function::getReadingDirection(const int &id) const{
+    return directionReadings.value(id, QPointer<Reading>());
 }
 
 /*!
@@ -2095,7 +1805,7 @@ Reading* Function::getReadingDirection(int id){
  * Returns the complete list of direction readings
  * \return
  */
-QList<Reading*> Function::getDirectionReadings(){
+const QMap<int, QPointer<Reading> > &Function::getDirectionReadings() const{
     return this->directionReadings;
 }
 
@@ -2104,24 +1814,25 @@ QList<Reading*> Function::getDirectionReadings(){
  * \param r
  * \param position
  */
-void Function::addReadingCartesian(Reading *r, int position){
-    this->cartesianReadings.append(r);
-    InputFeature feature;
-    feature.id = r->id;
-    feature.typeOfElement = eReadingCartesianElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
+void Function::addReadingCartesian(const QPointer<Reading> &reading, const int &position){
+
+    //check the pointer
+    if(reading.isNull()){
+        return;
     }
+
+    //add the element to the corresponding map
+    this->cartesianReadings.insert(reading->getId(), reading);
+
+    //create an input element
+    InputElement element;
+    element.id = reading->getId();
+    element.typeOfElement = eReadingCartesianElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
 }
 
 /*!
@@ -2129,29 +1840,19 @@ void Function::addReadingCartesian(Reading *r, int position){
  * Remove the cartesian reading with the specified id from the list of cartesian readings (if present)
  * \param id
  */
-void Function::removeReadingCartesian(int id){
-    foreach(Reading *r, this->cartesianReadings){
-        if(r->id == id){
-            this->cartesianReadings.removeOne(r);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+void Function::removeReadingCartesian(const int &id){
+
+    //remove element from corresponding map
+    this->cartesianReadings.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
     }
+
 }
 
 /*!
@@ -2160,13 +1861,8 @@ void Function::removeReadingCartesian(int id){
  * \param id
  * \return
  */
-Reading* Function::getReadingCartesian(int id){
-    foreach(Reading *r, this->cartesianReadings){
-        if(r->id == id){
-            return r;
-        }
-    }
-    return NULL;
+QPointer<Reading> Function::getReadingCartesian(const int &id) const{
+    return cartesianReadings.value(id, QPointer<Reading>());
 }
 
 /*!
@@ -2174,8 +1870,70 @@ Reading* Function::getReadingCartesian(int id){
  * Returns the complete list of cartesian readings
  * \return
  */
-QList<Reading*> Function::getCartesianReadings(){
+const QMap<int, QPointer<Reading> > &Function::getCartesianReadings() const{
     return this->cartesianReadings;
+}
+
+/*!
+ * \brief addScalarEntityTemperature
+ * \param SET
+ * \param position
+ */
+void Function::addScalarEntityTemperature(const QPointer<ScalarEntityTemperature> &temperature, const int &position){
+
+    //check the pointer
+    if(temperature.isNull()){
+        return;
+    }
+
+    //add the element to the corresponding map
+    this->scalarEntityTemperatures.insert(temperature->getId(), temperature);
+
+    //create an input element
+    InputElement element;
+    element.id = temperature->getId();
+    element.typeOfElement = eScalarEntityTemperatureElement;
+    element.isUsed = true;
+
+    //add the input element to the feature order map so it is used for calculation
+    this->featureOrder.insert(position, element);
+
+}
+
+/*!
+ * \brief removeScalarEntityTemperature removes the scalar entity temperature with the specified id from the list of scalar entity temperatures (if present)
+ * \param id
+ */
+void Function::removeScalarEntityTemperature(const int &id){
+
+    //remove element from corresponding map
+    this->scalarEntityTemperatures.remove(id);
+
+    //remove element from feature order map
+    InputElement element;
+    element.id = id;
+    QList<int> keys = this->featureOrder.keys();
+    foreach(const int &key, keys){
+        this->featureOrder.remove(key, element);
+    }
+
+}
+
+/*!
+ * \brief getScalaeEntityTemperature returns the scalar entity temperature with the specified id (if present) or NULL
+ * \param id
+ * \return
+ */
+QPointer<ScalarEntityTemperature> Function::getScalarEntityTemperature(const int &id) const{
+    return scalarEntityTemperatures.value(id, QPointer<ScalarEntityTemperature>());
+}
+
+/*!
+ * \brief getScalarEntityTemperatures returns the complete list of scalar entity temperatures
+ * \return
+ */
+const QMap<int, QPointer<ScalarEntityTemperature> > &Function::getScalarEntityTemperatures() const{
+    return this->scalarEntityTemperatures;
 }
 
 /*!
@@ -2183,19 +1941,19 @@ QList<Reading*> Function::getCartesianReadings(){
  * \param r
  * \param position
  */
-void Function::addReading(Reading *r, int position){
-    switch(r->typeofReading){
+void Function::addReading(const QPointer<Reading> &reading, const int &position){
+    switch(reading->getTypeOfReading()){
     case eCartesianReading:
-        this->addReadingCartesian(r, position);
+        this->addReadingCartesian(reading, position);
         break;
     case ePolarReading:
-        this->addReadingPolar(r, position);
+        this->addReadingPolar(reading, position);
         break;
     case eDirectionReading:
-        this->addReadingDirection(r, position);
+        this->addReadingDirection(reading, position);
         break;
     case eDistanceReading:
-        this->addReadingDistance(r, position);
+        this->addReadingDistance(reading, position);
         break;
     }
 }
@@ -2205,7 +1963,7 @@ void Function::addReading(Reading *r, int position){
  * \param feature
  * \param position
  */
-void Function::addFeature(FeatureWrapper *feature, int position){
+void Function::addFeature(const QPointer<FeatureWrapper> &feature, const int &position){
     switch(feature->getFeatureTypeEnum()){
     case ePointFeature:
         this->addPoint(feature->getPoint(), position);
@@ -2267,90 +2025,11 @@ void Function::addFeature(FeatureWrapper *feature, int position){
 }
 
 /*!
- * \brief addScalarEntityTemperature
- * \param SET
- * \param position
- */
-void Function::addScalarEntityTemperature(ScalarEntityTemperature *SET, int position)
-{
-    this->scalarEntityTemperatures.append(SET);
-    InputFeature feature;
-    feature.id = SET->getId();
-    feature.typeOfElement = eScalarEntityTemperatureElement;
-    feature.isUsed = true;
-    if(this->featureOrder.contains(position)){
-        QMap<int, QList<InputFeature> >::iterator i = this->featureOrder.find(position);
-        if(i != this->featureOrder.end()){
-            QList<InputFeature> featurePosition = i.value();
-            featurePosition.append(feature);
-            this->featureOrder.insert(position, featurePosition);
-        }
-    }else{
-        QList<InputFeature> featurePosition;
-        featurePosition.append(feature);
-        this->featureOrder.insert(position, featurePosition);
-    }
-}
-
-/*!
- * \brief removeScalarEntityTemperature removes the scalar entity temperature with the specified id from the list of scalar entity temperatures (if present)
- * \param id
- */
-void Function::removeScalarEntityTemperature(int id)
-{
-    foreach(ScalarEntityTemperature *SET, this->scalarEntityTemperatures){
-        if(SET->getId() == id){
-            this->scalarEntityTemperatures.removeOne(SET);
-            for(int i = 0; i < this->getNeededElements().length(); i++){
-                if(this->featureOrder.contains(i)){
-                    QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
-                    if(idx != this->featureOrder.end()){
-                        QList<InputFeature> featurePosition = idx.value();
-                        for(int j = 0; j < featurePosition.size(); j++){
-                            if(featurePosition.at(j).id == id){
-                                featurePosition.removeAt(j);
-                                break;
-                            }
-                        }
-                        this->featureOrder.insert(i, featurePosition);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
-    }
-}
-
-/*!
- * \brief getScalaeEntityTemperature returns the scalar entity temperature with the specified id (if present) or NULL
- * \param id
- * \return
- */
-ScalarEntityTemperature *Function::getScalarEntityTemperature(int id)
-{
-    foreach(ScalarEntityTemperature *SET, this->scalarEntityTemperatures){
-        if(SET->getId() == id){
-            return SET;
-        }
-    }
-    return NULL;
-}
-
-/*!
- * \brief getScalarEntityTemperatures returns the complete list of scalar entity temperatures
- * \return
- */
-QList<ScalarEntityTemperature *> Function::getScalarEntityTemperatures()
-{
-    return this->scalarEntityTemperatures;
-}
-
-/*!
  * \brief clear
  * Reset function
  */
 void Function::clear(){
+
     //clear lists with used elements
     this->stations.clear();
     this->trafoParams.clear();
@@ -2366,10 +2045,13 @@ void Function::clear(){
     this->cartesianReadings.clear();
     this->directionReadings.clear();
     this->distanceReadings.clear();
+
     //clear map with feature order
     this->featureOrder.clear();
+
     //delete statistic
     this->myStatistic.isValid = false;
+
 }
 
 /*!
@@ -2377,43 +2059,46 @@ void Function::clear(){
  * Clear statistic of this function
  */
 void Function::clearResults(){
+/*
     //clear statistic
     Statistic emptyStatistic;
     this->myStatistic = emptyStatistic;
+
     //set all feature to not be used
-    QMap<int, QList<InputFeature> > newFeatureOrder;
-    QMapIterator<int, QList<InputFeature> > iterate(this->featureOrder);
+    QMap<int, QList<InputElement> > newFeatureOrder;
+    QMapIterator<int, QList<InputElement> > iterate(this->featureOrder);
     int k = 0;
     while(iterate.hasNext()){
         iterate.next();
-        QList<InputFeature> newValue;
-        QList<InputFeature> value = iterate.value();
+        QList<InputElement> newValue;
+        QList<InputElement> value = iterate.value();
         for(int i = 0; i < value.size(); i++){
-            InputFeature f = value.at(i);
+            InputElement f = value.at(i);
             f.isUsed = false;
             newValue.append(f);
         }
         newFeatureOrder.insert(k, newValue);
         k++;
     }
-    this->featureOrder = newFeatureOrder;
+    this->featureOrder = newFeatureOrder;*/
+
 }
 
 /*!
- * \brief GaussFit::setUseState
+ * \brief Function::setUseState
  * Set state of feature
  * \param id
  * \param state
  */
-void Function::setUseState(int id, bool state){
-    for(int i = 0; i < this->getNeededElements().size(); i++){
+void Function::setUseState(const int &id, bool state){
+    /*for(int i = 0; i < this->getNeededElements().size(); i++){
         if(this->featureOrder.contains(i)){
-            QMap<int, QList<InputFeature> >::iterator idx = this->featureOrder.find(i);
+            QMap<int, QList<InputElement> >::iterator idx = this->featureOrder.find(i);
             if(idx != this->featureOrder.end()){
-                QList<InputFeature> featurePosition = idx.value();
+                QList<InputElement> featurePosition = idx.value();
                 for(int j = 0; j < featurePosition.size(); j++){
                     if(featurePosition.at(j).id == id){
-                        InputFeature feature;
+                        InputElement feature;
                         feature.id = id;
                         feature.isUsed = state;
                         feature.typeOfElement = featurePosition.at(j).typeOfElement;
@@ -2426,7 +2111,7 @@ void Function::setUseState(int id, bool state){
                 break;
             }
         }
-    }
+    }*/
 }
 
 /*!
@@ -2452,7 +2137,7 @@ void Function::writeToConsole(QString message){
  * \param typeOfFeature
  * \param id
  */
-void Function::removeFeature(int id){
+void Function::removeFeature(const int &id){
     this->removePoint(id);
     this->removeLine(id);
     this->removePlane(id);

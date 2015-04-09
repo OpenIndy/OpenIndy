@@ -2,8 +2,8 @@
 #define FEATURE_H
 
 #include <QObject>
+#include <QPointer>
 #include <QList>
-#include <QMap>
 #include <QString>
 #include <QtXml>
 
@@ -13,51 +13,67 @@ class FeatureWrapper;
 class Function;
 
 /*!
- * \brief a feature describes all geometries or coordinate systems
+ * \brief The Feature class
  */
 class Feature : public Element
 {
     Q_OBJECT
+
 public:
     explicit Feature(QObject *parent = 0);
+
+    Feature(const Feature &copy, QObject *parent = 0);
+
+    Feature &operator=(const Feature &copy);
+
     virtual ~Feature();
 
-    QString getFeatureName() const;
-    bool setFeatureName(const QString &name);
+    //#############################
+    //get or set feature attributes
+    //#############################
 
-    QString getGroupName() const;
+    const QString &getFeatureName() const;
+    void setFeatureName(const QString &name);
+
+    const QString &getGroupName() const;
     void setGroupName(const QString &group);
 
-    QString getComment() const;
+    const QString &getComment() const;
     void setComment(const QString &comment);
 
-    bool getIsUpdated() const;
+    const bool &getIsUpdated() const;
     void setIsUpdated(const bool &isUpdated);
 
-    bool getIsSolved() const;
+    const bool &getIsSolved() const;
     void setIsSolved(const bool &isSolved);
 
     //Configuration::eColor getDisplayColor() const;
     //void setDisplayColor(Configuration::eColor displayColor);
 
-    bool getIsDrawn() const;
+    const bool &getIsDrawn() const;
     void setIsDrawn(const bool &isDrawn);
 
-    const QList<Function *> getFunctions() const;
-    void addFunction(Function *f);
-    bool removeFunction(int index);
+    const QList<QPointer<Function> > &getFunctions() const;
+    void addFunction(const QPointer<Function> &function);
+    bool removeFunction(const int &index);
 
-    bool getIsActiveFeature() const;
+    const bool &getIsActiveFeature() const;
     void setActiveFeatureState(const bool &isActiveFeature);
 
-    QList<FeatureWrapper*> usedFor; //features which need this feature to recalc
-    QList<FeatureWrapper*> previouslyNeeded; //features which are needed to recalc this feature
+    //###########################
+    //reexecute the function list
+    //###########################
 
-    virtual void recalc() = 0;
+    virtual void recalc();
+
+    //#################
+    //save and load XML
+    //#################
 
     virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     virtual bool fromOpenIndyXML(QDomElement &xmlElem);
 
+/*
     virtual QString getDisplayX(bool showDiff) const;
     virtual QString getDisplayY(bool showDiff) const;
     virtual QString getDisplayZ(bool showDiff) const;
@@ -90,9 +106,14 @@ public:
     virtual QString getDisplayTime() const;
     virtual QString getDisplayExpansionOriginX() const;
     virtual QString getDisplayExpansionOriginY() const;
-    virtual QString getDisplayExpansionOriginZ() const;
+    virtual QString getDisplayExpansionOriginZ() const;*/
 
 signals:
+
+    //#######################################
+    //signals to inform about feature changes
+    //#######################################
+
     void featureNameChanged(const int &featureId, const QString &oldName);
     void featureGroupChanged(const int &featureId, const QString &oldGroup);
     void featureCommentChanged(const int &featureId);
@@ -107,13 +128,21 @@ signals:
     void featureAboutToBeDeleted(const int &featureId);
 
 protected:
+
+    //##################
+    //feature attributes
+    //##################
+
     QString name;
     QString group;
     QString comment;
     bool isUpdated;
     bool isSolved;
     bool isActiveFeature;
-    QList<Function*> functionList;
+    QList< QPointer<Function> > functionList;
+
+    QList< QPointer<FeatureWrapper> > usedFor; //features which need this feature to recalc
+    QList< QPointer<FeatureWrapper> > previouslyNeeded; //features which are needed to recalc this feature
 
     //Configuration::eColor displayColor;
     bool isDrawn;

@@ -51,7 +51,8 @@ public:
         return OiVec::mult((1.0 / value), v);
     }
 
-    OiVec normalize() const;
+    void normalize();
+
     OiMat t() const;
 
     static void cross(OiVec &result, const OiVec &a, const OiVec &b);

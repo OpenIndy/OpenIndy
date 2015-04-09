@@ -1,5 +1,5 @@
 #include "nurbs.h"
-
+/*
 #include "function.h"
 
 MeasurementConfig Nurbs::defaultMeasurementConfig;
@@ -13,10 +13,6 @@ Nurbs::Nurbs(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
     this->isDrawn = true;
 }
 
-/*!
- * \brief Nurbs::Nurbs
- * \param copy
- */
 Nurbs::Nurbs(const Nurbs &copy) : Geometry(copy.isNominal){
     this->id = copy.id;
     this->name = copy.name;
@@ -43,6 +39,84 @@ void Nurbs::recalc(){
         this->setIsSolved(false);
 
     }
+}
+
+QDomElement Nurbs::toOpenIndyXML(QDomDocument &xmlDoc) const{
+
+    QDomElement nurbs = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(nurbs.isNull()){
+        return nurbs;
+    }
+
+    nurbs.setAttribute("type", getGeometryTypeName(eNurbsGeometry));
+
+    return nurbs;
+
+}
+
+bool Nurbs::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+
+
+    }
+
+    return result;
+
+}
+
+bool Nurbs::saveSimulationData()
+{
+    return false;
+}
+*/
+
+
+/*!
+ * \brief Nurbs::Nurbs
+ * \param isNominal
+ * \param parent
+ */
+Nurbs::Nurbs(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
+
+}
+
+/*!
+ * \brief Nurbs::Nurbs
+ * \param copy
+ * \param parent
+ */
+Nurbs::Nurbs(const Nurbs &copy, QObject *parent) : Geometry(copy, parent){
+
+}
+
+/*!
+ * \brief Nurbs::operator =
+ * \param copy
+ * \return
+ */
+Nurbs &Nurbs::operator=(const Nurbs &copy){
+    return *this;
+}
+
+/*!
+ * \brief Nurbs::~Nurbs
+ */
+Nurbs::~Nurbs(){
+
+}
+
+/*!
+ * \brief Nurbs::recalc
+ */
+void Nurbs::recalc(){
+
+    Geometry::recalc();
+
 }
 
 /*!
@@ -81,9 +155,4 @@ bool Nurbs::fromOpenIndyXML(QDomElement &xmlElem){
 
     return result;
 
-}
-
-bool Nurbs::saveSimulationData()
-{
-    return false;
 }

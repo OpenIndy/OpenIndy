@@ -6,12 +6,12 @@
 #include "function.h"
 
 
-Observation::Observation(Reading *r, Station *s, bool isActiveCoordSys) :
+/*Observation::Observation(Reading *r, Station *s, bool isActiveCoordSys) :
     myReading(r), myStation(s), myXyz(4), myOriginalXyz(4), sigmaXyz(4), isActiveCoordSys(isActiveCoordSys)
 {
     //this->id = Configuration::generateID();
     if(r != NULL){
-        r->obs = this;
+        r->observation = this;
     }
     //use all observations on default
     this->isUsed = true;
@@ -22,7 +22,7 @@ Observation::Observation(Reading *r, Station *s, bool isActiveCoordSys) :
     //initialize matrices
     myStatistic.qxx = OiMat(4,4);
     myOriginalStatistic.qxx = OiMat(4,4);
-}
+}*/
 
 Observation::Observation() :
     myReading(NULL), myStation(NULL), myXyz(4), myOriginalXyz(4), sigmaXyz(4)
@@ -48,6 +48,130 @@ Observation::~Observation(){
         }
     }
 
+}
+
+/*!
+ * \brief Observation::getXYZ
+ * \return
+ */
+const OiVec &Observation::getXYZ() const{
+    return this->myXyz;
+}
+
+/*!
+ * \brief Observation::getOriginalXYZ
+ * \return
+ */
+const OiVec &Observation::getOriginalXYZ() const{
+    return this->myOriginalXyz;
+}
+
+/*!
+ * \brief Observation::getStatistic
+ * \return
+ */
+const Statistic &Observation::getStatistic() const{
+    return this->myStatistic;
+}
+
+/*!
+ * \brief Observation::getOriginalStatistic
+ * \return
+ */
+const Statistic &Observation::getOriginalStatistic() const{
+    return this->myOriginalStatistic;
+}
+
+/*!
+ * \brief Observation::getSigmaXYZ
+ * \return
+ */
+const OiVec &Observation::getSigmaXYZ() const{
+    return this->sigmaXyz;
+}
+
+/*!
+ * \brief Observation::getStation
+ * \return
+ */
+const QPointer<Station> &Observation::getStation() const{
+    return this->myStation;
+}
+
+/*!
+ * \brief Observation::setStation
+ * \param station
+ */
+void Observation::setStation(const QPointer<Station> &station){
+    if(!station.isNull()){
+        this->myStation = station;
+    }
+}
+
+/*!
+ * \brief Observation::getTargetGeometries
+ * \return
+ */
+const QList<QPointer<Geometry> > &Observation::getTargetGeometries() const{
+    return this->myTargetGeometries;
+}
+
+/*!
+ * \brief Observation::addTargetGeometry
+ * \param targetGeometry
+ */
+void Observation::addTargetGeometry(const QPointer<Geometry> &targetGeometry){
+    if(!targetGeometry.isNull()){
+        this->myTargetGeometries.append(targetGeometry);
+    }
+}
+
+/*!
+ * \brief Observation::removeTargetGeometry
+ * \param targetGeometry
+ */
+void Observation::removeTargetGeometry(const QPointer<Geometry> &targetGeometry){
+
+    if(targetGeometry.isNull()){
+        return;
+    }
+
+    if(this->myTargetGeometries.contains(targetGeometry)){
+        this->myTargetGeometries.removeOne(targetGeometry);
+    }
+
+}
+
+/*!
+ * \brief Observation::removeTargetGeometry
+ * \param geomId
+ */
+void Observation::removeTargetGeometry(const int &geomId){
+
+    foreach(const QPointer<Geometry> &geom, this->myTargetGeometries){
+        if(!geom.isNull() && geom->getId() == geomId){
+            this->myTargetGeometries.removeOne(geom);
+        }
+    }
+
+}
+
+/*!
+ * \brief Observation::getReading
+ * \return
+ */
+const QPointer<Reading> &Observation::getReading() const{
+    return this->myReading;
+}
+
+/*!
+ * \brief Observation::setReading
+ * \param reading
+ */
+void Observation::setReading(const QPointer<Reading> &reading){
+    if(!reading.isNull()){
+        this->myReading = reading;
+    }
 }
 
 /*!
@@ -140,16 +264,16 @@ bool Observation::fromOpenIndyXML(QDomElement &xmlElem){
         if(reading.isNull()){
             return false;
         }
-        Reading *myReading = new Reading();
+        QPointer<Reading> myReading = new Reading();
         this->myReading = myReading;
-        myReading->obs = this;
+        myReading->setObservation(this);
         result = myReading->fromOpenIndyXML(reading);
 
         //get original xyz from reading
         this->myReading->toCartesian();
-        this->myOriginalXyz.setAt(0, this->myReading->rCartesian.xyz.getAt(0));
-        this->myOriginalXyz.setAt(1, this->myReading->rCartesian.xyz.getAt(1));
-        this->myOriginalXyz.setAt(2, this->myReading->rCartesian.xyz.getAt(2));
+        this->myOriginalXyz.setAt(0, this->myReading->getCartesianReading().xyz.getAt(0));
+        this->myOriginalXyz.setAt(1, this->myReading->getCartesianReading().xyz.getAt(1));
+        this->myOriginalXyz.setAt(2, this->myReading->getCartesianReading().xyz.getAt(2));
         this->myOriginalXyz.setAt(3, 1.0);
 
     }
@@ -161,19 +285,20 @@ bool Observation::fromOpenIndyXML(QDomElement &xmlElem){
 /*!
  * \brief calcFromReading calculates the observation depending on its reading
  */
-void Observation::calcFromReading()
-{
-    Reading *r;
-    r = this->myReading;
+void Observation::calcFromReading(){
 
-    switch (this->myReading->typeofReading) {
+    if(this->myReading.isNull()){
+        return;
+    }
+
+    switch (this->myReading->getTypeOfReading()) {
     case ePolarReading:
         //calc obs xyz
-        this->myOriginalXyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
-        this->myXyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
+        this->myOriginalXyz = Reading::toCartesian(this->myReading->getPolarReading().azimuth,this->myReading->getPolarReading().zenith,this->myReading->getPolarReading().distance);
+        this->myXyz = Reading::toCartesian(this->myReading->getPolarReading().azimuth,this->myReading->getPolarReading().zenith,this->myReading->getPolarReading().distance);
 
         //calc sigma xyz
-        this->sigmaXyz = r->errorPropagationPolarToCart();
+        //this->sigmaXyz = r->errorPropagationPolarToCartesian();
 
         //created from reading polar
         this->setIsValid(true);
@@ -184,13 +309,13 @@ void Observation::calcFromReading()
         break;
     case eCartesianReading:
         //calc xyz
-        this->myOriginalXyz.setAt(0,r->rCartesian.xyz.getAt(0));
-        this->myOriginalXyz.setAt(1,r->rCartesian.xyz.getAt(1));
-        this->myOriginalXyz.setAt(2,r->rCartesian.xyz.getAt(2));
+        this->myOriginalXyz.setAt(0,this->myReading->getCartesianReading().xyz.getAt(0));
+        this->myOriginalXyz.setAt(1,this->myReading->getCartesianReading().xyz.getAt(1));
+        this->myOriginalXyz.setAt(2,this->myReading->getCartesianReading().xyz.getAt(2));
         this->myOriginalXyz.setAt(3,1.0);
-        this->myXyz.setAt(0,r->rCartesian.xyz.getAt(0));
-        this->myXyz.setAt(1,r->rCartesian.xyz.getAt(1));
-        this->myXyz.setAt(2,r->rCartesian.xyz.getAt(2));
+        this->myXyz.setAt(0,this->myReading->getCartesianReading().xyz.getAt(0));
+        this->myXyz.setAt(1,this->myReading->getCartesianReading().xyz.getAt(1));
+        this->myXyz.setAt(2,this->myReading->getCartesianReading().xyz.getAt(2));
         this->myXyz.setAt(3,1.0);
 
         //created from reading cartesian
@@ -263,7 +388,7 @@ void Observation::setIsValid(const bool &isValid)
  * \brief getIsValid returns if the observation is valid
  * \return
  */
-bool Observation::getIsValid()
+bool Observation::getIsValid() const
 {
     return this->isValid;
 }
@@ -281,7 +406,7 @@ void Observation::setIsSolved(const bool &isSolved)
  * \brief getIsSolved
  * \return
  */
-bool Observation::getIsSolved()
+bool Observation::getIsSolved() const
 {
     return this->isSolved;
 }
@@ -299,7 +424,7 @@ void Observation::setIsUsed(const bool &use)
  * \brief getIsUsed
  * \return
  */
-bool Observation::getIsUsed()
+bool Observation::getIsUsed() const
 {
     return this->isUsed;
 }

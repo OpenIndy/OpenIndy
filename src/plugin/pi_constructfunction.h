@@ -14,9 +14,9 @@ class ConstructFunction : public Function
 public:
     virtual ~ConstructFunction(){}
 
-    virtual QList<InputParams> getNeededElements() const = 0;
+    virtual QList<NeededElement> getNeededElements() const = 0;
     virtual QList<FeatureTypes> applicableFor() const = 0;
-    virtual PluginMetaData* getMetaData() const = 0;
+    virtual PluginMetaData getMetaData() const = 0;
 };
 
 #define ConstructFunction_iidd "de.openIndy.Plugin.Function.ConstructFunction.v001"

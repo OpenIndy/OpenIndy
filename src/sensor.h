@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QVariant>
 #include <QPair>
+#include <QObject>
 
 #include "sensorcontrol.h"
 #include "oisensoremitter.h"
@@ -26,8 +27,10 @@ class SensorControl;
  * Enumeration.
  *
  */
-class Sensor
+class Sensor : public QObject
 {
+    Q_OBJECT
+
 public:
 //constructor
     virtual ~Sensor(){}

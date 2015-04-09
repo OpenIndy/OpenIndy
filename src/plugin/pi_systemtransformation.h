@@ -15,7 +15,7 @@ class SystemTransformation : public Function
 public:
     virtual ~SystemTransformation(){}
 
-    virtual QList<InputParams> getNeededElements() const = 0;
+    virtual QList<NeededElement> getNeededElements() const = 0;
 
     /*!
      * \brief applicableFor
@@ -28,7 +28,7 @@ public:
         return result;
     }
 
-    virtual PluginMetaData* getMetaData() const = 0;
+    virtual PluginMetaData getMetaData() const = 0;
 
     QList<Station> stations_startSystem;
     QList<CoordinateSystem> coordSystems_startSystem;

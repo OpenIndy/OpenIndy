@@ -70,13 +70,12 @@ SOURCES += \
     models/featuretablemodel.cpp \
     models/featuretableproxymodel.cpp \
     src/geometry/circle.cpp \
-    src/geometry/cone.cpp \
-    src/geometry/cylinder.cpp \
     src/geometry/ellipsoid.cpp \
     src/geometry/hyperboloid.cpp \
     src/geometry/line.cpp \
     src/geometry/nurbs.cpp \
-    src/geometry/paraboloid.cpp \
+    src/geometry/ellipse.cpp \
+    src/geometry/slottedhole.cpp \
     src/geometry/plane.cpp \
     src/geometry/point.cpp \
     src/geometry/pointcloud.cpp \
@@ -102,7 +101,6 @@ SOURCES += \
     src/feature.cpp \
     src/featurewrapper.cpp \
     src/function.cpp \
-    src/functionconfiguration.cpp \
     src/geometry.cpp \
     src/measurementconfig.cpp \
     src/observation.cpp \
@@ -121,7 +119,14 @@ SOURCES += \
     ui/main.cpp \
     ui/mainwindow.cpp \
     ui/delegates/featureoverviewdelegate.cpp \
-    ui/delegates/trafoparamdelegate.cpp
+    ui/delegates/trafoparamdelegate.cpp \
+    src/direction.cpp \
+    src/position.cpp \
+    src/radius.cpp \
+    src/geometry/cone.cpp \
+    src/geometry/cylinder.cpp \
+    src/geometry/paraboloid.cpp \
+    src/geometry/torus.cpp
 
 HEADERS  += \
     controller/console.h \
@@ -134,13 +139,12 @@ HEADERS  += \
     models/featuretablemodel.h \
     models/featuretableproxymodel.h \
     src/geometry/circle.h \
-    src/geometry/cone.h \
-    src/geometry/cylinder.h \
     src/geometry/ellipsoid.h \
     src/geometry/hyperboloid.h \
     src/geometry/line.h \
     src/geometry/nurbs.h \
-    src/geometry/paraboloid.h \
+    src/geometry/ellipse.h \
+    src/geometry/slottedhole.h \
     src/geometry/plane.h \
     src/geometry/point.h \
     src/geometry/pointcloud.h \
@@ -182,7 +186,6 @@ HEADERS  += \
     src/feature.h \
     src/featurewrapper.h \
     src/function.h \
-    src/functionconfiguration.h \
     src/geometry.h \
     src/measurementconfig.h \
     src/observation.h \
@@ -201,7 +204,14 @@ HEADERS  += \
     ui/createfeaturedialog.h \
     ui/mainwindow.h \
     ui/delegates/featureoverviewdelegate.h \
-    ui/delegates/trafoparamdelegate.h
+    ui/delegates/trafoparamdelegate.h \
+    src/direction.h \
+    src/position.h \
+    src/radius.h \
+    src/geometry/cone.h \
+    src/geometry/cylinder.h \
+    src/geometry/paraboloid.h \
+    src/geometry/torus.h
 
 FORMS    += \
     ui/createfeaturedialog.ui \

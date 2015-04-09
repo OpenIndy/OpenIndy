@@ -7,6 +7,7 @@ PluginMetaData::PluginMetaData(QObject *parent) :
 
 }
 
+/*
 void PluginMetaData::emitSendMe(){
     emit sendMe(this);
-}
+}*/

@@ -1,38 +1,18 @@
 #include "featurewrapper.h"
 
-FeatureWrapper::FeatureWrapper(QObject *parent) : QObject(parent)
-{
-    this->myFeature = NULL;
-    this->myGeometry = NULL;
-
-    this->myCoordinateSystem = NULL;
-    this->myTrafoParam = NULL;
-
-    this->myStation = NULL;
-
-    this->myPoint = NULL;
-    this->myLine = NULL;
-    this->myPlane = NULL;
-    this->mySphere = NULL;
-    this->myCircle = NULL;
-    this->myCone = NULL;
-    this->myCylinder = NULL;
-    this->myEllipsoid = NULL;
-    this->myHyperboloid = NULL;
-    this->myParaboloid = NULL;
-    this->myNurbs = NULL;
-    this->myPointCloud = NULL;
-    this->myScalarEntityAngle = NULL;
-    this->myScalarEntityDistance = NULL;
-    this->myScalarEntityMeasurementSeries = NULL;
-    this->myScalarEntityTemperature = NULL;
+/*!
+ * \brief FeatureWrapper::FeatureWrapper
+ * \param parent
+ */
+FeatureWrapper::FeatureWrapper(QObject *parent) : QObject(parent){
+    this->typeOfFeature = eUndefinedFeature;
 }
 
 /*!
  * \brief FeatureWrapper::getFeatureTypeEnum
  * \return
  */
-FeatureTypes FeatureWrapper::getFeatureTypeEnum() const{
+const FeatureTypes &FeatureWrapper::getFeatureTypeEnum() const{
     return this->typeOfFeature;
 }
 
@@ -40,7 +20,7 @@ FeatureTypes FeatureWrapper::getFeatureTypeEnum() const{
  * \brief FeatureWrapper::getFeature
  * \return
  */
-QPointer<Feature> FeatureWrapper::getFeature() const{
+const QPointer<Feature> &FeatureWrapper::getFeature() const{
     return this->myFeature;
 }
 
@@ -48,7 +28,7 @@ QPointer<Feature> FeatureWrapper::getFeature() const{
  * \brief FeatureWrapper::getGeometry
  * \return
  */
-QPointer<Geometry> FeatureWrapper::getGeometry() const{
+const QPointer<Geometry> &FeatureWrapper::getGeometry() const{
     return this->myGeometry;
 }
 
@@ -56,7 +36,7 @@ QPointer<Geometry> FeatureWrapper::getGeometry() const{
  * \brief FeatureWrapper::getCoordinateSystem
  * \return
  */
-QPointer<CoordinateSystem> FeatureWrapper::getCoordinateSystem() const{
+const QPointer<CoordinateSystem> &FeatureWrapper::getCoordinateSystem() const{
     return this->myCoordinateSystem;
 }
 
@@ -64,7 +44,7 @@ QPointer<CoordinateSystem> FeatureWrapper::getCoordinateSystem() const{
  * \brief FeatureWrapper::getTrafoParam
  * \return
  */
-QPointer<TrafoParam> FeatureWrapper::getTrafoParam() const{
+const QPointer<TrafoParam> &FeatureWrapper::getTrafoParam() const{
     return this->myTrafoParam;
 }
 
@@ -72,7 +52,7 @@ QPointer<TrafoParam> FeatureWrapper::getTrafoParam() const{
  * \brief FeatureWrapper::getStation
  * \return
  */
-QPointer<Station> FeatureWrapper::getStation() const{
+const QPointer<Station> &FeatureWrapper::getStation() const{
     return this->myStation;
 }
 
@@ -80,7 +60,7 @@ QPointer<Station> FeatureWrapper::getStation() const{
  * \brief FeatureWrapper::getPoint
  * \return
  */
-QPointer<Point> FeatureWrapper::getPoint() const{
+const QPointer<Point> &FeatureWrapper::getPoint() const{
     return this->myPoint;
 }
 
@@ -88,7 +68,7 @@ QPointer<Point> FeatureWrapper::getPoint() const{
  * \brief FeatureWrapper::getLine
  * \return
  */
-QPointer<Line> FeatureWrapper::getLine() const{
+const QPointer<Line> &FeatureWrapper::getLine() const{
     return this->myLine;
 }
 
@@ -96,7 +76,7 @@ QPointer<Line> FeatureWrapper::getLine() const{
  * \brief FeatureWrapper::getPlane
  * \return
  */
-QPointer<Plane> FeatureWrapper::getPlane() const{
+const QPointer<Plane> &FeatureWrapper::getPlane() const{
     return this->myPlane;
 }
 
@@ -104,7 +84,7 @@ QPointer<Plane> FeatureWrapper::getPlane() const{
  * \brief FeatureWrapper::getSphere
  * \return
  */
-QPointer<Sphere> FeatureWrapper::getSphere() const{
+const QPointer<Sphere> &FeatureWrapper::getSphere() const{
     return this->mySphere;
 }
 
@@ -112,7 +92,7 @@ QPointer<Sphere> FeatureWrapper::getSphere() const{
  * \brief FeatureWrapper::getCircle
  * \return
  */
-QPointer<Circle> FeatureWrapper::getCircle() const{
+const QPointer<Circle> &FeatureWrapper::getCircle() const{
     return this->myCircle;
 }
 
@@ -120,7 +100,7 @@ QPointer<Circle> FeatureWrapper::getCircle() const{
  * \brief FeatureWrapper::getCone
  * \return
  */
-QPointer<Cone> FeatureWrapper::getCone() const{
+const QPointer<Cone> &FeatureWrapper::getCone() const{
     return this->myCone;
 }
 
@@ -128,7 +108,7 @@ QPointer<Cone> FeatureWrapper::getCone() const{
  * \brief FeatureWrapper::getCylinder
  * \return
  */
-QPointer<Cylinder> FeatureWrapper::getCylinder() const{
+const QPointer<Cylinder> &FeatureWrapper::getCylinder() const{
     return this->myCylinder;
 }
 
@@ -136,7 +116,7 @@ QPointer<Cylinder> FeatureWrapper::getCylinder() const{
  * \brief FeatureWrapper::getEllipsoid
  * \return
  */
-QPointer<Ellipsoid> FeatureWrapper::getEllipsoid() const{
+const QPointer<Ellipsoid> &FeatureWrapper::getEllipsoid() const{
     return this->myEllipsoid;
 }
 
@@ -144,7 +124,7 @@ QPointer<Ellipsoid> FeatureWrapper::getEllipsoid() const{
  * \brief FeatureWrapper::getHyperboloid
  * \return
  */
-QPointer<Hyperboloid> FeatureWrapper::getHyperboloid() const{
+const QPointer<Hyperboloid> &FeatureWrapper::getHyperboloid() const{
     return this->myHyperboloid;
 }
 
@@ -152,7 +132,7 @@ QPointer<Hyperboloid> FeatureWrapper::getHyperboloid() const{
  * \brief FeatureWrapper::getParaboloid
  * \return
  */
-QPointer<Paraboloid> FeatureWrapper::getParaboloid() const{
+const QPointer<Paraboloid> &FeatureWrapper::getParaboloid() const{
     return this->myParaboloid;
 }
 
@@ -160,7 +140,7 @@ QPointer<Paraboloid> FeatureWrapper::getParaboloid() const{
  * \brief FeatureWrapper::getPointCloud
  * \return
  */
-QPointer<PointCloud> FeatureWrapper::getPointCloud() const{
+const QPointer<PointCloud> &FeatureWrapper::getPointCloud() const{
     return this->myPointCloud;
 }
 
@@ -168,7 +148,7 @@ QPointer<PointCloud> FeatureWrapper::getPointCloud() const{
  * \brief FeatureWrapper::getNurbs
  * \return
  */
-QPointer<Nurbs> FeatureWrapper::getNurbs() const{
+const QPointer<Nurbs> &FeatureWrapper::getNurbs() const{
     return this->myNurbs;
 }
 
@@ -176,7 +156,7 @@ QPointer<Nurbs> FeatureWrapper::getNurbs() const{
  * \brief FeatureWrapper::getScalarEntityAngle
  * \return
  */
-QPointer<ScalarEntityAngle> FeatureWrapper::getScalarEntityAngle() const{
+const QPointer<ScalarEntityAngle> &FeatureWrapper::getScalarEntityAngle() const{
     return this->myScalarEntityAngle;
 }
 
@@ -184,7 +164,7 @@ QPointer<ScalarEntityAngle> FeatureWrapper::getScalarEntityAngle() const{
  * \brief FeatureWrapper::getScalarEntityDistance
  * \return
  */
-QPointer<ScalarEntityDistance> FeatureWrapper::getScalarEntityDistance() const{
+const QPointer<ScalarEntityDistance> &FeatureWrapper::getScalarEntityDistance() const{
     return this->myScalarEntityDistance;
 }
 
@@ -192,7 +172,7 @@ QPointer<ScalarEntityDistance> FeatureWrapper::getScalarEntityDistance() const{
  * \brief FeatureWrapper::getScalarEntityTemperature
  * \return
  */
-QPointer<ScalarEntityTemperature> FeatureWrapper::getScalarEntityTemperature() const{
+const QPointer<ScalarEntityTemperature> &FeatureWrapper::getScalarEntityTemperature() const{
     return this->myScalarEntityTemperature;
 }
 
@@ -200,7 +180,7 @@ QPointer<ScalarEntityTemperature> FeatureWrapper::getScalarEntityTemperature() c
  * \brief FeatureWrapper::getScalarEntityMeasurementSeries
  * \return
  */
-QPointer<ScalarEntityMeasurementSeries> FeatureWrapper::getScalarEntityMeasurementSeries() const{
+const QPointer<ScalarEntityMeasurementSeries> &FeatureWrapper::getScalarEntityMeasurementSeries() const{
     return this->myScalarEntityMeasurementSeries;
 }
 

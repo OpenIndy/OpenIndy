@@ -444,7 +444,7 @@ OiMat OiMat::getRotationMatrix(double angle, OiVec axis){
     if(axis.getSize() == 3){
         OiMat result(3, 3);
 
-        axis = axis.normalize();
+        axis.normalize();
 
         double w = qCos(angle / 2.0);
         OiVec x = qSin(angle / 2.0) * axis;

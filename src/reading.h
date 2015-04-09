@@ -4,7 +4,9 @@
 #include <QDateTime>
 #include <QtCore/qmath.h>
 #include <QtXml>
+#include <QPointer>
 
+#include "element.h"
 #include "measurementconfig.h"
 #include "oivec.h"
 #include "types.h"
@@ -13,12 +15,12 @@
 class Sensor;
 class Observation;
 
-/*!
- * \brief The Reading class
- * Father class of all specific reading types.
- */
+//###########################
+//definition of reading types
+//###########################
 
-struct sReadingPolar{
+class ReadingPolar{
+public:
     double azimuth;
     double zenith;
     double distance;
@@ -28,7 +30,8 @@ struct sReadingPolar{
     bool isValid;
 };
 
-struct sReadingDirection{
+class ReadingDirection{
+public:
     double azimuth;
     double zenith;
     double sigmaAzimuth;
@@ -36,31 +39,36 @@ struct sReadingDirection{
     bool isValid;
 };
 
-struct sReadingDistance{
+class ReadingDistance{
+public:
     double distance;
     double sigmaDistance;
     bool isValid;
 };
 
-struct sReadingCartesian{
+class ReadingCartesian{
+public:
     OiVec xyz;
     OiVec sigmaXyz;
     bool isValid;
 };
 
-struct sReadingTemperature{
+class ReadingTemperature{
+public:
     double tempDeg;
     double sigmaTempDeg;
     bool isValid;
 };
 
-struct sReadingUndefined{
+class ReadingUndefined{
+public:
     QMap<QString,double> values;
     QMap<QString,double> sigmaValues;
     bool isValid;
 };
 
-struct sReadingLevel{
+class ReadingLevel{
+public:
     double RX;
     double RY;
     double RZ;
@@ -70,56 +78,114 @@ struct sReadingLevel{
     bool isValid;
 };
 
-class Reading
+/*!
+ * \brief The Reading class
+ */
+class Reading : public Element
 {
 public:
     Reading();
     ~Reading();
 
-    int id;
-    ReadingTypes typeofReading;
-    QDateTime measuredAt;
-    Sensor *instrument;
-    Observation *obs;
+    //###########################
+    //get reading type and values
+    //###########################
 
-    sReadingPolar rPolar;
-    sReadingCartesian rCartesian;
-    sReadingDirection rDirection;
-    sReadingDistance rDistance;
-    sReadingTemperature rTemperature;
-    sReadingUndefined rUndefined;
-    sReadingLevel rLevel;
+    const ReadingTypes &getTypeOfReading() const;
 
-    const MeasurementConfig &getMeasurementConfig();
-    void setMeasurementConfig(const MeasurementConfig &mConfig);
+    const ReadingPolar &getPolarReading() const;
+    const ReadingCartesian &getCartesianReading() const;
+    const ReadingDirection &getDirectionReading() const;
+    const ReadingDistance &getDistanceReading() const;
+    const ReadingTemperature &getTemperatureReading() const;
+    const ReadingLevel &getLevelReading() const;
+    const ReadingUndefined &getUndefinedReading() const;
 
-    SensorFaces face;  //shows in which sight it was measured
-
-    void toCartesian();
-    static OiVec toCartesian(double, double, double);
-    void toPolar();
-    static OiVec toPolar(double, double, double);
+    //################################
+    //make and restore reading backups
+    //################################
 
     void makeBackup();
     void restoreBackup();
 
-    //error propagation
-    OiVec errorPropagationPolarToCart();
+    //############################################
+    //convert between polar and cartesian readings
+    //############################################
+
+    bool toCartesian();
+    bool toPolar();
+
+    static OiVec toCartesian(const double &azimuth, const double &zenith, const double &distance);
+    static OiVec toPolar(const double &x, const double &y, const double &z);
+
+    OiVec errorPropagationPolarToCartesian();
+
+    //#########################################
+    //get general information about the reading
+    //#########################################
+
+    const MeasurementConfig &getMeasurementConfig();
+    void setMeasurementConfig(const MeasurementConfig &mConfig);
+
+    //#################################################
+    //get and set references to sensor and observations
+    //#################################################
+
+    const QPointer<Sensor> &getSensor() const;
+    void setSensor(const QPointer<Sensor> &sensor);
+    const QPointer<Observation> &getObservation() const;
+    void setObservation(const QPointer<Observation> &observation);
+
+    //#################
+    //save and load XML
+    //#################
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
 private:
-    //save backup readings while calculating a simulation (reading are randomly shuffled)
-    sReadingPolar backupPolar;
-    sReadingCartesian backupCartesian;
-    sReadingDirection backupDirection;
-    sReadingDistance backupDistance;
-    sReadingTemperature backupTemperature;
-    sReadingUndefined backupUndefined;
-    sReadingLevel backupLevel;
 
-    MeasurementConfig myMeasurementConfig; //the configuration that the sensor used to produce this reading
+    //#######################
+    //reading type and values
+    //#######################
+
+    ReadingTypes typeOfReading;
+
+    ReadingPolar rPolar;
+    ReadingCartesian rCartesian;
+    ReadingDirection rDirection;
+    ReadingDistance rDistance;
+    ReadingTemperature rTemperature;
+    ReadingLevel rLevel;
+    ReadingUndefined rUndefined;
+
+    //###################################
+    //backup readings used for simulation
+    //###################################
+
+    ReadingPolar backupPolar;
+    ReadingCartesian backupCartesian;
+    ReadingDirection backupDirection;
+    ReadingDistance backupDistance;
+    ReadingTemperature backupTemperature;
+    ReadingLevel backupLevel;
+    ReadingUndefined backupUndefined;
+
+    //##########################
+    //general reading attributes
+    //##########################
+
+    QDateTime measuredAt;
+    MeasurementConfig mConfig; //the configuration that the sensor used to produce this reading
+    SensorFaces face;
+
+    //####################################
+    //references to sensor and observation
+    //####################################
+
+    QPointer<Sensor> instrument;
+    QPointer<Observation> observation;
+
 };
 
 #endif // READING_H

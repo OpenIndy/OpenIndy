@@ -102,11 +102,11 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
             if(currentFeature->getFeature()->getFunctions().size() == 0){
                 return "no function set";
             }else{
-                functions += currentFeature->getFeature()->getFunctions().at(0)->getMetaData()->name;
+                /*functions += currentFeature->getFeature()->getFunctions().at(0)->getMetaData()->name;
                 for(int i=1;i<currentFeature->getFeature()->getFunctions().size();i++){
                     functions += "," + currentFeature->getFeature()->getFunctions().at(i)->getMetaData()->name;
                 }
-                return functions;
+                return functions;*/
             }
         case 11://solved
             return currentFeature->getFeature()->getDisplaySolved();

@@ -142,8 +142,8 @@ void ScalarEntityAngle::setAngle(OiVec direction1, OiVec direction2){
             b.setAt(i, direction2.getAt(i));
         }
         //normalize vectors
-        a = a.normalize();
-        b = b.normalize();
+        a.normalize();
+        b.normalize();
         //calculate angle between directions
         double ab;
         OiVec::dot(ab, a, b);

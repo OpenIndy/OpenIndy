@@ -3,11 +3,11 @@
 #include "sensor.h"
 #include "observation.h"
 
-Reading::Reading()
+Reading::Reading() : Element()
 {
     this->measuredAt = QDateTime::currentDateTime();
     this->face = eFrontSide;
-    this->obs = NULL;
+    this->observation = NULL;
     this->instrument = NULL;
 }
 
@@ -16,11 +16,75 @@ Reading::~Reading(){
 }
 
 /*!
+ * \brief Reading::getTypeOfReading
+ * \return
+ */
+const ReadingTypes &Reading::getTypeOfReading() const{
+    return this->typeOfReading;
+}
+
+/*!
+ * \brief Reading::getPolarReading
+ * \return
+ */
+const ReadingPolar &Reading::getPolarReading() const{
+    return this->rPolar;
+}
+
+/*!
+ * \brief Reading::getCartesianReading
+ * \return
+ */
+const ReadingCartesian &Reading::getCartesianReading() const{
+    return this->rCartesian;
+}
+
+/*!
+ * \brief Reading::getDirectionReading
+ * \return
+ */
+const ReadingDirection &Reading::getDirectionReading() const{
+    return this->rDirection;
+}
+
+/*!
+ * \brief Reading::getDistanceReading
+ * \return
+ */
+const ReadingDistance &Reading::getDistanceReading() const{
+    return this->rDistance;
+}
+
+/*!
+ * \brief Reading::getTemperatureReading
+ * \return
+ */
+const ReadingTemperature &Reading::getTemperatureReading() const{
+    return this->rTemperature;
+}
+
+/*!
+ * \brief Reading::getLevelReading
+ * \return
+ */
+const ReadingLevel &Reading::getLevelReading() const{
+    return this->rLevel;
+}
+
+/*!
+ * \brief Reading::getUndefinedReading
+ * \return
+ */
+const ReadingUndefined &Reading::getUndefinedReading() const{
+    return this->rUndefined;
+}
+
+/*!
  * \brief Reading::getMeasurementConfig
  * \return
  */
 const MeasurementConfig &Reading::getMeasurementConfig(){
-    return this->myMeasurementConfig;
+    return this->mConfig;
 }
 
 /*!
@@ -28,48 +92,113 @@ const MeasurementConfig &Reading::getMeasurementConfig(){
  * \param mConfig
  */
 void Reading::setMeasurementConfig(const MeasurementConfig &mConfig){
-    this->myMeasurementConfig = mConfig;
+    this->mConfig = mConfig;
 }
 
-void Reading::toCartesian(){
+/*!
+ * \brief Reading::getSensor
+ * \return
+ */
+const QPointer<Sensor> &Reading::getSensor() const{
+    return this->instrument;
+}
+
+/*!
+ * \brief Reading::setSensor
+ * \param sensor
+ */
+void Reading::setSensor(const QPointer<Sensor> &sensor){
+    this->instrument = sensor;
+}
+
+/*!
+ * \brief Reading::getObservation
+ * \return
+ */
+const QPointer<Observation> &Reading::getObservation() const{
+    return this->observation;
+}
+
+/*!
+ * \brief Reading::setObservation
+ * \param observation
+ */
+void Reading::setObservation(const QPointer<Observation> &observation){
+    this->observation = observation;
+}
+
+/*!
+ * \brief Reading::toCartesian
+ * \return
+ */
+bool Reading::toCartesian(){
 
     if(rPolar.isValid){
-
         this->rCartesian.xyz = OiVec(4);
         this->rCartesian.xyz.setAt( 0, this->rPolar.distance * qSin(this->rPolar.zenith) * qCos(this->rPolar.azimuth) );
         this->rCartesian.xyz.setAt( 1, this->rPolar.distance * qSin(this->rPolar.zenith) * qSin(this->rPolar.azimuth) );
         this->rCartesian.xyz.setAt( 2, this->rPolar.distance * qCos(this->rPolar.zenith) );
         this->rCartesian.xyz.setAt( 3, 1.0 );
+    }
+
+    return this->rPolar.isValid;
+
+}
+
+/*!
+ * \brief Reading::toCartesian
+ * \param azimuth
+ * \param zenith
+ * \param distance
+ * \return
+ */
+OiVec Reading::toCartesian(const double &azimuth, const double &zenith, const double &distance){
+
+    OiVec g(4);
+
+    g.setAt(0, distance * qSin(zenith) * qCos(azimuth) );
+    g.setAt(1, distance * qSin(zenith) * qSin(azimuth) );
+    g.setAt(2, distance * qCos(zenith) );
+    g.setAt(3, 1.0 );
+
+    return g;
+
+}
+
+/*!
+ * \brief Reading::toPolar
+ * \return
+ */
+bool Reading::toPolar(){
+
+    if(this->rCartesian.isValid && this->rCartesian.xyz.getSize() == 4){
+
+        OiVec polarElems = Reading::toPolar(this->rCartesian.xyz.getAt(0), this->rCartesian.xyz.getAt(1), this->rCartesian.xyz.getAt(2));
+
+        this->rPolar.azimuth = polarElems.getAt(0);
+        this->rPolar.zenith = polarElems.getAt(1);
+        this->rPolar.distance = polarElems.getAt(2);
+
+        this->rDirection.azimuth = polarElems.getAt(0);
+        this->rDirection.zenith = polarElems.getAt(1);
+
+        this->rDistance.distance = polarElems.getAt(2);
 
     }
 
-}
-
-OiVec Reading::toCartesian(double az, double ze, double dist){
-    OiVec g(4);
-    g.setAt( 0, dist * qSin(ze) * qCos(az) );
-    g.setAt( 1, dist * qSin(ze) * qSin(az) );
-    g.setAt( 2, dist * qCos(ze) );
-    g.setAt( 3, 1.0 );
-    return g;
-}
-
-void Reading::toPolar(){
-
-    OiVec polarElems = Reading::toPolar(this->rCartesian.xyz.getAt(0), this->rCartesian.xyz.getAt(1), this->rCartesian.xyz.getAt(2));
-
-    this->rPolar.azimuth = polarElems.getAt(0);
-    this->rPolar.zenith = polarElems.getAt(1);
-    this->rPolar.distance = polarElems.getAt(2);
-
-    this->rDirection.azimuth = polarElems.getAt(0);
-    this->rDirection.zenith = polarElems.getAt(1);
-
-    this->rDistance.distance = polarElems.getAt(2);
+    return (this->rCartesian.isValid && this->rCartesian.xyz.getSize() == 4);
 
 }
 
-OiVec Reading::toPolar(double x, double y, double z){
+/*!
+ * \brief Reading::toPolar
+ * \param x
+ * \param y
+ * \param z
+ * \return
+ */
+OiVec Reading::toPolar(const double &x, const double &y, const double &z){
+
     OiVec g(4);
 
     double azimuth = qAtan2(y,x);
@@ -80,11 +209,15 @@ OiVec Reading::toPolar(double x, double y, double z){
     g.setAt( 1, zenith);
     g.setAt( 2, s);
     g.setAt( 3, 1.0 );
+
     return g;
+
 }
 
-void Reading::makeBackup()
-{
+/*!
+ * \brief Reading::makeBackup
+ */
+void Reading::makeBackup(){
     this->backupPolar = this->rPolar;
     this->backupCartesian = this->rCartesian;
     this->backupDirection = this->rDirection;
@@ -94,8 +227,10 @@ void Reading::makeBackup()
     this->backupLevel = this->rLevel;
 }
 
-void Reading::restoreBackup()
-{
+/*!
+ * \brief Reading::restoreBackup
+ */
+void Reading::restoreBackup(){
     this->rPolar = this->backupPolar;
     this->rCartesian = this->backupCartesian;
     this->rDirection = this->backupDirection;
@@ -110,7 +245,8 @@ void Reading::restoreBackup()
  * Variance propagation to get sigma values for cartesian coordinates
  * \return
  */
-OiVec Reading::errorPropagationPolarToCart(){
+OiVec Reading::errorPropagationPolarToCartesian(){
+
     OiVec sigmaCartXyz;
 
     OiMat F(3,3);
@@ -144,13 +280,14 @@ OiVec Reading::errorPropagationPolarToCart(){
     sigmaCartXyz.add(qSqrt(Qxx.getAt(2,2)));
     sigmaCartXyz.add(1.0);
 
-    if(this->obs != NULL){
-        this->obs->myStatistic.qxx = Qxx_hc;
-        this->obs->myStatistic.s0_apriori = 1.0;
-        this->obs->myOriginalStatistic = this->obs->myStatistic;
-    }
+    /*if(!this->observation.isNull()){
+        this->observation->getStatistic().qxx = Qxx_hc;
+        this->observation->getStatistic().s0_apriori = 1.0;
+        this->observation->myOriginalStatistic = this->observation->myStatistic;
+    }*/
 
     return sigmaCartXyz;
+
 }
 
 /*!
@@ -169,11 +306,11 @@ QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
     //add reading attributes
     reading.setAttribute("id", this->id);
     reading.setAttribute("time", this->measuredAt.toString(Qt::ISODate));
-    reading.setAttribute("type", getReadingTypeName(this->typeofReading));
+    reading.setAttribute("type", getReadingTypeName(this->typeOfReading));
 
     //add measurements
     QDomElement measurements = xmlDoc.createElement("measurements");
-    switch(this->typeofReading){
+    switch(this->typeOfReading){
     case eCartesianReading:
         if(this->rCartesian.isValid && this->rCartesian.xyz.getSize() >= 3 && this->rCartesian.sigmaXyz.getSize() >= 3){
             QDomElement x = xmlDoc.createElement("measurement");
@@ -301,7 +438,7 @@ bool Reading::fromOpenIndyXML(QDomElement &xmlElem){
     }
     this->id = xmlElem.attribute("id").toInt();
     this->measuredAt = QDateTime::fromString(xmlElem.attribute("time"), Qt::ISODate);
-    this->typeofReading = getReadingTypeEnum(xmlElem.attribute("type"));
+    this->typeOfReading = getReadingTypeEnum(xmlElem.attribute("type"));
 
     //get list of measurements
     QDomElement measurements = xmlElem.firstChildElement("measurements");

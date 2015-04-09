@@ -25,11 +25,11 @@ public:
     QString pluginType;
     bool alreadyExists;
 
-signals:
+/*signals:
     void sendMe(PluginMetaData*);
 
 public slots:
-    void emitSendMe();
+    void emitSendMe();*/
 
 };
 

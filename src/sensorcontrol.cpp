@@ -581,10 +581,10 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
 
     //r->id = generateID();
 
-    switch(geom->getMeasurementConfig().typeOfReading){
+    /*switch(geom->getMeasurementConfig().typeOfReading){
         case(ePolarReading) :{
             //set type
-            r->typeofReading = ePolarReading;
+            r->typeOfReading = ePolarReading;
             //set accuracy
             r->rPolar.sigmaAzimuth = myStation->getInstrumentConfig().sigma.sigmaAzimuth;
             r->rPolar.sigmaZenith= myStation->getInstrumentConfig().sigma.sigmaZenith;
@@ -610,7 +610,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
         }
         case(eDistanceReading) :{
             //set type
-            r->typeofReading = eDistanceReading;
+            r->typeOfReading = eDistanceReading;
             //set accuracy
             r->rDistance.sigmaDistance = myStation->getInstrumentConfig().sigma.sigmaDistance;
             //store reading in station
@@ -633,7 +633,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
         }
         case(eDirectionReading) :{
             //set type
-            r->typeofReading =eDirectionReading;
+            r->typeOfReading =eDirectionReading;
             //set accuracy
             r->rDirection.sigmaAzimuth = myStation->getInstrumentConfig().sigma.sigmaAzimuth;
             r->rDirection.sigmaZenith= myStation->getInstrumentConfig().sigma.sigmaZenith;
@@ -657,7 +657,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
         }
         case(eCartesianReading) :{
             //set type
-            r->typeofReading = eCartesianReading;
+            r->typeOfReading = eCartesianReading;
             //set accuracy
             r->rCartesian.sigmaXyz = myStation->getInstrumentConfig().sigma.sigmaXyz;
             //store reading in station
@@ -680,7 +680,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
         }
         case(eLevelReading) :{
             //set type
-            r->typeofReading = eLevelReading;
+            r->typeOfReading = eLevelReading;
             //store reading in station
             this->myStation->readingsLevel.append(r);
             //create observation
@@ -701,7 +701,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
     }
         case(eTemperatureReading) :{
             //set type
-            r->typeofReading = eTemperatureReading;
+            r->typeOfReading = eTemperatureReading;
             //store reading in station
             this->myStation->readingsTemperatur.append(r);
             //create observation
@@ -722,7 +722,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
         }
         case(eUndefinedReading) :{
                 //set type
-                r->typeofReading = eUndefinedReading;
+                r->typeOfReading = eUndefinedReading;
                 //store reading in station
                 this->myStation->readingsUndefined.append(r);
                 //create observation
@@ -741,7 +741,7 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
 
         break;
         }
-    }
+    }*/
 
     r->makeBackup();
 

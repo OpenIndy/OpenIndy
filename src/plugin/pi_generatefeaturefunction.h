@@ -16,9 +16,9 @@ class GenerateFeatureFunction : public Function
 public:
     virtual ~GenerateFeatureFunction(){}
 
-    virtual QList<InputParams> getNeededElements() const = 0;
+    virtual QList<NeededElement> getNeededElements() const = 0;
     virtual QList<FeatureTypes> applicableFor() const = 0;
-    virtual PluginMetaData* getMetaData() const = 0;
+    virtual PluginMetaData getMetaData() const = 0;
 
 /*protected:
     void addFeature(FeatureWrapper *myFeature){ //add a feature to OpenIndy

@@ -40,36 +40,36 @@ public:
     //################
 
     QString getFeatureTypeString() const;
-    FeatureTypes getFeatureTypeEnum() const;
+    const FeatureTypes &getFeatureTypeEnum() const;
 
     //###################
     //get feature pointer
     //###################
 
-    QPointer<Feature> getFeature() const;
-    QPointer<Geometry> getGeometry() const;
+    const QPointer<Feature> &getFeature() const;
+    const QPointer<Geometry> &getGeometry() const;
 
-    QPointer<CoordinateSystem> getCoordinateSystem() const;
-    QPointer<TrafoParam> getTrafoParam() const;
-    QPointer<Station> getStation() const;
+    const QPointer<CoordinateSystem> &getCoordinateSystem() const;
+    const QPointer<TrafoParam> &getTrafoParam() const;
+    const QPointer<Station> &getStation() const;
 
-    QPointer<Point> getPoint() const;
-    QPointer<Line> getLine() const;
-    QPointer<Plane> getPlane() const;
-    QPointer<Sphere> getSphere() const;
-    QPointer<Circle> getCircle() const;
-    QPointer<Cone> getCone() const;
-    QPointer<Cylinder> getCylinder() const;
-    QPointer<Ellipsoid> getEllipsoid() const;
-    QPointer<Hyperboloid> getHyperboloid() const;
-    QPointer<Paraboloid> getParaboloid() const;
-    QPointer<PointCloud> getPointCloud() const;
-    QPointer<Nurbs> getNurbs() const;
+    const QPointer<Point> &getPoint() const;
+    const QPointer<Line> &getLine() const;
+    const QPointer<Plane> &getPlane() const;
+    const QPointer<Sphere> &getSphere() const;
+    const QPointer<Circle> &getCircle() const;
+    const QPointer<Cone> &getCone() const;
+    const QPointer<Cylinder> &getCylinder() const;
+    const QPointer<Ellipsoid> &getEllipsoid() const;
+    const QPointer<Hyperboloid> &getHyperboloid() const;
+    const QPointer<Paraboloid> &getParaboloid() const;
+    const QPointer<PointCloud> &getPointCloud() const;
+    const QPointer<Nurbs> &getNurbs() const;
 
-    QPointer<ScalarEntityAngle> getScalarEntityAngle() const;
-    QPointer<ScalarEntityDistance> getScalarEntityDistance() const;
-    QPointer<ScalarEntityTemperature> getScalarEntityTemperature() const;
-    QPointer<ScalarEntityMeasurementSeries> getScalarEntityMeasurementSeries() const;
+    const QPointer<ScalarEntityAngle> &getScalarEntityAngle() const;
+    const QPointer<ScalarEntityDistance> &getScalarEntityDistance() const;
+    const QPointer<ScalarEntityTemperature> &getScalarEntityTemperature() const;
+    const QPointer<ScalarEntityMeasurementSeries> &getScalarEntityMeasurementSeries() const;
 
     //###################
     //set feature pointer
