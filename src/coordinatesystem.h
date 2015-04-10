@@ -6,6 +6,8 @@
 #include <QPointer>
 
 #include "feature.h"
+#include "position.h"
+#include "direction.h"
 
 class Observation;
 class TrafoParam;
@@ -20,69 +22,110 @@ class CoordinateSystem : public Feature
 
 public:
     explicit CoordinateSystem(QObject *parent = 0);
+
+    CoordinateSystem(const CoordinateSystem &copy, QObject *parent = 0);
+
+    CoordinateSystem &operator=(const CoordinateSystem &copy);
+
     virtual ~CoordinateSystem();
 
-    const QList< QPointer<Observation> > &getObservations() const;
-    QPointer<Observation> getObservation(const int &observationId) const;
-    bool addObservation(QPointer<Observation> const &observation);
+    //#######################################
+    //get or set coordinate system attributes
+    //#######################################
 
-    const QList< QPointer<TrafoParam> > &getTransformationParameters() const;
-    const QList< QPointer<TrafoParam> > getTransformationParameters(QPointer<CoordinateSystem> const &to) const;
-    bool addTransformationParameter(QPointer<TrafoParam> const &trafoParam);
-    bool removeTransformationParameter(QPointer<TrafoParam> const &trafoParam);
-
-    const QList< QPointer<FeatureWrapper> > &getNominals() const;
-    bool addNominal(QPointer<FeatureWrapper> const &nominal);
-    bool addNominals(const QList< QPointer<FeatureWrapper> > &nominals);
-    bool removeNominal(QPointer<FeatureWrapper> const &nominal);
-    bool removeNominal(const int &featureId);
-
-    bool getIsActiveCoordinateSystem() const;
+    const bool &getIsActiveCoordinateSystem() const;
     void setActiveCoordinateSystemState(const bool &isActiveCoordinateSystem);
 
-    OiVec origin;
+    const bool &getIsStationSystem() const;
 
-    OiVec getExpansionOrigin();
-    void setExpansionOrigin(OiVec expOri);
-    void setExpansionOriginX(double x);
-    void setExpansionOriginY(double y);
-    void setExpansionOriginZ(double z);
+    const Position &getOrigin() const;
+    const Direction &getXAxis() const;
+    const Direction &getYAxis() const;
+    const Direction &getZAxis() const;
+
+    void setCoordinateSystem(const Position &origin, const Direction &xAxis, const Direction &yAxis, const Direction &zAxis);
+
+    const Position &getExpansionOrigin() const;
+    void setExpansionOrigin(const Position &expansionOrigin);
+
+    //##################################################
+    //get or set observations, trafo params and nominals
+    //##################################################
+
+    const QList<QPointer<Observation> > &getObservations() const;
+    QPointer<Observation> getObservation(const int &observationId) const;
+    bool addObservation(const QPointer<Observation> &observation);
+
+    const QList<QPointer<TrafoParam> > &getTransformationParameters() const;
+    const QList<QPointer<TrafoParam> > getTransformationParameters(const QPointer<CoordinateSystem> &to) const;
+    bool addTransformationParameter(const QPointer<TrafoParam> &trafoParam);
+    bool removeTransformationParameter(const QPointer<TrafoParam> &trafoParam);
+
+    const QList<QPointer<FeatureWrapper> > &getNominals() const;
+    bool addNominal(const QPointer<FeatureWrapper> &nominal);
+    bool addNominals(const QList< QPointer<FeatureWrapper> > &nominals);
+    bool removeNominal(const QPointer<FeatureWrapper> &nominal);
+    bool removeNominal(const int &featureId);
+
+    //###########################
+    //reexecute the function list
+    //###########################
 
     void recalc();
 
-    QString getDisplayX() const;
-    QString getDisplayY() const;
-    QString getDisplayZ() const;
-    QString getDisplaySolved() const;
-    QString getDisplayExpansionOriginX() const;
-    QString getDisplayExpansionOriginY() const;
-    QString getDisplayExpansionOriginZ() const;
+    //#################
+    //save and load XML
+    //#################
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
-    bool isStationSystem;
-
-private:
-
-    /*
-    This point represents the point from which the Part object expans with temperature
-    Necessary for movement transformations (watch trafocontroller.h and trafocontroller.cpp)
-    */
-    OiVec expansionOrigin;
-
 signals:
+
+    //#################################################
+    //signals to inform about coordinate system changes
+    //#################################################
+
     void observationsChanged(const int &coordId, const int &obsId);
     void transformationParametersChanged(const int &coordId);
     void nominalsChanged(const int &coordId);
     void activeCoordinateSystemChanged(const int &coordId);
 
-protected:
+private:
+
+    //####################################
+    //general coordinate system attributes
+    //####################################
+
+    Position origin; //origin of the coordinate system in the current display coordinate system
+
+    Direction xAxis; //x axis of the coordinate system in the current display coordinate system
+    Direction yAxis; //y axis of the coordinate system in the current display coordinate system
+    Direction zAxis; //z axis of the coordinate system in the current display coordinate system
+
+    bool isStationSystem; //true if the coordinate system is a station system
+
+    bool isActiveCoordinateSystem;
+
+    Position expansionOrigin; //represents the point from which the Part object expands with temperature
+
+    //#######################################
+    //observations, trafo params and nominals
+    //#######################################
+
     QList< QPointer<Observation> > observations;
     QList< QPointer<TrafoParam> > trafoParams;
     QList< QPointer<FeatureWrapper> > nominals;
 
-    bool isActiveCoordinateSystem;
+
+    //QString getDisplayX() const;
+    //QString getDisplayY() const;
+    //QString getDisplayZ() const;
+    //QString getDisplaySolved() const;
+    //QString getDisplayExpansionOriginX() const;
+    //QString getDisplayExpansionOriginY() const;
+    //QString getDisplayExpansionOriginZ() const;
+
 };
 
 #endif // COORDINATESYSTEM_H

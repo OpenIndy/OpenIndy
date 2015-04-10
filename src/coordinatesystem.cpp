@@ -1,5 +1,5 @@
 #include "coordinatesystem.h"
-
+/*
 #include "observation.h"
 #include "trafoparam.h"
 #include "geometry.h"
@@ -44,19 +44,10 @@ CoordinateSystem::~CoordinateSystem(){
 
 }
 
-/*!
- * \brief CoordinateSystem::getObservations
- * \return
- */
 const QList<QPointer<Observation> > &CoordinateSystem::getObservations() const{
     return this->observations;
 }
 
-/*!
- * \brief CoordinateSystem::getObservation
- * \param observationId
- * \return
- */
 QPointer<Observation> CoordinateSystem::getObservation(const int &observationId) const{
     try{
 
@@ -72,11 +63,6 @@ QPointer<Observation> CoordinateSystem::getObservation(const int &observationId)
     }
 }
 
-/*!
- * \brief CoordinateSystem::addObservation
- * \param observation
- * \return
- */
 bool CoordinateSystem::addObservation(const QPointer<Observation> &observation){
     try{
 
@@ -93,19 +79,10 @@ bool CoordinateSystem::addObservation(const QPointer<Observation> &observation){
     }
 }
 
-/*!
- * \brief CoordinateSystem::getTransformationParameter
- * \return
- */
 const QList<QPointer<TrafoParam> > &CoordinateSystem::getTransformationParameters() const{
     return this->trafoParams;
 }
 
-/*!
- * \brief CoordinateSystem::getTransformationParameters
- * \param to
- * \return
- */
 const QList< QPointer<TrafoParam> > CoordinateSystem::getTransformationParameters(QPointer<CoordinateSystem> const &to) const{
     try{
 
@@ -127,11 +104,6 @@ const QList< QPointer<TrafoParam> > CoordinateSystem::getTransformationParameter
     }
 }
 
-/*!
- * \brief CoordinateSystem::addTransformationParameter
- * \param trafoParam
- * \return
- */
 bool CoordinateSystem::addTransformationParameter(const QPointer<TrafoParam> &trafoParam){
     try{
 
@@ -148,11 +120,6 @@ bool CoordinateSystem::addTransformationParameter(const QPointer<TrafoParam> &tr
     }
 }
 
-/*!
- * \brief CoordinateSystem::removeTransformationParameter
- * \param trafoParam
- * \return
- */
 bool CoordinateSystem::removeTransformationParameter(const QPointer<TrafoParam> &trafoParam){
     try{
 
@@ -178,25 +145,16 @@ bool CoordinateSystem::removeTransformationParameter(const QPointer<TrafoParam> 
     }
 }
 
-/*!
- * \brief CoordinateSystem::getNominals
- * \return
- */
 const QList<QPointer<FeatureWrapper> > &CoordinateSystem::getNominals() const{
     return this->nominals;
 }
 
-/*bool CoordinateSystem::addNominal(Geometry * const nominal)
+bool CoordinateSystem::addNominal(Geometry * const nominal)
 {
     this->nominals.append(nominal);
     return true;
-}*/
+}
 
-/*!
- * \brief CoordinateSystem::addNominal
- * \param nominal
- * \return
- */
 bool CoordinateSystem::addNominal(const QPointer<FeatureWrapper> &nominal){
     try{
 
@@ -221,11 +179,6 @@ bool CoordinateSystem::addNominal(const QPointer<FeatureWrapper> &nominal){
     }
 }
 
-/*!
- * \brief CoordinateSystem::addNominals
- * \param nominals
- * \return
- */
 bool CoordinateSystem::addNominals(const QList< QPointer<FeatureWrapper> > &nominals){
     try{
 
@@ -249,11 +202,6 @@ bool CoordinateSystem::addNominals(const QList< QPointer<FeatureWrapper> > &nomi
     }
 }
 
-/*!
- * \brief CoordinateSystem::removeNominal
- * \param nominal
- * \return
- */
 bool CoordinateSystem::removeNominal(const QPointer<FeatureWrapper> &nominal){
     try{
 
@@ -280,11 +228,6 @@ bool CoordinateSystem::removeNominal(const QPointer<FeatureWrapper> &nominal){
     }
 }
 
-/*!
- * \brief CoordinateSystem::removeNominal
- * \param featureId
- * \return
- */
 bool CoordinateSystem::removeNominal(const int &featureId){
     try{
 
@@ -309,17 +252,10 @@ bool CoordinateSystem::removeNominal(const int &featureId){
     }
 }
 
-/*!
- * \brief CoordinateSystem::getIsActiveCoordinateSystem
- * \return
- */
 bool CoordinateSystem::getIsActiveCoordinateSystem() const{
     return this->isActiveCoordinateSystem;
 }
 
-/*!
- * \brief CoordinateSystem::setActiveCoordinateSystemState
- */
 void CoordinateSystem::setActiveCoordinateSystemState(const bool &isActiveCoordinateSystem){
     if(this->isActiveCoordinateSystem != isActiveCoordinateSystem){
         this->isActiveCoordinateSystem = isActiveCoordinateSystem;
@@ -327,46 +263,26 @@ void CoordinateSystem::setActiveCoordinateSystemState(const bool &isActiveCoordi
     }
 }
 
-/*!
- * \brief getExpansionOrigin returns the vector of the origiin of expansion
- * \return
- */
 OiVec CoordinateSystem::getExpansionOrigin()
 {
     return this->expansionOrigin;
 }
 
-/*!
- * \brief setExpansionOrigin
- * \param expOri
- */
 void CoordinateSystem::setExpansionOrigin(OiVec expOri)
 {
     this->expansionOrigin = expOri;
 }
 
-/*!
- * \brief setExpansionOriginX
- * \param x
- */
 void CoordinateSystem::setExpansionOriginX(double x)
 {
     this->expansionOrigin.setAt(0,x);
 }
 
-/*!
- * \brief setExpansionOriginY
- * \param y
- */
 void CoordinateSystem::setExpansionOriginY(double y)
 {
     this->expansionOrigin.setAt(1,y);
 }
 
-/*!
- * \brief setExpansionOriginZ
- * \param z
- */
 void CoordinateSystem::setExpansionOriginZ(double z)
 {
     this->expansionOrigin.setAt(2,z);
@@ -425,11 +341,6 @@ QString CoordinateSystem::getDisplayExpansionOriginZ() const
     //return QString::number(this->expansionOrigin.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
 }
 
-/*!
- * \brief CoordinateSystem::toOpenIndyXML
- * \param xmlDoc
- * \return
- */
 QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc){
 
     QDomElement coordinateSystem = Feature::toOpenIndyXML(xmlDoc);
@@ -492,11 +403,6 @@ QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc){
 
 }
 
-/*!
- * \brief CoordinateSystem::fromOpenIndyXML
- * \param xmlElem
- * \return
- */
 bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Feature::fromOpenIndyXML(xmlElem);
@@ -517,5 +423,167 @@ bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem){
     }
 
     return result;
+
+}
+*/
+
+/*!
+ * \brief CoordinateSystem::CoordinateSystem
+ * \param parent
+ */
+CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent){
+
+}
+
+/*!
+ * \brief CoordinateSystem::CoordinateSystem
+ * \param copy
+ * \param parent
+ */
+CoordinateSystem::CoordinateSystem(const CoordinateSystem &copy, QObject *parent) : Feature(parent){
+
+    //copy attributes
+    this->origin = copy.origin;
+    this->xAxis = copy.xAxis;
+    this->yAxis = copy.yAxis;
+    this->zAxis = copy.zAxis;
+    this->isStationSystem = copy.isStationSystem;
+    this->isActiveCoordinateSystem = copy.isActiveCoordinateSystem;
+    this->expansionOrigin = copy.expansionOrigin;
+
+}
+
+CoordinateSystem &CoordinateSystem::operator=(const CoordinateSystem &copy)
+{
+
+}
+
+CoordinateSystem::~CoordinateSystem()
+{
+
+}
+
+const bool &CoordinateSystem::getIsActiveCoordinateSystem() const
+{
+
+}
+
+void CoordinateSystem::setActiveCoordinateSystemState(const bool &isActiveCoordinateSystem)
+{
+
+}
+
+const bool &CoordinateSystem::getIsStationSystem() const
+{
+
+}
+
+const Position &CoordinateSystem::getOrigin() const
+{
+
+}
+
+const Direction &CoordinateSystem::getXAxis() const
+{
+
+}
+
+const Direction &CoordinateSystem::getYAxis() const
+{
+
+}
+
+const Direction &CoordinateSystem::getZAxis() const
+{
+
+}
+
+void CoordinateSystem::setCoordinateSystem(const Position &origin, const Direction &xAxis, const Direction &yAxis, const Direction &zAxis)
+{
+
+}
+
+const Position &CoordinateSystem::getExpansionOrigin() const
+{
+
+}
+
+void CoordinateSystem::setExpansionOrigin(const Position &expansionOrigin)
+{
+
+}
+
+const QList<QPointer<Observation> > &CoordinateSystem::getObservations() const
+{
+
+}
+
+QPointer<Observation> CoordinateSystem::getObservation(const int &observationId) const
+{
+
+}
+
+bool CoordinateSystem::addObservation(const QPointer<Observation> &observation)
+{
+
+}
+
+const QList<QPointer<TrafoParam> > &CoordinateSystem::getTransformationParameters() const
+{
+
+}
+
+const QList<QPointer<TrafoParam> > CoordinateSystem::getTransformationParameters(const QPointer<CoordinateSystem> &to) const
+{
+
+}
+
+bool CoordinateSystem::addTransformationParameter(const QPointer<TrafoParam> &trafoParam)
+{
+
+}
+
+bool CoordinateSystem::removeTransformationParameter(const QPointer<TrafoParam> &trafoParam)
+{
+
+}
+
+const QList<QPointer<FeatureWrapper> > &CoordinateSystem::getNominals() const
+{
+
+}
+
+bool CoordinateSystem::addNominal(const QPointer<FeatureWrapper> &nominal)
+{
+
+}
+
+bool CoordinateSystem::addNominals(const QList<QPointer<FeatureWrapper> > &nominals)
+{
+
+}
+
+bool CoordinateSystem::removeNominal(const QPointer<FeatureWrapper> &nominal)
+{
+
+}
+
+bool CoordinateSystem::removeNominal(const int &featureId)
+{
+
+}
+
+void CoordinateSystem::recalc()
+{
+
+}
+
+QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc)
+{
+
+}
+
+bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem)
+{
 
 }
