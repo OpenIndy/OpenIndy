@@ -11,6 +11,8 @@ QMap<FeatureTypes, QString> featureTypesMap;
 QMap<GeometryTypes, QString> geometryTypesMap;
 QMap<ReadingTypes, QString> readingTypesMap;
 
+QString undefined = "";
+
 bool isInit = false;
 
 void initMaps(){
@@ -21,25 +23,32 @@ void initMaps(){
     geometryTypesMap.clear();
     readingTypesMap.clear();
 
-    //fill elements map
-    elementTypesMap.insert(ePointElement, "point");
-    elementTypesMap.insert(eLineElement, "line");
-    elementTypesMap.insert(ePlaneElement, "plane");
-    elementTypesMap.insert(eSphereElement, "sphere");
-    elementTypesMap.insert(eScalarEntityAngleElement, "angle");
-    elementTypesMap.insert(eScalarEntityDistanceElement, "distance");
-    elementTypesMap.insert(eScalarEntityTemperatureElement, "temperature");
-    elementTypesMap.insert(eStationElement, "station");
-    elementTypesMap.insert(eCoordinateSystemElement, "coordinate system");
-    elementTypesMap.insert(eTrafoParamElement, "transformation parameters");
-    elementTypesMap.insert(ePointCloudElement, "point cloud");
+    //fill element map
     elementTypesMap.insert(eCircleElement, "circle");
     elementTypesMap.insert(eConeElement, "cone");
     elementTypesMap.insert(eCylinderElement, "cylinder");
+    elementTypesMap.insert(eEllipseElement, "ellipse");
     elementTypesMap.insert(eEllipsoidElement, "ellipsoid");
     elementTypesMap.insert(eHyperboloidElement, "hyperboloid");
-    elementTypesMap.insert(eParaboloidElement, "paraboloid");
+    elementTypesMap.insert(eLineElement, "line");
     elementTypesMap.insert(eNurbsElement, "nurbs");
+    elementTypesMap.insert(eParaboloidElement, "paraboloid");
+    elementTypesMap.insert(ePlaneElement, "plane");
+    elementTypesMap.insert(ePointElement, "point");
+    elementTypesMap.insert(ePointCloudElement, "point cloud");
+    elementTypesMap.insert(eScalarEntityAngleElement, "angle");
+    elementTypesMap.insert(eScalarEntityDistanceElement, "distance");
+    elementTypesMap.insert(eScalarEntityMeasurementSeriesElement, "measurement series");
+    elementTypesMap.insert(eScalarEntityTemperatureElement, "temperature");
+    elementTypesMap.insert(eSlottedHoleElement, "slotted hole");
+    elementTypesMap.insert(eSphereElement, "sphere");
+    elementTypesMap.insert(eTorusElement, "torus");
+    elementTypesMap.insert(eDirectionElement, "direction");
+    elementTypesMap.insert(ePositionElement, "position");
+    elementTypesMap.insert(eRadiusElement, "radius");
+    elementTypesMap.insert(eCoordinateSystemElement, "coordinate system");
+    elementTypesMap.insert(eStationElement, "station");
+    elementTypesMap.insert(eTrafoParamElement, "transformation parameters");
     elementTypesMap.insert(eObservationElement, "observation");
     elementTypesMap.insert(eReadingCartesianElement, "cartesian reading");
     elementTypesMap.insert(eReadingPolarElement, "polar reading");
@@ -47,46 +56,51 @@ void initMaps(){
     elementTypesMap.insert(eReadingDirectionElement, "direction reading");
     elementTypesMap.insert(eReadingTemperatureElement, "temperature reading");
     elementTypesMap.insert(eReadingLevelElement, "level reading");
-    elementTypesMap.insert(eScalarEntityMeasurementSeriesElement, "measurement series");
 
-    //fill features map
-    featureTypesMap.insert(ePointFeature, "point");
-    featureTypesMap.insert(eLineFeature, "line");
-    featureTypesMap.insert(ePlaneFeature, "plane");
-    featureTypesMap.insert(eSphereFeature, "sphere");
-    featureTypesMap.insert(eScalarEntityAngleFeature, "angle");
-    featureTypesMap.insert(eScalarEntityDistanceFeature, "distance");
-    featureTypesMap.insert(eScalarEntityTemperatureFeature, "temperature");
-    featureTypesMap.insert(eStationFeature, "station");
-    featureTypesMap.insert(eCoordinateSystemFeature, "coordinate system");
-    featureTypesMap.insert(eTrafoParamFeature, "transformation parameters");
-    featureTypesMap.insert(ePointCloudFeature, "point cloud");
+    //fill feature map
     featureTypesMap.insert(eCircleFeature, "circle");
     featureTypesMap.insert(eConeFeature, "cone");
     featureTypesMap.insert(eCylinderFeature, "cylinder");
+    featureTypesMap.insert(eEllipseFeature, "ellipse");
     featureTypesMap.insert(eEllipsoidFeature, "ellipsoid");
     featureTypesMap.insert(eHyperboloidFeature, "hyperboloid");
-    featureTypesMap.insert(eParaboloidFeature, "paraboloid");
+    featureTypesMap.insert(eLineFeature, "line");
     featureTypesMap.insert(eNurbsFeature, "nurbs");
+    featureTypesMap.insert(eParaboloidFeature, "paraboloid");
+    featureTypesMap.insert(ePlaneFeature, "plane");
+    featureTypesMap.insert(ePointFeature, "point");
+    featureTypesMap.insert(ePointCloudFeature, "point cloud");
+    featureTypesMap.insert(eScalarEntityAngleFeature, "angle");
+    featureTypesMap.insert(eScalarEntityDistanceFeature, "distance");
     featureTypesMap.insert(eScalarEntityMeasurementSeriesFeature, "measurement series");
+    featureTypesMap.insert(eScalarEntityTemperatureFeature, "temperature");
+    featureTypesMap.insert(eSlottedHoleFeature, "slotted hole");
+    featureTypesMap.insert(eSphereFeature, "sphere");
+    featureTypesMap.insert(eTorusFeature, "torus");
+    featureTypesMap.insert(eCoordinateSystemFeature, "coordinate system");
+    featureTypesMap.insert(eStationFeature, "station");
+    featureTypesMap.insert(eTrafoParamFeature, "transformation parameters");
 
     //fill geometry map
-    geometryTypesMap.insert(ePointGeometry, "point");
-    geometryTypesMap.insert(eLineGeometry, "line");
-    geometryTypesMap.insert(ePlaneGeometry, "plane");
-    geometryTypesMap.insert(eSphereGeometry, "sphere");
-    geometryTypesMap.insert(eScalarEntityAngleGeometry, "angle");
-    geometryTypesMap.insert(eScalarEntityDistanceGeometry, "distance");
-    geometryTypesMap.insert(eScalarEntityTemperatureGeometry, "temperature");
-    geometryTypesMap.insert(ePointCloudGeometry, "point cloud");
     geometryTypesMap.insert(eCircleGeometry, "circle");
     geometryTypesMap.insert(eConeGeometry, "cone");
     geometryTypesMap.insert(eCylinderGeometry, "cylinder");
+    geometryTypesMap.insert(eEllipseGeometry, "ellipse");
     geometryTypesMap.insert(eEllipsoidGeometry, "ellipsoid");
     geometryTypesMap.insert(eHyperboloidGeometry, "hyperboloid");
-    geometryTypesMap.insert(eParaboloidGeometry, "paraboloid");
+    geometryTypesMap.insert(eLineGeometry, "line");
     geometryTypesMap.insert(eNurbsGeometry, "nurbs");
+    geometryTypesMap.insert(eParaboloidGeometry, "paraboloid");
+    geometryTypesMap.insert(ePlaneGeometry, "plane");
+    geometryTypesMap.insert(ePointGeometry, "point");
+    geometryTypesMap.insert(ePointCloudGeometry, "point cloud");
+    geometryTypesMap.insert(eScalarEntityAngleGeometry, "angle");
+    geometryTypesMap.insert(eScalarEntityDistanceGeometry, "distance");
     geometryTypesMap.insert(eScalarEntityMeasurementSeriesGeometry, "measurement series");
+    geometryTypesMap.insert(eScalarEntityTemperatureGeometry, "temperature");
+    geometryTypesMap.insert(eSlottedHoleGeometry, "slotted hole");
+    geometryTypesMap.insert(eSphereGeometry, "sphere");
+    geometryTypesMap.insert(eTorusGeometry, "torus");
 
     //fill reading map
     readingTypesMap.insert(eDistanceReading, "distance");
@@ -111,7 +125,7 @@ void initMaps(){
  * \param type
  * \return
  */
-QString getElementTypeName(const ElementTypes &type){
+const QString &getElementTypeName(const ElementTypes &type){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
@@ -120,9 +134,9 @@ QString getElementTypeName(const ElementTypes &type){
 
     //get the corresponding element name
     if(internal::elementTypesMap.contains(type)){
-        return internal::elementTypesMap.value(type);
+        return internal::elementTypesMap[type];
     }
-    return "undefined";
+    return internal::undefined;
 
 }
 
@@ -148,7 +162,7 @@ ElementTypes getElementTypeEnum(const QString &name){
  * \param type
  * \return
  */
-QString getFeatureTypeName(const FeatureTypes &type){
+const QString &getFeatureTypeName(const FeatureTypes &type){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
@@ -157,9 +171,9 @@ QString getFeatureTypeName(const FeatureTypes &type){
 
     //get the corresponding feature name
     if(internal::featureTypesMap.contains(type)){
-        return internal::featureTypesMap.value(type);
+        return internal::featureTypesMap[type];
     }
-    return "undefined";
+    return internal::undefined;
 
 }
 
@@ -185,7 +199,7 @@ FeatureTypes getFeatureTypeEnum(const QString &name){
  * \param type
  * \return
  */
-QString getGeometryTypeName(const GeometryTypes &type){
+const QString &getGeometryTypeName(const GeometryTypes &type){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
@@ -194,9 +208,9 @@ QString getGeometryTypeName(const GeometryTypes &type){
 
     //get the corresponding geometry name
     if(internal::geometryTypesMap.contains(type)){
-        return internal::geometryTypesMap.value(type);
+        return internal::geometryTypesMap[type];
     }
-    return "undefined";
+    return internal::undefined;
 
 }
 
@@ -236,7 +250,7 @@ bool getIsGeometry(const FeatureTypes &type){
  * \param type
  * \return
  */
-QString getReadingTypeName(const ReadingTypes &type){
+const QString &getReadingTypeName(const ReadingTypes &type){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
@@ -245,9 +259,9 @@ QString getReadingTypeName(const ReadingTypes &type){
 
     //get the corresponding reading name
     if(internal::readingTypesMap.contains(type)){
-        return internal::readingTypesMap.value(type);
+        return internal::readingTypesMap[type];
     }
-    return "undefined";
+    return internal::undefined;
 
 }
 

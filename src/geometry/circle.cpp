@@ -352,7 +352,7 @@ Circle::Circle(const bool &isNominal, QObject *parent) : Geometry(isNominal, par
  * \param parent
  */
 Circle::Circle(const bool &isNominal, const Position &center, const Direction &normal, const Radius &radius, QObject *parent) : Geometry(isNominal, parent){
-    this->setCircle(p, n, r);
+    this->setCircle(center, normal, radius);
 }
 
 /*!
@@ -477,7 +477,7 @@ void Circle::recalc(){
  */
 QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    QDomElement circle = Geometry::toOpenIndyXML(xmlDoc);
+    /*QDomElement circle = Geometry::toOpenIndyXML(xmlDoc);
 
     if(circle.isNull()){
         return circle;
@@ -507,7 +507,7 @@ QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
     }
     circle.appendChild(ijk);
 
-    return circle;
+    return circle;*/
 
 }
 
@@ -518,7 +518,7 @@ QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
  */
 bool Circle::fromOpenIndyXML(QDomElement &xmlElem){
 
-    bool result = Geometry::fromOpenIndyXML(xmlElem);
+    /*bool result = Geometry::fromOpenIndyXML(xmlElem);
 
     if(result){
 
@@ -545,6 +545,8 @@ bool Circle::fromOpenIndyXML(QDomElement &xmlElem){
 
     }
 
-    return result;
+    return result;*/
+
+    return true;
 
 }

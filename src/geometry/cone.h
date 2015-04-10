@@ -53,6 +53,7 @@ public:
 
     const Direction &getDirection() const;
     const Position &getPosition() const;
+
     const double &getAperture() const;
 
     void setCone(const Position &apex, const Direction &axis, const double &aperture);

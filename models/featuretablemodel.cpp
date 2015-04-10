@@ -63,7 +63,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         case 0://type
             return currentFeature->getFeatureTypeEnum();
         case 1://act/nom
-            return currentFeature->getFeature()->getDisplayIsNominal();
+            //return currentFeature->getFeature()->getDisplayIsNominal();
         case 2://group
             return currentFeature->getFeature()->getGroupName();
         case 3://name
@@ -93,11 +93,11 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
                 return QVariant();
             }*/
         case 7://stddev
-            return currentFeature->getFeature()->getDisplayStdDev();
+            //return currentFeature->getFeature()->getDisplayStdDev();
         case 8://obs
-            return currentFeature->getFeature()->getDisplayObs();
+            //return currentFeature->getFeature()->getDisplayObs();
         case 9://mconfig
-            return currentFeature->getFeature()->getDisplayMConfig();
+            //return currentFeature->getFeature()->getDisplayMConfig();
         case 10://function
             if(currentFeature->getFeature()->getFunctions().size() == 0){
                 return "no function set";
@@ -109,7 +109,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
                 return functions;*/
             }
         case 11://solved
-            return currentFeature->getFeature()->getDisplaySolved();
+            //return currentFeature->getFeature()->getDisplaySolved();
         case 12://comment
             return currentFeature->getFeature()->getComment();
         case 13://radius
@@ -137,29 +137,29 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
                 return QVariant();
             }*/
         case 17://com point
-            return currentFeature->getFeature()->getDisplayIsCommon();
+            //return currentFeature->getFeature()->getDisplayIsCommon();
         case 18://scalar value dist
             if(currentFeature->getFeature()->getIsSolved()){
-                return currentFeature->getFeature()->getDisplayScalarDistanceValue();
+                //return currentFeature->getFeature()->getDisplayScalarDistanceValue();
             }else{
                 return QVariant();
             }
         case 19://scalar value rad
             if(currentFeature->getFeature()->getIsSolved()){
-                return currentFeature->getFeature()->getDisplayScalarAngleValue();
+                //return currentFeature->getFeature()->getDisplayScalarAngleValue();
             }else{
                 return QVariant();
             }
         case 20://temperature
-            return currentFeature->getFeature()->getDisplayScalarTemperatureValue();
+            //return currentFeature->getFeature()->getDisplayScalarTemperatureValue();
         case 21://measurement series
-            return currentFeature->getFeature()->getDisplayScalarMeasurementSeriesValue();
+            //return currentFeature->getFeature()->getDisplayScalarMeasurementSeriesValue();
         case 22://expansion origin x
-           return currentFeature->getFeature()->getDisplayExpansionOriginX();
+            //return currentFeature->getFeature()->getDisplayExpansionOriginX();
         case 23://expansion origin y
-            return currentFeature->getFeature()->getDisplayExpansionOriginY();
+            //return currentFeature->getFeature()->getDisplayExpansionOriginY();
         case 24://expansion origin z
-            return currentFeature->getFeature()->getDisplayExpansionOriginZ();
+            //return currentFeature->getFeature()->getDisplayExpansionOriginZ();
         case 25://use
             if(currentFeature->getTrafoParam() != NULL){
                 return currentFeature->getTrafoParam()->getIsUsed();
@@ -171,27 +171,27 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
             }
             return QVariant();
         case 27://start system
-            return currentFeature->getFeature()->getDisplayStartSystem();
+            //return currentFeature->getFeature()->getDisplayStartSystem();
         case 28://dest system
-            return currentFeature->getFeature()->getDisplayDestinationSystem();
+            //return currentFeature->getFeature()->getDisplayDestinationSystem();
         case 29://tx
-            return currentFeature->getFeature()->getDisplayTranslationX();
+            //return currentFeature->getFeature()->getDisplayTranslationX();
         case 30://ty
-            return currentFeature->getFeature()->getDisplayTranslationY();
+            //return currentFeature->getFeature()->getDisplayTranslationY();
         case 31://tz
-            return currentFeature->getFeature()->getDisplayTranslationZ();
+            //return currentFeature->getFeature()->getDisplayTranslationZ();
         case 32://rx
-            return currentFeature->getFeature()->getDisplayRotationX();
+            //return currentFeature->getFeature()->getDisplayRotationX();
         case 33://ry
-            return currentFeature->getFeature()->getDisplayRotationY();
+            //return currentFeature->getFeature()->getDisplayRotationY();
         case 34://rz
-            return currentFeature->getFeature()->getDisplayRotationZ();
+            //return currentFeature->getFeature()->getDisplayRotationZ();
         case 35://sx
-            return currentFeature->getFeature()->getDisplayScaleX();
+            //return currentFeature->getFeature()->getDisplayScaleX();
         case 36://sy
-            return currentFeature->getFeature()->getDisplayScaleY();
+            //return currentFeature->getFeature()->getDisplayScaleY();
         case 37://sz
-            return currentFeature->getFeature()->getDisplayScaleZ();
+            //return currentFeature->getFeature()->getDisplayScaleZ();
         case 38://time
             if(currentFeature->getTrafoParam() != NULL){
                 return currentFeature->getTrafoParam()->getValidTime();

@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QtXml>
 
+#include "types.h"
+#include "util.h"
+
 /*!
  * \brief The Element class
  */

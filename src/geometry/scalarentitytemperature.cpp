@@ -1,5 +1,6 @@
 #include "scalarentitytemperature.h"
 
+/*
 #include "function.h"
 
 MeasurementConfig ScalarEntityTemperature::defaultMeasurementConfig;
@@ -40,6 +41,179 @@ void ScalarEntityTemperature::recalc(){
 
         this->setIsSolved(false);
 
+    }
+
+}
+
+QDomElement ScalarEntityTemperature::toOpenIndyXML(QDomDocument &xmlDoc) const{
+
+    QDomElement entityTemperature = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(entityTemperature.isNull()){
+        return entityTemperature;
+    }
+
+    entityTemperature.setAttribute("type", getGeometryTypeName(eScalarEntityTemperatureGeometry));
+
+    //add temperature
+    QDomElement temperature = xmlDoc.createElement("temperature");
+    if(this->getIsSolved() || this->getIsNominal()){
+        temperature.setAttribute("value", this->temperature);
+    }else{
+        temperature.setAttribute("value", 0.0);
+    }
+    entityTemperature.appendChild(temperature);
+
+    return entityTemperature;
+
+}
+
+bool ScalarEntityTemperature::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set circle attributes
+        QDomElement temperature = xmlElem.firstChildElement("temperature");
+
+        if(temperature.isNull() || !temperature.hasAttribute("value")){
+            return false;
+        }
+
+        this->temperature = temperature.attribute("value").toDouble();
+
+    }
+
+    return result;
+
+}
+
+bool ScalarEntityTemperature::saveSimulationData()
+{
+    this->mySimulationData.addScalar(this->temperature);
+    return true;
+}
+
+void ScalarEntityTemperature::setTemperature(double temperature){
+    this->temperature = temperature;
+}
+
+double ScalarEntityTemperature::getScalar() const
+{
+    return this->temperature;
+}
+
+double ScalarEntityTemperature::getTemperature() const{
+    return this->temperature;
+}
+
+QString ScalarEntityTemperature::getDisplayIsCommon() const{
+    return QString(isCommon?"true":"false");
+}
+
+QString ScalarEntityTemperature::getDisplayIsNominal() const{
+    return QString(isNominal?"true":"false");
+}
+QString ScalarEntityTemperature::getDisplayObs() const{
+    return QString::number(this->myObservations.size());
+}
+
+QString ScalarEntityTemperature::getDisplaySolved() const{
+    return QString(this->isSolved?"true":"false");
+}
+
+QString ScalarEntityTemperature::getDisplayMConfig() const{
+    return this->activeMeasurementConfig.getDisplayName();
+}
+
+QString ScalarEntityTemperature::getDisplayStdDev() const{
+
+    if(this->myStatistic.isValid){
+        //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
+    }
+    return "-/-";
+
+}
+
+QString ScalarEntityTemperature::getDisplayScalarTemperatureValue() const{
+    return "";
+    //return QString::number(OiUnitConverter::getTemperature(this->temperature),'f',OiUnitConverter::temperatureDigits);
+}
+*/
+
+
+/*!
+ * \brief ScalarEntityTemperature::ScalarEntityTemperature
+ * \param isNominal
+ * \param parent
+ */
+ScalarEntityTemperature::ScalarEntityTemperature(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
+
+}
+
+/*!
+ * \brief ScalarEntityTemperature::ScalarEntityTemperature
+ * \param isNominal
+ * \param temperature
+ * \param parent
+ */
+ScalarEntityTemperature::ScalarEntityTemperature(const bool &isNominal, const double &temperature, QObject *parent) : Geometry(isNominal, parent){
+    this->setTemperature(temperature);
+}
+
+/*!
+ * \brief ScalarEntityTemperature::ScalarEntityTemperature
+ * \param copy
+ * \param parent
+ */
+ScalarEntityTemperature::ScalarEntityTemperature(const ScalarEntityTemperature &copy, QObject *parent) : Geometry(copy, parent){
+    this->temperature = copy.temperature;
+}
+
+/*!
+ * \brief ScalarEntityTemperature::operator =
+ * \param copy
+ * \return
+ */
+ScalarEntityTemperature &ScalarEntityTemperature::operator=(const ScalarEntityTemperature &copy){
+    this->temperature = copy.temperature;
+    return *this;
+}
+
+/*!
+ * \brief ScalarEntityTemperature::~ScalarEntityTemperature
+ */
+ScalarEntityTemperature::~ScalarEntityTemperature(){
+
+}
+
+/*!
+ * \brief ScalarEntityTemperature::getTemperature
+ * \return
+ */
+const double &ScalarEntityTemperature::getTemperature() const{
+    return this->temperature;
+}
+
+/*!
+ * \brief ScalarEntityTemperature::setTemperature
+ * \param temperature
+ */
+void ScalarEntityTemperature::setTemperature(const double &temperature){
+    this->temperature = temperature;
+}
+
+/*!
+ * \brief ScalarEntityTemperature::recalc
+ */
+void ScalarEntityTemperature::recalc(){
+
+    Geometry::recalc();
+
+    //reset temperature definition if not solved
+    if(!this->isSolved){
+        this->temperature = 0.0;
     }
 
 }
@@ -96,56 +270,4 @@ bool ScalarEntityTemperature::fromOpenIndyXML(QDomElement &xmlElem){
 
     return result;
 
-}
-
-bool ScalarEntityTemperature::saveSimulationData()
-{
-    this->mySimulationData.addScalar(this->temperature);
-    return true;
-}
-
-void ScalarEntityTemperature::setTemperature(double temperature){
-    this->temperature = temperature;
-}
-
-double ScalarEntityTemperature::getScalar() const
-{
-    return this->temperature;
-}
-
-double ScalarEntityTemperature::getTemperature() const{
-    return this->temperature;
-}
-
-QString ScalarEntityTemperature::getDisplayIsCommon() const{
-    return QString(isCommon?"true":"false");
-}
-/*
-QString ScalarEntityTemperature::getDisplayIsNominal() const{
-    return QString(isNominal?"true":"false");
-}*/
-/*QString ScalarEntityTemperature::getDisplayObs() const{
-    return QString::number(this->myObservations.size());
-}*/
-
-QString ScalarEntityTemperature::getDisplaySolved() const{
-    return QString(this->isSolved?"true":"false");
-}
-
-QString ScalarEntityTemperature::getDisplayMConfig() const{
-    return this->activeMeasurementConfig.getDisplayName();
-}
-
-QString ScalarEntityTemperature::getDisplayStdDev() const{
-
-    if(this->myStatistic.isValid){
-        //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
-    }
-    return "-/-";
-
-}
-
-QString ScalarEntityTemperature::getDisplayScalarTemperatureValue() const{
-    return "";
-    //return QString::number(OiUnitConverter::getTemperature(this->temperature),'f',OiUnitConverter::temperatureDigits);
 }

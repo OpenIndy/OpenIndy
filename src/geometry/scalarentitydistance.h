@@ -1,40 +1,75 @@
 #ifndef SCALARENTITYDISTANCE_H
 #define SCALARENTITYDISTANCE_H
 
-#include "geometry.h"
-#include "statistic.h"
+#include <QObject>
+#include <QtXml>
 
+#include "geometry.h"
+
+/*!
+ * \brief The ScalarEntityDistance class
+ */
 class ScalarEntityDistance : public Geometry
 {
     Q_OBJECT
+
 public:
-    ScalarEntityDistance(bool isNominal, QObject *parent = 0);
-    ScalarEntityDistance(const ScalarEntityDistance &copy);
+    ScalarEntityDistance(const bool &isNominal, QObject *parent = 0);
+    ScalarEntityDistance(const bool &isNominal, const double &distance, QObject *parent = 0);
+
+    ScalarEntityDistance(const ScalarEntityDistance &copy, QObject *parent = 0);
+
+    ScalarEntityDistance &operator=(const ScalarEntityDistance &copy);
+
+    ~ScalarEntityDistance();
+
+    //########################################
+    //order of unknown parameters (Qxx-matrix)
+    //########################################
+
+    enum DistanceUnknowns{
+        unknownDistance
+    };
+
+    //##############################
+    //get or set distance parameters
+    //##############################
+
+    const double &getDistance() const;
+
+    void setDistance(const double &distance);
+
+    //###########################
+    //reexecute the function list
+    //###########################
 
     void recalc();
+
+    //#################
+    //save and load XML
+    //#################
 
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
-    bool saveSimulationData();
+private:
 
-    double getDistance() const;
-    void setDistance(double distance);
+    //###################
+    //distance attributes
+    //###################
 
-    double getScalar() const;
+    double distance;
 
-    QString getDisplayIsCommon() const;
+    //QString getDisplayIsCommon() const;
     //QString getDisplayIsNominal() const;
     //QString getDisplayObs() const;
-    QString getDisplaySolved() const;
-    QString getDisplayMConfig() const;
-    QString getDisplayStdDev() const;
-    QString getDisplayScalarDistanceValue() const;
+    //QString getDisplaySolved() const;
+    //QString getDisplayMConfig() const;
+    //QString getDisplayStdDev() const;
+    //QString getDisplayScalarAngleValue() const;
 
-    static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
+    //static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
 
-private:
-    double distance;
 
 };
 

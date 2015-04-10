@@ -416,7 +416,7 @@ QDomElement Line::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     QDomElement line = Geometry::toOpenIndyXML(xmlDoc);
 
-    if(line.isNull()){
+    /*if(line.isNull()){
         return line;
     }
 
@@ -433,7 +433,7 @@ QDomElement Line::toOpenIndyXML(QDomDocument &xmlDoc) const{
         ijk.setAttribute("j", 0.0);
         ijk.setAttribute("k", 0.0);
     }
-    line.appendChild(ijk);
+    line.appendChild(ijk);*/
 
     return line;
 
@@ -449,7 +449,7 @@ bool Line::fromOpenIndyXML(QDomElement &xmlElem){
     bool result = Geometry::fromOpenIndyXML(xmlElem);
 
     if(result){
-
+/*
         //set line attributes
         QDomElement directionVector = xmlElem.firstChildElement("spatialDirection");
         QDomElement axisPoint = xmlElem.firstChildElement("coordinates");
@@ -468,7 +468,7 @@ bool Line::fromOpenIndyXML(QDomElement &xmlElem){
         this->xyz.setAt(1, axisPoint.attribute("y").toDouble());
         this->xyz.setAt(2, axisPoint.attribute("z").toDouble());
         this->xyz.setAt(3, 1.0);
-
+*/
     }
 
     return result;

@@ -1,4 +1,5 @@
 #include "point.h"
+/*
 #include "function.h"
 
 MeasurementConfig Point::defaultMeasurementConfig;
@@ -12,10 +13,6 @@ Point::Point(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz
     this->isDrawn = true;
 }
 
-/*!
- * \brief Point::Point
- * \param copy
- */
 Point::Point(const Point &copy) : Geometry(copy.isNominal){
     this->id = copy.id;
     this->name = copy.name;
@@ -27,19 +24,11 @@ Point::~Point(){
 
 }
 
-/*!
- * \brief Point::getXYZ returns the xyz vector
- * \return
- */
 OiVec Point::getXYZ() const
 {
     return this->xyz;
 }
 
-/*!
- * \brief Point::recalc
- * Execute alls functions in the specified order
- */
 void Point::recalc(){
 
     //clear results
@@ -73,11 +62,6 @@ void Point::recalc(){
 
 }
 
-/*!
- * \brief Point::toOpenIndyXML
- * \param xmlDoc
- * \return
- */
 QDomElement Point::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     QDomElement point = Geometry::toOpenIndyXML(xmlDoc);
@@ -92,11 +76,6 @@ QDomElement Point::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
-/*!
- * \brief Point::fromOpenIndyXML
- * \param xmlElem
- * \return
- */
 bool Point::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Geometry::fromOpenIndyXML(xmlElem);
@@ -228,14 +207,14 @@ QString Point::getDisplayZ(bool showDiff) const{
 QString Point::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-/*
+
 QString Point::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}*/
+}
 
-/*QString Point::getDisplayObs() const{
+QString Point::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}*/
+}
 
 QString Point::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");
@@ -251,5 +230,146 @@ QString Point::getDisplayStdDev() const{
         //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
     return "-/-";
+
+}
+*/
+
+/*!
+ * \brief Point::Point
+ * \param isNominal
+ * \param parent
+ */
+Point::Point(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
+
+}
+
+/*!
+ * \brief Point::Point
+ * \param isNominal
+ * \param xyz
+ * \param parent
+ */
+Point::Point(const bool &isNominal, const Position &xyz, QObject *parent) : Geometry(isNominal, parent){
+    this->setPoint(xyz);
+}
+
+/*!
+ * \brief Point::Point
+ * \param copy
+ * \param parent
+ */
+Point::Point(const Point &copy, QObject *parent) : Geometry(copy, parent){
+
+    this->xyz = copy.xyz;
+
+}
+
+/*!
+ * \brief Point::operator =
+ * \param copy
+ * \return
+ */
+Point &Point::operator=(const Point &copy){
+
+    this->xyz = copy.xyz;
+
+    return *this;
+
+}
+
+/*!
+ * \brief Point::~Point
+ */
+Point::~Point(){
+
+}
+
+/*!
+ * \brief Point::hasPosition
+ * \return
+ */
+bool Point::hasPosition() const{
+    return true;
+}
+
+/*!
+ * \brief Point::getPosition
+ * Returns the point's position
+ * \return
+ */
+const Position &Point::getPosition() const{
+    return this->xyz;
+}
+
+/*!
+ * \brief Point::setPoint
+ * \param xyz
+ */
+void Point::setPoint(const Position &xyz){
+
+    //set the given parameters
+    this->xyz = xyz;
+
+}
+
+/*!
+ * \brief Point::recalc
+ */
+void Point::recalc(){
+
+    Geometry::recalc();
+
+    //reset point definition if not solved
+    if(!this->isSolved){
+        this->xyz.setVector(0.0, 0.0, 0.0);
+    }
+
+}
+
+/*!
+ * \brief Point::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Point::toOpenIndyXML(QDomDocument &xmlDoc) const{
+
+    QDomElement point = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(point.isNull()){
+        return point;
+    }
+
+    point.setAttribute("type", getGeometryTypeName(ePointGeometry));
+
+    return point;
+
+}
+
+/*!
+ * \brief Point::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Point::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+/*
+        //set point attributes
+        QDomElement coordinates = xmlElem.firstChildElement("coordinates");
+
+        if(coordinates.isNull() || !coordinates.hasAttribute("x") || !coordinates.hasAttribute("y") || !coordinates.hasAttribute("z")){
+            return false;
+        }
+
+        this->xyz.setAt(0, coordinates.attribute("x").toDouble());
+        this->xyz.setAt(1, coordinates.attribute("y").toDouble());
+        this->xyz.setAt(2, coordinates.attribute("z").toDouble());
+        this->xyz.setAt(3, 1.0);
+*/
+    }
+
+    return result;
 
 }

@@ -10,24 +10,39 @@
 
 //! all OpenIndy element types
 enum ElementTypes{
-    ePointElement,
-    eLineElement,
-    ePlaneElement,
-    eSphereElement,
-    eScalarEntityAngleElement,
-    eScalarEntityDistanceElement,
-    eScalarEntityTemperatureElement,
-    eStationElement,
-    eCoordinateSystemElement,
-    eTrafoParamElement,
-    ePointCloudElement,
+
+    //geometry types
     eCircleElement,
     eConeElement,
     eCylinderElement,
+    eEllipseElement,
     eEllipsoidElement,
     eHyperboloidElement,
-    eParaboloidElement,
+    eLineElement,
     eNurbsElement,
+    eParaboloidElement,
+    ePlaneElement,
+    ePointElement,
+    ePointCloudElement,
+    eScalarEntityAngleElement,
+    eScalarEntityDistanceElement,
+    eScalarEntityMeasurementSeriesElement,
+    eScalarEntityTemperatureElement,
+    eSlottedHoleElement,
+    eSphereElement,
+    eTorusElement,
+
+    //geometric element types
+    eDirectionElement,
+    ePositionElement,
+    eRadiusElement,
+
+    //general feature types
+    eCoordinateSystemElement,
+    eStationElement,
+    eTrafoParamElement,
+
+    //observation and reading types
     eObservationElement,
     eReadingCartesianElement,
     eReadingPolarElement,
@@ -35,53 +50,69 @@ enum ElementTypes{
     eReadingDirectionElement,
     eReadingTemperatureElement,
     eReadingLevelElement,
-    eScalarEntityMeasurementSeriesElement,
+
     eUndefinedElement
+
 };
 
 //! all OpenIndy feature types
 enum FeatureTypes{
-    ePointFeature,
-    eLineFeature,
-    ePlaneFeature,
-    eSphereFeature,
-    eStationFeature,
-    eCoordinateSystemFeature,
-    eTrafoParamFeature,
-    ePointCloudFeature,
+
+    //geometry types
     eCircleFeature,
     eConeFeature,
     eCylinderFeature,
+    eEllipseFeature,
     eEllipsoidFeature,
     eHyperboloidFeature,
+    eLineFeature,
     eNurbsFeature,
     eParaboloidFeature,
+    ePlaneFeature,
+    ePointFeature,
+    ePointCloudFeature,
     eScalarEntityAngleFeature,
     eScalarEntityDistanceFeature,
-    eScalarEntityTemperatureFeature,
     eScalarEntityMeasurementSeriesFeature,
+    eScalarEntityTemperatureFeature,
+    eSlottedHoleFeature,
+    eSphereFeature,
+    eTorusFeature,
+
+    //general feature types
+    eCoordinateSystemFeature,
+    eStationFeature,
+    eTrafoParamFeature,
+
     eUndefinedFeature
+
 };
 
 //! all OpenIndy geometry types
 enum GeometryTypes{
-    ePointGeometry,
-    eLineGeometry,
-    ePlaneGeometry,
-    eSphereGeometry,
-    ePointCloudGeometry,
+
     eCircleGeometry,
     eConeGeometry,
     eCylinderGeometry,
+    eEllipseGeometry,
     eEllipsoidGeometry,
     eHyperboloidGeometry,
+    eLineGeometry,
     eNurbsGeometry,
     eParaboloidGeometry,
+    ePlaneGeometry,
+    ePointGeometry,
+    ePointCloudGeometry,
     eScalarEntityAngleGeometry,
     eScalarEntityDistanceGeometry,
-    eScalarEntityTemperatureGeometry,
     eScalarEntityMeasurementSeriesGeometry,
+    eScalarEntityTemperatureGeometry,
+    eSlottedHoleGeometry,
+    eSphereGeometry,
+    eTorusGeometry,
+
     eUndefinedGeometry
+
 };
 
 //#######################
@@ -89,6 +120,7 @@ enum GeometryTypes{
 //#######################
 
 enum ReadingTypes{
+
     eDistanceReading,
     eCartesianReading,
     ePolarReading,
@@ -96,6 +128,7 @@ enum ReadingTypes{
     eTemperatureReading,
     eLevelReading,
     eUndefinedReading
+
 };
 
 //#####################
@@ -103,22 +136,29 @@ enum ReadingTypes{
 //#####################
 
 enum SensorTypes{
+
     eLaserTracker,
     eTotalStation,
     eUndefinedSensor
+
 };
 
 enum SensorFaces{
+
     eFrontSide,
     eBackSide
+
 };
 
 enum ConnectionTypes{
+
     eNetworkConnection,
     eSerialConnection
+
 };
 
 enum SensorFunctions{
+
     eMoveAngle,
     eMoveXYZ,
     eMotorState,
@@ -126,6 +166,7 @@ enum SensorFunctions{
     eInitialize,
     eHome,
     eCompensation
+
 };
 
 #endif // TYPES_H

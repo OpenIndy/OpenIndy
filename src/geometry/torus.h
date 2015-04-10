@@ -10,34 +10,36 @@
 #include "direction.h"
 
 /*!
- * \brief The Circle class
+ * \brief The Torus class
+ * Defines a torus of rotation
  */
-class Circle : public Geometry
+class Torus : public Geometry
 {
     Q_OBJECT
 
 public:
-    Circle(const bool &isNominal, QObject *parent = 0);
-    Circle(const bool &isNominal, const Position &center, const Direction &normal, const Radius &radius, QObject *parent = 0);
+    Torus(const bool &isNominal, QObject *parent = 0);
+    Torus(const bool &isNominal, const Position &center, const Direction &normal, const Radius &radiusA, const Radius &radiusB, QObject *parent = 0);
 
-    Circle(const Circle &copy, QObject *parent = 0);
+    Torus(const Torus &copy, QObject *parent = 0);
 
-    Circle &operator=(const Circle &copy);
+    Torus &operator=(const Torus &copy);
 
-    ~Circle();
+    ~Torus();
 
     //########################################
     //order of unknown parameters (Qxx-matrix)
     //########################################
 
-    enum CircleUnknowns{
+    enum TorusUnknowns{
         unknownCenterX,
         unknownCenterY,
         unknownCenterZ,
         unknownNormalI,
         unknownNormalJ,
         unknownNormalK,
-        unknownRadius
+        unknownRadiusA,
+        unknownRadiusB
     };
 
     //###################################################################
@@ -48,15 +50,17 @@ public:
     bool hasPosition() const;
     bool hasRadius() const;
 
-    //############################
-    //get or set circle parameters
-    //############################
+    //###########################
+    //get or set torus parameters
+    //###########################
 
     const Radius &getRadius() const;
     const Direction &getDirection() const;
     const Position &getPosition() const;
 
-    void setCircle(const Position &center, const Direction &normal, const Radius &radius);
+    const Radius &getSmallRadius() const;
+
+    void setTorus(const Position &center, const Direction &normal, const Radius &radiusA, const Radius &radiusB);
 
     //###########################
     //reexecute the function list
@@ -73,13 +77,14 @@ public:
 
 private:
 
-    //#################
-    //circle attributes
-    //#################
+    //################
+    //torus attributes
+    //################
 
-    Position center; //center
+    Position center; //center of the torus
     Direction normal; //normal vector
-    Radius radius; //radius
+    Radius radiusA; //distance of the center to the center curve of the torus
+    Radius radiusB; //distance of the center curve to the torus surface (radiusA > radiusB)
 
 
 

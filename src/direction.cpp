@@ -55,12 +55,8 @@ Direction::Direction(const double &x, const double &y, const double &z, const do
  * \param parent
  */
 Direction::Direction(const Direction &copy, QObject *parent) : Element(copy, parent){
-
-    if(copy.ijk.getSize() == 3 && copy.ijkH.getSize() == 4){
-        this->ijk = copy.ijk;
-        this->ijkH = copy.ijkH;
-    }
-
+    this->ijk = copy.ijk;
+    this->ijkH = copy.ijkH;
 }
 
 /*!
@@ -70,10 +66,8 @@ Direction::Direction(const Direction &copy, QObject *parent) : Element(copy, par
  */
 Direction &Direction::operator=(const Direction &copy){
 
-    if(copy.ijk.getSize() == 3 && copy.ijkH.getSize() == 4){
-        this->ijk = copy.ijk;
-        this->ijkH = copy.ijkH;
-    }
+    this->ijk = copy.ijk;
+    this->ijkH = copy.ijkH;
 
     return *this;
 

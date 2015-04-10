@@ -54,6 +54,7 @@ public:
 
     const Direction &getDirection() const;
     const Position &getPosition() const;
+
     const double &getA() const;
     const double &getC() const;
 

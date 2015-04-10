@@ -575,62 +575,62 @@ QList<FeatureWrapper *> OiJob::createFeatures(const FeatureAttributes &attribute
             switch(attributes.typeOfFeature){
             case ePointFeature: {
                 Point *myPoint = new Point(nominal);
-                myPoint->setMeasurementConfig(Point::defaultMeasurementConfig);
+                //myPoint->setMeasurementConfig(Point::defaultMeasurementConfig);
                 myFeature->setPoint(myPoint);
                 break;
             }case eLineFeature: {
                 Line *myLine = new Line(nominal);
-                myLine->setMeasurementConfig(Line::defaultMeasurementConfig);
+                //myLine->setMeasurementConfig(Line::defaultMeasurementConfig);
                 myFeature->setLine(myLine);
                 break;
             }case ePlaneFeature:{
                 Plane *myPlane = new Plane(nominal);
-                myPlane->setMeasurementConfig(Plane::defaultMeasurementConfig);
+                //myPlane->setMeasurementConfig(Plane::defaultMeasurementConfig);
                 myFeature->setPlane(myPlane);
                 break;
             }case eSphereFeature:{
                 Sphere *mySphere = new Sphere(nominal);
-                mySphere->setMeasurementConfig(Sphere::defaultMeasurementConfig);
+                //mySphere->setMeasurementConfig(Sphere::defaultMeasurementConfig);
                 myFeature->setSphere(mySphere);
                 break;
             }case eCircleFeature:{
                 Circle *myCircle = new Circle(nominal);
-                myCircle->setMeasurementConfig(Circle::defaultMeasurementConfig);
+                //myCircle->setMeasurementConfig(Circle::defaultMeasurementConfig);
                 myFeature->setCircle(myCircle);
                 break;
             }case eConeFeature:{
                 Cone *myCone = new Cone(nominal);
-                myCone->setMeasurementConfig(Cone::defaultMeasurementConfig);
+                //myCone->setMeasurementConfig(Cone::defaultMeasurementConfig);
                 myFeature->setCone(myCone);
                 break;
             }case eCylinderFeature:{
                 Cylinder *myCylinder = new Cylinder(nominal);
-                myCylinder->setMeasurementConfig(Cylinder::defaultMeasurementConfig);
+                //myCylinder->setMeasurementConfig(Cylinder::defaultMeasurementConfig);
                 myFeature->setCylinder(myCylinder);
                 break;
             }case eEllipsoidFeature:{
                 Ellipsoid *myEllipsoid = new Ellipsoid(nominal);
-                myEllipsoid->setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
+                //myEllipsoid->setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
                 myFeature->setEllipsoid(myEllipsoid);
                 break;
             }case eHyperboloidFeature:{
                 Hyperboloid *myHyperboloid = new Hyperboloid(nominal);
-                myHyperboloid->setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
+                //myHyperboloid->setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
                 myFeature->setHyperboloid(myHyperboloid);
                 break;
             }case eParaboloidFeature:{
                 Paraboloid *myParaboloid = new Paraboloid(nominal);
-                myParaboloid->setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
+                //myParaboloid->setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
                 myFeature->setParaboloid(myParaboloid);
                 break;
             }case ePointCloudFeature:{
                 PointCloud *myPointCloud = new PointCloud(nominal);
-                myPointCloud->setMeasurementConfig(PointCloud::defaultMeasurementConfig);
+                //myPointCloud->setMeasurementConfig(PointCloud::defaultMeasurementConfig);
                 myFeature->setPointCloud(myPointCloud);
                 break;
             }case eNurbsFeature:{
                 Nurbs *myNurbs = new Nurbs(nominal);
-                myNurbs->setMeasurementConfig(Nurbs::defaultMeasurementConfig);
+                //myNurbs->setMeasurementConfig(Nurbs::defaultMeasurementConfig);
                 myFeature->setNurbs(myNurbs);
                 break;
             }case eStationFeature:{
@@ -665,22 +665,22 @@ QList<FeatureWrapper *> OiJob::createFeatures(const FeatureAttributes &attribute
                 break;*/
             }case eScalarEntityAngleFeature:{
                 ScalarEntityAngle *myAngle = new ScalarEntityAngle(nominal);
-                myAngle->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
+                //myAngle->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
                 myFeature->setScalarEntityAngle(myAngle);
                 break;
             }case eScalarEntityDistanceFeature:{
                 ScalarEntityDistance *myDistance = new ScalarEntityDistance(nominal);
-                myDistance->setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
+                //myDistance->setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
                 myFeature->setScalarEntityDistance(myDistance);
                 break;
             }case eScalarEntityTemperatureFeature:{
                 ScalarEntityTemperature *myTemperature = new ScalarEntityTemperature(nominal);
-                myTemperature->setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
+                //myTemperature->setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
                 myFeature->setScalarEntityTemperature(myTemperature);
                 break;
             }case eScalarEntityMeasurementSeriesFeature:{
                 ScalarEntityMeasurementSeries *myMeasurementSeries = new ScalarEntityMeasurementSeries(nominal);
-                myMeasurementSeries->setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
+                //myMeasurementSeries->setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
                 myFeature->setScalarEntityMeasurementSeries(myMeasurementSeries);
                 break;
             }default:
@@ -1090,7 +1090,7 @@ void OiJob::setGeometryActual(const int &featureId){
         }
 
 
-        myNominal->getGeometry()->getMyActual();
+        myNominal->getGeometry()->getActual();
         FeatureWrapper *newActual;
         newActual= new FeatureWrapper();
 

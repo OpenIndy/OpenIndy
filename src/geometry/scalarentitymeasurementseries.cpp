@@ -1,5 +1,5 @@
 #include "scalarentitymeasurementseries.h"
-
+/*
 #include "function.h"
 
 MeasurementConfig ScalarEntityMeasurementSeries::defaultMeasurementConfig;
@@ -45,11 +45,6 @@ void ScalarEntityMeasurementSeries::recalc(){
 
 }
 
-/*!
- * \brief ScalarEntityMeasurementSeries::toOpenIndyXML
- * \param xmlDoc
- * \return
- */
 QDomElement ScalarEntityMeasurementSeries::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     QDomElement entityMeasurementSeries = Geometry::toOpenIndyXML(xmlDoc);
@@ -73,11 +68,6 @@ QDomElement ScalarEntityMeasurementSeries::toOpenIndyXML(QDomDocument &xmlDoc) c
 
 }
 
-/*!
- * \brief ScalarEntityMeasurementSeries::fromOpenIndyXML
- * \param xmlElem
- * \return
- */
 bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Geometry::fromOpenIndyXML(xmlElem);
@@ -121,13 +111,13 @@ double ScalarEntityMeasurementSeries::getScalar() const
 QString ScalarEntityMeasurementSeries::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-/*
+
 QString ScalarEntityMeasurementSeries::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}*/
-/*QString ScalarEntityMeasurementSeries::getDisplayObs() const{
+}
+QString ScalarEntityMeasurementSeries::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}*/
+}
 
 QString ScalarEntityMeasurementSeries::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");
@@ -148,4 +138,134 @@ QString ScalarEntityMeasurementSeries::getDisplayStdDev() const{
 
 QString ScalarEntityMeasurementSeries::getDisplayScalarMeasurementSeriesValue() const{
     return QString::number(this->seriesValue,'f',6);
+}
+*/
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries
+ * \param isNominal
+ * \param parent
+ */
+ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
+
+}
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries
+ * \param isNominal
+ * \param seriesValue
+ * \param parent
+ */
+ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(const bool &isNominal, const double &seriesValue, QObject *parent) : Geometry(isNominal, parent){
+    this->setSeriesValue(seriesValue);
+}
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries
+ * \param copy
+ * \param parent
+ */
+ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(const ScalarEntityMeasurementSeries &copy, QObject *parent) : Geometry(copy, parent){
+    this->seriesValue = copy.seriesValue;
+}
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::operator =
+ * \param copy
+ * \return
+ */
+ScalarEntityMeasurementSeries &ScalarEntityMeasurementSeries::operator=(const ScalarEntityMeasurementSeries &copy){
+    this->seriesValue = copy.seriesValue;
+    return *this;
+}
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::~ScalarEntityMeasurementSeries
+ */
+ScalarEntityMeasurementSeries::~ScalarEntityMeasurementSeries(){
+
+}
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::getSeriesValue
+ * \return
+ */
+const double &ScalarEntityMeasurementSeries::getSeriesValue() const{
+    return this->seriesValue;
+}
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::setSeriesValue
+ * \param seriesValue
+ */
+void ScalarEntityMeasurementSeries::setSeriesValue(const double &seriesValue){
+    this->seriesValue = seriesValue;
+}
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::recalc
+ */
+void ScalarEntityMeasurementSeries::recalc(){
+
+    Geometry::recalc();
+
+    //reset measurement series definition if not solved
+    if(!this->isSolved){
+        this->seriesValue = 0.0;
+    }
+
+}
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement ScalarEntityMeasurementSeries::toOpenIndyXML(QDomDocument &xmlDoc) const{
+
+    QDomElement entityMeasurementSeries = Geometry::toOpenIndyXML(xmlDoc);
+
+    if(entityMeasurementSeries.isNull()){
+        return entityMeasurementSeries;
+    }
+
+    entityMeasurementSeries.setAttribute("type", getGeometryTypeName(eScalarEntityMeasurementSeriesGeometry));
+
+    //add series value
+    QDomElement seriesValue = xmlDoc.createElement("seriesValue");
+    if(this->getIsSolved() || this->getIsNominal()){
+        seriesValue.setAttribute("value", this->seriesValue);
+    }else{
+        seriesValue.setAttribute("value", 0.0);
+    }
+    entityMeasurementSeries.appendChild(seriesValue);
+
+    return entityMeasurementSeries;
+
+}
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set measurement series attributes
+        QDomElement seriesValue = xmlElem.firstChildElement("seriesValue");
+
+        if(seriesValue.isNull() || !seriesValue.hasAttribute("value")){
+            return false;
+        }
+
+        this->seriesValue = seriesValue.attribute("value").toDouble();
+
+    }
+
+    return result;
+
 }

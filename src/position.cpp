@@ -55,12 +55,8 @@ Position::Position(const double &x, const double &y, const double &z, const doub
  * \param parent
  */
 Position::Position(const Position &copy, QObject *parent) : Element(copy, parent){
-
-    if(copy.xyz.getSize() == 3 && copy.xyzH.getSize() == 4){
-        this->xyz = copy.xyz;
-        this->xyzH = copy.xyzH;
-    }
-
+    this->xyz = copy.xyz;
+    this->xyzH = copy.xyzH;
 }
 
 /*!
@@ -70,10 +66,8 @@ Position::Position(const Position &copy, QObject *parent) : Element(copy, parent
  */
 Position &Position::operator=(const Position &copy){
 
-    if(copy.xyz.getSize() == 3 && copy.xyzH.getSize() == 4){
-        this->xyz = copy.xyz;
-        this->xyzH = copy.xyzH;
-    }
+    this->xyz = copy.xyz;
+    this->xyzH = copy.xyzH;
 
     return *this;
 

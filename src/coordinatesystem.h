@@ -1,13 +1,11 @@
 #ifndef COORDINATESYSTEM_H
 #define COORDINATESYSTEM_H
 
+#include <QObject>
 #include <QList>
 #include <QPointer>
 
-#include "featurewrapper.h"
 #include "feature.h"
-#include "oivec.h"
-#include "oiemitter.h"
 
 class Observation;
 class TrafoParam;
@@ -15,9 +13,6 @@ class Geometry;
 
 /*!
  * \brief The CoordinateSystem class
- * This class contains a list of observations associated with this coordinate system.
- * Also it contains all valid transformation parameters from this system to other systems.
- * The nominals list contains the nominal features in this coordinate system.
  */
 class CoordinateSystem : public Feature
 {

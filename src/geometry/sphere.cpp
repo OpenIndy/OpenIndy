@@ -1,5 +1,5 @@
 #include "sphere.h"
-
+/*
 #include "function.h"
 
 MeasurementConfig Sphere::defaultMeasurementConfig;
@@ -13,10 +13,6 @@ Sphere::Sphere(bool isNominal, QObject *parent) : Geometry(isNominal, parent), x
     this->isDrawn = true;
 }
 
-/*!
- * \brief Sphere::Sphere
- * \param copy
- */
 Sphere::Sphere(const Sphere &copy) : Geometry(copy.isNominal){
     this->id = copy.id;
     this->name = copy.name;
@@ -29,10 +25,6 @@ Sphere::~Sphere(){
 
 }
 
-/*!
- * \brief Sphere::getXYZ returns the xyz vector
- * \return
- */
 OiVec Sphere::getXYZ() const
 {
     return this->xyz;
@@ -43,10 +35,6 @@ double Sphere::getRadius() const
     return this->radius;
 }
 
-/*!
- * \brief Sphere::recalc
- * Execute alls functions in the specified order
- */
 void Sphere::recalc(){
 
     if(this->functionList.size() > 0){
@@ -72,11 +60,6 @@ void Sphere::recalc(){
 
 }
 
-/*!
- * \brief Sphere::toOpenIndyXML
- * \param xmlDoc
- * \return
- */
 QDomElement Sphere::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     QDomElement sphere = Geometry::toOpenIndyXML(xmlDoc);
@@ -99,11 +82,6 @@ QDomElement Sphere::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
-/*!
- * \brief Sphere::fromOpenIndyXML
- * \param xmlElem
- * \return
- */
 bool Sphere::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Geometry::fromOpenIndyXML(xmlElem);
@@ -271,13 +249,13 @@ QString Sphere::getDisplayRadius(bool showDiff) const{
 QString Sphere::getDisplayIsCommon() const{
     return QString(isCommon?"true":"false");
 }
-/*
+
 QString Sphere::getDisplayIsNominal() const{
     return QString(isNominal?"true":"false");
-}*/
-/*QString Sphere::getDisplayObs() const{
+}
+QString Sphere::getDisplayObs() const{
     return QString::number(this->myObservations.size());
-}*/
+}
 
 QString Sphere::getDisplaySolved() const{
     return QString(this->isSolved?"true":"false");
@@ -293,4 +271,179 @@ QString Sphere::getDisplayStdDev() const{
         //return QString::number(this->myStatistic.stdev*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits);
     }
     return "-/-";
+}
+*/
+
+/*!
+ * \brief Sphere::Sphere
+ * \param isNominal
+ * \param parent
+ */
+Sphere::Sphere(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
+
+}
+
+/*!
+ * \brief Sphere::Sphere
+ * \param isNominal
+ * \param center
+ * \param radius
+ * \param parent
+ */
+Sphere::Sphere(const bool &isNominal, const Position &center, const Radius &radius, QObject *parent) : Geometry(isNominal, parent){
+    this->setSphere(center, radius);
+}
+
+/*!
+ * \brief Sphere::Sphere
+ * \param copy
+ * \param parent
+ */
+Sphere::Sphere(const Sphere &copy, QObject *parent) : Geometry(copy, parent){
+
+    this->center = copy.center;
+    this->radius = copy.radius;
+
+}
+
+/*!
+ * \brief Sphere::operator =
+ * \param copy
+ * \return
+ */
+Sphere &Sphere::operator=(const Sphere &copy){
+
+    this->center = copy.center;
+    this->radius = copy.radius;
+
+    return *this;
+
+}
+
+/*!
+ * \brief Sphere::~Sphere
+ */
+Sphere::~Sphere(){
+
+}
+
+/*!
+ * \brief Sphere::hasPosition
+ * \return
+ */
+bool Sphere::hasPosition() const{
+    return true;
+}
+
+/*!
+ * \brief Sphere::hasRadius
+ * \return
+ */
+bool Sphere::hasRadius() const{
+    return true;
+}
+
+/*!
+ * \brief Sphere::getRadius
+ * Returns the radius of the sphere
+ * \return
+ */
+const Radius &Sphere::getRadius() const{
+    return this->radius;
+}
+
+/*!
+ * \brief Sphere::getPosition
+ * Returns the center of the sphere
+ * \return
+ */
+const Position &Sphere::getPosition() const{
+    return this->center;
+}
+
+/*!
+ * \brief Sphere::setSphere
+ * \param center
+ * \param radius
+ */
+void Sphere::setSphere(const Position &center, const Radius &radius){
+
+    //set the given parameters
+    this->center = center;
+    this->radius = radius;
+
+}
+
+/*!
+ * \brief Sphere::recalc
+ */
+void Sphere::recalc(){
+
+    Geometry::recalc();
+
+    //reset sphere definition if not solved
+    if(!this->isSolved){
+        this->center.setVector(0.0, 0.0, 0.0);
+        this->radius.setRadius(0.0);
+    }
+
+}
+
+/*!
+ * \brief Sphere::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Sphere::toOpenIndyXML(QDomDocument &xmlDoc) const{
+
+    QDomElement sphere = Geometry::toOpenIndyXML(xmlDoc);
+/*
+    if(sphere.isNull()){
+        return sphere;
+    }
+
+    sphere.setAttribute("type", getGeometryTypeName(eSphereGeometry));
+
+    QDomElement radius = xmlDoc.createElement("radius");
+    if(this->getIsSolved() || this->getIsNominal()){
+        radius.setAttribute("value", this->radius);
+    }else{
+        radius.setAttribute("value", 0.0);
+    }
+    sphere.appendChild(radius);
+*/
+    return sphere;
+
+}
+
+/*!
+ * \brief Sphere::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Sphere::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+
+    if(result){
+/*
+        //set sphere attributes
+        QDomElement radius = xmlElem.firstChildElement("radius");
+        QDomElement center = xmlElem.firstChildElement("coordinates");
+
+        if(radius.isNull() || center.isNull() || !radius.hasAttribute("value")
+                || !center.hasAttribute("x") || !center.hasAttribute("y") || !center.hasAttribute("z")){
+            return false;
+        }
+
+        this->radius = radius.attribute("value").toDouble();
+        this->xyz.setAt(0, center.attribute("x").toDouble());
+        this->xyz.setAt(1, center.attribute("y").toDouble());
+        this->xyz.setAt(2, center.attribute("z").toDouble());
+        this->xyz.setAt(3, 1.0);
+*/
+    }
+
+    return result;
+
 }

@@ -173,7 +173,7 @@ QDomElement Ellipse::toOpenIndyXML(QDomDocument &xmlDoc) const{
         return ellipse;
     }
 
-    ellipse.setAttribute("type", getGeometryTypeName());
+    ellipse.setAttribute("type", getGeometryTypeName(eEllipseGeometry));
 
     return ellipse;
 

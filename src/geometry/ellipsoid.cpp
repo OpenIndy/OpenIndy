@@ -232,8 +232,6 @@ void Ellipsoid::recalc(){
         this->majorAxis.setVector(0.0, 0.0, 0.0);
         this->a = 0.0;
         this->b = 0.0;
-        this->c = 0.0;
-        this->minorAxis.setVector(0.0, 0.0, 0.0);
     }
 
 }
