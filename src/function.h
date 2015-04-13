@@ -31,6 +31,7 @@
 #include "scalarentitymeasurementseries.h"
 #include "reading.h"
 #include "oifunctionemitter.h"
+#include "pluginmetadata.h"
 
 // \brief save the needed elements
 class NeededElement{

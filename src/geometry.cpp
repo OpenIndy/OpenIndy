@@ -791,7 +791,7 @@ void Geometry::recalc(){
 QDomElement Geometry::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     QDomElement geometry = Feature::toOpenIndyXML(xmlDoc);
-
+/*
     if(geometry.isNull()){
         return geometry;
     }
@@ -869,7 +869,7 @@ QDomElement Geometry::toOpenIndyXML(QDomDocument &xmlDoc) const{
         mConfig.setAttribute("name", this->activeMeasurementConfig.getName());
         geometry.appendChild(mConfig);
     }
-
+*/
     return geometry;
 
 }
@@ -884,7 +884,7 @@ bool Geometry::fromOpenIndyXML(QDomElement &xmlElem){
     bool result = Feature::fromOpenIndyXML(xmlElem);
 
     if(result){
-
+/*
         //set geometry attributes
         if(!xmlElem.hasAttribute("nominal") || !xmlElem.hasAttribute("common")){
             return false;
@@ -898,7 +898,7 @@ bool Geometry::fromOpenIndyXML(QDomElement &xmlElem){
             return false;
         }
         this->myStatistic.stdev = stdv.attribute("value").toDouble();
-
+*/
     }
 
     return result;

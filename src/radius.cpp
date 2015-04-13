@@ -4,7 +4,7 @@
  * \brief Radius::Radius
  * \param parent
  */
-Radius::Radius(QObject *parent){
+Radius::Radius(QObject *parent) : Element(parent){
     this->radius = 0.0;
 }
 
@@ -13,7 +13,7 @@ Radius::Radius(QObject *parent){
  * \param r
  * \param parent
  */
-Radius::Radius(const double &r, QObject *parent){
+Radius::Radius(const double &r, QObject *parent) : Element(parent){
     this->radius = r;
 }
 
@@ -22,7 +22,7 @@ Radius::Radius(const double &r, QObject *parent){
  * \param copy
  * \param parent
  */
-Radius::Radius(const Radius &copy, QObject *parent) : QObject(parent){
+Radius::Radius(const Radius &copy, QObject *parent) : Element(copy, parent){
     this->radius = copy.radius;
 }
 

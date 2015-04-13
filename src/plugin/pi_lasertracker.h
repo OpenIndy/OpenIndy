@@ -22,7 +22,7 @@ public:
 
     bool accept(SensorControl* s, SensorFunctions f){
 
-        switch(f){
+        /*switch(f){
         case(eMoveAngle):
             return this->move(s->az,s->ze,s->dist,s->isMoveRelativ);
         case(eMoveXYZ):
@@ -37,7 +37,7 @@ public:
             return this->changeMotorState();
         case(eCompensation):
             return this->compensation();
-        }
+        }*/
         return false;
     }
 

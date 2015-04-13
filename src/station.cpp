@@ -1,5 +1,10 @@
 #include "station.h"
-#include <QVariant>
+
+#include "coordinatesystem.h"
+#include "sensorcontrol.h"
+#include "reading.h"
+#include "sensor.h"
+/*
 
 Station::Station(QString name)
 {
@@ -100,19 +105,10 @@ Station::~Station(){
 
 }
 
-/*!
- * \brief Station::getIsActiveStation
- * \return
- */
 bool Station::getIsActiveStation(){
     return this->isActiveStation;
 }
 
-/*!
- * \brief Station::setAciteStationState
- * \param isActiveStation
- * \return
- */
 bool Station::setActiveStationState(bool isActiveStation){
     if(this->isActiveStation != isActiveStation){
         this->isActiveStation = isActiveStation;
@@ -147,19 +143,10 @@ SensorConfiguration Station::getInstrumentConfig(){
     return sensorPad->InstrumentConfig;
 }
 
-/*!
- * \brief Station::recalc
- * Execute alls functions in the specified order
- */
 void Station::recalc(){
 
 }
 
-/*!
- * \brief Station::toOpenIndyXML
- * \param xmlDoc
- * \return
- */
 QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
 
     QDomElement station = Feature::toOpenIndyXML(xmlDoc);
@@ -211,11 +198,6 @@ QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
 
 }
 
-/*!
- * \brief Station::fromOpenIndyXML
- * \param xmlElem
- * \return
- */
 bool Station::fromOpenIndyXML(QDomElement &xmlElem){
 
     bool result = Feature::fromOpenIndyXML(xmlElem);
@@ -230,26 +212,15 @@ bool Station::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 }
 
-/*!
- * \brief Station::emitActionFinished
- * \param wasSuccesful
- * will be emitted when the sensor action is completed
- */
 void Station::emitActionFinished(bool wasSuccesful){
 
     emit actionFinished(wasSuccesful);
 }
 
-/*!
- * \brief emitStartStream
- */
 void Station::emitStartReadingStream(int readingType) const{
     emit startReadingStream(readingType);
 }
 
-/*!
- * \brief Station::stopStream
- */
 void Station::emitStopReadingStream() const{
     emit stopReadingStream();
 }
@@ -264,50 +235,22 @@ void Station::emitStopSensorStatsStream() const
     emit stopSensorStatsStream();
 }
 
-
-/*!
- * \brief Station::emitStartMeasure
- * \param mConfig
- * \param geom
- * starts the measurement defined by the given MeasurementConfig.
- * The determined observation will be saved in the station coordinatesystem and
- * in the given geometry
- */
 void Station::emitStartMeasure(Geometry *geom, bool isActiveCoordSys) const{
     emit startMeasure(geom,isActiveCoordSys);
 }
 
-/*!
- * \brief Station::emitStartMove
- * \param azimuth
- * \param zenith
- * \param dist
- * \param isRelativ
- */
 void Station::emitStartMove(double azimuth, double zenith, double dist, bool isRelativ) const{
     emit startMove(azimuth, zenith, dist, isRelativ);
 }
 
-/*!
- * \brief Station::emitStartMove
- * \param x
- * \param y
- * \param z
- */
 void Station::emitStartMove(double x, double y, double z) const{
     emit startMove(x, y, z);
 }
 
-/*!
- * \brief Station::emitStartInitialize
- */
 void Station::emitStartInitialize() const{
     emit startInitialize();
 }
 
-/*!
- * \brief Station::emitStartMotorState
- */
 void Station::emitStartMotorState() const{
     emit startMotorState();
 }
@@ -326,30 +269,18 @@ void Station::emitSelfDefinedAction(QString s) const
     emit startSelfDefinedAction(s);
 }
 
-/*!
- * \brief Station::emitStartHome
- */
 void Station::emitStartHome() const{
     emit startHome();
 }
 
-/*!
- * \brief Station::emitStartToggleSight
- */
 void Station::emitStartToggleSight() const{
     emit startToggleSight();
 }
 
-/*!
- * \brief Station::emitStartConnect
- */
 void Station::emitStartConnect(ConnectionConfig *cConfig) const{
     emit startConnect(cConfig);
 }
 
-/*!
- * \brief Station::emitStartDisconnect
- */
 void Station::emitStartDisconnect() const{
     emit startDisconnect();
 }
@@ -398,4 +329,288 @@ QString Station::getDisplayStdDev() const{
 
 void Station::writeToConsole(QString msg){
     emit this->sendToConsole(msg);
+}
+*/
+
+/*!
+ * \brief Station::Station
+ * \param parent
+ */
+Station::Station(QObject *parent) : Feature(parent){
+
+    //create a point object as the station's position
+    this->position = new Point(false);
+
+    //create a coordinate system object as the station's coordinate system
+    this->stationSystem = new CoordinateSystem(QPointer<Station>(this));
+
+    //create a sensor control object, connect it and move it to thread
+    this->sensorControl = new SensorControl(QPointer<Station>(this));
+    //connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
+    this->connectSensorControl();
+    this->sensorControl->moveToThread(&this->stationThread);
+    this->stationThread.start();
+
+}
+
+/*!
+ * \brief Station::Station
+ * \param name
+ * \param parent
+ */
+Station::Station(const QString &name, QObject *parent) : Feature(parent){
+
+    this->name = name;
+
+    //create a point object as the station's position
+    this->position = new Point(false);
+    this->position->setFeatureName(name);
+
+    //create a coordinate system object as the station's coordinate system
+    this->stationSystem = new CoordinateSystem(QPointer<Station>(this));
+    this->stationSystem->setFeatureName(this->name);
+
+    //create a sensor control object, connect it and move it to thread
+    this->sensorControl = new SensorControl(QPointer<Station>(this));
+    //connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
+    this->connectSensorControl();
+    this->sensorControl->moveToThread(&this->stationThread);
+    this->stationThread.start();
+
+}
+
+/*!
+ * \brief Station::Station
+ * \param copy
+ * \param parent
+ */
+Station::Station(const Station &copy, QObject *parent) : Feature(copy, parent){
+
+    //copy general station attributes
+    this->isActiveStation = copy.isActiveStation;
+    if(!copy.position.isNull()){
+        this->position = new Point(*copy.position.data());
+    }
+
+    //copy measured readings
+    this->cartesianReadings = copy.cartesianReadings;
+    this->directionReadings = copy.directionReadings;
+    this->distanceReadings = copy.distanceReadings;
+    this->polarReadings = copy.polarReadings;
+    this->levelReadings = copy.levelReadings;
+    this->temperatureRadings = copy.temperatureRadings;
+    this->undefinedReadings = copy.undefinedReadings;
+
+}
+
+/*!
+ * \brief Station::operator =
+ * \param copy
+ * \return
+ */
+Station &Station::operator=(const Station &copy){
+
+    //copy general station attributes
+    this->isActiveStation = copy.isActiveStation;
+    if(!copy.position.isNull()){
+        this->position = new Point(*copy.position.data());
+    }
+
+    //copy measured readings
+    this->cartesianReadings = copy.cartesianReadings;
+    this->directionReadings = copy.directionReadings;
+    this->distanceReadings = copy.distanceReadings;
+    this->polarReadings = copy.polarReadings;
+    this->levelReadings = copy.levelReadings;
+    this->temperatureRadings = copy.temperatureRadings;
+    this->undefinedReadings = copy.undefinedReadings;
+
+    return *this;
+
+}
+
+/*!
+ * \brief Station::~Station
+ */
+Station::~Station(){
+
+}
+
+/*!
+ * \brief Station::getIsActiveStation
+ * \return
+ */
+const bool &Station::getIsActiveStation() const{
+    return this->isActiveStation;
+}
+
+/*!
+ * \brief Station::setActiveStationState
+ * \param isActiveStation
+ * \return
+ */
+bool Station::setActiveStationState(const bool &isActiveStation){
+    if(this->isActiveStation != isActiveStation){
+        this->isActiveStation = isActiveStation;
+        emit this->activeStationChanged(this->id);
+    }
+}
+
+/*!
+ * \brief Station::getPosition
+ * \return
+ */
+const QPointer<Point> &Station::getPosition() const{
+    return this->position;
+}
+
+/*!
+ * \brief Station::getCoordinateSystem
+ * \return
+ */
+const QPointer<CoordinateSystem> &Station::getCoordinateSystem() const{
+    return this->stationSystem;
+}
+
+/*!
+ * \brief Station::setSensor
+ * \param sensor
+ */
+void Station::setSensor(const QPointer<Sensor> &sensor){
+    if(!sensor.isNull() && !this->sensorControl.isNull()){
+        this->sensorControl->setSensor(sensor);
+    }
+}
+
+/*!
+ * \brief Station::recalc
+ */
+void Station::recalc(){
+    Feature::recalc();
+}
+
+/*!
+ * \brief Station::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
+
+    QDomElement station = Feature::toOpenIndyXML(xmlDoc);
+
+    /*if(station.isNull()){
+        return station;
+    }
+
+    station.setTagName("station");
+
+    //add used sensors
+    if(this->sensorPad != NULL && this->sensorPad->usedSensors.size() > 0){
+        QDomElement usedSensors = xmlDoc.createElement("usedSensors");
+        foreach(Sensor *s, this->sensorPad->usedSensors){
+            if(s != NULL){
+                QDomElement sensor = s->toOpenIndyXML(xmlDoc);
+                if(!sensor.isNull()){
+                    usedSensors.appendChild(sensor);
+                }
+            }
+        }
+        station.appendChild(usedSensors);
+    }
+
+    //add active sensor
+    if(this->sensorPad != NULL && this->sensorPad->instrument != NULL){
+        QDomElement activeSensor = this->sensorPad->instrument->toOpenIndyXML(xmlDoc);
+        if(!activeSensor.isNull()){
+            activeSensor.setTagName("activeSensor");
+            station.appendChild(activeSensor);
+        }
+    }
+
+    //add position
+    if(this->position != NULL){
+        QDomElement position = xmlDoc.createElement("position");
+        position.setAttribute("ref", this->position->getId());
+        station.appendChild(position);
+    }
+
+    //add coordinate system
+    if(this->coordSys != NULL){
+        QDomElement stationSystem = xmlDoc.createElement("coordinateSystem");
+        stationSystem.setAttribute("ref", this->coordSys->getId());
+        station.appendChild(stationSystem);
+    }*/
+
+    return station;
+
+}
+
+/*!
+ * \brief Station::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool Station::fromOpenIndyXML(QDomElement &xmlElem){
+
+    bool result = Feature::fromOpenIndyXML(xmlElem);
+
+    if(result){
+
+        //set station attributes
+        this->isActiveStation = false;
+
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief Station::stopThread
+ */
+void Station::stopThread(){
+    stationThread.quit();
+    stationThread.wait();
+}
+
+/*!
+ * \brief Station::startThread
+ */
+void Station::startThread(){
+    stationThread.start();
+}
+
+/*!
+ * \brief Station::stationNameChanged
+ * Update the station system name whenever the station's name has changed
+ * \param featureId
+ * \param oldName
+ */
+void Station::stationNameChanged(const int &featureId, const QString &oldName){
+    if(!this->stationSystem.isNull()){
+        this->stationSystem->setFeatureName(this->name);
+    }
+}
+
+/*!
+ * \brief Station::connectSensorControl
+ */
+void Station::connectSensorControl(){
+/*
+    connect(this->sensorControl, SIGNAL(commandFinished(bool)), this, SIGNAL(actionFinished(bool));
+
+    connect(this, SIGNAL(measure(const QPointer<Geometry>&,const bool&)), this->sensorControl,SLOT(measure(Geometry*,bool)));
+    connect(this, SIGNAL(move(double,double,double,bool)), this->sensorControl,SLOT(move(double,double,double,bool)));
+    connect(this, SIGNAL(move(double,double,double)), this->sensorControl,SLOT(move(double,double,double)));
+    connect(this, SIGNAL(initialize()), this->sensorControl,SLOT(initialize()));
+    connect(this, SIGNAL(motorState()), this->sensorControl,SLOT(motorState()));
+    connect(this, SIGNAL(home()), this->sensorControl,SLOT(home()));
+    connect(this, SIGNAL(toggleSight()), this->sensorControl,SLOT(toggleSight()));
+    connect(this, SIGNAL(compensation()), this->sensorControl,SLOT(compensation()));
+    connect(this, SIGNAL(connect(ConnectionConfig)), this->sensorControl,SLOT(connectSensor(ConnectionConfig*)));
+    connect(this, SIGNAL(disconnect()), this->sensorControl,SLOT(disconnectSensor()));
+    connect(this, SIGNAL(readingStream(bool,ReadingTypes)), this->sensorControl,SLOT(readingStream(int)));
+    connect(this, SIGNAL(sensorStateStream(bool)), this->sensorControl,SLOT(sensorStatsStream()));
+    connect(this, SIGNAL(selfDefinedAction(QString)), this->sensorControl,SLOT(doSelfDefinedAction(QString)));
+*/
 }

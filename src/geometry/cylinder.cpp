@@ -277,7 +277,7 @@ bool Cylinder::fromOpenIndyXML(QDomElement &xmlElem){
     bool result = Geometry::fromOpenIndyXML(xmlElem);
 
     if(result){
-
+/*
         //set cylinder attributes
         QDomElement radius = xmlElem.firstChildElement("radius");
         QDomElement directionVector = xmlElem.firstChildElement("spatialDirection");
@@ -298,7 +298,7 @@ bool Cylinder::fromOpenIndyXML(QDomElement &xmlElem){
         this->xyz.setAt(1, axisPoint.attribute("y").toDouble());
         this->xyz.setAt(2, axisPoint.attribute("z").toDouble());
         this->xyz.setAt(3, 1.0);
-
+*/
     }
 
     return result;

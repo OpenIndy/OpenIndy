@@ -67,8 +67,8 @@ void Statistic::reset(){
     this->stdev = 0.0;
 
     OiMat resetMat;
-    this->p.replace(reset);
-    this->qxx.replace(reset);
+    this->p.replace(resetMat);
+    this->qxx.replace(resetMat);
     OiVec resetVec;
     this->v.replace(resetVec);
 

@@ -12,6 +12,7 @@
 class Observation;
 class TrafoParam;
 class Geometry;
+class Station;
 
 /*!
  * \brief The CoordinateSystem class
@@ -22,12 +23,13 @@ class CoordinateSystem : public Feature
 
 public:
     explicit CoordinateSystem(QObject *parent = 0);
+    explicit CoordinateSystem(const QPointer<Station> &station, QObject *parent = 0);
 
     CoordinateSystem(const CoordinateSystem &copy, QObject *parent = 0);
 
     CoordinateSystem &operator=(const CoordinateSystem &copy);
 
-    virtual ~CoordinateSystem();
+    ~CoordinateSystem();
 
     //#######################################
     //get or set coordinate system attributes
@@ -37,6 +39,7 @@ public:
     void setActiveCoordinateSystemState(const bool &isActiveCoordinateSystem);
 
     const bool &getIsStationSystem() const;
+    const QPointer<Station> &getStation() const;
 
     const Position &getOrigin() const;
     const Direction &getXAxis() const;
@@ -109,13 +112,19 @@ private:
 
     Position expansionOrigin; //represents the point from which the Part object expands with temperature
 
+    QPointer<Station> station; //holds the station object (only if this is a station system)
+
     //#######################################
     //observations, trafo params and nominals
     //#######################################
 
-    QList< QPointer<Observation> > observations;
+    QList< QPointer<Observation> > observationsList;
+    QMap< int, QPointer<Observation> > observationsMap; //same observations but id as key
+
     QList< QPointer<TrafoParam> > trafoParams;
-    QList< QPointer<FeatureWrapper> > nominals;
+
+    QList< QPointer<FeatureWrapper> > nominalsList;
+    QMap< int, QPointer<FeatureWrapper> > nominalsMap; //same geometries but id as key
 
 
     //QString getDisplayX() const;

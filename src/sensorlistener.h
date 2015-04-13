@@ -4,49 +4,68 @@
 #include <QObject>
 #include <QThread>
 #include <QTime>
+#include <QMap>
+#include <QVariantMap>
+
 #include "sensor.h"
 
 /*!
  * \brief The SensorListener class
- * the sensor listener handles all sensor streams
- * it should be run on a custom thread and the
- * sensorcontroller of the station delegates the
- * stream activity
+ * The sensor listener handles all sensor streams and is controlled by SensorControl
  */
 class SensorListener : public QObject
 {
     Q_OBJECT
+
 public:
-    SensorListener(Sensor* s);
+    SensorListener(const QPointer<Sensor> &sensor, QObject *parent = 0);
 
+    ~SensorListener();
 
-    /*booleans to check and control
-     *stream activity
-    */
-    bool isStreamActive;
-    bool isStreamFinished;
+    //#################
+    //get or set sensor
+    //#################
+
+    void setInstrument(QPointer<Sensor> sensor);
+    QPointer<Sensor> getInstrument() const;
+
+    //#####################
+    //check stream activity
+    //#####################
+
+    bool getIsStreamActive() const;
+
+public slots:
+
+    //#######################
+    //start or stop streaming
+    //#######################
+
+    void startStatusStream();
+    void startReadingStream(const ReadingTypes &streamFormat);
+
+    void abortSensorAction();
     
 signals:
 
-    void sendReadingMap(QVariantMap);
-    void sendSensorStats(QMap<QString,QString>);
+    //##############################
+    //inform about streaming results
+    //##############################
+
+    void sendReadingMap(const QVariantMap &stream);
+    void sendSensorStats(const QMap<QString, QString> &stream);
     void connectionLost();
-    
-public slots:
-
-    //streams
-    void sensorStatStream();
-    void sensorReadingStream(int streamFormat);
-
-    //abort actual sensor action
-    void abortSensorAction();
-
-    //sensor
-    void setInstrument(Sensor* s);
-    Sensor* getInstrument();
 
 private:
-    Sensor* instrument;
+
+    //##########################
+    //sensor listener attributes
+    //##########################
+
+    QPointer<Sensor> sensor;
+
+    bool isStreamActive;
+    //bool isStreamFinished;
 
 };
 

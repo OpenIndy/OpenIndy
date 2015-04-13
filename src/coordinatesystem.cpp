@@ -1,4 +1,9 @@
 #include "coordinatesystem.h"
+
+#include "featurewrapper.h"
+#include "observation.h"
+#include "geometry.h"
+#include "trafoparam.h"
 /*
 #include "observation.h"
 #include "trafoparam.h"
@@ -431,8 +436,20 @@ bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem){
  * \brief CoordinateSystem::CoordinateSystem
  * \param parent
  */
-CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent){
+CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), isActiveCoordinateSystem(false), isStationSystem(false){
 
+}
+
+/*!
+ * \brief CoordinateSystem::CoordinateSystem
+ * \param station
+ * \param parent
+ */
+CoordinateSystem::CoordinateSystem(const QPointer<Station> &station, QObject *parent) : Feature(parent), isActiveCoordinateSystem(false){
+    if(!station.isNull()){
+        this->isStationSystem = true;
+        this->station = station;
+    }
 }
 
 /*!
@@ -448,142 +465,431 @@ CoordinateSystem::CoordinateSystem(const CoordinateSystem &copy, QObject *parent
     this->yAxis = copy.yAxis;
     this->zAxis = copy.zAxis;
     this->isStationSystem = copy.isStationSystem;
+    this->station = copy.station;
     this->isActiveCoordinateSystem = copy.isActiveCoordinateSystem;
     this->expansionOrigin = copy.expansionOrigin;
 
 }
 
-CoordinateSystem &CoordinateSystem::operator=(const CoordinateSystem &copy)
-{
+/*!
+ * \brief CoordinateSystem::operator =
+ * \param copy
+ * \return
+ */
+CoordinateSystem &CoordinateSystem::operator=(const CoordinateSystem &copy){
+
+    //copy attributes
+    this->origin = copy.origin;
+    this->xAxis = copy.xAxis;
+    this->yAxis = copy.yAxis;
+    this->zAxis = copy.zAxis;
+    this->isStationSystem = copy.isStationSystem;
+    this->station = copy.station;
+    this->isActiveCoordinateSystem = copy.isActiveCoordinateSystem;
+    this->expansionOrigin = copy.expansionOrigin;
+
+    return *this;
 
 }
 
-CoordinateSystem::~CoordinateSystem()
-{
+/*!
+ * \brief CoordinateSystem::~CoordinateSystem
+ */
+CoordinateSystem::~CoordinateSystem(){
 
 }
 
-const bool &CoordinateSystem::getIsActiveCoordinateSystem() const
-{
+/*!
+ * \brief CoordinateSystem::getIsActiveCoordinateSystem
+ * \return
+ */
+const bool &CoordinateSystem::getIsActiveCoordinateSystem() const{
+    return this->isActiveCoordinateSystem;
+}
+
+/*!
+ * \brief CoordinateSystem::setActiveCoordinateSystemState
+ * \param isActiveCoordinateSystem
+ */
+void CoordinateSystem::setActiveCoordinateSystemState(const bool &isActiveCoordinateSystem){
+    if(this->isActiveCoordinateSystem != isActiveCoordinateSystem){
+        this->isActiveCoordinateSystem = isActiveCoordinateSystem;
+        emit this->activeCoordinateSystemChanged(this->id);
+    }
+}
+
+/*!
+ * \brief CoordinateSystem::getIsStationSystem
+ * \return
+ */
+const bool &CoordinateSystem::getIsStationSystem() const{
+    return this->isStationSystem;
+}
+
+/*!
+ * \brief CoordinateSystem::getStation
+ * \return
+ */
+const QPointer<Station> &CoordinateSystem::getStation() const{
+    return this->station;
+}
+
+/*!
+ * \brief CoordinateSystem::getOrigin
+ * \return
+ */
+const Position &CoordinateSystem::getOrigin() const{
+    return this->origin;
+}
+
+/*!
+ * \brief CoordinateSystem::getXAxis
+ * \return
+ */
+const Direction &CoordinateSystem::getXAxis() const{
+    return this->xAxis;
+}
+
+/*!
+ * \brief CoordinateSystem::getYAxis
+ * \return
+ */
+const Direction &CoordinateSystem::getYAxis() const{
+    return this->yAxis;
+}
+
+/*!
+ * \brief CoordinateSystem::getZAxis
+ * \return
+ */
+const Direction &CoordinateSystem::getZAxis() const{
+    return this->zAxis;
+}
+
+/*!
+ * \brief CoordinateSystem::setCoordinateSystem
+ * \param origin
+ * \param xAxis
+ * \param yAxis
+ * \param zAxis
+ */
+void CoordinateSystem::setCoordinateSystem(const Position &origin, const Direction &xAxis, const Direction &yAxis, const Direction &zAxis){
+    this->origin = origin;
+    this->xAxis = xAxis;
+    this->yAxis = yAxis;
+    this->zAxis = zAxis;
+}
+
+/*!
+ * \brief CoordinateSystem::getExpansionOrigin
+ * \return
+ */
+const Position &CoordinateSystem::getExpansionOrigin() const{
+    return this->expansionOrigin;
+}
+
+/*!
+ * \brief CoordinateSystem::setExpansionOrigin
+ * \param expansionOrigin
+ */
+void CoordinateSystem::setExpansionOrigin(const Position &expansionOrigin){
+    this->expansionOrigin = expansionOrigin;
+}
+
+/*!
+ * \brief CoordinateSystem::getObservations
+ * \return
+ */
+const QList<QPointer<Observation> > &CoordinateSystem::getObservations() const{
+    return this->observationsList;
+}
+
+/*!
+ * \brief CoordinateSystem::getObservation
+ * \param observationId
+ * \return
+ */
+QPointer<Observation> CoordinateSystem::getObservation(const int &observationId) const{
+    return this->observationsMap.value(observationId, QPointer<Observation>());
+}
+
+/*!
+ * \brief CoordinateSystem::addObservation
+ * \param observation
+ * \return
+ */
+bool CoordinateSystem::addObservation(const QPointer<Observation> &observation){
+
+    if(!observation.isNull()){
+
+        this->observationsList.append(observation);
+        this->observationsMap.insert(observation->getId(), observation);
+
+        emit this->observationsChanged(this->id, observation->getId());
+
+        return true;
+
+    }
+
+    return false;
 
 }
 
-void CoordinateSystem::setActiveCoordinateSystemState(const bool &isActiveCoordinateSystem)
-{
+/*!
+ * \brief CoordinateSystem::getTransformationParameters
+ * \return
+ */
+const QList<QPointer<TrafoParam> > &CoordinateSystem::getTransformationParameters() const{
+    return this->trafoParams;
+}
+
+/*!
+ * \brief CoordinateSystem::getTransformationParameters
+ * \param to
+ * \return
+ */
+const QList<QPointer<TrafoParam> > CoordinateSystem::getTransformationParameters(const QPointer<CoordinateSystem> &to) const{
+
+    QList< QPointer<TrafoParam> > result;
+
+    //check the destination system
+    if(to.isNull()){
+        return result;
+    }
+
+    //run through all trafo params and select those whose destination system quals "to"
+    foreach(const QPointer<TrafoParam> &trafo, this->trafoParams){
+        if(!trafo.isNull() && !trafo->getDestinationSystem().isNull() && !trafo->getStartSystem().isNull()){
+            if(trafo->getDestinationSystem()->getId() == to->getId() || trafo->getStartSystem()->getId() == to->getId()){
+               result.append(trafo);
+            }
+        }
+    }
+
+    return result;
 
 }
 
-const bool &CoordinateSystem::getIsStationSystem() const
-{
+/*!
+ * \brief CoordinateSystem::addTransformationParameter
+ * \param trafoParam
+ * \return
+ */
+bool CoordinateSystem::addTransformationParameter(const QPointer<TrafoParam> &trafoParam){
+
+    if(!trafoParam.isNull()){
+
+        this->trafoParams.append(trafoParam);
+        emit this->transformationParametersChanged(this->id);
+
+        return true;
+
+    }
+
+    return false;
 
 }
 
-const Position &CoordinateSystem::getOrigin() const
-{
+/*!
+ * \brief CoordinateSystem::removeTransformationParameter
+ * \param trafoParam
+ * \return
+ */
+bool CoordinateSystem::removeTransformationParameter(const QPointer<TrafoParam> &trafoParam){
+    if(!trafoParam.isNull()){
+        this->trafoParams.removeOne(trafoParam);
+        emit this->transformationParametersChanged(this->id);
+    }
+}
+
+/*!
+ * \brief CoordinateSystem::getNominals
+ * \return
+ */
+const QList<QPointer<FeatureWrapper> > &CoordinateSystem::getNominals() const{
+    return this->nominalsList;
+}
+
+/*!
+ * \brief CoordinateSystem::addNominal
+ * \param nominal
+ * \return
+ */
+bool CoordinateSystem::addNominal(const QPointer<FeatureWrapper> &nominal){
+
+    if(!nominal.isNull() && !nominal->getGeometry().isNull()){
+
+        nominal->getGeometry()->setNominalSystem(this);
+        this->nominalsList.append(nominal);
+        this->nominalsMap.insert(nominal->getGeometry()->getId(), nominal);
+        emit this->nominalsChanged(this->id);
+
+        return true;
+
+    }
+
+    return false;
 
 }
 
-const Direction &CoordinateSystem::getXAxis() const
-{
+/*!
+ * \brief CoordinateSystem::addNominals
+ * \param nominals
+ * \return
+ */
+bool CoordinateSystem::addNominals(const QList<QPointer<FeatureWrapper> > &nominals){
+
+    if(nominals.size() > 0){
+
+        foreach(const QPointer<FeatureWrapper> &geom, nominals){
+
+            if(geom.isNull() || geom->getGeometry().isNull()){
+                continue;
+            }
+
+            geom->getGeometry()->setNominalSystem(this);
+            this->nominalsList.append(geom);
+            this->nominalsMap.insert(geom->getGeometry()->getId(), geom);
+
+        }
+
+        emit this->nominalsChanged(this->id);
+
+        return true;
+
+    }
+
+    return false;
 
 }
 
-const Direction &CoordinateSystem::getYAxis() const
-{
+/*!
+ * \brief CoordinateSystem::removeNominal
+ * \param nominal
+ * \return
+ */
+bool CoordinateSystem::removeNominal(const QPointer<FeatureWrapper> &nominal){
+
+    if(!nominal.isNull() && !nominal->getGeometry().isNull()){
+
+        this->nominalsMap.remove(nominal->getGeometry()->getId());
+        this->nominalsList.removeOne(nominal);
+        emit this->nominalsChanged(this->id);
+
+    }
+
+    return false;
 
 }
 
-const Direction &CoordinateSystem::getZAxis() const
-{
+/*!
+ * \brief CoordinateSystem::removeNominal
+ * \param featureId
+ * \return
+ */
+bool CoordinateSystem::removeNominal(const int &featureId){
+    QPointer<FeatureWrapper> nominal = this->nominalsMap.value(featureId, QPointer<FeatureWrapper>());
+    return this->removeNominal(nominal);
+}
+
+/*!
+ * \brief CoordinateSystem::recalc
+ */
+void CoordinateSystem::recalc(){
+    Feature::recalc();
+}
+
+/*!
+ * \brief CoordinateSystem::toOpenIndyXML
+ * \param xmlDoc
+ * \return
+ */
+QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc){
+
+    QDomElement coordinateSystem = Feature::toOpenIndyXML(xmlDoc);
+/*
+    if(coordinateSystem.isNull()){
+        return coordinateSystem;
+    }
+
+    coordinateSystem.setTagName("coordinateSystem");
+
+    //add trafo params
+    if(this->trafoParams.size() > 0){
+        QDomElement trafoParams = xmlDoc.createElement("transformationParameters");
+        foreach(TrafoParam *tp, this->trafoParams){
+            if(tp != NULL){
+                QDomElement trafoParam = xmlDoc.createElement("transformationParameter");
+                trafoParam.setAttribute("ref", tp->getId());
+                trafoParams.appendChild(trafoParam);
+            }
+        }
+        coordinateSystem.appendChild(trafoParams);
+    }
+
+    //add observations
+    if(this->observations.size() > 0){
+        QDomElement observations = xmlDoc.createElement("observations");
+        foreach(Observation *obs, this->observations){
+            if(obs != NULL){
+                QDomElement observation = xmlDoc.createElement("observation");
+                observation.setAttribute("ref", obs->getId());
+                observations.appendChild(observation);
+            }
+        }
+        coordinateSystem.appendChild(observations);
+    }
+
+    //add nominals
+    if(this->nominals.size() > 0){
+        QDomElement nominals = xmlDoc.createElement("nominalGeometries");
+        foreach(FeatureWrapper *geom, this->nominals){
+            if(geom != NULL && geom->getGeometry() != NULL){
+                QDomElement nominal = xmlDoc.createElement("geometry");
+                nominal.setAttribute("ref", geom->getGeometry()->getId());
+                nominals.appendChild(nominal);
+            }
+        }
+        coordinateSystem.appendChild(nominals);
+    }
+
+    //add expansion origin
+    if(this->expansionOrigin.getSize() >= 3){
+        QDomElement expansionOrigin = xmlDoc.createElement("expansionOrigin");
+        expansionOrigin.setAttribute("x", this->expansionOrigin.getAt(0));
+        expansionOrigin.setAttribute("y", this->expansionOrigin.getAt(1));
+        expansionOrigin.setAttribute("z", this->expansionOrigin.getAt(2));
+        coordinateSystem.appendChild(expansionOrigin);
+    }
+*/
+    return coordinateSystem;
 
 }
 
-void CoordinateSystem::setCoordinateSystem(const Position &origin, const Direction &xAxis, const Direction &yAxis, const Direction &zAxis)
-{
+/*!
+ * \brief CoordinateSystem::fromOpenIndyXML
+ * \param xmlElem
+ * \return
+ */
+bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem){
 
-}
+    bool result = Feature::fromOpenIndyXML(xmlElem);
 
-const Position &CoordinateSystem::getExpansionOrigin() const
-{
+    if(result){
+/*
+        //set expansion origin
+        QDomElement expansionOrigin = xmlElem.firstChildElement("expansionOrigin");
+        if(!expansionOrigin.isNull()){
+            if(!expansionOrigin.hasAttribute("x") || !expansionOrigin.hasAttribute("y") || !expansionOrigin.hasAttribute("z")){
+                return false;
+            }
+            this->expansionOrigin.setAt(0, expansionOrigin.attribute("x").toDouble());
+            this->expansionOrigin.setAt(1, expansionOrigin.attribute("y").toDouble());
+            this->expansionOrigin.setAt(2, expansionOrigin.attribute("z").toDouble());
+        }
+*/
+    }
 
-}
-
-void CoordinateSystem::setExpansionOrigin(const Position &expansionOrigin)
-{
-
-}
-
-const QList<QPointer<Observation> > &CoordinateSystem::getObservations() const
-{
-
-}
-
-QPointer<Observation> CoordinateSystem::getObservation(const int &observationId) const
-{
-
-}
-
-bool CoordinateSystem::addObservation(const QPointer<Observation> &observation)
-{
-
-}
-
-const QList<QPointer<TrafoParam> > &CoordinateSystem::getTransformationParameters() const
-{
-
-}
-
-const QList<QPointer<TrafoParam> > CoordinateSystem::getTransformationParameters(const QPointer<CoordinateSystem> &to) const
-{
-
-}
-
-bool CoordinateSystem::addTransformationParameter(const QPointer<TrafoParam> &trafoParam)
-{
-
-}
-
-bool CoordinateSystem::removeTransformationParameter(const QPointer<TrafoParam> &trafoParam)
-{
-
-}
-
-const QList<QPointer<FeatureWrapper> > &CoordinateSystem::getNominals() const
-{
-
-}
-
-bool CoordinateSystem::addNominal(const QPointer<FeatureWrapper> &nominal)
-{
-
-}
-
-bool CoordinateSystem::addNominals(const QList<QPointer<FeatureWrapper> > &nominals)
-{
-
-}
-
-bool CoordinateSystem::removeNominal(const QPointer<FeatureWrapper> &nominal)
-{
-
-}
-
-bool CoordinateSystem::removeNominal(const int &featureId)
-{
-
-}
-
-void CoordinateSystem::recalc()
-{
-
-}
-
-QDomElement CoordinateSystem::toOpenIndyXML(QDomDocument &xmlDoc)
-{
-
-}
-
-bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem)
-{
+    return result;
 
 }

@@ -9,6 +9,28 @@ FeatureWrapper::FeatureWrapper(QObject *parent) : QObject(parent){
 }
 
 /*!
+ * \brief FeatureWrapper::operator ==
+ * Compare 2 FeatureWrappers by their underlying feature id
+ * \param other
+ * \return
+ */
+bool FeatureWrapper::operator==(const FeatureWrapper &other){
+
+    //check if both feature wrappers have got a valid feature
+    if(this->myFeature.isNull() || other.getFeature().isNull()){
+        return false;
+    }
+
+    //compare the feature ids
+    if(this->myFeature->getId() == other.getFeature()->getId()){
+        return true;
+    }
+
+    return false;
+
+}
+
+/*!
  * \brief FeatureWrapper::getFeatureTypeEnum
  * \return
  */

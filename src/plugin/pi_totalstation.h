@@ -20,14 +20,14 @@ public:
 
     bool accept(SensorControl* s, SensorFunctions f){
 
-        switch(f){
+        /*switch(f){
         case(eMoveAngle):
             return this->move(s->az,s->ze,s->dist,s->isMoveRelativ);
         case(eMoveXYZ):
             return this->move(s->x_, s->y_, s->z_);
         case(eToggleSight):
             return this->toggleSightOrientation();
-        }
+        }*/
         return false;
     }
 

@@ -1,21 +1,25 @@
 #ifndef SENSORCONTROL_H
 #define SENSORCONTROL_H
 
+#include <QObject>
+#include <QPointer>
+#include <QThread>
 #include <QMutex>
-#include <QDebug>
 #include <QTime>
+
 #include "connectionconfig.h"
 #include "station.h"
-#include "measurementconfig.h"
-#include "oiemitter.h"
-#include "sensorconfiguration.h"
+#include "sensor.h"
+//#include "measurementconfig.h"
+//#include "oiemitter.h"
+//#include "sensorconfiguration.h"
 
 class SensorListener;
-class Station;
+//class Station;
 
 /*!
  * \brief The SensorControl class
- * the sensor control object belongs to a station and executes all sensor actions on a seperate thread.
+ * A sensor control object belongs to a station and executes all sensor actions on a seperate thread.
  */
 class SensorControl : public QObject
 {
@@ -23,95 +27,118 @@ class SensorControl : public QObject
 
 public:
 
-    //constructor
-    SensorControl(Station *st);
+    SensorControl(QPointer<Station> &station, QObject *parent = 0);
+
     ~SensorControl();
-
-    //instrument
-    Sensor *instrument;
-    QList<Sensor*> usedSensors;
-    SensorConfiguration InstrumentConfig;
-    SensorListener *instrumentListener;
-
-    QThread listenerThread;
-
-   // bool isReadingStreamActive;
-   // bool isSensorStatStreamActive;
-
-    //attributes
-    double az;
-    double ze;
-    double dist;
-    double x_;
-    double y_;
-    double z_;
-    bool isMoveRelativ;
-    bool isMState;
-    QString cmd;
-
-    OiEmitter& getOiEmitter();
-
-signals:
-    void commandFinished(bool);
-    void recalcFeature(Feature*);
-    void activateStatStream();
-    void activateReadingStream(int);
-    void measurementFinished(int,bool);
-
 
 public slots:
 
-    //measure
-    void measure(Geometry *geom,bool isActiveCoordSys);
+    //####################################
+    //get or set sensor control attributes
+    //####################################
 
-    //data stream
-    void readingStream(int);
-    void sensorStatsStream();
+    void setSensor(const QPointer<Sensor> &sensor);
 
-    //sensor actions
-    void move(double, double, double, bool);
-    void move(double, double, double);
+    //####################
+    //start sensor actions
+    //####################
+
+    void connectSensor(const ConnectionConfig &connConfig);
+    void disconnectSensor();
+
+    void measure(const QPointer<Geometry> &geom, const bool &isActiveCoordSys);
+
+    void readingStream(const bool &start, const ReadingTypes &readingType);
+    void sensorStatsStream(const bool &start);
+
+    void move(const double &azimuth, const double &zenith, const double &distance, const bool &isRelative);
+    void move(const double &x, const double &y, const double &z);
     void initialize();
     void motorState();
     void home();
     void toggleSight();
-    void connectSensor(ConnectionConfig *connConfig);
-    void disconnectSensor();
     void compensation();
-    void doSelfDefinedAction(QString s);
-    void stopReadingStream();
-    void stopStatStream();
+    void selfDefinedAction(const QString &action);
 
-    void copyMe(SensorControl *sc);
+    //void copyMe(SensorControl *sc);
+    //void addReading(Reading* r, Geometry* geom, bool isActiveCoordSys);
+    //ReadingTypes getTypeOfReadingStream();
 
-    void addReading(Reading* r, Geometry* geom, bool isActiveCoordSys);
+signals:
 
-    ReadingTypes getTypeOfReadingStream();
+    //##############################################
+    //signals emitted after sensor actions were done
+    //##############################################
+
+    void commandFinished(const bool &success);
+    void measurementFinished(const int &geomId, const bool &success);
+
+    void recalcFeature(const QPointer<Feature> &feature);
+
+    //void activateStatStream();
+    //void activateReadingStream(int);
 
 private:
 
-    enum streamType{
+    //#################################
+    //general sensor control attributes
+    //#################################
+
+    QPointer<Station> station;
+
+    QPointer<Sensor> sensor;
+    QList<QPointer<Sensor> > usedSensors;
+
+    //SensorConfiguration InstrumentConfig;
+
+    QPointer<SensorListener> sensorListener;
+    QThread listenerThread;
+
+    QMutex locker;
+    //OiEmitter myEmitter;
+
+   // bool isReadingStreamActive;
+   // bool isSensorStatStreamActive;
+
+    //################################################################
+    //helper attributes for the sensor plugins to get their parameters
+    //################################################################
+
+    double moveAzimuth;
+    double moveZenith;
+    double moveDistance;
+    bool moveIsRelative;
+    double moveX;
+    double moveY;
+    double moveZ;
+    QString action;
+    //bool isMState;
+
+    //OiEmitter& getOiEmitter();
+
+private slots:
+
+    /*enum streamType{
         eReadingStream,
         eSenorStats,
         eNoStream
-    };
+    };*/
 
-    Station *myStation;
-    QMutex locker;
-    OiEmitter myEmitter;
+    void saveMeasurementResults(const QList<QPointer<Reading> > &readings, const QPointer<Geometry> &geom, const bool &isActiveCoordSys);
 
-    streamType t;
-    int typeOfReadingStream;
+    void activateSensorStream();
+    void deactivateSensorStream();
 
-    void storeReadings(QList<Reading*>readings, Geometry* geom, bool isActiveCoordSys);
-    void saveReading(Reading* r, Geometry* geom, bool isActiveCoordSys);
+    //streamType t;
+    //int typeOfReadingStream;
 
-    bool sendActivateStream();
-    bool sendDeactivateStream();
-    bool checkSensor();
+    //void storeReadings(QList<Reading*>readings, Geometry* geom, bool isActiveCoordSys);
+    //void saveReading(Reading* r, Geometry* geom, bool isActiveCoordSys);
 
-private slots:
-    void streamLostSignal();
+    //bool sendActivateStream();
+    //bool sendDeactivateStream();
+    //bool checkSensor();
+    //void streamLostSignal();
 
 
 };

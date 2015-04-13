@@ -33,7 +33,7 @@ class FeatureWrapper : public QObject
 public:
     explicit FeatureWrapper(QObject *parent = 0);
 
-public:
+    bool operator==(const FeatureWrapper &other);
 
     //################
     //type information

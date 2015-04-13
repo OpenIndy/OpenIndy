@@ -1,6 +1,7 @@
 #ifndef READING_H
 #define READING_H
 
+#include <QObject>
 #include <QDateTime>
 #include <QtCore/qmath.h>
 #include <QtXml>
@@ -19,8 +20,14 @@ class Observation;
 //definition of reading types
 //###########################
 
+/*!
+ * \brief The ReadingPolar class
+ */
 class ReadingPolar{
 public:
+    ReadingPolar() : azimuth(0.0), zenith(0.0), distance(0.0),
+        sigmaAzimuth(0.0), sigmaZenith(0.0), sigmaDistance(0.0), isValid(false){}
+
     double azimuth;
     double zenith;
     double distance;
@@ -30,8 +37,14 @@ public:
     bool isValid;
 };
 
+/*!
+ * \brief The ReadingDirection class
+ */
 class ReadingDirection{
 public:
+    ReadingDirection() : azimuth(0.0), zenith(0.0), sigmaAzimuth(0.0),
+        sigmaZenith(0.0, isValid(false){}
+
     double azimuth;
     double zenith;
     double sigmaAzimuth;
@@ -39,34 +52,57 @@ public:
     bool isValid;
 };
 
+/*!
+ * \brief The ReadingDistance class
+ */
 class ReadingDistance{
 public:
+    ReadingDistance() : distance(0.0), sigmaDistance(0.0), isValid(false){}
+
     double distance;
     double sigmaDistance;
     bool isValid;
 };
 
+/*!
+ * \brief The ReadingCartesian class
+ */
 class ReadingCartesian{
 public:
+    ReadingCartesian() : xyz(3), sigmaXyz(3), isValid(false){}
+
     OiVec xyz;
     OiVec sigmaXyz;
     bool isValid;
 };
 
+/*!
+ * \brief The ReadingTemperature class
+ */
 class ReadingTemperature{
 public:
-    double tempDeg;
-    double sigmaTempDeg;
+    ReadingTemperature() : temperature(0.0), sigmaTemperature(0.0), isValid(false){}
+
+    double temperature;
+    double sigmaTemperature;
     bool isValid;
 };
 
+/*!
+ * \brief The ReadingUndefined class
+ */
 class ReadingUndefined{
 public:
+    ReadingUndefined() : isValid(false){}
+
     QMap<QString,double> values;
     QMap<QString,double> sigmaValues;
     bool isValid;
 };
 
+/*!
+ * \brief The ReadingLevel class
+ */
 class ReadingLevel{
 public:
     double RX;
@@ -78,13 +114,30 @@ public:
     bool isValid;
 };
 
+//########################
+//the reading class itself
+//########################
+
 /*!
  * \brief The Reading class
  */
 class Reading : public Element
 {
+    Q_OBJECT
+
 public:
-    Reading();
+    explicit Reading(const ReadingPolar &reading, QObject *parent = 0);
+    explicit Reading(const ReadingCartesian &reading, QObject *parent = 0);
+    explicit Reading(const ReadingDirection &reading, QObject *parent = 0);
+    explicit Reading(const ReadingDistance &reading, QObject *parent = 0);
+    explicit Reading(const ReadingTemperature &reading, QObject *parent = 0);
+    explicit Reading(const ReadingLevel &reading, QObject *parent = 0);
+    explicit Reading(const ReadingUndefined &reading, QObject *parent = 0);
+
+    Reading(const Reading &copy, QObject *parent = 0);
+
+    Reading &operator=(const Reading &copy);
+
     ~Reading();
 
     //###########################
@@ -112,13 +165,8 @@ public:
     //convert between polar and cartesian readings
     //############################################
 
-    bool toCartesian();
-    bool toPolar();
-
     static OiVec toCartesian(const double &azimuth, const double &zenith, const double &distance);
     static OiVec toPolar(const double &x, const double &y, const double &z);
-
-    OiVec errorPropagationPolarToCartesian();
 
     //#########################################
     //get general information about the reading
@@ -127,12 +175,19 @@ public:
     const MeasurementConfig &getMeasurementConfig();
     void setMeasurementConfig(const MeasurementConfig &mConfig);
 
+    const QDateTime &getMeasuredAt() const;
+    void setMeasuredAt(const QDateTime &measuredAt);
+
+    const SensorFaces &getFace() const;
+    void setSensorFace(const SensorFaces &face);
+
     //#################################################
     //get and set references to sensor and observations
     //#################################################
 
     const QPointer<Sensor> &getSensor() const;
     void setSensor(const QPointer<Sensor> &sensor);
+
     const QPointer<Observation> &getObservation() const;
     void setObservation(const QPointer<Observation> &observation);
 
@@ -185,6 +240,17 @@ private:
 
     QPointer<Sensor> instrument;
     QPointer<Observation> observation;
+
+private:
+
+    //##############
+    //helper methods
+    //##############
+
+    void toCartesian();
+    void toPolar();
+
+    OiVec errorPropagationPolarToCartesian();
 
 };
 

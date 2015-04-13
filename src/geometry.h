@@ -131,7 +131,7 @@ protected:
     bool isNominal;
     QList< QPointer<Geometry> > nominals;
     QPointer<Geometry> actual;
-    QList<Observation*> observations;
+    QList<QPointer<Observation> > observations;
     QPointer<CoordinateSystem> nominalSystem;
 
     Statistic statistic;

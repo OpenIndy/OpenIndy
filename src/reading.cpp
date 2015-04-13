@@ -1,5 +1,5 @@
 #include "reading.h"
-
+/*
 #include "sensor.h"
 #include "observation.h"
 
@@ -15,122 +15,62 @@ Reading::~Reading(){
 
 }
 
-/*!
- * \brief Reading::getTypeOfReading
- * \return
- */
 const ReadingTypes &Reading::getTypeOfReading() const{
     return this->typeOfReading;
 }
 
-/*!
- * \brief Reading::getPolarReading
- * \return
- */
 const ReadingPolar &Reading::getPolarReading() const{
     return this->rPolar;
 }
 
-/*!
- * \brief Reading::getCartesianReading
- * \return
- */
 const ReadingCartesian &Reading::getCartesianReading() const{
     return this->rCartesian;
 }
 
-/*!
- * \brief Reading::getDirectionReading
- * \return
- */
 const ReadingDirection &Reading::getDirectionReading() const{
     return this->rDirection;
 }
 
-/*!
- * \brief Reading::getDistanceReading
- * \return
- */
 const ReadingDistance &Reading::getDistanceReading() const{
     return this->rDistance;
 }
 
-/*!
- * \brief Reading::getTemperatureReading
- * \return
- */
 const ReadingTemperature &Reading::getTemperatureReading() const{
     return this->rTemperature;
 }
 
-/*!
- * \brief Reading::getLevelReading
- * \return
- */
 const ReadingLevel &Reading::getLevelReading() const{
     return this->rLevel;
 }
 
-/*!
- * \brief Reading::getUndefinedReading
- * \return
- */
 const ReadingUndefined &Reading::getUndefinedReading() const{
     return this->rUndefined;
 }
 
-/*!
- * \brief Reading::getMeasurementConfig
- * \return
- */
 const MeasurementConfig &Reading::getMeasurementConfig(){
     return this->mConfig;
 }
 
-/*!
- * \brief Reading::setMeasurementConfig
- * \param mConfig
- */
 void Reading::setMeasurementConfig(const MeasurementConfig &mConfig){
     this->mConfig = mConfig;
 }
 
-/*!
- * \brief Reading::getSensor
- * \return
- */
 const QPointer<Sensor> &Reading::getSensor() const{
     return this->instrument;
 }
 
-/*!
- * \brief Reading::setSensor
- * \param sensor
- */
 void Reading::setSensor(const QPointer<Sensor> &sensor){
     this->instrument = sensor;
 }
 
-/*!
- * \brief Reading::getObservation
- * \return
- */
 const QPointer<Observation> &Reading::getObservation() const{
     return this->observation;
 }
 
-/*!
- * \brief Reading::setObservation
- * \param observation
- */
 void Reading::setObservation(const QPointer<Observation> &observation){
     this->observation = observation;
 }
 
-/*!
- * \brief Reading::toCartesian
- * \return
- */
 bool Reading::toCartesian(){
 
     if(rPolar.isValid){
@@ -145,13 +85,6 @@ bool Reading::toCartesian(){
 
 }
 
-/*!
- * \brief Reading::toCartesian
- * \param azimuth
- * \param zenith
- * \param distance
- * \return
- */
 OiVec Reading::toCartesian(const double &azimuth, const double &zenith, const double &distance){
 
     OiVec g(4);
@@ -165,10 +98,6 @@ OiVec Reading::toCartesian(const double &azimuth, const double &zenith, const do
 
 }
 
-/*!
- * \brief Reading::toPolar
- * \return
- */
 bool Reading::toPolar(){
 
     if(this->rCartesian.isValid && this->rCartesian.xyz.getSize() == 4){
@@ -190,13 +119,6 @@ bool Reading::toPolar(){
 
 }
 
-/*!
- * \brief Reading::toPolar
- * \param x
- * \param y
- * \param z
- * \return
- */
 OiVec Reading::toPolar(const double &x, const double &y, const double &z){
 
     OiVec g(4);
@@ -214,9 +136,6 @@ OiVec Reading::toPolar(const double &x, const double &y, const double &z){
 
 }
 
-/*!
- * \brief Reading::makeBackup
- */
 void Reading::makeBackup(){
     this->backupPolar = this->rPolar;
     this->backupCartesian = this->rCartesian;
@@ -227,9 +146,6 @@ void Reading::makeBackup(){
     this->backupLevel = this->rLevel;
 }
 
-/*!
- * \brief Reading::restoreBackup
- */
 void Reading::restoreBackup(){
     this->rPolar = this->backupPolar;
     this->rCartesian = this->backupCartesian;
@@ -240,11 +156,6 @@ void Reading::restoreBackup(){
     this->rLevel = this->backupLevel;
 }
 
-/*!
- * \brief Reading::errorPropagationPolarToCart
- * Variance propagation to get sigma values for cartesian coordinates
- * \return
- */
 OiVec Reading::errorPropagationPolarToCartesian(){
 
     OiVec sigmaCartXyz;
@@ -280,21 +191,16 @@ OiVec Reading::errorPropagationPolarToCartesian(){
     sigmaCartXyz.add(qSqrt(Qxx.getAt(2,2)));
     sigmaCartXyz.add(1.0);
 
-    /*if(!this->observation.isNull()){
-        this->observation->getStatistic().qxx = Qxx_hc;
-        this->observation->getStatistic().s0_apriori = 1.0;
-        this->observation->myOriginalStatistic = this->observation->myStatistic;
-    }*/
+    //if(!this->observation.isNull()){
+      //  this->observation->getStatistic().qxx = Qxx_hc;
+        //this->observation->getStatistic().s0_apriori = 1.0;
+        //this->observation->myOriginalStatistic = this->observation->myStatistic;
+    //}
 
     return sigmaCartXyz;
 
 }
 
-/*!
- * \brief Reading::toOpenIndyXML
- * \param xmlDoc
- * \return
- */
 QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     if(xmlDoc.isNull()){
@@ -421,11 +327,6 @@ QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
 }
 
-/*!
- * \brief Reading::fromOpenIndyXML
- * \param xmlElem
- * \return
- */
 bool Reading::fromOpenIndyXML(QDomElement &xmlElem){
 
     if(xmlElem.isNull()){
@@ -485,5 +386,282 @@ bool Reading::fromOpenIndyXML(QDomElement &xmlElem){
             this->rLevel.RZ = measurement.attribute("value").toDouble();
         }
     }
+
+}
+*/
+
+/*!
+ * \brief Reading::Reading
+ * \param reading
+ * \param parent
+ */
+Reading::Reading(const ReadingPolar &reading, QObject *parent) : Element(parent){
+
+    //set the reading and transform into cartesian
+    this->typeOfReading = ePolarReading;
+    this->rPolar = reading;
+    this->toCartesian();
+    this->rCartesian.sigmaXyz = this->errorPropagationPolarToCartesian();
+
+    //set default attributes
+    this->measuredAt = QDateTime::currentDateTime();
+    this->face = eFrontSide;
+
+}
+
+/*!
+ * \brief Reading::Reading
+ * \param reading
+ * \param parent
+ */
+Reading::Reading(const ReadingCartesian &reading, QObject *parent) : Element(parent){
+
+    if(reading.xyz.getSize() != 3 || reading.sigmaXyz.getSize() != 3){
+        this->typeOfReading = eCartesianReading;
+        return;
+    }
+
+    //set the reading and transform into polar
+    this->typeOfReading = eCartesianReading;
+    this->rCartesian = reading;
+    this->toPolar();
+
+    //set default attributes
+    this->measuredAt = QDateTime::currentDateTime();
+    this->face = eFrontSide;
+
+}
+
+/*!
+ * \brief Reading::Reading
+ * \param reading
+ * \param parent
+ */
+Reading::Reading(const ReadingDirection &reading, QObject *parent) : Element(parent){
+
+    //set the reading
+    this->typeOfReading = eDirectionReading;
+    this->rDirection = reading;
+
+    //set default attributes
+    this->measuredAt = QDateTime::currentDateTime();
+    this->face = eFrontSide;
+
+}
+
+/*!
+ * \brief Reading::Reading
+ * \param reading
+ * \param parent
+ */
+Reading::Reading(const ReadingDistance &reading, QObject *parent) : Element(parent){
+
+    //set the reading and
+    this->typeOfReading = eDistanceReading;
+    this->rDirection = reading;
+
+    //set default attributes
+    this->measuredAt = QDateTime::currentDateTime();
+    this->face = eFrontSide;
+
+}
+
+/*!
+ * \brief Reading::Reading
+ * \param reading
+ * \param parent
+ */
+Reading::Reading(const ReadingTemperature &reading, QObject *parent) : Element(parent){
+
+    //set the reading
+    this->typeOfReading = eTemperatureReading;
+    this->rDirection = reading;
+
+    //set default attributes
+    this->measuredAt = QDateTime::currentDateTime();
+    this->face = eFrontSide;
+
+}
+
+/*!
+ * \brief Reading::Reading
+ * \param reading
+ * \param parent
+ */
+Reading::Reading(const ReadingLevel &reading, QObject *parent) : Element(parent){
+
+    //set the reading
+    this->typeOfReading = eLevelReading;
+    this->rDirection = reading;
+
+    //set default attributes
+    this->measuredAt = QDateTime::currentDateTime();
+    this->face = eFrontSide;
+
+}
+
+/*!
+ * \brief Reading::Reading
+ * \param reading
+ * \param parent
+ */
+Reading::Reading(const ReadingUndefined &reading, QObject *parent) : Element(parent){
+
+    //set the reading
+    this->typeOfReading = eUndefinedReading;
+    this->rDirection = reading;
+
+    //set default attributes
+    this->measuredAt = QDateTime::currentDateTime();
+    this->face = eFrontSide;
+
+}
+
+Reading::Reading(const Reading &copy, QObject *parent) : Element(copy, parent){
+
+}
+
+Reading &Reading::operator=(const Reading &copy)
+{
+
+}
+
+Reading::~Reading()
+{
+
+}
+
+const ReadingTypes &Reading::getTypeOfReading() const
+{
+
+}
+
+const ReadingPolar &Reading::getPolarReading() const
+{
+
+}
+
+const ReadingCartesian &Reading::getCartesianReading() const
+{
+
+}
+
+const ReadingDirection &Reading::getDirectionReading() const
+{
+
+}
+
+const ReadingDistance &Reading::getDistanceReading() const
+{
+
+}
+
+const ReadingTemperature &Reading::getTemperatureReading() const
+{
+
+}
+
+const ReadingLevel &Reading::getLevelReading() const
+{
+
+}
+
+const ReadingUndefined &Reading::getUndefinedReading() const
+{
+
+}
+
+void Reading::makeBackup()
+{
+
+}
+
+void Reading::restoreBackup()
+{
+
+}
+
+OiVec Reading::toCartesian(const double &azimuth, const double &zenith, const double &distance)
+{
+
+}
+
+OiVec Reading::toPolar(const double &x, const double &y, const double &z)
+{
+
+}
+
+const MeasurementConfig &Reading::getMeasurementConfig()
+{
+
+}
+
+void Reading::setMeasurementConfig(const MeasurementConfig &mConfig)
+{
+
+}
+
+const QDateTime &Reading::getMeasuredAt() const
+{
+
+}
+
+void Reading::setMeasuredAt(const QDateTime &measuredAt)
+{
+
+}
+
+const SensorFaces &Reading::getFace() const
+{
+
+}
+
+void Reading::setSensorFace(const SensorFaces &face)
+{
+
+}
+
+const QPointer<Sensor> &Reading::getSensor() const
+{
+
+}
+
+void Reading::setSensor(const QPointer<Sensor> &sensor)
+{
+
+}
+
+const QPointer<Observation> &Reading::getObservation() const
+{
+
+}
+
+void Reading::setObservation(const QPointer<Observation> &observation)
+{
+
+}
+
+QDomElement Reading::toOpenIndyXML(QDomDocument &xmlDoc) const
+{
+
+}
+
+bool Reading::fromOpenIndyXML(QDomElement &xmlElem)
+{
+
+}
+
+void Reading::toCartesian()
+{
+
+}
+
+void Reading::toPolar()
+{
+
+}
+
+OiVec Reading::errorPropagationPolarToCartesian()
+{
 
 }

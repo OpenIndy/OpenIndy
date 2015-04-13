@@ -1,5 +1,5 @@
 #include "sensorlistener.h"
-
+/*
 SensorListener::SensorListener(Sensor* s)
 {
     instrument = s;
@@ -60,9 +60,69 @@ Sensor *SensorListener::getInstrument()
 {
     return instrument;
 }
+*/
 
 
+/*!
+ * \brief SensorListener::SensorListener
+ * \param sensor
+ * \param parent
+ */
+SensorListener::SensorListener(const QPointer<Sensor> &sensor, QObject *parent) : QObject(parent){
 
+}
 
+/*!
+ * \brief SensorListener::~SensorListener
+ */
+SensorListener::~SensorListener(){
 
+}
 
+/*!
+ * \brief SensorListener::setInstrument
+ * \param sensor
+ */
+void SensorListener::setInstrument(QPointer<Sensor> sensor){
+    if(!sensor.isNull()){
+        this->sensor = sensor;
+    }
+}
+
+/*!
+ * \brief SensorListener::getInstrument
+ * \return
+ */
+QPointer<Sensor> SensorListener::getInstrument() const{
+    return this->sensor;
+}
+
+/*!
+ * \brief SensorListener::getIsStreamActive
+ * \return
+ */
+bool SensorListener::getIsStreamActive() const{
+    return this->isStreamActive;
+}
+
+/*!
+ * \brief SensorListener::startStatusStream
+ */
+void SensorListener::startStatusStream(){
+
+}
+
+/*!
+ * \brief SensorListener::startReadingStream
+ * \param streamFormat
+ */
+void SensorListener::startReadingStream(const ReadingTypes &streamFormat){
+
+}
+
+/*!
+ * \brief SensorListener::abortSensorAction
+ */
+void SensorListener::abortSensorAction(){
+
+}

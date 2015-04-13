@@ -477,8 +477,8 @@ void Circle::recalc(){
  */
 QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    /*QDomElement circle = Geometry::toOpenIndyXML(xmlDoc);
-
+    QDomElement circle = Geometry::toOpenIndyXML(xmlDoc);
+/*
     if(circle.isNull()){
         return circle;
     }
@@ -506,8 +506,8 @@ QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
         ijk.setAttribute("k", 0.0);
     }
     circle.appendChild(ijk);
-
-    return circle;*/
+*/
+    return circle;
 
 }
 
@@ -518,8 +518,8 @@ QDomElement Circle::toOpenIndyXML(QDomDocument &xmlDoc) const{
  */
 bool Circle::fromOpenIndyXML(QDomElement &xmlElem){
 
-    /*bool result = Geometry::fromOpenIndyXML(xmlElem);
-
+    bool result = Geometry::fromOpenIndyXML(xmlElem);
+/*
     if(result){
 
         //set circle attributes
@@ -544,9 +544,7 @@ bool Circle::fromOpenIndyXML(QDomElement &xmlElem){
         this->center.setAt(3, 1.0);
 
     }
-
-    return result;*/
-
-    return true;
+*/
+    return result;
 
 }

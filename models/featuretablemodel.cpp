@@ -167,7 +167,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
             return QVariant();
         case 26://datum trafo
             if(currentFeature->getTrafoParam() != NULL){
-                return currentFeature->getTrafoParam()->getisDatumTrafo();
+                //return currentFeature->getTrafoParam()->getisDatumTrafo();
             }
             return QVariant();
         case 27://start system

@@ -795,9 +795,9 @@ void OiJob::connectFeature(FeatureWrapper *myFeature){
 
         connect(myFeature->getStation(), SIGNAL(activeStationChanged(int)),
                 this, SLOT(setActiveStation(int)), Qt::DirectConnection);
-        connect(myFeature->getStation()->coordSys, SIGNAL(activeCoordinateSystemChanged(int)),
+        connect(myFeature->getStation()->getCoordinateSystem(), SIGNAL(activeCoordinateSystemChanged(int)),
                 this, SLOT(setActiveCoordinateSystem(int)), Qt::DirectConnection);
-        connect(myFeature->getStation()->coordSys, SIGNAL(observationsChanged(int, int)),
+        connect(myFeature->getStation()->getCoordinateSystem(), SIGNAL(observationsChanged(int, int)),
                 this, SLOT(setSystemObservations(int, int)), Qt::DirectConnection);
 
     }
@@ -982,7 +982,7 @@ void OiJob::setActiveStation(const int &featureId){
  */
 void OiJob::setActiveCoordinateSystem(const int &featureId){
     try{
-
+/*
         //get the coordinate system with id featureId
         CoordinateSystem *mySystem = NULL;
         FeatureWrapper *myCoordinateSystem = this->myFeatureContainer.getFeatureById(featureId);
@@ -1033,7 +1033,7 @@ void OiJob::setActiveCoordinateSystem(const int &featureId){
             //emit signal to inform that active coordinate system has changed
             emit this->activeCoordinateSystemChanged();
 
-        }
+        }*/
 
     }catch(exception &e){
         Console::addLine(e.what());
