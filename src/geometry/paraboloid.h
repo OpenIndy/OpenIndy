@@ -31,13 +31,13 @@ public:
     //########################################
 
     enum ParaboloidUnknowns{
-        unknownApexX,
-        unknownApexY,
-        unknownApexZ,
-        unknownAxisI,
-        unknownAxisJ,
-        unknownAxisK,
-        unknownA
+        unknownApexX = eUnknownX,
+        unknownApexY = eUnknownY,
+        unknownApexZ = eUnknownZ,
+        unknownAxisI = eUnknownPrimaryI,
+        unknownAxisJ = eUnknownPrimaryJ,
+        unknownAxisK = eUnknownPrimaryK,
+        unknownA = eUnknownA
     };
 
     //###################################################################

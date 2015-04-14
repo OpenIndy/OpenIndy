@@ -30,41 +30,131 @@
 #include "scalarentitytemperature.h"
 #include "scalarentitymeasurementseries.h"
 #include "reading.h"
-#include "oifunctionemitter.h"
+#include "slottedhole.h"
+#include "torus.h"
+#include "ellipse.h"
 #include "pluginmetadata.h"
 
-// \brief save the needed elements
+//############################################
+//helper classes to define function parameters
+//############################################
+
+/*!
+ * \brief The NeededElement class
+ * Save the needed element types that are necessary to solve a function
+ */
 class NeededElement{
 public:
     ElementTypes typeOfElement; //type of the needed input element
     QString description; //optional description for the needed element to show in the GUI
-    bool infinite; //only one element or as many features as one wants?
+    bool infinite; //only one element or as many elements as one wants?
 };
 
-// \brief save the feature order
+/*!
+ * \brief The InputElement class
+ * Save the input elements that are used to solve a function
+ */
 class InputElement{
 public:
-    int id;
-    ElementTypes typeOfElement;
-    bool isUsed;
+    InputElement() : isUsed(true){}
+    InputElement(const int &id) : isUsed(true){}
 
-    //custom comparison operator to define an input element by its id
+    //! custom comparison operator to compare input elements by their id
     bool operator==(const InputElement &other){
         if(this->id == other.id){
             return true;
         }
         return false;
     }
+
+    int id; //the id of the element
+    ElementTypes typeOfElement; //the type of the element
+
+    //single parameters of this element that shall not be used in function calculation
+    //e.g. ignore the radius of an input sphere
+    QList<UnknownParameters> ignoredDestinationParams;
+
+    //single parameters of the feature to be calculated that this element shall not have effect on
+    //e.g. use a point only for a circle's plane, not the radius
+    QList<UnknownParameters> ignoredTargetParams;
+
+    bool isUsed; //true if this element is used in function calculation
+
+    //element pointers (only valid for the specified element type)
+    QPointer<Station> station;
+    QPointer<CoordinateSystem> coordSystem;
+    QPointer<TrafoParam> trafoParam;
+
+    QPointer<Circle> circle;
+    QPointer<Cone> cone;
+    QPointer<Cylinder> cylinder;
+    QPointer<Ellipse> ellipse;
+    QPointer<Ellipsoid> ellipsoid;
+    QPointer<Hyperboloid> hyperboloid;
+    QPointer<Line> line;
+    QPointer<Nurbs> nurbs;
+    QPointer<Paraboloid> paraboloid;
+    QPointer<Plane> plane;
+    QPointer<Point> point;
+    QPointer<PointCloud> pointCloud;
+    QPointer<ScalarEntityAngle> scalarEntityAngle;
+    QPointer<ScalarEntityDistance> scalarEntityDistance;
+    QPointer<ScalarEntityMeasurementSeries> scalarEntityMeasurementSeries;
+    QPointer<ScalarEntityTemperature> scalarEntityTemperature;
+    QPointer<SlottedHole> slottedHole;
+    QPointer<Sphere> sphere;
+    QPointer<Torus> torus;
+
+    QPointer<Geometry> geometry;
+
+    QPointer<Observation> observation;
+    QPointer<Reading> polarReading;
+    QPointer<Reading> directionReading;
+    QPointer<Reading> distanceReading;
+    QPointer<Reading> cartesianReading;
+    QPointer<Reading> temperatureReading;
+    QPointer<Reading> levelReading;
+    QPointer<Reading> undefinedReading;
 };
 
-//! \brief  save user specified non-feature function input parameters
+/*!
+ * \brief The ScalarInputParams class
+ * Save user specified non-element scalar function input parameters
+ */
 class ScalarInputParams{
 public:
+    ScalarInputParams() : isValid(false){}
+
     QMap<QString, double> doubleParameter;
     QMap<QString, int> intParameter;
     QMap<QString, QString> stringParameter;
     bool isValid;
 };
+
+/*!
+ * \brief The FixedParameter class
+ * Save a value for each parameter that shall be fixed
+ */
+class FixedParameter{
+public:
+    FixedParameter() : value(0.0){}
+    FixedParameter(const UnknownParameters &param) : value(0.0), parameter(param){}
+
+    //! custom comparison operator to compare fixed parameters
+    bool operator==(const FixedParameter &other){
+        if(this->parameter == other.parameter){
+            return true;
+        }
+        return false;
+    }
+
+    UnknownParameters parameter;
+    double value;
+};
+
+//#####################
+//function class itself
+//#####################
 
 /*!
  * \brief The Function class
@@ -74,66 +164,82 @@ class Function : public QObject
     Q_OBJECT
 
 public:
-    virtual ~Function(){}
+    Function(QObject *parent = 0);
+
+    virtual ~Function();
 
     //############
     //exec methods
     //############
 
-    virtual bool exec(Station&);
-    virtual bool exec(CoordinateSystem&);
-    virtual bool exec(TrafoParam&);
-    virtual bool exec(Point&);
-    virtual bool exec(Line&);
-    virtual bool exec(Plane&);
-    virtual bool exec(Sphere&);
-    virtual bool exec(Circle&);
-    virtual bool exec(Cone&);
-    virtual bool exec(Cylinder&);
-    virtual bool exec(Ellipsoid&);
-    virtual bool exec(Hyperboloid&);
-    virtual bool exec(Nurbs&);
-    virtual bool exec(Paraboloid&);
-    virtual bool exec(PointCloud&);
-    virtual bool exec(ScalarEntityAngle&);
-    virtual bool exec(ScalarEntityDistance&);
-    virtual bool exec(ScalarEntityTemperature&);
-    virtual bool exec(ScalarEntityMeasurementSeries&);
+    virtual bool exec(QPointer<Station> &station);
+    virtual bool exec(QPointer<CoordinateSystem> &coordinateSystem);
+    virtual bool exec(QPointer<TrafoParam> &trafoParam);
+
+    virtual bool exec(QPointer<Circle> &circle);
+    virtual bool exec(QPointer<Cone> &cone);
+    virtual bool exec(QPointer<Cylinder> &cylinder);
+    virtual bool exec(QPointer<Ellipse> &ellipse);
+    virtual bool exec(QPointer<Ellipsoid> &ellipsoid);
+    virtual bool exec(QPointer<Hyperboloid> &hyperboloid);
+    virtual bool exec(QPointer<Line> &line);
+    virtual bool exec(QPointer<Nurbs> &nurbs);
+    virtual bool exec(QPointer<Paraboloid> &paraboloid);
+    virtual bool exec(QPointer<Plane> &plane);
+    virtual bool exec(QPointer<Point> &point);
+    virtual bool exec(QPointer<PointCloud> &pointCloud);
+    virtual bool exec(QPointer<ScalarEntityAngle> &angle);
+    virtual bool exec(QPointer<ScalarEntityDistance> &distance);
+    virtual bool exec(QPointer<ScalarEntityMeasurementSeries> &measurementSeries);
+    virtual bool exec(QPointer<ScalarEntityTemperature> &temperature);
+    virtual bool exec(QPointer<SlottedHole> &slottedHole);
+    virtual bool exec(QPointer<Sphere> &sphere);
+    virtual bool exec(QPointer<Torus> &torus);
 
     //##########################################################
     //methods to specify further information to solve a function
     //##########################################################
 
-    virtual QList<NeededElement> getNeededElements() const = 0;
-    virtual QList<FeatureTypes> applicableFor() const = 0;
-    virtual PluginMetaData getMetaData() const = 0;
+    const QList<NeededElement> &getNeededElements() const;
+    const QList<FeatureTypes> &getApplicableFor() const;
+    const PluginMetaData &getMetaData() const;
 
-    virtual QMap<QString, int> getIntegerParameter() const;
-    virtual QMap<QString, double> getDoubleParameter() const;
-    virtual QMultiMap<QString, QString> getStringParameter() const;
+    const QMap<QString, int> &getIntegerParameter() const;
+    const QMap<QString, double> &getDoubleParameter() const;
+    const QMultiMap<QString, QString> &getStringParameter() const;
 
     void setScalarInputParams(const ScalarInputParams &params);
-    const ScalarInputParams &getScalarInputParams();
+    const ScalarInputParams &getScalarInputParams() const;
+
+    const QList<FixedParameter> &getFixedParameters() const;
+    void fixParameter(const FixedParameter &parameter);
+    void unfixParameter(const UnknownParameters &parameter);
+    void unfixAllParameters();
 
     //####################
     //get function results
     //####################
 
-    virtual QStringList getResultProtocol() const;
+    const QStringList &getResultProtocol() const;
 
-    Statistic& getStatistic();
+    const Statistic &getStatistic() const;
 
     //###############
     //general getters
     //###############
 
-    OiFunctionEmitter& getOiEmitter();
-
-    bool isValid();
-
-    const QMultiMap<int, InputElement> &getFeatureOrder() const;
-
     const int &getId() const;
+
+    bool getIsValid() const;
+
+    //###################
+    //get or set elements
+    //###################
+
+    const QMap<int, QList<InputElement> > &getInputElements() const;
+    void addInputElement(const InputElement &element, const int &position);
+    void removeInputElement(const int &id, const int &position);
+    void replaceInputElement(const InputElement &element, const int &position);
 
     //#############
     //clear results
@@ -149,177 +255,53 @@ public:
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
-    //#######################
-    //get and update elements
-    //#######################
+signals:
 
-    void addStation(const QPointer<Station> &station, const int &position);
-    void removeStation(const int &id);
-    QPointer<Station> getStation(const int &id) const;
-    const QMap<int, QPointer<Station> > &getStations() const;
+    //################################################
+    //signals to inform OpenIndy about function issues
+    //################################################
 
-    void addCoordSystem(const QPointer<CoordinateSystem> &coordSys, const int &position);
-    void removeCoordSystem(const int &id);
-    QPointer<CoordinateSystem> getCoordinateSystem(const int &id) const;
-    const QMap<int, QPointer<CoordinateSystem> > &getCoordinateSystems() const;
-
-    void addTrafoParam(const QPointer<TrafoParam> &trafoParam, const int &position);
-    void removeTrafoParam(const int &id);
-    QPointer<TrafoParam> getTrafoParam(const int &id) const;
-    const QMap<int, QPointer<TrafoParam> > &getTrafoParams() const;
-
-    void addPoint(const QPointer<Point> &point, const int &position);
-    void removePoint(const int &id);
-    QPointer<Point> getPoint(const int &id) const;
-    const QMap<int, QPointer<Point> > &getPoints() const;
-
-    void addLine(const QPointer<Line> &line, const int &position);
-    void removeLine(const int &id);
-    QPointer<Line> getLine(const int &id) const;
-    const QMap<int, QPointer<Line> > &getLines() const;
-
-    void addPlane(const QPointer<Plane> &plane, const int &position);
-    void removePlane(const int &id);
-    QPointer<Plane> getPlane(const int &id) const;
-    const QMap<int, QPointer<Plane> > &getPlanes() const;
-
-    void addSphere(const QPointer<Sphere> &sphere, const int &position);
-    void removeSphere(const int &id);
-    QPointer<Sphere> getSphere(const int &id) const;
-    const QMap<int, QPointer<Sphere> > &getSpheres() const;
-
-    void addCircle(const QPointer<Circle> &circle, const int &position);
-    void removeCircle(const int &id);
-    QPointer<Circle> getCircle(const int &id) const;
-    const QMap<int, QPointer<Circle> > &getCircles() const;
-
-    void addCylinder(const QPointer<Cylinder> &cylinder, const int &position);
-    void removeCylinder(const int &id);
-    QPointer<Cylinder> getCylinder(const int &id) const;
-    const QMap<int, QPointer<Cylinder> > &getCylinders() const;
-
-    void addCone(const QPointer<Cone> &cone, const int &position);
-    void removeCone(const int &id);
-    QPointer<Cone> getCone(const int &id) const;
-    const QMap<int, QPointer<Cone> > &getCones() const;
-
-    void addEllipsoid(const QPointer<Ellipsoid> &ellipsoid, const int &position);
-    void removeEllipsoid(const int &id);
-    QPointer<Ellipsoid> getEllipsoid(const int &id) const;
-    const QMap<int, QPointer<Ellipsoid> > &getEllipsoids() const;
-
-    void addParaboloid(const QPointer<Paraboloid> &paraboloid, const int &position);
-    void removeParaboloid(const int &id);
-    QPointer<Paraboloid> getParaboloid(const int &id) const;
-    const QMap<int, QPointer<Paraboloid> > &getParaboloids() const;
-
-    void addHyperboloid(const QPointer<Hyperboloid> &hyperboloid, const int &position);
-    void removeHyperboloid(const int &id);
-    QPointer<Hyperboloid> getHyperboloid(const int &id) const;
-    const QMap<int, QPointer<Hyperboloid> > &getHyperboloids() const;
-
-    void addNurb(const QPointer<Nurbs> &nurbs, const int &position);
-    void removeNurb(const int &id);
-    QPointer<Nurbs> getNurb(const int &id) const;
-    const QMap<int, QPointer<Nurbs> > &getNurbs() const;
-
-    void addPointCloud(const QPointer<PointCloud> &pointCloud, const int &position);
-    void removePointCloud(const int &id);
-    QPointer<PointCloud> getPointCloud(const int &id) const;
-    const QMap<int, QPointer<PointCloud> > &getPointClouds() const;
-
-    void addScalarEntityDistance(const QPointer<ScalarEntityDistance> &distance, const int &position);
-    void removeScalarEntityDistance(const int &id);
-    QPointer<ScalarEntityDistance> getScalarEntityDistance(const int &id) const;
-    const QMap<int, QPointer<ScalarEntityDistance> > &getScalarEntityDistances() const;
-
-    void addScalarEntityAngle(const QPointer<ScalarEntityAngle> &angle, const int &position);
-    void removeScalarEntityAngle(const int &id);
-    QPointer<ScalarEntityAngle> getScalarEntityAngle(const int &id) const;
-    const QMap<int, QPointer<ScalarEntityAngle> > &getScalarEntityAngles() const;
-
-    void addObservation(const QPointer<Observation> &observation, const int &position);
-    void removeObservation(const int &id);
-    QPointer<Observation> getObservation(const int &id) const;
-    const QMap<int, QPointer<Observation> > &getObservations() const;
-
-    void addReadingPolar(const QPointer<Reading> &reading, const int &position);
-    void removeReadingPolar(const int &id);
-    QPointer<Reading> getReadingPolar(const int &id) const;
-    const QMap<int, QPointer<Reading> > &getPolarReadings() const;
-
-    void addReadingDistance(const QPointer<Reading> &reading, const int &position);
-    void removeReadingDistance(const int &id);
-    QPointer<Reading> getReadingDistance(const int &id) const;
-    const QMap<int, QPointer<Reading> > &getDistanceReadings() const;
-
-    void addReadingDirection(const QPointer<Reading> &reading, const int &position);
-    void removeReadingDirection(const int &id);
-    QPointer<Reading> getReadingDirection(const int &id) const;
-    const QMap<int, QPointer<Reading> > &getDirectionReadings() const;
-
-    void addReadingCartesian(const QPointer<Reading> &reading, const int &position);
-    void removeReadingCartesian(const int &id);
-    QPointer<Reading> getReadingCartesian(const int &id) const;
-    const QMap<int, QPointer<Reading> > &getCartesianReadings() const;
-
-    void addScalarEntityTemperature(const QPointer<ScalarEntityTemperature> &temperature, const int &position);
-    void removeScalarEntityTemperature(const int &id);
-    QPointer<ScalarEntityTemperature> getScalarEntityTemperature(const int &id) const;
-    const QMap<int, QPointer<ScalarEntityTemperature> > &getScalarEntityTemperatures() const;
-
-    //TODO add getter for vector and xyz elements
-
-    void addReading(const QPointer<Reading> &reading, const int &position);
-
-    void addFeature(const QPointer<FeatureWrapper> &feature, const int &position);
-    void removeFeature(const int &id);
+    void sendMessage(const QString &msg);
 
 protected:
-    void setUseState(const int &id, bool state);
-    void writeToConsole(QString message);
 
-    //#######################################################
-    //lists with elements that are used to solve the function
-    //#######################################################
+    //#################################
+    //mark elements as used or not used
+    //#################################
 
-    QMap<int, QPointer<Station> > stations;
-    QMap<int, QPointer<CoordinateSystem> > coordSystems;
-    QMap<int, QPointer<TrafoParam> > trafoParams;
-    QMap<int, QPointer<Point> > points;
-    QMap<int, QPointer<Line> > lines;
-    QMap<int, QPointer<Plane> > planes;
-    QMap<int, QPointer<Sphere> > spheres;
-    QMap<int, QPointer<Circle> > circles;
-    QMap<int, QPointer<Cone> > cones;
-    QMap<int, QPointer<Cylinder> > cylinders;
-    QMap<int, QPointer<Ellipsoid> > ellipsoids;
-    QMap<int, QPointer<Paraboloid> > paraboloids;
-    QMap<int, QPointer<Hyperboloid> > hyperboloids;
-    QMap<int, QPointer<Nurbs> > nurbs;
-    QMap<int, QPointer<PointCloud> > pointClouds;
-    QMap<int, QPointer<ScalarEntityDistance> > scalarEntityDistances;
-    QMap<int, QPointer<ScalarEntityAngle> > scalarEntityAngles;
-    QMap<int, QPointer<Observation> > observations;
-    QMap<int, QPointer<Reading> > polarReadings;
-    QMap<int, QPointer<Reading> > distanceReadings;
-    QMap<int, QPointer<Reading> > directionReadings;
-    QMap<int, QPointer<Reading> > cartesianReadings;
-    QMap<int, QPointer<ScalarEntityTemperature> > scalarEntityTemperatures;
+    void setUseState(const int &position, const int &id, const bool &state);
+
+    //###########################
+    //input and output parameters
+    //###########################
+
+    //meta information about the function (to tell OpenIndy what this function does)
+    QList<NeededElement> neededElements;
+    QList<FeatureTypes> applicableFor;
+    PluginMetaData metaData;
+
+    //the needed scalar input parameters including default values
+    QMap<QString, int> integerParameters;
+    QMap<QString, double> doubleParameters;
+    QMultiMap<QString, QString> stringParameters;
+
+    //user defined scalar input parameters
+    ScalarInputParams scalarInputParams;
+
+    //parameters of a geometry that should have a fixed value
+    QList<FixedParameter> fixedParameters;
+
+    QStringList resultProtocol;
 
     //##################
     //general attributes
     //##################
 
-    Statistic myStatistic;
-
     int id;
-    ScalarInputParams scalarInputParams;
 
-    QMultiMap<int, InputElement> featureOrder;
+    Statistic statistic;
 
-private:
-    OiFunctionEmitter myEmitter;
+    QMap<int, QList<InputElement> > inputElements;
 
 };
 

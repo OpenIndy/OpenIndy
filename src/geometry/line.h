@@ -29,12 +29,12 @@ public:
     //########################################
 
     enum LineUnknowns{
-        unknownPositionX,
-        unknownPositionY,
-        unknownPositionZ,
-        unknownAxisI,
-        unknownAxisJ,
-        unknownAxisK,
+        unknownPositionX = eUnknownX,
+        unknownPositionY = eUnknownY,
+        unknownPositionZ = eUnknownZ,
+        unknownAxisI = eUnknownPrimaryI,
+        unknownAxisJ = eUnknownPrimaryJ,
+        unknownAxisK = eUnknownPrimaryK
     };
 
     //###################################################################

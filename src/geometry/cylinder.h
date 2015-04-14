@@ -32,13 +32,13 @@ public:
     //########################################
 
     enum CylinderUnknowns{
-        unknownAxisPointX,
-        unknownAxisPointY,
-        unknownAxisPointZ,
-        unknownAxisI,
-        unknownAxisJ,
-        unknownAxisK,
-        unknownRadius
+        unknownAxisPointX = eUnknownX,
+        unknownAxisPointY = eUnknownY,
+        unknownAxisPointZ = eUnknownZ,
+        unknownAxisI = eUnknownPrimaryI,
+        unknownAxisJ = eUnknownPrimaryJ,
+        unknownAxisK = eUnknownPrimaryK,
+        unknownRadius = eUnknownRadiusA
     };
 
     //###################################################################

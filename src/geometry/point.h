@@ -27,9 +27,9 @@ public:
     //########################################
 
     enum PointUnknowns{
-        unknownCenterX,
-        unknownCenterY,
-        unknownCenterZ
+        unknownCenterX = eUnknownX,
+        unknownCenterY = eUnknownY,
+        unknownCenterZ = eUnknownZ
     };
 
     //###################################################################

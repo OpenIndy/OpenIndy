@@ -31,12 +31,12 @@ public:
     //########################################
 
     enum PlaneUnknowns{
-        unknownPositionX,
-        unknownPositionY,
-        unknownPositionZ,
-        unknownNormalI,
-        unknownNormalJ,
-        unknownNormalK
+        unknownPositionX = eUnknownX,
+        unknownPositionY = eUnknownY,
+        unknownPositionZ = eUnknownZ,
+        unknownNormalI = eUnknownPrimaryI,
+        unknownNormalJ = eUnknownPrimaryJ,
+        unknownNormalK = eUnknownPrimaryK
     };
 
     //###################################################################

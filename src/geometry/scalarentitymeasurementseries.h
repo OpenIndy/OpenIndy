@@ -28,7 +28,7 @@ public:
     //########################################
 
     enum MeasurementSeriesUnknowns{
-        unknownMeasurementSeries
+        unknownMeasurementSeries = eUnknownMeasurementSeries
     };
 
     //########################################

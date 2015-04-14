@@ -31,14 +31,14 @@ public:
     //########################################
 
     enum HyperboloidUnknowns{
-        unknownCenterX,
-        unknownCenterY,
-        unknownCenterZ,
-        unknownAxisI,
-        unknownAxisJ,
-        unknownAxisK,
-        unknownA,
-        unknownC
+        unknownCenterX = eUnknownX,
+        unknownCenterY = eUnknownY,
+        unknownCenterZ = eUnknownZ,
+        unknownAxisI = eUnknownPrimaryI,
+        unknownAxisJ = eUnknownPrimaryJ,
+        unknownAxisK = eUnknownPrimaryK,
+        unknownA = eUnknownA,
+        unknownC = eUnknownC
     };
 
     //###################################################################

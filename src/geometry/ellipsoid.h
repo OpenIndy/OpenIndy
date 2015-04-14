@@ -32,14 +32,14 @@ public:
     //########################################
 
     enum EllipsoidUnknowns{
-        unknownCenterX,
-        unknownCenterY,
-        unknownCenterZ,
-        unknownMajorAxisI,
-        unknownMajorAxisJ,
-        unknownMajorAxisK,
-        unknownA,
-        unknownB
+        unknownCenterX = eUnknownX,
+        unknownCenterY = eUnknownY,
+        unknownCenterZ = eUnknownZ,
+        unknownMajorAxisI = eUnknownPrimaryI,
+        unknownMajorAxisJ = eUnknownPrimaryJ,
+        unknownMajorAxisK = eUnknownPrimaryK,
+        unknownA = eUnknownA,
+        unknownB = eUnknownB
     };
 
     //###################################################################

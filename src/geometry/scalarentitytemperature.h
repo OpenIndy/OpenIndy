@@ -28,7 +28,7 @@ public:
     //########################################
 
     enum TemperatureUnknowns{
-        unknownTemperature
+        unknownTemperature = eUnknownTemperature
     };
 
     //#################################

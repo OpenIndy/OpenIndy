@@ -32,14 +32,14 @@ public:
     //########################################
 
     enum TorusUnknowns{
-        unknownCenterX,
-        unknownCenterY,
-        unknownCenterZ,
-        unknownNormalI,
-        unknownNormalJ,
-        unknownNormalK,
-        unknownRadiusA,
-        unknownRadiusB
+        unknownCenterX = eUnknownX,
+        unknownCenterY = eUnknownY,
+        unknownCenterZ = eUnknownZ,
+        unknownNormalI = eUnknownPrimaryI,
+        unknownNormalJ = eUnknownPrimaryJ,
+        unknownNormalK = eUnknownPrimaryK,
+        unknownRadiusA = eUnknownRadiusA,
+        unknownRadiusB = eUnknownRadiusB
     };
 
     //###################################################################

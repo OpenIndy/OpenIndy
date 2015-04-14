@@ -115,6 +115,33 @@ enum GeometryTypes{
 
 };
 
+//################################
+//all available unknown parameters
+//################################
+
+enum UnknownParameters{
+    eUnknownX, //point coordinates
+    eUnknownY,
+    eUnknownZ,
+    eUnknownPrimaryI, //primary vector
+    eUnknownPrimaryJ,
+    eUnknownPrimaryK,
+    eUnknownSecondaryI, //secondary vector
+    eUnknownSecondaryJ,
+    eUnknownSecondaryK,
+    eUnknownRadiusA, //radius
+    eUnknownRadiusB, //(torus)
+    eUnknownAperture, //opening angle (cone)
+    eUnknownA, //semi-major axis
+    eUnknownB, //semi-minor axis
+    eUnknownC, //(hyperboloid)
+    eUnknownAngle, //scalar entities
+    eUnknownDistance,
+    eUnknownMeasurementSeries,
+    eUnknownTemperature,
+    eUnknownLength //(slotted hole)
+};
+
 //#######################
 //available reading types
 //#######################
