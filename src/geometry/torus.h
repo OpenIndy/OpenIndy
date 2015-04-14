@@ -1,5 +1,5 @@
-#ifndef CIRCLE_H
-#define CIRCLE_H
+#ifndef TORUS_H
+#define TORUS_H
 
 #include <QObject>
 #include <QtXml>
@@ -110,4 +110,4 @@ private:
 */
 };
 
-#endif // CIRCLE_H
+#endif // TORUS_H

@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QPointer>
 
+#include "types.h"
+#include "util.h"
 #include "feature.h"
 #include "geometry.h"
 #include "coordinatesystem.h"
@@ -21,6 +23,9 @@
 #include "hyperboloid.h"
 #include "pointcloud.h"
 #include "nurbs.h"
+#include "ellipse.h"
+#include "slottedhole.h"
+#include "torus.h"
 #include "scalarentityangle.h"
 #include "scalarentitydistance.h"
 #include "scalarentitytemperature.h"
@@ -65,6 +70,9 @@ public:
     const QPointer<Paraboloid> &getParaboloid() const;
     const QPointer<PointCloud> &getPointCloud() const;
     const QPointer<Nurbs> &getNurbs() const;
+    const QPointer<Ellipse> &getEllipse() const;
+    const QPointer<SlottedHole> &getSlottedHole() const;
+    const QPointer<Torus> &getTorus() const;
 
     const QPointer<ScalarEntityAngle> &getScalarEntityAngle() const;
     const QPointer<ScalarEntityDistance> &getScalarEntityDistance() const;
@@ -76,7 +84,7 @@ public:
     //###################
 
     void setCoordinateSystem(const QPointer<CoordinateSystem> &coordSystem);
-    void setTrafoParam(const QPointer<TrafoParam> &trafoPara);
+    void setTrafoParam(const QPointer<TrafoParam> &trafoParam);
     void setStation(const QPointer<Station> &station);
 
     void setPoint(const QPointer<Point> &point);
@@ -91,6 +99,9 @@ public:
     void setParaboloid(const QPointer<Paraboloid> &paraboloid);
     void setPointCloud(const QPointer<PointCloud> &pointCloud);
     void setNurbs(const QPointer<Nurbs> &nurbs);
+    void setEllipse(const QPointer<Ellipse> &ellipse);
+    void setSlottedHole(const QPointer<SlottedHole> &slottedHole);
+    void setTorus(const QPointer<Torus> &torus);
 
     void setScalarEntityAngle(const QPointer<ScalarEntityAngle> &angle);
     void setScalarEntityDistance(const QPointer<ScalarEntityDistance> &distance);
@@ -103,30 +114,33 @@ private:
     //private feature pointer that hold a feature or are set to invalid
     //#################################################################
 
-    QPointer<Feature> myFeature;
-    QPointer<Geometry> myGeometry;
+    QPointer<Feature> feature;
+    QPointer<Geometry> geometry;
 
-    QPointer<CoordinateSystem> myCoordinateSystem;
-    QPointer<TrafoParam> myTrafoParam;
+    QPointer<CoordinateSystem> coordinateSystem;
+    QPointer<TrafoParam> trafoParam;
 
-    QPointer<Station> myStation;
+    QPointer<Station> station;
 
-    QPointer<Point> myPoint;
-    QPointer<Line> myLine;
-    QPointer<Plane> myPlane;
-    QPointer<Sphere> mySphere;
-    QPointer<Circle> myCircle;
-    QPointer<Cone> myCone;
-    QPointer<Cylinder> myCylinder;
-    QPointer<Ellipsoid> myEllipsoid;
-    QPointer<Hyperboloid> myHyperboloid;
-    QPointer<Paraboloid> myParaboloid;
-    QPointer<PointCloud> myPointCloud;
-    QPointer<Nurbs> myNurbs;
-    QPointer<ScalarEntityAngle> myScalarEntityAngle;
-    QPointer<ScalarEntityDistance> myScalarEntityDistance;
-    QPointer<ScalarEntityTemperature> myScalarEntityTemperature;
-    QPointer<ScalarEntityMeasurementSeries> myScalarEntityMeasurementSeries;
+    QPointer<Point> point;
+    QPointer<Line> line;
+    QPointer<Plane> plane;
+    QPointer<Sphere> sphere;
+    QPointer<Circle> circle;
+    QPointer<Cone> cone;
+    QPointer<Cylinder> cylinder;
+    QPointer<Ellipsoid> ellipsoid;
+    QPointer<Hyperboloid> hyperboloid;
+    QPointer<Paraboloid> paraboloid;
+    QPointer<PointCloud> pointCloud;
+    QPointer<Nurbs> nurbs;
+    QPointer<Ellipse> ellipse;
+    QPointer<SlottedHole> slottedHole;
+    QPointer<Torus> torus;
+    QPointer<ScalarEntityAngle> angle;
+    QPointer<ScalarEntityDistance> distance;
+    QPointer<ScalarEntityTemperature> temperature;
+    QPointer<ScalarEntityMeasurementSeries> measurementSeries;
 
     FeatureTypes typeOfFeature;
 
