@@ -36,7 +36,7 @@ public:
     //#############################
 
     const bool &getIsActiveStation() const;
-    bool setActiveStationState(const bool &isActiveStation);
+    void setActiveStationState(const bool &isActiveStation);
 
     const QPointer<Point> &getPosition() const;
 

@@ -2050,7 +2050,7 @@ void Function::clear(){
     this->featureOrder.clear();
 
     //delete statistic
-    this->myStatistic.isValid = false;
+    this->myStatistic.setIsValid(false);
 
 }
 

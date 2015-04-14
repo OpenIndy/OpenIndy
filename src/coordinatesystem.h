@@ -61,14 +61,14 @@ public:
 
     const QList<QPointer<TrafoParam> > &getTransformationParameters() const;
     const QList<QPointer<TrafoParam> > getTransformationParameters(const QPointer<CoordinateSystem> &to) const;
-    bool addTransformationParameter(const QPointer<TrafoParam> &trafoParam);
-    bool removeTransformationParameter(const QPointer<TrafoParam> &trafoParam);
+    void addTransformationParameter(const QPointer<TrafoParam> &trafoParam);
+    void removeTransformationParameter(const QPointer<TrafoParam> &trafoParam);
 
     const QList<QPointer<FeatureWrapper> > &getNominals() const;
-    bool addNominal(const QPointer<FeatureWrapper> &nominal);
-    bool addNominals(const QList< QPointer<FeatureWrapper> > &nominals);
-    bool removeNominal(const QPointer<FeatureWrapper> &nominal);
-    bool removeNominal(const int &featureId);
+    void addNominal(const QPointer<FeatureWrapper> &nominal);
+    void addNominals(const QList< QPointer<FeatureWrapper> > &nominals);
+    void removeNominal(const QPointer<FeatureWrapper> &nominal);
+    void removeNominal(const int &featureId);
 
     //###########################
     //reexecute the function list

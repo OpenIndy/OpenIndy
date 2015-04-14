@@ -10,6 +10,7 @@
 #include "element.h"
 #include "measurementconfig.h"
 #include "oivec.h"
+#include "oimat.h"
 #include "types.h"
 #include "util.h"
 
@@ -43,7 +44,7 @@ public:
 class ReadingDirection{
 public:
     ReadingDirection() : azimuth(0.0), zenith(0.0), sigmaAzimuth(0.0),
-        sigmaZenith(0.0, isValid(false){}
+        sigmaZenith(0.0), isValid(false){}
 
     double azimuth;
     double zenith;
@@ -238,8 +239,14 @@ private:
     //references to sensor and observation
     //####################################
 
-    QPointer<Sensor> instrument;
+    QPointer<Sensor> sensor;
     QPointer<Observation> observation;
+
+    //################
+    //helper variables
+    //################
+
+    bool hasBackup; //true if a backup was made using makeBackup
 
 private:
 

@@ -447,9 +447,8 @@ const bool &Station::getIsActiveStation() const{
 /*!
  * \brief Station::setActiveStationState
  * \param isActiveStation
- * \return
  */
-bool Station::setActiveStationState(const bool &isActiveStation){
+void Station::setActiveStationState(const bool &isActiveStation){
     if(this->isActiveStation != isActiveStation){
         this->isActiveStation = isActiveStation;
         emit this->activeStationChanged(this->id);

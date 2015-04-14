@@ -505,11 +505,19 @@ const QPointer<CoordinateSystem> &TrafoParam::getDestinationSystem() const{
  * \return
  */
 bool TrafoParam::setCoordinateSystems(const QPointer<CoordinateSystem> &from, const QPointer<CoordinateSystem> &to){
+
     if(!from.isNull() && !to.isNull()){
+
         this->from = from;
         this->to = to;
+
         emit this->coordinateSystemsChanged(this->id);
+
+        return true;
+
     }
+
+    return false;
 }
 
 /*!

@@ -613,9 +613,8 @@ const QList<QPointer<Observation> > &Geometry::getObservations() const{
 /*!
  * \brief Geometry::addObservation
  * \param obs
- * \return
  */
-bool Geometry::addObservation(const QPointer<Observation> &obs){
+void Geometry::addObservation(const QPointer<Observation> &obs){
     if(!obs.isNull()){
         this->observations.append(obs);
         emit this->geomObservationsChanged(this->id);
@@ -625,13 +624,12 @@ bool Geometry::addObservation(const QPointer<Observation> &obs){
 /*!
  * \brief Geometry::removeObservation
  * \param obs
- * \return
  */
-bool Geometry::removeObservation(const QPointer<Observation> &obs){
+void Geometry::removeObservation(const QPointer<Observation> &obs){
 
     //check if obs is valid
     if(obs.isNull()){
-        return false;
+        return;
     }
 
     //remove observation with equal id
@@ -640,10 +638,9 @@ bool Geometry::removeObservation(const QPointer<Observation> &obs){
         if(!observation.isNull() && observation->getId() == obs->getId()){
             this->observations.removeOne(observation);
             emit this->geomObservationsChanged(this->id);
-            return true;
+            return;
         }
     }
-    return false;
 
 }
 
@@ -658,9 +655,8 @@ const QPointer<CoordinateSystem> &Geometry::getNominalSystem() const{
 /*!
  * \brief Geometry::setNominalSystem
  * \param nomSys
- * \return
  */
-bool Geometry::setNominalSystem(const QPointer<CoordinateSystem> &nomSys){
+void Geometry::setNominalSystem(const QPointer<CoordinateSystem> &nomSys){
     if(!nomSys.isNull()){
         this->nominalSystem = nomSys;
         emit this->geomNominalSystemChanged(this->id);

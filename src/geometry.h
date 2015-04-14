@@ -53,11 +53,11 @@ public:
 
     //QString getDisplayObs() const;
     const QList<QPointer<Observation> > &getObservations() const;
-    bool addObservation(const QPointer<Observation> &obs);
-    bool removeObservation(const QPointer<Observation> &obs);
+    void addObservation(const QPointer<Observation> &obs);
+    void removeObservation(const QPointer<Observation> &obs);
 
     const QPointer<CoordinateSystem> &getNominalSystem() const;
-    bool setNominalSystem(const QPointer<CoordinateSystem> &nomSys);
+    void setNominalSystem(const QPointer<CoordinateSystem> &nomSys);
 	
     const MeasurementConfig &getMeasurementConfig() const;
     void setMeasurementConfig(const MeasurementConfig &myConfig);

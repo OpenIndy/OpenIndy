@@ -447,7 +447,7 @@ void Observation::setStation(const QPointer<Station> &station){
  * \return
  */
 const QList<QPointer<Geometry> > &Observation::getTargetGeometries() const{
-    return this->targetGeometries;
+    return this->targetGeometriesList;
 }
 
 /*!

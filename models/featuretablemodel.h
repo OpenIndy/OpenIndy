@@ -9,6 +9,7 @@
 #include "feature.h"
 #include "featurewrapper.h"
 #include "oijob.h"
+#include "reading.h"
 
 class FeatureTableModel : public QAbstractTableModel
 {
