@@ -1,7 +1,7 @@
 #ifndef PI_OIEXCHANGEDEFINEDFORMAT_H
 #define PI_OIEXCHANGEDEFINEDFORMAT_H
 
-#include "pi_oiexchangeinterface.h"
+#include "oiexchangeinterface.h"
 
 /*!
  * \brief The OiExchangeDefinedFormat class

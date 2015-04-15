@@ -3,7 +3,7 @@
 
 #include <QVariantList>
 
-#include "pi_oiexchangeinterface.h"
+#include "oiexchangeinterface.h"
 
 /*!
  * \brief The OiExchangeSimpleAscii class

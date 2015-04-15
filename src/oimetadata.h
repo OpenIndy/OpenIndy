@@ -3,20 +3,20 @@
 
 #include <QString>
 #include <QJsonArray>
-#include "pi_oiplugin.h"
+#include "oiplugin.h"
 #include "sensor.h"
-#include "pi_lasertracker.h"
-#include "pi_totalstation.h"
-#include "pi_constructfunction.h"
-#include "pi_fitfunction.h"
-#include "pi_generatefeaturefunction.h"
-#include "pi_geodeticfunction.h"
-#include "pi_networkadjustment.h"
-#include "pi_objecttransformation.h"
-#include "pi_systemtransformation.h"
-#include "pi_oiexchangeinterface.h"
-#include "pi_oiexchangesimpleascii.h"
-#include "pi_oiexchangedefinedformat.h"
+#include "lasertracker.h"
+#include "totalstation.h"
+#include "constructfunction.h"
+#include "fitfunction.h"
+#include "generatefeaturefunction.h"
+#include "geodeticfunction.h"
+#include "networkadjustment.h"
+#include "objecttransformation.h"
+#include "systemtransformation.h"
+#include "oiexchangeinterface.h"
+#include "oiexchangesimpleascii.h"
+#include "oiexchangedefinedformat.h"
 
 /*!
  * \brief The OiMetaData class

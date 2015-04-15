@@ -35,18 +35,23 @@ linux: LIBS = -lGLU
 #-----------------------------------Linear Algebra---------------------------------------
 
 INCLUDEPATH += $$PWD/src
+INCLUDEPATH += $$PWD/src/geometry
+INCLUDEPATH += $$PWD/src/plugin
+INCLUDEPATH += $$PWD/src/plugin/function
+INCLUDEPATH += $$PWD/src/plugin/sensor
+INCLUDEPATH += $$PWD/src/plugin/networkAdjustment
+INCLUDEPATH += $$PWD/src/plugin/simulation
+INCLUDEPATH += $$PWD/src/plugin/tool
+INCLUDEPATH += $$PWD/src/plugin/exchange
+INCLUDEPATH += $$PWD/src/util
+
+INCLUDEPATH += $$PWD/models
+INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/ui/delegates
-INCLUDEPATH += $$PWD/controller
-INCLUDEPATH += $$PWD/src/geometry
-INCLUDEPATH += $$PWD/src/oiemitter
-INCLUDEPATH += $$PWD/src/plugin
-INCLUDEPATH += $$PWD/src/plugin/oitool
-INCLUDEPATH += $$PWD/src/simulation
-INCLUDEPATH += $$PWD/src/plugin/oiexchange
+INCLUDEPATH += $$PWD/ui/dialogs
+
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
-INCLUDEPATH += $$PWD/models
-INCLUDEPATH += $$PWD/src/util
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/release/ -lopenIndyLib
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/debug/ -lopenIndyLib
@@ -60,6 +65,11 @@ INCLUDEPATH += $$PWD/lib/openIndyLib/bin/release
 DEPENDPATH += $$PWD/lib/openIndyLib/bin/release
 
 SOURCES += \
+    main.cpp \
+    ui/mainwindow.cpp \
+    ui/dialogs/createfeaturedialog.cpp \
+    ui/delegates/featureoverviewdelegate.cpp \
+    ui/delegates/trafoparamdelegate.cpp \
     controller/console.cpp \
     controller/controller.cpp \
     controller/featureattributes.cpp \
@@ -69,44 +79,19 @@ SOURCES += \
     controller/systemdbmanager.cpp \
     models/featuretablemodel.cpp \
     models/featuretableproxymodel.cpp \
-    src/geometry/circle.cpp \
-    src/geometry/ellipsoid.cpp \
-    src/geometry/hyperboloid.cpp \
-    src/geometry/line.cpp \
-    src/geometry/nurbs.cpp \
-    src/geometry/ellipse.cpp \
-    src/geometry/slottedhole.cpp \
-    src/geometry/plane.cpp \
-    src/geometry/point.cpp \
-    src/geometry/pointcloud.cpp \
-    src/geometry/scalarentityangle.cpp \
-    src/geometry/scalarentitydistance.cpp \
-    src/geometry/scalarentitymeasurementseries.cpp \
-    src/geometry/scalarentitytemperature.cpp \
-    src/geometry/sphere.cpp \
-    src/oiemitter/oiemitter.cpp \
-    src/oiemitter/oiexchangeemitter.cpp \
-    src/oiemitter/oifeaturestateemitter.cpp \
-    src/oiemitter/oifunctionemitter.cpp \
-    src/oiemitter/oinetworkadjustmentemitter.cpp \
-    src/oiemitter/oisensoremitter.cpp \
-    src/oiemitter/oisimulationemitter.cpp \
-    src/plugin/oiexchange/oiexchangeobject.cpp \
-    src/simulation/simulationdata.cpp \
-    src/simulation/uncertaintycomponent.cpp \
-    src/util/util.cpp \
     src/connectionconfig.cpp \
     src/coordinatesystem.cpp \
+    src/direction.cpp \
     src/element.cpp \
     src/feature.cpp \
     src/featurewrapper.cpp \
-    src/function.cpp \
     src/geometry.cpp \
     src/measurementconfig.cpp \
     src/observation.cpp \
     src/oimetadata.cpp \
     src/oirequestresponse.cpp \
-    src/pluginmetadata.cpp \
+    src/position.cpp \
+    src/radius.cpp \
     src/reading.cpp \
     src/residual.cpp \
     src/sensorconfiguration.cpp \
@@ -115,20 +100,37 @@ SOURCES += \
     src/station.cpp \
     src/statistic.cpp \
     src/trafoparam.cpp \
-    ui/createfeaturedialog.cpp \
-    ui/main.cpp \
-    ui/mainwindow.cpp \
-    ui/delegates/featureoverviewdelegate.cpp \
-    ui/delegates/trafoparamdelegate.cpp \
-    src/direction.cpp \
-    src/position.cpp \
-    src/radius.cpp \
+    src/util/util.cpp \
+    src/geometry/circle.cpp \
     src/geometry/cone.cpp \
     src/geometry/cylinder.cpp \
+    src/geometry/ellipse.cpp \
+    src/geometry/ellipsoid.cpp \
+    src/geometry/hyperboloid.cpp \
+    src/geometry/line.cpp \
+    src/geometry/nurbs.cpp \
     src/geometry/paraboloid.cpp \
-    src/geometry/torus.cpp
+    src/geometry/plane.cpp \
+    src/geometry/point.cpp \
+    src/geometry/pointcloud.cpp \
+    src/geometry/scalarentityangle.cpp \
+    src/geometry/scalarentitydistance.cpp \
+    src/geometry/scalarentitymeasurementseries.cpp \
+    src/geometry/scalarentitytemperature.cpp \
+    src/geometry/slottedhole.cpp \
+    src/geometry/sphere.cpp \
+    src/geometry/torus.cpp \
+    src/plugin/pluginmetadata.cpp \
+    src/plugin/simulation/simulationdata.cpp \
+    src/plugin/simulation/uncertaintycomponent.cpp \
+    src/plugin/function/function.cpp \
+    src/plugin/exchange/oiexchangeobject.cpp
 
 HEADERS  += \
+    ui/mainwindow.h \
+    ui/dialogs/createfeaturedialog.h \
+    ui/delegates/featureoverviewdelegate.h \
+    ui/delegates/trafoparamdelegate.h \
     controller/console.h \
     controller/controller.h \
     controller/featureattributes.h \
@@ -138,13 +140,38 @@ HEADERS  += \
     controller/systemdbmanager.h \
     models/featuretablemodel.h \
     models/featuretableproxymodel.h \
+    src/connectionconfig.h \
+    src/coordinatesystem.h \
+    src/direction.h \
+    src/element.h \
+    src/feature.h \
+    src/featurewrapper.h \
+    src/geometry.h \
+    src/measurementconfig.h \
+    src/observation.h \
+    src/oimetadata.h \
+    src/oirequestresponse.h \
+    src/position.h \
+    src/radius.h \
+    src/reading.h \
+    src/residual.h \
+    src/sensorconfiguration.h \
+    src/sensorcontrol.h \
+    src/sensorlistener.h \
+    src/station.h \
+    src/statistic.h \
+    src/trafoparam.h \
+    src/util/types.h \
+    src/util/util.h \
     src/geometry/circle.h \
+    src/geometry/cone.h \
+    src/geometry/cylinder.h \
+    src/geometry/ellipse.h \
     src/geometry/ellipsoid.h \
     src/geometry/hyperboloid.h \
     src/geometry/line.h \
     src/geometry/nurbs.h \
-    src/geometry/ellipse.h \
-    src/geometry/slottedhole.h \
+    src/geometry/paraboloid.h \
     src/geometry/plane.h \
     src/geometry/point.h \
     src/geometry/pointcloud.h \
@@ -152,69 +179,38 @@ HEADERS  += \
     src/geometry/scalarentitydistance.h \
     src/geometry/scalarentitymeasurementseries.h \
     src/geometry/scalarentitytemperature.h \
+    src/geometry/slottedhole.h \
     src/geometry/sphere.h \
-    src/oiemitter/oiemitter.h \
-    src/oiemitter/oiexchangeemitter.h \
-    src/oiemitter/oifeaturestateemitter.h \
-    src/oiemitter/oifunctionemitter.h \
-    src/oiemitter/oinetworkadjustmentemitter.h \
-    src/oiemitter/oisensoremitter.h \
-    src/oiemitter/oisimulationemitter.h \
-    src/plugin/oiexchange/oiexchangeobject.h \
-    src/plugin/oiexchange/pi_oiexchangedefinedformat.h \
-    src/plugin/oiexchange/pi_oiexchangeinterface.h \
-    src/plugin/oiexchange/pi_oiexchangesimpleascii.h \
-    src/plugin/oitool/pi_oitool.h \
-    src/plugin/pi_constructfunction.h \
-    src/plugin/pi_fitfunction.h \
-    src/plugin/pi_generatefeaturefunction.h \
-    src/plugin/pi_geodeticfunction.h \
-    src/plugin/pi_lasertracker.h \
-    src/plugin/pi_networkadjustment.h \
-    src/plugin/pi_objecttransformation.h \
-    src/plugin/pi_oiplugin.h \
-    src/plugin/pi_systemtransformation.h \
-    src/plugin/pi_totalstation.h \
-    src/simulation/simulationdata.h \
-    src/simulation/simulationmodel.h \
-    src/simulation/uncertaintycomponent.h \
-    src/util/types.h \
-    src/util/util.h \
-    src/connectionconfig.h \
-    src/coordinatesystem.h \
-    src/element.h \
-    src/feature.h \
-    src/featurewrapper.h \
-    src/function.h \
-    src/geometry.h \
-    src/measurementconfig.h \
-    src/observation.h \
-    src/oimetadata.h \
-    src/oirequestresponse.h \
-    src/pluginmetadata.h \
-    src/reading.h \
-    src/residual.h \
-    src/sensor.h \
-    src/sensorconfiguration.h \
-    src/sensorcontrol.h \
-    src/sensorlistener.h \
-    src/station.h \
-    src/statistic.h \
-    src/trafoparam.h \
-    ui/createfeaturedialog.h \
-    ui/mainwindow.h \
-    ui/delegates/featureoverviewdelegate.h \
-    ui/delegates/trafoparamdelegate.h \
-    src/direction.h \
-    src/position.h \
-    src/radius.h \
-    src/geometry/cone.h \
-    src/geometry/cylinder.h \
-    src/geometry/paraboloid.h \
-    src/geometry/torus.h
+    src/geometry/torus.h \
+    src/plugin/oiplugin.h \
+    src/plugin/pluginmetadata.h \
+    src/plugin/tool/oitool.h \
+    src/plugin/simulation/simulationdata.h \
+    src/plugin/simulation/simulationmodel.h \
+    src/plugin/simulation/uncertaintycomponent.h \
+    src/plugin/sensor/lasertracker.h \
+    src/plugin/sensor/sensor.h \
+    src/plugin/sensor/totalstation.h \
+    src/plugin/networkAdjustment/networkadjustment.h \
+    src/plugin/function/constructfunction.h \
+    src/plugin/function/fitfunction.h \
+    src/plugin/function/function.h \
+    src/plugin/function/generatefeaturefunction.h \
+    src/plugin/function/geodeticfunction.h \
+    src/plugin/function/objecttransformation.h \
+    src/plugin/function/systemtransformation.h \
+    src/plugin/exchange/oiexchangedefinedformat.h \
+    src/plugin/exchange/oiexchangeinterface.h \
+    src/plugin/exchange/oiexchangeobject.h \
+    src/plugin/exchange/oiexchangesimpleascii.h \
+    lib/openIndyLib/include/chooselalib.h \
+    lib/openIndyLib/include/global.h \
+    lib/openIndyLib/include/linearalgebra.h \
+    lib/openIndyLib/include/oimat.h \
+    lib/openIndyLib/include/oivec.h
 
 FORMS    += \
-    ui/createfeaturedialog.ui \
-    ui/mainwindow.ui
+    ui/mainwindow.ui \
+    ui/dialogs/createfeaturedialog.ui
 
 

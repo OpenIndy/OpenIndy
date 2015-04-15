@@ -57,7 +57,7 @@ public:
 class InputElement{
 public:
     InputElement() : isUsed(true){}
-    InputElement(const int &id) : isUsed(true){}
+    InputElement(const int &id) : isUsed(true), id(id){}
 
     //! custom comparison operator to compare input elements by their id
     bool operator==(const InputElement &other){

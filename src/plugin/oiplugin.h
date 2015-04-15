@@ -4,10 +4,10 @@
 #include "function.h"
 #include "sensor.h"
 #include "simulationmodel.h"
-#include "pi_networkadjustment.h"
-#include "pi_oitool.h"
-#include "pi_oiexchangesimpleascii.h"
-#include "pi_oiexchangedefinedformat.h"
+#include "networkadjustment.h"
+#include "oitool.h"
+#include "oiexchangesimpleascii.h"
+#include "oiexchangedefinedformat.h"
 
 class OiPlugin
 {

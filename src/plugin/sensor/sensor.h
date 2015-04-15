@@ -9,7 +9,6 @@
 #include <QObject>
 
 #include "sensorcontrol.h"
-#include "oisensoremitter.h"
 #include "pluginmetadata.h"
 #include "sensorconfiguration.h"
 #include "types.h"
@@ -36,7 +35,7 @@ public:
     virtual ~Sensor(){}
 
 //attributes
-    OiSensorEmitter myEmitter;
+    //OiSensorEmitter myEmitter;
     SensorConfiguration myConfiguration;
 
 //methods
@@ -147,7 +146,7 @@ public:
     }
 
 protected:
-    void writeToConsole(QString s){myEmitter.emitSendString(s);}
+    //void writeToConsole(QString s){myEmitter.emitSendString(s);}
 
     QPair<ReadingTypes, Reading*> lastReading;
 

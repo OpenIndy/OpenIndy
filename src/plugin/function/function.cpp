@@ -1790,7 +1790,12 @@ const ScalarInputParams &Function::getScalarInputParams() const{
 
     //use default values if no scalar input params have been specified
     if(!this->scalarInputParams.isValid){
-
+        this->scalarInputParams.doubleParameter = this->doubleParameters;
+        this->scalarInputParams.intParameter = this->integerParameters;
+        QStringList keys = this->stringParameters.keys();
+        foreach(const QString &key, keys){
+            this->scalarInputParams.stringParameter.insert(key, this->stringParameters.value(key));
+        }
     }
 
     return this->scalarInputParams;
@@ -1928,7 +1933,12 @@ void Function::clearResults(){
     this->statistic.setIsValid(false);
 
     //set all elements to not have been used
-
+    QList<int> keys = this->inputElements.keys();
+    foreach(const QString &key, keys){
+        for(int i = 0; i < this->inputElements[key].size(); ++i){
+            this->inputElements[key][i].isUsed = false;
+        }
+    }
 
 }
 
@@ -2062,7 +2072,20 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
-void Function::setUseState(const int &position, const int &id, const bool &state)
-{
+/*!
+ * \brief Function::setUseState
+ * \param position
+ * \param id
+ * \param state
+ */
+void Function::setUseState(const int &position, const int &id, const bool &state){
+
+    //get the element at position with id and set isUsed to state
+    if(this->inputElements.contains(position)){
+        int index = this->inputElements[position].indexOf(id);
+        if(index > -1){
+            this->inputElements[position][index].isUsed = state;
+        }
+    }
 
 }

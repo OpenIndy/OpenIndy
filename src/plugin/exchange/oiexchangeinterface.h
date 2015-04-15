@@ -4,7 +4,6 @@
 #include <QStringList>
 #include <QObject>
 
-#include "oiexchangeemitter.h"
 #include "oiexchangeobject.h"
 #include "pluginmetadata.h"
 
@@ -108,7 +107,7 @@ public:
      * \param msg
      */
     void writeToConsole(QString msg) const{
-        this->myExchangeEmitter.emitSendString(msg);
+        //this->myExchangeEmitter.emitSendString(msg);
     }
 
 signals:
@@ -128,7 +127,7 @@ protected:
     QString groupName; //group that the imported nominals shall be added to
 
 private:
-    OiExchangeEmitter myExchangeEmitter;
+    //OiExchangeEmitter myExchangeEmitter;
 
 };
 
