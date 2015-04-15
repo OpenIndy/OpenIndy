@@ -50,6 +50,6 @@ public:
     bool exec(QPointer<Torus> &torus){ Function::exec(torus); }
 };
 
-#define SystemTransformation_iidd "de.openIndy.Plugin.Function.SystemTransformation.v001"
+#define SystemTransformation_iidd "de.openIndy.plugin.function.systemTransformation.v001"
 
 #endif // SYSTEMTRANSFORMATION_H

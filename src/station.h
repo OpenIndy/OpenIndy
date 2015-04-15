@@ -7,7 +7,6 @@
 
 #include "feature.h"
 #include "point.h"
-#include "connectionconfig.h"
 
 class SensorControl;
 class Reading;
@@ -115,7 +114,7 @@ signals:
     //signals to start sensor actions
     //###############################
 
-    void connectSensor(const ConnectionConfig &config);
+    void connectSensor();
     void disconnectSensor();
 
     void measure(const QPointer<Geometry> &geom, const bool &isActiveCoordSys);

@@ -1,5 +1,5 @@
-#ifndef PI_GEODETICFUNCTION_H
-#define PI_GEODETICFUNCTION_H
+#ifndef GEODETICFUNCTION_H
+#define GEODETICFUNCTION_H
 
 #include "function.h"
 
@@ -25,6 +25,6 @@ public:
     bool exec(QPointer<TrafoParam> &trafoParam){ Function::exec(trafoParam); }
 };
 
-#define GeodeticFunction_iidd "de.openIndy.Plugin.Function.GeodeticFunction.v001"
+#define GeodeticFunction_iidd "de.openIndy.plugin.function.geodeticFunction.v001"
 
-#endif // PI_GEODETICFUNCTION_H
+#endif // GEODETICFUNCTION_H

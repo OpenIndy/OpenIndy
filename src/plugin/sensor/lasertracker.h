@@ -1,32 +1,31 @@
-#ifndef PI_LASERTRACKER_H
-#define PI_LASERTRACKER_H
-
-#include <QString>
-#include <QDebug>
+#ifndef LASERTRACKER_H
+#define LASERTRACKER_H
 
 #include "sensor.h"
-#include "reading.h"
-#include "measurementconfig.h"
 
 /*!
- * \brief The LaserTrackerInterface class
- * interface class for implementing laser tracker plugins (.dll).
+ * \brief The LaserTracker class
  */
-
 class LaserTracker : public Sensor
 {
+    Q_OBJECT
 
 public:
+    LaserTracker(QObject *parent = 0) : Sensor(parent){}
 
     virtual ~LaserTracker(){}
 
-    bool accept(SensorControl* s, SensorFunctions f){
+    //##########################################
+    //calls the appropriate laser tracker method
+    //##########################################
 
-        /*switch(f){
+    bool accept(const SensorFunctions &method, const SensorAttributes &sAttr){
+
+        switch(method){
         case(eMoveAngle):
-            return this->move(s->az,s->ze,s->dist,s->isMoveRelativ);
+            return this->move(sAttr.moveAzimuth, sAttr.moveZenith, sAttr.moveDistance, sAttr.moveIsRelative);
         case(eMoveXYZ):
-            return this->move(s->x_,s->y_,s->z_);
+            return this->move(sAttr.moveX, sAttr.moveY, sAttr.moveZ);
         case(eInitialize):
             return this->initialize();
         case(eHome):
@@ -37,92 +36,89 @@ public:
             return this->changeMotorState();
         case(eCompensation):
             return this->compensation();
-        }*/
+        }
         return false;
+
     }
-
-    //--------------has to be implemented-----------------------
-
-    //-----get sensor capabilities-----
-
-    virtual QList<ReadingTypes>* getSupportedReadingTypes() const = 0;
-    virtual QList<SensorFunctions> getSupportedSensorActions() const = 0;
-    virtual QList<ConnectionTypes>* getConnectionType() const = 0;
-
-    //get meta data
-    virtual PluginMetaData* getMetaData() const = 0;
-
-    //individually defined sensor parameter
-    virtual QMap<QString,int>* getIntegerParameter() const = 0;
-    virtual QMap<QString,double>* getDoubleParameter() const = 0;
-    virtual QMap <QString, QStringList>* getStringParameter() const = 0;
-    virtual QStringList selfDefinedActions() const = 0;
-    virtual bool doSelfDefinedAction(QString a) = 0;
-
-    /*default accuracy
-     *keys:
-     * sigmaAzimuth sigmaAzimuth sigmaDistance
-     * sigmaXyz
-     * sigmaTempDeg
-     * sigmaAngleXZ
-     * sigmaAngleYZ
-     */
-    virtual QMap<QString,double>* getDefaultAccuracy() const = 0;
-
-    //-----sensor actions-----
-
-    //! abort a running action
-    virtual void abortAction() = 0;
-
-    //! connect app with laser tracker
-    virtual bool connectSensor(ConnectionConfig*) = 0;
-
-    //! disconnect app with laser tracker
-    virtual bool disconnectSensor() = 0;
-
-    //! laser tracker measures a point and returns a list of readings
-    virtual QList<Reading*>measure(MeasurementConfig *mc) = 0;
-
-    //! stream
-    virtual QVariantMap readingStream(ReadingTypes streamFormat) = 0;
-
-    //! getConnectionState
-    virtual bool getConnectionState() = 0;
-
-    //! return ready state of the sensor
-    virtual bool isReadyForMeasurement() = 0;
-
-    //!sensor stats
-    virtual QMap<QString,QString> getSensorStats()=0;
-
-    //!checks if sensor is busy
-    virtual bool isBusy() = 0;
-
 
 protected:
 
-    //! starts initialization
-    virtual bool initialize(){this->writeToConsole("not available");return false;}
+    //#####################
+    //laser tracker methods
+    //#####################
 
-    //! move laser tracker to specified position
-    virtual bool move(double azimuth, double zenith, double distance,bool isrelativ){this->writeToConsole("not available");return false;}
+    /*!
+     * \brief initialize
+     * \return
+     */
+    virtual bool initialize(){
+        emit this->sendMessage(QString("Laser Tracker not implemented correctly: initialization method missing"));
+        return false;
+    }
 
-    virtual bool move(double x, double y, double z){this->writeToConsole("not available");return false;}
+    /*!
+     * \brief move
+     * \param azimuth
+     * \param zenith
+     * \param distance
+     * \param isrelativ
+     * \return
+     */
+    virtual bool move(const double &azimuth, const double &zenith, const double &distance, const bool &isRelative){
+        emit this->sendMessage(QString("Laser Tracker not implemented correctly: move method missing"));
+        return false;
+    }
 
-    //! sets laser tracke to home position
-    virtual bool home(){this->writeToConsole("not available");return false;}
+    /*!
+     * \brief move
+     * \param x
+     * \param y
+     * \param z
+     * \return
+     */
+    virtual bool move(const double &x, const double &y, const double &z){
+        emit this->sendMessage(QString("Laser Tracker not implemented correctly: move method missing"));
+        return false;
+    }
 
-    //! turns motors on or off
-    virtual bool changeMotorState(){this->writeToConsole("not available");return false;}
+    /*!
+     * \brief home
+     * \return
+     */
+    virtual bool home(){
+        emit this->sendMessage(QString("Laser Tracker not implemented correctly: home method missing"));
+        return false;
+    }
 
-    //! toggle between frontside and backside
-    virtual bool toggleSightOrientation(){this->writeToConsole("not available");return false;}
+    /*!
+     * \brief changeMotorState
+     * \return
+     */
+    virtual bool changeMotorState(){
+        emit this->sendMessage(QString("Laser Tracker not implemented correctly: motor state method missing"));
+        return false;
+    }
 
-    //! compensation
-    virtual bool compensation(){this->writeToConsole("not available");return false;}
+    /*!
+     * \brief toggleSightOrientation
+     * \return
+     */
+    virtual bool toggleSightOrientation(){
+        emit this->sendMessage(QString("Laser Tracker not implemented correctly: toggle sight method missing"));
+        return false;
+    }
+
+    /*!
+     * \brief compensation
+     * \return
+     */
+    virtual bool compensation(){
+        emit this->sendMessage(QString("Laser Tracker not implemented correctly: compensation method missing"));
+        return false;
+    }
 
 };
 
-#define LaserTracker_iidd "de.openIndy.Plugin.Sensor.LaserTracker.v001"
+#define LaserTracker_iidd "de.openIndy.plugin.sensor.laserTracker.v001"
 
-#endif // PI_LASERTRACKER_H
+#endif // LASERTRACKER_H

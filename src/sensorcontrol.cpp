@@ -724,9 +724,8 @@ void SensorControl::setSensor(const QPointer<Sensor> &sensor){
 
 /*!
  * \brief SensorControl::connectSensor
- * \param connConfig
  */
-void SensorControl::connectSensor(const ConnectionConfig &connConfig){
+void SensorControl::connectSensor(){
 /*
     locker.lock();
 
@@ -877,10 +876,10 @@ void SensorControl::readingStream(const bool &start, const ReadingTypes &reading
 }
 
 /*!
- * \brief SensorControl::sensorStatsStream
+ * \brief SensorControl::sensorStatusStream
  * \param start
  */
-void SensorControl::sensorStatsStream(const bool &start){
+void SensorControl::sensorStatusStream(const bool &start){
 /*
     this->myEmitter.sendString("starting stat stream!");
 

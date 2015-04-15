@@ -1496,13 +1496,21 @@ void Function::removeFeature(const int &id){
  * \param parent
  */
 Function::Function(QObject *parent) : QObject(parent){
-
+    this->init();
 }
 
 /*!
  * \brief Function::~Function
  */
 Function::~Function(){
+
+}
+
+/*!
+ * \brief Function::init
+ * Method that is automatically called by function constructor and may be reimplemented by the plugin writer
+ */
+void Function::init(){
 
 }
 

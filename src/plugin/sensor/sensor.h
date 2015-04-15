@@ -1,18 +1,33 @@
 #ifndef SENSOR_H
 #define SENSOR_H
 
+#include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QStringList>
 #include <QMap>
 #include <QVariant>
 #include <QPair>
-#include <QObject>
 
-#include "sensorcontrol.h"
 #include "pluginmetadata.h"
 #include "sensorconfiguration.h"
 #include "types.h"
 #include "util.h"
+
+/*!
+ * \brief The SensorAttributes class
+ */
+class SensorAttributes{
+public:
+    double moveAzimuth;
+    double moveZenith;
+    double moveDistance;
+    bool moveIsRelative;
+    double moveX;
+    double moveY;
+    double moveZ;
+    QString action;
+};
 
 class Reading;
 class MeasurementConfig;
@@ -20,138 +35,114 @@ class SensorControl;
 
 /*!
  * \brief The Sensor class
- * Father class for all sensor types. The Sensor has four important methodes.
- * The measure methode execute a measurement defined by the MeasurementConfig
- * Object. The accept methode execute an sensor action defined by the Configuration
- * Enumeration.
- *
  */
 class Sensor : public QObject
 {
     Q_OBJECT
 
 public:
-//constructor
-    virtual ~Sensor(){}
+    Sensor(QObject *parent = 0);
 
-//attributes
-    //OiSensorEmitter myEmitter;
-    SensorConfiguration myConfiguration;
+    virtual ~Sensor();
 
-//methods
+    //############################
+    //sensor initialization method
+    //############################
 
-    //-----get sensor capabilities-----
+    virtual void init();
 
-    virtual QList<ReadingTypes>* getSupportedReadingTypes() const = 0;
-    virtual QList<SensorFunctions> getSupportedSensorActions() const = 0;
-    virtual QList<ConnectionTypes>* getConnectionType() const = 0;
+    //####################################
+    //get or set general sensor attributes
+    //####################################
 
-    //! get meta data
-    virtual PluginMetaData* getMetaData() const = 0;
+    const SensorConfiguration &getSensorConfiguration() const;
+    void setSensorConfiguration(const SensorConfiguration &sConfig);
 
-    //individually defined sensor parameter
-    virtual QMap<QString,int>* getIntegerParameter() const = 0;
-    virtual QMap<QString,double>* getDoubleParameter() const = 0;
-    virtual QMap <QString, QStringList>* getStringParameter() const = 0;
-    virtual QStringList selfDefinedActions() const = 0;
-    virtual bool doSelfDefinedAction(QString a) = 0;
+    const QPair<ReadingTypes, QPointer<Reading> > &getLastReading() const;
 
-    //individually defined reading type
-    virtual QString getUndefinedReadingName() const {return "undefined";}
+    //#########################################################
+    //methods to get or set further information to use a sensor
+    //#########################################################
 
-    /*default accuracy
-     *keys:
-     * sigmaAzimuth sigmaAzimuth sigmaDistance
-     * sigmaXyz
-     * sigmaTempDeg
-     * sigmaAngleXZ
-     * sigmaAngleYZ
-     */
-    virtual QMap<QString,double>* getDefaultAccuracy() const = 0;
+    const QList<ReadingTypes> &getSupportedReadingTypes() const;
+    const QList<SensorFunctions> &getSupportedSensorActions() const;
+    const QList<ConnectionTypes> &getSupportedConnectionTypes() const;
 
-    //! sensor configuration
-    void setSensorConfiguration(SensorConfiguration sConfig){
-        myConfiguration = sConfig;
-    }
+    const PluginMetaData &getMetaData() const;
 
-    //-----sensor actions-----
+    const QMap<QString, int> &getIntegerParameter() const;
+    const QMap<QString, double> &getDoubleParameter() const;
+    const QMap<QString, QStringList> &getStringParameter() const;
 
-    /*! checks given sensor functionality and nd calls the appropriate internal method
-     * of the instance*/
-    virtual bool accept(SensorControl*, SensorFunctions) = 0;
+    const QStringList &getSelfDefinedActions() const;
 
-    //! abort a running action
-    virtual void abortAction() = 0;
+    const QMap<QString, double> &getDefaultAccuracy() const;
 
-    //! connect app with sensor
-    virtual bool connectSensor(ConnectionConfig*) = 0;
+    //########################
+    //sensor state and actions
+    //########################
 
-    //! disconnect app with sensor
-    virtual bool disconnectSensor() = 0;
+    virtual bool accept(const SensorFunctions &method, const SensorAttributes &sAttr);
 
-    //! sensor measures a entity and returns a list of readings
-    virtual QList<Reading*> measure(MeasurementConfig*) = 0;
+    virtual bool abortAction();
 
-    //! stream
-    virtual QVariantMap readingStream(ReadingTypes streamFormat) = 0;
+    virtual bool connectSensor();
+    virtual bool disconnectSensor();
 
-    //! getConnectionState
-    virtual bool getConnectionState() = 0;
+    virtual QList<QPointer<Reading> > measure(const MeasurementConfig &mConfig);
+    virtual QVariantMap readingStream(const ReadingTypes &streamFormat);
 
-    //! return ready state of the sensor
-    virtual bool isReadyForMeasurement() = 0;
+    virtual bool getConnectionState();
+    virtual bool getIsReadyForMeasurement();
+    virtual bool getIsBusy();
+    virtual QMap<QString, QString> getSensorStatus();
 
-    //!sensor stats
-    virtual QMap<QString,QString> getSensorStats()=0;
+    virtual bool doSelfDefinedAction(const QString &action);
 
-    //!checks if sensor is busy
-    virtual bool isBusy() = 0;
+    //#################
+    //save and load XML
+    //#################
 
-    virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const
-    {
+    QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
+    bool fromOpenIndyXML(QDomElement &xmlElem);
 
-        if(xmlDoc.isNull() || this->getMetaData() == NULL){
-            return QDomElement();
-        }
+signals:
 
-        QDomElement sensor = xmlDoc.createElement("sensor");
+    //################################################
+    //signals to inform OpenIndy about function issues
+    //################################################
 
-        //add sensor attributes
-        sensor.setAttribute("name", this->getMetaData()->name);
-        sensor.setAttribute("plugin", this->getMetaData()->pluginName);
-
-        //add reading types
-        QDomElement readingTypes = xmlDoc.createElement("readingTypes");
-        if(this->getSupportedReadingTypes() != NULL){
-            QList<ReadingTypes> *types = this->getSupportedReadingTypes();
-            for(int i = 0; i < types->size(); i++){
-                QDomElement readingType = xmlDoc.createElement("type");
-                readingType.setAttribute("name", getReadingTypeName(types->at(i)));
-                readingTypes.appendChild(readingType);
-            }
-        }
-        sensor.appendChild(readingTypes);
-
-        return sensor;
-
-    }
-
-    /*!
-     * \brief getLastReading
-     * Returns the last reading (measured or streamed) of this sensor
-     * \return
-     */
-    QPair<ReadingTypes, Reading*> getLastReading(){
-        return this->lastReading;
-    }
+    void sendMessage(const QString &msg);
 
 protected:
-    //void writeToConsole(QString s){myEmitter.emitSendString(s);}
 
-    QPair<ReadingTypes, Reading*> lastReading;
+    //#########################
+    //general sensor attributes
+    //#########################
+
+    SensorConfiguration sensorConfiguration;
+
+    QPair<ReadingTypes, QPointer<Reading> > lastReading; //the last reading produced by this sensor
+
+    //###########################
+    //input and output parameters
+    //###########################
+
+    //meta information about the sensor
+    QList<ReadingTypes> supportedReadingTypes;
+    QList<SensorFunctions> supportedSensorActions;
+    QList<ConnectionTypes> supportedConnectionTypes;
+    QStringList selfDefinedActions;
+    QMap<QString, double> defaultAccuracy;
+    PluginMetaData metaData;
+
+    //the needed scalar input parameters including default values
+    QMap<QString, int> integerParameters;
+    QMap<QString, double> doubleParameters;
+    QMultiMap<QString, QString> stringParameters;
 
 };
 
-#define Sensor_iidd "de.openIndy.Plugin.Sensor.v001"
+#define Sensor_iidd "de.openIndy.plugin.sensor.v001"
 
 #endif // SENSOR_H

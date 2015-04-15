@@ -168,6 +168,12 @@ public:
 
     virtual ~Function();
 
+    //##############################
+    //function initialization method
+    //##############################
+
+    virtual void init();
+
     //############
     //exec methods
     //############
@@ -196,9 +202,9 @@ public:
     virtual bool exec(QPointer<Sphere> &sphere);
     virtual bool exec(QPointer<Torus> &torus);
 
-    //##########################################################
-    //methods to specify further information to solve a function
-    //##########################################################
+    //#############################################################
+    //methods to get or set further information to solve a function
+    //#############################################################
 
     const QList<NeededElement> &getNeededElements() const;
     const QList<FeatureTypes> &getApplicableFor() const;
@@ -304,5 +310,7 @@ protected:
     QMap<int, QList<InputElement> > inputElements;
 
 };
+
+#define Function_iid "de.openIndy.plugin.function.v001"
 
 #endif // FUNCTION_H

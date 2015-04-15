@@ -79,7 +79,6 @@ SOURCES += \
     controller/systemdbmanager.cpp \
     models/featuretablemodel.cpp \
     models/featuretableproxymodel.cpp \
-    src/connectionconfig.cpp \
     src/coordinatesystem.cpp \
     src/direction.cpp \
     src/element.cpp \
@@ -124,7 +123,8 @@ SOURCES += \
     src/plugin/simulation/simulationdata.cpp \
     src/plugin/simulation/uncertaintycomponent.cpp \
     src/plugin/function/function.cpp \
-    src/plugin/exchange/oiexchangeobject.cpp
+    src/plugin/exchange/oiexchangeobject.cpp \
+    src/plugin/sensor/sensor.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -140,7 +140,6 @@ HEADERS  += \
     controller/systemdbmanager.h \
     models/featuretablemodel.h \
     models/featuretableproxymodel.h \
-    src/connectionconfig.h \
     src/coordinatesystem.h \
     src/direction.h \
     src/element.h \

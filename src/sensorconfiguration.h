@@ -1,94 +1,145 @@
 #ifndef SENSORCONFIGURATION_H
 #define SENSORCONFIGURATION_H
 
+#include <QPointer>
 #include <QtXml>
+#include <QString>
+#include <QMap>
+#include <QtSerialPort/QSerialPort>
 
-#include "connectionconfig.h"
+#include "types.h"
 #include "oivec.h"
 
 class Sensor;
 
-class OiConfigState;
+//##############
+//helper classes
+//##############
 
+/*!
+ * \brief The ConnectionConfig class
+ */
+class ConnectionConfig
+{
+public:
+    ConnectionConfig();
+
+    ConnectionTypes typeOfConnection;
+
+    QString ip;
+    QString port;
+    QString comPort;
+    QSerialPort::BaudRate baudRate;
+    QSerialPort::DataBits dataBits;
+    QSerialPort::Parity parity;
+    QSerialPort::StopBits stopBits;
+    QSerialPort::FlowControl flowControl;
+};
+
+/*!
+ * \brief The Accuracy struct
+ */
 struct Accuracy{
 
-    Accuracy(){
-        sigmaXyz = OiVec(3);
-        sigmaAzimuth = 0.0;
-        sigmaZenith = 0.0;
-        sigmaDistance = 0.0;
-        sigmaTemp = 0.0;
-        sigmaAngleXZ = 0.0;
-        sigmaAngleYZ = 0.0;
-    }
+    Accuracy() : sigmaXyz(OiVec(3)), sigmaAzimuth(0.0), sigmaZenith(0.0), sigmaDistance(0.0),
+        sigmaTemp(0.0), sigmaAngleXZ(0.0), sigmaAngleYZ(0.0){}
 
     double sigmaAzimuth;
     double sigmaZenith;
     double sigmaDistance;
     OiVec sigmaXyz;
     double sigmaTemp;
-    QMap<QString,double> sigmaUndefined;
+    QMap<QString, double> sigmaUndefined;
     double sigmaAngleXZ;
     double sigmaAngleYZ;
 };
 
+//###########################
+//sensor configuration itself
+//###########################
+
+/*!
+ * \brief The SensorConfiguration class
+ */
 class SensorConfiguration
 {
-    friend class OiConfigState;
-
 public:
     SensorConfiguration();
 
+    SensorConfiguration(const SensorConfiguration &copy);
+
+    SensorConfiguration &operator=(const SensorConfiguration &copy);
+
+    /*
     //! compare the attributes of both sensor configs
     friend bool operator==(const SensorConfiguration &left, const SensorConfiguration &right){
 
         //TODO compare sensor config attributes
 
-        /*if(){
-            return true;
-        }else{
-            return false;
-        }*/
-
         return false;
 
-    }
+    }*/
 
-    QString getName() const;
-    QString getDisplayName() const;
-    bool getIsSaved() const;
+    //##########################################
+    //get or set sensor configuration attributes
+    //##########################################
+
+    const QString &getName() const;
+    bool setName(const QString &name);
+
+    const bool &getIsSaved() const;
+
     bool getIsValid() const;
 
-    bool setName(QString name);
+    const QPointer<Sensor> &getSensor() const;
+    void setSensor(const QPointer<Sensor> &sensor);
 
-    ConnectionConfig *connConfig;
-    SensorTypes instrumentType;
+    const SensorTypes &getTypeOfSensor() const;
+    const QString &getPluginName() const;
+    const QString &getSensorName() const;
 
-    QMap<QString, int> integerParameter;
-    QMap<QString, double> doubleParameter;
-    QMap<QString, QString> stringParameter;
+    const Accuracy &getAccuracy() const;
+    void setAccuracy(const Accuracy &accuracy);
 
-    Accuracy sigma;
+    const ConnectionConfig &getConnectionConfig() const;
+    void setConnectionConfig(const ConnectionConfig &cConfig);
 
-    Sensor *mySensor; //pointer to sensor to be able to access information about the sensor plugin
+    const QMap<QString, int> &getIntegerParameter() const;
+    void setIntegerParameter(const QMap<QString, int> &intParams);
 
-    QString pluginName;
-    QString sensorName;
+    const QMap<QString, double> &getDoubleParameter() const;
+    void setDoubleParameter(const QMap<QString, double> &doubleParams);
 
-    //xml import export
+    const QMap<QString, QString> &getStringParameter() const;
+    void setStringParameter(const QMap<QString, QString> &stringParams);
+
+    //#################
+    //save and load XML
+    //#################
+
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
 private:
-    //name of the config
+
+    //###############################
+    //sensor configuration attributes
+    //###############################
+
     QString name;
-
-    //true if the config is saved (reusable when restarting OpenIndy), false if not
     bool isSaved;
+    SensorTypes typeOfSensor;
 
-    //only OiConfigState can access this method from outside this class
-    void setIsSaved(bool isSaved);
+    QString pluginName;
+    QString sensorName;
+    QPointer<Sensor> sensor;
 
+    Accuracy accuracy;
+    ConnectionConfig cConfig;
+
+    QMap<QString, int> integerParameter;
+    QMap<QString, double> doubleParameter;
+    QMap<QString, QString> stringParameter;
 };
 
 #endif // SENSORCONFIGURATION_H

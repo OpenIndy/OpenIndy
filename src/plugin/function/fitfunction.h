@@ -1,5 +1,5 @@
-#ifndef PI_FITFUNCTION_H
-#define PI_FITFUNCTION_H
+#ifndef FITFUNCTION_H
+#define FITFUNCTION_H
 
 #include "function.h"
 
@@ -35,6 +35,6 @@ public:
     bool exec(QPointer<TrafoParam> &trafoParam){ Function::exec(trafoParam); }
 };
 
-#define FitFunction_iidd "de.openIndy.Plugin.Function.FitFunction.v001"
+#define FitFunction_iidd "de.openIndy.plugin.function.fitFunction.v001"
 
-#endif // PI_FITFUNCTION_H
+#endif // FITFUNCTION_H

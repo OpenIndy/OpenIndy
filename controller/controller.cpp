@@ -3,7 +3,6 @@
 #include "feature.h"
 #include "coordinatesystem.h"
 #include "station.h"
-#include "pi_lasertracker.h"
 
 /*!
  * \brief Controller::Controller

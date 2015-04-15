@@ -1,23 +1,24 @@
 #ifndef MEASUREMENTCONFIG_H
 #define MEASUREMENTCONFIG_H
 
+#include <QString>
 #include <QtXml>
 
 #include "types.h"
 
-class OiConfigState;
+//class OiConfigState;
 
 /*!
  * \brief The MeasurementConfig class
- * contains all the configuration parameters needed to start a measurement.
+ * Contains all the configuration parameters needed to start a measurement.
  */
 class MeasurementConfig
 {
-    friend class OiConfigState;
+    //friend class OiConfigState;
 
 public:
     MeasurementConfig();
-
+/*
     //! compare the attributes of both measurement configs
     friend bool operator==(const MeasurementConfig &left, const MeasurementConfig &right){
 
@@ -31,16 +32,60 @@ public:
             return false;
         }
 
-    }
+    }*/
 
-    QString getName() const;
-    QString getDisplayName() const;
-    bool getIsSaved() const;
+    //########################################
+    //get or set measurement config attributes
+    //########################################
+
+    const QString &getName() const;
+    void setName(const QString &name);
+
+    const bool &getIsSaved() const;
+
     bool getIsValid() const;
 
-    bool setName(QString name);
+    const int &getCount() const;
+    void setCount(const int &count);
 
-    //measurement config parameters
+    const int &getIterations() const;
+    void setIterations(const int &iterations);
+
+    const bool &getMeasureTwoSides() const;
+    void setMeasureTwoSides(const bool &twoSides);
+
+    const bool &getTimeDependent() const;
+    void setTimeDependent(const bool &timeDependent);
+
+    const bool &getDistanceDependent() const;
+    void setDistanceDependent(const bool &distanceDependent);
+
+    const long &getTimeInterval() const;
+    void setTimeInterval(const long &interval);
+
+    const double &getDistanceInterval() const;
+    void setDistanceInterval(const double &interval);
+
+    const ReadingTypes &getTypeOfReading() const;
+    void setTypeOfReading(const ReadingTypes &type);
+
+    //#################
+    //save and load XML
+    //#################
+
+    QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
+    bool fromOpenIndyXML(QDomElement &xmlElem);
+
+private:
+
+    //#############################
+    //measurement config attributes
+    //#############################
+
+    QString name;
+
+    bool isSaved;
+
     int count; //the number of measurements that the sensor shall bring together to a single reading
     int iterations; //the number of readings the sensor shall return
     bool measureTwoSides; //true if the sensor shall measure in both faces (false if not)
@@ -50,19 +95,8 @@ public:
     double distanceInterval; //distance interval in which the sensor shall measure
     ReadingTypes typeOfReading; //the type of reading which the sensor shall return
 
-    //xml import export
-    QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
-    bool fromOpenIndyXML(QDomElement &xmlElem);
-
-private:
-    //name of the config
-    QString name;
-
-    //true if the config is saved (reusable when restarting OpenIndy), false if not
-    bool isSaved;
-
     //only OiConfigState can access this method from outside this class
-    void setIsSaved(bool isSaved);
+    //void setIsSaved(bool isSaved);
 };
 
 #endif // MEASUREMENTCONFIG_H

@@ -1,5 +1,5 @@
-#ifndef PI_CONSTRUCTFUNCTION_H
-#define PI_CONSTRUCTFUNCTION_H
+#ifndef CONSTRUCTFUNCTION_H
+#define CONSTRUCTFUNCTION_H
 
 #include "function.h"
 
@@ -26,7 +26,7 @@ public:
 
 };
 
-#define ConstructFunction_iidd "de.openIndy.Plugin.Function.ConstructFunction.v001"
+#define ConstructFunction_iidd "de.openIndy.plugin.function.constructFunction.v001"
 
 
-#endif // PI_CONSTRUCTFUNCTION_H
+#endif // CONSTRUCTFUNCTION_H

@@ -1,5 +1,5 @@
-#ifndef PI_GENERATEFEATUREFUNCTION_H
-#define PI_GENERATEFEATUREFUNCTION_H
+#ifndef GENERATEFEATUREFUNCTION_H
+#define GENERATEFEATUREFUNCTION_H
 
 #include "function.h"
 
@@ -21,6 +21,6 @@ signals:
     void addFeatures(const QList<QPointer<FeatureWrapper> > &features);
 };
 
-#define GenerateFeatureFunction_iidd "de.openIndy.Plugin.Function.GenerateFeatureFunction.v001"
+#define GenerateFeatureFunction_iidd "de.openIndy.plugin.function.generateFeatureFunction.v001"
 
-#endif // PI_GENERATEFEATUREFUNCTION_H
+#endif // GENERATEFEATUREFUNCTION_H

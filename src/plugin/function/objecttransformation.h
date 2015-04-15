@@ -1,5 +1,5 @@
-#ifndef PI_OBJECTTRANSFORMATION_H
-#define PI_OBJECTTRANSFORMATION_H
+#ifndef OBJECTTRANSFORMATION_H
+#define OBJECTTRANSFORMATION_H
 
 #include "function.h"
 
@@ -24,6 +24,6 @@ public:
     bool exec(QPointer<CoordinateSystem> &coordinateSystem){ Function::exec(coordinateSystem); }
 };
 
-#define ObjectTransformation_iidd "de.openIndy.Plugin.Function.ObjectTransformation.v001"
+#define ObjectTransformation_iidd "de.openIndy.plugin.function.objectTransformation.v001"
 
-#endif // PI_OBJECTTRANSFORMATION_H
+#endif // OBJECTTRANSFORMATION_H

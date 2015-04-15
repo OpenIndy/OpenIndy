@@ -7,7 +7,6 @@
 #include <QMutex>
 #include <QTime>
 
-#include "connectionconfig.h"
 #include "station.h"
 #include "sensor.h"
 //#include "measurementconfig.h"
@@ -26,7 +25,6 @@ class SensorControl : public QObject
     Q_OBJECT
 
 public:
-
     SensorControl(QPointer<Station> &station, QObject *parent = 0);
 
     ~SensorControl();
@@ -43,13 +41,13 @@ public slots:
     //start sensor actions
     //####################
 
-    void connectSensor(const ConnectionConfig &connConfig);
+    void connectSensor();
     void disconnectSensor();
 
     void measure(const QPointer<Geometry> &geom, const bool &isActiveCoordSys);
 
     void readingStream(const bool &start, const ReadingTypes &readingType);
-    void sensorStatsStream(const bool &start);
+    void sensorStatusStream(const bool &start);
 
     void move(const double &azimuth, const double &zenith, const double &distance, const bool &isRelative);
     void move(const double &x, const double &y, const double &z);
@@ -104,14 +102,7 @@ private:
     //helper attributes for the sensor plugins to get their parameters
     //################################################################
 
-    double moveAzimuth;
-    double moveZenith;
-    double moveDistance;
-    bool moveIsRelative;
-    double moveX;
-    double moveY;
-    double moveZ;
-    QString action;
+    SensorAttributes sensorAttributes;
     //bool isMState;
 
     //OiEmitter& getOiEmitter();
