@@ -2,28 +2,26 @@
 #define PI_OBJECTTRANSFORMATION_H
 
 #include "function.h"
-#include <QString>
-#include "oivec.h"
 
 /*!
  * \brief The ObjectTransformation class
- * Interface for implementing object transformation function plugins.
+ * Function that changes a previously solved feature by using other elements
  */
 class ObjectTransformation : public Function
 {
+    Q_OBJECT
 
 public:
+    ObjectTransformation(QObject *parent = 0) : Function(parent){}
+
     virtual ~ObjectTransformation(){}
 
-    OiVec translate;
-    double rotate;
-    double offset;
+    //####################################
+    //methods that cannot be reimplemented
+    //####################################
 
-    virtual QList<NeededElement> getNeededElements() const = 0;
-    virtual QList<FeatureTypes> applicableFor() const = 0;
-
-    virtual PluginMetaData getMetaData() const = 0;
-
+    bool exec(QPointer<Station> &station){ Function::exec(station); }
+    bool exec(QPointer<CoordinateSystem> &coordinateSystem){ Function::exec(coordinateSystem); }
 };
 
 #define ObjectTransformation_iidd "de.openIndy.Plugin.Function.ObjectTransformation.v001"

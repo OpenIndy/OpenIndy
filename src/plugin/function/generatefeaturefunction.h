@@ -1,30 +1,24 @@
 #ifndef PI_GENERATEFEATUREFUNCTION_H
 #define PI_GENERATEFEATUREFUNCTION_H
 
-#include <QString>
-
 #include "function.h"
-//#include "oifunctionemitter.h"
 
 /*!
- * \brief The FitFunction class
- * Interface for implementing generate-feature-function plugins.
+ * \brief The GenerateFeatureFunction class
+ * Function that uses its input elements to generate one or more new feature
  */
 class GenerateFeatureFunction : public Function
 {
+    Q_OBJECT
 
 public:
+    GenerateFeatureFunction(QObject *parent = 0) : Function(parent){}
+
     virtual ~GenerateFeatureFunction(){}
 
-    virtual QList<NeededElement> getNeededElements() const = 0;
-    virtual QList<FeatureTypes> applicableFor() const = 0;
-    virtual PluginMetaData getMetaData() const = 0;
-
-/*protected:
-    void addFeature(FeatureWrapper *myFeature){ //add a feature to OpenIndy
-        this->getOiEmitter().addFeature(myFeature);
-    }*/
-
+signals:
+    void addFeature(const QPointer<FeatureWrapper> &feature);
+    void addFeatures(const QList<QPointer<FeatureWrapper> > &features);
 };
 
 #define GenerateFeatureFunction_iidd "de.openIndy.Plugin.Function.GenerateFeatureFunction.v001"

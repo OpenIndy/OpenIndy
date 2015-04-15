@@ -2,28 +2,31 @@
 #define PI_CONSTRUCTFUNCTION_H
 
 #include "function.h"
-#include <QString>
 
 /*!
  * \brief The ConstructFunction class
- * Interface for implementing construct function plugins.
+ * Function that solves geometries by constructing them from other elements
  */
 class ConstructFunction : public Function
 {
+    Q_OBJECT
 
 public:
+    ConstructFunction(QObject *parent = 0) : Function(parent){}
+
     virtual ~ConstructFunction(){}
 
-    virtual QList<NeededElement> getNeededElements() const = 0;
-    virtual QList<FeatureTypes> applicableFor() const = 0;
-    virtual PluginMetaData getMetaData() const = 0;
+    //####################################
+    //methods that cannot be reimplemented
+    //####################################
+
+    bool exec(QPointer<Station> &station){ Function::exec(station); }
+    bool exec(QPointer<CoordinateSystem> &coordinateSystem){ Function::exec(coordinateSystem); }
+    bool exec(QPointer<TrafoParam> &trafoParam){ Function::exec(trafoParam); }
+
 };
 
 #define ConstructFunction_iidd "de.openIndy.Plugin.Function.ConstructFunction.v001"
 
 
 #endif // PI_CONSTRUCTFUNCTION_H
-
-/*
- * bei construct coordinate system muss im plugin die nominals liste für das gebaute coord sys gefüllt werden
- */

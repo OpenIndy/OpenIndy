@@ -2,64 +2,52 @@
 #define SYSTEMTRANSFORMATION_H
 
 #include "function.h"
-#include <QString>
 
 /*!
  * \brief The SystemTransformation class
- * Interface for implementing coordinate system transformation function plugins.
+ * Functions that solves transformation parameters between two coordinate systems (station-station, part-part, alignments)
  */
-
 class SystemTransformation : public Function
 {
+    Q_OBJECT
 
 public:
-    virtual ~SystemTransformation(){}
+    SystemTransformation(QObject *parent = 0) : Function(parent){
 
-    virtual QList<NeededElement> getNeededElements() const = 0;
+        //only applicable for trafo params
+        this->applicableFor.clear();
+        this->applicableFor.append(eTrafoParamFeature);
 
-    /*!
-     * \brief applicableFor
-     * Only applicable for Transformation Parameter Feature
-     * \return
-     */
-    QList<FeatureTypes> applicableFor() const{
-        QList<FeatureTypes> result;
-        result.append(eTrafoParamFeature);
-        return result;
     }
 
-    virtual PluginMetaData getMetaData() const = 0;
+    virtual ~SystemTransformation(){}
 
-    QList<Station> stations_startSystem;
-    QList<CoordinateSystem> coordSystems_startSystem;
-    QList<TrafoParam> trafoParams_startSystem;
-    QList<Point> points_startSystem;
-    QList<Line> lines_startSystem;
-    QList<Plane> planes_startSystem;
-    QList<Sphere> spheres_startSystem;
-    QList<ScalarEntityDistance> scalarEntityDistances_startSystem;
-    QList<ScalarEntityAngle> scalarEntityAngles_startSystem;
-    QList<Observation> observations_startSystem;
-    QList<Reading> polarReadings_startSystem;
-    QList<Reading> distanceReadings_startSystem;
-    QList<Reading> directionReadings_startSystem;
-    QList<Reading> cartesianReadings_startSystem;
+    //####################################
+    //methods that cannot be reimplemented
+    //####################################
 
-    QList<Station> stations_targetSystem;
-    QList<CoordinateSystem> coordSystems_targetSystem;
-    QList<TrafoParam> trafoParams_targetSystem;
-    QList<Point> points_targetSystem;
-    QList<Line> lines_targetSystem;
-    QList<Plane> planes_targetSystem;
-    QList<Sphere> spheres_targetSystem;
-    QList<ScalarEntityDistance> scalarEntityDistances_targetSystem;
-    QList<ScalarEntityAngle> scalarEntityAngles_targetSystem;
-    QList<Observation> observations_targetSystem;
-    QList<Reading> polarReadings_targetSystem;
-    QList<Reading> distanceReadings_targetSystem;
-    QList<Reading> directionReadings_targetSystem;
-    QList<Reading> cartesianReadings_targetSystem;
+    bool exec(QPointer<Station> &station){ Function::exec(station); }
+    bool exec(QPointer<CoordinateSystem> &coordinateSystem){ Function::exec(coordinateSystem); }
 
+    bool exec(QPointer<Circle> &circle){ Function::exec(circle); }
+    bool exec(QPointer<Cone> &cone){ Function::exec(cone); }
+    bool exec(QPointer<Cylinder> &cylinder){ Function::exec(cylinder); }
+    bool exec(QPointer<Ellipse> &ellipse){ Function::exec(ellipse); }
+    bool exec(QPointer<Ellipsoid> &ellipsoid){ Function::exec(ellipsoid); }
+    bool exec(QPointer<Hyperboloid> &hyperboloid){ Function::exec(hyperboloid); }
+    bool exec(QPointer<Line> &line){ Function::exec(line); }
+    bool exec(QPointer<Nurbs> &nurbs){ Function::exec(nurbs); }
+    bool exec(QPointer<Paraboloid> &paraboloid){ Function::exec(paraboloid); }
+    bool exec(QPointer<Plane> &plane){ Function::exec(plane); }
+    bool exec(QPointer<Point> &point){ Function::exec(point); }
+    bool exec(QPointer<PointCloud> &pointCloud){ Function::exec(pointCloud); }
+    bool exec(QPointer<ScalarEntityAngle> &angle){ Function::exec(angle); }
+    bool exec(QPointer<ScalarEntityDistance> &distance){ Function::exec(distance); }
+    bool exec(QPointer<ScalarEntityMeasurementSeries> &measurementSeries){ Function::exec(measurementSeries); }
+    bool exec(QPointer<ScalarEntityTemperature> &temperature){ Function::exec(temperature); }
+    bool exec(QPointer<SlottedHole> &slottedHole){ Function::exec(slottedHole); }
+    bool exec(QPointer<Sphere> &sphere){ Function::exec(sphere); }
+    bool exec(QPointer<Torus> &torus){ Function::exec(torus); }
 };
 
 #define SystemTransformation_iidd "de.openIndy.Plugin.Function.SystemTransformation.v001"

@@ -2,24 +2,29 @@
 #define PI_GEODETICFUNCTION_H
 
 #include "function.h"
-#include <QString>
 
 /*!
  * \brief The GeodeticFunction class
- * Interface for implementing geodetic function plugins.
+ * for future use only
  */
 class GeodeticFunction : public Function
 {
+    Q_OBJECT
 
 public:
+    GeodeticFunction(QObject *parent = 0) : Function(parent){}
+
     virtual ~GeodeticFunction(){}
 
-    virtual QList<NeededElement> getNeededFeatures() const = 0;
-    virtual QList<FeatureTypes> applicableFor() const = 0;
-    virtual PluginMetaData getMetaData() const = 0;
+    //####################################
+    //methods that cannot be reimplemented
+    //####################################
+
+    bool exec(QPointer<Station> &station){ Function::exec(station); }
+    bool exec(QPointer<CoordinateSystem> &coordinateSystem){ Function::exec(coordinateSystem); }
+    bool exec(QPointer<TrafoParam> &trafoParam){ Function::exec(trafoParam); }
 };
 
 #define GeodeticFunction_iidd "de.openIndy.Plugin.Function.GeodeticFunction.v001"
-
 
 #endif // PI_GEODETICFUNCTION_H
