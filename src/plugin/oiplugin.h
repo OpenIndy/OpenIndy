@@ -1,40 +1,54 @@
-#ifndef PI_OIPLUGIN_H
-#define PI_OIPLUGIN_H
+#ifndef PLUGIN_H
+#define PLUGIN_H
+
+#include <QPointer>
+#include <QList>
 
 #include "function.h"
 #include "sensor.h"
 #include "simulationmodel.h"
 #include "networkadjustment.h"
-#include "oitool.h"
+#include "tool.h"
 #include "exchangesimpleascii.h"
 #include "exchangedefinedformat.h"
 
-class OiPlugin
+/*!
+ * \brief The Plugin class
+ */
+class Plugin
 {
 
 public:
-    virtual ~OiPlugin(){}
+    virtual ~Plugin(){}
 
-    virtual QList<Sensor*> createSensors() = 0;
-    virtual QList<Function*> createFunctions() = 0;
-    virtual QList<NetworkAdjustment*> createNetworkAdjustments() = 0;
-    virtual QList<SimulationModel*> createSimulations() = 0;
-    virtual QList<OiTool*> createTools() = 0;
-    virtual QList<ExchangeSimpleAscii*> createSimpleAsciiExchanges() = 0;
-    virtual QList<ExchangeDefinedFormat*> createDefinedFormatExchanges() = 0;
+    //##########################################################
+    //create instances of all available plugin types in a plugin
+    //##########################################################
 
-    virtual Sensor* createSensor(QString name) = 0;
-    virtual Function* createFunction(QString name) = 0;
-    virtual NetworkAdjustment* createNetworkAdjustment(QString name) = 0;
-    virtual SimulationModel* createSimulation(QString name) = 0;
-    virtual OiTool* createTool(QString name) = 0;
-    virtual ExchangeSimpleAscii* createSimpleAsciiExchange(QString name) = 0;
-    virtual ExchangeDefinedFormat* createDefinedFormatExchange(QString name) = 0;
+    virtual QList<QPointer<Sensor> > createSensors() = 0;
+    virtual QList<QPointer<Function> > createFunctions() = 0;
+    virtual QList<QPointer<NetworkAdjustment> > createNetworkAdjustments() = 0;
+    virtual QList<QPointer<SimulationModel> > createSimulations() = 0;
+    virtual QList<QPointer<Tool> > createTools() = 0;
+    virtual QList<QPointer<ExchangeSimpleAscii> > createSimpleAsciiExchanges() = 0;
+    virtual QList<QPointer<ExchangeDefinedFormat> > createDefinedFormatExchanges() = 0;
+
+    //###################################################
+    //create instances of a plugin type with a given name
+    //###################################################
+
+    virtual QPointer<Sensor> createSensor(const QString &name) = 0;
+    virtual QPointer<Function> createFunction(const QString &name) = 0;
+    virtual QPointer<NetworkAdjustment> createNetworkAdjustment(const QString &name) = 0;
+    virtual QPointer<SimulationModel> createSimulation(const QString &name) = 0;
+    virtual QPointer<Tool> createTool(const QString &name) = 0;
+    virtual QPointer<ExchangeSimpleAscii> createSimpleAsciiExchange(const QString &name) = 0;
+    virtual QPointer<ExchangeDefinedFormat> createDefinedFormatExchange(const QString &name) = 0;
 
 };
 
-#define OiPlugin_iidd "de.openIndy.Plugin.v001"
+#define Plugin_iidd "de.openIndy.plugin.v001"
 
-Q_DECLARE_INTERFACE(OiPlugin, OiPlugin_iidd)
+Q_DECLARE_INTERFACE(Plugin, Plugin_iidd)
 
-#endif // PI_OIPLUGIN_H
+#endif // PLUGIN_H

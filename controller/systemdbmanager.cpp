@@ -935,7 +935,7 @@ void SystemDbManager::saveSensorPlugin(int pluginId, Sensor* s){
     QSqlQuery command(SystemDbManager::db);
     command.exec(query);*/
 }
-
+/*
 void SystemDbManager::saveSimulationPlugin(int pluginId, SimulationModel *s)
 {
     //insert sensor plugin
@@ -943,7 +943,7 @@ void SystemDbManager::saveSimulationPlugin(int pluginId, SimulationModel *s)
             .arg(pluginId).arg(s->getMetaData()->iid).arg(s->getMetaData()->name).arg(s->getMetaData()->description);
     QSqlQuery command(SystemDbManager::db);
     command.exec(query);
-}
+}*/
 
 /*!
  * \brief SystemDbManager::saveNetworkAdjustmentPlugin
@@ -957,14 +957,14 @@ void SystemDbManager::saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustmen
     QSqlQuery command(SystemDbManager::db);
     command.exec(query);*/
 }
-
+/*
 void SystemDbManager::saveOiToolPlugin(int pluginId, OiTool* t){
     //insert sensor plugin
     QString query = QString("INSERT INTO oiToolPlugin (plugin_id, iid, name, description) VALUES (%1, '%2', '%3', '%4')")
             .arg(pluginId).arg(t->getMetaData()->iid).arg(t->getMetaData()->name).arg(t->getMetaData()->description);
     QSqlQuery command(SystemDbManager::db);
     command.exec(query);
-}
+}*/
 
 /*
 void SystemDbManager::saveOiExchangeSimpleAsciiPlugin(int pluginId, OiExchangeSimpleAscii *sa){

@@ -5,7 +5,7 @@ QString OiMetaData::version = "0.0.1";
 QString OiMetaData::sensorPlugin = "sensor";
 QString OiMetaData::functionPlugin = "function";
 
-QString OiMetaData::iid_OiPlugin = OiPlugin_iidd;
+QString OiMetaData::iid_OiPlugin = Plugin_iidd;
 QString OiMetaData::iid_Sensor = Sensor_iidd;
 QString OiMetaData::iid_LaserTracker=LaserTracker_iidd ;
 QString OiMetaData::iid_TotalStation = TotalStation_iidd;
@@ -17,7 +17,7 @@ QString OiMetaData::iid_NetworkAdjustment = NetworkAdjustment_iidd;
 QString OiMetaData::iid_ObjectTransformation = ObjectTransformation_iidd;
 QString OiMetaData::iid_SystemTransformation = SystemTransformation_iidd;
 QString OiMetaData::iid_Simulation = Simulation_iidd;
-QString OiMetaData::iid_OiTool = OiTool_iidd;
+QString OiMetaData::iid_OiTool = Tool_iidd;
 QString OiMetaData::iid_OiExchange = Exchange_iidd;
 QString OiMetaData::iid_OiExchangeSimpleAscii = ExchangeSimpleAscii_iidd;
 QString OiMetaData::iid_OiExchangeDefinedFormat = ExchangeDefinedFormat_iidd;

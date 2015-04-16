@@ -95,7 +95,7 @@ const QMap<QString, double> &Sensor::getDoubleParameter() const{
  * \brief Sensor::getStringParameter
  * \return
  */
-const QMap<QString, QStringList> &Sensor::getStringParameter() const{
+const QMultiMap<QString, QString> &Sensor::getStringParameter() const{
     return this->stringParameters;
 }
 

@@ -1,150 +1,219 @@
 #ifndef SIMULATIONMODEL_H
 #define SIMULATIONMODEL_H
 
+#include <QObject>
+#include <QPointer>
 #include <QMap>
+#include <QMultiMap>
+#include <QString>
+
 #include "pluginmetadata.h"
-#include "uncertaintycomponent.h"
 #include "reading.h"
-#include "trafoparam.h"
-#include "simulationdata.h"
+#include "position.h"
+#include "direction.h"
+#include "radius.h"
+
+//##############
+//helper classes
+//##############
 
 /*!
- * \brief The Uncertainties struct
- *
- *  the self defined uncertainties which are edited by the user will be
- *  stored here
+ * \brief The UncertaintyComponent class
+ * Describe an uncertainty component of a simulation model
  */
-struct Uncertainties{
+class UncertaintyComponent
+{
+public:
+    QString name;
 
-    QMap<QString,UncertaintyComponent> sensorUncertainties;
-    QMap<QString,UncertaintyComponent> objectUncertainties;
-    QMap<QString,UncertaintyComponent> enviromentUncertainties;
-    QMap<QString,UncertaintyComponent> humanUncertainties;
+    double value; //magnitude of the error
+    double uncertainty; //uncertainty of the error
+    QString distribution; //the distribution of the uncertainty component
 
+    QString errorUnit; //unit of the uncertainty value (mm, m ,...)
+
+    QString description;
+
+    QStringList distributions; //distributions in which the error could be determined at random
+};
+
+/*!
+ * \brief The Uncertainties class
+ */
+class Uncertainties{
+public:
+    QMap<QString, UncertaintyComponent> sensorUncertainties;
+    QMap<QString, UncertaintyComponent> objectUncertainties;
+    QMap<QString, UncertaintyComponent> enviromentUncertainties;
+    QMap<QString, UncertaintyComponent> humanUncertainties;
+};
+
+/*!
+ * \brief The UncertaintyData class
+ * Save information about simulation results for one geometry parameter
+ */
+class UncertaintyData{
+public:
+    QList<double> values; //randomly shuffled values produced distortion of readings and recalculation
+
+    //maximum and minimum of the data series
+    double maxValue;
+    double minValue;
+
+    double expectation;
+    double uncertainty; //uncertainty of the data series
+
+    QString distribution; //name of the distribution of the data series
+
+    //function pointers that calculate density and distribution values
+    double (*densityFunction)(const double &x, const double &expectation, const double &uncertainty,
+                              const double &lowerLimit, const double &upperLimit);
+    double (*distributionFunction)(const double &x, const double &expectation, const double &uncertainty,
+                                   const double &lowerLimit, const double &upperLimit);
+
+    QMap<QString, QString> info; //custom information
 
 };
+
+/*!
+ * \brief The SimulationData class
+ * Save simulation results for a geometry
+ */
+class SimulationData
+{
+public:
+
+    //####################################################
+    //uncertainty data for each unknown geometry parameter
+    //####################################################
+
+    UncertaintyData uncertaintyX;
+    UncertaintyData uncertaintyY;
+    UncertaintyData uncertaintyZ;
+
+    UncertaintyData uncertaintyPrimaryI;
+    UncertaintyData uncertaintyPrimaryJ;
+    UncertaintyData uncertaintyPrimaryK;
+
+    UncertaintyData uncertaintySecondaryI;
+    UncertaintyData uncertaintySecondaryJ;
+    UncertaintyData uncertaintySecondaryK;
+
+    UncertaintyData uncertaintyRadiusA;
+    UncertaintyData uncertaintyRadiusB;
+
+    UncertaintyData uncertaintyAperture;
+
+    UncertaintyData uncertaintyAngle;
+    UncertaintyData uncertaintyDistance;
+    UncertaintyData uncertaintyMeasurementSeries;
+    UncertaintyData uncertaintyTemperature;
+
+    UncertaintyData uncertaintyLength;
+
+    //###############################
+    //correlations between parameters
+    //###############################
+
+    QMap<QString, double> correlations;
+
+};
+
+//TODO set simulation config as separate class like sensor config an add xml save/load
+
+/*!
+ * \brief The SimulationConfiguration class
+ */
+class SimulationConfiguration{
+public:
+    Uncertainties uncertainties;
+
+    QMap<QString, int> integerParameters;
+    QMap<QString, double> doubleParameters;
+    QMap<QString, QString> stringParameters;
+};
+
+//#######################
+//simulation class itself
+//#######################
 
 /*!
  * \brief The SimulationModel class
- *
- * Interface for creating a uncertainty model for a simulation in OpenIndy.
- * you have to overwrite the four major error influences (sensor,object,enviroment and human).
- * the error depending on the measurement methode will be descriped by the user and openindy
+ * Interface for creating an uncertainty model for a simulation in OpenIndy.
+ * You can provide four major error influences (sensor, object, enviroment and human).
  */
-class SimulationModel
+class SimulationModel : public QObject
 {
+    Q_OBJECT
 
 public:
+    explicit SimulationModel(QObject *parent = 0);
 
-    virtual ~SimulationModel(){}
+    virtual ~SimulationModel();
 
-    /*!
-     * \brief getMetaData
-     * \return
-     *
-     * define here all information about your plugin
-     */
-    virtual PluginMetaData* getMetaData() = 0;
+    //#########################################
+    //methods to get or set further information
+    //#########################################
 
+    const PluginMetaData &getMetaData() const;
 
-    /*!
-     * \brief getSensorUncertainties
-     * \return
-     *
-     * define all sensor uncertainties here
-     */
-    virtual QMap<QString,UncertaintyComponent> getSensorUncertainties() = 0;
+    const SimulationConfiguration &getSimulationConfiguration() const;
+    void setSimulationConfiguration(const SimulationConfiguration &sConfig);
 
-    /*!
-     * \brief getObjectUncertainties
-     * \return
-     *
-     *  define all object uncertainties here
-     */
-    virtual QMap<QString,UncertaintyComponent> getObjectUncertainties() = 0;
+    const QMap<QString, int> &getIntegerParameter() const;
+    const QMap<QString, double> &getDoubleParameter() const;
+    const QMultiMap<QString, QString> &getStringParameter() const;
 
-    /*!
-     * \brief getEnviromentUncertainties
-     * \return
-     *
-     * define all enviroment uncertainties here
-     */
-    virtual QMap<QString, UncertaintyComponent> getEnviromentUncertainties() = 0;
+    //##################
+    //simulation methods
+    //##################
 
-    /*!
-     * \brief getHumanInfluence
-     * \return
-     *
-     * define all influences of an User here
-     */
-    virtual QMap<QString,UncertaintyComponent> getHumanInfluence() = 0;
+    const QMap<QString, UncertaintyComponent> &getSensorUncertainties() const;
+    const QMap<QString, UncertaintyComponent> &getObjectUncertainties() const;
+    const QMap<QString, UncertaintyComponent> &getEnviromentUncertainties() const;
+    const QMap<QString, UncertaintyComponent> &getHumanInfluence() const;
 
+    virtual bool distort(const QPointer<Reading> &r, const OiMat &objectRelation, const bool &newIterationStart);
+    virtual bool analyseSimulationData(UncertaintyData &d);
+    virtual double getCorrelationCoefficient(const QList<double> &x, const QList<double> &y);
 
-    //methodes to define custom setting parameter
-    virtual QMap<QString,int>* getIntegerParameter() = 0;
-    virtual QMap<QString,double>* getDoubleParameter() = 0;
-    virtual QMap <QString, QStringList>* getStringParameter() = 0;
+signals:
 
-    /*!
-     * \brief distort
-     * \param r
-     * \param objectRelation
-     * \return
-     *
-     *  here you have to distort a reading with the given uncertainties.
-     *  objectRelation is a homogenous matrix (4x4) which describes the
-     *  relation between Station and Object
-     */
-    virtual bool distort(Reading *r, OiMat objectRelation, bool newIterationStart) = 0;
+    //##################################################
+    //signals to inform OpenIndy about simulation issues
+    //##################################################
 
-    /*!
-     * \brief analyseSimulationData
-     * \param d
-     * \return
-     *
-     * analyse the simulation values saved in d.values. store your results
-     * in:
-     *  d.maxValues = Maximum
-     *  d.minValue = Minimum
-     *  d.uncertainty = Uncertainty of the data series
-     *  d.distribution = name of the distribution of the data series
-     *  d.densityFunction = set the pointer to a density function (double densityFunction(double x))
-     *  d.distributionFunction =  set the pointer to a distribution function (double distributionFunction(double x))
-     *  d.info = a map to define custom information of your analysis
-     */
-    virtual bool analyseSimulationData(UncertaintyData &d) = 0;
-
-    /*!
-     * \brief getCorrelationCoefficient
-     * \param x
-     * \param y
-     * \return
-     *
-     * determine the correlation coefficient of the two quantities x and y.
-     */
-    virtual double getCorrelationCoefficient(QList<double>x,QList<double>y) = 0;
-
-    //getter & setter
-    Uncertainties getGivenUncertainties(){return givenUncertainties;}
-    void setGivenUncertainties(Uncertainties u){givenUncertainties = u;}
-
-    void setIntegerParameter(QMap<QString,int>* m){this->integerParameter = m;}
-    void setDoubleParameter(QMap<QString,double>* m) {this->doubleParameter = m;}
-    void setStringParameter(QMap <QString, QString>* m) {this->stringParameter = m;}
-
+    void sendMessage(const QString &msg);
 
 protected:
 
-    Uncertainties givenUncertainties;
+    //################################
+    //simulation initialization method
+    //################################
 
-    QMap<QString,int>* integerParameter;
-    QMap<QString,double>* doubleParameter;
-    QMap <QString, QString>* stringParameter;
+    virtual void init();
 
+    //###########################
+    //input and output parameters
+    //###########################
 
+    SimulationConfiguration sConfig;
+
+    PluginMetaData metaData;
+
+    //the needed scalar input parameters including default values
+    QMap<QString, int> integerParameters;
+    QMap<QString, double> doubleParameters;
+    QMultiMap<QString, QString> stringParameters;
+
+    //uncertainties provided by plugin writer
+    QMap<QString, UncertaintyComponent> sensorUncertainties;
+    QMap<QString, UncertaintyComponent> objectUncertainties;
+    QMap<QString, UncertaintyComponent> environmentUncertainties;
+    QMap<QString, UncertaintyComponent> humanUncertainties;
 
 };
 
-#define Simulation_iidd "de.openIndy.Plugin.Simulation.v001"
+#define Simulation_iidd "de.openIndy.plugin.simulation.v001"
 
 #endif // SIMULATIONMODEL_H

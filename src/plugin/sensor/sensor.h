@@ -66,7 +66,7 @@ public:
 
     const QMap<QString, int> &getIntegerParameter() const;
     const QMap<QString, double> &getDoubleParameter() const;
-    const QMap<QString, QStringList> &getStringParameter() const;
+    const QMultiMap<QString, QString> &getStringParameter() const;
 
     const QStringList &getSelfDefinedActions() const;
 
@@ -139,7 +139,7 @@ protected:
     //the needed scalar input parameters including default values
     QMap<QString, int> integerParameters;
     QMap<QString, double> doubleParameters;
-    QMultiMap<QString, QStringList> stringParameters;
+    QMultiMap<QString, QString> stringParameters;
 
 };
 

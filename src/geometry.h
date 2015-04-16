@@ -9,7 +9,7 @@
 #include "feature.h"
 #include "measurementconfig.h"
 #include "statistic.h"
-#include "simulationdata.h"
+#include "simulationmodel.h"
 #include "radius.h"
 #include "direction.h"
 #include "position.h"

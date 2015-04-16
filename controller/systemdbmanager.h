@@ -47,7 +47,7 @@ class OiExchangePlugin : public SpecialPlugin{
 };
 
 //! class that holds information about an OpenIndy plugin
-class Plugin{
+/*class Plugin{
 public:
     int id;
     QString iid;
@@ -65,7 +65,7 @@ public:
     QList<SimulationPlugin> mySimulations;
     QList<SensorPlugin> mySensors;
     QList<OiToolPlugin> myTools;
-};
+};*/
 
 //! database interface class
 class SystemDbManager
@@ -147,9 +147,9 @@ private:
     static int savePluginHelper(PluginMetaData *metaInfo);
     static void saveFunctionPlugin(int pluginId, Function* f);
     static void saveSensorPlugin(int pluginId, Sensor* s);
-    static void saveSimulationPlugin(int pluginId, SimulationModel* s);
+    //static void saveSimulationPlugin(int pluginId, SimulationModel* s);
     static void saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustment* n);
-    static void saveOiToolPlugin(int pluginId, OiTool* t);
+    //static void saveOiToolPlugin(int pluginId, OiTool* t);
     //static void saveOiExchangeSimpleAsciiPlugin(int pluginId, OiExchangeSimpleAscii* sa);
     //static void saveOiExchangeDefinedFormatPlugin(int pluginId, OiExchangeDefinedFormat* df);
 

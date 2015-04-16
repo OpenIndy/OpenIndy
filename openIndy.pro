@@ -120,8 +120,8 @@ SOURCES += \
     src/geometry/sphere.cpp \
     src/geometry/torus.cpp \
     src/plugin/pluginmetadata.cpp \
-    src/plugin/simulation/simulationdata.cpp \
-    src/plugin/simulation/uncertaintycomponent.cpp \
+    src/plugin/tool/tool.cpp \
+    src/plugin/simulation/simulationmodel.cpp \
     src/plugin/function/function.cpp \
     src/plugin/sensor/sensor.cpp \
     src/plugin/exchange/exchangedefinedformat.cpp \
@@ -185,10 +185,8 @@ HEADERS  += \
     src/geometry/torus.h \
     src/plugin/oiplugin.h \
     src/plugin/pluginmetadata.h \
-    src/plugin/tool/oitool.h \
-    src/plugin/simulation/simulationdata.h \
+    src/plugin/tool/tool.h \
     src/plugin/simulation/simulationmodel.h \
-    src/plugin/simulation/uncertaintycomponent.h \
     src/plugin/sensor/lasertracker.h \
     src/plugin/sensor/sensor.h \
     src/plugin/sensor/totalstation.h \
@@ -212,5 +210,3 @@ HEADERS  += \
 FORMS    += \
     ui/mainwindow.ui \
     ui/dialogs/createfeaturedialog.ui
-
-

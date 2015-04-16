@@ -6,10 +6,7 @@
 
 class PluginMetaData : public QObject
 {
-    Q_OBJECT
 public:
-    explicit PluginMetaData(QObject *parent = 0);
-
     QString iid;
     QString name;
     QString pluginName;
@@ -24,12 +21,6 @@ public:
     bool isValid;
     QString pluginType;
     bool alreadyExists;
-
-/*signals:
-    void sendMe(PluginMetaData*);
-
-public slots:
-    void emitSendMe();*/
 
 };
 
