@@ -1,5 +1,7 @@
 #include "scalarentitytemperature.h"
 
+#include "featurewrapper.h"
+
 /*
 #include "function.h"
 
@@ -150,6 +152,11 @@ QString ScalarEntityTemperature::getDisplayScalarTemperatureValue() const{
  */
 ScalarEntityTemperature::ScalarEntityTemperature(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityTemperature(this);
+    }
+
 }
 
 /*!
@@ -159,7 +166,14 @@ ScalarEntityTemperature::ScalarEntityTemperature(const bool &isNominal, QObject 
  * \param parent
  */
 ScalarEntityTemperature::ScalarEntityTemperature(const bool &isNominal, const double &temperature, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityTemperature(this);
+    }
+
     this->setTemperature(temperature);
+
 }
 
 /*!
@@ -168,7 +182,14 @@ ScalarEntityTemperature::ScalarEntityTemperature(const bool &isNominal, const do
  * \param parent
  */
 ScalarEntityTemperature::ScalarEntityTemperature(const ScalarEntityTemperature &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityTemperature(this);
+    }
+
     this->temperature = copy.temperature;
+
 }
 
 /*!
@@ -177,8 +198,16 @@ ScalarEntityTemperature::ScalarEntityTemperature(const ScalarEntityTemperature &
  * \return
  */
 ScalarEntityTemperature &ScalarEntityTemperature::operator=(const ScalarEntityTemperature &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityTemperature(this);
+    }
+
     this->temperature = copy.temperature;
+
     return *this;
+
 }
 
 /*!

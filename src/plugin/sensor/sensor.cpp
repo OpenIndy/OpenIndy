@@ -212,7 +212,7 @@ bool Sensor::getIsBusy(){
  */
 QMap<QString, QString> Sensor::getSensorStatus(){
     emit this->sendMessage(QString("Sensor not implemented correctly: sensor status method missing"));
-    return false;
+    return QMap<QString, QString>();
 }
 
 /*!
@@ -231,12 +231,12 @@ bool Sensor::doSelfDefinedAction(const QString &action){
  */
 QDomElement Sensor::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    if(xmlDoc.isNull() || this->getMetaData() == NULL){
+    if(xmlDoc.isNull()){
         return QDomElement();
     }
-/*
-    QDomElement sensor = xmlDoc.createElement("sensor");
 
+    QDomElement sensor = xmlDoc.createElement("sensor");
+/*
     //add sensor attributes
     sensor.setAttribute("name", this->getMetaData()->name);
     sensor.setAttribute("plugin", this->getMetaData()->pluginName);

@@ -26,13 +26,15 @@ public:
 
     virtual ~FitFunction(){}
 
+protected:
+
     //####################################
     //methods that cannot be reimplemented
     //####################################
 
-    bool exec(QPointer<Station> &station){ Function::exec(station); }
-    bool exec(QPointer<CoordinateSystem> &coordinateSystem){ Function::exec(coordinateSystem); }
-    bool exec(QPointer<TrafoParam> &trafoParam){ Function::exec(trafoParam); }
+    bool exec(Station &station){ Function::exec(station); }
+    bool exec(CoordinateSystem &coordinateSystem){ Function::exec(coordinateSystem); }
+    bool exec(TrafoParam &trafoParam){ Function::exec(trafoParam); }
 };
 
 #define FitFunction_iidd "de.openIndy.plugin.function.fitFunction.v001"

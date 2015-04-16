@@ -1,5 +1,7 @@
 #include "ellipsoid.h"
 
+#include "featurewrapper.h"
+
 /*
 #include "function.h"
 
@@ -94,6 +96,11 @@ bool Ellipsoid::saveSimulationData()
  */
 Ellipsoid::Ellipsoid(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setEllipsoid(this);
+    }
+
 }
 
 /*!
@@ -108,7 +115,14 @@ Ellipsoid::Ellipsoid(const bool &isNominal, QObject *parent) : Geometry(isNomina
  * \param parent
  */
 Ellipsoid::Ellipsoid(const bool &isNominal, const Position &center, const Direction &majorAxis, const double &a, const double &b, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setEllipsoid(this);
+    }
+
     this->setEllipsoid(center, majorAxis, a, b);
+
 }
 
 /*!
@@ -117,6 +131,11 @@ Ellipsoid::Ellipsoid(const bool &isNominal, const Position &center, const Direct
  * \param parent
  */
 Ellipsoid::Ellipsoid(const Ellipsoid &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setEllipsoid(this);
+    }
 
     this->center = copy.center;
     this->majorAxis = copy.majorAxis;
@@ -131,6 +150,11 @@ Ellipsoid::Ellipsoid(const Ellipsoid &copy, QObject *parent) : Geometry(copy, pa
  * \return
  */
 Ellipsoid &Ellipsoid::operator=(const Ellipsoid &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setEllipsoid(this);
+    }
 
     this->center = copy.center;
     this->majorAxis = copy.majorAxis;

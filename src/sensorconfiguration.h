@@ -19,10 +19,9 @@ class Sensor;
 /*!
  * \brief The ConnectionConfig class
  */
-class ConnectionConfig
-{
+class ConnectionConfig{
 public:
-    ConnectionConfig();
+    ConnectionConfig(){}
 
     ConnectionTypes typeOfConnection;
 
@@ -39,8 +38,8 @@ public:
 /*!
  * \brief The Accuracy struct
  */
-struct Accuracy{
-
+class Accuracy{
+public:
     Accuracy() : sigmaXyz(OiVec(3)), sigmaAzimuth(0.0), sigmaZenith(0.0), sigmaDistance(0.0),
         sigmaTemp(0.0), sigmaAngleXZ(0.0), sigmaAngleYZ(0.0){}
 
@@ -85,7 +84,7 @@ public:
     //##########################################
 
     const QString &getName() const;
-    bool setName(const QString &name);
+    void setName(const QString &name);
 
     const bool &getIsSaved() const;
 

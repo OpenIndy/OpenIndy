@@ -384,12 +384,18 @@ QString TrafoParam::getDisplayStdDev() const
 }
 */
 
+#include "featurewrapper.h"
+
 /*!
  * \brief TrafoParam::TrafoParam
  * \param parent
  */
-TrafoParam::TrafoParam(QObject *parent) : Feature(parent),
-    scale(3), rotation(3), translation(3), homogenMatrix(4, 4){
+TrafoParam::TrafoParam(QObject *parent) : Feature(parent), scale(3), rotation(3), translation(3), homogenMatrix(4, 4){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setTrafoParam(this);
+    }
 
     //default values for trafo param attributes
     this->isUsed = false;
@@ -415,6 +421,11 @@ TrafoParam::TrafoParam(QObject *parent) : Feature(parent),
  */
 TrafoParam::TrafoParam(const TrafoParam &copy, QObject *parent) : Feature(copy, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setTrafoParam(this);
+    }
+
     //copy attributes
     this->from = copy.from;
     this->to = copy.to;
@@ -437,6 +448,11 @@ TrafoParam::TrafoParam(const TrafoParam &copy, QObject *parent) : Feature(copy, 
  * \return
  */
 TrafoParam &TrafoParam::operator=(const TrafoParam &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setTrafoParam(this);
+    }
 
     //copy attributes
     this->from = copy.from;

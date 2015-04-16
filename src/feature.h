@@ -28,6 +28,12 @@ public:
 
     virtual ~Feature();
 
+    //############################################
+    //get the feature wrapped by a feature wrapper
+    //############################################
+
+    const QPointer<FeatureWrapper> &getFeatureWrapper() const;
+
     //#############################
     //get or set feature attributes
     //#############################
@@ -55,7 +61,7 @@ public:
 
     const QList<QPointer<Function> > &getFunctions() const;
     void addFunction(const QPointer<Function> &function);
-    bool removeFunction(const int &index);
+    void removeFunction(const int &index);
 
     const bool &getIsActiveFeature() const;
     void setActiveFeatureState(const bool &isActiveFeature);
@@ -146,6 +152,12 @@ protected:
 
     //Configuration::eColor displayColor;
     bool isDrawn;
+
+    //#########################################
+    //this pointer as wrapped by FeatureWrapper
+    //#########################################
+
+    QPointer<FeatureWrapper> selfFeature;
 
 };
 

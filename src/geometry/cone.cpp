@@ -1,5 +1,7 @@
 #include "cone.h"
 
+#include "featurewrapper.h"
+
 /*
 
 #include "function.h"
@@ -98,6 +100,11 @@ bool Cone::saveSimulationData()
  */
 Cone::Cone(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCone(this);
+    }
+
 }
 
 /*!
@@ -109,7 +116,14 @@ Cone::Cone(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent)
  * \param parent
  */
 Cone::Cone(const bool &isNominal, const Position &apex, const Direction &axis, const double &aperture, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCone(this);
+    }
+
     this->setCone(apex, axis, aperture);
+
 }
 
 /*!
@@ -118,6 +132,11 @@ Cone::Cone(const bool &isNominal, const Position &apex, const Direction &axis, c
  * \param parent
  */
 Cone::Cone(const Cone &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCone(this);
+    }
 
     this->apex = copy.apex;
     this->axis = copy.axis;
@@ -131,6 +150,11 @@ Cone::Cone(const Cone &copy, QObject *parent) : Geometry(copy, parent){
  * \return
  */
 Cone &Cone::operator=(const Cone &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCone(this);
+    }
 
     this->apex = copy.apex;
     this->axis = copy.axis;

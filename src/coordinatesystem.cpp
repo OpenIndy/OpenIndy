@@ -438,6 +438,11 @@ bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem){
  */
 CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), isActiveCoordinateSystem(false), isStationSystem(false){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCoordinateSystem(this);
+    }
+
 }
 
 /*!
@@ -446,10 +451,18 @@ CoordinateSystem::CoordinateSystem(QObject *parent) : Feature(parent), isActiveC
  * \param parent
  */
 CoordinateSystem::CoordinateSystem(const QPointer<Station> &station, QObject *parent) : Feature(parent), isActiveCoordinateSystem(false){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCoordinateSystem(this);
+    }
+
+    //set up corresponding station
     if(!station.isNull()){
         this->isStationSystem = true;
         this->station = station;
     }
+
 }
 
 /*!
@@ -458,6 +471,11 @@ CoordinateSystem::CoordinateSystem(const QPointer<Station> &station, QObject *pa
  * \param parent
  */
 CoordinateSystem::CoordinateSystem(const CoordinateSystem &copy, QObject *parent) : Feature(parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCoordinateSystem(this);
+    }
 
     //copy attributes
     this->origin = copy.origin;
@@ -477,6 +495,11 @@ CoordinateSystem::CoordinateSystem(const CoordinateSystem &copy, QObject *parent
  * \return
  */
 CoordinateSystem &CoordinateSystem::operator=(const CoordinateSystem &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCoordinateSystem(this);
+    }
 
     //copy attributes
     this->origin = copy.origin;

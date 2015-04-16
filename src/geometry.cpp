@@ -445,8 +445,7 @@ void Geometry::resetSimulationData()
  * \param isNominal
  * \param parent
  */
-Geometry::Geometry(const bool &isNominal, QObject *parent) : Feature(parent),
-    isNominal(isNominal), isCommon(false){
+Geometry::Geometry(const bool &isNominal, QObject *parent) : Feature(parent), isNominal(isNominal), isCommon(false){
 
 }
 

@@ -55,6 +55,22 @@ Statistic& Statistic::operator =(const Statistic &other){
 }
 
 /*!
+ * \brief Statistic::getIsValid
+ * \return
+ */
+const bool &Statistic::getIsValid() const{
+    return this->isValid;
+}
+
+/*!
+ * \brief Statistic::setIsValid
+ * \param isValid
+ */
+void Statistic::setIsValid(const bool &isValid){
+    this->isValid = isValid;
+}
+
+/*!
  * \brief Statistic::reset
  * Clear all statistical parameters and set isValid to false
  */

@@ -1516,222 +1516,62 @@ void Function::init(){
 
 /*!
  * \brief Function::exec
- * \param station
+ * \param feature
  * \return
  */
-bool Function::exec(QPointer<Station> &station){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type station");
-    return false;
-}
+bool Function::exec(const QPointer<FeatureWrapper> &feature){
 
-/*!
- * \brief Function::exec
- * \param coordinateSystem
- * \return
- */
-bool Function::exec(QPointer<CoordinateSystem> &coordinateSystem){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type coordinate system");
-    return false;
-}
+    if(!feature.isNull()){
 
-/*!
- * \brief Function::exec
- * \param trafoParam
- * \return
- */
-bool Function::exec(QPointer<TrafoParam> &trafoParam){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type transformation parameter");
-    return false;
-}
+        switch(feature->getFeatureTypeEnum()){
+        case eStationFeature:
+            if(!feature->getStation().isNull()){ return this->exec(*feature->getStation()); }
+        case eTrafoParamFeature:
+            if(!feature->getTrafoParam().isNull()){ return this->exec(*feature->getTrafoParam()); }
+        case eCoordinateSystemFeature:
+            if(!feature->getCoordinateSystem().isNull()){ return this->exec(*feature->getCoordinateSystem()); }
+        case eCircleFeature:
+            if(!feature->getCircle().isNull()){ return this->exec(*feature->getCircle()); }
+        case eConeFeature:
+            if(!feature->getCone().isNull()){ return this->exec(*feature->getCone()); }
+        case eCylinderFeature:
+            if(!feature->getCylinder().isNull()){ return this->exec(*feature->getCylinder()); }
+        case eEllipseFeature:
+            if(!feature->getEllipse().isNull()){ return this->exec(*feature->getEllipse()); }
+        case eEllipsoidFeature:
+            if(!feature->getEllipsoid().isNull()){ return this->exec(*feature->getEllipsoid()); }
+        case eHyperboloidFeature:
+            if(!feature->getHyperboloid().isNull()){ return this->exec(*feature->getHyperboloid()); }
+        case eLineFeature:
+            if(!feature->getLine().isNull()){ return this->exec(*feature->getLine()); }
+        case eNurbsFeature:
+            if(!feature->getNurbs().isNull()){ return this->exec(*feature->getNurbs()); }
+        case eParaboloidFeature:
+            if(!feature->getParaboloid().isNull()){ return this->exec(*feature->getParaboloid()); }
+        case ePlaneFeature:
+            if(!feature->getPlane().isNull()){ return this->exec(*feature->getPlane()); }
+        case ePointFeature:
+            if(!feature->getPoint().isNull()){ return this->exec(*feature->getPoint()); }
+        case ePointCloudFeature:
+            if(!feature->getPointCloud().isNull()){ return this->exec(*feature->getPointCloud()); }
+        case eScalarEntityAngleFeature:
+            if(!feature->getScalarEntityAngle().isNull()){ return this->exec(*feature->getScalarEntityAngle()); }
+        case eScalarEntityDistanceFeature:
+            if(!feature->getScalarEntityDistance().isNull()){ return this->exec(*feature->getScalarEntityDistance()); }
+        case eScalarEntityMeasurementSeriesFeature:
+            if(!feature->getScalarEntityMeasurementSeries().isNull()){ return this->exec(*feature->getScalarEntityMeasurementSeries()); }
+        case eScalarEntityTemperatureFeature:
+            if(!feature->getScalarEntityTemperature().isNull()){ return this->exec(*feature->getScalarEntityTemperature()); }
+        case eSlottedHoleFeature:
+            if(!feature->getSlottedHole().isNull()){ return this->exec(*feature->getSlottedHole()); }
+        case eSphereFeature:
+            if(!feature->getSphere().isNull()){ return this->exec(*feature->getSphere()); }
+        case eTorusFeature:
+            if(!feature->getTorus().isNull()){ return this->exec(*feature->getTorus()); }
+        }
 
-/*!
- * \brief Function::exec
- * \param circle
- * \return
- */
-bool Function::exec(QPointer<Circle> &circle){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type circle");
-    return false;
-}
+    }
 
-/*!
- * \brief Function::exec
- * \param cone
- * \return
- */
-bool Function::exec(QPointer<Cone> &cone){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type cone");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param cylinder
- * \return
- */
-bool Function::exec(QPointer<Cylinder> &cylinder){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type cylinder");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param ellipse
- * \return
- */
-bool Function::exec(QPointer<Ellipse> &ellipse){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type ellipse");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param ellipsoid
- * \return
- */
-bool Function::exec(QPointer<Ellipsoid> &ellipsoid){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type ellipsoid");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param hyperboloid
- * \return
- */
-bool Function::exec(QPointer<Hyperboloid> &hyperboloid){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type hyperboloid");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param line
- * \return
- */
-bool Function::exec(QPointer<Line> &line){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type line");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param nurbs
- * \return
- */
-bool Function::exec(QPointer<Nurbs> &nurbs){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type nurbs");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param paraboloid
- * \return
- */
-bool Function::exec(QPointer<Paraboloid> &paraboloid){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type paraboloid");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param plane
- * \return
- */
-bool Function::exec(QPointer<Plane> &plane){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type plane");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param point
- * \return
- */
-bool Function::exec(QPointer<Point> &point){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type point");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param pointCloud
- * \return
- */
-bool Function::exec(QPointer<PointCloud> &pointCloud){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type point cloud");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param angle
- * \return
- */
-bool Function::exec(QPointer<ScalarEntityAngle> &angle){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type angle");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param distance
- * \return
- */
-bool Function::exec(QPointer<ScalarEntityDistance> &distance){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type distance");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param measurementSeries
- * \return
- */
-bool Function::exec(QPointer<ScalarEntityMeasurementSeries> &measurementSeries){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type measurement series");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param temperature
- * \return
- */
-bool Function::exec(QPointer<ScalarEntityTemperature> &temperature){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type temperature");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param slottedHole
- * \return
- */
-bool Function::exec(QPointer<SlottedHole> &slottedHole){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type slotted hole");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param sphere
- * \return
- */
-bool Function::exec(QPointer<Sphere> &sphere){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type sphere");
-    return false;
-}
-
-/*!
- * \brief Function::exec
- * \param torus
- * \return
- */
-bool Function::exec(QPointer<Torus> &torus){
-    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type torus");
-    return false;
 }
 
 /*!
@@ -1794,7 +1634,7 @@ void Function::setScalarInputParams(const ScalarInputParams &params){
  * \brief Function::getScalarInputParams
  * \return
  */
-const ScalarInputParams &Function::getScalarInputParams() const{
+const ScalarInputParams &Function::getScalarInputParams(){
 
     //use default values if no scalar input params have been specified
     if(!this->scalarInputParams.isValid){
@@ -1867,11 +1707,6 @@ const int &Function::getId() const{
     return this->id;
 }
 
-bool Function::getIsValid() const
-{
-
-}
-
 /*!
  * \brief Function::getInputElements
  * \return
@@ -1942,7 +1777,7 @@ void Function::clearResults(){
 
     //set all elements to not have been used
     QList<int> keys = this->inputElements.keys();
-    foreach(const QString &key, keys){
+    foreach(const int &key, keys){
         for(int i = 0; i < this->inputElements[key].size(); ++i){
             this->inputElements[key][i].isUsed = false;
         }
@@ -2078,6 +1913,227 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
 */
     return true;
 
+}
+
+
+/*!
+ * \brief Function::exec
+ * \param station
+ * \return
+ */
+bool Function::exec(Station &station){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type station");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param coordinateSystem
+ * \return
+ */
+bool Function::exec(CoordinateSystem &coordinateSystem){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type coordinate system");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param trafoParam
+ * \return
+ */
+bool Function::exec(TrafoParam &trafoParam){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type transformation parameter");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param circle
+ * \return
+ */
+bool Function::exec(Circle &circle){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type circle");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param cone
+ * \return
+ */
+bool Function::exec(Cone &cone){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type cone");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param cylinder
+ * \return
+ */
+bool Function::exec(Cylinder &cylinder){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type cylinder");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param ellipse
+ * \return
+ */
+bool Function::exec(Ellipse &ellipse){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type ellipse");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param ellipsoid
+ * \return
+ */
+bool Function::exec(Ellipsoid &ellipsoid){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type ellipsoid");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param hyperboloid
+ * \return
+ */
+bool Function::exec(Hyperboloid &hyperboloid){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type hyperboloid");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param line
+ * \return
+ */
+bool Function::exec(Line &line){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type line");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param nurbs
+ * \return
+ */
+bool Function::exec(Nurbs &nurbs){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type nurbs");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param paraboloid
+ * \return
+ */
+bool Function::exec(Paraboloid &paraboloid){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type paraboloid");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param plane
+ * \return
+ */
+bool Function::exec(Plane &plane){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type plane");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param point
+ * \return
+ */
+bool Function::exec(Point &point){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type point");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param pointCloud
+ * \return
+ */
+bool Function::exec(PointCloud &pointCloud){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type point cloud");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param angle
+ * \return
+ */
+bool Function::exec(ScalarEntityAngle &angle){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type angle");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param distance
+ * \return
+ */
+bool Function::exec(ScalarEntityDistance &distance){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type distance");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param measurementSeries
+ * \return
+ */
+bool Function::exec(ScalarEntityMeasurementSeries &measurementSeries){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type measurement series");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param temperature
+ * \return
+ */
+bool Function::exec(ScalarEntityTemperature &temperature){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type temperature");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param slottedHole
+ * \return
+ */
+bool Function::exec(SlottedHole &slottedHole){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type slotted hole");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param sphere
+ * \return
+ */
+bool Function::exec(Sphere &sphere){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type sphere");
+    return false;
+}
+
+/*!
+ * \brief Function::exec
+ * \param torus
+ * \return
+ */
+bool Function::exec(Torus &torus){
+    emit this->sendMessage("Function \"" + this->getMetaData().name + "\" not implemented for type torus");
+    return false;
 }
 
 /*!

@@ -1,4 +1,6 @@
 #include "sphere.h"
+
+#include "featurewrapper.h"
 /*
 #include "function.h"
 
@@ -281,6 +283,11 @@ QString Sphere::getDisplayStdDev() const{
  */
 Sphere::Sphere(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setSphere(this);
+    }
+
 }
 
 /*!
@@ -291,7 +298,14 @@ Sphere::Sphere(const bool &isNominal, QObject *parent) : Geometry(isNominal, par
  * \param parent
  */
 Sphere::Sphere(const bool &isNominal, const Position &center, const Radius &radius, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setSphere(this);
+    }
+
     this->setSphere(center, radius);
+
 }
 
 /*!
@@ -300,6 +314,11 @@ Sphere::Sphere(const bool &isNominal, const Position &center, const Radius &radi
  * \param parent
  */
 Sphere::Sphere(const Sphere &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setSphere(this);
+    }
 
     this->center = copy.center;
     this->radius = copy.radius;
@@ -312,6 +331,11 @@ Sphere::Sphere(const Sphere &copy, QObject *parent) : Geometry(copy, parent){
  * \return
  */
 Sphere &Sphere::operator=(const Sphere &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setSphere(this);
+    }
 
     this->center = copy.center;
     this->radius = copy.radius;

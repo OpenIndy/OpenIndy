@@ -1,5 +1,7 @@
 #include "cylinder.h"
 
+#include "featurewrapper.h"
+
 /*
 
 #include "function.h"
@@ -117,6 +119,11 @@ bool Cylinder::saveSimulationData()
  */
 Cylinder::Cylinder(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCylinder(this);
+    }
+
 }
 
 /*!
@@ -128,7 +135,14 @@ Cylinder::Cylinder(const bool &isNominal, QObject *parent) : Geometry(isNominal,
  * \param parent
  */
 Cylinder::Cylinder(const bool &isNominal, const Position &axisPoint, const Direction &axis, const Radius &radius, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCylinder(this);
+    }
+
     this->setCylinder(axisPoint, axis, radius);
+
 }
 
 /*!
@@ -137,6 +151,11 @@ Cylinder::Cylinder(const bool &isNominal, const Position &axisPoint, const Direc
  * \param parent
  */
 Cylinder::Cylinder(const Cylinder &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCylinder(this);
+    }
 
     this->axisPoint = copy.axisPoint;
     this->axis = copy.axis;
@@ -150,6 +169,11 @@ Cylinder::Cylinder(const Cylinder &copy, QObject *parent) : Geometry(copy, paren
  * \return
  */
 Cylinder &Cylinder::operator=(const Cylinder &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCylinder(this);
+    }
 
     this->axisPoint = copy.axisPoint;
     this->axis = copy.axis;

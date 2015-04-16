@@ -432,7 +432,7 @@ QString Feature::getDisplayExpansionOriginZ() const
  * \param parent
  */
 Feature::Feature(QObject *parent) : Element(parent), isActiveFeature(false), isSolved(false), isUpdated(false), isDrawn(false){
-
+    this->selfFeature = new FeatureWrapper();
 }
 
 /*!
@@ -454,6 +454,8 @@ Feature::Feature(const Feature &copy, QObject *parent) : Element(copy, parent){
     //copy functions (usedFor is not copied)
     this->functionList = copy.functionList;
     this->previouslyNeeded = copy.previouslyNeeded;
+
+    this->selfFeature = new FeatureWrapper();
 
 }
 
@@ -477,6 +479,8 @@ Feature &Feature::operator=(const Feature &copy){
     this->functionList = copy.functionList;
     this->previouslyNeeded = copy.previouslyNeeded;
 
+    this->selfFeature = new FeatureWrapper();
+
     return *this;
 
 }
@@ -486,6 +490,14 @@ Feature &Feature::operator=(const Feature &copy){
  */
 Feature::~Feature(){
 
+}
+
+/*!
+ * \brief Feature::getFeatureWrapper
+ * \return
+ */
+const QPointer<FeatureWrapper> &Feature::getFeatureWrapper() const{
+    return this->selfFeature;
 }
 
 /*!
@@ -626,9 +638,8 @@ void Feature::addFunction(const QPointer<Function> &function){
 /*!
  * \brief Feature::removeFunction
  * \param index
- * \return
  */
-bool Feature::removeFunction(const int &index){
+void Feature::removeFunction(const int &index){
     if(this->functionList.size() > index && index >= 0){
         this->functionList.removeAt(index);
         emit this->featureFunctionListChanged(this->id);
@@ -662,7 +673,7 @@ void Feature::recalc(){
     this->isSolved = false;
 
     //execute all functions in the specified order
-    foreach(QPointer<Function> function, this->functionList){
+    foreach(const QPointer<Function> &function, this->functionList){
 
         //break if the function pointer is not valid
         if(function.isNull()){
@@ -671,7 +682,7 @@ void Feature::recalc(){
         }
 
         //try to solve the current function
-        this->isSolved = function->exec(*this);
+        this->isSolved = function->exec(this->selfFeature);
         if(!this->isSolved){
             break;
         }

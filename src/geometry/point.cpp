@@ -1,4 +1,6 @@
 #include "point.h"
+
+#include "featurewrapper.h"
 /*
 #include "function.h"
 
@@ -241,6 +243,11 @@ QString Point::getDisplayStdDev() const{
  */
 Point::Point(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPoint(this);
+    }
+
 }
 
 /*!
@@ -250,7 +257,14 @@ Point::Point(const bool &isNominal, QObject *parent) : Geometry(isNominal, paren
  * \param parent
  */
 Point::Point(const bool &isNominal, const Position &xyz, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPoint(this);
+    }
+
     this->setPoint(xyz);
+
 }
 
 /*!
@@ -259,6 +273,11 @@ Point::Point(const bool &isNominal, const Position &xyz, QObject *parent) : Geom
  * \param parent
  */
 Point::Point(const Point &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPoint(this);
+    }
 
     this->xyz = copy.xyz;
 
@@ -270,6 +289,11 @@ Point::Point(const Point &copy, QObject *parent) : Geometry(copy, parent){
  * \return
  */
 Point &Point::operator=(const Point &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPoint(this);
+    }
 
     this->xyz = copy.xyz;
 

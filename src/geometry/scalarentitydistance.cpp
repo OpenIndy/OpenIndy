@@ -1,4 +1,6 @@
 #include "scalarentitydistance.h"
+
+#include "featurewrapper.h"
 /*
 #include "function.h"
 
@@ -148,6 +150,11 @@ QString ScalarEntityDistance::getDisplayScalarDistanceValue() const{
  */
 ScalarEntityDistance::ScalarEntityDistance(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityDistance(this);
+    }
+
 }
 
 /*!
@@ -157,7 +164,14 @@ ScalarEntityDistance::ScalarEntityDistance(const bool &isNominal, QObject *paren
  * \param parent
  */
 ScalarEntityDistance::ScalarEntityDistance(const bool &isNominal, const double &distance, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityDistance(this);
+    }
+
     this->setDistance(distance);
+
 }
 
 /*!
@@ -166,7 +180,14 @@ ScalarEntityDistance::ScalarEntityDistance(const bool &isNominal, const double &
  * \param parent
  */
 ScalarEntityDistance::ScalarEntityDistance(const ScalarEntityDistance &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityDistance(this);
+    }
+
     this->distance = copy.distance;
+
 }
 
 /*!
@@ -175,8 +196,16 @@ ScalarEntityDistance::ScalarEntityDistance(const ScalarEntityDistance &copy, QOb
  * \return
  */
 ScalarEntityDistance &ScalarEntityDistance::operator=(const ScalarEntityDistance &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityDistance(this);
+    }
+
     this->distance = copy.distance;
+
     return *this;
+
 }
 
 /*!

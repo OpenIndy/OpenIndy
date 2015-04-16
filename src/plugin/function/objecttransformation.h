@@ -16,12 +16,14 @@ public:
 
     virtual ~ObjectTransformation(){}
 
+protected:
+
     //####################################
     //methods that cannot be reimplemented
     //####################################
 
-    bool exec(QPointer<Station> &station){ Function::exec(station); }
-    bool exec(QPointer<CoordinateSystem> &coordinateSystem){ Function::exec(coordinateSystem); }
+    bool exec(Station &station){ Function::exec(station); }
+    bool exec(CoordinateSystem &coordinateSystem){ Function::exec(coordinateSystem); }
 };
 
 #define ObjectTransformation_iidd "de.openIndy.plugin.function.objectTransformation.v001"

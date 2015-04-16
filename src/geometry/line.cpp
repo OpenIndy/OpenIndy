@@ -1,4 +1,6 @@
 #include "line.h"
+
+#include "featurewrapper.h"
 /*
 #include "function.h"
 
@@ -299,6 +301,11 @@ QString Line::getDisplayStdDev() const{
  */
 Line::Line(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setLine(this);
+    }
+
 }
 
 /*!
@@ -309,7 +316,14 @@ Line::Line(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent)
  * \param parent
  */
 Line::Line(const bool &isNominal, const Position &xyz, const Direction &axis, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setLine(this);
+    }
+
     this->setLine(xyz, axis);
+
 }
 
 /*!
@@ -318,6 +332,11 @@ Line::Line(const bool &isNominal, const Position &xyz, const Direction &axis, QO
  * \param parent
  */
 Line::Line(const Line &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setLine(this);
+    }
 
     this->xyz = copy.xyz;
     this->axis = copy.axis;
@@ -330,6 +349,11 @@ Line::Line(const Line &copy, QObject *parent) : Geometry(copy, parent){
  * \return
  */
 Line &Line::operator=(const Line &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setLine(this);
+    }
 
     this->xyz = copy.xyz;
     this->axis = copy.axis;

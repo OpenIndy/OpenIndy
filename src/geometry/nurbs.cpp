@@ -1,4 +1,6 @@
 #include "nurbs.h"
+
+#include "featurewrapper.h"
 /*
 #include "function.h"
 
@@ -83,6 +85,11 @@ bool Nurbs::saveSimulationData()
  */
 Nurbs::Nurbs(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setNurbs(this);
+    }
+
 }
 
 /*!
@@ -92,6 +99,11 @@ Nurbs::Nurbs(const bool &isNominal, QObject *parent) : Geometry(isNominal, paren
  */
 Nurbs::Nurbs(const Nurbs &copy, QObject *parent) : Geometry(copy, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setNurbs(this);
+    }
+
 }
 
 /*!
@@ -100,7 +112,14 @@ Nurbs::Nurbs(const Nurbs &copy, QObject *parent) : Geometry(copy, parent){
  * \return
  */
 Nurbs &Nurbs::operator=(const Nurbs &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setNurbs(this);
+    }
+
     return *this;
+
 }
 
 /*!

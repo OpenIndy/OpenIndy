@@ -1,11 +1,18 @@
 #include "slottedhole.h"
 
+#include "featurewrapper.h"
+
 /*!
  * \brief SlottedHole::SlottedHole
  * \param isNominal
  * \param parent
  */
 SlottedHole::SlottedHole(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setSlottedHole(this);
+    }
 
 }
 
@@ -20,7 +27,14 @@ SlottedHole::SlottedHole(const bool &isNominal, QObject *parent) : Geometry(isNo
  * \param parent
  */
 SlottedHole::SlottedHole(const bool &isNominal, const Position &center, const Direction &normal, const Radius &radius, const double &length, const Direction &holeAxis, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setSlottedHole(this);
+    }
+
     this->setSlottedHole(center, normal, radius, length, holeAxis);
+
 }
 
 /*!
@@ -33,7 +47,14 @@ SlottedHole::SlottedHole(const bool &isNominal, const Position &center, const Di
  * \param parent
  */
 SlottedHole::SlottedHole(const bool &isNominal, const Position &circleCenterA, const Position &circleCenterB, const Direction &normal, const Radius &radius, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setSlottedHole(this);
+    }
+
     this->setSlottedHole(circleCenterA, circleCenterB, normal, radius);
+
 }
 
 /*!
@@ -42,6 +63,11 @@ SlottedHole::SlottedHole(const bool &isNominal, const Position &circleCenterA, c
  * \param parent
  */
 SlottedHole::SlottedHole(const SlottedHole &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setSlottedHole(this);
+    }
 
     this->center = copy.center;
     this->normal = copy.normal;
@@ -59,6 +85,11 @@ SlottedHole::SlottedHole(const SlottedHole &copy, QObject *parent) : Geometry(co
  * \return
  */
 SlottedHole &SlottedHole::operator=(const SlottedHole &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setSlottedHole(this);
+    }
 
     this->center = copy.center;
     this->normal = copy.normal;

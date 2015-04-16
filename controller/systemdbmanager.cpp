@@ -873,7 +873,7 @@ int SystemDbManager::savePluginHelper(PluginMetaData *metaInfo){
  * \param f
  */
 void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
-    QList<QString> elements;
+    /*QList<QString> elements;
 
     //get id's of features for which this plugin is applicable
     QList<FeatureTypes> lf = f->applicableFor();
@@ -920,7 +920,7 @@ void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
             }
             command.exec(query);
         }
-    }
+    }*/
 }
 
 /*!
@@ -929,11 +929,11 @@ void SystemDbManager::saveFunctionPlugin(int pluginId, Function* f){
  * \param s
  */
 void SystemDbManager::saveSensorPlugin(int pluginId, Sensor* s){
-    //insert sensor plugin
+    /*//insert sensor plugin
     QString query = QString("INSERT INTO sensorPlugin (plugin_id, iid, name, description) VALUES (%1, '%2', '%3', '%4')")
             .arg(pluginId).arg(s->getMetaData()->iid).arg(s->getMetaData()->name).arg(s->getMetaData()->description);
     QSqlQuery command(SystemDbManager::db);
-    command.exec(query);
+    command.exec(query);*/
 }
 
 void SystemDbManager::saveSimulationPlugin(int pluginId, SimulationModel *s)

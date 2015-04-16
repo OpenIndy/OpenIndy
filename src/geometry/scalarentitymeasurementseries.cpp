@@ -1,4 +1,6 @@
 #include "scalarentitymeasurementseries.h"
+
+#include "featurewrapper.h"
 /*
 #include "function.h"
 
@@ -148,6 +150,11 @@ QString ScalarEntityMeasurementSeries::getDisplayScalarMeasurementSeriesValue() 
  */
 ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityMeasurementSeries(this);
+    }
+
 }
 
 /*!
@@ -157,7 +164,14 @@ ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(const bool &isNomin
  * \param parent
  */
 ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(const bool &isNominal, const double &seriesValue, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityMeasurementSeries(this);
+    }
+
     this->setSeriesValue(seriesValue);
+
 }
 
 /*!
@@ -166,7 +180,14 @@ ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(const bool &isNomin
  * \param parent
  */
 ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(const ScalarEntityMeasurementSeries &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityMeasurementSeries(this);
+    }
+
     this->seriesValue = copy.seriesValue;
+
 }
 
 /*!
@@ -175,8 +196,16 @@ ScalarEntityMeasurementSeries::ScalarEntityMeasurementSeries(const ScalarEntityM
  * \return
  */
 ScalarEntityMeasurementSeries &ScalarEntityMeasurementSeries::operator=(const ScalarEntityMeasurementSeries &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityMeasurementSeries(this);
+    }
+
     this->seriesValue = copy.seriesValue;
+
     return *this;
+
 }
 
 /*!

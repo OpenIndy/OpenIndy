@@ -286,7 +286,7 @@ SensorConfiguration::SensorConfiguration(const SensorConfiguration &copy){
     //copy sensor config attributes
     this->name = copy.name;
     this->isSaved = copy.isSaved;
-    this->instrumentType = copy.instrumentType;
+    this->typeOfSensor = copy.typeOfSensor;
     this->pluginName = copy.pluginName;
     this->sensorName = copy.sensorName;
     this->sensor = copy.sensor;
@@ -308,7 +308,7 @@ SensorConfiguration &SensorConfiguration::operator=(const SensorConfiguration &c
     //copy sensor config attributes
     this->name = copy.name;
     this->isSaved = copy.isSaved;
-    this->instrumentType = copy.instrumentType;
+    this->typeOfSensor = copy.typeOfSensor;
     this->pluginName = copy.pluginName;
     this->sensorName = copy.sensorName;
     this->sensor = copy.sensor;
@@ -333,9 +333,8 @@ const QString &SensorConfiguration::getName() const{
 /*!
  * \brief SensorConfiguration::setName
  * \param name
- * \return
  */
-bool SensorConfiguration::setName(const QString &name){
+void SensorConfiguration::setName(const QString &name){
     if(this->name.compare(name) != 0){
         this->name = name;
         this->isSaved = false;
@@ -495,13 +494,13 @@ void SensorConfiguration::setStringParameter(const QMap<QString, QString> &strin
  */
 QDomElement SensorConfiguration::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
-    if(xmlDoc.isNull() || this->mySensor == NULL){
+    if(xmlDoc.isNull() || this->sensor == NULL){
         return QDomElement();
     }
-/*
+
     QDomElement sConfig = xmlDoc.createElement("sensorConfig");
     sConfig.setAttribute("name", this->name);
-
+/*
     //get sensor information to know which attributes to save in xml
     QList<ReadingTypes> supportedReadingTypes = *this->mySensor->getSupportedReadingTypes();
     QList<ConnectionTypes> supportedConnectionTypes = *this->mySensor->getConnectionType();

@@ -157,6 +157,11 @@ QString PointCloud::getDisplayZ(bool showDiff) const{
  */
 PointCloud::PointCloud(bool isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPointCloud(this);
+    }
+
 }
 
 /*!
@@ -164,8 +169,15 @@ PointCloud::PointCloud(bool isNominal, QObject *parent) : Geometry(isNominal, pa
  * \param copy
  */
 PointCloud::PointCloud(const PointCloud &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPointCloud(this);
+    }
+
     this->setPosition(copy.mainFocus);
     this->setBoundingBox(copy.bbox);
+
 }
 
 /*!
@@ -174,6 +186,11 @@ PointCloud::PointCloud(const PointCloud &copy, QObject *parent) : Geometry(copy,
  * \return
  */
 PointCloud &PointCloud::operator=(const PointCloud &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPointCloud(this);
+    }
 
     this->setPosition(copy.mainFocus);
     this->setBoundingBox(copy.bbox);

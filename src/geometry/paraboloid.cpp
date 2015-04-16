@@ -1,4 +1,6 @@
 #include "paraboloid.h"
+
+#include "featurewrapper.h"
 /*
 #include "function.h"
 
@@ -83,6 +85,11 @@ bool Paraboloid::saveSimulationData()
  */
 Paraboloid::Paraboloid(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setParaboloid(this);
+    }
+
 }
 
 /*!
@@ -94,7 +101,14 @@ Paraboloid::Paraboloid(const bool &isNominal, QObject *parent) : Geometry(isNomi
  * \param parent
  */
 Paraboloid::Paraboloid(const bool &isNominal, const Position &apex, const Direction &axis, const double &a, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setParaboloid(this);
+    }
+
     this->setParaboloid(apex, axis, a);
+
 }
 
 /*!
@@ -103,6 +117,11 @@ Paraboloid::Paraboloid(const bool &isNominal, const Position &apex, const Direct
  * \param parent
  */
 Paraboloid::Paraboloid(const Paraboloid &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setParaboloid(this);
+    }
 
     this->apex = copy.apex;
     this->axis = copy.axis;
@@ -115,6 +134,11 @@ Paraboloid::Paraboloid(const Paraboloid &copy, QObject *parent) : Geometry(copy,
  * \return
  */
 Paraboloid &Paraboloid::operator=(const Paraboloid &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setParaboloid(this);
+    }
 
     this->apex = copy.apex;
     this->axis = copy.axis;

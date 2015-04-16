@@ -334,12 +334,19 @@ bool Circle::saveSimulationData()
 }
 */
 
+#include "featurewrapper.h"
+
 /*!
  * \brief Circle::Circle
  * \param isNominal
  * \param parent
  */
 Circle::Circle(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCircle(this);
+    }
 
 }
 
@@ -352,7 +359,14 @@ Circle::Circle(const bool &isNominal, QObject *parent) : Geometry(isNominal, par
  * \param parent
  */
 Circle::Circle(const bool &isNominal, const Position &center, const Direction &normal, const Radius &radius, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCircle(this);
+    }
+
     this->setCircle(center, normal, radius);
+
 }
 
 /*!
@@ -361,6 +375,11 @@ Circle::Circle(const bool &isNominal, const Position &center, const Direction &n
  * \param parent
  */
 Circle::Circle(const Circle &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCircle(this);
+    }
 
     this->center = copy.center;
     this->radius = copy.radius;
@@ -374,6 +393,11 @@ Circle::Circle(const Circle &copy, QObject *parent) : Geometry(copy, parent){
  * \return
  */
 Circle &Circle::operator=(const Circle &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setCircle(this);
+    }
 
     this->center = copy.center;
     this->radius = copy.radius;

@@ -1,9 +1,11 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include "oivec.h"
+#include <QObject>
+#include <QtXml>
+
 #include "geometry.h"
-#include <QDebug>
+#include "position.h"
 
 /*!
  * \brief The Point class

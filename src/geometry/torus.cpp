@@ -1,11 +1,18 @@
 #include "torus.h"
 
+#include "featurewrapper.h"
+
 /*!
  * \brief Torus::Torus
  * \param isNominal
  * \param parent
  */
 Torus::Torus(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setTorus(this);
+    }
 
 }
 
@@ -19,7 +26,14 @@ Torus::Torus(const bool &isNominal, QObject *parent) : Geometry(isNominal, paren
  * \param parent
  */
 Torus::Torus(const bool &isNominal, const Position &center, const Direction &normal, const Radius &radiusA, const Radius &radiusB, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setTorus(this);
+    }
+
     this->setTorus(center, normal, radiusA, radiusB);
+
 }
 
 /*!
@@ -28,6 +42,11 @@ Torus::Torus(const bool &isNominal, const Position &center, const Direction &nor
  * \param parent
  */
 Torus::Torus(const Torus &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setTorus(this);
+    }
 
     this->center = copy.center;
     this->normal = copy.normal;
@@ -42,6 +61,11 @@ Torus::Torus(const Torus &copy, QObject *parent) : Geometry(copy, parent){
  * \return
  */
 Torus &Torus::operator=(const Torus &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setTorus(this);
+    }
 
     this->center = copy.center;
     this->normal = copy.normal;

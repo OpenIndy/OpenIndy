@@ -1,11 +1,18 @@
 #include "ellipse.h"
 
+#include "featurewrapper.h"
+
 /*!
  * \brief Ellipse::Ellipse
  * \param isNominal
  * \param parent
  */
 Ellipse::Ellipse(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setEllipse(this);
+    }
 
 }
 
@@ -20,7 +27,14 @@ Ellipse::Ellipse(const bool &isNominal, QObject *parent) : Geometry(isNominal, p
  * \param parent
  */
 Ellipse::Ellipse(const bool &isNominal, const Position &center, const Direction &normal, const double &a, const double &b, const Direction &semiMajorAxis, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setEllipse(this);
+    }
+
     this->setEllipse(center, normal, a, b, semiMajorAxis);
+
 }
 
 /*!
@@ -29,6 +43,11 @@ Ellipse::Ellipse(const bool &isNominal, const Position &center, const Direction 
  * \param parent
  */
 Ellipse::Ellipse(const Ellipse &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setEllipse(this);
+    }
 
     this->center = copy.center;
     this->normal = copy.normal;
@@ -44,6 +63,11 @@ Ellipse::Ellipse(const Ellipse &copy, QObject *parent) : Geometry(copy, parent){
  * \return
  */
 Ellipse &Ellipse::operator=(const Ellipse &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setEllipse(this);
+    }
 
     this->center = copy.center;
     this->normal = copy.normal;

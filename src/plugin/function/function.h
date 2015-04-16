@@ -34,6 +34,9 @@
 #include "torus.h"
 #include "ellipse.h"
 #include "pluginmetadata.h"
+#include "featurewrapper.h"
+#include "types.h"
+#include "util.h"
 
 //############################################
 //helper classes to define function parameters
@@ -174,33 +177,11 @@ public:
 
     virtual void init();
 
-    //############
-    //exec methods
-    //############
+    //###################################################################
+    //public exec method that calls the appropriate protected exec method
+    //###################################################################
 
-    virtual bool exec(QPointer<Station> &station);
-    virtual bool exec(QPointer<CoordinateSystem> &coordinateSystem);
-    virtual bool exec(QPointer<TrafoParam> &trafoParam);
-
-    virtual bool exec(QPointer<Circle> &circle);
-    virtual bool exec(QPointer<Cone> &cone);
-    virtual bool exec(QPointer<Cylinder> &cylinder);
-    virtual bool exec(QPointer<Ellipse> &ellipse);
-    virtual bool exec(QPointer<Ellipsoid> &ellipsoid);
-    virtual bool exec(QPointer<Hyperboloid> &hyperboloid);
-    virtual bool exec(QPointer<Line> &line);
-    virtual bool exec(QPointer<Nurbs> &nurbs);
-    virtual bool exec(QPointer<Paraboloid> &paraboloid);
-    virtual bool exec(QPointer<Plane> &plane);
-    virtual bool exec(QPointer<Point> &point);
-    virtual bool exec(QPointer<PointCloud> &pointCloud);
-    virtual bool exec(QPointer<ScalarEntityAngle> &angle);
-    virtual bool exec(QPointer<ScalarEntityDistance> &distance);
-    virtual bool exec(QPointer<ScalarEntityMeasurementSeries> &measurementSeries);
-    virtual bool exec(QPointer<ScalarEntityTemperature> &temperature);
-    virtual bool exec(QPointer<SlottedHole> &slottedHole);
-    virtual bool exec(QPointer<Sphere> &sphere);
-    virtual bool exec(QPointer<Torus> &torus);
+    bool exec(const QPointer<FeatureWrapper> &feature);
 
     //#############################################################
     //methods to get or set further information to solve a function
@@ -215,7 +196,7 @@ public:
     const QMultiMap<QString, QString> &getStringParameter() const;
 
     void setScalarInputParams(const ScalarInputParams &params);
-    const ScalarInputParams &getScalarInputParams() const;
+    const ScalarInputParams &getScalarInputParams();
 
     const QList<FixedParameter> &getFixedParameters() const;
     void fixParameter(const FixedParameter &parameter);
@@ -235,8 +216,6 @@ public:
     //###############
 
     const int &getId() const;
-
-    bool getIsValid() const;
 
     //###################
     //get or set elements
@@ -270,6 +249,34 @@ signals:
     void sendMessage(const QString &msg);
 
 protected:
+
+    //############
+    //exec methods
+    //############
+
+    virtual bool exec(Station &station);
+    virtual bool exec(CoordinateSystem &coordinateSystem);
+    virtual bool exec(TrafoParam &trafoParam);
+
+    virtual bool exec(Circle &circle);
+    virtual bool exec(Cone &cone);
+    virtual bool exec(Cylinder &cylinder);
+    virtual bool exec(Ellipse &ellipse);
+    virtual bool exec(Ellipsoid &ellipsoid);
+    virtual bool exec(Hyperboloid &hyperboloid);
+    virtual bool exec(Line &line);
+    virtual bool exec(Nurbs &nurbs);
+    virtual bool exec(Paraboloid &paraboloid);
+    virtual bool exec(Plane &plane);
+    virtual bool exec(Point &point);
+    virtual bool exec(PointCloud &pointCloud);
+    virtual bool exec(ScalarEntityAngle &angle);
+    virtual bool exec(ScalarEntityDistance &distance);
+    virtual bool exec(ScalarEntityMeasurementSeries &measurementSeries);
+    virtual bool exec(ScalarEntityTemperature &temperature);
+    virtual bool exec(SlottedHole &slottedHole);
+    virtual bool exec(Sphere &sphere);
+    virtual bool exec(Torus &torus);
 
     //#################################
     //mark elements as used or not used

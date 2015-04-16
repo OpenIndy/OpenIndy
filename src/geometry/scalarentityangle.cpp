@@ -1,4 +1,6 @@
 #include "scalarentityangle.h"
+
+#include "featurewrapper.h"
 /*
 #include "function.h"
 
@@ -168,6 +170,11 @@ QString ScalarEntityAngle::getDisplayScalarAngleValue() const{
  */
 ScalarEntityAngle::ScalarEntityAngle(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityAngle(this);
+    }
+
 }
 
 /*!
@@ -177,7 +184,14 @@ ScalarEntityAngle::ScalarEntityAngle(const bool &isNominal, QObject *parent) : G
  * \param parent
  */
 ScalarEntityAngle::ScalarEntityAngle(const bool &isNominal, const double &angle, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityAngle(this);
+    }
+
     this->setAngle(angle);
+
 }
 
 /*!
@@ -186,7 +200,14 @@ ScalarEntityAngle::ScalarEntityAngle(const bool &isNominal, const double &angle,
  * \param parent
  */
 ScalarEntityAngle::ScalarEntityAngle(const ScalarEntityAngle &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityAngle(this);
+    }
+
     this->angle = copy.angle;
+
 }
 
 /*!
@@ -195,8 +216,16 @@ ScalarEntityAngle::ScalarEntityAngle(const ScalarEntityAngle &copy, QObject *par
  * \return
  */
 ScalarEntityAngle &ScalarEntityAngle::operator=(const ScalarEntityAngle &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setScalarEntityAngle(this);
+    }
+
     this->angle = copy.angle;
+
     return *this;
+
 }
 
 /*!

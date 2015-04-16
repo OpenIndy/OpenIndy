@@ -332,11 +332,18 @@ void Station::writeToConsole(QString msg){
 }
 */
 
+#include "featurewrapper.h"
+
 /*!
  * \brief Station::Station
  * \param parent
  */
 Station::Station(QObject *parent) : Feature(parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setStation(this);
+    }
 
     //create a point object as the station's position
     this->position = new Point(false);
@@ -359,6 +366,11 @@ Station::Station(QObject *parent) : Feature(parent){
  * \param parent
  */
 Station::Station(const QString &name, QObject *parent) : Feature(parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setStation(this);
+    }
 
     this->name = name;
 
@@ -386,6 +398,11 @@ Station::Station(const QString &name, QObject *parent) : Feature(parent){
  */
 Station::Station(const Station &copy, QObject *parent) : Feature(copy, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setStation(this);
+    }
+
     //copy general station attributes
     this->isActiveStation = copy.isActiveStation;
     if(!copy.position.isNull()){
@@ -409,6 +426,11 @@ Station::Station(const Station &copy, QObject *parent) : Feature(copy, parent){
  * \return
  */
 Station &Station::operator=(const Station &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setStation(this);
+    }
 
     //copy general station attributes
     this->isActiveStation = copy.isActiveStation;

@@ -1,4 +1,6 @@
 #include "hyperboloid.h"
+
+#include "featurewrapper.h"
 /*
 #include "function.h"
 
@@ -84,6 +86,11 @@ bool Hyperboloid::saveSimulationData()
  */
 Hyperboloid::Hyperboloid(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setHyperboloid(this);
+    }
+
 }
 
 /*!
@@ -96,7 +103,14 @@ Hyperboloid::Hyperboloid(const bool &isNominal, QObject *parent) : Geometry(isNo
  * \param parent
  */
 Hyperboloid::Hyperboloid(const bool &isNominal, const Position &center, const Direction &axis, const double &a, const double &c, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setHyperboloid(this);
+    }
+
     this->setHyperboloid(center, axis, a, c);
+
 }
 
 /*!
@@ -105,6 +119,11 @@ Hyperboloid::Hyperboloid(const bool &isNominal, const Position &center, const Di
  * \param parent
  */
 Hyperboloid::Hyperboloid(const Hyperboloid &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setHyperboloid(this);
+    }
 
     this->center = copy.center;
     this->axis = copy.axis;
@@ -119,6 +138,11 @@ Hyperboloid::Hyperboloid(const Hyperboloid &copy, QObject *parent) : Geometry(co
  * \return
  */
 Hyperboloid &Hyperboloid::operator=(const Hyperboloid &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setHyperboloid(this);
+    }
 
     this->center = copy.center;
     this->axis = copy.axis;

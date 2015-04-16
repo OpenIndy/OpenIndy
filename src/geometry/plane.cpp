@@ -1,4 +1,6 @@
 #include "plane.h"
+
+#include "featurewrapper.h"
 /*
 #include "function.h"
 
@@ -304,6 +306,11 @@ QString Plane::getDisplayStdDev() const{
  */
 Plane::Plane(const bool &isNominal, QObject *parent) : Geometry(isNominal, parent){
 
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPlane(this);
+    }
+
 }
 
 /*!
@@ -314,7 +321,14 @@ Plane::Plane(const bool &isNominal, QObject *parent) : Geometry(isNominal, paren
  * \param parent
  */
 Plane::Plane(const bool &isNominal, const Position &xyz, const Direction &normal, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPlane(this);
+    }
+
     this->setPlane(xyz, normal);
+
 }
 
 /*!
@@ -325,7 +339,14 @@ Plane::Plane(const bool &isNominal, const Position &xyz, const Direction &normal
  * \param parent
  */
 Plane::Plane(const bool &isNominal, const Direction &normal, const double &d, QObject *parent) : Geometry(isNominal, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPlane(this);
+    }
+
     this->setPlane(normal, d);
+
 }
 
 /*!
@@ -334,6 +355,11 @@ Plane::Plane(const bool &isNominal, const Direction &normal, const double &d, QO
  * \param parent
  */
 Plane::Plane(const Plane &copy, QObject *parent) : Geometry(copy, parent){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPlane(this);
+    }
 
     this->xyz = copy.xyz;
     this->normal = copy.normal;
@@ -347,6 +373,11 @@ Plane::Plane(const Plane &copy, QObject *parent) : Geometry(copy, parent){
  * \return
  */
 Plane &Plane::operator=(const Plane &copy){
+
+    //set up feature wrapper
+    if(!this->selfFeature.isNull()){
+        this->selfFeature->setPlane(this);
+    }
 
     this->xyz = copy.xyz;
     this->normal = copy.normal;

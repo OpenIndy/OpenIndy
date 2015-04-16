@@ -139,7 +139,7 @@ protected:
     //the needed scalar input parameters including default values
     QMap<QString, int> integerParameters;
     QMap<QString, double> doubleParameters;
-    QMultiMap<QString, QString> stringParameters;
+    QMultiMap<QString, QStringList> stringParameters;
 
 };
 
