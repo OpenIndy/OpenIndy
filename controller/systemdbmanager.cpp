@@ -966,11 +966,7 @@ void SystemDbManager::saveOiToolPlugin(int pluginId, OiTool* t){
     command.exec(query);
 }
 
-/*!
- * \brief SystemDbManager::saveOiExchangeSimpleAsciiPlugin
- * \param pluginId
- * \param sa
- */
+/*
 void SystemDbManager::saveOiExchangeSimpleAsciiPlugin(int pluginId, OiExchangeSimpleAscii *sa){
 
     //get a list of supported elements
@@ -1003,11 +999,6 @@ void SystemDbManager::saveOiExchangeSimpleAsciiPlugin(int pluginId, OiExchangeSi
 
 }
 
-/*!
- * \brief SystemDbManager::saveOiExchangeDefinedFormatPlugin
- * \param pluginId
- * \param df
- */
 void SystemDbManager::saveOiExchangeDefinedFormatPlugin(int pluginId, OiExchangeDefinedFormat *df){
 
     //get a list of supported elements
@@ -1038,7 +1029,7 @@ void SystemDbManager::saveOiExchangeDefinedFormatPlugin(int pluginId, OiExchange
 
     }
 
-}
+}*/
 
 /*
 QStringList SystemDbManager::getSupportedGeometries(){

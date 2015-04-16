@@ -45,12 +45,6 @@ public:
 
     virtual ~Sensor();
 
-    //############################
-    //sensor initialization method
-    //############################
-
-    virtual void init();
-
     //####################################
     //get or set general sensor attributes
     //####################################
@@ -115,6 +109,12 @@ signals:
     void sendMessage(const QString &msg);
 
 protected:
+
+    //############################
+    //sensor initialization method
+    //############################
+
+    virtual void init();
 
     //#########################
     //general sensor attributes

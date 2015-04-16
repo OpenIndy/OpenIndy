@@ -20,13 +20,6 @@ Sensor::~Sensor(){
 }
 
 /*!
- * \brief Sensor::init
- */
-void Sensor::init(){
-
-}
-
-/*!
  * \brief Sensor::getSensorConfiguration
  * \return
  */
@@ -264,4 +257,12 @@ QDomElement Sensor::toOpenIndyXML(QDomDocument &xmlDoc) const{
  */
 bool Sensor::fromOpenIndyXML(QDomElement &xmlElem){
     return false;
+}
+
+/*!
+ * \brief Sensor::init
+ * Method that is automatically called by sensor constructor and may be reimplemented by the plugin writer
+ */
+void Sensor::init(){
+
 }

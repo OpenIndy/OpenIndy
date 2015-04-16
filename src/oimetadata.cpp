@@ -18,9 +18,9 @@ QString OiMetaData::iid_ObjectTransformation = ObjectTransformation_iidd;
 QString OiMetaData::iid_SystemTransformation = SystemTransformation_iidd;
 QString OiMetaData::iid_Simulation = Simulation_iidd;
 QString OiMetaData::iid_OiTool = OiTool_iidd;
-QString OiMetaData::iid_OiExchange = OiExchange_iidd;
-QString OiMetaData::iid_OiExchangeSimpleAscii = OiExchangeSimpleAscii_iidd;
-QString OiMetaData::iid_OiExchangeDefinedFormat = OiExchangeDefinedFormat_iidd;
+QString OiMetaData::iid_OiExchange = Exchange_iidd;
+QString OiMetaData::iid_OiExchangeSimpleAscii = ExchangeSimpleAscii_iidd;
+QString OiMetaData::iid_OiExchangeDefinedFormat = ExchangeDefinedFormat_iidd;
 
 
 /*!

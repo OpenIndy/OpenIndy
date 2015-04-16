@@ -1507,14 +1507,6 @@ Function::~Function(){
 }
 
 /*!
- * \brief Function::init
- * Method that is automatically called by function constructor and may be reimplemented by the plugin writer
- */
-void Function::init(){
-
-}
-
-/*!
  * \brief Function::exec
  * \param feature
  * \return
@@ -1915,6 +1907,13 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
 
 }
 
+/*!
+ * \brief Function::init
+ * Method that is automatically called by function constructor and may be reimplemented by the plugin writer
+ */
+void Function::init(){
+
+}
 
 /*!
  * \brief Function::exec

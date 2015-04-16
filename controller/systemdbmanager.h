@@ -150,8 +150,8 @@ private:
     static void saveSimulationPlugin(int pluginId, SimulationModel* s);
     static void saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustment* n);
     static void saveOiToolPlugin(int pluginId, OiTool* t);
-    static void saveOiExchangeSimpleAsciiPlugin(int pluginId, OiExchangeSimpleAscii* sa);
-    static void saveOiExchangeDefinedFormatPlugin(int pluginId, OiExchangeDefinedFormat* df);
+    //static void saveOiExchangeSimpleAsciiPlugin(int pluginId, OiExchangeSimpleAscii* sa);
+    //static void saveOiExchangeDefinedFormatPlugin(int pluginId, OiExchangeDefinedFormat* df);
 
 };
 

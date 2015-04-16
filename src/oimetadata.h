@@ -14,9 +14,9 @@
 #include "networkadjustment.h"
 #include "objecttransformation.h"
 #include "systemtransformation.h"
-#include "oiexchangeinterface.h"
-#include "oiexchangesimpleascii.h"
-#include "oiexchangedefinedformat.h"
+#include "exchangeinterface.h"
+#include "exchangesimpleascii.h"
+#include "exchangedefinedformat.h"
 
 /*!
  * \brief The OiMetaData class

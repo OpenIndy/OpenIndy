@@ -123,8 +123,10 @@ SOURCES += \
     src/plugin/simulation/simulationdata.cpp \
     src/plugin/simulation/uncertaintycomponent.cpp \
     src/plugin/function/function.cpp \
-    src/plugin/exchange/oiexchangeobject.cpp \
-    src/plugin/sensor/sensor.cpp
+    src/plugin/sensor/sensor.cpp \
+    src/plugin/exchange/exchangedefinedformat.cpp \
+    src/plugin/exchange/exchangesimpleascii.cpp \
+    src/plugin/exchange/exchangeinterface.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -198,10 +200,9 @@ HEADERS  += \
     src/plugin/function/geodeticfunction.h \
     src/plugin/function/objecttransformation.h \
     src/plugin/function/systemtransformation.h \
-    src/plugin/exchange/oiexchangedefinedformat.h \
-    src/plugin/exchange/oiexchangeinterface.h \
-    src/plugin/exchange/oiexchangeobject.h \
-    src/plugin/exchange/oiexchangesimpleascii.h \
+    src/plugin/exchange/exchangedefinedformat.h \
+    src/plugin/exchange/exchangeinterface.h \
+    src/plugin/exchange/exchangesimpleascii.h \
     lib/openIndyLib/include/chooselalib.h \
     lib/openIndyLib/include/global.h \
     lib/openIndyLib/include/linearalgebra.h \
