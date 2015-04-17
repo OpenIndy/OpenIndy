@@ -10,7 +10,13 @@
 class FeatureAttributes
 {
 public:
-    FeatureAttributes();
+    FeatureAttributes(){
+        this->count = 0;
+        this->isActual = false;
+        this->isNominal = false;
+        this->isCommon = false;
+        this->isMovement = false;
+    }
 
     //general attributes
     FeatureTypes typeOfFeature;

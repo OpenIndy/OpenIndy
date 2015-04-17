@@ -33,16 +33,16 @@ public:
     //###############
 
     //getter to access feature lists
-    const QList<QPointer<FeatureWrapper> > &getFeaturesList();
-    const QList<QPointer<CoordinateSystem> > &getCoordinateSystemsList();
-    const QList<QPointer<Station> > &getStationsList();
-    const QList<QPointer<TrafoParam> > &getTransformationParametersList();
-    const QList<QPointer<FeatureWrapper> > &getGeometriesList();
+    const QList<QPointer<FeatureWrapper> > &getFeaturesList() const;
+    const QList<QPointer<CoordinateSystem> > &getCoordinateSystemsList() const;
+    const QList<QPointer<Station> > &getStationsList() const;
+    const QList<QPointer<TrafoParam> > &getTransformationParametersList() const;
+    const QList<QPointer<FeatureWrapper> > &getGeometriesList() const;
 
-    //getter to get a list of all feature ids and names
-    const QList<int> &getFeatureIdList();
-    const QStringList &getFeatureNameList();
-    const QStringList &getFeatureGroupList();
+    //getter to get a list of all feature ids, names and groups
+    const QList<int> &getFeatureIdList() const;
+    const QStringList &getFeatureNameList() const;
+    const QStringList &getFeatureGroupList() const;
 
     //getter to access features by id, name, group or type
     QPointer<FeatureWrapper> getFeatureById(const int &featureId) const;
@@ -64,6 +64,8 @@ public:
 
     bool addFeature(const QPointer<FeatureWrapper> &feature);
     bool removeFeature(const int &featureId);
+
+    void removeAll();
 
     //#######################################################
     //callbacks on feature changes to update keys helper maps

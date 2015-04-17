@@ -109,6 +109,7 @@ signals:
     //#######################################
 
     void activeStationChanged(const int &stationId);
+    void sensorChanged(const int &featureId);
 
     //###############################
     //signals to start sensor actions

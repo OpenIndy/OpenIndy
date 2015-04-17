@@ -128,10 +128,10 @@ signals:
     void featureFunctionListChanged(const int &featureId);
     void featureUsedForChanged(const int &featureId);
     void featurePreviouslyNeededChanged(const int &featureId);
-    void featureDisplayColorChanged(const int &featureId);
-    void featureIsDrawnChanged(const int &featureId);
+    //void featureDisplayColorChanged(const int &featureId);
+    //void featureIsDrawnChanged(const int &featureId);
     void featureIsActiveChanged(const int &featureId);
-    void featureAboutToBeDeleted(const int &featureId);
+    //void featureAboutToBeDeleted(const int &featureId);
 
 protected:
 
@@ -142,16 +142,19 @@ protected:
     QString name;
     QString group;
     QString comment;
-    bool isUpdated;
-    bool isSolved;
+
+    bool isSolved; //true of the feature is solved in the current disply system
+    bool isUpdated; //helper attribute to indicate if a feature was already recalced during recalculation process
+
     bool isActiveFeature;
+
     QList< QPointer<Function> > functionList;
 
     QList< QPointer<FeatureWrapper> > usedFor; //features which need this feature to recalc
     QList< QPointer<FeatureWrapper> > previouslyNeeded; //features which are needed to recalc this feature
 
     //Configuration::eColor displayColor;
-    bool isDrawn;
+    //bool isDrawn;
 
     //#########################################
     //this pointer as wrapped by FeatureWrapper

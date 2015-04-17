@@ -500,6 +500,7 @@ const QPointer<CoordinateSystem> &Station::getCoordinateSystem() const{
 void Station::setSensor(const QPointer<Sensor> &sensor){
     if(!sensor.isNull() && !this->sensorControl.isNull()){
         this->sensorControl->setSensor(sensor);
+        emit this->sensorChanged(this->id);
     }
 }
 

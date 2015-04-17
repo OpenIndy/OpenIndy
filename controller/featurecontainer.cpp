@@ -227,7 +227,7 @@ FeatureContainer::~FeatureContainer(){
  * \brief FeatureContainer::getFeaturesList
  * \return
  */
-const QList<QPointer<FeatureWrapper> > &FeatureContainer::getFeaturesList(){
+const QList<QPointer<FeatureWrapper> > &FeatureContainer::getFeaturesList() const{
     return this->featuresList;
 }
 
@@ -235,7 +235,7 @@ const QList<QPointer<FeatureWrapper> > &FeatureContainer::getFeaturesList(){
  * \brief FeatureContainer::getCoordinateSystemsList
  * \return
  */
-const QList<QPointer<CoordinateSystem> > &FeatureContainer::getCoordinateSystemsList(){
+const QList<QPointer<CoordinateSystem> > &FeatureContainer::getCoordinateSystemsList() const{
     return this->coordSystems;
 }
 
@@ -243,7 +243,7 @@ const QList<QPointer<CoordinateSystem> > &FeatureContainer::getCoordinateSystems
  * \brief FeatureContainer::getStationsList
  * \return
  */
-const QList<QPointer<Station> > &FeatureContainer::getStationsList(){
+const QList<QPointer<Station> > &FeatureContainer::getStationsList() const{
     return this->stationsList;
 }
 
@@ -251,7 +251,7 @@ const QList<QPointer<Station> > &FeatureContainer::getStationsList(){
  * \brief FeatureContainer::getTransformationParametersList
  * \return
  */
-const QList<QPointer<TrafoParam> > &FeatureContainer::getTransformationParametersList(){
+const QList<QPointer<TrafoParam> > &FeatureContainer::getTransformationParametersList() const{
     return this->trafoParamsList;
 }
 
@@ -259,7 +259,7 @@ const QList<QPointer<TrafoParam> > &FeatureContainer::getTransformationParameter
  * \brief FeatureContainer::getGeometriesList
  * \return
  */
-const QList<QPointer<FeatureWrapper> > &FeatureContainer::getGeometriesList(){
+const QList<QPointer<FeatureWrapper> > &FeatureContainer::getGeometriesList() const{
     return this->geometriesList;
 }
 
@@ -267,7 +267,7 @@ const QList<QPointer<FeatureWrapper> > &FeatureContainer::getGeometriesList(){
  * \brief FeatureContainer::getFeatureIdList
  * \return
  */
-const QList<int> &FeatureContainer::getFeatureIdList(){
+const QList<int> &FeatureContainer::getFeatureIdList() const{
     return this->featureIds;
 }
 
@@ -275,7 +275,7 @@ const QList<int> &FeatureContainer::getFeatureIdList(){
  * \brief FeatureContainer::getFeatureNameList
  * \return
  */
-const QStringList &FeatureContainer::getFeatureNameList(){
+const QStringList &FeatureContainer::getFeatureNameList() const{
     return this->featureNames;
 }
 
@@ -283,7 +283,7 @@ const QStringList &FeatureContainer::getFeatureNameList(){
  * \brief FeatureContainer::getFeatureGroupList
  * \return
  */
-const QStringList &FeatureContainer::getFeatureGroupList(){
+const QStringList &FeatureContainer::getFeatureGroupList() const{
     return this->featureGroups;
 }
 
@@ -456,10 +456,42 @@ bool FeatureContainer::removeFeature(const int &featureId){
     }
 
     //delete the feature
-    delete feature->getFeature().data();
-    delete feature.data();
+    delete feature->getFeature();
+    delete feature;
 
     return true;
+
+}
+
+/*!
+ * \brief FeatureContainer::removeAll
+ * Remove and delete all features
+ */
+void FeatureContainer::removeAll(){
+
+    //delete all features
+    foreach(const QPointer<FeatureWrapper> &feature, this->featuresList){
+        if(!feature.isNull()){
+            if(feature->getFeature().isNull()){
+                delete feature->getFeature();
+            }
+            delete feature;
+        }
+    }
+
+    //clear all lists and maps
+    this->featuresList.clear();
+    this->coordSystems.clear();
+    this->stationsList.clear();
+    this->trafoParamsList.clear();
+    this->geometriesList.clear();
+    this->featuresIdMap.clear();
+    this->featuresNameMap.clear();
+    this->featuresGroupMap.clear();
+    this->featuresTypeMap.clear();
+    this->featureIds.clear();
+    this->featureNames.clear();
+    this->featureGroups.clear();
 
 }
 

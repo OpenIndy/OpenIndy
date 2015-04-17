@@ -31,6 +31,15 @@ bool FeatureWrapper::operator==(const FeatureWrapper &other){
 }
 
 /*!
+ * \brief FeatureWrapper::getFeatureTypeString
+ * \return
+ */
+QString FeatureWrapper::getFeatureTypeString() const{
+    return getFeatureTypeName(this->typeOfFeature);
+}
+
+
+/*!
  * \brief FeatureWrapper::getFeatureTypeEnum
  * \return
  */
@@ -235,7 +244,7 @@ const QPointer<ScalarEntityMeasurementSeries> &FeatureWrapper::getScalarEntityMe
  * \param coordSystem
  */
 void FeatureWrapper::setCoordinateSystem(const QPointer<CoordinateSystem> &coordSystem){
-    if(!coordSystem.isNull()){
+    if(!coordSystem.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = coordSystem;
         this->coordinateSystem = coordSystem;
         this->typeOfFeature = eCoordinateSystemFeature;
@@ -247,7 +256,7 @@ void FeatureWrapper::setCoordinateSystem(const QPointer<CoordinateSystem> &coord
  * \param trafoParam
  */
 void FeatureWrapper::setTrafoParam(const QPointer<TrafoParam> &trafoParam){
-    if(!trafoParam.isNull()){
+    if(!trafoParam.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = trafoParam;
         this->trafoParam = trafoParam;
         this->typeOfFeature = eTrafoParamFeature;
@@ -259,7 +268,7 @@ void FeatureWrapper::setTrafoParam(const QPointer<TrafoParam> &trafoParam){
  * \param station
  */
 void FeatureWrapper::setStation(const QPointer<Station> &station){
-    if(!station.isNull()){
+    if(!station.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = station;
         this->station = station;
         this->typeOfFeature = eStationFeature;
@@ -271,7 +280,7 @@ void FeatureWrapper::setStation(const QPointer<Station> &station){
  * \param point
  */
 void FeatureWrapper::setPoint(const QPointer<Point> &point){
-    if(!point.isNull()){
+    if(!point.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = point;
         this->geometry = point;
         this->point = point;
@@ -284,7 +293,7 @@ void FeatureWrapper::setPoint(const QPointer<Point> &point){
  * \param line
  */
 void FeatureWrapper::setLine(const QPointer<Line> &line){
-    if(!line.isNull()){
+    if(!line.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = line;
         this->geometry = line;
         this->line = line;
@@ -297,7 +306,7 @@ void FeatureWrapper::setLine(const QPointer<Line> &line){
  * \param plane
  */
 void FeatureWrapper::setPlane(const QPointer<Plane> &plane){
-    if(!plane.isNull()){
+    if(!plane.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = plane;
         this->geometry = plane;
         this->plane = plane;
@@ -310,7 +319,7 @@ void FeatureWrapper::setPlane(const QPointer<Plane> &plane){
  * \param sphere
  */
 void FeatureWrapper::setSphere(const QPointer<Sphere> &sphere){
-    if(!sphere.isNull()){
+    if(!sphere.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = sphere;
         this->geometry = sphere;
         this->sphere = sphere;
@@ -323,7 +332,7 @@ void FeatureWrapper::setSphere(const QPointer<Sphere> &sphere){
  * \param circle
  */
 void FeatureWrapper::setCircle(const QPointer<Circle> &circle){
-    if(!circle.isNull()){
+    if(!circle.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = circle;
         this->geometry = circle;
         this->circle = circle;
@@ -336,7 +345,7 @@ void FeatureWrapper::setCircle(const QPointer<Circle> &circle){
  * \param cone
  */
 void FeatureWrapper::setCone(const QPointer<Cone> &cone){
-    if(!cone.isNull()){
+    if(!cone.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = cone;
         this->geometry = cone;
         this->cone = cone;
@@ -349,7 +358,7 @@ void FeatureWrapper::setCone(const QPointer<Cone> &cone){
  * \param cylinder
  */
 void FeatureWrapper::setCylinder(const QPointer<Cylinder> &cylinder){
-    if(!cylinder.isNull()){
+    if(!cylinder.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = cylinder;
         this->geometry = cylinder;
         this->cylinder = cylinder;
@@ -362,7 +371,7 @@ void FeatureWrapper::setCylinder(const QPointer<Cylinder> &cylinder){
  * \param ellipsoid
  */
 void FeatureWrapper::setEllipsoid(const QPointer<Ellipsoid> &ellipsoid){
-    if(!ellipsoid.isNull()){
+    if(!ellipsoid.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = ellipsoid;
         this->geometry = ellipsoid;
         this->ellipsoid = ellipsoid;
@@ -375,7 +384,7 @@ void FeatureWrapper::setEllipsoid(const QPointer<Ellipsoid> &ellipsoid){
  * \param hyperboloid
  */
 void FeatureWrapper::setHyperboloid(const QPointer<Hyperboloid> &hyperboloid){
-    if(!hyperboloid.isNull()){
+    if(!hyperboloid.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = hyperboloid;
         this->geometry = hyperboloid;
         this->hyperboloid = hyperboloid;
@@ -388,7 +397,7 @@ void FeatureWrapper::setHyperboloid(const QPointer<Hyperboloid> &hyperboloid){
  * \param paraboloid
  */
 void FeatureWrapper::setParaboloid(const QPointer<Paraboloid> &paraboloid){
-    if(!paraboloid.isNull()){
+    if(!paraboloid.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = paraboloid;
         this->geometry = paraboloid;
         this->paraboloid = paraboloid;
@@ -401,7 +410,7 @@ void FeatureWrapper::setParaboloid(const QPointer<Paraboloid> &paraboloid){
  * \param pointCloud
  */
 void FeatureWrapper::setPointCloud(const QPointer<PointCloud> &pointCloud){
-    if(!pointCloud.isNull()){
+    if(!pointCloud.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = pointCloud;
         this->geometry = pointCloud;
         this->pointCloud = pointCloud;
@@ -414,7 +423,7 @@ void FeatureWrapper::setPointCloud(const QPointer<PointCloud> &pointCloud){
  * \param nurbs
  */
 void FeatureWrapper::setNurbs(const QPointer<Nurbs> &nurbs){
-    if(!nurbs.isNull()){
+    if(!nurbs.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = nurbs;
         this->geometry = nurbs;
         this->nurbs = nurbs;
@@ -427,7 +436,7 @@ void FeatureWrapper::setNurbs(const QPointer<Nurbs> &nurbs){
  * \param ellipse
  */
 void FeatureWrapper::setEllipse(const QPointer<Ellipse> &ellipse){
-    if(!ellipse.isNull()){
+    if(!ellipse.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = ellipse;
         this->geometry = ellipse;
         this->ellipse = ellipse;
@@ -440,7 +449,7 @@ void FeatureWrapper::setEllipse(const QPointer<Ellipse> &ellipse){
  * \param slottedHole
  */
 void FeatureWrapper::setSlottedHole(const QPointer<SlottedHole> &slottedHole){
-    if(!slottedHole.isNull()){
+    if(!slottedHole.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = slottedHole;
         this->geometry = slottedHole;
         this->slottedHole = slottedHole;
@@ -453,7 +462,7 @@ void FeatureWrapper::setSlottedHole(const QPointer<SlottedHole> &slottedHole){
  * \param torus
  */
 void FeatureWrapper::setTorus(const QPointer<Torus> &torus){
-    if(!torus.isNull()){
+    if(!torus.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = torus;
         this->geometry = torus;
         this->torus = torus;
@@ -466,7 +475,7 @@ void FeatureWrapper::setTorus(const QPointer<Torus> &torus){
  * \param angle
  */
 void FeatureWrapper::setScalarEntityAngle(const QPointer<ScalarEntityAngle> &angle){
-    if(!angle.isNull()){
+    if(!angle.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = angle;
         this->geometry = angle;
         this->angle = angle;
@@ -479,7 +488,7 @@ void FeatureWrapper::setScalarEntityAngle(const QPointer<ScalarEntityAngle> &ang
  * \param distance
  */
 void FeatureWrapper::setScalarEntityDistance(const QPointer<ScalarEntityDistance> &distance){
-    if(!distance.isNull()){
+    if(!distance.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = distance;
         this->geometry = distance;
         this->distance = distance;
@@ -492,7 +501,7 @@ void FeatureWrapper::setScalarEntityDistance(const QPointer<ScalarEntityDistance
  * \param temperature
  */
 void FeatureWrapper::setScalarEntityTemperature(const QPointer<ScalarEntityTemperature> &temperature){
-    if(!temperature.isNull()){
+    if(!temperature.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = temperature;
         this->geometry = temperature;
         this->temperature = temperature;
@@ -505,18 +514,10 @@ void FeatureWrapper::setScalarEntityTemperature(const QPointer<ScalarEntityTempe
  * \param measurementSeries
  */
 void FeatureWrapper::setScalarEntityMeasurementSeries(const QPointer<ScalarEntityMeasurementSeries> &measurementSeries){
-    if(!measurementSeries.isNull()){
+    if(!measurementSeries.isNull() && this->typeOfFeature == eUndefinedFeature){
         this->feature = measurementSeries;
         this->geometry = measurementSeries;
         this->measurementSeries = measurementSeries;
         this->typeOfFeature = eScalarEntityMeasurementSeriesFeature;
     }
-}
-
-/*!
- * \brief FeatureWrapper::getFeatureTypeString
- * \return
- */
-QString FeatureWrapper::getFeatureTypeString() const{
-    return getFeatureTypeName(this->typeOfFeature);
 }

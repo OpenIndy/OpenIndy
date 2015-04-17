@@ -118,6 +118,7 @@ signals:
     void geomObservationsChanged(const int &featureId);
     void geomNominalSystemChanged(const int &featureId);
     void geomStatisticChanged(const int &featureId);
+    void geomSimulationDataChanged(const int &featureId);
     void geomMeasurementConfigChanged(const int &featureId);
     //void geomUsedReadingTypesChanged(const int &featureId);
 
@@ -128,11 +129,14 @@ protected:
     //###################
 
     bool isCommon;
+
     bool isNominal;
     QList< QPointer<Geometry> > nominals;
+
     QPointer<Geometry> actual;
-    QList<QPointer<Observation> > observations;
     QPointer<CoordinateSystem> nominalSystem;
+
+    QList<QPointer<Observation> > observations;
 
     Statistic statistic;
     SimulationData simulationData;
