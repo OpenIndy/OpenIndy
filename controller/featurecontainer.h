@@ -1,7 +1,9 @@
 #ifndef FEATURECONTAINER_H
 #define FEATURECONTAINER_H
 
+#include <QPointer>
 #include <QString>
+#include <QList>
 #include <QStringList>
 #include <QMap>
 #include <QMultiMap>
@@ -13,8 +15,6 @@
 #include "trafoparam.h"
 #include "types.h"
 
-class OiJob;
-
 /*!
  * \brief The FeatureContainer class
  * Works as a container for all features in an OiJob.
@@ -22,59 +22,79 @@ class OiJob;
  * The lists and maps are kept in sync.
  */
 class FeatureContainer{
-    friend class OiJob;
 
-private:
+public:
     FeatureContainer();
 
+    ~FeatureContainer();
+
+    //###############
+    //access features
+    //###############
+
     //getter to access feature lists
-    QList<FeatureWrapper *> &getFeaturesList();
-    QList<CoordinateSystem *> &getCoordinateSystemsList();
-    QList<Station *> &getStationsList();
-    QList<TrafoParam *> &getTransformationParametersList();
-    QList<FeatureWrapper *> &getGeometriesList();
+    const QList<QPointer<FeatureWrapper> > &getFeaturesList();
+    const QList<QPointer<CoordinateSystem> > &getCoordinateSystemsList();
+    const QList<QPointer<Station> > &getStationsList();
+    const QList<QPointer<TrafoParam> > &getTransformationParametersList();
+    const QList<QPointer<FeatureWrapper> > &getGeometriesList();
 
     //getter to get a list of all feature ids and names
-    QList<int> getFeatureIdList();
-    QStringList getFeatureNameList();
-    QStringList getFeatureGroupList();
+    const QList<int> &getFeatureIdList();
+    const QStringList &getFeatureNameList();
+    const QStringList &getFeatureGroupList();
 
     //getter to access features by id, name, group or type
-    FeatureWrapper *getFeatureById(const int &featureId);
-    QList<FeatureWrapper *> getFeaturesByName(const QString &name);
-    QList<FeatureWrapper *> getFeaturesByGroup(const QString &group);
-    QList<FeatureWrapper *> getFeaturesByType(const FeatureTypes &type);
+    QPointer<FeatureWrapper> getFeatureById(const int &featureId) const;
+    QList<QPointer<FeatureWrapper> > getFeaturesByName(const QString &name) const;
+    QList<QPointer<FeatureWrapper> > getFeaturesByGroup(const QString &group) const;
+    QList<QPointer<FeatureWrapper> > getFeaturesByType(const FeatureTypes &type) const;
 
-    //getter to get the number of available features
-    int getFeatureCount();
-    int getStationCount();
-    int getCoordinateSystemCount();
-    int getTransformationParameterCount();
-    int getGeometryCount();
+    //######################
+    //get number of features
+    //######################
 
-    //add or remove features
-    bool addFeature(FeatureWrapper *myFeature);
-    bool removeAndDeleteFeature(const int &featureId);
+    int getFeatureCount() const;
+    int getGeometryCount() const;
+    int getFeatureCount(const FeatureTypes &type) const;
+
+    //############################
+    //add or remove single feature
+    //############################
+
+    bool addFeature(const QPointer<FeatureWrapper> &feature);
     bool removeFeature(const int &featureId);
 
-    //callbacks on feature changes
+    //#######################################################
+    //callbacks on feature changes to update keys helper maps
+    //#######################################################
+
     bool featureNameChanged(const int &featureId, const QString &oldName);
     bool featureGroupChanged(const int &featureId, const QString &oldGroup);
 
 private:
 
-    //feature lists (useful to provide lists of features by category (geometries, stations etc.))
-    QList<FeatureWrapper *> myFeaturesList; //list of all features in OpenIndy
-    QList<CoordinateSystem *> myCoordinateSystemsList; //list of all non-station coordinate systems
-    QList<Station *> myStationsList; //list of all stations (each station has pointer to its coordinate system)
-    QList<TrafoParam *> myTransformationParametersList; //list of all trafo params
-    QList<FeatureWrapper *> myGeometriesList; //list of all geometry features
+    //######################
+    //feature lists and maps
+    //######################
 
-    //feature maps (useful to quickly find a feature with a given id, name or group)
-    QMap<int, FeatureWrapper *> myFeaturesIdMap; //map of all features in OpenIndy with their id as key
-    QMultiMap<QString, FeatureWrapper *> myFeaturesNameMap; //map of all features in OpenIndy with their name as key
-    QMultiMap<QString, FeatureWrapper *> myFeaturesGroupMap; //map of all features in OpenIndy with their group as key
-    QMultiMap<FeatureTypes, FeatureWrapper *> myFeaturesTypeMap; // map of all features in OpenIndy with their type as key
+    //feature lists (useful to provide lists of features by category (geometries, stations etc.))
+    QList<QPointer<FeatureWrapper> > featuresList; //list of all features in OpenIndy
+    QList<QPointer<CoordinateSystem> > coordSystems; //list of all non-station coordinate systems
+    QList<QPointer<Station> > stationsList; //list of all stations (each station has pointer to its coordinate system)
+    QList<QPointer<TrafoParam> > trafoParamsList; //list of all trafo params
+    QList<QPointer<FeatureWrapper> > geometriesList; //list of all geometry features
+
+    //feature maps (useful to quickly find a feature with a given id, name or grou etc.)
+    QMap<int, QPointer<FeatureWrapper> > featuresIdMap; //map of all features in OpenIndy with their id as key
+    QMultiMap<QString, QPointer<FeatureWrapper> > featuresNameMap; //map of all features in OpenIndy with their name as key
+    QMultiMap<QString, QPointer<FeatureWrapper> > featuresGroupMap; //map of all features in OpenIndy with their group as key
+    QMultiMap<FeatureTypes, QPointer<FeatureWrapper> > featuresTypeMap; // map of all features in OpenIndy with their type as key
+
+    //lists with ids, names and groups
+    QList<int> featureIds;
+    QStringList featureNames;
+    QStringList featureGroups;
 
 };
 

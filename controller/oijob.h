@@ -20,9 +20,17 @@ class OiJob : public QObject
 public:
     explicit OiJob(QObject *parent = 0);
 
-    //####################################################
+    ~OiJob();
+
+    //#########################
+    //meta information of a job
+    //#########################
+
+    //name, Pfad(QIODevice)
+
+    //###########################################
     //methods to access the current feature state
-    //####################################################
+    //###########################################
 
     //number of features
     int getFeatureCount();
