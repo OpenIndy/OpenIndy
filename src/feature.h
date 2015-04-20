@@ -17,6 +17,7 @@ class Function;
  */
 class Feature : public Element
 {
+    friend class OiJob;
     Q_OBJECT
 
 public:
@@ -56,8 +57,8 @@ public:
     //Configuration::eColor getDisplayColor() const;
     //void setDisplayColor(Configuration::eColor displayColor);
 
-    const bool &getIsDrawn() const;
-    void setIsDrawn(const bool &isDrawn);
+    //const bool &getIsDrawn() const;
+    //void setIsDrawn(const bool &isDrawn);
 
     const QList<QPointer<Function> > &getFunctions() const;
     void addFunction(const QPointer<Function> &function);
@@ -65,6 +66,12 @@ public:
 
     const bool &getIsActiveFeature() const;
     void setActiveFeatureState(const bool &isActiveFeature);
+
+    const QList<QPointer<FeatureWrapper> > &getUsedFor() const;
+    bool addUsedFor(const QPointer<FeatureWrapper> &feature);
+
+    const QList<QPointer<FeatureWrapper> > &getPreviouslyNeeded() const;
+    bool addPreviouslyNeeded(const QPointer<FeatureWrapper> &feature);
 
     //###########################
     //reexecute the function list
@@ -156,11 +163,17 @@ protected:
     //Configuration::eColor displayColor;
     //bool isDrawn;
 
-    //#########################################
-    //this pointer as wrapped by FeatureWrapper
-    //#########################################
+    //######################################
+    //this pointer wrapped by FeatureWrapper
+    //######################################
 
     QPointer<FeatureWrapper> selfFeature;
+
+    //#############################################
+    //pointer to OiJob that this feature belongs to
+    //#############################################
+
+    QPointer<OiJob> job;
 
 };
 

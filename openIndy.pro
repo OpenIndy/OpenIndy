@@ -73,12 +73,12 @@ SOURCES += \
     controller/console.cpp \
     controller/controller.cpp \
     controller/featureattributes.cpp \
-    controller/featurecontainer.cpp \
-    controller/oijob.cpp \
-    controller/oimodelmanager.cpp \
+    controller/modelmanager.cpp \
     controller/systemdbmanager.cpp \
     models/featuretablemodel.cpp \
     models/featuretableproxymodel.cpp \
+    src/featurecontainer.cpp \
+    src/oijob.cpp \
     src/coordinatesystem.cpp \
     src/direction.cpp \
     src/element.cpp \
@@ -136,12 +136,12 @@ HEADERS  += \
     controller/console.h \
     controller/controller.h \
     controller/featureattributes.h \
-    controller/featurecontainer.h \
-    controller/oijob.h \
-    controller/oimodelmanager.h \
+    controller/modelmanager.h \
     controller/systemdbmanager.h \
     models/featuretablemodel.h \
     models/featuretableproxymodel.h \
+    src/featurecontainer.h \
+    src/oijob.h \
     src/coordinatesystem.h \
     src/direction.h \
     src/element.h \

@@ -437,7 +437,7 @@ const QPointer<Station> &Observation::getStation() const{
  * \param station
  */
 void Observation::setStation(const QPointer<Station> &station){
-    if(!station.isNull()){
+    if(this->station.isNull() && !station.isNull()){
         this->station = station;
     }
 }
@@ -493,11 +493,11 @@ const QPointer<Reading> &Observation::getReading() const{
  * \brief Observation::setReading
  * \param reading
  */
-void Observation::setReading(const QPointer<Reading> &reading){
+/*void Observation::setReading(const QPointer<Reading> &reading){
     if(!reading.isNull()){
         this->reading = reading;
     }
-}
+}*/
 
 /*!
  * \brief Observation::setIsValid

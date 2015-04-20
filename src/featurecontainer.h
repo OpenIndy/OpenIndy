@@ -35,6 +35,7 @@ public:
     //getter to access feature lists
     const QList<QPointer<FeatureWrapper> > &getFeaturesList() const;
     const QList<QPointer<CoordinateSystem> > &getCoordinateSystemsList() const;
+    QList<QPointer<CoordinateSystem> > getStationSystemsList() const;
     const QList<QPointer<Station> > &getStationsList() const;
     const QList<QPointer<TrafoParam> > &getTransformationParametersList() const;
     const QList<QPointer<FeatureWrapper> > &getGeometriesList() const;

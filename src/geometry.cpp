@@ -1,5 +1,6 @@
 #include "geometry.h"
 
+#include "oijob.h"
 /*
 
 #include "coordinatesystem.h"
@@ -543,12 +544,34 @@ const QList<QPointer<Geometry> > &Geometry::getNominals() const{
  * \return
  */
 bool Geometry::addNominal(const QPointer<Geometry> &nominal){
+
     if(!nominal.isNull() && nominal->getIsNominal()){
-        this->nominals.append(nominal);
-        emit this->geomNominalsChanged(this->id);
-        return true;
+
+        //compare feature types
+        if(this->selfFeature.isNull() || nominal->selfFeature.isNull() || this->selfFeature->getFeatureTypeEnum() != nominal->selfFeature->getFeatureTypeEnum()){
+            return false;
+        }
+
+        //check if the nominal is in the same job
+        if(!this->job.isNull()){
+            QPointer<FeatureWrapper> jobNominal = this->job->getFeatureById(nominal->getId());
+            if(jobNominal.isNull() || jobNominal->getGeometry().isNull() || jobNominal->getGeometry() != nominal){
+                return false;
+            }
+        }
+
+        //check if this geometry already contains the nominal
+        if(!this->nominals.contains(nominal)){
+            this->nominals.append(nominal);
+            nominal->setActual(this);
+            emit this->geomNominalsChanged(this->id);
+            return true;
+        }
+
     }
+
     return false;
+
 }
 
 /*!
@@ -559,20 +582,12 @@ bool Geometry::addNominal(const QPointer<Geometry> &nominal){
 bool Geometry::removeNominal(const QPointer<Geometry> &nominal){
 
     //check if the nominal is valid
-    if(nominal.isNull() || nominal->getIsNominal() == false){
+    if(nominal.isNull()){
         return false;
     }
 
-    //remove nominal with equal id
-    int id = nominal->getId();
-    foreach(QPointer<Geometry> geom, this->nominals){
-        if(!geom.isNull() && geom->getId() == id){
-            this->nominals.removeOne(geom);
-            emit this->geomNominalsChanged(this->id);
-            return true;
-        }
-    }
-    return false;
+    //remove nominal
+    return this->nominals.removeOne(nominal);
 
 }
 
@@ -596,8 +611,24 @@ bool Geometry::setActual(const QPointer<Geometry> &actual){
         return false;
     }
 
+    //compare feature types
+    if(this->selfFeature.isNull() || actual->selfFeature.isNull() || this->selfFeature->getFeatureTypeEnum() != actual->selfFeature->getFeatureTypeEnum()){
+        return false;
+    }
+
+    //check if actual is in the same job
+    if(!this->job.isNull()){
+        QPointer<FeatureWrapper> jobActual = this->job->getFeatureById(actual->getId());
+        if(jobActual.isNull() || jobActual->getGeometry().isNull() || jobActual->getGeometry() != actual){
+            return false;
+        }
+    }
+
     this->actual = actual;
+    actual->addNominal(this);
     emit this->geomActualChanged(this->id);
+
+    return true;
 
 }
 
@@ -631,15 +662,8 @@ void Geometry::removeObservation(const QPointer<Observation> &obs){
         return;
     }
 
-    //remove observation with equal id
-    int id = obs->getId();
-    foreach(QPointer<Observation> observation, this->observations){
-        if(!observation.isNull() && observation->getId() == obs->getId()){
-            this->observations.removeOne(observation);
-            emit this->geomObservationsChanged(this->id);
-            return;
-        }
-    }
+    //remove observation
+    this->observations.removeOne(obs);
 
 }
 
@@ -654,12 +678,29 @@ const QPointer<CoordinateSystem> &Geometry::getNominalSystem() const{
 /*!
  * \brief Geometry::setNominalSystem
  * \param nomSys
+ * \return
  */
-void Geometry::setNominalSystem(const QPointer<CoordinateSystem> &nomSys){
-    if(!nomSys.isNull()){
+bool Geometry::setNominalSystem(const QPointer<CoordinateSystem> &nomSys){
+
+    if(!nomSys.isNull() && this->isNominal && this->nominalSystem != nomSys){
+
+        //check if nomSys is in the same job
+        if(!this->job.isNull()){
+            QPointer<FeatureWrapper> jobSystem = this->job->getFeatureById(nomSys->getId());
+            if(jobSystem.isNull() || jobSystem->getCoordinateSystem().isNull() || jobSystem->getCoordinateSystem() != nomSys){
+                return false;
+            }
+        }
+
         this->nominalSystem = nomSys;
         emit this->geomNominalSystemChanged(this->id);
+
+        return true;
+
     }
+
+    return false;
+
 }
 
 /*!

@@ -6,7 +6,7 @@
 
 #include "featurewrapper.h"
 #include "featureattributes.h"
-#include "oimodelmanager.h"
+#include "modelmanager.h"
 
 namespace Ui {
 class CreateFeatureDialog;

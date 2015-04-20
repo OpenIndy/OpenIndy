@@ -1,4 +1,6 @@
 #include "trafoparam.h"
+
+#include "oijob.h"
 /*
 #include "coordinatesystem.h"
 #include "statistic.h"
@@ -522,7 +524,19 @@ const QPointer<CoordinateSystem> &TrafoParam::getDestinationSystem() const{
  */
 bool TrafoParam::setCoordinateSystems(const QPointer<CoordinateSystem> &from, const QPointer<CoordinateSystem> &to){
 
-    if(!from.isNull() && !to.isNull()){
+    if(!from.isNull() && !to.isNull() && from != to){
+
+        //check if to and from are in the same job
+
+        if(!this->job.isNull()){
+            QPointer<FeatureWrapper> jobFrom = this->job->getFeatureById(from->getId());
+            QPointer<FeatureWrapper> jobTo = this->job->getFeatureById(to->getId());
+            if(jobFrom.isNull() || jobTo.isNull() || jobFrom->getCoordinateSystem().isNull()
+                    || jobTo->getCoordinateSystem().isNull() || jobFrom->getCoordinateSystem() != from ||
+                    jobTo->getCoordinateSystem() != to){
+                return false;
+            }
+        }
 
         this->from = from;
         this->to = to;
@@ -534,6 +548,7 @@ bool TrafoParam::setCoordinateSystems(const QPointer<CoordinateSystem> &from, co
     }
 
     return false;
+
 }
 
 /*!

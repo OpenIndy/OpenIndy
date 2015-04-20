@@ -63,6 +63,7 @@ public:
     //access feature lists
     const QList<QPointer<FeatureWrapper> > &getFeaturesList() const;
     const QList<QPointer<CoordinateSystem> > &getCoordinateSystemsList() const;
+    QList<QPointer<CoordinateSystem> > getStationSystemsList() const;
     const QList<QPointer<Station> > &getStationsList() const;
     const QList<QPointer<TrafoParam> > &getTransformationParametersList() const;
     const QList<QPointer<FeatureWrapper> > &getGeometriesList() const;
@@ -173,7 +174,7 @@ signals:
     //general signals to inform OpenIndy about job issues
     //###################################################
 
-    void sendMessage(const QString &msg);
+    void sendMessage(const QString &msg) const;
 
 private slots:
 
@@ -235,6 +236,10 @@ private:
     //##############
 
     QStringList createFeatureNames(const QString &name, const int &count) const;
+    FeatureWrapper *createFeatureWrapper(const FeatureTypes &type, bool isNominal = false) const;
+    bool checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature);
+    bool canRemoveFeature(const QPointer<FeatureWrapper> &feature) const;
+    void clearDependencies(const QPointer<FeatureWrapper> &feature);
 
 private:
 
@@ -243,7 +248,7 @@ private:
     //#########################
 
     QString jobName; //the name under that the job is saved
-    QPointer<QIODevice> jobDevice; //ther device where the job is saved
+    QPointer<QIODevice> jobDevice; //the device where the job is saved
 
     //################################
     //active features and active group

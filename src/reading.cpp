@@ -1,4 +1,6 @@
 #include "reading.h"
+
+#include "observation.h"
 /*
 #include "sensor.h"
 #include "observation.h"
@@ -800,7 +802,7 @@ const QPointer<Sensor> &Reading::getSensor() const{
  * \param sensor
  */
 void Reading::setSensor(const QPointer<Sensor> &sensor){
-    if(!sensor.isNull()){
+    if(this->sensor.isNull() && !sensor.isNull()){
         this->sensor = sensor;
     }
 }
@@ -818,7 +820,10 @@ const QPointer<Observation> &Reading::getObservation() const{
  * \param observation
  */
 void Reading::setObservation(const QPointer<Observation> &observation){
-    this->observation = observation;
+    if(!observation.isNull()){
+        observation->reading = this;
+        this->observation = observation;
+    }
 }
 
 /*!

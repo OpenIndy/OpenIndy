@@ -7,11 +7,14 @@
 #include "types.h"
 #include "util.h"
 
+class OiJob;
+
 /*!
  * \brief The Element class
  */
 class Element : public QObject
 {
+    friend class OiJob;
     Q_OBJECT
 
 public:
@@ -28,7 +31,7 @@ public:
     //#############
 
     int getId() const;
-    bool setId(const int &id);
+    //bool setId(const int &id);
 
     //################
     //save or load XML

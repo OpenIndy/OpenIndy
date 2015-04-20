@@ -11,7 +11,7 @@
 Controller::Controller(QObject *parent) :
     QObject(parent)
 {
-
+    Feature *test = new Point(true);
 }
 
 /*!

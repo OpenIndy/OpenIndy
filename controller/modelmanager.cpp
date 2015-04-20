@@ -1,4 +1,4 @@
-#include "oimodelmanager.h"
+#include "modelmanager.h"
 
 /*QStringListModel OiModelManager::pluginNamesModel;
 QStringListModel OiModelManager::coordinateSystemsModel;

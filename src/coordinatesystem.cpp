@@ -4,6 +4,7 @@
 #include "observation.h"
 #include "geometry.h"
 #include "trafoparam.h"
+#include "oijob.h"
 /*
 #include "observation.h"
 #include "trafoparam.h"
@@ -643,7 +644,7 @@ QPointer<Observation> CoordinateSystem::getObservation(const int &observationId)
  */
 bool CoordinateSystem::addObservation(const QPointer<Observation> &observation){
 
-    if(!observation.isNull()){
+    if(!observation.isNull() || !observation->getReading().isNull() || !observation->getStation().isNull()){
 
         this->observationsList.append(observation);
         this->observationsMap.insert(observation->getId(), observation);
@@ -680,10 +681,10 @@ const QList<QPointer<TrafoParam> > CoordinateSystem::getTransformationParameters
         return result;
     }
 
-    //run through all trafo params and select those whose destination system quals "to"
+    //run through all trafo params and select those whose destination system equals "to"
     foreach(const QPointer<TrafoParam> &trafo, this->trafoParams){
         if(!trafo.isNull() && !trafo->getDestinationSystem().isNull() && !trafo->getStartSystem().isNull()){
-            if(trafo->getDestinationSystem()->getId() == to->getId() || trafo->getStartSystem()->getId() == to->getId()){
+            if(trafo->getDestinationSystem() == to || trafo->getStartSystem() == to){
                result.append(trafo);
             }
         }
@@ -696,23 +697,46 @@ const QList<QPointer<TrafoParam> > CoordinateSystem::getTransformationParameters
 /*!
  * \brief CoordinateSystem::addTransformationParameter
  * \param trafoParam
+ * \return
  */
-void CoordinateSystem::addTransformationParameter(const QPointer<TrafoParam> &trafoParam){
-    if(!trafoParam.isNull()){
+bool CoordinateSystem::addTransformationParameter(const QPointer<TrafoParam> &trafoParam){
+
+    if(!trafoParam.isNull() && !trafoParam->getStartSystem().isNull() && !trafoParam->getDestinationSystem().isNull()){
+
+        //check if the trafoParam is in the same job
+        if(!this->job.isNull() && !this->job->getTransformationParametersList().contains(trafoParam)){
+            return false;
+        }
+
+        //check if this system is either start or destination system
+        if(trafoParam->getStartSystem() != this || trafoParam->getDestinationSystem() != this){
+            return false;
+        }
+
         this->trafoParams.append(trafoParam);
+
         emit this->transformationParametersChanged(this->id);
+
+        return true;
+
     }
+
+    return false;
+
 }
 
 /*!
  * \brief CoordinateSystem::removeTransformationParameter
  * \param trafoParam
+ * \return
  */
-void CoordinateSystem::removeTransformationParameter(const QPointer<TrafoParam> &trafoParam){
+bool CoordinateSystem::removeTransformationParameter(const QPointer<TrafoParam> &trafoParam){
     if(!trafoParam.isNull()){
-        this->trafoParams.removeOne(trafoParam);
+        bool result = this->trafoParams.removeOne(trafoParam);
         emit this->transformationParametersChanged(this->id);
+        return result;
     }
+    return false;
 }
 
 /*!
@@ -726,61 +750,107 @@ const QList<QPointer<FeatureWrapper> > &CoordinateSystem::getNominals() const{
 /*!
  * \brief CoordinateSystem::addNominal
  * \param nominal
+ * \return
  */
-void CoordinateSystem::addNominal(const QPointer<FeatureWrapper> &nominal){
-    if(!nominal.isNull() && !nominal->getGeometry().isNull()){
+bool CoordinateSystem::addNominal(const QPointer<FeatureWrapper> &nominal){
+
+    if(!nominal.isNull() && !nominal->getGeometry().isNull() && nominal->getGeometry()->getIsNominal()){
+
+        //check if the nominal has already been added
+        if(this->nominalsMap.contains(nominal->getGeometry()->getId())){
+            return false;
+        }
+
+        //check if the nominal is in the same job
+        if(!this->job.isNull()){
+            QPointer<FeatureWrapper> jobFeature = this->job->getFeatureById(nominal->getGeometry()->getId());
+            if(jobFeature.isNull() || jobFeature->getGeometry().isNull() || jobFeature->getGeometry() != nominal->getGeometry()){
+                return false;
+            }
+        }
+
         nominal->getGeometry()->setNominalSystem(this);
         this->nominalsList.append(nominal);
         this->nominalsMap.insert(nominal->getGeometry()->getId(), nominal);
+
         emit this->nominalsChanged(this->id);
+
+        return true;
+
     }
+
+    return false;
+
 }
 
 /*!
  * \brief CoordinateSystem::addNominals
  * \param nominals
+ * \return
  */
-void CoordinateSystem::addNominals(const QList<QPointer<FeatureWrapper> > &nominals){
+bool CoordinateSystem::addNominals(const QList<QPointer<FeatureWrapper> > &nominals){
 
     if(nominals.size() > 0){
 
+        int oldSize = this->nominalsList.size();
+
+        //add all nominals without emitting the corresponding signals
+        this->blockSignals(true);
         foreach(const QPointer<FeatureWrapper> &geom, nominals){
+            this->addNominal(geom);
+        }
+        this->blockSignals(false);
 
-            if(geom.isNull() || geom->getGeometry().isNull()){
-                continue;
-            }
-
-            geom->getGeometry()->setNominalSystem(this);
-            this->nominalsList.append(geom);
-            this->nominalsMap.insert(geom->getGeometry()->getId(), geom);
-
+        if(this->nominalsList.size() > oldSize){
+            emit this->nominalsChanged(this->id);
+            return true;
         }
 
-        emit this->nominalsChanged(this->id);
-
     }
+
+    return false;
 
 }
 
 /*!
  * \brief CoordinateSystem::removeNominal
  * \param nominal
+ * \return
  */
-void CoordinateSystem::removeNominal(const QPointer<FeatureWrapper> &nominal){
+bool CoordinateSystem::removeNominal(const QPointer<FeatureWrapper> &nominal){
+
     if(!nominal.isNull() && !nominal->getGeometry().isNull()){
-        this->nominalsMap.remove(nominal->getGeometry()->getId());
-        this->nominalsList.removeOne(nominal);
-        emit this->nominalsChanged(this->id);
+
+        if(this->nominalsMap.remove(nominal->getGeometry()->getId()) == 1){
+            this->nominalsList.removeOne(nominal);
+            emit this->nominalsChanged(this->id);
+            return true;
+        }
+
     }
+
+    return false;
+
 }
 
 /*!
  * \brief CoordinateSystem::removeNominal
  * \param featureId
+ * \return
  */
-void CoordinateSystem::removeNominal(const int &featureId){
+bool CoordinateSystem::removeNominal(const int &featureId){
+
     QPointer<FeatureWrapper> nominal = this->nominalsMap.value(featureId, QPointer<FeatureWrapper>());
-    this->removeNominal(nominal);
+
+    if(!nominal.isNull()){
+        this->nominalsMap.remove(featureId);
+        this->nominalsList.removeOne(nominal);
+        emit this->nominalsChanged(this->id);
+        return true;
+    }
+
+    return false;
+
 }
 
 /*!

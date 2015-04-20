@@ -18,6 +18,7 @@ class CoordinateSystem;
  */
 class TrafoParam : public Feature
 {
+    friend class OiJob;
     Q_OBJECT
 
 public:

@@ -23,6 +23,8 @@ class CoordinateSystem;
  */
 class Geometry : public Feature
 {
+    friend class Geometry;
+    friend class OiJob;
     Q_OBJECT
 
 public:
@@ -57,7 +59,7 @@ public:
     void removeObservation(const QPointer<Observation> &obs);
 
     const QPointer<CoordinateSystem> &getNominalSystem() const;
-    void setNominalSystem(const QPointer<CoordinateSystem> &nomSys);
+    bool setNominalSystem(const QPointer<CoordinateSystem> &nomSys);
 	
     const MeasurementConfig &getMeasurementConfig() const;
     void setMeasurementConfig(const MeasurementConfig &myConfig);

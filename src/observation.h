@@ -17,6 +17,7 @@ class Station;
 
 class Observation : public Element
 {
+    friend class Reading;
     Q_OBJECT
 
 public:
@@ -53,7 +54,7 @@ public:
     void removeTargetGeometry(const int &geomId);
 
     const QPointer<Reading> &getReading() const;
-    void setReading(const QPointer<Reading> &reading);
+    //void setReading(const QPointer<Reading> &reading);
 
     //##########################
     //get and set state booleans

@@ -240,6 +240,20 @@ const QList<QPointer<CoordinateSystem> > &FeatureContainer::getCoordinateSystems
 }
 
 /*!
+ * \brief FeatureContainer::getStationSystemsList
+ * \return
+ */
+QList<QPointer<CoordinateSystem> > FeatureContainer::getStationSystemsList() const{
+    QList<QPointer<CoordinateSystem> > stationSystems;
+    foreach(const QPointer<Station> &station, this->stationsList){
+        if(!station.isNull() && !station->getCoordinateSystem().isNull()){
+            stationSystems.append(station->getCoordinateSystem());
+        }
+    }
+    return stationSystems;
+}
+
+/*!
  * \brief FeatureContainer::getStationsList
  * \return
  */
@@ -379,6 +393,11 @@ bool FeatureContainer::addFeature(const QPointer<FeatureWrapper> &feature){
         break;
     case eStationFeature:
         this->stationsList.append(feature->getStation());
+        if(!feature->getStation()->getCoordinateSystem().isNull()){
+            QPointer<FeatureWrapper> stationSystem = new FeatureWrapper();
+            stationSystem->setCoordinateSystem(feature->getStation()->getCoordinateSystem());
+            this->featuresIdMap.insert(feature->getStation()->getCoordinateSystem()->getId(), stationSystem);
+        }
         break;
     case eTrafoParamFeature:
         this->trafoParamsList.append(feature->getTrafoParam());

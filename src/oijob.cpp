@@ -1051,8 +1051,7 @@ bool OiJob::validateFeatureName(const QString &name, const FeatureTypes &type, c
         return true;
     }
 
-    if(type != eCoordinateSystemFeature && type != eTrafoParamFeature && type != eStationFeature
-            && type != eUndefinedFeature && isNominal == true){ //nominal geometry
+    if(getIsGeometry(type) && isNominal == true){ //nominal geometry
 
         //check if nominal system is valid
         if(nominalSystem.isNull()){
@@ -1082,8 +1081,7 @@ bool OiJob::validateFeatureName(const QString &name, const FeatureTypes &type, c
 
         return true;
 
-    }else if(type != eCoordinateSystemFeature && type != eTrafoParamFeature && type != eStationFeature
-             && type != eUndefinedFeature){ //actual geometry
+    }else if(getIsGeometry(type)){ //actual geometry
 
         //all equal name features have to be geometries, but no actual with the same type
         foreach(const QPointer<FeatureWrapper> &feature, features){
@@ -1177,6 +1175,14 @@ const QList<QPointer<FeatureWrapper> > &OiJob::getFeaturesList() const{
  */
 const QList<QPointer<CoordinateSystem> > &OiJob::getCoordinateSystemsList() const{
     return this->featureContainer.getCoordinateSystemsList();
+}
+
+/*!
+ * \brief OiJob::getStationSystems
+ * \return
+ */
+QList<QPointer<CoordinateSystem> > OiJob::getStationSystemsList() const{
+    return this->featureContainer.getStationSystemsList();
 }
 
 /*!
@@ -1297,28 +1303,10 @@ bool OiJob::addFeature(const QPointer<FeatureWrapper> &feature){
         return false;
     }
 
-    //check if feature with this id already exists
-    if(this->featureContainer.getFeatureIdList().contains(feature->getFeature()->getId())){
-        feature->getFeature()->setId(this->generateUniqueId());
-    }
-    this->nextId = feature->getFeature()->getId() + 1;
-
-    //check feature name
-    bool isNominal = (!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal());
-    QPointer<CoordinateSystem> nominalSystem = isNominal?feature->getGeometry()->getNominalSystem():QPointer<CoordinateSystem>(NULL);
-    if(!this->validateFeatureName(feature->getFeature()->getFeatureName(), feature->getFeatureTypeEnum(),
-                                 isNominal, nominalSystem)){
-        emit this->sendMessage("feature name already exists");
+    //check attributes and set up relations
+    if(!this->checkAndSetUpNewFeature(feature)){
         return false;
     }
-
-    //add nominal to nominal list of coordinate system
-    if(isNominal && !nominalSystem.isNull()){
-        feature->getGeometry()->getNominalSystem()->addNominal(feature);
-    }
-
-    //add the feature to the internal lists and maps
-    this->featureContainer.addFeature(feature);
 
     //connect the feature's signals to slots in OiJob
     this->connectFeature(feature);
@@ -1354,6 +1342,168 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
 
     QList<QPointer<FeatureWrapper> > result;
 
+    //at least one feature should be created
+    if(fAttr.count <= 0){
+        return result;
+    }
+
+    //if type is a geometry the at least one of isNominal and isActual has to be true
+    if(getIsGeometry(fAttr.typeOfFeature) && !fAttr.isNominal && !fAttr.isActual){
+        return result;
+    }
+
+    //if isNominal is true there has to be a valid nominalSystem
+    QPointer<CoordinateSystem> nominalSystem;
+    if(fAttr.isNominal){
+        QList<QPointer<FeatureWrapper> > features = this->featureContainer.getFeaturesByName(fAttr.nominalSystem);
+        if(features.size() != 1){
+            return result;
+        }
+        if(features.at(0).isNull() || features.at(0)->getCoordinateSystem().isNull() || features.at(0)->getCoordinateSystem()->getIsStationSystem()){
+            return result;
+        }
+        nominalSystem = features.at(0)->getCoordinateSystem();
+    }
+
+    //if type is a TrafoParam then start and destination system have to be in the job
+    QPointer<CoordinateSystem> startSystem, destSystem;
+    if(fAttr.typeOfFeature == eTrafoParamFeature){
+        QList<QPointer<FeatureWrapper> > startSystems = this->featureContainer.getFeaturesByName(fAttr.startSystem);
+        QList<QPointer<FeatureWrapper> > destinationSystems = this->featureContainer.getFeaturesByName(fAttr.destinationSystem);
+        if(startSystems.size() != 1 || destinationSystems.size() != 1
+                || startSystems.at(0).isNull() || destinationSystems.at(0).isNull()){
+            return result;
+        }
+        if(!startSystems.at(0)->getCoordinateSystem().isNull()){
+            startSystem = startSystems.at(0)->getCoordinateSystem();
+        }else if(!startSystems.at(0)->getStation().isNull() && !startSystems.at(0)->getStation()->getCoordinateSystem().isNull()){
+            startSystem = startSystems.at(0)->getStation()->getCoordinateSystem();
+        }
+        if(!destinationSystems.at(0)->getCoordinateSystem().isNull()){
+            destSystem = destinationSystems.at(0)->getCoordinateSystem();
+        }else if(!destinationSystems.at(0)->getStation().isNull() && !startSystems.at(0)->getStation()->getCoordinateSystem().isNull()){
+            destSystem = destinationSystems.at(0)->getStation()->getCoordinateSystem();
+        }
+
+        if(startSystem.isNull() || destSystem.isNull()){
+            return result;
+        }
+
+    }
+
+    //create and validate feature names
+    QStringList featureNames = this->createFeatureNames(fAttr.name, fAttr.count);
+    if(getIsGeometry(fAttr.typeOfFeature)){
+        if(fAttr.isNominal){
+            foreach(const QString &name, featureNames){
+                if(!validateFeatureName(name, fAttr.typeOfFeature, true, nominalSystem)){
+                    return result;
+                }
+            }
+        }
+        if(fAttr.isActual){
+            foreach(const QString &name, featureNames){
+                if(!validateFeatureName(name, fAttr.typeOfFeature)){
+                    return result;
+                }
+            }
+        }
+    }else{
+        foreach(const QString &name, featureNames){
+            if(!validateFeatureName(name, fAttr.typeOfFeature)){
+                return result;
+            }
+        }
+    }
+
+    //check if the group is a new group
+    bool isNewGroup = false;
+    if(this->featureContainer.getFeaturesByGroup(fAttr.group).size() == 0){
+        isNewGroup = true;
+    }
+
+    //create the features and add them to OpenIndy
+    foreach(const QString &name, featureNames){
+
+        QPointer<FeatureWrapper> actual, nominal;
+        if(getIsGeometry(fAttr.typeOfFeature)){
+
+
+
+            switch(fAttr.typeOfFeature){
+            case eCircleFeature:
+                if(fAttr.isActual){
+                    Circle circle = new Circle(false);
+                    //actual->setCircle(circle);
+                }
+                if(fAttr.isNominal){
+                    Circle circle = new Circle(true);
+                    //nominal->setCircle(circle);
+                }
+                break;
+            case eConeFeature:
+                if(fAttr.isActual){
+                    Cone cone = new Cone(false);
+                    //actual->setCircle(circle);
+                }
+                if(fAttr.isNominal){
+                    Cone cone = new Cone(true);
+                    //nominal->setCircle(circle);
+                }
+                break;
+            }
+
+        }else{
+            actual = new FeatureWrapper();
+            /*switch(fAttr.typeOfFeature){
+            case eStationFeature:
+                Station *station = new Station();
+                actual->setStation(station);
+                break;
+            case eCoordinateSystemFeature:
+                CoordinateSystem *system = new CoordinateSystem();
+                actual->setCoordinateSystem(system);
+                break;
+            case eTrafoParamFeature:
+                TrafoParam *trafoParam = new TrafoParam();
+                trafoParam->setCoordinateSystems(startSystem, destSystem);
+                actual->setTrafoParam(TrafoParam);
+                break;
+            }*/
+        }
+
+        //set feature attributes and add the feature to the feature container
+        if(!actual.isNull() && !actual->getFeature().isNull()){
+            actual->getFeature()->setFeatureName(name);
+            actual->getFeature()->setGroupName(fAttr.group);
+            this->featureContainer.addFeature(actual);
+        }
+        if(!nominal.isNull() && !nominal->getFeature().isNull()){
+            nominal->getFeature()->setFeatureName(name);
+            nominal->getFeature()->setGroupName(fAttr.group);
+            this->featureContainer.addFeature(nominal);
+        }
+
+    }
+
+    //emit signals
+    if(isNewGroup){
+        emit this->availableGroupsChanged();
+    }
+    emit this->featureSetChanged();
+    if(fAttr.typeOfFeature == eCoordinateSystemFeature){
+        emit this->coordSystemSetChanged();
+    }else if(fAttr.typeOfFeature == eStationFeature){
+        emit this->stationSetChanged();
+    }else if(fAttr.typeOfFeature == eTrafoParamFeature){
+        emit this->trafoParamSetChanged();
+    }else{
+        emit this->geometrySetChanged();
+    }
+
+    return result;
+
+/*
     //at least one of isNominal and isActual has to be set to true
     if(!fAttr.isNominal && !fAttr.isActual){
         return result;
@@ -1387,7 +1537,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
                 return result;
             }
         }
-    }
+    }*/
 
     /*if(featureNames.size() != fAttr.count){
         return result;
@@ -1399,7 +1549,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
     }*/
 
     //create features and add them to internal lists and maps
-    for(int i = 0; i < fAttr.count; i++){
+    /*for(int i = 0; i < fAttr.count; i++){
 
         QPointer<FeatureWrapper> feature = new FeatureWrapper();
         switch(fAttr.typeOfFeature){
@@ -1515,14 +1665,14 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
             break;
         }
 
-    }
+    }*/
 
 
 
 
 
     //features added signals
-    emit this->featureSetChanged();
+    /*emit this->featureSetChanged();
     if(feature->getFeatureTypeEnum() == eCoordinateSystemFeature){
         emit this->coordSystemSetChanged();
     }else if(feature->getFeatureTypeEnum() == eStationFeature){
@@ -1531,7 +1681,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
         emit this->trafoParamSetChanged();
     }else{
         emit this->geometrySetChanged();
-    }
+    }*/
 
 
 
@@ -1543,7 +1693,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
 
 
     //get the feature name
-    QString name;
+    /*QString name;
     int index;
     this->createFeatureName(name, index, attributes.name, attributes.count);
 
@@ -1718,17 +1868,65 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
         nominal = !nominal;
 
     }
-
+*/
     return result;
 
 }
 
 /*!
  * \brief OiJob::addFeatures
+ * Add one or more features of various types which are not related to each other
  * \param features
  * \return
  */
 bool OiJob::addFeatures(const QList<QPointer<FeatureWrapper> > &features){
+
+    QList<FeatureTypes> addedFeatureTypes;
+
+    foreach(const QPointer<FeatureWrapper> &feature, features){
+
+        //check if feature is valid
+        if(!feature.isNull() && !feature->getFeature().isNull()){
+            return false;
+        }
+
+        //check attributes and set up relations
+        if(!this->checkAndSetUpNewFeature(feature)){
+            continue;
+        }
+
+        //connect the feature's signals to slots in OiJob
+        this->connectFeature(feature);
+
+        //add feature type to list of added feature types
+        if(!addedFeatureTypes.contains(feature->getFeatureTypeEnum())){
+            addedFeatureTypes.append(feature->getFeatureTypeEnum());
+        }
+
+        //if a group is set for the new feature emit the group changed signal
+        if(feature->getFeature()->getGroupName().compare("") != 0
+                && this->featureContainer.getFeaturesByGroup(feature->getFeature()->getGroupName()).size() == 1){
+            emit this->availableGroupsChanged();
+        }
+
+    }
+
+    //features added signals
+    emit this->featureSetChanged();
+    if(addedFeatureTypes.contains(eCoordinateSystemFeature)){
+        emit this->coordSystemSetChanged();
+        addedFeatureTypes.removeOne(eCoordinateSystemFeature);
+    }else if(addedFeatureTypes.contains(eStationFeature)){
+        emit this->stationSetChanged();
+        addedFeatureTypes.removeOne(eStationFeature);
+    }else if(addedFeatureTypes.contains(eTrafoParamFeature)){
+        emit this->trafoParamSetChanged();
+        addedFeatureTypes.removeOne(eTrafoParamFeature);
+    }else if(addedFeatureTypes.size() > 0){
+        emit this->geometrySetChanged();
+    }
+
+    return true;
 
 }
 
@@ -1739,6 +1937,29 @@ bool OiJob::addFeatures(const QList<QPointer<FeatureWrapper> > &features){
  */
 bool OiJob::removeFeature(const int &featureId){
 
+    //get the feature by id
+    QPointer<FeatureWrapper> feature = this->featureContainer.getFeatureById(featureId);
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return false;
+    }
+
+    //check wether the feature could be deleted
+    if(!this->canRemoveFeature(feature)){
+        return false;
+    }
+
+    //clear feature dependencies
+    this->clearDependencies(feature);
+
+    //possibly reset active group
+    if(feature->getFeature()->getGroupName().compare("") != 0 && feature->getFeature()->getGroupName().compare(this->activeGroup) == 0
+            && this->featureContainer.getFeaturesByGroup(feature->getFeature()->getGroupName()).size() == 1){
+        this->activeGroup = "";
+        emit this->activeGroupChanged();
+    }
+
+    return this->featureContainer.removeFeature(featureId);
+
 }
 
 /*!
@@ -1747,6 +1968,28 @@ bool OiJob::removeFeature(const int &featureId){
  * \return
  */
 bool OiJob::removeFeature(const QPointer<FeatureWrapper> &feature){
+
+    //check feature
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return false;
+    }
+
+    //check wether the feature could be deleted
+    if(!this->canRemoveFeature(feature)){
+        return false;
+    }
+
+    //clear feature dependencies
+    this->clearDependencies(feature);
+
+    //possibly reset active group
+    if(feature->getFeature()->getGroupName().compare("") != 0 && feature->getFeature()->getGroupName().compare(this->activeGroup) == 0
+            && this->featureContainer.getFeaturesByGroup(feature->getFeature()->getGroupName()).size() == 1){
+        this->activeGroup = "";
+        emit this->activeGroupChanged();
+    }
+
+    return true;
 
 }
 
@@ -1927,14 +2170,377 @@ QStringList OiJob::createFeatureNames(const QString &name, const int &count) con
         baseName = name;
         postFix = 1;
     }else{
-        baseName = QStringRef(name, 0, index);
-        postFix = QStringRef(name, index, name.length() - index).toInt();
+        baseName = QStringRef(&name, 0, index).toString();
+        postFix = QStringRef(&name, index, name.length() - index).toInt();
     }
 
     for(int i = 0; i < count; i++){
-        result.append(QString("%1%2").arg(baseName).arg(postFix));
+        result.append(QString("%1%2").arg(baseName).arg(postFix + i));
     }
 
     return result;
+
+}
+
+/*!
+ * \brief OiJob::createFeatureWrapper
+ * Create a feature wrapper containing a feature of the given type
+ * \param type
+ * \param isNominal
+ * \return
+ */
+FeatureWrapper *OiJob::createFeatureWrapper(const FeatureTypes &type, bool isNominal) const{
+
+    FeatureWrapper *feature = new FeatureWrapper();
+
+    switch(type){
+    case eStationFeature:{
+        Station *station = new Station();
+        feature->setStation(station);
+        break;
+    }case eTrafoParamFeature:{
+        TrafoParam *trafoParam = new TrafoParam();
+        feature->setTrafoParam(trafoParam);
+        break;
+    }case eCoordinateSystemFeature:{
+        CoordinateSystem *coordSystem = new CoordinateSystem();
+        feature->setCoordinateSystem(coordSystem);
+        break;
+    }case eCircleFeature:{
+        Circle *circle = new Circle(isNominal);
+        feature->setCircle(circle);
+        break;
+    }case eConeFeature:{
+        Cone *cone = new Cone(isNominal);
+        feature->setCone(cone);
+        break;
+    }case eCylinderFeature:{
+        Cylinder *cylinder = new Cylinder(isNominal);
+        feature->setCylinder(cylinder);
+        break;
+    }case eEllipseFeature:{
+        Ellipse *ellipse = new Ellipse(isNominal);
+        feature->setEllipse(ellipse);
+        break;
+    }case eEllipsoidFeature:{
+        Ellipsoid *ellipsoid = new Ellipsoid(isNominal);
+        feature->setEllipsoid(ellipsoid);
+        break;
+    }case eHyperboloidFeature:{
+        Hyperboloid *hyperboloid = new Hyperboloid(isNominal);
+        feature->setHyperboloid(hyperboloid);
+        break;
+    }case eLineFeature:{
+        Line *line = new Line(isNominal);
+        feature->setLine(line);
+        break;
+    }case eNurbsFeature:{
+        Nurbs *nurbs = new Nurbs(isNominal);
+        feature->setNurbs(nurbs);
+        break;
+    }case eParaboloidFeature:{
+        Paraboloid *paraboloid = new Paraboloid(isNominal);
+        feature->setParaboloid(paraboloid);
+        break;
+    }case ePlaneFeature:{
+        Plane *plane = new Plane(isNominal);
+        feature->setPlane(plane);
+        break;
+    }case ePointFeature:{
+        Point *point = new Point(isNominal);
+        feature->setPoint(point);
+        break;
+    }case ePointCloudFeature:{
+        PointCloud *pointCloud = new PointCloud(isNominal);
+        feature->setPointCloud(pointCloud);
+        break;
+    }case eScalarEntityAngleFeature:{
+        ScalarEntityAngle *angle = new ScalarEntityAngle(isNominal);
+        feature->setScalarEntityAngle(angle);
+        break;
+    }case eScalarEntityDistanceFeature:{
+        ScalarEntityDistance *distance = new ScalarEntityDistance(isNominal);
+        feature->setScalarEntityDistance(distance);
+        break;
+    }case eScalarEntityMeasurementSeriesFeature:{
+        ScalarEntityMeasurementSeries *measurementSeries = new ScalarEntityMeasurementSeries(isNominal);
+        feature->setScalarEntityMeasurementSeries(measurementSeries);
+        break;
+    }case eScalarEntityTemperatureFeature:{
+        ScalarEntityTemperature *temperature = new ScalarEntityTemperature(isNominal);
+        feature->setScalarEntityTemperature(temperature);
+        break;
+    }case eSlottedHoleFeature:{
+        SlottedHole *slottedHole = new SlottedHole(isNominal);
+        feature->setSlottedHole(slottedHole);
+        break;
+    }case eSphereFeature:{
+        Sphere *sphere = new Sphere(isNominal);
+        feature->setSphere(sphere);
+        break;
+    }case eTorusFeature:{
+        Torus *torus = new Torus(isNominal);
+        feature->setTorus(torus);
+        break;
+    }
+    }
+
+    return feature;
+
+}
+
+/*!
+ * \brief OiJob::checkAndSetUpNewFeature
+ * Check the attributes of the given feature and set up relations
+ * \param feature
+ * \return
+ */
+bool OiJob::checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature){
+
+    //check if feature with this id already exists
+    if(this->featureContainer.getFeatureIdList().contains(feature->getFeature()->getId())){
+        feature->getFeature()->id = this->generateUniqueId();
+    }else if(this->nextId <= feature->getFeature()->getId()){
+        this->nextId = feature->getFeature()->getId() + 1;
+    }
+
+    //check feature name
+    bool isNominal = (!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal());
+    QPointer<CoordinateSystem> nominalSystem = isNominal?feature->getGeometry()->getNominalSystem():QPointer<CoordinateSystem>(NULL);
+    if(!this->validateFeatureName(feature->getFeature()->getFeatureName(), feature->getFeatureTypeEnum(),
+                                 isNominal, nominalSystem)){
+        emit this->sendMessage("feature name already exists");
+        return false;
+    }
+
+    //new feature shall not be active
+    feature->getFeature()->setActiveFeatureState(false);
+
+    //check feature relations
+    if(feature->getFeatureTypeEnum() == eCoordinateSystemFeature){
+
+        //check if the system is a nominal system
+        if(feature->getCoordinateSystem()->getIsStationSystem()){
+            return false;
+        }
+
+        //new coordinate system shall not be active
+        feature->getCoordinateSystem()->setActiveCoordinateSystemState(false);
+
+        //a nominal system cannot have observations
+        if(feature->getCoordinateSystem()->getObservations().size() > 0){
+            return false;
+        }
+
+        //a new system cannot have trafo params
+        if(feature->getCoordinateSystem()->getTransformationParameters().size() > 0){
+            return false;
+        }
+
+        //a new system cannot have nominals
+        if(feature->getCoordinateSystem()->getNominals().size() > 0){
+            return true;
+        }
+
+    }else if(feature->getFeatureTypeEnum() == eTrafoParamFeature){
+
+        //start and destination system have to exist in this job
+        if(feature->getTrafoParam()->getStartSystem().isNull()
+                || feature->getTrafoParam()->getDestinationSystem().isNull()){
+            return false;
+        }
+        QPointer<FeatureWrapper> jobFrom = this->getFeatureById(feature->getTrafoParam()->getStartSystem()->getId());
+        QPointer<FeatureWrapper> jobTo = this->getFeatureById(feature->getTrafoParam()->getDestinationSystem()->getId());
+        if(jobFrom.isNull() || jobTo.isNull() || jobFrom->getCoordinateSystem().isNull()
+                || jobTo->getCoordinateSystem().isNull() ||
+                jobFrom->getCoordinateSystem() != feature->getTrafoParam()->getStartSystem() ||
+                jobTo->getCoordinateSystem() != feature->getTrafoParam()->getDestinationSystem()){
+            return false;
+        }
+
+    }else if(getIsGeometry(feature->getFeatureTypeEnum())){
+
+        if(feature->getGeometry()->getIsNominal()){ // check nominal
+
+            //a nominal geometry cannot have nominals
+            if(feature->getGeometry()->getNominals().size() > 0){
+                return false;
+            }
+
+            //a nominal cannot have observations
+            if(feature->getGeometry()->getObservations().size() > 0){
+                return false;
+            }
+
+            //check if actual is in the same job / add actual to nominal
+            if(feature->getGeometry()->getActual().isNull()){
+                QList<QPointer<FeatureWrapper> > equalNameFeatures = this->getFeaturesByName(feature->getFeature()->getFeatureName());
+                foreach(const QPointer<FeatureWrapper> equal, equalNameFeatures){
+                    if(!equal.isNull() && equal->getFeatureTypeEnum() == feature->getFeatureTypeEnum() && !equal->getGeometry()->getIsNominal()){
+                        feature->getGeometry()->actual = equal->getGeometry();
+                    }
+                }
+            }else{
+                QPointer<FeatureWrapper> jobActual = this->getFeatureById(feature->getGeometry()->getActual()->getId());
+                if(jobActual.isNull() || jobActual->getGeometry().isNull() || jobActual->getGeometry() != feature->getGeometry()->getActual()){
+                    return false;
+                }
+            }
+
+            //check if nominal system is in the same job
+            if(feature->getGeometry()->getNominalSystem().isNull()
+                    || this->getCoordinateSystemsList().contains(feature->getGeometry()->getNominalSystem())){
+                return false;
+            }
+
+        }else{ //check actual
+
+            //check and add nominals
+            if(feature->getGeometry()->getNominals().size() > 0){
+                return false;
+            }
+            QList<QPointer<FeatureWrapper> > equalNameFeatures = this->getFeaturesByName(feature->getFeature()->getFeatureName());
+            foreach(const QPointer<FeatureWrapper> equal, equalNameFeatures){
+                if(!equal.isNull() && equal->getFeatureTypeEnum() == feature->getFeatureTypeEnum() && equal->getGeometry()->getIsNominal()){
+                    feature->getGeometry()->nominals.append(equal->getGeometry());
+                }
+            }
+
+            //a new actual shall not have observations
+            if(feature->getGeometry()->getObservations().size() > 0){
+                return false;
+            }
+
+            //an actual cannot have a nominal system
+            if(!feature->getGeometry()->getNominalSystem().isNull()){
+                return false;
+            }
+
+        }
+
+    }
+
+    //add the feature to the internal lists and maps
+    this->featureContainer.addFeature(feature);
+
+    //add nominal to nominal list of coordinate system
+    if(isNominal && !nominalSystem.isNull()){
+        nominalSystem->addNominal(feature);
+    }
+
+    //add nominal to nominal list of actual
+    if(isNominal && !feature->getGeometry()->getActual().isNull()){
+        feature->getGeometry()->getActual()->addNominal(feature->getGeometry());
+    }
+
+    //add actual to nominals
+    if(!isNominal && getIsGeometry(feature->getFeatureTypeEnum())){
+        foreach(const QPointer<Geometry> &nominal, feature->getGeometry()->getNominals()){
+            if(!nominal.isNull()){
+                nominal->setActual(feature->getGeometry());
+            }
+        }
+    }
+
+}
+
+/*!
+ * \brief OiJob::canRemoveFeature
+ * Check wether a feature could be deleted or not
+ * \param feature
+ * \return
+ */
+bool OiJob::canRemoveFeature(const QPointer<FeatureWrapper> &feature) const{
+
+    //do not remove active station or active coordinate system
+    if(!feature->getStation().isNull() && feature->getStation()->getIsActiveStation()){
+        emit this->sendMessage("Cannot delete the active station");
+        return false;
+    }
+    if( (!feature->getCoordinateSystem().isNull() && feature->getCoordinateSystem()->getIsActiveCoordinateSystem())
+            || (!feature->getStation().isNull() && !feature->getStation()->getCoordinateSystem().isNull()
+                && feature->getStation()->getCoordinateSystem()->getIsActiveCoordinateSystem()) ){
+        emit this->sendMessage("Cannot delete the active coordinate system");
+        return false;
+    }
+
+    //do not delete a station system (without deleting the station)
+    if(!feature->getCoordinateSystem().isNull() && feature->getCoordinateSystem()->getIsStationSystem()){
+        emit this->sendMessage("Cannot delete a station system without the corresponding station");
+        return false;
+    }
+
+    //do not delete coordinate systems with observations
+    if(!feature->getStation().isNull() && !feature->getStation()->getCoordinateSystem().isNull()
+            && feature->getStation()->getCoordinateSystem()->getObservations().size() > 0){
+        emit this->sendMessage("Cannot delete a station which contains one or more observations");
+        return false;
+    }
+
+    //do not delete coordinate systems with nominals
+    if(!feature->getCoordinateSystem().isNull() && feature->getCoordinateSystem()->getNominals().size() > 0){
+        emit this->sendMessage("Cannot delete a coordinate system which contains one or more nominals");
+        return false;
+    }
+
+}
+
+/*!
+ * \brief OiJob::clearDependencies
+ * \param feature
+ */
+void OiJob::clearDependencies(const QPointer<FeatureWrapper> &feature){
+
+    //reset usedFor and previouslyNeeded
+    foreach(const QPointer<FeatureWrapper> &previouslyNeeded, feature->getFeature()->getPreviouslyNeeded()){
+        if(!previouslyNeeded.isNull() && !previouslyNeeded->getFeature().isNull()){
+            previouslyNeeded->getFeature()->usedFor.removeOne(feature);
+        }
+    }
+    foreach(const QPointer<FeatureWrapper> &usedFor, feature->getFeature()->getUsedFor()){
+        if(!usedFor.isNull() && !usedFor->getFeature().isNull()){
+            usedFor->getFeature()->previouslyNeeded.removeOne(feature);
+        }
+    }
+
+    //clear type dependent attributes
+    if(feature->getFeatureTypeEnum() == eCoordinateSystemFeature){
+
+        //remove corresponding trafo params
+        foreach(const QPointer<TrafoParam> &trafoParam, feature->getCoordinateSystem()->getTransformationParameters()){
+            this->removeFeature(trafoParam->selfFeature);
+        }
+
+    }else if(feature->getFeatureTypeEnum() == eStationFeature){
+
+        //remove station system
+        if(!feature->getStation()->getCoordinateSystem().isNull()){
+            this->featureContainer.removeFeature(feature->getStation()->getCoordinateSystem()->getId());
+        }
+
+    }else if(feature->getFeatureTypeEnum() == eTrafoParamFeature){
+
+    }else{ //geometry
+
+        if(feature->getGeometry()->getIsNominal()){ //nominal
+
+            //remove nominal from nominal lists
+            if(!feature->getGeometry()->getActual().isNull()){
+                feature->getGeometry()->getActual()->removeNominal(feature->getGeometry());
+            }
+            if(!feature->getGeometry()->getNominalSystem().isNull()){
+                feature->getGeometry()->getNominalSystem()->removeNominal(feature);
+            }
+
+        }else{ //actual
+
+            //remove nominals first
+            foreach(const QPointer<Geometry> &nominal, feature->getGeometry()->getNominals()){
+                this->removeFeature(nominal->selfFeature);
+            }
+
+        }
+
+    }
 
 }

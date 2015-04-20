@@ -29,6 +29,8 @@ public:
     bool isNominal;
     bool isCommon;
     QString nominalSystem;
+
+    //a function
     QPair<QString, QString> functionPlugin; //T1 = plugin, T2 = function
 
     //only when typeOfFeature specifies a trafo param

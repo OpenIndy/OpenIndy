@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+/*
     //assign models to GUI elements
     this->assignModels();
 
@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //set up table view
     this->initFeatureTableView();
 
-
+*/
 
 
 

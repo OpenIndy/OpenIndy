@@ -9,7 +9,7 @@
 #include "observation.h"
 #include "featurewrapper.h"
 #include "oijob.h"
-#include "oimodelmanager.h"
+#include "modelmanager.h"
 
 //! \brief The Controller class
 class Controller : public QObject

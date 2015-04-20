@@ -13,7 +13,7 @@ FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
  * \return
  */
 bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
-
+/*
     //get and cast source model
     FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
     if(source_model == NULL){
@@ -44,7 +44,8 @@ bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
         }
         return false;
     }
-
+*/
+    return false;
 }
 
 /*!
@@ -55,7 +56,7 @@ bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
  * \return
  */
 bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
-
+/*
     //get and cast source model
     FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
     if(source_model == NULL){
@@ -121,7 +122,9 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
         return leftSmallestId > rightSmallestId;
 
     }
+*/
 
+    return false;
 }
 
 /*!

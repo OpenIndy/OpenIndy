@@ -1,5 +1,6 @@
 #include "feature.h"
 
+#include "oijob.h"
 /*
 
 #include "function.h"
@@ -431,7 +432,7 @@ QString Feature::getDisplayExpansionOriginZ() const
  * \brief Feature::Feature
  * \param parent
  */
-Feature::Feature(QObject *parent) : Element(parent), isActiveFeature(false), isSolved(false), isUpdated(false), isDrawn(false){
+Feature::Feature(QObject *parent) : Element(parent), isActiveFeature(false), isSolved(false), isUpdated(false){
     this->selfFeature = new FeatureWrapper();
 }
 
@@ -448,7 +449,6 @@ Feature::Feature(const Feature &copy, QObject *parent) : Element(copy, parent){
     this->group = copy.group;
     this->isSolved = copy.isSolved;
     this->isActiveFeature = copy.isActiveFeature;
-    this->isDrawn = copy.isDrawn;
     this->isUpdated = copy.isUpdated;
 
     //copy functions (usedFor is not copied)
@@ -472,7 +472,6 @@ Feature &Feature::operator=(const Feature &copy){
     this->group = copy.group;
     this->isSolved = copy.isSolved;
     this->isActiveFeature = copy.isActiveFeature;
-    this->isDrawn = copy.isDrawn;
     this->isUpdated = copy.isUpdated;
 
     //copy functions (usedFor is not copied)
@@ -513,11 +512,33 @@ const QString &Feature::getFeatureName() const{
  * \param name
  */
 void Feature::setFeatureName(const QString &name){
-    if(name.compare(this->name) != 0){
-        QString oldName = this->name;
-        this->name = name;
-        emit this->featureNameChanged(this->id, oldName);
+
+    //check if old name = new name
+    if(this->name.compare(name) == 0){
+        return;
     }
+
+    //validate the new name before setting it
+    if(!this->job.isNull() && !this->selfFeature.isNull()){
+
+        bool isNominal = false;
+        QPointer<CoordinateSystem> nominalSystem;
+        if(!this->selfFeature->getGeometry().isNull()){
+            isNominal = this->selfFeature->getGeometry()->getIsNominal();
+            nominalSystem = this->selfFeature->getGeometry()->getNominalSystem();
+        }
+
+        if(!this->job->validateFeatureName(name, this->selfFeature->getFeatureTypeEnum(), isNominal, nominalSystem)){
+            return;
+        }
+
+    }
+
+    //set the new name
+    QString oldName = this->name;
+    this->name = name;
+    emit this->featureNameChanged(this->id, oldName);
+
 }
 
 /*!
@@ -598,25 +619,6 @@ void Feature::setIsSolved(const bool &isSolved){
 }
 
 /*!
- * \brief Feature::getIsDrawn
- * \return
- */
-const bool &Feature::getIsDrawn() const{
-    return this->isDrawn;
-}
-
-/*!
- * \brief Feature::setIsDrawn
- * \param isDrawn
- */
-void Feature::setIsDrawn(const bool &isDrawn){
-    if(isDrawn != this->isDrawn){
-        this->isDrawn = isDrawn;
-        emit this->featureIsDrawnChanged(this->id);
-    }
-}
-
-/*!
  * \brief Feature::getFunctions
  * \return
  */
@@ -663,6 +665,94 @@ void Feature::setActiveFeatureState(const bool &isActiveFeature){
         this->isActiveFeature = isActiveFeature;
         emit this->featureIsActiveChanged(this->id);
     }
+}
+
+/*!
+ * \brief Feature::getUsedFor
+ * \return
+ */
+const QList<QPointer<FeatureWrapper> > &Feature::getUsedFor() const{
+    return this->usedFor;
+}
+
+/*!
+ * \brief Feature::addUsedFor
+ * \param feature
+ * \return
+ */
+bool Feature::addUsedFor(const QPointer<FeatureWrapper> &feature){
+
+    //check feature
+    if(!feature.isNull() && !feature->getFeature().isNull()){
+        return false;
+    }
+
+    //check if the feature is already included
+    if(this->usedFor.contains(feature)){
+        return false;
+    }
+
+    //check if feature is in same job
+    if(!this->job.isNull()){
+        QPointer<FeatureWrapper> jobFeature = this->job->getFeatureById(feature->getFeature()->getId());
+        if(jobFeature.isNull() || jobFeature->getFeature().isNull() || feature->getFeature() != jobFeature->getFeature()){
+            return false;
+        }
+    }
+
+    this->usedFor.append(feature);
+
+    //add this feature to the previously needed features of feature
+    if(!this->selfFeature.isNull()){
+        feature->getFeature()->addPreviouslyNeeded(this->selfFeature);
+    }
+
+    return true;
+
+}
+
+/*!
+ * \brief Feature::getPreviouslyNeeded
+ * \return
+ */
+const QList<QPointer<FeatureWrapper> > &Feature::getPreviouslyNeeded() const{
+    return this->previouslyNeeded;
+}
+
+/*!
+ * \brief Feature::addPreviouslyNeeded
+ * \param feature
+ * \return
+ */
+bool Feature::addPreviouslyNeeded(const QPointer<FeatureWrapper> &feature){
+
+    //check feature
+    if(!feature.isNull() && !feature->getFeature().isNull()){
+        return false;
+    }
+
+    //check if the feature is already included
+    if(this->previouslyNeeded.contains(feature)){
+        return false;
+    }
+
+    //check if feature is in same job
+    if(!this->job.isNull()){
+        QPointer<FeatureWrapper> jobFeature = this->job->getFeatureById(feature->getFeature()->getId());
+        if(jobFeature.isNull() || jobFeature->getFeature().isNull() || feature->getFeature() != jobFeature->getFeature()){
+            return false;
+        }
+    }
+
+    this->previouslyNeeded.append(feature);
+
+    //add this feature to the used for features of feature
+    if(!this->selfFeature.isNull()){
+        feature->getFeature()->addUsedFor(this->selfFeature);
+    }
+
+    return true;
+
 }
 
 /*!
