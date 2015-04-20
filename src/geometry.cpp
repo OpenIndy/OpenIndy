@@ -501,6 +501,29 @@ Geometry &Geometry::operator=(const Geometry &copy){
  */
 Geometry::~Geometry(){
 
+    if(this->isNominal){
+
+        //delete this geometry from the nominal list of its actual
+        if(!this->actual.isNull()){
+            this->actual->removeNominal(this);
+        }
+
+        //delete this geometry from list of nominals in myNominalCoordSys
+        if(!this->nominalSystem.isNull()){
+            this->nominalSystem->removeNominal(this->id);
+        }
+
+    }else{
+
+        //delete this geometry from target geometries list of the observations
+        foreach(const QPointer<Observation> &observation, this->observations){
+            if(!observation.isNull()){
+                observation->removeTargetGeometry(this->id);
+            }
+        }
+
+    }
+
 }
 
 /*!

@@ -1948,9 +1948,6 @@ bool OiJob::removeFeature(const int &featureId){
         return false;
     }
 
-    //clear feature dependencies
-    this->clearDependencies(feature);
-
     //possibly reset active group
     if(feature->getFeature()->getGroupName().compare("") != 0 && feature->getFeature()->getGroupName().compare(this->activeGroup) == 0
             && this->featureContainer.getFeaturesByGroup(feature->getFeature()->getGroupName()).size() == 1){
@@ -1978,9 +1975,6 @@ bool OiJob::removeFeature(const QPointer<FeatureWrapper> &feature){
     if(!this->canRemoveFeature(feature)){
         return false;
     }
-
-    //clear feature dependencies
-    this->clearDependencies(feature);
 
     //possibly reset active group
     if(feature->getFeature()->getGroupName().compare("") != 0 && feature->getFeature()->getGroupName().compare(this->activeGroup) == 0
@@ -2141,6 +2135,17 @@ void OiJob::setTrafoParamValidTime(const int &featureId)
 void OiJob::setTrafoParamIsMovement(const int &featureId)
 {
 
+}
+
+/*!
+ * \brief OiJob::elementAboutToBeDeleted
+ * \param elementId
+ * \param name
+ * \param group
+ * \param type
+ */
+void OiJob::elementAboutToBeDeleted(const int &elementId, const QString &name, const QString &group, const FeatureTypes &type){
+    this->featureContainer.checkAndClean(elementId, name, group, type);
 }
 
 void OiJob::connectFeature(const QPointer<FeatureWrapper> &feature)
@@ -2491,56 +2496,6 @@ bool OiJob::canRemoveFeature(const QPointer<FeatureWrapper> &feature) const{
  */
 void OiJob::clearDependencies(const QPointer<FeatureWrapper> &feature){
 
-    //reset usedFor and previouslyNeeded
-    foreach(const QPointer<FeatureWrapper> &previouslyNeeded, feature->getFeature()->getPreviouslyNeeded()){
-        if(!previouslyNeeded.isNull() && !previouslyNeeded->getFeature().isNull()){
-            previouslyNeeded->getFeature()->usedFor.removeOne(feature);
-        }
-    }
-    foreach(const QPointer<FeatureWrapper> &usedFor, feature->getFeature()->getUsedFor()){
-        if(!usedFor.isNull() && !usedFor->getFeature().isNull()){
-            usedFor->getFeature()->previouslyNeeded.removeOne(feature);
-        }
-    }
 
-    //clear type dependent attributes
-    if(feature->getFeatureTypeEnum() == eCoordinateSystemFeature){
-
-        //remove corresponding trafo params
-        foreach(const QPointer<TrafoParam> &trafoParam, feature->getCoordinateSystem()->getTransformationParameters()){
-            this->removeFeature(trafoParam->selfFeature);
-        }
-
-    }else if(feature->getFeatureTypeEnum() == eStationFeature){
-
-        //remove station system
-        if(!feature->getStation()->getCoordinateSystem().isNull()){
-            this->featureContainer.removeFeature(feature->getStation()->getCoordinateSystem()->getId());
-        }
-
-    }else if(feature->getFeatureTypeEnum() == eTrafoParamFeature){
-
-    }else{ //geometry
-
-        if(feature->getGeometry()->getIsNominal()){ //nominal
-
-            //remove nominal from nominal lists
-            if(!feature->getGeometry()->getActual().isNull()){
-                feature->getGeometry()->getActual()->removeNominal(feature->getGeometry());
-            }
-            if(!feature->getGeometry()->getNominalSystem().isNull()){
-                feature->getGeometry()->getNominalSystem()->removeNominal(feature);
-            }
-
-        }else{ //actual
-
-            //remove nominals first
-            foreach(const QPointer<Geometry> &nominal, feature->getGeometry()->getNominals()){
-                this->removeFeature(nominal->selfFeature);
-            }
-
-        }
-
-    }
 
 }

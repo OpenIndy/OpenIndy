@@ -222,6 +222,9 @@ private slots:
     void setTrafoParamValidTime(const int &featureId);
     void setTrafoParamIsMovement(const int &featureId);
 
+    //element deleted
+    void elementAboutToBeDeleted(const int &elementId, const QString &name, const QString &group, const FeatureTypes &type);
+
 private:
 
     //##############################

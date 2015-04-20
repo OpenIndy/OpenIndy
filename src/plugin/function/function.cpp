@@ -1734,6 +1734,16 @@ void Function::removeInputElement(const int &id, const int &position){
 }
 
 /*!
+ * \brief Function::removeInputElement
+ * \param id
+ */
+void Function::removeInputElement(const int &id){
+    for(int i = 0; i < this->inputElements.size(); i++){
+        this->inputElements[i].removeOne(InputElement(id));
+    }
+}
+
+/*!
  * \brief Function::replaceInputElement
  * \param element
  * \param position

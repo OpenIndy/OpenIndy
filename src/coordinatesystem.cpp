@@ -521,6 +521,30 @@ CoordinateSystem &CoordinateSystem::operator=(const CoordinateSystem &copy){
  */
 CoordinateSystem::~CoordinateSystem(){
 
+    //delete all observations made from this station coordinate system (only if this is a station system)
+    foreach(const QPointer<Observation> &observation, this->observationsList){
+        if(!observation.isNull()){
+            delete observation;
+        }
+    }
+
+    //delete transformation parameter sets from this coordinate system
+    foreach(const QPointer<TrafoParam> &trafoParam, this->trafoParams){
+        if(!trafoParam.isNull()){
+            delete trafoParam;
+        }
+    }
+
+    //delete nominals of this coordinate system
+    foreach(const QPointer<FeatureWrapper> &nominal, this->nominalsList){
+        if(nominal.isNull()){
+            if(nominal->getFeature().isNull()){
+                delete nominal->getFeature();
+            }
+            delete nominal;
+        }
+    }
+
 }
 
 /*!

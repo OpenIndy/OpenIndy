@@ -483,6 +483,138 @@ bool FeatureContainer::removeFeature(const int &featureId){
 }
 
 /*!
+ * \brief FeatureContainer::checkAndClean
+ * Checks wether there is a feature with the given id that was deleted but not removed from lists
+ * \param featureId
+ * \param name
+ * \param group
+ * \param type
+ */
+void FeatureContainer::checkAndClean(const int &featureId, const QString &name, const QString &group, const FeatureTypes &type){
+
+    if(!this->featuresIdMap.contains(featureId)){
+        return;
+    }
+
+    //clean feature list
+    QList<int> deletion;
+    int index = 0;
+    foreach(const QPointer<FeatureWrapper> &feature, this->featuresList){
+        if(feature.isNull() || feature->getFeature().isNull()){
+            //delete feature wrapper
+            if(!feature.isNull()){
+                delete feature;
+            }
+            deletion.append(index);
+        }
+        index++;
+    }
+    for(int i = deletion.size(); i > 0; i--){
+        this->featuresList.removeAt(i-1);
+    }
+
+    //clean coord system list
+    deletion.clear();
+    index = 0;
+    foreach(const QPointer<CoordinateSystem> &coordSystem, this->coordSystems){
+        if(coordSystem.isNull()){
+            deletion.append(index);
+        }
+        index++;
+    }
+    for(int i = deletion.size(); i > 0; i--){
+        this->coordSystems.removeAt(i-1);
+    }
+
+    //clean station list
+    deletion.clear();
+    index = 0;
+    foreach(const QPointer<Station> &station, this->stationsList){
+        if(station.isNull()){
+            deletion.append(index);
+        }
+        index++;
+    }
+    for(int i = deletion.size(); i > 0; i--){
+        this->stationsList.removeAt(i-1);
+    }
+
+    //clean trafo param list
+    deletion.clear();
+    index = 0;
+    foreach(const QPointer<TrafoParam> &trafoParam, this->trafoParamsList){
+        if(trafoParam.isNull()){
+            deletion.append(index);
+        }
+        index++;
+    }
+    for(int i = deletion.size(); i > 0; i--){
+        this->trafoParamsList.removeAt(i-1);
+    }
+
+    //clean geometry list
+    deletion.clear();
+    index = 0;
+    foreach(const QPointer<FeatureWrapper> &geometry, this->geometriesList){
+        if(geometry.isNull() || geometry->getFeature().isNull()){
+            //delete feature wrapper
+            if(!geometry.isNull()){
+                delete geometry;
+            }
+            deletion.append(index);
+        }
+        index++;
+    }
+    for(int i = deletion.size(); i > 0; i--){
+        this->geometriesList.removeAt(i-1);
+    }
+
+    //clean maps
+    bool removeAttribute = true;
+    this->featuresIdMap.remove(featureId);
+    this->featureIds.removeOne(featureId);
+    if(this->featuresNameMap.contains(name)){
+        QList<QPointer<FeatureWrapper> > features = this->featuresNameMap.values(name);
+        this->featuresNameMap.remove(name);
+        foreach(const QPointer<FeatureWrapper> &feature, features){
+            if(!feature.isNull() && feature->getFeature().isNull()){
+                this->featuresNameMap.insert(name, feature);
+                removeAttribute = false;
+            }
+        }
+        if(removeAttribute){
+            this->featureNames.removeOne(name);
+        }else{
+            removeAttribute = true;
+        }
+    }
+    if(group.compare("") != 0 && this->featuresGroupMap.contains(group)){
+        QList<QPointer<FeatureWrapper> > features = this->featuresGroupMap.values(group);
+        this->featuresGroupMap.remove(group);
+        foreach(const QPointer<FeatureWrapper> &feature, features){
+            if(!feature.isNull() && feature->getFeature().isNull()){
+                this->featuresGroupMap.insert(group, feature);
+                removeAttribute = false;
+            }
+        }
+        if(removeAttribute){
+            this->featureGroups.removeOne(group);
+        }
+    }
+    if(this->featuresTypeMap.contains(type)){
+        QList<QPointer<FeatureWrapper> > features = this->featuresTypeMap.values(type);
+        this->featuresTypeMap.remove(type);
+        foreach(const QPointer<FeatureWrapper> &feature, features){
+            if(!feature.isNull() && feature->getFeature().isNull()){
+                this->featuresTypeMap.insert(type, feature);
+                removeAttribute = false;
+            }
+        }
+    }
+
+}
+
+/*!
  * \brief FeatureContainer::removeAll
  * Remove and delete all features
  */

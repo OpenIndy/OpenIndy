@@ -66,6 +66,8 @@ public:
     bool addFeature(const QPointer<FeatureWrapper> &feature);
     bool removeFeature(const int &featureId);
 
+    void checkAndClean(const int &featureId, const QString &name, const QString &group, const FeatureTypes &type);
+
     void removeAll();
 
     //#######################################################
@@ -88,7 +90,7 @@ private:
     QList<QPointer<TrafoParam> > trafoParamsList; //list of all trafo params
     QList<QPointer<FeatureWrapper> > geometriesList; //list of all geometry features
 
-    //feature maps (useful to quickly find a feature with a given id, name or grou etc.)
+    //feature maps (useful to quickly find a feature with a given id, name or group etc.)
     QMap<int, QPointer<FeatureWrapper> > featuresIdMap; //map of all features in OpenIndy with their id as key
     QMultiMap<QString, QPointer<FeatureWrapper> > featuresNameMap; //map of all features in OpenIndy with their name as key
     QMultiMap<QString, QPointer<FeatureWrapper> > featuresGroupMap; //map of all features in OpenIndy with their group as key

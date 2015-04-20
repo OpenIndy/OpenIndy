@@ -479,6 +479,16 @@ TrafoParam &TrafoParam::operator=(const TrafoParam &copy){
  */
 TrafoParam::~TrafoParam(){
 
+    //delete this trafo set in from system
+    if(!this->from.isNull()){
+        this->from->removeTransformationParameter(this);
+    }
+
+    //delete this trafo set in to system
+    if(!this->to.isNull()){
+        this->to->removeTransformationParameter(this);
+    }
+
 }
 
 /*!

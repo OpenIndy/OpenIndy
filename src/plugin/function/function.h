@@ -218,6 +218,7 @@ public:
     const QMap<int, QList<InputElement> > &getInputElements() const;
     void addInputElement(const InputElement &element, const int &position);
     void removeInputElement(const int &id, const int &position);
+    void removeInputElement(const int &id);
     void replaceInputElement(const InputElement &element, const int &position);
 
     //#############

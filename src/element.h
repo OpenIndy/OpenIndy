@@ -47,6 +47,7 @@ signals:
     //#######################################
 
     void elementIdChanged();
+    void elementAboutToBeDeleted(const int &elementId, const QString &name, const QString &group, const FeatureTypes &type);
 
 protected:
     int id;

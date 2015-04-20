@@ -489,6 +489,54 @@ Feature &Feature::operator=(const Feature &copy){
  */
 Feature::~Feature(){
 
+    //check and update features which need this feature to recalc
+    if(this->usedFor.size() > 0 && this->selfFeature.isNull()){
+        foreach(const QPointer<FeatureWrapper> &feature, this->usedFor){
+
+            //check feature
+            if(feature.isNull() || feature->getFeature().isNull()){
+                continue;
+            }
+
+            //delete the feature from all functions
+            foreach(const QPointer<Function> function, feature->getFeature()->getFunctions()){
+                if(!function.isNull()){
+                    function->removeInputElement(this->id);
+                }
+            }
+
+            //remove this feature from previously needed list
+            feature->getFeature()->previouslyNeeded.removeOne(this->selfFeature);
+
+        }
+    }
+
+    //check and update features which were needed to recalc this feature
+    if(this->previouslyNeeded.size() > 0){
+        foreach(const QPointer<FeatureWrapper> &feature, this->previouslyNeeded){
+
+            //remove this feature from usedFor list
+            if(this->selfFeature.isNull() && !feature.isNull() && !feature->getFeature().isNull()){
+                feature->getFeature()->usedFor.removeOne(this->selfFeature);
+            }
+
+        }
+    }
+
+    //delete all functions when deleting the feature
+    foreach(const QPointer<Function> &function, this->functionList){
+        if(!function.isNull()){
+            delete function;
+        }
+    }
+
+    emit this->elementAboutToBeDeleted(this->id, this->name, this->group, this->selfFeature->getFeatureTypeEnum());
+
+    //delete self feature wrapper
+    if(!this->selfFeature.isNull()){
+        delete this->selfFeature;
+    }
+
 }
 
 /*!

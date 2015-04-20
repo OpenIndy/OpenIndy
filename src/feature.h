@@ -18,6 +18,7 @@ class Function;
 class Feature : public Element
 {
     friend class OiJob;
+    friend class Feature;
     Q_OBJECT
 
 public:

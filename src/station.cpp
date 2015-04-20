@@ -456,6 +456,24 @@ Station &Station::operator=(const Station &copy){
  */
 Station::~Station(){
 
+    this->stationThread.quit();
+    this->stationThread.wait();
+
+    //delete corresponding coordinate system with all observations made from this station
+    if(!this->stationSystem.isNull()){
+        delete this->stationSystem;
+    }
+
+    //delete position of this station
+    if(this->position.isNull()){
+        delete this->position;
+    }
+
+    //delete sensor control
+    if(!this->sensorControl.isNull()){
+        delete this->sensorControl;
+    }
+
 }
 
 /*!
