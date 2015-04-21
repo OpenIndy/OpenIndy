@@ -46,7 +46,7 @@ signals:
     //signals to inform about element changes
     //#######################################
 
-    void elementIdChanged();
+    //void elementIdChanged();
     void elementAboutToBeDeleted(const int &elementId, const QString &name, const QString &group, const FeatureTypes &type);
 
 protected:

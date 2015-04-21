@@ -146,29 +146,29 @@ signals:
     void featurePreviouslyNeededChanged(const int &featureId);
 
     //geometry specific attributes changed
-    void geometryIsCommon(const int &featureId);
-    void geometryNominals(const int &featureId);
-    void geometryActual(const int &featureId);
-    void geometryObservations(const int &featureId);
-    void geometryNominalSystem(const int &featureId);
-    void geometryStatistic(const int &featureId);
-    void geometrySimulationData(const int &featureId);
-    void geometryMeasurementConfig(const int &featureId);
+    void geometryIsCommonChanged(const int &featureId);
+    void geometryNominalsChanged(const int &featureId);
+    void geometryActualChanged(const int &featureId);
+    void geometryObservationsChanged(const int &featureId);
+    void geometryNominalSystemChanged(const int &featureId);
+    void geometryStatisticChanged(const int &featureId);
+    void geometrySimulationDataChanged(const int &featureId);
+    void geometryMeasurementConfigChanged(const int &featureId);
 
     //coordinate system specific attributes changed
-    void systemObservations(const int &featureId, const int &obsId);
-    void systemTrafoParams(const int &featureId);
-    void systemsNominals(const int &featureId);
+    void systemObservationsChanged(const int &featureId, const int &obsId);
+    void systemTrafoParamsChanged(const int &featureId);
+    void systemsNominalsChanged(const int &featureId);
 
     //station specific attributes changed
-    void stationSensor(const int &featureId);
+    void stationSensorChanged(const int &featureId);
 
     //transformation parameter specific attributes changed
-    void trafoParamParameters(const int &featureId);
-    void trafoParamSystems(const int &featureId);
-    void trafoParamIsUsed(const int &featureId);
-    void trafoParamValidTime(const int &featureId);
-    void trafoParamIsMovement(const int &featureId);
+    void trafoParamParametersChanged(const int &featureId);
+    void trafoParamSystemsChanged(const int &featureId);
+    void trafoParamIsUsedChanged(const int &featureId);
+    void trafoParamValidTimeChanged(const int &featureId);
+    void trafoParamIsMovementChanged(const int &featureId);
 
     //###################################################
     //general signals to inform OpenIndy about job issues
@@ -239,7 +239,7 @@ private:
     //##############
 
     QStringList createFeatureNames(const QString &name, const int &count) const;
-    FeatureWrapper *createFeatureWrapper(const FeatureTypes &type, bool isNominal = false) const;
+    QPointer<FeatureWrapper> createFeatureWrapper(const FeatureTypes &type, bool isNominal = false) const;
     bool checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature);
     bool canRemoveFeature(const QPointer<FeatureWrapper> &feature) const;
     void clearDependencies(const QPointer<FeatureWrapper> &feature);

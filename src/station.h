@@ -18,6 +18,7 @@ class Sensor;
  */
 class Station : public Feature
 {
+    friend class OiJob;
     Q_OBJECT
 
 public:

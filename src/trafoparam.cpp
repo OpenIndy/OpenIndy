@@ -534,10 +534,14 @@ const QPointer<CoordinateSystem> &TrafoParam::getDestinationSystem() const{
  */
 bool TrafoParam::setCoordinateSystems(const QPointer<CoordinateSystem> &from, const QPointer<CoordinateSystem> &to){
 
+    //check if to and from were already set
+    if(!this->to.isNull() || !this->from.isNull()){
+        return false;
+    }
+
     if(!from.isNull() && !to.isNull() && from != to){
 
         //check if to and from are in the same job
-
         if(!this->job.isNull()){
             QPointer<FeatureWrapper> jobFrom = this->job->getFeatureById(from->getId());
             QPointer<FeatureWrapper> jobTo = this->job->getFeatureById(to->getId());

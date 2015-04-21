@@ -508,9 +508,9 @@ Geometry::~Geometry(){
             this->actual->removeNominal(this);
         }
 
-        //delete this geometry from list of nominals in myNominalCoordSys
+        //delete this geometry from list of nominals in nominal system
         if(!this->nominalSystem.isNull()){
-            this->nominalSystem->removeNominal(this->id);
+            this->nominalSystem->removeNominal(this->selfFeature);
         }
 
     }else{
@@ -568,7 +568,7 @@ const QList<QPointer<Geometry> > &Geometry::getNominals() const{
  */
 bool Geometry::addNominal(const QPointer<Geometry> &nominal){
 
-    if(!nominal.isNull() && nominal->getIsNominal()){
+    if(!nominal.isNull() && nominal->getIsNominal() && !this->getIsNominal()){
 
         //compare feature types
         if(this->selfFeature.isNull() || nominal->selfFeature.isNull() || this->selfFeature->getFeatureTypeEnum() != nominal->selfFeature->getFeatureTypeEnum()){
@@ -629,6 +629,11 @@ const QPointer<Geometry> &Geometry::getActual() const{
  */
 bool Geometry::setActual(const QPointer<Geometry> &actual){
 
+    //check if this is a nominal
+    if(this->isNominal){
+        return false;
+    }
+
     //check actual
     if(actual.isNull() || (!this->actual.isNull() && this->actual->getId() == actual->getId())){
         return false;
@@ -668,10 +673,23 @@ const QList<QPointer<Observation> > &Geometry::getObservations() const{
  * \param obs
  */
 void Geometry::addObservation(const QPointer<Observation> &obs){
-    if(!obs.isNull()){
+
+    if(!obs.isNull() && !this->isNominal){
+
+        //check if obs is already included
+        if(this->observations.contains(obs)){
+            return;
+        }
+
+        //update target geometries
+        obs->addTargetGeometry(this);
+
         this->observations.append(obs);
+
         emit this->geomObservationsChanged(this->id);
+
     }
+
 }
 
 /*!
@@ -686,7 +704,14 @@ void Geometry::removeObservation(const QPointer<Observation> &obs){
     }
 
     //remove observation
-    this->observations.removeOne(obs);
+    if(this->observations.removeOne(obs)){
+
+        //update target geometries
+        obs->removeTargetGeometry(this);
+
+        emit this->geomObservationsChanged(this->id);
+
+    }
 
 }
 
@@ -716,6 +741,9 @@ bool Geometry::setNominalSystem(const QPointer<CoordinateSystem> &nomSys){
         }
 
         this->nominalSystem = nomSys;
+
+        nomSys->addNominal(this->selfFeature);
+
         emit this->geomNominalSystemChanged(this->id);
 
         return true;

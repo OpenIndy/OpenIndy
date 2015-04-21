@@ -455,10 +455,21 @@ const QList<QPointer<Geometry> > &Observation::getTargetGeometries() const{
  * \param targetGeometry
  */
 void Observation::addTargetGeometry(const QPointer<Geometry> &targetGeometry){
+
     if(!targetGeometry.isNull()){
+
+        //check if target geometry is already included
+        if(this->targetGeometriesList.contains(targetGeometry)){
+            return;
+        }
+
         this->targetGeometriesList.append(targetGeometry);
         this->targetGeometriesMap.insert(targetGeometry->getId(), targetGeometry);
+
+        targetGeometry->addObservation(this);
+
     }
+
 }
 
 /*!
@@ -466,10 +477,21 @@ void Observation::addTargetGeometry(const QPointer<Geometry> &targetGeometry){
  * \param targetGeometry
  */
 void Observation::removeTargetGeometry(const QPointer<Geometry> &targetGeometry){
+
     if(!targetGeometry.isNull()){
+
+        //check if target geometry is included
+        if(!this->targetGeometriesList.contains(targetGeometry)){
+            return;
+        }
+
         this->targetGeometriesList.removeOne(targetGeometry);
         this->targetGeometriesMap.remove(targetGeometry->getId());
+
+        targetGeometry->removeObservation(this);
+
     }
+
 }
 
 /*!

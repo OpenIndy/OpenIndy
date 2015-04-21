@@ -668,10 +668,18 @@ QPointer<Observation> CoordinateSystem::getObservation(const int &observationId)
  */
 bool CoordinateSystem::addObservation(const QPointer<Observation> &observation){
 
-    if(!observation.isNull() || !observation->getReading().isNull() || !observation->getStation().isNull()){
+    //check if this is a station system
+    if(!this->isStationSystem){
+        return false;
+    }
+
+    if(!observation.isNull() && !observation->getReading().isNull() && !observation->getStation().isNull()){
 
         this->observationsList.append(observation);
         this->observationsMap.insert(observation->getId(), observation);
+
+        //set observation's station
+        observation->setStation(this->station);
 
         emit this->observationsChanged(this->id, observation->getId());
 
@@ -777,6 +785,11 @@ const QList<QPointer<FeatureWrapper> > &CoordinateSystem::getNominals() const{
  * \return
  */
 bool CoordinateSystem::addNominal(const QPointer<FeatureWrapper> &nominal){
+
+    //check if this is a nominal system
+    if(this->isStationSystem){
+        return false;
+    }
 
     if(!nominal.isNull() && !nominal->getGeometry().isNull() && nominal->getGeometry()->getIsNominal()){
 
