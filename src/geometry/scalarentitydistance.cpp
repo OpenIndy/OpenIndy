@@ -298,3 +298,17 @@ bool ScalarEntityDistance::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief ScalarEntityDistance::getDisplayDistance
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString ScalarEntityDistance::getDisplayDistance(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->distance, type), 'f', digits);
+    }
+    return QString("");
+}

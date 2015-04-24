@@ -102,6 +102,15 @@ public:
     virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     virtual bool fromOpenIndyXML(QDomElement &xmlElem);
 
+    //###############
+    //display methods
+    //###############
+
+    QString getDisplayStDev(const UnitType &type, const int &digits) const;
+
+    QString getDisplayMeasurementConfig() const;
+    QString getDisplayObservations() const;
+
     //virtual bool saveSimulationData() = 0;
     //void resetSimulationData();
 

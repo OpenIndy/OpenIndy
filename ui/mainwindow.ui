@@ -110,7 +110,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="table">
        <attribute name="title">
@@ -118,7 +118,7 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QTableView" name="tableView_data">
+         <widget class="QTableView" name="tableView_features">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -178,7 +178,7 @@ background-position: center center;</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QTableView" name="tableView_trafoParam"/>
+         <widget class="QTableView" name="tableView_trafoParams"/>
         </item>
        </layout>
       </widget>
@@ -270,6 +270,17 @@ background-position: center center;</string>
     <addaction name="actionLoad_plugins"/>
     <addaction name="actionPlugin_manager"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionView_settings"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+   </widget>
    <widget class="QMenu" name="menuFeatures">
     <property name="title">
      <string>Features</string>
@@ -290,17 +301,6 @@ background-position: center center;</string>
     <addaction name="actionCreate_nurbs"/>
     <addaction name="actionCreate_pointcloud"/>
     <addaction name="actionCreate_circle"/>
-   </widget>
-   <widget class="QMenu" name="menuSettings">
-    <property name="title">
-     <string>Settings</string>
-    </property>
-    <addaction name="actionView_settings"/>
-   </widget>
-   <widget class="QMenu" name="menuTools">
-    <property name="title">
-     <string>Tools</string>
-    </property>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSensor"/>
@@ -497,22 +497,24 @@ color: rgb(255, 255, 255);
    <attribute name="toolBarBreak">
     <bool>true</bool>
    </attribute>
+   <addaction name="actionCreate_coordinatesystem"/>
+   <addaction name="actionCreate_station"/>
+   <addaction name="actionCreate_trafoParam"/>
    <addaction name="actionCreate_point"/>
-   <addaction name="actionCreate_line"/>
    <addaction name="actionCreate_plane"/>
    <addaction name="actionCreate_sphere"/>
-   <addaction name="actionCreate_station"/>
-   <addaction name="actionCreate_coordinatesystem"/>
-   <addaction name="actionCreate_trafoParam"/>
    <addaction name="actionCreate_cylinder"/>
+   <addaction name="actionCreate_circle"/>
    <addaction name="actionCreate_scalar_entity"/>
+   <addaction name="actionCreate_slotted_hole"/>
    <addaction name="actionCreate_cone"/>
    <addaction name="actionCreate_ellipsoid"/>
+   <addaction name="actionCreate_ellipse"/>
+   <addaction name="actionCreate_torus"/>
    <addaction name="actionCreate_hyperboloid"/>
    <addaction name="actionCreate_paraboloid"/>
    <addaction name="actionCreate_nurbs"/>
    <addaction name="actionCreate_pointcloud"/>
-   <addaction name="actionCreate_circle"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_magnify">
    <attribute name="dockWidgetArea">
@@ -962,6 +964,30 @@ color: rgb(255, 255, 255);
   <action name="actionMagnify">
    <property name="text">
     <string>magnify</string>
+   </property>
+  </action>
+  <action name="actionCreate_torus">
+   <property name="text">
+    <string>create torus</string>
+   </property>
+   <property name="toolTip">
+    <string>create torus</string>
+   </property>
+  </action>
+  <action name="actionCreate_slotted_hole">
+   <property name="text">
+    <string>create slotted hole</string>
+   </property>
+   <property name="toolTip">
+    <string>create slotted hole</string>
+   </property>
+  </action>
+  <action name="actionCreate_ellipse">
+   <property name="text">
+    <string>create ellipse</string>
+   </property>
+   <property name="toolTip">
+    <string>create ellipse</string>
    </property>
   </action>
  </widget>

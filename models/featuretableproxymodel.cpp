@@ -6,6 +6,23 @@ FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
 }
 
 /*!
+ * \brief FeatureTableProxyModel::getFeatureTableColumnConfig
+ * \return
+ */
+const FeatureTableColumnConfig &FeatureTableProxyModel::getFeatureTableColumnConfig() const{
+    return this->featureTableColumnConfig;
+}
+
+/*!
+ * \brief FeatureTableProxyModel::setFeatureTableColumnConfig
+ * \param config
+ */
+void FeatureTableProxyModel::setFeatureTableColumnConfig(const FeatureTableColumnConfig &config){
+    this->featureTableColumnConfig = config;
+    this->invalidateFilter();
+}
+
+/*!
  * \brief FeatureTableProxyModel::filterAcceptsRow
  * Filter features by group name and feature type
  * \param source_row
@@ -13,7 +30,7 @@ FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
  * \return
  */
 bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
-/*
+
     //get and cast source model
     FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
     if(source_model == NULL){
@@ -30,8 +47,14 @@ bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
         return false;
     }
 
+    //get and check the feature
+    QPointer<FeatureWrapper> feature = source_model->getCurrentJob()->getFeaturesList().at(source_row);
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return false;
+    }
+
     //if the feature is a trafo param reject it
-    if(source_model->getCurrentJob()->getFeatures().at(source_row)->getTrafoParam() != NULL){
+    if(!feature->getTrafoParam().isNull()){
         return false;
     }
 
@@ -39,13 +62,41 @@ bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
     if(source_model->getCurrentJob()->getActiveGroup().compare("") == 0){
         return true;
     }else{
-        if(source_model->getCurrentJob()->getFeatures().at(source_row)->getFeature()->getGroupName().compare(source_model->getCurrentJob()->getActiveGroup()) == 0){
+        if(feature->getFeature()->getGroupName().compare(source_model->getCurrentJob()->getActiveGroup()) == 0){
             return true;
         }
         return false;
     }
-*/
+
     return false;
+
+}
+
+/*!
+ * \brief FeatureTableProxyModel::filterAcceptsColumn
+ * \param source_column
+ * \param source_parent
+ * \return
+ */
+bool FeatureTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
+
+    //get and check display attribute
+    if(getDisplayAttributes().size() < source_column){
+        return false;
+    }
+    int attr = getDisplayAttributes().at(source_column);
+
+    //check if the attribute belongs to a non-trafo param feature
+    if(!getIsFeatureDisplayAttribute(attr)){
+        return false;
+    }
+
+    //check visibility of the attribute
+    if(this->featureTableColumnConfig.getColumnVisibility((FeatureDisplayAttributes)attr)){
+        return true;
+    }
+    return false;
+
 }
 
 /*!
@@ -124,21 +175,5 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
     }
 */
 
-    return false;
-}
-
-/*!
- * \brief FeatureTableProxyModel::filterAcceptsColumn
- * \param source_column
- * \param source_parent
- * \return
- */
-bool FeatureTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
-    /*QList<int> displayColumns = GUIConfiguration::displayAttributes(GUIConfiguration::featureAttributes,GUIConfiguration::allAttributes);
-    if(displayColumns.contains(source_column)){
-        return true;
-    }else{
-        return false;
-    }*/
     return true;
 }

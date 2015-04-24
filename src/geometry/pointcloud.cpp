@@ -354,3 +354,45 @@ bool PointCloud::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief PointCloud::getDisplayX
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString PointCloud::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->mainFocus.getVector().getAt(0), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief PointCloud::getDisplayY
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString PointCloud::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->mainFocus.getVector().getAt(1), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief PointCloud::getDisplayZ
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString PointCloud::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->mainFocus.getVector().getAt(2), type), 'f', digits);
+    }
+    return QString("");
+}

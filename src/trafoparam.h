@@ -82,20 +82,26 @@ public:
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
-    //QString getDisplayStartSystem() const;
-    //QString getDisplayDestinationSystem() const;
-    //QString getDisplayTranslationX() const;
-    //QString getDisplayTranslationY() const;
-    //QString getDisplayTranslationZ() const;
-    //QString getDisplayRotationX() const;
-    //QString getDisplayRotationY() const;
-    //QString getDisplayRotationZ() const;
-    //QString getDisplayScaleX() const;
-    //QString getDisplayScaleY() const;
-    //QString getDisplayScaleZ() const;
-    //QString getDisplayUse() const;
-    //QString getDisplayTime() const;
-    //QString getDisplayStdDev() const;
+    //###############
+    //display methods
+    //###############
+
+    QString getDisplayStDev(const UnitType &type, const int &digits) const;
+
+    QString getDisplayStartSystem() const;
+    QString getDisplayDestinationSystem() const;
+    QString getDisplayTranslationX(const UnitType &type, const int &digits) const;
+    QString getDisplayTranslationY(const UnitType &type, const int &digits) const;
+    QString getDisplayTranslationZ(const UnitType &type, const int &digits) const;
+    QString getDisplayRotationX(const UnitType &type, const int &digits) const;
+    QString getDisplayRotationY(const UnitType &type, const int &digits) const;
+    QString getDisplayRotationZ(const UnitType &type, const int &digits) const;
+    QString getDisplayScaleX(const int &digits) const;
+    QString getDisplayScaleY(const int &digits) const;
+    QString getDisplayScaleZ(const int &digits) const;
+    QString getDisplayIsUsed() const;
+    QString getDisplayValidTime() const;
+    QString getDisplayIsMovement() const;
 
 signals:
 

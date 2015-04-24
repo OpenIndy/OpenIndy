@@ -1,417 +1,189 @@
 #include "controller.h"
 
-#include "feature.h"
-#include "coordinatesystem.h"
-#include "station.h"
-
 /*!
  * \brief Controller::Controller
  * \param parent
  */
-Controller::Controller(QObject *parent) :
-    QObject(parent)
-{
-    Feature *test = new Point(true);
-}
+Controller::Controller(QObject *parent) : QObject(parent){
 
-/*!
- * \brief Controller::setActiveFeature
- * \param featureId
- */
-void Controller::setActiveFeature(const int &featureId){
-/*
-	//get the selected feature by its id
-    FeatureWrapper *selectedFeature = OiJob::getFeature(featureId);
-	
-	//check if the selected feature exists
-    if(selectedFeature == NULL || selectedFeature->getFeature() == NULL){
-        Console::addLine("Cannot activate an invalid feature");
-        return;
-	}
+    //initialize model manager
+    ModelManager::init();
 
-    //activate the feature if it is not activated yet
-    if(!selectedFeature->getFeature()->getIsActiveFeature()){
-        selectedFeature->getFeature()->setActiveFeatureState(true);
-    }
-*/
-}
+    //create default job
+    this->createDefaultJob();
 
-void Controller::setActiveStation(const int &featureId)
-{
+    //initialize display configs
+    this->initDisplayConfigs();
 
 }
 
 /*!
- * \brief Controller::setActiveCoordinateSystem
- * \param featureId
+ * \brief Controller::setFeatureTableColumnConfig
+ * \param config
  */
-void Controller::setActiveCoordinateSystem(const int &featureId){
-    //OiJob::activateCoordinateSystem(featureId);
+void Controller::setFeatureTableColumnConfig(const FeatureTableColumnConfig &config){
+    ModelManager::setFeatureTableColumnConfig(config);
 }
 
 /*!
- * \brief Controller::addFeatures
- * Add one or more features defined by the given attributes
- * \param attributes
+ * \brief Controller::setTrafoParamColumnConfig
+ * \param config
  */
-void Controller::addFeatures(const FeatureAttributes &attributes){
-    //OiJob::addFeatures(attributes);
-    //Console::addLine("feature creation failed");
-}
-
-void Controller::removeFeature(const int &featureId)
-{
-
-}
-
-
-/*!
- * \brief Controller::startMeasurement
- * After checking some conditions, it calls the measure function of the active sensor.
- */
-void Controller::startMeasurement(){
-/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }else if(OiJob::getActiveFeature() == NULL){
-        Console::addLine("no active feature");
-        return;
-    }
-
-    bool checkActiveCoordSys = false;
-
-    if (OiJob::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
-        checkActiveCoordSys = true;
-    }
-
-    if(checkSensorValid() && checkFeatureValid()){
-
-        if(OiJob::getActiveFeature()->getGeometry()->getIsNominal()){
-            if(!this->generateActualForNominal(OiJob::getActiveFeature())){
-                Console::addLine("can not create actual for nominal feature");
-                return;
-            }
-        }
-        switch (OiJob::getActiveFeature()->getTypeOfFeature()) {
-        case Configuration::ePlaneFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Plane::defaultMeasurementConfig);
-            break;
-        case Configuration::ePointFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Point::defaultMeasurementConfig);
-            break;
-        case Configuration::eLineFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Line::defaultMeasurementConfig);
-            break;
-        case Configuration::eSphereFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Sphere::defaultMeasurementConfig);
-            break;
-        case Configuration::eScalarEntityAngleFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityAngle::defaultMeasurementConfig);
-            break;
-        case Configuration::eScalarEntityDistanceFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityDistance::defaultMeasurementConfig);
-            break;
-        case Configuration::eCircleFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Circle::defaultMeasurementConfig);
-            break;
-        case Configuration::eConeFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Cone::defaultMeasurementConfig);
-            break;
-        case Configuration::eCylinderFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Cylinder::defaultMeasurementConfig);
-            break;
-        case Configuration::eEllipsoidFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Ellipsoid::defaultMeasurementConfig);
-            break;
-        case Configuration::eHyperboloidFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Hyperboloid::defaultMeasurementConfig);
-            break;
-        case Configuration::eParaboloidFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Paraboloid::defaultMeasurementConfig);
-            break;
-        case Configuration::eNurbsFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(Nurbs::defaultMeasurementConfig);
-            break;
-        case Configuration::ePointCloudFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(PointCloud::defaultMeasurementConfig);
-            break;
-        case Configuration::eScalarEntityTemperatureFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityTemperature::defaultMeasurementConfig);
-            break;
-        case Configuration::eScalarEntityMeasurementSeriesFeature:
-            OiJob::getActiveFeature()->getGeometry()->setMeasurementConfig(ScalarEntityMeasurementSeries::defaultMeasurementConfig);
-            break;
-        }
-        OiJob::getActiveStation()->emitStartMeasure(OiJob::getActiveFeature()->getGeometry(), checkActiveCoordSys);
-
-        emit sensorWorks("measuring...");
-    }*/
+void Controller::setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config){
+    ModelManager::setTrafoParamColumnConfig(config);
 }
 
 /*!
- * \brief Controller::addMeasurement
- * Add the last reading of current sensor to the active feature as an observations
+ * \brief Controller::setParameterDisplayConfig
+ * \param config
  */
-void Controller::addMeasurement(){
-/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }else if(OiJob::getActiveFeature() == NULL || OiJob::getActiveFeature()->getGeometry() == NULL){
-        Console::addLine("no active feature");
-        return;
-    }
-
-    bool checkActiveCoordSys = false;
-
-    if (OiJob::getActiveStation()->coordSys->getIsActiveCoordinateSystem()){
-        checkActiveCoordSys = true;
-    }
-
-    if(checkSensorValid() && checkFeatureValid()){
-
-        if(OiJob::getActiveFeature()->getGeometry()->getIsNominal()){
-            if(!this->generateActualForNominal(OiJob::getActiveFeature())){
-                Console::addLine("can not create actual for nominal feature");
-                return;
-            }
-        }
-
-        QPair<Configuration::ReadingTypes, Reading*> lastReading = OiJob::getActiveStation()->sensorPad->instrument->getLastReading();
-
-        Reading *r = new Reading();
-        *r = *lastReading.second;
-        OiJob::getActiveStation()->sensorPad->addReading(r, OiJob::getActiveFeature()->getGeometry(), checkActiveCoordSys);
-
-    }
-*/
+void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config){
+    ModelManager::setParameterDisplayConfig(config);
 }
 
 /*!
- * \brief Controller::startMove
- * After checking some conditions, it calls the move function of the active sensor.
+ * \brief Controller::createDefaultJob
  */
-void Controller::startMove(Reading *parameter){
-/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }
+void Controller::createDefaultJob(){
 
-    //TODO check function
-    if (parameter->typeofReading == Configuration::ePolar){
-        OiJob::getActiveStation()->emitStartMove(parameter->rPolar.azimuth,parameter->rPolar.zenith,parameter->rPolar.distance,false);
-        emit sensorWorks("moving...");
-    }else if (parameter->typeofReading == Configuration::eCartesian){
-        OiJob::getActiveStation()->emitStartMove(parameter->rCartesian.xyz.getAt(0),parameter->rCartesian.xyz.getAt(1),parameter->rCartesian.xyz.getAt(2));
-        emit sensorWorks("moving...");
-    }
-*/
-}
+    //create job with a station and a nominal system
+    QPointer<OiJob> job = new OiJob();
 
+    QPointer<FeatureWrapper> stationFeature = new FeatureWrapper();
+    QPointer<Station> station = new Station();
+    station->setFeatureName("STATION01");
+    stationFeature->setStation(station);
 
-void Controller::startAim(){
-/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }else if(OiJob::getActiveFeature() == NULL){
-        Console::addLine("no active feature");
-        return;
-    }
+    QPointer<FeatureWrapper> systemFeature = new FeatureWrapper();
+    QPointer<CoordinateSystem> system = new CoordinateSystem();
+    system->setFeatureName("PART");
+    systemFeature->setCoordinateSystem(system);
 
-    if(OiJob::getActiveFeature()->getGeometry() != NULL && !OiJob::getActiveFeature()->getGeometry()->getIsSolved()){
-        Console::addLine("Cannot aim a unsolved feature.");
-        return;
-    }
-    if(checkFeatureValid() && checkSensorValid()){
+    job->addFeature(stationFeature);
+    job->addFeature(systemFeature);
 
-        OiVec xyz = OiJob::getActiveFeature()->getGeometry()->getXYZ();
-        if(xyz.getSize() < 3){
-            return;
-        }
-        OiVec polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
-        if(OiJob::getActiveStation()->coordSys != OiJob::getActiveCoordinateSystem()){
+    //set the job as the current job
+    this->setJob(job);
 
-            //get homogeneous matrix from "from- coordsys" to active coord system
-            OiMat t = FeatureUpdater::trafoControl.getTransformationMatrix(OiJob::getActiveStation()->coordSys);
-            //if matrix is valid
-            if(t.getColCount() == 4 && t.getRowCount() == 4){
-                OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
-                //inverse because t is from "from" to active system, we need xyz in "from" system, that is the
-                //active station coord system
-                xyz = t.inv() * xyz;
-                polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
-            }
-
-            /*QList<TrafoParam*> myTrafoParams = OiFeatureState::getActiveCoordinateSystem()->getTransformationParameters(OiFeatureState::getActiveStation()->coordSys);
-            TrafoParam *tp = NULL;
-            if(myTrafoParams.size() > 0){
-                for(int i=0;i<myTrafoParams.size();i++){
-                    if(!myTrafoParams.at(i)->getIsMovement() && myTrafoParams.at(i)->getIsUsed()){
-                        tp = myTrafoParams.at(i);
-                        break;
-                    }
-                }
-            }
-            if(tp != NULL){
-                OiMat t;
-                if(tp->getDestinationSystem() == OiFeatureState::getActiveStation()->coordSys){
-                    t = tp->getHomogenMatrix();
-                }else{
-                    t = tp->getHomogenMatrix().inv();
-                }
-                OiVec xyz = Reading::toCartesian(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2));
-                xyz = t * xyz;
-                polarElements = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
-            }*/
-/*
-        }
-
-        OiJob::getActiveStation()->emitStartMove(polarElements.getAt(0),polarElements.getAt(1),polarElements.getAt(2),false);
-        emit sensorWorks("moving...");
-    }
-*/
 }
 
 /*!
- * \brief Controller::startConnect
- * After checking some conditions, it calls the connect function of the active sensor.
+ * \brief Controller::setJob
+ * \param job
  */
-void Controller::startConnect(){
-/*
-    if(OiJob::getActiveStation() != NULL){
-        if(OiJob::getActiveStation()->sensorPad->instrument != NULL){
-            OiJob::getActiveStation()->emitStartConnect(OiJob::getActiveStation()->getInstrumentConfig().connConfig);
-            emit sensorWorks("connecting...");
-            OiSensorEmitter *s = OiJob::getActiveStation()->getActiveSensorEmitter();
-            connect(s,SIGNAL(sendConnectionStat(bool)),this,SLOT(sendIsConnected(bool)));
-            connect(s,SIGNAL(sendIsReadyForMeasurement(int,QString)),this,SLOT(sendSensorState(int,QString)));
-        }else{
-            Console::addLine("sensor not connected");
-        }
-    }else{
-        Console::addLine("no active station");
-    }*/
-}
-/*!
- * \brief Controller::startDisconnect
- * After checking some conditions, it calls the disconnect function of the active sensor.
- */
-void Controller::startDisconnect(){
-/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
+void Controller::setJob(const QPointer<OiJob> &job){
+
+    //check job
+    if(job.isNull()){
         return;
     }
 
-    if(checkSensorValid()){
-        OiSensorEmitter *s = OiJob::getActiveStation()->getActiveSensorEmitter();
-        disconnect(s,SIGNAL(sendConnectionStat(bool)),this,SLOT(sendIsConnected(bool)));
-        disconnect(s,SIGNAL(sendIsReadyForMeasurement(int,QString)),this,SLOT(sendSensorState(int,QString)));
-        OiJob::getActiveStation()->emitStartDisconnect();
-        emit sensorWorks("disconnecting...");
-        emit sensorDisconnected();
-    }*/
+    //delete old job
+    if(!this->job.isNull()){
+        delete this->job;
+    }
+
+    //set and connect new job
+    this->job = job;
+
+    //active feature changes
+    QObject::connect(this->job.data(), SIGNAL(activeFeatureChanged()), this, SIGNAL(activeFeatureChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(activeStationChanged()), this, SIGNAL(activeStationChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(activeCoordinateSystemChanged()), this, SIGNAL(activeCoordinateSystemChanged()), Qt::AutoConnection);
+
+    //feature(s) added or removed
+    QObject::connect(this->job.data(), SIGNAL(featureSetChanged()), this, SIGNAL(featureSetChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(coordSystemSetChanged()), this, SIGNAL(coordSystemSetChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(stationSetChanged()), this, SIGNAL(stationSetChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(trafoParamSetChanged()), this, SIGNAL(trafoParamSetChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(geometrySetChanged()), this, SIGNAL(geometrySetChanged()), Qt::AutoConnection);
+
+    //group(s) added or removed
+    QObject::connect(this->job.data(), SIGNAL(availableGroupsChanged()), this, SIGNAL(availableGroupsChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(activeGroupChanged()), this, SIGNAL(activeGroupChanged()), Qt::AutoConnection);
+
+    //general feature attributes changed
+    QObject::connect(this->job.data(), SIGNAL(featureAttributesChanged()), this, SIGNAL(featureAttributesChanged()), Qt::AutoConnection);
+
+    //feature specific attributes changed
+    QObject::connect(this->job.data(), SIGNAL(featureNameChanged(const int&, const QString&)),
+                     this, SIGNAL(featureNameChanged(const int&, const QString&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(featureGroupChanged(const int&, const QString&)),
+                     this, SIGNAL(featureGroupChanged(const int&, const QString&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(featureCommentChanged(const int&)),
+                     this, SIGNAL(featureCommentChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(featureIsUpdatedChanged(const int&)),
+                     this, SIGNAL(featureIsUpdatedChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(featureIsSolvedChanged(const int&)),
+                     this, SIGNAL(featureIsSolvedChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(featureFunctionsChanged(const int&)),
+                     this, SIGNAL(featureFunctionsChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(featureUsedForChanged(const int&)),
+                     this, SIGNAL(featureUsedForChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(featurePreviouslyNeededChanged(const int&)),
+                     this, SIGNAL(featurePreviouslyNeededChanged(const int&)), Qt::AutoConnection);
+
+    //geometry specific attributes changed
+    QObject::connect(this->job.data(), SIGNAL(geometryIsCommonChanged(const int&)),
+                     this, SIGNAL(geometryIsCommonChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(geometryNominalsChanged(const int&)),
+                     this, SIGNAL(geometryNominalsChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(geometryActualChanged(const int&)),
+                     this, SIGNAL(geometryActualChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(geometryObservationsChanged(const int&)),
+                     this, SIGNAL(geometryObservationsChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(geometryNominalSystemChanged(const int&)),
+                     this, SIGNAL(geometryNominalSystemChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(geometryStatisticChanged(const int&)),
+                     this, SIGNAL(geometryStatisticChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(geometrySimulationDataChanged(const int&)),
+                     this, SIGNAL(geometrySimulationDataChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(geometryMeasurementConfigChanged(const int&)),
+                     this, SIGNAL(geometryMeasurementConfigChanged(const int&)), Qt::AutoConnection);
+
+    //coordinate system specific attributes changed
+    QObject::connect(this->job.data(), SIGNAL(systemObservationsChanged(const int&, const int&)),
+                     this, SIGNAL(systemObservationsChanged(const int&, const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(systemTrafoParamsChanged(const int&)),
+                     this, SIGNAL(systemTrafoParamsChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(systemsNominalsChanged(const int&)),
+                     this, SIGNAL(systemsNominalsChanged(const int&)), Qt::AutoConnection);
+
+    //station specific attributes changed
+    QObject::connect(this->job.data(), SIGNAL(stationSensorChanged(const int&)),
+                     this, SIGNAL(stationSensorChanged(const int&)), Qt::AutoConnection);
+
+    //transformation parameter specific attributes changed
+    QObject::connect(this->job.data(), SIGNAL(trafoParamParametersChanged(const int&)),
+                     this, SIGNAL(trafoParamParametersChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(trafoParamSystemsChanged(const int&)),
+                     this, SIGNAL(trafoParamSystemsChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(trafoParamIsUsedChanged(const int&)),
+                     this, SIGNAL(trafoParamIsUsedChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(trafoParamValidTimeChanged(const int&)),
+                     this, SIGNAL(trafoParamValidTimeChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), SIGNAL(trafoParamIsMovementChanged(const int&)),
+                     this, SIGNAL(trafoParamIsMovementChanged(const int&)), Qt::AutoConnection);
+
+    //pass the new job to model manager
+    ModelManager::setCurrentJob(this->job);
+
 }
 
 /*!
- * \brief Controller::startToggleSight
- * After checking some conditions, it calls the toggle sight function of the active sensor.
+ * \brief Controller::initDisplayConfigs
+ * Sets up initial display configs and passes them to model manager
  */
-void Controller::startToggleSight(){
-/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }
+void Controller::initDisplayConfigs(){
 
-    if(checkSensorValid()){
-        OiJob::getActiveStation()->emitStartToggleSight();
-        emit sensorWorks("toggle sight...");
-    }*/
-}
+    //create default configs
+    FeatureTableColumnConfig featureTableColumnConfig;
+    TrafoParamTableColumnConfig trafoParamTableColumnConfig;
+    ParameterDisplayConfig parameterDisplayConfig;
 
-/*!
- * \brief Controller::startInitialize
- * After checking some conditions, it calls the initialize function of the active sensor.
- */
-void Controller::startInitialize(){
-/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }
+    //pass the default configs to model manager
+    ModelManager::setFeatureTableColumnConfig(featureTableColumnConfig);
+    ModelManager::setTrafoParamColumnConfig(trafoParamTableColumnConfig);
+    ModelManager::setParameterDisplayConfig(parameterDisplayConfig);
 
-    if(checkSensorValid()){
-        OiJob::getActiveStation()->emitStartInitialize();
-        emit sensorWorks("initialize...");
-    }*/
-}
-
-/*!
- * \brief Controller::startHome
- * After checking some conditions, it calls the home function of the active sensor.
- */
-void Controller::startHome(){
-/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }
-
-    if(checkSensorValid()){
-        OiJob::getActiveStation()->emitStartHome();
-        emit sensorWorks("home...");
-    }*/
-}
-
-/*!
- * \brief Controller::startCompensation
- * After checking some conditions, it calls the compensation function of the active sensor.
- */
-void Controller::startCompensation(){
-/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }
-
-    if(checkSensorValid()){
-        OiJob::getActiveStation()->emitStartCompensation();
-        emit sensorWorks("compensation...");
-    }*/
-}
-
-/*!
- * \brief Controller::startChangeMotorState
- * After checking some conditions, it calls the change motor state function of the active sensor.
- */
-void Controller::startChangeMotorState(){
-/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }
-
-    if(checkSensorValid()){
-        OiJob::getActiveStation()->emitStartMotorState();
-        emit sensorWorks("change motor state...");
-    }*/
-}
-
-/*!
- * \brief Controller::startCustomAction calls the custom action of the sensor.
- * \param s
- */
-void Controller::startCustomAction(const QString &s)
-{/*
-    if(OiJob::getActiveStation() == NULL){
-        Console::addLine("no active station");
-        return;
-    }
-
-    emit sensorWorks(s);
-    OiJob::getActiveStation()->emitSelfDefinedAction(s);*/
 }

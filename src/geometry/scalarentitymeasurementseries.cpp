@@ -298,3 +298,17 @@ bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief ScalarEntityMeasurementSeries::getDisplayMeasurementSeries
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString ScalarEntityMeasurementSeries::getDisplayMeasurementSeries(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->seriesValue, type), 'f', digits);
+    }
+    return QString("");
+}

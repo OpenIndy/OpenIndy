@@ -297,3 +297,112 @@ bool Ellipsoid::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief Ellipsoid::getDisplayX
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipsoid::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(0), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipsoid::getDisplayY
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipsoid::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(1), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipsoid::getDisplayZ
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipsoid::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(2), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipsoid::getDisplayPrimaryI
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipsoid::getDisplayPrimaryI(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->majorAxis.getVector().getAt(0), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipsoid::getDisplayPrimaryJ
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipsoid::getDisplayPrimaryJ(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->majorAxis.getVector().getAt(1), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipsoid::getDisplayPrimaryK
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipsoid::getDisplayPrimaryK(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->majorAxis.getVector().getAt(2), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipsoid::getDisplayA
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipsoid::getDisplayA(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->a, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipsoid::getDisplayB
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipsoid::getDisplayB(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->b, type), 'f', digits);
+    }
+    return QString("");
+}

@@ -281,3 +281,112 @@ bool Hyperboloid::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief Hyperboloid::getDisplayX
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Hyperboloid::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(0), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Hyperboloid::getDisplayY
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Hyperboloid::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(1), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Hyperboloid::getDisplayZ
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Hyperboloid::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(2), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Hyperboloid::getDisplayPrimaryI
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Hyperboloid::getDisplayPrimaryI(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->axis.getVector().getAt(0), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Hyperboloid::getDisplayPrimaryJ
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Hyperboloid::getDisplayPrimaryJ(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->axis.getVector().getAt(1), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Hyperboloid::getDisplayPrimaryK
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Hyperboloid::getDisplayPrimaryK(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->axis.getVector().getAt(2), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Hyperboloid::getDisplayA
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Hyperboloid::getDisplayA(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->a, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Hyperboloid::getDisplayC
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Hyperboloid::getDisplayC(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->c, type), 'f', digits);
+    }
+    return QString("");
+}

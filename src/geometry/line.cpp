@@ -498,3 +498,84 @@ bool Line::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief Line::getDisplayX
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Line::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->xyz.getVector().getAt(0), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Line::getDisplayY
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Line::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->xyz.getVector().getAt(1), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Line::getDisplayZ
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Line::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->xyz.getVector().getAt(2), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Line::getDisplayPrimaryI
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Line::getDisplayPrimaryI(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->axis.getVector().getAt(0), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Line::getDisplayPrimaryJ
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Line::getDisplayPrimaryJ(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->axis.getVector().getAt(1), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Line::getDisplayPrimaryK
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Line::getDisplayPrimaryK(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->axis.getVector().getAt(2), 'f', digits);
+    }
+    return QString("");
+}

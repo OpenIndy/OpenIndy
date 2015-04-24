@@ -220,3 +220,151 @@ bool Ellipse::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief Ellipse::getDisplayX
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(0), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipse::getDisplayY
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(1), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipse::getDisplayZ
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(2), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipse::getDisplayPrimaryI
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplayPrimaryI(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->normal.getVector().getAt(0), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipse::getDisplayPrimaryJ
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplayPrimaryJ(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->normal.getVector().getAt(1), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipse::getDisplayPrimaryK
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplayPrimaryK(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->normal.getVector().getAt(2), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipse::getDisplaySecondaryI
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplaySecondaryI(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->semiMajorAxis.getVector().getAt(0), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipse::getDisplaySecondaryJ
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplaySecondaryJ(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->semiMajorAxis.getVector().getAt(1), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipse::getDisplaySecondaryK
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplaySecondaryK(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->semiMajorAxis.getVector().getAt(2), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipse::getDisplayA
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplayA(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->a, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Ellipse::getDisplayB
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Ellipse::getDisplayB(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->b, type), 'f', digits);
+    }
+    return QString("");
+}

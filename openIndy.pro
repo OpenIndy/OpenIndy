@@ -47,6 +47,7 @@ INCLUDEPATH += $$PWD/src/util
 
 INCLUDEPATH += $$PWD/models
 INCLUDEPATH += $$PWD/controller
+INCLUDEPATH += $$PWD/controller/config
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/ui/delegates
 INCLUDEPATH += $$PWD/ui/dialogs
@@ -126,7 +127,11 @@ SOURCES += \
     src/plugin/sensor/sensor.cpp \
     src/plugin/exchange/exchangedefinedformat.cpp \
     src/plugin/exchange/exchangesimpleascii.cpp \
-    src/plugin/exchange/exchangeinterface.cpp
+    src/plugin/exchange/exchangeinterface.cpp \
+    controller/config/featuretablecolumnconfig.cpp \
+    controller/config/trafoparamtablecolumnconfig.cpp \
+    controller/config/parameterdisplayconfig.cpp \
+    models/trafoparamtableproxymodel.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -205,7 +210,11 @@ HEADERS  += \
     lib/openIndyLib/include/global.h \
     lib/openIndyLib/include/linearalgebra.h \
     lib/openIndyLib/include/oimat.h \
-    lib/openIndyLib/include/oivec.h
+    lib/openIndyLib/include/oivec.h \
+    controller/config/featuretablecolumnconfig.h \
+    controller/config/trafoparamtablecolumnconfig.h \
+    controller/config/parameterdisplayconfig.h \
+    models/trafoparamtableproxymodel.h
 
 FORMS    += \
     ui/mainwindow.ui \

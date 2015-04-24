@@ -858,3 +858,146 @@ bool TrafoParam::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief TrafoParam::getDisplayStDev
+ * \param type
+ * \param digits
+ * \return
+ */
+QString TrafoParam::getDisplayStDev(const UnitType &type, const int &digits) const{
+    return QString::number(convertToDefault(this->statistic.getStdev(), type), 'f', digits);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayStartSystem
+ * \return
+ */
+QString TrafoParam::getDisplayStartSystem() const{
+    if(!this->from.isNull()){
+        return this->from->getFeatureName();
+    }
+    return QString("");
+}
+
+/*!
+ * \brief TrafoParam::getDisplayDestinationSystem
+ * \return
+ */
+QString TrafoParam::getDisplayDestinationSystem() const{
+    if(!this->to.isNull()){
+        return this->to->getFeatureName();
+    }
+    return QString("");
+}
+
+/*!
+ * \brief TrafoParam::getDisplayTranslationX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString TrafoParam::getDisplayTranslationX(const UnitType &type, const int &digits) const{
+    return QString::number(convertToDefault(this->translation.getAt(0), type), 'f', digits);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayTranslationY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString TrafoParam::getDisplayTranslationY(const UnitType &type, const int &digits) const{
+    return QString::number(convertToDefault(this->translation.getAt(1), type), 'f', digits);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayTranslationZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString TrafoParam::getDisplayTranslationZ(const UnitType &type, const int &digits) const{
+    return QString::number(convertToDefault(this->translation.getAt(2), type), 'f', digits);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayRotationX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString TrafoParam::getDisplayRotationX(const UnitType &type, const int &digits) const{
+    return QString::number(convertToDefault(this->rotation.getAt(0), type), 'f', digits);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayRotationY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString TrafoParam::getDisplayRotationY(const UnitType &type, const int &digits) const{
+    return QString::number(convertToDefault(this->rotation.getAt(1), type), 'f', digits);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayRotationZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString TrafoParam::getDisplayRotationZ(const UnitType &type, const int &digits) const{
+    return QString::number(convertToDefault(this->rotation.getAt(2), type), 'f', digits);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayScaleX
+ * \param digits
+ * \return
+ */
+QString TrafoParam::getDisplayScaleX(const int &digits) const{
+    return QString::number(this->scale.getAt(0), 'f', digits);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayScaleY
+ * \param digits
+ * \return
+ */
+QString TrafoParam::getDisplayScaleY(const int &digits) const{
+    return QString::number(this->scale.getAt(1), 'f', digits);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayScaleZ
+ * \param digits
+ * \return
+ */
+QString TrafoParam::getDisplayScaleZ(const int &digits) const{
+    return QString::number(this->scale.getAt(2), 'f', digits);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayIsUsed
+ * \return
+ */
+QString TrafoParam::getDisplayIsUsed() const{
+    return this->isUsed?"true":"false";
+}
+
+/*!
+ * \brief TrafoParam::getDisplayValidTime
+ * \return
+ */
+QString TrafoParam::getDisplayValidTime() const{
+    return this->validTime.toString(Qt::ISODate);
+}
+
+/*!
+ * \brief TrafoParam::getDisplayIsMovement
+ * \return
+ */
+QString TrafoParam::getDisplayIsMovement() const{
+    return this->isMovement?"true":"false";
+}

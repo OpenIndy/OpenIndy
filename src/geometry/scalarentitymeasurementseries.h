@@ -52,6 +52,12 @@ public:
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
+    //###############
+    //display methods
+    //###############
+
+    QString getDisplayMeasurementSeries(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+
 private:
 
     //#############################

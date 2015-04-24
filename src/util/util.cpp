@@ -9,19 +9,28 @@ namespace internal{
 QMap<ElementTypes, QString> elementTypesMap;
 QMap<FeatureTypes, QString> featureTypesMap;
 QMap<GeometryTypes, QString> geometryTypesMap;
+
 QMap<ReadingTypes, QString> readingTypesMap;
+
+QMap<FeatureDisplayAttributes, QString> featureDisplayAttributesMap;
+QMap<TrafoParamDisplayAttributes, QString> trafoParamDisplayAttributesMap;
+
+QList<int> displayAttributes;
 
 QString undefined = "";
 
 bool isInit = false;
 
-void initMaps(){
+void init(){
 
     //clear maps
     elementTypesMap.clear();
     featureTypesMap.clear();
     geometryTypesMap.clear();
     readingTypesMap.clear();
+    featureDisplayAttributesMap.clear();
+    trafoParamDisplayAttributesMap.clear();
+    displayAttributes.clear();
 
     //fill element map
     elementTypesMap.insert(eCircleElement, "circle");
@@ -110,6 +119,86 @@ void initMaps(){
     readingTypesMap.insert(eTemperatureReading, "temperature");
     readingTypesMap.insert(eLevelReading, "level");
 
+    //fill feature display attributes map
+    featureDisplayAttributesMap.insert(eFeatureDisplayType, "type");
+    featureDisplayAttributesMap.insert(eFeatureDisplayName, "name");
+    featureDisplayAttributesMap.insert(eFeatureDisplayComment, "comment");
+    featureDisplayAttributesMap.insert(eFeatureDisplayGroup, "group");
+    featureDisplayAttributesMap.insert(eFeatureDisplayIsSolved, "solved");
+    featureDisplayAttributesMap.insert(eFeatureDisplayIsUpdated, "updated");
+    featureDisplayAttributesMap.insert(eFeatureDisplayFunctions, "functions");
+    featureDisplayAttributesMap.insert(eFeatureDisplayUsedFor, "used for");
+    featureDisplayAttributesMap.insert(eFeatureDisplayPreviouslyNeeded, "previously needed");
+    featureDisplayAttributesMap.insert(eFeatureDisplayStDev, "stdev");
+    featureDisplayAttributesMap.insert(eFeatureDisplayMeasurementConfig, "measurement config");
+    featureDisplayAttributesMap.insert(eFeatureDisplayObservations, "observations");
+    featureDisplayAttributesMap.insert(eFeatureDisplayX, "x");
+    featureDisplayAttributesMap.insert(eFeatureDisplayY, "y");
+    featureDisplayAttributesMap.insert(eFeatureDisplayZ, "z");
+    featureDisplayAttributesMap.insert(eFeatureDisplayPrimaryI, "i");
+    featureDisplayAttributesMap.insert(eFeatureDisplayPrimaryJ, "j");
+    featureDisplayAttributesMap.insert(eFeatureDisplayPrimaryK, "k");
+    featureDisplayAttributesMap.insert(eFeatureDisplayRadiusA, "radius");
+    featureDisplayAttributesMap.insert(eFeatureDisplayRadiusB, "radius 2");
+    featureDisplayAttributesMap.insert(eFeatureDisplaySecondaryI, "i 2");
+    featureDisplayAttributesMap.insert(eFeatureDisplaySecondaryJ, "j 2");
+    featureDisplayAttributesMap.insert(eFeatureDisplaySecondaryK, "k 2");
+    featureDisplayAttributesMap.insert(eFeatureDisplayAperture, "aperture");
+    featureDisplayAttributesMap.insert(eFeatureDisplayA, "a");
+    featureDisplayAttributesMap.insert(eFeatureDisplayB, "b");
+    featureDisplayAttributesMap.insert(eFeatureDisplayC, "c");
+    featureDisplayAttributesMap.insert(eFeatureDisplayAngle, "angle");
+    featureDisplayAttributesMap.insert(eFeatureDisplayDistance, "distance");
+    featureDisplayAttributesMap.insert(eFeatureDisplayMeasurementSeries, "measurement series");
+    featureDisplayAttributesMap.insert(eFeatureDisplayTemperature, "temperature");
+    featureDisplayAttributesMap.insert(eFeatureDisplayLength, "length");
+    featureDisplayAttributesMap.insert(eFeatureDisplayExpansionOriginX, "expansion x");
+    featureDisplayAttributesMap.insert(eFeatureDisplayExpansionOriginY, "expansion y");
+    featureDisplayAttributesMap.insert(eFeatureDisplayExpansionOriginZ, "expansion z");
+
+    //fill trafo param display attributes map
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayType, "type");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayName, "name");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayComment, "comment");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayGroup, "group");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayIsSolved, "solved");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayIsUpdated, "updated");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayFunctions, "functions");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayUsedFor, "used for");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayPreviouslyNeeded, "previously needed");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayStDev, "stdev");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayStartSystem, "start");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayDestinationSystem, "destination");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayTranslationX, "tx");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayTranslationY, "ty");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayTranslationZ, "tz");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayRotationX, "rx");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayRotationY, "ry");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayRotationZ, "rz");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayScaleX, "sx");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayScaleY, "sy");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayScaleZ, "sz");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayIsUsed, "used");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayValidTime, "time");
+    trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayIsMovement, "movement");
+
+    //fill available display attributes
+    for(int i = 0; i < 10; i++){ //general feature attributes
+        displayAttributes.append(i);
+    }
+    for(int i = 100; i < 102; i++){ //geometry specific attributes
+        displayAttributes.append(i);
+    }
+    for(int i = 200; i < 220; i++){ //unknown geometry parameters
+        displayAttributes.append(i);
+    }
+    for(int i = 300; i < 303; i++){ //coordinate system specific
+        displayAttributes.append(i);
+    }
+    for(int i = 400; i < 414; i++){ //trafo param specific
+        displayAttributes.append(i);
+    }
+
     isInit = true;
 
 }
@@ -129,7 +218,7 @@ const QString &getElementTypeName(const ElementTypes &type){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
-        internal::initMaps();
+        internal::init();
     }
 
     //get the corresponding element name
@@ -149,7 +238,7 @@ ElementTypes getElementTypeEnum(const QString &name){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
-        internal::initMaps();
+        internal::init();
     }
 
     //get the corresponding element enum value
@@ -166,7 +255,7 @@ const QString &getFeatureTypeName(const FeatureTypes &type){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
-        internal::initMaps();
+        internal::init();
     }
 
     //get the corresponding feature name
@@ -186,7 +275,7 @@ FeatureTypes getFeatureTypeEnum(const QString &name){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
-        internal::initMaps();
+        internal::init();
     }
 
     //get the corresponding feature enum value
@@ -203,7 +292,7 @@ const QString &getGeometryTypeName(const GeometryTypes &type){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
-        internal::initMaps();
+        internal::init();
     }
 
     //get the corresponding geometry name
@@ -223,7 +312,7 @@ GeometryTypes getGeometryTypeEnum(const QString &name){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
-        internal::initMaps();
+        internal::init();
     }
 
     //get the corresponding geometry enum value
@@ -254,7 +343,7 @@ const QString &getReadingTypeName(const ReadingTypes &type){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
-        internal::initMaps();
+        internal::init();
     }
 
     //get the corresponding reading name
@@ -274,10 +363,139 @@ ReadingTypes getReadingTypeEnum(const QString &name){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
-        internal::initMaps();
+        internal::init();
     }
 
     //get the corresponding reading enum value
     return internal::readingTypesMap.key(name, eUndefinedReading);
+
+}
+
+/*!
+ * \brief getDisplayAttributes
+ * Returns a list of enum values (feature attributes and trafo param attributes)
+ * \return
+ */
+const QList<int> &getDisplayAttributes(){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::displayAttributes;
+
+}
+
+/*!
+ * \brief getIsFeatureDisplayAttribute
+ * Returns true if the given attribute is a feature attribute
+ * \param attr
+ * \return
+ */
+bool getIsFeatureDisplayAttribute(const int &attr){
+    if( (attr >= 0 && attr < 10) || (attr >= 100 && attr < 102) || (attr >= 200 && attr < 220) || (attr >= 300 && attr < 303) ){
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief getIsTrafoParamDisplayAttribute
+ * Returns true if the given attribute is a trafo param attribute
+ * \param attr
+ * \return
+ */
+bool getIsTrafoParamDisplayAttribute(const int &attr){
+    if( (attr >= 0 && attr < 10) || (attr >= 400 && attr < 414) ){
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief getDisplayAttributeName
+ * Returns the name of the attribute represented by the given enum value
+ * \param attr
+ * \return
+ */
+const QString &getDisplayAttributeName(const int &attr){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    if(getIsFeatureDisplayAttribute(attr)){ //feature display attribute
+        return internal::featureDisplayAttributesMap.value((FeatureDisplayAttributes)attr);
+    }else if(getIsTrafoParamDisplayAttribute(attr)){ //trafo param display attribute
+        return internal::trafoParamDisplayAttributesMap.value((TrafoParamDisplayAttributes)attr);
+    }
+
+    return internal::undefined;
+
+}
+
+/*!
+ * \brief getDisplayAttributeName
+ * \param attr
+ * \return
+ */
+const QString &getDisplayAttributeName(const FeatureDisplayAttributes &attr){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::featureDisplayAttributesMap.value(attr);
+
+}
+
+/*!
+ * \brief getDisplayAttributeName
+ * \param attr
+ * \return
+ */
+const QString &getDisplayAttributeName(const TrafoParamDisplayAttributes &attr){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::trafoParamDisplayAttributesMap.value(attr);
+
+}
+
+/*!
+ * \brief convertToDefault
+ * Convert the given value of unit type to the default unit
+ * \param value
+ * \param type
+ * \return
+ */
+double convertToDefault(const double &value, const UnitType &type){
+
+    switch(type){
+    case eUnitMilliMeter:
+        return value * (1.0 / 1000.0);
+    case eUnitInch:
+        return value * (1.0 / 39.37007874);
+    case eUnitMilliRadians:
+        return value * (1.0 / 1000.0);
+    case eUnitGon:
+        return value * (1.0 / RHO_GON);
+    case eUnitArcSeconds:
+        return value * (1.0 / 206264.8062471);
+    case eUnitDecimalDegree:
+        return value * (1.0 / RHO_DEGREE);
+    case eUnitFahrenheit:
+        return (value - 32.0) / 1.8;
+    case eUnitKelvin:
+        return value - 273.15;
+    default:
+        return value;
+    }
 
 }

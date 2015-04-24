@@ -212,16 +212,16 @@
         </spacer>
        </item>
        <item>
-        <widget class="QToolButton" name="toolButton_create">
+        <widget class="QToolButton" name="toolButton_cancel">
          <property name="text">
           <string>create</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="toolButton_cancel">
+        <widget class="QToolButton" name="toolButton_ok">
          <property name="text">
-          <string>cancel</string>
+          <string>ok</string>
          </property>
         </widget>
        </item>

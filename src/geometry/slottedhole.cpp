@@ -302,3 +302,151 @@ bool SlottedHole::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief SlottedHole::getDisplayX
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(0), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief SlottedHole::getDisplayY
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(1), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief SlottedHole::getDisplayZ
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->center.getVector().getAt(2), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief SlottedHole::getDisplayPrimaryI
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplayPrimaryI(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->normal.getVector().getAt(0), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief SlottedHole::getDisplayPrimaryJ
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplayPrimaryJ(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->normal.getVector().getAt(1), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief SlottedHole::getDisplayPrimaryK
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplayPrimaryK(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->normal.getVector().getAt(2), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief SlottedHole::getDisplayRadiusA
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplayRadiusA(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->radius.getRadius(), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief SlottedHole::getDisplaySecondaryI
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplaySecondaryI(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->holeAxis.getVector().getAt(0), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief SlottedHole::getDisplaySecondaryJ
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplaySecondaryJ(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->holeAxis.getVector().getAt(1), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief SlottedHole::getDisplaySecondaryK
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplaySecondaryK(const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(this->holeAxis.getVector().getAt(2), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief SlottedHole::getDisplayLength
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString SlottedHole::getDisplayLength(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->length, type), 'f', digits);
+    }
+    return QString("");
+}

@@ -12,7 +12,9 @@ namespace Ui {
 class CreateFeatureDialog;
 }
 
-//! Dialog to create features in OpenIndy
+/*!
+ * \brief The CreateFeatureDialog class
+ */
 class CreateFeatureDialog : public QDialog
 {
     Q_OBJECT

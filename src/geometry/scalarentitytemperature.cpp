@@ -300,3 +300,17 @@ bool ScalarEntityTemperature::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief ScalarEntityTemperature::getDisplayTemperature
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString ScalarEntityTemperature::getDisplayTemperature(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->temperature, type), 'f', digits);
+    }
+    return QString("");
+}

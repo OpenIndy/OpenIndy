@@ -61,6 +61,14 @@ public:
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
+    //###############
+    //display methods
+    //###############
+
+    QString getDisplayX(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    QString getDisplayY(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    QString getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+
 private:
 
     //################

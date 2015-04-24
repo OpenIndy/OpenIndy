@@ -5,6 +5,14 @@
 #include <QStringList>
 
 //#######################
+//define scalar constants
+//#######################
+
+#define PI 3.141592653589793
+#define RHO_DEGREE  (180.0/PI)
+#define RHO_GON (200.0/PI)
+
+//#######################
 //available element types
 //#######################
 
@@ -120,6 +128,7 @@ enum GeometryTypes{
 //################################
 
 enum UnknownParameters{
+
     eUnknownX, //point coordinates
     eUnknownY,
     eUnknownZ,
@@ -140,6 +149,7 @@ enum UnknownParameters{
     eUnknownMeasurementSeries,
     eUnknownTemperature,
     eUnknownLength //(slotted hole)
+
 };
 
 //#######################
@@ -155,6 +165,125 @@ enum ReadingTypes{
     eTemperatureReading,
     eLevelReading,
     eUndefinedReading
+
+};
+
+//############################
+//available display attributes
+//############################
+
+enum FeatureDisplayAttributes{
+
+    //general attributes
+    eFeatureDisplayType = 0,
+    eFeatureDisplayName,
+    eFeatureDisplayComment,
+    eFeatureDisplayGroup,
+    eFeatureDisplayIsSolved,
+    eFeatureDisplayIsUpdated,
+    eFeatureDisplayFunctions,
+    eFeatureDisplayUsedFor,
+    eFeatureDisplayPreviouslyNeeded,
+    eFeatureDisplayStDev,
+
+    //geometry specific
+    eFeatureDisplayMeasurementConfig = 100,
+    eFeatureDisplayObservations,
+
+    //unknown parameters
+    eFeatureDisplayX = 200,
+    eFeatureDisplayY,
+    eFeatureDisplayZ,
+    eFeatureDisplayPrimaryI,
+    eFeatureDisplayPrimaryJ,
+    eFeatureDisplayPrimaryK,
+    eFeatureDisplayRadiusA,
+    eFeatureDisplayRadiusB,
+    eFeatureDisplaySecondaryI,
+    eFeatureDisplaySecondaryJ,
+    eFeatureDisplaySecondaryK,
+    eFeatureDisplayAperture,
+    eFeatureDisplayA,
+    eFeatureDisplayB,
+    eFeatureDisplayC,
+    eFeatureDisplayAngle,
+    eFeatureDisplayDistance,
+    eFeatureDisplayMeasurementSeries,
+    eFeatureDisplayTemperature,
+    eFeatureDisplayLength,
+
+    //coordinate system specific
+    eFeatureDisplayExpansionOriginX = 300,
+    eFeatureDisplayExpansionOriginY,
+    eFeatureDisplayExpansionOriginZ
+
+};
+
+enum TrafoParamDisplayAttributes{
+
+    //general attributes
+    eTrafoParamDisplayType = 0,
+    eTrafoParamDisplayName,
+    eTrafoParamDisplayComment,
+    eTrafoParamDisplayGroup,
+    eTrafoParamDisplayIsSolved,
+    eTrafoParamDisplayIsUpdated,
+    eTrafoParamDisplayFunctions,
+    eTrafoParamDisplayUsedFor,
+    eTrafoParamDisplayPreviouslyNeeded,
+    eTrafoParamDisplayStDev,
+
+    //trafo param specific attributes
+    eTrafoParamDisplayStartSystem = 400,
+    eTrafoParamDisplayDestinationSystem,
+    eTrafoParamDisplayTranslationX,
+    eTrafoParamDisplayTranslationY,
+    eTrafoParamDisplayTranslationZ,
+    eTrafoParamDisplayRotationX,
+    eTrafoParamDisplayRotationY,
+    eTrafoParamDisplayRotationZ,
+    eTrafoParamDisplayScaleX,
+    eTrafoParamDisplayScaleY,
+    eTrafoParamDisplayScaleZ,
+    eTrafoParamDisplayIsUsed,
+    eTrafoParamDisplayValidTime,
+    eTrafoParamDisplayIsMovement
+
+};
+
+//###############
+//available units
+//###############
+
+enum UnitType{
+
+    //metric unit types
+    eUnitMilliMeter,
+    eUnitMeter,
+    eUnitInch,
+
+    //angular unit types
+    eUnitRadiant,
+    eUnitMilliRadians,
+    eUnitGon,
+    eUnitDecimalDegree,
+    eUnitArcSeconds,
+
+    //temperature unit types
+    eUnitGrad,
+    eUnitKelvin,
+    eUnitFahrenheit,
+
+    eNoUnit
+
+};
+
+enum DimensionType{
+
+    eMetric,
+    eAngular,
+    eTemperature,
+    eDimensionless
 
 };
 

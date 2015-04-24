@@ -29,4 +29,23 @@ bool getIsGeometry(const FeatureTypes &type);
 const QString &getReadingTypeName(const ReadingTypes &type);
 ReadingTypes getReadingTypeEnum(const QString &name);
 
+//####################################################
+//global functions to query feature display attributes
+//####################################################
+
+const QList<int> &getDisplayAttributes();
+
+bool getIsFeatureDisplayAttribute(const int &attr);
+bool getIsTrafoParamDisplayAttribute(const int &attr);
+
+const QString &getDisplayAttributeName(const int &attr);
+const QString &getDisplayAttributeName(const FeatureDisplayAttributes &attr);
+const QString &getDisplayAttributeName(const TrafoParamDisplayAttributes &attr);
+
+//##################################################
+//global functions to convert units to default units
+//##################################################
+
+double convertToDefault(const double &value, const UnitType &type);
+
 #endif // UTIL_H

@@ -1299,7 +1299,7 @@ bool OiJob::setActiveGroup(const QString &group){
 bool OiJob::addFeature(const QPointer<FeatureWrapper> &feature){
 
     //check if feature is valid
-    if(!feature.isNull() && !feature->getFeature().isNull()){
+    if(feature.isNull() || feature->getFeature().isNull()){
         return false;
     }
 

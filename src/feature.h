@@ -87,40 +87,74 @@ public:
     virtual QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     virtual bool fromOpenIndyXML(QDomElement &xmlElem);
 
-/*
-    virtual QString getDisplayX(bool showDiff) const;
-    virtual QString getDisplayY(bool showDiff) const;
-    virtual QString getDisplayZ(bool showDiff) const;
-    virtual QString getDisplayI(bool showDiff) const;
-    virtual QString getDisplayJ(bool showDiff) const;
-    virtual QString getDisplayK(bool showDiff) const;
-    virtual QString getDisplayRadius(bool showDiff) const;
-    virtual QString getDisplayIsCommon() const;
-    virtual QString getDisplayIsNominal() const;
-    virtual QString getDisplayObs() const;
-    virtual QString getDisplaySolved() const;
-    virtual QString getDisplayMConfig() const;
-    virtual QString getDisplayStdDev() const;
-    virtual QString getDisplayScalarDistanceValue() const;
-    virtual QString getDisplayScalarAngleValue() const;
+    //###############
+    //display methods
+    //###############
+
+    //general attributes
+    virtual QString getDisplayType() const;
+    virtual QString getDisplayIsSolved() const;
+    virtual QString getDisplayIsUpdated() const;
+    virtual QString getDisplayFunctions() const;
+    virtual QString getDisplayUsedFor() const;
+    virtual QString getDisplayPreviouslyNeeded() const;
+    virtual QString getDisplayStDev(const UnitType &type, const int &digits) const;
+
+    //geometry specific attributes
+    virtual QString getDisplayMeasurementConfig() const;
+    virtual QString getDisplayObservations() const;
+
+    //unknown geometry parameters
+    virtual QString getDisplayX(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayY(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayPrimaryI(const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayPrimaryJ(const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayPrimaryK(const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayRadiusA(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayRadiusB(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplaySecondaryI(const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplaySecondaryJ(const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplaySecondaryK(const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayAperture(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayA(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayB(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayC(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayAngle(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayDistance(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayMeasurementSeries(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayTemperature(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    virtual QString getDisplayLength(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+
+    //coordinate system specific
+    virtual QString getDisplayExpansionOriginX(const UnitType &type, const int &digits) const;
+    virtual QString getDisplayExpansionOriginY(const UnitType &type, const int &digits) const;
+    virtual QString getDisplayExpansionOriginZ(const UnitType &type, const int &digits) const;
+    virtual QString getDisplayXAxisI(const int &digits) const;
+    virtual QString getDisplayXAxisJ(const int &digits) const;
+    virtual QString getDisplayXAxisK(const int &digits) const;
+    virtual QString getDisplayYAxisI(const int &digits) const;
+    virtual QString getDisplayYAxisJ(const int &digits) const;
+    virtual QString getDisplayYAxisK(const int &digits) const;
+    virtual QString getDisplayZAxisI(const int &digits) const;
+    virtual QString getDisplayZAxisJ(const int &digits) const;
+    virtual QString getDisplayZAxisK(const int &digits) const;
+
+    //trafo param specific
     virtual QString getDisplayStartSystem() const;
     virtual QString getDisplayDestinationSystem() const;
-    virtual QString getDisplayTranslationX() const;
-    virtual QString getDisplayTranslationY() const;
-    virtual QString getDisplayTranslationZ() const;
-    virtual QString getDisplayScaleX() const;
-    virtual QString getDisplayScaleY() const;
-    virtual QString getDisplayScaleZ() const;
-    virtual QString getDisplayRotationX() const;
-    virtual QString getDisplayRotationY() const;
-    virtual QString getDisplayRotationZ() const;
-    virtual QString getDisplayScalarTemperatureValue() const;
-    virtual QString getDisplayScalarMeasurementSeriesValue() const;
-    virtual QString getDisplayUse() const;
-    virtual QString getDisplayTime() const;
-    virtual QString getDisplayExpansionOriginX() const;
-    virtual QString getDisplayExpansionOriginY() const;
-    virtual QString getDisplayExpansionOriginZ() const;*/
+    virtual QString getDisplayTranslationX(const UnitType &type, const int &digits) const;
+    virtual QString getDisplayTranslationY(const UnitType &type, const int &digits) const;
+    virtual QString getDisplayTranslationZ(const UnitType &type, const int &digits) const;
+    virtual QString getDisplayRotationX(const UnitType &type, const int &digits) const;
+    virtual QString getDisplayRotationY(const UnitType &type, const int &digits) const;
+    virtual QString getDisplayRotationZ(const UnitType &type, const int &digits) const;
+    virtual QString getDisplayScaleX(const int &digits) const;
+    virtual QString getDisplayScaleY(const int &digits) const;
+    virtual QString getDisplayScaleZ(const int &digits) const;
+    virtual QString getDisplayIsUsed() const;
+    virtual QString getDisplayValidTime() const;
+    virtual QString getDisplayIsMovement() const;
 
 signals:
 

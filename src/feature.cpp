@@ -922,3 +922,565 @@ bool Feature::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief Feature::getDisplayType
+ * \return
+ */
+QString Feature::getDisplayType() const{
+    if(!this->selfFeature.isNull()){
+        return this->selfFeature->getFeatureTypeString();
+    }
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayIsSolved
+ * \return
+ */
+QString Feature::getDisplayIsSolved() const{
+    return this->isSolved?"true":"false";
+}
+
+/*!
+ * \brief Feature::getDisplayIsUpdated
+ * \return
+ */
+QString Feature::getDisplayIsUpdated() const{
+    return this->isUpdated?"false":"true";
+}
+
+/*!
+ * \brief Feature::getDisplayFunctions
+ * \return
+ */
+QString Feature::getDisplayFunctions() const{
+    QString display = "";
+    for(int i = 0; i < this->functionList.size(); i++){
+        QPointer<Function> function = this->functionList.at(i);
+        if(!function.isNull()){
+            if(i == this->functionList.size() - 1){ // last function
+                display += function->getMetaData().name;
+            }else{
+                display += function->getMetaData().name + ", ";
+            }
+        }
+    }
+    return display;
+}
+
+/*!
+ * \brief Feature::getDisplayUsedFor
+ * \return
+ */
+QString Feature::getDisplayUsedFor() const{
+    QString display = "";
+    for(int i = 0; i < this->usedFor.size(); i++){
+        QPointer<FeatureWrapper> feature = this->usedFor.at(i);
+        if(!feature.isNull() && !feature->getFeature().isNull()){
+            if(i == this->usedFor.size() - 1){ // last feature
+                display += feature->getFeature()->getFeatureName();
+            }else{
+                display += feature->getFeature()->getFeatureName() + ", ";
+            }
+        }
+    }
+    return display;
+}
+
+/*!
+ * \brief Feature::getDisplayPreviouslyNeeded
+ * \return
+ */
+QString Feature::getDisplayPreviouslyNeeded() const{
+    QString display = "";
+    for(int i = 0; i < this->previouslyNeeded.size(); i++){
+        QPointer<FeatureWrapper> feature = this->previouslyNeeded.at(i);
+        if(!feature.isNull() && !feature->getFeature().isNull()){
+            if(i == this->previouslyNeeded.size() - 1){ // last feature
+                display += feature->getFeature()->getFeatureName();
+            }else{
+                display += feature->getFeature()->getFeatureName() + ", ";
+            }
+        }
+    }
+    return display;
+}
+
+/*!
+ * \brief Feature::getDisplayStDev
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayStDev(const UnitType &type, const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayMeasurementConfig
+ * \return
+ */
+QString Feature::getDisplayMeasurementConfig() const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayObservations
+ * \return
+ */
+QString Feature::getDisplayObservations() const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayX
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayY
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayZ
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayPrimaryI
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayPrimaryI(const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayPrimaryJ
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayPrimaryJ(const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayPrimaryK
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayPrimaryK(const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayRadiusA
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayRadiusA(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayRadiusB
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayRadiusB(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplaySecondaryI
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplaySecondaryI(const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplaySecondaryJ
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplaySecondaryJ(const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplaySecondaryK
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplaySecondaryK(const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayAperture
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayAperture(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayA
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayA(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayB
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayB(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayC
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayC(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayAngle
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayAngle(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayDistance
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayDistance(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayMeasurementSeries
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayMeasurementSeries(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayTemperature
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayTemperature(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayLength
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Feature::getDisplayLength(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayExpansionOriginX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayExpansionOriginX(const UnitType &type, const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayExpansionOriginY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayExpansionOriginY(const UnitType &type, const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayExpansionOriginZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayExpansionOriginZ(const UnitType &type, const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayXAxisI
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayXAxisI(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayXAxisJ
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayXAxisJ(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayXAxisK
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayXAxisK(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayYAxisI
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayYAxisI(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayYAxisJ
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayYAxisJ(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayYAxisK
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayYAxisK(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayZAxisI
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayZAxisI(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayZAxisJ
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayZAxisJ(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayZAxisK
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayZAxisK(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayStartSystem
+ * \return
+ */
+QString Feature::getDisplayStartSystem() const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayDestinationSystem
+ * \return
+ */
+QString Feature::getDisplayDestinationSystem() const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayTranslationX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayTranslationX(const UnitType &type, const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayTranslationY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayTranslationY(const UnitType &type, const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayTranslationZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayTranslationZ(const UnitType &type, const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayRotationX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayRotationX(const UnitType &type, const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayRotationY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayRotationY(const UnitType &type, const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayRotationZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayRotationZ(const UnitType &type, const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayScaleX
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayScaleX(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayScaleY
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayScaleY(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayScaleZ
+ * \param digits
+ * \return
+ */
+QString Feature::getDisplayScaleZ(const int &digits) const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayIsUsed
+ * \return
+ */
+QString Feature::getDisplayIsUsed() const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayValidTime
+ * \return
+ */
+QString Feature::getDisplayValidTime() const{
+    return QString("-/-");
+}
+
+/*!
+ * \brief Feature::getDisplayIsMovement
+ * \return
+ */
+QString Feature::getDisplayIsMovement() const{
+    return QString("-/-");
+}

@@ -84,6 +84,27 @@ public:
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc);
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
+    //###############
+    //display methods
+    //###############
+
+    QString getDisplayX(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    QString getDisplayY(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+    QString getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff = false) const;
+
+    QString getDisplayExpansionOriginX(const UnitType &type, const int &digits) const;
+    QString getDisplayExpansionOriginY(const UnitType &type, const int &digits) const;
+    QString getDisplayExpansionOriginZ(const UnitType &type, const int &digits) const;
+    QString getDisplayXAxisI(const int &digits) const;
+    QString getDisplayXAxisJ(const int &digits) const;
+    QString getDisplayXAxisK(const int &digits) const;
+    QString getDisplayYAxisI(const int &digits) const;
+    QString getDisplayYAxisJ(const int &digits) const;
+    QString getDisplayYAxisK(const int &digits) const;
+    QString getDisplayZAxisI(const int &digits) const;
+    QString getDisplayZAxisJ(const int &digits) const;
+    QString getDisplayZAxisK(const int &digits) const;
+
 signals:
 
     //#################################################
@@ -126,15 +147,6 @@ private:
 
     QList< QPointer<FeatureWrapper> > nominalsList;
     QMap< int, QPointer<FeatureWrapper> > nominalsMap; //same geometries but id as key
-
-
-    //QString getDisplayX() const;
-    //QString getDisplayY() const;
-    //QString getDisplayZ() const;
-    //QString getDisplaySolved() const;
-    //QString getDisplayExpansionOriginX() const;
-    //QString getDisplayExpansionOriginY() const;
-    //QString getDisplayExpansionOriginZ() const;
 
 };
 

@@ -607,6 +607,48 @@ bool Station::fromOpenIndyXML(QDomElement &xmlElem){
 }
 
 /*!
+ * \brief Station::getDisplayX
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Station::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->position.isNull()){
+        return this->position->getDisplayX(type, digits, showDiff);
+    }
+    return QString("-/-");
+}
+
+/*!
+ * \brief Station::getDisplayY
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Station::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->position.isNull()){
+        return this->position->getDisplayY(type, digits, showDiff);
+    }
+    return QString("-/-");
+}
+
+/*!
+ * \brief Station::getDisplayZ
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString Station::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->position.isNull()){
+        return this->position->getDisplayZ(type, digits, showDiff);
+    }
+    return QString("-/-");
+}
+
+/*!
  * \brief Station::stopThread
  */
 void Station::stopThread(){

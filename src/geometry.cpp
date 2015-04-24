@@ -991,3 +991,69 @@ bool Geometry::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief Geometry::getDisplayStDev
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Geometry::getDisplayStDev(const UnitType &type, const int &digits) const{
+    if(this->statistic.getIsValid()){
+        return QString::number(convertToDefault(this->statistic.getStdev(), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Geometry::getDisplayMeasurementConfig
+ * \return
+ */
+QString Geometry::getDisplayMeasurementConfig() const{
+    return this->activeMeasurementConfig.getName();
+}
+
+/*!
+ * \brief Geometry::getDisplayObservations
+ * \return
+ */
+QString Geometry::getDisplayObservations() const{
+
+    int validObs = 0;
+    int totalObs = this->observations.size();
+
+    //get the number of used observations in the first function of this geometry
+    if(totalObs > 0 && this->functionList.size() > 0){
+
+        //get and check function pointer
+        QPointer<Function> firstFunction = this->functionList.at(0);
+        if(firstFunction.isNull()){
+            return QString("-/%1").arg(totalObs);
+        }
+
+        //get the number of used observations
+        QMap<int, QList<InputElement> > inputElements = firstFunction->getInputElements();
+        QList<int> keys = inputElements.keys();
+        foreach(const int &key, keys){
+
+            //check if input alements at key are observations
+            if(inputElements[key].size() > 0 && inputElements[key][0].typeOfElement == eObservationElement){
+
+                //run through all observations and check their used state
+                foreach(const InputElement &element, inputElements[key]){
+                    if(element.isUsed){
+                        validObs++;
+                    }
+                }
+
+            }
+
+        }
+
+        return QString("%1/%2").arg(validObs).arg(totalObs);
+
+    }
+
+    return QString("-/%1").arg(totalObs);
+
+}

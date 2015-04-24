@@ -991,3 +991,147 @@ bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief CoordinateSystem::getDisplayX
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString CoordinateSystem::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString::number(convertToDefault(this->origin.getVector().getAt(0), type), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayY
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString CoordinateSystem::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString::number(convertToDefault(this->origin.getVector().getAt(1), type), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayZ
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString CoordinateSystem::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
+    return QString::number(convertToDefault(this->origin.getVector().getAt(2), type), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayExpansionOriginX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayExpansionOriginX(const UnitType &type, const int &digits) const{
+    return QString::number(convertToDefault(this->expansionOrigin.getVector().getAt(0), type), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayExpansionOriginY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayExpansionOriginY(const UnitType &type, const int &digits) const{
+    return QString::number(convertToDefault(this->expansionOrigin.getVector().getAt(1), type), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayExpansionOriginZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayExpansionOriginZ(const UnitType &type, const int &digits) const{
+    return QString::number(convertToDefault(this->expansionOrigin.getVector().getAt(2), type), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayXAxisI
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayXAxisI(const int &digits) const{
+    return QString::number(this->xAxis.getVector().getAt(0), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayXAxisJ
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayXAxisJ(const int &digits) const{
+    return QString::number(this->xAxis.getVector().getAt(1), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayXAxisK
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayXAxisK(const int &digits) const{
+    return QString::number(this->xAxis.getVector().getAt(2), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayYAxisI
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayYAxisI(const int &digits) const{
+    return QString::number(this->yAxis.getVector().getAt(0), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayYAxisJ
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayYAxisJ(const int &digits) const{
+    return QString::number(this->yAxis.getVector().getAt(1), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayYAxisK
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayYAxisK(const int &digits) const{
+    return QString::number(this->yAxis.getVector().getAt(2), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayZAxisI
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayZAxisI(const int &digits) const{
+    return QString::number(this->zAxis.getVector().getAt(0), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayZAxisJ
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayZAxisJ(const int &digits) const{
+    return QString::number(this->zAxis.getVector().getAt(1), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::getDisplayZAxisK
+ * \param digits
+ * \return
+ */
+QString CoordinateSystem::getDisplayZAxisK(const int &digits) const{
+    return QString::number(this->zAxis.getVector().getAt(2), 'f', digits);
+}

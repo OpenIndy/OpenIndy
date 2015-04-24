@@ -1,29 +1,29 @@
-#ifndef FEATURETABLEPROXYMODEL_H
-#define FEATURETABLEPROXYMODEL_H
+#ifndef TRAFOPARAMTABLEPROXYMODEL_H
+#define TRAFOPARAMTABLEPROXYMODEL_H
 
 #include <QSortFilterProxyModel>
 #include <QPointer>
 
 #include "oijob.h"
 #include "featuretablemodel.h"
-#include "featuretablecolumnconfig.h"
+#include "trafoparamtablecolumnconfig.h"
 
 /*!
- * \brief The FeatureTableProxyModel class
+ * \brief The TrafoParamTableProxyModel class
  */
-class FeatureTableProxyModel : public QSortFilterProxyModel
+class TrafoParamTableProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 
 public:
-    explicit FeatureTableProxyModel(QObject *parent = 0);
+    explicit TrafoParamTableProxyModel(QObject *parent = 0);
 
     //#########################
     //get or set display config
     //#########################
 
-    const FeatureTableColumnConfig &getFeatureTableColumnConfig() const;
-    void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
+    const TrafoParamTableColumnConfig &getTrafoParamTableColumnConfig() const;
+    void setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config);
     
 protected:
 
@@ -42,8 +42,8 @@ private:
     //display config
     //##############
 
-    FeatureTableColumnConfig featureTableColumnConfig;
+    TrafoParamTableColumnConfig trafoParamTableColumnConfig;
     
 };
 
-#endif // FEATURETABLEPROXYMODEL_H
+#endif // TRAFOPARAMTABLEPROXYMODEL_H

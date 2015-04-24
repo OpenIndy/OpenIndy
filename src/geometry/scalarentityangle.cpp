@@ -318,3 +318,17 @@ bool ScalarEntityAngle::fromOpenIndyXML(QDomElement &xmlElem){
     return result;
 
 }
+
+/*!
+ * \brief ScalarEntityAngle::getDisplayAngle
+ * \param type
+ * \param digits
+ * \param showDiff
+ * \return
+ */
+QString ScalarEntityAngle::getDisplayAngle(const UnitType &type, const int &digits, const bool &showDiff) const{
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->angle, type), 'f', digits);
+    }
+    return QString("");
+}
