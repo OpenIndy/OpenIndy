@@ -22,17 +22,38 @@ public:
     explicit CreateFeatureDialog(QWidget *parent = 0);
     ~CreateFeatureDialog();
 
-    void setFeatureType(const FeatureTypes &typeOfFeature);
+    //###########################
+    //get or set the feature type
+    //###########################
+
+    const FeatureTypes &getFeatureType() const;
+    void setFeatureType(const FeatureTypes &type);
 
 signals:
+
+    //#######################################
+    //create features specified by attributes
+    //#######################################
+
     void addFeatures(const FeatureAttributes &attributes);
 
 private slots:
-    void showEvent(QShowEvent *event);
+
+    //#########################
+    //actions triggered by user
+    //#########################
+
+    void on_toolButton_ok_clicked();
+    void on_toolButton_cancel_clicked();
+    void on_checkBox_nominal_toggled(bool checked);
+
+private:
 
     //##################################
     //methods to initialize GUI elements
     //##################################
+
+    void showEvent(QShowEvent *event);
 
     void initGUI();
     void initModels();
@@ -43,10 +64,6 @@ private slots:
     //GUI interactions
     //################
 
-    void on_toolButton_cancel_clicked();
-    void on_toolButton_create_clicked();
-    void on_toolButton_mConfig_clicked();
-
     void featureAttributesFromGUI(FeatureAttributes &attributes);
 
 private:
@@ -55,45 +72,5 @@ private:
     FeatureTypes typeOfFeature;
 
 };
-
-
-    /*
-
-    void setFeatureType(FeatureTypes typeOfFeature);
-
-
-    //void availableGroupsChanged(QStringList myGroups);
-    //void setAvailableFunctions(QStringList functions, QString defaultFunction);
-
-
-
-signals:
-
-    void createFeature(FeatureAttributes fae);
-    void createFeatureMConfig(FeatureTypes typeOfFeature);
-
-    void trafoParamCreated();
-
-private slots:
-
-
-
-    //void receiveFeatureType(FeatureTypes);
-
-    void on_toolButton_create_clicked();
-    void on_toolButton_cancel_clicked();
-    void on_checkBox_Nominal_toggled(bool checked);
-    void on_toolButton_mConfig_clicked();
-    void on_checkBox_Actual_toggled(bool checked);
-    void on_checkBox_movement_toggled(bool checked);
-    void on_comboBox_destinationSystem_currentIndexChanged(const QString &arg1);
-
-
-
-    FeatureTypes typeOfFeature;
-
-    void showEvent(QShowEvent *event);
-    void initGUI();
-};*/
 
 #endif // CREATEFEATUREDIALOG_H

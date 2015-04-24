@@ -335,6 +335,21 @@ bool getIsGeometry(const FeatureTypes &type){
 }
 
 /*!
+ * \brief getIsScalarEntity
+ * \param type
+ * \return
+ */
+bool getIsScalarEntity(const FeatureTypes &type){
+    if(type == eScalarEntityAngleFeature
+            || type == eScalarEntityDistanceFeature
+            || type == eScalarEntityMeasurementSeriesFeature
+            || type == eScalarEntityTemperatureFeature){
+        return true;
+    }
+    return false;
+}
+
+/*!
  * \brief getReadingTypeName
  * \param type
  * \return

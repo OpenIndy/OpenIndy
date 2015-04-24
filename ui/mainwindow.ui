@@ -404,7 +404,7 @@ background-position: center center;</string>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QListView" name="listView_Console">
+      <widget class="QListView" name="listView_console">
        <property name="enabled">
         <bool>true</bool>
        </property>

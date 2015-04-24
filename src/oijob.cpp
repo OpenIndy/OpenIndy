@@ -1347,7 +1347,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
         return result;
     }
 
-    //if type is a geometry the at least one of isNominal and isActual has to be true
+    //if type is a geometry then at least one of isNominal and isActual has to be true
     if(getIsGeometry(fAttr.typeOfFeature) && !fAttr.isNominal && !fAttr.isActual){
         return result;
     }
@@ -1436,7 +1436,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
 
             //set feature attributes
             feature->getFeature()->id = this->generateUniqueId();
-            feature->getFeature()->name = fAttr.name;
+            feature->getFeature()->name = name;
             feature->getFeature()->group = fAttr.group;
 
             //set nominal system
@@ -1459,14 +1459,14 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
 
             //set feature attributes
             feature->getFeature()->id = this->generateUniqueId();
-            feature->getFeature()->name = fAttr.name;
+            feature->getFeature()->name = name;
             feature->getFeature()->group = fAttr.group;
 
             this->featureContainer.addFeature(feature);
 
         }
 
-        //create non geometry feature
+        //create non-geometry feature
         if(!getIsGeometry(fAttr.typeOfFeature)){
 
             //create and check feature
@@ -1477,7 +1477,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
 
             //set feature attributes
             feature->getFeature()->id = this->generateUniqueId();
-            feature->getFeature()->name = fAttr.name;
+            feature->getFeature()->name = name;
             feature->getFeature()->group = fAttr.group;
 
             //if type is trafo param set start and destination system

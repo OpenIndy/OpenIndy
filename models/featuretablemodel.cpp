@@ -241,8 +241,16 @@ const QPointer<OiJob> &FeatureTableModel::getCurrentJob() const{
  */
 void FeatureTableModel::setCurrentJob(const QPointer<OiJob> &job){
     if(!job.isNull()){
+
+        //disconnect current job
+        if(!this->currentJob.isNull()){
+            this->disconnectJob();
+        }
+
         this->currentJob = job;
+        this->connectJob();
         this->updateModel();
+
     }
 }
 
@@ -423,5 +431,26 @@ QString FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &featu
     }
 
     return QString("");
+
+}
+
+/*!
+ * \brief FeatureTableModel::connectJob
+ */
+void FeatureTableModel::connectJob(){
+
+    QObject::connect(this->currentJob.data(), SIGNAL(featureSetChanged()), this, SLOT(updateModel()), Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), SIGNAL(activeCoordinateSystemChanged()), this, SLOT(updateModel()), Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), SIGNAL(activeFeatureChanged()), this, SLOT(updateModel()), Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), SIGNAL(activeStationChanged()), this, SLOT(updateModel()), Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), SIGNAL(featureAttributesChanged()), this, SLOT(updateModel()), Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief FeatureTableModel::disconnectJob
+ */
+void FeatureTableModel::disconnectJob()
+{
 
 }

@@ -43,7 +43,7 @@ bool SystemDbManager::deletePlugin(const QString &iid){
  */
 bool SystemDbManager::getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const FeatureTypes &typeOfFeature){
 
-    if(sqlModel.isNull()){
+    /*if(sqlModel.isNull()){
         return false;
     }
 
@@ -83,7 +83,8 @@ bool SystemDbManager::getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel
         SystemDbManager::disconnect();
 
     }
-    return check;
+    return check;*/
+    return false;
 
 }
 
@@ -95,7 +96,7 @@ bool SystemDbManager::getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel
  */
 bool SystemDbManager::getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const FeatureTypes &typeOfFeature){
 
-    if(sqlModel.isNull()){
+    /*if(sqlModel.isNull()){
         return false;
     }
 
@@ -126,7 +127,8 @@ bool SystemDbManager::getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel
         SystemDbManager::disconnect();
 
     }
-    return check;
+    return check;*/
+    return false;
 
 }
 
@@ -138,7 +140,7 @@ bool SystemDbManager::getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel
  */
 bool SystemDbManager::getNeededElementsModel(QPointer<QSqlQueryModel> &sqlModel, const FunctionPlugin &functionPlugin){
 
-    if(sqlModel.isNull()){
+    /*if(sqlModel.isNull()){
         return false;
     }
 
@@ -181,7 +183,8 @@ bool SystemDbManager::getNeededElementsModel(QPointer<QSqlQueryModel> &sqlModel,
         SystemDbManager::disconnect();
 
     }
-    return check;
+    return check;*/
+    return false;
 
 }
 
@@ -193,7 +196,7 @@ bool SystemDbManager::getNeededElementsModel(QPointer<QSqlQueryModel> &sqlModel,
  */
 bool SystemDbManager::getLaserTrackerModel(QPointer<QSqlQueryModel> &sqlModel){
 
-    if(sqlModel.isNull()){
+    /*if(sqlModel.isNull()){
         return false;
     }
 
@@ -217,7 +220,8 @@ bool SystemDbManager::getLaserTrackerModel(QPointer<QSqlQueryModel> &sqlModel){
         SystemDbManager::disconnect();
 
     }
-    return check;
+    return check;*/
+    return false;
 
 }
 
@@ -229,7 +233,7 @@ bool SystemDbManager::getLaserTrackerModel(QPointer<QSqlQueryModel> &sqlModel){
  */
 bool SystemDbManager::getTotalStationModel(QPointer<QSqlQueryModel> &sqlModel){
 
-    if(sqlModel.isNull()){
+    /*if(sqlModel.isNull()){
         return false;
     }
 
@@ -253,7 +257,8 @@ bool SystemDbManager::getTotalStationModel(QPointer<QSqlQueryModel> &sqlModel){
         SystemDbManager::disconnect();
 
     }
-    return check;
+    return check;*/
+    return false;
 
 }
 
@@ -265,7 +270,7 @@ bool SystemDbManager::getTotalStationModel(QPointer<QSqlQueryModel> &sqlModel){
  */
 bool SystemDbManager::getUndefinedSensorModel(QPointer<QSqlQueryModel> &sqlModel){
 
-    if(sqlModel.isNull()){
+    /*if(sqlModel.isNull()){
         return false;
     }
 
@@ -289,7 +294,9 @@ bool SystemDbManager::getUndefinedSensorModel(QPointer<QSqlQueryModel> &sqlModel
         SystemDbManager::disconnect();
 
     }
-    return check;
+    return check;*/
+
+    return false;
 
 }
 
@@ -840,7 +847,7 @@ int SystemDbManager::getLastId(QString table){
  * \return
  */
 int SystemDbManager::savePluginHelper(PluginMetaData *metaInfo){
-    int pluginId = -1;
+    /*int pluginId = -1;
 
     QDir pluginDir(qApp->applicationDirPath()); //get application path
     QString relativePath = pluginDir.relativeFilePath(metaInfo->path); //get relative path to plugin with application path as basis
@@ -864,7 +871,8 @@ int SystemDbManager::savePluginHelper(PluginMetaData *metaInfo){
         pluginId = -1;
     }
 
-    return pluginId;
+    return pluginId;*/
+    return -1;
 }
 
 /*!

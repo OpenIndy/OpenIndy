@@ -1,7 +1,9 @@
 #ifndef MODELMANAGER_H
 #define MODELMANAGER_H
 
+#include <QObject>
 #include <QPointer>
+#include <QStringListModel>
 
 #include "oijob.h"
 #include "featuretablemodel.h"
@@ -13,11 +15,12 @@
 /*!
  * \brief The ModelManager class
  */
-class ModelManager
+class ModelManager : public QObject
 {
+    Q_OBJECT
 
 private:
-    ModelManager();
+    explicit ModelManager(QObject *parent = 0);
 
 public:
 
@@ -47,13 +50,27 @@ public:
     static const ParameterDisplayConfig &getParameterDisplayConfig();
     static void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
-    //#########################################
-    //static models (models that may be reused)
-    //#########################################
+    //#############################################
+    //get static models (models that may be reused)
+    //#############################################
 
     //general feature models
     static FeatureTableModel &getFeatureTableModel();
     static FeatureTableProxyModel &getFeatureTableProxyModel();
+
+    //coordinate system models
+    static QStringListModel &getCoordinateSystemsModel();
+    static QStringListModel &getNominalSystemsModel();
+
+private slots:
+
+    //##########################################
+    //update models on current job state changes
+    //##########################################
+
+    //feature(s) added or removed
+    void coordSystemSetChanged();
+    void stationSetChanged();
 
 private:
 
@@ -67,6 +84,10 @@ private:
     static FeatureTableModel featureTableModel;
     static FeatureTableProxyModel featureTableProxyModel;
 
+    //coordinate systems models
+    static QStringListModel coordinateSystemsModel;
+    static QStringListModel nominalSystemsModel;
+
 private:
 
     //##############
@@ -77,6 +98,11 @@ private:
     static void updateFeatureTableColumnConfig();
     static void updateTrafoParamTableColumnConfig();
     static void updateParameterDisplayConfig();
+
+    //update models
+    static void updateCoordinateSystemsModel();
+    static void updateNominalSystemsModel();
+    static void updateGroupsModel();
 
     //####################
     //model initialization
@@ -91,6 +117,12 @@ private:
     static FeatureTableColumnConfig featureTableColumnConfig; //defines which columns shall be visible in feature table proxy model
     static TrafoParamTableColumnConfig trafoParamTableColumnConfig; //defines which columns shall be visible in trafo param proxy model
     static ParameterDisplayConfig parameterDisplayConfig; //defines in which unit and with how many digits a parameter value shall be displayed
+
+    //#############################
+    //single model manager instance
+    //#############################
+
+    static QPointer<ModelManager> myInstance;
 
 };
 

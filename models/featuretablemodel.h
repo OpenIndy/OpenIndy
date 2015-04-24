@@ -66,6 +66,9 @@ private:
 
     QString getDisplayValue(const QPointer<FeatureWrapper> &feature, const int &column) const;
 
+    void connectJob();
+    void disconnectJob();
+
 private:
 
     //###########

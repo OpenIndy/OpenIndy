@@ -18,6 +18,24 @@ Controller::Controller(QObject *parent) : QObject(parent){
 }
 
 /*!
+ * \brief Controller::addFeatures
+ * \param attributes
+ */
+void Controller::addFeatures(const FeatureAttributes &attributes){
+
+    Console::getInstance()->addLine("test output");
+
+    //check job
+    if(this->job.isNull()){
+        Console::getInstance()->addLine("No active job");
+        return;
+    }
+
+    this->job->addFeatures(attributes);
+
+}
+
+/*!
  * \brief Controller::setFeatureTableColumnConfig
  * \param config
  */
@@ -48,6 +66,7 @@ void Controller::createDefaultJob(){
 
     //create job with a station and a nominal system
     QPointer<OiJob> job = new OiJob();
+    this->setJob(job);
 
     QPointer<FeatureWrapper> stationFeature = new FeatureWrapper();
     QPointer<Station> station = new Station();
@@ -61,9 +80,6 @@ void Controller::createDefaultJob(){
 
     job->addFeature(stationFeature);
     job->addFeature(systemFeature);
-
-    //set the job as the current job
-    this->setJob(job);
 
 }
 

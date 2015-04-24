@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>377</height>
+    <height>390</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,158 +21,205 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0,0,0,0">
+     <property name="spacing">
+      <number>10</number>
+     </property>
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2">
+      <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,2">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
        <item>
-        <widget class="QLabel" name="label_name">
+        <widget class="QLabel" name="label_entityType">
          <property name="text">
-          <string>name:</string>
+          <string>type:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_name">
-         <property name="placeholderText">
-          <string>feature name</string>
-         </property>
-        </widget>
+        <widget class="QComboBox" name="comboBox_entityType"/>
        </item>
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,2">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
        <item>
-        <widget class="QLabel" name="label_group">
+        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2">
+         <item>
+          <widget class="QLabel" name="label_name">
+           <property name="text">
+            <string>name:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_name">
+           <property name="placeholderText">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,2">
+         <item>
+          <widget class="QLabel" name="label_group">
+           <property name="text">
+            <string>group: </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_group">
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,2">
+         <item>
+          <widget class="QLabel" name="label_count">
+           <property name="text">
+            <string>count:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBox_count">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,2">
+         <item>
+          <widget class="QLabel" name="label_function">
+           <property name="text">
+            <string>function:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_function">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <item>
+        <widget class="QCheckBox" name="checkBox_common">
          <property name="text">
-          <string>group: </string>
+          <string>common</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_group">
-         <property name="editable">
+        <widget class="QCheckBox" name="checkBox_actual">
+         <property name="text">
+          <string>actual</string>
+         </property>
+         <property name="checked">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,2">
        <item>
-        <widget class="QLabel" name="label_count">
+        <widget class="QCheckBox" name="checkBox_nominal">
          <property name="text">
-          <string>count:</string>
+          <string>nominal</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="spinBox_count">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,2">
-       <item>
-        <widget class="QLabel" name="label_function">
-         <property name="text">
-          <string>function:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="comboBox_function">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,2">
+         <item>
+          <widget class="QLabel" name="label_nominalSystem">
+           <property name="text">
+            <string>nominal system</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_nominalSystem"/>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBox_isCommon">
-       <property name="text">
-        <string>is common</string>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_isActual">
-       <property name="text">
-        <string>is actual</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_isNominal">
-       <property name="text">
-        <string>is nominal</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_isMovement">
-       <property name="text">
-        <string>is movement</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,2">
        <item>
-        <widget class="QLabel" name="label_nominalSystem">
+        <widget class="QCheckBox" name="checkBox_movement">
          <property name="text">
-          <string>nominal system</string>
+          <string>movement</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_nominalSystem"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,2">
-       <item>
-        <widget class="QLabel" name="label_startSystem">
-         <property name="text">
-          <string>start system</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="comboBox_startSystem"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,2">
-       <item>
-        <widget class="QLabel" name="label_destinationSystem">
-         <property name="text">
-          <string>destination system</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,2">
+         <item>
+          <widget class="QLabel" name="label_startSystem">
+           <property name="text">
+            <string>start system</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_startSystem"/>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_destinationSystem"/>
+        <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,2">
+         <item>
+          <widget class="QLabel" name="label_destinationSystem">
+           <property name="text">
+            <string>destination system</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_destinationSystem"/>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -180,6 +227,9 @@
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -214,7 +264,7 @@
        <item>
         <widget class="QToolButton" name="toolButton_cancel">
          <property name="text">
-          <string>create</string>
+          <string>cancel</string>
          </property>
         </widget>
        </item>

@@ -2,39 +2,68 @@
 #define CONSOLE_H
 
 #include <QObject>
+#include <QPointer>
 #include <QString>
-#include <iostream>
-#include <QDateTime>
 #include <QStringList>
 #include <QStringListModel>
+#include <QDateTime>
+
 #include <QTextStream>
 #include <QFile>
 
 class Console : public QObject
 {
     Q_OBJECT
-public:
-    explicit Console(QObject *parent = 0);
-    
-    static QStringList Log;
-    QStringListModel *output;
 
-    static Console *c;
+private:
+    explicit Console(QObject *parent = 0);
+
+public:
+    static const QPointer<Console> &getInstance();
+
+    //##############################
+    //get model with console entries
+    //##############################
+
+    QStringListModel &getConsoleModel();
 
 signals:
 
-    void changedList();
+    //##################################
+    //signal to inform about new entries
+    //##################################
+
+    void lineAdded();
 
 public slots:
-    
-    static void addLine(QString);
-    static void addLine(QString, bool);
-    static void addLine(QString, double);
-    static void addLine(QString, int);
+
+    //#########################
+    //write messages to console
+    //#########################
+
+    void addLine(const QString &msg);
+    void addLine(const QString &msg, const bool &value);
+    void addLine(const QString &msg, const double &value);
+    void addLine(const QString &msg, const int &value);
 
 private:
 
-    void writeToLogFile(QString);
+    //##############
+    //helper methods
+    //##############
+
+    void writeToLogFile(const QString &msg);
+
+private:
+
+    static QPointer<Console> myInstance;
+
+    //################
+    //console contents
+    //################
+
+    QStringList log;
+    QStringListModel output;
 
 };
 

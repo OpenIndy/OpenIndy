@@ -21,6 +21,7 @@ const QString &getGeometryTypeName(const GeometryTypes &type);
 GeometryTypes getGeometryTypeEnum(const QString &name);
 
 bool getIsGeometry(const FeatureTypes &type);
+bool getIsScalarEntity(const FeatureTypes &type);
 
 //#######################################
 //global functions to query reading types

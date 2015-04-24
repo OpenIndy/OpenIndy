@@ -7,9 +7,11 @@
 
 #include "oijob.h"
 #include "modelmanager.h"
+#include "console.h"
 #include "featuretablecolumnconfig.h"
 #include "trafoparamtablecolumnconfig.h"
 #include "parameterdisplayconfig.h"
+#include "featureattributes.h"
 
 /*!
  * \brief The Controller class
@@ -22,6 +24,12 @@ public:
     explicit Controller(QObject *parent = 0);
 
 public slots:
+
+    //######################
+    //add or remove features
+    //######################
+
+    void addFeatures(const FeatureAttributes &attributes);
 
     //###################
     //set display configs
