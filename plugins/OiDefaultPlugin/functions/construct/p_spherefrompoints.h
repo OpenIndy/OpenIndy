@@ -1,30 +1,42 @@
 #ifndef P_SPHEREFROMPOINTS_H
 #define P_SPHEREFROMPOINTS_H
 
-#include <QtGlobal>
-#include <QDateTime>
 #include <QObject>
-#include <QDebug>
-#include <QThread>
-#include "pi_constructfunction.h"
-#include "point.h"
-#include "configuration.h"
+#include <QPointer>
+#include <QtMath>
+
+#include "constructfunction.h"
 #include "oivec.h"
 #include "oimat.h"
 #include "cfitting_sphere.h"
-#include "pluginmetadata.h"
 
+/*!
+ * \brief The SphereFromPoints class
+ */
 class SphereFromPoints : public ConstructFunction
 { 
-public:
-    PluginMetaData* getMetaData() const;
-    bool exec(Sphere&);
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    Q_OBJECT
+protected:
+
+    //##############################
+    //function initialization method
+    //##############################
+
+    void init();
+
+    //############
+    //exec methods
+    //############
+
+    bool exec(Sphere &sphere);
 
 private:
-    void setUpResult(Sphere &s, double *x, double *y, double *z, int count, double *xm, double r, double *qxx);
-    int getPointCount();
+
+    //##############
+    //helper methods
+    //##############
+
+    bool setUpResult(Sphere &sphere);
 
 };
 

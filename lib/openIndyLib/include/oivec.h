@@ -33,6 +33,7 @@ public:
     void setAt(const int &pos, const double &value);
 
     void add(const double &value);
+    void removeLast();
 
     void replace(const OiVec&);
 

@@ -11,8 +11,10 @@
 
 #include "pluginmetadata.h"
 #include "sensorconfiguration.h"
+#include "measurementconfig.h"
 #include "types.h"
 #include "util.h"
+#include "reading.h"
 
 /*!
  * \brief The SensorAttributes class

@@ -1,284 +1,267 @@
 #include "p_bestfitcircle.h"
 
-BestFitCircle::BestFitCircle(){}
+/*!
+ * \brief BestFitCircle::init
+ */
+void BestFitCircle::init(){
 
-PluginMetaData *BestFitCircle::getMetaData() const {
-    PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "BestFitCircle";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "Michael Loesler - derletztekick.com";
-    metaData->description = QString("%1 %2")
+    //set plugin meta data
+    this->metaData.name = "BestFitCircle";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "Michael Loesler - derletztekick.com";
+    this->metaData.description = QString("%1 %2")
             .arg("This function estimates a spatial circle usnig a general least squares algorithm.")
             .arg("Insert at least three non-collinear observed points, to get the best fit circle.")
             .arg("The algorithm was taken from the OpenSource FormFittingToolbox (c) M.Loesler (GNU-GPL).");
-    metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
+    this->metaData.iid = "de.openIndy.plugin.function.fitFunction.v001";
 
-    return metaData;
+    //set needed elements
+    NeededElement param1;
+    param1.description = "Select at least three non-collinear observed points to calculate the best fit circle.";
+    param1.infinite = true;
+    param1.typeOfElement = eObservationElement;
+    this->neededElements.append(param1);
+
+    //set spplicable for
+    this->applicableFor.append(eCircleFeature);
+
 }
 
+/*!
+ * \brief BestFitCircle::exec
+ * \param circle
+ * \return
+ */
 bool BestFitCircle::exec(Circle &circle) {
 
-    int obsCount = this->getObservationCount();
-
-    //if enough observations available
-    if(this->isValid() && obsCount >= 3){
-
-        //fill x,y,z arrays
-        double *x = new double[obsCount];
-        double *y = new double[obsCount];
-        double *z = new double[obsCount];
-
-        int k = 0;
-
-        /*
-        foreach(Point *point, this->points){
-            OiVec xyz = point->xyz;
-            x[k] = xyz.getAt(0);
-            y[k] = xyz.getAt(1);
-            z[k] = xyz.getAt(2);
-            k++;
+    //get and check input observations
+    if(!this->inputElements.contains(0) || this->inputElements[0].size() < 3){
+        emit this->sendMessage(QString("Not enough valid observations to fit the circle %1").arg(circle.getFeatureName()));
+        return false;
+    }
+    QList<QPointer<Observation> > inputObservations;
+    foreach(const InputElement &element, this->inputElements[0]){
+        if(!element.observation.isNull() && element.observation->getIsSolved() && element.observation->getIsValid()){
+            inputObservations.append(element.observation);
+            this->setUseState(0, element.id, true);
         }
-        */
+        this->setUseState(0, element.id, false);
+    }
+    if(inputObservations.size() < 3){
+        emit this->sendMessage(QString("Not enough valid points to fit the point %1").arg(circle.getFeatureName()));
+        return false;
+    }
 
-        double xc = 0, yc = 0, zc = 0, rc = 0;
+    int obsCount = inputObservations.size();
 
-        foreach(Observation *obs, this->observations){
-            if(obs->getUseState()){
-                x[k] = obs->myXyz.getAt(0);
-                y[k] = obs->myXyz.getAt(1);
-                z[k] = obs->myXyz.getAt(2);
+    //fill x,y,z arrays
+    double *x = new double[obsCount];
+    double *y = new double[obsCount];
+    double *z = new double[obsCount];
 
-                xc += x[k];
-                yc += y[k];
-                zc += z[k];
+    int k = 0;
 
-                k++;
-            }
-        }
+    double xc = 0, yc = 0, zc = 0, rc = 0;
 
-        xc /= obsCount;
-        yc /= obsCount;
-        zc /= obsCount;
+    foreach(const QPointer<Observation> &obs, inputObservations){
+        x[k] = obs->getXYZ().getAt(0);
+        y[k] = obs->getXYZ().getAt(1);
+        z[k] = obs->getXYZ().getAt(2);
 
-        for(int i=0; i<obsCount; i++)
-            rc += sqrt((x[i]-xc)*(x[i]-xc) + (y[i]-yc)*(y[i]-yc) + (z[i]-zc)*(z[i]-zc));
-        rc /= obsCount;
+        xc += x[k];
+        yc += y[k];
+        zc += z[k];
 
-        OiVec plane = this->getApproximatedPlane(obsCount, x, y, z, xc, yc, zc);
+        k++;
+    }
 
-        int maxItr = 50;
-        double maxAbsDu = 1.0E308;
-        double nx = plane.getAt(0);
-        double ny = plane.getAt(1);
-        double nz = plane.getAt(2);
-        double d  = plane.getAt(3);
+    xc /= obsCount;
+    yc /= obsCount;
+    zc /= obsCount;
 
-        // Stelle Matrizen fuer GH-Modell auf; in einer spaeteren Implementierung sollte die NGL direkt aufgebaut werden
-        // um Speicherplatz zu sparen. Fuer wenige Punkte (und aus Gruenden der Uebersicht) wird im Moment darauf verzichtet.
-        // Aus numerischen Gruenden koennte mit Schwerpunktreduzierten Daten gearbeitet werden.
-        // u = [x0, y0, z0, r0, nx0, ny0, nz0, d0] - Korrekte Reihenfolge durch ENUM vorgegeben.
+    for(int i=0; i<obsCount; i++)
+        rc += sqrt((x[i]-xc)*(x[i]-xc) + (y[i]-yc)*(y[i]-yc) + (z[i]-zc)*(z[i]-zc));
+    rc /= obsCount;
 
-        OiVec v(3*obsCount);
-        OiMat Qxx(8,8);
+    OiVec plane = this->getApproximatedPlane(obsCount, x, y, z, xc, yc, zc);
 
-        int itr = 0;
-        while(true) {
+    int maxItr = 50;
+    double maxAbsDu = 1.0E308;
+    double nx = plane.getAt(0);
+    double ny = plane.getAt(1);
+    double nz = plane.getAt(2);
+    double d  = plane.getAt(3);
 
-            OiMat A(2*obsCount, 8);
-            OiMat B(2*obsCount, 3*obsCount);
-            OiVec w(2*obsCount);
+    // Stelle Matrizen fuer GH-Modell auf; in einer spaeteren Implementierung sollte die NGL direkt aufgebaut werden
+    // um Speicherplatz zu sparen. Fuer wenige Punkte (und aus Gruenden der Uebersicht) wird im Moment darauf verzichtet.
+    // Aus numerischen Gruenden koennte mit Schwerpunktreduzierten Daten gearbeitet werden.
+    // u = [x0, y0, z0, r0, nx0, ny0, nz0, d0] - Korrekte Reihenfolge durch ENUM vorgegeben.
 
-            for(int i=0; i<obsCount; i++){
-                double xP = x[i] - v.getAt(3*i);
-                double yP = y[i] - v.getAt(3*i+1);
-                double zP = z[i] - v.getAt(3*i+2);
+    OiVec v(3*obsCount);
+    OiMat Qxx(8,8);
 
-                // Kugelparameter
-                A.setAt(i, Circle::unknownX, -2.0*(xP - xc));
-                A.setAt(i, Circle::unknownY, -2.0*(yP - yc));
-                A.setAt(i, Circle::unknownZ, -2.0*(zP - zc));
-                A.setAt(i, Circle::unknownR, -2.0*rc);
+    int itr = 0;
+    while(true) {
 
-                B.setAt(i, i*3,   2.0*(xP - xc));
-                B.setAt(i, i*3+1, 2.0*(yP - yc));
-                B.setAt(i, i*3+2, 2.0*(zP - zc));
+        OiMat A(2*obsCount, 8);
+        OiMat B(2*obsCount, 3*obsCount);
+        OiVec w(2*obsCount);
 
-                w.setAt(i, rc*rc - ((xP-xc)*(xP-xc) + (yP-yc)*(yP-yc) + (zP-zc)*(zP-zc)));
-
-                // Ebene in Normalform
-                A.setAt(obsCount+i, Circle::unknownI, xP);
-                A.setAt(obsCount+i, Circle::unknownJ, yP);
-                A.setAt(obsCount+i, Circle::unknownK, zP);
-                A.setAt(obsCount+i, Circle::unknownD, -1.0);
-
-                B.setAt(obsCount+i, i*3,   nx);
-                B.setAt(obsCount+i, i*3+1, ny);
-                B.setAt(obsCount+i, i*3+2, nz);
-
-                w.setAt(obsCount+i, d - (nx*xP + ny*yP + nz*zP));
-            }
-
-            w = -1*B*v + w;
-
-            OiMat Qww = B * B.t();
-            OiMat Pww = Qww.inv();
-            OiMat NGL = A.t() * Pww * A;
-            OiVec ngl = A.t() * Pww * w;
-
-            OiMat NGLR(NGL.getRowCount() + 2, NGL.getColCount() + 2);
-            OiVec nglr(ngl.getSize() + 2);
-
-            for (int i=0; i<NGL.getRowCount(); i++) {
-                nglr.setAt(i, ngl.getAt(i));
-                for (int j=0; j<NGL.getColCount(); j++)
-                    NGLR.setAt(i,j, NGL.getAt(i,j));
-            }
-
-            NGLR.setAt(NGL.getRowCount(), Circle::unknownX, nx);
-            NGLR.setAt(NGL.getRowCount(), Circle::unknownY, ny);
-            NGLR.setAt(NGL.getRowCount(), Circle::unknownZ, nz);
-            NGLR.setAt(NGL.getRowCount(), Circle::unknownI, xc);
-            NGLR.setAt(NGL.getRowCount(), Circle::unknownJ, yc);
-            NGLR.setAt(NGL.getRowCount(), Circle::unknownK, zc);
-            NGLR.setAt(NGL.getRowCount(), Circle::unknownD, -1.0);
-            nglr.setAt(NGL.getRowCount(), d - (nx*xc + ny*yc + nz*zc));
-
-            NGLR.setAt(NGL.getRowCount()+1, Circle::unknownI, 2.0*nx);
-            NGLR.setAt(NGL.getRowCount()+1, Circle::unknownJ, 2.0*ny);
-            NGLR.setAt(NGL.getRowCount()+1, Circle::unknownK, 2.0*nz);
-            nglr.setAt(NGL.getRowCount()+1, 1.0 - (nx*nx + ny*ny + nz*nz));
-
-            NGLR.setAt(Circle::unknownX, NGL.getRowCount(), nx);
-            NGLR.setAt(Circle::unknownY, NGL.getRowCount(), ny);
-            NGLR.setAt(Circle::unknownZ, NGL.getRowCount(), nz);
-            NGLR.setAt(Circle::unknownI, NGL.getRowCount(), xc);
-            NGLR.setAt(Circle::unknownJ, NGL.getRowCount(), yc);
-            NGLR.setAt(Circle::unknownK, NGL.getRowCount(), zc);
-            NGLR.setAt(Circle::unknownD, NGL.getRowCount(), -1.0);
-
-            NGLR.setAt(Circle::unknownI, NGL.getRowCount()+1, 2.0*nx);
-            NGLR.setAt(Circle::unknownJ, NGL.getRowCount()+1, 2.0*ny);
-            NGLR.setAt(Circle::unknownK, NGL.getRowCount()+1, 2.0*nz);
-
-            OiMat QxxR = NGLR.inv();
-            OiVec duk  = QxxR * nglr;
-            OiVec du(A.getColCount());
-
-            xc += duk.getAt(Circle::unknownX);
-            yc += duk.getAt(Circle::unknownY);
-            zc += duk.getAt(Circle::unknownZ);
-            rc += duk.getAt(Circle::unknownR);
-
-            nx += duk.getAt(Circle::unknownI);
-            ny += duk.getAt(Circle::unknownJ);
-            nz += duk.getAt(Circle::unknownK);
-            d  += duk.getAt(Circle::unknownD);
-
-            maxAbsDu = duk.getAt(0);
-            for (int i=0; i<du.getSize(); i++) {
-                du.setAt(i, duk.getAt(i));
-                maxAbsDu = max(maxAbsDu, fabs(duk.getAt(i)));
-
-                // Dies waere nur am Ende der letzten Iteration notwendig
-                for (int j=0; j<du.getSize(); j++)
-                    Qxx.setAt(i,j,QxxR.getAt(i,j));
-            }
-
-            v = B.t()*Pww*(A*du-w);
-
-            if (itr<maxItr && maxAbsDu < 1.0E-8) {
-                qDebug() << "DEBUG: Found Solution!";
-                break;
-            }
-            else if (itr>maxItr) {
-                qDebug() << "DEBUG: Estimation failed!";
-                return false;
-            }
-            itr++;
-        }
-
-        // Statistik
-        Statistic myStats = circle.getStatistic();
-        myStats.s0_apriori     = 1.0;
-        double vv;
-        OiVec::dot(vv, v,v);
-        myStats.s0_aposteriori = (obsCount-6) > 0 ? sqrt(vv/(obsCount-6)) : 1.0;
-
-        circle.xyz.setAt(0, xc);
-        circle.xyz.setAt(1, yc);
-        circle.xyz.setAt(2, zc);
-        circle.radius = rc;
-        circle.ijk.setAt(0, nx);
-        circle.ijk.setAt(1, ny);
-        circle.ijk.setAt(2, nz);
-        circle.dist2origin = d;
-
-        myStats.v.replace(v);
         for(int i=0; i<obsCount; i++){
-            Residual r;
-            r.addValue("vx", v.getAt(i*3),   UnitConverter::eMetric);
-            r.addValue("vy", v.getAt(3*i+1), UnitConverter::eMetric);
-            r.addValue("vz", v.getAt(3*i+2), UnitConverter::eMetric);
-            myStats.displayResiduals.append(r);
+            double xP = x[i] - v.getAt(3*i);
+            double yP = y[i] - v.getAt(3*i+1);
+            double zP = z[i] - v.getAt(3*i+2);
+
+            // Kugelparameter
+            A.setAt(i, Circle::unknownCenterX, -2.0*(xP - xc));
+            A.setAt(i, Circle::unknownCenterY, -2.0*(yP - yc));
+            A.setAt(i, Circle::unknownCenterZ, -2.0*(zP - zc));
+            A.setAt(i, Circle::unknownRadius, -2.0*rc);
+
+            B.setAt(i, i*3,   2.0*(xP - xc));
+            B.setAt(i, i*3+1, 2.0*(yP - yc));
+            B.setAt(i, i*3+2, 2.0*(zP - zc));
+
+            w.setAt(i, rc*rc - ((xP-xc)*(xP-xc) + (yP-yc)*(yP-yc) + (zP-zc)*(zP-zc)));
+
+            // Ebene in Normalform
+            A.setAt(obsCount+i, Circle::unknownNormalI, xP);
+            A.setAt(obsCount+i, Circle::unknownNormalJ, yP);
+            A.setAt(obsCount+i, Circle::unknownNormalK, zP);
+            A.setAt(obsCount+i, 7, -1.0);
+
+            B.setAt(obsCount+i, i*3,   nx);
+            B.setAt(obsCount+i, i*3+1, ny);
+            B.setAt(obsCount+i, i*3+2, nz);
+
+            w.setAt(obsCount+i, d - (nx*xP + ny*yP + nz*zP));
         }
-        myStats.qxx = Qxx;
 
-        myStats.isValid = true;
-        circle.setStatistic(myStats);
-        this->myStatistic = circle.getStatistic();
+        w = -1*B*v + w;
 
-        return true;
-    }else{
-        //set statistic to invalid
-        Statistic myStats = circle.getStatistic();
-        myStats.isValid = false;
-        circle.setStatistic(myStats);
-        this->myStatistic = circle.getStatistic();
-    }
-    return false;
-}
+        OiMat Qww = B * B.t();
+        OiMat Pww = Qww.inv();
+        OiMat NGL = A.t() * Pww * A;
+        OiVec ngl = A.t() * Pww * w;
 
-QList<InputParams> BestFitCircle::getNeededElements() const {
-    QList<InputParams> result;
-    InputParams param;
-    param.index = 0;
-    param.description = "Select at least three non-collinear observed points to calculate the best fit circle.";
-    param.infinite = true;
-    param.typeOfElement = Configuration::eObservationElement;
-    result.append(param);
+        OiMat NGLR(NGL.getRowCount() + 2, NGL.getColCount() + 2);
+        OiVec nglr(ngl.getSize() + 2);
 
-//    InputParams param;
-//    param.index = 0;
-//    param.description = "Select at least 3 non-collinear observed points to calculate the best fit circle.";
-//    param.infinite = true;
-//    param.typeOfElement = Configuration::ePointElement;
-//    result.append(param);
-
-    return result;
-}
-
-QList<Configuration::FeatureTypes> BestFitCircle::applicableFor() const {
-    QList<Configuration::FeatureTypes> result;
-    result.append(Configuration::eCircleFeature);
-    return result;
-}
-/**
- * Returns the number of valid Points
- * @brief BestFitCircle::getObservationCount
- * @return nop
- */
-int BestFitCircle::getObservationCount(){
-    int count = 0;
-    foreach(Observation *obs, this->observations){
-        if(obs->getUseState()){
-            this->setUseState(obs->getId(), true);
-            count++;
+        for (int i=0; i<NGL.getRowCount(); i++) {
+            nglr.setAt(i, ngl.getAt(i));
+            for (int j=0; j<NGL.getColCount(); j++)
+                NGLR.setAt(i,j, NGL.getAt(i,j));
         }
-        else
-            this->setUseState(obs->getId(), false);
+
+        NGLR.setAt(NGL.getRowCount(), Circle::unknownCenterX, nx);
+        NGLR.setAt(NGL.getRowCount(), Circle::unknownCenterY, ny);
+        NGLR.setAt(NGL.getRowCount(), Circle::unknownCenterZ, nz);
+        NGLR.setAt(NGL.getRowCount(), Circle::unknownNormalI, xc);
+        NGLR.setAt(NGL.getRowCount(), Circle::unknownNormalJ, yc);
+        NGLR.setAt(NGL.getRowCount(), Circle::unknownNormalK, zc);
+        NGLR.setAt(NGL.getRowCount(), 7, -1.0);
+        nglr.setAt(NGL.getRowCount(), d - (nx*xc + ny*yc + nz*zc));
+
+        NGLR.setAt(NGL.getRowCount()+1, Circle::unknownNormalI, 2.0*nx);
+        NGLR.setAt(NGL.getRowCount()+1, Circle::unknownNormalJ, 2.0*ny);
+        NGLR.setAt(NGL.getRowCount()+1, Circle::unknownNormalK, 2.0*nz);
+        nglr.setAt(NGL.getRowCount()+1, 1.0 - (nx*nx + ny*ny + nz*nz));
+
+        NGLR.setAt(Circle::unknownCenterX, NGL.getRowCount(), nx);
+        NGLR.setAt(Circle::unknownCenterY, NGL.getRowCount(), ny);
+        NGLR.setAt(Circle::unknownCenterZ, NGL.getRowCount(), nz);
+        NGLR.setAt(Circle::unknownNormalI, NGL.getRowCount(), xc);
+        NGLR.setAt(Circle::unknownNormalJ, NGL.getRowCount(), yc);
+        NGLR.setAt(Circle::unknownNormalK, NGL.getRowCount(), zc);
+        NGLR.setAt(7, NGL.getRowCount(), -1.0);
+
+        NGLR.setAt(Circle::unknownNormalI, NGL.getRowCount()+1, 2.0*nx);
+        NGLR.setAt(Circle::unknownNormalJ, NGL.getRowCount()+1, 2.0*ny);
+        NGLR.setAt(Circle::unknownNormalK, NGL.getRowCount()+1, 2.0*nz);
+
+        OiMat QxxR = NGLR.inv();
+        OiVec duk  = QxxR * nglr;
+        OiVec du(A.getColCount());
+
+        xc += duk.getAt(Circle::unknownCenterX);
+        yc += duk.getAt(Circle::unknownCenterY);
+        zc += duk.getAt(Circle::unknownCenterZ);
+        rc += duk.getAt(Circle::unknownRadius);
+
+        nx += duk.getAt(Circle::unknownNormalI);
+        ny += duk.getAt(Circle::unknownNormalJ);
+        nz += duk.getAt(Circle::unknownNormalK);
+        d  += duk.getAt(7);
+
+        maxAbsDu = duk.getAt(0);
+        for (int i=0; i<du.getSize(); i++) {
+            du.setAt(i, duk.getAt(i));
+            maxAbsDu = max(maxAbsDu, fabs(duk.getAt(i)));
+
+            // Dies waere nur am Ende der letzten Iteration notwendig
+            for (int j=0; j<du.getSize(); j++)
+                Qxx.setAt(i,j,QxxR.getAt(i,j));
+        }
+
+        v = B.t()*Pww*(A*du-w);
+
+        if (itr<maxItr && maxAbsDu < 1.0E-8) {
+            qDebug() << "DEBUG: Found Solution!";
+            break;
+        }
+        else if (itr>maxItr) {
+            qDebug() << "DEBUG: Estimation failed!";
+            return false;
+        }
+        itr++;
     }
-    return count;
+
+    // Statistik
+    Statistic myStats;
+    myStats.setS0APriori(1.0);
+    double vv;
+    OiVec::dot(vv, v, v);
+    myStats.setS0APosteriori((obsCount-6) > 0 ? sqrt(vv/(obsCount-6)) : 1.0);
+
+    Position circlePosition;
+    OiVec xyz(3);
+    xyz.setAt(0, xc);
+    xyz.setAt(1, yc);
+    xyz.setAt(2, zc);
+    circlePosition.setVector(xyz);
+
+    Direction circleDirection;
+    OiVec ijk(3);
+    ijk.setAt(0, nx);
+    ijk.setAt(1, ny);
+    ijk.setAt(2, nz);
+    circleDirection.setVector(ijk);
+
+    Radius circleRadius;
+    circleRadius.setRadius(rc);
+
+    circle.setCircle(circlePosition, circleDirection, circleRadius);
+
+    myStats.setV(v);
+    for(int i=0; i<obsCount; i++){
+        Residual r;
+        r.elementId = inputObservations.at(i)->getId();
+        r.corrections.insert("vx", v.getAt(i*3));
+        r.corrections.insert("vx", v.getAt(3*i+1));
+        r.corrections.insert("vx", v.getAt(3*i+2));
+        r.dimension = eMetric;
+        myStats.addDisplayResidual(r);
+    }
+    myStats.setQxx(Qxx);
+
+    myStats.setIsValid(true);
+    circle.setStatistic(myStats);
+    this->statistic = circle.getStatistic();
+
+    return true;
+
 }
+
 /**
  * Estimate the approx. Plane. SourceCode is taken from
  * com.derletztekick.geodesy.formFittingToolbox.v2.form.form3d.Circle3D

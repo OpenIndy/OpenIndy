@@ -47,6 +47,9 @@ public:
     const QPointer<CoordinateSystem> &getNominalSystem() const;
     void setNominalSystem(const QPointer<CoordinateSystem> &nominalSystem);
 
+    const QMap<DimensionType, UnitType> &getUnits() const;
+    void setUnit(const DimensionType &dimension, const UnitType &unit);
+
 public slots:
 
     //#########################
@@ -103,6 +106,8 @@ protected:
     //###########################
 
     //QMap<OiUnitConverter::DimensionType, OiUnitConverter::UnitType> units; //units used for im- or export
+
+    QMap<DimensionType, UnitType> units;
 
     bool exportObservations; //true if only the observations of the selected geometries shall be exported
     QString groupName; //group that the imported nominals shall be added to

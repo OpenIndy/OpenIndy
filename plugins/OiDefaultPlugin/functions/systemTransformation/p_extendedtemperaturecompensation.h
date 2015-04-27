@@ -1,36 +1,40 @@
 #ifndef P_EXTENDEDTEMPERATURECOMPENSATION_H
 #define P_EXTENDEDTEMPERATURECOMPENSATION_H
 
-#include "pi_systemtransformation.h"
-#include "configuration.h"
+#include "systemtransformation.h"
 #include "pluginmetadata.h"
 #include <QtCore/qmath.h>
 #include "materials.h"
 
+using namespace std;
 
 /*!
  * \brief The ExtendedTemperatureCompensation class is a system transformation with temperature compensation.
  * By specifying a minimum of 3 common points between the systems, a reference temperature and the material, this
  * function calculates the scales (x,y,z) , translation and rotation
  */
-
-using namespace std;
-
 class ExtendedTemperatureCompensation : public SystemTransformation
 {
-public:
-    ExtendedTemperatureCompensation();
+    Q_OBJECT
+protected:
 
-    PluginMetaData* getMetaData() const;
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    //##############################
+    //function initialization method
+    //##############################
 
-    bool exec(TrafoParam &);
+    void init();
 
-    QMap<QString, QStringList> getStringParameter() const;
-    QMap<QString, double> getDoubleParameter() const;
+    //############
+    //exec methods
+    //############
 
-    QStringList getResultProtocol() const;
+    bool exec(TrafoParam &trafoParam);
+
+    //##############################################################################################
+    //tell OpenIndy wether the input elements shall be shown as one entry in function plugin loader)
+    //##############################################################################################
+
+    virtual bool mergeInputElements();
 
 private:
 
@@ -46,7 +50,7 @@ private:
     OiVec scale;
 
     bool calc(TrafoParam &tp);
-    void init();
+    void initPoints();
     void getExtraParameter();
     OiVec approxTranslation(OiVec rot, OiVec s);
     OiVec approxRotation();

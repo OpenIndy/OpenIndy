@@ -1,7 +1,7 @@
 #ifndef P_OIEXCHANGEPTS_H
 #define P_OIEXCHANGEPTS_H
 
-#include "pi_oiexchangedefinedformat.h"
+#include "exchangedefinedformat.h"
 
 class OiExchangePts : public OiExchangeDefinedFormat
 { 

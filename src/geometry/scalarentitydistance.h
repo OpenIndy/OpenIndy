@@ -28,7 +28,7 @@ public:
     //########################################
 
     enum DistanceUnknowns{
-        unknownDistance = eUnknownDistance
+        unknownDistance = 0
     };
 
     //##############################

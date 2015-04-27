@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QJsonArray>
-#include "oiplugin.h"
+#include "plugin.h"
 #include "sensor.h"
 #include "lasertracker.h"
 #include "totalstation.h"

@@ -36,17 +36,17 @@ public:
     //########################################
 
     enum SlottedHoleUnknowns{
-        unknownCenterX = eUnknownX,
-        unknownCenterY = eUnknownY,
-        unknownCenterZ = eUnknownZ,
-        unknownNormalI = eUnknownPrimaryI,
-        unknownNormalJ = eUnknownPrimaryJ,
-        unknownNormalK = eUnknownPrimaryK,
-        unknownRadius = eUnknownRadiusA,
-        unknownLength = eUnknownLength,
-        unknownHoleAxisI = eUnknownSecondaryI,
-        unknownHoleAxisJ = eUnknownSecondaryJ,
-        unknownHoleAxisK = eUnknownSecondaryK
+        unknownCenterX = 0,
+        unknownCenterY,
+        unknownCenterZ,
+        unknownNormalI,
+        unknownNormalJ,
+        unknownNormalK,
+        unknownRadius,
+        unknownLength,
+        unknownHoleAxisI,
+        unknownHoleAxisJ,
+        unknownHoleAxisK
     };
 
     //###################################################################

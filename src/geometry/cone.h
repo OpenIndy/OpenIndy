@@ -31,13 +31,13 @@ public:
     //########################################
 
     enum ConeUnknowns{
-        unknownApexX = eUnknownX,
-        unknownApexY = eUnknownY,
-        unknownApexZ = eUnknownZ,
-        unknownAxisI = eUnknownPrimaryI,
-        unknownAxisJ = eUnknownPrimaryJ,
-        unknownAxisK = eUnknownPrimaryK,
-        unknownAperture = eUnknownAperture
+        unknownApexX = 0,
+        unknownApexY,
+        unknownApexZ,
+        unknownAxisI,
+        unknownAxisJ,
+        unknownAxisK,
+        unknownAperture
     };
 
     //###################################################################

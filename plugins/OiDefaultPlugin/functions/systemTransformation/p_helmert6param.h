@@ -1,7 +1,7 @@
 #ifndef P_HELMERT6PARAM_H
 #define P_HELMERT6PARAM_H
 
-#include "pi_systemtransformation.h"
+#include "systemtransformation.h"
 
 using namespace std;
 
@@ -11,17 +11,20 @@ using namespace std;
  */
 class Helmert6Param : public SystemTransformation
 {
-public:
-    Helmert6Param();
+    Q_OBJECT
+protected:
 
-    PluginMetaData* getMetaData() const;
-    bool exec(TrafoParam&);
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    //##############################
+    //function initialization method
+    //##############################
 
-    QMap<QString, QStringList> getStringParameter() const;
+    void init();
 
-    QStringList getResultProtocol() const;
+    //############
+    //exec methods
+    //############
+
+    bool exec(TrafoParam &trafoParam);
 
 private:
     bool svdError;
@@ -31,7 +34,7 @@ private:
     OiVec translation;
     OiVec rotation;
 
-    void init();
+    void initPoints();
     vector<OiVec> calcCentroidCoord();
     vector<OiVec> centroidReducedCoord(QList<OiVec> input, OiVec centroid);
     vector<OiMat> modelMatrix(vector<OiVec> locC, vector<OiVec> refC);

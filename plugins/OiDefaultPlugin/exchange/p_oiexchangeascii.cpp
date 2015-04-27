@@ -1,50 +1,51 @@
 #include "p_oiexchangeascii.h"
 
 /*!
- * \brief OiExchangeAscii::getMetaData
- * \return
+ * \brief OiExchangeAscii::init
  */
-PluginMetaData *OiExchangeAscii::getMetaData() const{
+void OiExchangeAscii::init(){
 
-    PluginMetaData* metaData = new PluginMetaData();
+    //set plugin meta data
+    this->metaData.name = "OiExchangeAscii";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "bra";
+    this->metaData.description = "Read simple Ascii files.";
+    this->metaData.iid = "de.openIndy.plugin.exchange.exchangeSimpleAscii.v001";
 
-    metaData->name = "OiExchangeAscii";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "br";
-    metaData->description = QString("%1")
-            .arg("Read simple Ascii files.");
-    metaData->iid = "de.openIndy.Plugin.OiExchange.OiExchangeSimpleAscii.v001";
+    //set supported delimiters
+    this->supportedDelimiters.append("whitespace [ ]");
+    this->supportedDelimiters.append("semicolon [;]");
 
-    return metaData;
+    //set supported geometries
+    this->supportedGeometries.append(ePointGeometry);
 
 }
 
 /*!
  * \brief OiExchangeAscii::getDefaultColumnOrder
  * \param typeOfGeometry
- * \param projectData
  * \return
  */
-QList<OiExchangeSimpleAscii::ColumnType> OiExchangeAscii::getDefaultColumnOrder(Configuration::GeometryTypes typeOfGeometry, const OiExchangeObject &projectData) const{
+QList<ExchangeSimpleAscii::ColumnType> OiExchangeAscii::getDefaultColumnOrder(const GeometryTypes &typeOfGeometry){
 
-    QList<OiExchangeSimpleAscii::ColumnType> defaultColumnOrder;
+    QList<ExchangeSimpleAscii::ColumnType> defaultColumnOrder;
 
     try{
 
         //check if device exists
-        if(projectData.device == NULL){
-            return QList<OiExchangeSimpleAscii::ColumnType>();
+        if(this->device.isNull()){
+            return defaultColumnOrder;
         }
 
         //if device is not opened yet, open it
-        if(!projectData.device->isOpen()){
-            projectData.device->open(QIODevice::ReadOnly | QIODevice::Text);
+        if(!this->device->isOpen()){
+            this->device->open(QIODevice::ReadOnly | QIODevice::Text);
         }
 
         //read the first twenty lines to get the maximum number of columns
         int numColumns = 0;
         int sampleSize = 20;
-        QTextStream in(projectData.device);
+        QTextStream in(this->device.data());
         while (!in.atEnd() && sampleSize >= 0){
 
             QString line = in.readLine();
@@ -58,11 +59,11 @@ QList<OiExchangeSimpleAscii::ColumnType> OiExchangeAscii::getDefaultColumnOrder(
         }
 
         //close the device
-        projectData.device->close();
+        this->device->close();
 
         //depending on the geometry type and the number of columns fill the default columns order
         switch(typeOfGeometry){
-        case Configuration::ePointGeometry:
+        case ePointGeometry:
             if(numColumns == 1){
                 defaultColumnOrder.append(OiExchangeAscii::eColumnX);
             }else if(numColumns == 2){
@@ -105,7 +106,7 @@ QList<OiExchangeSimpleAscii::ColumnType> OiExchangeAscii::getDefaultColumnOrder(
         }
 
     }catch(const exception &e){
-        this->writeToConsole(e.what());
+        emit this->sendMessage(e.what());
     }
 
     return defaultColumnOrder;
@@ -115,15 +116,14 @@ QList<OiExchangeSimpleAscii::ColumnType> OiExchangeAscii::getDefaultColumnOrder(
 /*!
  * \brief OiExchangeAscii::getFilePreview
  * \param typeOfGeometry
- * \param projectData
  * \return
  */
-QMap<OiExchangeSimpleAscii::ColumnType, QVariantList> OiExchangeAscii::getFilePreview(Configuration::GeometryTypes typeOfGeometry, const OiExchangeObject &projectData) const{
+QMap<ExchangeSimpleAscii::ColumnType, QVariantList> OiExchangeAscii::getFilePreview(const GeometryTypes &typeOfGeometry){
 
-    QMap<OiExchangeSimpleAscii::ColumnType, QVariantList> filePreview;
+    QMap<ExchangeSimpleAscii::ColumnType, QVariantList> filePreview;
 
     //get the default column order
-    QList<OiExchangeSimpleAscii::ColumnType> defaultColumnOrder = this->getDefaultColumnOrder(typeOfGeometry, projectData);
+    QList<ExchangeSimpleAscii::ColumnType> defaultColumnOrder = this->getDefaultColumnOrder(typeOfGeometry);
 
     //insert an empty list for each column as default
     for(int i = 0; i < defaultColumnOrder.size(); i++){
@@ -133,18 +133,18 @@ QMap<OiExchangeSimpleAscii::ColumnType, QVariantList> OiExchangeAscii::getFilePr
     try{
 
         //check if device exists
-        if(projectData.device == NULL){
+        if(this->device.isNull()){
             return filePreview;
         }
 
         //if device is not opened yet, open it
-        if(!projectData.device->isOpen()){
-            projectData.device->open(QIODevice::ReadOnly | QIODevice::Text);
+        if(!this->device->isOpen()){
+            this->device->open(QIODevice::ReadOnly | QIODevice::Text);
         }
 
         //get the first twenty lines as preview
         int sampleSize = 20;
-        QTextStream in(projectData.device);
+        QTextStream in(this->device);
         while (!in.atEnd() && sampleSize >= 0){
 
             QString line = in.readLine();
@@ -173,10 +173,10 @@ QMap<OiExchangeSimpleAscii::ColumnType, QVariantList> OiExchangeAscii::getFilePr
         }
 
         //close the device
-        projectData.device->close();
+        this->device->close();
 
     }catch(const exception &e){
-        this->writeToConsole(e.what());
+        emit this->sendMessage(e.what());
     }
 
     return filePreview;
@@ -188,19 +188,19 @@ QMap<OiExchangeSimpleAscii::ColumnType, QVariantList> OiExchangeAscii::getFilePr
  * \param typeOfGeometry
  * \return
  */
-QList<OiExchangeSimpleAscii::ColumnType> OiExchangeAscii::getPossibleColumns(Configuration::GeometryTypes typeOfGeometry) const{
+QList<ExchangeSimpleAscii::ColumnType> OiExchangeAscii::getPossibleColumns(const GeometryTypes &typeOfGeometry){
 
-    QList<OiExchangeSimpleAscii::ColumnType> possibleColumns;
+    QList<ExchangeSimpleAscii::ColumnType> possibleColumns;
 
     //add all possible columns depending on the type of geometry
     switch(typeOfGeometry){
-    case Configuration::ePointGeometry:
-        possibleColumns.append(OiExchangeSimpleAscii::eColumnX);
-        possibleColumns.append(OiExchangeSimpleAscii::eColumnY);
-        possibleColumns.append(OiExchangeSimpleAscii::eColumnZ);
-        possibleColumns.append(OiExchangeSimpleAscii::eColumnFeatureName);
-        possibleColumns.append(OiExchangeSimpleAscii::eColumnGroupName);
-        possibleColumns.append(OiExchangeSimpleAscii::eColumnComment);
+    case ePointGeometry:
+        possibleColumns.append(ExchangeSimpleAscii::eColumnX);
+        possibleColumns.append(ExchangeSimpleAscii::eColumnY);
+        possibleColumns.append(ExchangeSimpleAscii::eColumnZ);
+        possibleColumns.append(ExchangeSimpleAscii::eColumnFeatureName);
+        possibleColumns.append(ExchangeSimpleAscii::eColumnGroupName);
+        possibleColumns.append(ExchangeSimpleAscii::eColumnComment);
         break;
     }
 
@@ -209,27 +209,11 @@ QList<OiExchangeSimpleAscii::ColumnType> OiExchangeAscii::getPossibleColumns(Con
 }
 
 /*!
- * \brief OiExchangeAscii::getSupportedDelimiters
- * \return
- */
-QStringList OiExchangeAscii::getSupportedDelimiters() const{
-
-    QStringList supportedDelimiters;
-
-    //add supported delimiter names
-    supportedDelimiters.append("whitespace [ ]");
-    supportedDelimiters.append("semicolon [;]");
-
-    return supportedDelimiters;
-
-}
-
-/*!
  * \brief OiExchangeAscii::getDelimiter
  * \param delimiterName
  * \return
  */
-QRegExp OiExchangeAscii::getDelimiter(QString delimiterName) const{
+QRegExp OiExchangeAscii::getDelimiter(const QString &delimiterName) const{
 
     if(delimiterName.compare("whitespace [ ]")){
         return QRegExp("\\s+");
@@ -243,37 +227,35 @@ QRegExp OiExchangeAscii::getDelimiter(QString delimiterName) const{
 
 /*!
  * \brief OiExchangeAscii::importOiData
- * \param projectData
- * \return
  */
-bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
+void OiExchangeAscii::importOiData(){
 
     try{
 
-        projectData.features.clear();
+        this->features.clear();
 
         //set the number of error prone lines to 0
         int numErrors = 0;
 
         switch(this->typeOfGeometry){
-        case Configuration::ePointGeometry:
+        case ePointGeometry:
 
             //check if device exists
-            if(projectData.device == NULL){
-                return false;
+            if(this->device.isNull()){
+                return;
             }
 
             //if device is not opened yet, open it
-            if(!projectData.device->isOpen()){
-                projectData.device->open(QIODevice::ReadOnly | QIODevice::Text);
+            if(!this->device->isOpen()){
+                this->device->open(QIODevice::ReadOnly | QIODevice::Text);
             }
 
-            qint64 fileSize = projectData.device->size();
+            qint64 fileSize = this->device->size();
             qint64 readSize = 0;
             qint64 numPoints = 0;
 
             //read all lines
-            QTextStream in(projectData.device);
+            QTextStream in(this->device);
             while (!in.atEnd()){
 
                 QString line = in.readLine();
@@ -284,8 +266,7 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
                 QStringList columns = line.split(this->getDelimiter(this->usedDelimiter));
 
                 //create a point object
-                Point *myNominal = new Point(true);
-                myNominal->setId(-1);
+                QPointer<Point> myNominal = new Point(true);
 
                 bool errorWhileParsing = false;
 
@@ -296,92 +277,81 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
                         break;
                     }
 
+                    //set the point attribute depending on the current column
                     switch(this->userDefinedColumns.at(i)){
-                    case OiExchangeSimpleAscii::eColumnFeatureName:
+                    case ExchangeSimpleAscii::eColumnFeatureName:
                         myNominal->setFeatureName(columns.at(i));
                         break;
-                    case OiExchangeSimpleAscii::eColumnComment:
+                    case ExchangeSimpleAscii::eColumnComment:
                         myNominal->setComment(columns.at(i));
                         break;
-                    case OiExchangeSimpleAscii::eColumnGroupName:
+                    case ExchangeSimpleAscii::eColumnGroupName:
                         myNominal->setGroupName(columns.at(i));
                         break;
-                    case OiExchangeSimpleAscii::eColumnX:{
+                    case ExchangeSimpleAscii::eColumnX:{
 
                         double x = 0.0;
                         x = columns.at(i).toDouble(&errorWhileParsing);
                         errorWhileParsing = !errorWhileParsing;
 
                         //transform the unit of the imported coordinate to [m]
-                        if(this->units.contains(UnitConverter::eMetric)
-                                && this->units.value(UnitConverter::eMetric) != UnitConverter::eMETER){
-                            switch(this->units.value(UnitConverter::eMetric)){
-                            case UnitConverter::eMILLIMETER:
-                                x = x / 1000.0;
-                                break;
-                            case UnitConverter::eInch:
-                                x = x / 39.37007874;
-                                break;
-                            }
+                        if(this->units.contains(eMetric) && this->units.value(eMetric) != eUnitMeter){
+                            convertToDefault(x, this->units.value(eMetric));
                         }
 
                         if(!errorWhileParsing){
-                            myNominal->xyz.setAt(0, x);
+                            Position position = myNominal->getPosition();
+                            OiVec vec = position.getVector();
+                            vec.setAt(0, x);
+                            position.setVector(vec);
+                            myNominal->setPoint(position);
                         }
 
                         break;
 
-                    }case OiExchangeSimpleAscii::eColumnY:{
+                    }case ExchangeSimpleAscii::eColumnY:{
 
                         double y = 0.0;
                         y = columns.at(i).toDouble(&errorWhileParsing);
                         errorWhileParsing = !errorWhileParsing;
 
                         //transform the unit of the imported coordinate to [m]
-                        if(this->units.contains(UnitConverter::eMetric)
-                                && this->units.value(UnitConverter::eMetric) != UnitConverter::eMETER){
-                            switch(this->units.value(UnitConverter::eMetric)){
-                            case UnitConverter::eMILLIMETER:
-                                y = y / 1000.0;
-                                break;
-                            case UnitConverter::eInch:
-                                y = y / 39.37007874;
-                                break;
-                            }
+                        if(this->units.contains(eMetric) && this->units.value(eMetric) != eUnitMeter){
+                            convertToDefault(y, this->units.value(eMetric));
                         }
 
                         if(!errorWhileParsing){
-                            myNominal->xyz.setAt(1, y);
+                            Position position = myNominal->getPosition();
+                            OiVec vec = position.getVector();
+                            vec.setAt(1, y);
+                            position.setVector(vec);
+                            myNominal->setPoint(position);
                         }
 
                         break;
 
-                    }case OiExchangeSimpleAscii::eColumnZ:{
+                    }case ExchangeSimpleAscii::eColumnZ:{
 
                         double z = 0.0;
                         z = columns.at(i).toDouble(&errorWhileParsing);
                         errorWhileParsing = !errorWhileParsing;
 
                         //transform the unit of the imported coordinate to [m]
-                        if(this->units.contains(UnitConverter::eMetric)
-                                && this->units.value(UnitConverter::eMetric) != UnitConverter::eMETER){
-                            switch(this->units.value(UnitConverter::eMetric)){
-                            case UnitConverter::eMILLIMETER:
-                                z = z / 1000.0;
-                                break;
-                            case UnitConverter::eInch:
-                                z = z / 39.37007874;
-                                break;
-                            }
+                        if(this->units.contains(eMetric) && this->units.value(eMetric) != eUnitMeter){
+                            convertToDefault(z, this->units.value(eMetric));
                         }
 
                         if(!errorWhileParsing){
-                            myNominal->xyz.setAt(2, z);
+                            Position position = myNominal->getPosition();
+                            OiVec vec = position.getVector();
+                            vec.setAt(2, z);
+                            position.setVector(vec);
+                            myNominal->setPoint(position);
                         }
 
                         break;
 
-                    }case OiExchangeSimpleAscii::eColumnIgnore:{
+                    }case ExchangeSimpleAscii::eColumnIgnore:{
                         break;
                     }}
 
@@ -401,9 +371,9 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
 
                 //add the imported nominal to OpenIndy
                 if(!errorWhileParsing){
-                    FeatureWrapper *myGeometry = new FeatureWrapper();
+                    QPointer<FeatureWrapper> myGeometry = new FeatureWrapper();
                     myGeometry->setPoint(myNominal);
-                    this->addGeometry(myGeometry, projectData);
+                    this->features.append(myGeometry);
                 }
 
                 //update import progress
@@ -418,49 +388,27 @@ bool OiExchangeAscii::importOiData(OiExchangeObject &projectData){
             }
 
             //close the device
-            projectData.device->close();
+            this->device->close();
 
             break;
 
         }
 
     }catch(const exception &e){
-        this->writeToConsole(e.what());
-        return false;
+        emit this->sendMessage(e.what());
     }
-
-    return true;
 
 }
 
 /*!
  * \brief OiExchangeAscii::exportOiData
- * \param projectData
- * \return
  */
-bool OiExchangeAscii::exportOiData(OiExchangeObject &projectData){
+void OiExchangeAscii::exportOiData(){
 
     try{
 
     }catch(const exception &e){
-        this->writeToConsole(e.what());
+        emit this->sendMessage(e.what());
     }
-
-    return true;
-
-}
-
-/*!
- * \brief OiExchangeAscii::getSupportedGeometries
- * \return
- */
-QList<Configuration::GeometryTypes> OiExchangeAscii::getSupportedGeometries(){
-
-    QList<Configuration::GeometryTypes> supportedGeometries;
-
-    //add supported geometries
-    supportedGeometries.append(Configuration::ePointGeometry);
-
-    return supportedGeometries;
 
 }

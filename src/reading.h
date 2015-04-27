@@ -155,6 +155,12 @@ public:
     const ReadingLevel &getLevelReading() const;
     const ReadingUndefined &getUndefinedReading() const;
 
+    //##############################
+    //set polar reading (simulation)
+    //##############################
+
+    void setPolarReading(const ReadingPolar &rPolar);
+
     //################################
     //make and restore reading backups
     //################################

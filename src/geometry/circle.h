@@ -31,13 +31,13 @@ public:
     //########################################
 
     enum CircleUnknowns{
-        unknownCenterX = eUnknownX,
-        unknownCenterY = eUnknownY,
-        unknownCenterZ = eUnknownZ,
-        unknownNormalI = eUnknownPrimaryI,
-        unknownNormalJ = eUnknownPrimaryJ,
-        unknownNormalK = eUnknownPrimaryK,
-        unknownRadius = eUnknownRadiusA
+        unknownCenterX = 0,
+        unknownCenterY,
+        unknownCenterZ,
+        unknownNormalI,
+        unknownNormalJ,
+        unknownNormalK,
+        unknownRadius
     };
 
     //###################################################################

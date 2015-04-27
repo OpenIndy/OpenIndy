@@ -1,164 +1,120 @@
 #include "p_bestfitsphere.h"
 
 /*!
- * \brief BestFitSphere::getMetaData
- * \return
+ * \brief BestFitSphere::init
  */
-PluginMetaData* BestFitSphere::getMetaData() const{
-    PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "BestFitSphere";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "br";
-    metaData->description = QString("%1 %2")
-            .arg("This function calculates an adjusted sphere.")
-            .arg("You can input as many observations as you want which are then used to find the best fit sphere.");
-    metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
-    return metaData;
-}
+void BestFitSphere::init(){
 
-/*!
- * \brief BestFitSphere::getNeededElements
- * \return
- */
-QList<InputParams> BestFitSphere::getNeededElements() const{
-    QList<InputParams> result;
-    InputParams param;
-    param.index = 0;
-    param.description = "Select at least four observations to calculate the best fit sphere.";
-    param.infinite = true;
-    param.typeOfElement = Configuration::eObservationElement;
-    result.append(param);
-    return result;
-}
+    //set plugin meta data
+    this->metaData.name = "BestFitSphere";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "kern";
+    this->metaData.description = QString("%1 %2")
+            .arg("This function caclulates an adjusted sphere.")
+            .arg("You can input as many points as you want which are then used to find the best fit sphere.");
+    this->metaData.iid = "de.openIndy.plugin.function.fitFunction.v001";
 
-/*!
- * \brief BestFitSphere::applicableFor
- * \return
- */
-QList<Configuration::FeatureTypes> BestFitSphere::applicableFor() const{
-    QList<Configuration::FeatureTypes> result;
-    result.append(Configuration::eSphereFeature);
-    return result;
+    //set needed elements
+    NeededElement param1;
+    param1.description = "Select at least four observations to calculate the best fit sphere.";
+    param1.infinite = true;
+    param1.typeOfElement = eObservationElement;
+    this->neededElements.append(param1);
+
+    //set spplicable for
+    this->applicableFor.append(eSphereFeature);
+
 }
 
 /*!
  * \brief BestFitSphere::exec
- * \param s
+ * \param sphere
  * \return
  */
-bool BestFitSphere::exec(Sphere &s){
-    bool check = false;
-    int obsCount = this->getObservationCount();
-
-    //if enough observations available
-    if(this->isValid() && obsCount >= 4){
-
-        //fill x,y,z arrays
-        double *x = new double[obsCount];
-        double *y = new double[obsCount];
-        double *z = new double[obsCount];
-        int k = 0;
-        foreach(Observation *obs, this->observations){
-            if(obs->getUseState()){
-                x[k] = obs->myXyz.getAt(0);
-                y[k] = obs->myXyz.getAt(1);
-                z[k] = obs->myXyz.getAt(2);
-                k++;
-                this->setUseState(obs->getId(), true);
-            }else{
-                this->setUseState(obs->getId(), false);
-            }
-        }
-
-        //calculate centroid of given observations
-        double centroid[3];
-        centroid[0] = 0.0;
-        centroid[1] = 0.0;
-        centroid[2] = 0.0;
-        for(int i = 0; i < obsCount; i++){
-            centroid[0] += x[i];
-            centroid[1] += y[i];
-            centroid[2] += z[i];
-        }
-        centroid[0] = centroid[0] / (float)obsCount;
-        centroid[1] = centroid[1] / (float)obsCount;
-        centroid[2] = centroid[2] / (float)obsCount;
-
-        //reduce observations by centroid
-        for(int i = 0; i < obsCount; i++){
-            x[i] = x[i] - centroid[0];
-            y[i] = y[i] - centroid[1];
-            z[i] = z[i] - centroid[2];
-        }
-
-        //adjust
-        double r;
-        double xm[3];
-        double qxx[4*4];
-        if( fitting_sphere(x, y, z, obsCount , xm, &r, qxx) ){
-
-            //add centroid coordinates to the center of the sphere
-            xm[0] += centroid[0];
-            xm[1] += centroid[1];
-            xm[2] += centroid[2];
-
-            this->setUpResult(s, x, y, z, obsCount, xm, r, qxx);
-
-
-            check = true;
-
-        }else{
-            this->writeToConsole("Unknown error while fitting sphere");
-        }
-
-        //free space
-        delete[] x;
-        delete[] y;
-        delete[] z;
-    }else{
-        //set statistic to invalid
-        Statistic myStats = s.getStatistic();
-        myStats.isValid = false;
-        s.setStatistic(myStats);
-        this->myStatistic = s.getStatistic();
-        this->writeToConsole("Not enough observations available for calculation");
-    }
-
-    return check;
+bool BestFitSphere::exec(Sphere &sphere){
+    return this->setUpResult(sphere);
 }
 
 /*!
  * \brief BestFitSphere::setUpResult
- * \param s
- * \param x
- * \param y
- * \param z
- * \param count
- * \param xm
- * \param r
- * \param qxx
- */
-void BestFitSphere::setUpResult(Sphere &s, double *x, double *y, double *z, int count, double *xm, double r, double *qxx){
-    OiVec mp(4);
-    mp.setAt(0, xm[0]);
-    mp.setAt(1, xm[1]);
-    mp.setAt(2, xm[2]);
-    mp.setAt(3, 1.0);
-    s.xyz = mp;
-    s.radius = r;
-}
-
-/*!
- * \brief BestFitSphere::checkObservationCount
- * Get number of valid observations
+ * \param sphere
  * \return
  */
-int BestFitSphere::getObservationCount(){
-    int count = 0;
-    foreach(Observation *obs, this->observations){
-        if(obs->getUseState()){
-            count++;
-        }
+bool BestFitSphere::setUpResult(Sphere &sphere){
+
+    //get and check input observations
+    if(!this->inputElements.contains(0) || this->inputElements[0].size() < 4){
+        emit this->sendMessage(QString("Not enough valid observations to fit the sphere %1").arg(sphere.getFeatureName()));
+        return false;
     }
-    return count;
+    QList<QPointer<Observation> > inputObservations;
+    foreach(const InputElement &element, this->inputElements[0]){
+        if(!element.observation.isNull() && element.observation->getIsSolved() && element.observation->getIsValid()){
+            inputObservations.append(element.observation);
+            this->setUseState(0, element.id, true);
+        }
+        this->setUseState(0, element.id, false);
+    }
+    if(inputObservations.size() < 4){
+        emit this->sendMessage(QString("Not enough valid observations to fit the sphere %1").arg(sphere.getFeatureName()));
+        return false;
+    }
+
+    //fill x,y,z arrays
+    double *x = new double[inputObservations.size()];
+    double *y = new double[inputObservations.size()];
+    double *z = new double[inputObservations.size()];
+    for(int i = 0; i < inputObservations.size(); i++){
+        x[i] = inputObservations[i]->getXYZ().getAt(0);
+        y[i] = inputObservations[i]->getXYZ().getAt(1);
+        z[i] = inputObservations[i]->getXYZ().getAt(2);
+    }
+
+    //calculate centroid of given observations
+    double centroid[3];
+    centroid[0] = 0.0;
+    centroid[1] = 0.0;
+    centroid[2] = 0.0;
+    for(int i = 0; i < inputObservations.size(); i++){
+        centroid[0] += x[i];
+        centroid[1] += y[i];
+        centroid[2] += z[i];
+    }
+    centroid[0] = centroid[0] / (float)inputObservations.size();
+    centroid[1] = centroid[1] / (float)inputObservations.size();
+    centroid[2] = centroid[2] / (float)inputObservations.size();
+
+    //reduce observations by centroid
+    for(int i = 0; i < inputObservations.size(); i++){
+        x[i] = x[i] - centroid[0];
+        y[i] = y[i] - centroid[1];
+        z[i] = z[i] - centroid[2];
+    }
+
+    //adjust
+    double r;
+    double xm[3];
+    double qxx[4*4];
+    if( !fitting_sphere(x, y, z, inputObservations.size() , xm, &r, qxx) ){
+        emit this->sendMessage(QString("Unknown error while fitting sphere %1").arg(sphere.getFeatureName()));
+        delete[] x;
+        delete[] y;
+        delete[] z;
+        return false;
+    }
+
+    //free space
+    delete[] x;
+    delete[] y;
+    delete[] z;
+
+    //set result
+    Position position;
+    position.setVector(xm[0], xm[1], xm[2]);
+    Radius radius;
+    radius.setRadius(r);
+    sphere.setSphere(position, radius);
+
+    return true;
+
 }

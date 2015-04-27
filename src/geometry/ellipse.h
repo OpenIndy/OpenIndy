@@ -31,17 +31,17 @@ public:
     //########################################
 
     enum EllipseUnknowns{
-        unknownCenterX = eUnknownX,
-        unknownCenterY = eUnknownY,
-        unknownCenterZ = eUnknownZ,
-        unknownNormalI = eUnknownPrimaryI,
-        unknownNormalJ = eUnknownPrimaryJ,
-        unknownNormalK = eUnknownPrimaryK,
-        unknownA = eUnknownA,
-        unknownB = eUnknownB,
-        unknownSemiMajorAxisI = eUnknownSecondaryI,
-        unknownSemiMajorAxisJ = eUnknownSecondaryJ,
-        unknownSemiMajorAxisK = eUnknownSecondaryK
+        unknownCenterX = 0,
+        unknownCenterY,
+        unknownCenterZ,
+        unknownNormalI,
+        unknownNormalJ,
+        unknownNormalK,
+        unknownA,
+        unknownB,
+        unknownSemiMajorAxisI,
+        unknownSemiMajorAxisJ,
+        unknownSemiMajorAxisK
     };
 
     //###################################################################

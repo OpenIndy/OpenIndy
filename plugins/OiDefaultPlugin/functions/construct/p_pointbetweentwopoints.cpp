@@ -1,106 +1,75 @@
 #include "p_pointbetweentwopoints.h"
 
 /*!
- * \brief PointBetweenTwoPoints::getMetaData
- * \return
+ * \brief PointBetweenTwoPoints::init
  */
-PluginMetaData* PointBetweenTwoPoints::getMetaData() const{
-    PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "PointBetweenTwoPoints";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "br";
-    metaData->description = QString("%1 %2")
+void PointBetweenTwoPoints::init(){
+
+    //set plugin meta data
+    this->metaData.name = "PointBetweenTwoPoints";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "bra";
+    this->metaData.description = QString("%1 %2")
             .arg("This function calculates the point between two points.")
             .arg("Therefore you have to input those two points.");
-    metaData->iid = "de.openIndy.Plugin.Function.ConstructFunction.v001";
-    return metaData;
-}
+    this->metaData.iid = "de.openIndy.plugin.function.constructFunction.v001";
 
-/*!
- * \brief PointBetweenTwoPoints::getNeededElements
- * \return
- */
-QList<InputParams> PointBetweenTwoPoints::getNeededElements() const{
-    QList<InputParams> result;
-    InputParams param1;
-    param1.index = 0;
+    //set needed elements
+    NeededElement param1;
     param1.description = "Select first point.";
     param1.infinite = false;
-    param1.typeOfElement = Configuration::ePointElement;
-    result.append(param1);
-    InputParams param2;
-    param2.index = 0;
+    param1.typeOfElement = ePointElement;
+    NeededElement param2;
     param2.description = "Select second point.";
     param2.infinite = false;
-    param2.typeOfElement = Configuration::ePointElement;
-    result.append(param2);
-    return result;
-}
+    param2.typeOfElement = ePointElement;
+    this->neededElements.append(param2);
 
-/*!
- * \brief PointBetweenTwoPoints::applicableFor
- * \return
- */
-QList<Configuration::FeatureTypes> PointBetweenTwoPoints::applicableFor() const{
-    QList<Configuration::FeatureTypes> result;
-    result.append(Configuration::ePointFeature);
-    return result;
+    //set spplicable for
+    this->applicableFor.append(ePointFeature);
+
 }
 
 /*!
  * \brief PointBetweenTwoPoints::exec
- * \param p
+ * \param point
  * \return
  */
-bool PointBetweenTwoPoints::exec(Point &p){
-    if(this->isValid() && this->getTwoPoints()){
-        return this->calcMidPoint(p);
-    }else{
-        this->writeToConsole("Not enough points available for calculation");
+bool PointBetweenTwoPoints::exec(Point &point){
+    return this->setUpResult(point);
+}
+
+/*!
+ * \brief PointBetweenTwoPoints::setUpResult
+ * \param point
+ * \return
+ */
+bool PointBetweenTwoPoints::setUpResult(Point &point){
+
+    //get and check input points
+    if(!this->inputElements.contains(0) || this->inputElements[0].size() != 1
+            || !this->inputElements.contains(1) || this->inputElements.size() != 1){
         return false;
     }
-}
-
-/*!
- * \brief PointBetweenTwoPoints::getTwoPoints
- * Get start and destiantion point
- * \return
- */
-bool PointBetweenTwoPoints::getTwoPoints(){
-    this->startPoint = NULL;
-    this->destPoint = NULL;
-    if(this->featureOrder.contains(0) && this->featureOrder.contains(1)){ //if featureOrder contains 2 elements
-        QMap<int, QList<InputFeature> >::iterator startIdx = this->featureOrder.find(0);
-        QMap<int, QList<InputFeature> >::iterator destIdx = this->featureOrder.find(0);
-        if(startIdx != this->featureOrder.end() && startIdx.value().size() > 0
-                && destIdx != this->featureOrder.end() && destIdx.value().size() > 0){ //if both lists contain elements
-            QList<InputFeature> startElementList = startIdx.value();
-            QList<InputFeature> destElementList = destIdx.value();
-            if(startElementList.at(0).typeOfElement == Configuration::ePointElement
-                    && destElementList.at(0).typeOfElement == Configuration::ePointElement){ //if both elements are point elements
-                this->startPoint = this->getPoint(startElementList.at(0).id);
-                this->destPoint = this->getPoint(destElementList.at(0).id);
-                if(this->startPoint != NULL && this->destPoint != NULL){ //if both points exist
-                    return true;
-                }
-            }
-        }
+    QPointer<Point> point1 = this->inputElements[0].at(0).point;
+    QPointer<Point> point2 = this->inputElements[1].at(0).point;
+    if(point1.isNull() || point2.isNull() || !point1->getIsSolved() || !point2->getIsSolved()){
+        return false;
     }
-    return false;
-}
 
-/*!
- * \brief PointBetweenTwoPoints::calcMidPoint
- * Calculate the point between start and destination point
- * \return
- */
-bool PointBetweenTwoPoints::calcMidPoint(Point &p){
-    if(this->startPoint->getIsSolved() && this->startPoint->getIsUpdated()
-            && this->destPoint->getIsSolved() && this->destPoint->getIsUpdated()){
-        OiVec result = (startPoint->xyz + destPoint->xyz) / 2.0;
-        result.setAt(3, 1.0);
-        p.xyz = result;
-        return true;
-    }
-    return false;
+    //calculate midpoint
+    OiVec center = (point1->getPosition().getVector() + point2->getPosition().getVector()) * 0.5;
+
+    //set result
+    Position position;
+    position.setVector(center);
+    point.setPoint(position);
+
+    //set statistic
+    this->statistic.setIsValid(true);
+    this->statistic.setStdev((point1->getStatistic().getStdev() + point2->getStatistic().getStdev()) * 0.5);
+    point.setStatistic(this->statistic);
+
+    return true;
+
 }

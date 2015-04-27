@@ -31,10 +31,10 @@ public:
     //########################################
 
     enum SphereUnknowns{
-        unknownCenterX = eUnknownX,
-        unknownCenterY = eUnknownY,
-        unknownCenterZ = eUnknownZ,
-        unknownRadius = eUnknownRadiusA
+        unknownCenterX = 0,
+        unknownCenterY,
+        unknownCenterZ,
+        unknownRadius
     };
 
     //###################################################################

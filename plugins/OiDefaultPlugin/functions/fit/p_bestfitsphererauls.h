@@ -1,32 +1,43 @@
 #ifndef P_BESTFITSPHERERAULS_H
 #define P_BESTFITSPHERERAULS_H
 
-#include <QtGlobal>
-#include <QDateTime>
 #include <QObject>
-#include <QDebug>
-#include <QThread>
-#include "pi_fitfunction.h"
-#include "point.h"
-#include "configuration.h"
+#include <QPointer>
+#include <QtMath>
+
+#include "fitfunction.h"
 #include "oivec.h"
 #include "oimat.h"
-#include "pluginmetadata.h"
 
+/*!
+ * \brief The BestFitSphereRauls class
+ */
 class BestFitSphereRauls : public FitFunction
 {
-public:
-    PluginMetaData *getMetaData() const;
-    bool exec(Sphere&);
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    Q_OBJECT
+protected:
+
+    //##############################
+    //function initialization method
+    //##############################
+
+    void init();
+
+    //############
+    //exec methods
+    //############
+
+    bool exec(Sphere &sphere);
 
 private:
-    QList<Observation *> myValidObservations;
 
-    int setUpObservations();
-    bool approximate(Sphere&);
-    bool fit(Sphere&);
+    //##############
+    //helper methods
+    //##############
+
+    bool approximate(Sphere &sphere, const QList<QPointer<Observation> > &inputObservations);
+    bool fit(Sphere &sphere, const QList<QPointer<Observation> > &inputObservations);
+
 };
 
 #endif // P_BESTFITSPHERERAULS_H

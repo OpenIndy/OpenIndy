@@ -1,36 +1,41 @@
 #ifndef P_INTERSECTLINEPLANE_H
 #define P_INTERSECTLINEPLANE_H
 
-#include <QtGlobal>
-#include <QDateTime>
 #include <QObject>
-#include <QDebug>
-#include <QThread>
-#include <qmath.h>
-#include <vector>
-#include "pi_constructfunction.h"
-#include "point.h"
-#include "line.h"
-#include "plane.h"
-#include "configuration.h"
+#include <QPointer>
+
+#include "constructfunction.h"
 #include "oivec.h"
 #include "oimat.h"
-#include "pluginmetadata.h"
 
-using namespace std;
-
+/*!
+ * \brief The IntersectLinePlane class
+ */
 class IntersectLinePlane : public ConstructFunction
-{  
-public:
-    PluginMetaData* getMetaData() const;
-    bool exec(Point&);
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+{
+    Q_OBJECT
+protected:
+
+    //##############################
+    //function initialization method
+    //##############################
+
+    void init();
+
+    //############
+    //exec methods
+    //############
+
+    bool exec(Point &point);
 
 private:
-    bool setUpResult(Point&);
-    bool checkElementCount();
-    bool isIntersection(Line*, Plane*);
+
+    //##############
+    //helper methods
+    //##############
+
+    bool setUpResult(Point &point);
+    bool isIntersection(const QPointer<Line> &line, const QPointer<Plane> &plane);
 
 };
 

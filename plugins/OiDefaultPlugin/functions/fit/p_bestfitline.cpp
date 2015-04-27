@@ -1,63 +1,35 @@
 #include "p_bestfitline.h"
 
-/*!
- * \brief BestFitLine::getMetaData
- * \return
- */
-PluginMetaData* BestFitLine::getMetaData() const{
-    PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "BestFitLine";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "br";
-    metaData->description = QString("%1 %2")
-            .arg("This function calculates an adjusted line (Drixler).")
+void BestFitLine::init(){
+
+    //set plugin meta data
+    this->metaData.name = "BestFitLine";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "bra";
+    this->metaData.description = QString("%1 %2")
+            .arg("This function calculates an adjusted line.")
             .arg("You can input as many observations as you want which are then used to find the best fit 3D line.");
-    metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
-    return metaData;
-}
+    this->metaData.iid = "de.openIndy.plugin.function.fitFunction.v001";
 
-/*!
- * \brief BestFitLine::getNeededElements
- * \return
- */
-QList<InputParams> BestFitLine::getNeededElements() const{
-    QList<InputParams> result;
-    InputParams param;
-    param.index = 0;
-    param.description = "Select at least two observations to calculate the best fit line.";
-    param.infinite = true;
-    param.typeOfElement = Configuration::eObservationElement;
-    result.append(param);
-    return result;
-}
+    //set needed elements
+    NeededElement param1;
+    param1.description = "Select at least two observations to calculate the best fit line.";
+    param1.infinite = true;
+    param1.typeOfElement = eObservationElement;
+    this->neededElements.append(param1);
 
-/*!
- * \brief BestFitLine::applicableFor
- * \return
- */
-QList<Configuration::FeatureTypes> BestFitLine::applicableFor() const{
-    QList<Configuration::FeatureTypes> result;
-    result.append(Configuration::eLineFeature);
-    return result;
+    //set spplicable for
+    this->applicableFor.append(eLineFeature);
+
 }
 
 /*!
  * \brief BestFitLine::exec
- * \param p
+ * \param line
  * \return
  */
-bool BestFitLine::exec(Line &l){
-    if(this->isValid() && this->checkObservationCount()){
-        return this->setUpResult( l );
-    }else{
-        //set statistic to invalid
-        Statistic myStats = l.getStatistic();
-        myStats.isValid = false;
-        l.setStatistic(myStats);
-        this->myStatistic = l.getStatistic();
-        this->writeToConsole("Not enough observations available for calculation");
-        return false;
-    }
+bool BestFitLine::exec(Line &line){
+    return this->setUpResult(line);
 }
 
 /*!
@@ -66,24 +38,46 @@ bool BestFitLine::exec(Line &l){
  * \param p
  */
 bool BestFitLine::setUpResult(Line &line){
+
+    //get and check input observations
+    if(!this->inputElements.contains(0) || this->inputElements[0].size() < 2){
+        emit this->sendMessage(QString("Not enough valid observations to fit the line %1").arg(line.getFeatureName()));
+        return false;
+    }
+    QList<QPointer<Observation> > inputObservations;
+    foreach(const InputElement &element, this->inputElements[0]){
+        if(!element.observation.isNull() && element.observation->getIsSolved() && element.observation->getIsValid()){
+            inputObservations.append(element.observation);
+            this->setUseState(0, element.id, true);
+        }
+        this->setUseState(0, element.id, false);
+    }
+    if(inputObservations.size() < 2){
+        emit this->sendMessage(QString("Not enough valid observations to fit the line %1").arg(line.getFeatureName()));
+        return false;
+    }
+
     //centroid
     OiVec centroid(4);
-    int n = 0;
-    foreach(Observation *obs, this->observations){
-        if(obs->getUseState()){
-            centroid = centroid + obs->myXyz;
-            n++;
-        }
+    foreach(const QPointer<Observation> &obs, inputObservations){
+        centroid = centroid + obs->getXYZ();
     }
-    centroid = centroid * (double)(1.0/n);
-    //fill a matrix
-    OiMat a = this->preCalc(centroid);
+    centroid = centroid * (1.0/inputObservations.size());
+    centroid.removeLast();
+
+    //principle component analysis
+    OiMat a(inputObservations.size(), 3);
+    for(int i = 0; i < inputObservations.size(); i++){
+        a.setAt(i, 0, inputObservations.at(i)->getXYZ().getAt(0) - centroid.getAt(0));
+        a.setAt(i, 1, inputObservations.at(i)->getXYZ().getAt(1) - centroid.getAt(1));
+        a.setAt(i, 2, inputObservations.at(i)->getXYZ().getAt(2) - centroid.getAt(2));
+    }
     OiMat ata = a.t() * a;
-    //perform svd
     OiMat u(3,3);
     OiVec d(3);
     OiMat v(3,3);
     ata.svd(u, d, v);
+
     //get largest eigenvector which is r vector and v^T * v as sum of the 2 smaller eigenvectors
     int eigenIndex = -1;
     double eVal = 0.0;
@@ -96,85 +90,36 @@ bool BestFitLine::setUpResult(Line &line){
             vtv += d.getAt(i);
         }
     }
-    if(eigenIndex > -1){
-        //vector of direction (check that line always points in the same direction)
-        OiVec r(3);
-        u.getCol(r, eigenIndex);
-        if(this->referenceDirection.getSize() == 0){ //if this function is executed the first time
-            this->referenceDirection = r;
-        }
-        double absR = qSqrt(r.getAt(0) * r.getAt(0) + r.getAt(1) * r.getAt(1) + r.getAt(2) * r.getAt(2));
-        double absRef = qSqrt(this->referenceDirection.getAt(0) * this->referenceDirection.getAt(0)
-                              + this->referenceDirection.getAt(1) * this->referenceDirection.getAt(1)
-                              + this->referenceDirection.getAt(2) * this->referenceDirection.getAt(2));
-        double refH;
-        OiVec::dot(refH, r, this->referenceDirection);
-        double angle = qAcos( refH / (absR * absRef) );
-        if(angle > PI || angle < -PI){ //switch direction
-            r = r * -1.0;
-        }
-        r.add(1.0);
-        centroid.setAt(3, 1.0);
-        //calculate qxx and sll matrix
-        OiMat qxx = (1 / d.getAt(eigenIndex)) * r.t().t() * r.t();
-        OiMat sll = (vtv / (n - 3)) * (vtv / (n - 3)) * qxx;
-        //set result
-        line.ijk = r;
-        line.xyz = centroid;
-        Statistic myStats = line.getStatistic();
-        myStats.stdev = qSqrt( vtv / (n - 3) );
-        myStats.s0_apriori = 1.0;
-        myStats.s0_aposteriori = myStats.stdev;
-        myStats.qxx = qxx;
-        myStats.isValid = true;
-        line.setStatistic(myStats);
-        this->myStatistic = line.getStatistic();
-        return true;
-    }
-    return false;
-}
+    OiVec r(3);
+    u.getCol(r, eigenIndex);
+    r.normalize();
 
-/*!
- * \brief BestFitLine::preCalc
- * Calculates the A Matrix
- * \param plane
- */
-OiMat BestFitLine::preCalc(OiVec centroid){
-    //calc centroid reduce coordinates
-    vector<OiVec> crCoord;
-    foreach(Observation *obs, this->observations){
-        if(obs->getUseState()){
-            crCoord.push_back( (obs->myXyz - centroid) );
-        }
+    //check that the orientation of the line is from first to second observation
+    OiVec pos1 = inputObservations.at(0)->getXYZ();
+    pos1.removeLast();
+    OiVec pos2 = inputObservations.at(1)->getXYZ();
+    pos2.removeLast();
+    OiVec direction = pos2 - pos1;
+    direction.normalize();
+    double angle = 0.0; //angle between r and direction
+    OiVec::dot(angle, r, direction);
+    angle = qAbs(qAcos(angle));
+    if(angle > (PI/2.0)){
+        r = r * -1.0;
     }
-    //set up A matrix
-    OiMat a(crCoord.size(), 3);
-    for(int i = 0; i < crCoord.size(); i++){
-        a.setAt(i, 0, crCoord.at(i).getAt(0));
-        a.setAt(i, 1, crCoord.at(i).getAt(1));
-        a.setAt(i, 2, crCoord.at(i).getAt(2));
-    }
-    return a;
-}
 
-/*!
- * \brief BestFitLine::checkObservationCount
- * Check wether there are enough valid observations for calculation
- * \return
- */
-bool BestFitLine::checkObservationCount(){
-    int count = 0;
-    foreach(Observation *obs, this->observations){
-        if(obs->getUseState()){
-            this->setUseState(obs->getId(), true);
-            count++;
-        }else{
-            this->setUseState(obs->getId(), false);
-        }
-    }
-    if(count >= 2){
-        return true;
-    }else{
-        return false;
-    }
+    //set result
+    Position linePosition;
+    linePosition.setVector(centroid);
+    Direction lineDirection;
+    lineDirection.setVector(r);
+    line.setLine(linePosition, lineDirection);
+
+    //set statistic
+    this->statistic.setIsValid(true);
+    this->statistic.setStdev(qSqrt(vtv/(inputObservations.size()-2.0)));
+    line.setStatistic(this->statistic);
+
+    return true;
+
 }

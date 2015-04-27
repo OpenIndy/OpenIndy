@@ -6,6 +6,11 @@
  */
 ExchangeInterface::ExchangeInterface(QObject *parent) : QObject(parent){
 
+    //init units
+    this->units.insert(eMetric, eUnitMeter);
+    this->units.insert(eAngular, eUnitDecimalDegree);
+    this->units.insert(eTemperature, eUnitGrad);
+
 }
 
 /*!
@@ -109,6 +114,23 @@ const QPointer<CoordinateSystem> &ExchangeInterface::getNominalSystem() const{
  */
 void ExchangeInterface::setNominalSystem(const QPointer<CoordinateSystem> &nominalSystem){
     this->nominalSystem = nominalSystem;
+}
+
+/*!
+ * \brief ExchangeInterface::getUnits
+ * \return
+ */
+const QMap<DimensionType, UnitType> &ExchangeInterface::getUnits() const{
+    return this->units;
+}
+
+/*!
+ * \brief ExchangeInterface::setUnit
+ * \param dimension
+ * \param unit
+ */
+void ExchangeInterface::setUnit(const DimensionType &dimension, const UnitType &unit){
+    this->units.insert(dimension, unit);
 }
 
 /*!

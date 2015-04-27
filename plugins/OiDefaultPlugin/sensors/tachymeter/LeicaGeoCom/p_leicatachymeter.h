@@ -10,66 +10,65 @@
 #include <QThread>
 #include <QStringList>
 #include <QVariantMap>
-#include "pi_totalstation.h"
+#include "totalstation.h"
 
-
+/*!
+ * \brief The LeicaTachymeter class
+ */
 class LeicaTachymeter : public TotalStation
 {
+    Q_OBJECT
 
-    
+protected:
+
+    //############################
+    //sensor initialization method
+    //############################
+
+    void init();
+
 public:
-    LeicaTachymeter();
 
-public:
+    //########################
+    //sensor state and actions
+    //########################
 
-    QList<Configuration::ReadingTypes>* getSupportedReadingTypes() const;
-    QList<Configuration::SensorFunctionalities> getSupportedSensorActions() const;
-    QList<Configuration::ConnectionTypes>* getConnectionType() const;
-
-    PluginMetaData* getMetaData() const;
-
-    QMap<QString,int>* getIntegerParameter() const;
-    QMap<QString,double>* getDoubleParameter() const;
-    QMap <QString, QStringList>* getStringParameter() const;
-    QStringList selfDefinedActions() const;
-    bool doSelfDefinedAction(QString a);
-
-    QMap<QString,double>* getDefaultAccuracy() const;
+    bool doSelfDefinedAction(const QString &action);
 
     //! abort a running action
-    void abortAction();
+    bool abortAction();
 
     //! connect to sensor
-    virtual bool connectSensor(ConnectionConfig* connConfig);
+    bool connectSensor();
 
     //! disconnect to sensor
-    virtual bool disconnectSensor();
+    bool disconnectSensor();
 
     //! measure
-    QList<Reading*> measure(MeasurementConfig* mc);
+    QList<QPointer<Reading> > measure(const MeasurementConfig &mConfig);
 
     //! stream
-    QVariantMap readingStream(Configuration::ReadingTypes streamFormat);
+    QVariantMap readingStream(const ReadingTypes &streamFormat);
 
     //! getConnectionState
     bool getConnectionState();
 
     //! return ready state of the sensor
-    bool isReadyForMeasurement();
+    bool getIsReadyForMeasurement();
 
     //!sensor stats
-    QMap<QString,QString> getSensorStats();
+    QMap<QString, QString> getSensorStatus();
 
     //!checks if sensor is busy
-    bool isBusy();
+    bool getIsBusy();
 
 protected:
 
     //! move totalstation to specified position
-    bool move(double azimuth, double zenith, double distance,bool isrelativ);
+    bool move(const double &azimuth, const double &zenith, const double &distance, const bool &isRelative);
 
     //! move total station to specified xyz position
-    bool move(double x, double y, double z);
+    bool move(const double &x, const double &y, const double &z);
 
     //! toggle between frontside and backside
     bool toggleSightOrientation();
@@ -94,10 +93,10 @@ private:
 
     QSerialPort *serial;
 
-    QList<Reading*> measurePolar(MeasurementConfig*);
-    QList<Reading*> measureDistance(MeasurementConfig*);
-    QList<Reading*> measureDirection(MeasurementConfig*);
-    QList<Reading*> measureCartesian(MeasurementConfig*);
+    QList<QPointer<Reading> > measurePolar(const MeasurementConfig &mConfig);
+    QList<QPointer<Reading> > measureDistance(const MeasurementConfig &mConfig);
+    QList<QPointer<Reading> > measureDirection(const MeasurementConfig &mConfig);
+    QList<QPointer<Reading> > measureCartesian(const MeasurementConfig &mConfig);
 
     QSerialPort::BaudRate myBaudRate;
     QSerialPort::DataBits myDataBits;
@@ -112,7 +111,7 @@ private:
 
     bool checkCommandRC(QString command);
 
-    Configuration::Faces getCurrentFace(double zenith);
+    SensorFaces getCurrentFace(double zenith);
 
     bool setTargetTypeMeasure();
     bool setTargetTypeStream();
@@ -125,19 +124,19 @@ private:
 
     bool measureWatchWindow;
     bool watchWindowOpen;
-    Configuration::ReadingTypes currentStreamFormat;
+    ReadingTypes currentStreamFormat;
     void stopWatchWindowForMeasurement();
     void restartWatchWindowAfterMeasurement();
 
 
-    Reading* getQuickMeasReading(QString receive);
+    QPointer<Reading> getQuickMeasReading(QString receive);
 
     void activateLaserPointer();
     void deactivateLaserPointer();
 
     void stopTrackingMode();
 
-    Reading* getStreamValues();
+    QPointer<Reading> getStreamValues();
 
 };
 

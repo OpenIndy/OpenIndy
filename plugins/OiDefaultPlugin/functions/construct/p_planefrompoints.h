@@ -1,37 +1,41 @@
 #ifndef P_PLANEFROMPOINTS_H
 #define P_PLANEFROMPOINTS_H
 
-#include <QtGlobal>
-#include <QDateTime>
 #include <QObject>
-#include <QDebug>
-#include <QThread>
-#include <qmath.h>
-#include <vector>
-#include "pi_constructfunction.h"
-#include "point.h"
-#include "plane.h"
-#include "configuration.h"
+#include <QPointer>
+#include <QtMath>
+
+#include "constructfunction.h"
 #include "oivec.h"
 #include "oimat.h"
-#include "pluginmetadata.h"
 
-using namespace std;
-
+/*!
+ * \brief The PlaneFromPoints class
+ */
 class PlaneFromPoints : public ConstructFunction
 {
-public:
-    PluginMetaData* getMetaData() const;
-    bool exec(Plane&);
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    Q_OBJECT
+protected:
+
+    //##############################
+    //function initialization method
+    //##############################
+
+    void init();
+
+    //############
+    //exec methods
+    //############
+
+    bool exec(Plane &plane);
 
 private:
-    bool checkPointCount();
-    bool setUpResult(Plane&);
-    OiMat preCalc();
 
-    OiVec referenceDirection;
+    //##############
+    //helper methods
+    //##############
+
+    bool setUpResult(Plane &plane);
 
 };
 

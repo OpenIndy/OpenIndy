@@ -188,7 +188,6 @@ HEADERS  += \
     src/geometry/slottedhole.h \
     src/geometry/sphere.h \
     src/geometry/torus.h \
-    src/plugin/oiplugin.h \
     src/plugin/pluginmetadata.h \
     src/plugin/tool/tool.h \
     src/plugin/simulation/simulationmodel.h \
@@ -214,7 +213,8 @@ HEADERS  += \
     controller/config/featuretablecolumnconfig.h \
     controller/config/trafoparamtablecolumnconfig.h \
     controller/config/parameterdisplayconfig.h \
-    models/trafoparamtableproxymodel.h
+    models/trafoparamtableproxymodel.h \
+    src/plugin/plugin.h
 
 FORMS    += \
     ui/mainwindow.ui \

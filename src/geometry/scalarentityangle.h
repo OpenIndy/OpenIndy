@@ -28,7 +28,7 @@ public:
     //########################################
 
     enum AngleUnknowns{
-        unknownAngle = eUnknownAngle
+        unknownAngle = 0
     };
 
     //###########################

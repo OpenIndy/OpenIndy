@@ -1,98 +1,91 @@
 #include "p_bestfitsphererauls.h"
 
-PluginMetaData *BestFitSphereRauls::getMetaData() const{
-    PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "BestFitSphereRauls";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "br";
-    metaData->description = QString("%1 %2")
-            .arg("This function calculates an adjusted sphere.")
+/*!
+ * \brief BestFitSphereRauls::init
+ */
+void BestFitSphereRauls::init(){
+
+    //set plugin meta data
+    this->metaData.name = "BestFitSphereRauls";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "bra";
+    this->metaData.description = QString("%1 %2")
+            .arg("This function caclulates an adjusted sphere.")
             .arg("You can input as many observations as you want which are then used to find the best fit sphere.");
-    metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
-    return metaData;
-}
+    this->metaData.iid = "de.openIndy.plugin.function.constructFunction.v001";
 
-bool BestFitSphereRauls::exec(Sphere &s){
-    if(this->isValid() && this->setUpObservations() >= 4){
+    //set needed elements
+    NeededElement param1;
+    param1.description = "Select at least four observations to calculate the best fit sphere.";
+    param1.infinite = true;
+    param1.typeOfElement = eObservationElement;
+    this->neededElements.append(param1);
 
-        //calculate approximate sphere parameters
-        if(this->approximate(s)){
+    //set spplicable for
+    this->applicableFor.append(eSphereFeature);
 
-            return this->fit(s);
-
-        }
-
-    }else{
-        //set statistic to invalid
-        Statistic myStats = s.getStatistic();
-        myStats.isValid = false;
-        s.setStatistic(myStats);
-        this->myStatistic = s.getStatistic();
-        this->writeToConsole("Not enough observations available for calculation");
-    }
-    return false;
-}
-
-QList<InputParams> BestFitSphereRauls::getNeededElements() const{
-    QList<InputParams> result;
-    InputParams param;
-    param.index = 0;
-    param.description = "Select at least four observations to calculate the best fit sphere.";
-    param.infinite = true;
-    param.typeOfElement = Configuration::eObservationElement;
-    result.append(param);
-    return result;
-}
-
-QList<Configuration::FeatureTypes> BestFitSphereRauls::applicableFor() const{
-    QList<Configuration::FeatureTypes> result;
-    result.append(Configuration::eSphereFeature);
-    return result;
 }
 
 /*!
- * \brief BestFitSphereRauls::setUpObservations
- * Return number of valid observations and save them into a special list
+ * \brief BestFitSphereRauls::exec
+ * \param sphere
  * \return
  */
-int BestFitSphereRauls::setUpObservations(){
-    this->myValidObservations.clear();
-    int count = 0;
-    foreach(Observation *obs, this->observations){
-        if(obs->getUseState()){
-            this->myValidObservations.append(obs);
-            count++;
-        }
+bool BestFitSphereRauls::exec(Sphere &sphere){
+
+    //get and check input observations
+    if(!this->inputElements.contains(0) || this->inputElements[0].size() < 4){
+        emit this->sendMessage(QString("Not enough valid observations to fit the sphere %1").arg(sphere.getFeatureName()));
+        return false;
     }
-    return count;
+    QList<QPointer<Observation> > inputObservations;
+    foreach(const InputElement &element, this->inputElements[0]){
+        if(!element.observation.isNull() && element.observation->getIsSolved() && element.observation->getIsValid()){
+            inputObservations.append(element.observation);
+            this->setUseState(0, element.id, true);
+        }
+        this->setUseState(0, element.id, false);
+    }
+    if(inputObservations.size() < 4){
+        emit this->sendMessage(QString("Not enough valid observations to fit the sphere %1").arg(sphere.getFeatureName()));
+        return false;
+    }
+
+    //fit the sphere
+    if(this->approximate(sphere, inputObservations)){
+        return this->fit(sphere, inputObservations);
+    }
+    return false;
+
 }
 
-bool BestFitSphereRauls::approximate(Sphere &s){
-
-    int numPoints = this->myValidObservations.size();
+/*!
+ * \brief BestFitSphereRauls::approximate
+ * \param sphere
+ * \param inputObservations
+ * \return
+ */
+bool BestFitSphereRauls::approximate(Sphere &sphere, const QList<QPointer<Observation> > &inputObservations){
 
     //calculate centroid coordinates
-    OiVec centroid(3);
-    for(int i = 0; i < numPoints; i++){
-        OiVec x(3);
-        x.setAt(0, this->myValidObservations.at(i)->myXyz.getAt(0));
-        x.setAt(1, this->myValidObservations.at(i)->myXyz.getAt(1));
-        x.setAt(2, this->myValidObservations.at(i)->myXyz.getAt(2));
-        centroid += x;
+    OiVec centroid(4);
+    for(int i = 0; i < inputObservations.size(); i++){
+        centroid = centroid + inputObservations.at(i)->getXYZ();
     }
-    centroid = centroid / numPoints;
+    centroid = centroid / inputObservations.size();
+    centroid.removeLast();
 
     //Drixler
     OiMat N(4, 4);
     OiVec n(4);
-    for(int i = 0; i < numPoints; i++){
+    for(int i = 0; i < inputObservations.size(); i++){
         double x = 0.0;
         double y = 0.0;
         double z = 0.0;
 
-        x = this->myValidObservations.at(i)->myXyz.getAt(0) - centroid.getAt(0);
-        y = this->myValidObservations.at(i)->myXyz.getAt(1) - centroid.getAt(1);
-        z = this->myValidObservations.at(i)->myXyz.getAt(2) - centroid.getAt(2);
+        x = inputObservations.at(i)->getXYZ().getAt(0) - centroid.getAt(0);
+        y = inputObservations.at(i)->getXYZ().getAt(1) - centroid.getAt(1);
+        z = inputObservations.at(i)->getXYZ().getAt(2) - centroid.getAt(2);
 
         double xx = x*x;
         double yy = y*y;
@@ -129,7 +122,7 @@ bool BestFitSphereRauls::approximate(Sphere &s){
     try{
         Q = N.inv();
     }catch(exception &e){
-        this->writeToConsole(e.what());
+        emit this->sendMessage(e.what());
         return false;
     }
 
@@ -146,41 +139,44 @@ bool BestFitSphereRauls::approximate(Sphere &s){
     zm = -0.5 * a.getAt(2) + centroid.getAt(2);
 
     //set approximate result
-    s.radius = r;
-    s.xyz.setAt(0, xm);
-    s.xyz.setAt(1, ym);
-    s.xyz.setAt(2, zm);
+    Position position;
+    position.setVector(xm, ym, zm);
+    Radius radius;
+    radius.setRadius(r);
+    sphere.setSphere(position, radius);
 
     return true;
 
 }
 
-bool BestFitSphereRauls::fit(Sphere &s){
-
-    int numPoints = this->myValidObservations.size();
+/*!
+ * \brief BestFitSphereRauls::fit
+ * \param sphere
+ * \param inputObservations
+ * \return
+ */
+bool BestFitSphereRauls::fit(Sphere &sphere, const QList<QPointer<Observation> > &inputObservations){
 
     int numIterations = 0;
 
     //set approximation values
-    double xm = s.xyz.getAt(0);
-    double ym = s.xyz.getAt(1);
-    double zm = s.xyz.getAt(2);
-    double r = s.radius;
+    double xm = sphere.getPosition().getVector().getAt(0);
+    double ym = sphere.getPosition().getVector().getAt(1);
+    double zm = sphere.getPosition().getVector().getAt(2);
+    double r = sphere.getRadius().getRadius();
 
     OiVec xd(4);
     double xdxd = 0.0;
-    OiVec verb(numPoints*3);
+    OiVec verb(inputObservations.size()*3);
     do{
 
-        OiMat A(numPoints, 4);
-        OiMat B(numPoints, numPoints*3);
-        OiVec w(numPoints);
-        for(int i = 0; i < numPoints; i++){
+        OiMat A(inputObservations.size(), 4);
+        OiMat B(inputObservations.size(), inputObservations.size()*3);
+        OiVec w(inputObservations.size());
+        for(int i = 0; i < inputObservations.size(); i++){
 
-            OiVec x(3);
-            x.setAt(0, this->myValidObservations.at(i)->myXyz.getAt(0));
-            x.setAt(1, this->myValidObservations.at(i)->myXyz.getAt(1));
-            x.setAt(2, this->myValidObservations.at(i)->myXyz.getAt(2));
+            OiVec x = inputObservations.at(i)->getXYZ();
+            x.removeLast();
 
             double r0 = qSqrt( (x.getAt(0) + verb.getAt(i*3) - xm) * (x.getAt(0) + verb.getAt(i*3) - xm)
                                + (x.getAt(1) + verb.getAt(i*3+1) - ym) * (x.getAt(1) + verb.getAt(i*3+1) - ym)
@@ -202,20 +198,20 @@ bool BestFitSphereRauls::fit(Sphere &s){
         OiMat BBT = B * B.t();
         OiMat AT = A.t();
 
-        OiMat N(numPoints+4, numPoints+4);
+        OiMat N(inputObservations.size()+4, inputObservations.size()+4);
         for(int i = 0; i < BBT.getRowCount(); i++){
             for(int j = 0; j < BBT.getColCount(); j++){
                 N.setAt(i,j, BBT.getAt(i,j));
             }
         }
-        for(int i = 0; i < numPoints; i++){
+        for(int i = 0; i < inputObservations.size(); i++){
             for(int j = 0; j < 4; j++){
-                N.setAt(i, j+numPoints, A.getAt(i,j));
+                N.setAt(i, j+inputObservations.size(), A.getAt(i,j));
             }
         }
         for(int i = 0; i < 4; i++){
-            for(int j = 0; j < numPoints; j++){
-                N.setAt(i+numPoints, j, AT.getAt(i,j));
+            for(int j = 0; j < inputObservations.size(); j++){
+                N.setAt(i+inputObservations.size(), j, AT.getAt(i,j));
             }
         }
 
@@ -223,22 +219,22 @@ bool BestFitSphereRauls::fit(Sphere &s){
             w.add(0.0);
         }
 
-        OiMat Q(numPoints+4, numPoints+4);
+        OiMat Q(inputObservations.size()+4, inputObservations.size()+4);
         try{
             Q = N.inv();
         }catch(exception &e){
-            this->writeToConsole(e.what());
+            emit this->sendMessage(e.what());
             return false;
         }
 
         OiVec res = -1.0 * Q * w;
 
-        OiVec k(numPoints);
-        for(int i = 0; i < numPoints; i++){
+        OiVec k(inputObservations.size());
+        for(int i = 0; i < inputObservations.size(); i++){
             k.setAt(i, res.getAt(i));
         }
         for(int i = 0; i < 4; i++){
-            xd.setAt(i, res.getAt(i+numPoints));
+            xd.setAt(i, res.getAt(i+inputObservations.size()));
         }
 
         OiVec vd = B.t() * k;
@@ -257,15 +253,16 @@ bool BestFitSphereRauls::fit(Sphere &s){
     }while( (xdxd > 0.000001) && (numIterations < 101) );
 
     if(numIterations >= 101){
-        this->writeToConsole("No solution found during 100 iterations");
+        emit this->sendMessage("No solution found during 100 iterations");
         return false;
     }
 
     //set final result
-    s.radius = r;
-    s.xyz.setAt(0, xm);
-    s.xyz.setAt(1, ym);
-    s.xyz.setAt(2, zm);
+    Position position;
+    position.setVector(xm, ym, zm);
+    Radius radius;
+    radius.setRadius(r);
+    sphere.setSphere(position, radius);
 
     double stdv = 0.0;
     if(verb.getSize() > 12){
@@ -278,13 +275,13 @@ bool BestFitSphereRauls::fit(Sphere &s){
         stdv = 0.0;
     }
     Statistic myStats;
-    myStats.s0_apriori = 1.0;
-    myStats.s0_aposteriori = stdv;
-    myStats.stdev = stdv;
-    myStats.isValid = true;
+    myStats.setS0APriori(1.0);
+    myStats.setS0APosteriori(stdv);
+    myStats.setStdev(stdv);
+    myStats.setIsValid(true);
 
-    s.setStatistic(myStats);
-    this->myStatistic = myStats;
+    sphere.setStatistic(myStats);
+    this->statistic = myStats;
 
     return true;
 

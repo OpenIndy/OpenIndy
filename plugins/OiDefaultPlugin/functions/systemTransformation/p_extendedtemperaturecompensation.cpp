@@ -1,88 +1,78 @@
 #include "p_extendedtemperaturecompensation.h"
 
-ExtendedTemperatureCompensation::ExtendedTemperatureCompensation()
-{
-}
-
 /*!
- * \brief getMetaData of the function
- * \return
+ * \brief ExtendedTemperatureCompensation::init
  */
-PluginMetaData *ExtendedTemperatureCompensation::getMetaData() const
-{
-    PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "9ParameterHelmertTransformation";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "jw";
-    metaData->description = QString("%1 %2").arg("This is a 9 parameter helmert transformation. You can claculate the")
+void ExtendedTemperatureCompensation::init(){
+
+    //set plugin meta data
+    this->metaData.name = "9ParameterHelmertTransformation";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "jwa";
+    this->metaData.description = QString("%1 %2").arg("This is a 9 parameter helmert transformation. You can calculate the")
             .arg("parameters by the given points (at least 3).");
-    metaData->iid = "de.openIndy.Plugin.Function.SystemTransformation.v001";
-    return metaData;
+    this->metaData.iid = "de.openIndy.plugin.function.systemTransformation.v001";
+
+    //set needed elements
+    NeededElement param1; //start system
+    param1.description = "Select points for calculating the transformation.";
+    param1.infinite = true;
+    param1.typeOfElement = ePointElement;
+    NeededElement param2; //destination system
+    param2.description = "Select points for calculating the transformation.";
+    param2.infinite = true;
+    param2.typeOfElement = ePointElement;
+    this->neededElements.append(param2);
+
+    //set spplicable for
+    this->applicableFor.append(eTrafoParamFeature);
+
 }
 
 /*!
- * \brief getNeededElements of the function
+ * \brief ExtendedTemperatureCompensation::exec
+ * \param trafoParam
  * \return
  */
-QList<InputParams> ExtendedTemperatureCompensation::getNeededElements() const
-{
-    QList<InputParams> result;
-    InputParams param;
-    param.description = "Select points for calculating the transformation.";
-    param.infinite = true;
-    param.typeOfElement = Configuration::ePointElement;
-    result.append(param);
-    return result;
-}
+bool ExtendedTemperatureCompensation::exec(TrafoParam &trafoParam){
 
-/*!
- * \brief applicableFor
- * \return
- */
-QList<Configuration::FeatureTypes> ExtendedTemperatureCompensation::applicableFor() const
-{
-   QList<Configuration::FeatureTypes> result;
-   result.append(Configuration::eTrafoParamFeature);
-   return result;
-}
-
-/*!
- * \brief exec function of the class.
- * \return
- */
-bool ExtendedTemperatureCompensation::exec(TrafoParam &tp)
-{
     this->protocol.clear();
     this->svdError = false;
 
-    if(this->isValid()){
-        this->init();
-        if(locSystem.count() == refSystem.count() && locSystem.count()>2){
+    this->initPoints();
 
-            //get translation and rotation from loc to ref system, so you can transform later
-            this->rotation = this->approxRotation();
-            this->scale = this->approxScale(this->rotation);
-            this->translation = this->approxTranslation(this->rotation,this->scale);
+    if(this->locSystem.count() == this->refSystem.count() && this->locSystem.count() > 2){
 
-            if(locSystem.count()>3){
-                return this->calc(tp);
+        //get translation and rotation from loc to ref system, so you can transform later
+        this->rotation = this->approxRotation();
+        this->scale = this->approxScale(this->rotation);
+        this->translation = this->approxTranslation(this->rotation, this->scale);
 
-            }else{  
-                OiMat rot = this->getRotationMatrix(this->rotation);
-                OiMat s = this->getScaleMatrix(this->scale);
-                OiMat t = this->getTranslationMatrix(this->translation);
+        if(this->locSystem.count()>3){
+            return this->calc(trafoParam);
 
-                tp.setHomogenMatrix(rot,t,s);
-                return true;
-            }
         }else{
-            this->writeToConsole("Not enough common points");
-            return false;
+            OiMat rot = this->getRotationMatrix(this->rotation);
+            OiMat s = this->getScaleMatrix(this->scale);
+            OiMat t = this->getTranslationMatrix(this->translation);
+
+            trafoParam.setTransformationParameters(rot, t, s);
+            return true;
         }
+
     }else{
-        this->writeToConsole("No valid points");
+        emit this->sendMessage("Not enough points to calculate transformation parameters");
         return false;
     }
+
+}
+
+/*!
+ * \brief ExtendedTemperatureCompensation::mergeInputElements
+ * \return
+ */
+bool ExtendedTemperatureCompensation::mergeInputElements(){
+    return true;
 }
 
 /*!
@@ -108,7 +98,9 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
 
     }
 
-    tp.getStatistic()->stdev = sqrt(sumVV/(3.0*this->locSystem.size()-9.0));
+    Statistic statistic;
+    statistic.setStdev(sqrt(sumVV/(3.0*this->locSystem.size()-9.0)));
+    tp.setStatistic(statistic);
 
     //get rotation between pseudo loc and ref system
     OiVec tmpRotation = this->approxRotation();
@@ -190,62 +182,38 @@ bool ExtendedTemperatureCompensation::calc(TrafoParam &tp)
     OiMat r = this->getRotationMatrix(this->rotation);
     OiMat t = this->getTranslationMatrix(this->translation);
 
-    tp.setHomogenMatrix(r,t,s);
+    tp.setTransformationParameters(r,t,s);
 
     return true;
 }
 
 /*!
-* \brief getStringParameter gets all additionally needed string parameters for the function
-* \return
-*/
-QMap<QString, QStringList> ExtendedTemperatureCompensation::getStringParameter() const
-{
-    QMap<QString, QStringList> result;
-
-    return result;
-}
-
-/*!
-* \brief getDoubleParameter gets all additionally needed double parameters for the function
-* \return
-*/
-QMap<QString, double> ExtendedTemperatureCompensation::getDoubleParameter() const
-{
-    QMap<QString,double> result;
-
-    return result;
-}
-
-/*!
- * \brief getResultProtocol returns a protocoll of the function
- * \return
- */
-QStringList ExtendedTemperatureCompensation::getResultProtocol() const
-{
-    return this->protocol;
-}
-
-/*!
  * \brief ExtendedTemperatureCompensation::init fills local system and reference system vectors.
  */
-void ExtendedTemperatureCompensation::init()
-{
+void ExtendedTemperatureCompensation::initPoints(){
+
+    //clear lists
     this->locSystem.clear();
     this->refSystem.clear();
-    if(this->points_startSystem.size() == this->points_targetSystem.size()){
-            for(int i = 0; i < this->points_startSystem.size(); i++){
-                if(this->points_startSystem.at(i).getIsSolved() && this->points_targetSystem.at(i).getIsSolved()){
-                    this->locSystem.append(this->points_startSystem.at(i).xyz);
-                    this->refSystem.append(this->points_targetSystem.at(i).xyz);
-                    this->setUseState(this->points_startSystem.at(i).getId(), true);
-                    this->setUseState(this->points_targetSystem.at(i).getId(), true);
-                }else{
-                    this->setUseState(this->points_startSystem.at(i).getId(), false);
-                    this->setUseState(this->points_targetSystem.at(i).getId(), false);
-                }
-            }
+
+    //get and check input points
+    if(!this->inputElements.contains(0) || this->inputElements[0].size() < 3
+            || !this->inputElements.contains(1) || this->inputElements[1].size() != this->inputElements[0].size()){
+        return;
     }
+    for(int i = 0; i < this->inputElements[0].size(); i++){
+        if(this->inputElements[0].at(i).point.isNull() || this->inputElements[1].at(i).point.isNull()
+                || this->inputElements[0].at(i).point->getFeatureName().compare(this->inputElements[1].at(i).point->getFeatureName()) != 0){
+            this->setUseState(0, this->inputElements[0].at(i).point->getId(), false);
+            this->setUseState(1, this->inputElements[1].at(i).point->getId(), false);
+            continue;
+        }
+        this->setUseState(0, this->inputElements[0].at(i).point->getId(), true);
+        this->setUseState(1, this->inputElements[1].at(i).point->getId(), true);
+        this->locSystem.append(this->inputElements[0].at(i).point->getPosition().getVectorH());
+        this->refSystem.append(this->inputElements[1].at(i).point->getPosition().getVectorH());
+    }
+
 }
 
 /*!

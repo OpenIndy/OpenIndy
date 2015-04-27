@@ -1,30 +1,42 @@
 #ifndef P_BESTFITSPHERE_H
 #define P_BESTFITSPHERE_H
 
-#include <QtGlobal>
-#include <QDateTime>
 #include <QObject>
-#include <QDebug>
-#include <QThread>
-#include "pi_fitfunction.h"
-#include "point.h"
-#include "configuration.h"
+#include <QPointer>
+#include <QtMath>
+
+#include "fitfunction.h"
 #include "oivec.h"
 #include "oimat.h"
 #include "cfitting_sphere.h"
-#include "pluginmetadata.h"
 
+/*!
+ * \brief The BestFitSphere class
+ */
 class BestFitSphere : public FitFunction
 {
-public:
-    PluginMetaData* getMetaData() const;
-    bool exec(Sphere&);
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    Q_OBJECT
+protected:
+
+    //##############################
+    //function initialization method
+    //##############################
+
+    void init();
+
+    //############
+    //exec methods
+    //############
+
+    bool exec(Sphere &sphere);
 
 private:
-    void setUpResult(Sphere &s, double *x, double *y, double *z, int count, double *xm, double r, double *qxx);
-    int getObservationCount();
+
+    //##############
+    //helper methods
+    //##############
+
+    bool setUpResult(Sphere &sphere);
 
 };
 

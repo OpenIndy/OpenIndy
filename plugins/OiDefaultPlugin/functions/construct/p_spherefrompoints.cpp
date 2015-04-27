@@ -1,130 +1,120 @@
 #include "p_spherefrompoints.h"
 
 /*!
- * \brief SphereFromPoints::getMetaData
- * \return
+ * \brief SphereFromPoints::init
  */
-PluginMetaData* SphereFromPoints::getMetaData() const{
-    PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "SphereFromPoints";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "br";
-    metaData->description = QString("%1 %2")
+void SphereFromPoints::init(){
+
+    //set plugin meta data
+    this->metaData.name = "SphereFromPoints";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "kern";
+    this->metaData.description = QString("%1 %2")
             .arg("This function caclulates an adjusted sphere.")
             .arg("You can input as many points as you want which are then used to find the best fit sphere.");
-    metaData->iid = "de.openIndy.Plugin.Function.ConstructFunction.v001";
-    return metaData;
-}
+    this->metaData.iid = "de.openIndy.plugin.function.constructFunction.v001";
 
-/*!
- * \brief SphereFromPoints::getNeededElements
- * \return
- */
-QList<InputParams> SphereFromPoints::getNeededElements() const{
-    QList<InputParams> result;
-    InputParams param;
-    param.index = 0;
-    param.description = "Select at least four points to calculate the best fit sphere.";
-    param.infinite = true;
-    param.typeOfElement = Configuration::ePointElement;
-    result.append(param);
-    return result;
-}
+    //set needed elements
+    NeededElement param1;
+    param1.description = "Select at least four points to calculate the best fit sphere.";
+    param1.infinite = true;
+    param1.typeOfElement = ePointElement;
+    this->neededElements.append(param1);
 
-/*!
- * \brief SphereFromPoints::applicableFor
- * \return
- */
-QList<Configuration::FeatureTypes> SphereFromPoints::applicableFor() const{
-    QList<Configuration::FeatureTypes> result;
-    result.append(Configuration::eSphereFeature);
-    return result;
+    //set spplicable for
+    this->applicableFor.append(eSphereFeature);
+
 }
 
 /*!
  * \brief SphereFromPoints::exec
- * \param s
+ * \param sphere
  * \return
  */
-bool SphereFromPoints::exec(Sphere &s){
-    bool check = false;
-    int poiCount = this->getPointCount();
-
-    //if enough points available
-    if(this->isValid() && poiCount >= 4){
-
-        //fill x,y,z arrays
-        double *x = new double[poiCount];
-        double *y = new double[poiCount];
-        double *z = new double[poiCount];
-        int k = 0;
-        foreach(Point *p, this->points){
-            if(p->getIsSolved()){
-                x[k] = p->xyz.getAt(0);
-                y[k] = p->xyz.getAt(1);
-                z[k] = p->xyz.getAt(2);
-                k++;
-            }else{
-                this->setUseState(p->getId(), false);
-            }
-        }
-
-        //adjust
-        double r;
-        double xm[3];
-        double qxx[4*4];
-        if( fitting_sphere(x, y, z, poiCount , xm, &r, qxx) ){
-            this->setUpResult(s, x, y, z, poiCount, xm, r, qxx);
-            check = true;
-        }else{
-            this->writeToConsole("Unknown error while fitting sphere");
-        }
-
-        //free space
-        delete[] x;
-        delete[] y;
-        delete[] z;
-    }else{
-        this->writeToConsole("Not enough points available for calculation");
-    }
-
-    return check;
+bool SphereFromPoints::exec(Sphere &sphere){
+    return this->setUpResult(sphere);
 }
 
 /*!
  * \brief SphereFromPoints::setUpResult
- * \param s
- * \param x
- * \param y
- * \param z
- * \param count
- * \param xm
- * \param r
- * \param qxx
- */
-void SphereFromPoints::setUpResult(Sphere &s, double *x, double *y, double *z, int count, double *xm, double r, double *qxx){
-    OiVec mp(4);
-    mp.setAt(0, xm[0]);
-    mp.setAt(1, xm[1]);
-    mp.setAt(2, xm[2]);
-    mp.setAt(3, 1.0);
-    s.xyz = mp;
-    s.radius = r;
-}
-
-/*!
- * \brief SphereFromPoints::checkPointCount
+ * \param sphere
  * \return
  */
-int SphereFromPoints::getPointCount(){
-    int count = 0;
-    foreach(Point *p, this->points){
-        if(p->getIsSolved()){
-            this->setUseState(p->getId(), true);
-            count++;
-        }else{
-            this->setUseState(p->getId(), false);
-        }
+bool SphereFromPoints::setUpResult(Sphere &sphere){
+
+    //get and check input points
+    if(!this->inputElements.contains(0) || this->inputElements[0].size() < 4){
+        emit this->sendMessage(QString("Not enough valid points to fit the sphere %1").arg(sphere.getFeatureName()));
+        return false;
     }
-    return count;
+    QList<QPointer<Point> > inputPoints;
+    foreach(const InputElement &element, this->inputElements[0]){
+        if(!element.point.isNull() && element.point->getIsSolved()){
+            inputPoints.append(element.point);
+            this->setUseState(0, element.id, true);
+        }
+        this->setUseState(0, element.id, false);
+    }
+    if(inputPoints.size() < 4){
+        emit this->sendMessage(QString("Not enough valid points to fit the sphere %1").arg(sphere.getFeatureName()));
+        return false;
+    }
+
+    //fill x,y,z arrays
+    double *x = new double[inputPoints.size()];
+    double *y = new double[inputPoints.size()];
+    double *z = new double[inputPoints.size()];
+    for(int i = 0; i < inputPoints.size(); i++){
+        x[i] = inputPoints[i]->getPosition().getVector().getAt(0);
+        y[i] = inputPoints[i]->getPosition().getVector().getAt(1);
+        z[i] = inputPoints[i]->getPosition().getVector().getAt(2);
+    }
+
+    //calculate centroid of given points
+    double centroid[3];
+    centroid[0] = 0.0;
+    centroid[1] = 0.0;
+    centroid[2] = 0.0;
+    for(int i = 0; i < inputPoints.size(); i++){
+        centroid[0] += x[i];
+        centroid[1] += y[i];
+        centroid[2] += z[i];
+    }
+    centroid[0] = centroid[0] / (float)inputPoints.size();
+    centroid[1] = centroid[1] / (float)inputPoints.size();
+    centroid[2] = centroid[2] / (float)inputPoints.size();
+
+    //reduce points by centroid
+    for(int i = 0; i < inputPoints.size(); i++){
+        x[i] = x[i] - centroid[0];
+        y[i] = y[i] - centroid[1];
+        z[i] = z[i] - centroid[2];
+    }
+
+    //adjust
+    double r;
+    double xm[3];
+    double qxx[4*4];
+    if( !fitting_sphere(x, y, z, inputPoints.size() , xm, &r, qxx) ){
+        emit this->sendMessage(QString("Unknown error while fitting sphere %1").arg(sphere.getFeatureName()));
+        delete[] x;
+        delete[] y;
+        delete[] z;
+        return false;
+    }
+
+    //free space
+    delete[] x;
+    delete[] y;
+    delete[] z;
+
+    //set result
+    Position position;
+    position.setVector(xm[0], xm[1], xm[2]);
+    Radius radius;
+    radius.setRadius(r);
+    sphere.setSphere(position, radius);
+
+    return true;
+
 }

@@ -1,37 +1,42 @@
 #ifndef P_INTERSECTPLANEPLANE_H
 #define P_INTERSECTPLANEPLANE_H
 
-#include <QtGlobal>
-#include <QDateTime>
 #include <QObject>
-#include <QDebug>
-#include <QThread>
-#include <qmath.h>
-#include <vector>
-#include "pi_constructfunction.h"
-#include "point.h"
-#include "plane.h"
-#include "configuration.h"
+#include <QPointer>
+
+#include "constructfunction.h"
 #include "oivec.h"
 #include "oimat.h"
-#include "pluginmetadata.h"
 
-using namespace std;
-
+/*!
+ * \brief The IntersectPlanePlane class
+ */
 class IntersectPlanePlane : public ConstructFunction
 {  
-public:
-    PluginMetaData* getMetaData() const;
-    bool exec(Line&);
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    Q_OBJECT
+protected:
+
+    //##############################
+    //function initialization method
+    //##############################
+
+    void init();
+
+    //############
+    //exec methods
+    //############
+
+    bool exec(Line &line);
 
 private:
-    bool setUpResult(Line&);
-    bool checkElementCount();
-    bool isIntersection(Plane*, Plane*);
-    OiVec calcDirectionVector(OiVec, OiVec);
-    OiVec calcPointOnLine(OiVec, OiVec, OiVec, OiVec);
+
+    //##############
+    //helper methods
+    //##############
+
+    bool setUpResult(Line &line);
+    bool isIntersection(const QPointer<Plane> &plane1, const QPointer<Plane> &plane2);
+    void calcPointOnLine(OiVec &p_l, const OiVec &n1, const OiVec &n2, const OiVec &n3, const OiVec &d);
 
 };
 

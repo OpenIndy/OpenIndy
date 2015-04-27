@@ -126,12 +126,10 @@ public:
  */
 class ScalarInputParams{
 public:
-    ScalarInputParams() : isValid(false){}
-
+    bool isValid;
     QMap<QString, double> doubleParameter;
     QMap<QString, int> intParameter;
     QMap<QString, QString> stringParameter;
-    bool isValid;
 };
 
 /*!

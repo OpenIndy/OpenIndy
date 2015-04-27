@@ -1,9 +1,9 @@
 #include "residual.h"
-
+/*
 Residual::Residual()
 {
 }
-/*
+
 void Residual::addValue(QString key, double value, OiUnitConverter::DimensionType dimension){
 
     this->residual.insert(key,value);

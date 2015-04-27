@@ -1,44 +1,30 @@
 #include "p_helmert7Param.h"
 
-/*!
- * \brief Helmert7Param::getMetaData
- * \return
- */
-PluginMetaData* Helmert7Param::getMetaData() const{
-    PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "HelmertTransformation";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "br";
-    metaData->description = QString("%1 %2")
+void Helmert7Param::init(){
+
+    //set plugin meta data
+    this->metaData.name = "HelmertTransformation";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "bra";
+    this->metaData.description = QString("%1 %2")
             .arg("This function calculates a 7 parameter helmert transformation.")
             .arg("That transformation is based on identical points in start and target system.");
-    metaData->iid = "de.openIndy.Plugin.Function.SystemTransformation.v001";
-    return metaData;
-}
+    this->metaData.iid = "de.openIndy.plugin.function.systemTransformation.v001";
 
-/*!
- * \brief Helmert7Param::getNeededElements
- * \return
- */
-QList<InputParams> Helmert7Param::getNeededElements() const{
-    QList<InputParams> result;
-    InputParams param;
-    param.index = 0;
-    param.description = "Select points to be used for transformation.";
-    param.infinite = true;
-    param.typeOfElement = Configuration::ePointElement;
-    result.append(param);
-    return result;
-}
+    //set needed elements
+    NeededElement param1; //start system
+    param1.description = "Select points for calculating the transformation.";
+    param1.infinite = true;
+    param1.typeOfElement = ePointElement;
+    NeededElement param2; //destination system
+    param2.description = "Select points for calculating the transformation.";
+    param2.infinite = true;
+    param2.typeOfElement = ePointElement;
+    this->neededElements.append(param2);
 
-/*!
- * \brief Helmert7Param::applicableFor
- * \return
- */
-QList<Configuration::FeatureTypes> Helmert7Param::applicableFor() const{
-    QList<Configuration::FeatureTypes> result;
-    result.append(Configuration::eTrafoParamFeature);
-    return result;
+    //set spplicable for
+    this->applicableFor.append(eTrafoParamFeature);
+
 }
 
 /*!
@@ -49,45 +35,49 @@ QList<Configuration::FeatureTypes> Helmert7Param::applicableFor() const{
 bool Helmert7Param::exec(TrafoParam &trafoParam){
     this->svdError = false;
 
-    if(this->isValid()){ //check wether all parameters for calculation are available
-        this->init(); //fills the locSystem and refSystem vectors based on the given common points.
-        if(locSystem.count() == refSystem.count() && locSystem.count() > 2){ //if enough common points available
-            if(this->calc(trafoParam)){
-                if(locSystem.count() > 3){
-                    return this->adjust(trafoParam);
-                }else if(locSystem.count() == 3){
-                    return true;
-                }
+    this->initPoints(); //fills the locSystem and refSystem vectors based on the given common points.
+    if(locSystem.count() == refSystem.count() && locSystem.count() > 2){ //if enough common points available
+        if(this->calc(trafoParam)){
+            if(locSystem.count() > 3){
+                return this->adjust(trafoParam);
+            }else if(locSystem.count() == 3){
+                return true;
             }
-        }else{
-            this->writeToConsole("Not enough common points!");
         }
     }else{
-        this->writeToConsole("The Input arguments are not valid!");
+        emit this->sendMessage("Not enough common points!");
     }
 
     return false;
 }
 
 /*!
- * \brief Helmert7Param::init
+ * \brief Helmert7Param::initPoints
  */
-void Helmert7Param::init(){
+void Helmert7Param::initPoints(){
+
+    //clear lists
     this->locSystem.clear();
     this->refSystem.clear();
-    if(this->points_startSystem.size() == this->points_targetSystem.size()){
-        for(int i = 0; i < this->points_startSystem.size(); i++){
-            if(this->points_startSystem.at(i).getIsSolved() && this->points_targetSystem.at(i).getIsSolved()){
-                this->locSystem.append(this->points_startSystem.at(i).xyz);
-                this->refSystem.append(this->points_targetSystem.at(i).xyz);
-                this->setUseState(this->points_startSystem.at(i).getId(), true);
-                this->setUseState(this->points_targetSystem.at(i).getId(), true);
-            }else{
-                this->setUseState(this->points_startSystem.at(i).getId(), false);
-                this->setUseState(this->points_targetSystem.at(i).getId(), false);
-            }
-        }
+
+    //get and check input points
+    if(!this->inputElements.contains(0) || this->inputElements[0].size() < 3
+            || !this->inputElements.contains(1) || this->inputElements[1].size() != this->inputElements[0].size()){
+        return;
     }
+    for(int i = 0; i < this->inputElements[0].size(); i++){
+        if(this->inputElements[0].at(i).point.isNull() || this->inputElements[1].at(i).point.isNull()
+                || this->inputElements[0].at(i).point->getFeatureName().compare(this->inputElements[1].at(i).point->getFeatureName()) != 0){
+            this->setUseState(0, this->inputElements[0].at(i).point->getId(), false);
+            this->setUseState(1, this->inputElements[1].at(i).point->getId(), false);
+            continue;
+        }
+        this->setUseState(0, this->inputElements[0].at(i).point->getId(), true);
+        this->setUseState(1, this->inputElements[1].at(i).point->getId(), true);
+        this->locSystem.append(this->inputElements[0].at(i).point->getPosition().getVectorH());
+        this->refSystem.append(this->inputElements[1].at(i).point->getPosition().getVectorH());
+    }
+
 }
 
 /*!
@@ -299,7 +289,7 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
         }
     }
     rotation.setAt(3, 3, 1.0);
-    tp.setHomogenMatrix(rotation, translation, scale);
+    tp.setTransformationParameters(rotation, translation, scale);
 
     double sumVV = 0.0;
 
@@ -311,7 +301,9 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
 
     }
 
-    tp.getStatistic()->stdev = sqrt(sumVV/(3.0*this->locSystem.size()-7.0));
+    Statistic stats;
+    stats.setStdev(sqrt(sumVV/(3.0*this->locSystem.size()-7.0)));
+    tp.setStatistic(stats);
     //tp.generateHomogenMatrix();
 }
 

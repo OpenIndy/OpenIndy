@@ -1,92 +1,58 @@
 #include "p_changeradius.h"
 
 /*!
- * \brief ChangeRadius::getMetaData
- * \return
+ * \brief ChangeRadius::init
  */
-PluginMetaData* ChangeRadius::getMetaData() const{
-    PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "ChangeRadius";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "br";
-    metaData->description = QString("%1")
+void ChangeRadius::init(){
+
+    //set plugin meta data
+    this->metaData.name = "ChangeRadius";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "bra";
+    this->metaData.description = QString("%1")
             .arg("This functions adds the specified offset to the radius of the target geometry");
-    metaData->iid = "de.openIndy.Plugin.Function.ObjectTransformation.v001";
-    return metaData;
-}
+    this->metaData.iid = "de.openIndy.plugin.function.objectTransformation.v001";
 
-/*!
- * \brief ChangeRadius::getNeededElements
- * \return
- */
-QList<InputParams> ChangeRadius::getNeededElements() const{
-    QList<InputParams> result;
-    InputParams param;
-    param.index = 0;
-    param.description = "Select a distance which will be added as an offset to the radius of the target geometry.";
-    param.infinite = false;
-    param.typeOfElement = Configuration::eScalarEntityDistanceElement;
-    result.append(param);
-    return result;
-}
+    //set spplicable for
+    this->applicableFor.append(eSphereFeature);
 
-/*!
- * \brief ChangeRadius::applicableFor
- * \return
- */
-QList<Configuration::FeatureTypes> ChangeRadius::applicableFor() const{
-    QList<Configuration::FeatureTypes> result;
-    result.append(Configuration::eSphereFeature);
-    return result;
+    //set double parameter
+    this->doubleParameters.insert("offset", 0.0);
+
 }
 
 /*!
  * \brief ChangeRadius::exec
- * \param targetSphere
+ * \param sphere
  * \return
  */
-bool ChangeRadius::exec(Sphere &targetSphere){
-    if(this->isValid()){
-        ScalarEntityDistance *seDistance = this->getDistance();
-        if(seDistance != NULL){
-            this->attachOffsetToSphere(targetSphere, seDistance);
-            return true;
-        }else{
-            this->writeToConsole("Not enough valid geometries available for calculation");
-            return false;
-        }
+bool ChangeRadius::exec(Sphere &sphere){
+    return this->setUpResult(sphere);
+}
+
+/*!
+ * \brief ChangeRadius::setUpResult
+ * \param sphere
+ * \return
+ */
+bool ChangeRadius::setUpResult(Sphere &sphere){
+
+    //get and check offset
+    double offset = 0.0;
+    if(this->scalarInputParams.doubleParameter.contains("offset")){
+        offset = this->scalarInputParams.doubleParameter.value("offset");
     }else{
-        this->writeToConsole("Not enough valid geometries available for calculation");
-        return false;
+        offset = this->doubleParameters.value("offset");
     }
-}
 
-/*!
- * \brief ChangeRadius::getDistance
- * \return
- */
-ScalarEntityDistance* ChangeRadius::getDistance(){
-    ScalarEntityDistance *result = NULL;
-    foreach(ScalarEntityDistance *sed, this->scalarEntityDistances){
-        if(result == NULL && sed->getIsSolved()){
-            result = sed;
-            this->setUseState(result->getId(), true);
-        }else{
-            this->setUseState(sed->getId(), false);
-        }
-    }
-    return result;
-}
+    //add offset to radius of the sphere
+    Position position = sphere.getPosition();
+    Radius radius = sphere.getRadius();
+    radius.setRadius(radius.getRadius() + offset);
 
-/*!
- * \brief ChangeRadius::attachOffsetToSphere
- * \param targetSphere
- * \param distance
- */
-void ChangeRadius::attachOffsetToSphere(Sphere &targetSphere, ScalarEntityDistance *distance){
-    if(targetSphere.getIsSolved() && distance->getIsSolved()){ //if all elements are solved
-        if(targetSphere.getIsUpdated() && distance->getIsUpdated()){ //if all elements are in the same coordinate system
-            targetSphere.radius = targetSphere.radius + distance->getDistance();
-        }
-    }
+    //set result
+    sphere.setSphere(position, radius);
+
+    return true;
+
 }

@@ -1,17 +1,17 @@
-#ifndef P_POINTBETWEENTWOPOINTS_H
-#define P_POINTBETWEENTWOPOINTS_H
+#ifndef P_REGISTER_H
+#define P_REGISTER_H
 
 #include <QObject>
 #include <QPointer>
 
-#include "constructfunction.h"
+#include "objecttransformation.h"
 #include "oivec.h"
 #include "oimat.h"
 
 /*!
- * \brief The PointBetweenTwoPoints class
+ * \brief The Register class
  */
-class PointBetweenTwoPoints : public ConstructFunction
+class Register : public ObjectTransformation
 {
     Q_OBJECT
 protected:
@@ -27,6 +27,7 @@ protected:
     //############
 
     bool exec(Point &point);
+    bool exec(Sphere &sphere);
 
 private:
 
@@ -35,7 +36,8 @@ private:
     //##############
 
     bool setUpResult(Point &point);
+    bool setUpResult(Sphere &sphere);
 
 };
 
-#endif // P_POINTBETWEENTWOPOINTS_H
+#endif // P_REGISTER_H

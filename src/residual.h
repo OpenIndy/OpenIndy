@@ -3,13 +3,13 @@
 
 #include <QMap>
 #include <QString>
-
+/*
 class Residual
 {
 public:
     Residual();
 
-    /*void addValue(QString key, double value, OiUnitConverter::DimensionType dimension);
+    void addValue(QString key, double value, OiUnitConverter::DimensionType dimension);
 
     QMap<QString, double> getResidualMap();
     QMap<QString, OiUnitConverter::DimensionType> getResidualUnitMap();
@@ -18,8 +18,8 @@ public:
 
     QMap<QString,double> residual;
 
-    QMap<QString, OiUnitConverter::DimensionType> residualUnitType;*/
+    QMap<QString, OiUnitConverter::DimensionType> residualUnitType;
 
-};
+};*/
 
 #endif // RESIDUAL_H

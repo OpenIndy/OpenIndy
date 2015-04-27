@@ -661,6 +661,16 @@ const ReadingUndefined &Reading::getUndefinedReading() const{
 }
 
 /*!
+ * \brief Reading::setPolarReading
+ * \param rPolar
+ */
+void Reading::setPolarReading(const ReadingPolar &rPolar){
+    if(this->rPolar.isValid && rPolar.isValid){
+        this->rPolar = rPolar;
+    }
+}
+
+/*!
  * \brief Reading::makeBackup
  */
 void Reading::makeBackup(){
@@ -1039,6 +1049,7 @@ void Reading::toCartesian(){
     this->rCartesian.xyz.setAt( 0, this->rPolar.distance * qSin(this->rPolar.zenith) * qCos(this->rPolar.azimuth) );
     this->rCartesian.xyz.setAt( 1, this->rPolar.distance * qSin(this->rPolar.zenith) * qSin(this->rPolar.azimuth) );
     this->rCartesian.xyz.setAt( 2, this->rPolar.distance * qCos(this->rPolar.zenith) );
+    this->rCartesian.isValid = true;
 
 }
 

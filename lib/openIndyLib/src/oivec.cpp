@@ -78,6 +78,15 @@ void OiVec::add(const double &value){
 }
 
 /*!
+ * \brief OiVec::removeLast
+ */
+void OiVec::removeLast(){
+    if(this->values.size() > 0){
+        this->values.pop_back();
+    }
+}
+
+/*!
  * \brief OiVec::replace
  */
 void OiVec::replace(const OiVec &v){

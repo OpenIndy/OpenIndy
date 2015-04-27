@@ -1,8 +1,7 @@
 #ifndef P_SIMPLETEMPERATURECOMPENSATION_H
 #define P_SIMPLETEMPERATURECOMPENSATION_H
 
-#include "pi_systemtransformation.h"
-#include "configuration.h"
+#include "systemtransformation.h"
 #include "pluginmetadata.h"
 #include "materials.h"
 
@@ -13,22 +12,23 @@
  */
 class SimpleTemperatureCompensation : public SystemTransformation
 {
-public:
-    SimpleTemperatureCompensation();
+    Q_OBJECT
+protected:
 
-    PluginMetaData* getMetaData() const;
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    //##############################
+    //function initialization method
+    //##############################
 
-    bool exec(TrafoParam &);
+    void init();
 
-    QMap<QString, QStringList> getStringParameter() const;
-    QMap<QString, double> getDoubleParameter() const;
+    //############
+    //exec methods
+    //############
+
+    bool exec(TrafoParam &trafoParam);
 
     void calcExpansion(TrafoParam &tp);
     void calcAccuracy(TrafoParam &tp, double tempAccuracy, double expansion);
-
-    QStringList getResultProtocol();
 
 private:
     QString protActTemp;

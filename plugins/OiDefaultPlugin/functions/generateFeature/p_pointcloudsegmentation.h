@@ -10,14 +10,13 @@
 #include <QMap>
 #include <QStringList>
 
-#include "pi_generatefeaturefunction.h"
+#include "generatefeaturefunction.h"
 
 #include "plane.h"
 #include "sphere.h"
 #include "cylinder.h"
 
 #include "pluginmetadata.h"
-#include "configuration.h"
 #include "oivec.h"
 #include "oimat.h"
 
@@ -213,19 +212,20 @@ private:
 
 class PointCloudSegmentation : public GenerateFeatureFunction
 {
-public:
-    PluginMetaData* getMetaData() const;
 
-    bool exec(PointCloud&);
+protected:
 
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    //##############################
+    //function initialization method
+    //##############################
 
-    QMap<QString, int> getIntegerParameter() const;
-    QMap<QString, double> getDoubleParameter() const;
-    QMap<QString, QStringList> getStringParameter() const;
+    virtual void init();
 
-    QStringList getResultProtocol() const;
+    //############
+    //exec methods
+    //############
+
+    bool exec(PointCloud &pointCloud);
 
 private:
     SegmentationConsumer *myHandler;

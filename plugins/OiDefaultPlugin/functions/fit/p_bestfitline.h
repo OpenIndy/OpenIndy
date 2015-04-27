@@ -1,36 +1,43 @@
 #ifndef P_BESTFTILINE_H
 #define P_BESTFTILINE_H
 
-#include <QtGlobal>
-#include <QDateTime>
 #include <QObject>
-#include <QDebug>
-#include <QThread>
-#include <qmath.h>
-#include <vector>
-#include "pi_fitfunction.h"
-#include "line.h"
-#include "configuration.h"
+#include <QPointer>
+#include <QtMath>
+
+#include "fitfunction.h"
 #include "oivec.h"
 #include "oimat.h"
-#include "pluginmetadata.h"
 
 using namespace std;
 
+/*!
+ * \brief The BestFitLine class
+ */
 class BestFitLine : public FitFunction
 { 
-public:
-    PluginMetaData* getMetaData() const;
-    bool exec(Line&);
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    Q_OBJECT
+protected:
+
+    //##############################
+    //function initialization method
+    //##############################
+
+    void init();
+
+    //############
+    //exec methods
+    //############
+
+    bool exec(Line &line);
 
 private:
-    bool checkObservationCount();
-    bool setUpResult(Line&);
-    OiMat preCalc(OiVec centroid);
 
-    OiVec referenceDirection;
+    //##############
+    //helper methods
+    //##############
+
+    bool setUpResult(Line &line);
 
 };
 

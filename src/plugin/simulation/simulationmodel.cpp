@@ -92,7 +92,7 @@ const QMap<QString, UncertaintyComponent> &SimulationModel::getEnviromentUncerta
  * \return
  */
 const QMap<QString, UncertaintyComponent> &SimulationModel::getHumanInfluence() const{
-    return humanUncertainties;
+    return this->humanInfluence;
 }
 
 /*!

@@ -1,18 +1,15 @@
-#ifndef P_POINTBETWEENTWOPOINTS_H
-#define P_POINTBETWEENTWOPOINTS_H
+#ifndef P_TRANSLATEBYVALUE_H
+#define P_TRANSLATEBYVALUE_H
 
 #include <QObject>
 #include <QPointer>
 
-#include "constructfunction.h"
+#include "objecttransformation.h"
 #include "oivec.h"
 #include "oimat.h"
 
-/*!
- * \brief The PointBetweenTwoPoints class
- */
-class PointBetweenTwoPoints : public ConstructFunction
-{
+class TranslateByValue : public ObjectTransformation
+{  
     Q_OBJECT
 protected:
 
@@ -27,6 +24,9 @@ protected:
     //############
 
     bool exec(Point &point);
+    bool exec(Line &line);
+    bool exec(Plane &plane);
+    bool exec(Sphere &sphere);
 
 private:
 
@@ -35,7 +35,10 @@ private:
     //##############
 
     bool setUpResult(Point &point);
+    bool setUpResult(Line &line);
+    bool setUpResult(Plane &plane);
+    bool setUpResult(Sphere &sphere);
 
 };
 
-#endif // P_POINTBETWEENTWOPOINTS_H
+#endif // P_TRANSLATEBYVALUE_H

@@ -2,7 +2,8 @@
 #define MATERIALS_H
 
 #include <QStringList>
-#include <unitconverter.h>
+
+#include "types.h"
 
 /*!
  * \brief The Materials class handles all supported materials and their thermal expansion coefficients

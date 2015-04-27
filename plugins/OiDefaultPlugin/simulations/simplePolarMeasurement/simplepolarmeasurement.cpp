@@ -1,26 +1,430 @@
 #include "simplepolarmeasurement.h"
 
-SimplePolarMeasurement::SimplePolarMeasurement()
-{
+/*!
+ * \brief SimplePolarMeasurement::init
+ */
+void SimplePolarMeasurement::init(){
+
+    //set plugin meta data
+    this->metaData.name = "SimplePolarMeasurement";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "mlux";
+    this->metaData.description = "simulation of a simple polar measurement system";
+    this->metaData.iid = "de.openIndy.plugin.simulation.v001";
+
+    //####################
+    //sensor uncertainties
+    //####################
+
+    //######################### lambda #########################
+    UncertaintyComponent lambda;
+
+    lambda.name = "lambda";
+    lambda.value = 0.0;
+    lambda.uncertainty = 0.000403;
+    lambda.distribution = this->distributions.at(0);
+    lambda.distributions = this->distributions;
+    lambda.errorUnit = "[mm]";
+
+    lambda.description="lambda - Range offset in millimeter";
+
+    this->sensorUncertainties.insert("lambda",lambda);
+
+    //######################### mu #########################
+    UncertaintyComponent mu;
+
+    mu.name = "mu";
+    mu.value = 0.0;
+    mu.uncertainty = 0.000005;
+    mu.distribution = this->distributions.at(0);
+    mu.distributions = this->distributions;
+    mu.errorUnit = "[-]";
+
+    mu.description="mu - Scale factor for range";
+
+    this->sensorUncertainties.insert("mu",mu);
+
+    //######################### ex #########################
+    UncertaintyComponent ex;
+
+    ex.name = "ex";
+    ex.value = 0.0;
+    ex.uncertainty = 0.0000122;
+    ex.distribution = this->distributions.at(0);
+    ex.distributions = this->distributions;
+    ex.errorUnit = "[mm]";
+
+    ex.description="ex - Transit axis offset from the standing axis";
+
+    this->sensorUncertainties.insert("ex",ex);
+
+    //######################### by #########################
+    UncertaintyComponent by;
+
+    by.name = "by";
+    by.value = 0.0;
+    by.uncertainty = 0.0000654;
+    by.distribution = this->distributions.at(0);
+    by.distributions = this->distributions;
+    by.errorUnit =  "[mm]";
+
+    by.description="by - Beam offset (y-direction) from the origin";
+
+    this->sensorUncertainties.insert("by",by);
+
+    //######################### bz #########################
+    UncertaintyComponent bz;
+
+    bz.name = "bz";
+    bz.value = 0.0;
+    bz.uncertainty = 0.0000974;
+    bz.distribution = this->distributions.at(0);
+    bz.distributions = this->distributions;
+    bz.errorUnit =  "[mm]";
+
+    bz.description="bz - Beam offset (z-direction) from the origin";
+
+    this->sensorUncertainties.insert("bz",bz);
+
+    //######################### alpha #########################
+    UncertaintyComponent alpha;
+
+    alpha.name = "alpha";
+    alpha.value = 0.0;
+    alpha.uncertainty = 0.128;
+    alpha.distribution = this->distributions.at(0);
+    alpha.distributions = this->distributions;
+    alpha.errorUnit =  "[arcsec]";
+
+    alpha.description="alpha - Transit axis angle in the yz-plane";
+
+    this->sensorUncertainties.insert("alpha",alpha);
+
+    //######################### gamma #########################
+    UncertaintyComponent gamma;
+
+    gamma.name = "gamma";
+    gamma.value = 0.0;
+    gamma.uncertainty = 0.079;
+    gamma.distribution = this->distributions.at(0);
+    gamma.distributions = this->distributions;
+    gamma.errorUnit = "[arcsec]";
+
+    gamma.description="gamma - Beam axis angle in the xy-plane";
+
+    this->sensorUncertainties.insert("gamma",gamma);
+
+    //######################### Aa1 #########################
+    UncertaintyComponent Aa1;
+
+    Aa1.name = "Aa1";
+    Aa1.value = 0.0;
+    Aa1.uncertainty = 0.064;
+    Aa1.distribution = this->distributions.at(0);
+    Aa1.distributions = this->distributions;
+    Aa1.errorUnit = "[arcsec]";
+
+    Aa1.description="Aa1 - Azimuth scale error, first order";
+
+    this->sensorUncertainties.insert("Aa1",Aa1);
+
+    //######################### Ba1 #########################
+    UncertaintyComponent Ba1;
+
+    Ba1.name = "Aa1";
+    Ba1.value = 0.0;
+    Ba1.uncertainty = 0.080;
+    Ba1.distribution = this->distributions.at(0);
+    Ba1.distributions = this->distributions;
+    Ba1.errorUnit = "[arcsec]";
+
+    Ba1.description="Ba1 - Azimuth scale error, first order";
+
+    this->sensorUncertainties.insert("Ba1",Ba1);
+
+    //######################### Aa2 #########################
+    UncertaintyComponent Aa2;
+
+    Aa2.name = "Aa2";
+    Aa2.value = 0.0;
+    Aa2.uncertainty = 0.073;
+    Aa2.distribution = this->distributions.at(0);
+    Aa2.distributions = this->distributions;
+    Aa2.errorUnit = "[arcsec]";
+
+    Aa2.description="Aa2 - Azimuth scale error, second order";
+
+    this->sensorUncertainties.insert("Aa2",Aa2);
+
+    //######################### Ba2 #########################
+    UncertaintyComponent Ba2;
+
+    Ba2.name = "Ba2";
+    Ba2.value = 0.0;
+    Ba2.uncertainty = 0.090;
+    Ba2.distribution = this->distributions.at(0);
+    Ba2.distributions = this->distributions;
+    Ba2.errorUnit = "[arcsec]";
+
+    Ba2.description="Ba2 - Azimuth scale error, second order";
+
+    this->sensorUncertainties.insert("Ba2",Ba2);
+
+    //######################### Ba2 #########################
+    UncertaintyComponent Ae0;
+
+    Ae0.name = "Ae0";
+    Ae0.value = 0.0;
+    Ae0.uncertainty = 0.223;
+    Ae0.distribution = this->distributions.at(0);
+    Ae0.distributions = this->distributions;
+    Ae0.errorUnit = "[arcsec]";
+
+    Ae0.description="Ae0 - Elevation angle offset";
+
+    this->sensorUncertainties.insert("Ae0",Ae0);
+
+    //######################### Ae1 #########################
+    UncertaintyComponent Ae1;
+
+    Ae1.name = "Ae1";
+    Ae1.value = 0.0;
+    Ae1.uncertainty = 0.152;
+    Ae1.distribution = this->distributions.at(0);
+    Ae1.distributions = this->distributions;
+    Ae1.errorUnit = "[arcsec]";
+
+    Ae1.description="Ae1 - Elevation scale error, first order";
+
+    this->sensorUncertainties.insert("Ae1",Ae1);
+
+    //######################### Be1 #########################
+    UncertaintyComponent Be1;
+
+    Be1.name = "Be1";
+    Be1.value = 0.0;
+    Be1.uncertainty = 0.183;
+    Be1.distribution = this->distributions.at(0);
+    Be1.distributions = this->distributions;
+    Be1.errorUnit = "[arcsec]";
+
+    Be1.description="Be1 - Elevation scale error, first order";
+
+    this->sensorUncertainties.insert("Be1",Be1);
+
+    //######################### Ae2 #########################
+    UncertaintyComponent Ae2;
+
+    Ae2.name = "Ae2";
+    Ae2.value = 0.0;
+    Ae2.uncertainty = 0.214;
+    Ae2.distribution = this->distributions.at(0);
+    Ae2.distributions = this->distributions;
+    Ae2.errorUnit = "[arcsec]";
+
+    Ae2.description="Ae2 - Elevation scale error, second order";
+
+    this->sensorUncertainties.insert("Ae2",Ae2);
+
+    //######################### Be2 #########################
+    UncertaintyComponent Be2;
+
+    Be2.name = "Be2";
+    Be2.value = 0.0;
+    Be2.uncertainty = 0.214;
+    Be2.distribution = this->distributions.at(0);
+    Be2.distributions = this->distributions;
+    Be2.errorUnit = "[arcsec]";
+
+    Be2.description="Be2 - Elevation scale error, second order";
+
+    this->sensorUncertainties.insert("Be2",Be2);
+
+    //####################
+    //object uncertainties
+    //####################
+
+    //######################### coefficient of thermal expansion #########################
+    UncertaintyComponent cOfE;
+
+    cOfE.name = "coefficient of thermal expansion";
+    cOfE.value = 11.8;
+    cOfE.uncertainty = 2;
+    cOfE.distribution = this->distributions.at(0);
+    cOfE.distributions = this->distributions;
+    cOfE.errorUnit = "1/K";
+
+    cOfE.description="The degree of expansion divided by the change in temperaturer";
+
+    this->objectUncertainties.insert("coefficientOfExpansion",cOfE);
+
+    //######################### materialTemperature #########################
+    UncertaintyComponent mt;
+
+    mt.name = "material temperature";
+    mt.value = 20;
+    mt.uncertainty = 1;
+    mt.distribution = this->distributions.at(0);
+    mt.distributions = this->distributions;
+    mt.errorUnit = "[celsius]";
+
+    mt.description="influence of temperaturer on the object and sensor";
+
+    this->objectUncertainties.insert("materialTemperature",mt);
+
+    //#########################
+    //environment uncertainites
+    //#########################
+
+    //######################### temperature #########################
+    UncertaintyComponent t;
+
+    t.name = "temperature";
+    t.value = 20.0;
+    t.uncertainty = 0.5;
+    t.distribution = this->distributions.at(0);
+    t.distributions = this->distributions;
+    t.errorUnit = "[celsius]";
+
+    t.description="influence of temperaturer on the object and sensor";
+
+    this->environmentUncertainties.insert("temperature",t);
+
+    //######################### vertical temperature gradient#########################
+    UncertaintyComponent vtg;
+
+    vtg.name = "vertical temperature gradient";
+    vtg.value = 0.4;
+    vtg.uncertainty = 0.1;
+    vtg.distribution = this->distributions.at(0);
+    vtg.distributions = this->distributions;
+    vtg.errorUnit = "[celsius/m]";
+
+    vtg.description="gradient to calculate the vertical beam refraction";
+
+    this->environmentUncertainties.insert("verticalTemperatureGradient",vtg);
+
+    //######################### horizontal temperature gradient#########################
+    UncertaintyComponent htg;
+
+    htg.name = "horizontal temperature gradient";
+    htg.value = 0.1;
+    htg.uncertainty = 0.1;
+    htg.distribution = this->distributions.at(0);
+    htg.distributions = this->distributions;
+    htg.errorUnit = "[celsius/m]";
+
+    htg.description="gradient to calculate the horizontal beam refraction";
+
+    this->environmentUncertainties.insert("horizontalTemperatureGradient",htg);
+
+    //######################### pressure #########################
+    UncertaintyComponent p;
+
+    p.name = "pressure";
+    p.value = 101325.0 ;
+    p.uncertainty = 10.0;
+    p.distribution = this->distributions.at(0);
+    p.distributions = this->distributions;
+    p.errorUnit = "[pascal]";
+
+    p.description="influence of pressure(air)  on the sensor";
+
+    this->environmentUncertainties.insert("pressure",p);
+
+    //######################### vertical pressure Gradient#########################
+    UncertaintyComponent hpg;
+
+    hpg.name = "vertical pressure gradient";
+    hpg.value = -0.8;
+    hpg.uncertainty = 0.1;
+    hpg.distribution = this->distributions.at(0);
+    hpg.distributions = this->distributions;
+    hpg.errorUnit = "[pascal/m]";
+
+    hpg.description="gradient to calculate the vertical beam refraction";
+
+    this->environmentUncertainties.insert("verticalPressureGradient",hpg);
+
+    //######################### humidity #########################
+    UncertaintyComponent h;
+
+    h.name = "humidity";
+    h.value = 50.0 ;
+    h.uncertainty = 1.0;
+    h.distribution = this->distributions.at(0);
+    h.distributions = this->distributions;
+    h.errorUnit = "[percent %]";
+
+    h.description="influence of humidity(air)  on the sensor";
+
+    this->environmentUncertainties.insert("humidity",h);
+
+    //###############
+    //human influence
+    //###############
+
+    //######################### azimuth #########################
+    UncertaintyComponent a;
+
+    a.name = "delta_azimuth";
+    a.value = 0.0;
+    a.uncertainty = 0.0001;
+    a.distribution = this->distributions.at(0);
+    a.distributions = this->distributions;
+    a.errorUnit = "[milliGrad]";
+
+    a.description="influence of the user on the azimuth measurement";
+
+    this->humanInfluence.insert("delta_azimuth",a);
+
+    //######################### zenith #########################
+    UncertaintyComponent z;
+
+    z.name = "delta_zenith";
+    z.value = 0.0;
+    z.uncertainty = 0.0001;
+    z.distribution = this->distributions.at(0);
+    z.distributions = this->distributions;
+    z.errorUnit = "[milliGrad]";
+
+    z.description="influence of the user on the zenith measurement";
+
+    this->humanInfluence.insert("delta_zenith",z);
+
+    //######################### distance #########################
+    UncertaintyComponent d;
+
+    d.name = "delta_distance";
+    d.value = 0.0;
+    d.uncertainty = 0.0001;
+    d.distribution = this->distributions.at(0);
+    d.distributions = this->distributions;
+    d.errorUnit = "[mm]";
+
+    d.description="influence of the user on the distance measurement";
+
+    this->humanInfluence.insert("delta_distance",d);
+
+    //set double parameters
+    this->doubleParameters.insert("wavelength [micrometer]", 0.633);
+
+    //set string parameters
+    this->stringParameters.insert("use sensor errors", "no");
+    this->stringParameters.insert("use sensor errors", "yes");
+    this->stringParameters.insert("use environment errors", "no");
+    this->stringParameters.insert("use environment errors", "yes");
+    this->stringParameters.insert("use object errors", "yes");
+    this->stringParameters.insert("use object errors", "no");
+    this->stringParameters.insert("use human errors", "yes");
+    this->stringParameters.insert("use human errors", "no");
+
+    //simulation specific inits
     this->distributions.append("normal");
     this->distributions.append("uniform");
     this->distributions.append("triangular");
-
     newIteration = true;
-}
 
-PluginMetaData *SimplePolarMeasurement::getMetaData()
-{
-    PluginMetaData* metaData = new PluginMetaData();
-
-    metaData->name = "SimplePolarMeasurement";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "mlux";
-    metaData->description = "simulation of a simple polar measurement system";
-    metaData->iid = "de.openIndy.Plugin.Simulation.v001";
-    //...
-
-    return metaData;
 }
 
 double erfFunc(double x)
@@ -46,7 +450,7 @@ double erfFunc(double x)
     return sign*y;
 }
 
-double densityNormal(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
+double densityNormal(const double &x, const double &expectation, const double &uncertainty, const double &lowerLimit, const double &upperLimit)
 {
     double e = -0.5*(((x-expectation)/(uncertainty))*((x-expectation)/(uncertainty)));
 
@@ -55,13 +459,13 @@ double densityNormal(double x, double expectation, double uncertainty,double low
     return result;
 }
 
-double distributionNormal(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
+double distributionNormal(const double &x, const double &expectation, const double &uncertainty, const double &lowerLimit, const double &upperLimit)
 {
     return 0.5*(1.0+erfFunc((x-expectation)/(sqrt(2.0*uncertainty*uncertainty))));
 
 }
 
-double densityUniform(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
+double densityUniform(const double &x, const double &expectation, const double &uncertainty, const double &lowerLimit, const double &upperLimit)
 {
 
     double result = 1/(upperLimit-lowerLimit);
@@ -69,7 +473,7 @@ double densityUniform(double x, double expectation, double uncertainty,double lo
     return result;
 }
 
-double distributionUniform(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
+double distributionUniform(const double &x, const double &expectation, const double &uncertainty, const double &lowerLimit, const double &upperLimit)
 {
     double result = (x-lowerLimit)/(upperLimit-lowerLimit);
 
@@ -77,7 +481,7 @@ double distributionUniform(double x, double expectation, double uncertainty,doub
 }
 
 
-double densityTriangular(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
+double densityTriangular(const double &x, const double &expectation, const double &uncertainty, const double &lowerLimit, const double &upperLimit)
 {
 
     double result = 0.0;
@@ -91,7 +495,7 @@ double densityTriangular(double x, double expectation, double uncertainty,double
     return result;
 }
 
-double distributionTriangular(double x, double expectation, double uncertainty,double lowerLimit, double upperLimit)
+double distributionTriangular(const double &x, const double &expectation, const double &uncertainty, const double &lowerLimit, const double &upperLimit)
 {
     double result = 0.0;
 
@@ -104,453 +508,12 @@ double distributionTriangular(double x, double expectation, double uncertainty,d
     return result;
 }
 
-
-QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getSensorUncertainties()
-{
-    QMap<QString, UncertaintyComponent> sensorUncertainties;
-
-    //######################### lambda #########################
-    UncertaintyComponent lambda;
-
-    lambda.name = "lambda";
-    lambda.value = 0.0;
-    lambda.uncertainty = 0.000403;
-    lambda.distribution = this->distributions.at(0);
-    lambda.distributions = this->distributions;
-    lambda.errorUnit = "[mm]";
-
-    lambda.description="lambda - Range offset in millimeter";
-
-    sensorUncertainties.insert("lambda",lambda);
-
-    //######################### mu #########################
-    UncertaintyComponent mu;
-
-    mu.name = "mu";
-    mu.value = 0.0;
-    mu.uncertainty = 0.000005;
-    mu.distribution = this->distributions.at(0);
-    mu.distributions = this->distributions;
-    mu.errorUnit = "[-]";
-
-    mu.description="mu - Scale factor for range";
-
-    sensorUncertainties.insert("mu",mu);
-
-    //######################### ex #########################
-    UncertaintyComponent ex;
-
-    ex.name = "ex";
-    ex.value = 0.0;
-    ex.uncertainty = 0.0000122;
-    ex.distribution = this->distributions.at(0);
-    ex.distributions = this->distributions;
-    ex.errorUnit = "[mm]";
-
-    ex.description="ex - Transit axis offset from the standing axis";
-
-    sensorUncertainties.insert("ex",ex);
-
-    //######################### by #########################
-    UncertaintyComponent by;
-
-    by.name = "by";
-    by.value = 0.0;
-    by.uncertainty = 0.0000654;
-    by.distribution = this->distributions.at(0);
-    by.distributions = this->distributions;
-    by.errorUnit =  "[mm]";
-
-    by.description="by - Beam offset (y-direction) from the origin";
-
-    sensorUncertainties.insert("by",by);
-
-    //######################### bz #########################
-    UncertaintyComponent bz;
-
-    bz.name = "bz";
-    bz.value = 0.0;
-    bz.uncertainty = 0.0000974;
-    bz.distribution = this->distributions.at(0);
-    bz.distributions = this->distributions;
-    bz.errorUnit =  "[mm]";
-
-    bz.description="bz - Beam offset (z-direction) from the origin";
-
-    sensorUncertainties.insert("bz",bz);
-
-    //######################### alpha #########################
-    UncertaintyComponent alpha;
-
-    alpha.name = "alpha";
-    alpha.value = 0.0;
-    alpha.uncertainty = 0.128;
-    alpha.distribution = this->distributions.at(0);
-    alpha.distributions = this->distributions;
-    alpha.errorUnit =  "[arcsec]";
-
-    alpha.description="alpha - Transit axis angle in the yz-plane";
-
-    sensorUncertainties.insert("alpha",alpha);
-
-    //######################### gamma #########################
-    UncertaintyComponent gamma;
-
-    gamma.name = "gamma";
-    gamma.value = 0.0;
-    gamma.uncertainty = 0.079;
-    gamma.distribution = this->distributions.at(0);
-    gamma.distributions = this->distributions;
-    gamma.errorUnit = "[arcsec]";
-
-    gamma.description="gamma - Beam axis angle in the xy-plane";
-
-    sensorUncertainties.insert("gamma",gamma);
-
-    //######################### Aa1 #########################
-    UncertaintyComponent Aa1;
-
-    Aa1.name = "Aa1";
-    Aa1.value = 0.0;
-    Aa1.uncertainty = 0.064;
-    Aa1.distribution = this->distributions.at(0);
-    Aa1.distributions = this->distributions;
-    Aa1.errorUnit = "[arcsec]";
-
-    Aa1.description="Aa1 - Azimuth scale error, first order";
-
-    sensorUncertainties.insert("Aa1",Aa1);
-
-    //######################### Ba1 #########################
-    UncertaintyComponent Ba1;
-
-    Ba1.name = "Aa1";
-    Ba1.value = 0.0;
-    Ba1.uncertainty = 0.080;
-    Ba1.distribution = this->distributions.at(0);
-    Ba1.distributions = this->distributions;
-    Ba1.errorUnit = "[arcsec]";
-
-    Ba1.description="Ba1 - Azimuth scale error, first order";
-
-    sensorUncertainties.insert("Ba1",Ba1);
-
-    //######################### Aa2 #########################
-    UncertaintyComponent Aa2;
-
-    Aa2.name = "Aa2";
-    Aa2.value = 0.0;
-    Aa2.uncertainty = 0.073;
-    Aa2.distribution = this->distributions.at(0);
-    Aa2.distributions = this->distributions;
-    Aa2.errorUnit = "[arcsec]";
-
-    Aa2.description="Aa2 - Azimuth scale error, second order";
-
-    sensorUncertainties.insert("Aa2",Aa2);
-
-    //######################### Ba2 #########################
-    UncertaintyComponent Ba2;
-
-    Ba2.name = "Ba2";
-    Ba2.value = 0.0;
-    Ba2.uncertainty = 0.090;
-    Ba2.distribution = this->distributions.at(0);
-    Ba2.distributions = this->distributions;
-    Ba2.errorUnit = "[arcsec]";
-
-    Ba2.description="Ba2 - Azimuth scale error, second order";
-
-    sensorUncertainties.insert("Ba2",Ba2);
-
-    //######################### Ba2 #########################
-    UncertaintyComponent Ae0;
-
-    Ae0.name = "Ae0";
-    Ae0.value = 0.0;
-    Ae0.uncertainty = 0.223;
-    Ae0.distribution = this->distributions.at(0);
-    Ae0.distributions = this->distributions;
-    Ae0.errorUnit = "[arcsec]";
-
-    Ae0.description="Ae0 - Elevation angle offset";
-
-    sensorUncertainties.insert("Ae0",Ae0);
-
-    //######################### Ae1 #########################
-    UncertaintyComponent Ae1;
-
-    Ae1.name = "Ae1";
-    Ae1.value = 0.0;
-    Ae1.uncertainty = 0.152;
-    Ae1.distribution = this->distributions.at(0);
-    Ae1.distributions = this->distributions;
-    Ae1.errorUnit = "[arcsec]";
-
-    Ae1.description="Ae1 - Elevation scale error, first order";
-
-    sensorUncertainties.insert("Ae1",Ae1);
-
-    //######################### Be1 #########################
-    UncertaintyComponent Be1;
-
-    Be1.name = "Be1";
-    Be1.value = 0.0;
-    Be1.uncertainty = 0.183;
-    Be1.distribution = this->distributions.at(0);
-    Be1.distributions = this->distributions;
-    Be1.errorUnit = "[arcsec]";
-
-    Be1.description="Be1 - Elevation scale error, first order";
-
-    sensorUncertainties.insert("Be1",Be1);
-
-    //######################### Ae2 #########################
-    UncertaintyComponent Ae2;
-
-    Ae2.name = "Ae2";
-    Ae2.value = 0.0;
-    Ae2.uncertainty = 0.214;
-    Ae2.distribution = this->distributions.at(0);
-    Ae2.distributions = this->distributions;
-    Ae2.errorUnit = "[arcsec]";
-
-    Ae2.description="Ae2 - Elevation scale error, second order";
-
-    sensorUncertainties.insert("Ae2",Ae2);
-
-    //######################### Be2 #########################
-    UncertaintyComponent Be2;
-
-    Be2.name = "Be2";
-    Be2.value = 0.0;
-    Be2.uncertainty = 0.214;
-    Be2.distribution = this->distributions.at(0);
-    Be2.distributions = this->distributions;
-    Be2.errorUnit = "[arcsec]";
-
-    Be2.description="Be2 - Elevation scale error, second order";
-
-    sensorUncertainties.insert("Be2",Be2);
-
-
-    return sensorUncertainties;
-}
-
-QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getObjectUncertainties()
-{
-    QMap<QString, UncertaintyComponent> objectUncertainties;
-
-    //######################### coefficient of thermal expansion #########################
-    UncertaintyComponent cOfE;
-
-    cOfE.name = "coefficient of thermal expansion";
-    cOfE.value = 11.8;
-    cOfE.uncertainty = 2;
-    cOfE.distribution = this->distributions.at(0);
-    cOfE.distributions = this->distributions;
-    cOfE.errorUnit = "1/K";
-
-    cOfE.description="The degree of expansion divided by the change in temperaturer";
-
-    objectUncertainties.insert("coefficientOfExpansion",cOfE);
-
-    //######################### materialTemperature #########################
-    UncertaintyComponent t;
-
-    t.name = "material temperature";
-    t.value = 20;
-    t.uncertainty = 1;
-    t.distribution = this->distributions.at(0);
-    t.distributions = this->distributions;
-    t.errorUnit = "[celsius]";
-
-    t.description="influence of temperaturer on the object and sensor";
-
-    objectUncertainties.insert("materialTemperature",t);
-
-
-    return objectUncertainties;
-}
-
-QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getEnviromentUncertainties()
-{
-    QMap<QString, UncertaintyComponent> enviromentUncertainties;
-
-    //######################### temperature #########################
-    UncertaintyComponent t;
-
-    t.name = "temperature";
-    t.value = 20.0;
-    t.uncertainty = 0.5;
-    t.distribution = this->distributions.at(0);
-    t.distributions = this->distributions;
-    t.errorUnit = "[celsius]";
-
-    t.description="influence of temperaturer on the object and sensor";
-
-    enviromentUncertainties.insert("temperature",t);
-
-    //######################### vertical temperature gradient#########################
-    UncertaintyComponent vtg;
-
-    vtg.name = "vertical temperature gradient";
-    vtg.value = 0.4;
-    vtg.uncertainty = 0.1;
-    vtg.distribution = this->distributions.at(0);
-    vtg.distributions = this->distributions;
-    vtg.errorUnit = "[celsius/m]";
-
-    vtg.description="gradient to calculate the vertical beam refraction";
-
-    enviromentUncertainties.insert("verticalTemperatureGradient",vtg);
-
-    //######################### horizontal temperature gradient#########################
-    UncertaintyComponent htg;
-
-    htg.name = "horizontal temperature gradient";
-    htg.value = 0.1;
-    htg.uncertainty = 0.1;
-    htg.distribution = this->distributions.at(0);
-    htg.distributions = this->distributions;
-    htg.errorUnit = "[celsius/m]";
-
-    htg.description="gradient to calculate the horizontal beam refraction";
-
-    enviromentUncertainties.insert("horizontalTemperatureGradient",htg);
-
-    //######################### pressure #########################
-    UncertaintyComponent p;
-
-    p.name = "pressure";
-    p.value = 101325.0 ;
-    p.uncertainty = 10.0;
-    p.distribution = this->distributions.at(0);
-    p.distributions = this->distributions;
-    p.errorUnit = "[pascal]";
-
-    p.description="influence of pressure(air)  on the sensor";
-
-    enviromentUncertainties.insert("pressure",p);
-
-    //######################### vertical pressure Gradient#########################
-    UncertaintyComponent hpg;
-
-    hpg.name = "vertical pressure gradient";
-    hpg.value = -0.8;
-    hpg.uncertainty = 0.1;
-    hpg.distribution = this->distributions.at(0);
-    hpg.distributions = this->distributions;
-    hpg.errorUnit = "[pascal/m]";
-
-    hpg.description="gradient to calculate the vertical beam refraction";
-
-    enviromentUncertainties.insert("verticalPressureGradient",hpg);
-
-    //######################### humidity #########################
-    UncertaintyComponent h;
-
-    h.name = "humidity";
-    h.value = 50.0 ;
-    h.uncertainty = 1.0;
-    h.distribution = this->distributions.at(0);
-    h.distributions = this->distributions;
-    h.errorUnit = "[percent %]";
-
-    h.description="influence of humidity(air)  on the sensor";
-
-    enviromentUncertainties.insert("humidity",h);
-
-    return enviromentUncertainties;
-}
-
-QMap<QString, UncertaintyComponent> SimplePolarMeasurement::getHumanInfluence()
-{
-    QMap<QString, UncertaintyComponent> humanInfluence;
-
-    //######################### azimuth #########################
-    UncertaintyComponent a;
-
-    a.name = "delta_azimuth";
-    a.value = 0.0;
-    a.uncertainty = 0.0001;
-    a.distribution = this->distributions.at(0);
-    a.distributions = this->distributions;
-    a.errorUnit = "[milliGrad]";
-
-    a.description="influence of the user on the azimuth measurement";
-
-    humanInfluence.insert("delta_azimuth",a);
-
-    //######################### zenith #########################
-    UncertaintyComponent z;
-
-    z.name = "delta_zenith";
-    z.value = 0.0;
-    z.uncertainty = 0.0001;
-    z.distribution = this->distributions.at(0);
-    z.distributions = this->distributions;
-    z.errorUnit = "[milliGrad]";
-
-    z.description="influence of the user on the zenith measurement";
-
-    humanInfluence.insert("delta_zenith",z);
-
-    //######################### distance #########################
-    UncertaintyComponent d;
-
-    d.name = "delta_distance";
-    d.value = 0.0;
-    d.uncertainty = 0.0001;
-    d.distribution = this->distributions.at(0);
-    d.distributions = this->distributions;
-    d.errorUnit = "[mm]";
-
-    d.description="influence of the user on the distance measurement";
-
-    humanInfluence.insert("delta_distance",d);
-
-
-    return humanInfluence;
-}
-
-QMap<QString, int> *SimplePolarMeasurement::getIntegerParameter()
-{
-        return NULL;
-}
-
-QMap<QString, double> *SimplePolarMeasurement::getDoubleParameter()
-{
-    QMap<QString,double>* doubleParam = new QMap<QString,double>;
-
-    doubleParam->insert("wavelength [micrometer]",0.633);
-
-    return doubleParam;
-
-}
-
-QMap<QString, QStringList> *SimplePolarMeasurement::getStringParameter()
-{
-    QMap <QString, QStringList>* stringParameter = new QMap<QString, QStringList>;
-
-    QStringList dice;
-    QStringList diceDefaultNo;
-
-    dice.append("yes");
-    dice.append("no");
-
-    diceDefaultNo.append("no");
-    diceDefaultNo.append("yes");
-
-    stringParameter->insert("use sensor errors",dice);
-    stringParameter->insert("use environment errors", dice);
-    stringParameter->insert("use object errors", diceDefaultNo);
-    stringParameter->insert("use human errors", diceDefaultNo);
-
-
-    return stringParameter;
-}
-
+/*!
+ * \brief SimplePolarMeasurement::analyseSimulationData
+ * analyse the simulation values saved in d.values. store your results
+ * \param d
+ * \return
+ */
 bool SimplePolarMeasurement::analyseSimulationData(UncertaintyData &d)
 {
 
@@ -599,7 +562,14 @@ bool SimplePolarMeasurement::analyseSimulationData(UncertaintyData &d)
    return true;
 }
 
-double SimplePolarMeasurement::getCorrelationCoefficient(QList<double> x, QList<double> y)
+/*!
+ * \brief SimplePolarMeasurement::getCorrelationCoefficient
+ * determine the correlation coefficient of the two quantities x and y.
+ * \param x
+ * \param y
+ * \return
+ */
+double SimplePolarMeasurement::getCorrelationCoefficient(const QList<double> &x, const QList<double> &y)
 {
 
     if(x.size() != y.size()){
@@ -632,24 +602,34 @@ double SimplePolarMeasurement::getCorrelationCoefficient(QList<double> x, QList<
     return r;
 }
 
-bool SimplePolarMeasurement::distort(Reading *r,OiMat objectRelation,bool newIterationStart)
+/*!
+ * \brief SimplePolarMeasurement::distort
+ * here you have to distort a reading with the given uncertainties.
+ * objectRelation is a homogenous matrix (4x4) which describes the
+ * relation between Station and Object
+ * \param r
+ * \param objectRelation
+ * \param newIterationStart
+ * \return
+ */
+bool SimplePolarMeasurement::distort(const QPointer<Reading> &r, const OiMat &objectRelation, const bool &newIterationStart)
 {
 
     newIteration = newIterationStart;
 
-    if(stringParameter->value("use sensor errors").compare("yes")==0){
+    if(this->sConfig.stringParameters.value("use sensor errors").compare("yes")==0){
        distortionBySensor(r);
     }
 
-    if(stringParameter->value("use environment errors").compare("yes")==0){
+    if(this->sConfig.stringParameters.value("use environment errors").compare("yes")==0){
         distortionByEnviroment(r);
     }
 
-    if(stringParameter->value("use object errors").compare("yes")==0){
+    if(this->sConfig.stringParameters.value("use object errors").compare("yes")==0){
         distortionByObject(r,objectRelation);
     }
 
-    if(stringParameter->value("use human errors").compare("yes")==0){
+    if(this->sConfig.stringParameters.value("use human errors").compare("yes")==0){
        distortionByHuman(r);
     }
 
@@ -706,31 +686,30 @@ double SimplePolarMeasurement::distortComponent(UncertaintyComponent u)
 
 bool SimplePolarMeasurement::distortionBySensor(Reading *r)
 {
-    if(r->typeofReading != Configuration::ePolar){
+    if(r->getTypeOfReading() != ePolarReading){
         return false;
     }
 
+    double lambda = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("lambda"))/1000.0;
+    double mu = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("mu"));
+    double ex = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("ex"))/1000.0;
+    double by = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("by"))/1000.0;
+    double bz = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("bz"))/1000.0;
+    double alpha = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("alpha"))*(M_PI/648000.0);
+    double gamma = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("gamma"))*(M_PI/648000.0);
+    double Aa1 = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("Aa1"))*(M_PI/648000.0);
+    double Ba1 = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("Ba1"))*(M_PI/648000.0);
+    double Aa2 = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("Aa2"))*(M_PI/648000.0);
+    double Ba2 = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("Ba2"))*(M_PI/648000.0);
+    double Ae0 = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("Ae0"))*(M_PI/648000.0);
+    double Ae1 = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("Ae1"))*(M_PI/648000.0);
+    double Be1 = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("Be1"))*(M_PI/648000.0);
+    double Ae2 = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("Ae2"))*(M_PI/648000.0);
+    double Be2 = distortComponent(this->sConfig.uncertainties.sensorUncertainties.value("Be2"))*(M_PI/648000.0);
 
-    double lambda = distortComponent(givenUncertainties.sensorUncertainties.value("lambda"))/1000.0;
-    double mu = distortComponent(givenUncertainties.sensorUncertainties.value("mu"));
-    double ex = distortComponent(givenUncertainties.sensorUncertainties.value("ex"))/1000.0;
-    double by = distortComponent(givenUncertainties.sensorUncertainties.value("by"))/1000.0;
-    double bz = distortComponent(givenUncertainties.sensorUncertainties.value("bz"))/1000.0;
-    double alpha = distortComponent(givenUncertainties.sensorUncertainties.value("alpha"))*(M_PI/648000.0);
-    double gamma = distortComponent(givenUncertainties.sensorUncertainties.value("gamma"))*(M_PI/648000.0);
-    double Aa1 = distortComponent(givenUncertainties.sensorUncertainties.value("Aa1"))*(M_PI/648000.0);
-    double Ba1 = distortComponent(givenUncertainties.sensorUncertainties.value("Ba1"))*(M_PI/648000.0);
-    double Aa2 = distortComponent(givenUncertainties.sensorUncertainties.value("Aa2"))*(M_PI/648000.0);
-    double Ba2 = distortComponent(givenUncertainties.sensorUncertainties.value("Ba2"))*(M_PI/648000.0);
-    double Ae0 = distortComponent(givenUncertainties.sensorUncertainties.value("Ae0"))*(M_PI/648000.0);
-    double Ae1 = distortComponent(givenUncertainties.sensorUncertainties.value("Ae1"))*(M_PI/648000.0);
-    double Be1 = distortComponent(givenUncertainties.sensorUncertainties.value("Be1"))*(M_PI/648000.0);
-    double Ae2 = distortComponent(givenUncertainties.sensorUncertainties.value("Ae2"))*(M_PI/648000.0);
-    double Be2 = distortComponent(givenUncertainties.sensorUncertainties.value("Be2"))*(M_PI/648000.0);
-
-    double az = r->rPolar.azimuth;
-    double ze = r->rPolar.zenith;
-    double d = r->rPolar.distance;
+    double az = r->getPolarReading().azimuth;
+    double ze = r->getPolarReading().zenith;
+    double d = r->getPolarReading().distance;
 
     d = (1+mu)*d+lambda;
 
@@ -777,9 +756,13 @@ bool SimplePolarMeasurement::distortionBySensor(Reading *r)
     OiVec p(3);
     p = b+d*n;
 
-    r->rPolar.azimuth = qAtan2(p.getAt(1),p.getAt(0));
-    r->rPolar.distance = qSqrt(p.getAt(0)*p.getAt(0)+p.getAt(1)*p.getAt(1)+p.getAt(2)*p.getAt(2));
-    r->rPolar.zenith = acos(p.getAt(2)/r->rPolar.distance);
+    ReadingPolar rPolar;
+
+    rPolar.azimuth = qAtan2(p.getAt(1),p.getAt(0));
+    rPolar.distance = qSqrt(p.getAt(0)*p.getAt(0)+p.getAt(1)*p.getAt(1)+p.getAt(2)*p.getAt(2));
+    rPolar.zenith = acos(p.getAt(2)/rPolar.distance);
+
+    r->setPolarReading(rPolar);
 
     return true;
 }
@@ -789,20 +772,20 @@ bool SimplePolarMeasurement::distortionByEnviroment(Reading *r)
 
     if(newIteration){
 
-        double refTemperature = givenUncertainties.enviromentUncertainties.value("temperature").value;
-        double temperature = distortComponent(givenUncertainties.enviromentUncertainties.value("temperature"));
+        double refTemperature = this->sConfig.uncertainties.enviromentUncertainties.value("temperature").value;
+        double temperature = distortComponent(this->sConfig.uncertainties.enviromentUncertainties.value("temperature"));
 
-        double verticalTempGradient =  distortComponent(givenUncertainties.enviromentUncertainties.value("verticalTemperatureGradient"));
-        double horizontalTempGradient =  distortComponent(givenUncertainties.enviromentUncertainties.value("horizontalTemperatureGradient"));
-        double verticalPreGradient =  distortComponent(givenUncertainties.enviromentUncertainties.value("verticalPressureGradient"));
+        double verticalTempGradient =  distortComponent(this->sConfig.uncertainties.enviromentUncertainties.value("verticalTemperatureGradient"));
+        double horizontalTempGradient =  distortComponent(this->sConfig.uncertainties.enviromentUncertainties.value("horizontalTemperatureGradient"));
+        double verticalPreGradient =  distortComponent(this->sConfig.uncertainties.enviromentUncertainties.value("verticalPressureGradient"));
 
-        double refPressure = givenUncertainties.enviromentUncertainties.value("pressure").value;
-        double pressure = distortComponent(givenUncertainties.enviromentUncertainties.value("pressure"));
+        double refPressure = this->sConfig.uncertainties.enviromentUncertainties.value("pressure").value;
+        double pressure = distortComponent(this->sConfig.uncertainties.enviromentUncertainties.value("pressure"));
 
-        double refHumidity = givenUncertainties.enviromentUncertainties.value("humidity").value;
-        double humidity = distortComponent(givenUncertainties.enviromentUncertainties.value("humidity"));
+        double refHumidity = this->sConfig.uncertainties.enviromentUncertainties.value("humidity").value;
+        double humidity = distortComponent(this->sConfig.uncertainties.enviromentUncertainties.value("humidity"));
 
-        double wavelength = doubleParameter->value("wavelength [micrometer]");
+        double wavelength = this->sConfig.doubleParameters.value("wavelength [micrometer]");
 
         refraction = this->edlenRefractionCalculation(refTemperature,refPressure,refHumidity,wavelength);
         distortedRefraction = this->edlenRefractionCalculation(temperature,pressure,humidity,wavelength);
@@ -814,28 +797,36 @@ bool SimplePolarMeasurement::distortionByEnviroment(Reading *r)
         horizontalDn = horizontalDn-refraction;
    }
 
-    r->rPolar.distance = r->rPolar.distance+((refraction-distortedRefraction)*r->rPolar.distance);
+    ReadingPolar rPolar;
 
-    double refractionZenith = (1/(2*refraction))*verticalDn*r->rPolar.distance;
-    double refractionAzimuth = (1/(2*refraction))*horizontalDn*r->rPolar.distance;
+    rPolar.distance = r->getPolarReading().distance+((refraction-distortedRefraction)*r->getPolarReading().distance);
 
-    r->rPolar.azimuth = r->rPolar.azimuth+refractionAzimuth;
-    r->rPolar.zenith = r->rPolar.zenith+refractionZenith;
+    double refractionZenith = (1/(2*refraction))*verticalDn*rPolar.distance;
+    double refractionAzimuth = (1/(2*refraction))*horizontalDn*rPolar.distance;
+
+    rPolar.azimuth = r->getPolarReading().azimuth+refractionAzimuth;
+    rPolar.zenith = r->getPolarReading().zenith+refractionZenith;
+
+    r->setPolarReading(rPolar);
 
     return true;
 }
 
 bool SimplePolarMeasurement::distortionByHuman(Reading *r)
 {
-    double deltaAzimuth = distortComponent(givenUncertainties.humanUncertainties.value("delta_azimuth"))/1000;
+    double deltaAzimuth = distortComponent(this->sConfig.uncertainties.humanUncertainties.value("delta_azimuth"))/1000;
     deltaAzimuth = deltaAzimuth*M_PI/180;
-    double deltaZenith = distortComponent(givenUncertainties.humanUncertainties.value("delta_zenith"))/1000;
+    double deltaZenith = distortComponent(this->sConfig.uncertainties.humanUncertainties.value("delta_zenith"))/1000;
     deltaZenith = deltaZenith*M_PI/180;
-    double deltaDistance = distortComponent(givenUncertainties.humanUncertainties.value("delta_distance"))/1000;
+    double deltaDistance = distortComponent(this->sConfig.uncertainties.humanUncertainties.value("delta_distance"))/1000;
 
-    r->rPolar.azimuth = r->rPolar.azimuth + deltaAzimuth;
-    r->rPolar.zenith = r->rPolar.zenith + deltaZenith;
-    r->rPolar.distance = r->rPolar.distance + deltaDistance;
+    ReadingPolar rPolar;
+
+    rPolar.azimuth = r->getPolarReading().azimuth + deltaAzimuth;
+    rPolar.zenith = r->getPolarReading().zenith + deltaZenith;
+    rPolar.distance = r->getPolarReading().distance + deltaDistance;
+
+    r->setPolarReading(rPolar);
 
     return true;
 }
@@ -847,23 +838,27 @@ bool SimplePolarMeasurement::distortionByObject(Reading *r, OiMat objectRelation
     }
 
     if(newIteration){
-        ref_coefficientOfExpansion = givenUncertainties.objectUncertainties.value("coefficientOfExpansion").value;
-        coefficientOfExpansion = distortComponent(givenUncertainties.objectUncertainties.value("coefficientOfExpansion"));
+        ref_coefficientOfExpansion = this->sConfig.uncertainties.objectUncertainties.value("coefficientOfExpansion").value;
+        coefficientOfExpansion = distortComponent(this->sConfig.uncertainties.objectUncertainties.value("coefficientOfExpansion"));
 
-        ref_materialTemperature = givenUncertainties.objectUncertainties.value("materialTemperature").value;
-        materialTemperature = distortComponent(givenUncertainties.objectUncertainties.value("materialTemperature"));
+        ref_materialTemperature = this->sConfig.uncertainties.objectUncertainties.value("materialTemperature").value;
+        materialTemperature = distortComponent(this->sConfig.uncertainties.objectUncertainties.value("materialTemperature"));
     }
 
     double scale = 1+((materialTemperature-ref_materialTemperature)*(coefficientOfExpansion-ref_coefficientOfExpansion)/1000000);
 
-    OiVec xyz = Reading::toCartesian(r->rPolar.azimuth,r->rPolar.zenith,r->rPolar.distance);
+    OiVec xyz = Reading::toCartesian(r->getPolarReading().azimuth,r->getPolarReading().zenith,r->getPolarReading().distance);
     xyz = objectRelation * xyz;
     xyz = xyz * scale;
     OiVec polar = Reading::toPolar(xyz.getAt(0),xyz.getAt(1),xyz.getAt(2));
 
-    r->rPolar.azimuth = polar.getAt(0);
-    r->rPolar.zenith = polar.getAt(1);
-    r->rPolar.distance = polar.getAt(2);
+    ReadingPolar rPolar;
+
+    rPolar.azimuth = polar.getAt(0);
+    rPolar.zenith = polar.getAt(1);
+    rPolar.distance = polar.getAt(2);
+
+    r->setPolarReading(rPolar);
 
     return true;
 }

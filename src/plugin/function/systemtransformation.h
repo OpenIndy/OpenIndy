@@ -22,34 +22,43 @@ public:
 
     virtual ~SystemTransformation(){}
 
+    //##############################################################################################
+    //tell OpenIndy wether the input elements shall be shown as one entry in function plugin loader)
+    //##############################################################################################
+
+    virtual bool mergeInputElements(){
+        return false;
+    }
+
 protected:
 
     //####################################
     //methods that cannot be reimplemented
     //####################################
 
-    bool exec(Station &station){ Function::exec(station); }
-    bool exec(CoordinateSystem &coordinateSystem){ Function::exec(coordinateSystem); }
+    bool exec(Station &station){ return Function::exec(station); }
+    bool exec(CoordinateSystem &coordinateSystem){ return Function::exec(coordinateSystem); }
 
-    bool exec(Circle &circle){ Function::exec(circle); }
-    bool exec(Cone &cone){ Function::exec(cone); }
-    bool exec(Cylinder &cylinder){ Function::exec(cylinder); }
-    bool exec(Ellipse &ellipse){ Function::exec(ellipse); }
-    bool exec(Ellipsoid &ellipsoid){ Function::exec(ellipsoid); }
-    bool exec(Hyperboloid &hyperboloid){ Function::exec(hyperboloid); }
-    bool exec(Line &line){ Function::exec(line); }
-    bool exec(Nurbs &nurbs){ Function::exec(nurbs); }
-    bool exec(Paraboloid &paraboloid){ Function::exec(paraboloid); }
-    bool exec(Plane &plane){ Function::exec(plane); }
-    bool exec(Point &point){ Function::exec(point); }
-    bool exec(PointCloud &pointCloud){ Function::exec(pointCloud); }
-    bool exec(ScalarEntityAngle &angle){ Function::exec(angle); }
-    bool exec(ScalarEntityDistance &distance){ Function::exec(distance); }
-    bool exec(ScalarEntityMeasurementSeries &measurementSeries){ Function::exec(measurementSeries); }
-    bool exec(ScalarEntityTemperature &temperature){ Function::exec(temperature); }
-    bool exec(SlottedHole &slottedHole){ Function::exec(slottedHole); }
-    bool exec(Sphere &sphere){ Function::exec(sphere); }
-    bool exec(Torus &torus){ Function::exec(torus); }
+    bool exec(Circle &circle){ return Function::exec(circle); }
+    bool exec(Cone &cone){ return Function::exec(cone); }
+    bool exec(Cylinder &cylinder){ return Function::exec(cylinder); }
+    bool exec(Ellipse &ellipse){ return Function::exec(ellipse); }
+    bool exec(Ellipsoid &ellipsoid){ return Function::exec(ellipsoid); }
+    bool exec(Hyperboloid &hyperboloid){ return Function::exec(hyperboloid); }
+    bool exec(Line &line){ return Function::exec(line); }
+    bool exec(Nurbs &nurbs){ return Function::exec(nurbs); }
+    bool exec(Paraboloid &paraboloid){ return Function::exec(paraboloid); }
+    bool exec(Plane &plane){ return Function::exec(plane); }
+    bool exec(Point &point){ return Function::exec(point); }
+    bool exec(PointCloud &pointCloud){ return Function::exec(pointCloud); }
+    bool exec(ScalarEntityAngle &angle){ return Function::exec(angle); }
+    bool exec(ScalarEntityDistance &distance){ return Function::exec(distance); }
+    bool exec(ScalarEntityMeasurementSeries &measurementSeries){ return Function::exec(measurementSeries); }
+    bool exec(ScalarEntityTemperature &temperature){ return Function::exec(temperature); }
+    bool exec(SlottedHole &slottedHole){ return Function::exec(slottedHole); }
+    bool exec(Sphere &sphere){ return Function::exec(sphere); }
+    bool exec(Torus &torus){ return Function::exec(torus); }
+
 };
 
 #define SystemTransformation_iidd "de.openIndy.plugin.function.systemTransformation.v001"

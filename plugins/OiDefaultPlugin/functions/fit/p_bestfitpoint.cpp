@@ -1,187 +1,127 @@
 #include "p_bestfitpoint.h"
 
 /*!
- * \brief BestFitPoint::getMetaData
- * \return
+ * \brief BestFitPoint::init
  */
-PluginMetaData* BestFitPoint::getMetaData() const{
-    PluginMetaData* metaData = new PluginMetaData();
-    metaData->name = "BestFitPoint";
-    metaData->pluginName = "OpenIndy Default Plugin";
-    metaData->author = "br";
-    metaData->description = QString("%1 %2")
+void BestFitPoint::init(){
+
+    //set plugin meta data
+    this->metaData.name = "BestFitPoint";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "bra";
+    this->metaData.description = QString("%1 %2")
             .arg("This function calculates an adjusted point.")
             .arg("You can input as many observations as you want which are then used to find the best fit 3D point.");
-    metaData->iid = "de.openIndy.Plugin.Function.FitFunction.v001";
-    return metaData;
-}
+    this->metaData.iid = "de.openIndy.plugin.function.fitFunction.v001";
 
-/*!
- * \brief BestFitPoint::getNeededElements
- * \return
- */
-QList<InputParams> BestFitPoint::getNeededElements() const{
-    QList<InputParams> result;
-    InputParams param;
-    param.index = 0;
-    param.description = "Select observations to calculate the best fit point.";
-    param.infinite = true;
-    param.typeOfElement = Configuration::eObservationElement;
-    result.append(param);
-    return result;
-}
+    //set needed elements
+    NeededElement param1;
+    param1.description = "Select at least one observation to calculate the best fit point.";
+    param1.infinite = true;
+    param1.typeOfElement = eObservationElement;
+    this->neededElements.append(param1);
 
-/*!
- * \brief BestFitPoint::applicableFor
- * \return
- */
-QList<Configuration::FeatureTypes> BestFitPoint::applicableFor() const{
-    QList<Configuration::FeatureTypes> result;
-    result.append(Configuration::ePointFeature);
-    return result;
+    //set spplicable for
+    this->applicableFor.append(ePointFeature);
+
 }
 
 /*!
  * \brief BestFitPoint::exec
- * \param p
+ * \param point
  * \return
  */
-bool BestFitPoint::exec(Point &p){
-    if(this->isValid() && this->checkObservationCount()){
-        this->setUpPointResult( p );
-        this->writeToConsole("point fit completed");
-        return true;
-    }else{
-        //set statistic to invalid
-        Statistic myStats = p.getStatistic();
-        myStats.isValid = false;
-        p.setStatistic(myStats);
-        this->myStatistic = p.getStatistic();
-        this->writeToConsole("Not enough observations available for calculation");
-        return false;
-    }
-
+bool BestFitPoint::exec(Point &point){
+    return this->setUpResult(point);
 }
 
 /*!
  * \brief BestFitPoint::setUpResult
- * Set up result and statistic for type point
- * \param midpoint
- */
-void BestFitPoint::setUpPointResult(Point &point){
-    //Fill l vector
-    OiVec l;
-    vector<double> sigma;
-    foreach(Observation *obs, this->observations){
-        if(obs->getUseState()){
-            l.add( obs->myXyz.getAt(0) );
-            l.add( obs->myXyz.getAt(1) );
-            l.add( obs->myXyz.getAt(2) );
-            //sigma.push_back( obs->sigmaXyz.getAt(0)*obs->sigmaXyz.getAt(0) );
-            //sigma.push_back( obs->sigmaXyz.getAt(1)*obs->sigmaXyz.getAt(1) );
-            //sigma.push_back( obs->sigmaXyz.getAt(2)*obs->sigmaXyz.getAt(2) );
-            this->setUseState(obs->getId(), true);
-        }else{
-            this->setUseState(obs->getId(), false);
-        }
-    }
-    if(l.getSize() > 0){
-        //Fill A matrix
-        OiMat a(l.getSize(), 3);
-        for(int i = 0; i < l.getSize(); i++){
-            if( (i%3) == 0 ){
-                a.setAt(i, Point::unknownX, 1.0);
-            }else if( (i%3) == 1 ){
-                a.setAt(i, Point::unknownY, 1.0);
-            }else if( (i%3) == 2 ){
-                a.setAt(i, Point::unknownZ, 1.0);
-            }
-        }
-        //Fill P matrix
-        //OiMat sll(l.getSize(), l.getSize());
-        //OiMat p(l.getSize(), l.getSize());
-        //sll.diag(sigma);
-        //OiMat neu = 3.3 * a;
-        //p = sll.inv();
-        //Adjust
-        OiMat n = a.t() * a;
-        OiVec c = a.t() * l;
-        try{
-            OiMat qxx = n.inv();
-            OiVec x = qxx * c;
-            OiVec v = a * x - l;
-            x.add(1.0);
-
-            double stdv = 0.0;
-            if(v.getSize() > 3){
-                double sum_vv = 0.0;
-                for(int i = 0; i < v.getSize(); i++){
-                    sum_vv += v.getAt(i) * v.getAt(i);
-                }
-                stdv = qSqrt(sum_vv / (v.getSize() - 3));
-            }else{
-                stdv = 0.0;
-            }
-            Statistic myStats = point.getStatistic();
-            myStats.s0_apriori = 1.0;
-            myStats.s0_aposteriori = stdv;
-
-            //set point
-            point.xyz = x;
-            myStats.qxx = qxx;
-            myStats.v.replace(v);
-            myStats.stdev = stdv;
-
-            for(int i = 0; i < myStats.v.getSize() / 3; i++){
-                Residual r;
-
-                r.addValue("vx", v.getAt(i*3), UnitConverter::eMetric);
-                r.addValue("vy", v.getAt(1+i*3), UnitConverter::eMetric);
-                r.addValue("vz", v.getAt(2+i*3), UnitConverter::eMetric);
-
-                myStats.displayResiduals.append(r);
-            }
-
-            myStats.isValid = true;
-            point.setStatistic(myStats);
-            this->myStatistic = point.getStatistic();
-
-        }catch(logic_error e){
-            this->writeToConsole(e.what());
-            return;
-        }catch(runtime_error e){
-            this->writeToConsole(e.what());
-            return;
-        }
-    }else{
-        this->writeToConsole("Not enough valid observations available for calculation");
-    }
-
-}
-
-/*!
- * \brief BestFitPoint::checkObservationCount
- * Check wether there are enough valid observations for calculation
+ * \param point
  * \return
  */
-bool BestFitPoint::checkObservationCount(){
-    int count = 0;
-    foreach(Observation *obs, this->observations){
-        if(obs->getUseState()){
-            count++;
-        }else{
-            this->setUseState(obs->getId(), false);
-        }
-    }
-    if(count >= 1){
-        return true;
-    }else{
+bool BestFitPoint::setUpResult(Point &point){
+
+    //get and check input observations
+    if(!this->inputElements.contains(0) || this->inputElements[0].size() < 1){
+        emit this->sendMessage(QString("Not enough valid observations to fit the point %1").arg(point.getFeatureName()));
         return false;
     }
-}
+    QList<QPointer<Observation> > inputObservations;
+    foreach(const InputElement &element, this->inputElements[0]){
+        if(!element.observation.isNull() && element.observation->getIsSolved() && element.observation->getIsValid()){
+            inputObservations.append(element.observation);
+            this->setUseState(0, element.id, true);
+        }
+        this->setUseState(0, element.id, false);
+    }
+    if(inputObservations.size() < 1){
+        emit this->sendMessage(QString("Not enough valid observations to fit the point %1").arg(point.getFeatureName()));
+        return false;
+    }
 
-QStringList BestFitPoint::getResultProtocol(){
-    QStringList dummy;
-    dummy.append("test protocol");
-    return dummy;
+    //fill l vector
+    OiVec l;
+    foreach(const QPointer<Observation> &obs, inputObservations){
+        l.add( obs->getXYZ().getAt(0) );
+        l.add( obs->getXYZ().getAt(1) );
+        l.add( obs->getXYZ().getAt(2) );
+    }
+
+    //fill A matrix
+    OiMat a(l.getSize(), 3);
+    for(int i = 0; i < l.getSize(); i++){
+        if( (i%3) == 0 ){
+            a.setAt(i, Point::unknownCenterX, 1.0);
+        }else if( (i%3) == 1 ){
+            a.setAt(i, Point::unknownCenterY, 1.0);
+        }else if( (i%3) == 2 ){
+            a.setAt(i, Point::unknownCenterZ, 1.0);
+        }
+    }
+
+    //adjust
+    OiMat n = a.t() * a;
+    OiVec c = a.t() * l;
+    OiMat qxx;
+    OiVec x, v;
+    try{
+        qxx = n.inv();
+        x = qxx * c;
+        v = a * x - l;
+    }catch(const logic_error &e){
+        emit this->sendMessage(e.what());
+        return false;
+    }catch(const runtime_error &e){
+        emit this->sendMessage(e.what());
+        return false;
+    }
+
+    //calculate point based corrections
+    OiVec corr;
+    for(int i = 0; i < inputObservations.size(); i++){
+        corr.add(qSqrt(v.getAt(3*i)*v.getAt(3*i)
+                       + v.getAt(3*i+1)*v.getAt(3*i+1)
+                       + v.getAt(3*i+2)*v.getAt(3*i+2)));
+    }
+
+    //calculate standard deviation
+    double stdev = 0.0;
+    OiVec::dot(stdev, corr, corr);
+    stdev = qSqrt(stdev * (inputObservations.size() - 1.0));
+
+    //set result
+    Position position;
+    position.setVector(x);
+    point.setPoint(position);
+
+    //set statistic
+    this->statistic.setIsValid(true);
+    this->statistic.setQxx(qxx);
+    this->statistic.setV(corr);
+    this->statistic.setStdev(stdev);
+    point.setStatistic(this->statistic);
+
+    return true;
+
 }

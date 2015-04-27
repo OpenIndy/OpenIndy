@@ -1,7 +1,10 @@
 #ifndef PI_NETWORKADJUSTMENT_H
 #define PI_NETWORKADJUSTMENT_H
 
+#include <QObject>
 #include <QString>
+
+#include "pluginmetadata.h"
 
 class CoordinateSystem;
 class Statistic;
@@ -10,20 +13,23 @@ class Statistic;
  * \brief The NetworkAdjustment class
  * Interface for implementing network adjustment plugins.
  */
-class NetworkAdjustment
+class NetworkAdjustment : public QObject
 {
+    Q_OBJECT
 
 public:
+    NetworkAdjustment(QObject *parent = 0) : QObject(parent){}
+
     virtual ~NetworkAdjustment(){}
 
     QList<CoordinateSystem*> coordSys;
     Statistic *stats;
 
-    virtual PluginMetaData* getMetaData() const = 0;
+    virtual PluginMetaData* getMetaData(){ return NULL; }
 
-    virtual void recalc() = 0;
+    virtual void recalc(){}
 };
-#define NetworkAdjustment_iidd "de.openIndy.Plugin.NetworkAdjustment.v001"
+#define NetworkAdjustment_iidd "de.openIndy.plugin.networkAdjustment.v001"
 
 
 #endif // PI_NETWORKADJUSTMENT_H

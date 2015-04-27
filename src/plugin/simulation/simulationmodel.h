@@ -210,7 +210,7 @@ protected:
     QMap<QString, UncertaintyComponent> sensorUncertainties;
     QMap<QString, UncertaintyComponent> objectUncertainties;
     QMap<QString, UncertaintyComponent> environmentUncertainties;
-    QMap<QString, UncertaintyComponent> humanUncertainties;
+    QMap<QString, UncertaintyComponent> humanInfluence;
 
 };
 

@@ -5,8 +5,21 @@
 
 #include "oivec.h"
 #include "oimat.h"
-#include "residual.h"
+#include "types.h"
 
+/*!
+ * \brief The Residual class
+ */
+class Residual{
+public:
+    int elementId; //id of the element this residual belongs to
+    QMap<QString, double> corrections; //the correction values (key: name)
+    DimensionType dimension; //dimension of the correction values
+};
+
+/*!
+ * \brief The Statistic class
+ */
 class Statistic
 {
 
@@ -47,6 +60,9 @@ public:
     const OiVec &getV() const;
     void setV(const OiVec &v);
 
+    const QList<Residual> &getDisplayResiduals() const;
+    void addDisplayResidual(const Residual &residual);
+
 private:
     bool isValid;
 
@@ -63,7 +79,7 @@ private:
     OiMat qxx;
 
     OiVec v; //vertical distances from geometry surface
-    //QList<Residual> displayResiduals;
+    QList<Residual> displayResiduals;
 
 };
 

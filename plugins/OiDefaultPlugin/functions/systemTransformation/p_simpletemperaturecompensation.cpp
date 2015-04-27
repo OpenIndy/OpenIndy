@@ -1,100 +1,55 @@
 #include "p_simpletemperaturecompensation.h"
 
 /*!
- * \brief SimpleTemperatureCompensation constructor
+ * \brief SimpleTemperatureCompensation::init
  */
-SimpleTemperatureCompensation::SimpleTemperatureCompensation()
-{
-}
+void SimpleTemperatureCompensation::init(){
 
-/*!
- * \brief getMetaData of the function
- * \return
- */
-PluginMetaData *SimpleTemperatureCompensation::getMetaData() const
-{
-    PluginMetaData* metaData = new PluginMetaData();
-        metaData->name = "StandardTempComp";
-        metaData->pluginName = "OpenIndy Default Plugin";
-        metaData->author = "jw";
-        metaData->description = QString("%1 %2")
-                .arg("This functions calculates an equal temperature compensation value for x,y and z component.")
-                .arg("Type in the actual and reference temperature and chose a material and get the three scales.");
-        metaData->iid = "de.openIndy.Plugin.Function.SystemTransformation.v001";
-        return metaData;
-}
+    //set plugin meta data
+    this->metaData.name = "StandardTempComp";
+    this->metaData.pluginName = "OpenIndy Default Plugin";
+    this->metaData.author = "jwa";
+    this->metaData.description = QString("%1 %2")
+            .arg("This functions calculates an equal temperature compensation value for x,y and z component.")
+            .arg("Type in the actual and reference temperature and chose a material and get the three scales.");
+    this->metaData.iid = "de.openIndy.plugin.function.systemTransformation.v001";
 
-/*!
- * \brief getNeededElements
- * \return
- */
-QList<InputParams> SimpleTemperatureCompensation::getNeededElements() const
-{
-    QList<InputParams> result;
-    return result;
-}
+    //set spplicable for
+    this->applicableFor.append(eTrafoParamFeature);
 
-/*!
- * \brief applicableFor
- * \return
- */
-QList<Configuration::FeatureTypes> SimpleTemperatureCompensation::applicableFor() const
-{
-    QList<Configuration::FeatureTypes> result;
-        result.append(Configuration::eTrafoParamFeature);
-        return result;
-}
-
-/*!
- * \brief exec
- * \return
- */
-bool SimpleTemperatureCompensation::exec(TrafoParam &tp)
-{
-    if(this->isValid()){
-        FunctionConfiguration myConfig = this->getFunctionConfiguration();
-        QMap<QString,QString> stringParameter = myConfig.stringParameter;
-
-        this->calcExpansion(tp);
-
-    }else{
-        this->writeToConsole("An error occured at calculating the function.");
-        return false;
+    //set string parameter
+    QStringList materials = Materials::getMaterials();
+    for(int i = 0; i < materials.size(); i++){
+        this->stringParameters.insert("material", materials.at(i));
     }
+
+    //set double parameter
+    this->doubleParameters.insert("referenceTemperature", 20.0);
+    this->doubleParameters.insert("actualTemperature", 20.0);
+    this->doubleParameters.insert("temperatureAccuracy", 0.1);
+
+}
+
+/*!
+ * \brief SimpleTemperatureCompensation::exec
+ * \param trafoParam
+ * \return
+ */
+bool SimpleTemperatureCompensation::exec(TrafoParam &trafoParam){
+    this->calcExpansion(trafoParam);
+
+    //set protocol
+    this->resultProtocol.append("temperature compensation using the following parameters:");
+    this->resultProtocol.append(QString("actual temperature [°C]: " + this->protActTemp));
+    this->resultProtocol.append(QString("reference temperature [°C]: " + this->protRefTemp));
+    this->resultProtocol.append(QString("accuracy of temperature measurement [°C]: " + this->protTempAccuracy));
+    this->resultProtocol.append(QString("material: " + this->protMaterial));
+    this->resultProtocol.append(QString("expansion coefficient [m]: " + this->protExpansionCoeff));
+    this->resultProtocol.append(QString("expansion [m]/[m]: " + this->protExpansion));
+    this->resultProtocol.append("accuracy calculated by temperature measurement accuracy * expansion");
+    this->resultProtocol.append(QString("accuracy for expansion [m]: " + this->protSTDDEV));
+
     return true;
-}
-
-/*!
- * \brief getStringParameter specifies additional string input parameters for the function.
- * \return
- */
-QMap<QString, QStringList> SimpleTemperatureCompensation::getStringParameter() const
-{
-    QMap<QString, QStringList> result;
-    QString key ="material";
-    QStringList value;
-    value = Materials::getMaterials();
-    result.insert(key,value);
-    return result;
-}
-
-/*!
- * \brief getDoubleParameter specifies additional double parameters fpr the function.
- * \return
- */
-QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter() const
-{
-    QMap<QString,double> result;
-    QString key = "referenceTemperature";
-    double value = 20.0;
-    result.insert(key,value);
-    key = "actualTemperature";
-    value = 20.0;
-    result.insert(key,value);
-    key = "temperatureAccuracy";
-    value = 0.1;
-    result.insert(key, value);
-    return result;
 }
 
 /*!
@@ -102,11 +57,10 @@ QMap<QString, double> SimpleTemperatureCompensation::getDoubleParameter() const
  * \param tp
  * \param SET
  */
-void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp)
-{
-    FunctionConfiguration myConfig = this->getFunctionConfiguration();
-    QMap<QString,QString> stringParameter = myConfig.stringParameter;
-    QMap<QString,double> doubleParameter = myConfig.doubleParameter;
+void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp){
+
+    QMap<QString,QString> stringParameter = this->scalarInputParams.stringParameter;
+    QMap<QString,double> doubleParameter = this->scalarInputParams.doubleParameter;
 
     QString material = "";
     double actTemp = 20.0;
@@ -147,7 +101,7 @@ void SimpleTemperatureCompensation::calcExpansion(TrafoParam &tp)
         scale.setAt(2,2,m);
         scale.setAt(3,3,1.0);
 
-        tp.setHomogenMatrix(eMat, eMat, scale);
+        tp.setTransformationParameters(eMat, eMat, scale);
 
         this->calcAccuracy(tp,tempAccuracy,expansion);
 
@@ -165,32 +119,14 @@ void SimpleTemperatureCompensation::calcAccuracy(TrafoParam &tp, double tempAccu
 {
     double stddev = tempAccuracy*(expansion);
     protSTDDEV = QString::number(stddev,'f',6);
-    Statistic *myStats = new Statistic();
+    Statistic myStats;
 
-    myStats->s0_apriori = 1.0;
-    myStats->s0_aposteriori = stddev;
-    myStats->stdev = stddev;
-    myStats->isValid = true;
+    myStats.setS0APriori(1.0);
+    myStats.setS0APosteriori(stddev);
+    myStats.setStdev(stddev);
+    myStats.setIsValid(true);
 
     tp.setStatistic(myStats);
+    this->statistic = myStats;
 
-    this->myStatistic.s0_aposteriori = myStats->s0_aposteriori;
-    this->myStatistic.s0_apriori = myStats->s0_apriori;
-    this->myStatistic.stdev = myStats->stdev;
-    this->myStatistic.isValid = myStats->isValid;
-}
-
-QStringList SimpleTemperatureCompensation::getResultProtocol()
-{
-    QStringList protocoll;
-    protocoll.append("temperature compensation using the following parameters:");
-    protocoll.append(QString("actual temperature [°C]: " + this->protActTemp));
-    protocoll.append(QString("reference temperature [°C]: " + this->protRefTemp));
-    protocoll.append(QString("accuracy of temperature measurement [°C]: " + this->protTempAccuracy));
-    protocoll.append(QString("material: " + this->protMaterial));
-    protocoll.append(QString("expansion coefficient [m]: " + this->protExpansionCoeff));
-    protocoll.append(QString("expansion [m]/[m]: " + this->protExpansion));
-    protocoll.append("accuracy calculated by temperature measurement accuracy * expansion");
-    protocoll.append(QString("accuracy for expansion [m]: " + this->protSTDDEV));
-    return protocoll;
 }

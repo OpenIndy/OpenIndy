@@ -8,10 +8,9 @@
 #include <QThread>
 #include <QtCore/qmath.h>
 #include <vector>
-#include "pi_systemtransformation.h"
+#include "systemtransformation.h"
 #include "point.h"
 #include "trafoparam.h"
-#include "configuration.h"
 #include "oivec.h"
 #include "oimat.h"
 #include "pluginmetadata.h"
@@ -20,18 +19,27 @@ using namespace std;
 
 class Helmert7Param : public SystemTransformation
 {  
-public:
-    PluginMetaData* getMetaData() const;
-    bool exec(TrafoParam&);
-    QList<InputParams> getNeededElements() const;
-    QList<Configuration::FeatureTypes> applicableFor() const;
+    Q_OBJECT
+protected:
+
+    //##############################
+    //function initialization method
+    //##############################
+
+    void init();
+
+    //############
+    //exec methods
+    //############
+
+    bool exec(TrafoParam &trafoParam);
 
 private:
     bool svdError;
     QList<OiVec> locSystem;
     QList<OiVec> refSystem;
 
-    void init();
+    void initPoints();
     bool calc(TrafoParam &tp);
     vector<OiVec> calcCentroidCoord();
     vector<OiVec> centroidReducedCoord(QList<OiVec> input, OiVec centroid);

@@ -1,30 +1,19 @@
 #include "p_factory.h"
 
-int    gDebugLevel=0;
-TReal  gConvergence=1e-9;
-
-/*!
- * \brief OiTemplatePlugin::OiTemplatePlugin
- * \param parent
- */
-OiTemplatePlugin::OiTemplatePlugin(QObject *parent):
-    QObject(parent){
-
-}
+//int    gDebugLevel=0;
+//TReal  gConvergence=1e-9;
 
 /*!
  * \brief OiTemplatePlugin::createSensors
  * Returns a list with all sensors
  * \return
  */
-QList<Sensor*> OiTemplatePlugin::createSensors(){
-    QList<Sensor*> resultSet;
-    Sensor *pTracker = new PseudoTracker();
-    Sensor *LeicaTachy = new LeicaTachymeter();
-    Sensor *pSensor = new PseudoSensor();
+QList<QPointer<Sensor> > OiTemplatePlugin::createSensors(){
+    QList<QPointer<Sensor> > resultSet;
+    QPointer<Sensor> pTracker = new PseudoTracker();
+    QPointer<Sensor> LeicaTachy = new LeicaTachymeter();
     resultSet.append(pTracker);
     resultSet.append(LeicaTachy);
-    resultSet.append(pSensor);
     return resultSet;
 }
 
@@ -33,8 +22,8 @@ QList<Sensor*> OiTemplatePlugin::createSensors(){
  * Returns a list with all functions
  * \return
  */
-QList<Function*> OiTemplatePlugin::createFunctions(){
-    QList<Function*> resultSet;
+QList<QPointer<Function> > OiTemplatePlugin::createFunctions(){
+    QList<QPointer<Function> > resultSet;
 
     resultSet.append(new BestFitPoint());
     resultSet.append(new BestFitLine());
@@ -48,17 +37,14 @@ QList<Function*> OiTemplatePlugin::createFunctions(){
     resultSet.append(new IntersectPlanePlane());
     resultSet.append(new SphereFromPoints());
     resultSet.append(new ChangeRadius());
-    resultSet.append(new TranslateByLine());
-    resultSet.append(new TranslateByPlane());
-    resultSet.append(new ProjectInPlane());
+    resultSet.append(new TranslateByValue());
+    resultSet.append(new Register());
     resultSet.append(new Helmert7Param());
-    resultSet.append(new ShiftPlane());
     resultSet.append(new BestFitCircle());
     resultSet.append(new SimpleTemperatureCompensation());
     resultSet.append(new ExtendedTemperatureCompensation());
     resultSet.append(new Helmert6Param());
     resultSet.append(new BestFitSphereRauls());
-    resultSet.append(new PointCloudSegmentation());
 
     return resultSet;
 }
@@ -68,8 +54,8 @@ QList<Function*> OiTemplatePlugin::createFunctions(){
  * Returns a list with all network adjustments
  * \return
  */
-QList<NetworkAdjustment*> OiTemplatePlugin::createNetworkAdjustments(){
-    QList<NetworkAdjustment*> resultSet;
+QList<QPointer<NetworkAdjustment> > OiTemplatePlugin::createNetworkAdjustments(){
+    QList<QPointer<NetworkAdjustment> > resultSet;
     return resultSet;
 }
 
@@ -78,8 +64,8 @@ QList<NetworkAdjustment*> OiTemplatePlugin::createNetworkAdjustments(){
  * Returns a list with all simulations
  * \return
  */
-QList<SimulationModel *> OiTemplatePlugin::createSimulations(){
-    QList<SimulationModel*> resultSet;
+QList<QPointer<SimulationModel> > OiTemplatePlugin::createSimulations(){
+    QList<QPointer<SimulationModel> > resultSet;
     resultSet.append(new SimplePolarMeasurement());
     return resultSet;
 }
@@ -88,9 +74,8 @@ QList<SimulationModel *> OiTemplatePlugin::createSimulations(){
  * \brief OiTemplatePlugin::createTools
  * \return
  */
-QList<OiTool *> OiTemplatePlugin::createTools(){
-    QList<OiTool*> resultSet;
-    resultSet.append(new OiReportCreator());
+QList<QPointer<Tool> > OiTemplatePlugin::createTools(){
+    QList<QPointer<Tool> > resultSet;
     return resultSet;
 }
 
@@ -98,8 +83,8 @@ QList<OiTool *> OiTemplatePlugin::createTools(){
  * \brief OiTemplatePlugin::createSimpleAsciiExchanges
  * \return
  */
-QList<OiExchangeSimpleAscii *> OiTemplatePlugin::createSimpleAsciiExchanges(){
-    QList<OiExchangeSimpleAscii*> resultSet;
+QList<QPointer<ExchangeSimpleAscii> > OiTemplatePlugin::createSimpleAsciiExchanges(){
+    QList<QPointer<ExchangeSimpleAscii> > resultSet;
     resultSet.append(new OiExchangeAscii());
     return resultSet;
 }
@@ -108,9 +93,8 @@ QList<OiExchangeSimpleAscii *> OiTemplatePlugin::createSimpleAsciiExchanges(){
  * \brief OiTemplatePlugin::createDefinedFormatExchanges
  * \return
  */
-QList<OiExchangeDefinedFormat *> OiTemplatePlugin::createDefinedFormatExchanges(){
-    QList<OiExchangeDefinedFormat*> resultSet;
-    resultSet.append(new OiExchangePts());
+QList<QPointer<ExchangeDefinedFormat> > OiTemplatePlugin::createDefinedFormatExchanges(){
+    QList<QPointer<ExchangeDefinedFormat> > resultSet;
     return resultSet;
 }
 
@@ -120,14 +104,12 @@ QList<OiExchangeDefinedFormat *> OiTemplatePlugin::createDefinedFormatExchanges(
  * \param name
  * \return
  */
-Sensor* OiTemplatePlugin::createSensor(QString name){
-    Sensor *result = NULL;
+QPointer<Sensor> OiTemplatePlugin::createSensor(const QString &name){
+    QPointer<Sensor> result(NULL);
     if(name.compare("PseudoTracker") == 0){
         result = new PseudoTracker();
     }else if(name.compare("LeicaTachymeter") == 0){
         result = new LeicaTachymeter();
-    }else if(name.compare("PseudoSensor") == 0){
-        result = new PseudoSensor();
     }
     return result;
 }
@@ -138,8 +120,8 @@ Sensor* OiTemplatePlugin::createSensor(QString name){
  * \param name
  * \return
  */
-Function* OiTemplatePlugin::createFunction(QString name){
-    Function *result = NULL;
+QPointer<Function> OiTemplatePlugin::createFunction(const QString &name){
+    QPointer<Function> result(NULL);
     if(name.compare("BestFitPoint") == 0){
         result = new BestFitPoint();
     }else if(name.compare("BestFitLine") == 0){
@@ -164,16 +146,12 @@ Function* OiTemplatePlugin::createFunction(QString name){
         result = new SphereFromPoints();
     }else if(name.compare("ChangeRadius") == 0){
         result = new ChangeRadius();
-    }else if(name.compare("TranslateByLine") == 0){
-        result = new TranslateByLine();
-    }else if(name.compare("TranslateByPlane") == 0){
-        result = new TranslateByPlane();
-    }else if(name.compare("ProjectInPlane") == 0){
-        result = new ProjectInPlane();
+    }else if(name.compare("TranslateByValue") == 0){
+        result = new TranslateByValue();
+    }else if(name.compare("Register") == 0){
+        result = new Register();
     }else if(name.compare("HelmertTransformation") == 0){
         result = new Helmert7Param();
-    }else if(name.compare("ShiftPlane") == 0){
-        result = new ShiftPlane();
     }else if(name.compare("BestFitCircle") == 0){
         result = new BestFitCircle();
     }else if(name.compare("StandardTempComp") == 0){
@@ -184,8 +162,6 @@ Function* OiTemplatePlugin::createFunction(QString name){
         result = new Helmert6Param();
     }else if(name.compare("BestFitSphereRauls") == 0){
         result = new BestFitSphereRauls();
-    }else if(name.compare("PointCloudSegmentation") == 0){
-        result = new PointCloudSegmentation();
     }
     return result;
 }
@@ -196,9 +172,8 @@ Function* OiTemplatePlugin::createFunction(QString name){
  * \param name
  * \return
  */
-NetworkAdjustment* OiTemplatePlugin::createNetworkAdjustment(QString name){
-    NetworkAdjustment *result = NULL;
-
+QPointer<NetworkAdjustment> OiTemplatePlugin::createNetworkAdjustment(const QString &name){
+    QPointer<NetworkAdjustment> result(NULL);
     return result;
 }
 
@@ -208,8 +183,8 @@ NetworkAdjustment* OiTemplatePlugin::createNetworkAdjustment(QString name){
  * \param name
  * \return
  */
-SimulationModel *OiTemplatePlugin::createSimulation(QString name){
-    SimulationModel *result = NULL;
+QPointer<SimulationModel> OiTemplatePlugin::createSimulation(const QString &name){
+    QPointer<SimulationModel> result(NULL);
 
     if(name.compare("SimplePolarMeasurement") == 0){
         result = new SimplePolarMeasurement();
@@ -218,14 +193,13 @@ SimulationModel *OiTemplatePlugin::createSimulation(QString name){
     return result;
 }
 
-OiTool *OiTemplatePlugin::createTool(QString name)
-{
-    OiTool *result = NULL;
-
-    if(name.compare("Report Creator") == 0){
-        result = new OiReportCreator();
-    }
-
+/*!
+ * \brief OiTemplatePlugin::createTool
+ * \param name
+ * \return
+ */
+QPointer<Tool> OiTemplatePlugin::createTool(const QString &name){
+    QPointer<Tool> result(NULL);
     return result;
 }
 
@@ -234,9 +208,9 @@ OiTool *OiTemplatePlugin::createTool(QString name)
  * \param name
  * \return
  */
-OiExchangeSimpleAscii *OiTemplatePlugin::createSimpleAsciiExchange(QString name){
+QPointer<ExchangeSimpleAscii> OiTemplatePlugin::createSimpleAsciiExchange(const QString &name){
 
-    OiExchangeSimpleAscii *result = NULL;
+    QPointer<ExchangeSimpleAscii> result(NULL);
 
     if(name.compare("OiExchangeAscii") == 0){
         result = new OiExchangeAscii();
@@ -251,14 +225,7 @@ OiExchangeSimpleAscii *OiTemplatePlugin::createSimpleAsciiExchange(QString name)
  * \param name
  * \return
  */
-OiExchangeDefinedFormat *OiTemplatePlugin::createDefinedFormatExchange(QString name){
-
-    OiExchangeDefinedFormat *result = NULL;
-
-    if(name.compare("OiExchangePts") == 0){
-        result = new OiExchangePts();
-    }
-
+QPointer<ExchangeDefinedFormat> OiTemplatePlugin::createDefinedFormatExchange(const QString &name){
+    QPointer<ExchangeDefinedFormat> result(NULL);
     return result;
-
 }
