@@ -66,7 +66,7 @@ CREATE TABLE measurementConfig (
 	name text
 );
 
--- alle Feature Typen die es fuer eine OpenIndy Installation gibt
+-- alle Element Typen die es fuer eine OpenIndy Installation gibt
 CREATE TABLE element (
 	id integer PRIMARY KEY autoincrement,
 	measurementConfig_id integer,
@@ -74,7 +74,7 @@ CREATE TABLE element (
 	FOREIGN KEY (measurementConfig_id) REFERENCES measurementConfig(id)
 );
 
--- fuer jedes Plugin alle Features, die zur Berechnung benötigt werden
+-- fuer jedes Plugin alle Elements, die zur Berechnung benötigt werden
 CREATE TABLE pluginElement (
 	id integer PRIMARY KEY autoincrement,
 	functionPlugin_id integer,
@@ -95,7 +95,7 @@ CREATE TABLE elementPlugin (
 );
 
 -- alle GUI Tools eines Plugins
-CREATE TABLE oiToolPlugin (
+CREATE TABLE toolPlugin (
 	id integer PRIMARY KEY autoincrement,
 	iid text,
 	plugin_id integer,
@@ -105,7 +105,7 @@ CREATE TABLE oiToolPlugin (
 );
 
 -- alle Im- und Export Algorithmen eines Plugins
-CREATE TABLE oiExchangePlugin (
+CREATE TABLE exchangePlugin (
 	id integer PRIMARY KEY autoincrement,
 	iid text,
 	plugin_id integer,
@@ -115,19 +115,19 @@ CREATE TABLE oiExchangePlugin (
 );
 
 -- für jeden Im- und Export Algorithmus alle Geometrien, die unterstützt werden
-CREATE TABLE elementOiExchange (
+CREATE TABLE elementExchange (
 	id integer PRIMARY KEY autoincrement,
 	element_id integer,
-	oiExchangePlugin_id integer,
+	exchangePlugin_id integer,
 	use_as_default boolean,
 	FOREIGN KEY (element_id) REFERENCES element(id),
-	FOREIGN KEY (oiExchangePlugin_id) REFERENCES oiExchangePlugin(id)
+	FOREIGN KEY (exchangePlugin_id) REFERENCES exchangePlugin(id)
 );
 
 -- für jedes special format Plugin alle Dateiendungen, die unterstützt werden
-CREATE TABLE oiExchangeFileExtensions (
+CREATE TABLE exchangeFileExtensions (
 	id integer PRIMARY KEY autoincrement,
-	oiExchangePlugin_id integer,
+	exchangePlugin_id integer,
 	file_extension text,
-	FOREIGN KEY (oiExchangePlugin_id) REFERENCES oiExchangePlugin(id)
+	FOREIGN KEY (exchangePlugin_id) REFERENCES exchangePlugin(id)
 );
