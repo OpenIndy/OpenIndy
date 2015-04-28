@@ -15,12 +15,11 @@ public:
     QString compiler;
     QString operatingSystem;
     bool dependencies;
-    QJsonArray dependeciesPath;
+    QJsonArray dependenciesPath;
     QString description;
     QString path;
     bool isValid;
     QString pluginType;
-    bool alreadyExists;
 
 };
 

@@ -131,7 +131,9 @@ SOURCES += \
     controller/config/featuretablecolumnconfig.cpp \
     controller/config/trafoparamtablecolumnconfig.cpp \
     controller/config/parameterdisplayconfig.cpp \
-    models/trafoparamtableproxymodel.cpp
+    models/trafoparamtableproxymodel.cpp \
+    controller/plugincopier.cpp \
+    controller/pluginloader.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -214,7 +216,9 @@ HEADERS  += \
     controller/config/trafoparamtablecolumnconfig.h \
     controller/config/parameterdisplayconfig.h \
     models/trafoparamtableproxymodel.h \
-    src/plugin/plugin.h
+    src/plugin/plugin.h \
+    controller/plugincopier.h \
+    controller/pluginloader.h
 
 FORMS    += \
     ui/mainwindow.ui \
