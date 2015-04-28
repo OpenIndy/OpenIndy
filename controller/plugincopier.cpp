@@ -1,5 +1,7 @@
 #include "plugincopier.h"
 
+#include "pluginloader.h"
+
 /*!
  * \brief PluginCopier::PluginCopier
  * \param parent
@@ -95,6 +97,13 @@ void PluginCopier::importPlugin(const QString &path){
     //copy plugin itself
     if(!QFile::copy(pluginFileInfo.absoluteFilePath(), pluginDir.absolutePath() + "/" + pluginFileInfo.fileName())){
         emit this->sendError(QString("Copy failed for plugin %1").arg(pluginFileInfo.fileName()));
+        emit this->importFinished(false);
+        return;
+    }
+
+    //add plugin to database
+    if(!this->savePlugin(pluginDir.absoluteFilePath(pluginFileInfo.fileName()))){
+        emit this->sendError(QString("Plugin %1 has not been saved in system database").arg(pluginFileInfo.fileName()));
         emit this->importFinished(false);
         return;
     }
@@ -217,5 +226,125 @@ bool PluginCopier::checkDependencies(const QString &sourcePath, const PluginMeta
     }
 
     return true;
+
+}
+
+/*!
+ * \brief PluginCopier::savePlugin
+ * \param path
+ * \return
+ */
+bool PluginCopier::savePlugin(const QString &path){
+
+    //check if the file exists
+    if(!QFile::exists(path)){
+        return false;
+    }
+
+    //get plugin meta data
+    PluginMetaData metaData = PluginLoader::getPluginMetaData(path);
+
+    //create plugin for database
+    sdb::Plugin plugin;
+    plugin.iid = metaData.iid;
+    plugin.name = metaData.pluginName;
+    plugin.description = metaData.description;
+    plugin.version = metaData.pluginVersion;
+    plugin.author = metaData.author;
+    plugin.compiler = metaData.compiler;
+    plugin.operating_sys = metaData.operatingSystem;
+    plugin.has_dependencies = metaData.dependencies;
+    plugin.file_path = metaData.path;
+    plugin.is_active = true;
+
+    //add sensors
+    QList<QPointer<Sensor> > sensors = PluginLoader::loadSensorPlugins(path);
+    foreach(const QPointer<Sensor> &sensor, sensors){
+        if(!sensor.isNull()){
+            sdb::Sensor pSensor;
+            pSensor.iid = sensor->getMetaData().iid;
+            pSensor.name = sensor->getMetaData().name;
+            pSensor.description = sensor->getMetaData().description;
+            plugin.sensors.append(pSensor);
+        }
+    }
+
+    //add functions
+    QList<QPointer<Function> > functions = PluginLoader::loadFunctionPlugins(path);
+    foreach(const QPointer<Function> &function, functions){
+        if(!function.isNull()){
+            sdb::Function pFunction;
+            pFunction.iid = function->getMetaData().iid;
+            pFunction.name = function->getMetaData().name;
+            pFunction.description = function->getMetaData().description;
+            pFunction.applicableFor = function->getApplicableFor();
+            foreach(const NeededElement &element, function->getNeededElements()){
+                pFunction.neededElements.append(element.typeOfElement);
+            }
+            plugin.functions.append(pFunction);
+        }
+    }
+
+    //add simulations
+    QList<QPointer<SimulationModel> > simulations = PluginLoader::loadSimulationPlugins(path);
+    foreach(const QPointer<SimulationModel> &simulation, simulations){
+        if(!simulation.isNull()){
+            sdb::Simulation pSimulation;
+            pSimulation.iid = simulation->getMetaData().iid;
+            pSimulation.name = simulation->getMetaData().name;
+            pSimulation.description = simulation->getMetaData().description;
+            plugin.simulations.append(pSimulation);
+        }
+    }
+
+    //add tools
+    QList<QPointer<Tool> > tools = PluginLoader::loadToolPlugins(path);
+    foreach(const QPointer<Tool> &tool, tools){
+        if(!tool.isNull()){
+            sdb::Tool pTool;
+            pTool.iid = tool->getMetaData().iid;
+            pTool.name = tool->getMetaData().name;
+            pTool.description = tool->getMetaData().description;
+            plugin.tools.append(pTool);
+        }
+    }
+
+    //add network adjustments
+    /*QList<QPointer<NetworkAdjustment> > networkAdjustments = PluginLoader::loadNetworkAdjustmentPlugins(path);
+    foreach(const QPointer<NetworkAdjustment> &networkAdjustment, networkAdjustments){
+        if(!networkAdjustment.isNull()){
+            sdb::NetworkAdjustment pNetworkAdjustment;
+            pNetworkAdjustment.iid = networkAdjustment->getMetaData().iid;
+            pNetworkAdjustment.name = networkAdjustment->getMetaData().name;
+            pNetworkAdjustment.description = networkAdjustment->getMetaData().description;
+            plugin.networkAdjustments.append(pNetworkAdjustment);
+        }
+    }*/
+
+    //add simple ascii exchanges
+    QList<QPointer<ExchangeSimpleAscii> > exchangesSimpleAscii = PluginLoader::loadExchangeSimpleAsciiPlugins(path);
+    foreach(const QPointer<ExchangeSimpleAscii> &exchange, exchangesSimpleAscii){
+        if(!exchange.isNull()){
+            sdb::Exchange pExchange;
+            pExchange.iid = exchange->getMetaData().iid;
+            pExchange.name = exchange->getMetaData().name;
+            pExchange.description = exchange->getMetaData().description;
+            plugin.exchanges.append(pExchange);
+        }
+    }
+
+    //add defined format exchanges
+    QList<QPointer<ExchangeDefinedFormat> > exchangesDefinedFormat = PluginLoader::loadExchangeDefinedFormatPlugins(path);
+    foreach(const QPointer<ExchangeDefinedFormat> &exchange, exchangesDefinedFormat){
+        if(!exchange.isNull()){
+            sdb::Exchange pExchange;
+            pExchange.iid = exchange->getMetaData().iid;
+            pExchange.name = exchange->getMetaData().name;
+            pExchange.description = exchange->getMetaData().description;
+            plugin.exchanges.append(pExchange);
+        }
+    }
+
+    return SystemDbManager::addPlugin(plugin);
 
 }

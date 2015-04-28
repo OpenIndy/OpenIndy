@@ -1,10 +1,9 @@
 #ifndef PLUGINMETADATA_H
 #define PLUGINMETADATA_H
 
-#include <QObject>
 #include <QJsonArray>
 
-class PluginMetaData : public QObject
+class PluginMetaData
 {
 public:
     QString iid;

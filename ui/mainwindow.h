@@ -12,6 +12,7 @@
 #include "console.h"
 
 #include "createfeaturedialog.h"
+#include "pluginloaderdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -94,6 +95,9 @@ private slots:
     void on_actionCreate_slotted_hole_triggered();
     void on_actionCreate_ellipse_triggered();
 
+    //plugin dialogs
+    void on_actionLoad_plugins_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -120,6 +124,7 @@ private:
     //############################
 
     CreateFeatureDialog createFeatureDialog;
+    PluginLoaderDialog pluginLoaderDialog;
 
 };
 

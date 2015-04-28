@@ -14,6 +14,7 @@
 
 #include "pluginmetadata.h"
 #include "oimetadata.h"
+#include "systemdbmanager.h"
 
 class PluginCopier : public QObject
 {
@@ -54,9 +55,7 @@ private:
     bool copyDir(const QString &sourcePath, const QString &destinationPath);
     bool checkDependencies(const QString &sourcePath, const PluginMetaData &metaData);
 
-
-    void makeErrorMsg(QString msg);
-    bool checkDependenciesExistens(QString path,PluginMetaData *pluginMeta );
+    bool savePlugin(const QString &path);
 
 };
 

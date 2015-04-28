@@ -45,6 +45,49 @@ QPointer<PluginLoader> PluginLoader::getInstance(){
 }
 
 /*!
+ * \brief PluginLoader::getPluginMetaData
+ * Get plugin meta data as a preview
+ * \param path
+ * \return
+ */
+PluginMetaData PluginLoader::getPluginMetaData(const QString &path){
+
+    PluginMetaData metaData;
+
+    //search in the given folder for a valid plugin
+    QDir pluginsDir(path);
+
+    foreach(const QString &fileName, pluginsDir.entryList(QDir::Files)) {
+
+        //get file path and check if the file is a valied plugin
+        QString filePath = pluginsDir.absoluteFilePath(fileName);
+        QPluginLoader pluginLoader(filePath);
+        bool isPlugin = pluginLoader.metaData().value("MetaData").toObject().value("isOiPlugin").toBool();
+        if(isPlugin){
+
+            //get plugin meta data
+            metaData.iid = pluginLoader.metaData().value("IID").toString();
+            metaData.name =  pluginLoader.metaData().value("MetaData").toObject().value("name").toString();
+            metaData.pluginVersion =  pluginLoader.metaData().value("MetaData").toObject().value("pluginVersion").toString();
+            metaData.author = pluginLoader.metaData().value("MetaData").toObject().value("author").toString();
+            metaData.compiler = pluginLoader.metaData().value("MetaData").toObject().value("compiler").toString();
+            metaData.operatingSystem = pluginLoader.metaData().value("MetaData").toObject().value("operatingSystem").toString();
+            metaData.dependencies = pluginLoader.metaData().value("MetaData").toObject().value("dependencies").toBool();
+            metaData.description = pluginLoader.metaData().value("MetaData").toObject().value("description").toString();
+            metaData.dependenciesPath = pluginLoader.metaData().value("MetaData").toObject().value("libPaths").toArray();
+            metaData.path = filePath;
+
+            break;
+
+        }
+
+    }
+
+    return metaData;
+
+}
+
+/*!
  * \brief PluginLoader::importPlugin
  * Imports the plugin at file path path
  * \param path

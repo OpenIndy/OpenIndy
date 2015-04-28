@@ -228,3 +228,10 @@ void MainWindow::on_actionCreate_ellipse_triggered(){
     this->createFeatureDialog.setFeatureType(eEllipseFeature);
     this->createFeatureDialog.show();
 }
+
+/*!
+ * \brief MainWindow::on_actionLoad_plugins_triggered
+ */
+void MainWindow::on_actionLoad_plugins_triggered(){
+    this->pluginLoaderDialog.show();
+}

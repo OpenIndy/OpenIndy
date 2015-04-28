@@ -43,6 +43,12 @@ public:
 
     static QPointer<PluginLoader> getInstance();
 
+    //#################################
+    //get plugin meta data as a preview
+    //#################################
+
+    static PluginMetaData getPluginMetaData(const QString &path);
+
     //########################
     //import or remove plugins
     //########################

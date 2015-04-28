@@ -133,7 +133,8 @@ SOURCES += \
     controller/config/parameterdisplayconfig.cpp \
     models/trafoparamtableproxymodel.cpp \
     controller/plugincopier.cpp \
-    controller/pluginloader.cpp
+    controller/pluginloader.cpp \
+    ui/dialogs/pluginloaderdialog.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -218,8 +219,10 @@ HEADERS  += \
     models/trafoparamtableproxymodel.h \
     src/plugin/plugin.h \
     controller/plugincopier.h \
-    controller/pluginloader.h
+    controller/pluginloader.h \
+    ui/dialogs/pluginloaderdialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
-    ui/dialogs/createfeaturedialog.ui
+    ui/dialogs/createfeaturedialog.ui \
+    ui/dialogs/pluginloaderdialog.ui
