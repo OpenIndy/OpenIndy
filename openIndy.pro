@@ -73,7 +73,7 @@ SOURCES += \
     ui/delegates/trafoparamdelegate.cpp \
     controller/console.cpp \
     controller/controller.cpp \
-    controller/featureattributes.cpp \
+    src/featureattributes.cpp \
     controller/modelmanager.cpp \
     controller/systemdbmanager.cpp \
     models/featuretablemodel.cpp \
@@ -88,7 +88,7 @@ SOURCES += \
     src/geometry.cpp \
     src/measurementconfig.cpp \
     src/observation.cpp \
-    src/oimetadata.cpp \
+    controller/oimetadata.cpp \
     src/oirequestresponse.cpp \
     src/position.cpp \
     src/radius.cpp \
@@ -140,7 +140,7 @@ HEADERS  += \
     ui/delegates/trafoparamdelegate.h \
     controller/console.h \
     controller/controller.h \
-    controller/featureattributes.h \
+    src/featureattributes.h \
     controller/modelmanager.h \
     controller/systemdbmanager.h \
     models/featuretablemodel.h \
@@ -155,7 +155,7 @@ HEADERS  += \
     src/geometry.h \
     src/measurementconfig.h \
     src/observation.h \
-    src/oimetadata.h \
+    controller/oimetadata.h \
     src/oirequestresponse.h \
     src/position.h \
     src/radius.h \

@@ -2,9 +2,9 @@
 #define DATABASE_H
 
 #include <QtSql>
-#include <QSqlQueryModel>
 #include <QString>
 #include <QList>
+#include <QStringList>
 #include <QDir>
 #include <QMultiMap>
 #include <QPointer>
@@ -12,43 +12,27 @@
 #include "pluginmetadata.h"
 #include "oimetadata.h"
 #include "console.h"
+#include "types.h"
+#include "util.h"
 
-//! base class for all plugin types
-class SpecialPlugin{
+//###############################################
+//exchange classes to save database query results
+//###############################################
+
+namespace sdb{
+
+class Function;
+class Simulation;
+class Sensor;
+class Tool;
+class NetworkAdjustment;
+class Exchange;
+
+//! represents an OpenIndy plugin
+class Plugin{
 public:
-    int id;
-    QString iid;
-    QString name;
-    QString description;
-    QString pluginName;
-};
+    Plugin() : id(-1), has_dependencies(false), is_active(false) {}
 
-//! function plugins
-class FunctionPlugin : public SpecialPlugin{
-public:
-    QList<FeatureTypes> applicableFor;
-    QList<ElementTypes> neededElements;
-};
-
-//! sensor plugins
-class SensorPlugin : public SpecialPlugin{
-};
-
-//! simulation plugins
-class SimulationPlugin : public SpecialPlugin{
-};
-
-//! tool plugins
-class OiToolPlugin : public SpecialPlugin{
-};
-
-//! exchange plugins
-class OiExchangePlugin : public SpecialPlugin{
-};
-
-//! class that holds information about an OpenIndy plugin
-/*class Plugin{
-public:
     int id;
     QString iid;
     QString name;
@@ -61,79 +45,194 @@ public:
     QString file_path;
     bool is_active;
 
-    QList<FunctionPlugin> myFunctions;
-    QList<SimulationPlugin> mySimulations;
-    QList<SensorPlugin> mySensors;
-    QList<OiToolPlugin> myTools;
-};*/
+    QList<Function> functions;
+    QList<Simulation> simulations;
+    QList<Sensor> sensors;
+    QList<Tool> tools;
+    QList<NetworkAdjustment> networkAdjustments;
+    QList<Exchange> exchanges;
+};
 
-//! database interface class
+//! represents a function
+class Function{
+public:
+    Function() : id(-1){}
+
+    int id;
+    QString iid;
+    QString name;
+    QString description;
+
+    Plugin plugin;
+
+    QList<FeatureTypes> applicableFor;
+    QList<ElementTypes> neededElements;
+};
+
+//! represents a sensor
+class Sensor{
+public:
+    Sensor() : id(-1){}
+
+    int id;
+    QString iid;
+    QString name;
+    QString description;
+
+    Plugin plugin;
+};
+
+//! represents a simulation
+class Simulation{
+public:
+    Simulation() : id(-1){}
+
+    int id;
+    QString iid;
+    QString name;
+    QString description;
+
+    Plugin plugin;
+};
+
+//! represents a tool
+class Tool{
+public:
+    Tool() : id(-1){}
+
+    int id;
+    QString iid;
+    QString name;
+    QString description;
+
+    Plugin plugin;
+};
+
+//! represents a network adjustment
+class NetworkAdjustment{
+public:
+    NetworkAdjustment() : id(-1){}
+
+    int id;
+    QString iid;
+    QString name;
+    QString description;
+
+    Plugin plugin;
+};
+
+//! represents an exchange function
+class Exchange{
+public:
+    Exchange() : id(-1){}
+
+    int id;
+    QString iid;
+    QString name;
+    QString description;
+
+    Plugin plugin;
+};
+
+}
+
+//##################
+//database interface
+//##################
+
+/*!
+ * \brief The SystemDbManager class
+ * System database interface class
+ */
 class SystemDbManager
 {
 public:
-    //TODO QPointer const ?
 
-    //##################################
-    //public functions to query database
-    //##################################
-
+    //#####################
     //add or remove plugins
-    static bool savePlugin(const Plugin &plugin);
-    static bool deletePlugin(const Plugin &plugin);
-    static bool deletePlugin(const QString &iid);
+    //#####################
 
-    //get sql models (function)
-    static bool getCreateFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const FeatureTypes &typeOfFeature);
-    static bool getChangeFunctionsModel(QPointer<QSqlQueryModel> &sqlModel, const FeatureTypes &typeOfFeature);
-    static bool getNeededElementsModel(QPointer<QSqlQueryModel> &sqlModel, const FunctionPlugin &functionPlugin);
+    static bool addPlugin(const sdb::Plugin &plugin);
+    static bool removePlugin(const sdb::Plugin &plugin);
 
-    //get sql models (sensor)
-    static bool getLaserTrackerModel(QPointer<QSqlQueryModel> &sqlModel);
-    static bool getTotalStationModel(QPointer<QSqlQueryModel> &sqlModel);
-    static bool getUndefinedSensorModel(QPointer<QSqlQueryModel> &sqlModel);
+    //###########
+    //get plugins
+    //###########
 
-    //add or remove measurement configs
+    static QList<sdb::Plugin> getPlugins();
+
+    //###########
+    //get sensors
+    //###########
+
+    static QList<sdb::Sensor> getSensors();
+
+    static QList<sdb::Sensor> getLaserTrackers();
+    static QList<sdb::Sensor> getTotalStations();
+
+    //#############
+    //get functions
+    //#############
+
+    static QList<sdb::Function> getFunctions();
+
+    static QList<sdb::Function> getCreateFunctions(const FeatureTypes &type);
+    static QList<sdb::Function> getChangeFunctions(const FeatureTypes &type);
+
+    //#########
+    //get tools
+    //#########
+
+    static QList<sdb::Tool> getTools();
+
+    //###############
+    //get simulations
+    //###############
+
+    static QList<sdb::Simulation> getSimulations();
+
+    //#######################
+    //get network adjustments
+    //#######################
+
+    static QList<sdb::NetworkAdjustment> getNetworkAdjustments();
+
+    //#############
+    //get exchanges
+    //#############
+
+    static QList<sdb::Exchange> getExchanges();
+
+    //###################
+    //measurement configs
+    //###################
+
+    static QStringList getMeasurementConfigs();
+
     static bool addMeasurementConfig(const QString &name);
     static bool removeMeasurementConfig(const QString &name);
-    static QString getDefaultMeasurementConfig(const GeometryTypes &typeOfGeometry);
-    static bool setDefaultMeasurementConfig(const GeometryTypes &typeOfGeometry, const QString &name);
 
-    //add or remove sensor configs
+    static QString getDefaultMeasurementConfig(const QString &elementType);
+    static bool setDefaultMeasurementConfig(const QString &name, const QString &elementType);
+
+    //##############
+    //sensor configs
+    //##############
+
+    static QStringList getSensorConfigs();
+
     static bool addSensorConfig(const QString &name);
     static bool removeSensorConfig(const QString &name);
+
     static QString getDefaultSensorConfig();
     static bool setDefaultSensorConfig(const QString &name);
 
-    //get the file path of a plugin
-    static bool getSensorPluginFilePath(QString &filePath, const QString &pluginName, const QString &sensorName);
-    static bool getFunctionPluginFilePath(QString &filePath, const QString &pluginName, const QString &functionName);
-    //bool getPluginFilePath(QString &filePath, const QString &pluginName, const QString &sensorName);
-    //bool getPluginFilePath(QString &filePath, const QString &pluginName, const QString &sensorName);
-
-
-/*
-    static QString getPluginFilePath(QString name, QString plugin);
-
-    static QStringList getSupportedGeometries();
-
-    static QList<Plugin> getAvailablePlugins();
-    static QStringList getAvailablePluginNames();
-
-    static FunctionPlugin getDefaultFunction(FeatureTypes featureType);
-    static QList<FunctionPlugin> getAvailableFitFunctions(FeatureTypes featureType);
-    static QList<FunctionPlugin> getAvailableConstructFunctions(FeatureTypes featureType);
-
-    static QList<SimulationPlugin> getAvailableSimulationPlugins();
-
-    static void saveDefaultFunction(FeatureTypes featureType, QString function, QString plugin);
-
-    static QMultiMap<QString,QString> getAvailableOiTools();
-
-    static QMultiMap<QString,QString> getAvailableSimpleAsciiExchangePlugins();
-    static QMultiMap<QString,QString> getAvailableDefinedFormatExchangePlugins();
-*/
-
 private:
+
+    //##########
+    //connection
+    //##########
+
     static QSqlDatabase db;
     static bool isInit;
 
@@ -141,17 +240,21 @@ private:
     static bool connect();
     static void disconnect();
 
-    static int getElementId(QString element);
-    static QList<int> getElementIds(QList<QString> elements);
-    static int getLastId(QString table);
-    static int savePluginHelper(PluginMetaData *metaInfo);
-    static void saveFunctionPlugin(int pluginId, Function* f);
-    static void saveSensorPlugin(int pluginId, Sensor* s);
-    //static void saveSimulationPlugin(int pluginId, SimulationModel* s);
-    static void saveNetworkAdjustmentPlugin(int pluginId, NetworkAdjustment* n);
-    //static void saveOiToolPlugin(int pluginId, OiTool* t);
-    //static void saveOiExchangeSimpleAsciiPlugin(int pluginId, OiExchangeSimpleAscii* sa);
-    //static void saveOiExchangeDefinedFormatPlugin(int pluginId, OiExchangeDefinedFormat* df);
+    //################
+    //helper functions
+    //################
+
+    static int savePlugin(const sdb::Plugin &plugin);
+
+    static void saveFunction(const sdb::Function &function, const int &plugin_id);
+    static void saveSensor(const sdb::Sensor &sensor, const int &plugin_id);
+    static void saveSimulation(const sdb::Simulation &simulation, const int &plugin_id);
+    static void saveExchange(const sdb::Exchange &exchange, const int &plugin_id);
+    static void saveTool(const sdb::Tool &tool, const int &plugin_id);
+    static void saveNetworkAdjustment(const sdb::NetworkAdjustment &networkAdjustment, const int &plugin_id);
+
+    static int getLastId(const QString &table);
+    static QList<int> getElementIds(const QStringList &elements);
 
 };
 

@@ -102,7 +102,6 @@ SOURCES += \
     ../../src/measurementconfig.cpp \
     ../../src/observation.cpp \
     ../../src/oijob.cpp \
-    ../../src/oimetadata.cpp \
     ../../src/oirequestresponse.cpp \
     ../../src/position.cpp \
     ../../src/radius.cpp \
@@ -196,7 +195,6 @@ HEADERS += \
     ../../src/measurementconfig.h \
     ../../src/observation.h \
     ../../src/oijob.h \
-    ../../src/oimetadata.h \
     ../../src/oirequestresponse.h \
     ../../src/position.h \
     ../../src/radius.h \

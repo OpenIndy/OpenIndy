@@ -20,19 +20,18 @@
 
 /*!
  * \brief The OiMetaData class
+ * Holds version information about OpenIndy
  */
 class OiMetaData
 {
-private:
 
-    static QString version;
+public:
 
- public:
+    //#########################
+    //plugin interface versions
+    //#########################
 
-    static QString sensorPlugin;
-    static QString functionPlugin;
-
-    static QString iid_OiPlugin;
+    static QString iid_Plugin;
     static QString iid_LaserTracker;
     static QString iid_TotalStation;
     static QString iid_ConstructFunction;
@@ -44,17 +43,25 @@ private:
     static QString iid_SystemTransformation;
     static QString iid_Sensor;
     static QString iid_Simulation;
-    static QString iid_OiTool;
-    static QString iid_OiExchange;
-    static QString iid_OiExchangeSimpleAscii;
-    static QString iid_OiExchangeDefinedFormat;
+    static QString iid_Tool;
+    static QString iid_Exchange;
+    static QString iid_ExchangeSimpleAscii;
+    static QString iid_ExchangeDefinedFormat;
 
-    static QString getVersion();
+    static bool findIID(const QString &iid);
+
+    //#################################
+    //version of the main program (src)
+    //#################################
+
+    static QString version;
+
+    //#################################
+    //meta data about this installation
+    //#################################
+
     static QString getCompiler();
     static QString getOperatingSys();
-    static bool findIID(QString iid);
-    //static int generateId();
-
 
 };
 
