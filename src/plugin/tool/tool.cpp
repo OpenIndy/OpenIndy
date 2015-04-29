@@ -5,7 +5,7 @@
  * \param parent
  */
 Tool::Tool(QWidget *parent) : QWidget(parent){
-    this->init();
+
 }
 
 /*!

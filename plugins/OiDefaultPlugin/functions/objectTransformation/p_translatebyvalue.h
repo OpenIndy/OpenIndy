@@ -11,13 +11,16 @@
 class TranslateByValue : public ObjectTransformation
 {  
     Q_OBJECT
-protected:
+
+public:
 
     //##############################
     //function initialization method
     //##############################
 
     void init();
+
+protected:
 
     //############
     //exec methods

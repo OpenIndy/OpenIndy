@@ -20,15 +20,14 @@
 class SimplePolarMeasurement : public SimulationModel
 {
     Q_OBJECT
-protected:
+
+public:
 
     //################################
     //simulation initialization method
     //################################
 
     void init();
-
-public:
 
     //##################
     //simulation methods

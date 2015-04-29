@@ -9,7 +9,7 @@
  * \param parent
  */
 Sensor::Sensor(QObject *parent) : QObject(parent){
-    this->init();
+
 }
 
 /*!
@@ -261,7 +261,6 @@ bool Sensor::fromOpenIndyXML(QDomElement &xmlElem){
 
 /*!
  * \brief Sensor::init
- * Method that is automatically called by sensor constructor and may be reimplemented by the plugin writer
  */
 void Sensor::init(){
 

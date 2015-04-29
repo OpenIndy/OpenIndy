@@ -25,6 +25,12 @@ public:
 
     virtual ~ExchangeInterface();
 
+    //##############################
+    //exchange initialization method
+    //##############################
+
+    virtual void init();
+
     //#########################################
     //methods to get or set further information
     //#########################################
@@ -94,12 +100,6 @@ signals:
     void exportFinished(const bool &success);
 
 protected:
-
-    //##############################
-    //exchange initialization method
-    //##############################
-
-    virtual void init();
 
     //###########################
     //input and output parameters

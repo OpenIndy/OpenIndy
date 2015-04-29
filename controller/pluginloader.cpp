@@ -136,8 +136,9 @@ QPointer<Sensor> PluginLoader::loadSensorPlugin(const QString &path, const QStri
     if(plugin){
         Plugin *sensorFactory = qobject_cast<Plugin *>(plugin);
         sensor = sensorFactory->createSensor(name);
+        sensor->init();
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected sensor"));
+        Console::getInstance()->addLine(QString("Cannot load selected sensor: %1").arg(pluginLoader.errorString()));
     }
 
     return sensor;
@@ -159,8 +160,9 @@ QPointer<Function> PluginLoader::loadFunctionPlugin(const QString &path, const Q
     if(plugin){
         Plugin *functionFactory = qobject_cast<Plugin *>(plugin);
         function = functionFactory->createFunction(name);
+        function->init();
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected function"));
+        Console::getInstance()->addLine(QString("Cannot load selected function: %1").arg(pluginLoader.errorString()));
     }
 
     return function;
@@ -182,8 +184,9 @@ QPointer<SimulationModel> PluginLoader::loadSimulationPlugin(const QString &path
     if(plugin){
         Plugin *simulationFactory = qobject_cast<Plugin *>(plugin);
         simulation = simulationFactory->createSimulation(name);
+        simulation->init();
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected simulation"));
+        Console::getInstance()->addLine(QString("Cannot load selected simulation: %1").arg(pluginLoader.errorString()));
     }
 
     return simulation;
@@ -206,7 +209,7 @@ QPointer<NetworkAdjustment> PluginLoader::loadNetworkAdjustmentPlugin(const QStr
         Plugin *networkAdjustmentFactory = qobject_cast<Plugin *>(plugin);
         networkAdjustment = networkAdjustmentFactory->createNetworkAdjustment(name);
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected network adjustment"));
+        Console::getInstance()->addLine(QString("Cannot load selected network adjustment: %1").arg(pluginLoader.errorString()));
     }
 
     return networkAdjustment;
@@ -214,12 +217,12 @@ QPointer<NetworkAdjustment> PluginLoader::loadNetworkAdjustmentPlugin(const QStr
 }
 
 /*!
- * \brief PluginLoader::loadOiToolPlugin
+ * \brief PluginLoader::loadToolPlugin
  * \param path
  * \param name
  * \return
  */
-QPointer<Tool> PluginLoader::loadOiToolPlugin(const QString &path, const QString &name){
+QPointer<Tool> PluginLoader::loadToolPlugin(const QString &path, const QString &name){
 
     QPointer<Tool> tool(NULL);
 
@@ -228,8 +231,9 @@ QPointer<Tool> PluginLoader::loadOiToolPlugin(const QString &path, const QString
     if(plugin){
         Plugin *toolFactory = qobject_cast<Plugin *>(plugin);
         tool = toolFactory->createTool(name);
+        tool->init();
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected tool"));
+        Console::getInstance()->addLine(QString("Cannot load selected tool: %1").arg(pluginLoader.errorString()));
     }
 
     return tool;
@@ -237,12 +241,12 @@ QPointer<Tool> PluginLoader::loadOiToolPlugin(const QString &path, const QString
 }
 
 /*!
- * \brief PluginLoader::loadOiExchangeSimpleAsciiPlugin
+ * \brief PluginLoader::loadExchangeSimpleAsciiPlugin
  * \param path
  * \param name
  * \return
  */
-QPointer<ExchangeSimpleAscii> PluginLoader::loadOiExchangeSimpleAsciiPlugin(const QString &path, const QString &name){
+QPointer<ExchangeSimpleAscii> PluginLoader::loadExchangeSimpleAsciiPlugin(const QString &path, const QString &name){
 
     QPointer<ExchangeSimpleAscii> exchange(NULL);
 
@@ -251,8 +255,9 @@ QPointer<ExchangeSimpleAscii> PluginLoader::loadOiExchangeSimpleAsciiPlugin(cons
     if(plugin){
         Plugin *exchangeFactory = qobject_cast<Plugin *>(plugin);
         exchange = exchangeFactory->createSimpleAsciiExchange(name);
+        exchange->init();
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected exchange"));
+        Console::getInstance()->addLine(QString("Cannot load selected simple ascii exchange: %1").arg(pluginLoader.errorString()));
     }
 
     return exchange;
@@ -260,12 +265,12 @@ QPointer<ExchangeSimpleAscii> PluginLoader::loadOiExchangeSimpleAsciiPlugin(cons
 }
 
 /*!
- * \brief PluginLoader::loadOiExchangeDefinedFormatPlugin
+ * \brief PluginLoader::loadExchangeDefinedFormatPlugin
  * \param path
  * \param name
  * \return
  */
-QPointer<ExchangeDefinedFormat> PluginLoader::loadOiExchangeDefinedFormatPlugin(const QString &path, const QString &name){
+QPointer<ExchangeDefinedFormat> PluginLoader::loadExchangeDefinedFormatPlugin(const QString &path, const QString &name){
 
     QPointer<ExchangeDefinedFormat> exchange(NULL);
 
@@ -274,8 +279,9 @@ QPointer<ExchangeDefinedFormat> PluginLoader::loadOiExchangeDefinedFormatPlugin(
     if(plugin){
         Plugin *exchangeFactory = qobject_cast<Plugin *>(plugin);
         exchange = exchangeFactory->createDefinedFormatExchange(name);
+        exchange->init();
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected exchange"));
+        Console::getInstance()->addLine(QString("Cannot load selected defined format exchange: %1").arg(pluginLoader.errorString()));
     }
 
     return exchange;
@@ -294,10 +300,13 @@ QList<QPointer<Sensor> > PluginLoader::loadSensorPlugins(const QString &path){
     QPluginLoader pluginLoader(path);
     QObject *plugin = pluginLoader.instance();
     if(plugin){
-        Plugin *SensorFactory = qobject_cast<Plugin *>(plugin);
-        sensorList = SensorFactory->createSensors();
+        Plugin *sensorFactory = qobject_cast<Plugin *>(plugin);
+        sensorList = sensorFactory->createSensors();
+        foreach(const QPointer<Sensor> &sensor, sensorList){
+            sensor->init();
+        }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load sensors"));
+        Console::getInstance()->addLine(QString("Cannot load sensors: %1").arg(pluginLoader.errorString()));
     }
 
     return sensorList;
@@ -318,8 +327,11 @@ QList<QPointer<Function> > PluginLoader::loadFunctionPlugins(const QString &path
     if(plugin){
         Plugin *functionFactory = qobject_cast<Plugin *>(plugin);
         functionList = functionFactory->createFunctions();
+        foreach(const QPointer<Function> &function, functionList){
+            function->init();
+        }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load functions"));
+        Console::getInstance()->addLine(QString("Cannot load functions: %1").arg(pluginLoader.errorString()));
     }
 
     return functionList;
@@ -340,8 +352,11 @@ QList<QPointer<SimulationModel> > PluginLoader::loadSimulationPlugins(const QStr
     if(plugin){
         Plugin *simulationFactory = qobject_cast<Plugin *>(plugin);
         simulationList = simulationFactory->createSimulations();
+        foreach(const QPointer<SimulationModel> &simulation, simulationList){
+            simulation->init();
+        }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load simulations"));
+        Console::getInstance()->addLine(QString("Cannot load simulations: %1").arg(pluginLoader.errorString()));
     }
 
     return simulationList;
@@ -363,7 +378,7 @@ QList<QPointer<NetworkAdjustment> > PluginLoader::loadNetworkAdjustmentPlugins(c
         Plugin *networkAdjustmenFactory = qobject_cast<Plugin *>(plugin);
         networkAdjustmentList = networkAdjustmenFactory->createNetworkAdjustments();
     }else{
-        Console::getInstance()->addLine(QString("Cannot load network adjustments"));
+        Console::getInstance()->addLine(QString("Cannot load network adjustments: %1").arg(pluginLoader.errorString()));
     }
 
     return networkAdjustmentList;
@@ -384,8 +399,11 @@ QList<QPointer<Tool> > PluginLoader::loadToolPlugins(const QString &path){
     if(plugin){
         Plugin *toolFactory = qobject_cast<Plugin *>(plugin);
         toolList = toolFactory->createTools();
+        foreach(const QPointer<Tool> &tool, toolList){
+            tool->init();
+        }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load tools"));
+        Console::getInstance()->addLine(QString("Cannot load tools: %1").arg(pluginLoader.errorString()));
     }
 
     return toolList;
@@ -406,8 +424,11 @@ QList<QPointer<ExchangeSimpleAscii> > PluginLoader::loadExchangeSimpleAsciiPlugi
     if(plugin){
         Plugin *exchangeFactory = qobject_cast<Plugin *>(plugin);
         exchangeList = exchangeFactory->createSimpleAsciiExchanges();
+        foreach(const QPointer<ExchangeSimpleAscii> &exchange, exchangeList){
+            exchange->init();
+        }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load exchanges"));
+        Console::getInstance()->addLine(QString("Cannot load simple ascii exchanges: %1").arg(pluginLoader.errorString()));
     }
 
     return exchangeList;
@@ -428,8 +449,11 @@ QList<QPointer<ExchangeDefinedFormat> > PluginLoader::loadExchangeDefinedFormatP
     if(plugin){
         Plugin *exchangeFactory = qobject_cast<Plugin *>(plugin);
         exchangeList = exchangeFactory->createDefinedFormatExchanges();
+        foreach(const QPointer<ExchangeDefinedFormat> &exchange, exchangeList){
+            exchange->init();
+        }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load exchanges"));
+        Console::getInstance()->addLine(QString("Cannot load defined format exchanges: %1").arg(pluginLoader.errorString()));
     }
 
     return exchangeList;

@@ -16,13 +16,16 @@
 class BestFitPlane2 : public FitFunction
 {
     Q_OBJECT
-protected:
+
+public:
 
     //##############################
     //function initialization method
     //##############################
 
     void init();
+
+protected:
 
     //############
     //exec methods

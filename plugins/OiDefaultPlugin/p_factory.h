@@ -61,6 +61,7 @@ class OiTemplatePlugin : public QObject, Plugin
     Q_INTERFACES(Plugin)
     
 public:
+    OiTemplatePlugin(QObject *parent = 0);
 
     //##########################################################
     //create instances of all available plugin types in a plugin

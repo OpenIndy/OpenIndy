@@ -64,9 +64,9 @@ public:
     static QPointer<Function> loadFunctionPlugin(const QString &path, const QString &name);
     static QPointer<SimulationModel> loadSimulationPlugin(const QString &path, const QString &name);
     static QPointer<NetworkAdjustment> loadNetworkAdjustmentPlugin(const QString &path, const QString &name);
-    static QPointer<Tool> loadOiToolPlugin(const QString &path, const QString &name);
-    static QPointer<ExchangeSimpleAscii> loadOiExchangeSimpleAsciiPlugin(const QString &path, const QString &name);
-    static QPointer<ExchangeDefinedFormat> loadOiExchangeDefinedFormatPlugin(const QString &path, const QString &name);
+    static QPointer<Tool> loadToolPlugin(const QString &path, const QString &name);
+    static QPointer<ExchangeSimpleAscii> loadExchangeSimpleAsciiPlugin(const QString &path, const QString &name);
+    static QPointer<ExchangeDefinedFormat> loadExchangeDefinedFormatPlugin(const QString &path, const QString &name);
 
     static QList<QPointer<Sensor> > loadSensorPlugins(const QString &path);
     static QList<QPointer<Function> > loadFunctionPlugins(const QString &path);

@@ -37,8 +37,11 @@ void PluginCopier::importPlugin(const QString &path){
 
     //get file info and check if plugin already exists
     QFileInfo pluginFileInfo(path);
-    QDir pluginDir(appDir.absolutePath() + "/plugins/" + pluginFileInfo.fileName());
+    QDir pluginDir(appDir.absolutePath() + "/plugins");
     pluginDir.mkpath(pluginDir.absolutePath());
+
+    qDebug() << pluginDir.absolutePath();
+
     if(QFile::exists(pluginDir.absoluteFilePath(pluginFileInfo.fileName()))){
         emit this->sendError(QString("Plugin %1 already exists").arg(pluginFileInfo.fileName()));
         emit this->importFinished(false);
@@ -95,7 +98,7 @@ void PluginCopier::importPlugin(const QString &path){
     }
 
     //copy plugin itself
-    if(!QFile::copy(pluginFileInfo.absoluteFilePath(), pluginDir.absolutePath() + "/" + pluginFileInfo.fileName())){
+    if(!QFile::copy(pluginFileInfo.absoluteFilePath(), pluginDir.absoluteFilePath(pluginFileInfo.fileName()))){
         emit this->sendError(QString("Copy failed for plugin %1").arg(pluginFileInfo.fileName()));
         emit this->importFinished(false);
         return;
@@ -241,20 +244,18 @@ bool PluginCopier::savePlugin(const QString &path){
         return false;
     }
 
-    //get plugin meta data
-    PluginMetaData metaData = PluginLoader::getPluginMetaData(path);
-
     //create plugin for database
     sdb::Plugin plugin;
-    plugin.iid = metaData.iid;
-    plugin.name = metaData.pluginName;
-    plugin.description = metaData.description;
-    plugin.version = metaData.pluginVersion;
-    plugin.author = metaData.author;
-    plugin.compiler = metaData.compiler;
-    plugin.operating_sys = metaData.operatingSystem;
-    plugin.has_dependencies = metaData.dependencies;
-    plugin.file_path = metaData.path;
+    QPluginLoader pluginLoader(path);
+    plugin.iid = pluginLoader.metaData().value("IID").toString();
+    plugin.name =  pluginLoader.metaData().value("MetaData").toObject().value("name").toString();
+    plugin.version =  pluginLoader.metaData().value("MetaData").toObject().value("pluginVersion").toString();
+    plugin.author = pluginLoader.metaData().value("MetaData").toObject().value("author").toString();
+    plugin.compiler = pluginLoader.metaData().value("MetaData").toObject().value("compiler").toString();
+    plugin.operating_sys = pluginLoader.metaData().value("MetaData").toObject().value("operatingSystem").toString();
+    plugin.has_dependencies = pluginLoader.metaData().value("MetaData").toObject().value("dependencies").toBool();
+    plugin.description = pluginLoader.metaData().value("MetaData").toObject().value("description").toString();
+    plugin.file_path = path;
     plugin.is_active = true;
 
     //add sensors

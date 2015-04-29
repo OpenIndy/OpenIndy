@@ -12,13 +12,16 @@ using namespace std;
 class Helmert6Param : public SystemTransformation
 {
     Q_OBJECT
-protected:
+
+public:
 
     //##############################
     //function initialization method
     //##############################
 
     void init();
+
+protected:
 
     //############
     //exec methods

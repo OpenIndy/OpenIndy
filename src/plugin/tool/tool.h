@@ -18,6 +18,12 @@ public:
 
     virtual ~Tool();
 
+    //##########################
+    //tool initialization method
+    //##########################
+
+    virtual void init();
+
     //#########################################
     //methods to get or set further information
     //#########################################
@@ -52,12 +58,6 @@ signals:
     void customXmlResponse(const QPointer<OiRequestResponse> &response);
 
 protected:
-
-    //##########################
-    //tool initialization method
-    //##########################
-
-    virtual void init();
 
     //###########################
     //input and output parameters

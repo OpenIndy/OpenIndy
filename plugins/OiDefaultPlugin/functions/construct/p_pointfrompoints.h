@@ -17,13 +17,16 @@ using namespace std;
 class PointFromPoints : public ConstructFunction
 {
     Q_OBJECT
-protected:
+
+public:
 
     //##############################
     //function initialization method
     //##############################
 
     void init();
+
+protected:
 
     //############
     //exec methods

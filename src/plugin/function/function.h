@@ -169,6 +169,12 @@ public:
 
     virtual ~Function();
 
+    //##############################
+    //function initialization method
+    //##############################
+
+    virtual void init();
+
     //###################################################################
     //public exec method that calls the appropriate protected exec method
     //###################################################################
@@ -242,12 +248,6 @@ signals:
     void sendMessage(const QString &msg);
 
 protected:
-
-    //##############################
-    //function initialization method
-    //##############################
-
-    virtual void init();
 
     //############
     //exec methods

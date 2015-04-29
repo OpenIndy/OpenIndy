@@ -21,15 +21,13 @@ class PseudoTracker : public LaserTracker
 {
     Q_OBJECT
 
-protected:
+public:
 
     //############################
     //sensor initialization method
     //############################
 
     void init();
-
-public:
 
     //########################
     //sensor state and actions

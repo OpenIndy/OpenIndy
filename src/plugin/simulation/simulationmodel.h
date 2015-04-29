@@ -151,6 +151,12 @@ public:
 
     virtual ~SimulationModel();
 
+    //################################
+    //simulation initialization method
+    //################################
+
+    virtual void init();
+
     //#########################################
     //methods to get or set further information
     //#########################################
@@ -186,12 +192,6 @@ signals:
     void sendMessage(const QString &msg);
 
 protected:
-
-    //################################
-    //simulation initialization method
-    //################################
-
-    virtual void init();
 
     //###########################
     //input and output parameters

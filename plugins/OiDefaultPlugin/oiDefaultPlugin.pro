@@ -10,6 +10,7 @@ QT += serialport
 QT += xml
 
 TEMPLATE = lib
+#TEMPLATE = app
 TARGET = $$qtLibraryTarget(p_defaultPlugin)
 
 CONFIG += plugin
@@ -152,13 +153,13 @@ SOURCES += \
     lib/fitting/cfitting_plane.cpp \
     lib/fitting/cfitting_sphere.cpp \
     lib/fitting/cfitting_util.cpp \
-    lib/fitting/fitting_main.cpp \
     lib/fitting/util/Getopt.cpp \
     lib/fitting/util/iskeyword.cpp \
     lib/fitting/util/microtim.cpp \
     lib/fitting/util/mystring.cpp \
     lib/fitting/util/rho.cpp \
-    p_factory.cpp
+    p_factory.cpp \
+    main.cpp
 
 HEADERS += \
     functions/construct/p_intersectlineplane.h \
@@ -261,7 +262,12 @@ HEADERS += \
     lib/fitting/util/microtim.h \
     lib/fitting/util/mystring.h \
     lib/fitting/util/rho.h \
-    p_factory.h
+    p_factory.h \
+    ../../lib/openIndyLib/include/global.h \
+    ../../lib/openIndyLib/include/linearalgebra.h \
+    ../../lib/openIndyLib/include/oimat.h \
+    ../../lib/openIndyLib/include/oivec.h \
+    ../../lib/openIndyLib/include/chooselalib.h
 
 OTHER_FILES += metaInfo.json
 

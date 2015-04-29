@@ -5,7 +5,7 @@
  * \param parent
  */
 SimulationModel::SimulationModel(QObject *parent) : QObject(parent){
-    this->init();
+
 }
 
 /*!

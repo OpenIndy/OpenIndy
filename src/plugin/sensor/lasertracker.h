@@ -11,7 +11,7 @@ class LaserTracker : public Sensor
     Q_OBJECT
 
 public:
-    LaserTracker(QObject *parent = 0) : Sensor(parent){}
+    explicit LaserTracker(QObject *parent = 0) : Sensor(parent){}
 
     virtual ~LaserTracker(){}
 

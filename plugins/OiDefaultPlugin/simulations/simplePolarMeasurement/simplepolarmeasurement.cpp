@@ -12,6 +12,12 @@ void SimplePolarMeasurement::init(){
     this->metaData.description = "simulation of a simple polar measurement system";
     this->metaData.iid = "de.openIndy.plugin.simulation.v001";
 
+    //simulation specific inits
+    this->distributions.append("normal");
+    this->distributions.append("uniform");
+    this->distributions.append("triangular");
+    newIteration = true;
+
     //####################
     //sensor uncertainties
     //####################
@@ -418,12 +424,6 @@ void SimplePolarMeasurement::init(){
     this->stringParameters.insert("use object errors", "no");
     this->stringParameters.insert("use human errors", "yes");
     this->stringParameters.insert("use human errors", "no");
-
-    //simulation specific inits
-    this->distributions.append("normal");
-    this->distributions.append("uniform");
-    this->distributions.append("triangular");
-    newIteration = true;
 
 }
 

@@ -20,13 +20,16 @@ using namespace std;
 class Helmert7Param : public SystemTransformation
 {  
     Q_OBJECT
-protected:
+
+public:
 
     //##############################
     //function initialization method
     //##############################
 
     void init();
+
+protected:
 
     //############
     //exec methods

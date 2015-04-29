@@ -353,7 +353,8 @@ Station::Station(QObject *parent) : Feature(parent){
     QObject::connect(this, SIGNAL(featureNameChanged(const int&, const QString&)), this, SLOT(stationNameChanged(const int&, const QString&)), Qt::DirectConnection);
 
     //create a sensor control object, connect it and move it to thread
-    this->sensorControl = new SensorControl(QPointer<Station>(this));
+    QPointer<Station> stationPointer(this);
+    this->sensorControl = new SensorControl(stationPointer);
     //connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
     this->connectSensorControl();
     this->sensorControl->moveToThread(&this->stationThread);
@@ -384,7 +385,8 @@ Station::Station(const QString &name, QObject *parent) : Feature(parent){
     this->stationSystem->setFeatureName(this->name);
 
     //create a sensor control object, connect it and move it to thread
-    this->sensorControl = new SensorControl(QPointer<Station>(this));
+    QPointer<Station> stationPointer(this);
+    this->sensorControl = new SensorControl(stationPointer);
     //connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
     this->connectSensorControl();
     this->sensorControl->moveToThread(&this->stationThread);

@@ -13,15 +13,13 @@ class OiExchangeAscii : public ExchangeSimpleAscii
 { 
     Q_OBJECT
 
-protected:
+public:
 
     //##############################
     //exchange initialization method
     //##############################
 
     void init();
-
-public:
 
     //#########################
     //import and export methods

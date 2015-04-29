@@ -16,13 +16,16 @@ using namespace std;
 class ExtendedTemperatureCompensation : public SystemTransformation
 {
     Q_OBJECT
-protected:
+
+public:
 
     //##############################
     //function initialization method
     //##############################
 
     void init();
+
+protected:
 
     //############
     //exec methods

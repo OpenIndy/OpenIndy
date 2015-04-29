@@ -14,13 +14,16 @@
 class IntersectPlanePlane : public ConstructFunction
 {  
     Q_OBJECT
-protected:
+
+public:
 
     //##############################
     //function initialization method
     //##############################
 
     void init();
+
+protected:
 
     //############
     //exec methods

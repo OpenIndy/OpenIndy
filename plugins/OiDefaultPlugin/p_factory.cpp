@@ -1,7 +1,11 @@
 #include "p_factory.h"
 
-//int    gDebugLevel=0;
-//TReal  gConvergence=1e-9;
+int    gDebugLevel=0;
+TReal  gConvergence=1e-9;
+
+OiTemplatePlugin::OiTemplatePlugin(QObject *parent) : QObject(parent){
+
+}
 
 /*!
  * \brief OiTemplatePlugin::createSensors
