@@ -13,6 +13,7 @@
 
 #include "createfeaturedialog.h"
 #include "pluginloaderdialog.h"
+#include "importnominaldialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -97,6 +98,7 @@ private slots:
 
     //plugin dialogs
     void on_actionLoad_plugins_triggered();
+    void on_action_importNominals_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -125,6 +127,7 @@ private:
 
     CreateFeatureDialog createFeatureDialog;
     PluginLoaderDialog pluginLoaderDialog;
+    ImportNominalDialog importNominalDialog;
 
 };
 

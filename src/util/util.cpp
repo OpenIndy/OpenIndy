@@ -17,6 +17,8 @@ QMap<TrafoParamDisplayAttributes, QString> trafoParamDisplayAttributesMap;
 
 QList<int> displayAttributes;
 
+QMap<UnitType, QString> unitTypesMap;
+
 QString undefined = "";
 
 bool isInit = false;
@@ -31,6 +33,7 @@ void init(){
     featureDisplayAttributesMap.clear();
     trafoParamDisplayAttributesMap.clear();
     displayAttributes.clear();
+    unitTypesMap.clear();
 
     //fill element map
     elementTypesMap.insert(eCircleElement, "circle");
@@ -198,6 +201,19 @@ void init(){
     for(int i = 400; i < 414; i++){ //trafo param specific
         displayAttributes.append(i);
     }
+
+    //fill unit types map
+    unitTypesMap.insert(eUnitArcSeconds, "[arcsec]");
+    unitTypesMap.insert(eUnitDecimalDegree, "[°]");
+    unitTypesMap.insert(eUnitFahrenheit, "[°F]");
+    unitTypesMap.insert(eUnitGon, "[gon]");
+    unitTypesMap.insert(eUnitGrad, "[°C]");
+    unitTypesMap.insert(eUnitInch, "[inch]");
+    unitTypesMap.insert(eUnitKelvin, "[°K]");
+    unitTypesMap.insert(eUnitMeter, "[m]");
+    unitTypesMap.insert(eUnitMilliMeter, "[mm]");
+    unitTypesMap.insert(eUnitMilliRadians, "[mrad]");
+    unitTypesMap.insert(eUnitRadiant, "[rad]");
 
     isInit = true;
 
@@ -512,5 +528,42 @@ double convertToDefault(const double &value, const UnitType &type){
     default:
         return value;
     }
+
+}
+
+/*!
+ * \brief getUnitTypeName
+ * \param type
+ * \return
+ */
+const QString &getUnitTypeName(const UnitType &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding reading name
+    if(internal::unitTypesMap.contains(type)){
+        return internal::unitTypesMap[type];
+    }
+    return internal::undefined;
+
+}
+
+/*!
+ * \brief getUnitTypeEnum
+ * \param name
+ * \return
+ */
+UnitType getUnitTypeEnum(const QString &name){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding reading enum value
+    return internal::unitTypesMap.key(name, eNoUnit);
 
 }

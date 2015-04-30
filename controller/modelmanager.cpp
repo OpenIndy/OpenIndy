@@ -12,6 +12,13 @@ TrafoParamTableColumnConfig ModelManager::trafoParamTableColumnConfig;
 ParameterDisplayConfig ModelManager::parameterDisplayConfig;
 QStringListModel ModelManager::coordinateSystemsModel;
 QStringListModel ModelManager::nominalSystemsModel;
+QStringListModel ModelManager::metricUnitTypesModel;
+QStringListModel ModelManager::angularUnitTypesModel;
+QStringListModel ModelManager::temperatureUnitTypesModel;
+QStringListModel ModelManager::dummyStringListModel;
+QStringListModel ModelManager::pluginNamesModel;
+QStringListModel ModelManager::groupNamesModel;
+QList<sdb::Plugin> ModelManager::plugins;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -27,6 +34,8 @@ void ModelManager::init(){
 
     //init models
     ModelManager::initFeatureTableModels();
+    ModelManager::initUnitTypesModels();
+    ModelManager::initPluginModels();
 
 }
 
@@ -133,6 +142,136 @@ QStringListModel &ModelManager::getNominalSystemsModel(){
 }
 
 /*!
+ * \brief ModelManager::getGroupNamesModel
+ * \return
+ */
+QStringListModel &ModelManager::getGroupNamesModel(){
+    return ModelManager::groupNamesModel;
+}
+
+/*!
+ * \brief ModelManager::getUnitTypesModel
+ * \param dimension
+ * \return
+ */
+QStringListModel &ModelManager::getUnitTypesModel(const DimensionType &dimension){
+    switch(dimension){
+    case eMetric:
+        return ModelManager::metricUnitTypesModel;
+    case eAngular:
+        return ModelManager::angularUnitTypesModel;
+    case eTemperature:
+        return ModelManager::temperatureUnitTypesModel;
+    default:
+        return ModelManager::dummyStringListModel;
+    }
+}
+
+/*!
+ * \brief ModelManager::getPluginNamesModel
+ * \return
+ */
+QStringListModel &ModelManager::getPluginNamesModel(){
+    return ModelManager::pluginNamesModel;
+}
+
+/*!
+ * \brief ModelManager::getExchangeSimpleAsciiNames
+ * \param pluginName
+ * \return
+ */
+QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiNames(const QString &pluginName){
+
+    QPointer<QStringListModel> model(NULL);
+
+    QStringList exchanges;
+    foreach(const sdb::Plugin &plugin, ModelManager::plugins){
+
+        //check if the plugin is the one that was queried and add all simple ascii exchanges
+        if(plugin.name.compare(pluginName) == 0){
+            foreach(const sdb::Exchange &exchange, plugin.exchanges){
+                if(exchange.iid.compare(OiMetaData::iid_ExchangeSimpleAscii) == 0){
+                    exchanges.append(exchange.name);
+                }
+            }
+        }
+
+    }
+    model = new QStringListModel(exchanges);
+
+    return model;
+
+}
+
+/*!
+ * \brief ModelManager::getExchangeSimpleAsciiDelimiters
+ * \param pluginName
+ * \param exchangeName
+ * \return
+ */
+QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiDelimiters(const QString &pluginName, const QString &exchangeName){
+
+    QPointer<QStringListModel> model(NULL);
+
+    QStringList delimiters;
+
+    //get plugin file path
+    QString path;
+    foreach(const sdb::Plugin &plugin, ModelManager::plugins){
+        if(plugin.name.compare(pluginName) == 0){
+            path = plugin.file_path;
+            break;
+        }
+    }
+
+    //get and check exchange plugin
+    QPointer<ExchangeSimpleAscii> exchange = PluginLoader::loadExchangeSimpleAsciiPlugin(path, exchangeName);
+    if(!exchange.isNull()){
+        delimiters = exchange->getSupportedDelimiters();
+    }
+
+    model = new QStringListModel(delimiters);
+
+    return model;
+
+}
+
+/*!
+ * \brief ModelManager::getExchangeSimpleAsciiSupportedGeometries
+ * \param pluginName
+ * \param exchangeName
+ * \return
+ */
+QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiSupportedGeometries(const QString &pluginName, const QString &exchangeName){
+
+    QPointer<QStringListModel> model(NULL);
+
+    QStringList supportedGeometries;
+
+    //get plugin file path
+    QString path;
+    foreach(const sdb::Plugin &plugin, ModelManager::plugins){
+        if(plugin.name.compare(pluginName) == 0){
+            path = plugin.file_path;
+            break;
+        }
+    }
+
+    //get and check exchange plugin
+    QPointer<ExchangeSimpleAscii> exchange = PluginLoader::loadExchangeSimpleAsciiPlugin(path, exchangeName);
+    if(!exchange.isNull()){
+        foreach(const GeometryTypes &type, exchange->getSupportedGeometries()){
+            supportedGeometries.append(getGeometryTypeName(type));
+        }
+    }
+
+    model = new QStringListModel(supportedGeometries);
+
+    return model;
+
+}
+
+/*!
  * \brief ModelManager::coordSystemSetChanged
  */
 void ModelManager::coordSystemSetChanged(){
@@ -166,6 +305,13 @@ void ModelManager::stationSetChanged(){
 }
 
 /*!
+ * \brief ModelManager::availableGroupsChanged
+ */
+void ModelManager::availableGroupsChanged(){
+
+}
+
+/*!
  * \brief ModelManager::updateJob
  * Passes the new job to all static models
  */
@@ -182,6 +328,7 @@ void ModelManager::updateJob(){
     //connect the job to slots in model manager
     QObject::connect(ModelManager::currentJob.data(), SIGNAL(coordSystemSetChanged()), ModelManager::myInstance.data(), SLOT(coordSystemSetChanged()), Qt::AutoConnection);
     QObject::connect(ModelManager::currentJob.data(), SIGNAL(stationSetChanged()), ModelManager::myInstance.data(), SLOT(stationSetChanged()), Qt::AutoConnection);
+    QObject::connect(ModelManager::currentJob.data(), SIGNAL(availableGroupsChanged()), ModelManager::myInstance.data(), SLOT(availableGroupsChanged()), Qt::AutoConnection);
 
 }
 
@@ -272,6 +419,13 @@ void ModelManager::updateNominalSystemsModel(){
 }
 
 /*!
+ * \brief ModelManager::updateGroupsModel
+ */
+void ModelManager::updateGroupsModel(){
+
+}
+
+/*!
  * \brief ModelManager::initFeatureTableModels
  */
 void ModelManager::initFeatureTableModels(){
@@ -279,5 +433,49 @@ void ModelManager::initFeatureTableModels(){
     //assign source models
     ModelManager::featureTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
     ModelManager::featureTableProxyModel.setDynamicSortFilter(true);
+
+}
+
+/*!
+ * \brief ModelManager::initUnitTypesModels
+ */
+void ModelManager::initUnitTypesModels(){
+
+    QStringList metricUnitTypes;
+    metricUnitTypes.append(getUnitTypeName(eUnitInch));
+    metricUnitTypes.append(getUnitTypeName(eUnitMeter));
+    metricUnitTypes.append(getUnitTypeName(eUnitMilliMeter));
+    ModelManager::metricUnitTypesModel.setStringList(metricUnitTypes);
+
+    QStringList angularUnitTypes;
+    angularUnitTypes.append(getUnitTypeName(eUnitArcSeconds));
+    angularUnitTypes.append(getUnitTypeName(eUnitDecimalDegree));
+    angularUnitTypes.append(getUnitTypeName(eUnitGon));
+    angularUnitTypes.append(getUnitTypeName(eUnitMilliRadians));
+    angularUnitTypes.append(getUnitTypeName(eUnitRadiant));
+    ModelManager::angularUnitTypesModel.setStringList(angularUnitTypes);
+
+    QStringList temperatureUnitTypes;
+    temperatureUnitTypes.append(getUnitTypeName(eUnitFahrenheit));
+    temperatureUnitTypes.append(getUnitTypeName(eUnitGrad));
+    temperatureUnitTypes.append(getUnitTypeName(eUnitKelvin));
+    ModelManager::temperatureUnitTypesModel.setStringList(temperatureUnitTypes);
+
+}
+
+/*!
+ * \brief ModelManager::initPluginModels
+ */
+void ModelManager::initPluginModels(){
+
+    //get plugins from database
+    ModelManager::plugins = SystemDbManager::getPlugins();
+
+    //update plugin names model
+    QStringList pluginNames;
+    foreach(const sdb::Plugin &plugin, plugins){
+        pluginNames.append(plugin.name);
+    }
+    ModelManager::pluginNamesModel.setStringList(pluginNames);
 
 }

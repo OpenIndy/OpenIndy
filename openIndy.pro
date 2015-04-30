@@ -48,6 +48,8 @@ INCLUDEPATH += $$PWD/src/util
 INCLUDEPATH += $$PWD/models
 INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/controller/config
+INCLUDEPATH += $$PWD/controller/exchange
+INCLUDEPATH += $$PWD/controller/param
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/ui/delegates
 INCLUDEPATH += $$PWD/ui/dialogs
@@ -134,7 +136,9 @@ SOURCES += \
     models/trafoparamtableproxymodel.cpp \
     controller/plugincopier.cpp \
     controller/pluginloader.cpp \
-    ui/dialogs/pluginloaderdialog.cpp
+    ui/dialogs/pluginloaderdialog.cpp \
+    controller/exchange/dataexchanger.cpp \
+    ui/dialogs/importnominaldialog.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -220,9 +224,13 @@ HEADERS  += \
     src/plugin/plugin.h \
     controller/plugincopier.h \
     controller/pluginloader.h \
-    ui/dialogs/pluginloaderdialog.h
+    ui/dialogs/pluginloaderdialog.h \
+    controller/exchange/dataexchanger.h \
+    ui/dialogs/importnominaldialog.h \
+    controller/param/exchangeParams.h
 
 FORMS    += \
     ui/mainwindow.ui \
     ui/dialogs/createfeaturedialog.ui \
-    ui/dialogs/pluginloaderdialog.ui
+    ui/dialogs/pluginloaderdialog.ui \
+    ui/dialogs/importnominaldialog.ui

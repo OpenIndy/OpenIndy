@@ -43,10 +43,13 @@ const QString &getDisplayAttributeName(const int &attr);
 const QString &getDisplayAttributeName(const FeatureDisplayAttributes &attr);
 const QString &getDisplayAttributeName(const TrafoParamDisplayAttributes &attr);
 
-//##################################################
-//global functions to convert units to default units
-//##################################################
+//###############################
+//global functions to query units
+//###############################
 
 double convertToDefault(const double &value, const UnitType &type);
+
+const QString &getUnitTypeName(const UnitType &type);
+UnitType getUnitTypeEnum(const QString &name);
 
 #endif // UTIL_H

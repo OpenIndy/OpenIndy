@@ -96,7 +96,7 @@ signals:
 
     void sendMessage(const QString &msg);
     void updateProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
-    void importFinished(const bool &success, const QList<QPointer<FeatureWrapper> > &features);
+    void importFinished(const bool &success);
     void exportFinished(const bool &success);
 
 protected:

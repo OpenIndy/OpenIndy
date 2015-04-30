@@ -235,3 +235,10 @@ void MainWindow::on_actionCreate_ellipse_triggered(){
 void MainWindow::on_actionLoad_plugins_triggered(){
     this->pluginLoaderDialog.show();
 }
+
+/*!
+ * \brief MainWindow::on_action_importNominals_triggered
+ */
+void MainWindow::on_action_importNominals_triggered(){
+    this->importNominalDialog.show();
+}
