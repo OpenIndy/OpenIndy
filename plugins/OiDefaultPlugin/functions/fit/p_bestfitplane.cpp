@@ -105,21 +105,30 @@ bool BestFitPlane::setUpResult(Plane &plane){
             }
         }
         double d = (sumXN + sumYN + sumZN) / (double)count;
-        //normal vector (check that plane always points in the same direction)
         n = n.normalize();
-        if(this->referenceDirection.getSize() == 0){ //if this function is executed the first time
-            this->referenceDirection = n;
-        }
-        double absR = qSqrt(n.getAt(0) * n.getAt(0) + n.getAt(1) * n.getAt(1) + n.getAt(2) * n.getAt(2));
-        double absRef = qSqrt(this->referenceDirection.getAt(0) * this->referenceDirection.getAt(0)
-                              + this->referenceDirection.getAt(1) * this->referenceDirection.getAt(1)
-                              + this->referenceDirection.getAt(2) * this->referenceDirection.getAt(2));
-        double refH;
-        OiVec::dot(refH, n, this->referenceDirection);
-        double angle = qAcos( refH / (absR * absRef) );
-        if(angle > PI || angle < -PI){ //switch direction
+
+
+        //define normal vector of the plane by the first three points
+        OiVec ab = this->observations.at(1)->myXyz - this->observations.at(0)->myXyz;
+        OiVec ac = this->observations.at(2)->myXyz - this->observations.at(0)->myXyz;
+        OiVec ab_3(3);
+        ab_3.setAt(0, ab.getAt(0));
+        ab_3.setAt(1, ab.getAt(1));
+        ab_3.setAt(2, ab.getAt(2));
+        OiVec ac_3(3);
+        ac_3.setAt(0, ac.getAt(0));
+        ac_3.setAt(1, ac.getAt(1));
+        ac_3.setAt(2, ac.getAt(2));
+        OiVec direction(3);
+        OiVec::cross(direction, ab_3, ac_3);
+        direction = direction.normalize();
+        double angle = 0.0; //angle between n and direction
+        OiVec::dot(angle, n, direction);
+        angle = qAbs(qAcos(angle));
+        if(angle > (PI / 2.0)){
             n = n * -1.0;
         }
+
         n.add(1.0);
         plane.ijk = n;
         plane.xyz.setAt(0, sumX/(double)count);

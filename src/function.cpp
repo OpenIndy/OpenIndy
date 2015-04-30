@@ -265,6 +265,7 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
     while (intIterator.hasNext()) {
         intIterator.next();
         QDomElement intParam = xmlDoc.createElement("parameter");
+        intParam.setAttribute("name", intIterator.key());
         intParam.setAttribute("value", intIterator.value());
         integerParams.appendChild(intParam);
     }
@@ -276,6 +277,7 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
     while (doubleIterator.hasNext()) {
         doubleIterator.next();
         QDomElement doubleParam = xmlDoc.createElement("parameter");
+        doubleParam.setAttribute("name", doubleIterator.key());
         doubleParam.setAttribute("value", doubleIterator.value());
         doubleParams.appendChild(doubleParam);
     }
@@ -287,6 +289,7 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
     while (stringIterator.hasNext()) {
         stringIterator.next();
         QDomElement stringParam = xmlDoc.createElement("parameter");
+        stringParam.setAttribute("name", stringIterator.key());
         stringParam.setAttribute("value", stringIterator.value());
         stringParams.appendChild(stringParam);
     }
@@ -318,7 +321,7 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
         QDomNodeList paramList = integerParameters.childNodes();
         for(int i = 0; i < paramList.size(); i++){
             QDomElement integerParameter = paramList.at(i).toElement();
-            if(integerParameter.tagName().compare("parameter") && integerParameter.hasAttribute("value")
+            if(integerParameter.tagName().compare("parameter") == 0 && integerParameter.hasAttribute("value")
                     && integerParameter.hasAttribute("name")){
                 this->myConfiguration.intParameter.insert(integerParameter.attribute("name"), integerParameter.attribute("value").toInt());
             }
@@ -331,7 +334,7 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
         QDomNodeList paramList = doubleParameters.childNodes();
         for(int i = 0; i < paramList.size(); i++){
             QDomElement doubleParameter = paramList.at(i).toElement();
-            if(doubleParameter.tagName().compare("parameter") && doubleParameter.hasAttribute("value")
+            if(doubleParameter.tagName().compare("parameter") == 0 && doubleParameter.hasAttribute("value")
                     && doubleParameter.hasAttribute("name")){
                 this->myConfiguration.doubleParameter.insert(doubleParameter.attribute("name"), doubleParameter.attribute("value").toDouble());
             }
@@ -344,12 +347,14 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
         QDomNodeList paramList = stringParameters.childNodes();
         for(int i = 0; i < paramList.size(); i++){
             QDomElement stringParameter = paramList.at(i).toElement();
-            if(stringParameter.tagName().compare("parameter") && stringParameter.hasAttribute("value")
+            if(stringParameter.tagName().compare("parameter") == 0 && stringParameter.hasAttribute("value")
                     && stringParameter.hasAttribute("name")){
                 this->myConfiguration.stringParameter.insert(stringParameter.attribute("name"), stringParameter.attribute("value"));
             }
         }
     }
+
+    this->myConfiguration.functionConfigSet = true;
 
     return true;
 
