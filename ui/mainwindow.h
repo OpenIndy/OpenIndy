@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <QString>
 #include <QIODevice>
+#include <QListView>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -15,6 +16,7 @@
 #include "createfeaturedialog.h"
 #include "pluginloaderdialog.h"
 #include "importnominaldialog.h"
+#include "loadingdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -75,6 +77,13 @@ signals:
 
 private slots:
 
+    //#############################
+    //tasks triggered by controller
+    //#############################
+
+    void importNominalsStarted();
+    void importNominalsFinished(const bool &success);
+
     //#########################
     //actions triggered by user
     //#########################
@@ -100,8 +109,10 @@ private slots:
     void on_actionCreate_slotted_hole_triggered();
     void on_actionCreate_ellipse_triggered();
 
-    //plugin dialogs
+    //plugin actions
     void on_actionLoad_plugins_triggered();
+
+    //import export actions
     void on_action_importNominals_triggered();
 
 private:
@@ -132,6 +143,7 @@ private:
     CreateFeatureDialog createFeatureDialog;
     PluginLoaderDialog pluginLoaderDialog;
     ImportNominalDialog importNominalDialog;
+    LoadingDialog loadingDialog;
 
 };
 

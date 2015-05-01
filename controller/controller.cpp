@@ -15,6 +15,9 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize display configs
     this->initDisplayConfigs();
 
+    //connect helper objects
+    this->connectDataExchanger();
+
 }
 
 /*!
@@ -40,7 +43,15 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
  * \param params
  */
 void Controller::importNominals(const ExchangeParams &params){
-    this->exchanger.importData(params);
+
+    //try to start import nominal task
+    if(!this->exchanger.importData(params)){
+        return;
+    }
+
+    //show loading dialog during import
+    emit this->nominalImportStarted();
+
 }
 
 /*!
@@ -111,83 +122,83 @@ void Controller::setJob(const QPointer<OiJob> &job){
     this->job = job;
 
     //active feature changes
-    QObject::connect(this->job.data(), SIGNAL(activeFeatureChanged()), this, SIGNAL(activeFeatureChanged()), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(activeStationChanged()), this, SIGNAL(activeStationChanged()), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(activeCoordinateSystemChanged()), this, SIGNAL(activeCoordinateSystemChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::activeFeatureChanged, this, &Controller::activeFeatureChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::activeStationChanged, this, &Controller::activeStationChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::activeCoordinateSystemChanged, this, &Controller::activeCoordinateSystemChanged, Qt::AutoConnection);
 
     //feature(s) added or removed
-    QObject::connect(this->job.data(), SIGNAL(featureSetChanged()), this, SIGNAL(featureSetChanged()), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(coordSystemSetChanged()), this, SIGNAL(coordSystemSetChanged()), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(stationSetChanged()), this, SIGNAL(stationSetChanged()), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(trafoParamSetChanged()), this, SIGNAL(trafoParamSetChanged()), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(geometrySetChanged()), this, SIGNAL(geometrySetChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::featureSetChanged, this, &Controller::featureSetChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::coordSystemSetChanged, this, &Controller::coordSystemSetChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::stationSetChanged, this, &Controller::stationSetChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::trafoParamSetChanged, this, &Controller::trafoParamSetChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::geometrySetChanged, this, &Controller::geometrySetChanged, Qt::AutoConnection);
 
     //group(s) added or removed
-    QObject::connect(this->job.data(), SIGNAL(availableGroupsChanged()), this, SIGNAL(availableGroupsChanged()), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(activeGroupChanged()), this, SIGNAL(activeGroupChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::availableGroupsChanged, this, &Controller::availableGroupsChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::activeGroupChanged, this, &Controller::activeGroupChanged, Qt::AutoConnection);
 
     //general feature attributes changed
-    QObject::connect(this->job.data(), SIGNAL(featureAttributesChanged()), this, SIGNAL(featureAttributesChanged()), Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::featureAttributesChanged, this, &Controller::featureAttributesChanged, Qt::AutoConnection);
 
     //feature specific attributes changed
-    QObject::connect(this->job.data(), SIGNAL(featureNameChanged(const int&, const QString&)),
-                     this, SIGNAL(featureNameChanged(const int&, const QString&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(featureGroupChanged(const int&, const QString&)),
-                     this, SIGNAL(featureGroupChanged(const int&, const QString&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(featureCommentChanged(const int&)),
-                     this, SIGNAL(featureCommentChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(featureIsUpdatedChanged(const int&)),
-                     this, SIGNAL(featureIsUpdatedChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(featureIsSolvedChanged(const int&)),
-                     this, SIGNAL(featureIsSolvedChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(featureFunctionsChanged(const int&)),
-                     this, SIGNAL(featureFunctionsChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(featureUsedForChanged(const int&)),
-                     this, SIGNAL(featureUsedForChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(featurePreviouslyNeededChanged(const int&)),
-                     this, SIGNAL(featurePreviouslyNeededChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::featureNameChanged,
+                     this, &Controller::featureNameChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::featureGroupChanged,
+                     this, &Controller::featureGroupChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::featureCommentChanged,
+                     this, &Controller::featureCommentChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::featureIsUpdatedChanged,
+                     this, &Controller::featureIsUpdatedChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::featureIsSolvedChanged,
+                     this, &Controller::featureIsSolvedChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::featureFunctionsChanged,
+                     this, &Controller::featureFunctionsChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::featureUsedForChanged,
+                     this, &Controller::featureUsedForChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::featurePreviouslyNeededChanged,
+                     this, &Controller::featurePreviouslyNeededChanged, Qt::AutoConnection);
 
     //geometry specific attributes changed
-    QObject::connect(this->job.data(), SIGNAL(geometryIsCommonChanged(const int&)),
-                     this, SIGNAL(geometryIsCommonChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(geometryNominalsChanged(const int&)),
-                     this, SIGNAL(geometryNominalsChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(geometryActualChanged(const int&)),
-                     this, SIGNAL(geometryActualChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(geometryObservationsChanged(const int&)),
-                     this, SIGNAL(geometryObservationsChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(geometryNominalSystemChanged(const int&)),
-                     this, SIGNAL(geometryNominalSystemChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(geometryStatisticChanged(const int&)),
-                     this, SIGNAL(geometryStatisticChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(geometrySimulationDataChanged(const int&)),
-                     this, SIGNAL(geometrySimulationDataChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(geometryMeasurementConfigChanged(const int&)),
-                     this, SIGNAL(geometryMeasurementConfigChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::geometryIsCommonChanged,
+                     this, &Controller::geometryIsCommonChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::geometryNominalsChanged,
+                     this, &Controller::geometryNominalsChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::geometryActualChanged,
+                     this, &Controller::geometryActualChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::geometryObservationsChanged,
+                     this, &Controller::geometryObservationsChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::geometryNominalSystemChanged,
+                     this, &Controller::geometryNominalSystemChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::geometryStatisticChanged,
+                     this, &Controller::geometryStatisticChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::geometrySimulationDataChanged,
+                     this, &Controller::geometrySimulationDataChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::geometryMeasurementConfigChanged,
+                     this, &Controller::geometryMeasurementConfigChanged, Qt::AutoConnection);
 
     //coordinate system specific attributes changed
-    QObject::connect(this->job.data(), SIGNAL(systemObservationsChanged(const int&, const int&)),
-                     this, SIGNAL(systemObservationsChanged(const int&, const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(systemTrafoParamsChanged(const int&)),
-                     this, SIGNAL(systemTrafoParamsChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(systemsNominalsChanged(const int&)),
-                     this, SIGNAL(systemsNominalsChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::systemObservationsChanged,
+                     this, &Controller::systemObservationsChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::systemTrafoParamsChanged,
+                     this, &Controller::systemTrafoParamsChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::systemsNominalsChanged,
+                     this, &Controller::systemsNominalsChanged, Qt::AutoConnection);
 
     //station specific attributes changed
-    QObject::connect(this->job.data(), SIGNAL(stationSensorChanged(const int&)),
-                     this, SIGNAL(stationSensorChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::stationSensorChanged,
+                     this, &Controller::stationSensorChanged, Qt::AutoConnection);
 
     //transformation parameter specific attributes changed
-    QObject::connect(this->job.data(), SIGNAL(trafoParamParametersChanged(const int&)),
-                     this, SIGNAL(trafoParamParametersChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(trafoParamSystemsChanged(const int&)),
-                     this, SIGNAL(trafoParamSystemsChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(trafoParamIsUsedChanged(const int&)),
-                     this, SIGNAL(trafoParamIsUsedChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(trafoParamValidTimeChanged(const int&)),
-                     this, SIGNAL(trafoParamValidTimeChanged(const int&)), Qt::AutoConnection);
-    QObject::connect(this->job.data(), SIGNAL(trafoParamIsMovementChanged(const int&)),
-                     this, SIGNAL(trafoParamIsMovementChanged(const int&)), Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::trafoParamParametersChanged,
+                     this, &Controller::trafoParamParametersChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::trafoParamSystemsChanged,
+                     this, &Controller::trafoParamSystemsChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::trafoParamIsUsedChanged,
+                     this, &Controller::trafoParamIsUsedChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::trafoParamValidTimeChanged,
+                     this, &Controller::trafoParamValidTimeChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::trafoParamIsMovementChanged,
+                     this, &Controller::trafoParamIsMovementChanged, Qt::AutoConnection);
 
     //pass the new job around
     ModelManager::setCurrentJob(this->job);
@@ -210,5 +221,15 @@ void Controller::initDisplayConfigs(){
     ModelManager::setFeatureTableColumnConfig(featureTableColumnConfig);
     ModelManager::setTrafoParamColumnConfig(trafoParamTableColumnConfig);
     ModelManager::setParameterDisplayConfig(parameterDisplayConfig);
+
+}
+
+/*!
+ * \brief Controller::connectDataExchanger
+ */
+void Controller::connectDataExchanger(){
+
+    QObject::connect(&this->exchanger, &DataExchanger::importFinished, this, &Controller::nominalImportFinished, Qt::AutoConnection);
+    QObject::connect(&this->exchanger, &DataExchanger::updateProgress, this, &Controller::nominalImportProgressUpdated, Qt::AutoConnection);
 
 }

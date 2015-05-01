@@ -138,7 +138,8 @@ SOURCES += \
     controller/pluginloader.cpp \
     ui/dialogs/pluginloaderdialog.cpp \
     controller/exchange/dataexchanger.cpp \
-    ui/dialogs/importnominaldialog.cpp
+    ui/dialogs/importnominaldialog.cpp \
+    ui/dialogs/loadingdialog.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -227,10 +228,12 @@ HEADERS  += \
     ui/dialogs/pluginloaderdialog.h \
     controller/exchange/dataexchanger.h \
     ui/dialogs/importnominaldialog.h \
-    controller/param/exchangeParams.h
+    controller/param/exchangeParams.h \
+    ui/dialogs/loadingdialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
     ui/dialogs/createfeaturedialog.ui \
     ui/dialogs/pluginloaderdialog.ui \
-    ui/dialogs/importnominaldialog.ui
+    ui/dialogs/importnominaldialog.ui \
+    ui/dialogs/loadingdialog.ui

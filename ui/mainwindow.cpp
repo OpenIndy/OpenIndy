@@ -29,12 +29,43 @@ MainWindow::~MainWindow(){
 }
 
 /*!
+ * \brief MainWindow::importNominalsStarted
+ * Triggered by Controller whenever an nominal import task has been started
+ */
+void MainWindow::importNominalsStarted(){
+    this->loadingDialog.show();
+}
+
+/*!
+ * \brief MainWindow::importNominalsFinished
+ * Triggered by Controller whenever an import nominals task has been finished
+ * \param success
+ */
+void MainWindow::importNominalsFinished(const bool &success){
+
+    //print import success to console
+    if(success){
+        Console::getInstance()->addLine("Nominals successfully imported");
+    }else{
+        Console::getInstance()->addLine("Nominals not imported successfully");
+    }
+
+    this->loadingDialog.close();
+
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
 
-    QObject::connect(this, SIGNAL(addFeatures(const FeatureAttributes&)), &this->control, SLOT(addFeatures(const FeatureAttributes&)));
-    QObject::connect(this, SIGNAL(importNominals(const ExchangeParams&)), &this->control, SLOT(importNominals(const ExchangeParams&)));
+    //connect actions triggered by user to slots in controller
+    QObject::connect(this, &MainWindow::addFeatures, &this->control, &Controller::addFeatures, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::importNominals, &this->control, &Controller::importNominals, Qt::AutoConnection);
+
+    //connect actions triggered by controller to slots in main window
+    QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::nominalImportFinished, this, &MainWindow::importNominalsFinished, Qt::AutoConnection);
 
 }
 
@@ -44,13 +75,16 @@ void MainWindow::connectController(){
 void MainWindow::connectDialogs(){
 
     //connect create feature dialog
-    QObject::connect(&this->createFeatureDialog, SIGNAL(addFeatures(const FeatureAttributes&)), this, SIGNAL(addFeatures(const FeatureAttributes&)));
+    QObject::connect(&this->createFeatureDialog, &CreateFeatureDialog::addFeatures, this, &MainWindow::addFeatures, Qt::AutoConnection);
 
     //connect console
-    QObject::connect(Console::getInstance().data(), SIGNAL(lineAdded()), this->ui->listView_console, SLOT(scrollToBottom()));
+    QObject::connect(Console::getInstance().data(), &Console::lineAdded, this->ui->listView_console, &QListView::scrollToBottom, Qt::AutoConnection);
 
     //connect import dialogs
-    QObject::connect(&this->importNominalDialog, SIGNAL(startImport(const ExchangeParams&)), this, SIGNAL(importNominals(const ExchangeParams&)));
+    QObject::connect(&this->importNominalDialog, &ImportNominalDialog::startImport, this, &MainWindow::importNominals, Qt::AutoConnection);
+
+    //connect loading dialog
+    QObject::connect(&this->control, &Controller::nominalImportProgressUpdated, &this->loadingDialog, &LoadingDialog::updateProgress, Qt::AutoConnection);
 
 }
 
@@ -74,9 +108,9 @@ void MainWindow::assignModels(){
 void MainWindow::initFeatureTableViews(){
 
     //resize rows and columns to table view contents
-    this->ui->tableView_features->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->ui->tableView_features->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     this->ui->tableView_features->verticalHeader()->setDefaultSectionSize(22);
-    this->ui->tableView_trafoParams->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->ui->tableView_trafoParams->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
 
 }

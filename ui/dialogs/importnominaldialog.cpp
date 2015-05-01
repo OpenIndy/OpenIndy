@@ -160,4 +160,6 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked(){
     //start the import
     emit this->startImport(params);
 
+    this->close();
+
 }

@@ -18,6 +18,7 @@ class CreateFeatureDialog;
 class CreateFeatureDialog : public QDialog
 {
     Q_OBJECT
+
 public:
     explicit CreateFeatureDialog(QWidget *parent = 0);
     ~CreateFeatureDialog();

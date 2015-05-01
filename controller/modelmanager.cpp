@@ -326,9 +326,9 @@ void ModelManager::updateJob(){
     ModelManager::featureTableModel.setCurrentJob(ModelManager::currentJob);
 
     //connect the job to slots in model manager
-    QObject::connect(ModelManager::currentJob.data(), SIGNAL(coordSystemSetChanged()), ModelManager::myInstance.data(), SLOT(coordSystemSetChanged()), Qt::AutoConnection);
-    QObject::connect(ModelManager::currentJob.data(), SIGNAL(stationSetChanged()), ModelManager::myInstance.data(), SLOT(stationSetChanged()), Qt::AutoConnection);
-    QObject::connect(ModelManager::currentJob.data(), SIGNAL(availableGroupsChanged()), ModelManager::myInstance.data(), SLOT(availableGroupsChanged()), Qt::AutoConnection);
+    QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);
+    QObject::connect(ModelManager::currentJob.data(), &OiJob::stationSetChanged, ModelManager::myInstance.data(), &ModelManager::stationSetChanged, Qt::AutoConnection);
+    QObject::connect(ModelManager::currentJob.data(), &OiJob::availableGroupsChanged, ModelManager::myInstance.data(), &ModelManager::availableGroupsChanged, Qt::AutoConnection);
 
 }
 

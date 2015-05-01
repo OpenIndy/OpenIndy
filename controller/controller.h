@@ -102,6 +102,14 @@ signals:
     void trafoParamValidTimeChanged(const int &featureId);
     void trafoParamIsMovementChanged(const int &featureId);
 
+    //#################################
+    //import export task status changes
+    //#################################
+
+    void nominalImportStarted();
+    void nominalImportProgressUpdated(const int &progress, const QString &msg);
+    void nominalImportFinished(const bool &success);
+
 private:
 
     //##############
@@ -112,6 +120,12 @@ private:
     void setJob(const QPointer<OiJob> &job);
 
     void initDisplayConfigs();
+
+    //######################
+    //connect helper objects
+    //######################
+
+    void connectDataExchanger();
 
 private:
 
