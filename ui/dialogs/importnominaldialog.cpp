@@ -74,7 +74,7 @@ void ImportNominalDialog::on_pushButton_file_sa_clicked(){
     QString path = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                      "",
                                                      tr("Files (*.*)"));
-    ui->lineEdit_path->setText(path);
+    this->ui->lineEdit_file_sa->setText(path);
 
 }
 
@@ -144,6 +144,7 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked(){
 
     //set params
     ExchangeParams params;
+    params.exchangeFilePath = this->ui->lineEdit_file_sa->text();
     params.delimiter = this->ui->comboBox_separator_sa->currentText();
     params.exchangeName = this->ui->comboBox_exchange_sa->currentText();
     params.groupName = this->ui->comboBox_groupNames->currentText();
@@ -152,7 +153,9 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked(){
     params.pluginName = this->ui->comboBox_plugin_sa->currentText();
     params.skipFirstLine = this->ui->checkBox_skipFirst_sa->isChecked();
     params.typeOfGeometry = getGeometryTypeEnum(this->ui->comboBox_geometry_sa->currentText());
-
+    params.units.insert(eMetric, getUnitTypeEnum(this->ui->comboBox_distance_sa->currentText()));
+    params.units.insert(eAngular, getUnitTypeEnum(this->ui->comboBox_angle_sa->currentText()));
+    params.units.insert(eTemperature, getUnitTypeEnum(this->ui->comboBox_temperature_sa->currentText()));
 
     //start the import
     emit this->startImport(params);

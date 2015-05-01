@@ -34,6 +34,7 @@ MainWindow::~MainWindow(){
 void MainWindow::connectController(){
 
     QObject::connect(this, SIGNAL(addFeatures(const FeatureAttributes&)), &this->control, SLOT(addFeatures(const FeatureAttributes&)));
+    QObject::connect(this, SIGNAL(importNominals(const ExchangeParams&)), &this->control, SLOT(importNominals(const ExchangeParams&)));
 
 }
 
@@ -47,6 +48,9 @@ void MainWindow::connectDialogs(){
 
     //connect console
     QObject::connect(Console::getInstance().data(), SIGNAL(lineAdded()), this->ui->listView_console, SLOT(scrollToBottom()));
+
+    //connect import dialogs
+    QObject::connect(&this->importNominalDialog, SIGNAL(startImport(const ExchangeParams&)), this, SIGNAL(importNominals(const ExchangeParams&)));
 
 }
 

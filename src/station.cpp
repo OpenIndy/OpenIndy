@@ -4,6 +4,7 @@
 #include "sensorcontrol.h"
 #include "reading.h"
 #include "sensor.h"
+#include "oijob.h"
 /*
 
 Station::Station(QString name)
@@ -663,6 +664,69 @@ void Station::stopThread(){
  */
 void Station::startThread(){
     stationThread.start();
+}
+
+/*!
+ * \brief Station::setUpFeatureId
+ * Generate a new unique id when the current job was set
+ */
+void Station::setUpFeatureId(){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //generate unique id for station's position
+    if(!this->position.isNull()){
+        this->position->id = this->job->generateUniqueId();
+    }
+
+    //generate unique id for station's coordinate system
+    if(!this->stationSystem.isNull()){
+        this->stationSystem->id = this->job->generateUniqueId();
+    }
+
+    //generate unique ids for station's readings
+    foreach(const QPointer<Reading> &reading, this->cartesianReadings){
+        if(!reading.isNull()){
+            reading->id = this->job->generateUniqueId();
+        }
+    }
+    foreach(const QPointer<Reading> &reading, this->polarReadings){
+        if(!reading.isNull()){
+            reading->id = this->job->generateUniqueId();
+        }
+    }
+    foreach(const QPointer<Reading> &reading, this->directionReadings){
+        if(!reading.isNull()){
+            reading->id = this->job->generateUniqueId();
+        }
+    }
+    foreach(const QPointer<Reading> &reading, this->distanceReadings){
+        if(!reading.isNull()){
+            reading->id = this->job->generateUniqueId();
+        }
+    }
+    foreach(const QPointer<Reading> &reading, this->temperatureRadings){
+        if(!reading.isNull()){
+            reading->id = this->job->generateUniqueId();
+        }
+    }
+    foreach(const QPointer<Reading> &reading, this->levelReadings){
+        if(!reading.isNull()){
+            reading->id = this->job->generateUniqueId();
+        }
+    }
+    foreach(const QPointer<Reading> &reading, this->undefinedReadings){
+        if(!reading.isNull()){
+            reading->id = this->job->generateUniqueId();
+        }
+    }
+
+    //feature specific
+    Feature::setUpFeatureId();
+
 }
 
 /*!

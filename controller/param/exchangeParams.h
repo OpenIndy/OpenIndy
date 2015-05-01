@@ -21,6 +21,9 @@ class ExchangeParams
 {
 public:
 
+    //file path of the file that shall be im- or exported
+    QString exchangeFilePath;
+
     //plugin information
     QString pluginName; //name of the plugin
     QString exchangeName; //name of the exchange implementation
@@ -30,7 +33,7 @@ public:
     QList<QPointer<FeatureWrapper> > exportFeatures; //features that shall be exported
     bool exportObservations; //true if observations shall be exported
     QString groupName;
-    QPointer<CoordinateSystem> nominalSystem;
+    QString nominalSystem;
     QMap<DimensionType, UnitType> units;
 
     //simple ascii parameters

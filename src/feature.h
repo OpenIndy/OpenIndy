@@ -177,6 +177,12 @@ signals:
 
 protected:
 
+    //######################################
+    //update feature id when the job was set
+    //######################################
+
+    virtual void setUpFeatureId();
+
     //##################
     //feature attributes
     //##################
@@ -207,6 +213,8 @@ protected:
     //#############################################
     //pointer to OiJob that this feature belongs to
     //#############################################
+
+    void setJob(const QPointer<OiJob> &job);
 
     QPointer<OiJob> job;
 

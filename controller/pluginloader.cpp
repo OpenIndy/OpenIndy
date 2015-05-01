@@ -136,7 +136,9 @@ QPointer<Sensor> PluginLoader::loadSensorPlugin(const QString &path, const QStri
     if(plugin){
         Plugin *sensorFactory = qobject_cast<Plugin *>(plugin);
         sensor = sensorFactory->createSensor(name);
-        sensor->init();
+        if(!sensor.isNull()){
+            sensor->init();
+        }
     }else{
         Console::getInstance()->addLine(QString("Cannot load selected sensor: %1").arg(pluginLoader.errorString()));
     }
@@ -160,7 +162,9 @@ QPointer<Function> PluginLoader::loadFunctionPlugin(const QString &path, const Q
     if(plugin){
         Plugin *functionFactory = qobject_cast<Plugin *>(plugin);
         function = functionFactory->createFunction(name);
-        function->init();
+        if(!function.isNull()){
+            function->init();
+        }
     }else{
         Console::getInstance()->addLine(QString("Cannot load selected function: %1").arg(pluginLoader.errorString()));
     }
@@ -184,7 +188,9 @@ QPointer<SimulationModel> PluginLoader::loadSimulationPlugin(const QString &path
     if(plugin){
         Plugin *simulationFactory = qobject_cast<Plugin *>(plugin);
         simulation = simulationFactory->createSimulation(name);
-        simulation->init();
+        if(!simulation.isNull()){
+            simulation->init();
+        }
     }else{
         Console::getInstance()->addLine(QString("Cannot load selected simulation: %1").arg(pluginLoader.errorString()));
     }
@@ -231,7 +237,9 @@ QPointer<Tool> PluginLoader::loadToolPlugin(const QString &path, const QString &
     if(plugin){
         Plugin *toolFactory = qobject_cast<Plugin *>(plugin);
         tool = toolFactory->createTool(name);
-        tool->init();
+        if(!tool.isNull()){
+            tool->init();
+        }
     }else{
         Console::getInstance()->addLine(QString("Cannot load selected tool: %1").arg(pluginLoader.errorString()));
     }
@@ -255,7 +263,9 @@ QPointer<ExchangeSimpleAscii> PluginLoader::loadExchangeSimpleAsciiPlugin(const 
     if(plugin){
         Plugin *exchangeFactory = qobject_cast<Plugin *>(plugin);
         exchange = exchangeFactory->createSimpleAsciiExchange(name);
-        exchange->init();
+        if(!exchange.isNull()){
+            exchange->init();
+        }
     }else{
         Console::getInstance()->addLine(QString("Cannot load selected simple ascii exchange: %1").arg(pluginLoader.errorString()));
     }
@@ -279,7 +289,9 @@ QPointer<ExchangeDefinedFormat> PluginLoader::loadExchangeDefinedFormatPlugin(co
     if(plugin){
         Plugin *exchangeFactory = qobject_cast<Plugin *>(plugin);
         exchange = exchangeFactory->createDefinedFormatExchange(name);
-        exchange->init();
+        if(!exchange.isNull()){
+            exchange->init();
+        }
     }else{
         Console::getInstance()->addLine(QString("Cannot load selected defined format exchange: %1").arg(pluginLoader.errorString()));
     }
@@ -303,7 +315,9 @@ QList<QPointer<Sensor> > PluginLoader::loadSensorPlugins(const QString &path){
         Plugin *sensorFactory = qobject_cast<Plugin *>(plugin);
         sensorList = sensorFactory->createSensors();
         foreach(const QPointer<Sensor> &sensor, sensorList){
-            sensor->init();
+            if(!sensor.isNull()){
+                sensor->init();
+            }
         }
     }else{
         Console::getInstance()->addLine(QString("Cannot load sensors: %1").arg(pluginLoader.errorString()));
@@ -328,7 +342,9 @@ QList<QPointer<Function> > PluginLoader::loadFunctionPlugins(const QString &path
         Plugin *functionFactory = qobject_cast<Plugin *>(plugin);
         functionList = functionFactory->createFunctions();
         foreach(const QPointer<Function> &function, functionList){
-            function->init();
+            if(!function.isNull()){
+                function->init();
+            }
         }
     }else{
         Console::getInstance()->addLine(QString("Cannot load functions: %1").arg(pluginLoader.errorString()));
@@ -353,7 +369,9 @@ QList<QPointer<SimulationModel> > PluginLoader::loadSimulationPlugins(const QStr
         Plugin *simulationFactory = qobject_cast<Plugin *>(plugin);
         simulationList = simulationFactory->createSimulations();
         foreach(const QPointer<SimulationModel> &simulation, simulationList){
-            simulation->init();
+            if(!simulation.isNull()){
+                simulation->init();
+            }
         }
     }else{
         Console::getInstance()->addLine(QString("Cannot load simulations: %1").arg(pluginLoader.errorString()));
@@ -400,7 +418,9 @@ QList<QPointer<Tool> > PluginLoader::loadToolPlugins(const QString &path){
         Plugin *toolFactory = qobject_cast<Plugin *>(plugin);
         toolList = toolFactory->createTools();
         foreach(const QPointer<Tool> &tool, toolList){
-            tool->init();
+            if(!tool.isNull()){
+                tool->init();
+            }
         }
     }else{
         Console::getInstance()->addLine(QString("Cannot load tools: %1").arg(pluginLoader.errorString()));
@@ -425,7 +445,9 @@ QList<QPointer<ExchangeSimpleAscii> > PluginLoader::loadExchangeSimpleAsciiPlugi
         Plugin *exchangeFactory = qobject_cast<Plugin *>(plugin);
         exchangeList = exchangeFactory->createSimpleAsciiExchanges();
         foreach(const QPointer<ExchangeSimpleAscii> &exchange, exchangeList){
-            exchange->init();
+            if(!exchange.isNull()){
+                exchange->init();
+            }
         }
     }else{
         Console::getInstance()->addLine(QString("Cannot load simple ascii exchanges: %1").arg(pluginLoader.errorString()));
@@ -450,7 +472,9 @@ QList<QPointer<ExchangeDefinedFormat> > PluginLoader::loadExchangeDefinedFormatP
         Plugin *exchangeFactory = qobject_cast<Plugin *>(plugin);
         exchangeList = exchangeFactory->createDefinedFormatExchanges();
         foreach(const QPointer<ExchangeDefinedFormat> &exchange, exchangeList){
-            exchange->init();
+            if(!exchange.isNull()){
+                exchange->init();
+            }
         }
     }else{
         Console::getInstance()->addLine(QString("Cannot load defined format exchanges: %1").arg(pluginLoader.errorString()));

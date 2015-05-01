@@ -680,8 +680,15 @@ const QList<QPointer<Function> > &Feature::getFunctions() const{
  */
 void Feature::addFunction(const QPointer<Function> &function){
     if(!function.isNull()){
+
+        //let the current job generate a unique id if it is valid
+        if(!this->job.isNull()){
+            function->id = this->job->generateUniqueId();
+        }
+
         this->functionList.append(function);
         emit this->featureFunctionListChanged(this->id);
+
     }
 }
 
@@ -1483,4 +1490,45 @@ QString Feature::getDisplayValidTime() const{
  */
 QString Feature::getDisplayIsMovement() const{
     return QString("-/-");
+}
+
+/*!
+ * \brief Feature::setUpFeatureId
+ * Generate a new unique id when the current job was set
+ */
+void Feature::setUpFeatureId(){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //let the job generate a new unique id for this feature
+    this->id = job->generateUniqueId();
+
+    //generate unique ids for the feature's functions
+    foreach(const QPointer<Function> &function, this->functionList){
+        if(!function.isNull()){
+            function->id = this->job->generateUniqueId();
+        }
+    }
+
+}
+
+/*!
+ * \brief Feature::setJob
+ * Called by OiJob. Sets the current job this feature belongs to and checks its id
+ * \param job
+ */
+void Feature::setJob(const QPointer<OiJob> &job){
+
+    //check and set job
+    if(job.isNull()){
+        return;
+    }
+    this->job = job;
+
+    //generate feature id
+    this->setUpFeatureId();
+
 }

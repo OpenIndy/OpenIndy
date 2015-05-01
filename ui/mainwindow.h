@@ -10,6 +10,7 @@
 #include "featureattributes.h"
 #include "modelmanager.h"
 #include "console.h"
+#include "exchangeParams.h"
 
 #include "createfeaturedialog.h"
 #include "pluginloaderdialog.h"
@@ -64,6 +65,9 @@ signals:
     void recalcActiveFeature();
     void recalcFeature(const int &featureId);
     void recalcTrafoParam(const int &featureId);
+
+    //import or export features
+    void importNominals(const ExchangeParams &params);
 
     //save or load projects
     void saveProject();

@@ -36,6 +36,14 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
 }
 
 /*!
+ * \brief Controller::importNominals
+ * \param params
+ */
+void Controller::importNominals(const ExchangeParams &params){
+    this->exchanger.importData(params);
+}
+
+/*!
  * \brief Controller::setFeatureTableColumnConfig
  * \param config
  */
@@ -181,8 +189,9 @@ void Controller::setJob(const QPointer<OiJob> &job){
     QObject::connect(this->job.data(), SIGNAL(trafoParamIsMovementChanged(const int&)),
                      this, SIGNAL(trafoParamIsMovementChanged(const int&)), Qt::AutoConnection);
 
-    //pass the new job to model manager
+    //pass the new job around
     ModelManager::setCurrentJob(this->job);
+    this->exchanger.setCurrentJob(this->job);
 
 }
 

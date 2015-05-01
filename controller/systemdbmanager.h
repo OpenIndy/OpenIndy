@@ -160,6 +160,7 @@ public:
     //###########
 
     static QList<sdb::Plugin> getPlugins();
+    static sdb::Plugin getPlugin(const QString &name);
 
     //###########
     //get sensors

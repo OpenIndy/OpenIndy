@@ -12,6 +12,7 @@
  */
 class Point : public Geometry
 {
+    friend class Station;
     Q_OBJECT
 
 public:

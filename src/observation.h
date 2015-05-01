@@ -18,6 +18,7 @@ class Station;
 class Observation : public Element
 {
     friend class Reading;
+    friend class CoordinateSystem;
     Q_OBJECT
 
 public:

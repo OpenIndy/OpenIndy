@@ -1434,8 +1434,10 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
                 continue;
             }
 
+            //pass the job to the feature
+            feature->getFeature()->setJob(this);
+
             //set feature attributes
-            feature->getFeature()->id = this->generateUniqueId();
             feature->getFeature()->name = name;
             feature->getFeature()->group = fAttr.group;
 
@@ -1457,8 +1459,10 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
                 continue;
             }
 
+            //pass the job to the feature
+            feature->getFeature()->setJob(this);
+
             //set feature attributes
-            feature->getFeature()->id = this->generateUniqueId();
             feature->getFeature()->name = name;
             feature->getFeature()->group = fAttr.group;
 
@@ -1475,8 +1479,10 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
                 continue;
             }
 
+            //pass the job to the feature
+            feature->getFeature()->setJob(this);
+
             //set feature attributes
-            feature->getFeature()->id = this->generateUniqueId();
             feature->getFeature()->name = name;
             feature->getFeature()->group = fAttr.group;
 
@@ -1526,8 +1532,8 @@ bool OiJob::addFeatures(const QList<QPointer<FeatureWrapper> > &features){
     foreach(const QPointer<FeatureWrapper> &feature, features){
 
         //check if feature is valid
-        if(!feature.isNull() && !feature->getFeature().isNull()){
-            return false;
+        if(feature.isNull() || feature->getFeature().isNull()){
+            continue;
         }
 
         //check attributes and set up relations
@@ -1951,6 +1957,7 @@ void OiJob::setGeometrySimulationData(const int &featureId){
  */
 void OiJob::setGeometryMeasurementConfig(const int &featureId){
     emit this->geometryMeasurementConfigChanged(featureId);
+    qDebug() << featureId;
 }
 
 /*!
@@ -2055,87 +2062,87 @@ void OiJob::connectFeature(const QPointer<FeatureWrapper> &feature){
     }
 
     //general element connects
-    QObject::connect(feature->getFeature().data(), SIGNAL(elementAboutToBeDeleted(const int&, const QString&, const QString&, const FeatureTypes&)),
-                     this, SLOT(elementAboutToBeDeleted(const int&, const QString&, const QString&, const FeatureTypes&)), Qt::AutoConnection);
+    QObject::connect(feature->getFeature().data(), &Element::elementAboutToBeDeleted,
+                     this, &OiJob::elementAboutToBeDeleted, Qt::AutoConnection);
 
     //general feature connects
-    QObject::connect(feature->getFeature().data(), SIGNAL(featureNameChanged(const int&, const QString&)),
-                     this, SLOT(setFeatureName(const int&, const QString&)), Qt::AutoConnection);
-    QObject::connect(feature->getFeature().data(), SIGNAL(featureGroupChanged(const int&, const QString&)),
-                     this, SLOT(setFeatureGroup(const int&, const QString&)), Qt::AutoConnection);
-    QObject::connect(feature->getFeature().data(), SIGNAL(featureCommentChanged(const int&)),
-                     this, SLOT(setFeatureComment(const int&)), Qt::AutoConnection);
-    //QObject::connect(feature->getFeature().data(), SIGNAL(featureIsUpdatedChanged(const int&)),
-    //                 this, SLOT(setFeatureIsUpdated(const int&)), Qt::AutoConnection);
-    QObject::connect(feature->getFeature().data(), SIGNAL(featureIsSolvedChanged(const int&)),
-                     this, SLOT(setFeatureIsSolved(const int&)), Qt::AutoConnection);
-    QObject::connect(feature->getFeature().data(), SIGNAL(featureFunctionListChanged(const int&)),
-                     this, SLOT(setFeatureFunctions(const int&)), Qt::AutoConnection);
-    QObject::connect(feature->getFeature().data(), SIGNAL(featureUsedForChanged(const int&)),
-                     this, SLOT(setFeatureUsedFor(const int&)), Qt::AutoConnection);
-    QObject::connect(feature->getFeature().data(), SIGNAL(featurePreviouslyNeededChanged(const int&)),
-                     this, SLOT(setFeaturePreviouslyNeeded(const int&)), Qt::AutoConnection);
-    QObject::connect(feature->getFeature().data(), SIGNAL(featureIsActiveChanged(const int&)),
-                     this, SLOT(setActiveFeature(const int&)), Qt::AutoConnection);
+    QObject::connect(feature->getFeature().data(), &Feature::featureNameChanged,
+                     this, &OiJob::setFeatureName, Qt::AutoConnection);
+    QObject::connect(feature->getFeature().data(), &Feature::featureGroupChanged,
+                     this, &OiJob::setFeatureGroup, Qt::AutoConnection);
+    QObject::connect(feature->getFeature().data(), &Feature::featureCommentChanged,
+                     this, &OiJob::setFeatureComment, Qt::AutoConnection);
+    //QObject::connect(feature->getFeature().data(), &Feature::featureIsUpdatedChanged,
+    //                 this, &OiJob::setFeatureIsUpdated, Qt::AutoConnection);
+    QObject::connect(feature->getFeature().data(), &Feature::featureIsSolvedChanged,
+                     this, &OiJob::setFeatureIsSolved, Qt::AutoConnection);
+    QObject::connect(feature->getFeature().data(), &Feature::featureFunctionListChanged,
+                     this, &OiJob::setFeatureFunctions, Qt::AutoConnection);
+    QObject::connect(feature->getFeature().data(), &Feature::featureUsedForChanged,
+                     this, &OiJob::setFeatureUsedFor, Qt::AutoConnection);
+    QObject::connect(feature->getFeature().data(), &Feature::featurePreviouslyNeededChanged,
+                     this, &OiJob::setFeaturePreviouslyNeeded, Qt::AutoConnection);
+    QObject::connect(feature->getFeature().data(), &Feature::featureIsActiveChanged,
+                     this, &OiJob::setActiveFeature, Qt::AutoConnection);
 
     //general geometry connects
     if(getIsGeometry(feature->getFeatureTypeEnum())){
-        QObject::connect(feature->getGeometry().data(), SIGNAL(geomIsCommonChanged(const int&)),
-                         this, SLOT(setGeometryIsCommon(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getGeometry().data(), SIGNAL(geomNominalsChanged(const int&)),
-                         this, SLOT(setGeometryNominals(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getGeometry().data(), SIGNAL(geomActualChanged(const int&)),
-                         this, SLOT(setGeometryActual(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getGeometry().data(), SIGNAL(geomObservationsChanged(const int&)),
-                         this, SLOT(setGeometryObservations(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getGeometry().data(), SIGNAL(geomNominalSystemChanged(const int&)),
-                         this, SLOT(setGeometryNominalSystem(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getGeometry().data(), SIGNAL(geomStatisticChanged(const int&)),
-                         this, SLOT(setGeometryStatistic(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getGeometry().data(), SIGNAL(geomSimulationDataChanged(const int&)),
-                         this, SLOT(setGeometrySimulationData(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getGeometry().data(), SIGNAL(geomMeasurementConfigChanged(const int&)),
-                         this, SLOT(setGeometryMeasurementConfig(const int&)), Qt::AutoConnection);
+        QObject::connect(feature->getGeometry().data(), &Geometry::geomIsCommonChanged,
+                         this, &OiJob::setGeometryIsCommon, Qt::AutoConnection);
+        QObject::connect(feature->getGeometry().data(), &Geometry::geomNominalsChanged,
+                         this, &OiJob::setGeometryNominals, Qt::AutoConnection);
+        QObject::connect(feature->getGeometry().data(), &Geometry::geomActualChanged,
+                         this, &OiJob::setGeometryActual, Qt::AutoConnection);
+        QObject::connect(feature->getGeometry().data(), &Geometry::geomObservationsChanged,
+                         this, &OiJob::setGeometryObservations, Qt::AutoConnection);
+        QObject::connect(feature->getGeometry().data(), &Geometry::geomNominalSystemChanged,
+                         this, &OiJob::setGeometryNominalSystem, Qt::AutoConnection);
+        QObject::connect(feature->getGeometry().data(), &Geometry::geomStatisticChanged,
+                         this, &OiJob::setGeometryStatistic, Qt::AutoConnection);
+        QObject::connect(feature->getGeometry().data(), &Geometry::geomSimulationDataChanged,
+                         this, &OiJob::setGeometrySimulationData, Qt::AutoConnection);
+        QObject::connect(feature->getGeometry().data(), &Geometry::geomMeasurementConfigChanged,
+                         this, &OiJob::setGeometryMeasurementConfig, Qt::AutoConnection);
     }
 
     //trafo param connects
     if(feature->getFeatureTypeEnum() == eTrafoParamFeature){
-        QObject::connect(feature->getTrafoParam().data(), SIGNAL(transformationParameterChanged(const int&)),
-                         this, SLOT(setTrafoParamParameters(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getTrafoParam().data(), SIGNAL(coordinateSystemsChanged(const int&)),
-                         this, SLOT(setTrafoParamSystems(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getTrafoParam().data(), SIGNAL(isUsedChanged(const int&)),
-                         this, SLOT(setTrafoParamIsUsed(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getTrafoParam().data(), SIGNAL(validTimeChanged(const int&)),
-                         this, SLOT(setTrafoParamValidTime(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getTrafoParam().data(), SIGNAL(isMovementChanged(const int&)),
-                         this, SLOT(setTrafoParamIsMovement(const int&)), Qt::AutoConnection);
+        QObject::connect(feature->getTrafoParam().data(), &TrafoParam::transformationParameterChanged,
+                         this, &OiJob::setTrafoParamParameters, Qt::AutoConnection);
+        QObject::connect(feature->getTrafoParam().data(), &TrafoParam::coordinateSystemsChanged,
+                         this, &OiJob::setTrafoParamSystems, Qt::AutoConnection);
+        QObject::connect(feature->getTrafoParam().data(), &TrafoParam::isUsedChanged,
+                         this, &OiJob::setTrafoParamIsUsed, Qt::AutoConnection);
+        QObject::connect(feature->getTrafoParam().data(), &TrafoParam::validTimeChanged,
+                         this, &OiJob::setTrafoParamValidTime, Qt::AutoConnection);
+        QObject::connect(feature->getTrafoParam().data(), &TrafoParam::isMovementChanged,
+                         this, &OiJob::setTrafoParamIsMovement, Qt::AutoConnection);
     }
 
     //station connects
     if(feature->getFeatureTypeEnum() == eStationFeature){
-        QObject::connect(feature->getStation().data(), SIGNAL(activeStationChanged(const int&)),
-                         this, SLOT(setActiveStation(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getStation().data(), SIGNAL(sensorChanged(const int&)),
-                         this, SLOT(setStationSensor(const int&)), Qt::AutoConnection);
+        QObject::connect(feature->getStation().data(), &Station::activeStationChanged,
+                         this, &OiJob::setActiveStation, Qt::AutoConnection);
+        QObject::connect(feature->getStation().data(), &Station::sensorChanged,
+                         this, &OiJob::setStationSensor, Qt::AutoConnection);
         if(!feature->getStation()->getCoordinateSystem().isNull()){
-            QObject::connect(feature->getStation()->getCoordinateSystem().data(), SIGNAL(observationsChanged(const int&, const int&)),
-                             this, SLOT(setSystemObservations(const int&, const int&)), Qt::AutoConnection);
-            QObject::connect(feature->getStation()->getCoordinateSystem().data(), SIGNAL(transformationParametersChanged(const int&)),
-                             this, SLOT(setSystemTrafoParams(const int&)), Qt::AutoConnection);
-            QObject::connect(feature->getStation()->getCoordinateSystem().data(), SIGNAL(activeCoordinateSystemChanged(const int&)),
-                             this, SLOT(setActiveCoordinateSystem(const int&)), Qt::AutoConnection);
+            QObject::connect(feature->getStation()->getCoordinateSystem().data(), &CoordinateSystem::observationsChanged,
+                             this, &OiJob::setSystemObservations, Qt::AutoConnection);
+            QObject::connect(feature->getStation()->getCoordinateSystem().data(), &CoordinateSystem::transformationParametersChanged,
+                             this, &OiJob::setSystemTrafoParams, Qt::AutoConnection);
+            QObject::connect(feature->getStation()->getCoordinateSystem().data(), &CoordinateSystem::activeCoordinateSystemChanged,
+                             this, &OiJob::setActiveCoordinateSystem, Qt::AutoConnection);
         }
     }
 
     //coordinate system connects
     if(feature->getFeatureTypeEnum() == eCoordinateSystemFeature){
-        QObject::connect(feature->getCoordinateSystem().data(), SIGNAL(nominalsChanged(const int&)),
-                         this, SLOT(setSystemsNominals(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getCoordinateSystem().data(), SIGNAL(transformationParametersChanged(const int&)),
-                         this, SLOT(setSystemTrafoParams(const int&)), Qt::AutoConnection);
-        QObject::connect(feature->getCoordinateSystem().data(), SIGNAL(activeCoordinateSystemChanged(const int&)),
-                         this, SLOT(setActiveCoordinateSystem(const int&)), Qt::AutoConnection);
+        QObject::connect(feature->getCoordinateSystem().data(), &CoordinateSystem::nominalsChanged,
+                         this, &OiJob::setSystemsNominals, Qt::AutoConnection);
+        QObject::connect(feature->getCoordinateSystem().data(), &CoordinateSystem::transformationParametersChanged,
+                         this, &OiJob::setSystemTrafoParams, Qt::AutoConnection);
+        QObject::connect(feature->getCoordinateSystem().data(), &CoordinateSystem::activeCoordinateSystemChanged,
+                         this, &OiJob::setActiveCoordinateSystem, Qt::AutoConnection);
     }
 
 }
@@ -2152,87 +2159,87 @@ void OiJob::disconnectFeature(const QPointer<FeatureWrapper> &feature){
     }
 
     //general element connects
-    QObject::disconnect(feature->getFeature().data(), SIGNAL(elementAboutToBeDeleted(const int&, const QString&, const QString&, const FeatureTypes&)),
-                     this, SLOT(elementAboutToBeDeleted(const int&, const QString&, const QString&, const FeatureTypes&)));
+    QObject::disconnect(feature->getFeature().data(), &Element::elementAboutToBeDeleted,
+                     this, &OiJob::elementAboutToBeDeleted);
 
     //general feature connects
-    QObject::disconnect(feature->getFeature().data(), SIGNAL(featureNameChanged(const int&, const QString&)),
-                     this, SLOT(setFeatureName(const int&, const QString&)));
-    QObject::disconnect(feature->getFeature().data(), SIGNAL(featureGroupChanged(const int&, const QString&)),
-                     this, SLOT(setFeatureGroup(const int&, const QString&)));
-    QObject::disconnect(feature->getFeature().data(), SIGNAL(featureCommentChanged(const int&)),
-                     this, SLOT(setFeatureComment(const int&)));
-    //QObject::disconnect(feature->getFeature().data(), SIGNAL(featureIsUpdatedChanged(const int&)),
-    //                 this, SLOT(setFeatureIsUpdated(const int&)));
-    QObject::disconnect(feature->getFeature().data(), SIGNAL(featureIsSolvedChanged(const int&)),
-                     this, SLOT(setFeatureIsSolved(const int&)));
-    QObject::disconnect(feature->getFeature().data(), SIGNAL(featureFunctionListChanged(const int&)),
-                     this, SLOT(setFeatureFunctions(const int&)));
-    QObject::disconnect(feature->getFeature().data(), SIGNAL(featureUsedForChanged(const int&)),
-                     this, SLOT(setFeatureUsedFor(const int&)));
-    QObject::disconnect(feature->getFeature().data(), SIGNAL(featurePreviouslyNeededChanged(const int&)),
-                     this, SLOT(setFeaturePreviouslyNeeded(const int&)));
-    QObject::disconnect(feature->getFeature().data(), SIGNAL(featureIsActiveChanged(const int&)),
-                     this, SLOT(setActiveFeature(const int&)));
+    QObject::disconnect(feature->getFeature().data(), &Feature::featureNameChanged,
+                     this, &OiJob::setFeatureName);
+    QObject::disconnect(feature->getFeature().data(), &Feature::featureGroupChanged,
+                     this, &OiJob::setFeatureGroup);
+    QObject::disconnect(feature->getFeature().data(), &Feature::featureCommentChanged,
+                     this, &OiJob::setFeatureComment);
+    //QObject::disconnect(feature->getFeature().data(), &Feature::featureIsUpdatedChanged,
+    //                 this, &OiJob::setFeatureIsUpdated);
+    QObject::disconnect(feature->getFeature().data(), &Feature::featureIsSolvedChanged,
+                     this, &OiJob::setFeatureIsSolved);
+    QObject::disconnect(feature->getFeature().data(), &Feature::featureFunctionListChanged,
+                     this, &OiJob::setFeatureFunctions);
+    QObject::disconnect(feature->getFeature().data(), &Feature::featureUsedForChanged,
+                     this, &OiJob::setFeatureUsedFor);
+    QObject::disconnect(feature->getFeature().data(), &Feature::featurePreviouslyNeededChanged,
+                     this, &OiJob::setFeaturePreviouslyNeeded);
+    QObject::disconnect(feature->getFeature().data(), &Feature::featureIsActiveChanged,
+                     this, &OiJob::setActiveFeature);
 
     //general geometry connects
     if(getIsGeometry(feature->getFeatureTypeEnum())){
-        QObject::disconnect(feature->getGeometry().data(), SIGNAL(geomIsCommonChanged(const int&)),
-                         this, SLOT(setGeometryIsCommon(const int&)));
-        QObject::disconnect(feature->getGeometry().data(), SIGNAL(geomNominalsChanged(const int&)),
-                         this, SLOT(setGeometryNominals(const int&)));
-        QObject::disconnect(feature->getGeometry().data(), SIGNAL(geomActualChanged(const int&)),
-                         this, SLOT(setGeometryActual(const int&)));
-        QObject::disconnect(feature->getGeometry().data(), SIGNAL(geomObservationsChanged(const int&)),
-                         this, SLOT(setGeometryObservations(const int&)));
-        QObject::disconnect(feature->getGeometry().data(), SIGNAL(geomNominalSystemChanged(const int&)),
-                         this, SLOT(setGeometryNominalSystem(const int&)));
-        QObject::disconnect(feature->getGeometry().data(), SIGNAL(geomStatisticChanged(const int&)),
-                         this, SLOT(setGeometryStatistic(const int&)));
-        QObject::disconnect(feature->getGeometry().data(), SIGNAL(geomSimulationDataChanged(const int&)),
-                         this, SLOT(setGeometrySimulationData(const int&)));
-        QObject::disconnect(feature->getGeometry().data(), SIGNAL(geomMeasurementConfigChanged(const int&)),
-                         this, SLOT(setGeometryMeasurementConfig(const int&)));
+        QObject::connect(feature->getGeometry().data(), &Geometry::geomIsCommonChanged,
+                         this, &OiJob::setGeometryIsCommon);
+        QObject::disconnect(feature->getGeometry().data(), &Geometry::geomNominalsChanged,
+                         this, &OiJob::setGeometryNominals);
+        QObject::disconnect(feature->getGeometry().data(), &Geometry::geomActualChanged,
+                         this, &OiJob::setGeometryActual);
+        QObject::disconnect(feature->getGeometry().data(), &Geometry::geomObservationsChanged,
+                         this, &OiJob::setGeometryObservations);
+        QObject::disconnect(feature->getGeometry().data(), &Geometry::geomNominalSystemChanged,
+                         this, &OiJob::setGeometryNominalSystem);
+        QObject::disconnect(feature->getGeometry().data(), &Geometry::geomStatisticChanged,
+                         this, &OiJob::setGeometryStatistic);
+        QObject::disconnect(feature->getGeometry().data(), &Geometry::geomSimulationDataChanged,
+                         this, &OiJob::setGeometrySimulationData);
+        QObject::disconnect(feature->getGeometry().data(), &Geometry::geomMeasurementConfigChanged,
+                         this, &OiJob::setGeometryMeasurementConfig);
     }
 
     //trafo param connects
     if(feature->getFeatureTypeEnum() == eTrafoParamFeature){
-        QObject::disconnect(feature->getTrafoParam().data(), SIGNAL(transformationParameterChanged(const int&)),
-                         this, SLOT(setTrafoParamParameters(const int&)));
-        QObject::disconnect(feature->getTrafoParam().data(), SIGNAL(coordinateSystemsChanged(const int&)),
-                         this, SLOT(setTrafoParamSystems(const int&)));
-        QObject::disconnect(feature->getTrafoParam().data(), SIGNAL(isUsedChanged(const int&)),
-                         this, SLOT(setTrafoParamIsUsed(const int&)));
-        QObject::disconnect(feature->getTrafoParam().data(), SIGNAL(validTimeChanged(const int&)),
-                         this, SLOT(setTrafoParamValidTime(const int&)));
-        QObject::disconnect(feature->getTrafoParam().data(), SIGNAL(isMovementChanged(const int&)),
-                         this, SLOT(setTrafoParamIsMovement(const int&)));
+        QObject::disconnect(feature->getTrafoParam().data(), &TrafoParam::transformationParameterChanged,
+                         this, &OiJob::setTrafoParamParameters);
+        QObject::disconnect(feature->getTrafoParam().data(), &TrafoParam::coordinateSystemsChanged,
+                         this, &OiJob::setTrafoParamSystems);
+        QObject::disconnect(feature->getTrafoParam().data(), &TrafoParam::isUsedChanged,
+                         this, &OiJob::setTrafoParamIsUsed);
+        QObject::disconnect(feature->getTrafoParam().data(), &TrafoParam::validTimeChanged,
+                         this, &OiJob::setTrafoParamValidTime);
+        QObject::disconnect(feature->getTrafoParam().data(), &TrafoParam::isMovementChanged,
+                         this, &OiJob::setTrafoParamIsMovement);
     }
 
     //station connects
     if(feature->getFeatureTypeEnum() == eStationFeature){
-        QObject::disconnect(feature->getStation().data(), SIGNAL(activeStationChanged(const int&)),
-                         this, SLOT(setActiveStation(const int&)));
-        QObject::disconnect(feature->getStation().data(), SIGNAL(sensorChanged(const int&)),
-                         this, SLOT(setStationSensor(const int&)));
+        QObject::disconnect(feature->getStation().data(), &Station::activeStationChanged,
+                         this, &OiJob::setActiveStation);
+        QObject::disconnect(feature->getStation().data(), &Station::sensorChanged,
+                         this, &OiJob::setStationSensor);
         if(!feature->getStation()->getCoordinateSystem().isNull()){
-            QObject::disconnect(feature->getStation()->getCoordinateSystem().data(), SIGNAL(observationsChanged(const int&, const int&)),
-                             this, SLOT(setSystemObservations(const int&, const int&)));
-            QObject::disconnect(feature->getStation()->getCoordinateSystem().data(), SIGNAL(transformationParametersChanged(const int&)),
-                             this, SLOT(setSystemTrafoParams(const int&)));
-            QObject::disconnect(feature->getStation()->getCoordinateSystem().data(), SIGNAL(activeCoordinateSystemChanged(const int&)),
-                             this, SLOT(setActiveCoordinateSystem(const int&)));
+            QObject::disconnect(feature->getStation()->getCoordinateSystem().data(), &CoordinateSystem::observationsChanged,
+                             this, &OiJob::setSystemObservations);
+            QObject::disconnect(feature->getStation()->getCoordinateSystem().data(), &CoordinateSystem::transformationParametersChanged,
+                             this, &OiJob::setSystemTrafoParams);
+            QObject::disconnect(feature->getStation()->getCoordinateSystem().data(), &CoordinateSystem::activeCoordinateSystemChanged,
+                             this, &OiJob::setActiveCoordinateSystem);
         }
     }
 
     //coordinate system connects
     if(feature->getFeatureTypeEnum() == eCoordinateSystemFeature){
-        QObject::disconnect(feature->getCoordinateSystem().data(), SIGNAL(nominalsChanged(const int&)),
-                         this, SLOT(setSystemsNominals(const int&)));
-        QObject::disconnect(feature->getCoordinateSystem().data(), SIGNAL(transformationParametersChanged(const int&)),
-                         this, SLOT(setSystemTrafoParams(const int&)));
-        QObject::disconnect(feature->getCoordinateSystem().data(), SIGNAL(activeCoordinateSystemChanged(const int&)),
-                         this, SLOT(setActiveCoordinateSystem(const int&)));
+        QObject::disconnect(feature->getCoordinateSystem().data(), &CoordinateSystem::nominalsChanged,
+                         this, &OiJob::setSystemsNominals);
+        QObject::disconnect(feature->getCoordinateSystem().data(), &CoordinateSystem::transformationParametersChanged,
+                         this, &OiJob::setSystemTrafoParams);
+        QObject::disconnect(feature->getCoordinateSystem().data(), &CoordinateSystem::activeCoordinateSystemChanged,
+                         this, &OiJob::setActiveCoordinateSystem);
     }
 
 }
@@ -2383,12 +2390,8 @@ QPointer<FeatureWrapper> OiJob::createFeatureWrapper(const FeatureTypes &type, b
  */
 bool OiJob::checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature){
 
-    //check if feature with this id already exists
-    if(this->featureContainer.getFeatureIdList().contains(feature->getFeature()->getId())){
-        feature->getFeature()->id = this->generateUniqueId();
-    }else if(this->nextId <= feature->getFeature()->getId()){
-        this->nextId = feature->getFeature()->getId() + 1;
-    }
+    //pass the job to the feature
+    feature->getFeature()->setJob(this);
 
     //check feature name
     bool isNominal = (!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal());
@@ -2480,7 +2483,7 @@ bool OiJob::checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature){
 
             //check if nominal system is in the same job
             if(feature->getGeometry()->getNominalSystem().isNull()
-                    || this->getCoordinateSystemsList().contains(feature->getGeometry()->getNominalSystem())){
+                    || !this->getCoordinateSystemsList().contains(feature->getGeometry()->getNominalSystem())){
                 return false;
             }
 
@@ -2532,6 +2535,8 @@ bool OiJob::checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature){
             }
         }
     }
+
+    return true;
 
 }
 

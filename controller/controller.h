@@ -12,6 +12,8 @@
 #include "trafoparamtablecolumnconfig.h"
 #include "parameterdisplayconfig.h"
 #include "featureattributes.h"
+#include "exchangeParams.h"
+#include "dataexchanger.h"
 
 /*!
  * \brief The Controller class
@@ -25,16 +27,17 @@ public:
 
 public slots:
 
-    //######################
-    //add or remove features
-    //######################
+    //#######################
+    //tasks triggered by user
+    //#######################
 
+    //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
 
-    //###################
-    //set display configs
-    //###################
+    //import or export features
+    void importNominals(const ExchangeParams &params);
 
+    //set display configs
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
     void setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config);
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
@@ -117,6 +120,9 @@ private:
     //##################
 
     QPointer<OiJob> job;
+
+    //data exchanger
+    DataExchanger exchanger;
 
 };
 

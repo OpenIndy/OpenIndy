@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QApplication>
 
+#include "systemdbmanager.h"
 #include "exchangesimpleascii.h"
 #include "exchangedefinedformat.h"
 #include "oijob.h"

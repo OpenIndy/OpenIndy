@@ -632,6 +632,149 @@ QList<sdb::Plugin> SystemDbManager::getPlugins(){
 }
 
 /*!
+ * \brief SystemDbManager::getPlugin
+ * Get the plugin with the specified name
+ * \param name
+ * \return
+ */
+sdb::Plugin SystemDbManager::getPlugin(const QString &name){
+
+    sdb::Plugin plugin;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+        QString query;
+
+        //second command for plugin implementations
+        QSqlQuery command2(SystemDbManager::db);
+        QString query2;
+
+        //third command for function plugins
+        QSqlQuery command3(SystemDbManager::db);
+        QString query3;
+
+        //query all available plugins
+        query = QString("SELECT %1 %2 FROM plugin WHERE name = '%3'")
+                .arg("id, iid, name, description, version, author, compiler, operating_sys,")
+                .arg("has_dependencies, file_path, is_active")
+                .arg(name);
+        command.exec(query);
+        if(command.next()){
+
+            plugin.id = command.value("id").toInt();
+            plugin.iid = command.value("iid").toString();
+            plugin.name = command.value("name").toString();
+            plugin.description = command.value("description").toString();
+            plugin.version = command.value("version").toString();
+            plugin.author = command.value("author").toString();
+            plugin.compiler = command.value("compiler").toString();
+            plugin.operating_sys = command.value("operating_sys").toString();
+            plugin.has_dependencies = command.value("has_dependencies").toBool();
+            plugin.file_path = command.value("file_path").toString();
+            plugin.is_active = command.value("is_active").toBool();
+
+            //query all available sensors
+            query2 = QString("SELECT id, iid, name, description FROM sensorPlugin");
+            command2.exec(query2);
+            while(command2.next()){
+                sdb::Sensor sensor;
+                sensor.id = command2.value("id").toInt();
+                sensor.iid = command2.value("iid").toString();
+                sensor.name = command2.value("name").toString();
+                sensor.description = command2.value("description").toString();
+                plugin.sensors.append(sensor);
+            }
+
+            //query all available simulations
+            query2 = QString("SELECT id, iid, name, description FROM simulationPlugin");
+            command2.exec(query2);
+            while(command2.next()){
+                sdb::Simulation simulation;
+                simulation.id = command2.value("id").toInt();
+                simulation.iid = command2.value("iid").toString();
+                simulation.name = command2.value("name").toString();
+                simulation.description = command2.value("description").toString();
+                plugin.simulations.append(simulation);
+            }
+
+            //query all available network adjustments
+            query2 = QString("SELECT id, iid, name, description FROM networkAdjustmentPlugin");
+            command2.exec(query2);
+            while(command2.next()){
+                sdb::NetworkAdjustment networkAdjustment;
+                networkAdjustment.id = command2.value("id").toInt();
+                networkAdjustment.iid = command2.value("iid").toString();
+                networkAdjustment.name = command2.value("name").toString();
+                networkAdjustment.description = command2.value("description").toString();
+                plugin.networkAdjustments.append(networkAdjustment);
+            }
+
+            //query all available tools
+            query2 = QString("SELECT id, iid, name, description FROM toolPlugin");
+            command2.exec(query2);
+            while(command2.next()){
+                sdb::Tool tool;
+                tool.id = command2.value("id").toInt();
+                tool.iid = command2.value("iid").toString();
+                tool.name = command2.value("name").toString();
+                tool.description = command2.value("description").toString();
+                plugin.tools.append(tool);
+            }
+
+            //query all available exchanges
+            query2 = QString("SELECT id, iid, name, description FROM exchangePlugin");
+            command2.exec(query2);
+            while(command2.next()){
+                sdb::Exchange exchange;
+                exchange.id = command2.value("id").toInt();
+                exchange.iid = command2.value("iid").toString();
+                exchange.name = command2.value("name").toString();
+                exchange.description = command2.value("description").toString();
+                plugin.exchanges.append(exchange);
+            }
+
+            //query all available functions
+            query2 = QString("SELECT id, iid, name, description FROM functionPlugin");
+            command2.exec(query2);
+            while(command2.next()){
+                sdb::Function function;
+                function.id = command2.value("id").toInt();
+                function.iid = command2.value("iid").toString();
+                function.name = command2.value("name").toString();
+                function.description = command2.value("description").toString();
+
+                //query needed elements
+                query3 = QString("SELECT e.element_type AS element_type FROM pluginElement AS pe INNER JOIN element AS e %1")
+                        .arg(QString("ON pe.element_id = e.id WHERE pe.functionPlugin_id = %1").arg(function.id));
+                command3.exec(query3);
+                while(command3.next()){
+                    function.neededElements.append(getElementTypeEnum(command3.value("element_type").toString()));
+                }
+
+                //query applicable for
+                query3 = QString("SELECT e.element_type AS element_type FROM elementPlugin AS ep INNER JOIN element AS e %1")
+                        .arg(QString("ON ep.element_id = e.id WHERE ep.functionPlugin_id = %1").arg(function.id));
+                command3.exec(query3);
+                while(command3.next()){
+                    function.applicableFor.append(getFeatureTypeEnum(command3.value("element_type").toString()));
+                }
+
+                plugin.functions.append(function);
+            }
+
+        }
+
+        SystemDbManager::disconnect();
+
+    }
+
+    return plugin;
+
+}
+
+/*!
  * \brief SystemDbManager::getSensors
  * Returns a list of all available sensors
  * \return

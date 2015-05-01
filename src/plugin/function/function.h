@@ -162,6 +162,7 @@ public:
  */
 class Function : public QObject
 {
+    friend class Feature;
     Q_OBJECT
 
 public:

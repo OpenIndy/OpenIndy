@@ -149,6 +149,14 @@ signals:
 
     //void sendToConsole(QString);
 
+protected:
+
+    //######################################
+    //update feature id when the job was set
+    //######################################
+
+    void setUpFeatureId();
+
 private:
 
     //##########################

@@ -124,6 +124,7 @@ public:
  */
 class Reading : public Element
 {
+    friend class Station;
     Q_OBJECT
 
 public:

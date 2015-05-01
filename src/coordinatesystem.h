@@ -19,6 +19,7 @@ class Station;
  */
 class CoordinateSystem : public Feature
 {
+    friend class Station;
     friend class OiJob;
     Q_OBJECT
 
@@ -115,6 +116,14 @@ signals:
     void transformationParametersChanged(const int &coordId);
     void nominalsChanged(const int &coordId);
     void activeCoordinateSystemChanged(const int &coordId);
+
+protected:
+
+    //######################################
+    //update feature id when the job was set
+    //######################################
+
+    void setUpFeatureId();
 
 private:
 

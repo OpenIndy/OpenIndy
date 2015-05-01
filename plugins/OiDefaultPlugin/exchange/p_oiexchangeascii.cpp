@@ -215,9 +215,9 @@ QList<ExchangeSimpleAscii::ColumnType> OiExchangeAscii::getPossibleColumns(const
  */
 QRegExp OiExchangeAscii::getDelimiter(const QString &delimiterName) const{
 
-    if(delimiterName.compare("whitespace [ ]")){
+    if(delimiterName.compare("whitespace [ ]") == 0){
         return QRegExp("\\s+");
-    }else if(delimiterName.compare("semicolon [;]")){
+    }else if(delimiterName.compare("semicolon [;]") == 0){
         return QRegExp("[;]");
     }
 
@@ -234,6 +234,12 @@ void OiExchangeAscii::importOiData(){
 
         this->features.clear();
 
+        //check if nominal system is valid
+        if(this->nominalSystem.isNull()){
+            emit this->importFinished(false);
+            return;
+        }
+
         //set the number of error prone lines to 0
         int numErrors = 0;
 
@@ -242,6 +248,7 @@ void OiExchangeAscii::importOiData(){
 
             //check if device exists
             if(this->device.isNull()){
+                emit this->importFinished(false);
                 return;
             }
 
@@ -369,6 +376,9 @@ void OiExchangeAscii::importOiData(){
                     myNominal->setGroupName(this->groupName);
                 }
 
+                //set nominal system
+                myNominal->setNominalSystem(this->nominalSystem);
+
                 //add the imported nominal to OpenIndy
                 if(!errorWhileParsing){
                     QPointer<FeatureWrapper> myGeometry = new FeatureWrapper();
@@ -389,6 +399,9 @@ void OiExchangeAscii::importOiData(){
 
             //close the device
             this->device->close();
+
+            //emit import finished signal
+            emit this->importFinished(true);
 
             break;
 

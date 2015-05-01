@@ -681,6 +681,11 @@ bool CoordinateSystem::addObservation(const QPointer<Observation> &observation){
         //set observation's station
         observation->setStation(this->station);
 
+        //generate unique id for the observation
+        if(!this->job.isNull()){
+            observation->id = this->job->generateUniqueId();
+        }
+
         emit this->observationsChanged(this->id, observation->getId());
 
         return true;
@@ -1134,4 +1139,26 @@ QString CoordinateSystem::getDisplayZAxisJ(const int &digits) const{
  */
 QString CoordinateSystem::getDisplayZAxisK(const int &digits) const{
     return QString::number(this->zAxis.getVector().getAt(2), 'f', digits);
+}
+
+/*!
+ * \brief CoordinateSystem::setUpFeatureId
+ */
+void CoordinateSystem::setUpFeatureId(){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //generate unique ids for observations
+    foreach(const QPointer<Observation> &obs, this->observationsList){
+        if(!obs.isNull()){
+            obs->id = this->job->generateUniqueId();
+        }
+    }
+
+    //feature specific
+    Feature::setUpFeatureId();
+
 }

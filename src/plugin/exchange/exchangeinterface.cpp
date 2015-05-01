@@ -18,6 +18,11 @@ ExchangeInterface::ExchangeInterface(QObject *parent) : QObject(parent){
  */
 ExchangeInterface::~ExchangeInterface(){
 
+    //delete device if not deleted yet
+    if(!this->device.isNull()){
+        delete this->device;
+    }
+
 }
 
 /*!

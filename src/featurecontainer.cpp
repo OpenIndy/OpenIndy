@@ -409,7 +409,7 @@ bool FeatureContainer::addFeature(const QPointer<FeatureWrapper> &feature){
 
     //update lists with ids, names and groups
     this->featureIds.append(feature->getFeature()->getId());
-    if(!this->featureNames.contains(feature->getFeature()->getFeatureName())){
+    if(this->featuresNameMap.values(feature->getFeature()->getFeatureName()).size() == 1){
         this->featureNames.append(feature->getFeature()->getFeatureName());
     }
     if(feature->getFeature()->getGroupName().compare("") != 0 &&
