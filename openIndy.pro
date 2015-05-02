@@ -46,6 +46,7 @@ INCLUDEPATH += $$PWD/src/plugin/exchange
 INCLUDEPATH += $$PWD/src/util
 
 INCLUDEPATH += $$PWD/models
+INCLUDEPATH += $$PWD/models/treeitems
 INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/controller/config
 INCLUDEPATH += $$PWD/controller/exchange
@@ -139,7 +140,15 @@ SOURCES += \
     ui/dialogs/pluginloaderdialog.cpp \
     controller/exchange/dataexchanger.cpp \
     ui/dialogs/importnominaldialog.cpp \
-    ui/dialogs/loadingdialog.cpp
+    ui/dialogs/loadingdialog.cpp \
+    models/treeitems/featuretreeitem.cpp \
+    models/featuretreeviewmodel.cpp \
+    models/availableelementstreeviewproxymodel.cpp \
+    models/usedelementsmodel.cpp \
+    models/treeitems/functiontreeitem.cpp \
+    models/activefeaturefunctionsmodel.cpp \
+    models/functiontablemodel.cpp \
+    models/functiontableproxymodel.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -229,7 +238,15 @@ HEADERS  += \
     controller/exchange/dataexchanger.h \
     ui/dialogs/importnominaldialog.h \
     controller/param/exchangeParams.h \
-    ui/dialogs/loadingdialog.h
+    ui/dialogs/loadingdialog.h \
+    models/treeitems/featuretreeitem.h \
+    models/featuretreeviewmodel.h \
+    models/availableelementstreeviewproxymodel.h \
+    models/usedelementsmodel.h \
+    models/treeitems/functiontreeitem.h \
+    models/activefeaturefunctionsmodel.h \
+    models/functiontablemodel.h \
+    models/functiontableproxymodel.h
 
 FORMS    += \
     ui/mainwindow.ui \

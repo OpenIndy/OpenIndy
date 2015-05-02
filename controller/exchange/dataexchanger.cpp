@@ -160,8 +160,6 @@ bool DataExchanger::exportData(const ExchangeParams &params){
  */
 void DataExchanger::importFeatures(const bool &success){
 
-    qDebug() << "in import finished";
-
     if(!success){
         emit this->importFinished(false);
         return;

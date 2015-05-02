@@ -6,7 +6,7 @@
  * \param parent
  */
 FeatureTableModel::FeatureTableModel(const QPointer<OiJob> &job, QObject *parent) : QAbstractTableModel(parent){
-    this->currentJob = job;
+    this->setCurrentJob(job);
 }
 
 /*!
@@ -439,18 +439,23 @@ QString FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &featu
  */
 void FeatureTableModel::connectJob(){
 
-    QObject::connect(this->currentJob.data(), SIGNAL(featureSetChanged()), this, SLOT(updateModel()), Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), SIGNAL(activeCoordinateSystemChanged()), this, SLOT(updateModel()), Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), SIGNAL(activeFeatureChanged()), this, SLOT(updateModel()), Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), SIGNAL(activeStationChanged()), this, SLOT(updateModel()), Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), SIGNAL(featureAttributesChanged()), this, SLOT(updateModel()), Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featureSetChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
 
 }
 
 /*!
  * \brief FeatureTableModel::disconnectJob
  */
-void FeatureTableModel::disconnectJob()
-{
+void FeatureTableModel::disconnectJob(){
+
+    QObject::disconnect(this->currentJob.data(), &OiJob::featureSetChanged, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::updateModel);
 
 }

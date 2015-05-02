@@ -12,7 +12,10 @@
 //#######################################
 
 const QString &getElementTypeName(const ElementTypes &type);
+const QString &getElementTypePluralName(const ElementTypes &type);
 ElementTypes getElementTypeEnum(const QString &name);
+ElementTypes getElementTypeEnum(const FeatureTypes &type);
+ElementTypes getElementTypeEnum(const ReadingTypes &type);
 
 const QString &getFeatureTypeName(const FeatureTypes &type);
 FeatureTypes getFeatureTypeEnum(const QString &name);

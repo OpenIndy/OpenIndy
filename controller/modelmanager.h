@@ -14,6 +14,7 @@
 #include "trafoparamtablecolumnconfig.h"
 #include "parameterdisplayconfig.h"
 #include "pluginloader.h"
+#include "featuretreeviewmodel.h"
 
 /*!
  * \brief The ModelManager class
@@ -60,6 +61,7 @@ public:
     //general feature models
     static FeatureTableModel &getFeatureTableModel();
     static FeatureTableProxyModel &getFeatureTableProxyModel();
+    static FeatureTreeViewModel &getFeatureTreeViewModel();
 
     //coordinate system models
     static QStringListModel &getCoordinateSystemsModel();
@@ -107,6 +109,7 @@ private:
     //general feature models
     static FeatureTableModel featureTableModel;
     static FeatureTableProxyModel featureTableProxyModel;
+    static FeatureTreeViewModel featureTreeViewModel;
 
     //coordinate systems models
     static QStringListModel coordinateSystemsModel;

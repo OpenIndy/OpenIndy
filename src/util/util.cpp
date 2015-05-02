@@ -7,6 +7,7 @@
 namespace internal{
 
 QMap<ElementTypes, QString> elementTypesMap;
+QMap<ElementTypes, QString> elementTypesPluralMap;
 QMap<FeatureTypes, QString> featureTypesMap;
 QMap<GeometryTypes, QString> geometryTypesMap;
 
@@ -27,6 +28,7 @@ void init(){
 
     //clear maps
     elementTypesMap.clear();
+    elementTypesPluralMap.clear();
     featureTypesMap.clear();
     geometryTypesMap.clear();
     readingTypesMap.clear();
@@ -68,6 +70,40 @@ void init(){
     elementTypesMap.insert(eReadingDirectionElement, "direction reading");
     elementTypesMap.insert(eReadingTemperatureElement, "temperature reading");
     elementTypesMap.insert(eReadingLevelElement, "level reading");
+
+    //fill element plural map
+    elementTypesPluralMap.insert(eCircleElement, "circles");
+    elementTypesPluralMap.insert(eConeElement, "cones");
+    elementTypesPluralMap.insert(eCylinderElement, "cylinders");
+    elementTypesPluralMap.insert(eEllipseElement, "ellipses");
+    elementTypesPluralMap.insert(eEllipsoidElement, "ellipsoids");
+    elementTypesPluralMap.insert(eHyperboloidElement, "hyperboloids");
+    elementTypesPluralMap.insert(eLineElement, "lines");
+    elementTypesPluralMap.insert(eNurbsElement, "nurbs");
+    elementTypesPluralMap.insert(eParaboloidElement, "paraboloids");
+    elementTypesPluralMap.insert(ePlaneElement, "planes");
+    elementTypesPluralMap.insert(ePointElement, "points");
+    elementTypesPluralMap.insert(ePointCloudElement, "point clouds");
+    elementTypesPluralMap.insert(eScalarEntityAngleElement, "angles");
+    elementTypesPluralMap.insert(eScalarEntityDistanceElement, "distances");
+    elementTypesPluralMap.insert(eScalarEntityMeasurementSeriesElement, "measurement series");
+    elementTypesPluralMap.insert(eScalarEntityTemperatureElement, "temperatures");
+    elementTypesPluralMap.insert(eSlottedHoleElement, "slotted holes");
+    elementTypesPluralMap.insert(eSphereElement, "spheres");
+    elementTypesPluralMap.insert(eTorusElement, "tori");
+    elementTypesPluralMap.insert(eDirectionElement, "directions");
+    elementTypesPluralMap.insert(ePositionElement, "positions");
+    elementTypesPluralMap.insert(eRadiusElement, "radii");
+    elementTypesPluralMap.insert(eCoordinateSystemElement, "coordinate systems");
+    elementTypesPluralMap.insert(eStationElement, "stations");
+    elementTypesPluralMap.insert(eTrafoParamElement, "transformation parameters");
+    elementTypesPluralMap.insert(eObservationElement, "observations");
+    elementTypesPluralMap.insert(eReadingCartesianElement, "cartesian readings");
+    elementTypesPluralMap.insert(eReadingPolarElement, "polar readings");
+    elementTypesPluralMap.insert(eReadingDistanceElement, "distance readings");
+    elementTypesPluralMap.insert(eReadingDirectionElement, "direction readings");
+    elementTypesPluralMap.insert(eReadingTemperatureElement, "temperature readings");
+    elementTypesPluralMap.insert(eReadingLevelElement, "level readings");
 
     //fill feature map
     featureTypesMap.insert(eCircleFeature, "circle");
@@ -246,6 +282,26 @@ const QString &getElementTypeName(const ElementTypes &type){
 }
 
 /*!
+ * \brief getElementTypePluralName
+ * \param type
+ * \return
+ */
+const QString &getElementTypePluralName(const ElementTypes &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding element name
+    if(internal::elementTypesPluralMap.contains(type)){
+        return internal::elementTypesPluralMap[type];
+    }
+    return internal::undefined;
+
+}
+
+/*!
  * \brief getElementTypeEnum
  * \param name
  * \return
@@ -258,7 +314,96 @@ ElementTypes getElementTypeEnum(const QString &name){
     }
 
     //get the corresponding element enum value
-    return internal::elementTypesMap.key(name, eUndefinedElement);
+    ElementTypes type = internal::elementTypesMap.key(name, eUndefinedElement);
+    if(type == eUndefinedElement){
+        type = internal::elementTypesPluralMap.key(name, eUndefinedElement);;
+    }
+
+    return type;
+
+}
+
+/*!
+ * \brief getElementTypeEnum
+ * Converts FeatureTypes to ElementTypes
+ * \param type
+ * \return
+ */
+ElementTypes getElementTypeEnum(const FeatureTypes &type){
+
+    switch(type){
+    case eCircleFeature:
+        return eCircleElement;
+    case eConeFeature:
+        return eConeElement;
+    case eCylinderFeature:
+        return eCylinderElement;
+    case eEllipseFeature:
+        return eEllipseElement;
+    case eEllipsoidFeature:
+        return eEllipsoidElement;
+    case eHyperboloidFeature:
+        return eHyperboloidElement;
+    case eLineFeature:
+        return eLineElement;
+    case eNurbsFeature:
+        return eNurbsElement;
+    case eParaboloidFeature:
+        return eParaboloidElement;
+    case ePlaneFeature:
+        return ePlaneElement;
+    case ePointFeature:
+        return ePointElement;
+    case ePointCloudFeature:
+        return ePointCloudElement;
+    case eScalarEntityAngleFeature:
+        return eScalarEntityAngleElement;
+    case eScalarEntityDistanceFeature:
+        return eScalarEntityDistanceElement;
+    case eScalarEntityMeasurementSeriesFeature:
+        return eScalarEntityMeasurementSeriesElement;
+    case eScalarEntityTemperatureFeature:
+        return eScalarEntityTemperatureElement;
+    case eSlottedHoleFeature:
+        return eSlottedHoleElement;
+    case eSphereFeature:
+        return eSphereElement;
+    case eTorusFeature:
+        return eTorusElement;
+    case eCoordinateSystemFeature:
+        return eCoordinateSystemElement;
+    case eStationFeature:
+        return eStationElement;
+    case eTrafoParamFeature:
+        return eTrafoParamElement;
+    default:
+        return eUndefinedElement;
+    }
+
+}
+
+/*!
+ * \brief getElementTypeEnum
+ * convert ReadingTypes to ElementTypes
+ * \param type
+ * \return
+ */
+ElementTypes getElementTypeEnum(const ReadingTypes &type){
+
+    switch(type){
+    case eCartesianReading:
+        return eReadingCartesianElement;
+    case eDistanceReading:
+        return eReadingDistanceElement;
+    case ePolarReading:
+        return eReadingPolarElement;
+    case eDirectionReading:
+        return eReadingDirectionElement;
+    case eTemperatureReading:
+        return eReadingTemperatureElement;
+    case eLevelReading:
+        return eReadingLevelElement;
+    }
 
 }
 

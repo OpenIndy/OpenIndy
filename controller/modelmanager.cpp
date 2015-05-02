@@ -18,6 +18,7 @@ QStringListModel ModelManager::temperatureUnitTypesModel;
 QStringListModel ModelManager::dummyStringListModel;
 QStringListModel ModelManager::pluginNamesModel;
 QStringListModel ModelManager::groupNamesModel;
+FeatureTreeViewModel ModelManager::featureTreeViewModel;
 QList<sdb::Plugin> ModelManager::plugins;
 
 /*!
@@ -123,6 +124,14 @@ FeatureTableModel &ModelManager::getFeatureTableModel(){
  */
 FeatureTableProxyModel &ModelManager::getFeatureTableProxyModel(){
     return ModelManager::featureTableProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getFeatureTreeViewModel
+ * \return
+ */
+FeatureTreeViewModel &ModelManager::getFeatureTreeViewModel(){
+    return ModelManager::featureTreeViewModel;
 }
 
 /*!
@@ -324,6 +333,7 @@ void ModelManager::updateJob(){
 
     //pass the job to all static models that need it
     ModelManager::featureTableModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::featureTreeViewModel.setCurrentJob(ModelManager::currentJob);
 
     //connect the job to slots in model manager
     QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);
