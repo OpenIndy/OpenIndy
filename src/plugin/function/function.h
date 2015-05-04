@@ -126,6 +126,10 @@ public:
  */
 class ScalarInputParams{
 public:
+    ScalarInputParams(){
+        isValid = false;
+    }
+
     bool isValid;
     QMap<QString, double> doubleParameter;
     QMap<QString, int> intParameter;
@@ -247,6 +251,9 @@ signals:
     //################################################
 
     void sendMessage(const QString &msg);
+
+    void inputElementsChanged();
+    void scalarInputParametersChanged();
 
 protected:
 

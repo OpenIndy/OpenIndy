@@ -45,7 +45,7 @@ void FunctionTreeItem::appendChild(const QPointer<FunctionTreeItem> &child){
 
     //set index and parent for child
     child->index = this->children.size();
-    child->setParent(this);
+    child->parent = this;
 
     //add the child
     this->children.append(child);

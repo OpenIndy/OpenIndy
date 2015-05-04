@@ -24,6 +24,12 @@ public:
 
     const FeatureTableColumnConfig &getFeatureTableColumnConfig() const;
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
+
+    //##############################
+    //get id of the feature at index
+    //##############################
+
+    //int getFeatureIdAtIndex(const QModelIndex &index);
     
 protected:
 

@@ -1440,13 +1440,16 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
             //set feature attributes
             feature->getFeature()->name = name;
             feature->getFeature()->group = fAttr.group;
+            feature->getGeometry()->isNominal = true;
 
             //set nominal system
             feature->getGeometry()->nominalSystem = nominalSystem;
             nominalSystem->nominalsList.append(feature);
             nominalSystem->nominalsMap.insert(feature->getGeometry()->getId(), feature);
 
+            //add and connect feature
             this->featureContainer.addFeature(feature);
+            this->connectFeature(feature);
 
         }
 
@@ -1465,8 +1468,11 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
             //set feature attributes
             feature->getFeature()->name = name;
             feature->getFeature()->group = fAttr.group;
+            feature->getGeometry()->isNominal = false;
 
+            //add and connect feature
             this->featureContainer.addFeature(feature);
+            this->connectFeature(feature);
 
         }
 
@@ -1494,7 +1500,9 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
                 destSystem->trafoParams.append(feature->getTrafoParam());
             }
 
+            //add and connect feature
             this->featureContainer.addFeature(feature);
+            this->connectFeature(feature);
 
         }
 
@@ -1663,13 +1671,16 @@ void OiJob::setActiveFeature(const int &featureId){
             return;
         }
 
-        //set currently active feature to deactive
-        if(!this->activeFeature.isNull() && !this->activeFeature->getFeature().isNull()){
-            this->activeFeature->getFeature()->setActiveFeatureState(false);
-        }
+        //get pointer to the old active feature
+        QPointer<FeatureWrapper> oldActiveFeature = this->activeFeature;
 
         //save feature as active feature
         this->activeFeature = feature;
+
+        //set currently active feature to deactive
+        if(!oldActiveFeature.isNull() && !oldActiveFeature->getFeature().isNull()){
+            oldActiveFeature->getFeature()->setActiveFeatureState(false);
+        }
 
         emit this->activeFeatureChanged();
 

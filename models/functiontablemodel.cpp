@@ -109,6 +109,111 @@ QVariant FunctionTableModel::headerData(int section, Qt::Orientation orientation
 }
 
 /*!
+ * \brief FunctionTableModel::getFunctionDescription
+ * \param index
+ * \return
+ */
+QString FunctionTableModel::getFunctionDescription(const QModelIndex &index) const{
+
+    //check index
+    if(!index.isValid()){
+        return "";
+    }
+
+    //get description of the right function
+    int numFunctionPlugins = 0;
+    foreach(const sdb::Plugin &plugin, this->plugins){
+
+        //run through all function of the current plugin
+        foreach(const sdb::Function &function, plugin.functions){
+
+            //if the current function corresponds to the given row index
+            if(index.row() == numFunctionPlugins){
+
+                return function.description;
+
+            }
+
+            numFunctionPlugins++;
+        }
+
+    }
+
+    return "";
+
+}
+
+/*!
+ * \brief FunctionTableModel::getFunctionName
+ * \param index
+ * \return
+ */
+QString FunctionTableModel::getFunctionName(const QModelIndex &index) const{
+
+    //check index
+    if(!index.isValid()){
+        return "";
+    }
+
+    //get description of the right function
+    int numFunctionPlugins = 0;
+    foreach(const sdb::Plugin &plugin, this->plugins){
+
+        //run through all function of the current plugin
+        foreach(const sdb::Function &function, plugin.functions){
+
+            //if the current function corresponds to the given row index
+            if(index.row() == numFunctionPlugins){
+
+                return function.name;
+
+            }
+
+            numFunctionPlugins++;
+        }
+
+    }
+
+    return "";
+
+}
+
+/*!
+ * \brief FunctionTableModel::getPluginFilePath
+ * \param index
+ * \return
+ */
+QString FunctionTableModel::getPluginFilePath(const QModelIndex &index) const{
+
+    //check index
+    if(!index.isValid()){
+        return "";
+    }
+
+    //get description of the right function
+    int numFunctionPlugins = 0;
+    foreach(const sdb::Plugin &plugin, this->plugins){
+
+        //run through all function of the current plugin
+        foreach(const sdb::Function &function, plugin.functions){
+
+            //if the current function corresponds to the given row index
+            if(index.row() == numFunctionPlugins){
+
+                return plugin.file_path;
+
+            }
+
+            numFunctionPlugins++;
+        }
+
+    }
+
+    return "";
+
+}
+
+/*!
  * \brief FunctionTableModel::getPlugins
  * \return
  */

@@ -19,6 +19,11 @@ QStringListModel ModelManager::dummyStringListModel;
 QStringListModel ModelManager::pluginNamesModel;
 QStringListModel ModelManager::groupNamesModel;
 FeatureTreeViewModel ModelManager::featureTreeViewModel;
+AvailableElementsTreeViewProxyModel ModelManager::availableElementsTreeViewProxyModel;
+UsedElementsModel ModelManager::usedElementsModel;
+FunctionTableModel ModelManager::functionTableModel;
+FunctionTableProxyModel ModelManager::functionTableProxyModel;
+ActiveFeatureFunctionsModel ModelManager::activeFeatureFunctionsModel;
 QList<sdb::Plugin> ModelManager::plugins;
 
 /*!
@@ -35,6 +40,8 @@ void ModelManager::init(){
 
     //init models
     ModelManager::initFeatureTableModels();
+    ModelManager::initFeatureTreeViewModels();
+    ModelManager::initFunctionTableModels();
     ModelManager::initUnitTypesModels();
     ModelManager::initPluginModels();
 
@@ -135,6 +142,22 @@ FeatureTreeViewModel &ModelManager::getFeatureTreeViewModel(){
 }
 
 /*!
+ * \brief ModelManager::getAvailableElementsTreeViewProxyModel
+ * \return
+ */
+AvailableElementsTreeViewProxyModel &ModelManager::getAvailableElementsTreeViewProxyModel(){
+    return ModelManager::availableElementsTreeViewProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getUsedElementsModel
+ * \return
+ */
+UsedElementsModel &ModelManager::getUsedElementsModel(){
+    return ModelManager::usedElementsModel;
+}
+
+/*!
  * \brief ModelManager::getCoordinateSystemsModel
  * \return
  */
@@ -182,6 +205,30 @@ QStringListModel &ModelManager::getUnitTypesModel(const DimensionType &dimension
  */
 QStringListModel &ModelManager::getPluginNamesModel(){
     return ModelManager::pluginNamesModel;
+}
+
+/*!
+ * \brief ModelManager::getFunctionTableModel
+ * \return
+ */
+FunctionTableModel &ModelManager::getFunctionTableModel(){
+    return ModelManager::functionTableModel;
+}
+
+/*!
+ * \brief ModelManager::getFunctionTableProxyModel
+ * \return
+ */
+FunctionTableProxyModel &ModelManager::getFunctionTableProxyModel(){
+    return ModelManager::functionTableProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getActiveFeatureFunctionsModel
+ * \return
+ */
+ActiveFeatureFunctionsModel &ModelManager::getActiveFeatureFunctionsModel(){
+    return ModelManager::activeFeatureFunctionsModel;
 }
 
 /*!
@@ -318,6 +365,14 @@ void ModelManager::stationSetChanged(){
  */
 void ModelManager::availableGroupsChanged(){
 
+    //check the current job
+    if(ModelManager::currentJob.isNull()){
+        return;
+    }
+
+    //update groups model
+    ModelManager::updateGroupsModel();
+
 }
 
 /*!
@@ -334,6 +389,10 @@ void ModelManager::updateJob(){
     //pass the job to all static models that need it
     ModelManager::featureTableModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::featureTreeViewModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::activeFeatureFunctionsModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::functionTableProxyModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::usedElementsModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::availableElementsTreeViewProxyModel.setCurrentJob(ModelManager::currentJob);
 
     //connect the job to slots in model manager
     QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);
@@ -433,6 +492,16 @@ void ModelManager::updateNominalSystemsModel(){
  */
 void ModelManager::updateGroupsModel(){
 
+    QStringList groups;
+
+    //get a list of all available groups
+    groups = ModelManager::currentJob->getFeatureGroupList();
+
+    //add default entry (all groups)
+    groups.push_front("all groups");
+
+    ModelManager::groupNamesModel.setStringList(groups);
+
 }
 
 /*!
@@ -443,6 +512,29 @@ void ModelManager::initFeatureTableModels(){
     //assign source models
     ModelManager::featureTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
     ModelManager::featureTableProxyModel.setDynamicSortFilter(true);
+
+}
+
+/*!
+ * \brief ModelManager::initFeatureTreeViewModels
+ */
+void ModelManager::initFeatureTreeViewModels(){
+
+    //assign source models
+    ModelManager::availableElementsTreeViewProxyModel.setSourceModel(&ModelManager::featureTreeViewModel);
+
+    //set header data
+    //ModelManager::usedElementsModel.setHeaderData(1, Qt::Horizontal, "used elements");
+
+}
+
+/*!
+ * \brief ModelManager::initFunctionTableModels
+ */
+void ModelManager::initFunctionTableModels(){
+
+    //assign source models
+    ModelManager::functionTableProxyModel.setSourceModel(&ModelManager::functionTableModel);
 
 }
 
@@ -480,6 +572,9 @@ void ModelManager::initPluginModels(){
 
     //get plugins from database
     ModelManager::plugins = SystemDbManager::getPlugins();
+
+    //pass the plugins list to all static models that need it
+    ModelManager::functionTableModel.setPlugins(ModelManager::plugins);
 
     //update plugin names model
     QStringList pluginNames;

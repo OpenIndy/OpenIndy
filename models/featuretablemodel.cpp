@@ -73,6 +73,23 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
 
     }else if(role == Qt::BackgroundRole){
 
+        //active feature
+        if(feature->getFeature()->getIsActiveFeature()){
+            return QColor(QColor::fromCmykF(0.59, 0.40, 0.10, 0.10).lighter());
+        }
+
+        //active station
+        if(!feature->getStation().isNull() && feature->getStation()->getIsActiveStation()){
+            return QColor(Qt::darkGray);
+        }
+
+        //inactive station
+        if(!feature->getStation().isNull()){
+            return QColor(Qt::lightGray);
+        }
+
+        //unsovled feature
+
     }
 
     return QVariant();
@@ -122,6 +139,66 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
  * \return
  */
 bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & value, int role){
+
+    //check current job and model index
+    if(this->currentJob.isNull() || !index.isValid()){
+        return false;
+    }
+
+    //get the feature to at index.row()
+    if(this->currentJob->getFeatureCount() <= index.row()){
+        return false;
+    }
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeaturesList().at(index.row());
+
+    //check the feature
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return false;
+    }
+
+    //get and check column index
+    int column = index.column();
+    if(column < 0 || getDisplayAttributes().size() <= column){
+        return false;
+    }
+
+    //get display attribute
+    int attr = getDisplayAttributes().at(column);
+
+    //if a non-trafo param feature has been edited
+    if(getIsFeatureDisplayAttribute(attr)){
+
+        switch((FeatureDisplayAttributes)attr){
+        case eFeatureDisplayName:{
+
+            //check if the feature is a nominal geometry
+            bool isNominal = (!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal());
+            QPointer<CoordinateSystem> nominalSystem(NULL);
+            if(isNominal){
+                nominalSystem = feature->getGeometry()->getNominalSystem();
+            }
+
+            //only commit the new feature name if it is valid
+            if(this->currentJob->validateFeatureName(value.toString(), feature->getFeatureTypeEnum(), isNominal, nominalSystem)){
+                feature->getFeature()->setFeatureName(value.toString());
+                return true;
+            }
+            return false;
+
+        }case eFeatureDisplayComment:{
+            feature->getFeature()->setComment(value.toString());
+            return true;
+        }case eFeatureDisplayGroup:{
+            feature->getFeature()->setGroupName(value.toString());
+            return true;
+        }
+        }
+
+    }
+
+    return false;
+
+
 
     /*
     //get the active feature
@@ -224,6 +301,86 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
     this->updateModel();
 */
     return true;
+
+}
+
+/*!
+ * \brief FeatureTableModel::getFeatureIdAtIndex
+ * Returns the id of the feature at index or -1
+ * \param index
+ * \return
+ */
+int FeatureTableModel::getFeatureIdAtIndex(const QModelIndex &index){
+
+    //check index
+    if(!index.isValid()){
+        return -1;
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return -1;
+    }
+
+    //check if row index is valid
+    if(index.row() >= this->currentJob->getFeatureCount()){
+        return -1;
+    }
+
+    //check feature at index
+    if(this->currentJob->getFeaturesList().at(index.row()).isNull()
+            || this->currentJob->getFeaturesList().at(index.row())->getFeature().isNull()){
+        return -1;
+    }
+
+    return this->currentJob->getFeaturesList().at(index.row())->getFeature()->getId();
+
+}
+
+/*!
+ * \brief FeatureTableModel::getActiveFeature
+ * \return
+ */
+QPointer<FeatureWrapper> FeatureTableModel::getActiveFeature() const{
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return QPointer<FeatureWrapper>(NULL);
+    }
+
+    return this->currentJob->getActiveFeature();
+
+}
+
+/*!
+ * \brief FeatureTableModel::setActiveFeature
+ * \param index
+ */
+void FeatureTableModel::setActiveFeature(const QModelIndex &index){
+
+    //check index
+    if(!index.isValid()){
+        return;
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check if row index is valid
+    if(index.row() >= this->currentJob->getFeatureCount()){
+        return;
+    }
+
+    //check feature at index
+    if(this->currentJob->getFeaturesList().at(index.row()).isNull()
+            || this->currentJob->getFeaturesList().at(index.row())->getFeature().isNull()){
+        return;
+    }
+
+    //set active feature
+    this->currentJob->getFeaturesList().at(index.row())->getFeature()->setActiveFeatureState(true);
 
 }
 

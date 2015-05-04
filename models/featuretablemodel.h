@@ -4,6 +4,7 @@
 #include <QAbstractTableModel>
 #include <QObject>
 #include <QPointer>
+#include <QColor>
 
 #include "oijob.h"
 #include "types.h"
@@ -12,6 +13,7 @@
 
 /*!
  * \brief The FeatureTableModel class
+ * Model with all features of an OpenIndy job
  */
 class FeatureTableModel : public QAbstractTableModel
 {
@@ -35,6 +37,19 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+
+    //##############################
+    //get id of the feature at index
+    //##############################
+
+    int getFeatureIdAtIndex(const QModelIndex &index);
+
+    //#########################
+    //get or set active feature
+    //#########################
+
+    QPointer<FeatureWrapper> getActiveFeature() const;
+    void setActiveFeature(const QModelIndex &index);
 
     //###############################
     //get or set current OpenIndy job

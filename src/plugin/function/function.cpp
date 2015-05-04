@@ -1620,6 +1620,8 @@ const QMultiMap<QString, QString> &Function::getStringParameter() const{
  */
 void Function::setScalarInputParams(const ScalarInputParams &params){
     this->scalarInputParams = params;
+    this->scalarInputParams.isValid = true;
+    emit this->scalarInputParametersChanged();
 }
 
 /*!
@@ -1713,6 +1715,8 @@ const QMap<int, QList<InputElement> > &Function::getInputElements() const{
  * \param position
  */
 void Function::addInputElement(const InputElement &element, const int &position){
+
+    //add the input element
     if(this->inputElements.contains(position)){
         this->inputElements[position].append(element);
     }else{
@@ -1720,6 +1724,9 @@ void Function::addInputElement(const InputElement &element, const int &position)
         elements.append(element);
         this->inputElements.insert(position, elements);
     }
+
+    emit this->inputElementsChanged();
+
 }
 
 /*!
@@ -1730,6 +1737,7 @@ void Function::addInputElement(const InputElement &element, const int &position)
 void Function::removeInputElement(const int &id, const int &position){
     if(this->inputElements.contains(position)){
         this->inputElements[position].removeOne(InputElement(id));
+        emit this->inputElementsChanged();
     }
 }
 
@@ -1740,6 +1748,7 @@ void Function::removeInputElement(const int &id, const int &position){
 void Function::removeInputElement(const int &id){
     for(int i = 0; i < this->inputElements.size(); i++){
         this->inputElements[i].removeOne(InputElement(id));
+        emit this->inputElementsChanged();
     }
 }
 
@@ -1753,6 +1762,7 @@ void Function::replaceInputElement(const InputElement &element, const int &posit
         int index = this->inputElements[position].indexOf(element);
         if(index > -1){
             this->inputElements[position].replace(index, element);
+            emit this->inputElementsChanged();
         }
     }
 }
@@ -1766,6 +1776,8 @@ void Function::clear(){
     this->scalarInputParams.isValid = false;
     this->resultProtocol.clear();
     this->statistic.setIsValid(false);
+
+    emit this->inputElementsChanged();
 }
 
 /*!

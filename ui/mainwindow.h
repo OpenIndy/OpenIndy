@@ -16,7 +16,10 @@
 #include "createfeaturedialog.h"
 #include "pluginloaderdialog.h"
 #include "importnominaldialog.h"
+#include "featurefunctionsdialog.h"
 #include "loadingdialog.h"
+
+#include "featuretabledelegate.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,9 +43,9 @@ signals:
     //###################################
 
     //active feature states
-    void setActiveFeature(const int &featureId);
-    void setActiveStation(const int &featureId);
-    void setActiveCoordinateSystem(const int &featureId);
+    //void setActiveFeature(const int &featureId);
+    //void setActiveStation(const int &featureId);
+    //void setActiveCoordinateSystem(const int &featureId);
 
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
@@ -115,6 +118,12 @@ private slots:
     //import export actions
     void on_action_importNominals_triggered();
 
+    //feature table view interactions
+    void on_tableView_features_clicked(const QModelIndex &index);
+
+    //function dialog
+    void on_actionSet_function_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -130,9 +139,9 @@ private:
     void connectDialogs();
     void assignModels();
 
-    //#################
-    //init GUI elements
-    //#################
+    //##################################
+    //methods to initialize GUI elements
+    //##################################
 
     void initFeatureTableViews();
 
@@ -144,6 +153,7 @@ private:
     PluginLoaderDialog pluginLoaderDialog;
     ImportNominalDialog importNominalDialog;
     LoadingDialog loadingDialog;
+    FeatureFunctionsDialog featureFunctionsDialog;
 
 };
 

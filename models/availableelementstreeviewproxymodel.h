@@ -33,13 +33,19 @@ public:
     //set filter
     //##########
 
-    void setSelectedFunctionPosition(const int &functionIndex, const int &neededElementIndex);
+    void setSelectedFunctionPosition(const int &functionPosition, const int &neededElementIndex);
 
-    //#######################################
-    //access feature tree item by model index
-    //#######################################
+    //###############################################
+    //get or set information about available elements
+    //###############################################
 
-    QPointer<FeatureTreeItem> getItemAtIndex(const QModelIndex &index);
+    bool validateSelection(const QModelIndexList &selection) const;
+
+    void addInputElements(const QModelIndexList &selection);
+
+
+
+    //QPointer<FeatureTreeItem> getItemAtIndex(const QModelIndex &index);
 
     //###########################################
     //override methods of sort filter proxy model
@@ -63,6 +69,8 @@ private:
 
     void resetSelectedFunctionPosition();
 
+    void addInputElement(Feature *target, Function *function, const ElementTypes &type, const QPointer<FeatureTreeItem> &item);
+
     //###########
     //current job
     //###########
@@ -75,6 +83,12 @@ private:
 
     int functionPosition; //specifies the index of the function list of the active feature
     int neededElementIndex; //specifies the needed element index of the function at functionPosition
+
+    //#######################
+    //save connected function
+    //#######################
+
+    QPointer<Function> connectedFunction;
 
 };
 

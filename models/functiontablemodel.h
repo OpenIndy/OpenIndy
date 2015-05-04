@@ -32,6 +32,14 @@ public:
 
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
+    //########################
+    //get function information
+    //########################
+
+    QString getFunctionDescription(const QModelIndex &index) const;
+    QString getFunctionName(const QModelIndex &index) const;
+    QString getPluginFilePath(const QModelIndex &index) const;
+
     //######################################
     //get or set currently available plugins
     //######################################

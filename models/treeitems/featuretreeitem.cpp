@@ -290,7 +290,7 @@ void FeatureTreeItem::appendChild(const QPointer<FeatureTreeItem> &child){
 
     //set index and parent for child
     child->index = this->children.size();
-    child->setParent(this);
+    child->parent = this;
 
     //add the child
     this->children.append(child);

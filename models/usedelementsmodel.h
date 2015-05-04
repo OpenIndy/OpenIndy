@@ -29,16 +29,17 @@ public:
     //#######################################
 
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;
+    int	columnCount(const QModelIndex & parent = QModelIndex()) const;
 
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-    //#####################################
-    //access used element id by model index
-    //#####################################
+    //####################
+    //remove used elements
+    //####################
 
-    int getElementIdAtIndex(const QModelIndex &index);
+    void removeUsedElements(const QModelIndexList &selection);
 
     //###############################
     //get or set current OpenIndy job
@@ -51,7 +52,7 @@ public:
     //set filter
     //##########
 
-    void setSelectedFunctionPosition(const int &functionIndex, const int &neededElementIndex);
+    void setSelectedFunctionPosition(const int &functionPosition, const int &neededElementIndex);
 
 private slots:
 
@@ -84,6 +85,12 @@ private:
 
     int functionPosition; //specifies the index of the function list of the active feature
     int neededElementIndex; //specifies the needed element index of the function at functionPosition
+
+    //#######################
+    //save connected function
+    //#######################
+
+    QPointer<Function> connectedFunction;
 
 };
 

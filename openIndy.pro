@@ -54,6 +54,8 @@ INCLUDEPATH += $$PWD/controller/param
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/ui/delegates
 INCLUDEPATH += $$PWD/ui/dialogs
+INCLUDEPATH += $$PWD/ui/widgets
+INCLUDEPATH += $$PWD/ui/selectionmodels
 
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
 
@@ -72,8 +74,6 @@ SOURCES += \
     main.cpp \
     ui/mainwindow.cpp \
     ui/dialogs/createfeaturedialog.cpp \
-    ui/delegates/featureoverviewdelegate.cpp \
-    ui/delegates/trafoparamdelegate.cpp \
     controller/console.cpp \
     controller/controller.cpp \
     src/featureattributes.cpp \
@@ -148,13 +148,16 @@ SOURCES += \
     models/treeitems/functiontreeitem.cpp \
     models/activefeaturefunctionsmodel.cpp \
     models/functiontablemodel.cpp \
-    models/functiontableproxymodel.cpp
+    models/functiontableproxymodel.cpp \
+    ui/dialogs/featurefunctionsdialog.cpp \
+    ui/widgets/scalarparameterwidget.cpp \
+    ui/selectionmodels/multiselectionmodel.cpp \
+    ui/delegates/featuretabledelegate.cpp \
+    ui/delegates/trafoparamtabledelegate.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
     ui/dialogs/createfeaturedialog.h \
-    ui/delegates/featureoverviewdelegate.h \
-    ui/delegates/trafoparamdelegate.h \
     controller/console.h \
     controller/controller.h \
     src/featureattributes.h \
@@ -246,11 +249,17 @@ HEADERS  += \
     models/treeitems/functiontreeitem.h \
     models/activefeaturefunctionsmodel.h \
     models/functiontablemodel.h \
-    models/functiontableproxymodel.h
+    models/functiontableproxymodel.h \
+    ui/dialogs/featurefunctionsdialog.h \
+    ui/widgets/scalarparameterwidget.h \
+    ui/selectionmodels/multiselectionmodel.h \
+    ui/delegates/featuretabledelegate.h \
+    ui/delegates/trafoparamtabledelegate.h
 
 FORMS    += \
     ui/mainwindow.ui \
     ui/dialogs/createfeaturedialog.ui \
     ui/dialogs/pluginloaderdialog.ui \
     ui/dialogs/importnominaldialog.ui \
-    ui/dialogs/loadingdialog.ui
+    ui/dialogs/loadingdialog.ui \
+    ui/dialogs/featurefunctionsdialog.ui

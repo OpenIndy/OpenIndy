@@ -59,7 +59,7 @@ int ActiveFeatureFunctionsModel::columnCount(const QModelIndex &parent) const{
  */
 QVariant ActiveFeatureFunctionsModel::data(const QModelIndex &index, int role) const{
 
-    if (!index.isValid())
+    if(!index.isValid())
         return QVariant();
 
     FunctionTreeItem *item = static_cast<FunctionTreeItem*>(index.internalPointer());
@@ -84,7 +84,7 @@ QVariant ActiveFeatureFunctionsModel::data(const QModelIndex &index, int role) c
  */
 QModelIndex ActiveFeatureFunctionsModel::index(int row, int column, const QModelIndex &parent) const{
 
-    if (!hasIndex(row, column, parent))
+    if(!hasIndex(row, column, parent))
         return QModelIndex();
 
     FunctionTreeItem *parentItem = NULL;
@@ -125,6 +125,346 @@ QModelIndex ActiveFeatureFunctionsModel::parent(const QModelIndex &index) const{
     }else{
         return QModelIndex();
     }
+
+}
+
+/*!
+ * \brief ActiveFeatureFunctionsModel::headerData
+ * \param section
+ * \param orientation
+ * \param role
+ * \return
+ */
+QVariant ActiveFeatureFunctionsModel::headerData(int section, Qt::Orientation orientation, int role) const{
+    if((Qt::DisplayRole == role) &&
+            (Qt::Horizontal == orientation) &&
+            (0 <= section) &&
+            (section < columnCount())){
+
+        return "functions";
+
+    }
+    return QVariant();
+}
+
+/*!
+ * \brief ActiveFeatureFunctionsModel::canRemoveFunction
+ * \param index
+ * \return
+ */
+bool ActiveFeatureFunctionsModel::canRemoveFunction(const QModelIndex &index) const{
+
+    //check index (has to be valid and its parent has to be the root item)
+    if(!index.isValid() || index.parent().isValid()){
+        return false;
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return false;
+    }
+
+    //check and get active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return false;
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check function
+    if(index.row() >= feature->getFunctions().size() || feature->getFunctions().at(index.row()).isNull()){
+        return false;
+    }
+
+    //do not delete the first function if more than one function is available
+    if(feature->getFunctions().size() > 1 && index.row() == 0){
+        return false;
+    }
+
+    return true;
+
+}
+
+/*!
+ * \brief ActiveFeatureFunctionsModel::removeFunction
+ * \param index
+ */
+void ActiveFeatureFunctionsModel::removeFunction(const QModelIndex &index){
+
+    //check index (has to be valid and its parent has to be the root item)
+    if(!index.isValid() || index.parent().isValid()){
+        return;
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check and get active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return;
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check and get function
+    if(index.row() >= feature->getFunctions().size() || feature->getFunctions().at(index.row()).isNull()){
+        return;
+    }
+    QPointer<Function> function = feature->getFunctions().at(index.row());
+
+    //remove the function from the feature
+    feature->removeFunction(index.row());
+
+    //delete the function
+    if(!function.isNull()){
+        delete function;
+    }
+
+}
+
+/*!
+ * \brief ActiveFeatureFunctionsModel::getFunctionDescription
+ * \param index
+ * \return
+ */
+QString ActiveFeatureFunctionsModel::getFunctionDescription(const QModelIndex &index) const{
+
+    //check index (has to be valid and its parent has to be the root item)
+    if(!index.isValid() || index.parent().isValid()){
+        return "";
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return "";
+    }
+
+    //check and get active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return "";
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check and get function
+    if(index.row() >= feature->getFunctions().size() || feature->getFunctions().at(index.row()).isNull()){
+        return "";
+    }
+    Function *function = feature->getFunctions().at(index.row());
+
+    return function->getMetaData().description;
+
+}
+
+/*!
+ * \brief ActiveFeatureFunctionsModel::getInputElementDexcription
+ * \param index
+ * \return
+ */
+QString ActiveFeatureFunctionsModel::getInputElementDescription(const QModelIndex &index) const{
+
+    //check index (has to be valid and its parent must not be the root item)
+    if(!index.isValid() || !index.parent().isValid()){
+        return "";
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return "";
+    }
+
+    //check and get active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return "";
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check and get function
+    if(index.parent().row() >= feature->getFunctions().size() || feature->getFunctions().at(index.parent().row()).isNull()){
+        return "";
+    }
+    Function *function = feature->getFunctions().at(index.parent().row());
+
+    //check and get needed element
+    if(index.row() >= function->getNeededElements().size()){
+        return "";
+    }
+    NeededElement element = function->getNeededElements().at(index.row());
+
+    return element.description;
+
+}
+
+/*!
+ * \brief ActiveFeatureFunctionsModel::getIntegerParameter
+ * \param index
+ * \return
+ */
+QMap<QString, int> ActiveFeatureFunctionsModel::getIntegerParameter(const QModelIndex &index) const{
+
+    //check index (has to be valid and its parent has to be the root item)
+    if(!index.isValid() || index.parent().isValid()){
+        return QMap<QString, int>();
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return QMap<QString, int>();
+    }
+
+    //check and get active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return QMap<QString, int>();
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check and get function
+    if(index.row() >= feature->getFunctions().size() || feature->getFunctions().at(index.row()).isNull()){
+        return QMap<QString, int>();
+    }
+    Function *function = feature->getFunctions().at(index.row());
+
+    return function->getScalarInputParams().intParameter;
+
+}
+
+/*!
+ * \brief ActiveFeatureFunctionsModel::getDoubleParameter
+ * \param index
+ * \return
+ */
+QMap<QString, double> ActiveFeatureFunctionsModel::getDoubleParameter(const QModelIndex &index) const{
+
+    //check index (has to be valid and its parent has to be the root item)
+    if(!index.isValid() || index.parent().isValid()){
+        return QMap<QString, double>();
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return QMap<QString, double>();
+    }
+
+    //check and get active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return QMap<QString, double>();
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check and get function
+    if(index.row() >= feature->getFunctions().size() || feature->getFunctions().at(index.row()).isNull()){
+        return QMap<QString, double>();
+    }
+    Function *function = feature->getFunctions().at(index.row());
+
+    return function->getScalarInputParams().doubleParameter;
+
+}
+
+/*!
+ * \brief ActiveFeatureFunctionsModel::getStringParameterSelection
+ * \param index
+ * \return
+ */
+QMap<QString, QString> ActiveFeatureFunctionsModel::getStringParameterSelection(const QModelIndex &index) const{
+
+    //check index (has to be valid and its parent has to be the root item)
+    if(!index.isValid() || index.parent().isValid()){
+        return QMap<QString, QString>();
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return QMap<QString, QString>();
+    }
+
+    //check and get active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return QMap<QString, QString>();
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check and get function
+    if(index.row() >= feature->getFunctions().size() || feature->getFunctions().at(index.row()).isNull()){
+        return QMap<QString, QString>();
+    }
+    Function *function = feature->getFunctions().at(index.row());
+
+    return function->getScalarInputParams().stringParameter;
+
+}
+
+/*!
+ * \brief ActiveFeatureFunctionsModel::setScalarInputParameters
+ * \param index
+ * \param intParams
+ * \param doubleParams
+ * \param stringParams
+ */
+void ActiveFeatureFunctionsModel::setScalarInputParameters(const QModelIndex &index, const QMap<QString, int> &intParams, const QMap<QString, double> &doubleParams, const QMap<QString, QString> &stringParams){
+
+    //check index (has to be valid and its parent has to be the root item)
+    if(!index.isValid() || index.parent().isValid()){
+        return;
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check and get active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return;
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check and get function
+    if(index.row() >= feature->getFunctions().size() || feature->getFunctions().at(index.row()).isNull()){
+        return;
+    }
+    Function *function = feature->getFunctions().at(index.row());
+
+    //create scalar input parameters
+    ScalarInputParams params;
+    params.intParameter = intParams;
+    params.doubleParameter = doubleParams;
+    params.stringParameter = stringParams;
+
+    //set scalar input parameters
+    function->setScalarInputParams(params);
+
+}
+
+/*!
+ * \brief ActiveFeatureFunctionsModel::getStringParameter
+ * \param index
+ * \return
+ */
+QMultiMap<QString, QString> ActiveFeatureFunctionsModel::getStringParameter(const QModelIndex &index) const{
+
+    //check index (has to be valid and its parent has to be the root item)
+    if(!index.isValid() || index.parent().isValid()){
+        return QMultiMap<QString, QString>();
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return QMultiMap<QString, QString>();
+    }
+
+    //check and get active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return QMultiMap<QString, QString>();
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check and get function
+    if(index.row() >= feature->getFunctions().size() || feature->getFunctions().at(index.row()).isNull()){
+        return QMultiMap<QString, QString>();
+    }
+    Function *function = feature->getFunctions().at(index.row());
+
+    return function->getStringParameter();
 
 }
 
@@ -208,6 +548,7 @@ void ActiveFeatureFunctionsModel::updateModel(){
             }
 
         }
+        this->rootItem->appendChild(itemFunction);
 
     }
 

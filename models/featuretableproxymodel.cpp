@@ -23,6 +23,28 @@ void FeatureTableProxyModel::setFeatureTableColumnConfig(const FeatureTableColum
 }
 
 /*!
+ * \brief FeatureTableProxyModel::getFeatureIdAtIndex
+ * \param index
+ * \return
+ */
+/*int FeatureTableProxyModel::getFeatureIdAtIndex(const QModelIndex &index){
+
+    //check index
+    if(!index.isValid()){
+        return -1;
+    }
+
+    //get and cast source model
+    FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
+    if(source_model == NULL){
+        return -1;
+    }
+
+    return source_model->getFeatureIdAtIndex(this->mapToSource(index));
+
+}*/
+
+/*!
  * \brief FeatureTableProxyModel::filterAcceptsRow
  * Filter features by group name and feature type
  * \param source_row

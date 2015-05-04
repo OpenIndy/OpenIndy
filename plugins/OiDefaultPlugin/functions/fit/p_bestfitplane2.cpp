@@ -15,6 +15,7 @@ void BestFitPlane2::init(){
     this->metaData.iid = "de.openIndy.plugin.function.fitFunction.v001";
 
     //set needed elements
+    this->neededElements.clear();
     NeededElement param1;
     param1.description = "Select at least three observations to calculate the best fit plane.";
     param1.infinite = true;

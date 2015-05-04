@@ -1,4 +1,4 @@
-#include "trafoparamdelegate.h"
+#include "trafoparamtabledelegate.h"
 
 TrafoParamDelegate::TrafoParamDelegate(QObject * parent)
     : QItemDelegate(parent)

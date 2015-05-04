@@ -15,6 +15,7 @@ void BestFitSphere::init(){
     this->metaData.iid = "de.openIndy.plugin.function.fitFunction.v001";
 
     //set needed elements
+    this->neededElements.clear();
     NeededElement param1;
     param1.description = "Select at least four observations to calculate the best fit sphere.";
     param1.infinite = true;

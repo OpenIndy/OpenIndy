@@ -42,6 +42,15 @@ int UsedElementsModel::rowCount(const QModelIndex &parent) const{
 }
 
 /*!
+ * \brief UsedElementsModel::columnCount
+ * \param parent
+ * \return
+ */
+int UsedElementsModel::columnCount(const QModelIndex &parent) const{
+    return 1;
+}
+
+/*!
  * \brief UsedElementsModel::data
  * \param index
  * \param role
@@ -188,11 +197,55 @@ QVariant UsedElementsModel::headerData(int section, Qt::Orientation orientation,
 }
 
 /*!
+ * \brief UsedElementsModel::removeUsedElements
+ * \param selection
+ */
+void UsedElementsModel::removeUsedElements(const QModelIndexList &selection){
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //get and check active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return;
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check selected function position
+    if(this->functionPosition < 0 || this->functionPosition >= feature->getFunctions().size()
+            || feature->getFunctions().at(this->functionPosition).isNull()){
+        return;
+    }
+    Function *function = feature->getFunctions().at(this->functionPosition);
+
+    //check and get input elements
+    if(!function->getInputElements().contains(this->neededElementIndex)){
+        return;
+    }
+    QList<InputElement> inputElements = function->getInputElements().value(this->neededElementIndex);
+
+    //remove all selected elements
+    foreach(const QModelIndex &index, selection){
+
+        //check index
+        if(!index.isValid() || index.row() >= inputElements.size()){
+            return;
+        }
+
+        function->removeInputElement(inputElements.at(index.row()).id, this->neededElementIndex);
+
+    }
+
+}
+
+/*!
  * \brief UsedElementsModel::getElementIdAtIndex
  * \param index
  * \return
  */
-int UsedElementsModel::getElementIdAtIndex(const QModelIndex &index){
+/*int UsedElementsModel::getElementIdAtIndex(const QModelIndex &index){
 
     //check index
     if(!index.isValid()){
@@ -226,7 +279,7 @@ int UsedElementsModel::getElementIdAtIndex(const QModelIndex &index){
 
     return element.id;
 
-}
+}*/
 
 /*!
  * \brief UsedElementsModel::getCurrentJob
@@ -257,12 +310,36 @@ void UsedElementsModel::setCurrentJob(const QPointer<OiJob> &job){
 
 /*!
  * \brief UsedElementsModel::setSelectedFunctionPosition
- * \param functionIndex
+ * \param functionPosition
  * \param neededElementIndex
  */
-void UsedElementsModel::setSelectedFunctionPosition(const int &functionIndex, const int &neededElementIndex){
+void UsedElementsModel::setSelectedFunctionPosition(const int &functionPosition, const int &neededElementIndex){
+
+    //reset old function position
+    this->resetSelectedFunctionPosition();
+
+    //set function index and input element index
     this->functionPosition = functionPosition;
     this->neededElementIndex = neededElementIndex;
+
+    //get and check active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return;
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check selected function position
+    if(this->functionPosition < 0 || this->functionPosition >= feature->getFunctions().size()
+            || feature->getFunctions().at(this->functionPosition).isNull()){
+        return;
+    }
+    this->connectedFunction = feature->getFunctions().at(this->functionPosition);
+
+    //connect the specified function
+    QObject::connect(this->connectedFunction.data(), &Function::inputElementsChanged, this, &UsedElementsModel::updateModel, Qt::AutoConnection);
+
+    this->updateModel();
+
 }
 
 /*!
@@ -295,8 +372,18 @@ void UsedElementsModel::disconnectJob(){
 
 /*!
  * \brief UsedElementsModel::resetSelectedFunctionPosition
+ * Reset the model
  */
 void UsedElementsModel::resetSelectedFunctionPosition(){
+
+    //reset function index and input element index
     this->functionPosition = -1;
     this->neededElementIndex = -1;
+
+    //disconnect function
+    if(!this->connectedFunction.isNull()){
+        QObject::disconnect(this->connectedFunction.data(), &Function::inputElementsChanged, this, &UsedElementsModel::updateModel);
+        this->connectedFunction = QPointer<Function>(NULL);
+    }
+
 }

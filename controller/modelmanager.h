@@ -15,6 +15,11 @@
 #include "parameterdisplayconfig.h"
 #include "pluginloader.h"
 #include "featuretreeviewmodel.h"
+#include "availableelementstreeviewproxymodel.h"
+#include "usedelementsmodel.h"
+#include "activefeaturefunctionsmodel.h"
+#include "functiontablemodel.h"
+#include "functiontableproxymodel.h"
 
 /*!
  * \brief The ModelManager class
@@ -62,6 +67,8 @@ public:
     static FeatureTableModel &getFeatureTableModel();
     static FeatureTableProxyModel &getFeatureTableProxyModel();
     static FeatureTreeViewModel &getFeatureTreeViewModel();
+    static AvailableElementsTreeViewProxyModel &getAvailableElementsTreeViewProxyModel();
+    static UsedElementsModel &getUsedElementsModel();
 
     //coordinate system models
     static QStringListModel &getCoordinateSystemsModel();
@@ -75,6 +82,11 @@ public:
 
     //plugin models
     static QStringListModel &getPluginNamesModel();
+
+    //function models
+    static FunctionTableModel &getFunctionTableModel();
+    static FunctionTableProxyModel &getFunctionTableProxyModel();
+    static ActiveFeatureFunctionsModel &getActiveFeatureFunctionsModel();
 
     //############################################################
     //get dynamic models (models that are newly created each time)
@@ -110,6 +122,8 @@ private:
     static FeatureTableModel featureTableModel;
     static FeatureTableProxyModel featureTableProxyModel;
     static FeatureTreeViewModel featureTreeViewModel;
+    static AvailableElementsTreeViewProxyModel availableElementsTreeViewProxyModel;
+    static UsedElementsModel usedElementsModel;
 
     //coordinate systems models
     static QStringListModel coordinateSystemsModel;
@@ -125,6 +139,11 @@ private:
 
     //plugin models
     static QStringListModel pluginNamesModel;
+
+    //function models
+    static FunctionTableModel functionTableModel;
+    static FunctionTableProxyModel functionTableProxyModel;
+    static ActiveFeatureFunctionsModel activeFeatureFunctionsModel;
 
     //##################
     //empty dummy models
@@ -156,6 +175,9 @@ private:
     //########################################################
 
     static void initFeatureTableModels();
+    static void initFeatureTreeViewModels();
+
+    static void initFunctionTableModels();
 
     static void initUnitTypesModels();
 

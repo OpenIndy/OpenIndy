@@ -10,6 +10,48 @@ FunctionTableProxyModel::FunctionTableProxyModel(QObject *parent) :
 }
 
 /*!
+ * \brief FunctionTableProxyModel::addFunction
+ * \param index
+ */
+void FunctionTableProxyModel::addFunction(const QModelIndex &index){
+
+    //ckeck index
+    if(!index.isValid()){
+        return;
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return;
+    }
+
+    //get and check source model
+    FunctionTableModel *sourceModel = static_cast<FunctionTableModel *>(this->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get function name and plugin file path
+    QString functionName = sourceModel->getFunctionName(this->mapToSource(index));
+    QString filePath = sourceModel->getPluginFilePath(this->mapToSource(index));
+
+    //load and check function
+    QPointer<Function> function = PluginLoader::loadFunctionPlugin(filePath, functionName);
+    if(function.isNull()){
+        return;
+    }
+
+    //add the function to the active feature
+    this->currentJob->getActiveFeature()->getFeature()->addFunction(function);
+
+}
+
+/*!
  * \brief FunctionTableProxyModel::getCurrentJob
  * \return
  */

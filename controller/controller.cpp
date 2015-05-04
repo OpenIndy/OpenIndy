@@ -26,8 +26,6 @@ Controller::Controller(QObject *parent) : QObject(parent){
  */
 void Controller::addFeatures(const FeatureAttributes &attributes){
 
-    Console::getInstance()->addLine("test output");
-
     //check job
     if(this->job.isNull()){
         Console::getInstance()->addLine("No active job");
@@ -35,6 +33,44 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
     }
 
     this->job->addFeatures(attributes);
+
+}
+
+/*!
+ * \brief Controller::setActiveFeature
+ * \param featureId
+ */
+/*void Controller::setActiveFeature(const int &featureId){
+
+    //check job
+    if(this->job.isNull()){
+        Console::getInstance()->addLine("No active job");
+        return;
+    }
+
+    //set active feature
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
+    if(!feature.isNull() && !feature->getFeature().isNull()){
+        feature->getFeature()->setActiveFeatureState(true);
+    }else{
+        Console::getInstance()->addLine(QString("No is no feature with the id %1 that could be activated").arg(featureId));
+    }
+
+}*/
+
+/*!
+ * \brief Controller::setActiveStation
+ * \param featureId
+ */
+void Controller::setActiveStation(const int &featureId){
+
+}
+
+/*!
+ * \brief Controller::setActiveCoordinateSystem
+ * \param featureId
+ */
+void Controller::setActiveCoordinateSystem(const int &featureId){
 
 }
 

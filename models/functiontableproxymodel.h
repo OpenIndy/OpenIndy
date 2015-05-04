@@ -9,6 +9,7 @@
 #include "util.h"
 #include "functiontablemodel.h"
 #include "oimetadata.h"
+#include "pluginloader.h"
 
 /*!
  * \brief The FunctionTableProxyModel class
@@ -19,6 +20,12 @@ class FunctionTableProxyModel : public QSortFilterProxyModel
 
 public:
     explicit FunctionTableProxyModel(QObject *parent = 0);
+
+    //####################################
+    //add a function to the active feature
+    //####################################
+
+    void addFunction(const QModelIndex &index);
 
     //###############################
     //get or set current OpenIndy job

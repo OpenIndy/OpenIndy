@@ -36,6 +36,31 @@ public:
     QModelIndex	index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
     QModelIndex	parent(const QModelIndex & index) const;
 
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+
+    //###############################
+    //get or set function information
+    //###############################
+
+    //remove functions
+    bool canRemoveFunction(const QModelIndex &index) const;
+    void removeFunction(const QModelIndex &index);
+
+    //get description of function and input elements
+    QString getFunctionDescription(const QModelIndex &index) const;
+    QString getInputElementDescription(const QModelIndex &index) const;
+
+    //get user defined scalar input parameters
+    QMap<QString, int> getIntegerParameter(const QModelIndex &index) const;
+    QMap<QString, double> getDoubleParameter(const QModelIndex &index) const;
+    QMap<QString, QString> getStringParameterSelection(const QModelIndex &index) const;
+
+    //set scalar input parameters
+    void setScalarInputParameters(const QModelIndex &index, const QMap<QString, int> &intParams, const QMap<QString, double> &doubleParams, const QMap<QString, QString> &stringParams);
+
+    //get all available string parameters
+    QMultiMap<QString, QString> getStringParameter(const QModelIndex &index) const;
+
     //###############################
     //get or set current OpenIndy job
     //###############################

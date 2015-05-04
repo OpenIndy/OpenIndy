@@ -16,6 +16,7 @@ void BestFitCircle::init(){
     this->metaData.iid = "de.openIndy.plugin.function.fitFunction.v001";
 
     //set needed elements
+    this->neededElements.clear();
     NeededElement param1;
     param1.description = "Select at least three non-collinear observed points to calculate the best fit circle.";
     param1.infinite = true;

@@ -1,5 +1,5 @@
-#ifndef TABLEMODELDELEGATE_H
-#define TABLEMODELDELEGATE_H
+#ifndef FEATURETABLEDELEGATE_H
+#define FEATURETABLEDELEGATE_H
 
 #include <QItemDelegate>
 #include <QLineEdit>
@@ -9,14 +9,18 @@
 #include "featuretableproxymodel.h"
 #include "featuretablemodel.h"
 
-class FeatureOverviewDelegate : public QItemDelegate
+/*!
+ * \brief The FeatureTableDelegate class
+ * Delegate to edit data in FeatureTableModel
+ */
+class FeatureTableDelegate : public QItemDelegate
 {
 public:
-    FeatureOverviewDelegate(QObject * parent = 0);
+    FeatureTableDelegate(QObject * parent = 0);
 
     QWidget* createEditor(QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index) const;
     void setEditorData(QWidget * editor, const QModelIndex & index) const;
     void setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const;
 };
 
-#endif // TABLEMODELDELEGATE_H
+#endif // FEATURETABLEDELEGATE_H
