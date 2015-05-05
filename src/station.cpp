@@ -384,6 +384,7 @@ Station::Station(const QString &name, QObject *parent) : Feature(parent){
     //create a coordinate system object as the station's coordinate system
     this->stationSystem = new CoordinateSystem(QPointer<Station>(this));
     this->stationSystem->setFeatureName(this->name);
+    QObject::connect(this, SIGNAL(featureNameChanged(const int&, const QString&)), this, SLOT(stationNameChanged(const int&, const QString&)), Qt::DirectConnection);
 
     //create a sensor control object, connect it and move it to thread
     QPointer<Station> stationPointer(this);

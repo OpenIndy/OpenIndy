@@ -13,6 +13,7 @@
 
 /*!
  * \brief The FunctionTableProxyModel class
+ * Model that holds all available function plugins filtered by the function types that could be added to the active feature's function list
  */
 class FunctionTableProxyModel : public QSortFilterProxyModel
 {

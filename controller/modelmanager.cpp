@@ -24,7 +24,20 @@ UsedElementsModel ModelManager::usedElementsModel;
 FunctionTableModel ModelManager::functionTableModel;
 FunctionTableProxyModel ModelManager::functionTableProxyModel;
 ActiveFeatureFunctionsModel ModelManager::activeFeatureFunctionsModel;
+QPointer<SensorConfigurationManager> ModelManager::sensorConfigManager;
+SensorTableModel ModelManager::sensorTableModel;
+SensorTableProxyModel ModelManager::sensorTableProxyModel;
+SensorConfigurationModel ModelManager::sensorConfigurationModel;
+SensorConfigurationProxyModel ModelManager::sensorConfigurationProxyModel;
+QStringListModel ModelManager::sensorTypeNamesModel;
 QList<sdb::Plugin> ModelManager::plugins;
+QStandardItemModel ModelManager::baudRateTypesModel;
+QStandardItemModel ModelManager::dataBitTypesModel;
+QStandardItemModel ModelManager::flowControlTypesModel;
+QStandardItemModel ModelManager::parityTypesModel;
+QStandardItemModel ModelManager::stopBitTypesModel;
+QStandardItemModel ModelManager::availableSerialPortsModel;
+QStandardItemModel ModelManager::availableIpAdressesModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -44,6 +57,10 @@ void ModelManager::init(){
     ModelManager::initFunctionTableModels();
     ModelManager::initUnitTypesModels();
     ModelManager::initPluginModels();
+    ModelManager::initSensorTableModels();
+    ModelManager::initSensorListViewModels();
+    ModelManager::initSensorTypeNamesModel();
+    ModelManager::initSensorConnectionModels();
 
 }
 
@@ -64,6 +81,23 @@ void ModelManager::setCurrentJob(const QPointer<OiJob> &job){
         ModelManager::currentJob = job;
         ModelManager::updateJob();
     }
+}
+
+/*!
+ * \brief ModelManager::getSensorConfigManager
+ * \return
+ */
+const QPointer<SensorConfigurationManager> &ModelManager::getSensorConfigManager(){
+    return ModelManager::sensorConfigManager;
+}
+
+/*!
+ * \brief ModelManager::setSensorConfigManager
+ * \param sensorConfigManager
+ */
+void ModelManager::setSensorConfigManager(const QPointer<SensorConfigurationManager> &sensorConfigManager){
+    ModelManager::sensorConfigManager = sensorConfigManager;
+    ModelManager::updateSensorConfigManager();
 }
 
 /*!
@@ -232,6 +266,102 @@ ActiveFeatureFunctionsModel &ModelManager::getActiveFeatureFunctionsModel(){
 }
 
 /*!
+ * \brief ModelManager::getSensorTypeNamesModel
+ * \return
+ */
+QStringListModel &ModelManager::getSensorTypeNamesModel(){
+    return ModelManager::sensorTypeNamesModel;
+}
+
+/*!
+ * \brief ModelManager::getSensorTableModel
+ * \return
+ */
+SensorTableModel &ModelManager::getSensorTableModel(){
+    return ModelManager::sensorTableModel;
+}
+
+/*!
+ * \brief ModelManager::getSensorTableProxyModel
+ * \return
+ */
+SensorTableProxyModel &ModelManager::getSensorTableProxyModel(){
+    return ModelManager::sensorTableProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getSensorConfigurationModel
+ * \return
+ */
+SensorConfigurationModel &ModelManager::getSensorConfigurationModel(){
+    return ModelManager::sensorConfigurationModel;
+}
+
+/*!
+ * \brief ModelManager::getSensorConfigurationProxyModel
+ * \return
+ */
+SensorConfigurationProxyModel &ModelManager::getSensorConfigurationProxyModel(){
+    return ModelManager::sensorConfigurationProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getBaudRateTypesModel
+ * \return
+ */
+QStandardItemModel &ModelManager::getBaudRateTypesModel(){
+    return ModelManager::baudRateTypesModel;
+}
+
+/*!
+ * \brief ModelManager::getDataBitTypesModel
+ * \return
+ */
+QStandardItemModel &ModelManager::getDataBitTypesModel(){
+    return ModelManager::dataBitTypesModel;
+}
+
+/*!
+ * \brief ModelManager::getFlowControlTypesModel
+ * \return
+ */
+QStandardItemModel &ModelManager::getFlowControlTypesModel(){
+    return ModelManager::flowControlTypesModel;
+}
+
+/*!
+ * \brief ModelManager::getParityTypesModel
+ * \return
+ */
+QStandardItemModel &ModelManager::getParityTypesModel(){
+    return ModelManager::parityTypesModel;
+}
+
+/*!
+ * \brief ModelManager::getStopBitTypesModel
+ * \return
+ */
+QStandardItemModel &ModelManager::getStopBitTypesModel(){
+    return ModelManager::stopBitTypesModel;
+}
+
+/*!
+ * \brief ModelManager::getAvailableSerialPortsModel
+ * \return
+ */
+QStandardItemModel &ModelManager::getAvailableSerialPortsModel(){
+    return ModelManager::availableSerialPortsModel;
+}
+
+/*!
+ * \brief ModelManager::getAvailableIpAdressesModel
+ * \return
+ */
+QStandardItemModel &ModelManager::getAvailableIpAdressesModel(){
+    return ModelManager::availableIpAdressesModel;
+}
+
+/*!
  * \brief ModelManager::getExchangeSimpleAsciiNames
  * \param pluginName
  * \return
@@ -376,6 +506,15 @@ void ModelManager::availableGroupsChanged(){
 }
 
 /*!
+ * \brief ModelManager::sensorConfigurationsChanged
+ */
+/*void ModelManager::sensorConfigurationsChanged(){
+
+    ModelManager::updateSensorConfigNamesModel();
+
+}*/
+
+/*!
  * \brief ModelManager::updateJob
  * Passes the new job to all static models
  */
@@ -423,6 +562,20 @@ void ModelManager::updateParameterDisplayConfig(){
 
     //pass the parameter display config to all static models that need it
     ModelManager::featureTableModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
+
+}
+
+/*!
+ * \brief ModelManager::updateSensorConfigManager
+ */
+void ModelManager::updateSensorConfigManager(){
+
+    //pass the sensor config manager to all static models that need it
+    ModelManager::sensorConfigurationModel.setSensorConfigurationManager(ModelManager::sensorConfigManager);
+
+    //connect the config manager to slots in ModelManager
+    //QObject::connect(&ModelManager::sensorConfigManager, &SensorConfigurationManager::sensorConfigurationsChanged,
+    //                 ModelManager::myInstance.data(), &ModelManager::sensorConfigurationsChanged, Qt::AutoConnection);
 
 }
 
@@ -539,6 +692,151 @@ void ModelManager::initFunctionTableModels(){
 }
 
 /*!
+ * \brief ModelManager::initSensorTypeNamesModel
+ */
+void ModelManager::initSensorTypeNamesModel(){
+
+    QStringList sensorTypes;
+
+    foreach(const SensorTypes &type, getAvailableSensorTypes()){
+        sensorTypes.append(getSensorTypeName(type));
+    }
+
+    ModelManager::sensorTypeNamesModel.setStringList(sensorTypes);
+
+}
+
+/*!
+ * \brief ModelManager::initSensorTableModels
+ */
+void ModelManager::initSensorTableModels(){
+
+    //assign source models
+    ModelManager::sensorTableProxyModel.setSourceModel(&ModelManager::sensorTableModel);
+
+}
+
+/*!
+ * \brief ModelManager::initSensorListViewModels
+ */
+void ModelManager::initSensorListViewModels(){
+
+    //assign source models
+    ModelManager::sensorConfigurationProxyModel.setSourceModel(&ModelManager::sensorConfigurationModel);
+
+}
+
+/*!
+ * \brief ModelManager::initSensorConnectionModels
+ */
+void ModelManager::initSensorConnectionModels(){
+
+    //initialize baud rate model
+    QStandardItem *baud1200 = new QStandardItem("1200");
+    baud1200->setData(QSerialPort::Baud1200, Qt::UserRole);
+    ModelManager::baudRateTypesModel.appendRow(baud1200);
+    QStandardItem *baud2400 = new QStandardItem("2400");
+    baud2400->setData(QSerialPort::Baud2400, Qt::UserRole);
+    ModelManager::baudRateTypesModel.appendRow(baud2400);
+    QStandardItem *baud4800 = new QStandardItem("4800");
+    baud4800->setData(QSerialPort::Baud4800, Qt::UserRole);
+    ModelManager::baudRateTypesModel.appendRow(baud4800);
+    QStandardItem *baud9600 = new QStandardItem("9600");
+    baud9600->setData(QSerialPort::Baud9600, Qt::UserRole);
+    ModelManager::baudRateTypesModel.appendRow(baud9600);
+    QStandardItem *baud19200 = new QStandardItem("19200");
+    baud19200->setData(QSerialPort::Baud19200, Qt::UserRole);
+    ModelManager::baudRateTypesModel.appendRow(baud19200);
+    QStandardItem *baud38400 = new QStandardItem("38400");
+    baud38400->setData(QSerialPort::Baud38400, Qt::UserRole);
+    ModelManager::baudRateTypesModel.appendRow(baud38400);
+    QStandardItem *baud57600 = new QStandardItem("57600");
+    baud57600->setData(QSerialPort::Baud57600, Qt::UserRole);
+    ModelManager::baudRateTypesModel.appendRow(baud57600);
+    QStandardItem *baud115200 = new QStandardItem("115200");
+    baud115200->setData(QSerialPort::Baud115200, Qt::UserRole);
+    ModelManager::baudRateTypesModel.appendRow(baud115200);
+
+    //initialize databits model
+    QStandardItem *data5 = new QStandardItem("5");
+    data5->setData(QSerialPort::Data5, Qt::UserRole);
+    ModelManager::dataBitTypesModel.appendRow(data5);
+    QStandardItem *data6 = new QStandardItem("6");
+    data6->setData(QSerialPort::Data6, Qt::UserRole);
+    ModelManager::dataBitTypesModel.appendRow(data6);
+    QStandardItem *data7 = new QStandardItem("7");
+    data7->setData(QSerialPort::Data7, Qt::UserRole);
+    ModelManager::dataBitTypesModel.appendRow(data7);
+    QStandardItem *data8 = new QStandardItem("8");
+    data8->setData(QSerialPort::Data8, Qt::UserRole);
+    ModelManager::dataBitTypesModel.appendRow(data8);
+
+    //initialize flow control model
+    QStandardItem *noControl = new QStandardItem("no flowcontrol");
+    noControl->setData(QSerialPort::NoFlowControl, Qt::UserRole);
+    ModelManager::flowControlTypesModel.appendRow(noControl);
+    QStandardItem *hardwareControl = new QStandardItem("hardware flowcontrol");
+    hardwareControl->setData(QSerialPort::HardwareControl, Qt::UserRole);
+    ModelManager::flowControlTypesModel.appendRow(hardwareControl);
+    QStandardItem *softwareControl = new QStandardItem("software flowcontrol");
+    softwareControl->setData(QSerialPort::SoftwareControl, Qt::UserRole);
+    ModelManager::flowControlTypesModel.appendRow(softwareControl);
+    QStandardItem *unknownControl = new QStandardItem("unknown flowcontrol");
+    unknownControl->setData(QSerialPort::UnknownFlowControl, Qt::UserRole);
+    ModelManager::flowControlTypesModel.appendRow(unknownControl);
+
+    //initialize parity model
+    QStandardItem *noParity = new QStandardItem("no parity");
+    noParity->setData(QSerialPort::NoParity, Qt::UserRole);
+    ModelManager::parityTypesModel.appendRow(noParity);
+    QStandardItem *evenParity = new QStandardItem("even parity");
+    evenParity->setData(QSerialPort::EvenParity, Qt::UserRole);
+    ModelManager::parityTypesModel.appendRow(evenParity);
+    QStandardItem *oddParity = new QStandardItem("odd parity");
+    oddParity->setData(QSerialPort::OddParity, Qt::UserRole);
+    ModelManager::parityTypesModel.appendRow(oddParity);
+    QStandardItem *spaceParity = new QStandardItem("space parity");
+    spaceParity->setData(QSerialPort::SpaceParity, Qt::UserRole);
+    ModelManager::parityTypesModel.appendRow(spaceParity);
+    QStandardItem *markParity = new QStandardItem("mark parity");
+    markParity->setData(QSerialPort::MarkParity, Qt::UserRole);
+    ModelManager::parityTypesModel.appendRow(markParity);
+    QStandardItem *unknownParity = new QStandardItem("unknown parity");
+    unknownParity->setData(QSerialPort::UnknownParity, Qt::UserRole);
+    ModelManager::parityTypesModel.appendRow(unknownParity);
+
+    //initialize stop bits model
+    QStandardItem *oneStop = new QStandardItem("one stop");
+    oneStop->setData(QSerialPort::OneStop, Qt::UserRole);
+    ModelManager::stopBitTypesModel.appendRow(oneStop);
+    QStandardItem *oneHalfStop = new QStandardItem("one and half");
+    oneHalfStop->setData(QSerialPort::OneAndHalfStop, Qt::UserRole);
+    ModelManager::stopBitTypesModel.appendRow(oneHalfStop);
+    QStandardItem *twoStop = new QStandardItem("two stop");
+    twoStop->setData(QSerialPort::TwoStop, Qt::UserRole);
+    ModelManager::stopBitTypesModel.appendRow(twoStop);
+    QStandardItem *unknownStop = new QStandardItem("unknown stopbits");
+    unknownStop->setData(QSerialPort::UnknownStopBits, Qt::UserRole);
+    ModelManager::stopBitTypesModel.appendRow(unknownStop);
+
+    //initialize serial ports model
+    foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts()){
+        QStandardItem *serialPort = new QStandardItem(info.portName());
+        ModelManager::availableSerialPortsModel.appendRow(serialPort);
+    }
+
+    //initialize ip4 addresses model
+    QList<QHostAddress> ipAdresses = QNetworkInterface::allAddresses();
+    foreach(const QHostAddress &adress, ipAdresses){
+        if(adress.protocol() == QAbstractSocket::IPv4Protocol){
+            QStandardItem *ip = new QStandardItem(adress.toString());
+            ModelManager::availableIpAdressesModel.appendRow(ip);
+        }
+    }
+
+}
+
+/*!
  * \brief ModelManager::initUnitTypesModels
  */
 void ModelManager::initUnitTypesModels(){
@@ -575,6 +873,7 @@ void ModelManager::initPluginModels(){
 
     //pass the plugins list to all static models that need it
     ModelManager::functionTableModel.setPlugins(ModelManager::plugins);
+    ModelManager::sensorTableModel.setPlugins(ModelManager::plugins);
 
     //update plugin names model
     QStringList pluginNames;

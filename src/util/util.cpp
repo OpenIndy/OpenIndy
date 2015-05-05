@@ -20,6 +20,8 @@ QList<int> displayAttributes;
 
 QMap<UnitType, QString> unitTypesMap;
 
+QMap<SensorTypes, QString> sensorTypesMap;
+
 QString undefined = "";
 
 bool isInit = false;
@@ -36,6 +38,7 @@ void init(){
     trafoParamDisplayAttributesMap.clear();
     displayAttributes.clear();
     unitTypesMap.clear();
+    sensorTypesMap.clear();
 
     //fill element map
     elementTypesMap.insert(eCircleElement, "circle");
@@ -250,6 +253,10 @@ void init(){
     unitTypesMap.insert(eUnitMilliMeter, "[mm]");
     unitTypesMap.insert(eUnitMilliRadians, "[mrad]");
     unitTypesMap.insert(eUnitRadiant, "[rad]");
+
+    //fill sensor types map
+    sensorTypesMap.insert(eLaserTracker, "laser tracker");
+    sensorTypesMap.insert(eTotalStation, "total station");
 
     isInit = true;
 
@@ -710,5 +717,50 @@ UnitType getUnitTypeEnum(const QString &name){
 
     //get the corresponding reading enum value
     return internal::unitTypesMap.key(name, eNoUnit);
+
+}
+
+/*!
+ * \brief getAvailableSensorTypes
+ * \return
+ */
+QList<SensorTypes> getAvailableSensorTypes(){
+    return internal::sensorTypesMap.keys();
+}
+
+/*!
+ * \brief getSensorTypeName
+ * \param type
+ * \return
+ */
+const QString &getSensorTypeName(const SensorTypes &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding sensor type name
+    if(internal::sensorTypesMap.contains(type)){
+        return internal::sensorTypesMap[type];
+    }
+    return internal::undefined;
+
+}
+
+/*!
+ * \brief getSensorTypeEnum
+ * \param name
+ * \return
+ */
+SensorTypes getSensorTypeEnum(const QString &name){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding reading enum value
+    return internal::sensorTypesMap.key(name, eUndefinedSensor);
 
 }

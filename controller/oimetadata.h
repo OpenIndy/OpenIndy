@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QJsonArray>
+
+#include "types.h"
 #include "plugin.h"
 #include "sensor.h"
 #include "lasertracker.h"
@@ -49,6 +51,8 @@ public:
     static QString iid_ExchangeDefinedFormat;
 
     static bool findIID(const QString &iid);
+
+    static SensorTypes getSensorTypeEnum(const QString &iid);
 
     //#################################
     //version of the main program (src)

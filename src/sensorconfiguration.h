@@ -8,6 +8,7 @@
 #include <QtSerialPort/QSerialPort>
 
 #include "types.h"
+#include "util.h"
 #include "oivec.h"
 
 class Sensor;
@@ -18,6 +19,7 @@ class Sensor;
 
 /*!
  * \brief The ConnectionConfig class
+ * Save all information needed to connect a sensor
  */
 class ConnectionConfig{
 public:
@@ -36,11 +38,12 @@ public:
 };
 
 /*!
- * \brief The Accuracy struct
+ * \brief The Accuracy class
+ * Save information about the accurycy of a sensor
  */
 class Accuracy{
 public:
-    Accuracy() : sigmaXyz(OiVec(3)), sigmaAzimuth(0.0), sigmaZenith(0.0), sigmaDistance(0.0),
+    Accuracy() : sigmaXyz((OiVec(3))), sigmaAzimuth(0.0), sigmaZenith(0.0), sigmaDistance(0.0),
         sigmaTemp(0.0), sigmaAngleXZ(0.0), sigmaAngleYZ(0.0){}
 
     double sigmaAzimuth;
@@ -62,6 +65,7 @@ public:
  */
 class SensorConfiguration
 {
+
 public:
     SensorConfiguration();
 
@@ -69,15 +73,14 @@ public:
 
     SensorConfiguration &operator=(const SensorConfiguration &copy);
 
-    /*
-    //! compare the attributes of both sensor configs
     friend bool operator==(const SensorConfiguration &left, const SensorConfiguration &right){
 
-        //TODO compare sensor config attributes
-
+        if(left.getName().compare(right.getName()) == 0){
+            return true;
+        }
         return false;
 
-    }*/
+    }
 
     //##########################################
     //get or set sensor configuration attributes
@@ -87,15 +90,21 @@ public:
     void setName(const QString &name);
 
     const bool &getIsSaved() const;
+    void setIsSaved(const bool &isSaved);
 
     bool getIsValid() const;
 
-    const QPointer<Sensor> &getSensor() const;
-    void setSensor(const QPointer<Sensor> &sensor);
+    //const QPointer<Sensor> &getSensor() const;
+    //void setSensor(const QPointer<Sensor> &sensor);
 
     const SensorTypes &getTypeOfSensor() const;
+    void setTypeOfSensor(const SensorTypes &type);
+
     const QString &getPluginName() const;
+    void setPluginName(const QString &name);
+
     const QString &getSensorName() const;
+    void setSensorName(const QString &name);
 
     const Accuracy &getAccuracy() const;
     void setAccuracy(const Accuracy &accuracy);
@@ -127,11 +136,11 @@ private:
 
     QString name;
     bool isSaved;
-    SensorTypes typeOfSensor;
 
     QString pluginName;
     QString sensorName;
-    QPointer<Sensor> sensor;
+    SensorTypes typeOfSensor;
+    //QPointer<Sensor> sensor;
 
     Accuracy accuracy;
     ConnectionConfig cConfig;

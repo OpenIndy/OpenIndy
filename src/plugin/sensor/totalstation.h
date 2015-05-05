@@ -76,6 +76,6 @@ protected:
 
 };
 
-#define TotalStation_iidd "de.openIndy.Plugin.Sensor.TotalStation.v001"
+#define TotalStation_iidd "de.openIndy.plugin.sensor.totalStation.v001"
 
 #endif // TOTALSTATION_H

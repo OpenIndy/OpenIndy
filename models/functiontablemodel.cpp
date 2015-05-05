@@ -239,17 +239,3 @@ void FunctionTableModel::updateModel(){
     emit this->layoutAboutToBeChanged();
     emit this->layoutChanged();
 }
-
-/*!
- * \brief FunctionTableModel::connectJob
- */
-void FunctionTableModel::connectJob(){
-
-}
-
-/*!
- * \brief FunctionTableModel::disconnectJob
- */
-void FunctionTableModel::disconnectJob(){
-
-}

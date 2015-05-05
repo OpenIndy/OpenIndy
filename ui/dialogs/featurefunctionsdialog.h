@@ -80,8 +80,6 @@ private:
     //widget with scalar input parameters
     ScalarParameterWidget *scalarParameterWidget;
 
-private:
-
     //##################################
     //methods to initialize GUI elements
     //##################################

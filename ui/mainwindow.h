@@ -18,6 +18,7 @@
 #include "importnominaldialog.h"
 #include "featurefunctionsdialog.h"
 #include "loadingdialog.h"
+#include "sensorconfigurationdialog.h"
 
 #include "featuretabledelegate.h"
 
@@ -84,8 +85,20 @@ private slots:
     //tasks triggered by controller
     //#############################
 
+    //nominal import
     void importNominalsStarted();
     void importNominalsFinished(const bool &success);
+
+    //active feature changes
+    void activeCoordinateSystemChanged();
+
+    //feature(s) added or removed
+    void coordSystemSetChanged();
+    void stationSetChanged();
+
+    //group(s) added or removed
+    void availableGroupsChanged();
+    void activeGroupChanged();
 
     //#########################
     //actions triggered by user
@@ -124,6 +137,9 @@ private slots:
     //function dialog
     void on_actionSet_function_triggered();
 
+    //sensor dialogs
+    void on_actionSet_instrument_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -154,6 +170,7 @@ private:
     ImportNominalDialog importNominalDialog;
     LoadingDialog loadingDialog;
     FeatureFunctionsDialog featureFunctionsDialog;
+    SensorConfigurationDialog sensorConfigurationDialog;
 
 };
 

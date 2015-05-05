@@ -153,7 +153,15 @@ SOURCES += \
     ui/widgets/scalarparameterwidget.cpp \
     ui/selectionmodels/multiselectionmodel.cpp \
     ui/delegates/featuretabledelegate.cpp \
-    ui/delegates/trafoparamtabledelegate.cpp
+    ui/delegates/trafoparamtabledelegate.cpp \
+    controller/config/measurementconfigmanager.cpp \
+    controller/config/sensorconfigurationmanager.cpp \
+    models/sensortablemodel.cpp \
+    models/sensortableproxymodel.cpp \
+    ui/dialogs/sensorconfigurationdialog.cpp \
+    models/sensorconfigurationmodel.cpp \
+    models/sensorconfigurationproxymodel.cpp \
+    ui/delegates/sensorconfigurationlistdelegate.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -254,7 +262,15 @@ HEADERS  += \
     ui/widgets/scalarparameterwidget.h \
     ui/selectionmodels/multiselectionmodel.h \
     ui/delegates/featuretabledelegate.h \
-    ui/delegates/trafoparamtabledelegate.h
+    ui/delegates/trafoparamtabledelegate.h \
+    controller/config/measurementconfigmanager.h \
+    controller/config/sensorconfigurationmanager.h \
+    models/sensortablemodel.h \
+    models/sensortableproxymodel.h \
+    ui/dialogs/sensorconfigurationdialog.h \
+    models/sensorconfigurationmodel.h \
+    models/sensorconfigurationproxymodel.h \
+    ui/delegates/sensorconfigurationlistdelegate.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -262,4 +278,5 @@ FORMS    += \
     ui/dialogs/pluginloaderdialog.ui \
     ui/dialogs/importnominaldialog.ui \
     ui/dialogs/loadingdialog.ui \
-    ui/dialogs/featurefunctionsdialog.ui
+    ui/dialogs/featurefunctionsdialog.ui \
+    ui/dialogs/sensorconfigurationdialog.ui

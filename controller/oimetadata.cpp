@@ -65,6 +65,24 @@ bool OiMetaData::findIID(const QString &iid){
 }
 
 /*!
+ * \brief OiMetaData::getSensorTypeEnum
+ * \param iid
+ * \return
+ */
+SensorTypes OiMetaData::getSensorTypeEnum(const QString &iid){
+
+    //check the given iid
+    if(iid.compare(OiMetaData::iid_LaserTracker) == 0){
+        return eLaserTracker;
+    }else if(iid.compare(OiMetaData::iid_TotalStation) == 0){
+        return eTotalStation;
+    }
+
+    return eUndefinedSensor;
+
+}
+
+/*!
  * \brief OiMetaData::getCompiler
  * \return
  */

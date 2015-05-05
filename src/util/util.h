@@ -55,4 +55,12 @@ double convertToDefault(const double &value, const UnitType &type);
 const QString &getUnitTypeName(const UnitType &type);
 UnitType getUnitTypeEnum(const QString &name);
 
+//######################################
+//global functions to query sensor types
+//######################################
+
+QList<SensorTypes> getAvailableSensorTypes();
+const QString &getSensorTypeName(const SensorTypes &type);
+SensorTypes getSensorTypeEnum(const QString &name);
+
 #endif // UTIL_H

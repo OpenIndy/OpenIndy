@@ -1489,7 +1489,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
             feature->getFeature()->setJob(this);
 
             //set feature attributes
-            feature->getFeature()->name = name;
+            feature->getFeature()->setFeatureName(name);
             feature->getFeature()->group = fAttr.group;
 
             //if type is trafo param set start and destination system

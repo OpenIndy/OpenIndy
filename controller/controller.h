@@ -14,6 +14,7 @@
 #include "featureattributes.h"
 #include "exchangeParams.h"
 #include "dataexchanger.h"
+#include "sensorconfigurationmanager.h"
 
 /*!
  * \brief The Controller class
@@ -24,6 +25,12 @@ class Controller : public QObject
 
 public:
     explicit Controller(QObject *parent = 0);
+
+    //############
+    //load configs
+    //############
+
+    void loadConfigs();
 
 public slots:
 
@@ -46,6 +53,9 @@ public slots:
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
     void setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config);
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
+
+    //save or load a job
+    void createDefaultJob();
 
 signals:
 
@@ -121,10 +131,10 @@ private:
     //helper methods
     //##############
 
-    void createDefaultJob();
     void setJob(const QPointer<OiJob> &job);
 
     void initDisplayConfigs();
+    void initConfigManager();
 
     //######################
     //connect helper objects
@@ -142,6 +152,9 @@ private:
 
     //data exchanger
     DataExchanger exchanger;
+
+    //config manager
+    QPointer<SensorConfigurationManager> sensorConfigManager;
 
 };
 

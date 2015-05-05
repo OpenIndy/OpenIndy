@@ -9,11 +9,11 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize model manager
     ModelManager::init();
 
-    //create default job
-    this->createDefaultJob();
-
     //initialize display configs
     this->initDisplayConfigs();
+
+    //initialize config manager
+    this->initConfigManager();
 
     //connect helper objects
     this->connectDataExchanger();
@@ -136,6 +136,10 @@ void Controller::createDefaultJob(){
     job->addFeature(stationFeature);
     job->addFeature(systemFeature);
 
+    //activate features
+    station->setActiveStationState(true);
+    station->getCoordinateSystem()->setActiveCoordinateSystemState(true);
+
 }
 
 /*!
@@ -257,6 +261,20 @@ void Controller::initDisplayConfigs(){
     ModelManager::setFeatureTableColumnConfig(featureTableColumnConfig);
     ModelManager::setTrafoParamColumnConfig(trafoParamTableColumnConfig);
     ModelManager::setParameterDisplayConfig(parameterDisplayConfig);
+
+}
+
+/*!
+ * \brief Controller::initConfigManager
+ */
+void Controller::initConfigManager(){
+
+    //load configs from config folder
+    this->sensorConfigManager = new SensorConfigurationManager();
+    this->sensorConfigManager->loadFromConfigFolder();
+
+    //pass config managers to model manager
+    ModelManager::setSensorConfigManager(this->sensorConfigManager);
 
 }
 

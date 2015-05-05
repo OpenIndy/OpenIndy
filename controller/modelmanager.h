@@ -4,6 +4,10 @@
 #include <QObject>
 #include <QPointer>
 #include <QStringListModel>
+#include <QStandardItemModel>
+#include <QSerialPortInfo>
+#include <QHostAddress>
+#include <QNetworkInterface>
 
 #include "oimetadata.h"
 #include "systemdbmanager.h"
@@ -20,6 +24,11 @@
 #include "activefeaturefunctionsmodel.h"
 #include "functiontablemodel.h"
 #include "functiontableproxymodel.h"
+#include "sensorconfigurationmanager.h"
+#include "sensortablemodel.h"
+#include "sensortableproxymodel.h"
+#include "sensorconfigurationmodel.h"
+#include "sensorconfigurationproxymodel.h"
 
 /*!
  * \brief The ModelManager class
@@ -46,9 +55,16 @@ public:
     static const QPointer<OiJob> &getCurrentJob();
     static void setCurrentJob(const QPointer<OiJob> &job);
 
-    //###################
-    //set display configs
-    //###################
+    //#########################
+    //get or set sensor configs
+    //#########################
+
+    static const QPointer<SensorConfigurationManager> &getSensorConfigManager();
+    static void setSensorConfigManager(const QPointer<SensorConfigurationManager> &sensorConfigManager);
+
+    //##########################
+    //get or set display configs
+    //##########################
 
     static const FeatureTableColumnConfig &getFeatureTableColumnConfig();
     static void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
@@ -88,6 +104,22 @@ public:
     static FunctionTableProxyModel &getFunctionTableProxyModel();
     static ActiveFeatureFunctionsModel &getActiveFeatureFunctionsModel();
 
+    //sensor models
+    static QStringListModel &getSensorTypeNamesModel();
+    static SensorTableModel &getSensorTableModel();
+    static SensorTableProxyModel &getSensorTableProxyModel();
+    static SensorConfigurationModel &getSensorConfigurationModel();
+    static SensorConfigurationProxyModel &getSensorConfigurationProxyModel();
+
+    //sensor connection models
+    static QStandardItemModel &getBaudRateTypesModel();
+    static QStandardItemModel &getDataBitTypesModel();
+    static QStandardItemModel &getFlowControlTypesModel();
+    static QStandardItemModel &getParityTypesModel();
+    static QStandardItemModel &getStopBitTypesModel();
+    static QStandardItemModel &getAvailableSerialPortsModel();
+    static QStandardItemModel &getAvailableIpAdressesModel();
+
     //############################################################
     //get dynamic models (models that are newly created each time)
     //############################################################
@@ -109,6 +141,12 @@ private slots:
 
     //groups added or removed
     void availableGroupsChanged();
+
+    //###############################
+    //update models on config changes
+    //###############################
+
+    //void sensorConfigurationsChanged();
 
 private:
 
@@ -145,6 +183,22 @@ private:
     static FunctionTableProxyModel functionTableProxyModel;
     static ActiveFeatureFunctionsModel activeFeatureFunctionsModel;
 
+    //sensor models
+    static QStringListModel sensorTypeNamesModel;
+    static SensorTableModel sensorTableModel;
+    static SensorTableProxyModel sensorTableProxyModel;
+    static SensorConfigurationModel sensorConfigurationModel;
+    static SensorConfigurationProxyModel sensorConfigurationProxyModel;
+
+    //sensor connection models
+    static QStandardItemModel baudRateTypesModel;
+    static QStandardItemModel dataBitTypesModel;
+    static QStandardItemModel flowControlTypesModel;
+    static QStandardItemModel parityTypesModel;
+    static QStandardItemModel stopBitTypesModel;
+    static QStandardItemModel availableSerialPortsModel;
+    static QStandardItemModel availableIpAdressesModel;
+
     //##################
     //empty dummy models
     //##################
@@ -161,6 +215,7 @@ private:
     static void updateFeatureTableColumnConfig();
     static void updateTrafoParamTableColumnConfig();
     static void updateParameterDisplayConfig();
+    static void updateSensorConfigManager();
 
     //################################################################
     //update models (called every time a connected event is triggered)
@@ -169,6 +224,7 @@ private:
     static void updateCoordinateSystemsModel();
     static void updateNominalSystemsModel();
     static void updateGroupsModel();
+    static void updateSensorConfigNamesModel();
 
     //########################################################
     //model initialization (called only once at the beginning)
@@ -178,6 +234,12 @@ private:
     static void initFeatureTreeViewModels();
 
     static void initFunctionTableModels();
+
+    static void initSensorTypeNamesModel();
+    static void initSensorTableModels();
+    static void initSensorListViewModels();
+
+    static void initSensorConnectionModels();
 
     static void initUnitTypesModels();
 
@@ -190,6 +252,12 @@ private:
     static FeatureTableColumnConfig featureTableColumnConfig; //defines which columns shall be visible in feature table proxy model
     static TrafoParamTableColumnConfig trafoParamTableColumnConfig; //defines which columns shall be visible in trafo param proxy model
     static ParameterDisplayConfig parameterDisplayConfig; //defines in which unit and with how many digits a parameter value shall be displayed
+
+    //##############
+    //config manager
+    //##############
+
+    static QPointer<SensorConfigurationManager> sensorConfigManager;
 
     //###############################################################
     //save sdb::Plugin so that the database must only be queried once

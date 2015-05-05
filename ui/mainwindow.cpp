@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->connectDialogs();
     this->connectController();
 
+    //create default job
+    this->control.createDefaultJob();
+
 }
 
 /*!
@@ -51,6 +54,56 @@ void MainWindow::importNominalsFinished(const bool &success){
     }
 
     this->loadingDialog.close();
+
+}
+
+/*!
+ * \brief MainWindow::activeCoordinateSystemChanged
+ */
+void MainWindow::activeCoordinateSystemChanged(){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check current job
+    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    if(job.isNull()){
+        return;
+    }
+
+    //update combo box with active coordinate system
+    if(!job->getActiveCoordinateSystem().isNull()){
+        this->ui->comboBox_activeCoordSystem->setCurrentText(job->getActiveCoordinateSystem()->getFeatureName());
+    }
+
+}
+
+void MainWindow::coordSystemSetChanged()
+{
+
+}
+
+void MainWindow::stationSetChanged()
+{
+
+}
+
+void MainWindow::availableGroupsChanged()
+{
+
+}
+
+void MainWindow::activeGroupChanged()
+{
 
 }
 
@@ -267,6 +320,15 @@ void MainWindow::on_actionSet_function_triggered(){
 }
 
 /*!
+ * \brief MainWindow::on_actionSet_instrument_triggered
+ */
+void MainWindow::on_actionSet_instrument_triggered(){
+
+    this->sensorConfigurationDialog.show();
+
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -279,6 +341,7 @@ void MainWindow::connectController(){
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::nominalImportFinished, this, &MainWindow::importNominalsFinished, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::activeCoordinateSystemChanged, this, &MainWindow::activeCoordinateSystemChanged, Qt::AutoConnection);
 
 }
 
