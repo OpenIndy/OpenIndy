@@ -1107,7 +1107,6 @@ OiVec Reading::errorPropagationPolarToCartesian(){
     sigmaXyz.add(qSqrt(Qxx.getAt(0,0)));
     sigmaXyz.add(qSqrt(Qxx.getAt(1,1)));
     sigmaXyz.add(qSqrt(Qxx.getAt(2,2)));
-    sigmaXyz.add(1.0);
 
     return sigmaXyz;
 

@@ -99,4 +99,7 @@ private:
     //void setIsSaved(bool isSaved);
 };
 
+Q_DECLARE_METATYPE( MeasurementConfig )
+Q_DECLARE_METATYPE( MeasurementConfig* )
+
 #endif // MEASUREMENTCONFIG_H

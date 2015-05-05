@@ -37,6 +37,49 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
 }
 
 /*!
+ * \brief Controller::sensorConfigurationChanged
+ * \param name
+ * \param connectSensor
+ */
+void Controller::sensorConfigurationChanged(const QString &name, const bool &connectSensor){
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //get and check the specified sensor config
+    SensorConfiguration sConfig = this->sensorConfigManager->getSavedSensorConfig(name);
+    if(!sConfig.getIsValid()){
+        Console::getInstance()->addLine(QString("No sensor configuration available with the name %1").arg(name));
+        return;
+    }
+
+    //get and check plugin information
+    sdb::Plugin plugin = SystemDbManager::getPlugin(sConfig.getPluginName());
+    if(plugin.id == -1){
+        Console::getInstance()->addLine(QString("No plugin available with the name %1").arg(sConfig.getPluginName()));
+        return;
+    }
+
+    //create sensor instance and assign it to the active station
+    QPointer<Sensor> sensor = PluginLoader::loadSensorPlugin(plugin.file_path, sConfig.getSensorName());
+    if(sensor.isNull()){
+        Console::getInstance()->addLine(QString("No sensor available with the name %1").arg(sConfig.getSensorName()));
+        return;
+    }
+
+    //set active station's sensor
+    sensor->setSensorConfiguration(sConfig);
+    activeStation->setSensor(sensor);
+
+    Console::getInstance()->addLine("Active sensor changed");
+
+}
+
+/*!
  * \brief Controller::setActiveFeature
  * \param featureId
  */
@@ -143,6 +186,297 @@ void Controller::createDefaultJob(){
 }
 
 /*!
+ * \brief Controller::startConnect
+ */
+void Controller::startConnect(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("connecting sensor...");
+
+    //connect sensor
+    activeStation->connectSensor();
+
+}
+
+/*!
+ * \brief Controller::startDisconnect
+ */
+void Controller::startDisconnect(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("disconnecting sensor...");
+
+    //disconnect sensor
+    activeStation->disconnectSensor();
+
+}
+
+/*!
+ * \brief Controller::startMeasurement
+ */
+void Controller::startMeasurement(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
+    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
+        Console::getInstance()->addLine("No active feature");
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("performing measurement...");
+
+    //perform measurement
+    int id = activeFeature->getGeometry()->getId();
+    MeasurementConfig mConfig;
+    activeStation->measure(id, mConfig);
+
+}
+
+/*!
+ * \brief Controller::startMove
+ * \param reading
+ */
+void Controller::startMove(const Reading &reading){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
+    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
+
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("moving sensor...");
+
+    //move sensor
+    if(reading.getTypeOfReading() == eCartesianReading){
+        activeStation->move(reading.getCartesianReading().xyz.getAt(0),
+                            reading.getCartesianReading().xyz.getAt(1),
+                            reading.getCartesianReading().xyz.getAt(2));
+        return;
+    }else if(reading.getTypeOfReading() == ePolarReading){
+        activeStation->move(reading.getPolarReading().azimuth,
+                            reading.getPolarReading().zenith,
+                            reading.getPolarReading().distance, false);
+        return;
+    }
+
+    emit this->sensorActionFinished(false, "Selected reading type is not supported");
+
+}
+
+/*!
+ * \brief Controller::startAim
+ */
+void Controller::startAim(){
+
+    //TODO implement transformation here
+
+}
+
+/*!
+ * \brief Controller::startToggleSight
+ */
+void Controller::startToggleSight(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("toggling sight orientation...");
+
+    //toggle sight
+    activeStation->toggleSight();
+
+}
+
+/*!
+ * \brief Controller::startInitialize
+ */
+void Controller::startInitialize(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("initializing sensor...");
+
+    //initialize sensor
+    activeStation->initialize();
+
+}
+
+/*!
+ * \brief Controller::startHome
+ */
+void Controller::startHome(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("setting sensor to home position...");
+
+    //set sensor to home position
+    activeStation->home();
+
+}
+
+/*!
+ * \brief Controller::startCompensation
+ */
+void Controller::startCompensation(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("starting compensation...");
+
+    //start compensation
+    activeStation->compensation();
+
+}
+
+/*!
+ * \brief Controller::startChangeMotorState
+ */
+void Controller::startChangeMotorState(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("changing motor state...");
+
+    //change motor state
+    activeStation->motorState();
+
+}
+
+/*!
+ * \brief Controller::startCustomAction
+ * \param task
+ */
+void Controller::startCustomAction(const QString &task){
+    //TODO implement custom action
+}
+
+/*!
+ * \brief Controller::activeStationChangedCallback
+ */
+void Controller::activeStationChangedCallback(){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = job->getActiveStation();
+    if(activeStation.isNull()){
+        return;
+    }
+
+    //connect sensor action results
+    QObject::connect(activeStation.data(), &Station::commandFinished, this, &Controller::sensorActionFinished, Qt::AutoConnection);
+
+}
+
+/*!
  * \brief Controller::setJob
  * \param job
  */
@@ -164,6 +498,7 @@ void Controller::setJob(const QPointer<OiJob> &job){
     //active feature changes
     QObject::connect(this->job.data(), &OiJob::activeFeatureChanged, this, &Controller::activeFeatureChanged, Qt::AutoConnection);
     QObject::connect(this->job.data(), &OiJob::activeStationChanged, this, &Controller::activeStationChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::activeStationChanged, this, &Controller::activeStationChangedCallback, Qt::AutoConnection);
     QObject::connect(this->job.data(), &OiJob::activeCoordinateSystemChanged, this, &Controller::activeCoordinateSystemChanged, Qt::AutoConnection);
 
     //feature(s) added or removed

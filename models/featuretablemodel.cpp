@@ -385,6 +385,26 @@ void FeatureTableModel::setActiveFeature(const QModelIndex &index){
 }
 
 /*!
+ * \brief FeatureTableModel::getActiveStation
+ * \return
+ */
+QPointer<Station> FeatureTableModel::getActiveStation() const{
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return QPointer<Station>(NULL);
+    }
+
+    return this->currentJob->getActiveStation();
+
+}
+
+void FeatureTableModel::setActiveStation(const QModelIndex &index)
+{
+
+}
+
+/*!
  * \brief FeatureTableModel::getCurrentJob
  * \return
  */

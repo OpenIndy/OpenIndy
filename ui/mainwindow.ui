@@ -359,7 +359,7 @@ background-position: center center;</string>
     <bool>true</bool>
    </attribute>
   </widget>
-  <widget class="QToolBar" name="toolBar_ControlPad">
+  <widget class="QToolBar" name="toolBar_controlPad">
    <property name="enabled">
     <bool>true</bool>
    </property>
@@ -376,7 +376,7 @@ background-position: center center;</string>
     </size>
    </property>
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>sensor pad</string>
    </property>
    <property name="floatable">
     <bool>true</bool>

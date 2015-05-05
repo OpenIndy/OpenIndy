@@ -38,6 +38,7 @@ QStandardItemModel ModelManager::parityTypesModel;
 QStandardItemModel ModelManager::stopBitTypesModel;
 QStandardItemModel ModelManager::availableSerialPortsModel;
 QStandardItemModel ModelManager::availableIpAdressesModel;
+QStringListModel ModelManager::readingTypeNamesModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -61,6 +62,7 @@ void ModelManager::init(){
     ModelManager::initSensorListViewModels();
     ModelManager::initSensorTypeNamesModel();
     ModelManager::initSensorConnectionModels();
+    ModelManager::initReadingTypesModels();
 
 }
 
@@ -239,6 +241,14 @@ QStringListModel &ModelManager::getUnitTypesModel(const DimensionType &dimension
  */
 QStringListModel &ModelManager::getPluginNamesModel(){
     return ModelManager::pluginNamesModel;
+}
+
+/*!
+ * \brief ModelManager::getReadingTypeNamesModel
+ * \return
+ */
+QStringListModel &ModelManager::getReadingTypeNamesModel(){
+    return ModelManager::readingTypeNamesModel;
 }
 
 /*!
@@ -860,6 +870,22 @@ void ModelManager::initUnitTypesModels(){
     temperatureUnitTypes.append(getUnitTypeName(eUnitGrad));
     temperatureUnitTypes.append(getUnitTypeName(eUnitKelvin));
     ModelManager::temperatureUnitTypesModel.setStringList(temperatureUnitTypes);
+
+}
+
+/*!
+ * \brief ModelManager::initReadingTypesModels
+ */
+void ModelManager::initReadingTypesModels(){
+
+    QStringList readingTypes;
+    readingTypes.append(getReadingTypeName(eCartesianReading));
+    readingTypes.append(getReadingTypeName(eDistanceReading));
+    readingTypes.append(getReadingTypeName(ePolarReading));
+    readingTypes.append(getReadingTypeName(eDirectionReading));
+    readingTypes.append(getReadingTypeName(eTemperatureReading));
+    readingTypes.append(getReadingTypeName(eLevelReading));
+    ModelManager::readingTypeNamesModel.setStringList(readingTypes);
 
 }
 

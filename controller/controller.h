@@ -41,6 +41,9 @@ public slots:
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
 
+    //set sensor configuration for active sensor
+    void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
+
     //set active feature states
     //void setActiveFeature(const int &featureId);
     void setActiveStation(const int &featureId);
@@ -56,6 +59,19 @@ public slots:
 
     //save or load a job
     void createDefaultJob();
+
+    //sensor actions
+    void startConnect();
+    void startDisconnect();
+    void startMeasurement();
+    void startMove(const Reading &reading);
+    void startAim();
+    void startToggleSight();
+    void startInitialize();
+    void startHome();
+    void startCompensation();
+    void startChangeMotorState();
+    void startCustomAction(const QString &task);
 
 signals:
 
@@ -124,6 +140,21 @@ signals:
     void nominalImportStarted();
     void nominalImportProgressUpdated(const int &progress, const QString &msg);
     void nominalImportFinished(const bool &success);
+
+    //##############
+    //sensor actions
+    //##############
+
+    void sensorActionStarted(const QString &name);
+    void sensorActionFinished(const bool &success, const QString &msg);
+
+private slots:
+
+    //###################################
+    //slots to react on job state changes
+    //###################################
+
+    void activeStationChangedCallback();
 
 private:
 

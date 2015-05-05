@@ -122,6 +122,25 @@ void SensorConfigurationDialog::on_pushButton_cancel_clicked(){
 }
 
 /*!
+ * \brief SensorConfigurationDialog::on_pushButton_set_clicked
+ */
+void SensorConfigurationDialog::on_pushButton_set_clicked(){
+
+    //get selected sensor config name
+    QModelIndexList selection = this->ui->listView_sensorConfigs->selectionModel()->selectedIndexes();
+    if(selection.size() != 1){
+        Console::getInstance()->addLine("No sensor configuration selected");
+        return;
+    }
+    QString name = selection.at(0).data().toString();
+
+    emit this->setSensorConfiguration(name);
+
+    this->close();
+
+}
+
+/*!
  * \brief SensorConfigurationDialog::on_tableView_sensorPlugins_clicked
  * \param index
  */

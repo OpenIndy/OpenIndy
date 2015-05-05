@@ -1,74 +1,12 @@
 #include "sensorlistener.h"
-/*
-SensorListener::SensorListener(Sensor* s)
-{
-    instrument = s;
-    isStreamActive = false;
-    isStreamFinished = false;
-}
-
-
-void SensorListener::sensorStatStream()
-{
-    isStreamFinished = false;
-
-    if(instrument != NULL){
-        while(isStreamActive){
-            if(instrument->getConnectionState()){
-                QMap<QString,QString> m= instrument->getSensorStats();
-                emit sendSensorStats(m);
-            }else{
-                emit connectionLost();
-            }
-        }
-    }
-
-    isStreamFinished = true;
-}
-
-void SensorListener::sensorReadingStream(int streamFormat)
-{
-    isStreamFinished = false;
-
-    ReadingTypes readingTyp = (ReadingTypes) streamFormat;
-
-    if(instrument != NULL && instrument->getConnectionState()){
-        while(isStreamActive){
-            if(instrument->getConnectionState()){
-               QVariantMap m = instrument->readingStream(readingTyp);
-               emit sendReadingMap(m);
-            }else{
-               emit connectionLost();
-            }
-        }
-    }
-
-    isStreamFinished = true;
-}
-
-void SensorListener::abortSensorAction()
-{
-    instrument->abortAction();
-}
-
-void SensorListener::setInstrument(Sensor *s)
-{
-    instrument = s;
-}
-
-Sensor *SensorListener::getInstrument()
-{
-    return instrument;
-}
-*/
-
 
 /*!
  * \brief SensorListener::SensorListener
- * \param sensor
+ * \param locker
  * \param parent
  */
-SensorListener::SensorListener(const QPointer<Sensor> &sensor, QObject *parent) : QObject(parent){
+SensorListener::SensorListener(QMutex &locker, QObject *parent) : QObject(parent),
+    locker(locker), streamFormat(eCartesianReading){
 
 }
 
@@ -83,7 +21,7 @@ SensorListener::~SensorListener(){
  * \brief SensorListener::setInstrument
  * \param sensor
  */
-void SensorListener::setInstrument(QPointer<Sensor> sensor){
+void SensorListener::setSensor(const QPointer<Sensor> &sensor){
     if(!sensor.isNull()){
         this->sensor = sensor;
     }
@@ -93,36 +31,64 @@ void SensorListener::setInstrument(QPointer<Sensor> sensor){
  * \brief SensorListener::getInstrument
  * \return
  */
-QPointer<Sensor> SensorListener::getInstrument() const{
+const QPointer<Sensor> &SensorListener::getSensor() const{
     return this->sensor;
 }
 
 /*!
- * \brief SensorListener::getIsStreamActive
+ * \brief SensorListener::startStreaming
+ */
+void SensorListener::startStreaming(){
+
+    //get real time information from sensor as long the sensor is connected
+    forever{
+
+        this->locker.lock();
+
+        //check sensor
+        if(this->sensor.isNull()){
+            emit this->connectionLost();
+            this->locker.unlock();
+            return;
+        }
+
+        //check connection state
+        if(!this->sensor->getConnectionState()){
+            emit this->connectionLost();
+            this->locker.unlock();
+            QThread::msleep(100);
+            continue;
+        }
+
+        //get sensor status information
+        QMap<QString,QString> status = this->sensor->getSensorStatus();
+        emit this->realTimeStatus(status);
+
+        //get reading (current sensor position)
+        QVariantMap reading = this->sensor->readingStream(this->streamFormat);
+        emit this->realTimeReading(reading);
+
+        this->locker.unlock();
+
+        //sleep for 100 ms to avoid overhead
+        QThread::msleep(100);
+
+    }
+
+}
+
+/*!
+ * \brief SensorListener::getReadingStreamFormat
  * \return
  */
-bool SensorListener::getIsStreamActive() const{
-    return this->isStreamActive;
+ReadingTypes SensorListener::getReadingStreamFormat() const{
+    return this->streamFormat;
 }
 
 /*!
- * \brief SensorListener::startStatusStream
- */
-void SensorListener::startStatusStream(){
-
-}
-
-/*!
- * \brief SensorListener::startReadingStream
+ * \brief SensorListener::setReadingStreamFormat
  * \param streamFormat
  */
-void SensorListener::startReadingStream(const ReadingTypes &streamFormat){
-
-}
-
-/*!
- * \brief SensorListener::abortSensorAction
- */
-void SensorListener::abortSensorAction(){
-
+void SensorListener::setReadingStreamFormat(ReadingTypes streamFormat){
+    this->streamFormat = streamFormat;
 }
