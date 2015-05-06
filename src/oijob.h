@@ -176,6 +176,14 @@ signals:
 
     void sendMessage(const QString &msg) const;
 
+    //#####################################
+    //signals forwarded from FeatureUpdater
+    //#####################################
+
+    void featuresRecalculated();
+    void featureRecalculated(const int &featureId);
+    void trafoParamRecalculated(const int &featureId);
+
 private slots:
 
     //###########################################################################

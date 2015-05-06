@@ -1313,7 +1313,7 @@ bool OiJob::addFeature(const QPointer<FeatureWrapper> &feature){
 
     //if a group is set for the new feature emit the group changed signal
     if(feature->getFeature()->getGroupName().compare("") != 0
-            && this->featureContainer.getFeaturesByGroup(feature->getFeature()->getGroupName()).size() == 1){
+            && !this->featureContainer.getFeatureGroupList().contains(feature->getFeature()->getGroupName())){
         emit this->availableGroupsChanged();
     }
 
@@ -1418,7 +1418,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
 
     //check if the group is a new group
     bool isNewGroup = false;
-    if(this->featureContainer.getFeaturesByGroup(fAttr.group).size() == 0){
+    if(fAttr.group.compare("") != 0 && this->featureContainer.getFeatureGroupList().contains(fAttr.group)){
         isNewGroup = true;
     }
 
@@ -1550,7 +1550,7 @@ bool OiJob::addFeatures(const QList<QPointer<FeatureWrapper> > &features){
         }
 
         //connect the feature's signals to slots in OiJob
-        this->connectFeature(feature);
+        //this->connectFeature(feature);
 
         //add feature type to list of added feature types
         if(!addedFeatureTypes.contains(feature->getFeatureTypeEnum())){
@@ -1559,7 +1559,7 @@ bool OiJob::addFeatures(const QList<QPointer<FeatureWrapper> > &features){
 
         //if a group is set for the new feature emit the group changed signal
         if(feature->getFeature()->getGroupName().compare("") != 0
-                && this->featureContainer.getFeaturesByGroup(feature->getFeature()->getGroupName()).size() == 1){
+                && !this->featureContainer.getFeatureGroupList().contains(feature->getFeature()->getGroupName())){
             emit this->availableGroupsChanged();
         }
 

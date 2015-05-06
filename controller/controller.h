@@ -15,6 +15,7 @@
 #include "exchangeParams.h"
 #include "dataexchanger.h"
 #include "sensorconfigurationmanager.h"
+#include "featureupdater.h"
 
 /*!
  * \brief The Controller class
@@ -156,6 +157,12 @@ private slots:
 
     void activeStationChangedCallback();
 
+    //################################
+    //slots to react on sensor results
+    //################################
+
+    void measurementFinished(const int &geomId, const QList<QPointer<Reading> > &readings);
+
 private:
 
     //##############
@@ -167,11 +174,14 @@ private:
     void initDisplayConfigs();
     void initConfigManager();
 
+    void registerMetaTypes();
+
     //######################
     //connect helper objects
     //######################
 
     void connectDataExchanger();
+    void connectFeatureUpdater();
 
 private:
 
@@ -183,6 +193,9 @@ private:
 
     //data exchanger
     DataExchanger exchanger;
+
+    //feature updater
+    FeatureUpdater featureUpdater;
 
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;

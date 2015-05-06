@@ -6,6 +6,9 @@
  */
 Controller::Controller(QObject *parent) : QObject(parent){
 
+    //register meta types
+    this->registerMetaTypes();
+
     //initialize model manager
     ModelManager::init();
 
@@ -17,6 +20,7 @@ Controller::Controller(QObject *parent) : QObject(parent){
 
     //connect helper objects
     this->connectDataExchanger();
+    this->connectFeatureUpdater();
 
 }
 
@@ -473,7 +477,17 @@ void Controller::activeStationChangedCallback(){
 
     //connect sensor action results
     QObject::connect(activeStation.data(), &Station::commandFinished, this, &Controller::sensorActionFinished, Qt::AutoConnection);
+    QObject::connect(activeStation.data(), &Station::measurementFinished, this, &Controller::measurementFinished, Qt::AutoConnection);
 
+}
+
+/*!
+ * \brief Controller::measurementFinished
+ * \param geomId
+ * \param readings
+ */
+void Controller::measurementFinished(const int &geomId, const QList<QPointer<Reading> > &readings){
+    this->featureUpdater.addMeasurementResults(geomId, readings);
 }
 
 /*!
@@ -578,6 +592,7 @@ void Controller::setJob(const QPointer<OiJob> &job){
     //pass the new job around
     ModelManager::setCurrentJob(this->job);
     this->exchanger.setCurrentJob(this->job);
+    this->featureUpdater.setCurrentJob(this->job);
 
 }
 
@@ -614,11 +629,39 @@ void Controller::initConfigManager(){
 }
 
 /*!
+ * \brief Controller::registerMetaTypes
+ * Registers meta types to be able to use them in signal slot connections
+ */
+void Controller::registerMetaTypes(){
+
+    qRegisterMetaType<MeasurementConfig>();
+    qRegisterMetaType<SensorConfiguration>();
+    qRegisterMetaType<QList<QPointer<Reading> > >();
+
+}
+
+/*!
  * \brief Controller::connectDataExchanger
  */
 void Controller::connectDataExchanger(){
 
     QObject::connect(&this->exchanger, &DataExchanger::importFinished, this, &Controller::nominalImportFinished, Qt::AutoConnection);
     QObject::connect(&this->exchanger, &DataExchanger::updateProgress, this, &Controller::nominalImportProgressUpdated, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief Controller::connectFeatureUpdater
+ */
+void Controller::connectFeatureUpdater(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    QObject::connect(&this->featureUpdater, &FeatureUpdater::featureRecalculated, this->job.data(), &OiJob::featureRecalculated, Qt::AutoConnection);
+    QObject::connect(&this->featureUpdater, &FeatureUpdater::featuresRecalculated, this->job.data(), &OiJob::featuresRecalculated, Qt::AutoConnection);
+    QObject::connect(&this->featureUpdater, &FeatureUpdater::trafoParamRecalculated, this->job.data(), &OiJob::trafoParamRecalculated, Qt::AutoConnection);
 
 }

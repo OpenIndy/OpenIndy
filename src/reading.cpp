@@ -830,10 +830,25 @@ const QPointer<Observation> &Reading::getObservation() const{
  * \param observation
  */
 void Reading::setObservation(const QPointer<Observation> &observation){
-    if(!observation.isNull()){
-        observation->reading = this;
-        this->observation = observation;
+
+    //check observation
+    if(observation.isNull()){
+        return;
     }
+
+    //set observation position
+    if(this->rCartesian.isValid){
+        observation->originalXyz.setAt(0, this->rCartesian.xyz.getAt(0));
+        observation->originalXyz.setAt(1, this->rCartesian.xyz.getAt(1));
+        observation->originalXyz.setAt(2, this->rCartesian.xyz.getAt(2));
+        observation->originalXyz.setAt(3, 1.0);
+        observation->isValid = true;
+    }
+
+    //set up dependencies
+    observation->reading = this;
+    this->observation = observation;
+
 }
 
 /*!

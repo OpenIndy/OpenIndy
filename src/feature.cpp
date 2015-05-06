@@ -687,6 +687,7 @@ void Feature::addFunction(const QPointer<Function> &function){
         }
 
         this->functionList.append(function);
+        this->isUpdated = false;
         emit this->featureFunctionListChanged(this->id);
 
     }
@@ -699,6 +700,7 @@ void Feature::addFunction(const QPointer<Function> &function){
 void Feature::removeFunction(const int &index){
     if(this->functionList.size() > index && index >= 0){
         this->functionList.removeAt(index);
+        this->isUpdated = false;
         emit this->featureFunctionListChanged(this->id);
     }
 }
@@ -800,6 +802,8 @@ bool Feature::addPreviouslyNeeded(const QPointer<FeatureWrapper> &feature){
     }
 
     this->previouslyNeeded.append(feature);
+
+    this->isUpdated = false;
 
     //add this feature to the used for features of feature
     if(!this->selfFeature.isNull()){

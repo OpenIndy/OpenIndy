@@ -268,4 +268,6 @@ private:
 
 };
 
+Q_DECLARE_METATYPE( Reading* )
+
 #endif // READING_H

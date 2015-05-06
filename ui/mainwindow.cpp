@@ -501,9 +501,9 @@ void MainWindow::assignModels(){
 void MainWindow::initFeatureTableViews(){
 
     //resize rows and columns to table view contents
-    this->ui->tableView_features->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    this->ui->tableView_features->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->ui->tableView_features->verticalHeader()->setDefaultSectionSize(22);
-    this->ui->tableView_trafoParams->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    this->ui->tableView_trafoParams->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
 
 }

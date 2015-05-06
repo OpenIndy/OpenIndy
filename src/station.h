@@ -148,6 +148,8 @@ private slots:
     void stationNameChanged(const int &featureId, const QString &oldName);
     void connectSensorControl();
 
+    void addReadings(const int &geomId, const QList<QPointer<Reading> > &readings);
+
 };
 
 #endif // STATION_H

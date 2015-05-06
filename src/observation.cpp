@@ -335,7 +335,7 @@ bool Observation::getUseState()
  * \brief Observation::Observation
  * \param parent
  */
-Observation::Observation(QObject *parent) : Element(parent), xyz(4), originalXyz(4){
+Observation::Observation(QObject *parent) : Element(parent), xyz(4), originalXyz(4), isValid(false), isSolved(false){
 
 }
 
@@ -349,7 +349,7 @@ Observation::Observation(const Observation &copy, QObject *parent) : Element(cop
     //copy attributes
     this->isValid = copy.isValid;
     this->isSolved = copy.isSolved;
-    this->isActiveCoordSys = copy.isActiveCoordSys;
+    //this->isActiveCoordSys = copy.isActiveCoordSys;
     this->xyz = copy.xyz;
     this->originalXyz = copy.originalXyz;
     this->statistic = copy.statistic;
@@ -371,7 +371,7 @@ Observation &Observation::operator=(const Observation &copy){
     //copy attributes
     this->isValid = copy.isValid;
     this->isSolved = copy.isSolved;
-    this->isActiveCoordSys = copy.isActiveCoordSys;
+    //this->isActiveCoordSys = copy.isActiveCoordSys;
     this->xyz = copy.xyz;
     this->originalXyz = copy.originalXyz;
     this->statistic = copy.statistic;
@@ -398,6 +398,19 @@ Observation::~Observation(){
  */
 const OiVec &Observation::getXYZ() const{
     return this->xyz;
+}
+
+/*!
+ * \brief Observation::setXYZ
+ * \param xyz
+ */
+void Observation::setXYZ(const OiVec &xyz){
+
+    //check vector
+    if(xyz.getSize() == this->xyz.getSize()){
+        this->xyz = xyz;
+    }
+
 }
 
 /*!
@@ -525,9 +538,9 @@ const QPointer<Reading> &Observation::getReading() const{
  * \brief Observation::setIsValid
  * \param isValid
  */
-void Observation::setIsValid(const bool &isValid){
+/*void Observation::setIsValid(const bool &isValid){
     this->isValid = isValid;
-}
+}*/
 
 /*!
  * \brief Observation::getIsValid

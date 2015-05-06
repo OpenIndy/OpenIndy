@@ -82,7 +82,8 @@ private:
     //helper methods
     //##############
 
-    QString getDisplayValue(const QPointer<FeatureWrapper> &feature, const int &column) const;
+    QVariant getDisplayValue(const QPointer<FeatureWrapper> &feature, const int &column) const;
+    QVariant getBackgroundValue(const QPointer<FeatureWrapper> &feature, const int &column) const;
 
     void connectJob();
     void disconnectJob();

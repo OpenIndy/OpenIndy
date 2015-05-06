@@ -762,7 +762,6 @@ void Station::connectSensorControl(){
     QObject::connect(this, &Station::connectSensor, this->sensorControl.data(), &SensorControl::connectSensor, Qt::AutoConnection);
     QObject::connect(this, &Station::disconnectSensor, this->sensorControl.data(), &SensorControl::disconnectSensor, Qt::AutoConnection);
 
-    qRegisterMetaType<MeasurementConfig>();
     //void (Station:: *measureSignal)(const int &geomId) = &Station::measure;
     //void (SensorControl:: *measureSlot)(const int &geomId) = &SensorControl::measure;
     //QObject::connect(this, measureSignal, this->sensorControl.data(), measureSlot);
@@ -786,6 +785,46 @@ void Station::connectSensorControl(){
 
     //connect sensor action results
     QObject::connect(this->sensorControl.data(), &SensorControl::commandFinished, this, &Station::commandFinished, Qt::AutoConnection);
+    QObject::connect(this->sensorControl.data(), &SensorControl::measurementFinished, this, &Station::addReadings, Qt::AutoConnection);
     QObject::connect(this->sensorControl.data(), &SensorControl::measurementFinished, this, &Station::measurementFinished, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief Station::addReadings
+ * \param geomId
+ * \param readings
+ */
+void Station::addReadings(const int &geomId, const QList<QPointer<Reading> > &readings){
+
+    foreach(const QPointer<Reading> &reading, readings){
+
+        //check reading
+        if(reading.isNull()){
+            continue;
+        }
+
+        switch(reading->getTypeOfReading()){
+        case eCartesianReading:
+            this->cartesianReadings.append(reading);
+            break;
+        case eDirectionReading:
+            this->directionReadings.append(reading);
+            break;
+        case eDistanceReading:
+            this->distanceReadings.append(reading);
+            break;
+        case ePolarReading:
+            this->polarReadings.append(reading);
+            break;
+        case eLevelReading:
+            this->levelReadings.append(reading);
+            break;
+        case eTemperatureReading:
+            this->temperatureRadings.append(reading);
+            break;
+        }
+
+    }
 
 }

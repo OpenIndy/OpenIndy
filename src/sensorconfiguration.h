@@ -150,4 +150,7 @@ private:
     QMap<QString, QString> stringParameter;
 };
 
+Q_DECLARE_METATYPE( SensorConfiguration )
+Q_DECLARE_METATYPE( SensorConfiguration* )
+
 #endif // SENSORCONFIGURATION_H
