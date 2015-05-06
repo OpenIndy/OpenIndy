@@ -63,4 +63,12 @@ QList<SensorTypes> getAvailableSensorTypes();
 const QString &getSensorTypeName(const SensorTypes &type);
 SensorTypes getSensorTypeEnum(const QString &name);
 
+//##########################################
+//global functions to query sensor functions
+//##########################################
+
+QList<SensorFunctions> getAvailableSensorFunctions();
+const QString &getSensorFunctionName(const SensorFunctions &type);
+SensorFunctions getSensorFunctionEnum(const QString &name);
+
 #endif // UTIL_H

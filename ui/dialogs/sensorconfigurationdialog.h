@@ -39,6 +39,14 @@ public:
     explicit SensorConfigurationDialog(QWidget *parent = 0);
     ~SensorConfigurationDialog();
 
+signals:
+
+    //###############################################
+    //signals to inform about sensor config selection
+    //###############################################
+
+    void setSensorConfiguration(const QString &name);
+
 private slots:
 
     //#################################
@@ -64,6 +72,7 @@ private slots:
 
     //set or cancel
     void on_pushButton_cancel_clicked();
+    void on_pushButton_set_clicked();
 
     //sensor config parameters changed
 

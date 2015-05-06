@@ -161,7 +161,11 @@ SOURCES += \
     ui/dialogs/sensorconfigurationdialog.cpp \
     models/sensorconfigurationmodel.cpp \
     models/sensorconfigurationproxymodel.cpp \
-    ui/delegates/sensorconfigurationlistdelegate.cpp
+    ui/delegates/sensorconfigurationlistdelegate.cpp \
+    ui/dialogs/movesensordialog.cpp \
+    ui/dialogs/sensortaskinfodialog.cpp \
+    controller/featureupdater.cpp \
+    controller/trafocontroller.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -270,7 +274,11 @@ HEADERS  += \
     ui/dialogs/sensorconfigurationdialog.h \
     models/sensorconfigurationmodel.h \
     models/sensorconfigurationproxymodel.h \
-    ui/delegates/sensorconfigurationlistdelegate.h
+    ui/delegates/sensorconfigurationlistdelegate.h \
+    ui/dialogs/movesensordialog.h \
+    ui/dialogs/sensortaskinfodialog.h \
+    controller/featureupdater.h \
+    controller/trafocontroller.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -279,4 +287,6 @@ FORMS    += \
     ui/dialogs/importnominaldialog.ui \
     ui/dialogs/loadingdialog.ui \
     ui/dialogs/featurefunctionsdialog.ui \
-    ui/dialogs/sensorconfigurationdialog.ui
+    ui/dialogs/sensorconfigurationdialog.ui \
+    ui/dialogs/movesensordialog.ui \
+    ui/dialogs/sensortaskinfodialog.ui

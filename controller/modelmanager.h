@@ -99,6 +99,9 @@ public:
     //plugin models
     static QStringListModel &getPluginNamesModel();
 
+    //reading types models
+    static QStringListModel &getReadingTypeNamesModel();
+
     //function models
     static FunctionTableModel &getFunctionTableModel();
     static FunctionTableProxyModel &getFunctionTableProxyModel();
@@ -178,6 +181,9 @@ private:
     //plugin models
     static QStringListModel pluginNamesModel;
 
+    //reading models
+    static QStringListModel readingTypeNamesModel;
+
     //function models
     static FunctionTableModel functionTableModel;
     static FunctionTableProxyModel functionTableProxyModel;
@@ -242,6 +248,8 @@ private:
     static void initSensorConnectionModels();
 
     static void initUnitTypesModels();
+
+    static void initReadingTypesModels();
 
     static void initPluginModels();
 

@@ -356,7 +356,6 @@ Station::Station(QObject *parent) : Feature(parent){
     //create a sensor control object, connect it and move it to thread
     QPointer<Station> stationPointer(this);
     this->sensorControl = new SensorControl(stationPointer);
-    //connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
     this->connectSensorControl();
     this->sensorControl->moveToThread(&this->stationThread);
     this->stationThread.start();
@@ -389,7 +388,6 @@ Station::Station(const QString &name, QObject *parent) : Feature(parent){
     //create a sensor control object, connect it and move it to thread
     QPointer<Station> stationPointer(this);
     this->sensorControl = new SensorControl(stationPointer);
-    //connect(&sensorPad->getOiEmitter(), SIGNAL(sendString(QString)), this, SLOT(writeToConsole(QString)));
     this->connectSensorControl();
     this->sensorControl->moveToThread(&this->stationThread);
     this->stationThread.start();
@@ -517,6 +515,23 @@ const QPointer<CoordinateSystem> &Station::getCoordinateSystem() const{
 }
 
 /*!
+ * \brief Station::getActiveSensorType
+ * \return
+ */
+SensorTypes Station::getActiveSensorType() const{
+
+    //check sensor control
+    if(this->sensorControl.isNull() || this->sensorControl->getSensor().isNull()){
+        return eUndefinedSensor;
+    }
+
+    SensorTypes sensorType = this->sensorControl->getSensor()->getSensorConfiguration().getTypeOfSensor();
+
+    return sensorType;
+
+}
+
+/*!
  * \brief Station::setSensor
  * \param sensor
  */
@@ -525,6 +540,17 @@ void Station::setSensor(const QPointer<Sensor> &sensor){
         this->sensorControl->setSensor(sensor);
         emit this->sensorChanged(this->id);
     }
+}
+
+/*!
+ * \brief Station::getSensorListener
+ * \return
+ */
+const QPointer<const SensorListener> Station::getSensorListener() const{
+    if(!this->sensorControl.isNull()){
+        return this->sensorControl->getSensorListener();
+    }
+    return QPointer<const SensorListener>();
 }
 
 /*!
@@ -653,21 +679,6 @@ QString Station::getDisplayZ(const UnitType &type, const int &digits, const bool
 }
 
 /*!
- * \brief Station::stopThread
- */
-void Station::stopThread(){
-    stationThread.quit();
-    stationThread.wait();
-}
-
-/*!
- * \brief Station::startThread
- */
-void Station::startThread(){
-    stationThread.start();
-}
-
-/*!
  * \brief Station::setUpFeatureId
  * Generate a new unique id when the current job was set
  */
@@ -746,21 +757,74 @@ void Station::stationNameChanged(const int &featureId, const QString &oldName){
  * \brief Station::connectSensorControl
  */
 void Station::connectSensorControl(){
-/*
-    connect(this->sensorControl, SIGNAL(commandFinished(bool)), this, SIGNAL(actionFinished(bool));
 
-    connect(this, SIGNAL(measure(const QPointer<Geometry>&,const bool&)), this->sensorControl,SLOT(measure(Geometry*,bool)));
-    connect(this, SIGNAL(move(double,double,double,bool)), this->sensorControl,SLOT(move(double,double,double,bool)));
-    connect(this, SIGNAL(move(double,double,double)), this->sensorControl,SLOT(move(double,double,double)));
-    connect(this, SIGNAL(initialize()), this->sensorControl,SLOT(initialize()));
-    connect(this, SIGNAL(motorState()), this->sensorControl,SLOT(motorState()));
-    connect(this, SIGNAL(home()), this->sensorControl,SLOT(home()));
-    connect(this, SIGNAL(toggleSight()), this->sensorControl,SLOT(toggleSight()));
-    connect(this, SIGNAL(compensation()), this->sensorControl,SLOT(compensation()));
-    connect(this, SIGNAL(connect(ConnectionConfig)), this->sensorControl,SLOT(connectSensor(ConnectionConfig*)));
-    connect(this, SIGNAL(disconnect()), this->sensorControl,SLOT(disconnectSensor()));
-    connect(this, SIGNAL(readingStream(bool,ReadingTypes)), this->sensorControl,SLOT(readingStream(int)));
-    connect(this, SIGNAL(sensorStateStream(bool)), this->sensorControl,SLOT(sensorStatsStream()));
-    connect(this, SIGNAL(selfDefinedAction(QString)), this->sensorControl,SLOT(doSelfDefinedAction(QString)));
-*/
+    //connect sensor actions
+    QObject::connect(this, &Station::connectSensor, this->sensorControl.data(), &SensorControl::connectSensor, Qt::AutoConnection);
+    QObject::connect(this, &Station::disconnectSensor, this->sensorControl.data(), &SensorControl::disconnectSensor, Qt::AutoConnection);
+
+    //void (Station:: *measureSignal)(const int &geomId) = &Station::measure;
+    //void (SensorControl:: *measureSlot)(const int &geomId) = &SensorControl::measure;
+    //QObject::connect(this, measureSignal, this->sensorControl.data(), measureSlot);
+    //QObject::connect(this, SIGNAL(measure(int,MeasurementConfig)), this->sensorControl.data(), SLOT(measure(int,MeasurementConfig)), Qt::AutoConnection);
+    QObject::connect(this, &Station::measure, this->sensorControl.data(), &SensorControl::measure, Qt::AutoConnection);
+
+    void (Station:: *movePolarSignal)(const double &azimuth, const double &zenith, const double &distance, const bool &isRelative) = &Station::move;
+    void (SensorControl:: *movePolarSlot)(const double &azimuth, const double &zenith, const double &distance, const bool &isRelative) = &SensorControl::move;
+    QObject::connect(this, movePolarSignal, this->sensorControl.data(), movePolarSlot);
+
+    void (Station:: *moveCartesianSignal)(const double &x, const double &y, const double &z) = &Station::move;
+    void (SensorControl:: *moveCartesianSlot)(const double &x, const double &y, const double &z) = &SensorControl::move;
+    QObject::connect(this, moveCartesianSignal, this->sensorControl.data(), moveCartesianSlot);
+
+    QObject::connect(this, &Station::initialize, this->sensorControl.data(), &SensorControl::initialize, Qt::AutoConnection);
+    QObject::connect(this, &Station::motorState, this->sensorControl.data(), &SensorControl::motorState, Qt::AutoConnection);
+    QObject::connect(this, &Station::home, this->sensorControl.data(), &SensorControl::home, Qt::AutoConnection);
+    QObject::connect(this, &Station::toggleSight, this->sensorControl.data(), &SensorControl::toggleSight, Qt::AutoConnection);
+    QObject::connect(this, &Station::compensation, this->sensorControl.data(), &SensorControl::compensation, Qt::AutoConnection);
+    QObject::connect(this, &Station::selfDefinedAction, this->sensorControl.data(), &SensorControl::selfDefinedAction, Qt::AutoConnection);
+
+    //connect sensor action results
+    QObject::connect(this->sensorControl.data(), &SensorControl::commandFinished, this, &Station::commandFinished, Qt::AutoConnection);
+    QObject::connect(this->sensorControl.data(), &SensorControl::measurementFinished, this, &Station::addReadings, Qt::AutoConnection);
+    QObject::connect(this->sensorControl.data(), &SensorControl::measurementFinished, this, &Station::measurementFinished, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief Station::addReadings
+ * \param geomId
+ * \param readings
+ */
+void Station::addReadings(const int &geomId, const QList<QPointer<Reading> > &readings){
+
+    foreach(const QPointer<Reading> &reading, readings){
+
+        //check reading
+        if(reading.isNull()){
+            continue;
+        }
+
+        switch(reading->getTypeOfReading()){
+        case eCartesianReading:
+            this->cartesianReadings.append(reading);
+            break;
+        case eDirectionReading:
+            this->directionReadings.append(reading);
+            break;
+        case eDistanceReading:
+            this->distanceReadings.append(reading);
+            break;
+        case ePolarReading:
+            this->polarReadings.append(reading);
+            break;
+        case eLevelReading:
+            this->levelReadings.append(reading);
+            break;
+        case eTemperatureReading:
+            this->temperatureRadings.append(reading);
+            break;
+        }
+
+    }
+
 }

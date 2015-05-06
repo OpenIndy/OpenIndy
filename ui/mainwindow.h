@@ -19,6 +19,8 @@
 #include "featurefunctionsdialog.h"
 #include "loadingdialog.h"
 #include "sensorconfigurationdialog.h"
+#include "movesensordialog.h"
+#include "sensortaskinfodialog.h"
 
 #include "featuretabledelegate.h"
 
@@ -43,28 +45,12 @@ signals:
     //tasks to be performed by controller
     //###################################
 
-    //active feature states
-    //void setActiveFeature(const int &featureId);
-    //void setActiveStation(const int &featureId);
-    //void setActiveCoordinateSystem(const int &featureId);
-
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
     void removeFeature(const int &featureId);
 
-    //sensor methods
-    void startMeasurement();
-    void addMeasurement();
-    void startMove(const QPointer<Reading> &parameter);
-    void startAim();
-    void startConnect();
-    void startDisconnect();
-    void startToggleSight();
-    void startInitialize();
-    void startHome();
-    void startCompensation();
-    void startChangeMotorState();
-    void startCustomAction(const QString &s);
+    //set sensor configuration for active sensor
+    void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
 
     //recalculation of features
     void recalcAll();
@@ -99,6 +85,13 @@ private slots:
     //group(s) added or removed
     void availableGroupsChanged();
     void activeGroupChanged();
+
+    //station changes
+    void stationSensorChanged(const int &featureId);
+
+    //sensor actions
+    void sensorActionStarted(const QString &name);
+    void sensorActionFinished(const bool &success, const QString &msg);
 
     //#########################
     //actions triggered by user
@@ -139,6 +132,11 @@ private slots:
 
     //sensor dialogs
     void on_actionSet_instrument_triggered();
+    void setSensorConfiguration(const QString &name);
+    void showMoveSensorDialog();
+
+    //toggle visibility of widgets
+    void on_actionControl_pad_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -161,6 +159,14 @@ private:
 
     void initFeatureTableViews();
 
+    void initSensorPad();
+
+    //##############################
+    //methods to update GUI elements
+    //##############################
+
+    void activeSensorTypeChanged(const SensorTypes &type);
+
     //############################
     //OpenIndy dialogs and widgets
     //############################
@@ -171,6 +177,25 @@ private:
     LoadingDialog loadingDialog;
     FeatureFunctionsDialog featureFunctionsDialog;
     SensorConfigurationDialog sensorConfigurationDialog;
+    MoveSensorDialog moveSensorDialog;
+    SensorTaskInfoDialog sensorTaskInfoDialog;
+
+    //##########
+    //sensor pad
+    //##########
+
+    //sensor actions
+    QAction *actionConnect;
+    QAction *actionDisconnect;
+    QAction *actionInitialize;
+    QAction *actionMeasure;
+    QAction *actionAim;
+    QAction *actionMove;
+    QAction *actionHome;
+    QAction *actionChangeMotorState;
+    QAction *actionToggleSightOrientation;
+    QAction *actionCompensation;
+
 
 };
 

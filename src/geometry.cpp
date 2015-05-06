@@ -686,6 +686,8 @@ void Geometry::addObservation(const QPointer<Observation> &obs){
 
         this->observations.append(obs);
 
+        this->isUpdated = false;
+
         emit this->geomObservationsChanged(this->id);
 
     }
@@ -708,6 +710,8 @@ void Geometry::removeObservation(const QPointer<Observation> &obs){
 
         //update target geometries
         obs->removeTargetGeometry(this);
+
+        this->isUpdated = false;
 
         emit this->geomObservationsChanged(this->id);
 

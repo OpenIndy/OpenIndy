@@ -5,10 +5,10 @@
 #include <QList>
 #include <QPointer>
 
+#include "sensorcontrol.h"
 #include "feature.h"
 #include "point.h"
 
-class SensorControl;
 class Reading;
 class CoordinateSystem;
 class Sensor;
@@ -42,10 +42,10 @@ public:
 
     const QPointer<CoordinateSystem> &getCoordinateSystem() const;
 
+    SensorTypes getActiveSensorType() const;
     void setSensor(const QPointer<Sensor> &sensor);
 
-    //void setInstrumentConfig(SensorConfiguration sensorConfig);
-    //SensorConfiguration getInstrumentConfig();
+    const QPointer<SensorListener const> getSensorListener() const;
 
     //###########################
     //reexecute the function list
@@ -68,49 +68,6 @@ public:
     QString getDisplayY(const UnitType &type, const int &digits, const bool &showDiff = false) const;
     QString getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff = false) const;
 
-
-    //ReadingTypes getReadingStreamType();
-
-public slots:
-
-    //#####################
-    //control sensor thread
-    //#####################
-
-    void stopThread();
-    void startThread();
-
-
-
-    //void connect(const ConnectionConfig &config) const;
-    //void disconnect() const;
-
-    //void measure(const QPointer<Geometry> &geom, const bool &isActiveCoordSys) const;
-
-    //void readingStream(const bool &start, const ReadingTypes &readingType) const;
-    //void sensorStateStream(const bool &start) const;
-
-    //void move(const double &azimuth, const double &zenith, const double &distance, const bool &isRelative) const;
-    //void move(const double &x, const double &y, const double &z) const;
-    //void initialize() const;
-    //void motorState() const;
-    //void home() const;
-    //void toggleSight() const;
-    //void compensation() const;
-    //void selfDefinedAction(const QString &action) const;
-
-
-    //OiSensorEmitter* getActiveSensorEmitter();
-
-    //QString getDisplayX() const;
-    //QString getDisplayY() const;
-    //QString getDisplayZ() const;
-    //QString getDisplayIsCommon() const;
-    //QString getDisplayIsNominal() const;
-    //QString getDisplaySolved() const;
-    //QString getDisplayMConfig() const;
-    //QString getDisplayStdDev() const;
-
 signals:
 
     //#######################################
@@ -127,10 +84,9 @@ signals:
     void connectSensor();
     void disconnectSensor();
 
-    void measure(const QPointer<Geometry> &geom, const bool &isActiveCoordSys);
+    void measure(const int &geomId, const MeasurementConfig &mConfig);
 
-    void readingStream(const bool &start, const ReadingTypes &readingType);
-    void sensorStateStream(const bool &start);
+    void setStreamFormat(ReadingTypes streamFormat);
 
     void move(const double &azimuth, const double &zenith, const double &distance, const bool &isRelative);
     void move(const double &x, const double &y, const double &z);
@@ -145,9 +101,8 @@ signals:
     //signals emitted when a sensor action was finished
     //#################################################
 
-    void actionFinished(bool);
-
-    //void sendToConsole(QString);
+    void commandFinished(const bool &success, const QString &msg);
+    void measurementFinished(const int &geomId, const QList<QPointer<Reading> > &readings);
 
 protected:
 
@@ -193,9 +148,7 @@ private slots:
     void stationNameChanged(const int &featureId, const QString &oldName);
     void connectSensorControl();
 
-    //! will be emitted when sensor action is completed
-    //void emitActionFinished(bool wasSuccessful);
-    //void writeToConsole(QString);
+    void addReadings(const int &geomId, const QList<QPointer<Reading> > &readings);
 
 };
 

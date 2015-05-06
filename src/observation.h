@@ -35,6 +35,8 @@ public:
     //##################################
 
     const OiVec &getXYZ() const;
+    void setXYZ(const OiVec &xyz);
+
     const OiVec &getOriginalXYZ() const;
 
     const Statistic &getStatistic() const;
@@ -61,7 +63,6 @@ public:
     //get and set state booleans
     //##########################
 
-    void setIsValid(const bool &isValid);
     const bool &getIsValid() const;
 
     void setIsSolved(const bool &isSolved);
@@ -96,7 +97,7 @@ private:
     //booleans that indicate the state of the observation
     //###################################################
 
-    bool isActiveCoordSys; //indicates wether the observation coord system is the current coordinate system at time of creation
+    //bool isActiveCoordSys; //indicates wether the observation coord system is the current coordinate system at time of creation
 
     bool isValid; //defines if the reading can be transformed, without any function, to a xyz observation
     bool isSolved; //defines wether this observation is valid in current coordinate system

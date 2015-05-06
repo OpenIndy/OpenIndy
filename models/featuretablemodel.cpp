@@ -73,22 +73,8 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
 
     }else if(role == Qt::BackgroundRole){
 
-        //active feature
-        if(feature->getFeature()->getIsActiveFeature()){
-            return QColor(QColor::fromCmykF(0.59, 0.40, 0.10, 0.10).lighter());
-        }
-
-        //active station
-        if(!feature->getStation().isNull() && feature->getStation()->getIsActiveStation()){
-            return QColor(Qt::darkGray);
-        }
-
-        //inactive station
-        if(!feature->getStation().isNull()){
-            return QColor(Qt::lightGray);
-        }
-
-        //unsovled feature
+        //return the color in which to display the feature at index.column()
+        return this->getBackgroundValue(feature, columnIndex);
 
     }
 
@@ -385,6 +371,26 @@ void FeatureTableModel::setActiveFeature(const QModelIndex &index){
 }
 
 /*!
+ * \brief FeatureTableModel::getActiveStation
+ * \return
+ */
+QPointer<Station> FeatureTableModel::getActiveStation() const{
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return QPointer<Station>(NULL);
+    }
+
+    return this->currentJob->getActiveStation();
+
+}
+
+void FeatureTableModel::setActiveStation(const QModelIndex &index)
+{
+
+}
+
+/*!
  * \brief FeatureTableModel::getCurrentJob
  * \return
  */
@@ -443,11 +449,11 @@ void FeatureTableModel::updateModel(){
  * \param column
  * \return
  */
-QString FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feature, const int &column) const{
+QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feature, const int &column) const{
 
     //check if the column exists in available display attributes
     if(column < 0 || getDisplayAttributes().size() <= column){
-        return QString("");
+        return QVariant();
     }
 
     //get the display attribute
@@ -587,7 +593,124 @@ QString FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &featu
 
     }
 
-    return QString("");
+    return QVariant();
+
+}
+
+/*!
+ * \brief FeatureTableModel::getBackgroundValue
+ * \param feature
+ * \param column
+ * \return
+ */
+QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &feature, const int &column) const{
+
+    //check if the column exists in available display attributes
+    if(column < 0 || getDisplayAttributes().size() <= column){
+        return QVariant();
+    }
+
+    //active feature
+    if(feature->getFeature()->getIsActiveFeature()){
+        return QColor(QColor::fromCmykF(0.59, 0.40, 0.10, 0.10).lighter());
+    }
+
+    //active station
+    if(!feature->getStation().isNull() && feature->getStation()->getIsActiveStation()){
+        return QColor(Qt::darkGray);
+    }
+
+    //inactive station
+    if(!feature->getStation().isNull()){
+        return QColor(Qt::lightGray);
+    }
+
+    //get the display attribute
+    int attr = getDisplayAttributes().at(column);
+
+    //check if the feature is solved or not
+    if(feature->getFeature()->getIsSolved()){
+        return QVariant();
+    }
+
+    //set background for parameter cells of unsolved features
+    if(getIsFeatureDisplayAttribute(attr)){ //feature attributes
+
+        switch((FeatureDisplayAttributes)attr){
+        case eFeatureDisplayX:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayY:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayZ:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayPrimaryI:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayPrimaryJ:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayPrimaryK:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayRadiusA:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayRadiusB:
+            return QColor(Qt::yellow);
+        case eFeatureDisplaySecondaryI:
+            return QColor(Qt::yellow);
+        case eFeatureDisplaySecondaryJ:
+            return QColor(Qt::yellow);
+        case eFeatureDisplaySecondaryK:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayAperture:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayA:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayB:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayC:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayAngle:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayDistance:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayMeasurementSeries:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayTemperature:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayLength:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayExpansionOriginX:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayExpansionOriginY:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayExpansionOriginZ:
+            return QColor(Qt::yellow);
+        }
+
+    }else if(getIsTrafoParamDisplayAttribute(attr)){ //trafo param attributes
+
+        switch((TrafoParamDisplayAttributes)attr){
+        case eTrafoParamDisplayTranslationX:
+            return QColor(Qt::yellow);
+        case eTrafoParamDisplayTranslationY:
+            return QColor(Qt::yellow);
+        case eTrafoParamDisplayTranslationZ:
+            return QColor(Qt::yellow);
+        case eTrafoParamDisplayRotationX:
+            return QColor(Qt::yellow);
+        case eTrafoParamDisplayRotationY:
+            return QColor(Qt::yellow);
+        case eTrafoParamDisplayRotationZ:
+            return QColor(Qt::yellow);
+        case eTrafoParamDisplayScaleX:
+            return QColor(Qt::yellow);
+        case eTrafoParamDisplayScaleY:
+            return QColor(Qt::yellow);
+        case eTrafoParamDisplayScaleZ:
+            return QColor(Qt::yellow);
+        }
+
+    }
+
+    return QVariant();
 
 }
 
@@ -601,6 +724,8 @@ void FeatureTableModel::connectJob(){
     QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
 
 }
 
@@ -614,5 +739,7 @@ void FeatureTableModel::disconnectJob(){
     QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel);
 
 }

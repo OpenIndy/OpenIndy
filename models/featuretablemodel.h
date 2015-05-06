@@ -51,6 +51,9 @@ public:
     QPointer<FeatureWrapper> getActiveFeature() const;
     void setActiveFeature(const QModelIndex &index);
 
+    QPointer<Station> getActiveStation() const;
+    void setActiveStation(const QModelIndex &index);
+
     //###############################
     //get or set current OpenIndy job
     //###############################
@@ -79,7 +82,8 @@ private:
     //helper methods
     //##############
 
-    QString getDisplayValue(const QPointer<FeatureWrapper> &feature, const int &column) const;
+    QVariant getDisplayValue(const QPointer<FeatureWrapper> &feature, const int &column) const;
+    QVariant getBackgroundValue(const QPointer<FeatureWrapper> &feature, const int &column) const;
 
     void connectJob();
     void disconnectJob();

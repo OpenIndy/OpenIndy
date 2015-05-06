@@ -22,6 +22,8 @@ QMap<UnitType, QString> unitTypesMap;
 
 QMap<SensorTypes, QString> sensorTypesMap;
 
+QMap<SensorFunctions, QString> sensorFunctionsMap;
+
 QString undefined = "";
 
 bool isInit = false;
@@ -257,6 +259,15 @@ void init(){
     //fill sensor types map
     sensorTypesMap.insert(eLaserTracker, "laser tracker");
     sensorTypesMap.insert(eTotalStation, "total station");
+
+    //fill sensor functions map
+    sensorFunctionsMap.insert(eMoveAngle, "move (polar)");
+    sensorFunctionsMap.insert(eMoveXYZ, "move (cartesian)");
+    sensorFunctionsMap.insert(eMotorState, "change motor state");
+    sensorFunctionsMap.insert(eToggleSight, "toggle sight orientation");
+    sensorFunctionsMap.insert(eInitialize, "initialize");
+    sensorFunctionsMap.insert(eHome, "home");
+    sensorFunctionsMap.insert(eCompensation, "compensation");
 
     isInit = true;
 
@@ -762,5 +773,50 @@ SensorTypes getSensorTypeEnum(const QString &name){
 
     //get the corresponding reading enum value
     return internal::sensorTypesMap.key(name, eUndefinedSensor);
+
+}
+
+/*!
+ * \brief getAvailableSensorFunctions
+ * \return
+ */
+QList<SensorFunctions> getAvailableSensorFunctions(){
+    return internal::sensorFunctionsMap.keys();
+}
+
+/*!
+ * \brief getSensorFunctionName
+ * \param type
+ * \return
+ */
+const QString &getSensorFunctionName(const SensorFunctions &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding sensor function name
+    if(internal::sensorFunctionsMap.contains(type)){
+        return internal::sensorFunctionsMap[type];
+    }
+    return internal::undefined;
+
+}
+
+/*!
+ * \brief getSensorFunctionEnum
+ * \param name
+ * \return
+ */
+SensorFunctions getSensorFunctionEnum(const QString &name){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding sensor function enum value
+    return internal::sensorFunctionsMap.key(name, eInitialize);
 
 }

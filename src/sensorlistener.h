@@ -9,52 +9,55 @@
 
 #include "sensor.h"
 
+class SensorControl;
+
 /*!
  * \brief The SensorListener class
  * The sensor listener handles all sensor streams and is controlled by SensorControl
  */
 class SensorListener : public QObject
 {
+    friend class SensorControl;
     Q_OBJECT
 
 public:
-    SensorListener(const QPointer<Sensor> &sensor, QObject *parent = 0);
+    SensorListener(QMutex &locker, QObject *parent = 0);
 
     ~SensorListener();
 
-    //#################
-    //get or set sensor
-    //#################
-
-    void setInstrument(QPointer<Sensor> sensor);
-    QPointer<Sensor> getInstrument() const;
-
-    //#####################
-    //check stream activity
-    //#####################
-
-    bool getIsStreamActive() const;
-
-public slots:
-
-    //#######################
-    //start or stop streaming
-    //#######################
-
-    void startStatusStream();
-    void startReadingStream(const ReadingTypes &streamFormat);
-
-    void abortSensorAction();
-    
 signals:
 
     //##############################
     //inform about streaming results
     //##############################
 
-    void sendReadingMap(const QVariantMap &stream);
-    void sendSensorStats(const QMap<QString, QString> &stream);
-    void connectionLost();
+    void realTimeReading(const QVariantMap &reading) const;
+    void realTimeStatus(const QMap<QString, QString> &status) const;
+    void connectionLost() const;
+
+private:
+
+    //#################
+    //get or set sensor
+    //#################
+
+    void setSensor(const QPointer<Sensor> &sensor);
+    const QPointer<Sensor> &getSensor() const;
+
+private slots:
+
+    //#######################
+    //start or stop streaming
+    //#######################
+
+    void startStreaming();
+
+    //################################
+    //get or set reading stream format
+    //################################
+
+    ReadingTypes getReadingStreamFormat() const;
+    void setReadingStreamFormat(ReadingTypes streamFormat);
 
 private:
 
@@ -64,8 +67,9 @@ private:
 
     QPointer<Sensor> sensor;
 
-    bool isStreamActive;
-    //bool isStreamFinished;
+    ReadingTypes streamFormat;
+
+    QMutex &locker;
 
 };
 

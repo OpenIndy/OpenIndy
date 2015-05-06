@@ -405,6 +405,7 @@ QList<QPointer<Reading> > PseudoTracker::measurePolar(const MeasurementConfig &m
     rPolar.azimuth = myAzimuth;
     rPolar.zenith = myZenith;
     rPolar.distance = myDistance;
+    rPolar.isValid = true;
 
     this->noisyPolarReading(rPolar);
 
@@ -435,6 +436,7 @@ QList<QPointer<Reading> > PseudoTracker::measureDistance(const MeasurementConfig
     double dd = ((double) rand()/RAND_MAX)*(20.0-1.0)+1.0;
     dd = dd/10000;
     rDistance.distance = myDistance + dd;
+    rDistance.isValid = true;
 
     QPointer<Reading> p = new Reading(rDistance);
 
@@ -466,6 +468,7 @@ QList<QPointer<Reading> > PseudoTracker::measureDirection(const MeasurementConfi
     dze = dze/1000;
     rDirection.azimuth = myAzimuth + daz;
     rDirection.zenith = myAzimuth + dze;
+    rDirection.isValid = true;
 
     QPointer<Reading> p = new Reading(rDirection);
 
@@ -500,6 +503,7 @@ QList<QPointer<Reading> > PseudoTracker::measureCartesian(const MeasurementConfi
     rCartesian.xyz.setAt(0, (myDistance * qSin(myZenith) * qCos(myAzimuth))+dx);
     rCartesian.xyz.setAt(1, (myDistance * qSin(myZenith) * qSin(myAzimuth))+dy);
     rCartesian.xyz.setAt(2, (myDistance * qCos(myZenith))+dz);
+    rCartesian.isValid = true;
 
     QPointer<Reading> p = new Reading(rCartesian);
 

@@ -15,6 +15,7 @@
 #include "exchangeParams.h"
 #include "dataexchanger.h"
 #include "sensorconfigurationmanager.h"
+#include "featureupdater.h"
 
 /*!
  * \brief The Controller class
@@ -41,6 +42,9 @@ public slots:
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
 
+    //set sensor configuration for active sensor
+    void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
+
     //set active feature states
     //void setActiveFeature(const int &featureId);
     void setActiveStation(const int &featureId);
@@ -56,6 +60,19 @@ public slots:
 
     //save or load a job
     void createDefaultJob();
+
+    //sensor actions
+    void startConnect();
+    void startDisconnect();
+    void startMeasurement();
+    void startMove(const Reading &reading);
+    void startAim();
+    void startToggleSight();
+    void startInitialize();
+    void startHome();
+    void startCompensation();
+    void startChangeMotorState();
+    void startCustomAction(const QString &task);
 
 signals:
 
@@ -125,6 +142,27 @@ signals:
     void nominalImportProgressUpdated(const int &progress, const QString &msg);
     void nominalImportFinished(const bool &success);
 
+    //##############
+    //sensor actions
+    //##############
+
+    void sensorActionStarted(const QString &name);
+    void sensorActionFinished(const bool &success, const QString &msg);
+
+private slots:
+
+    //###################################
+    //slots to react on job state changes
+    //###################################
+
+    void activeStationChangedCallback();
+
+    //################################
+    //slots to react on sensor results
+    //################################
+
+    void measurementFinished(const int &geomId, const QList<QPointer<Reading> > &readings);
+
 private:
 
     //##############
@@ -136,11 +174,14 @@ private:
     void initDisplayConfigs();
     void initConfigManager();
 
+    void registerMetaTypes();
+
     //######################
     //connect helper objects
     //######################
 
     void connectDataExchanger();
+    void connectFeatureUpdater();
 
 private:
 
@@ -152,6 +193,9 @@ private:
 
     //data exchanger
     DataExchanger exchanger;
+
+    //feature updater
+    FeatureUpdater featureUpdater;
 
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;

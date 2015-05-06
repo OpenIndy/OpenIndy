@@ -702,6 +702,16 @@ void SensorControl::saveReading(Reading* r, Geometry* geom, bool isActiveCoordSy
  */
 SensorControl::SensorControl(QPointer<Station> &station, QObject *parent) : QObject(parent), station(station){
 
+    //create sensor listener, connect it and move it to thread
+    this->sensorListener = new SensorListener(this->locker);
+    QObject::connect(&this->listenerThread, &QThread::started, this->sensorListener.data(), &SensorListener::startStreaming, Qt::AutoConnection);
+
+    //connect(this,SIGNAL(activateStatStream()),this->sensorListener,SLOT(sensorStatStream()));
+    //connect(this,SIGNAL(activateReadingStream(int)),this->sensorListener,SLOT(sensorReadingStream(int)));
+    //connect(sensorListener,SIGNAL(connectionLost()),this,SLOT(streamLostSignal()));
+    //sensorListener->moveToThread(&listenerThread);
+    //listenerThread.start();
+
 }
 
 /*!
@@ -709,6 +719,22 @@ SensorControl::SensorControl(QPointer<Station> &station, QObject *parent) : QObj
  */
 SensorControl::~SensorControl(){
 
+    //stop listener thread if it is still running
+    if(this->listenerThread.isRunning()){
+        this->listenerThread.quit();
+        this->listenerThread.wait();
+    }
+
+    delete this->sensorListener;
+
+}
+
+/*!
+ * \brief SensorControl::getSensor
+ * \return
+ */
+const QPointer<Sensor> &SensorControl::getSensor() const{
+    return this->sensor;
 }
 
 /*!
@@ -716,186 +742,172 @@ SensorControl::~SensorControl(){
  * \param sensor
  */
 void SensorControl::setSensor(const QPointer<Sensor> &sensor){
-    if(!sensor.isNull()){
-        this->usedSensors.append(this->sensor);
-        this->sensor = sensor;
+
+    //check sensor
+    if(sensor.isNull()){
+        return;
     }
+
+    //check old sensor and add it to list of used sensors
+    if(!this->sensor.isNull()){
+
+        //stop listener thread if it is still running
+        if(this->listenerThread.isRunning()){
+            this->listenerThread.quit();
+            this->listenerThread.wait();
+        }
+
+        this->usedSensors.append(this->sensor);
+
+    }
+
+    //set new sensor
+    this->sensor = sensor;
+    this->sensorListener->setSensor(this->sensor);
+
+    //move sensor listener to thread and start listening
+    this->sensorListener->moveToThread(&this->listenerThread);
+    this->listenerThread.start();
+
+}
+
+/*!
+ * \brief SensorControl::getSensorListener
+ * \return
+ */
+const QPointer<const SensorListener> SensorControl::getSensorListener() const{
+    return this->sensorListener;
+}
+
+/*!
+ * \brief SensorControl::setStreamFormat
+ * \param streamFormat
+ */
+void SensorControl::setStreamFormat(ReadingTypes streamFormat){
+
+    //stop listener thread if it is still running
+    if(this->listenerThread.isRunning()){
+        this->listenerThread.quit();
+        this->listenerThread.wait();
+    }
+
+    this->sensorListener->setReadingStreamFormat(streamFormat);
+
+    //check sensor
+    if(this->sensor.isNull() || !this->sensor->getConnectionState()){
+        return;
+    }
+
+    //restart sensor listener
+    this->sensorListener->moveToThread(&this->listenerThread);
+    this->listenerThread.start();
+
 }
 
 /*!
  * \brief SensorControl::connectSensor
  */
 void SensorControl::connectSensor(){
-/*
-    locker.lock();
 
-    listenerThread.start();
+    this->locker.lock();
 
-    if(this->t != eNoStream){
-        this->sendDeactivateStream();
-    }
-
-    if(instrument->getConnectionState()){
-        this->myEmitter.sendString("sensor already connected");
-
-        if(this->t != eNoStream){
-            this->sendActivateStream();
-        }
-
-        emit commandFinished(true);
-
+    //check sensor
+    if(this->sensor.isNull()){
         locker.unlock();
-
         return;
     }
 
-    this->myEmitter.sendString("connecting sensor");
-
-    bool wasSuccessful = instrument->connectSensor(connConfig);
-
-    if(wasSuccessful){
-       instrumentListener->setInstrument(instrument);
+    //connect sensor if it is not connected yet
+    bool success = false;
+    QString msg;
+    if(!this->sensor->getConnectionState()){
+        success = this->sensor->connectSensor();
+        if(success){
+            msg = "sensor connected";
+        }else{
+            msg = "failed to connect sensor";
+        }
+    }else{
+        msg = "sensor already connected";
     }
 
-    if(this->t != eNoStream){
-        this->sendActivateStream();
-    }
+    emit this->commandFinished(success, msg);
 
+    this->locker.unlock();
 
-    emit commandFinished(wasSuccessful);
-
-    locker.unlock();
-*/
 }
 
 /*!
  * \brief SensorControl::disconnectSensor
  */
 void SensorControl::disconnectSensor(){
-/*
-    locker.lock();
 
-    if(this->t != eNoStream){
-        this->sendDeactivateStream();
+    this->locker.lock();
+
+    //check sensor
+    if(this->sensor.isNull()){
+        this->locker.unlock();
+        return;
     }
 
-    this->myEmitter.sendString("disconnecting sensor");
-
-    bool wasSuccessful = instrument->disconnectSensor();
-
-    if(wasSuccessful){
-        this->t = eNoStream;
+    //disconnect sensor if it is connected
+    bool success = false;
+    QString msg;
+    if(this->sensor->getConnectionState()){
+        success = this->sensor->disconnectSensor();
+        if(success){
+            msg = "sensor disconnected";
+        }else{
+            msg = "failed to disconnect sensor";
+        }
+    }else{
+        msg = "sensor not connected";
     }
 
-    listenerThread.quit();
+    emit this->commandFinished(success, msg);
 
-    if(!listenerThread.wait()){
-        this->myEmitter.sendString("timeout - stream failed");
-        emit commandFinished(false);
-    }
+    this->locker.unlock();
 
-    emit commandFinished(wasSuccessful);
-
-    locker.unlock();
-    */
 }
 
 /*!
  * \brief SensorControl::measure
- * \param geom
- * \param isActiveCoordSys
+ * \param geomId
+ * \param mConfig
  */
-void SensorControl::measure(const QPointer<Geometry> &geom, const bool &isActiveCoordSys){
-/*
-    locker.lock();
+void SensorControl::measure(const int &geomId, const MeasurementConfig &mConfig){
 
-    if(!this->sendDeactivateStream()){
-        locker.unlock();
-        emit commandFinished(false);
+    this->locker.lock();
+
+    //check sensor
+    if(this->sensor.isNull()){
+        this->locker.unlock();
         return;
     }
-    if(!instrument->isReadyForMeasurement()){
-      locker.unlock();
-      emit commandFinished(false);
-      this->myEmitter.sendString("sensor not ready for measurement");
-      return ;
-    }
 
-    if(!checkSensor()){
-       locker.unlock();
-       emit commandFinished(false);
-       return;
-    }
-
-    MeasurementConfig mconfig = geom->getMeasurementConfig();
-    QList<Reading*> readings = instrument->measure(&mconfig);
-
-    if(readings.size() == 0){
-        this->myEmitter.sendString("measurement not valid!");
-        emit commandFinished(false);
-        emit measurementFinished(geom->getId(),false);
+    //start measure if the sensor is connected
+    bool success = false;
+    QList<QPointer<Reading> > readings;
+    QString msg;
+    if(this->sensor->getConnectionState()){
+        readings = this->sensor->measure(mConfig);
+        if(readings.size() > 0){
+            msg = "measurement finished";
+            success = true;
+        }else{
+            msg = "failed to measure";
+        }
     }else{
-        this->storeReadings(readings,geom, isActiveCoordSys);
-        emit commandFinished(true);
-        emit measurementFinished(geom->getId(),true);
-        emit this->recalcFeature(geom);
+        msg = "sensor not connected";
     }
 
-    if(!this->sendActivateStream()){
-
+    emit this->commandFinished(success, msg);
+    if(success){
+        emit this->measurementFinished(geomId, readings);
     }
 
-    locker.unlock();
-    */
-}
+    this->locker.unlock();
 
-/*!
- * \brief SensorControl::readingStream
- * \param start
- * \param readingType
- */
-void SensorControl::readingStream(const bool &start, const ReadingTypes &readingType){
-/*
-    this->myEmitter.sendString("starting reading stream!");
-
-    if(t == eReadingStream){
-        return;
-    }
-
-    if(!this->sendDeactivateStream()){
-        emit commandFinished(false);
-        return;
-    }
-
-    typeOfReadingStream = r;
-
-    this->t = this->eReadingStream;
-
-    this->sendActivateStream();
-    */
-}
-
-/*!
- * \brief SensorControl::sensorStatusStream
- * \param start
- */
-void SensorControl::sensorStatusStream(const bool &start){
-/*
-    this->myEmitter.sendString("starting stat stream!");
-
-    if(t == eSenorStats){
-        return;
-    }
-
-    if(!this->sendDeactivateStream()){
-        emit commandFinished(false);
-        return;
-    }
-
-    this->t = this->eSenorStats;
-
-    this->sendActivateStream();
-    */
 }
 
 /*!
@@ -906,36 +918,43 @@ void SensorControl::sensorStatusStream(const bool &start){
  * \param isRelative
  */
 void SensorControl::move(const double &azimuth, const double &zenith, const double &distance, const bool &isRelative){
-/*
-    locker.lock();
 
-    if(!this->sendDeactivateStream()){
-        locker.unlock();
-        emit commandFinished(false);
+    this->locker.lock();
+
+    //check sensor
+    if(this->sensor.isNull()){
+        this->locker.unlock();
         return;
     }
 
-    if(!this->checkSensor()){
-       locker.unlock();
-       emit commandFinished(false);
-       return;
+    //start moving if the sensor is connected
+    bool success = false;
+    QString msg;
+    if(this->sensor->getConnectionState()){
+
+        //set up sensor attributes
+        SensorAttributes attr;
+        attr.moveAzimuth = azimuth;
+        attr.moveZenith = zenith;
+        attr.moveDistance = distance;
+        attr.moveIsRelative = isRelative;
+
+        bool success = this->sensor->accept(eMoveAngle, attr);
+        if(success){
+            msg = "moving sensor finished";
+            success = true;
+        }else{
+            msg = "failed to move sensor";
+        }
+
+    }else{
+        msg = "sensor not connected";
     }
 
-    this->myEmitter.sendString("start move command");
+    emit this->commandFinished(success, msg);
 
-    this->az =azimuth;
-    this->ze= zenith;
-    this->dist = distance;
-    this->isMoveRelativ = isRelative;
+    this->locker.unlock();
 
-    bool wasSuccessful = instrument->accept(this, eMoveAngle);
-
-    emit commandFinished(wasSuccessful);
-
-    this->sendActivateStream();
-
-    locker.unlock();
-*/
 }
 
 /*!
@@ -945,167 +964,223 @@ void SensorControl::move(const double &azimuth, const double &zenith, const doub
  * \param z
  */
 void SensorControl::move(const double &x, const double &y, const double &z){
-/*
-    locker.lock();
 
-    if(!this->sendDeactivateStream()){
-        locker.unlock();
-        emit commandFinished(false);
+    this->locker.lock();
+
+    //check sensor
+    if(this->sensor.isNull()){
+        this->locker.unlock();
         return;
     }
 
-    if(!this->checkSensor()){
-       locker.unlock();
-       emit commandFinished(false);
-       return;
+    //start moving if the sensor is connected
+    bool success = false;
+    QString msg;
+    if(this->sensor->getConnectionState()){
+
+        //set up sensor attributes
+        SensorAttributes attr;
+        attr.moveX = x;
+        attr.moveY = y;
+        attr.moveZ = z;
+        attr.moveIsRelative = false;
+
+        bool success = this->sensor->accept(eMoveXYZ, attr);
+        if(success){
+            msg = "moving sensor finished";
+            success = true;
+        }else{
+            msg = "failed to move sensor";
+        }
+
+    }else{
+        msg = "sensor not connected";
     }
 
-    this->myEmitter.sendString("start move command");
+    emit this->commandFinished(success, msg);
 
+    this->locker.unlock();
 
-    this->x_ =x;
-    this->y_ =y;
-    this->z_ =z;
-
-    bool wasSuccessful = instrument->accept(this, eMoveXYZ);
-
-    emit commandFinished(wasSuccessful);
-
-    this->sendActivateStream();
-
-    locker.unlock();
-    */
 }
 
 /*!
  * \brief SensorControl::initialize
  */
 void SensorControl::initialize(){
-/*
-    locker.lock();
 
-    if(!this->checkSensor()){
-       locker.unlock();
-       emit commandFinished(false);
-       return;
+    this->locker.lock();
+
+    //check sensor
+    if(this->sensor.isNull()){
+        this->locker.unlock();
+        return;
     }
 
-    this->myEmitter.sendString("start initialize");
+    //start initializing if the sensor is connected
+    bool success = false;
+    QString msg;
+    if(this->sensor->getConnectionState()){
 
-    bool wasSuccessful = instrument->accept(this, eInitialize);
+        bool success = this->sensor->accept(eInitialize, SensorAttributes());
+        if(success){
+            msg = "initializing finished";
+            success = true;
+        }else{
+            msg = "failed to initialize sensor";
+        }
 
-    emit commandFinished(wasSuccessful);
+    }else{
+        msg = "sensor not connected";
+    }
 
-    locker.unlock();
-*/
+    emit this->commandFinished(success, msg);
+
+    this->locker.unlock();
+
 }
 
 /*!
  * \brief SensorControl::motorState
  */
 void SensorControl::motorState(){
-/*
-    locker.lock();
 
-    if(!this->checkSensor()){
-       locker.unlock();
-       emit commandFinished(false);
-       return;
+    this->locker.lock();
+
+    //check sensor
+    if(this->sensor.isNull()){
+        this->locker.unlock();
+        return;
     }
 
-    this->myEmitter.sendString("changing motor state");
+    //start changing motor state if the sensor is connected
+    bool success = false;
+    QString msg;
+    if(this->sensor->getConnectionState()){
 
-    bool wasSuccessful = instrument->accept(this, eMotorState);
+        bool success = this->sensor->accept(eMotorState, SensorAttributes());
+        if(success){
+            msg = "changing motor state finished";
+            success = true;
+        }else{
+            msg = "failed to change motor state";
+        }
 
-    emit commandFinished(wasSuccessful);
+    }else{
+        msg = "sensor not connected";
+    }
 
-    locker.unlock();
-    */
+    emit this->commandFinished(success, msg);
+
+    this->locker.unlock();
+
 }
 
 /*!
  * \brief SensorControl::home
  */
 void SensorControl::home(){
-/*
-    locker.lock();
 
-    if(!this->sendDeactivateStream()){
-        locker.unlock();
-        emit commandFinished(false);
+    this->locker.lock();
+
+    //check sensor
+    if(this->sensor.isNull()){
+        this->locker.unlock();
         return;
     }
 
-    if(!this->checkSensor()){
-       locker.unlock();
-       emit commandFinished(false);
-       return;
+    //start home if the sensor is connected
+    bool success = false;
+    QString msg;
+    if(this->sensor->getConnectionState()){
+
+        bool success = this->sensor->accept(eHome, SensorAttributes());
+        if(success){
+            msg = "setting home finished";
+            success = true;
+        }else{
+            msg = "failed to set sensor to home position";
+        }
+
+    }else{
+        msg = "sensor not connected";
     }
 
-    this->myEmitter.sendString("set home");
+    emit this->commandFinished(success, msg);
 
-    bool wasSuccessful = instrument->accept(this, eHome);
+    this->locker.unlock();
 
-    emit commandFinished(wasSuccessful);
-
-    this->sendActivateStream();
-
-    locker.unlock();
-    */
 }
 
 /*!
  * \brief SensorControl::toggleSight
  */
 void SensorControl::toggleSight(){
-/*
-    locker.lock();
 
-    if(!this->sendDeactivateStream()){
-        locker.unlock();
-        emit commandFinished(false);
+    this->locker.lock();
+
+    //check sensor
+    if(this->sensor.isNull()){
+        this->locker.unlock();
         return;
     }
 
-    if(!this->checkSensor()){
-       locker.unlock();
-       emit commandFinished(false);
-       return;
+    //start toggle sight if the sensor is connected
+    bool success = false;
+    QString msg;
+    if(this->sensor->getConnectionState()){
+
+        bool success = this->sensor->accept(eToggleSight, SensorAttributes());
+        if(success){
+            msg = "toggle sight orientation finished";
+            success = true;
+        }else{
+            msg = "failed to toggle sight orientation";
+        }
+
+    }else{
+        msg = "sensor not connected";
     }
 
-    this->myEmitter.sendString("toggleSight");
+    emit this->commandFinished(success, msg);
 
-    bool wasSuccessful =  instrument->accept(this, eToggleSight);
+    this->locker.unlock();
 
-    emit commandFinished(wasSuccessful);
-
-    this->sendActivateStream();
-
-    locker.unlock();
-*/
 }
 
 /*!
  * \brief SensorControl::compensation
  */
 void SensorControl::compensation(){
-/*
-    locker.lock();
 
-    if(!this->checkSensor()){
-       locker.unlock();
-       emit commandFinished(false);
-       return;
+    this->locker.lock();
+
+    //check sensor
+    if(this->sensor.isNull()){
+        this->locker.unlock();
+        return;
     }
 
-    this->myEmitter.sendString("start compensation");
+    //start compensation if the sensor is connected
+    bool success = false;
+    QString msg;
+    if(this->sensor->getConnectionState()){
 
-    bool wasSuccessful =  instrument->accept(this, eCompensation);
+        bool success = this->sensor->accept(eCompensation, SensorAttributes());
+        if(success){
+            msg = "starting compensation finished";
+            success = true;
+        }else{
+            msg = "failed to start compensation";
+        }
 
-    emit commandFinished(wasSuccessful);
+    }else{
+        msg = "sensor not connected";
+    }
 
-    locker.unlock();
-*/
+    emit this->commandFinished(success, msg);
+
+    this->locker.unlock();
+
 }
 
 /*!
@@ -1113,222 +1188,5 @@ void SensorControl::compensation(){
  * \param action
  */
 void SensorControl::selfDefinedAction(const QString &action){
-/*
-    locker.lock();
-
-    if(!this->sendDeactivateStream()){
-        locker.unlock();
-        emit commandFinished(false);
-        return;
-    }
-
-    if(!this->checkSensor()){
-       locker.unlock();
-       emit commandFinished(false);
-       return;
-    }
-
-    bool wasSuccessful = instrument->doSelfDefinedAction(s);
-
-    emit commandFinished(wasSuccessful);
-
-    if(!this->sendActivateStream()){
-
-    }
-
-    locker.unlock();
-*/
-}
-
-/*!
- * \brief SensorControl::saveMeasurementResults
- * \param readings
- * \param geom
- * \param isActiveCoordSys
- */
-void SensorControl::saveMeasurementResults(const QList<QPointer<Reading> > &readings, const QPointer<Geometry> &geom, const bool &isActiveCoordSys){
-/*
-    for(int i = 0; i < readings.size();i++){
-
-        //r->id = generateID();
-
-        switch(geom->getMeasurementConfig().typeOfReading){
-            case(ePolarReading) :{
-                //set type
-                r->typeOfReading = ePolarReading;
-                //set accuracy
-                r->rPolar.sigmaAzimuth = myStation->getInstrumentConfig().sigma.sigmaAzimuth;
-                r->rPolar.sigmaZenith= myStation->getInstrumentConfig().sigma.sigmaZenith;
-                r->rPolar.sigmaDistance = myStation->getInstrumentConfig().sigma.sigmaDistance;
-                //store reading in station
-                this->myStation->readingsPol.append(r);
-                //create observation
-                Observation *obs = new Observation(r,myStation,isActiveCoordSys);
-                //save geometry in observation
-                obs->myTargetGeometries.append(geom);
-                //add observation to fit function of geom
-                if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                    geom->getFunctions().at(0)->addObservation(obs, 0);
-                }
-
-                //save observation in geometry
-                geom->addObservation(obs);
-                //geom->insertReadingType(ePolar,sPolar);
-                //save observation in station
-                this->myStation->coordSys->addObservation(obs);
-
-                break;
-            }
-            case(eDistanceReading) :{
-                //set type
-                r->typeOfReading = eDistanceReading;
-                //set accuracy
-                r->rDistance.sigmaDistance = myStation->getInstrumentConfig().sigma.sigmaDistance;
-                //store reading in station
-                this->myStation->readingsDist.append(r);
-                //create observation
-                Observation *obs = new Observation(r, myStation,isActiveCoordSys);
-                //save geometry in observation
-                obs->myTargetGeometries.append(geom);
-                //add observation to fit function of geom
-                if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                    geom->getFunctions().at(0)->addObservation(obs, 0);
-                }
-                //save observation in geometry
-                geom->addObservation(obs);
-                //geom->insertReadingType(eDistance,sDistance);
-                //save observation in station
-                this->myStation->coordSys->addObservation(obs);
-
-                break;
-            }
-            case(eDirectionReading) :{
-                //set type
-                r->typeOfReading =eDirectionReading;
-                //set accuracy
-                r->rDirection.sigmaAzimuth = myStation->getInstrumentConfig().sigma.sigmaAzimuth;
-                r->rDirection.sigmaZenith= myStation->getInstrumentConfig().sigma.sigmaZenith;
-                //store reading in station
-                this->myStation->readingsDir.append(r);
-                //create observation
-                Observation *obs = new Observation(r, myStation,isActiveCoordSys);
-                //save geometry in observation
-                obs->myTargetGeometries.append(geom);
-                //add observation to fit function of geom
-                if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                    geom->getFunctions().at(0)->addObservation(obs, 0);
-                }
-                //save observation in geometry
-                geom->addObservation(obs);
-                //geom->insertReadingType(eDirection,sDirection);
-                //save observation in station
-                this->myStation->coordSys->addObservation(obs);
-
-                break;
-            }
-            case(eCartesianReading) :{
-                //set type
-                r->typeOfReading = eCartesianReading;
-                //set accuracy
-                r->rCartesian.sigmaXyz = myStation->getInstrumentConfig().sigma.sigmaXyz;
-                //store reading in station
-                this->myStation->readingsXyz.append(r);
-                //create observation
-                Observation *obs = new Observation(r, myStation,isActiveCoordSys);
-                //save geometry in observation
-                //add observation to fit function of geom
-                if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                    geom->getFunctions().at(0)->addObservation(obs, 0);
-                }
-                obs->myTargetGeometries.append(geom);
-                //save observation in geometry
-                geom->addObservation(obs);
-                //geom->insertReadingType(eCartesian,sCartesian);
-                //save observation in station
-                this->myStation->coordSys->addObservation(obs);
-
-                break;
-            }
-            case(eLevelReading) :{
-                //set type
-                r->typeOfReading = eLevelReading;
-                //store reading in station
-                this->myStation->readingsLevel.append(r);
-                //create observation
-                Observation *obs = new Observation(r, myStation,isActiveCoordSys);
-                //save geometry in observation
-                //add observation to fit function of geom
-                if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                    geom->getFunctions().at(0)->addObservation(obs, 0);
-                }
-                obs->myTargetGeometries.append(geom);
-                //save observation in geometry
-                geom->addObservation(obs);
-                //geom->insertReadingType(eLevel,sLevel);
-                //save observation in station
-                this->myStation->coordSys->addObservation(obs);
-
-            break;
-        }
-            case(eTemperatureReading) :{
-                //set type
-                r->typeOfReading = eTemperatureReading;
-                //store reading in station
-                this->myStation->readingsTemperatur.append(r);
-                //create observation
-                Observation *obs = new Observation(r, myStation,isActiveCoordSys);
-                //save geometry in observation
-                //add observation to fit function of geom
-                if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                    geom->getFunctions().at(0)->addObservation(obs, 0);
-                }
-                obs->myTargetGeometries.append(geom);
-                //save observation in geometry
-                geom->addObservation(obs);
-                //geom->insertReadingType(eTemperatur,sTemperatur);
-                //save observation in station
-                this->myStation->coordSys->addObservation(obs);
-
-            break;
-            }
-            case(eUndefinedReading) :{
-                    //set type
-                    r->typeOfReading = eUndefinedReading;
-                    //store reading in station
-                    this->myStation->readingsUndefined.append(r);
-                    //create observation
-                    Observation *obs = new Observation(r, myStation,isActiveCoordSys);
-                    //save geometry in observation
-                    //add observation to fit function of geom
-                    if(geom->getFunctions().size() > 0 && geom->getFunctions().at(0)->getMetaData()->iid == OiMetaData::iid_FitFunction){
-                        geom->getFunctions().at(0)->addObservation(obs, 0);
-                    }
-                    obs->myTargetGeometries.append(geom);
-                    //save observation in geometry
-                    geom->addObservation(obs);
-                    //geom->insertReadingType(eUndefined, instrument->getUndefinedReadingName());
-                    //save observation in station
-                    this->myStation->coordSys->addObservation(obs);
-
-            break;
-            }
-        }
-
-        r->makeBackup();
-    }
-*/
-}
-
-/*!
- * \brief SensorControl::activateSensorStream
- */
-void SensorControl::activateSensorStream(){
-
-}
-
-/*!
- * \brief SensorControl::deactivateSensorStream
- */
-void SensorControl::deactivateSensorStream(){
 
 }
