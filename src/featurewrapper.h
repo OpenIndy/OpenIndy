@@ -146,4 +146,6 @@ private:
 
 };
 
+Q_DECLARE_METATYPE( FeatureWrapper* )
+
 #endif // FEATUREWRAPPER_H

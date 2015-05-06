@@ -15,6 +15,7 @@
 
 #include "featurecontainer.h"
 #include "featureattributes.h"
+#include "function.h"
 #include "types.h"
 #include "util.h"
 
@@ -96,19 +97,24 @@ public:
 
     void removeAll();
 
+    //##########################################
+    //add or remove functions and input elements
+    //##########################################
 
-    //activate features
-    //bool activateFeature(const int &featureId);
-    //bool activateStation(const int &featureId);
-    //bool activateCoordinateSystem(const int &featureId);
+    //add or remove functions
+    void addFunction(const QPointer<Function> &function);
+    void removeFunction(const int &functionIndex);
 
-    /*static FeatureWrapper *addFeature(FeatureAttributes attributes);
-    static bool addFeature(FeatureWrapper *myFeature);
-    static QList<FeatureWrapper *> addFeatures(FeatureAttributes attributes);
-    static bool addFeatures(const QList<FeatureWrapper *> &myFeatures);*/
+    //add input elements to a feature's function
+    void addInputObservation(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const QPointer<Observation> &observation);
+    void addInputReading(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const QPointer<Reading> &reading);
+    void addInputFeature(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const QPointer<FeatureWrapper> &feature);
 
-    //static CoordinateSystem *getNominalSystem(QString name);
-    //static void resetFeatureLists();
+    //remove input elements from a feature's function
+    void removeInputElement(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const int &elementId);
+
+    //add new observations
+    void addMeasurementResults(const int &geomId, const QList<QPointer<Reading> > &readings);
 
 signals:
 
@@ -175,6 +181,12 @@ signals:
     //###################################################
 
     void sendMessage(const QString &msg) const;
+
+    //##############################
+    //signals to force recalculation
+    //##############################
+
+    void recalcFeature(const QPointer<Feature> &feature);
 
     //#####################################
     //signals forwarded from FeatureUpdater
@@ -249,8 +261,14 @@ private:
     QStringList createFeatureNames(const QString &name, const int &count) const;
     QPointer<FeatureWrapper> createFeatureWrapper(const FeatureTypes &type, bool isNominal = false) const;
     bool checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature);
+
     bool canRemoveFeature(const QPointer<FeatureWrapper> &feature) const;
-    void clearDependencies(const QPointer<FeatureWrapper> &feature);
+    //void clearDependencies(const QPointer<FeatureWrapper> &feature);
+
+    bool checkCircleWarning(const QPointer<Feature> &activeFeature, const QPointer<Feature> &usedForActiveFeature);
+
+    void setUpDependencies(const InputElement &element, const QPointer<Feature> &feature);
+    void resetDependencies(const InputElement &element, const QPointer<Feature> &feature);
 
 private:
 

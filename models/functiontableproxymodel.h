@@ -34,6 +34,14 @@ public:
 
     const QPointer<OiJob> &getCurrentJob() const;
     void setCurrentJob(const QPointer<OiJob> &job);
+
+signals:
+
+    //###########################
+    //signals to change job state
+    //###########################
+
+    void startAddFunction(const QPointer<Function> &function);
     
 protected:
 

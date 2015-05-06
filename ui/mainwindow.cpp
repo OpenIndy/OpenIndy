@@ -428,6 +428,28 @@ void MainWindow::on_actionControl_pad_triggered(){
 }
 
 /*!
+ * \brief MainWindow::on_comboBox_groups_currentIndexChanged
+ * \param arg1
+ */
+void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    sourceModel->setActiveGroupName(arg1);
+
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){

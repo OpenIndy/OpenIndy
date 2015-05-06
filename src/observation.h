@@ -123,4 +123,6 @@ private:
 
 };
 
+Q_DECLARE_METATYPE( Observation* )
+
 #endif // OBSERVATION_H

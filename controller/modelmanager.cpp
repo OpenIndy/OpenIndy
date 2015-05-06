@@ -661,7 +661,7 @@ void ModelManager::updateGroupsModel(){
     groups = ModelManager::currentJob->getFeatureGroupList();
 
     //add default entry (all groups)
-    groups.push_front("all groups");
+    groups.push_front("All Groups");
 
     ModelManager::groupNamesModel.setStringList(groups);
 

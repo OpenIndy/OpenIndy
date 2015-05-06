@@ -487,7 +487,15 @@ void Controller::activeStationChangedCallback(){
  * \param readings
  */
 void Controller::measurementFinished(const int &geomId, const QList<QPointer<Reading> > &readings){
-    this->featureUpdater.addMeasurementResults(geomId, readings);
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //add observations
+    this->job->addMeasurementResults(geomId, readings);
+
 }
 
 /*!
@@ -508,6 +516,9 @@ void Controller::setJob(const QPointer<OiJob> &job){
 
     //set and connect new job
     this->job = job;
+
+    //log messages to console
+    QObject::connect(this->job.data(), &OiJob::sendMessage, this, &Controller::logToConsole, Qt::AutoConnection);
 
     //active feature changes
     QObject::connect(this->job.data(), &OiJob::activeFeatureChanged, this, &Controller::activeFeatureChanged, Qt::AutoConnection);
@@ -629,6 +640,14 @@ void Controller::initConfigManager(){
 }
 
 /*!
+ * \brief Controller::logToConsole
+ * \param msg
+ */
+void Controller::logToConsole(const QString &msg){
+    Console::getInstance()->addLine(msg);
+}
+
+/*!
  * \brief Controller::registerMetaTypes
  * Registers meta types to be able to use them in signal slot connections
  */
@@ -637,6 +656,10 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<MeasurementConfig>();
     qRegisterMetaType<SensorConfiguration>();
     qRegisterMetaType<QList<QPointer<Reading> > >();
+    qRegisterMetaType<QPointer<Feature> >();
+    qRegisterMetaType<QPointer<Function> >();
+    qRegisterMetaType<QPointer<FeatureWrapper> >();
+    qRegisterMetaType<QPointer<Observation> >();
 
 }
 
@@ -663,5 +686,7 @@ void Controller::connectFeatureUpdater(){
     QObject::connect(&this->featureUpdater, &FeatureUpdater::featureRecalculated, this->job.data(), &OiJob::featureRecalculated, Qt::AutoConnection);
     QObject::connect(&this->featureUpdater, &FeatureUpdater::featuresRecalculated, this->job.data(), &OiJob::featuresRecalculated, Qt::AutoConnection);
     QObject::connect(&this->featureUpdater, &FeatureUpdater::trafoParamRecalculated, this->job.data(), &OiJob::trafoParamRecalculated, Qt::AutoConnection);
+
+    QObject::connect(this->job.data(), &OiJob::recalcFeature, &this->featureUpdater, &FeatureUpdater::recalcFeature, Qt::AutoConnection);
 
 }

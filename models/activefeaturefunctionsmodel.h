@@ -74,6 +74,14 @@ public:
 
     const QPointer<FunctionTreeItem> &getRootItem() const;
 
+signals:
+
+    //###########################
+    //signals to change job state
+    //###########################
+
+    void startRemoveFunction(const int &functionIndex);
+
 private slots:
 
     //###########################################

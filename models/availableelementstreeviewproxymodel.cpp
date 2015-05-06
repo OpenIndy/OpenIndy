@@ -202,7 +202,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
             return;
         }
 
-        this->addInputElement(feature, function, neededElement, item);
+        this->addInputElement(item, function->getNeededElements().at(this->neededElementIndex).typeOfElement);
 
     }
 
@@ -274,9 +274,10 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
             || this->neededElementIndex >= feature->getFunctions().at(this->functionPosition)->getNeededElements().size()){
         return false;
     }
+    Function *function = feature->getFunctions().at(this->functionPosition);
 
     //get needed element
-    ElementTypes neededElement = feature->getFunctions().at(this->functionPosition)->getNeededElements().at(this->neededElementIndex).typeOfElement;
+    ElementTypes neededElement = function->getNeededElements().at(this->neededElementIndex).typeOfElement;
 
     //get feature tree item
     QPointer<FeatureTreeItem> item(NULL);
@@ -293,6 +294,26 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
     }
     if(item.isNull()){
         return false;
+    }
+
+    //check wether the item's type equals the needed element type but the item is already used or equals the feature to be calculated
+    if(item->getElementType() == neededElement){
+
+        //check if function already contains the element
+        QMap<int, QList<InputElement> > inputElements = function->getInputElements();
+        if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
+            return !inputElements.contains(item->getFeature()->getFeature()->getId());
+        }else if(item->getIsObservation() && !item->getObservation().isNull()){
+            return !inputElements.contains(item->getObservation()->getId());
+        }else if(item->getIsReading() && !item->getReading().isNull()){
+            return !inputElements.contains(item->getReading()->getId());
+        }
+
+        //check if the element equals the feature to be calculated
+        if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
+            return !(feature->getId() == item->getFeature()->getFeature()->getId());
+        }
+
     }
 
     //check wether item contains an element of the type neededElement
@@ -318,7 +339,16 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsColumn(int source_row, co
  */
 void AvailableElementsTreeViewProxyModel::connectJob(){
 
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
     QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition, Qt::AutoConnection);
+
+    QObject::connect(this, &AvailableElementsTreeViewProxyModel::addInputFeature, this->currentJob.data(), &OiJob::addInputFeature, Qt::AutoConnection);
+    QObject::connect(this, &AvailableElementsTreeViewProxyModel::addInputObservation, this->currentJob.data(), &OiJob::addInputObservation, Qt::AutoConnection);
+    QObject::connect(this, &AvailableElementsTreeViewProxyModel::addInputReading, this->currentJob.data(), &OiJob::addInputReading, Qt::AutoConnection);
 
 }
 
@@ -327,7 +357,16 @@ void AvailableElementsTreeViewProxyModel::connectJob(){
  */
 void AvailableElementsTreeViewProxyModel::disconnectJob(){
 
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
     QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition);
+
+    QObject::disconnect(this, &AvailableElementsTreeViewProxyModel::addInputFeature, this->currentJob.data(), &OiJob::addInputFeature);
+    QObject::disconnect(this, &AvailableElementsTreeViewProxyModel::addInputObservation, this->currentJob.data(), &OiJob::addInputObservation);
+    QObject::disconnect(this, &AvailableElementsTreeViewProxyModel::addInputReading, this->currentJob.data(), &OiJob::addInputReading);
 
 }
 
@@ -349,14 +388,46 @@ void AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition(){
 }
 
 /*!
+ * \brief AvailableElementsTreeViewProxyModel::checkCircleWarning
+ * \param activeFeature
+ * \param usedForActiveFeature
+ * \return
+ */
+bool AvailableElementsTreeViewProxyModel::checkCircleWarning(const QPointer<Feature> &activeFeature, const QPointer<Feature> &usedForActiveFeature){
+
+    //check features
+    if(activeFeature.isNull() || usedForActiveFeature.isNull() || activeFeature->getId() == usedForActiveFeature->getId()){
+        return true;
+    }
+
+    //check if active feature is in the list of previously needed features of usedForActiveFeature
+    foreach(const QPointer<FeatureWrapper> &feature, usedForActiveFeature->getPreviouslyNeeded()){
+
+        //check feature
+        if(feature.isNull() || feature->getFeature().isNull()){
+            continue;
+        }
+
+        if(feature->getFeature()->getId() == activeFeature->getId()){
+            return true;
+        }else if(feature->getFeature()->getPreviouslyNeeded().size() > 0
+                 && this->checkCircleWarning(activeFeature, feature->getFeature())){
+            return true;
+        }
+
+    }
+
+    return false;
+
+}
+
+/*!
  * \brief AvailableElementsTreeViewProxyModel::addInputElement
  * Add input elements recursively
- * \param target
- * \param function
- * \param type
  * \param item
+ * \param type
  */
-void AvailableElementsTreeViewProxyModel::addInputElement(Feature *target, Function *function, const ElementTypes &type, const QPointer<FeatureTreeItem> &item){
+void AvailableElementsTreeViewProxyModel::addInputElement(const QPointer<FeatureTreeItem> &item, const ElementTypes &type){
 
     //check item
     if(item.isNull()){
@@ -366,616 +437,15 @@ void AvailableElementsTreeViewProxyModel::addInputElement(Feature *target, Funct
     //if this item is of the right type
     if(item->getElementType() == type){
 
-        switch(type){
-        case eCircleElement:{
-
-            //check circle
-            if(item->getFeature().isNull() || item->getFeature()->getCircle().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getCircle()->getId());
-            element.typeOfElement = eCircleElement;
-            element.circle = item->getFeature()->getCircle();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getCircle()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eConeElement:{
-
-            //check cone
-            if(item->getFeature().isNull() || item->getFeature()->getCone().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getCone()->getId());
-            element.typeOfElement = eConeElement;
-            element.cone = item->getFeature()->getCone();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getCone()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eCylinderElement:{
-
-            //check cylinder
-            if(item->getFeature().isNull() || item->getFeature()->getCylinder().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getCylinder()->getId());
-            element.typeOfElement = eCylinderElement;
-            element.cylinder = item->getFeature()->getCylinder();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getCylinder()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eEllipseElement:{
-
-            //check ellipse
-            if(item->getFeature().isNull() || item->getFeature()->getEllipse().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getEllipse()->getId());
-            element.typeOfElement = eEllipseElement;
-            element.ellipse = item->getFeature()->getEllipse();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getEllipse()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eEllipsoidElement:{
-
-            //check ellipsoid
-            if(item->getFeature().isNull() || item->getFeature()->getEllipsoid().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getEllipsoid()->getId());
-            element.typeOfElement = eEllipsoidElement;
-            element.ellipsoid = item->getFeature()->getEllipsoid();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getEllipsoid()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eHyperboloidElement:{
-
-            //check hyperboloid
-            if(item->getFeature().isNull() || item->getFeature()->getHyperboloid().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getHyperboloid()->getId());
-            element.typeOfElement = eHyperboloidElement;
-            element.hyperboloid = item->getFeature()->getHyperboloid();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getHyperboloid()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eLineElement:{
-
-            //check line
-            if(item->getFeature().isNull() || item->getFeature()->getLine().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getLine()->getId());
-            element.typeOfElement = eLineElement;
-            element.line = item->getFeature()->getLine();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getLine()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eNurbsElement:{
-
-            //check nurbs
-            if(item->getFeature().isNull() || item->getFeature()->getNurbs().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getNurbs()->getId());
-            element.typeOfElement = eNurbsElement;
-            element.nurbs = item->getFeature()->getNurbs();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getNurbs()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eParaboloidElement:{
-
-            //check paraboloid
-            if(item->getFeature().isNull() || item->getFeature()->getParaboloid().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getParaboloid()->getId());
-            element.typeOfElement = eParaboloidElement;
-            element.paraboloid = item->getFeature()->getParaboloid();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getParaboloid()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case ePlaneElement:{
-
-            //check plane
-            if(item->getFeature().isNull() || item->getFeature()->getPlane().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getPlane()->getId());
-            element.typeOfElement = ePlaneElement;
-            element.plane = item->getFeature()->getPlane();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getPlane()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case ePointElement:{
-
-            //check point
-            if(item->getFeature().isNull() || item->getFeature()->getPoint().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getPoint()->getId());
-            element.typeOfElement = ePointElement;
-            element.point = item->getFeature()->getPoint();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getPoint()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case ePointCloudElement:{
-
-            //check point cloud
-            if(item->getFeature().isNull() || item->getFeature()->getPointCloud().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getPointCloud()->getId());
-            element.typeOfElement = ePointCloudElement;
-            element.pointCloud = item->getFeature()->getPointCloud();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getPointCloud()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eScalarEntityAngleElement:{
-
-            //check angle
-            if(item->getFeature().isNull() || item->getFeature()->getScalarEntityAngle().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getScalarEntityAngle()->getId());
-            element.typeOfElement = eScalarEntityAngleElement;
-            element.scalarEntityAngle = item->getFeature()->getScalarEntityAngle();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getScalarEntityAngle()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eScalarEntityDistanceElement:{
-
-            //check distance
-            if(item->getFeature().isNull() || item->getFeature()->getScalarEntityDistance().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getScalarEntityDistance()->getId());
-            element.typeOfElement = eScalarEntityDistanceElement;
-            element.scalarEntityDistance = item->getFeature()->getScalarEntityDistance();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getScalarEntityDistance()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eScalarEntityMeasurementSeriesElement:{
-
-            //check series
-            if(item->getFeature().isNull() || item->getFeature()->getScalarEntityMeasurementSeries().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getScalarEntityMeasurementSeries()->getId());
-            element.typeOfElement = eScalarEntityMeasurementSeriesElement;
-            element.scalarEntityMeasurementSeries = item->getFeature()->getScalarEntityMeasurementSeries();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getScalarEntityMeasurementSeries()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eScalarEntityTemperatureElement:{
-
-            //check temperature
-            if(item->getFeature().isNull() || item->getFeature()->getScalarEntityTemperature().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getScalarEntityTemperature()->getId());
-            element.typeOfElement = eScalarEntityTemperatureElement;
-            element.scalarEntityTemperature = item->getFeature()->getScalarEntityTemperature();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getScalarEntityTemperature()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eSlottedHoleElement:{
-
-            //check slotted hole
-            if(item->getFeature().isNull() || item->getFeature()->getSlottedHole().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getSlottedHole()->getId());
-            element.typeOfElement = eSlottedHoleElement;
-            element.slottedHole = item->getFeature()->getSlottedHole();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getSlottedHole()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eSphereElement:{
-
-            //check sphere
-            if(item->getFeature().isNull() || item->getFeature()->getSphere().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getSphere()->getId());
-            element.typeOfElement = eSphereElement;
-            element.sphere = item->getFeature()->getSphere();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getSphere()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eTorusElement:{
-
-            //check torus
-            if(item->getFeature().isNull() || item->getFeature()->getTorus().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getTorus()->getId());
-            element.typeOfElement = eTorusElement;
-            element.torus = item->getFeature()->getTorus();
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getTorus()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eDirectionElement:{
-
-            //check direction
-            if(item->getFeature().isNull() || item->getFeature()->getGeometry().isNull() ||
-                    !item->getFeature()->getGeometry()->hasDirection() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getGeometry()->getId());
-            element.typeOfElement = eDirectionElement;
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getGeometry()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case ePositionElement:{
-
-            //check position
-            if(item->getFeature().isNull() || item->getFeature()->getGeometry().isNull() ||
-                    !item->getFeature()->getGeometry()->hasPosition() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getGeometry()->getId());
-            element.typeOfElement = ePositionElement;
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getGeometry()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eRadiusElement:{
-
-            //check radius
-            if(item->getFeature().isNull() || item->getFeature()->getGeometry().isNull() ||
-                    !item->getFeature()->getGeometry()->hasRadius() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getGeometry()->getId());
-            element.typeOfElement = eRadiusElement;
-            element.geometry = item->getFeature()->getGeometry();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getGeometry()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eCoordinateSystemElement:{
-
-            //check coordinate system
-            if(item->getFeature().isNull() || item->getFeature()->getCoordinateSystem().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getCoordinateSystem()->getId());
-            element.typeOfElement = eCoordinateSystemElement;
-            element.coordSystem = item->getFeature()->getCoordinateSystem();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getCoordinateSystem()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eStationElement:{
-
-            //check station
-            if(item->getFeature().isNull() || item->getFeature()->getStation().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getStation()->getId());
-            element.typeOfElement = eStationElement;
-            element.station = item->getFeature()->getStation();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getStation()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eTrafoParamElement:{
-
-            //check trafo param
-            if(item->getFeature().isNull() || item->getFeature()->getTrafoParam().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getFeature()->getTrafoParam()->getId());
-            element.typeOfElement = eTrafoParamElement;
-            element.trafoParam = item->getFeature()->getTrafoParam();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            target->addPreviouslyNeeded(item->getFeature());
-            item->getFeature()->getTrafoParam()->addUsedFor(target->getFeatureWrapper());
-
-            return;
-
-        }case eObservationElement:{
-
-            //check observation
-            if(item->getObservation().isNull() || target->getFeatureWrapper().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getObservation()->getId());
-            element.typeOfElement = eObservationElement;
-            element.observation = item->getObservation();
-            function->addInputElement(element, this->neededElementIndex);
-
-            //create dependencies
-            if(!target->getFeatureWrapper()->getGeometry().isNull()){
-                target->getFeatureWrapper()->getGeometry()->addObservation(item->getObservation());
-                item->getObservation()->addTargetGeometry(target->getFeatureWrapper()->getGeometry());
-            }
-
-            return;
-
-        }case eReadingCartesianElement:{
-
-            //check reading
-            if(item->getReading().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getReading()->getId());
-            element.typeOfElement = eReadingCartesianElement;
-            element.cartesianReading = item->getReading();
-            function->addInputElement(element, this->neededElementIndex);
-
-            return;
-
-        }case eReadingPolarElement:{
-
-            //check reading
-            if(item->getReading().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getReading()->getId());
-            element.typeOfElement = eReadingPolarElement;
-            element.polarReading = item->getReading();
-            function->addInputElement(element, this->neededElementIndex);
-
-            return;
-
-        }case eReadingDistanceElement:{
-
-            //check reading
-            if(item->getReading().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getReading()->getId());
-            element.typeOfElement = eReadingDistanceElement;
-            element.distanceReading = item->getReading();
-            function->addInputElement(element, this->neededElementIndex);
-
-            return;
-
-        }case eReadingDirectionElement:{
-
-            //check reading
-            if(item->getReading().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getReading()->getId());
-            element.typeOfElement = eReadingDirectionElement;
-            element.directionReading = item->getReading();
-            function->addInputElement(element, this->neededElementIndex);
-
-            return;
-
-        }case eReadingTemperatureElement:{
-
-            //check reading
-            if(item->getReading().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getReading()->getId());
-            element.typeOfElement = eReadingTemperatureElement;
-            element.temperatureReading = item->getReading();
-            function->addInputElement(element, this->neededElementIndex);
-
-            return;
-
-        }case eReadingLevelElement:{
-
-            //check reading
-            if(item->getReading().isNull()){
-                return;
-            }
-
-            //create and add input element
-            InputElement element(item->getReading()->getId());
-            element.typeOfElement = eReadingLevelElement;
-            element.levelReading = item->getReading();
-            function->addInputElement(element, this->neededElementIndex);
-
-            return;
-
-        }
+        if(!item->getFeature().isNull()){
+            emit this->addInputFeature(this->currentJob->getActiveFeature(), this->functionPosition,
+                                       this->neededElementIndex, item->getFeature());
+        }else if(!item->getReading().isNull()){
+            emit this->addInputReading(this->currentJob->getActiveFeature(), this->functionPosition,
+                                       this->neededElementIndex, item->getReading());
+        }else if(!item->getObservation().isNull()){
+            emit this->addInputObservation(this->currentJob->getActiveFeature(), this->functionPosition,
+                                       this->neededElementIndex, item->getObservation());
         }
 
         return;
@@ -985,7 +455,7 @@ void AvailableElementsTreeViewProxyModel::addInputElement(Feature *target, Funct
     //if this item contains one or more items of the right type
     if(item->getHasElement(type)){
         for(int i = 0; i < item->getChildCount(); i++){
-            this->addInputElement(target, function, type, item->getChild(i));
+            this->addInputElement(item->getChild(i), type);
         }
     }
 

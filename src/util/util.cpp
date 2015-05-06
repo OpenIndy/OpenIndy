@@ -500,6 +500,57 @@ GeometryTypes getGeometryTypeEnum(const QString &name){
 }
 
 /*!
+ * \brief getIsFeature
+ * \param type
+ * \return
+ */
+bool getIsFeature(const ElementTypes &type){
+    if(type == eObservationElement
+            || type == eReadingCartesianElement
+            || type == eReadingPolarElement
+            || type == eReadingDistanceElement
+            || type == eReadingDirectionElement
+            || type == eReadingTemperatureElement
+            || type == eReadingLevelElement
+            || type == eDirectionElement
+            || type == ePositionElement
+            || type == eRadiusElement
+            || type == eUndefinedElement){
+        return false;
+    }
+    return true;
+}
+
+/*!
+ * \brief getIsReading
+ * \param type
+ * \return
+ */
+bool getIsReading(const ElementTypes &type){
+    if(type == eReadingCartesianElement
+            || type == eReadingDirectionElement
+            || type == eReadingDistanceElement
+            || type == eReadingLevelElement
+            || type == eReadingPolarElement
+            || type == eReadingTemperatureElement){
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * \brief getIsObservation
+ * \param type
+ * \return
+ */
+bool getIsObservation(const ElementTypes &type){
+    if(type == eObservationElement){
+        return true;
+    }
+    return false;
+}
+
+/*!
  * \brief getIsGeometry
  * \param type
  * \return

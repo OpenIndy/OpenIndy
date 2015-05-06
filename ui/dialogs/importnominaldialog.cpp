@@ -147,7 +147,9 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked(){
     params.exchangeFilePath = this->ui->lineEdit_file_sa->text();
     params.delimiter = this->ui->comboBox_separator_sa->currentText();
     params.exchangeName = this->ui->comboBox_exchange_sa->currentText();
-    params.groupName = this->ui->comboBox_groupNames->currentText();
+    if(this->ui->comboBox_groupNames->currentText().compare("All Groups") != 0){
+        params.groupName = this->ui->comboBox_groupNames->currentText();
+    }
     params.isDefinedFormat = false;
     params.nominalSystem = this->ui->comboBox_system_sa->currentText();
     params.pluginName = this->ui->comboBox_plugin_sa->currentText();

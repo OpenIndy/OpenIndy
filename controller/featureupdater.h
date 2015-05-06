@@ -46,6 +46,8 @@ public:
     const QPointer<OiJob> &getCurrentJob() const;
     void setCurrentJob(const QPointer<OiJob> &job);
 
+public slots:
+
     //################
     //add measurements
     //################

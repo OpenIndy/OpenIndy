@@ -138,6 +138,9 @@ private slots:
     //toggle visibility of widgets
     void on_actionControl_pad_triggered();
 
+    //active group or coordinate system changed
+    void on_comboBox_groups_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
 

@@ -325,6 +325,8 @@ protected:
 
 };
 
+Q_DECLARE_METATYPE( Function* )
+
 #define Function_iid "de.openIndy.plugin.function.v001"
 
 #endif // FUNCTION_H

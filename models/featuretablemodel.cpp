@@ -391,6 +391,36 @@ void FeatureTableModel::setActiveStation(const QModelIndex &index)
 }
 
 /*!
+ * \brief FeatureTableModel::getActiveGroupName
+ * \return
+ */
+const QString &FeatureTableModel::getActiveGroupName() const{
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return "";
+    }
+
+    return this->currentJob->getActiveGroup();
+
+}
+
+/*!
+ * \brief FeatureTableModel::setActiveGroupName
+ * \param group
+ */
+void FeatureTableModel::setActiveGroupName(const QString &group){
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    this->currentJob->setActiveGroup(group);
+
+}
+
+/*!
  * \brief FeatureTableModel::getCurrentJob
  * \return
  */

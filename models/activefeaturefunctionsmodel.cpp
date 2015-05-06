@@ -210,15 +210,10 @@ void ActiveFeatureFunctionsModel::removeFunction(const QModelIndex &index){
     if(index.row() >= feature->getFunctions().size() || feature->getFunctions().at(index.row()).isNull()){
         return;
     }
-    QPointer<Function> function = feature->getFunctions().at(index.row());
 
-    //remove the function from the feature
-    feature->removeFunction(index.row());
-
-    //delete the function
-    if(!function.isNull()){
-        delete function;
-    }
+    //emit signal to remove the function and its dependencies
+    int functionIndex = index.row();
+    emit this->startRemoveFunction(functionIndex);
 
 }
 
@@ -568,6 +563,8 @@ void ActiveFeatureFunctionsModel::connectJob(){
     QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ActiveFeatureFunctionsModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::featureFunctionsChanged, this, &ActiveFeatureFunctionsModel::updateModel, Qt::AutoConnection);
 
+    QObject::connect(this, &ActiveFeatureFunctionsModel::startRemoveFunction, this->currentJob.data(), &OiJob::removeFunction, Qt::AutoConnection);
+
 }
 
 /*!
@@ -577,5 +574,7 @@ void ActiveFeatureFunctionsModel::disconnectJob(){
 
     QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ActiveFeatureFunctionsModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::featureFunctionsChanged, this, &ActiveFeatureFunctionsModel::updateModel);
+
+    QObject::disconnect(this, &ActiveFeatureFunctionsModel::startRemoveFunction, this->currentJob.data(), &OiJob::removeFunction);
 
 }

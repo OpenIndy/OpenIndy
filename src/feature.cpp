@@ -740,7 +740,7 @@ const QList<QPointer<FeatureWrapper> > &Feature::getUsedFor() const{
 bool Feature::addUsedFor(const QPointer<FeatureWrapper> &feature){
 
     //check feature
-    if(!feature.isNull() && !feature->getFeature().isNull()){
+    if(feature.isNull() || feature->getFeature().isNull()){
         return false;
     }
 
@@ -769,6 +769,34 @@ bool Feature::addUsedFor(const QPointer<FeatureWrapper> &feature){
 }
 
 /*!
+ * \brief Feature::removeUsedFor
+ * \param feature
+ * \return
+ */
+bool Feature::removeUsedFor(const QPointer<FeatureWrapper> &feature){
+
+    //check feature
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return false;
+    }
+
+    //check if the feature is included
+    if(!this->usedFor.contains(feature)){
+        return false;
+    }
+
+    this->usedFor.removeOne(feature);
+
+    //remove this feature from the previously needed features of feature
+    if(!this->selfFeature.isNull()){
+        feature->getFeature()->removePreviouslyNeeded(this->selfFeature);
+    }
+
+    return true;
+
+}
+
+/*!
  * \brief Feature::getPreviouslyNeeded
  * \return
  */
@@ -784,7 +812,7 @@ const QList<QPointer<FeatureWrapper> > &Feature::getPreviouslyNeeded() const{
 bool Feature::addPreviouslyNeeded(const QPointer<FeatureWrapper> &feature){
 
     //check feature
-    if(!feature.isNull() && !feature->getFeature().isNull()){
+    if(feature.isNull() || feature->getFeature().isNull()){
         return false;
     }
 
@@ -808,6 +836,36 @@ bool Feature::addPreviouslyNeeded(const QPointer<FeatureWrapper> &feature){
     //add this feature to the used for features of feature
     if(!this->selfFeature.isNull()){
         feature->getFeature()->addUsedFor(this->selfFeature);
+    }
+
+    return true;
+
+}
+
+/*!
+ * \brief Feature::removePreviouslyNeeded
+ * \param feature
+ * \return
+ */
+bool Feature::removePreviouslyNeeded(const QPointer<FeatureWrapper> &feature){
+
+    //check feature
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return false;
+    }
+
+    //check if the feature is included
+    if(!this->previouslyNeeded.contains(feature)){
+        return false;
+    }
+
+    this->previouslyNeeded.removeOne(feature);
+
+    this->isUpdated = false;
+
+    //remove this feature from the used for features of feature
+    if(!this->selfFeature.isNull()){
+        feature->getFeature()->removeUsedFor(this->selfFeature);
     }
 
     return true;

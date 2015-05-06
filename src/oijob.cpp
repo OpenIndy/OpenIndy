@@ -1653,6 +1653,622 @@ void OiJob::removeAll(){
 }
 
 /*!
+ * \brief OiJob::addFunction
+ * \param function
+ */
+void OiJob::addFunction(const QPointer<Function> &function){
+
+    //check active feature
+    if(this->activeFeature.isNull() || this->activeFeature->getFeature().isNull()){
+        return;
+    }
+
+    //check function
+    if(function.isNull()){
+        return;
+    }
+
+    //add the function to the active feature
+    this->activeFeature->getFeature()->addFunction(function);
+
+    //set up dependencies
+    QMap<int, QList<InputElement> > inputElements = function->getInputElements();
+    foreach(int key, inputElements.keys()){
+        foreach(const InputElement &element, inputElements[key]){
+            this->setUpDependencies(element, this->activeFeature->getFeature());
+        }
+    }
+
+}
+
+/*!
+ * \brief OiJob::removeFunction
+ * \param functionIndex
+ */
+void OiJob::removeFunction(const int &functionIndex){
+
+    //check active feature
+    if(this->activeFeature.isNull() || this->activeFeature->getFeature().isNull()){
+        return;
+    }
+
+    //get and check the function at the specified index
+    if(functionIndex < 0 || functionIndex >= this->activeFeature->getFeature()->getFunctions().size()){
+        return;
+    }
+    QPointer<Function> function = this->activeFeature->getFeature()->getFunctions().at(functionIndex);
+    if(function.isNull()){
+        return;
+    }
+
+    //get a list of input elements and reset dependencies
+    QMap<int, QList<InputElement> > inputElements = function->getInputElements();
+    foreach(int key, inputElements.keys()){
+        foreach(const InputElement &element, inputElements[key]){
+            this->resetDependencies(element, this->activeFeature->getFeature());
+        }
+    }
+
+    //remove and delete the function
+    this->activeFeature->getFeature()->removeFunction(functionIndex);
+    delete function;
+
+}
+
+/*!
+ * \brief OiJob::addInputObservation
+ * Adds an existing observation the the specified function of the target feature
+ * \param target
+ * \param functionPosition
+ * \param neededElementsIndex
+ * \param observation
+ */
+void OiJob::addInputObservation(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const QPointer<Observation> &observation){
+
+    //check target feature and observation
+    if(target.isNull() || target->getFeature().isNull() || observation.isNull()){
+        return;
+    }
+
+    //check function position
+    if(functionPosition < 0 || functionPosition >= target->getFeature()->getFunctions().size()
+            || target->getFeature()->getFunctions().at(functionPosition).isNull()){
+        return;
+    }
+
+    //create and add input element
+    InputElement element(observation->getId());
+    element.typeOfElement = eObservationElement;
+    element.observation = observation;
+    target->getFeature()->getFunctions().at(functionPosition)->addInputElement(element, neededElementsIndex);
+
+    //create dependencies
+    if(!target->getGeometry().isNull()){
+        observation->addTargetGeometry(target->getGeometry());
+    }
+
+}
+
+/*!
+ * \brief OiJob::addInputReading
+ * Adds an existing reading to the specified function of the target feature
+ * \param target
+ * \param functionPosition
+ * \param neededElementsIndex
+ * \param reading
+ */
+void OiJob::addInputReading(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const QPointer<Reading> &reading){
+
+    //check target feature and reading
+    if(target.isNull() || target->getFeature().isNull() || reading.isNull()){
+        return;
+    }
+
+    //check function position
+    if(functionPosition < 0 || functionPosition >= target->getFeature()->getFunctions().size()
+            || target->getFeature()->getFunctions().at(functionPosition).isNull()){
+        return;
+    }
+
+    //create and add input element
+    InputElement element(reading->getId());
+    element.typeOfElement = getElementTypeEnum(reading->getTypeOfReading());
+
+    switch(reading->getTypeOfReading()){
+    case eDistanceReading:
+        element.distanceReading = reading;
+        break;
+    case eCartesianReading:
+        element.cartesianReading = reading;
+        break;
+    case ePolarReading:
+        element.polarReading = reading;
+        break;
+    case eDirectionReading:
+        element.directionReading = reading;
+        break;
+    case eTemperatureReading:
+        element.temperatureReading = reading;
+        break;
+    case eLevelReading:
+        element.levelReading = reading;
+        break;
+    }
+
+    target->getFeature()->getFunctions().at(functionPosition)->addInputElement(element, neededElementsIndex);
+
+}
+
+/*!
+ * \brief OiJob::addInputFeature
+ * Adds an existing feature to the specified function of the target feature
+ * \param target
+ * \param functionPosition
+ * \param neededElementsIndex
+ * \param feature
+ */
+void OiJob::addInputFeature(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const QPointer<FeatureWrapper> &feature){
+
+    //check target and input features
+    if(target.isNull() || target->getFeature().isNull() || feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    //check function position
+    if(functionPosition < 0 || functionPosition >= target->getFeature()->getFunctions().size()
+            || target->getFeature()->getFunctions().at(functionPosition).isNull()){
+        return;
+    }
+
+    //check circular reference
+    if(this->checkCircleWarning(target->getFeature(), feature->getFeature())){
+        emit this->sendMessage("Cannot add input element: circular reference error");
+        return;
+    }
+
+    //create and add input element
+    InputElement element(feature->getFeature()->getId());
+    element.typeOfElement = target->getFeature()->getFunctions().at(functionPosition)->getNeededElements().at(neededElementsIndex).typeOfElement;
+
+    switch(target->getFeature()->getFunctions().at(functionPosition)->getNeededElements().at(neededElementsIndex).typeOfElement){
+    case eCircleElement:{
+
+        //check circle
+        if(feature->getGeometry().isNull() || feature->getCircle().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.circle = feature->getCircle();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eConeElement:{
+
+        //check cone
+        if(feature->getGeometry().isNull() || feature->getCone().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.cone = feature->getCone();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eCylinderElement:{
+
+        //check cylinder
+        if(feature->getGeometry().isNull() || feature->getCylinder().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.cylinder = feature->getCylinder();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eEllipseElement:{
+
+        //check ellipse
+        if(feature->getGeometry().isNull() || feature->getEllipse().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.ellipse = feature->getEllipse();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eEllipsoidElement:{
+
+        //check ellipsoid
+        if(feature->getGeometry().isNull() || feature->getEllipsoid().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.ellipsoid = feature->getEllipsoid();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eHyperboloidElement:{
+
+        //check hyperboloid
+        if(feature->getGeometry().isNull() || feature->getHyperboloid().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.hyperboloid = feature->getHyperboloid();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eLineElement:{
+
+        //check line
+        if(feature->getGeometry().isNull() || feature->getLine().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.line = feature->getLine();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eNurbsElement:{
+
+        //check nurbs
+        if(feature->getGeometry().isNull() || feature->getNurbs().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.nurbs = feature->getNurbs();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eParaboloidElement:{
+
+        //check paraboloid
+        if(feature->getGeometry().isNull() || feature->getParaboloid().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.paraboloid = feature->getParaboloid();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case ePlaneElement:{
+
+        //check plane
+        if(feature->getGeometry().isNull() || feature->getPlane().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.plane = feature->getPlane();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case ePointElement:{
+
+        //check point
+        if(feature->getGeometry().isNull() || feature->getPoint().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.point = feature->getPoint();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case ePointCloudElement:{
+
+        //check point cloud
+        if(feature->getGeometry().isNull() || feature->getPointCloud().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.pointCloud = feature->getPointCloud();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eScalarEntityAngleElement:{
+
+        //check angle
+        if(feature->getGeometry().isNull() || feature->getScalarEntityAngle().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.scalarEntityAngle = feature->getScalarEntityAngle();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eScalarEntityDistanceElement:{
+
+        //check distance
+        if(feature->getGeometry().isNull() || feature->getScalarEntityDistance().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.scalarEntityDistance = feature->getScalarEntityDistance();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eScalarEntityMeasurementSeriesElement:{
+
+        //check series
+        if(feature->getGeometry().isNull() || feature->getScalarEntityMeasurementSeries().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.scalarEntityMeasurementSeries = feature->getScalarEntityMeasurementSeries();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eScalarEntityTemperatureElement:{
+
+        //check temperature
+        if(feature->getGeometry().isNull() || feature->getScalarEntityTemperature().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.scalarEntityTemperature = feature->getScalarEntityTemperature();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eSlottedHoleElement:{
+
+        //check slotted hole
+        if(feature->getGeometry().isNull() || feature->getSlottedHole().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.slottedHole = feature->getSlottedHole();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eSphereElement:{
+
+        //check sphere
+        if(feature->getGeometry().isNull() || feature->getSphere().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.sphere = feature->getSphere();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eTorusElement:{
+
+        //check torus
+        if(feature->getGeometry().isNull() || feature->getTorus().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.torus = feature->getTorus();
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eDirectionElement:{
+
+        //check direction
+        if(feature->getGeometry().isNull() || feature->getGeometry()->hasDirection()){
+            return;
+        }
+
+        //set up input element
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case ePositionElement:{
+
+        //check position
+        if(feature->getGeometry().isNull() || feature->getGeometry()->hasPosition()){
+            return;
+        }
+
+        //set up input element
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eRadiusElement:{
+
+        //check radius
+        if(feature->getGeometry().isNull() || feature->getGeometry()->hasRadius()){
+            return;
+        }
+
+        //set up input element
+        element.geometry = feature->getGeometry();
+
+        break;
+
+    }case eCoordinateSystemElement:{
+
+        //check coordinate system
+        if(feature->getCoordinateSystem().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.coordSystem = feature->getCoordinateSystem();
+
+        break;
+
+    }case eStationElement:{
+
+        //check station
+        if(feature->getStation().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.station = feature->getStation();
+
+        break;
+
+    }case eTrafoParamElement:{
+
+        //check trafo param
+        if(feature->getTrafoParam().isNull()){
+            return;
+        }
+
+        //set up input element
+        element.trafoParam = feature->getTrafoParam();
+
+        break;
+
+    }default:{
+        return;
+    }
+    }
+
+    //add the input element to the function
+    target->getFeature()->getFunctions().at(functionPosition)->addInputElement(element, neededElementsIndex);
+
+    //create dependencies
+    target->getFeature()->addPreviouslyNeeded(feature);
+
+}
+
+/*!
+ * \brief OiJob::removeInputElement
+ * Removes an input element from the specified function
+ * \param target
+ * \param functionPosition
+ * \param neededElementsIndex
+ * \param elementId
+ */
+void OiJob::removeInputElement(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const int &elementId){
+
+    //check target and input features
+    if(target.isNull() || target->getFeature().isNull()){
+        return;
+    }
+
+    //check function position
+    if(functionPosition < 0 || functionPosition >= target->getFeature()->getFunctions().size()
+            || target->getFeature()->getFunctions().at(functionPosition).isNull()){
+        return;
+    }
+    Function *function = target->getFeature()->getFunctions().at(functionPosition);
+
+    //check and get input elements
+    if(!function->getInputElements().contains(neededElementsIndex)){
+        return;
+    }
+
+    //remove the input element with the specified id
+    function->removeInputElement(elementId, neededElementsIndex);
+
+    //check wether the removed element is still included at another index of the function
+    InputElement inputElement;
+    bool isStillIncluded = false;
+    QMap<int, QList<InputElement> > inputElements = function->getInputElements();
+    foreach(int key, inputElements.keys()){
+        foreach(const InputElement &element, inputElements[key]){
+
+            //compare id
+            if(element.id == elementId){
+                isStillIncluded = true;
+                inputElement = element;
+                break;
+            }
+
+        }
+    }
+
+    //reset dependencies if necessary
+    if(isStillIncluded){
+        this->resetDependencies(inputElement, target->getFeature());
+    }
+
+}
+
+/*!
+ * \brief OiJob::addMeasurementResults
+ * Creates and adds observations for the given readings
+ * \param geomId
+ * \param readings
+ */
+void OiJob::addMeasurementResults(const int &geomId, const QList<QPointer<Reading> > &readings){
+
+    //check active station
+    QPointer<Station> activeStation = this->activeStation;
+    if(activeStation.isNull()){
+        foreach(const QPointer<Reading> &reading, readings){
+            if(!reading.isNull()){
+                delete reading;
+            }
+        }
+        return;
+    }
+
+    //get and check feature with the id geomId
+    QPointer<FeatureWrapper> feature = this->featureContainer.getFeatureById(geomId);
+    if(feature.isNull() || feature->getGeometry().isNull()){
+        foreach(const QPointer<Reading> &reading, readings){
+            if(!reading.isNull()){
+                delete reading;
+            }
+        }
+        return;
+    }
+
+    //run through all readings
+    foreach(const QPointer<Reading> &reading, readings){
+
+        //check reading
+        if(reading.isNull()){
+            continue;
+        }
+
+        //create and set up observation
+        QPointer<Observation> observation = new Observation();
+        observation->setStation(activeStation);
+        observation->addTargetGeometry(feature->getGeometry());
+        reading->setObservation(observation);
+
+    }
+
+    //recalculate the feature
+    emit this->recalcFeature(feature->getFeature());
+
+}
+
+/*!
  * \brief OiJob::setActiveFeature
  * \param featureId
  */
@@ -2596,8 +3212,328 @@ bool OiJob::canRemoveFeature(const QPointer<FeatureWrapper> &feature) const{
  * \brief OiJob::clearDependencies
  * \param feature
  */
-void OiJob::clearDependencies(const QPointer<FeatureWrapper> &feature){
+/*void OiJob::clearDependencies(const QPointer<FeatureWrapper> &feature){
 
 
+
+}*/
+
+/*!
+ * \brief OiJob::checkCircleWarning
+ * \param activeFeature
+ * \param usedForActiveFeature
+ * \return
+ */
+bool OiJob::checkCircleWarning(const QPointer<Feature> &activeFeature, const QPointer<Feature> &usedForActiveFeature){
+
+    //check features
+    if(activeFeature.isNull() || usedForActiveFeature.isNull() || activeFeature->getId() == usedForActiveFeature->getId()){
+        return true;
+    }
+
+    //check if active feature is in the list of previously needed features of usedForActiveFeature
+    foreach(const QPointer<FeatureWrapper> &feature, usedForActiveFeature->getPreviouslyNeeded()){
+
+        //check feature
+        if(feature.isNull() || feature->getFeature().isNull()){
+            continue;
+        }
+
+        if(feature->getFeature()->getId() == activeFeature->getId()){
+            return true;
+        }else if(feature->getFeature()->getPreviouslyNeeded().size() > 0
+                 && this->checkCircleWarning(activeFeature, feature->getFeature())){
+            return true;
+        }
+
+    }
+
+    return false;
+
+}
+
+/*!
+ * \brief OiJob::setUpDependencies
+ * \param element
+ * \param feature
+ */
+void OiJob::setUpDependencies(const InputElement &element, const QPointer<Feature> &feature){
+
+    if(getIsFeature(element.typeOfElement)){
+
+        switch(element.typeOfElement){
+        case eCircleElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eConeElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eCylinderElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eEllipseElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eEllipsoidElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eHyperboloidElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eLineElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eNurbsElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eParaboloidElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case ePlaneElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case ePointElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case ePointCloudElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eScalarEntityAngleElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eScalarEntityDistanceElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eScalarEntityMeasurementSeriesElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eScalarEntityTemperatureElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eSlottedHoleElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eSphereElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eTorusElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eCoordinateSystemElement:{
+            if(!element.coordSystem.isNull() && !element.coordSystem->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.coordSystem->getFeatureWrapper());
+            }
+            break;
+        }case eStationElement:{
+            if(!element.station.isNull() && !element.station->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.station->getFeatureWrapper());
+            }
+            break;
+        }case eTrafoParamElement:{
+            if(!element.trafoParam.isNull() && !element.trafoParam->getFeatureWrapper().isNull()){
+                feature->addPreviouslyNeeded(element.trafoParam->getFeatureWrapper());
+            }
+            break;
+        }
+        }
+
+    }else if(getIsObservation(element.typeOfElement)){
+
+        if(!element.observation.isNull() && !feature->getFeatureWrapper().isNull() && !feature->getFeatureWrapper()->getGeometry().isNull()){
+            feature->getFeatureWrapper()->getGeometry()->addObservation(element.observation);
+        }
+
+    }else if(getIsReading(element.typeOfElement)){
+
+        return;
+
+    }else if(element.typeOfElement != eUndefinedElement){
+
+        if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+            feature->addPreviouslyNeeded(element.geometry->getFeatureWrapper());
+        }
+
+    }
+
+}
+
+/*!
+ * \brief OiJob::resetDependencies
+ * \param element
+ * \param feature
+ */
+void OiJob::resetDependencies(const InputElement &element, const QPointer<Feature> &feature){
+
+    if(getIsFeature(element.typeOfElement)){
+
+        switch(element.typeOfElement){
+        case eCircleElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eConeElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eCylinderElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eEllipseElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eEllipsoidElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eHyperboloidElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eLineElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eNurbsElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eParaboloidElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case ePlaneElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case ePointElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case ePointCloudElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eScalarEntityAngleElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eScalarEntityDistanceElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eScalarEntityMeasurementSeriesElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eScalarEntityTemperatureElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eSlottedHoleElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eSphereElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eTorusElement:{
+            if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+            }
+            break;
+        }case eCoordinateSystemElement:{
+            if(!element.coordSystem.isNull() && !element.coordSystem->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.coordSystem->getFeatureWrapper());
+            }
+            break;
+        }case eStationElement:{
+            if(!element.station.isNull() && !element.station->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.station->getFeatureWrapper());
+            }
+            break;
+        }case eTrafoParamElement:{
+            if(!element.trafoParam.isNull() && !element.trafoParam->getFeatureWrapper().isNull()){
+                feature->removePreviouslyNeeded(element.trafoParam->getFeatureWrapper());
+            }
+            break;
+        }
+        }
+
+    }else if(getIsObservation(element.typeOfElement)){
+
+        if(!element.observation.isNull() && !feature->getFeatureWrapper().isNull() && !feature->getFeatureWrapper()->getGeometry().isNull()){
+            element.observation->removeTargetGeometry(feature->getFeatureWrapper()->getGeometry());
+        }
+
+    }else if(getIsReading(element.typeOfElement)){
+
+        return;
+
+    }else if(element.typeOfElement != eUndefinedElement){
+
+        if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
+            feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+        }
+
+    }
 
 }

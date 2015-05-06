@@ -46,8 +46,8 @@ void FunctionTableProxyModel::addFunction(const QModelIndex &index){
         return;
     }
 
-    //add the function to the active feature
-    this->currentJob->getActiveFeature()->getFeature()->addFunction(function);
+    //add the function and its dependencies
+    emit this->startAddFunction(function);
 
 }
 
@@ -190,6 +190,8 @@ void FunctionTableProxyModel::connectJob(){
     QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FunctionTableProxyModel::invalidateFilter, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::featureFunctionsChanged, this, &FunctionTableProxyModel::invalidateFilter, Qt::AutoConnection);
 
+    QObject::connect(this, &FunctionTableProxyModel::startAddFunction, this->currentJob.data(), &OiJob::addFunction, Qt::AutoConnection);
+
 }
 
 /*!
@@ -199,5 +201,7 @@ void FunctionTableProxyModel::disconnectJob(){
 
     QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FunctionTableProxyModel::invalidateFilter);
     QObject::disconnect(this->currentJob.data(), &OiJob::featureFunctionsChanged, this, &FunctionTableProxyModel::invalidateFilter);
+
+    QObject::disconnect(this, &FunctionTableProxyModel::startAddFunction, this->currentJob.data(), &OiJob::addFunction);
 
 }

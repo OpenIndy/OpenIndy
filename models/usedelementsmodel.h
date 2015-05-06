@@ -54,6 +54,14 @@ public:
 
     void setSelectedFunctionPosition(const int &functionPosition, const int &neededElementIndex);
 
+signals:
+
+    //###########################
+    //signals to change job state
+    //###########################
+
+    void startRemoveUsedElements(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const int &elementId);
+
 private slots:
 
     //###########################################

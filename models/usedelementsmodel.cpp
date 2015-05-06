@@ -234,7 +234,8 @@ void UsedElementsModel::removeUsedElements(const QModelIndexList &selection){
             return;
         }
 
-        function->removeInputElement(inputElements.at(index.row()).id, this->neededElementIndex);
+        emit this->startRemoveUsedElements(this->currentJob->getActiveFeature(), this->functionPosition,
+                                           this->neededElementIndex, inputElements.at(index.row()).id);
 
     }
 
@@ -358,6 +359,8 @@ void UsedElementsModel::connectJob(){
     QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &UsedElementsModel::resetSelectedFunctionPosition, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &UsedElementsModel::updateModel, Qt::AutoConnection);
 
+    QObject::connect(this, &UsedElementsModel::startRemoveUsedElements, this->currentJob.data(), &OiJob::removeInputElement, Qt::AutoConnection);
+
 }
 
 /*!
@@ -367,6 +370,8 @@ void UsedElementsModel::disconnectJob(){
 
     QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &UsedElementsModel::resetSelectedFunctionPosition);
     QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &UsedElementsModel::updateModel);
+
+    QObject::disconnect(this, &UsedElementsModel::startRemoveUsedElements, this->currentJob.data(), &OiJob::removeInputElement);
 
 }
 

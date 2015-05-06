@@ -70,9 +70,11 @@ public:
 
     const QList<QPointer<FeatureWrapper> > &getUsedFor() const;
     bool addUsedFor(const QPointer<FeatureWrapper> &feature);
+    bool removeUsedFor(const QPointer<FeatureWrapper> &feature);
 
     const QList<QPointer<FeatureWrapper> > &getPreviouslyNeeded() const;
     bool addPreviouslyNeeded(const QPointer<FeatureWrapper> &feature);
+    bool removePreviouslyNeeded(const QPointer<FeatureWrapper> &feature);
 
     //###########################
     //reexecute the function list
@@ -219,5 +221,7 @@ protected:
     QPointer<OiJob> job;
 
 };
+
+Q_DECLARE_METATYPE( Feature* )
 
 #endif // FEATURE_H

@@ -54,6 +54,13 @@ public:
     QPointer<Station> getActiveStation() const;
     void setActiveStation(const QModelIndex &index);
 
+    //#######################
+    //get or set active group
+    //#######################
+
+    const QString &getActiveGroupName() const;
+    void setActiveGroupName(const QString &group);
+
     //###############################
     //get or set current OpenIndy job
     //###############################

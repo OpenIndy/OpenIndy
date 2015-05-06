@@ -22,14 +22,6 @@ public:
 
     virtual ~SystemTransformation(){}
 
-    //##############################################################################################
-    //tell OpenIndy wether the input elements shall be shown as one entry in function plugin loader)
-    //##############################################################################################
-
-    virtual bool mergeInputElements(){
-        return false;
-    }
-
 protected:
 
     //####################################
@@ -58,6 +50,11 @@ protected:
     bool exec(SlottedHole &slottedHole){ return Function::exec(slottedHole); }
     bool exec(Sphere &sphere){ return Function::exec(sphere); }
     bool exec(Torus &torus){ return Function::exec(torus); }
+
+    //special attributes for system transformations
+
+    QMap<int, QList<InputElement> > inputElementsStartSystem; //input elements solved in start system
+    QMap<int, QList<InputElement> > inputElementsDestinationSystem; //input elements solved in destination system
 
 };
 

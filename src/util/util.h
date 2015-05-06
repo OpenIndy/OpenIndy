@@ -23,6 +23,10 @@ FeatureTypes getFeatureTypeEnum(const QString &name);
 const QString &getGeometryTypeName(const GeometryTypes &type);
 GeometryTypes getGeometryTypeEnum(const QString &name);
 
+bool getIsFeature(const ElementTypes &type);
+bool getIsReading(const ElementTypes &type);
+bool getIsObservation(const ElementTypes &type);
+
 bool getIsGeometry(const FeatureTypes &type);
 bool getIsScalarEntity(const FeatureTypes &type);
 

@@ -174,6 +174,8 @@ private:
     void initDisplayConfigs();
     void initConfigManager();
 
+    void logToConsole(const QString &msg);
+
     void registerMetaTypes();
 
     //######################

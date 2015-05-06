@@ -43,15 +43,21 @@ public:
 
     void addInputElements(const QModelIndexList &selection);
 
-
-
-    //QPointer<FeatureTreeItem> getItemAtIndex(const QModelIndex &index);
-
     //###########################################
     //override methods of sort filter proxy model
     //###########################################
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+
+signals:
+
+    //###########################
+    //signals to change job state
+    //###########################
+
+    void addInputObservation(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const QPointer<Observation> &observation);
+    void addInputReading(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const QPointer<Reading> &reading);
+    void addInputFeature(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const QPointer<FeatureWrapper> &feature);
 
 protected:
 
@@ -69,7 +75,9 @@ private:
 
     void resetSelectedFunctionPosition();
 
-    void addInputElement(Feature *target, Function *function, const ElementTypes &type, const QPointer<FeatureTreeItem> &item);
+    bool checkCircleWarning(const QPointer<Feature> &activeFeature, const QPointer<Feature> &usedForActiveFeature);
+
+    void addInputElement(const QPointer<FeatureTreeItem> &item, const ElementTypes &type);
 
     //###########
     //current job
