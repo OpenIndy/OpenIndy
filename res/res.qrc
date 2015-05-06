@@ -68,5 +68,24 @@
         <file>icons/featureToolBar.png</file>
         <file>icons/simulation.png</file>
         <file>icons/streamingLogo.png</file>
+        <file>icons/Point Cloud.svg</file>
+        <file>icons/Cone.svg</file>
+        <file>icons/Ellipse.svg</file>
+        <file>icons/Ellipsoid.svg</file>
+        <file>icons/Point.svg</file>
+        <file>icons/Nurbs Surface.svg</file>
+        <file>icons/Paraboloid.svg</file>
+        <file>icons/Line.svg</file>
+        <file>icons/Hyperboloid.svg</file>
+        <file>icons/Sphere.svg</file>
+        <file>icons/Plane.svg</file>
+        <file>icons/Circle.svg</file>
+        <file>icons/Cylinder.svg</file>
+        <file>icons/Torus.svg</file>
+        <file>icons/Scalar Entities.svg</file>
+        <file>icons/Slotted Hole.svg</file>
+        <file>icons/Station.svg</file>
+        <file>icons/Coordinatesystem.svg</file>
+        <file>icons/TrafoParam.svg</file>
     </qresource>
 </RCC>
