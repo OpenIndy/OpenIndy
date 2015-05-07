@@ -11,14 +11,16 @@
 #include "oivec.h"
 #include "statistic.h"
 
-class Geometry;
 class Reading;
 class Station;
+class CoordinateSystem;
+class TrafoController;
 
 class Observation : public Element
 {
     friend class Reading;
     friend class CoordinateSystem;
+    friend class TrafoController;
     Q_OBJECT
 
 public:

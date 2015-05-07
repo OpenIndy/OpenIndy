@@ -655,6 +655,11 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
         return QColor(Qt::lightGray);
     }
 
+    //nominals
+    if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+        return QColor(QColor::fromRgb(230,230,180));
+    }
+
     //get the display attribute
     int attr = getDisplayAttributes().at(column);
 

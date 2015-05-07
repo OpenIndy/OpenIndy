@@ -13,6 +13,7 @@ class Observation;
 class TrafoParam;
 class Geometry;
 class Station;
+class TrafoController;
 
 /*!
  * \brief The CoordinateSystem class
@@ -21,6 +22,7 @@ class CoordinateSystem : public Feature
 {
     friend class Station;
     friend class OiJob;
+    friend class TrafoController;
     Q_OBJECT
 
 public:

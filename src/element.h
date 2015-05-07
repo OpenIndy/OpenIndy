@@ -31,7 +31,6 @@ public:
     //#############
 
     int getId() const;
-    //bool setId(const int &id);
 
     //################
     //save or load XML
@@ -46,22 +45,11 @@ signals:
     //signals to inform about element changes
     //#######################################
 
-    //void elementIdChanged();
     void elementAboutToBeDeleted(const int &elementId, const QString &name, const QString &group, const FeatureTypes &type);
 
 protected:
     int id;
 
-    /*
-    //TODO make protected and friend of OiFeatureState
-public:
-    void (&convertMetricValue)(double&);
-    void (&convertAngularValue)(double&);
-    void (&convertTemperatureValue)(double&);
-
-    unsigned int (&getMetricDigits)();
-    unsigned int (&getAngularDigits)();
-    unsigned int (&getTemperatureDigits)();*/
 };
 
 #endif // ELEMENT_H

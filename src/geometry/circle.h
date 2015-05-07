@@ -93,28 +93,6 @@ private:
     Direction normal; //normal vector
     Radius radius; //radius
 
-
-
-
-
-    /*QString getDisplayX(bool showDiff) const;
-    QString getDisplayY(bool showDiff) const;
-    QString getDisplayZ(bool showDiff) const;
-    QString getDisplayRadius(bool showDiff) const;
-    QString getDisplayIsCommon() const;
-    //QString getDisplayIsNominal() const;
-    //QString getDisplayObs() const;
-    QString getDisplaySolved() const;
-    QString getDisplayMConfig() const;
-    QString getDisplayStdDev() const;
-    QString getDisplayI(bool showDiff) const;
-    QString getDisplayJ(bool showDiff) const;
-    QString getDisplayK(bool showDiff) const;
-
-    bool saveSimulationData();
-
-    static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
-*/
 };
 
 #endif // CIRCLE_H

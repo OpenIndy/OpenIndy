@@ -253,6 +253,8 @@ private:
 
     static void initPluginModels();
 
+    static void initGroupsModel();
+
     //###############
     //display configs
     //###############

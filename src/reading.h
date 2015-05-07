@@ -16,6 +16,7 @@
 
 class Sensor;
 class Observation;
+class CoordinateSystem;
 
 //###########################
 //definition of reading types
@@ -125,6 +126,7 @@ public:
 class Reading : public Element
 {
     friend class Station;
+    friend class CoordinateSystem;
     Q_OBJECT
 
 public:

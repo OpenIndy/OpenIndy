@@ -63,6 +63,7 @@ void ModelManager::init(){
     ModelManager::initSensorTypeNamesModel();
     ModelManager::initSensorConnectionModels();
     ModelManager::initReadingTypesModels();
+    ModelManager::initGroupsModel();
 
 }
 
@@ -596,6 +597,11 @@ void ModelManager::updateCoordinateSystemsModel(){
 
     QStringList coordSystems;
 
+    //check current job
+    if(ModelManager::currentJob.isNull()){
+        return;
+    }
+
     //add all nominal systems
     foreach(const QPointer<CoordinateSystem> &system, ModelManager::currentJob->getCoordinateSystemsList()){
 
@@ -633,6 +639,11 @@ void ModelManager::updateNominalSystemsModel(){
 
     QStringList coordSystems;
 
+    //check current job
+    if(ModelManager::currentJob.isNull()){
+        return;
+    }
+
     //add all nominal systems
     foreach(const QPointer<CoordinateSystem> &system, ModelManager::currentJob->getCoordinateSystemsList()){
 
@@ -658,7 +669,9 @@ void ModelManager::updateGroupsModel(){
     QStringList groups;
 
     //get a list of all available groups
-    groups = ModelManager::currentJob->getFeatureGroupList();
+    if(!ModelManager::currentJob.isNull()){
+        groups = ModelManager::currentJob->getFeatureGroupList();
+    }
 
     //add default entry (all groups)
     groups.push_front("All Groups");
@@ -907,5 +920,14 @@ void ModelManager::initPluginModels(){
         pluginNames.append(plugin.name);
     }
     ModelManager::pluginNamesModel.setStringList(pluginNames);
+
+}
+
+/*!
+ * \brief ModelManager::initGroupsModel
+ */
+void ModelManager::initGroupsModel(){
+
+    ModelManager::updateGroupsModel();
 
 }

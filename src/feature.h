@@ -55,12 +55,6 @@ public:
     const bool &getIsSolved() const;
     void setIsSolved(const bool &isSolved);
 
-    //Configuration::eColor getDisplayColor() const;
-    //void setDisplayColor(Configuration::eColor displayColor);
-
-    //const bool &getIsDrawn() const;
-    //void setIsDrawn(const bool &isDrawn);
-
     const QList<QPointer<Function> > &getFunctions() const;
     void addFunction(const QPointer<Function> &function);
     void removeFunction(const int &index);
@@ -172,10 +166,7 @@ signals:
     void featureFunctionListChanged(const int &featureId);
     void featureUsedForChanged(const int &featureId);
     void featurePreviouslyNeededChanged(const int &featureId);
-    //void featureDisplayColorChanged(const int &featureId);
-    //void featureIsDrawnChanged(const int &featureId);
     void featureIsActiveChanged(const int &featureId);
-    //void featureAboutToBeDeleted(const int &featureId);
 
 protected:
 
@@ -203,9 +194,6 @@ protected:
     QList< QPointer<FeatureWrapper> > usedFor; //features which need this feature to recalc
     QList< QPointer<FeatureWrapper> > previouslyNeeded; //features which are needed to recalc this feature
 
-    //Configuration::eColor displayColor;
-    //bool isDrawn;
-
     //######################################
     //this pointer wrapped by FeatureWrapper
     //######################################
@@ -216,7 +204,7 @@ protected:
     //pointer to OiJob that this feature belongs to
     //#############################################
 
-    void setJob(const QPointer<OiJob> &job);
+    virtual void setJob(const QPointer<OiJob> &job);
 
     QPointer<OiJob> job;
 

@@ -150,6 +150,14 @@ private slots:
 
     void addReadings(const int &geomId, const QList<QPointer<Reading> > &readings);
 
+protected:
+
+    //#############################################
+    //pointer to OiJob that this feature belongs to
+    //#############################################
+
+    void setJob(const QPointer<OiJob> &job);
+
 };
 
 #endif // STATION_H

@@ -22,69 +22,16 @@ const QPointer<OiJob> &FeatureUpdater::getCurrentJob() const{
  */
 void FeatureUpdater::setCurrentJob(const QPointer<OiJob> &job){
     if(!job.isNull()){
+
+        //disconnect current job
+        if(!this->currentJob.isNull()){
+            this->disconnectJob();
+        }
+
         this->currentJob = job;
-    }
-}
-
-/*!
- * \brief FeatureUpdater::addMeasurementResults
- * Creates and adds observations for the given readings
- * \param geomId
- * \param readings
- */
-void FeatureUpdater::addMeasurementResults(const int &geomId, const QList<QPointer<Reading> > &readings){
-
-    //check current job
-    if(this->currentJob.isNull()){
-        foreach(const QPointer<Reading> &reading, readings){
-            if(!reading.isNull()){
-                delete reading;
-            }
-        }
-        return;
-    }
-
-    //check active station
-    QPointer<Station> activeStation = this->currentJob->getActiveStation();
-    if(activeStation.isNull()){
-        foreach(const QPointer<Reading> &reading, readings){
-            if(!reading.isNull()){
-                delete reading;
-            }
-        }
-        return;
-    }
-
-    //get and check feature with the id geomId
-    QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(geomId);
-    if(feature.isNull() || feature->getGeometry().isNull()){
-        foreach(const QPointer<Reading> &reading, readings){
-            if(!reading.isNull()){
-                delete reading;
-            }
-        }
-        return;
-    }
-
-    //run through all readings
-    foreach(const QPointer<Reading> &reading, readings){
-
-        //check reading
-        if(reading.isNull()){
-            continue;
-        }
-
-        //create and set up observation
-        QPointer<Observation> observation = new Observation();
-        observation->setStation(activeStation);
-        observation->addTargetGeometry(feature->getGeometry());
-        reading->setObservation(observation);
+        this->connectJob();
 
     }
-
-    //recalculate the feature
-    this->recalcFeature(feature->getFeature());
-
 }
 
 /*!
@@ -92,27 +39,73 @@ void FeatureUpdater::addMeasurementResults(const int &geomId, const QList<QPoint
  * Recalculates the hole set of features and trafo params of the current OpenIndy job
  */
 void FeatureUpdater::recalcAll(){
-    /*QMap<int,bool> solvedSystems;
 
-    foreach(CoordinateSystem *c, OiJob::getCoordinateSystems()){
-        foreach(TrafoParam *t, c->getTransformationParameters()){
-            if(!solvedSystems.contains(t->getId())){
-               FeatureUpdater::recalcTrafoParam(t);
-               solvedSystems.insert(t->getId(),true);
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check active coordinate system
+    if(this->currentJob->getActiveCoordinateSystem().isNull()){
+        return;
+    }
+
+    //save a list with ids of the solved trafo params
+    QList<int> solvedTrafoParams;
+
+    //run through all nominal systems
+    foreach(const QPointer<CoordinateSystem> &system, this->currentJob->getCoordinateSystemsList()){
+
+        //check system
+        if(system.isNull()){
+            continue;
+        }
+
+        //run through all trafo params of the system
+        foreach(const QPointer<TrafoParam> &tp, system->getTransformationParameters()){
+
+            //check trafo param
+            if(tp.isNull()){
+                continue;
             }
+
+            //recalculate the trafo param if not yet done
+            if(!solvedTrafoParams.contains(tp->getId())){
+               this->recalcTrafoParam(tp);
+               solvedTrafoParams.append(tp->getId());
+            }
+
+        }
+
+    }
+
+    //run through all station systems
+    foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
+
+        //check station system
+        if(station.isNull() || station->getCoordinateSystem().isNull()){
+            continue;
+        }
+
+        //run through all trafo params of the station system
+        foreach(const QPointer<TrafoParam> &tp, station->getCoordinateSystem()->getTransformationParameters()){
+
+            //check trafo param
+            if(tp.isNull()){
+                continue;
+            }
+
+            //recalculate the trafo param if not yet done
+            if(!solvedTrafoParams.contains(tp->getId())){
+                this->recalcTrafoParam(tp);
+                solvedTrafoParams.append(tp->getId());
+            }
+
         }
     }
 
-    foreach(Station *s, OiJob::getStations()){
-        foreach(TrafoParam *t, s->coordSys->getTransformationParameters()){
-            if(!solvedSystems.contains(t->getId())){
-               FeatureUpdater::recalcTrafoParam(t);
-               solvedSystems.insert(t->getId(),true);
-            }
-        }
-    }
-
-    FeatureUpdater::recalcFeatureSet();*/
+    //recalculate all features
+    this->recalcFeatureSet();
 
 }
 
@@ -121,21 +114,41 @@ void FeatureUpdater::recalcAll(){
  * Recalculate the hole set of features of the current OpenIndy job
  */
 void FeatureUpdater::recalcFeatureSet(){
-    /*//set all features to not have been updated
-    foreach(FeatureWrapper *feature, OiJob::getFeatures()){
-        if(feature != NULL && feature->getFeature() != NULL){
+
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check active coordinate system
+    if(this->currentJob->getActiveCoordinateSystem().isNull()){
+        return;
+    }
+
+    //set all features to not have been updated
+    foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
+        if(!feature.isNull() && !feature->getFeature().isNull()){
             feature->getFeature()->setIsUpdated(false);
         }
     }
+
     //recalc recursively
-    foreach(FeatureWrapper *feature, OiJob::getFeatures()){
-        if(feature != NULL && feature->getFeature() != NULL){
-            if(!feature->getFeature()->getIsUpdated() && feature->getTrafoParam() == NULL){
-                this->recalcFeature(feature->getFeature());
-            }
+    foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
+
+        //check feature
+        if(feature.isNull() || feature->getFeature().isNull()){
+            continue;
         }
+
+        //recalc the feature if it was not recalced yet and is no trafo param
+        if(!feature->getFeature()->getIsUpdated() && feature->getFeatureTypeEnum() != eTrafoParamFeature){
+            this->recalcFeature(feature->getFeature());
+        }
+
     }
-    emit this->featuresRecalculated();*/
+
+    emit this->featuresRecalculated();
+
 }
 
 /*!
@@ -145,10 +158,23 @@ void FeatureUpdater::recalcFeatureSet(){
  */
 void FeatureUpdater::recalcFeature(const QPointer<Feature> &feature){
 
-    //check the feature
-    if(feature.isNull()){
+    //check job
+    if(this->currentJob.isNull()){
         return;
     }
+
+    //check active coordinate system
+    if(this->currentJob->getActiveCoordinateSystem().isNull()){
+        return;
+    }
+
+    //check the feature
+    if(feature.isNull() || feature->getFeatureWrapper().isNull() || !feature->getFeatureWrapper()->getTrafoParam().isNull()){
+        return;
+    }
+
+    //transform all observations of the feature to the active coordinate system
+    this->trafoController.transformObservations(feature, this->currentJob->getActiveCoordinateSystem());
 
     //set feature to not updated
     feature->setIsUpdated(false);
@@ -166,86 +192,141 @@ void FeatureUpdater::recalcFeature(const QPointer<Feature> &feature){
  * \param trafoParam
  */
 void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
-    /*//if trafo param has "from", "to" and a function
-    if(trafoParam != NULL && trafoParam->getStartSystem() != NULL && trafoParam->getDestinationSystem() != NULL && trafoParam->getFunctions().size() > 0
-            && trafoParam->getFunctions().at(0) != NULL){
 
-        SystemTransformation *tpFunction = dynamic_cast<SystemTransformation*>(trafoParam->getFunctions().at(0));
-        //if function of tp is a system transformation
-        if(tpFunction != NULL){
+    //check trafo param
+    if(trafoParam.isNull() || trafoParam->getStartSystem().isNull() || trafoParam->getDestinationSystem().isNull()){
+        return;
+    }
 
-            //clear all copy lists of function
-            tpFunction->points_startSystem.clear();
-            tpFunction->points_targetSystem.clear();
-            tpFunction->lines_startSystem.clear();
-            tpFunction->lines_targetSystem.clear();
-            tpFunction->planes_startSystem.clear();
-            tpFunction->planes_targetSystem.clear();
-            tpFunction->spheres_startSystem.clear();
-            tpFunction->spheres_targetSystem.clear();
-            tpFunction->scalarEntityAngles_startSystem.clear();
-            tpFunction->scalarEntityAngles_targetSystem.clear();
-            tpFunction->scalarEntityDistances_startSystem.clear();
-            tpFunction->scalarEntityDistances_targetSystem.clear();
+    //get and check system transformation
+    if(trafoParam->getFunctions().size() == 0 || trafoParam->getFunctions().at(0).isNull()){
+        return;
+    }
+    QPointer<SystemTransformation> systemTransformation = dynamic_cast<SystemTransformation *>(trafoParam->getFunctions().at(0).data());
+    if(systemTransformation.isNull()){
+        return;
+    }
 
-            if(trafoParam->getStartSystem()->getNominals().size() > 0 && trafoParam->getDestinationSystem()->getNominals().size() > 0){ //if both nominals
-                this->fillTrafoParamFunctionNN(tpFunction, trafoParam);
-            }else if(trafoParam->getStartSystem()->getNominals().size() == 0 && trafoParam->getDestinationSystem()->getNominals().size() == 0){ //if both actual
-                if(trafoParam->getIsMovement()){
-                    this->fillTrafoParamFunctionMovement(tpFunction,trafoParam);
-                }else{
-                    this->fillTrafoParamFunctionAA(tpFunction, trafoParam);
-                }
-            }else if( (trafoParam->getStartSystem()->getNominals().size() == 0 && trafoParam->getDestinationSystem()->getNominals().size() > 0)
-                      || (trafoParam->getStartSystem()->getNominals().size() > 0 && trafoParam->getDestinationSystem()->getNominals().size() == 0) ){ //if one actual one nominal
-                this->fillTrafoParamFunctionAN(tpFunction, trafoParam);
-            }
+    //set up input feature
+    if(trafoParam->getStartSystem()->getIsStationSystem() && trafoParam->getDestinationSystem()->getIsStationSystem()){ //actual - actual
+        this->setUpTrafoParamActualActual(trafoParam, systemTransformation);
+    }else if((trafoParam->getStartSystem()->getIsStationSystem() && !trafoParam->getDestinationSystem()->getIsStationSystem())
+             || (!trafoParam->getStartSystem()->getIsStationSystem() && trafoParam->getDestinationSystem()->getIsStationSystem())){ //actual - nominal
+        this->setUpTrafoParamActualNominal(trafoParam, systemTransformation);
+    }else{ //nominal - nominal
+        this->setUpTrafoParamNominalNominal(trafoParam, systemTransformation);
+    }
+
+    //recalculate trafo param
+    trafoParam->recalc();
+    trafoParam->setIsUpdated(true);
+
+    //recalc dependent features
+    foreach(const QPointer<FeatureWrapper> &dependentFeature, trafoParam->getUsedFor()){
+
+        //check feature
+        if(dependentFeature.isNull() || dependentFeature->getFeature().isNull() || !dependentFeature->getTrafoParam().isNull()){
+            continue;
         }
 
-        trafoParam->recalc();
-        trafoParam->setIsUpdated(true);
+        this->recalcFeature(dependentFeature->getFeature());
 
-        //recalc dependent features
-        foreach(FeatureWrapper *dependentFeature, trafoParam->usedFor){
-            if(dependentFeature->getFeature() != NULL && dependentFeature->getTrafoParam() == NULL){ //if wrapper contains a feature but not a trafo param
-                this->recalcFeature(dependentFeature->getFeature());
-            }
-        }
-    }*/
+    }
+
 }
 
 /*!
  * \brief FeatureUpdater::switchCoordinateSystem
  * Does all recalculation steps necessary when the active coordinate system has changed
- * \param to
+ * \param destinationSystem
  */
-void FeatureUpdater::switchCoordinateSystem(const QPointer<CoordinateSystem> &to){
-    /*if(to != NULL){
-        //transform all observations to current coordinate system
-        foreach(CoordinateSystem* cs, OiJob::getCoordinateSystems()){
-            if(cs != NULL){
-                //cs->transformObservations(to);
-                trafoControl.transformObservations(cs);
-            }
+void FeatureUpdater::switchCoordinateSystem(const QPointer<CoordinateSystem> &destinationSystem){
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check system
+    if(destinationSystem.isNull()){
+        return;
+    }
+
+    //#######################################################
+    //transform all observations to current coordinate system
+    //#######################################################
+
+    //run through all station systems
+    foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
+
+        //check station system
+        if(station.isNull() || station->getCoordinateSystem().isNull()){
+            continue;
         }
-        foreach(Station* s, OiJob::getStations()){
-            if(s != NULL && s->coordSys != NULL){
-                //s->coordSys->transformObservations(to);
-                trafoControl.transformObservations(s->coordSys);
-            }
+
+        //transform all observations of the station system to the active coordinate system
+        this->trafoController.transformObservations(station->getCoordinateSystem(), this->currentJob->getActiveCoordinateSystem());
+
+    }
+
+    //###################################################################################
+    //set nominals to solved only if their nominal system is the active coordinate system
+    //###################################################################################
+
+    //run through all nominal systems
+    foreach(const QPointer<CoordinateSystem> &system, this->currentJob->getCoordinateSystemsList()){
+
+        //check system
+        if(system.isNull()){
+            continue;
         }
-        //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
-        foreach(FeatureWrapper *feature, OiJob::getFeatures()){
-            if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()
-                    && feature->getGeometry()->getNominalSystem() != to){
-                feature->getGeometry()->setIsSolved(false);
-            }else if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()){
-                feature->getGeometry()->setIsSolved(true);
+
+        //run through all nominals of the system
+        foreach(const QPointer<FeatureWrapper> &feature, system->getNominals()){
+
+            bool isSolved = (system == this->currentJob->getActiveCoordinateSystem());
+
+            //check feature
+            if(!feature.isNull() && !feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                feature->getGeometry()->setIsSolved(isSolved);
             }
+
         }
-        //recalc all features
-        this->recalcFeatureSet();
-    }*/
+
+    }
+
+    //###################
+    //recalc all features
+    //###################
+
+    this->recalcFeatureSet();
+
+}
+
+/*!
+ * \brief FeatureUpdater::connectJob
+ */
+void FeatureUpdater::connectJob(){
+
+    QObject::connect(this, &FeatureUpdater::featureRecalculated, this->currentJob.data(), &OiJob::featureRecalculated, Qt::AutoConnection);
+    QObject::connect(this, &FeatureUpdater::featuresRecalculated, this->currentJob.data(), &OiJob::featuresRecalculated, Qt::AutoConnection);
+    QObject::connect(this, &FeatureUpdater::trafoParamRecalculated, this->currentJob.data(), &OiJob::trafoParamRecalculated, Qt::AutoConnection);
+
+    QObject::connect(this->currentJob.data(), &OiJob::recalcFeature, this, &FeatureUpdater::recalcFeature, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief FeatureUpdater::disconnectJob
+ */
+void FeatureUpdater::disconnectJob(){
+
+    QObject::disconnect(this, &FeatureUpdater::featureRecalculated, this->currentJob.data(), &OiJob::featureRecalculated);
+    QObject::disconnect(this, &FeatureUpdater::featuresRecalculated, this->currentJob.data(), &OiJob::featuresRecalculated);
+    QObject::disconnect(this, &FeatureUpdater::trafoParamRecalculated, this->currentJob.data(), &OiJob::trafoParamRecalculated);
+
+    QObject::disconnect(this->currentJob.data(), &OiJob::recalcFeature, this, &FeatureUpdater::recalcFeature);
+
 }
 
 /*!
@@ -297,486 +378,714 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
 
 }
 
+/*!
+ * \brief FeatureUpdater::setUpTrafoParamActualActual
+ * \param trafoParam
+ * \param systemTransformation
+ */
+void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation){
 
-
-
-
-
-
-
-/*
-void FeatureUpdater::switchCoordinateSystemWithoutTransformation(CoordinateSystem *to){
-    if(to != NULL){
-        //set all observation to target coordinate system
-        foreach(CoordinateSystem* cs, OiJob::getCoordinateSystems()){
-            if(cs != NULL){
-                if(cs == to){ //if cs is the target coordinate system
-                    //cs->setObservationState(true);
-                    trafoControl.setObservationState(cs,true);
-                }else{
-                    //cs->setObservationState(false);
-                    trafoControl.setObservationState(cs,false);
-                }
-            }
-        }
-        foreach(Station* s, OiJob::getStations()){
-            if(s != NULL && s->coordSys != NULL){
-                if(s->coordSys == to){ //if cs is the target coordinate system
-                    //s->coordSys->setObservationState(true);
-                    trafoControl.setObservationState(s->coordSys,true);
-                }else{
-                    //s->coordSys->setObservationState(false);
-                    trafoControl.setObservationState(s->coordSys,false);
-                }
-            }
-        }
-        //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
-        foreach(FeatureWrapper *feature, OiJob::getFeatures()){
-            if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()
-                    && feature->getGeometry()->getNominalSystem() != to){
-                feature->getGeometry()->setIsSolved(false);
-            }else if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()){
-                feature->getGeometry()->setIsSolved(true);
-            }
-        }
-        //recalc all features
-        this->recalcFeatureSet();
-    }
-}
-
-void FeatureUpdater::switchCoordinateSystemWithoutMovement(CoordinateSystem *to)
-{
-    foreach (CoordinateSystem *cs, OiJob::getCoordinateSystems()) {
-        if(cs != NULL){
-            if(cs == to){
-                trafoControl.setObservationState(cs,true);
-            }else{
-                trafoControl.transformObsForMovementCalculation(cs,to);
+    //delete old copy elements
+    systemTransformation->inputPointsStartSystem.clear();
+    systemTransformation->inputPointsDestinationSystem.clear();
+    QList<int> startKeys = systemTransformation->inputElementsStartSystem.keys();
+    foreach(const int &key, startKeys){
+        QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
+        foreach(const InputElement &element, startElements){
+            if(!element.geometry.isNull()){
+                delete element.geometry;
             }
         }
     }
-
-    foreach (Station *s, OiJob::getStations()) {
-        if(s != NULL && s->coordSys != NULL){
-            if(s->coordSys == to){
-                trafoControl.setObservationState(s->coordSys,true);
-            }else{
-                trafoControl.transformObsForMovementCalculation(s->coordSys,to);
+    systemTransformation->inputElementsStartSystem.clear();
+    QList<int> destKeys = systemTransformation->inputElementsDestinationSystem.keys();
+    foreach(const int &key, destKeys){
+        QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
+        foreach(const InputElement &element, destElements){
+            if(!element.geometry.isNull()){
+                delete element.geometry;
             }
         }
     }
+    systemTransformation->inputElementsDestinationSystem.clear();
 
-    //set isSolved of all nominals whose coordinate system is not "to" to false, otherwise to true
-    foreach(FeatureWrapper *feature, OiJob::getFeatures()){
-        if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()
-                && feature->getGeometry()->getNominalSystem() != to){
-            feature->getGeometry()->setIsSolved(false);
-        }else if(feature->getGeometry() != NULL && feature->getGeometry()->getIsNominal()){
-            feature->getGeometry()->setIsSolved(true);
-        }
-    }
-    //recalc all features
-    this->recalcFeatureSet();
-}
-
-TrafoParam* FeatureUpdater::findTrafoParam(CoordinateSystem *searchSystem, QList<TrafoParam *> trafoParams){
-    foreach(TrafoParam *tp, trafoParams){
-        if(tp->getDestinationSystem() != NULL && tp->getDestinationSystem() == searchSystem){
-            return tp;
-        }
-    }
-    return NULL;
-    return NULL;
-}
-
-void FeatureUpdater::fillTrafoParamFunctionNN(SystemTransformation *function, TrafoParam *tp){
-    //sort helper class which compares and sorts the list of start and target points
-    SortListByName mySorter;
-
-    //add all points
-    foreach(Point *p, function->getPoints()){
-        Point cpyP(*p);
-        cpyP.setIsSolved(true);
-        if(p->getIsNominal() && p->getNominalSystem() == tp->getStartSystem()){
-            mySorter.addLocPoint(cpyP);
-        }else if(p->getIsNominal() && p->getNominalSystem() == tp->getDestinationSystem()){
-            mySorter.addRefPoint(cpyP);
-        }
-    }
-    //add all lines
-    foreach(Line *l, function->getLines()){
-        Line cpyL(*l);
-        cpyL.setIsSolved(true);
-        if(l->getIsNominal() && l->getNominalSystem() == tp->getStartSystem()){
-            mySorter.addLocLine(cpyL);
-        }else if(l->getIsNominal() && l->getNominalSystem() == tp->getDestinationSystem()){
-            mySorter.addRefLine(cpyL);
-        }
-    }
-    //add all planes
-    foreach(Plane *p, function->getPlanes()){
-        Plane cpyP(*p);
-        cpyP.setIsSolved(true);
-        if(p->getIsNominal() && p->getNominalSystem() == tp->getStartSystem()){
-            mySorter.addLocPlane(cpyP);
-        }else if(p->getIsNominal() && p->getNominalSystem() == tp->getDestinationSystem()){
-            mySorter.addRefPlane(cpyP);
-        }
-    }
-    //add all spheres
-    foreach(Sphere *s, function->getSpheres()){
-        Sphere cpyS(*s);
-        cpyS.setIsSolved(true);
-        if(s->getIsNominal() && s->getNominalSystem() == tp->getStartSystem()){
-            mySorter.addLocSphere(cpyS);
-        }else if(s->getIsNominal() && s->getNominalSystem() == tp->getDestinationSystem()){
-            mySorter.addRefSphere(cpyS);
-        }
-    }
-    //add all scalar entity distances
-    foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
-        ScalarEntityDistance cpyS(*s);
-        cpyS.setIsSolved(true);
-        if(s->getIsNominal() && s->getNominalSystem() == tp->getStartSystem()){
-            mySorter.addLocScalarEntityDistance(cpyS);
-        }else if(s->getIsNominal() && s->getNominalSystem() == tp->getDestinationSystem()){
-            mySorter.addRefScalarEntityDistance(cpyS);
-        }
-    }
-    //add all scalar entity angles
-    foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
-        ScalarEntityAngle cpyS(*s);
-        cpyS.setIsSolved(true);
-        if(s->getIsNominal() && s->getNominalSystem() == tp->getStartSystem()){
-            mySorter.addLocScalarEntityAngle(cpyS);
-        }else if(s->getIsNominal() && s->getNominalSystem() == tp->getDestinationSystem()){
-            mySorter.addRefScalarEntityAngle(cpyS);
-        }
+    //get and check keys
+    bool isAlignment;
+    QList<int> keys = systemTransformation->getInputElements().keys();
+    if(keys.size() <= 0){ //no input elements
+        return;
+    }else if(keys.size() == 1){ //normal transformation
+        isAlignment = false;
+    }else{ //alignment
+        isAlignment = true;
     }
 
-    //add sorted lists to the function
-    function->points_startSystem = mySorter.getLocPoints();
-    function->points_targetSystem = mySorter.getRefPoints();
-    function->lines_startSystem = mySorter.getLocLines();
-    function->lines_targetSystem = mySorter.getRefLines();
-    function->planes_startSystem = mySorter.getLocPlanes();
-    function->planes_targetSystem = mySorter.getRefPlanes();
-    function->spheres_startSystem = mySorter.getLocSpheres();
-    function->spheres_targetSystem = mySorter.getRefSpheres();
-    function->scalarEntityAngles_startSystem = mySorter.getLocScalarEntityAngles();
-    function->scalarEntityAngles_targetSystem = mySorter.getRefScalarEntityAngles();
-    function->scalarEntityDistances_startSystem = mySorter.getLocScalarEntityDistances();
-    function->scalarEntityDistances_targetSystem = mySorter.getRefScalarEntityDistances();
-}
+    //sort helper object which compares and sorts the list of start and target points
+    SortListByName sorter;
 
-void FeatureUpdater::fillTrafoParamFunctionAN(SystemTransformation *function, TrafoParam *tp){
-    //sort helper class which compares and sorts the list of start and target points
-    SortListByName mySorter;
-
-    CoordinateSystem *actualSystem = NULL;
-    CoordinateSystem *nominalSystem = NULL;
-    if(tp->getStartSystem()->getNominals().size() == 0){ //if "from" system is actual
-        actualSystem = tp->getStartSystem();
-        nominalSystem = tp->getDestinationSystem();
-    }else if(tp->getDestinationSystem()->getNominals().size() == 0){ //if "to" system is actual
-        actualSystem = tp->getDestinationSystem();
-        nominalSystem = tp->getStartSystem();
-    }
-
-    if(actualSystem != NULL && nominalSystem != NULL){
-
-        //TODO switch immer auslösen
-
-        //if coord sys needs to be switched
-        if(!actualSystem->getIsActiveCoordinateSystem()){
-            this->switchCoordinateSystemWithoutTransformation(actualSystem);
-        }
-
-        //add all points
-        foreach(Point *p, function->getPoints()){
-            if(p->getIsNominal() && p->getNominalSystem() == nominalSystem){
-                Point cpyP(*p);
-                cpyP.setIsSolved(true);
-                mySorter.addLocPoint(cpyP);
-            }else if(!p->getIsNominal() && p->getIsSolved()){
-                mySorter.addRefPoint(Point(*p));
-            }
-        }
-        //add all lines
-        foreach(Line *l, function->getLines()){
-            if(l->getIsNominal() && l->getNominalSystem() == nominalSystem){
-                Line cpyL(*l);
-                cpyL.setIsSolved(true);
-                mySorter.addLocLine(cpyL);
-            }else if(!l->getIsNominal() && l->getIsSolved()){
-                mySorter.addRefLine(Line(*l));
-            }
-        }
-        //add all planes
-        foreach(Plane *p, function->getPlanes()){
-            if(p->getIsNominal() && p->getNominalSystem() == nominalSystem){
-                Plane cpyP(*p);
-                cpyP.setIsSolved(true);
-                mySorter.addLocPlane(cpyP);
-            }else if(!p->getIsNominal() && p->getIsSolved()){
-                mySorter.addRefPlane(Plane(*p));
-            }
-        }
-        //add all spheres
-        foreach(Sphere *s, function->getSpheres()){
-            if(s->getIsNominal() && s->getNominalSystem() == nominalSystem){
-                Sphere cpyS(*s);
-                cpyS.setIsSolved(true);
-                mySorter.addLocSphere(cpyS);
-            }else if(!s->getIsNominal() && s->getIsSolved()){
-                mySorter.addRefSphere(Sphere(*s));
-            }
-        }
-        //add all scalar entity distances
-        foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
-            if(s->getIsNominal() && s->getNominalSystem() == nominalSystem){
-                ScalarEntityDistance cpyS(*s);
-                cpyS.setIsSolved(true);
-                mySorter.addLocScalarEntityDistance(cpyS);
-            }else if(!s->getIsNominal() && s->getIsSolved()){
-                mySorter.addRefScalarEntityDistance(ScalarEntityDistance(*s));
-            }
-        }
-        //add all scalar entity angles
-        foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
-            if(s->getIsNominal() && s->getNominalSystem() == nominalSystem){
-                ScalarEntityAngle cpyS(*s);
-                cpyS.setIsSolved(true);
-                mySorter.addLocScalarEntityAngle(cpyS);
-            }else if(!s->getIsNominal() && s->getIsSolved()){
-                mySorter.addRefScalarEntityAngle(ScalarEntityAngle(*s));
-            }
-        }
-
-        //add sorted lists to the function
-        if(tp->getStartSystem()->getNominals().size() > 0){ //if "from" system is nominal
-            function->points_startSystem = mySorter.getLocPoints();
-            function->points_targetSystem = mySorter.getRefPoints();
-            function->lines_startSystem = mySorter.getLocLines();
-            function->lines_targetSystem = mySorter.getRefLines();
-            function->planes_startSystem = mySorter.getLocPlanes();
-            function->planes_targetSystem = mySorter.getRefPlanes();
-            function->spheres_startSystem = mySorter.getLocSpheres();
-            function->spheres_targetSystem = mySorter.getRefSpheres();
-            function->scalarEntityAngles_startSystem = mySorter.getLocScalarEntityAngles();
-            function->scalarEntityAngles_targetSystem = mySorter.getRefScalarEntityAngles();
-            function->scalarEntityDistances_startSystem = mySorter.getLocScalarEntityDistances();
-            function->scalarEntityDistances_targetSystem = mySorter.getRefScalarEntityDistances();
-        }else if(tp->getDestinationSystem()->getNominals().size() > 0){ //if "to" system is nominal
-            function->points_startSystem = mySorter.getRefPoints();
-            function->points_targetSystem = mySorter.getLocPoints();
-            function->lines_startSystem = mySorter.getRefLines();
-            function->lines_targetSystem = mySorter.getLocLines();
-            function->planes_startSystem = mySorter.getRefPlanes();
-            function->planes_targetSystem = mySorter.getLocPlanes();
-            function->spheres_startSystem = mySorter.getRefSpheres();
-            function->spheres_targetSystem = mySorter.getLocSpheres();
-            function->scalarEntityAngles_startSystem = mySorter.getRefScalarEntityAngles();
-            function->scalarEntityAngles_targetSystem = mySorter.getLocScalarEntityAngles();
-            function->scalarEntityDistances_startSystem = mySorter.getRefScalarEntityDistances();
-            function->scalarEntityDistances_targetSystem = mySorter.getLocScalarEntityDistances();
-        }
-
-        //if coord sys needs to be re-switched
-        if(!actualSystem->getIsActiveCoordinateSystem()){
-            this->switchCoordinateSystem(OiJob::getActiveCoordinateSystem());
-        }
-    }
-}
-
-void FeatureUpdater::fillTrafoParamFunctionAA(SystemTransformation *function, TrafoParam *tp){
-    //sort helper class which compares and sorts the list of start and target points
-    SortListByName mySorter;
+    //###################
+    //set up start system
+    //###################
 
     //if coord sys needs to be switched to "from" system
-    if(!tp->getStartSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystemWithoutTransformation(tp->getStartSystem());
+    if(!trafoParam->getStartSystem()->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystemWithoutTransformation(trafoParam->getStartSystem());
     }
 
-    //add all points
-    foreach(Point *p, function->getPoints()){
-        if(!p->getIsNominal() && p->getIsSolved()){
-            mySorter.addLocPoint(Point(*p));
+    //set up input elements for alignment transformations
+    if(isAlignment){
+
+        //run through all keys and add start system elements
+        QList<int> keys = systemTransformation->getInputElements().keys();
+        foreach(const int &key, keys){
+
+            QList<InputElement> newElements;
+
+            //get input elements at the position key
+            QList<InputElement> inputElements = systemTransformation->getInputElements().value(key);
+            foreach(const InputElement &element, inputElements){
+
+                //check geometry
+                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
+                    continue;
+                }
+
+                //check if the geometry is an actual and is solved
+                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                    continue;
+                }
+
+                InputElement copyElement(element.id);
+                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
+                newElements.append(copyElement);
+
+            }
+
+            systemTransformation->inputElementsStartSystem.insert(key, newElements);
+
         }
-    }
-    //add all lines
-    foreach(Line *l, function->getLines()){
-        if(!l->getIsNominal() && l->getIsSolved()){
-            mySorter.addLocLine(Line(*l));
-        }
-    }
-    //add all planes
-    foreach(Plane *p, function->getPlanes()){
-        if(!p->getIsNominal() && p->getIsSolved()){
-            mySorter.addLocPlane(Plane(*p));
-        }
-    }
-    //add all spheres
-    foreach(Sphere *s, function->getSpheres()){
-        if(!s->getIsNominal() && s->getIsSolved()){
-            mySorter.addLocSphere(Sphere(*s));
-        }
-    }
-    //add all scalar entity distances
-    foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
-        if(!s->getIsNominal() && s->getIsSolved()){
-            mySorter.addLocScalarEntityDistance(ScalarEntityDistance(*s));
-        }
-    }
-    //add all scalar entity angles
-    foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
-        if(!s->getIsNominal() && s->getIsSolved()){
-            mySorter.addLocScalarEntityAngle(ScalarEntityAngle(*s));
-        }
+
     }
 
-    //switch to "to" system
-    this->switchCoordinateSystemWithoutTransformation(tp->getDestinationSystem());
+    //set up input elements for normal transformations
+    if(!isAlignment){
 
-    //add all points
-    foreach(Point *p, function->getPoints()){
-        if(!p->getIsNominal() && p->getIsSolved()){
-            mySorter.addRefPoint(Point(*p));
+        //get input elements at the position 0
+        QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
+        foreach(const InputElement &element, inputElements){
+
+            //add all points
+            if(element.typeOfElement == ePointElement && !element.point.isNull()){
+                if(!element.point->getIsNominal() && element.point->getIsSolved()){
+                    sorter.addLocPoint(Point(*element.point.data()));
+                }
+            }
+
+        }
+
+    }
+
+    //#########################
+    //set up destination system
+    //#########################
+
+    //if coord sys needs to be switched to "to" system
+    this->switchCoordinateSystemWithoutTransformation(trafoParam->getDestinationSystem());
+
+    //set up input elements for alignment transformations
+    if(isAlignment){
+
+        //run through all keys and add destination system elements
+        QList<int> keys = systemTransformation->getInputElements().keys();
+        foreach(const int &key, keys){
+
+            QList<InputElement> newElements;
+
+            //get input elements at the position key
+            QList<InputElement> inputElements = systemTransformation->getInputElements().value(key);
+            foreach(const InputElement &element, inputElements){
+
+                //check geometry
+                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
+                    continue;
+                }
+
+                //check if the geometry is an actual and is solved
+                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                    continue;
+                }
+
+                InputElement copyElement(element.id);
+                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
+                newElements.append(copyElement);
+
+            }
+
+            systemTransformation->inputElementsDestinationSystem.insert(key, newElements);
+
+        }
+
+    }
+
+    //set up input elements for normal transformations
+    if(!isAlignment){
+
+        //get input elements at the position 0
+        QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
+        foreach(const InputElement &element, inputElements){
+
+            //add all points
+            if(element.typeOfElement == ePointElement && !element.point.isNull()){
+                if(!element.point->getIsNominal() && element.point->getIsSolved()){
+                    sorter.addLocPoint(Point(*element.point.data()));
+                }
+            }
+
+        }
+
+    }
+
+    //#########################
+    //reswitch to active system
+    //#########################
+
+    //add sorted lists to the function
+    systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
+    systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
+
+    //if coord sys needs to be re-switched
+    if(!trafoParam->getDestinationSystem()->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystem(trafoParam->getDestinationSystem());
+    }
+
+}
+
+/*!
+ * \brief FeatureUpdater::setUpTrafoParamActualNominal
+ * \param trafoParam
+ * \param systemTransformation
+ */
+void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation){
+
+    //delete old copy elements
+    systemTransformation->inputPointsStartSystem.clear();
+    systemTransformation->inputPointsDestinationSystem.clear();
+    QList<int> startKeys = systemTransformation->inputElementsStartSystem.keys();
+    foreach(const int &key, startKeys){
+        QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
+        foreach(const InputElement &element, startElements){
+            if(!element.geometry.isNull()){
+                delete element.geometry;
+            }
         }
     }
-    //add all lines
-    foreach(Line *l, function->getLines()){
-        if(!l->getIsNominal() && l->getIsSolved()){
-            mySorter.addRefLine(Line(*l));
+    systemTransformation->inputElementsStartSystem.clear();
+    QList<int> destKeys = systemTransformation->inputElementsDestinationSystem.keys();
+    foreach(const int &key, destKeys){
+        QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
+        foreach(const InputElement &element, destElements){
+            if(!element.geometry.isNull()){
+                delete element.geometry;
+            }
         }
     }
-    //add all planes
-    foreach(Plane *p, function->getPlanes()){
-        if(!p->getIsNominal() && p->getIsSolved()){
-            mySorter.addRefPlane(Plane(*p));
+    systemTransformation->inputElementsDestinationSystem.clear();
+
+    //get and check keys
+    bool isAlignment;
+    QList<int> keys = systemTransformation->getInputElements().keys();
+    if(keys.size() <= 0){ //no input elements
+        return;
+    }else if(keys.size() == 1){ //normal transformation
+        isAlignment = false;
+    }else{ //alignment
+        isAlignment = true;
+    }
+
+    //sort helper object which compares and sorts the list of start and target points
+    SortListByName sorter;
+
+    //###################
+    //set up start system
+    //###################
+
+    //if coord sys needs to be switched to "from" system
+    if(!trafoParam->getStartSystem()->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystemWithoutTransformation(trafoParam->getStartSystem());
+    }
+
+    //set up input elements for alignment transformations
+    if(isAlignment){
+
+        //run through all keys and add start system elements
+        QList<int> keys = systemTransformation->getInputElements().keys();
+        foreach(const int &key, keys){
+
+            QList<InputElement> newElements;
+
+            //get input elements at the position key
+            QList<InputElement> inputElements = systemTransformation->getInputElements().value(key);
+            foreach(const InputElement &element, inputElements){
+
+                //check geometry
+                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
+                    continue;
+                }
+
+                //check if the geometry is an actual and is solved
+                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                    continue;
+                }
+
+                InputElement copyElement(element.id);
+                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
+                newElements.append(copyElement);
+
+            }
+
+            systemTransformation->inputElementsStartSystem.insert(key, newElements);
+
+        }
+
+    }
+
+    //set up input elements for normal transformations
+    if(!isAlignment){
+
+        //get input elements at the position 0
+        QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
+        foreach(const InputElement &element, inputElements){
+
+            //add all points
+            if(element.typeOfElement == ePointElement && !element.point.isNull()){
+                if((!trafoParam->getStartSystem()->getIsStationSystem() && element.point->getIsNominal())
+                        || element.point->getIsSolved()){
+                    sorter.addLocPoint(Point(*element.point.data()));
+                }
+            }
+
+        }
+
+    }
+
+    //#########################
+    //set up destination system
+    //#########################
+
+    //if coord sys needs to be switched to "to" system
+    this->switchCoordinateSystemWithoutTransformation(trafoParam->getDestinationSystem());
+
+    //set up input elements for alignment transformations
+    if(isAlignment){
+
+        //run through all keys and add destination system elements
+        QList<int> keys = systemTransformation->getInputElements().keys();
+        foreach(const int &key, keys){
+
+            QList<InputElement> newElements;
+
+            //get input elements at the position key
+            QList<InputElement> inputElements = systemTransformation->getInputElements().value(key);
+            foreach(const InputElement &element, inputElements){
+
+                //check geometry
+                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
+                    continue;
+                }
+
+                //check if the geometry is an actual and is solved
+                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                    continue;
+                }
+
+                InputElement copyElement(element.id);
+                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
+                newElements.append(copyElement);
+
+            }
+
+            systemTransformation->inputElementsDestinationSystem.insert(key, newElements);
+
+        }
+
+    }
+
+    //set up input elements for normal transformations
+    if(!isAlignment){
+
+        //get input elements at the position 0
+        QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
+        foreach(const InputElement &element, inputElements){
+
+            //add all points
+            if(element.typeOfElement == ePointElement && !element.point.isNull()){
+                if((!trafoParam->getDestinationSystem()->getIsStationSystem() && element.point->getIsNominal())
+                        || element.point->getIsSolved()){
+                    sorter.addRefPoint(Point(*element.point.data()));
+                }
+            }
+
+        }
+
+    }
+
+    //#########################
+    //reswitch to active system
+    //#########################
+
+    //add sorted lists to the function
+    systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
+    systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
+
+    //if coord sys needs to be re-switched
+    if(!trafoParam->getDestinationSystem()->getIsActiveCoordinateSystem()){
+        this->switchCoordinateSystem(trafoParam->getDestinationSystem());
+    }
+
+}
+
+/*!
+ * \brief FeatureUpdater::setUpTrafoParamNominalNominal
+ * \param trafoParam
+ * \param systemTransformation
+ */
+void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation){
+
+    //delete old copy elements
+    systemTransformation->inputPointsStartSystem.clear();
+    systemTransformation->inputPointsDestinationSystem.clear();
+    QList<int> startKeys = systemTransformation->inputElementsStartSystem.keys();
+    foreach(const int &key, startKeys){
+        QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
+        foreach(const InputElement &element, startElements){
+            if(!element.geometry.isNull()){
+                delete element.geometry;
+            }
         }
     }
-    //add all spheres
-    foreach(Sphere *s, function->getSpheres()){
-        if(!s->getIsNominal() && s->getIsSolved()){
-            mySorter.addRefSphere(Sphere(*s));
+    systemTransformation->inputElementsStartSystem.clear();
+    QList<int> destKeys = systemTransformation->inputElementsDestinationSystem.keys();
+    foreach(const int &key, destKeys){
+        QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
+        foreach(const InputElement &element, destElements){
+            if(!element.geometry.isNull()){
+                delete element.geometry;
+            }
         }
     }
-    //add all scalar entity distances
-    foreach(ScalarEntityDistance *s, function->getScalarEntityDistances()){
-        if(!s->getIsNominal() && s->getIsSolved()){
-            mySorter.addRefScalarEntityDistance(ScalarEntityDistance(*s));
-        }
+    systemTransformation->inputElementsDestinationSystem.clear();
+
+    //get and check keys
+    bool isAlignment;
+    QList<int> keys = systemTransformation->getInputElements().keys();
+    if(keys.size() <= 0){ //no input elements
+        return;
+    }else if(keys.size() == 1){ //normal transformation
+        isAlignment = false;
+    }else{ //alignment
+        isAlignment = true;
     }
-    //add all scalar entity angles
-    foreach(ScalarEntityAngle *s, function->getScalarEntityAngles()){
-        if(!s->getIsNominal() && s->getIsSolved()){
-            mySorter.addRefScalarEntityAngle(ScalarEntityAngle(*s));
+
+    //sort helper object which compares and sorts the list of start and target points
+    SortListByName sorter;
+
+    //###################
+    //set up start system
+    //###################
+
+    //set up input elements for normal transformations
+    if(!isAlignment){
+
+        //get input elements at the position 0
+        QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
+        foreach(const InputElement &element, inputElements){
+
+            //add all points
+            if(element.typeOfElement == ePointElement && !element.point.isNull()){
+                if(element.point->getIsNominal() && element.point->getNominalSystem() == trafoParam->getStartSystem()){
+                    sorter.addLocPoint(Point(*element.point.data()));
+                }
+            }
+
         }
+
+    }
+
+    //#########################
+    //set up destination system
+    //#########################
+
+    //if coord sys needs to be switched to "to" system
+    this->switchCoordinateSystemWithoutTransformation(trafoParam->getDestinationSystem());
+
+    //set up input elements for normal transformations
+    if(!isAlignment){
+
+        //get input elements at the position 0
+        QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
+        foreach(const InputElement &element, inputElements){
+
+            //add all points
+            if(element.typeOfElement == ePointElement && !element.point.isNull()){
+                if(element.point->getIsNominal() && element.point->getNominalSystem() == trafoParam->getDestinationSystem()){
+                    sorter.addLocPoint(Point(*element.point.data()));
+                }
+            }
+
+        }
+
     }
 
     //add sorted lists to the function
-    function->points_startSystem = mySorter.getLocPoints();
-    function->points_targetSystem = mySorter.getRefPoints();
-    function->lines_startSystem = mySorter.getLocLines();
-    function->lines_targetSystem = mySorter.getRefLines();
-    function->planes_startSystem = mySorter.getLocPlanes();
-    function->planes_targetSystem = mySorter.getRefPlanes();
-    function->spheres_startSystem = mySorter.getLocSpheres();
-    function->spheres_targetSystem = mySorter.getRefSpheres();
-    function->scalarEntityAngles_startSystem = mySorter.getLocScalarEntityAngles();
-    function->scalarEntityAngles_targetSystem = mySorter.getRefScalarEntityAngles();
-    function->scalarEntityDistances_startSystem = mySorter.getLocScalarEntityDistances();
-    function->scalarEntityDistances_targetSystem = mySorter.getRefScalarEntityDistances();
+    systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
+    systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
 
-    //if coord sys needs to be re-switched
-    if(!tp->getDestinationSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystem(OiJob::getActiveCoordinateSystem());
-    }
 }
 
-void FeatureUpdater::fillTrafoParamFunctionMovement(SystemTransformation *function, TrafoParam *tp)
-{
-    //sort helper class which compares and sorts the list of start and target points
-    SortListByName mySorter;
 
-    //can only be calculated when active coord system is a PART
-    this->switchCoordinateSystemWithoutMovement(OiJob::getActiveCoordinateSystem());
 
-    QDateTime startTime;
 
-    //get smallest QDateTime from first point as reference time
-    if(function->getPoints().size()>0){
-        startTime = function->getPoints().at(0)->getObservations().at(0)->myReading->measuredAt;
-    }else{
+
+
+
+
+
+/*!
+ * \brief FeatureUpdater::switchCoordinateSystemWithoutTransformation
+ * \param destinationSystem
+ */
+void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<CoordinateSystem> &destinationSystem){
+
+    //check current job
+    if(this->currentJob.isNull()){
         return;
     }
 
-    //edit the points and assign them to the right list.
-    foreach(Point *p, function->getPoints()){
-
-        foreach (Observation *obs, p->getObservations()) {
-            //only obs that are valid in the coord system of the movement
-            //and transformed obs to the coord system of the movement
-            if(obs->getUseState()){
-
-                if(obs->myReading->measuredAt.time() > startTime.time().addSecs(-180) && //is obs in the time span
-                        obs->myReading->measuredAt.time() < startTime.time().addSecs(180)){ //for being a reference obs
-                    obs->setIsSolved(true);
-                }else{
-                    obs->setIsSolved(false);
-                }
-            }else{
-                obs->setIsSolved(false);
-            }
-        }
-        p->recalc(); //recalc points only with obs that are in the reference time span
-        if(p->getIsSolved()){ //if point can be recalced
-            Point cpyPRef(*p); //create a copy and assign to the reference list
-            cpyPRef.setIsSolved(true);
-            mySorter.addRefPoint(cpyPRef);
-        }
-
-        foreach (Observation *obs, p->getObservations()) {
-            if(obs->myStation->coordSys == tp->getStartSystem()){//as actual state use only obs from the current station
-                if(obs->myReading->measuredAt.time() > tp->getValidTime().time().addSecs(-180) && //is obs in the time span
-                        obs->myReading->measuredAt.time() < tp->getValidTime().time().addSecs(180)){ //for being a actual obs
-                    obs->setIsSolved(true);
-                }else{
-                    obs->setIsSolved(false);
-                }
-            }else{
-                obs->setIsSolved(false);
-            }
-        }
-        p->recalc(); //recalc points only with obs that are in the actual time span
-        if(p->getIsSolved()){ //if point can be recalced
-            Point cpyPStart(*p); //create a copy and assign to the actual list
-            cpyPStart.setIsSolved(true);
-            mySorter.addLocPoint(cpyPStart);
-        }
+    //check system
+    if(destinationSystem.isNull()){
+        return;
     }
 
-    //add sorted lists to the function
-    function->points_startSystem = mySorter.getLocPoints();
-    function->points_targetSystem = mySorter.getRefPoints();
-    function->lines_startSystem = mySorter.getLocLines();
-    function->lines_targetSystem = mySorter.getRefLines();
-    function->planes_startSystem = mySorter.getLocPlanes();
-    function->planes_targetSystem = mySorter.getRefPlanes();
-    function->spheres_startSystem = mySorter.getLocSpheres();
-    function->spheres_targetSystem = mySorter.getRefSpheres();
-    function->scalarEntityAngles_startSystem = mySorter.getLocScalarEntityAngles();
-    function->scalarEntityAngles_targetSystem = mySorter.getRefScalarEntityAngles();
-    function->scalarEntityDistances_startSystem = mySorter.getLocScalarEntityDistances();
-    function->scalarEntityDistances_targetSystem = mySorter.getRefScalarEntityDistances();
+    //#######################################################
+    //transform all observations to current coordinate system
+    //#######################################################
 
-    //if coord sys needs to be re-switched
-    if(!tp->getStartSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystem(OiJob::getActiveCoordinateSystem());
+    //run through all station systems
+    foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
+
+        //check station system
+        if(station.isNull() || station->getCoordinateSystem().isNull()){
+            continue;
+        }
+
+        //run through all observations of the station system
+        foreach(const QPointer<Observation> &obs, station->getCoordinateSystem()->getObservations()){
+
+            bool isSolved = (station->getCoordinateSystem() == this->currentJob->getActiveCoordinateSystem());
+
+            //set observation to solved only if it has been measured in the active coordinate system
+            if(!obs.isNull()){
+                obs->setIsSolved(isSolved);
+            }
+
+        }
+
     }
 
-    //recalc featureSet, because some observations are disabled. So the feature uses all its observations again now
+    //###################################################################################
+    //set nominals to solved only if their nominal system is the active coordinate system
+    //###################################################################################
+
+    //run through all nominal systems
+    foreach(const QPointer<CoordinateSystem> &system, this->currentJob->getCoordinateSystemsList()){
+
+        //check system
+        if(system.isNull()){
+            continue;
+        }
+
+        //run through all nominals of the system
+        foreach(const QPointer<FeatureWrapper> &feature, system->getNominals()){
+
+            bool isSolved = (system == this->currentJob->getActiveCoordinateSystem());
+
+            //check feature
+            if(!feature.isNull() && !feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                feature->getGeometry()->setIsSolved(isSolved);
+            }
+
+        }
+
+    }
+
+    //###################
+    //recalc all features
+    //###################
+
     this->recalcFeatureSet();
+
 }
-*/
+
+/*!
+ * \brief FeatureUpdater::copyGeometry
+ * \param newElement
+ * \param oldElement
+ * \param type
+ */
+void FeatureUpdater::copyGeometry(InputElement &newElement, const QPointer<FeatureWrapper> &oldElement, const ElementTypes &type){
+
+    //add all elements
+    switch(type){
+    case eCircleElement:{
+        if(!oldElement.isNull() && !oldElement->getCircle().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.circle = new Circle(*oldElement->getCircle().data());
+            newElement.geometry = newElement.circle.data();
+            newElement.typeOfElement = eCircleElement;
+        }
+        return;
+    }case eConeElement:{
+        if(!oldElement.isNull() && !oldElement->getCone().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.cone = new Cone(*oldElement->getCone().data());
+            newElement.geometry = newElement.cone.data();
+            newElement.typeOfElement = eConeElement;
+        }
+        return;
+    }
+    case eCylinderElement:{
+        if(!oldElement.isNull() && !oldElement->getCylinder().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.cylinder = new Cylinder(*oldElement->getCylinder().data());
+            newElement.geometry = newElement.cylinder.data();
+            newElement.typeOfElement = eCylinderElement;
+        }
+        return;
+    }case eEllipseElement:{
+        if(!oldElement.isNull() && !oldElement->getEllipse().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.ellipse = new Ellipse(*oldElement->getEllipse().data());
+            newElement.geometry = newElement.ellipse.data();
+            newElement.typeOfElement = eEllipseElement;
+        }
+        return;
+    }case eEllipsoidElement:{
+        if(!oldElement.isNull() && !oldElement->getEllipsoid().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.ellipsoid = new Ellipsoid(*oldElement->getEllipsoid().data());
+            newElement.geometry = newElement.ellipsoid.data();
+            newElement.typeOfElement = eEllipsoidElement;
+        }
+        return;
+    }case eHyperboloidElement:{
+        if(!oldElement.isNull() && !oldElement->getHyperboloid().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.hyperboloid = new Hyperboloid(*oldElement->getHyperboloid().data());
+            newElement.geometry = newElement.hyperboloid.data();
+            newElement.typeOfElement = eHyperboloidElement;
+        }
+        return;
+    }case eLineElement:{
+        if(!oldElement.isNull() && !oldElement->getLine().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.line = new Line(*oldElement->getLine().data());
+            newElement.geometry = newElement.line.data();
+            newElement.typeOfElement = eLineElement;
+        }
+        return;
+    }case eNurbsElement:{
+        if(!oldElement.isNull() && !oldElement->getNurbs().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.nurbs = new Nurbs(*oldElement->getNurbs().data());
+            newElement.geometry = newElement.nurbs.data();
+            newElement.typeOfElement = eNurbsElement;
+        }
+        return;
+    }case eParaboloidElement:{
+        if(!oldElement.isNull() && !oldElement->getParaboloid().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.paraboloid = new Paraboloid(*oldElement->getParaboloid().data());
+            newElement.geometry = newElement.paraboloid.data();
+            newElement.typeOfElement = eParaboloidElement;
+        }
+        return;
+    }case ePlaneElement:{
+        if(!oldElement.isNull() && !oldElement->getPlane().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.plane = new Plane(*oldElement->getPlane().data());
+            newElement.geometry = newElement.plane.data();
+            newElement.typeOfElement = ePlaneElement;
+        }
+        return;
+    }case ePointElement:{
+        if(!oldElement.isNull() && !oldElement->getPoint().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.point = new Point(*oldElement->getPoint().data());
+            newElement.geometry = newElement.point.data();
+            newElement.typeOfElement = ePointElement;
+        }
+        return;
+    }case ePointCloudElement:{
+        if(!oldElement.isNull() && !oldElement->getPointCloud().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.pointCloud = new PointCloud(*oldElement->getPointCloud().data());
+            newElement.geometry = newElement.pointCloud.data();
+            newElement.typeOfElement = ePointCloudElement;
+        }
+        return;
+    }case eScalarEntityAngleElement:{
+        if(!oldElement.isNull() && !oldElement->getScalarEntityAngle().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.scalarEntityAngle = new ScalarEntityAngle(*oldElement->getScalarEntityAngle().data());
+            newElement.geometry = newElement.scalarEntityAngle.data();
+            newElement.typeOfElement = eScalarEntityAngleElement;
+        }
+        return;
+    }case eScalarEntityDistanceElement:{
+        if(!oldElement.isNull() && !oldElement->getScalarEntityDistance().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.scalarEntityDistance = new ScalarEntityDistance(*oldElement->getScalarEntityDistance().data());
+            newElement.geometry = newElement.scalarEntityDistance.data();
+            newElement.typeOfElement = eScalarEntityDistanceElement;
+        }
+        return;
+    }case eScalarEntityMeasurementSeriesElement:{
+        if(!oldElement.isNull() && !oldElement->getScalarEntityMeasurementSeries().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.scalarEntityMeasurementSeries = new ScalarEntityMeasurementSeries(*oldElement->getScalarEntityMeasurementSeries().data());
+            newElement.geometry = newElement.scalarEntityMeasurementSeries.data();
+            newElement.typeOfElement = eScalarEntityMeasurementSeriesElement;
+        }
+        return;
+    }case eScalarEntityTemperatureElement:{
+        if(!oldElement.isNull() && !oldElement->getScalarEntityTemperature().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.scalarEntityTemperature = new ScalarEntityTemperature(*oldElement->getScalarEntityTemperature().data());
+            newElement.geometry = newElement.scalarEntityTemperature.data();
+            newElement.typeOfElement = eScalarEntityTemperatureElement;
+        }
+        return;
+    }case eSlottedHoleElement:{
+        if(!oldElement.isNull() && !oldElement->getSlottedHole().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.slottedHole = new SlottedHole(*oldElement->getSlottedHole().data());
+            newElement.geometry = newElement.slottedHole.data();
+            newElement.typeOfElement = eSlottedHoleElement;
+        }
+        return;
+    }case eSphereElement:{
+        if(!oldElement.isNull() && !oldElement->getSphere().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.sphere = new Sphere(*oldElement->getSphere().data());
+            newElement.geometry = newElement.sphere.data();
+            newElement.typeOfElement = eSphereElement;
+        }
+        return;
+    }case eTorusElement:{
+        if(!oldElement.isNull() && !oldElement->getTorus().isNull() && !oldElement->getGeometry().isNull()){
+            newElement.torus = new Torus(*oldElement->getTorus().data());
+            newElement.geometry = newElement.torus.data();
+            newElement.typeOfElement = eTorusElement;
+        }
+        return;
+    }case eDirectionElement:{
+        if(!oldElement.isNull() && !oldElement->getGeometry().isNull()){
+            this->copyGeometry(newElement, oldElement, getElementTypeEnum(oldElement->getFeatureTypeEnum()));
+        }
+        return;
+    }case ePositionElement:{
+        if(!oldElement.isNull() && !oldElement->getGeometry().isNull()){
+            this->copyGeometry(newElement, oldElement, getElementTypeEnum(oldElement->getFeatureTypeEnum()));
+        }
+        return;
+    }case eRadiusElement:{
+        if(!oldElement.isNull() && !oldElement->getGeometry().isNull()){
+            this->copyGeometry(newElement, oldElement, getElementTypeEnum(oldElement->getFeatureTypeEnum()));
+        }
+        return;
+    }
+    }
+
+}

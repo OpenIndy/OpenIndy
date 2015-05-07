@@ -45,6 +45,7 @@ bool BestFitCircle::exec(Circle &circle) {
         if(!element.observation.isNull() && element.observation->getIsSolved() && element.observation->getIsValid()){
             inputObservations.append(element.observation);
             this->setUseState(0, element.id, true);
+            continue;
         }
         this->setUseState(0, element.id, false);
     }
@@ -222,7 +223,7 @@ bool BestFitCircle::exec(Circle &circle) {
     myStats.setS0APriori(1.0);
     double vv;
     OiVec::dot(vv, v, v);
-    myStats.setS0APosteriori((obsCount-6) > 0 ? sqrt(vv/(obsCount-6)) : 1.0);
+    myStats.setS0APosteriori((obsCount-6) > 0 ? sqrt(vv/(obsCount-6.0)) : 1.0);
 
     Position circlePosition;
     OiVec xyz(3);

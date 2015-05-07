@@ -22,11 +22,7 @@ void Helmert6Param::init(){
     param1.description = "Select points for calculating the transformation.";
     param1.infinite = true;
     param1.typeOfElement = ePointElement;
-    NeededElement param2; //destination system
-    param2.description = "Select points for calculating the transformation.";
-    param2.infinite = true;
-    param2.typeOfElement = ePointElement;
-    this->neededElements.append(param2);
+    this->neededElements.append(param1);
 
     //set spplicable for
     this->applicableFor.append(eTrafoParamFeature);
@@ -96,7 +92,7 @@ void Helmert6Param::initPoints(){
     this->refSystem.clear();
 
     //get and check input points
-    if(!this->inputElements.contains(0) || this->inputElements[0].size() < 3
+    /*if(!this->inputElements.contains(0) || this->inputElements[0].size() < 3
             || !this->inputElements.contains(1) || this->inputElements[1].size() != this->inputElements[0].size()){
         return;
     }
@@ -111,6 +107,18 @@ void Helmert6Param::initPoints(){
         this->setUseState(1, this->inputElements[1].at(i).point->getId(), true);
         this->locSystem.append(this->inputElements[0].at(i).point->getPosition().getVectorH());
         this->refSystem.append(this->inputElements[1].at(i).point->getPosition().getVectorH());
+    }*/
+
+    if(this->inputPointsStartSystem.size() >= 3 &&
+            this->inputPointsStartSystem.size() == this->inputPointsDestinationSystem.size()){
+
+        for(int i = 0; i < this->inputPointsStartSystem.size(); i++){
+
+            this->locSystem.append(this->inputPointsStartSystem.at(i).getPosition().getVector());
+            this->refSystem.append(this->inputPointsDestinationSystem.at(i).getPosition().getVector());
+
+        }
+
     }
 
 }

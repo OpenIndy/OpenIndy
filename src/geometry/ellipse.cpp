@@ -199,6 +199,37 @@ QDomElement Ellipse::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     ellipse.setAttribute("type", getGeometryTypeName(eEllipseGeometry));
 
+    //set semi-major axis length
+    QDomElement a = xmlDoc.createElement("a");
+    if(this->isSolved || this->isNominal){
+        a.setAttribute("value", this->a);
+    }else{
+        a.setAttribute("value", 0.0);
+    }
+    ellipse.appendChild(a);
+
+    //set semi-minor axis length
+    QDomElement b = xmlDoc.createElement("b");
+    if(this->isSolved || this->isNominal){
+        b.setAttribute("value", this->b);
+    }else{
+        b.setAttribute("value", 0.0);
+    }
+    ellipse.appendChild(b);
+
+    //set semi-major axis direction
+    QDomElement semiMajorAxis = xmlDoc.createElement("semiMajorAxis");
+    if(this->isSolved || this->isNominal){
+        semiMajorAxis.setAttribute("i", this->semiMajorAxis.getVector().getAt(0));
+        semiMajorAxis.setAttribute("j", this->semiMajorAxis.getVector().getAt(1));
+        semiMajorAxis.setAttribute("k", this->semiMajorAxis.getVector().getAt(2));
+    }else{
+        semiMajorAxis.setAttribute("i", 0.0);
+        semiMajorAxis.setAttribute("j", 0.0);
+        semiMajorAxis.setAttribute("k", 0.0);
+    }
+    ellipse.appendChild(semiMajorAxis);
+
     return ellipse;
 
 }
@@ -214,6 +245,32 @@ bool Ellipse::fromOpenIndyXML(QDomElement &xmlElem){
 
     if(result){
 
+        //set ellipse attributes
+        QDomElement a = xmlElem.firstChildElement("a");
+        QDomElement b = xmlElem.firstChildElement("b");
+        QDomElement semiMajorAxis = xmlElem.firstChildElement("semiMajorAxis");
+        QDomElement normal = xmlElem.firstChildElement("spatialDirection");
+        QDomElement center = xmlElem.firstChildElement("coordinates");
+
+        if(a.isNull() || b.isNull() || semiMajorAxis.isNull() || normal.isNull() || center.isNull()
+                || !a.hasAttribute("value") || !b.hasAttribute("value") || semiMajorAxis.hasAttribute("i")
+                || !semiMajorAxis.hasAttribute("j") || !semiMajorAxis.hasAttribute("k")
+                || !normal.hasAttribute("i") || normal.hasAttribute("j") || normal.hasAttribute("k")
+                || !center.hasAttribute("x") || !center.hasAttribute("y") || !center.hasAttribute("z")){
+            return false;
+        }
+
+        this->a = a.attribute("value").toDouble();
+        this->b = b.attribute("value").toDouble();
+        this->semiMajorAxis.setVector(semiMajorAxis.attribute("i").toDouble(),
+                                      semiMajorAxis.attribute("j").toDouble(),
+                                      semiMajorAxis.attribute("k").toDouble());
+        this->normal.setVector(normal.attribute("i").toDouble(),
+                               normal.attribute("j").toDouble(),
+                               normal.attribute("k").toDouble());
+        this->center.setVector(center.attribute("x").toDouble(),
+                               center.attribute("y").toDouble(),
+                               center.attribute("z").toDouble());
 
     }
 

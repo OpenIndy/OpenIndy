@@ -44,7 +44,6 @@ public:
     void setCommonState(const bool &isCommon);
 
     const bool &getIsNominal() const;
-    //QString getDisplayIsNominal() const;
 
     const QList<QPointer<Geometry> > &getNominals() const;
     bool addNominal(const QPointer<Geometry> &nominal);
@@ -53,7 +52,6 @@ public:
     const QPointer<Geometry> &getActual() const;
     bool setActual(const QPointer<Geometry> &actual);
 
-    //QString getDisplayObs() const;
     const QList<QPointer<Observation> > &getObservations() const;
     void addObservation(const QPointer<Observation> &obs);
     void removeObservation(const QPointer<Observation> &obs);
@@ -92,9 +90,6 @@ public:
 
     virtual void recalc();
 
-    //QMap<ReadingTypes, QString> getUsedReadingTypes() const;
-    //void removeReadingType(ReadingTypes rType);
-
     //#################
     //save and load XML
     //#################
@@ -111,12 +106,6 @@ public:
     QString getDisplayMeasurementConfig() const;
     QString getDisplayObservations() const;
 
-    //virtual bool saveSimulationData() = 0;
-    //void resetSimulationData();
-
-private:
-    //void insertReadingType(ReadingTypes readingType, QString displayName);
-
 signals:
 
     //########################################
@@ -131,7 +120,6 @@ signals:
     void geomStatisticChanged(const int &featureId);
     void geomSimulationDataChanged(const int &featureId);
     void geomMeasurementConfigChanged(const int &featureId);
-    //void geomUsedReadingTypesChanged(const int &featureId);
 
 protected:
 
@@ -151,7 +139,6 @@ protected:
 
     Statistic statistic;
     SimulationData simulationData;
-    //QMap<ReadingTypes, QString> usedReadingTypes;
 
     //current measurement config that is used to create readings until the user selects another one
     MeasurementConfig activeMeasurementConfig; //only for this geometry instance

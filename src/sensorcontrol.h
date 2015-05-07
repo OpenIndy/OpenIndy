@@ -35,6 +35,8 @@ public slots:
     const QPointer<Sensor> &getSensor() const;
     void setSensor(const QPointer<Sensor> &sensor);
 
+    const QList<QPointer<Sensor> > &getUsedSensors() const;
+
     const QPointer<SensorListener const> getSensorListener() const;
 
     void setStreamFormat(ReadingTypes streamFormat);

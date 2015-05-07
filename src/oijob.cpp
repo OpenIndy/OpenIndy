@@ -968,7 +968,7 @@ void OiJob::setSystemObservations(const int &featureId, const int &obsId){
  * \brief OiJob::OiJob
  * \param parent
  */
-OiJob::OiJob(QObject *parent) : QObject(parent), nextId(1){
+OiJob::OiJob(QObject *parent) : QObject(parent), nextId(1), activeGroup("All Groups"){
 
 }
 
@@ -1550,7 +1550,7 @@ bool OiJob::addFeatures(const QList<QPointer<FeatureWrapper> > &features){
         }
 
         //connect the feature's signals to slots in OiJob
-        //this->connectFeature(feature);
+        this->connectFeature(feature);
 
         //add feature type to list of added feature types
         if(!addedFeatureTypes.contains(feature->getFeatureTypeEnum())){
@@ -1667,6 +1667,9 @@ void OiJob::addFunction(const QPointer<Function> &function){
     if(function.isNull()){
         return;
     }
+
+    //connect the function
+    QObject::connect(function.data(), &Function::sendMessage, this, &OiJob::sendMessage, Qt::AutoConnection);
 
     //add the function to the active feature
     this->activeFeature->getFeature()->addFunction(function);
@@ -2227,7 +2230,7 @@ void OiJob::addMeasurementResults(const int &geomId, const QList<QPointer<Readin
 
     //check active station
     QPointer<Station> activeStation = this->activeStation;
-    if(activeStation.isNull()){
+    if(activeStation.isNull() || activeStation->getCoordinateSystem().isNull()){
         foreach(const QPointer<Reading> &reading, readings){
             if(!reading.isNull()){
                 delete reading;
@@ -2257,9 +2260,17 @@ void OiJob::addMeasurementResults(const int &geomId, const QList<QPointer<Readin
 
         //create and set up observation
         QPointer<Observation> observation = new Observation();
-        observation->setStation(activeStation);
-        observation->addTargetGeometry(feature->getGeometry());
         reading->setObservation(observation);
+        activeStation->getCoordinateSystem()->addObservation(observation);
+        observation->addTargetGeometry(feature->getGeometry());
+
+        //add the observation to the first function of the feature (if it is a fit function)
+        if(feature->getGeometry()->getFunctions().size() >= 1
+                && !feature->getGeometry()->getFunctions().at(0).isNull()
+                && feature->getGeometry()->getFunctions().at(0)->getNeededElements().size() > 0
+                && feature->getGeometry()->getFunctions().at(0)->getNeededElements().at(0).typeOfElement == eObservationElement){
+            this->addInputObservation(feature, 0, 0, observation);
+        }
 
     }
 
@@ -2460,11 +2471,20 @@ void OiJob::setFeatureGroup(const int &featureId, const QString &oldGroup){
         return;
     }
 
+    //check if the group is a new group
+    bool isNewGroup = false;
+    if(!this->featureContainer.getFeatureGroupList().contains(feature->getFeature()->getGroupName())){
+        isNewGroup = true;
+    }
+
     //update feature container
     this->featureContainer.featureGroupChanged(featureId, oldGroup);
 
     emit this->featureAttributesChanged();
     emit this->featureGroupChanged(featureId, oldGroup);
+    if(isNewGroup){
+        emit this->availableGroupsChanged();
+    }
 
 }
 

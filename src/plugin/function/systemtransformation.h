@@ -3,12 +3,15 @@
 
 #include "function.h"
 
+class FeatureUpdater;
+
 /*!
  * \brief The SystemTransformation class
  * Functions that solves transformation parameters between two coordinate systems (station-station, part-part, alignments)
  */
 class SystemTransformation : public Function
 {
+    friend class FeatureUpdater;
     Q_OBJECT
 
 public:
@@ -51,8 +54,11 @@ protected:
     bool exec(Sphere &sphere){ return Function::exec(sphere); }
     bool exec(Torus &torus){ return Function::exec(torus); }
 
-    //special attributes for system transformations
+    //special attributes for system transformations (normal transformations)
+    QList<Point> inputPointsStartSystem; //input elements solved in start system
+    QList<Point> inputPointsDestinationSystem; //input elements solved in destination system
 
+    //special attributes for system transformations (alignments)
     QMap<int, QList<InputElement> > inputElementsStartSystem; //input elements solved in start system
     QMap<int, QList<InputElement> > inputElementsDestinationSystem; //input elements solved in destination system
 

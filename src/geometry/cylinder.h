@@ -84,11 +84,6 @@ public:
     QString getDisplayPrimaryK(const int &digits, const bool &showDiff = false) const;
     QString getDisplayRadiusA(const UnitType &type, const int &digits, const bool &showDiff = false) const;
 
-
-    //bool saveSimulationData();
-
-    //static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
-
 private:
 
     //###################

@@ -61,6 +61,10 @@ signals:
 
 protected:
 
+    //###########################################
+    //override methods of sort filter proxy model
+    //###########################################
+
     bool filterAcceptsRow (int source_row, const QModelIndex &source_parent) const;
     bool filterAcceptsColumn (int source_column, const QModelIndex &source_parent) const;
 
@@ -74,8 +78,6 @@ private:
     void disconnectJob();
 
     void resetSelectedFunctionPosition();
-
-    bool checkCircleWarning(const QPointer<Feature> &activeFeature, const QPointer<Feature> &usedForActiveFeature);
 
     void addInputElement(const QPointer<FeatureTreeItem> &item, const ElementTypes &type);
 

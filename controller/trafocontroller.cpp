@@ -5,6 +5,227 @@ TrafoController::TrafoController(QObject *parent) :
 {
 }
 
+/*!
+ * \brief TrafoController::transformObservations
+ * Transforms all observations of the given feature into the destination system
+ * \param feature
+ * \param destinationSystem
+ */
+void TrafoController::transformObservations(const QPointer<Feature> &feature, const QPointer<CoordinateSystem> &destinationSystem){
+
+    //check feature and system
+    if(feature.isNull() || feature->getFeatureWrapper().isNull() || feature->getFeatureWrapper()->getGeometry().isNull() || destinationSystem.isNull()){
+        return;
+    }
+
+    //run through all observations of the feature
+    foreach(const QPointer<Observation> &obs, feature->getFeatureWrapper()->getGeometry()->getObservations()){
+
+        //check observation
+        if(obs.isNull() || obs->getStation().isNull() || obs->getStation()->getCoordinateSystem().isNull()){
+            continue;
+        }
+
+        //get the station system from which the observation was made
+        QPointer<CoordinateSystem> startSystem = obs->getStation()->getCoordinateSystem();
+
+        //transform all observations of the station system
+        this->transformObservations(startSystem, destinationSystem);
+
+    }
+
+}
+
+/*!
+ * \brief TrafoController::transformObservations
+ * Transforms all observations of the start
+ * \param startSystem
+ * \param destinationSystem
+ */
+void TrafoController::transformObservations(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem){
+
+    //check systems
+    if(startSystem.isNull() || destinationSystem.isNull()){
+        return;
+    }
+
+    //check if the systems are identical
+    if(startSystem == destinationSystem){
+        foreach(const QPointer<Observation> &observation, startSystem->getObservations()){
+            if(!observation.isNull()){
+                observation->setXYZ(observation->getOriginalXYZ());
+                observation->setIsSolved(true);
+            }
+        }
+        return;
+    }
+
+    //get homogeneous transformation matrix to transform all observations
+    //the matrix transforms the obs to current coord system and also handles datum - transformations
+    OiMat trafoMat;
+    bool hasTransformation = this->getTransformationMatrix(trafoMat, startSystem, destinationSystem);
+
+    //if trafo matrix is valid
+    //check if matrix is 4x4 = homogeneous matrix
+    if(hasTransformation && trafoMat.getRowCount() == 4 && trafoMat.getColCount() == 4){
+
+        startSystem->setIsSolved(true);
+
+        //transform coordinate system origin and axes
+        startSystem->origin.setVector(trafoMat * startSystem->getOrigin().getVector());
+
+        //transform observations
+        foreach(const QPointer<Observation> &obs, startSystem->getObservations()) {
+            if(obs->getOriginalStatistic().getQxx().getRowCount() == 4 && obs->getOriginalStatistic().getQxx().getColCount() == 4
+                    && obs->getOriginalXYZ().getSize() == 4){
+                obs->xyz = trafoMat * obs->originalXyz;
+                obs->statistic.setQxx(trafoMat * obs->originalStatistic.getQxx());
+                obs->setIsSolved(true);
+            }
+        }
+
+        //then apply movements if active system is a part system
+        //if active system is a station -> do nothing
+        //this->CheckToApplyMovements(from);
+
+    }else{
+
+        //set the coord sys to not solved
+        startSystem->setIsSolved(false);
+
+        //set all observations to not solved
+        foreach(const QPointer<Observation> &observation, startSystem->getObservations()){
+            if(!observation.isNull()){
+                observation->setIsSolved(false);
+            }
+        }
+
+    }
+
+}
+
+/*!
+ * \brief TrafoController::getTransformationMatrix
+ * \param trafoMat
+ * \param startSystem
+ * \param destinationSystem
+ * \return
+ */
+bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem){
+
+    //try to find a corresponding transformation to directly transform between systems
+    QPointer<TrafoParam> trafoParam = this->findTransformation(startSystem, destinationSystem);
+    if(!trafoParam.isNull()){
+        if(trafoParam->getStartSystem() == startSystem){
+            trafoMat = trafoParam->getHomogenMatrix();
+        }else{
+            trafoMat = trafoParam->getHomogenMatrix().inv();
+        }
+        return true;
+    }
+
+    //try to find a transformation chain
+    foreach(const QPointer<TrafoParam> &tp, startSystem->getTransformationParameters()){
+
+        //check tp
+        if(tp.isNull() || !tp->getIsUsed()){
+            continue;
+        }
+
+        //search trafo param in tp that are in relation to the target system
+        foreach(const QPointer<TrafoParam> &t, tp->getStartSystem()->getTransformationParameters()){
+
+            //check t
+            if(t.isNull() || !t->getIsUsed() || !t->getIsDatumTrafo()){
+                continue;
+            }
+
+            //check if the start system is the active system
+            if(t->getStartSystem()->getIsActiveCoordinateSystem()){
+
+                trafoMat = t->getHomogenMatrix().inv();
+                if(tp->getStartSystem() == startSystem){
+                    trafoMat = trafoMat * tp->getHomogenMatrix();
+                }else{
+                    trafoMat = trafoMat * tp->getHomogenMatrix().inv();
+                }
+                return true;
+
+            }else if(t->getDestinationSystem()->getIsActiveCoordinateSystem()){
+
+                trafoMat = t->getHomogenMatrix();
+                if(tp->getStartSystem() == startSystem){
+                    trafoMat = trafoMat * tp->getHomogenMatrix();
+                }else{
+                    trafoMat = trafoMat * tp->getHomogenMatrix().inv();
+                }
+                return true;
+
+            }
+
+        }
+
+        //search trafo param in tp that are in relation to the target system
+        foreach(const QPointer<TrafoParam> &t, tp->getDestinationSystem()->getTransformationParameters()) {
+
+            //check tp
+            if(tp.isNull() || !tp->getIsUsed()){
+                continue;
+            }
+
+            //check if start system is the active system
+            if(t->getStartSystem()->getIsActiveCoordinateSystem()){
+
+                trafoMat = t->getHomogenMatrix().inv();
+                if(tp->getStartSystem() == destinationSystem){
+                    trafoMat = trafoMat * tp->getHomogenMatrix();
+                }else{
+                    trafoMat = trafoMat * tp->getHomogenMatrix().inv();
+                }
+                return true;
+
+            }else if(t->getDestinationSystem()->getIsActiveCoordinateSystem()){
+
+                trafoMat = t->getHomogenMatrix();
+                if(tp->getStartSystem() == destinationSystem){
+                    trafoMat = trafoMat * tp->getHomogenMatrix();
+                }else{
+                    trafoMat = trafoMat * tp->getHomogenMatrix().inv();
+                }
+                return true;
+
+            }
+        }
+    }
+
+}
+
+/*!
+ * \brief TrafoController::findTransformation
+ * \param startSystem
+ * \param destinationSystem
+ * \return
+ */
+QPointer<TrafoParam> TrafoController::findTransformation(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem){
+
+    foreach(const QPointer<TrafoParam> tp, startSystem->getTransformationParameters()){
+
+        //check trafo param
+        if(tp.isNull() || tp->getStartSystem().isNull() || tp->getDestinationSystem().isNull()){
+            continue;
+        }
+
+        //check if tp transforms from given start system to given destination system and is usable
+        if((tp->getStartSystem() == destinationSystem || tp->getDestinationSystem() == destinationSystem) && tp->getIsUsed()){
+            return tp;
+        }
+
+    }
+
+    return QPointer<TrafoParam>(NULL);
+
+}
+
 /*
 void TrafoController::addObservation(Observation *obs)
 {

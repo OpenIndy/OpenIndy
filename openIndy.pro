@@ -165,7 +165,8 @@ SOURCES += \
     ui/dialogs/movesensordialog.cpp \
     ui/dialogs/sensortaskinfodialog.cpp \
     controller/featureupdater.cpp \
-    controller/trafocontroller.cpp
+    controller/trafocontroller.cpp \
+    controller/sortlistbyname.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -278,7 +279,8 @@ HEADERS  += \
     ui/dialogs/movesensordialog.h \
     ui/dialogs/sensortaskinfodialog.h \
     controller/featureupdater.h \
-    controller/trafocontroller.h
+    controller/trafocontroller.h \
+    controller/sortlistbyname.h
 
 FORMS    += \
     ui/mainwindow.ui \

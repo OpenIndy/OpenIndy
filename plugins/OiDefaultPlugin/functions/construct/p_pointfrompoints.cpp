@@ -107,7 +107,7 @@ bool PointFromPoints::setUpResult(Point &point){
     //calculate standard deviation
     double stdev = 0.0;
     OiVec::dot(stdev, corr, corr);
-    stdev = qSqrt(stdev * (inputPoints.size() - 1.0));
+    stdev = qSqrt(stdev / (inputPoints.size() - 1.0));
 
     //set result
     Position position;

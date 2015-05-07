@@ -184,22 +184,22 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
         //get source index
         QModelIndex sourceIndex = this->mapToSource(index);
         if(!sourceIndex.isValid()){
-            return;
+            continue;
         }
 
         //get and check corresponding feature tree item
         QPointer<FeatureTreeItem> item(NULL);
         if(!sourceIndex.isValid()){
-            return;
+            continue;
         }
         item = static_cast<FeatureTreeItem*>(sourceIndex.internalPointer());
         if(item.isNull()){
-            return;
+            continue;
         }
 
         //check if item is or contains the needed element type
         if(!item->getHasElement(neededElement)){
-            return;
+            continue;
         }
 
         this->addInputElement(item, function->getNeededElements().at(this->neededElementIndex).typeOfElement);
@@ -299,6 +299,11 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
     //check wether the item's type equals the needed element type but the item is already used or equals the feature to be calculated
     if(item->getElementType() == neededElement){
 
+        //check if the element equals the feature to be calculated
+        if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
+            return !(feature->getId() == item->getFeature()->getFeature()->getId());
+        }
+
         //check if function already contains the element
         QMap<int, QList<InputElement> > inputElements = function->getInputElements();
         if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
@@ -307,11 +312,6 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
             return !inputElements.contains(item->getObservation()->getId());
         }else if(item->getIsReading() && !item->getReading().isNull()){
             return !inputElements.contains(item->getReading()->getId());
-        }
-
-        //check if the element equals the feature to be calculated
-        if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
-            return !(feature->getId() == item->getFeature()->getFeature()->getId());
         }
 
     }
@@ -388,40 +388,6 @@ void AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition(){
 }
 
 /*!
- * \brief AvailableElementsTreeViewProxyModel::checkCircleWarning
- * \param activeFeature
- * \param usedForActiveFeature
- * \return
- */
-bool AvailableElementsTreeViewProxyModel::checkCircleWarning(const QPointer<Feature> &activeFeature, const QPointer<Feature> &usedForActiveFeature){
-
-    //check features
-    if(activeFeature.isNull() || usedForActiveFeature.isNull() || activeFeature->getId() == usedForActiveFeature->getId()){
-        return true;
-    }
-
-    //check if active feature is in the list of previously needed features of usedForActiveFeature
-    foreach(const QPointer<FeatureWrapper> &feature, usedForActiveFeature->getPreviouslyNeeded()){
-
-        //check feature
-        if(feature.isNull() || feature->getFeature().isNull()){
-            continue;
-        }
-
-        if(feature->getFeature()->getId() == activeFeature->getId()){
-            return true;
-        }else if(feature->getFeature()->getPreviouslyNeeded().size() > 0
-                 && this->checkCircleWarning(activeFeature, feature->getFeature())){
-            return true;
-        }
-
-    }
-
-    return false;
-
-}
-
-/*!
  * \brief AvailableElementsTreeViewProxyModel::addInputElement
  * Add input elements recursively
  * \param item
@@ -436,6 +402,29 @@ void AvailableElementsTreeViewProxyModel::addInputElement(const QPointer<Feature
 
     //if this item is of the right type
     if(item->getElementType() == type){
+
+        //check if the element equals the feature to be calculated
+        if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
+            if(this->currentJob->getActiveFeature()->getFeature()->getId() == item->getFeature()->getFeature()->getId()){
+                return;
+            }
+        }
+
+        //check if function already contains the element
+        QMap<int, QList<InputElement> > inputElements = this->currentJob->getActiveFeature()->getFeature()->getFunctions().at(this->functionPosition)->getInputElements();
+        if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
+            if(inputElements.contains(item->getFeature()->getFeature()->getId())){
+                return;
+            }
+        }else if(item->getIsObservation() && !item->getObservation().isNull()){
+            if(inputElements.contains(item->getObservation()->getId())){
+                return;
+            }
+        }else if(item->getIsReading() && !item->getReading().isNull()){
+            if(inputElements.contains(item->getReading()->getId())){
+                return;
+            }
+        }
 
         if(!item->getFeature().isNull()){
             emit this->addInputFeature(this->currentJob->getActiveFeature(), this->functionPosition,

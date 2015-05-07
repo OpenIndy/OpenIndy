@@ -392,7 +392,7 @@ QString TrafoParam::getDisplayStdDev() const
  * \brief TrafoParam::TrafoParam
  * \param parent
  */
-TrafoParam::TrafoParam(QObject *parent) : Feature(parent), scale(3), rotation(3), translation(3), homogenMatrix(4, 4){
+TrafoParam::TrafoParam(QObject *parent) : Feature(parent), isUsed(true), scale(3), rotation(3), translation(3), homogenMatrix(4, 4){
 
     //set up feature wrapper
     if(!this->selfFeature.isNull()){

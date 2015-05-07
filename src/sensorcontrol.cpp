@@ -772,6 +772,14 @@ void SensorControl::setSensor(const QPointer<Sensor> &sensor){
 }
 
 /*!
+ * \brief SensorControl::getUsedSensors
+ * \return
+ */
+const QList<QPointer<Sensor> > &SensorControl::getUsedSensors() const{
+    return this->usedSensors;
+}
+
+/*!
  * \brief SensorControl::getSensorListener
  * \return
  */

@@ -15,6 +15,7 @@
 #include "pluginloader.h"
 #include "trafocontroller.h"
 #include "oijob.h"
+#include "sortlistbyname.h"
 
 /*!
  * \brief The FeatureUpdater class
@@ -48,12 +49,6 @@ public:
 
 public slots:
 
-    //################
-    //add measurements
-    //################
-
-    void addMeasurementResults(const int &geomId, const QList<QPointer<Reading> > &readings);
-
     //#####################
     //recalculation methods
     //#####################
@@ -64,8 +59,8 @@ public slots:
     void recalcFeature(const QPointer<Feature> &feature);
     void recalcTrafoParam(const QPointer<TrafoParam> &trafoParam);
 
-    //change the active coordinate system
-    void switchCoordinateSystem(const QPointer<CoordinateSystem> &to);
+    //change the active coordinate system (transforms all observations to the given coordinate system, if possible)
+    void switchCoordinateSystem(const QPointer<CoordinateSystem> &destinationSystem);
 
 private:
 
@@ -73,7 +68,20 @@ private:
     //helper methods
     //##############
 
+    void connectJob();
+    void disconnectJob();
+
     void recursiveFeatureRecalculation(const QPointer<Feature> &feature);
+
+    //set up input elements for trafo param features
+    void setUpTrafoParamActualActual(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
+    void setUpTrafoParamActualNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
+    void setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
+
+    //change the active coordinate system (does not transform observations)
+    void switchCoordinateSystemWithoutTransformation(const QPointer<CoordinateSystem> &destinationSystem);
+
+    void copyGeometry(InputElement &newElement, const QPointer<FeatureWrapper> &oldElement, const ElementTypes &type);
 
     //##################
     //general attributes
@@ -81,19 +89,7 @@ private:
 
     QPointer<OiJob> currentJob;
 
-/*
-    TrafoParam* findTrafoParam(CoordinateSystem *searchSystem, QList<TrafoParam *> trafoParams);
-
-private:
-    void fillTrafoParamFunctionNN(SystemTransformation *function, TrafoParam *tp);
-    void fillTrafoParamFunctionAN(SystemTransformation *function, TrafoParam *tp);
-    void fillTrafoParamFunctionAA(SystemTransformation *function, TrafoParam *tp);
-    void fillTrafoParamFunctionMovement(SystemTransformation *function, TrafoParam *tp);
-
-    void switchCoordinateSystemWithoutTransformation(CoordinateSystem *to);
-    void switchCoordinateSystemWithoutMovement(CoordinateSystem *to);
-
-    static FeatureUpdater *myFeatureUpdater;*/
+    TrafoController trafoController; //handles all transformations to transform Observations in the right coordinate system
 
 };
 

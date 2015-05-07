@@ -50,6 +50,7 @@ bool BestFitLine::setUpResult(Line &line){
         if(!element.observation.isNull() && element.observation->getIsSolved() && element.observation->getIsValid()){
             inputObservations.append(element.observation);
             this->setUseState(0, element.id, true);
+            continue;
         }
         this->setUseState(0, element.id, false);
     }

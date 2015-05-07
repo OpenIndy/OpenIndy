@@ -53,6 +53,7 @@ bool BestFitPoint::setUpResult(Point &point){
         if(!element.observation.isNull() && element.observation->getIsSolved() && element.observation->getIsValid()){
             inputObservations.append(element.observation);
             this->setUseState(0, element.id, true);
+            continue;
         }
         this->setUseState(0, element.id, false);
     }
@@ -109,7 +110,7 @@ bool BestFitPoint::setUpResult(Point &point){
     //calculate standard deviation
     double stdev = 0.0;
     OiVec::dot(stdev, corr, corr);
-    stdev = qSqrt(stdev * (inputObservations.size() - 1.0));
+    stdev = qSqrt(stdev / (inputObservations.size() - 1.0));
 
     //set result
     Position position;

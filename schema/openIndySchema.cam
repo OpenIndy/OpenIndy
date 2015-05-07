@@ -18,7 +18,7 @@
         <activeCoordinateSystem ref="%12345%" />
         <activeStation ref="%12345%" />
         <stations>
-          <station id="%12345%" name="%string%" group="%string%" comment="%string%" solved="%true%">
+          <station id="%12345%" name="%string%" group="%string%" comment="%string%" solved="%true%" activeFeature="%true%" activeStation="%string%">
             <activeSensor name="%string%" plugin="%string%">
               <readingTypes>
                 <type name="%string%" />
@@ -39,7 +39,7 @@
           </station>
         </stations>
         <coordinateSystems>
-          <coordinateSystem id="%12345%" name="%string%" solved="%true%" group="%string%" comment="%string%">
+          <coordinateSystem id="%12345%" name="%string%" solved="%true%" group="%string%" comment="%string%" activeFeature="%string%" activeSystem="%string%">
             <expansionOrigin x="%1245.00%" y="%1245.00%" z="%1245.00%" />
             <transformationParameters>
               <transformationParameter ref="%string%" />
@@ -72,10 +72,14 @@
             <previouslyNeeded>
               <feature ref="%12345%" />
             </previouslyNeeded>
+            <coordinates x="%1111.0000%" y="%1111.0000%" z="%1111.0000%" />
+            <xAxis i="%1111.0000%" j="%1111.0000%" k="%1111.0000%" />
+            <yAxis i="%1111.0000%" j="%1111.0000%" k="%1111.0000%" />
+            <zAxis i="%1111.0000%" j="%1111.0000%" k="%1111.0000%" />
           </coordinateSystem>
         </coordinateSystems>
         <transformationParameters>
-          <transformationParameter id="%12345%" name="%string%" solved="%true%" tx="%1245.00%" ty="%1245.00%" tz="%1245.00%" rx="%1245.00%" ry="%1245.00%" rz="%1245.00%" mx="%1245.00%" my="%1245.00%" mz="%1245.00%" use="%true%" movement="%true%" datumTransformation="%true%" time="%HH:MM:SS%" group="%string%" comment="%string%">
+          <transformationParameter id="%12345%" name="%string%" solved="%true%" tx="%1245.00%" ty="%1245.00%" tz="%1245.00%" rx="%1245.00%" ry="%1245.00%" rz="%1245.00%" mx="%1245.00%" my="%1245.00%" mz="%1245.00%" use="%true%" movement="%true%" datumTransformation="%true%" time="%HH:MM:SS%" group="%string%" comment="%string%" activeFeature="%string%">
             <from ref="%12345%" />
             <to ref="%12345%" />
             <functions>
@@ -103,7 +107,7 @@
           </transformationParameter>
         </transformationParameters>
         <geometries>
-          <geometry id="%12345%" name="%string%" type="%string%" nominal="%true%" common="%true%" solved="%true%" group="%string%" comment="%string%">
+          <geometry id="%12345%" name="%string%" type="%string%" nominal="%true%" common="%true%" solved="%true%" group="%string%" comment="%string%" activeFeature="%string%">
             <coordinates x="%1245.00%" y="%1245.00%" z="%1245.00%" />
             <spatialDirection i="%1245.00%" j="%1245.00%" k="%1245.00%" />
             <radius value="%1245.00%" />
@@ -143,6 +147,10 @@
               <geometry ref="%string%" />
             </nominalGeometries>
             <actual ref="%12345%" />
+            <aperture value="%1111.0000%" />
+            <a value="%1111.0000%" />
+            <b value="%1111.0000%" />
+            <semiMajorAxis i="%1111.0000%" j="%1111.0000%" k="%string%" />
           </geometry>
         </geometries>
         <observations>
@@ -187,6 +195,7 @@
     <as:Rules>
       <as:default>
         <as:context>
+          <as:constraint action="setNumberMask(//a/@value,######.####)" />
           <as:constraint action="makeOptional(//accuracy/@sigmaAngleXZ)" />
           <as:constraint action="setNumberMask(//accuracy/@sigmaAngleXZ,######.##)" />
           <as:constraint action="makeOptional(//accuracy/@sigmaAngleYZ)" />
@@ -210,6 +219,8 @@
           <as:constraint action="setNumberMask(//activeStation/@ref,#######)" />
           <as:constraint action="setNumberMask(//actual/@ref,#######)" />
           <as:constraint action="setNumberMask(//angle/@value,######.####)" />
+          <as:constraint action="setNumberMask(//aperture/@value,######.####)" />
+          <as:constraint action="setNumberMask(//b/@value,######.####)" />
           <as:constraint action="makeOptional(//configs/measurementConfigs,)" />
           <as:constraint action="makeOptional(//configs/sensorConfigs,)" />
           <as:constraint action="makeOptional(//connection/@baudRate)" />
@@ -264,6 +275,7 @@
           <as:constraint action="datatype(//geometry/@solved,boolean)" />
           <as:constraint action="makeOptional(//geometry/actual)" />
           <as:constraint action="makeOptional(//geometry/angle)" />
+          <as:constraint action="makeOptional(//geometry/coordinates,)" />
           <as:constraint action="makeOptional(//geometry/distance)" />
           <as:constraint action="makeOptional(//geometry/functions)" />
           <as:constraint action="makeOptional(//geometry/measurementConfig)" />
@@ -272,6 +284,7 @@
           <as:constraint action="makeOptional(//geometry/radius)" />
           <as:constraint action="makeOptional(//geometry/seriesValue)" />
           <as:constraint action="makeOptional(//geometry/spatialDirection)" />
+          <as:constraint action="makeOptional(//geometry/temperature,)" />
           <as:constraint action="makeOptional(//geometry/temperature,)" />
           <as:constraint action="makeOptional(//geometry/usedFor)" />
           <as:constraint action="setNumberMask(//inputElement/@index,#######)" />
@@ -320,6 +333,8 @@
           <as:constraint action="setNumberMask(//reading/@id,#######)" />
           <as:constraint action="datatype(//reading/@time,dateTime)" />
           <as:constraint action="makeRepeatable(//readingTypes/type)" />
+          <as:constraint action="setNumberMask(//semiMajorAxis/@i,######.####)" />
+          <as:constraint action="setNumberMask(//semiMajorAxis/@j,######.####)" />
           <as:constraint action="makeOptional(//sensorConfig/doubleParameters)" />
           <as:constraint action="makeOptional(//sensorConfig/integerParameters,)" />
           <as:constraint action="makeOptional(//sensorConfig/stringParameters)" />
@@ -331,6 +346,7 @@
           <as:constraint action="setNumberMask(//spatialDirection/@j,######.####)" />
           <as:constraint action="setNumberMask(//spatialDirection/@k,####.######)" />
           <as:constraint action="setNumberMask(//standardDeviation/@value,####.######)" />
+          <as:constraint action="datatype(//station/@activeFeature,boolean)" />
           <as:constraint action="setNumberMask(//station/@id,#######)" />
           <as:constraint action="setNumberMask(//station/@ref,#######)" />
           <as:constraint action="datatype(//station/@solved,boolean)" />
@@ -366,6 +382,15 @@
           <as:constraint action="makeRepeatable(//usedSensors/sensor)" />
           <as:constraint action="makeOptional(//usedSensors/sensor,)" />
           <as:constraint action="setNumberMask(//valueadius/@value,####.######)" />
+          <as:constraint action="setNumberMask(//xAxis/@i,######.####)" />
+          <as:constraint action="setNumberMask(//xAxis/@j,######.####)" />
+          <as:constraint action="setNumberMask(//xAxis/@k,######.####)" />
+          <as:constraint action="setNumberMask(//yAxis/@i,######.####)" />
+          <as:constraint action="setNumberMask(//yAxis/@j,######.####)" />
+          <as:constraint action="setNumberMask(//yAxis/@k,######.####)" />
+          <as:constraint action="setNumberMask(//zAxis/@i,######.####)" />
+          <as:constraint action="setNumberMask(//zAxis/@j,######.####)" />
+          <as:constraint action="setNumberMask(//zAxis/@k,######.####)" />
         </as:context>
       </as:default>
     </as:Rules>

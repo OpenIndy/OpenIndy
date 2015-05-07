@@ -569,17 +569,20 @@ QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
 
     QDomElement station = Feature::toOpenIndyXML(xmlDoc);
 
-    /*if(station.isNull()){
+    if(station.isNull()){
         return station;
     }
 
     station.setTagName("station");
 
+    //add station attributes
+    station.setAttribute("activeStation", this->getIsActiveStation());
+
     //add used sensors
-    if(this->sensorPad != NULL && this->sensorPad->usedSensors.size() > 0){
+    if(!this->sensorControl.isNull() && this->sensorControl->getUsedSensors().size() > 0){
         QDomElement usedSensors = xmlDoc.createElement("usedSensors");
-        foreach(Sensor *s, this->sensorPad->usedSensors){
-            if(s != NULL){
+        foreach(const QPointer<Sensor> &s, this->sensorControl->getUsedSensors()){
+            if(!s.isNull()){
                 QDomElement sensor = s->toOpenIndyXML(xmlDoc);
                 if(!sensor.isNull()){
                     usedSensors.appendChild(sensor);
@@ -590,8 +593,8 @@ QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
     }
 
     //add active sensor
-    if(this->sensorPad != NULL && this->sensorPad->instrument != NULL){
-        QDomElement activeSensor = this->sensorPad->instrument->toOpenIndyXML(xmlDoc);
+    if(!this->sensorControl.isNull() && !this->sensorControl->getSensor().isNull()){
+        QDomElement activeSensor = this->sensorControl->getSensor()->toOpenIndyXML(xmlDoc);
         if(!activeSensor.isNull()){
             activeSensor.setTagName("activeSensor");
             station.appendChild(activeSensor);
@@ -599,18 +602,18 @@ QDomElement Station::toOpenIndyXML(QDomDocument &xmlDoc){
     }
 
     //add position
-    if(this->position != NULL){
+    if(!this->position.isNull()){
         QDomElement position = xmlDoc.createElement("position");
         position.setAttribute("ref", this->position->getId());
         station.appendChild(position);
     }
 
     //add coordinate system
-    if(this->coordSys != NULL){
+    if(!this->stationSystem.isNull()){
         QDomElement stationSystem = xmlDoc.createElement("coordinateSystem");
-        stationSystem.setAttribute("ref", this->coordSys->getId());
+        stationSystem.setAttribute("ref", this->stationSystem->getId());
         station.appendChild(stationSystem);
-    }*/
+    }
 
     return station;
 
@@ -627,8 +630,12 @@ bool Station::fromOpenIndyXML(QDomElement &xmlElem){
 
     if(result){
 
+        if(!xmlElem.hasAttribute("activeStation")){
+            return false;
+        }
+
         //set station attributes
-        this->isActiveStation = false;
+        this->isActiveStation = xmlElem.attribute("activeStation").toInt();
 
     }
 
@@ -826,5 +833,32 @@ void Station::addReadings(const int &geomId, const QList<QPointer<Reading> > &re
         }
 
     }
+
+}
+
+/*!
+ * \brief Station::setJob
+ * \param job
+ */
+void Station::setJob(const QPointer<OiJob> &job){
+
+    //check and set job
+    if(job.isNull()){
+        return;
+    }
+    this->job = job;
+
+    //pass job to the station system
+    if(!this->stationSystem.isNull()){
+        this->stationSystem->setJob(job);
+    }
+
+    //pass the job to the station point
+    if(!this->position.isNull()){
+        this->position->setJob(job);
+    }
+
+    //generate feature id
+    this->setUpFeatureId();
 
 }

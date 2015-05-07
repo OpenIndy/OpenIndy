@@ -678,15 +678,4 @@ void Controller::connectDataExchanger(){
  */
 void Controller::connectFeatureUpdater(){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
-    }
-
-    QObject::connect(&this->featureUpdater, &FeatureUpdater::featureRecalculated, this->job.data(), &OiJob::featureRecalculated, Qt::AutoConnection);
-    QObject::connect(&this->featureUpdater, &FeatureUpdater::featuresRecalculated, this->job.data(), &OiJob::featuresRecalculated, Qt::AutoConnection);
-    QObject::connect(&this->featureUpdater, &FeatureUpdater::trafoParamRecalculated, this->job.data(), &OiJob::trafoParamRecalculated, Qt::AutoConnection);
-
-    QObject::connect(this->job.data(), &OiJob::recalcFeature, &this->featureUpdater, &FeatureUpdater::recalcFeature, Qt::AutoConnection);
-
 }
