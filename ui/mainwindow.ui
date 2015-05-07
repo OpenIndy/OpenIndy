@@ -322,12 +322,12 @@ background-position: center center;</string>
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="actionControl_pad"/>
-   <addaction name="actionMeasurement_Configuration"/>
    <addaction name="actionSet_function"/>
+   <addaction name="actionMeasurement_Configuration"/>
    <addaction name="actionWatch_window"/>
-   <addaction name="actionConsole"/>
    <addaction name="actionShow_help"/>
    <addaction name="actionSensor_real_time_data"/>
+   <addaction name="actionConsole"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolbarCreateFeature">
@@ -596,7 +596,7 @@ color: rgb(255, 255, 255);
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/folder_open.png</normaloff>:/Images/icons/folder_open.png</iconset>
+     <normaloff>:/Images/icons/open.svg</normaloff>:/Images/icons/open.svg</iconset>
    </property>
    <property name="text">
     <string>open project</string>
@@ -614,7 +614,7 @@ color: rgb(255, 255, 255);
   <action name="actionShow_help">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/info.png</normaloff>:/Images/icons/info.png</iconset>
+     <normaloff>:/Images/icons/help.svg</normaloff>:/Images/icons/help.svg</iconset>
    </property>
    <property name="text">
     <string>show help</string>
@@ -623,7 +623,7 @@ color: rgb(255, 255, 255);
   <action name="actionControl_pad">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/sensorcontrol.png</normaloff>:/Images/icons/sensorcontrol.png</iconset>
+     <normaloff>:/Images/icons/sensor control pad.svg</normaloff>:/Images/icons/sensor control pad.svg</iconset>
    </property>
    <property name="text">
     <string>sensor control</string>
@@ -749,7 +749,7 @@ color: rgb(255, 255, 255);
   <action name="actionSet_function">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/function.png</normaloff>:/Images/icons/function.png</iconset>
+     <normaloff>:/Images/icons/function.svg</normaloff>:/Images/icons/function.svg</iconset>
    </property>
    <property name="text">
     <string>set function</string>
@@ -758,7 +758,7 @@ color: rgb(255, 255, 255);
   <action name="actionSave">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/filesave.png</normaloff>:/Images/icons/filesave.png</iconset>
+     <normaloff>:/Images/icons/save.svg</normaloff>:/Images/icons/save.svg</iconset>
    </property>
    <property name="text">
     <string>save</string>
