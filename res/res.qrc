@@ -87,5 +87,10 @@
         <file>icons/Station.svg</file>
         <file>icons/Coordinatesystem.svg</file>
         <file>icons/TrafoParam.svg</file>
+        <file>icons/sensor control pad.svg</file>
+        <file>icons/open.svg</file>
+        <file>icons/save.svg</file>
+        <file>icons/help.svg</file>
+        <file>icons/function.svg</file>
     </qresource>
 </RCC>
