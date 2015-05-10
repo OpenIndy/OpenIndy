@@ -155,19 +155,19 @@ void FeatureTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *mod
     case eFeatureDisplayName:
         customEditor = qobject_cast<QLineEdit*>(editor);
         if(customEditor != NULL){
-            featureTableProxyModel->sourceModel()->setData(index, customEditor->text());
+            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customEditor->text());
         }
         break;
     case eFeatureDisplayComment:
         customEditor = qobject_cast<QLineEdit*>(editor);
         if(customEditor != NULL){
-            featureTableProxyModel->sourceModel()->setData(index, customEditor->text());
+            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customEditor->text());
         }
         break;
     case eFeatureDisplayGroup:
         customEditor = qobject_cast<QLineEdit*>(editor);
         if(customEditor != NULL){
-            featureTableProxyModel->sourceModel()->setData(index, customEditor->text());
+            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customEditor->text());
         }
         break;
     }

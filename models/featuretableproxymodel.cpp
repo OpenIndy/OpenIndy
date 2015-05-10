@@ -129,10 +129,10 @@ bool FeatureTableProxyModel::filterAcceptsColumn(int source_column, const QModel
  * \return
  */
 bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
-/*
+
     //get and cast source model
     FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
-    if(source_model == NULL){
+    if(source_model == NULL || source_model->getCurrentJob().isNull()){
         return false;
     }
 
@@ -141,26 +141,29 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
         return false;
     }
 
-    //get row index for each model index
+    //get and check row index for each model index
     int leftIndex = left.row();
     int rightIndex = right.row();
+    if(source_model->getCurrentJob()->getFeaturesList().size() <= leftIndex || source_model->getCurrentJob()->getFeaturesList().size() <= rightIndex){
+        return false;
+    }
 
     //get relevant properties of left and right feature
     QString leftName = "", rightName = "";
     int leftId = 0, rightId = 0;
     bool leftNominal = false, rightNominal = false;
-    FeatureWrapper *leftFeature = source_model->getCurrentJob()->getFeatures().at(leftIndex);
-    FeatureWrapper *rightFeature = source_model->getCurrentJob()->getFeatures().at(rightIndex);
-    if(leftFeature != NULL && leftFeature->getFeature() != NULL
-            && rightFeature != NULL && rightFeature->getFeature() != NULL){
+    QPointer<FeatureWrapper> leftFeature = source_model->getCurrentJob()->getFeaturesList().at(leftIndex);
+    QPointer<FeatureWrapper> rightFeature = source_model->getCurrentJob()->getFeaturesList().at(rightIndex);
+    if(!leftFeature.isNull() && !leftFeature->getFeature().isNull()
+            && !rightFeature.isNull() && !rightFeature->getFeature().isNull()){
         leftName = leftFeature->getFeature()->getFeatureName();
         rightName = rightFeature->getFeature()->getFeatureName();
         leftId = leftFeature->getFeature()->getId();
         rightId = rightFeature->getFeature()->getId();
-        if(leftFeature->getGeometry() != NULL){
+        if(!leftFeature->getGeometry().isNull()){
             leftNominal = leftFeature->getGeometry()->getIsNominal();
         }
-        if(rightFeature->getGeometry() != NULL){
+        if(!rightFeature->getGeometry().isNull()){
             rightNominal = rightFeature->getGeometry()->getIsNominal();
         }
     }
@@ -169,33 +172,23 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
     if(leftName.compare(rightName) == 0){ //if feature names are equal
 
         if(leftNominal != rightNominal){ //if one is actual and the other one is nominal
-            return leftNominal;
+            return rightNominal;
         }
 
-        return leftId > rightId;
+        return leftId < rightId;
 
     }else{ //if feature names are not equal
 
-        //get smallest id of features with equal name
-        int leftSmallestId = -1;
-        int rightSmallestId = -1;
-        QList<FeatureWrapper *> leftFeatures = source_model->getCurrentJob()->getFeaturesByName(leftName);
-        QList<FeatureWrapper *> rightFeatures = source_model->getCurrentJob()->getFeaturesByName(rightName);
-        for(int i = 0; i < leftFeatures.size(); i++){
-            if(leftSmallestId == -1 || leftFeatures.at(i)->getFeature()->getId() < leftSmallestId){
-                leftSmallestId = leftFeatures.at(i)->getFeature()->getId();
-            }
+        //use the actual of a nominal for sorting
+        if(!leftFeature->getGeometry().isNull() && leftFeature->getGeometry()->getIsNominal() && !leftFeature->getGeometry()->getActual().isNull()){
+            leftId = leftFeature->getGeometry()->getActual()->getId();
         }
-        for(int i = 0; i < rightFeatures.size(); i++){
-            if(rightSmallestId == -1 || rightFeatures.at(i)->getFeature()->getId() < rightSmallestId){
-                rightSmallestId = rightFeatures.at(i)->getFeature()->getId();
-            }
+        if(!rightFeature->getGeometry().isNull() && rightFeature->getGeometry()->getIsNominal() && !rightFeature->getGeometry()->getActual().isNull()){
+            rightId = rightFeature->getGeometry()->getActual()->getId();
         }
 
-        return leftSmallestId > rightSmallestId;
+        return leftId < rightId;
 
     }
-*/
 
-    return true;
 }

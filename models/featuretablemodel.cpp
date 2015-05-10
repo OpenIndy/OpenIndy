@@ -165,11 +165,14 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             }
 
             //only commit the new feature name if it is valid
-            if(this->currentJob->validateFeatureName(value.toString(), feature->getFeatureTypeEnum(), isNominal, nominalSystem)){
-                feature->getFeature()->setFeatureName(value.toString());
-                return true;
+            if(!this->currentJob->validateFeatureName(value.toString(), feature->getFeatureTypeEnum(), isNominal, nominalSystem)){
+                return false;
             }
-            return false;
+
+            //commit the new feature name
+            feature->getFeature()->setFeatureName(value.toString());
+
+            return true;
 
         }case eFeatureDisplayComment:{
             feature->getFeature()->setComment(value.toString());

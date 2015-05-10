@@ -93,10 +93,6 @@ private:
     Direction axis; //the axis vector that points from the apex inside the paraboloid (rotation axis)
     double a; //compression or streatch parameter
 
-    //bool saveSimulationData();
-
-    //static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
-
 };
 
 #endif // PARABOLOID_H

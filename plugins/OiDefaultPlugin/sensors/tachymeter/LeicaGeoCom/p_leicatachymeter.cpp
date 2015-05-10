@@ -146,7 +146,7 @@ bool LeicaTachymeter::connectSensor(){
                 && this->serial->setFlowControl(this->sensorConfiguration.getConnectionConfig().flowControl)
                 && this->serial->setStopBits(this->sensorConfiguration.getConnectionConfig().stopBits) ){
 
-            emit this->sendMessage("connected");
+            emit this->sensorMessage("connected");
             return true;
         }
     }
@@ -163,7 +163,7 @@ bool LeicaTachymeter::disconnectSensor(){
 
     if(this->serial->isOpen()){
        this->serial->close();
-        emit this->sendMessage("connection closed");
+        emit this->sensorMessage("connection closed");
     }
 
     return true;
@@ -182,7 +182,7 @@ bool LeicaTachymeter::toggleSightOrientation(){
 
 
             if(executeCommand(command)){
-                emit this->sendMessage("toggle sight");
+                emit this->sensorMessage("toggle sight");
                 QString measureData = this->receive();
 
              return true;
@@ -224,7 +224,7 @@ bool LeicaTachymeter::getLOCKState()
         }
         return false;
     }else{
-        emit this->sendMessage("not connected");
+        emit this->sensorMessage("not connected");
         return false;
     }
 }
@@ -267,7 +267,7 @@ bool LeicaTachymeter::setLOCKState(QString currentState)
 
         bool result = this->checkCommandRC(command);
         if(result){
-            emit this->sendMessage("atr and lock state changed");
+            emit this->sensorMessage("atr and lock state changed");
         }else{
             return false;
         }
@@ -297,7 +297,7 @@ bool LeicaTachymeter::startTargetTracking()
 
         bool result = this->checkCommandRC(command);
         if(result){
-            emit this->sendMessage("target tracking active.");
+            emit this->sensorMessage("target tracking active.");
             return true;
         }else{
             return false;
@@ -324,7 +324,7 @@ bool LeicaTachymeter::fineAdjust()
     //execute fine adjust command
     bool result = this->checkCommandRC(command);
     if(result){
-        emit this->sendMessage("fine adjust successful.");
+        emit this->sensorMessage("fine adjust successful.");
         //if successful then run target tracking.
 
         //set bool, that fine adjust was callled
@@ -447,7 +447,7 @@ bool LeicaTachymeter::move(const double &x, const double &y, const double &z){
         command.append(",0,0,0\r\n");
 
         if(executeCommand(command)){
-            emit this->sendMessage("moving...");
+            emit this->sensorMessage("moving...");
             QString measureData = this->receive();
         }
 
@@ -1169,7 +1169,7 @@ void LeicaTachymeter::stopTrackingMode()
     QString command = "%R1Q,17017:6\r\n";
     if(executeCommand(command)){
         QString measuredData = this->receive();
-        emit this->sendMessage("stop tracking");
+        emit this->sensorMessage("stop tracking");
     }
 }
 
@@ -1240,7 +1240,7 @@ QPointer<Reading> LeicaTachymeter::getStreamValues()
  */
 bool LeicaTachymeter::executeEDM(){
 
-    emit this->sendMessage("start edm measurement");
+    emit this->sensorMessage("start edm measurement");
 
     //QString edmCommand = "%R1Q,2008:1,1\r\n";  //maybe wrong. 1 = reflector tape? try with the other values
 

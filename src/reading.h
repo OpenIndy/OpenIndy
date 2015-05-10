@@ -127,7 +127,11 @@ class Reading : public Element
 {
     friend class Station;
     friend class CoordinateSystem;
+    friend class Observation;
     Q_OBJECT
+
+private:
+    explicit Reading(QObject *parent = 0);
 
 public:
     explicit Reading(const ReadingPolar &reading, QObject *parent = 0);

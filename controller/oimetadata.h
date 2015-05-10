@@ -54,6 +54,19 @@ public:
 
     static SensorTypes getSensorTypeEnum(const QString &iid);
 
+    //###############################
+    //get plugin interface type names
+    //###############################
+
+    static QStringList getSensorTypeNames();
+    static QString getSensorTypeName(const QString &iid);
+
+    static QStringList getFunctionTypeNames();
+    static QString getFunctionTypeName(const QString &iid);
+
+    static QStringList getExchangeTypeNames();
+    static QString getExchangeTypeName(const QString &iid);
+
     //#################################
     //version of the main program (src)
     //#################################

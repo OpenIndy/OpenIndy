@@ -33,7 +33,17 @@ signals:
 
     void realTimeReading(const QVariantMap &reading) const;
     void realTimeStatus(const QMap<QString, QString> &status) const;
+
     void connectionLost() const;
+    void connectionReceived() const;
+
+    void isReadyForMeasurement(const bool &isReady) const;
+
+    //#######################
+    //special sensor messages
+    //#######################
+
+    void sensorMessage(const Sensor::SensorMessage &type, const QString &msg);
 
 private:
 

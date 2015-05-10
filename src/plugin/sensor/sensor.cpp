@@ -139,7 +139,7 @@ bool Sensor::abortAction(){
  * \return
  */
 bool Sensor::connectSensor(){
-    emit this->sendMessage(QString("Sensor not implemented correctly: connect method missing"));
+    emit this->sensorMessage(QString("Sensor not implemented correctly: connect method missing"));
     return false;
 }
 
@@ -148,7 +148,7 @@ bool Sensor::connectSensor(){
  * \return
  */
 bool Sensor::disconnectSensor(){
-    emit this->sendMessage(QString("Sensor not implemented correctly: disconnect method missing"));
+    emit this->sensorMessage(QString("Sensor not implemented correctly: disconnect method missing"));
     return false;
 }
 
@@ -158,7 +158,7 @@ bool Sensor::disconnectSensor(){
  * \return
  */
 QList<QPointer<Reading> > Sensor::measure(const MeasurementConfig &mConfig){
-    emit this->sendMessage(QString("Sensor not implemented correctly: measure method missing"));
+    emit this->sensorMessage(QString("Sensor not implemented correctly: measure method missing"));
     return QList<QPointer<Reading> >();
 }
 
@@ -168,7 +168,7 @@ QList<QPointer<Reading> > Sensor::measure(const MeasurementConfig &mConfig){
  * \return
  */
 QVariantMap Sensor::readingStream(const ReadingTypes &streamFormat){
-    emit this->sendMessage(QString("Sensor not implemented correctly: reading stream method missing"));
+    emit this->sensorMessage(QString("Sensor not implemented correctly: reading stream method missing"));
     return QVariantMap();
 }
 
@@ -177,7 +177,7 @@ QVariantMap Sensor::readingStream(const ReadingTypes &streamFormat){
  * \return
  */
 bool Sensor::getConnectionState(){
-    emit this->sendMessage(QString("Sensor not implemented correctly: connection state method missing"));
+    emit this->sensorMessage(QString("Sensor not implemented correctly: connection state method missing"));
     return false;
 }
 
@@ -186,7 +186,7 @@ bool Sensor::getConnectionState(){
  * \return
  */
 bool Sensor::getIsReadyForMeasurement(){
-    emit this->sendMessage(QString("Sensor not implemented correctly: is ready method missing"));
+    emit this->sensorMessage(QString("Sensor not implemented correctly: is ready method missing"));
     return false;
 }
 
@@ -195,7 +195,7 @@ bool Sensor::getIsReadyForMeasurement(){
  * \return
  */
 bool Sensor::getIsBusy(){
-    emit this->sendMessage(QString("Sensor not implemented correctly: is busy method missing"));
+    emit this->sensorMessage(QString("Sensor not implemented correctly: is busy method missing"));
     return false;
 }
 
@@ -204,7 +204,7 @@ bool Sensor::getIsBusy(){
  * \return
  */
 QMap<QString, QString> Sensor::getSensorStatus(){
-    emit this->sendMessage(QString("Sensor not implemented correctly: sensor status method missing"));
+    emit this->sensorMessage(QString("Sensor not implemented correctly: sensor status method missing"));
     return QMap<QString, QString>();
 }
 
@@ -229,13 +229,13 @@ QDomElement Sensor::toOpenIndyXML(QDomDocument &xmlDoc) const{
     }
 
     QDomElement sensor = xmlDoc.createElement("sensor");
-/*
+
     //add sensor attributes
-    sensor.setAttribute("name", this->getMetaData()->name);
-    sensor.setAttribute("plugin", this->getMetaData()->pluginName);
+    sensor.setAttribute("name", this->getMetaData().name);
+    sensor.setAttribute("plugin", this->getMetaData().pluginName);
 
     //add reading types
-    QDomElement readingTypes = xmlDoc.createElement("readingTypes");
+    /*QDomElement readingTypes = xmlDoc.createElement("readingTypes");
     if(this->getSupportedReadingTypes() != NULL){
         QList<ReadingTypes> *types = this->getSupportedReadingTypes();
         for(int i = 0; i < types->size(); i++){
@@ -244,8 +244,8 @@ QDomElement Sensor::toOpenIndyXML(QDomDocument &xmlDoc) const{
             readingTypes.appendChild(readingType);
         }
     }
-    sensor.appendChild(readingTypes);
-*/
+    sensor.appendChild(readingTypes);*/
+
     return sensor;
 
 }

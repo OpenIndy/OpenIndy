@@ -74,8 +74,6 @@ private slots:
     void on_pushButton_cancel_clicked();
     void on_pushButton_set_clicked();
 
-    //sensor config parameters changed
-
     //sensor plugin changed
     void on_tableView_sensorPlugins_clicked(const QModelIndex &index);
     void on_comboBox_typeOfConnection_currentIndexChanged(const QString &arg1);
@@ -103,7 +101,7 @@ private:
     //##############
 
     //update GUI elements from the selected sensor config
-    void updateConnectionConfigFromSensorConfig(const ConnectionConfig &cConfig);
+    void updateConnectionConfigFromSensorConfig(const QList<ConnectionTypes> supportedConnections, const ConnectionConfig &cConfig);
     void updateAccuracyFromSensorConfig(const Accuracy &accuracy);
     void updateScalarParametersFromSensorConfig(const QMap<QString, int> &intParams,
                                                 const QMap<QString, double> &doubleParams,

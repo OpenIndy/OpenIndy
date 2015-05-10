@@ -59,7 +59,6 @@ public:
     void removeTargetGeometry(const int &geomId);
 
     const QPointer<Reading> &getReading() const;
-    //void setReading(const QPointer<Reading> &reading);
 
     //##########################
     //get and set state booleans
@@ -69,11 +68,6 @@ public:
 
     void setIsSolved(const bool &isSolved);
     const bool &getIsSolved() const;
-
-    //void setIsUsed(const bool &use);
-    //const bool &getIsUsed() const;
-
-    //bool getUseState();
 
     //#################
     //save and load XML
@@ -103,7 +97,6 @@ private:
 
     bool isValid; //defines if the reading can be transformed, without any function, to a xyz observation
     bool isSolved; //defines wether this observation is valid in current coordinate system
-    //bool isUsed; //defines if the observation is and should be used for functions
 
     //#############################
     //xyz coordinates and statistic

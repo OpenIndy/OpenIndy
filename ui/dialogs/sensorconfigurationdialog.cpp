@@ -83,7 +83,7 @@ void SensorConfigurationDialog::on_listView_sensorConfigs_clicked(const QModelIn
 
     //set up connection config
     ConnectionConfig cConfig = sensorConfigModel->getConnectionConfig(sensorConfigProxyModel->mapToSource(index));
-    this->updateConnectionConfigFromSensorConfig(cConfig);
+    this->updateConnectionConfigFromSensorConfig(sensorTableModel->getSupportedConnectionTypes(sensorTableModel->getSelectedIndex()), cConfig);
 
     //Accuracy accuracy = sensorConfigModel->getAccuracy(sensorConfigProxyModel->mapToSource(index));
     //this->updateAccuracyFromSensorConfig(accuracy);
@@ -157,13 +157,56 @@ void SensorConfigurationDialog::on_tableView_sensorPlugins_clicked(const QModelI
         return;
     }
 
+    //get and check sensor plugins model
     SensorTableModel *sensorTableModel = static_cast<SensorTableModel *>(sensorTableProxyModel->sourceModel());
     if(sensorTableProxyModel == NULL){
         return;
     }
 
-    sensorTableModel->selectSensorPlugin(sensorTableModel->getSensorName(index),
-                                         sensorTableModel->getPluginName(index));
+    //get and check source index
+    QModelIndex sourceIndex = sensorTableProxyModel->mapToSource(index);
+    if(!sourceIndex.isValid()){
+        return;
+    }
+
+    //select the sensor plugin that was selected (only if it is not selected yet)
+    if(sourceIndex == sensorTableModel->getSelectedIndex()){
+        qDebug() << "same sensor plugin";
+        return;
+    }
+
+    sensorTableModel->selectSensorPlugin(sensorTableModel->getSensorName(sourceIndex),
+                                         sensorTableModel->getPluginName(sourceIndex));
+    sourceIndex = sensorTableModel->getSelectedIndex();
+
+    //######################
+    //set default parameters
+    //######################
+
+    //this->blockSignals(true);
+
+    //set connection config
+    ConnectionConfig cConfig;
+    QList<ConnectionTypes> connectionTypes = sensorTableModel->getSupportedConnectionTypes(sourceIndex);
+    this->updateConnectionConfigFromSensorConfig(connectionTypes, cConfig);
+
+    //set accuracy
+
+    //set sensor parameters
+    QMap<QString, int> intParams = sensorTableModel->getIntegerParameter();
+    QMap<QString, double> doubleParams = sensorTableModel->getDoubleParameter();
+    QMultiMap<QString, QString> availableStringParams = sensorTableModel->getStringParameter();
+    QMap<QString, QString> stringParams;
+    foreach(const QString &key, availableStringParams.keys()){
+        stringParams.insert(key, availableStringParams.value(key));
+    }
+    this->updateScalarParametersFromSensorConfig(intParams, doubleParams, stringParams, availableStringParams);
+
+    //this->blockSignals(false);
+
+    //#############################
+    //update selected sensor config
+    //#############################
 
     this->updateSensorConfigFromSelection();
 
@@ -174,7 +217,47 @@ void SensorConfigurationDialog::on_tableView_sensorPlugins_clicked(const QModelI
  * \param arg1
  */
 void SensorConfigurationDialog::on_comboBox_typeOfConnection_currentIndexChanged(const QString &arg1){
+
+    //set visibility
+    if(arg1.compare(getConnectionTypeName(eSerialConnection)) == 0){
+        this->ui->comboBox_baudrate->setVisible(true);
+        this->ui->label_baudRate->setVisible(true);
+        this->ui->comboBox_databits->setVisible(true);
+        this->ui->label_databits->setVisible(true);
+        this->ui->comboBox_flowcontrol->setVisible(true);
+        this->ui->label_flowControl->setVisible(true);
+        this->ui->comboBox_parity->setVisible(true);
+        this->ui->label_parity->setVisible(true);
+        this->ui->comboBox_stopbits->setVisible(true);
+        this->ui->label_stopBits->setVisible(true);
+        this->ui->comboBox_comPort->setVisible(true);
+        this->ui->label_comPort->setVisible(true);
+        this->ui->comboBox_ip->setVisible(false);
+        this->ui->label_ip->setVisible(false);
+        this->ui->lineEdit_port->setVisible(false);
+        this->ui->label_port->setVisible(false);
+    }else if(arg1.compare(getConnectionTypeName(eNetworkConnection)) == 0){
+        this->ui->comboBox_baudrate->setVisible(false);
+        this->ui->label_baudRate->setVisible(false);
+        this->ui->comboBox_databits->setVisible(false);
+        this->ui->label_databits->setVisible(false);
+        this->ui->comboBox_flowcontrol->setVisible(false);
+        this->ui->label_flowControl->setVisible(false);
+        this->ui->comboBox_parity->setVisible(false);
+        this->ui->label_parity->setVisible(false);
+        this->ui->comboBox_stopbits->setVisible(false);
+        this->ui->label_stopBits->setVisible(false);
+        this->ui->comboBox_comPort->setVisible(false);
+        this->ui->label_comPort->setVisible(false);
+        this->ui->comboBox_ip->setVisible(true);
+        this->ui->label_ip->setVisible(true);
+        this->ui->lineEdit_port->setVisible(true);
+        this->ui->label_port->setVisible(true);
+    }
+
+    //update selected sensor config
     this->updateSensorConfigFromSelection();
+
 }
 
 /*!
@@ -244,11 +327,13 @@ void SensorConfigurationDialog::on_comboBox_stopbits_currentIndexChanged(int ind
 
 /*!
  * \brief SensorConfigurationDialog::updateConnectionConfigFromSensorConfig
+ * \param supportedConnections
  * \param cConfig
  */
-void SensorConfigurationDialog::updateConnectionConfigFromSensorConfig(const ConnectionConfig &cConfig){
+void SensorConfigurationDialog::updateConnectionConfigFromSensorConfig(const QList<ConnectionTypes> supportedConnections, const ConnectionConfig &cConfig){
 
     //do not trigger edits while setting up connection config
+    this->ui->comboBox_typeOfConnection->blockSignals(true);
     this->ui->comboBox_baudrate->blockSignals(true);
     this->ui->comboBox_databits->blockSignals(true);
     this->ui->comboBox_flowcontrol->blockSignals(true);
@@ -258,6 +343,51 @@ void SensorConfigurationDialog::updateConnectionConfigFromSensorConfig(const Con
     this->ui->comboBox_ip->blockSignals(true);
     this->ui->lineEdit_port->blockSignals(true);
 
+    //set up available connection types
+    this->ui->comboBox_typeOfConnection->clear();
+    foreach(const ConnectionTypes &type, supportedConnections){
+        this->ui->comboBox_typeOfConnection->addItem(getConnectionTypeName(type));
+        this->ui->comboBox_typeOfConnection->setCurrentText(getConnectionTypeName(type));
+    }
+
+    //set visibility
+    if(this->ui->comboBox_typeOfConnection->currentText().compare(getConnectionTypeName(eSerialConnection)) == 0){
+        this->ui->comboBox_baudrate->setVisible(true);
+        this->ui->label_baudRate->setVisible(true);
+        this->ui->comboBox_databits->setVisible(true);
+        this->ui->label_databits->setVisible(true);
+        this->ui->comboBox_flowcontrol->setVisible(true);
+        this->ui->label_flowControl->setVisible(true);
+        this->ui->comboBox_parity->setVisible(true);
+        this->ui->label_parity->setVisible(true);
+        this->ui->comboBox_stopbits->setVisible(true);
+        this->ui->label_stopBits->setVisible(true);
+        this->ui->comboBox_comPort->setVisible(true);
+        this->ui->label_comPort->setVisible(true);
+        this->ui->comboBox_ip->setVisible(false);
+        this->ui->label_ip->setVisible(false);
+        this->ui->lineEdit_port->setVisible(false);
+        this->ui->label_port->setVisible(false);
+    }else if(this->ui->comboBox_typeOfConnection->currentText().compare(getConnectionTypeName(eNetworkConnection)) == 0){
+        this->ui->comboBox_baudrate->setVisible(false);
+        this->ui->label_baudRate->setVisible(false);
+        this->ui->comboBox_databits->setVisible(false);
+        this->ui->label_databits->setVisible(false);
+        this->ui->comboBox_flowcontrol->setVisible(false);
+        this->ui->label_flowControl->setVisible(false);
+        this->ui->comboBox_parity->setVisible(false);
+        this->ui->label_parity->setVisible(false);
+        this->ui->comboBox_stopbits->setVisible(false);
+        this->ui->label_stopBits->setVisible(false);
+        this->ui->comboBox_comPort->setVisible(false);
+        this->ui->label_comPort->setVisible(false);
+        this->ui->comboBox_ip->setVisible(true);
+        this->ui->label_ip->setVisible(true);
+        this->ui->lineEdit_port->setVisible(true);
+        this->ui->label_port->setVisible(true);
+    }
+
+    //set up connection parameters
     int baudRateIndex = this->ui->comboBox_baudrate->findData(cConfig.baudRate, Qt::UserRole);
     if(baudRateIndex >= 0){
         this->ui->comboBox_baudrate->setCurrentIndex(baudRateIndex);
@@ -286,6 +416,7 @@ void SensorConfigurationDialog::updateConnectionConfigFromSensorConfig(const Con
     this->ui->lineEdit_port->setText(cConfig.port);
 
     //from now on trigger edits
+    this->ui->comboBox_typeOfConnection->blockSignals(false);
     this->ui->comboBox_baudrate->blockSignals(false);
     this->ui->comboBox_databits->blockSignals(false);
     this->ui->comboBox_flowcontrol->blockSignals(false);
@@ -325,19 +456,20 @@ void SensorConfigurationDialog::updateScalarParametersFromSensorConfig(const QMa
  */
 void SensorConfigurationDialog::updateSensorConfigFromSelection(){
 
-    //get and check model
+    //####################
+    //get and check models
+    //####################
+
     SensorConfigurationProxyModel *sensorConfigProxyModel = static_cast<SensorConfigurationProxyModel *>(this->ui->listView_sensorConfigs->model());
     if(sensorConfigProxyModel == NULL){
         return;
     }
 
-    //get and check source model
     SensorConfigurationModel *sensorConfigModel = static_cast<SensorConfigurationModel *>(sensorConfigProxyModel->sourceModel());
     if(sensorConfigModel == NULL){
         return;
     }
 
-    //get and check sensor plugins proxy model
     SensorTableProxyModel *sensorTableProxyModel = static_cast<SensorTableProxyModel *>(this->ui->tableView_sensorPlugins->model());
     if(sensorTableProxyModel == NULL){
         return;
@@ -348,10 +480,12 @@ void SensorConfigurationDialog::updateSensorConfigFromSelection(){
         return;
     }
 
+    //###############################
     //get selected sensor config name
+    //###############################
 
     QModelIndexList selection = this->ui->listView_sensorConfigs->selectionModel()->selectedIndexes();
-    qDebug() << "sConfigs: " << selection.size();
+    //qDebug() << "selection: " << selection.size();
     if(selection.size() != 1){
         return;
     }
@@ -359,6 +493,10 @@ void SensorConfigurationDialog::updateSensorConfigFromSelection(){
 
     SensorConfiguration sConfig;
     sConfig.setName(name);
+
+    //#######################################
+    //set up sensor config from GUI selection
+    //#######################################
 
     //set up sensor plugin
     QModelIndex pluginIndex = sensorTableModel->getSelectedIndex();
@@ -392,22 +530,21 @@ void SensorConfigurationDialog::updateSensorConfigFromSelection(){
     sConfig.setDoubleParameter(doubleParams);
     sConfig.setStringParameter(stringParams);
 
-    //replace sensor config
+    //#############################
+    //replace the old sensor config
+    //#############################
+
+    //replace config
     sensorConfigModel->replaceSensorConfig(name, sConfig);
 
-    QModelIndexList selection5 = this->ui->listView_sensorConfigs->selectionModel()->selectedIndexes();
-    qDebug() << "sConfigs nach replace: " << selection5.size();
-
-    qDebug() << selection.at(0).row() << " " << selection.at(0).column();
-
-    if(this->ui->listView_sensorConfigs->model()->hasIndex(selection.at(0).row(), selection.at(0).column())){
+    //select the new config in tree view
+    /*if(this->ui->listView_sensorConfigs->model()->hasIndex(selection.at(0).row(), selection.at(0).column())){
         QModelIndex newSelection = sensorConfigModel->getIndex(sConfig.getName());
         if(newSelection.isValid()){
             qDebug() << "true";
             this->ui->listView_sensorConfigs->selectionModel()->select(newSelection, QItemSelectionModel::Select);
         }
-    }
-    qDebug() << "false";
+    }*/
 
 }
 

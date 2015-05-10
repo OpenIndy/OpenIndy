@@ -1809,7 +1809,7 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
     if(xmlDoc.isNull()){
         return QDomElement();
     }
-/*
+
     //add function attributes
     QDomElement function = xmlDoc.createElement("function");
     function.setAttribute("name", this->getMetaData().name);
@@ -1818,10 +1818,10 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add used elements
     QDomElement inputElements = xmlDoc.createElement("inputElements");
-    QMapIterator<int, QList<InputElement> > inputIterator(this->getFeatureOrder());
+    QMapIterator<int, QList<InputElement> > inputIterator(this->getInputElements());
     while (inputIterator.hasNext()) {
         inputIterator.next();
-        foreach(InputElement input, inputIterator.value()){
+        foreach(const InputElement &input, inputIterator.value()){
             QDomElement inputElement = xmlDoc.createElement("element");
             inputElement.setAttribute("index", inputIterator.key());
             inputElement.setAttribute("type", input.typeOfElement);
@@ -1833,10 +1833,11 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add integer parameters
     QDomElement integerParams = xmlDoc.createElement("integerParameters");
-    QMapIterator<QString, int> intIterator(this->myConfiguration.intParameter);
+    QMapIterator<QString, int> intIterator(this->scalarInputParams.intParameter);
     while (intIterator.hasNext()) {
         intIterator.next();
         QDomElement intParam = xmlDoc.createElement("parameter");
+        intParam.setAttribute("name", intIterator.key());
         intParam.setAttribute("value", intIterator.value());
         integerParams.appendChild(intParam);
     }
@@ -1844,10 +1845,11 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add double parameters
     QDomElement doubleParams = xmlDoc.createElement("doubleParameters");
-    QMapIterator<QString, double> doubleIterator(this->myConfiguration.doubleParameter);
+    QMapIterator<QString, double> doubleIterator(this->scalarInputParams.doubleParameter);
     while (doubleIterator.hasNext()) {
         doubleIterator.next();
         QDomElement doubleParam = xmlDoc.createElement("parameter");
+        doubleParam.setAttribute("name", doubleIterator.key());
         doubleParam.setAttribute("value", doubleIterator.value());
         doubleParams.appendChild(doubleParam);
     }
@@ -1855,18 +1857,17 @@ QDomElement Function::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     //add string parameters
     QDomElement stringParams = xmlDoc.createElement("stringParameters");
-    QMapIterator<QString, QString> stringIterator(this->myConfiguration.stringParameter);
+    QMapIterator<QString, QString> stringIterator(this->scalarInputParams.stringParameter);
     while (stringIterator.hasNext()) {
         stringIterator.next();
         QDomElement stringParam = xmlDoc.createElement("parameter");
+        stringParam.setAttribute("name", stringIterator.key());
         stringParam.setAttribute("value", stringIterator.value());
         stringParams.appendChild(stringParam);
     }
     function.appendChild(stringParams);
 
-    return function;*/
-
-    return QDomElement();
+    return function;
 
 }
 
@@ -1880,7 +1881,7 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
     if(xmlElem.isNull()){
         return false;
     }
-/*
+
     if(!xmlElem.hasAttribute("name") || !xmlElem.hasAttribute("plugin") || !xmlElem.hasAttribute("executionIndex")
             || !xmlElem.hasAttribute("type")){
         return false;
@@ -1892,9 +1893,9 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
         QDomNodeList paramList = integerParameters.childNodes();
         for(int i = 0; i < paramList.size(); i++){
             QDomElement integerParameter = paramList.at(i).toElement();
-            if(integerParameter.tagName().compare("parameter") && integerParameter.hasAttribute("value")
+            if(integerParameter.tagName().compare("parameter") == 0 && integerParameter.hasAttribute("value")
                     && integerParameter.hasAttribute("name")){
-                this->myConfiguration.intParameter.insert(integerParameter.attribute("name"), integerParameter.attribute("value").toInt());
+                this->scalarInputParams.intParameter.insert(integerParameter.attribute("name"), integerParameter.attribute("value").toInt());
             }
         }
     }
@@ -1905,9 +1906,9 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
         QDomNodeList paramList = doubleParameters.childNodes();
         for(int i = 0; i < paramList.size(); i++){
             QDomElement doubleParameter = paramList.at(i).toElement();
-            if(doubleParameter.tagName().compare("parameter") && doubleParameter.hasAttribute("value")
+            if(doubleParameter.tagName().compare("parameter") == 0 && doubleParameter.hasAttribute("value")
                     && doubleParameter.hasAttribute("name")){
-                this->myConfiguration.doubleParameter.insert(doubleParameter.attribute("name"), doubleParameter.attribute("value").toDouble());
+                this->scalarInputParams.doubleParameter.insert(doubleParameter.attribute("name"), doubleParameter.attribute("value").toDouble());
             }
         }
     }
@@ -1918,13 +1919,15 @@ bool Function::fromOpenIndyXML(QDomElement &xmlElem){
         QDomNodeList paramList = stringParameters.childNodes();
         for(int i = 0; i < paramList.size(); i++){
             QDomElement stringParameter = paramList.at(i).toElement();
-            if(stringParameter.tagName().compare("parameter") && stringParameter.hasAttribute("value")
+            if(stringParameter.tagName().compare("parameter") == 0 && stringParameter.hasAttribute("value")
                     && stringParameter.hasAttribute("name")){
-                this->myConfiguration.stringParameter.insert(stringParameter.attribute("name"), stringParameter.attribute("value"));
+                this->scalarInputParams.stringParameter.insert(stringParameter.attribute("name"), stringParameter.attribute("value"));
             }
         }
     }
-*/
+
+    this->scalarInputParams.isValid = true;
+
     return true;
 
 }

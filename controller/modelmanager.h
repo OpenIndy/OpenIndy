@@ -29,6 +29,7 @@
 #include "sensortableproxymodel.h"
 #include "sensorconfigurationmodel.h"
 #include "sensorconfigurationproxymodel.h"
+#include "plugintreeviewmodel.h"
 
 /*!
  * \brief The ModelManager class
@@ -98,6 +99,7 @@ public:
 
     //plugin models
     static QStringListModel &getPluginNamesModel();
+    static PluginTreeViewModel &getPluginTreeViewModel();
 
     //reading types models
     static QStringListModel &getReadingTypeNamesModel();
@@ -139,11 +141,15 @@ private slots:
     //##########################################
 
     //feature(s) added or removed
+    void featureSetChanged();
     void coordSystemSetChanged();
     void stationSetChanged();
 
     //groups added or removed
     void availableGroupsChanged();
+
+    //feature specific attributes changed
+    void featureNameChanged(const int &featureId, const QString &oldName);
 
     //###############################
     //update models on config changes
@@ -180,6 +186,7 @@ private:
 
     //plugin models
     static QStringListModel pluginNamesModel;
+    static PluginTreeViewModel pluginTreeViewModel;
 
     //reading models
     static QStringListModel readingTypeNamesModel;

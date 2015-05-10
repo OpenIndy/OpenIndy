@@ -280,6 +280,28 @@ QDomElement SlottedHole::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     slottedHole.setAttribute("type", getGeometryTypeName(eNurbsGeometry));
 
+    //set length
+    QDomElement length = xmlDoc.createElement("length");
+    if(this->isSolved || this->isNominal){
+        length.setAttribute("value", this->length);
+    }else{
+        length.setAttribute("value", 0.0);
+    }
+    slottedHole.appendChild(length);
+
+    //set hole axis
+    QDomElement holeAxis = xmlDoc.createElement("holeAxis");
+    if(this->isSolved || this->isNominal){
+        holeAxis.setAttribute("i", this->holeAxis.getVector().getAt(0));
+        holeAxis.setAttribute("j", this->holeAxis.getVector().getAt(1));
+        holeAxis.setAttribute("k", this->holeAxis.getVector().getAt(2));
+    }else{
+        holeAxis.setAttribute("i", 0.0);
+        holeAxis.setAttribute("j", 0.0);
+        holeAxis.setAttribute("k", 0.0);
+    }
+    slottedHole.appendChild(holeAxis);
+
     return slottedHole;
 
 }
@@ -295,7 +317,32 @@ bool SlottedHole::fromOpenIndyXML(QDomElement &xmlElem){
 
     if(result){
 
+        //set slotted hole attributes
+        QDomElement radius = xmlElem.firstChildElement("radius");
+        QDomElement length = xmlElem.firstChildElement("length");
+        QDomElement holeAxis = xmlElem.firstChildElement("holeAxis");
+        QDomElement normal = xmlElem.firstChildElement("spatialDirection");
+        QDomElement center = xmlElem.firstChildElement("coordinates");
 
+        if(radius.isNull() || length.isNull() || holeAxis.isNull() || normal.isNull() || center.isNull()
+                || !radius.hasAttribute("value") || !length.hasAttribute("value") || holeAxis.hasAttribute("i")
+                || !holeAxis.hasAttribute("j") || !holeAxis.hasAttribute("k")
+                || !normal.hasAttribute("i") || normal.hasAttribute("j") || normal.hasAttribute("k")
+                || !center.hasAttribute("x") || !center.hasAttribute("y") || !center.hasAttribute("z")){
+            return false;
+        }
+
+        this->radius.setRadius(radius.attribute("value").toDouble());
+        this->length = length.attribute("value").toDouble();
+        this->holeAxis.setVector(holeAxis.attribute("i").toDouble(),
+                                 holeAxis.attribute("j").toDouble(),
+                                 holeAxis.attribute("k").toDouble());
+        this->normal.setVector(normal.attribute("i").toDouble(),
+                               normal.attribute("j").toDouble(),
+                               normal.attribute("k").toDouble());
+        this->center.setVector(center.attribute("x").toDouble(),
+                               center.attribute("y").toDouble(),
+                               center.attribute("z").toDouble());
 
     }
 

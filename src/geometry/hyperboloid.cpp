@@ -1,83 +1,6 @@
 #include "hyperboloid.h"
 
 #include "featurewrapper.h"
-/*
-#include "function.h"
-
-MeasurementConfig Hyperboloid::defaultMeasurementConfig;
-
-Hyperboloid::Hyperboloid(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
-{
-    //this->id = Configuration::generateID();
-    this->myNominalCoordSys = NULL;
-    this->isSolved = false;
-    this->isUpdated = false;
-    this->isDrawn = true;
-}
-
-Hyperboloid::Hyperboloid(const Hyperboloid &copy) : Geometry(copy.isNominal) {
-    this->id = copy.id;
-    this->name = copy.name;
-    this->isSolved = copy.isSolved;
-}
-
-void Hyperboloid::recalc(){
-
-    if(this->functionList.size() > 0){
-
-        bool solved = true;
-        foreach(Function *f, this->functionList){
-
-            //execute the function if it exists and if the last function was executed successfully
-            if(f != NULL && solved == true){
-                solved = f->exec(*this);
-            }
-
-        }
-        this->setIsSolved(solved);
-
-    }else if(this->isNominal == false){
-
-        this->setIsSolved(false);
-
-    }
-
-}
-
-QDomElement Hyperboloid::toOpenIndyXML(QDomDocument &xmlDoc) const{
-
-    QDomElement hyperboloid = Geometry::toOpenIndyXML(xmlDoc);
-
-    if(hyperboloid.isNull()){
-        return hyperboloid;
-    }
-
-    hyperboloid.setAttribute("type", getGeometryTypeName(eHyperboloidGeometry));
-
-    return hyperboloid;
-
-}
-
-bool Hyperboloid::fromOpenIndyXML(QDomElement &xmlElem){
-
-    bool result = Geometry::fromOpenIndyXML(xmlElem);
-
-    if(result){
-
-
-
-    }
-
-    return result;
-
-}
-
-bool Hyperboloid::saveSimulationData()
-{
-    return false;
-}
-*/
-
 
 /*!
  * \brief Hyperboloid::Hyperboloid
@@ -259,6 +182,24 @@ QDomElement Hyperboloid::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     hyperboloid.setAttribute("type", getGeometryTypeName(eHyperboloidGeometry));
 
+    //set a
+    QDomElement a = xmlDoc.createElement("a");
+    if(this->isSolved || this->isNominal){
+        a.setAttribute("value", this->a);
+    }else{
+        a.setAttribute("value", 0.0);
+    }
+    hyperboloid.appendChild(a);
+
+    //set c
+    QDomElement c = xmlDoc.createElement("c");
+    if(this->isSolved || this->isNominal){
+        c.setAttribute("value", this->c);
+    }else{
+        c.setAttribute("value", 0.0);
+    }
+    hyperboloid.appendChild(c);
+
     return hyperboloid;
 
 }
@@ -274,7 +215,27 @@ bool Hyperboloid::fromOpenIndyXML(QDomElement &xmlElem){
 
     if(result){
 
+        //set hyperboloid attributes
+        QDomElement a = xmlElem.firstChildElement("a");
+        QDomElement c = xmlElem.firstChildElement("c");
+        QDomElement axis = xmlElem.firstChildElement("spatialDirection");
+        QDomElement center = xmlElem.firstChildElement("coordinates");
 
+        if(a.isNull() || c.isNull() || axis.isNull() || center.isNull()
+                || !a.hasAttribute("value") || !c.hasAttribute("value") || axis.hasAttribute("i")
+                || !axis.hasAttribute("j") || !axis.hasAttribute("k")
+                || !center.hasAttribute("x") || !center.hasAttribute("y") || !center.hasAttribute("z")){
+            return false;
+        }
+
+        this->a = a.attribute("value").toDouble();
+        this->c = c.attribute("value").toDouble();
+        this->axis.setVector(axis.attribute("i").toDouble(),
+                             axis.attribute("j").toDouble(),
+                             axis.attribute("k").toDouble());
+        this->center.setVector(center.attribute("x").toDouble(),
+                               center.attribute("y").toDouble(),
+                               center.attribute("z").toDouble());
 
     }
 

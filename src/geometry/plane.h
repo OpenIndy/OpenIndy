@@ -93,23 +93,6 @@ private:
 
     double d; //smallest distance from origin
 
-
-    //bool saveSimulationData();
-
-    //QString getDisplayX(bool showDiff) const;
-    //QString getDisplayY(bool showDiff) const;
-    //QString getDisplayZ(bool showDiff) const;
-    //QString getDisplayI(bool showDiff) const;
-    //QString getDisplayJ(bool showDiff) const;
-    //QString getDisplayK(bool showDiff) const;
-    //QString getDisplayIsCommon() const;
-    //QString getDisplayIsNominal() const;
-    //QString getDisplayObs() const;
-    //QString getDisplaySolved() const;
-    //QString getDisplayMConfig() const;
-    //QString getDisplayStdDev() const;
-
-    //static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
 };
 
 #endif // PLANE_H

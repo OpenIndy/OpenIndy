@@ -117,10 +117,6 @@ private:
     Position circleCenterA; //center of one circle
     Position circleCenterB; //center of the other circle
 
-    //bool saveSimulationData();
-
-    //static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
-
 };
 
 #endif // SLOTTEDHOLE_H

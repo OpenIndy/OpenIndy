@@ -52,7 +52,7 @@ protected:
      * \return
      */
     virtual bool initialize(){
-        emit this->sendMessage(QString("Laser Tracker not implemented correctly: initialization method missing"));
+        emit this->sensorMessage(QString("Laser Tracker not implemented correctly: initialization method missing"));
         return false;
     }
 
@@ -65,7 +65,7 @@ protected:
      * \return
      */
     virtual bool move(const double &azimuth, const double &zenith, const double &distance, const bool &isRelative){
-        emit this->sendMessage(QString("Laser Tracker not implemented correctly: move method missing"));
+        emit this->sensorMessage(QString("Laser Tracker not implemented correctly: move method missing"));
         return false;
     }
 
@@ -77,7 +77,7 @@ protected:
      * \return
      */
     virtual bool move(const double &x, const double &y, const double &z){
-        emit this->sendMessage(QString("Laser Tracker not implemented correctly: move method missing"));
+        emit this->sensorMessage(QString("Laser Tracker not implemented correctly: move method missing"));
         return false;
     }
 
@@ -86,7 +86,7 @@ protected:
      * \return
      */
     virtual bool home(){
-        emit this->sendMessage(QString("Laser Tracker not implemented correctly: home method missing"));
+        emit this->sensorMessage(QString("Laser Tracker not implemented correctly: home method missing"));
         return false;
     }
 
@@ -95,7 +95,7 @@ protected:
      * \return
      */
     virtual bool changeMotorState(){
-        emit this->sendMessage(QString("Laser Tracker not implemented correctly: motor state method missing"));
+        emit this->sensorMessage(QString("Laser Tracker not implemented correctly: motor state method missing"));
         return false;
     }
 
@@ -104,7 +104,7 @@ protected:
      * \return
      */
     virtual bool toggleSightOrientation(){
-        emit this->sendMessage(QString("Laser Tracker not implemented correctly: toggle sight method missing"));
+        emit this->sensorMessage(QString("Laser Tracker not implemented correctly: toggle sight method missing"));
         return false;
     }
 
@@ -113,7 +113,7 @@ protected:
      * \return
      */
     virtual bool compensation(){
-        emit this->sendMessage(QString("Laser Tracker not implemented correctly: compensation method missing"));
+        emit this->sensorMessage(QString("Laser Tracker not implemented correctly: compensation method missing"));
         return false;
     }
 

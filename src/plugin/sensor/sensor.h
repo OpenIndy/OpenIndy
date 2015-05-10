@@ -47,6 +47,12 @@ public:
 
     virtual ~Sensor();
 
+    enum SensorMessage{
+        eSensorOk,
+        eSensorWarning,
+        eSensorError
+    };
+
     //############################
     //sensor initialization method
     //############################
@@ -110,11 +116,12 @@ public:
 
 signals:
 
-    //################################################
-    //signals to inform OpenIndy about function issues
-    //################################################
+    //##############################################
+    //signals to inform OpenIndy about sensor issues
+    //##############################################
 
-    void sendMessage(const QString &msg);
+    void sensorMessage(const QString &msg);
+    void sensorMessage(const SensorMessage &type, const QString &msg);
 
 protected:
 

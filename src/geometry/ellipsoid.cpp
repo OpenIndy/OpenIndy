@@ -2,93 +2,6 @@
 
 #include "featurewrapper.h"
 
-/*
-#include "function.h"
-
-MeasurementConfig Ellipsoid::defaultMeasurementConfig;
-
-Ellipsoid::Ellipsoid(bool isNominal, QObject *parent) : Geometry(isNominal, parent), xyz(4),a(0.0),b(0.0),c(0.0)
-{
-    //this->id = Configuration::generateID();
-    this->myNominalCoordSys = NULL;
-    this->isSolved = false;
-    this->isUpdated = false;
-    this->isDrawn = true;
-}
-
-Ellipsoid::Ellipsoid(const Ellipsoid &copy) : Geometry(copy.isNominal){
-    this->id = copy.id;
-    this->name = copy.name;
-    this->isSolved = copy.isSolved;
-}
-
-OiVec Ellipsoid::getXYZ() const
-{
-    return this->xyz;
-}
-
-void Ellipsoid::recalc(){
-
-    if(this->functionList.size() > 0){
-
-        bool solved = true;
-        foreach(Function *f, this->functionList){
-
-            //execute the function if it exists and if the last function was executed successfully
-            if(f != NULL && solved == true){
-                solved = f->exec(*this);
-            }
-
-        }
-        this->setIsSolved(solved);
-
-    }else if(this->isNominal == false){
-
-        this->xyz = OiVec(4);
-        this->a = 0.0;
-        this->b = 0.0;
-        this->c = 0.0;
-        this->setIsSolved(false);
-
-    }
-
-}
-
-QDomElement Ellipsoid::toOpenIndyXML(QDomDocument &xmlDoc) const{
-
-    QDomElement ellipsoid = Geometry::toOpenIndyXML(xmlDoc);
-
-    if(ellipsoid.isNull()){
-        return ellipsoid;
-    }
-
-    ellipsoid.setAttribute("type", getGeometryTypeName(eEllipsoidGeometry));
-
-    return ellipsoid;
-
-}
-
-bool Ellipsoid::fromOpenIndyXML(QDomElement &xmlElem){
-
-    bool result = Geometry::fromOpenIndyXML(xmlElem);
-
-    if(result){
-
-
-
-    }
-
-    return result;
-
-}
-
-bool Ellipsoid::saveSimulationData()
-{
-    return false;
-}
-*/
-
-
 /*!
  * \brief Ellipsoid::Ellipsoid
  * \param isNominal
@@ -275,6 +188,24 @@ QDomElement Ellipsoid::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     ellipsoid.setAttribute("type", getGeometryTypeName(eEllipsoidGeometry));
 
+    //set semi-major axis length
+    QDomElement a = xmlDoc.createElement("a");
+    if(this->isSolved || this->isNominal){
+        a.setAttribute("value", this->a);
+    }else{
+        a.setAttribute("value", 0.0);
+    }
+    ellipsoid.appendChild(a);
+
+    //set semi-minor axis length
+    QDomElement b = xmlDoc.createElement("b");
+    if(this->isSolved || this->isNominal){
+        b.setAttribute("value", this->b);
+    }else{
+        b.setAttribute("value", 0.0);
+    }
+    ellipsoid.appendChild(b);
+
     return ellipsoid;
 
 }
@@ -290,7 +221,27 @@ bool Ellipsoid::fromOpenIndyXML(QDomElement &xmlElem){
 
     if(result){
 
+        //set ellipsoid attributes
+        QDomElement a = xmlElem.firstChildElement("a");
+        QDomElement b = xmlElem.firstChildElement("b");
+        QDomElement majorAxis = xmlElem.firstChildElement("spatialDirection");
+        QDomElement center = xmlElem.firstChildElement("coordinates");
 
+        if(a.isNull() || b.isNull() || majorAxis.isNull() || center.isNull()
+                || !a.hasAttribute("value") || !b.hasAttribute("value") || majorAxis.hasAttribute("i")
+                || !majorAxis.hasAttribute("j") || !majorAxis.hasAttribute("k")
+                || !center.hasAttribute("x") || !center.hasAttribute("y") || !center.hasAttribute("z")){
+            return false;
+        }
+
+        this->a = a.attribute("value").toDouble();
+        this->b = b.attribute("value").toDouble();
+        this->majorAxis.setVector(majorAxis.attribute("i").toDouble(),
+                                  majorAxis.attribute("j").toDouble(),
+                                  majorAxis.attribute("k").toDouble());
+        this->center.setVector(center.attribute("x").toDouble(),
+                               center.attribute("y").toDouble(),
+                               center.attribute("z").toDouble());
 
     }
 

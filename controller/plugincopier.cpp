@@ -40,13 +40,13 @@ void PluginCopier::importPlugin(const QString &path){
     QDir pluginDir(appDir.absolutePath() + "/plugins");
     pluginDir.mkpath(pluginDir.absolutePath());
 
-    qDebug() << pluginDir.absolutePath();
-
     if(QFile::exists(pluginDir.absoluteFilePath(pluginFileInfo.fileName()))){
         emit this->sendError(QString("Plugin %1 already exists").arg(pluginFileInfo.fileName()));
         emit this->importFinished(false);
         return;
     }
+
+    pluginDir.cdUp();
 
     //copy dependencies
     if(metaData.dependencies){
@@ -68,9 +68,9 @@ void PluginCopier::importPlugin(const QString &path){
             //get destination path
             QString destPath;
             if (metaData.dependenciesPath.at(i).toObject().value("path").toString().compare("app") == 0){
-                destPath = QString(pluginDir.absolutePath() + "/" + pluginFileInfo.fileName());
+                destPath = QString(pluginDir.absolutePath() + "/" + metaData.dependenciesPath.at(i).toObject().value("name").toString());
             }else{
-                destPath = QString(metaData.dependenciesPath.at(i).toObject().value("path").toString() + "/" + pluginFileInfo.fileName());
+                destPath = QString(metaData.dependenciesPath.at(i).toObject().value("path").toString() + "/" + metaData.dependenciesPath.at(i).toObject().value("name").toString());
             }
 
             //copy from source to destination
@@ -80,7 +80,6 @@ void PluginCopier::importPlugin(const QString &path){
                     QFile::remove(destPath);
                 }
                 QFile::copy(sourcePath, destPath);
-                emit this->sendMessage(destPath);
 
             }else if(sourcePathInfo.isDir()){
 
@@ -96,6 +95,8 @@ void PluginCopier::importPlugin(const QString &path){
 
         }
     }
+
+    pluginDir.cd("plugins");
 
     //copy plugin itself
     if(!QFile::copy(pluginFileInfo.absoluteFilePath(), pluginDir.absoluteFilePath(pluginFileInfo.fileName()))){
@@ -195,7 +196,7 @@ bool PluginCopier::copyDir(const QString &sourcePath, const QString &destination
         if(!QFile::copy(sourcePath + "/" + destFiles.at(i), destinationPath + "/" + destFiles.at(i))){
             return false;
         }else{
-            emit sendMessage(destinationPath + "/" + destFiles.at(i));
+
         }
 
     }

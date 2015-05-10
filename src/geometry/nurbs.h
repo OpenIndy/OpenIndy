@@ -51,18 +51,6 @@ public:
     QDomElement toOpenIndyXML(QDomDocument &xmlDoc) const;
     bool fromOpenIndyXML(QDomElement &xmlElem);
 
-private:
-
-    //################
-    //nurbs attributes
-    //################
-
-
-    //bool saveSimulationData();
-
-    //static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
-
-    //TODO implement nurbs
 };
 
 #endif // NURBS_H

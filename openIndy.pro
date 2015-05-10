@@ -166,7 +166,12 @@ SOURCES += \
     ui/dialogs/sensortaskinfodialog.cpp \
     controller/featureupdater.cpp \
     controller/trafocontroller.cpp \
-    controller/sortlistbyname.cpp
+    controller/sortlistbyname.cpp \
+    ui/widgets/plugininfowidget.cpp \
+    ui/dialogs/settingsdialog.cpp \
+    models/treeitems/plugintreeitem.cpp \
+    models/plugintreeviewmodel.cpp \
+    ui/dialogs/pluginmanagerdialog.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -280,7 +285,12 @@ HEADERS  += \
     ui/dialogs/sensortaskinfodialog.h \
     controller/featureupdater.h \
     controller/trafocontroller.h \
-    controller/sortlistbyname.h
+    controller/sortlistbyname.h \
+    ui/widgets/plugininfowidget.h \
+    ui/dialogs/settingsdialog.h \
+    models/treeitems/plugintreeitem.h \
+    models/plugintreeviewmodel.h \
+    ui/dialogs/pluginmanagerdialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -291,4 +301,6 @@ FORMS    += \
     ui/dialogs/featurefunctionsdialog.ui \
     ui/dialogs/sensorconfigurationdialog.ui \
     ui/dialogs/movesensordialog.ui \
-    ui/dialogs/sensortaskinfodialog.ui
+    ui/dialogs/sensortaskinfodialog.ui \
+    ui/dialogs/settingsdialog.ui \
+    ui/dialogs/pluginmanagerdialog.ui

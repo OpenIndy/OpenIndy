@@ -531,7 +531,7 @@ QList<sdb::Plugin> SystemDbManager::getPlugins(){
             plugin.is_active = command.value("is_active").toBool();
 
             //query all available sensors
-            query2 = QString("SELECT id, iid, name, description FROM sensorPlugin");
+            query2 = QString("SELECT id, iid, name, description FROM sensorPlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::Sensor sensor;
@@ -543,7 +543,7 @@ QList<sdb::Plugin> SystemDbManager::getPlugins(){
             }
 
             //query all available simulations
-            query2 = QString("SELECT id, iid, name, description FROM simulationPlugin");
+            query2 = QString("SELECT id, iid, name, description FROM simulationPlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::Simulation simulation;
@@ -555,7 +555,7 @@ QList<sdb::Plugin> SystemDbManager::getPlugins(){
             }
 
             //query all available network adjustments
-            query2 = QString("SELECT id, iid, name, description FROM networkAdjustmentPlugin");
+            query2 = QString("SELECT id, iid, name, description FROM networkAdjustmentPlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::NetworkAdjustment networkAdjustment;
@@ -567,7 +567,7 @@ QList<sdb::Plugin> SystemDbManager::getPlugins(){
             }
 
             //query all available tools
-            query2 = QString("SELECT id, iid, name, description FROM toolPlugin");
+            query2 = QString("SELECT id, iid, name, description FROM toolPlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::Tool tool;
@@ -579,7 +579,7 @@ QList<sdb::Plugin> SystemDbManager::getPlugins(){
             }
 
             //query all available exchanges
-            query2 = QString("SELECT id, iid, name, description FROM exchangePlugin");
+            query2 = QString("SELECT id, iid, name, description FROM exchangePlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::Exchange exchange;
@@ -591,7 +591,7 @@ QList<sdb::Plugin> SystemDbManager::getPlugins(){
             }
 
             //query all available functions
-            query2 = QString("SELECT id, iid, name, description FROM functionPlugin");
+            query2 = QString("SELECT id, iid, name, description FROM functionPlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::Function function;
@@ -676,7 +676,7 @@ sdb::Plugin SystemDbManager::getPlugin(const QString &name){
             plugin.is_active = command.value("is_active").toBool();
 
             //query all available sensors
-            query2 = QString("SELECT id, iid, name, description FROM sensorPlugin");
+            query2 = QString("SELECT id, iid, name, description FROM sensorPlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::Sensor sensor;
@@ -688,7 +688,7 @@ sdb::Plugin SystemDbManager::getPlugin(const QString &name){
             }
 
             //query all available simulations
-            query2 = QString("SELECT id, iid, name, description FROM simulationPlugin");
+            query2 = QString("SELECT id, iid, name, description FROM simulationPlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::Simulation simulation;
@@ -700,7 +700,7 @@ sdb::Plugin SystemDbManager::getPlugin(const QString &name){
             }
 
             //query all available network adjustments
-            query2 = QString("SELECT id, iid, name, description FROM networkAdjustmentPlugin");
+            query2 = QString("SELECT id, iid, name, description FROM networkAdjustmentPlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::NetworkAdjustment networkAdjustment;
@@ -712,7 +712,7 @@ sdb::Plugin SystemDbManager::getPlugin(const QString &name){
             }
 
             //query all available tools
-            query2 = QString("SELECT id, iid, name, description FROM toolPlugin");
+            query2 = QString("SELECT id, iid, name, description FROM toolPlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::Tool tool;
@@ -724,7 +724,7 @@ sdb::Plugin SystemDbManager::getPlugin(const QString &name){
             }
 
             //query all available exchanges
-            query2 = QString("SELECT id, iid, name, description FROM exchangePlugin");
+            query2 = QString("SELECT id, iid, name, description FROM exchangePlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::Exchange exchange;
@@ -736,7 +736,7 @@ sdb::Plugin SystemDbManager::getPlugin(const QString &name){
             }
 
             //query all available functions
-            query2 = QString("SELECT id, iid, name, description FROM functionPlugin");
+            query2 = QString("SELECT id, iid, name, description FROM functionPlugin WHERE plugin_id = %1").arg(plugin.id);
             command2.exec(query2);
             while(command2.next()){
                 sdb::Function function;

@@ -89,7 +89,7 @@ void PseudoTracker::init(){
  */
 bool PseudoTracker::doSelfDefinedAction(const QString &action){
     if(action == "echo"){
-        emit this->sendMessage(action);
+        emit this->sensorMessage(action);
     }
     return true;
 }
@@ -238,9 +238,16 @@ QList<QPointer<Reading> > PseudoTracker::measure(const MeasurementConfig &mConfi
     }
 
     if(readings.size() > 0){
+
+        //delete old last reading
+        if(!this->lastReading.second.isNull()){
+            delete this->lastReading.second;
+        }
+
         this->lastReading.first = readings.last()->getTypeOfReading();
         QPointer<Reading> r = new Reading(*readings.last().data());
         this->lastReading.second = r;
+
     }
 
     return readings;
@@ -336,6 +343,11 @@ QVariantMap PseudoTracker::readingStream(const ReadingTypes &streamFormat){
         break;
     }default:
         break;
+    }
+
+    //delete old last reading
+    if(!this->lastReading.second.isNull()){
+        delete this->lastReading.second;
     }
 
     this->lastReading.first = r->getTypeOfReading();

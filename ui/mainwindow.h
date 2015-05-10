@@ -21,6 +21,7 @@
 #include "sensorconfigurationdialog.h"
 #include "movesensordialog.h"
 #include "sensortaskinfodialog.h"
+#include "pluginmanagerdialog.h"
 
 #include "featuretabledelegate.h"
 
@@ -120,6 +121,7 @@ private slots:
 
     //plugin actions
     void on_actionLoad_plugins_triggered();
+    void on_actionPlugin_manager_triggered();
 
     //import export actions
     void on_action_importNominals_triggered();
@@ -182,6 +184,7 @@ private:
     SensorConfigurationDialog sensorConfigurationDialog;
     MoveSensorDialog moveSensorDialog;
     SensorTaskInfoDialog sensorTaskInfoDialog;
+    PluginManagerDialog pluginManagerDialog;
 
     //##########
     //sensor pad

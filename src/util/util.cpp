@@ -11,6 +11,9 @@ QMap<ElementTypes, QString> elementTypesPluralMap;
 QMap<FeatureTypes, QString> featureTypesMap;
 QMap<GeometryTypes, QString> geometryTypesMap;
 
+QMap<ElementTypes, QString> elementTypeIcons;
+QMap<FeatureTypes, QString> featureTypeIcons;
+
 QMap<ReadingTypes, QString> readingTypesMap;
 
 QMap<FeatureDisplayAttributes, QString> featureDisplayAttributesMap;
@@ -23,6 +26,8 @@ QMap<UnitType, QString> unitTypesMap;
 QMap<SensorTypes, QString> sensorTypesMap;
 
 QMap<SensorFunctions, QString> sensorFunctionsMap;
+
+QMap<ConnectionTypes, QString> connectionTypesMap;
 
 QString undefined = "";
 
@@ -155,6 +160,64 @@ void init(){
     geometryTypesMap.insert(eSphereGeometry, "sphere");
     geometryTypesMap.insert(eTorusGeometry, "torus");
 
+    //fill element type icons
+    elementTypeIcons.insert(eCircleElement, ":/Images/icons/Circle.svg");
+    elementTypeIcons.insert(eConeElement, ":/Images/icons/Cone.svg");
+    elementTypeIcons.insert(eCylinderElement, ":/Images/icons/Cylinder.svg");
+    elementTypeIcons.insert(eEllipseElement, ":/Images/icons/Ellipse.svg");
+    elementTypeIcons.insert(eEllipsoidElement, ":/Images/icons/Ellipsoid.svg");
+    elementTypeIcons.insert(eHyperboloidElement, ":/Images/icons/Hyperboloid.svg");
+    elementTypeIcons.insert(eLineElement, ":/Images/icons/Line.svg");
+    elementTypeIcons.insert(eNurbsElement, ":/Images/icons/Nurbs Surface.svg");
+    elementTypeIcons.insert(eParaboloidElement, ":/Images/icons/Paraboloid.svg");
+    elementTypeIcons.insert(ePlaneElement, ":/Images/icons/Plane.svg");
+    elementTypeIcons.insert(ePointElement, ":/Images/icons/Point.svg");
+    elementTypeIcons.insert(ePointCloudElement, ":/Images/icons/Point Cloud.svg");
+    elementTypeIcons.insert(eScalarEntityAngleElement, ":/Images/icons/Scalar Entities.svg");
+    elementTypeIcons.insert(eScalarEntityDistanceElement, ":/Images/icons/Scalar Entities.svg");
+    elementTypeIcons.insert(eScalarEntityMeasurementSeriesElement, ":/Images/icons/Scalar Entities.svg");
+    elementTypeIcons.insert(eScalarEntityTemperatureElement, ":/Images/icons/Scalar Entities.svg");
+    elementTypeIcons.insert(eSlottedHoleElement, ":/Images/icons/Slotted Hole.svg");
+    elementTypeIcons.insert(eSphereElement, ":/Images/icons/Sphere.svg");
+    elementTypeIcons.insert(eTorusElement, ":/Images/icons/Torus.svg");
+    elementTypeIcons.insert(eDirectionElement, "");
+    elementTypeIcons.insert(ePositionElement, "");
+    elementTypeIcons.insert(eRadiusElement, "");
+    elementTypeIcons.insert(eCoordinateSystemElement, ":/Images/icons/Coordinatesystem.svg");
+    elementTypeIcons.insert(eStationElement, ":/Images/icons/Station.svg");
+    elementTypeIcons.insert(eTrafoParamElement, ":/Images/icons/TrafoParam.svg");
+    elementTypeIcons.insert(eObservationElement, "");
+    elementTypeIcons.insert(eReadingCartesianElement, "");
+    elementTypeIcons.insert(eReadingPolarElement, "");
+    elementTypeIcons.insert(eReadingDistanceElement, "");
+    elementTypeIcons.insert(eReadingDirectionElement, "");
+    elementTypeIcons.insert(eReadingTemperatureElement, "");
+    elementTypeIcons.insert(eReadingLevelElement, "");
+
+    //fill feature type icons
+    featureTypeIcons.insert(eCircleFeature, ":/Images/icons/Circle.svg");
+    featureTypeIcons.insert(eConeFeature, ":/Images/icons/Cone.svg");
+    featureTypeIcons.insert(eCylinderFeature, ":/Images/icons/Cylinder.svg");
+    featureTypeIcons.insert(eEllipseFeature, ":/Images/icons/Ellipse.svg");
+    featureTypeIcons.insert(eEllipsoidFeature, ":/Images/icons/Ellipsoid.svg");
+    featureTypeIcons.insert(eHyperboloidFeature, ":/Images/icons/Hyperboloid.svg");
+    featureTypeIcons.insert(eLineFeature, ":/Images/icons/Line.svg");
+    featureTypeIcons.insert(eNurbsFeature, ":/Images/icons/Nurbs Surface.svg");
+    featureTypeIcons.insert(eParaboloidFeature, ":/Images/icons/Paraboloid.svg");
+    featureTypeIcons.insert(ePlaneFeature, ":/Images/icons/Plane.svg");
+    featureTypeIcons.insert(ePointFeature, ":/Images/icons/Point.svg");
+    featureTypeIcons.insert(ePointCloudFeature, ":/Images/icons/Point Cloud.svg");
+    featureTypeIcons.insert(eScalarEntityAngleFeature, ":/Images/icons/Scalar Entities.svg");
+    featureTypeIcons.insert(eScalarEntityDistanceFeature, ":/Images/icons/Scalar Entities.svg");
+    featureTypeIcons.insert(eScalarEntityMeasurementSeriesFeature, ":/Images/icons/Scalar Entities.svg");
+    featureTypeIcons.insert(eScalarEntityTemperatureFeature, ":/Images/icons/Scalar Entities.svg");
+    featureTypeIcons.insert(eSlottedHoleFeature, ":/Images/icons/Slotted Hole.svg");
+    featureTypeIcons.insert(eSphereFeature, ":/Images/icons/Sphere.svg");
+    featureTypeIcons.insert(eTorusFeature, ":/Images/icons/Torus.svg");
+    featureTypeIcons.insert(eCoordinateSystemFeature, ":/Images/icons/Coordinatesystem.svg");
+    featureTypeIcons.insert(eStationFeature, ":/Images/icons/Station.svg");
+    featureTypeIcons.insert(eTrafoParamFeature, ":/Images/icons/TrafoParam.svg");
+
     //fill reading map
     readingTypesMap.insert(eDistanceReading, "distance");
     readingTypesMap.insert(eCartesianReading, "cartesian");
@@ -269,6 +332,10 @@ void init(){
     sensorFunctionsMap.insert(eHome, "home");
     sensorFunctionsMap.insert(eCompensation, "compensation");
 
+    //fill connection types map
+    connectionTypesMap.insert(eSerialConnection, "serial");
+    connectionTypesMap.insert(eNetworkConnection, "network");
+
     isInit = true;
 
 }
@@ -278,6 +345,51 @@ void init(){
 //#######################################
 //global functions to query element types
 //#######################################
+
+/*!
+ * \brief getAvailableElementTypes
+ * \return
+ */
+QList<ElementTypes> getAvailableElementTypes(){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::elementTypesMap.keys();
+
+}
+
+/*!
+ * \brief getAvailableFeatureTypes
+ * \return
+ */
+QList<FeatureTypes> getAvailableFeatureTypes(){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::featureTypesMap.keys();
+
+}
+
+/*!
+ * \brief getAvailableGeometryTypes
+ * \return
+ */
+QList<GeometryTypes> getAvailableGeometryTypes(){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::geometryTypesMap.keys();
+
+}
 
 /*!
  * \brief getElementTypeName
@@ -580,6 +692,46 @@ bool getIsScalarEntity(const FeatureTypes &type){
 }
 
 /*!
+ * \brief getElementTypeIconPath
+ * \param type
+ * \return
+ */
+const QString &getElementTypeIconPath(const ElementTypes &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding element type icon
+    if(internal::elementTypeIcons.contains(type)){
+        return internal::elementTypeIcons[type];
+    }
+    return internal::undefined;
+
+}
+
+/*!
+ * \brief getFeatureTypeIconPath
+ * \param type
+ * \return
+ */
+const QString &getFeatureTypeIconPath(const FeatureTypes &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding feature type icon
+    if(internal::featureTypeIcons.contains(type)){
+        return internal::featureTypeIcons[type];
+    }
+    return internal::undefined;
+
+}
+
+/*!
  * \brief getReadingTypeName
  * \param type
  * \return
@@ -869,5 +1021,50 @@ SensorFunctions getSensorFunctionEnum(const QString &name){
 
     //get the corresponding sensor function enum value
     return internal::sensorFunctionsMap.key(name, eInitialize);
+
+}
+
+/*!
+ * \brief getAvailableConnectionTypes
+ * \return
+ */
+QList<ConnectionTypes> getAvailableConnectionTypes(){
+    return internal::connectionTypesMap.keys();
+}
+
+/*!
+ * \brief getConnectionTypeName
+ * \param type
+ * \return
+ */
+const QString &getConnectionTypeName(const ConnectionTypes &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding connection type name
+    if(internal::connectionTypesMap.contains(type)){
+        return internal::connectionTypesMap[type];
+    }
+    return internal::undefined;
+
+}
+
+/*!
+ * \brief getConnectionTypeEnum
+ * \param name
+ * \return
+ */
+ConnectionTypes getConnectionTypeEnum(const QString &name){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding connection type enum value
+    return internal::connectionTypesMap.key(name, eNetworkConnection);
 
 }

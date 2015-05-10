@@ -192,6 +192,15 @@ QDomElement Torus::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     torus.setAttribute("type", getGeometryTypeName(eCircleGeometry));
 
+    //set radius b
+    QDomElement radiusB = xmlDoc.createElement("radiusB");
+    if(this->isSolved || this->isNominal){
+        radiusB.setAttribute("value", this->radiusB.getRadius());
+    }else{
+        radiusB.setAttribute("value", 0.0);
+    }
+    torus.appendChild(radiusB);
+
     return torus;
 
 }
@@ -207,6 +216,27 @@ bool Torus::fromOpenIndyXML(QDomElement &xmlElem){
 
     if(result){
 
+        //set torus attributes
+        QDomElement radiusA = xmlElem.firstChildElement("radius");
+        QDomElement radiusB = xmlElem.firstChildElement("radiusB");
+        QDomElement normal = xmlElem.firstChildElement("spatialDirection");
+        QDomElement center = xmlElem.firstChildElement("coordinates");
+
+        if(radiusA.isNull() || radiusB.isNull() || normal.isNull() || center.isNull()
+                || !radiusA.hasAttribute("value") || !radiusB.hasAttribute("value")
+                || !normal.hasAttribute("i") || normal.hasAttribute("j") || normal.hasAttribute("k")
+                || !center.hasAttribute("x") || !center.hasAttribute("y") || !center.hasAttribute("z")){
+            return false;
+        }
+
+        this->radiusA.setRadius(radiusA.attribute("value").toDouble());
+        this->radiusB.setRadius(radiusB.attribute("value").toDouble());
+        this->normal.setVector(normal.attribute("i").toDouble(),
+                               normal.attribute("j").toDouble(),
+                               normal.attribute("k").toDouble());
+        this->center.setVector(center.attribute("x").toDouble(),
+                               center.attribute("y").toDouble(),
+                               center.attribute("z").toDouble());
 
     }
 

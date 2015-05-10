@@ -195,12 +195,13 @@ const QPointer<Geometry> &Geometry::getActual() const{
 bool Geometry::setActual(const QPointer<Geometry> &actual){
 
     //check if this is a nominal
-    if(this->isNominal){
+    if(!this->isNominal){
         return false;
     }
 
     //check actual
-    if(actual.isNull() || (!this->actual.isNull() && this->actual->getId() == actual->getId())){
+    if(actual.isNull() || (!this->actual.isNull() && this->actual->getId() == actual->getId())
+            || actual->getIsNominal()){
         return false;
     }
 

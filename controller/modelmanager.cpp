@@ -39,6 +39,7 @@ QStandardItemModel ModelManager::stopBitTypesModel;
 QStandardItemModel ModelManager::availableSerialPortsModel;
 QStandardItemModel ModelManager::availableIpAdressesModel;
 QStringListModel ModelManager::readingTypeNamesModel;
+PluginTreeViewModel ModelManager::pluginTreeViewModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -242,6 +243,14 @@ QStringListModel &ModelManager::getUnitTypesModel(const DimensionType &dimension
  */
 QStringListModel &ModelManager::getPluginNamesModel(){
     return ModelManager::pluginNamesModel;
+}
+
+/*!
+ * \brief ModelManager::getPluginTreeViewModel
+ * \return
+ */
+PluginTreeViewModel &ModelManager::getPluginTreeViewModel(){
+    return ModelManager::pluginTreeViewModel;
 }
 
 /*!
@@ -469,6 +478,21 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiSupportedGeometri
 }
 
 /*!
+ * \brief ModelManager::featureSetChanged
+ */
+void ModelManager::featureSetChanged(){
+
+    //check the current job
+    if(ModelManager::currentJob.isNull()){
+        return;
+    }
+
+    //resort table model
+    ModelManager::featureTableProxyModel.sort(0);
+
+}
+
+/*!
  * \brief ModelManager::coordSystemSetChanged
  */
 void ModelManager::coordSystemSetChanged(){
@@ -517,6 +541,23 @@ void ModelManager::availableGroupsChanged(){
 }
 
 /*!
+ * \brief ModelManager::featureNameChanged
+ * \param featureId
+ * \param oldName
+ */
+void ModelManager::featureNameChanged(const int &featureId, const QString &oldName){
+
+    //check the current job
+    if(ModelManager::currentJob.isNull()){
+        return;
+    }
+
+    //resort table model
+    ModelManager::featureTableProxyModel.sort(0);
+
+}
+
+/*!
  * \brief ModelManager::sensorConfigurationsChanged
  */
 /*void ModelManager::sensorConfigurationsChanged(){
@@ -548,6 +589,8 @@ void ModelManager::updateJob(){
     QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(ModelManager::currentJob.data(), &OiJob::stationSetChanged, ModelManager::myInstance.data(), &ModelManager::stationSetChanged, Qt::AutoConnection);
     QObject::connect(ModelManager::currentJob.data(), &OiJob::availableGroupsChanged, ModelManager::myInstance.data(), &ModelManager::availableGroupsChanged, Qt::AutoConnection);
+    QObject::connect(ModelManager::currentJob.data(), &OiJob::featureSetChanged, ModelManager::myInstance.data(), &ModelManager::featureSetChanged, Qt::AutoConnection);
+    QObject::connect(ModelManager::currentJob.data(), &OiJob::featureNameChanged, ModelManager::myInstance.data(), &ModelManager::featureNameChanged, Qt::AutoConnection);
 
 }
 
@@ -687,7 +730,6 @@ void ModelManager::initFeatureTableModels(){
 
     //assign source models
     ModelManager::featureTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
-    ModelManager::featureTableProxyModel.setDynamicSortFilter(true);
 
 }
 
@@ -913,6 +955,7 @@ void ModelManager::initPluginModels(){
     //pass the plugins list to all static models that need it
     ModelManager::functionTableModel.setPlugins(ModelManager::plugins);
     ModelManager::sensorTableModel.setPlugins(ModelManager::plugins);
+    ModelManager::pluginTreeViewModel.setPlugins(ModelManager::plugins);
 
     //update plugin names model
     QStringList pluginNames;

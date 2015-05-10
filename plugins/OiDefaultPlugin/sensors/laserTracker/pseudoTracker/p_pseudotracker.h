@@ -80,7 +80,7 @@ protected:
     bool toggleSightOrientation();
 
     //! compensation
-    bool compensation() ;
+    bool compensation();
 
 private:
     QList<QPointer<Reading> > measurePolar(const MeasurementConfig &mConfig);

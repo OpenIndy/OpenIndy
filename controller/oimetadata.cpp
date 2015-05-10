@@ -83,6 +83,111 @@ SensorTypes OiMetaData::getSensorTypeEnum(const QString &iid){
 }
 
 /*!
+ * \brief OiMetaData::getSensorTypeNames
+ * \return
+ */
+QStringList OiMetaData::getSensorTypeNames(){
+
+    QStringList result;
+
+    result.append(OiMetaData::iid_LaserTracker);
+    result.append(OiMetaData::iid_TotalStation);
+
+    return result;
+
+}
+
+/*!
+ * \brief OiMetaData::getSensorTypeName
+ * \param iid
+ * \return
+ */
+QString OiMetaData::getSensorTypeName(const QString &iid){
+
+    if(iid.compare(OiMetaData::iid_LaserTracker) == 0){
+        return "laser tracker";
+    }else if(iid.compare(OiMetaData::iid_TotalStation) == 0){
+        return "total station";
+    }
+    return "";
+
+}
+
+/*!
+ * \brief OiMetaData::getFunctionTypeNames
+ * \return
+ */
+QStringList OiMetaData::getFunctionTypeNames(){
+
+    QStringList result;
+
+    result.append(OiMetaData::iid_FitFunction);
+    result.append(OiMetaData::iid_ConstructFunction);
+    result.append(OiMetaData::iid_GenerateFeatureFunction);
+    result.append(OiMetaData::iid_GeodeticFunction);
+    result.append(OiMetaData::iid_ObjectTransformation);
+    result.append(OiMetaData::iid_SystemTransformation);
+
+    return result;
+
+}
+
+/*!
+ * \brief OiMetaData::getFunctionTypeName
+ * \param iid
+ * \return
+ */
+QString OiMetaData::getFunctionTypeName(const QString &iid){
+
+    if(iid.compare(OiMetaData::iid_FitFunction) == 0){
+        return "fit function";
+    }else if(iid.compare(OiMetaData::iid_ConstructFunction) == 0){
+        return "construct function";
+    }else if(iid.compare(OiMetaData::iid_GenerateFeatureFunction) == 0){
+        return "generate feature function";
+    }else if(iid.compare(OiMetaData::iid_GeodeticFunction) == 0){
+        return "geodetic function";
+    }else if(iid.compare(OiMetaData::iid_ObjectTransformation) == 0){
+        return "object transformation";
+    }else if(iid.compare(OiMetaData::iid_SystemTransformation) == 0){
+        return "system transformation";
+    }
+    return "";
+
+}
+
+/*!
+ * \brief OiMetaData::getExchangeTypeNames
+ * \return
+ */
+QStringList OiMetaData::getExchangeTypeNames(){
+
+    QStringList result;
+
+    result.append(OiMetaData::iid_ExchangeSimpleAscii);
+    result.append(OiMetaData::iid_ExchangeDefinedFormat);
+
+    return result;
+
+}
+
+/*!
+ * \brief OiMetaData::getExchangeTypeName
+ * \param iid
+ * \return
+ */
+QString OiMetaData::getExchangeTypeName(const QString &iid){
+
+    if(iid.compare(OiMetaData::iid_ExchangeSimpleAscii) == 0){
+        return "exchange simple ascii";
+    }else if(iid.compare(OiMetaData::iid_ExchangeDefinedFormat) == 0){
+        return "exchange defined format";
+    }
+    return "";
+
+}
+
+/*!
  * \brief OiMetaData::getCompiler
  * \return
  */

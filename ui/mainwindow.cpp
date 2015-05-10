@@ -317,6 +317,13 @@ void MainWindow::on_actionLoad_plugins_triggered(){
 }
 
 /*!
+ * \brief MainWindow::on_actionPlugin_manager_triggered
+ */
+void MainWindow::on_actionPlugin_manager_triggered(){
+    this->pluginManagerDialog.show();
+}
+
+/*!
  * \brief MainWindow::on_action_importNominals_triggered
  */
 void MainWindow::on_action_importNominals_triggered(){
@@ -493,6 +500,9 @@ void MainWindow::connectDialogs(){
     //connect move sensor dialog
     QObject::connect(&this->moveSensorDialog, &MoveSensorDialog::moveSensor, &this->control, &Controller::startMove, Qt::AutoConnection);
 
+    //connect plugin manager dialog
+    QObject::connect(&this->pluginManagerDialog, &PluginManagerDialog::loadPlugins, &this->pluginLoaderDialog, &PluginLoaderDialog::show, Qt::AutoConnection);
+
 }
 
 /*!
@@ -524,6 +534,7 @@ void MainWindow::initFeatureTableViews(){
 
     //resize rows and columns to table view contents
     this->ui->tableView_features->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_features->verticalHeader()->setDefaultSectionSize(22);
     this->ui->tableView_trafoParams->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);

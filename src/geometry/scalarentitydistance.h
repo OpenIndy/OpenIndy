@@ -66,17 +66,6 @@ private:
 
     double distance;
 
-    //QString getDisplayIsCommon() const;
-    //QString getDisplayIsNominal() const;
-    //QString getDisplayObs() const;
-    //QString getDisplaySolved() const;
-    //QString getDisplayMConfig() const;
-    //QString getDisplayStdDev() const;
-    //QString getDisplayScalarAngleValue() const;
-
-    //static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
-
-
 };
 
 #endif // SCALARENTITYDISTANCE_H

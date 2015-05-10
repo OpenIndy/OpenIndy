@@ -84,20 +84,6 @@ private:
     Position center; //center
     Radius radius; //radius
 
-    //bool saveSimulationData();
-
-    //QString getDisplayX(bool showDiff) const;
-    //QString getDisplayY(bool showDiff) const;
-    //QString getDisplayZ(bool showDiff) const;
-    //QString getDisplayRadius(bool showDiff) const;
-    //QString getDisplayIsCommon() const;
-    //QString getDisplayIsNominal() const;
-    //QString getDisplayObs() const;
-    //QString getDisplaySolved() const;
-    //QString getDisplayMConfig() const;
-    //QString getDisplayStdDev() const;
-
-    //static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
 };
 
 #endif // SPHERE_H

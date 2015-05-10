@@ -99,28 +99,6 @@ private:
     Radius radiusA; //distance of the center to the center curve of the torus
     Radius radiusB; //distance of the center curve to the torus surface (radiusA > radiusB)
 
-
-
-
-
-    /*QString getDisplayX(bool showDiff) const;
-    QString getDisplayY(bool showDiff) const;
-    QString getDisplayZ(bool showDiff) const;
-    QString getDisplayRadius(bool showDiff) const;
-    QString getDisplayIsCommon() const;
-    //QString getDisplayIsNominal() const;
-    //QString getDisplayObs() const;
-    QString getDisplaySolved() const;
-    QString getDisplayMConfig() const;
-    QString getDisplayStdDev() const;
-    QString getDisplayI(bool showDiff) const;
-    QString getDisplayJ(bool showDiff) const;
-    QString getDisplayK(bool showDiff) const;
-
-    bool saveSimulationData();
-
-    static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
-*/
 };
 
 #endif // TORUS_H

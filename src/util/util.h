@@ -11,6 +11,10 @@
 //global functions to query element types
 //#######################################
 
+QList<ElementTypes> getAvailableElementTypes();
+QList<FeatureTypes> getAvailableFeatureTypes();
+QList<GeometryTypes> getAvailableGeometryTypes();
+
 const QString &getElementTypeName(const ElementTypes &type);
 const QString &getElementTypePluralName(const ElementTypes &type);
 ElementTypes getElementTypeEnum(const QString &name);
@@ -29,6 +33,13 @@ bool getIsObservation(const ElementTypes &type);
 
 bool getIsGeometry(const FeatureTypes &type);
 bool getIsScalarEntity(const FeatureTypes &type);
+
+//#########################################################
+//global function to query icon resources for element types
+//#########################################################
+
+const QString &getElementTypeIconPath(const ElementTypes &type);
+const QString &getFeatureTypeIconPath(const FeatureTypes &type);
 
 //#######################################
 //global functions to query reading types
@@ -74,5 +85,13 @@ SensorTypes getSensorTypeEnum(const QString &name);
 QList<SensorFunctions> getAvailableSensorFunctions();
 const QString &getSensorFunctionName(const SensorFunctions &type);
 SensorFunctions getSensorFunctionEnum(const QString &name);
+
+//#########################################
+//global function to query connection types
+//#########################################
+
+QList<ConnectionTypes> getAvailableConnectionTypes();
+const QString &getConnectionTypeName(const ConnectionTypes &type);
+ConnectionTypes getConnectionTypeEnum(const QString &name);
 
 #endif // UTIL_H

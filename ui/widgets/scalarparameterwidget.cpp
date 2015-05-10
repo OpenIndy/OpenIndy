@@ -123,6 +123,7 @@ void ScalarParameterWidget::setUpGui(){
         stringLabel->setFont(boldFont);
         QComboBox *stringComboBox = new QComboBox();
         stringComboBox->addItems(stringValue);
+        stringComboBox->setCurrentText(this->stringParameterSelection.value(stringKey));
         this->parameterLabel.append(stringLabel);
         this->stringParameterComboBox.insert(stringKey, stringComboBox);
         this->myLayout->insertRow(rowIndex, stringLabel, stringComboBox);

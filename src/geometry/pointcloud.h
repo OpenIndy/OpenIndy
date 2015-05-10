@@ -92,14 +92,6 @@ public:
     QString getDisplayY(const UnitType &type, const int &digits, const bool &showDiff = false) const;
     QString getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff = false) const;
 
-    //bool saveSimulationData();
-
-    //QString getDisplayX(bool showDiff) const;
-    //QString getDisplayY(bool showDiff) const;
-    //QString getDisplayZ(bool showDiff) const;
-
-    //static MeasurementConfig defaultMeasurementConfig; //used as a default for this geometry type
-
 signals:
     void pcSegmentAdded(const QPointer<FeatureWrapper> &segment);
 

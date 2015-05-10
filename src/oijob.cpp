@@ -1447,6 +1447,15 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
             nominalSystem->nominalsList.append(feature);
             nominalSystem->nominalsMap.insert(feature->getGeometry()->getId(), feature);
 
+            //search corresponding actual
+            QList<QPointer<FeatureWrapper> > equalNameFeatures = this->featureContainer.getFeaturesByName(name);
+            foreach(const QPointer<FeatureWrapper> &equal, equalNameFeatures){
+                if(!equal.isNull() && equal->getFeatureTypeEnum() == fAttr.typeOfFeature && !equal->getGeometry()->getIsNominal()){
+                    feature->getGeometry()->actual = equal->getGeometry();
+                    equal->getGeometry()->nominals.append(feature->getGeometry());
+                }
+            }
+
             //add and connect feature
             this->featureContainer.addFeature(feature);
             this->connectFeature(feature);
@@ -1469,6 +1478,15 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
             feature->getFeature()->name = name;
             feature->getFeature()->group = fAttr.group;
             feature->getGeometry()->isNominal = false;
+
+            //search corresponding nominal
+            QList<QPointer<FeatureWrapper> > equalNameFeatures = this->featureContainer.getFeaturesByName(name);
+            foreach(const QPointer<FeatureWrapper> &equal, equalNameFeatures){
+                if(!equal.isNull() && equal->getFeatureTypeEnum() == fAttr.typeOfFeature && equal->getGeometry()->getIsNominal()){
+                    equal->getGeometry()->actual = feature->getGeometry();
+                    feature->getGeometry()->nominals.append(equal->getGeometry());
+                }
+            }
 
             //add and connect feature
             this->featureContainer.addFeature(feature);
@@ -2436,8 +2454,51 @@ void OiJob::setFeatureName(const int &featureId, const QString &oldName){
         return;
     }
 
+    //save the ids of renamed features
+    QList<int> renamedFeatures;
+
     //update geometry relations
     if(getIsGeometry(feature->getFeatureTypeEnum())){
+
+        //check geometry
+        if(feature->getGeometry().isNull()){
+            return;
+        }
+
+        //clear old relations
+        if(!feature->getGeometry().isNull()){
+            if(feature->getGeometry()->getIsNominal() && !feature->getGeometry()->getActual().isNull()){
+
+                //remove this nominal from its actual
+                feature->getGeometry()->getActual()->removeNominal(feature->getGeometry());
+                feature->getGeometry()->actual = QPointer<Geometry>(NULL);
+
+            }else if(!feature->getGeometry()->getIsNominal()){
+
+                //rename all nominals of this actual
+                foreach(const QPointer<Geometry> &geometry, feature->getGeometry()->getNominals()){
+
+                    //check geometry
+                    if(geometry.isNull() || geometry->getFeatureWrapper().isNull()){
+                        continue;
+                    }
+
+                    //validate the new feature name and update the name or remove the nominal from its actual
+                    if(this->validateFeatureName(feature->getFeature()->getFeatureName(), geometry->getFeatureWrapper()->getFeatureTypeEnum(),
+                                                 true, geometry->getNominalSystem())){
+                        geometry->name = feature->getFeature()->getFeatureName();
+                        renamedFeatures.append(geometry->getId());
+                    }else{
+                        feature->getGeometry()->removeNominal(geometry);
+                        geometry->actual = QPointer<Geometry>(NULL);
+                    }
+
+                }
+
+            }
+        }
+
+        //set up new relations
         QList<QPointer<FeatureWrapper> > equalNameFeatures = this->featureContainer.getFeaturesByName(feature->getFeature()->getFeatureName());
         foreach(const QPointer<FeatureWrapper> &other, equalNameFeatures){
             if(!other.isNull() && !other->getFeature().isNull() && feature->getFeatureTypeEnum() == other->getFeatureTypeEnum()){
@@ -2448,10 +2509,14 @@ void OiJob::setFeatureName(const int &featureId, const QString &oldName){
                 }
             }
         }
+
     }
 
     //update feature container
     this->featureContainer.featureNameChanged(featureId, oldName);
+    foreach(const int &id, renamedFeatures){
+        this->featureContainer.featureNameChanged(id, oldName);
+    }
 
     emit this->featureAttributesChanged();
     emit this->featureNameChanged(featureId, oldName);
@@ -2900,20 +2965,26 @@ QStringList OiJob::createFeatureNames(const QString &name, const int &count) con
 
     QStringList result;
 
-    //split base name from postfix
-    QString baseName;
-    int postFix;
-    int index = name.lastIndexOf(QRegExp("[0-9]*$"), name.length()-1);
-    if(index == -1){
-        baseName = name;
-        postFix = 1;
-    }else{
-        baseName = QStringRef(&name, 0, index).toString();
-        postFix = QStringRef(&name, index, name.length() - index).toInt();
+    //if only one feature shall be created take the hole name
+    if(count == 1){
+        result.append(name);
+        return result;
     }
 
+    //split base name from postfix
+    QString baseName = name;
+    QString postFix;
+
+    int index = baseName.lastIndexOf(QRegExp("[0-9]*$"), baseName.length()-1);
+    while(index > -1){
+        postFix.append(QStringRef(&baseName, index, baseName.length() - index));
+        baseName.resize(index);
+        index = baseName.lastIndexOf(QRegExp("[0-9]*$"), baseName.length()-1);
+    }
+
+    int postFixInt = postFix.toInt();
     for(int i = 0; i < count; i++){
-        result.append(QString("%1%2").arg(baseName).arg(postFix + i));
+        result.append(QString("%1%2").arg(baseName).arg(QString::number(postFixInt + i)));
     }
 
     return result;
@@ -3116,9 +3187,10 @@ bool OiJob::checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature){
             //check if actual is in the same job / add actual to nominal
             if(feature->getGeometry()->getActual().isNull()){
                 QList<QPointer<FeatureWrapper> > equalNameFeatures = this->getFeaturesByName(feature->getFeature()->getFeatureName());
-                foreach(const QPointer<FeatureWrapper> equal, equalNameFeatures){
+                foreach(const QPointer<FeatureWrapper> &equal, equalNameFeatures){
                     if(!equal.isNull() && equal->getFeatureTypeEnum() == feature->getFeatureTypeEnum() && !equal->getGeometry()->getIsNominal()){
                         feature->getGeometry()->actual = equal->getGeometry();
+                        equal->getGeometry()->nominals.append(feature->getGeometry());
                     }
                 }
             }else{
@@ -3144,6 +3216,7 @@ bool OiJob::checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature){
             foreach(const QPointer<FeatureWrapper> equal, equalNameFeatures){
                 if(!equal.isNull() && equal->getFeatureTypeEnum() == feature->getFeatureTypeEnum() && equal->getGeometry()->getIsNominal()){
                     feature->getGeometry()->nominals.append(equal->getGeometry());
+                    equal->getGeometry()->actual = feature->getGeometry();
                 }
             }
 

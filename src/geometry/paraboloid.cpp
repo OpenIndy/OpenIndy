@@ -1,82 +1,6 @@
 #include "paraboloid.h"
 
 #include "featurewrapper.h"
-/*
-#include "function.h"
-
-MeasurementConfig Paraboloid::defaultMeasurementConfig;
-
-Paraboloid::Paraboloid(bool isNominal, QObject *parent) : Geometry(isNominal, parent)
-{
-    //this->id = Configuration::generateID();
-    this->myNominalCoordSys = NULL;
-    this->isSolved = false;
-    this->isUpdated = false;
-    this->isDrawn = true;
-}
-
-Paraboloid::Paraboloid(const Paraboloid &copy) : Geometry(copy.isNominal){
-    this->id = copy.id;
-    this->name = copy.name;
-    this->isSolved = copy.isSolved;
-}
-
-void Paraboloid::recalc(){
-
-    if(this->functionList.size() > 0){
-
-        bool solved = true;
-        foreach(Function *f, this->functionList){
-
-            //execute the function if it exists and if the last function was executed successfully
-            if(f != NULL && solved == true){
-                solved = f->exec(*this);
-            }
-
-        }
-        this->setIsSolved(solved);
-
-    }else if(this->isNominal == false){
-
-        this->setIsSolved(false);
-
-    }
-
-}
-
-QDomElement Paraboloid::toOpenIndyXML(QDomDocument &xmlDoc) const{
-
-    QDomElement paraboloid = Geometry::toOpenIndyXML(xmlDoc);
-
-    if(paraboloid.isNull()){
-        return paraboloid;
-    }
-
-    paraboloid.setAttribute("type", getGeometryTypeName(eParaboloidGeometry));
-
-    return paraboloid;
-
-}
-
-bool Paraboloid::fromOpenIndyXML(QDomElement &xmlElem){
-
-    bool result = Geometry::fromOpenIndyXML(xmlElem);
-
-    if(result){
-
-
-
-    }
-
-    return result;
-
-}
-
-bool Paraboloid::saveSimulationData()
-{
-    return false;
-}
-*/
 
 /*!
  * \brief Paraboloid::Paraboloid
@@ -243,6 +167,15 @@ QDomElement Paraboloid::toOpenIndyXML(QDomDocument &xmlDoc) const{
 
     paraboloid.setAttribute("type", getGeometryTypeName(eParaboloidGeometry));
 
+    //set a
+    QDomElement a = xmlDoc.createElement("a");
+    if(this->isSolved || this->isNominal){
+        a.setAttribute("value", this->a);
+    }else{
+        a.setAttribute("value", 0.0);
+    }
+    paraboloid.appendChild(a);
+
     return paraboloid;
 
 }
@@ -258,7 +191,24 @@ bool Paraboloid::fromOpenIndyXML(QDomElement &xmlElem){
 
     if(result){
 
+        //set paraboloid attributes
+        QDomElement a = xmlElem.firstChildElement("a");
+        QDomElement axis = xmlElem.firstChildElement("spatialDirection");
+        QDomElement apex = xmlElem.firstChildElement("coordinates");
 
+        if(a.isNull() || axis.isNull() || apex.isNull() || !a.hasAttribute("value")
+                || !axis.hasAttribute("i") || axis.hasAttribute("j") || axis.hasAttribute("k")
+                || !apex.hasAttribute("x") || !apex.hasAttribute("y") || !apex.hasAttribute("z")){
+            return false;
+        }
+
+        this->a = a.attribute("value").toDouble();
+        this->axis.setVector(axis.attribute("i").toDouble(),
+                               axis.attribute("j").toDouble(),
+                               axis.attribute("k").toDouble());
+        this->apex.setVector(apex.attribute("x").toDouble(),
+                             apex.attribute("y").toDouble(),
+                             apex.attribute("z").toDouble());
 
     }
 

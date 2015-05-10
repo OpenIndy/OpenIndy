@@ -47,6 +47,12 @@
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_add">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="focusPolicy">
               <enum>Qt::NoFocus</enum>
              </property>
@@ -76,7 +82,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget_sensorConfig">
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="plugin">
           <attribute name="title">
@@ -140,12 +146,9 @@
           <attribute name="title">
            <string>connection</string>
           </attribute>
-          <layout class="QHBoxLayout" name="horizontalLayout_25">
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,1,1,1,1,1,1,1,1">
-             <property name="sizeConstraint">
-              <enum>QLayout::SetMaximumSize</enum>
-             </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_22" stretch="1,1">
                <item>
@@ -276,6 +279,19 @@
                </item>
               </layout>
              </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
             </layout>
            </item>
           </layout>
@@ -288,7 +304,7 @@
            <item>
             <widget class="QToolBox" name="toolBox_accuracy">
              <property name="currentIndex">
-              <number>0</number>
+              <number>3</number>
              </property>
              <widget class="QWidget" name="page_sigmaPolar">
               <property name="geometry">
@@ -302,46 +318,63 @@
               <attribute name="label">
                <string>sigma polar</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_5">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
+              <layout class="QGridLayout" name="gridLayout_7">
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_5">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_sigmaAzimuth"/>
+                  <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
+                   <item>
+                    <widget class="QLabel" name="label_sigmaAzimuth">
+                     <property name="text">
+                      <string>sigma azimuth:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_sigmaAzimuth"/>
+                   </item>
+                  </layout>
                  </item>
                  <item>
-                  <widget class="QLabel" name="label_sigmaAzimuth">
-                   <property name="text">
-                    <string>sigma azimuth</string>
+                  <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
+                   <item>
+                    <widget class="QLabel" name="label_sigmaZenith">
+                     <property name="text">
+                      <string>sigma zenith:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_sigmaZenith"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,1">
+                   <item>
+                    <widget class="QLabel" name="label_sigmaDistance">
+                     <property name="text">
+                      <string>sigma distance:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_sigmaDistance"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
                    </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
-                 <item>
-                  <widget class="QLineEdit" name="lineEdit_sigmaZenith"/>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_sigmaZenith">
-                   <property name="text">
-                    <string>sigma zenith</string>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
                    </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,1">
-                 <item>
-                  <widget class="QLineEdit" name="lineEdit_sigmaDistance"/>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_sigmaDistance">
-                   <property name="text">
-                    <string>sigma distance</string>
-                   </property>
-                  </widget>
+                  </spacer>
                  </item>
                 </layout>
                </item>
@@ -352,53 +385,70 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>112</width>
-                <height>96</height>
+                <width>667</width>
+                <height>309</height>
                </rect>
               </property>
               <attribute name="label">
                <string>sigma cartesian</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_6">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,1">
+              <layout class="QGridLayout" name="gridLayout_6">
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_6">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_sigmaX"/>
+                  <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,1">
+                   <item>
+                    <widget class="QLabel" name="label_sigmaX">
+                     <property name="text">
+                      <string>sigma X:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_sigmaX"/>
+                   </item>
+                  </layout>
                  </item>
                  <item>
-                  <widget class="QLabel" name="label_sigmaX">
-                   <property name="text">
-                    <string>sigma X</string>
+                  <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,1">
+                   <item>
+                    <widget class="QLabel" name="label_sigmaY">
+                     <property name="text">
+                      <string>sigma Y:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_sigmaY"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="1,1">
+                   <item>
+                    <widget class="QLabel" name="label_sigmaZ">
+                     <property name="text">
+                      <string>sigma Z:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_sigmaZ"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_3">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
                    </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,1">
-                 <item>
-                  <widget class="QLineEdit" name="lineEdit_sigmaY"/>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_sigmaY">
-                   <property name="text">
-                    <string>sigma Y</string>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
                    </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="1,1">
-                 <item>
-                  <widget class="QLineEdit" name="lineEdit_sigmaZ"/>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_sigmaZ">
-                   <property name="text">
-                    <string>sigma Z</string>
-                   </property>
-                  </widget>
+                  </spacer>
                  </item>
                 </layout>
                </item>
@@ -409,25 +459,42 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>166</width>
-                <height>40</height>
+                <width>667</width>
+                <height>309</height>
                </rect>
               </property>
               <attribute name="label">
                <string>sigma temperature</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_10">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,1">
+              <layout class="QGridLayout" name="gridLayout_5">
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_9">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_sigmaTemp"/>
+                  <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,1">
+                   <item>
+                    <widget class="QLabel" name="label_sigmaTemp">
+                     <property name="text">
+                      <string>sigma temperature:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_sigmaTemp"/>
+                   </item>
+                  </layout>
                  </item>
                  <item>
-                  <widget class="QLabel" name="label_sigmaTemp">
-                   <property name="text">
-                    <string>sigma temperature</string>
+                  <spacer name="verticalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
                    </property>
-                  </widget>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                 </layout>
                </item>
@@ -438,43 +505,60 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>132</width>
-                <height>68</height>
+                <width>667</width>
+                <height>309</height>
                </rect>
               </property>
               <attribute name="label">
                <string>sigma level measurement</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_11">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="1,1">
+              <layout class="QGridLayout" name="gridLayout_4">
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_10">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_sigmaAngleXZ"/>
+                  <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="1,1">
+                   <item>
+                    <widget class="QLabel" name="label_sigmaAngleXZ">
+                     <property name="text">
+                      <string>sigma angle:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_sigmaAngleXZ"/>
+                   </item>
+                  </layout>
                  </item>
                  <item>
-                  <widget class="QLabel" name="label_sigmaAngleXZ">
-                   <property name="text">
-                    <string>sigma angle</string>
-                   </property>
-                  </widget>
+                  <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="1,1">
+                   <item>
+                    <widget class="QLabel" name="label_sigmaAngleYZ">
+                     <property name="text">
+                      <string>sigma angle:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_sigmaAngleYZ">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="1,1">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_sigmaAngleYZ">
-                   <property name="text">
-                    <string/>
+                  <spacer name="verticalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
                    </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_sigmaAngleYZ">
-                   <property name="text">
-                    <string>sigma angle</string>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
                    </property>
-                  </widget>
+                  </spacer>
                  </item>
                 </layout>
                </item>
@@ -485,8 +569,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>100</width>
-                <height>30</height>
+                <width>667</width>
+                <height>309</height>
                </rect>
               </property>
               <attribute name="label">
