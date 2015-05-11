@@ -1,43 +1,35 @@
-#include "sensorconfigurationdialog.h"
-#include "ui_sensorconfigurationdialog.h"
+#include "measurementconfigurationdialog.h"
+#include "ui_measurementconfigurationdialog.h"
 
 /*!
- * \brief SensorConfigurationDialog::SensorConfigurationDialog
+ * \brief MeasurementConfigurationDialog::MeasurementConfigurationDialog
  * \param parent
  */
-SensorConfigurationDialog::SensorConfigurationDialog(QWidget *parent) : QDialog(parent),
-    ui(new Ui::SensorConfigurationDialog)
+MeasurementConfigurationDialog::MeasurementConfigurationDialog(QWidget *parent) : QDialog(parent),
+    ui(new Ui::MeasurementConfigurationDialog)
 {
     ui->setupUi(this);
-
-    //init GUI elements
-    this->initGUI();
 
     //init models
     this->initModels();
 
+    //init GUI elements
+    this->initGUI();
+
 }
 
 /*!
- * \brief SensorConfigurationDialog::~SensorConfigurationDialog
+ * \brief MeasurementConfigurationDialog::~MeasurementConfigurationDialog
  */
-SensorConfigurationDialog::~SensorConfigurationDialog(){
-
+MeasurementConfigurationDialog::~MeasurementConfigurationDialog(){
+    delete this->ui;
 }
 
 /*!
- * \brief SensorConfigurationDialog::scalarParameterChanged
- */
-void SensorConfigurationDialog::scalarParameterChanged(){
-    this->updateSensorConfigFromSelection();
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_listView_sensorConfigs_clicked
- * Triggered whenever the user selects a sensor config
+ * \brief MeasurementConfigurationDialog::on_listView_measurementConfigs_clicked
  * \param index
  */
-void SensorConfigurationDialog::on_listView_sensorConfigs_clicked(const QModelIndex &index){
+void MeasurementConfigurationDialog::on_listView_measurementConfigs_clicked(const QModelIndex &index){
 
     //check index
     if(!index.isValid()){
@@ -45,554 +37,73 @@ void SensorConfigurationDialog::on_listView_sensorConfigs_clicked(const QModelIn
     }
 
     //set widgets visibility
-    this->ui->tabWidget_sensorConfig->setEnabled(true);
+    this->ui->widget_measurementConfigValues->setEnabled(true);
 
     //get and check model
-    SensorConfigurationProxyModel *sensorConfigProxyModel = static_cast<SensorConfigurationProxyModel *>(this->ui->listView_sensorConfigs->model());
-    if(sensorConfigProxyModel == NULL){
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_measurementConfigs->model());
+    if(mConfigProxyModel == NULL){
         return;
     }
 
     //get and check source model
-    SensorConfigurationModel *sensorConfigModel = static_cast<SensorConfigurationModel *>(sensorConfigProxyModel->sourceModel());
-    if(sensorConfigModel == NULL){
+    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
+    if(mConfigModel == NULL){
         return;
     }
 
-    //get information about the sensor of the selected config
-    SensorTypes sensorType = sensorConfigModel->getSensorType(sensorConfigProxyModel->mapToSource(index));
-    QString sensorName = sensorConfigModel->getSensorName(sensorConfigProxyModel->mapToSource(index));
-    QString pluginName = sensorConfigModel->getPluginName(sensorConfigProxyModel->mapToSource(index));
+    //get selected measurement config
+    MeasurementConfig mConfig = mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index));
 
-    //set selected sensor type
-    this->ui->comboBox_availableSensorTypes->setCurrentText(getSensorTypeName(sensorType));
-
-    //get and check sensor plugins proxy model
-    SensorTableProxyModel *sensorTableProxyModel = static_cast<SensorTableProxyModel *>(this->ui->tableView_sensorPlugins->model());
-    if(sensorTableProxyModel == NULL){
-        return;
-    }
-
-    SensorTableModel *sensorTableModel = static_cast<SensorTableModel *>(sensorTableProxyModel->sourceModel());
-    if(sensorTableProxyModel == NULL){
-        return;
-    }
-
-    //select the corresponding sensor plugin
-    sensorTableModel->selectSensorPlugin(sensorName, pluginName);
-
-    //set up connection config
-    ConnectionConfig cConfig = sensorConfigModel->getConnectionConfig(sensorConfigProxyModel->mapToSource(index));
-    this->updateConnectionConfigFromSensorConfig(sensorTableModel->getSupportedConnectionTypes(sensorTableModel->getSelectedIndex()), cConfig);
-
-    //Accuracy accuracy = sensorConfigModel->getAccuracy(sensorConfigProxyModel->mapToSource(index));
-    //this->updateAccuracyFromSensorConfig(accuracy);
-
-    //set up scalar parameters
-    QMap<QString, int> intParams = sensorConfigModel->getIntegerParameter(sensorConfigProxyModel->mapToSource(index));
-    QMap<QString, double> doubleParams = sensorConfigModel->getDoubleParameter(sensorConfigProxyModel->mapToSource(index));
-    QMap<QString, QString> stringParams = sensorConfigModel->getStringParameter(sensorConfigProxyModel->mapToSource(index));
-    QMultiMap<QString, QString> availableStringOptions = sensorTableModel->getStringParameter();
-    this->updateScalarParametersFromSensorConfig(intParams, doubleParams, stringParams, availableStringOptions);
+    //update GUI from selected measurement config
+    this->updateGuiFromMeasurementConfig(mConfig);
 
 }
 
 /*!
- * \brief SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentIndexChanged
- * \param arg1
- */
-void SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1){
-
-    //get and check model
-    SensorTableProxyModel *sensorTableProxyModel = static_cast<SensorTableProxyModel *>(this->ui->tableView_sensorPlugins->model());
-    if(sensorTableProxyModel == NULL){
-        return;
-    }
-
-    //set filter for sensor table model
-    sensorTableProxyModel->setSensorType(getSensorTypeEnum(arg1));
-
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_pushButton_cancel_clicked
- */
-void SensorConfigurationDialog::on_pushButton_cancel_clicked(){
-    this->close();
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_pushButton_set_clicked
- */
-void SensorConfigurationDialog::on_pushButton_set_clicked(){
-
-    //get selected sensor config name
-    QModelIndexList selection = this->ui->listView_sensorConfigs->selectionModel()->selectedIndexes();
-    if(selection.size() != 1){
-        Console::getInstance()->addLine("No sensor configuration selected");
-        return;
-    }
-    QString name = selection.at(0).data().toString();
-
-    emit this->setSensorConfiguration(name);
-
-    this->close();
-
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_tableView_sensorPlugins_clicked
- * \param index
- */
-void SensorConfigurationDialog::on_tableView_sensorPlugins_clicked(const QModelIndex &index){
-
-    //check index
-    if(!index.isValid()){
-        return;
-    }
-
-    //get and check sensor plugins proxy model
-    SensorTableProxyModel *sensorTableProxyModel = static_cast<SensorTableProxyModel *>(this->ui->tableView_sensorPlugins->model());
-    if(sensorTableProxyModel == NULL){
-        return;
-    }
-
-    //get and check sensor plugins model
-    SensorTableModel *sensorTableModel = static_cast<SensorTableModel *>(sensorTableProxyModel->sourceModel());
-    if(sensorTableProxyModel == NULL){
-        return;
-    }
-
-    //get and check source index
-    QModelIndex sourceIndex = sensorTableProxyModel->mapToSource(index);
-    if(!sourceIndex.isValid()){
-        return;
-    }
-
-    //select the sensor plugin that was selected (only if it is not selected yet)
-    if(sourceIndex == sensorTableModel->getSelectedIndex()){
-        qDebug() << "same sensor plugin";
-        return;
-    }
-
-    sensorTableModel->selectSensorPlugin(sensorTableModel->getSensorName(sourceIndex),
-                                         sensorTableModel->getPluginName(sourceIndex));
-    sourceIndex = sensorTableModel->getSelectedIndex();
-
-    //######################
-    //set default parameters
-    //######################
-
-    //this->blockSignals(true);
-
-    //set connection config
-    ConnectionConfig cConfig;
-    QList<ConnectionTypes> connectionTypes = sensorTableModel->getSupportedConnectionTypes(sourceIndex);
-    this->updateConnectionConfigFromSensorConfig(connectionTypes, cConfig);
-
-    //set accuracy
-
-    //set sensor parameters
-    QMap<QString, int> intParams = sensorTableModel->getIntegerParameter();
-    QMap<QString, double> doubleParams = sensorTableModel->getDoubleParameter();
-    QMultiMap<QString, QString> availableStringParams = sensorTableModel->getStringParameter();
-    QMap<QString, QString> stringParams;
-    foreach(const QString &key, availableStringParams.keys()){
-        stringParams.insert(key, availableStringParams.value(key));
-    }
-    this->updateScalarParametersFromSensorConfig(intParams, doubleParams, stringParams, availableStringParams);
-
-    //this->blockSignals(false);
-
-    //#############################
-    //update selected sensor config
-    //#############################
-
-    this->updateSensorConfigFromSelection();
-
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_comboBox_typeOfConnection_currentIndexChanged
- * \param arg1
- */
-void SensorConfigurationDialog::on_comboBox_typeOfConnection_currentIndexChanged(const QString &arg1){
-
-    //set visibility
-    if(arg1.compare(getConnectionTypeName(eSerialConnection)) == 0){
-        this->ui->comboBox_baudrate->setVisible(true);
-        this->ui->label_baudRate->setVisible(true);
-        this->ui->comboBox_databits->setVisible(true);
-        this->ui->label_databits->setVisible(true);
-        this->ui->comboBox_flowcontrol->setVisible(true);
-        this->ui->label_flowControl->setVisible(true);
-        this->ui->comboBox_parity->setVisible(true);
-        this->ui->label_parity->setVisible(true);
-        this->ui->comboBox_stopbits->setVisible(true);
-        this->ui->label_stopBits->setVisible(true);
-        this->ui->comboBox_comPort->setVisible(true);
-        this->ui->label_comPort->setVisible(true);
-        this->ui->comboBox_ip->setVisible(false);
-        this->ui->label_ip->setVisible(false);
-        this->ui->lineEdit_port->setVisible(false);
-        this->ui->label_port->setVisible(false);
-    }else if(arg1.compare(getConnectionTypeName(eNetworkConnection)) == 0){
-        this->ui->comboBox_baudrate->setVisible(false);
-        this->ui->label_baudRate->setVisible(false);
-        this->ui->comboBox_databits->setVisible(false);
-        this->ui->label_databits->setVisible(false);
-        this->ui->comboBox_flowcontrol->setVisible(false);
-        this->ui->label_flowControl->setVisible(false);
-        this->ui->comboBox_parity->setVisible(false);
-        this->ui->label_parity->setVisible(false);
-        this->ui->comboBox_stopbits->setVisible(false);
-        this->ui->label_stopBits->setVisible(false);
-        this->ui->comboBox_comPort->setVisible(false);
-        this->ui->label_comPort->setVisible(false);
-        this->ui->comboBox_ip->setVisible(true);
-        this->ui->label_ip->setVisible(true);
-        this->ui->lineEdit_port->setVisible(true);
-        this->ui->label_port->setVisible(true);
-    }
-
-    //update selected sensor config
-    this->updateSensorConfigFromSelection();
-
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_comboBox_ip_currentTextChanged
- * \param arg1
- */
-void SensorConfigurationDialog::on_comboBox_ip_currentTextChanged(const QString &arg1){
-    this->updateSensorConfigFromSelection();
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_lineEdit_port_textChanged
- * \param arg1
- */
-void SensorConfigurationDialog::on_lineEdit_port_textChanged(const QString &arg1){
-    this->updateSensorConfigFromSelection();
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_comboBox_comPort_currentIndexChanged
- * \param index
- */
-void SensorConfigurationDialog::on_comboBox_comPort_currentIndexChanged(int index){
-    this->updateSensorConfigFromSelection();
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_comboBox_baudrate_currentIndexChanged
- * \param index
- */
-void SensorConfigurationDialog::on_comboBox_baudrate_currentIndexChanged(int index){
-    this->updateSensorConfigFromSelection();
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_comboBox_databits_currentIndexChanged
- * \param index
- */
-void SensorConfigurationDialog::on_comboBox_databits_currentIndexChanged(int index){
-    this->updateSensorConfigFromSelection();
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_comboBox_flowcontrol_currentIndexChanged
- * \param index
- */
-void SensorConfigurationDialog::on_comboBox_flowcontrol_currentIndexChanged(int index){
-    this->updateSensorConfigFromSelection();
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_comboBox_parity_currentIndexChanged
- * \param index
- */
-void SensorConfigurationDialog::on_comboBox_parity_currentIndexChanged(int index){
-    this->updateSensorConfigFromSelection();
-}
-
-/*!
- * \brief SensorConfigurationDialog::on_comboBox_stopbits_currentIndexChanged
- * \param index
- */
-void SensorConfigurationDialog::on_comboBox_stopbits_currentIndexChanged(int index){
-    this->updateSensorConfigFromSelection();
-}
-
-
-/*!
- * \brief SensorConfigurationDialog::updateConnectionConfigFromSensorConfig
- * \param supportedConnections
- * \param cConfig
- */
-void SensorConfigurationDialog::updateConnectionConfigFromSensorConfig(const QList<ConnectionTypes> supportedConnections, const ConnectionConfig &cConfig){
-
-    //do not trigger edits while setting up connection config
-    this->ui->comboBox_typeOfConnection->blockSignals(true);
-    this->ui->comboBox_baudrate->blockSignals(true);
-    this->ui->comboBox_databits->blockSignals(true);
-    this->ui->comboBox_flowcontrol->blockSignals(true);
-    this->ui->comboBox_parity->blockSignals(true);
-    this->ui->comboBox_stopbits->blockSignals(true);
-    this->ui->comboBox_comPort->blockSignals(true);
-    this->ui->comboBox_ip->blockSignals(true);
-    this->ui->lineEdit_port->blockSignals(true);
-
-    //set up available connection types
-    this->ui->comboBox_typeOfConnection->clear();
-    foreach(const ConnectionTypes &type, supportedConnections){
-        this->ui->comboBox_typeOfConnection->addItem(getConnectionTypeName(type));
-        this->ui->comboBox_typeOfConnection->setCurrentText(getConnectionTypeName(type));
-    }
-
-    //set visibility
-    if(this->ui->comboBox_typeOfConnection->currentText().compare(getConnectionTypeName(eSerialConnection)) == 0){
-        this->ui->comboBox_baudrate->setVisible(true);
-        this->ui->label_baudRate->setVisible(true);
-        this->ui->comboBox_databits->setVisible(true);
-        this->ui->label_databits->setVisible(true);
-        this->ui->comboBox_flowcontrol->setVisible(true);
-        this->ui->label_flowControl->setVisible(true);
-        this->ui->comboBox_parity->setVisible(true);
-        this->ui->label_parity->setVisible(true);
-        this->ui->comboBox_stopbits->setVisible(true);
-        this->ui->label_stopBits->setVisible(true);
-        this->ui->comboBox_comPort->setVisible(true);
-        this->ui->label_comPort->setVisible(true);
-        this->ui->comboBox_ip->setVisible(false);
-        this->ui->label_ip->setVisible(false);
-        this->ui->lineEdit_port->setVisible(false);
-        this->ui->label_port->setVisible(false);
-    }else if(this->ui->comboBox_typeOfConnection->currentText().compare(getConnectionTypeName(eNetworkConnection)) == 0){
-        this->ui->comboBox_baudrate->setVisible(false);
-        this->ui->label_baudRate->setVisible(false);
-        this->ui->comboBox_databits->setVisible(false);
-        this->ui->label_databits->setVisible(false);
-        this->ui->comboBox_flowcontrol->setVisible(false);
-        this->ui->label_flowControl->setVisible(false);
-        this->ui->comboBox_parity->setVisible(false);
-        this->ui->label_parity->setVisible(false);
-        this->ui->comboBox_stopbits->setVisible(false);
-        this->ui->label_stopBits->setVisible(false);
-        this->ui->comboBox_comPort->setVisible(false);
-        this->ui->label_comPort->setVisible(false);
-        this->ui->comboBox_ip->setVisible(true);
-        this->ui->label_ip->setVisible(true);
-        this->ui->lineEdit_port->setVisible(true);
-        this->ui->label_port->setVisible(true);
-    }
-
-    //set up connection parameters
-    int baudRateIndex = this->ui->comboBox_baudrate->findData(cConfig.baudRate, Qt::UserRole);
-    if(baudRateIndex >= 0){
-        this->ui->comboBox_baudrate->setCurrentIndex(baudRateIndex);
-    }
-    int dataBitsIndex = this->ui->comboBox_databits->findData(cConfig.dataBits, Qt::UserRole);
-    if(dataBitsIndex >= 0){
-        this->ui->comboBox_databits->setCurrentIndex(dataBitsIndex);
-    }
-    int flowControlIndex = this->ui->comboBox_flowcontrol->findData(cConfig.flowControl, Qt::UserRole);
-    if(flowControlIndex >= 0){
-        this->ui->comboBox_flowcontrol->setCurrentIndex(flowControlIndex);
-    }
-    int parityIndex = this->ui->comboBox_parity->findData(cConfig.parity, Qt::UserRole);
-    if(parityIndex >= 0){
-        this->ui->comboBox_parity->setCurrentIndex(parityIndex);
-    }
-    int stopBitsIndex = this->ui->comboBox_stopbits->findData(cConfig.stopBits, Qt::UserRole);
-    if(stopBitsIndex >= 0){
-        this->ui->comboBox_stopbits->setCurrentIndex(stopBitsIndex);
-    }
-    int comPortIndex = this->ui->comboBox_comPort->findData(cConfig.comPort, Qt::UserRole);
-    if(comPortIndex >= 0){
-        this->ui->comboBox_comPort->setCurrentIndex(comPortIndex);
-    }
-    this->ui->comboBox_ip->setCurrentText(cConfig.ip);
-    this->ui->lineEdit_port->setText(cConfig.port);
-
-    //from now on trigger edits
-    this->ui->comboBox_typeOfConnection->blockSignals(false);
-    this->ui->comboBox_baudrate->blockSignals(false);
-    this->ui->comboBox_databits->blockSignals(false);
-    this->ui->comboBox_flowcontrol->blockSignals(false);
-    this->ui->comboBox_parity->blockSignals(false);
-    this->ui->comboBox_stopbits->blockSignals(false);
-    this->ui->comboBox_comPort->blockSignals(false);
-    this->ui->comboBox_ip->blockSignals(false);
-    this->ui->lineEdit_port->blockSignals(false);
-
-}
-
-/*!
- * \brief SensorConfigurationDialog::updateAccuracyFromSensorConfig
- * \param accuracy
- */
-void SensorConfigurationDialog::updateAccuracyFromSensorConfig(const Accuracy &accuracy){
-
-}
-
-/*!
- * \brief SensorConfigurationDialog::updateScalarParametersFromSensorConfig
- * \param intParams
- * \param doubleParams
- * \param stringParams
- * \param availableStringOptions
- */
-void SensorConfigurationDialog::updateScalarParametersFromSensorConfig(const QMap<QString, int> &intParams, const QMap<QString, double> &doubleParams, const QMap<QString, QString> &stringParams, const QMultiMap<QString, QString> &availableStringOptions){
-
-    this->scalarParameterWidget->setIntParameter(intParams);
-    this->scalarParameterWidget->setDoubleParameter(doubleParams);
-    this->scalarParameterWidget->setStringParameter(availableStringOptions, stringParams);
-
-}
-
-/*!
- * \brief SensorConfigurationDialog::updateSensorConfigFromSelection
- */
-void SensorConfigurationDialog::updateSensorConfigFromSelection(){
-
-    //####################
-    //get and check models
-    //####################
-
-    SensorConfigurationProxyModel *sensorConfigProxyModel = static_cast<SensorConfigurationProxyModel *>(this->ui->listView_sensorConfigs->model());
-    if(sensorConfigProxyModel == NULL){
-        return;
-    }
-
-    SensorConfigurationModel *sensorConfigModel = static_cast<SensorConfigurationModel *>(sensorConfigProxyModel->sourceModel());
-    if(sensorConfigModel == NULL){
-        return;
-    }
-
-    SensorTableProxyModel *sensorTableProxyModel = static_cast<SensorTableProxyModel *>(this->ui->tableView_sensorPlugins->model());
-    if(sensorTableProxyModel == NULL){
-        return;
-    }
-
-    SensorTableModel *sensorTableModel = static_cast<SensorTableModel *>(sensorTableProxyModel->sourceModel());
-    if(sensorTableProxyModel == NULL){
-        return;
-    }
-
-    //###############################
-    //get selected sensor config name
-    //###############################
-
-    QModelIndexList selection = this->ui->listView_sensorConfigs->selectionModel()->selectedIndexes();
-    //qDebug() << "selection: " << selection.size();
-    if(selection.size() != 1){
-        return;
-    }
-    QString name = selection.at(0).data().toString();
-
-    SensorConfiguration sConfig;
-    sConfig.setName(name);
-
-    //#######################################
-    //set up sensor config from GUI selection
-    //#######################################
-
-    //set up sensor plugin
-    QModelIndex pluginIndex = sensorTableModel->getSelectedIndex();
-    if(!pluginIndex.isValid()){
-        return;
-    }
-    sConfig.setSensorName(sensorTableModel->getSensorName(pluginIndex));
-    sConfig.setPluginName(sensorTableModel->getPluginName(pluginIndex));
-    sConfig.setTypeOfSensor(sensorTableModel->getSensorType(pluginIndex));
-
-    //set up connection config
-    ConnectionConfig cConfig;
-    cConfig.baudRate = static_cast<QSerialPort::BaudRate>(this->ui->comboBox_baudrate->itemData(ui->comboBox_baudrate->currentIndex()).toInt());
-    cConfig.comPort = this->ui->comboBox_comPort->currentText();
-    cConfig.dataBits = static_cast<QSerialPort::DataBits>(this->ui->comboBox_databits->itemData(ui->comboBox_databits->currentIndex()).toInt());
-    cConfig.flowControl = static_cast<QSerialPort::FlowControl>(this->ui->comboBox_flowcontrol->itemData(ui->comboBox_flowcontrol->currentIndex()).toInt());
-    cConfig.ip = this->ui->comboBox_ip->currentText();
-    cConfig.parity = static_cast<QSerialPort::Parity>(this->ui->comboBox_parity->itemData(ui->comboBox_parity->currentIndex()).toInt());
-    cConfig.port = this->ui->lineEdit_port->text();
-    cConfig.stopBits = static_cast<QSerialPort::StopBits>(this->ui->comboBox_stopbits->itemData(ui->comboBox_stopbits->currentIndex()).toInt());
-    cConfig.typeOfConnection = static_cast<ConnectionTypes>(this->ui->comboBox_typeOfConnection->itemData(ui->comboBox_typeOfConnection->currentIndex()).toInt());
-    sConfig.setConnectionConfig(cConfig);
-
-    //set up accuracy
-
-    //set up sensor parameters
-    QMap<QString, int> intParams = this->scalarParameterWidget->getIntParameter();
-    QMap<QString, double> doubleParams = this->scalarParameterWidget->getDoubleParameter();
-    QMap<QString, QString> stringParams = this->scalarParameterWidget->getStringParameter();
-    sConfig.setIntegerParameter(intParams);
-    sConfig.setDoubleParameter(doubleParams);
-    sConfig.setStringParameter(stringParams);
-
-    //#############################
-    //replace the old sensor config
-    //#############################
-
-    //replace config
-    sensorConfigModel->replaceSensorConfig(name, sConfig);
-
-    //select the new config in tree view
-    /*if(this->ui->listView_sensorConfigs->model()->hasIndex(selection.at(0).row(), selection.at(0).column())){
-        QModelIndex newSelection = sensorConfigModel->getIndex(sConfig.getName());
-        if(newSelection.isValid()){
-            qDebug() << "true";
-            this->ui->listView_sensorConfigs->selectionModel()->select(newSelection, QItemSelectionModel::Select);
-        }
-    }*/
-
-}
-
-/*!
- * \brief SensorConfigurationDialog::sensorConfigContextMenuRequested
+ * \brief MeasurementConfigurationDialog::measurementConfigContextMenuRequested
  * \param point
  */
-void SensorConfigurationDialog::sensorConfigContextMenuRequested(const QPoint &point){
+void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const QPoint &point){
 
     //get and check index
-    QModelIndex index = this->ui->listView_sensorConfigs->indexAt(point);
+    QModelIndex index = this->ui->listView_measurementConfigs->indexAt(point);
     if(!index.isValid() || index.parent().isValid()){
         return;
     }
 
-    //get and check sensor config proxy model
-    SensorConfigurationProxyModel *sensorConfigProxyModel = static_cast<SensorConfigurationProxyModel *>(this->ui->listView_sensorConfigs->model());
-    if(sensorConfigProxyModel == NULL){
+    //get and check measurement config proxy model
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_measurementConfigs->model());
+    if(mConfigProxyModel == NULL){
         return;
     }
 
-    //get and check sensor config model
-    SensorConfigurationModel *sensorConfigModel = static_cast<SensorConfigurationModel *>(sensorConfigProxyModel->sourceModel());
-    if(sensorConfigModel == NULL){
+    //get and check measurement config model
+    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
+    if(mConfigModel == NULL){
         return;
     }
 
     //check if the selected config is a saved config
-    if(!sensorConfigModel->getIsSaved(sensorConfigProxyModel->mapToSource(index))){
+    if(!mConfigModel->getIsSaved(mConfigProxyModel->mapToSource(index))){
         return;
     }
 
     //set selected index
-    this->ui->listView_sensorConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
+    this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
 
     QMenu *menu = new QMenu();
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedSensorConfig()));
-    menu->exec(ui->listView_sensorConfigs->mapToGlobal(point));
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedMeasurementConfig()));
+    menu->exec(ui->listView_measurementConfigs->mapToGlobal(point));
 
 }
 
 /*!
- * \brief SensorConfigurationDialog::removeSelectedSensorConfig
+ * \brief MeasurementConfigurationDialog::removeSelectedMeasurementConfig
  */
-void SensorConfigurationDialog::removeSelectedSensorConfig(){
+void MeasurementConfigurationDialog::removeSelectedMeasurementConfig(){
 
     //get and check index
-    QModelIndexList selection = this->ui->listView_sensorConfigs->selectionModel()->selectedIndexes();
+    QModelIndexList selection = this->ui->listView_measurementConfigs->selectionModel()->selectedIndexes();
     if(selection.size() != 1){
         return;
     }
@@ -601,62 +112,217 @@ void SensorConfigurationDialog::removeSelectedSensorConfig(){
         return;
     }
 
-    //get and check sensor config proxy model
-    SensorConfigurationProxyModel *sensorConfigProxyModel = static_cast<SensorConfigurationProxyModel *>(this->ui->listView_sensorConfigs->model());
-    if(sensorConfigProxyModel == NULL){
+    //get and check measurement config proxy model
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_measurementConfigs->model());
+    if(mConfigProxyModel == NULL){
         return;
     }
 
-    //get and check sensor config model
-    SensorConfigurationModel *sensorConfigModel = static_cast<SensorConfigurationModel *>(sensorConfigProxyModel->sourceModel());
-    if(sensorConfigModel == NULL){
+    //get and check measurement config model
+    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
+    if(mConfigModel == NULL){
         return;
     }
 
-    sensorConfigModel->removeSensorConfig(sensorConfigProxyModel->mapToSource(index));
+    mConfigModel->removeMeasurementConfig(mConfigProxyModel->mapToSource(index));
 
 }
 
 /*!
- * \brief SensorConfigurationDialog::on_pushButton_add_clicked
- * Triggered whenever the user wants to add a new sensor config
+ * \brief MeasurementConfigurationDialog::on_pushButton_add_clicked
  */
-void SensorConfigurationDialog::on_pushButton_add_clicked(){
+void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
 
-    SensorConfiguration sConfig;
-    sConfig.setName("new config");
+    MeasurementConfig mConfig;
+    mConfig.setName("new config");
 
-    //get and check sensor config proxy model
-    SensorConfigurationProxyModel *sensorConfigProxyModel = static_cast<SensorConfigurationProxyModel *>(this->ui->listView_sensorConfigs->model());
-    if(sensorConfigProxyModel == NULL){
+    //get and check measurement config proxy model
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_measurementConfigs->model());
+    if(mConfigProxyModel == NULL){
         return;
     }
 
-    //get and check sensor config model
-    SensorConfigurationModel *sensorConfigModel = static_cast<SensorConfigurationModel *>(sensorConfigProxyModel->sourceModel());
-    if(sensorConfigModel == NULL){
+    //get and check measurement config model
+    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
+    if(mConfigModel == NULL){
         return;
     }
 
-    //add new sensor config
-    QModelIndex index = sensorConfigModel->addSensorConfig(sConfig);
+    //add new measurement config
+    QModelIndex index = mConfigModel->addMeasurementConfig(mConfig);
 
     //check index
-    if(!index.isValid() || !sensorConfigModel->hasIndex(index.row(), index.column())){
+    if(!index.isValid() || !mConfigModel->hasIndex(index.row(), index.column())){
         return;
     }
 
     //select the new item
-    this->ui->listView_sensorConfigs->selectionModel()->clearSelection();
-    this->ui->listView_sensorConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
+    this->ui->listView_measurementConfigs->selectionModel()->clearSelection();
+    this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
 
 }
 
 /*!
- * \brief SensorConfigurationDialog::showEvent
+ * \brief MeasurementConfigurationDialog::on_lineEdit_numMeas_textChanged
+ * \param arg1
+ */
+void MeasurementConfigurationDialog::on_lineEdit_numMeas_textChanged(const QString &arg1){
+    this->updateMeasurementConfigFromSelection();
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::on_lineEdit_iterations_textChanged
+ * \param arg1
+ */
+void MeasurementConfigurationDialog::on_lineEdit_iterations_textChanged(const QString &arg1){
+    this->updateMeasurementConfigFromSelection();
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::on_comboBox_readingType_currentIndexChanged
+ * \param arg1
+ */
+void MeasurementConfigurationDialog::on_comboBox_readingType_currentIndexChanged(const QString &arg1){
+    this->updateMeasurementConfigFromSelection();
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::on_checkBox_twoFace_clicked
+ */
+void MeasurementConfigurationDialog::on_checkBox_twoFace_clicked(){
+    this->updateMeasurementConfigFromSelection();
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::on_checkBox_timeDependent_clicked
+ */
+void MeasurementConfigurationDialog::on_checkBox_timeDependent_clicked(){
+    this->updateMeasurementConfigFromSelection();
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged
+ * \param arg1
+ */
+void MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged(const QString &arg1){
+    this->updateMeasurementConfigFromSelection();
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::on_checkBox_distanceDependent_clicked
+ */
+void MeasurementConfigurationDialog::on_checkBox_distanceDependent_clicked(){
+    this->updateMeasurementConfigFromSelection();
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged
+ * \param arg1
+ */
+void MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged(const QString &arg1){
+    this->updateMeasurementConfigFromSelection();
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::on_pushButton_set_clicked
+ */
+void MeasurementConfigurationDialog::on_pushButton_set_clicked(){
+
+    //get selected measurement config name
+    QModelIndexList selection = this->ui->listView_measurementConfigs->selectionModel()->selectedIndexes();
+    if(selection.size() != 1){
+        return;
+    }
+    QString name = selection.at(0).data().toString();
+
+    //set the selected measurement config for the active feature
+    emit this->setMeasurementConfiguration(name);
+
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::updateGuiFromMeasurementConfig
+ * \param mConfig
+ */
+void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const MeasurementConfig &mConfig){
+
+    //do not trigger edits while setting up measurement config
+    this->ui->comboBox_readingType->blockSignals(true);
+    this->ui->lineEdit_distancInterval->blockSignals(true);
+    this->ui->lineEdit_iterations->blockSignals(true);
+    this->ui->lineEdit_numMeas->blockSignals(true);
+    this->ui->lineEdit_timeInterval->blockSignals(true);
+    this->ui->checkBox_distanceDependent->blockSignals(true);
+    this->ui->checkBox_timeDependent->blockSignals(true);
+    this->ui->checkBox_twoFace->blockSignals(true);
+
+    //set up GUI elements
+    this->ui->comboBox_readingType->setCurrentText(getReadingTypeName(mConfig.getTypeOfReading()));
+    this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
+    this->ui->lineEdit_iterations->setText(QString::number(mConfig.getIterations()));
+    this->ui->lineEdit_numMeas->setText(QString::number(mConfig.getCount()));
+    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval()));
+    this->ui->checkBox_distanceDependent->setChecked(mConfig.getDistanceDependent());
+    this->ui->checkBox_timeDependent->setChecked(mConfig.getTimeDependent());
+    this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
+
+    //from now on trigger edits
+    this->ui->comboBox_readingType->blockSignals(true);
+    this->ui->lineEdit_distancInterval->blockSignals(true);
+    this->ui->lineEdit_iterations->blockSignals(true);
+    this->ui->lineEdit_numMeas->blockSignals(true);
+    this->ui->lineEdit_timeInterval->blockSignals(true);
+    this->ui->checkBox_distanceDependent->blockSignals(true);
+    this->ui->checkBox_timeDependent->blockSignals(true);
+    this->ui->checkBox_twoFace->blockSignals(true);
+
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::updateMeasurementConfigFromSelection
+ */
+void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
+
+    //get and check model
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_measurementConfigs->model());
+    if(mConfigProxyModel == NULL){
+        return;
+    }
+
+    //get and check source model
+    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
+    if(mConfigModel == NULL){
+        return;
+    }
+
+    //get selected measurement config name
+    QModelIndexList selection = this->ui->listView_measurementConfigs->selectionModel()->selectedIndexes();
+    if(selection.size() != 1){
+        return;
+    }
+    QString name = selection.at(0).data().toString();
+
+    //getmeasurement config from GUI selection
+    MeasurementConfig mConfig;
+    mConfig.setTypeOfReading(getReadingTypeEnum(this->ui->comboBox_readingType->currentText()));
+    mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble());
+    mConfig.setIterations(this->ui->lineEdit_iterations->text().toInt());
+    mConfig.setCount(this->ui->lineEdit_numMeas->text().toInt());
+    mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
+    mConfig.setDistanceDependent(this->ui->checkBox_distanceDependent->isChecked());
+    mConfig.setTimeDependent(this->ui->checkBox_timeDependent->isChecked());
+    mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
+
+    //replace the selected measurement config
+    mConfigModel->replaceMeasurementConfig(name, mConfig);
+
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::showEvent
  * \param event
  */
-void SensorConfigurationDialog::showEvent(QShowEvent *event){
+void MeasurementConfigurationDialog::showEvent(QShowEvent *event){
 
     //put the dialog in the screen center
     const QRect screen = QApplication::desktop()->screenGeometry();
@@ -667,56 +333,35 @@ void SensorConfigurationDialog::showEvent(QShowEvent *event){
 }
 
 /*!
- * \brief SensorConfigurationDialog::initGUI
+ * \brief MeasurementConfigurationDialog::initGUI
  */
-void SensorConfigurationDialog::initGUI(){
+void MeasurementConfigurationDialog::initGUI(){
 
-    //set initial sensor type
-    this->ui->comboBox_availableSensorTypes->setCurrentText("");
+    //set default reading type
+    this->ui->comboBox_readingType->setCurrentText(getReadingTypeName(ePolarReading));
 
-    //stretch function table view
-    this->ui->tableView_sensorPlugins->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    this->ui->tableView_sensorPlugins->verticalHeader()->setDefaultSectionSize(22);
-
-    //set up scalar parameter widget
-    QGridLayout *extraParameterLayout = new QGridLayout();
-    this->ui->widget_scalarParameter->setLayout(extraParameterLayout);
-    this->scalarParameterWidget = new ScalarParameterWidget();
-    QObject::connect(this->scalarParameterWidget, &ScalarParameterWidget::scalarParametersChanged, this, &SensorConfigurationDialog::scalarParameterChanged, Qt::AutoConnection);
-    extraParameterLayout->addWidget(this->scalarParameterWidget);
-
-    //set initial visibility of widgets
-    this->ui->tabWidget_sensorConfig->setEnabled(false);
+    //set visibility
+    this->ui->widget_measurementConfigValues->setEnabled(false);
 
     //allow contect menu for sensor config model
-    this->ui->listView_sensorConfigs->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(this->ui->listView_sensorConfigs, &QListView::customContextMenuRequested, this, &SensorConfigurationDialog::sensorConfigContextMenuRequested, Qt::AutoConnection);
+    this->ui->listView_measurementConfigs->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(this->ui->listView_measurementConfigs, &QListView::customContextMenuRequested, this, &MeasurementConfigurationDialog::measurementConfigContextMenuRequested, Qt::AutoConnection);
 
-    //assign delegate to sensor configs list view
-    SensorConfigurationListDelegate *delegate = new SensorConfigurationListDelegate();
-    this->ui->listView_sensorConfigs->setItemDelegate(delegate);
+    //assign delegate to measurement configs list view
+    MeasurementConfigurationListDelegate *delegate = new MeasurementConfigurationListDelegate();
+    this->ui->listView_measurementConfigs->setItemDelegate(delegate);
 
 }
 
 /*!
- * \brief SensorConfigurationDialog::initModels
+ * \brief MeasurementConfigurationDialog::initModels
  */
-void SensorConfigurationDialog::initModels(){
+void MeasurementConfigurationDialog::initModels(){
 
-    //init sensor models
-    this->ui->tableView_sensorPlugins->setModel(&ModelManager::getSensorTableProxyModel());
-    this->ui->comboBox_availableSensorTypes->setModel(&ModelManager::getSensorTypeNamesModel());
+    //init reading types model
+    this->ui->comboBox_readingType->setModel(&ModelManager::getReadingTypeNamesModel());
 
-    //init sensor config model
-    this->ui->listView_sensorConfigs->setModel(&ModelManager::getSensorConfigurationProxyModel());
-
-    //init connection config models
-    this->ui->comboBox_baudrate->setModel(&ModelManager::getBaudRateTypesModel());
-    this->ui->comboBox_databits->setModel(&ModelManager::getDataBitTypesModel());
-    this->ui->comboBox_flowcontrol->setModel(&ModelManager::getFlowControlTypesModel());
-    this->ui->comboBox_parity->setModel(&ModelManager::getParityTypesModel());
-    this->ui->comboBox_stopbits->setModel(&ModelManager::getStopBitTypesModel());
-    this->ui->comboBox_comPort->setModel(&ModelManager::getAvailableSerialPortsModel());
-    this->ui->comboBox_ip->setModel(&ModelManager::getAvailableIpAdressesModel());
+    //init measurement config model
+    this->ui->listView_measurementConfigs->setModel(&ModelManager::getMeasurementConfigurationProxyModel());
 
 }

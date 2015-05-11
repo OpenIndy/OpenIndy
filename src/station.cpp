@@ -187,6 +187,28 @@ const QPointer<CoordinateSystem> &Station::getCoordinateSystem() const{
 }
 
 /*!
+ * \brief Station::setSensor
+ * \param sensor
+ */
+void Station::setSensor(const QPointer<Sensor> &sensor){
+    if(!sensor.isNull() && !this->sensorControl.isNull()){
+        this->sensorControl->setSensor(sensor);
+        emit this->sensorChanged(this->id);
+    }
+}
+
+/*!
+ * \brief Station::getSensorListener
+ * \return
+ */
+const QPointer<const SensorListener> Station::getSensorListener() const{
+    if(!this->sensorControl.isNull()){
+        return this->sensorControl->getSensorListener();
+    }
+    return QPointer<const SensorListener>();
+}
+
+/*!
  * \brief Station::getActiveSensorType
  * \return
  */
@@ -222,25 +244,57 @@ QList<ReadingTypes> Station::getSupportedReadingTypes() const{
 }
 
 /*!
- * \brief Station::setSensor
- * \param sensor
+ * \brief Station::getSupportedConnectionTypes
+ * \return
  */
-void Station::setSensor(const QPointer<Sensor> &sensor){
-    if(!sensor.isNull() && !this->sensorControl.isNull()){
-        this->sensorControl->setSensor(sensor);
-        emit this->sensorChanged(this->id);
+QList<ConnectionTypes> Station::getSupportedConnectionTypes() const{
+
+    QList<ConnectionTypes> connectionTypes;
+
+    //check sensor
+    if(this->sensorControl.isNull() || this->sensorControl->getSensor().isNull()){
+        return connectionTypes;
     }
+
+    connectionTypes = this->sensorControl->getSensor()->getSupportedConnectionTypes();
+    return connectionTypes;
+
 }
 
 /*!
- * \brief Station::getSensorListener
+ * \brief Station::getSupportedSensorActions
  * \return
  */
-const QPointer<const SensorListener> Station::getSensorListener() const{
-    if(!this->sensorControl.isNull()){
-        return this->sensorControl->getSensorListener();
+QList<SensorFunctions> Station::getSupportedSensorActions() const{
+
+    QList<SensorFunctions> sensorFunctions;
+
+    //check sensor
+    if(this->sensorControl.isNull() || this->sensorControl->getSensor().isNull()){
+        return sensorFunctions;
     }
-    return QPointer<const SensorListener>();
+
+    sensorFunctions = this->sensorControl->getSensor()->getSupportedSensorActions();
+    return sensorFunctions;
+
+}
+
+/*!
+ * \brief Station::getSelfDefinedActions
+ * \return
+ */
+QStringList Station::getSelfDefinedActions() const{
+
+    QStringList selfDefinedActions;
+
+    //check sensor
+    if(this->sensorControl.isNull() || this->sensorControl->getSensor().isNull()){
+        return selfDefinedActions;
+    }
+
+    selfDefinedActions = this->sensorControl->getSensor()->getSelfDefinedActions();
+    return selfDefinedActions;
+
 }
 
 /*!

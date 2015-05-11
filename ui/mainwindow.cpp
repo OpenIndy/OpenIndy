@@ -135,7 +135,8 @@ void MainWindow::stationSensorChanged(const int &featureId){
     }
 
     //set sensor action's visibility depending on the sensor type
-    this->activeSensorTypeChanged(activeStation->getActiveSensorType());
+    this->activeSensorTypeChanged(activeStation->getActiveSensorType(), activeStation->getSupportedSensorActions(),
+                                  activeStation->getSelfDefinedActions());
 
 }
 
@@ -519,6 +520,13 @@ void MainWindow::on_actionClose_triggered(){
 }
 
 /*!
+ * \brief MainWindow::on_actionMeasurement_Configuration_triggered
+ */
+void MainWindow::on_actionMeasurement_Configuration_triggered(){
+    this->measurementConfigDialog.show();
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -527,6 +535,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::addFeatures, &this->control, &Controller::addFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::importNominals, &this->control, &Controller::importNominals, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::measurementConfigurationChanged, &this->control, &Controller::measurementConfigurationChanged, Qt::AutoConnection);
     QObject::connect(this, static_cast<void (MainWindow::*)()>(&MainWindow::saveProject),
                      &this->control, static_cast<void (Controller::*)()>(&Controller::saveProject), Qt::AutoConnection);
     QObject::connect(this, static_cast<void (MainWindow::*)(const QString&)>(&MainWindow::saveProject),
@@ -563,6 +572,9 @@ void MainWindow::connectDialogs(){
 
     //connect sensor config dialog
     QObject::connect(&this->sensorConfigurationDialog, &SensorConfigurationDialog::setSensorConfiguration, this, &MainWindow::setSensorConfiguration, Qt::AutoConnection);
+
+    //connect measurement config dialog
+    QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::setMeasurementConfiguration, this, &MainWindow::measurementConfigurationChanged, Qt::AutoConnection);
 
     //connect move sensor dialog
     QObject::connect(&this->moveSensorDialog, &MoveSensorDialog::moveSensor, &this->control, &Controller::startMove, Qt::AutoConnection);
@@ -693,9 +705,12 @@ void MainWindow::initSensorPad(){
  * \brief MainWindow::activeSensorTypeChanged
  * Depending on the active stations's sensor set visibility of sensor pad actions
  * \param type
+ * \param supportedActions
+ * \param selfDefinedActions
  */
-void MainWindow::activeSensorTypeChanged(const SensorTypes &type){
+void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions){
 
+    //set visibility of standard actions
     switch(type){
     case eLaserTracker:
 
@@ -767,5 +782,31 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type){
         break;
 
     }
+
+    //delete old self defined actions
+    foreach(const QPointer<QAction> &action, this->selfDefinedActions){
+        if(!action.isNull()){
+            this->ui->toolBar_controlPad->removeAction(action.data());
+            delete action;
+        }
+    }
+    this->selfDefinedActions.clear();
+
+    //delete old signal mapper
+    if(!this->customActionMapper.isNull()){
+        delete this->customActionMapper;
+    }
+    this->customActionMapper = new QSignalMapper();
+
+    //add new self defined actions
+    foreach(const QString &action, selfDefinedActions){
+        QPointer<QAction> customAction = new QAction(0);
+        customAction->setText(action);
+        this->selfDefinedActions.append(customAction);
+        this->ui->toolBar_controlPad->addAction(customAction.data());
+        QObject::connect(customAction.data(), SIGNAL(triggered()), this->customActionMapper.data(), SLOT(map()), Qt::AutoConnection);
+        this->customActionMapper->setMapping(customAction.data(), action);
+    }
+    QObject::connect(this->customActionMapper.data(), SIGNAL(mapped(const QString&)), &this->control, SLOT(startCustomAction(const QString&)), Qt::AutoConnection);
 
 }

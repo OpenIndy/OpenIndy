@@ -41,6 +41,9 @@ QStandardItemModel ModelManager::availableIpAdressesModel;
 QStringListModel ModelManager::readingTypeNamesModel;
 PluginTreeViewModel ModelManager::pluginTreeViewModel;
 TrafoParamTableProxyModel ModelManager::trafoParamTableProxyModel;
+MeasurementConfigurationModel ModelManager::measurementConfigurationModel;
+MeasurementConfigurationProxyModel ModelManager::measurementConfigurationProxyModel;
+QPointer<MeasurementConfigManager> ModelManager::measurementConfigManager;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -66,6 +69,7 @@ void ModelManager::init(){
     ModelManager::initSensorConnectionModels();
     ModelManager::initReadingTypesModels();
     ModelManager::initGroupsModel();
+    ModelManager::initMeasurementConfigModels();
 
 }
 
@@ -103,6 +107,23 @@ const QPointer<SensorConfigurationManager> &ModelManager::getSensorConfigManager
 void ModelManager::setSensorConfigManager(const QPointer<SensorConfigurationManager> &sensorConfigManager){
     ModelManager::sensorConfigManager = sensorConfigManager;
     ModelManager::updateSensorConfigManager();
+}
+
+/*!
+ * \brief ModelManager::getMeasurementConfigManager
+ * \return
+ */
+const QPointer<MeasurementConfigManager> &ModelManager::getMeasurementConfigManager(){
+    return ModelManager::measurementConfigManager;
+}
+
+/*!
+ * \brief ModelManager::setMeasurementConfigManager
+ * \param measurementConfigManager
+ */
+void ModelManager::setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &measurementConfigManager){
+    ModelManager::measurementConfigManager = measurementConfigManager;
+    ModelManager::updateMeasurementConfigManager();
 }
 
 /*!
@@ -391,6 +412,22 @@ QStandardItemModel &ModelManager::getAvailableIpAdressesModel(){
 }
 
 /*!
+ * \brief ModelManager::getMeasurementConfigurationModel
+ * \return
+ */
+MeasurementConfigurationModel &ModelManager::getMeasurementConfigurationModel(){
+    return ModelManager::measurementConfigurationModel;
+}
+
+/*!
+ * \brief ModelManager::getMeasurementConfigurationProxyModel
+ * \return
+ */
+MeasurementConfigurationProxyModel &ModelManager::getMeasurementConfigurationProxyModel(){
+    return ModelManager::measurementConfigurationProxyModel;
+}
+
+/*!
  * \brief ModelManager::getExchangeSimpleAsciiNames
  * \param pluginName
  * \return
@@ -643,6 +680,16 @@ void ModelManager::updateSensorConfigManager(){
 }
 
 /*!
+ * \brief ModelManager::updateMeasurementConfigManager
+ */
+void ModelManager::updateMeasurementConfigManager(){
+
+    //pass the measurement config manager to all static models that need it
+    ModelManager::measurementConfigurationModel.setMeasurementConfigurationManager(ModelManager::measurementConfigManager);
+
+}
+
+/*!
  * \brief ModelManager::updateCoordinateSystemsModel
  */
 void ModelManager::updateCoordinateSystemsModel(){
@@ -798,6 +845,16 @@ void ModelManager::initSensorListViewModels(){
 
     //assign source models
     ModelManager::sensorConfigurationProxyModel.setSourceModel(&ModelManager::sensorConfigurationModel);
+
+}
+
+/*!
+ * \brief ModelManager::initMeasurementConfigModels
+ */
+void ModelManager::initMeasurementConfigModels(){
+
+    //assign source models
+    ModelManager::measurementConfigurationProxyModel.setSourceModel(&ModelManager::measurementConfigurationModel);
 
 }
 

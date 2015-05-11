@@ -47,6 +47,11 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
  */
 void Controller::sensorConfigurationChanged(const QString &name, const bool &connectSensor){
 
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
@@ -79,7 +84,40 @@ void Controller::sensorConfigurationChanged(const QString &name, const bool &con
     sensor->setSensorConfiguration(sConfig);
     activeStation->setSensor(sensor);
 
-    Console::getInstance()->addLine("Active sensor changed");
+    //connect the sensor
+    if(connectSensor){
+        this->startConnect();
+    }
+
+}
+
+/*!
+ * \brief Controller::measurementConfigurationChanged
+ * \param name
+ */
+void Controller::measurementConfigurationChanged(const QString &name){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
+    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
+        Console::getInstance()->addLine("No active geometry selected");
+        return;
+    }
+
+    //get and check the specified measurement config
+    MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(name);
+    if(!mConfig.getIsValid()){
+        Console::getInstance()->addLine(QString("No measurement configuration available with the name %1").arg(name));
+        return;
+    }
+
+    //set measurement config for the active feature
+    activeFeature->getGeometry()->setMeasurementConfig(mConfig);
 
 }
 
@@ -506,6 +544,7 @@ void Controller::startChangeMotorState(){
  * \param task
  */
 void Controller::startCustomAction(const QString &task){
+    qDebug() << task;
     //TODO implement custom action
 }
 
@@ -683,9 +722,12 @@ void Controller::initConfigManager(){
     //load configs from config folder
     this->sensorConfigManager = new SensorConfigurationManager();
     this->sensorConfigManager->loadFromConfigFolder();
+    this->measurementConfigManager = new MeasurementConfigManager();
+    this->measurementConfigManager->loadFromConfigFolder();
 
     //pass config managers to model manager
     ModelManager::setSensorConfigManager(this->sensorConfigManager);
+    ModelManager::setMeasurementConfigManager(this->measurementConfigManager);
 
 }
 

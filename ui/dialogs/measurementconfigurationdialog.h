@@ -1,5 +1,5 @@
-#ifndef SENSORCONFIGURATIONDIALOG_H
-#define SENSORCONFIGURATIONDIALOG_H
+#ifndef MEASUREMENTCONFIGURATIONDIALOG_H
+#define MEASUREMENTCONFIGURATIONDIALOG_H
 
 #include <QDialog>
 #include <QtSerialPort/QSerialPort>
@@ -19,97 +19,72 @@
 
 #include "types.h"
 #include "console.h"
-#include "sensorconfiguration.h"
+#include "measurementconfig.h"
 #include "modelmanager.h"
-#include "scalarparameterwidget.h"
-#include "sensorconfigurationlistdelegate.h"
+#include "measurementconfigurationlistdelegate.h"
 
 namespace Ui {
-class SensorConfigurationDialog;
+class MeasurementConfigurationDialog;
 }
 
 /*!
- * \brief The SensorConfigurationDialog class
+ * \brief The MeasurementConfigurationDialog class
  */
-class SensorConfigurationDialog : public QDialog
+class MeasurementConfigurationDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit SensorConfigurationDialog(QWidget *parent = 0);
-    ~SensorConfigurationDialog();
+    explicit MeasurementConfigurationDialog(QWidget *parent = 0);
+    ~MeasurementConfigurationDialog();
 
 signals:
 
-    //###############################################
-    //signals to inform about sensor config selection
-    //###############################################
+    //#############################################################################
+    //signals to inform about measurement config selection (for the active feature)
+    //#############################################################################
 
-    void setSensorConfiguration(const QString &name);
+    void setMeasurementConfiguration(const QString &name);
 
 private slots:
-
-    //#################################
-    //scalar parameter changed callback
-    //#################################
-
-    void scalarParameterChanged();
 
     //#########################
     //actions triggered by user
     //#########################
 
-    //sensor configs list view
-    void on_listView_sensorConfigs_clicked(const QModelIndex &index);
-    void sensorConfigContextMenuRequested(const QPoint &point);
-    void removeSelectedSensorConfig();
+    //measurement configs list view
+    void on_listView_measurementConfigs_clicked(const QModelIndex &index);
+    void measurementConfigContextMenuRequested(const QPoint &point);
+    void removeSelectedMeasurementConfig();
 
-    //add new sensor config
+    //add new measurement configs
     void on_pushButton_add_clicked();
 
-    //sensor types combo box
-    void on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1);
+    //measurement config attributes changed
+    void on_lineEdit_numMeas_textChanged(const QString &arg1);
+    void on_lineEdit_iterations_textChanged(const QString &arg1);
+    void on_comboBox_readingType_currentIndexChanged(const QString &arg1);
+    void on_checkBox_twoFace_clicked();
+    void on_checkBox_timeDependent_clicked();
+    void on_lineEdit_timeInterval_textChanged(const QString &arg1);
+    void on_checkBox_distanceDependent_clicked();
+    void on_lineEdit_distancInterval_textChanged(const QString &arg1);
 
-    //set or cancel
-    void on_pushButton_cancel_clicked();
+    //set measurement config for the active feature
     void on_pushButton_set_clicked();
 
-    //sensor plugin changed
-    void on_tableView_sensorPlugins_clicked(const QModelIndex &index);
-    void on_comboBox_typeOfConnection_currentIndexChanged(const QString &arg1);
-    void on_comboBox_ip_currentTextChanged(const QString &arg1);
-    void on_lineEdit_port_textChanged(const QString &arg1);
-    void on_comboBox_comPort_currentIndexChanged(int index);
-    void on_comboBox_baudrate_currentIndexChanged(int index);
-    void on_comboBox_databits_currentIndexChanged(int index);
-    void on_comboBox_flowcontrol_currentIndexChanged(int index);
-    void on_comboBox_parity_currentIndexChanged(int index);
-    void on_comboBox_stopbits_currentIndexChanged(int index);
-
 private:
-    Ui::SensorConfigurationDialog *ui;
-
-    //#################
-    //helper attributes
-    //#################
-
-    //widget with scalar input parameters
-    ScalarParameterWidget *scalarParameterWidget;
+    Ui::MeasurementConfigurationDialog *ui;
 
     //##############
     //helper methods
     //##############
 
-    //update GUI elements from the selected sensor config
-    void updateConnectionConfigFromSensorConfig(const QList<ConnectionTypes> supportedConnections, const ConnectionConfig &cConfig);
-    void updateAccuracyFromSensorConfig(const Accuracy &accuracy);
-    void updateScalarParametersFromSensorConfig(const QMap<QString, int> &intParams,
-                                                const QMap<QString, double> &doubleParams,
-                                                const QMap<QString, QString> &stringParams,
-                                                const QMultiMap<QString, QString> &availableStringOptions);
+    //update GUI elements from the selected measurement config
+    void updateGuiFromMeasurementConfig(const MeasurementConfig &mConfig);
 
-    //update the selected sensor config from GUI elements
-    void updateSensorConfigFromSelection();
+    //update the selected measurement config from GUI elements
+    void updateMeasurementConfigFromSelection();
 
     //##################################
     //methods to initialize GUI elements
@@ -122,4 +97,4 @@ private:
 
 };
 
-#endif // SENSORCONFIGURATIONDIALOG_H
+#endif // MEASUREMENTCONFIGURATIONDIALOG_H

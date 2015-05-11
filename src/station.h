@@ -44,11 +44,21 @@ public:
 
     const QPointer<CoordinateSystem> &getCoordinateSystem() const;
 
-    SensorTypes getActiveSensorType() const;
-    QList<ReadingTypes> getSupportedReadingTypes() const;
     void setSensor(const QPointer<Sensor> &sensor);
 
     const QPointer<SensorListener const> getSensorListener() const;
+
+    //####################################################
+    //get information about the currently connected sensor
+    //####################################################
+
+    SensorTypes getActiveSensorType() const;
+
+    QList<ReadingTypes> getSupportedReadingTypes() const;
+    QList<ConnectionTypes> getSupportedConnectionTypes() const;
+
+    QList<SensorFunctions> getSupportedSensorActions() const;
+    QStringList getSelfDefinedActions() const;
 
     //###########################
     //reexecute the function list

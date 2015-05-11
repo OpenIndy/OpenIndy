@@ -31,6 +31,8 @@
 #include "sensorconfigurationmodel.h"
 #include "sensorconfigurationproxymodel.h"
 #include "plugintreeviewmodel.h"
+#include "measurementconfigurationmodel.h"
+#include "measurementconfigurationproxymodel.h"
 
 /*!
  * \brief The ModelManager class
@@ -57,12 +59,15 @@ public:
     static const QPointer<OiJob> &getCurrentJob();
     static void setCurrentJob(const QPointer<OiJob> &job);
 
-    //#########################
-    //get or set sensor configs
-    //#########################
+    //##########################
+    //get or set config managers
+    //##########################
 
     static const QPointer<SensorConfigurationManager> &getSensorConfigManager();
     static void setSensorConfigManager(const QPointer<SensorConfigurationManager> &sensorConfigManager);
+
+    static const QPointer<MeasurementConfigManager> &getMeasurementConfigManager();
+    static void setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &measurementConfigManager);
 
     //##########################
     //get or set display configs
@@ -126,6 +131,10 @@ public:
     static QStandardItemModel &getStopBitTypesModel();
     static QStandardItemModel &getAvailableSerialPortsModel();
     static QStandardItemModel &getAvailableIpAdressesModel();
+
+    //measurement config models
+    static MeasurementConfigurationModel &getMeasurementConfigurationModel();
+    static MeasurementConfigurationProxyModel &getMeasurementConfigurationProxyModel();
 
     //############################################################
     //get dynamic models (models that are newly created each time)
@@ -215,6 +224,10 @@ private:
     static QStandardItemModel availableSerialPortsModel;
     static QStandardItemModel availableIpAdressesModel;
 
+    //measurement config models
+    static MeasurementConfigurationModel measurementConfigurationModel;
+    static MeasurementConfigurationProxyModel measurementConfigurationProxyModel;
+
     //##################
     //empty dummy models
     //##################
@@ -232,6 +245,7 @@ private:
     static void updateTrafoParamTableColumnConfig();
     static void updateParameterDisplayConfig();
     static void updateSensorConfigManager();
+    static void updateMeasurementConfigManager();
 
     //################################################################
     //update models (called every time a connected event is triggered)
@@ -254,6 +268,8 @@ private:
     static void initSensorTypeNamesModel();
     static void initSensorTableModels();
     static void initSensorListViewModels();
+
+    static void initMeasurementConfigModels();
 
     static void initSensorConnectionModels();
 
@@ -278,6 +294,7 @@ private:
     //##############
 
     static QPointer<SensorConfigurationManager> sensorConfigManager;
+    static QPointer<MeasurementConfigManager> measurementConfigManager;
 
     //###############################################################
     //save sdb::Plugin so that the database must only be queried once

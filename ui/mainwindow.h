@@ -6,6 +6,7 @@
 #include <QString>
 #include <QIODevice>
 #include <QListView>
+#include <QSignalMapper>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -23,6 +24,7 @@
 #include "sensortaskinfodialog.h"
 #include "pluginmanagerdialog.h"
 #include "watchwindowdialog.h"
+#include "measurementconfigurationdialog.h"
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
@@ -54,6 +56,9 @@ signals:
 
     //set sensor configuration for active sensor
     void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
+
+    //set measurement configuration for active feature
+    void measurementConfigurationChanged(const QString &name);
 
     //recalculation of features
     void recalcAll();
@@ -158,6 +163,9 @@ private slots:
     //close OpenIndy
     void on_actionClose_triggered();
 
+    //show measurement config dialog
+    void on_actionMeasurement_Configuration_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -185,7 +193,7 @@ private:
     //methods to update GUI elements
     //##############################
 
-    void activeSensorTypeChanged(const SensorTypes &type);
+    void activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
 
     //############################
     //OpenIndy dialogs and widgets
@@ -201,6 +209,7 @@ private:
     SensorTaskInfoDialog sensorTaskInfoDialog;
     PluginManagerDialog pluginManagerDialog;
     WatchWindowDialog watchWindowDialog;
+    MeasurementConfigurationDialog measurementConfigDialog;
 
     //##########
     //sensor pad
@@ -217,7 +226,9 @@ private:
     QAction *actionChangeMotorState;
     QAction *actionToggleSightOrientation;
     QAction *actionCompensation;
+    QList<QPointer<QAction> > selfDefinedActions;
 
+    QPointer<QSignalMapper> customActionMapper;
 
 };
 

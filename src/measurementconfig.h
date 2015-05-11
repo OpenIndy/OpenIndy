@@ -18,21 +18,19 @@ class MeasurementConfig
 
 public:
     MeasurementConfig();
-/*
-    //! compare the attributes of both measurement configs
+
+    MeasurementConfig(const MeasurementConfig &copy);
+
+    MeasurementConfig &operator=(const MeasurementConfig &copy);
+
     friend bool operator==(const MeasurementConfig &left, const MeasurementConfig &right){
 
-        if(left.count == right.count && left.iterations == right.iterations
-                && left.measureTwoSides == right.measureTwoSides
-                && left.timeDependent == right.timeDependent && left.distanceDependent == right.distanceDependent
-                && left.timeInterval == right.timeInterval && left.distanceInterval == right.distanceInterval
-                && left.typeOfReading == right.typeOfReading){
+        if(left.getName().compare(right.getName()) == 0){
             return true;
-        }else{
-            return false;
         }
+        return false;
 
-    }*/
+    }
 
     //########################################
     //get or set measurement config attributes
@@ -42,6 +40,7 @@ public:
     void setName(const QString &name);
 
     const bool &getIsSaved() const;
+    void setIsSaved(const bool &isSaved);
 
     bool getIsValid() const;
 
@@ -83,7 +82,6 @@ private:
     //#############################
 
     QString name;
-
     bool isSaved;
 
     int count; //the number of measurements that the sensor shall bring together to a single reading

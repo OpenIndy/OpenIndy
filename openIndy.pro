@@ -173,7 +173,11 @@ SOURCES += \
     models/plugintreeviewmodel.cpp \
     ui/dialogs/pluginmanagerdialog.cpp \
     ui/dialogs/watchwindowdialog.cpp \
-    controller/exchange/projectexchanger.cpp
+    controller/exchange/projectexchanger.cpp \
+    ui/dialogs/measurementconfigurationdialog.cpp \
+    models/measurementconfigurationmodel.cpp \
+    models/measurementconfigurationproxymodel.cpp \
+    ui/delegates/measurementconfigurationlistdelegate.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -294,7 +298,11 @@ HEADERS  += \
     models/plugintreeviewmodel.h \
     ui/dialogs/pluginmanagerdialog.h \
     ui/dialogs/watchwindowdialog.h \
-    controller/exchange/projectexchanger.h
+    controller/exchange/projectexchanger.h \
+    ui/dialogs/measurementconfigurationdialog.h \
+    models/measurementconfigurationmodel.h \
+    models/measurementconfigurationproxymodel.h \
+    ui/delegates/measurementconfigurationlistdelegate.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -308,4 +316,5 @@ FORMS    += \
     ui/dialogs/sensortaskinfodialog.ui \
     ui/dialogs/settingsdialog.ui \
     ui/dialogs/pluginmanagerdialog.ui \
-    ui/dialogs/watchwindowdialog.ui
+    ui/dialogs/watchwindowdialog.ui \
+    ui/dialogs/measurementconfigurationdialog.ui

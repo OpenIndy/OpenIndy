@@ -15,6 +15,7 @@
 #include "exchangeParams.h"
 #include "dataexchanger.h"
 #include "sensorconfigurationmanager.h"
+#include "measurementconfigmanager.h"
 #include "featureupdater.h"
 #include "projectexchanger.h"
 
@@ -45,6 +46,9 @@ public slots:
 
     //set sensor configuration for active sensor
     void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
+
+    //set measurement configuration for active feature
+    void measurementConfigurationChanged(const QString &name);
 
     //set active feature states
     //void setActiveFeature(const int &featureId);
@@ -207,6 +211,7 @@ private:
 
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;
+    QPointer<MeasurementConfigManager> measurementConfigManager;
 
 };
 

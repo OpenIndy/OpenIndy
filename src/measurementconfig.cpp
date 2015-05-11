@@ -107,7 +107,7 @@ void MeasurementConfig::setIsSaved(bool isSaved){
 MeasurementConfig::MeasurementConfig() : isSaved(false){
 
     //set defaults
-    this->count = 1000;
+    this->count = 500;
     this->iterations = 1;
     this->measureTwoSides = false;
     this->timeDependent = false;
@@ -115,6 +115,49 @@ MeasurementConfig::MeasurementConfig() : isSaved(false){
     this->timeInterval = 0;
     this->distanceInterval = 0.0;
     this->typeOfReading = ePolarReading;
+
+}
+
+/*!
+ * \brief MeasurementConfig::MeasurementConfig
+ * \param copy
+ */
+MeasurementConfig::MeasurementConfig(const MeasurementConfig &copy){
+
+    //copy measurement config attributes
+    this->name = copy.name;
+    this->isSaved = copy.isSaved;
+    this->count = copy.count;
+    this->iterations = copy.iterations;
+    this->measureTwoSides = copy.measureTwoSides;
+    this->timeDependent = copy.timeDependent;
+    this->distanceDependent = copy.distanceDependent;
+    this->timeInterval = copy.timeInterval;
+    this->distanceInterval = copy.distanceInterval;
+    this->typeOfReading = copy.typeOfReading;
+
+}
+
+/*!
+ * \brief MeasurementConfig::operator =
+ * \param copy
+ * \return
+ */
+MeasurementConfig &MeasurementConfig::operator=(const MeasurementConfig &copy){
+
+    //copy measurement config attributes
+    this->name = copy.name;
+    this->isSaved = copy.isSaved;
+    this->count = copy.count;
+    this->iterations = copy.iterations;
+    this->measureTwoSides = copy.measureTwoSides;
+    this->timeDependent = copy.timeDependent;
+    this->distanceDependent = copy.distanceDependent;
+    this->timeInterval = copy.timeInterval;
+    this->distanceInterval = copy.distanceInterval;
+    this->typeOfReading = copy.typeOfReading;
+
+    return *this;
 
 }
 
@@ -141,6 +184,14 @@ void MeasurementConfig::setName(const QString &name){
  */
 const bool &MeasurementConfig::getIsSaved() const{
     return this->isSaved;
+}
+
+/*!
+ * \brief MeasurementConfig::setIsSaved
+ * \param isSaved
+ */
+void MeasurementConfig::setIsSaved(const bool &isSaved){
+    this->isSaved = isSaved;
 }
 
 /*!
