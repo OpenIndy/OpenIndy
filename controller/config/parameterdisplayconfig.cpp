@@ -42,12 +42,12 @@ void ParameterDisplayConfig::setDisplayUnitType(const DimensionType &dimension, 
         break;
     case eAngular:
         if(unit == eUnitRadiant || unit == eUnitMilliRadians || unit == eUnitGon || unit == eUnitDecimalDegree || unit == eUnitArcSeconds){
-            this->metricDisplayUnit = unit;
+            this->angularDisplayUnit = unit;
         }
         break;
     case eTemperature:
         if(unit == eUnitGrad || unit == eUnitKelvin || unit == eUnitFahrenheit){
-            this->metricDisplayUnit = unit;
+            this->temperatureDisplayUnit = unit;
         }
         break;
     case eDimensionless:

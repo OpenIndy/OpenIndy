@@ -252,7 +252,7 @@ bool Plane::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Plane::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->xyz.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->xyz.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -266,7 +266,7 @@ QString Plane::getDisplayX(const UnitType &type, const int &digits, const bool &
  */
 QString Plane::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->xyz.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->xyz.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -280,7 +280,7 @@ QString Plane::getDisplayY(const UnitType &type, const int &digits, const bool &
  */
 QString Plane::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->xyz.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->xyz.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }

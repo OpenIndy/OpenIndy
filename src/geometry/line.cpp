@@ -201,7 +201,7 @@ bool Line::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Line::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->xyz.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->xyz.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -215,7 +215,7 @@ QString Line::getDisplayX(const UnitType &type, const int &digits, const bool &s
  */
 QString Line::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->xyz.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->xyz.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -229,7 +229,7 @@ QString Line::getDisplayY(const UnitType &type, const int &digits, const bool &s
  */
 QString Line::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->xyz.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->xyz.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }

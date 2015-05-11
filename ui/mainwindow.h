@@ -25,6 +25,7 @@
 #include "pluginmanagerdialog.h"
 #include "watchwindowdialog.h"
 #include "measurementconfigurationdialog.h"
+#include "settingsdialog.h"
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
@@ -170,6 +171,9 @@ private slots:
     //activate a station
     void on_actionActivate_station_triggered();
 
+    //show settings dialog
+    void on_actionView_settings_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -214,6 +218,7 @@ private:
     PluginManagerDialog pluginManagerDialog;
     WatchWindowDialog watchWindowDialog;
     MeasurementConfigurationDialog measurementConfigDialog;
+    SettingsDialog settingsDialog;
 
     //##########
     //sensor pad

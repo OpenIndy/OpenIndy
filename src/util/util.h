@@ -66,6 +66,7 @@ const QString &getDisplayAttributeName(const TrafoParamDisplayAttributes &attr);
 //###############################
 
 double convertToDefault(const double &value, const UnitType &type);
+double convertFromDefault(const double &value, const UnitType &type);
 
 const QString &getUnitTypeName(const UnitType &type);
 UnitType getUnitTypeEnum(const QString &name);

@@ -253,7 +253,7 @@ bool Torus::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Torus::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -267,7 +267,7 @@ QString Torus::getDisplayX(const UnitType &type, const int &digits, const bool &
  */
 QString Torus::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -281,7 +281,7 @@ QString Torus::getDisplayY(const UnitType &type, const int &digits, const bool &
  */
 QString Torus::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }
@@ -334,7 +334,7 @@ QString Torus::getDisplayPrimaryK(const int &digits, const bool &showDiff) const
  */
 QString Torus::getDisplayRadiusA(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->radiusA.getRadius(), type), 'f', digits);
+        return QString::number(convertFromDefault(this->radiusA.getRadius(), type), 'f', digits);
     }
     return QString("");
 }
@@ -348,7 +348,7 @@ QString Torus::getDisplayRadiusA(const UnitType &type, const int &digits, const 
  */
 QString Torus::getDisplayRadiusB(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->radiusB.getRadius(), type), 'f', digits);
+        return QString::number(convertFromDefault(this->radiusB.getRadius(), type), 'f', digits);
     }
     return QString("");
 }

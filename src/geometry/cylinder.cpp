@@ -226,7 +226,7 @@ bool Cylinder::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Cylinder::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->axisPoint.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->axisPoint.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -240,7 +240,7 @@ QString Cylinder::getDisplayX(const UnitType &type, const int &digits, const boo
  */
 QString Cylinder::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->axisPoint.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->axisPoint.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -254,7 +254,7 @@ QString Cylinder::getDisplayY(const UnitType &type, const int &digits, const boo
  */
 QString Cylinder::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->axisPoint.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->axisPoint.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }
@@ -307,7 +307,7 @@ QString Cylinder::getDisplayPrimaryK(const int &digits, const bool &showDiff) co
  */
 QString Cylinder::getDisplayRadiusA(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->radius.getRadius(), type), 'f', digits);
+        return QString::number(convertFromDefault(this->radius.getRadius(), type), 'f', digits);
     }
     return QString("");
 }

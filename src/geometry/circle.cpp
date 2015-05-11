@@ -224,7 +224,7 @@ bool Circle::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Circle::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -238,7 +238,7 @@ QString Circle::getDisplayX(const UnitType &type, const int &digits, const bool 
  */
 QString Circle::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -252,7 +252,7 @@ QString Circle::getDisplayY(const UnitType &type, const int &digits, const bool 
  */
 QString Circle::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }
@@ -305,7 +305,7 @@ QString Circle::getDisplayPrimaryK(const int &digits, const bool &showDiff) cons
  */
 QString Circle::getDisplayRadiusA(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->radius.getRadius(), type), 'f', digits);
+        return QString::number(convertFromDefault(this->radius.getRadius(), type), 'f', digits);
     }
     return QString("");
 }

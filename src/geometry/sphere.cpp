@@ -198,7 +198,7 @@ bool Sphere::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Sphere::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -212,7 +212,7 @@ QString Sphere::getDisplayX(const UnitType &type, const int &digits, const bool 
  */
 QString Sphere::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -226,7 +226,7 @@ QString Sphere::getDisplayY(const UnitType &type, const int &digits, const bool 
  */
 QString Sphere::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }

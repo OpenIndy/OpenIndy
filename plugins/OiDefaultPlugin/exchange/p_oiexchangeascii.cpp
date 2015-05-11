@@ -303,7 +303,7 @@ void OiExchangeAscii::importOiData(){
 
                         //transform the unit of the imported coordinate to [m]
                         if(this->units.contains(eMetric) && this->units.value(eMetric) != eUnitMeter){
-                            convertToDefault(x, this->units.value(eMetric));
+                            x = convertToDefault(x, this->units.value(eMetric));
                         }
 
                         if(!errorWhileParsing){
@@ -324,7 +324,7 @@ void OiExchangeAscii::importOiData(){
 
                         //transform the unit of the imported coordinate to [m]
                         if(this->units.contains(eMetric) && this->units.value(eMetric) != eUnitMeter){
-                            convertToDefault(y, this->units.value(eMetric));
+                            y = convertToDefault(y, this->units.value(eMetric));
                         }
 
                         if(!errorWhileParsing){
@@ -345,7 +345,7 @@ void OiExchangeAscii::importOiData(){
 
                         //transform the unit of the imported coordinate to [m]
                         if(this->units.contains(eMetric) && this->units.value(eMetric) != eUnitMeter){
-                            convertToDefault(z, this->units.value(eMetric));
+                            z = convertToDefault(z, this->units.value(eMetric));
                         }
 
                         if(!errorWhileParsing){

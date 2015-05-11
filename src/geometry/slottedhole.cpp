@@ -359,7 +359,7 @@ bool SlottedHole::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString SlottedHole::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -373,7 +373,7 @@ QString SlottedHole::getDisplayX(const UnitType &type, const int &digits, const 
  */
 QString SlottedHole::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -387,7 +387,7 @@ QString SlottedHole::getDisplayY(const UnitType &type, const int &digits, const 
  */
 QString SlottedHole::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }
@@ -440,7 +440,7 @@ QString SlottedHole::getDisplayPrimaryK(const int &digits, const bool &showDiff)
  */
 QString SlottedHole::getDisplayRadiusA(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->radius.getRadius(), type), 'f', digits);
+        return QString::number(convertFromDefault(this->radius.getRadius(), type), 'f', digits);
     }
     return QString("");
 }
@@ -493,7 +493,7 @@ QString SlottedHole::getDisplaySecondaryK(const int &digits, const bool &showDif
  */
 QString SlottedHole::getDisplayLength(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->length, type), 'f', digits);
+        return QString::number(convertFromDefault(this->length, type), 'f', digits);
     }
     return QString("");
 }

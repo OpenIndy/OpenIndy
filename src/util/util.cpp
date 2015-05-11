@@ -898,6 +898,38 @@ double convertToDefault(const double &value, const UnitType &type){
 }
 
 /*!
+ * \brief convertFromDefault
+ * Convert the given value of default unit to the specified unit type
+ * \param value
+ * \param type
+ * \return
+ */
+double convertFromDefault(const double &value, const UnitType &type){
+
+    switch(type){
+    case eUnitMilliMeter:
+        return value * 1000.0;
+    case eUnitInch:
+        return value * 39.37007874;
+    case eUnitMilliRadians:
+        return value * 1000.0;
+    case eUnitGon:
+        return value * RHO_GON;
+    case eUnitArcSeconds:
+        return value * 206264.8062471;
+    case eUnitDecimalDegree:
+        return value * RHO_DEGREE;
+    case eUnitFahrenheit:
+        return value * 1.8 + 32.0;
+    case eUnitKelvin:
+        return value + 273.15;
+    default:
+        return value;
+    }
+
+}
+
+/*!
  * \brief getUnitTypeName
  * \param type
  * \return

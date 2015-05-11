@@ -9,6 +9,9 @@
 #include <QStringListModel>
 #include <QDesktopWidget>
 
+#include "modelmanager.h"
+#include "parameterdisplayconfig.h"
+
 namespace Ui {
 class SettingsDialog;
 }
@@ -21,6 +24,27 @@ public:
     explicit SettingsDialog(QWidget *parent = 0);
     ~SettingsDialog();
 
+signals:
+
+    //########################
+    //display settings changed
+    //########################
+
+    void setDisplayConfig(const ParameterDisplayConfig &config);
+
+private slots:
+
+    //#########################
+    //actions triggered by user
+    //#########################
+
+    void on_comboBox_angleType_currentIndexChanged(const QString &arg1);
+    void on_comboBox_distanceType_currentIndexChanged(const QString &arg1);
+    void on_comboBox_temperatureType_currentIndexChanged(const QString &arg1);
+    void on_lineEdit_angleDigits_textChanged(const QString &arg1);
+    void on_lineEdit_distanceDigits_textChanged(const QString &arg1);
+    void on_lineEdit_temperatureDigits_textChanged(const QString &arg1);
+
 private:
 
     //##################################
@@ -28,6 +52,15 @@ private:
     //##################################
 
     void showEvent(QShowEvent *event);
+
+    void initGUI();
+    void initModels();
+
+    //##############
+    //helper methods
+    //##############
+
+    void updateDisplayConfigFromSelection();
 
 private:
     Ui::SettingsDialog *ui;

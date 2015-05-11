@@ -516,7 +516,7 @@ QString TrafoParam::getDisplayDestinationSystem() const{
  */
 QString TrafoParam::getDisplayTranslationX(const UnitType &type, const int &digits) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->translation.getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->translation.getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -529,7 +529,7 @@ QString TrafoParam::getDisplayTranslationX(const UnitType &type, const int &digi
  */
 QString TrafoParam::getDisplayTranslationY(const UnitType &type, const int &digits) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->translation.getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->translation.getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -542,7 +542,7 @@ QString TrafoParam::getDisplayTranslationY(const UnitType &type, const int &digi
  */
 QString TrafoParam::getDisplayTranslationZ(const UnitType &type, const int &digits) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->translation.getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->translation.getAt(2), type), 'f', digits);
     }
     return QString("");
 }
@@ -555,7 +555,7 @@ QString TrafoParam::getDisplayTranslationZ(const UnitType &type, const int &digi
  */
 QString TrafoParam::getDisplayRotationX(const UnitType &type, const int &digits) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->rotation.getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->rotation.getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -568,7 +568,7 @@ QString TrafoParam::getDisplayRotationX(const UnitType &type, const int &digits)
  */
 QString TrafoParam::getDisplayRotationY(const UnitType &type, const int &digits) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->rotation.getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->rotation.getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -581,7 +581,7 @@ QString TrafoParam::getDisplayRotationY(const UnitType &type, const int &digits)
  */
 QString TrafoParam::getDisplayRotationZ(const UnitType &type, const int &digits) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->rotation.getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->rotation.getAt(2), type), 'f', digits);
     }
     return QString("");
 }

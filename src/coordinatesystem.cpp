@@ -651,7 +651,7 @@ bool CoordinateSystem::fromOpenIndyXML(QDomElement &xmlElem){
  * \return
  */
 QString CoordinateSystem::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
-    return QString::number(convertToDefault(this->origin.getVector().getAt(0), type), 'f', digits);
+    return QString::number(convertFromDefault(this->origin.getVector().getAt(0), type), 'f', digits);
 }
 
 /*!
@@ -662,7 +662,7 @@ QString CoordinateSystem::getDisplayX(const UnitType &type, const int &digits, c
  * \return
  */
 QString CoordinateSystem::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
-    return QString::number(convertToDefault(this->origin.getVector().getAt(1), type), 'f', digits);
+    return QString::number(convertFromDefault(this->origin.getVector().getAt(1), type), 'f', digits);
 }
 
 /*!
@@ -673,7 +673,7 @@ QString CoordinateSystem::getDisplayY(const UnitType &type, const int &digits, c
  * \return
  */
 QString CoordinateSystem::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
-    return QString::number(convertToDefault(this->origin.getVector().getAt(2), type), 'f', digits);
+    return QString::number(convertFromDefault(this->origin.getVector().getAt(2), type), 'f', digits);
 }
 
 /*!
@@ -683,7 +683,7 @@ QString CoordinateSystem::getDisplayZ(const UnitType &type, const int &digits, c
  * \return
  */
 QString CoordinateSystem::getDisplayExpansionOriginX(const UnitType &type, const int &digits) const{
-    return QString::number(convertToDefault(this->expansionOrigin.getVector().getAt(0), type), 'f', digits);
+    return QString::number(convertFromDefault(this->expansionOrigin.getVector().getAt(0), type), 'f', digits);
 }
 
 /*!
@@ -693,7 +693,7 @@ QString CoordinateSystem::getDisplayExpansionOriginX(const UnitType &type, const
  * \return
  */
 QString CoordinateSystem::getDisplayExpansionOriginY(const UnitType &type, const int &digits) const{
-    return QString::number(convertToDefault(this->expansionOrigin.getVector().getAt(1), type), 'f', digits);
+    return QString::number(convertFromDefault(this->expansionOrigin.getVector().getAt(1), type), 'f', digits);
 }
 
 /*!
@@ -703,7 +703,7 @@ QString CoordinateSystem::getDisplayExpansionOriginY(const UnitType &type, const
  * \return
  */
 QString CoordinateSystem::getDisplayExpansionOriginZ(const UnitType &type, const int &digits) const{
-    return QString::number(convertToDefault(this->expansionOrigin.getVector().getAt(2), type), 'f', digits);
+    return QString::number(convertFromDefault(this->expansionOrigin.getVector().getAt(2), type), 'f', digits);
 }
 
 /*!

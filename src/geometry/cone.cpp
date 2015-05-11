@@ -227,7 +227,7 @@ bool Cone::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Cone::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->apex.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->apex.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -241,7 +241,7 @@ QString Cone::getDisplayX(const UnitType &type, const int &digits, const bool &s
  */
 QString Cone::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->apex.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->apex.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -255,7 +255,7 @@ QString Cone::getDisplayY(const UnitType &type, const int &digits, const bool &s
  */
 QString Cone::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->apex.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->apex.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }
@@ -308,7 +308,7 @@ QString Cone::getDisplayPrimaryK(const int &digits, const bool &showDiff) const{
  */
 QString Cone::getDisplayAperture(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->aperture, type), 'f', digits);
+        return QString::number(convertFromDefault(this->aperture, type), 'f', digits);
     }
     return QString("");
 }

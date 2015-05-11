@@ -252,7 +252,7 @@ bool Hyperboloid::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Hyperboloid::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -266,7 +266,7 @@ QString Hyperboloid::getDisplayX(const UnitType &type, const int &digits, const 
  */
 QString Hyperboloid::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -280,7 +280,7 @@ QString Hyperboloid::getDisplayY(const UnitType &type, const int &digits, const 
  */
 QString Hyperboloid::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }
@@ -333,7 +333,7 @@ QString Hyperboloid::getDisplayPrimaryK(const int &digits, const bool &showDiff)
  */
 QString Hyperboloid::getDisplayA(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->a, type), 'f', digits);
+        return QString::number(convertFromDefault(this->a, type), 'f', digits);
     }
     return QString("");
 }
@@ -347,7 +347,7 @@ QString Hyperboloid::getDisplayA(const UnitType &type, const int &digits, const 
  */
 QString Hyperboloid::getDisplayC(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->c, type), 'f', digits);
+        return QString::number(convertFromDefault(this->c, type), 'f', digits);
     }
     return QString("");
 }

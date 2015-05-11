@@ -603,6 +603,13 @@ void MainWindow::on_actionActivate_station_triggered(){
 }
 
 /*!
+ * \brief MainWindow::on_actionView_settings_triggered
+ */
+void MainWindow::on_actionView_settings_triggered(){
+    this->settingsDialog.show();
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -660,6 +667,9 @@ void MainWindow::connectDialogs(){
 
     //connect feature functions dialog
     QObject::connect(&this->featureFunctionsDialog, &FeatureFunctionsDialog::recalculateActiveFeature, &this->control, &Controller::recalcActiveFeature, Qt::AutoConnection);
+
+    //connect settings dialog
+    QObject::connect(&this->settingsDialog, &SettingsDialog::setDisplayConfig, &this->control, &Controller::setParameterDisplayConfig, Qt::AutoConnection);
 
 }
 

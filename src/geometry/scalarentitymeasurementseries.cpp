@@ -167,7 +167,7 @@ bool ScalarEntityMeasurementSeries::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString ScalarEntityMeasurementSeries::getDisplayMeasurementSeries(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->seriesValue, type), 'f', digits);
+        return QString::number(convertFromDefault(this->seriesValue, type), 'f', digits);
     }
     return QString("");
 }

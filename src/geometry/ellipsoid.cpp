@@ -258,7 +258,7 @@ bool Ellipsoid::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Ellipsoid::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -272,7 +272,7 @@ QString Ellipsoid::getDisplayX(const UnitType &type, const int &digits, const bo
  */
 QString Ellipsoid::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -286,7 +286,7 @@ QString Ellipsoid::getDisplayY(const UnitType &type, const int &digits, const bo
  */
 QString Ellipsoid::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->center.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->center.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }
@@ -339,7 +339,7 @@ QString Ellipsoid::getDisplayPrimaryK(const int &digits, const bool &showDiff) c
  */
 QString Ellipsoid::getDisplayA(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->a, type), 'f', digits);
+        return QString::number(convertFromDefault(this->a, type), 'f', digits);
     }
     return QString("");
 }
@@ -353,7 +353,7 @@ QString Ellipsoid::getDisplayA(const UnitType &type, const int &digits, const bo
  */
 QString Ellipsoid::getDisplayB(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->b, type), 'f', digits);
+        return QString::number(convertFromDefault(this->b, type), 'f', digits);
     }
     return QString("");
 }

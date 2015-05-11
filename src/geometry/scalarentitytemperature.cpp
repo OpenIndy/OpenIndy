@@ -167,7 +167,7 @@ bool ScalarEntityTemperature::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString ScalarEntityTemperature::getDisplayTemperature(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->temperature, type), 'f', digits);
+        return QString::number(convertFromDefault(this->temperature, type), 'f', digits);
     }
     return QString("");
 }

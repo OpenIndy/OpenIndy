@@ -225,7 +225,7 @@ bool Paraboloid::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Paraboloid::getDisplayX(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->apex.getVector().getAt(0), type), 'f', digits);
+        return QString::number(convertFromDefault(this->apex.getVector().getAt(0), type), 'f', digits);
     }
     return QString("");
 }
@@ -239,7 +239,7 @@ QString Paraboloid::getDisplayX(const UnitType &type, const int &digits, const b
  */
 QString Paraboloid::getDisplayY(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->apex.getVector().getAt(1), type), 'f', digits);
+        return QString::number(convertFromDefault(this->apex.getVector().getAt(1), type), 'f', digits);
     }
     return QString("");
 }
@@ -253,7 +253,7 @@ QString Paraboloid::getDisplayY(const UnitType &type, const int &digits, const b
  */
 QString Paraboloid::getDisplayZ(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->apex.getVector().getAt(2), type), 'f', digits);
+        return QString::number(convertFromDefault(this->apex.getVector().getAt(2), type), 'f', digits);
     }
     return QString("");
 }
@@ -306,7 +306,7 @@ QString Paraboloid::getDisplayPrimaryK(const int &digits, const bool &showDiff) 
  */
 QString Paraboloid::getDisplayA(const UnitType &type, const int &digits, const bool &showDiff) const{
     if(this->isSolved){
-        return QString::number(convertToDefault(this->a, type), 'f', digits);
+        return QString::number(convertFromDefault(this->a, type), 'f', digits);
     }
     return QString("");
 }
