@@ -10,6 +10,7 @@
 #include "types.h"
 #include "util.h"
 #include "parameterdisplayconfig.h"
+#include "console.h"
 
 /*!
  * \brief The FeatureTableModel class
@@ -53,6 +54,9 @@ public:
 
     QPointer<Station> getActiveStation() const;
     void setActiveStation(const QModelIndex &index);
+
+    QPointer<CoordinateSystem> getActiveCoordinateSystem() const;
+    void setActiveCoordinateSystem(const QString &name);
 
     //#######################
     //get or set active group

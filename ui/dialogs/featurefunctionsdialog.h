@@ -35,6 +35,14 @@ public:
     explicit FeatureFunctionsDialog(QWidget *parent = 0);
     ~FeatureFunctionsDialog();
 
+signals:
+
+    //##############################################################
+    //recalculate the active feature after its functions were edited
+    //##############################################################
+
+    void recalculateActiveFeature();
+
 private slots:
 
     //#################################
@@ -69,6 +77,9 @@ private slots:
     //active feature functions tree view context menu
     void activeFeatureFunctionsContextMenuRequested(const QPoint &point);
     void removeSelectedFunction();
+
+    //recalculate the active feature
+    void on_cmd_ok_clicked();
 
 private:
     Ui::FeatureFunctionsDialog *ui;

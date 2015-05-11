@@ -82,7 +82,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget_sensorConfig">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="plugin">
           <attribute name="title">
@@ -311,8 +311,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>667</width>
-                <height>309</height>
+                <width>152</width>
+                <height>104</height>
                </rect>
               </property>
               <attribute name="label">
@@ -385,8 +385,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>667</width>
-                <height>309</height>
+                <width>118</width>
+                <height>104</height>
                </rect>
               </property>
               <attribute name="label">
@@ -459,8 +459,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>667</width>
-                <height>309</height>
+                <width>172</width>
+                <height>48</height>
                </rect>
               </property>
               <attribute name="label">
@@ -569,8 +569,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>667</width>
-                <height>309</height>
+                <width>100</width>
+                <height>30</height>
                </rect>
               </property>
               <attribute name="label">

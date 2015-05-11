@@ -14,6 +14,7 @@ class TrafoParam;
 class Geometry;
 class Station;
 class TrafoController;
+class ProjectExchanger;
 
 /*!
  * \brief The CoordinateSystem class
@@ -23,6 +24,7 @@ class CoordinateSystem : public Feature
     friend class Station;
     friend class OiJob;
     friend class TrafoController;
+    friend class ProjectExchanger;
     Q_OBJECT
 
 public:

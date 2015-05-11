@@ -41,6 +41,27 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
 }
 
 /*!
+ * \brief Controller::recalcActiveFeature
+ */
+void Controller::recalcActiveFeature(){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> feature = this->job->getActiveFeature();
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    //recalculate the active feature
+    this->featureUpdater.recalcFeature(feature->getFeature());
+
+}
+
+/*!
  * \brief Controller::sensorConfigurationChanged
  * \param name
  * \param connectSensor
@@ -175,6 +196,30 @@ void Controller::importNominals(const ExchangeParams &params){
 
 }
 
+/*!
+ * \brief Controller::setFeatureTableColumnConfig
+ * \param config
+ */
+void Controller::setFeatureTableColumnConfig(const FeatureTableColumnConfig &config){
+    ModelManager::setFeatureTableColumnConfig(config);
+}
+
+/*!
+ * \brief Controller::setTrafoParamColumnConfig
+ * \param config
+ */
+void Controller::setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config){
+    ModelManager::setTrafoParamColumnConfig(config);
+}
+
+/*!
+ * \brief Controller::setParameterDisplayConfig
+ * \param config
+ */
+void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config){
+    ModelManager::setParameterDisplayConfig(config);
+}
+
 void Controller::saveProject()
 {
 
@@ -217,33 +262,56 @@ void Controller::saveProject(const QString &fileName){
 
 }
 
-void Controller::loadProject(const QString &projectName, const QPointer<QIODevice> &device)
-{
-
-}
-
 /*!
- * \brief Controller::setFeatureTableColumnConfig
- * \param config
+ * \brief Controller::loadProject
+ * \param projectName
+ * \param device
  */
-void Controller::setFeatureTableColumnConfig(const FeatureTableColumnConfig &config){
-    ModelManager::setFeatureTableColumnConfig(config);
-}
+void Controller::loadProject(const QString &projectName, const QPointer<QIODevice> &device){
 
-/*!
- * \brief Controller::setTrafoParamColumnConfig
- * \param config
- */
-void Controller::setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config){
-    ModelManager::setTrafoParamColumnConfig(config);
-}
+    //check device
+    if(device.isNull()){
+        Console::getInstance()->addLine("No device");
+        return;
+    }
 
-/*!
- * \brief Controller::setParameterDisplayConfig
- * \param config
- */
-void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config){
-    ModelManager::setParameterDisplayConfig(config);
+    //create empty job
+    QPointer<OiJob> newJob(NULL);
+
+    //load xml file to DOM tree
+    QDomDocument project;
+    try{
+        device->open(QIODevice::ReadOnly);
+        project.setContent(device);
+        device->close();
+    }catch(const exception &e){
+        Console::getInstance()->addLine("Error while opening OpenIndy xml file.");
+        return;
+    }
+
+    //load project from xml
+    newJob = ProjectExchanger::loadProject(project);
+
+    //check job
+    if(newJob.isNull()){
+        Console::getInstance()->addLine("Error while parsing OpenIndy xml file.");
+        return;
+    }
+
+    //set project meta data
+    newJob->setJobDevice(device);
+    newJob->setJobName(projectName);
+
+    //delete old job
+    if(!this->job.isNull()){
+        delete this->job;
+    }
+
+    //set new job
+    this->setJob(newJob);
+
+    Console::getInstance()->addLine("OpenIndy project successfully loaded.");
+
 }
 
 /*!

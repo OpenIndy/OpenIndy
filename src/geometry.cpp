@@ -247,10 +247,10 @@ void Geometry::addObservation(const QPointer<Observation> &obs){
             return;
         }
 
+        this->observations.append(obs);
+
         //update target geometries
         obs->addTargetGeometry(this);
-
-        this->observations.append(obs);
 
         this->isUpdated = false;
 
@@ -428,8 +428,8 @@ void Geometry::recalc(){
 
     Feature::recalc();
 
-    //if the geometry is a nominal without functions set isSolved to true
-    if(this->functionList.size() == 0 && this->isNominal){
+    //if the geometry is a nominal without functions and its system is the active system set isSolved to true
+    if(this->functionList.size() == 0 && this->isNominal && !this->nominalSystem.isNull() && this->nominalSystem->getIsActiveCoordinateSystem()){
         this->isSolved = true;
     }
 

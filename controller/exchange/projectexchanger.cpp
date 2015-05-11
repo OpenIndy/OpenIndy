@@ -201,8 +201,40 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
 
     }
 
-    //add loaded features to OiFeatureState
+    //remove station points
     foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
+        if(!station.isNull() && !station->getStation().isNull()){
+            if(!station->getStation()->getPosition().isNull()){
+                ProjectExchanger::myGeometries.remove(station->getStation()->getPosition()->getId());
+            }
+        }
+    }
+
+    /*foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
+        Station *s = station->getStation().data();
+        qDebug() << s->getFeatureName();
+    }
+    foreach(const QPointer<FeatureWrapper> &system, ProjectExchanger::myCoordinateSystems){
+        CoordinateSystem *c = system->getCoordinateSystem().data();
+        qDebug() << c->getFeatureName();
+    }
+    foreach(const QPointer<FeatureWrapper> &trafoParam, ProjectExchanger::myTransformationParameters){
+        TrafoParam *t = trafoParam->getTrafoParam().data();
+        qDebug() << t->getFeatureName();
+    }
+    foreach(const QPointer<FeatureWrapper> &geometry, ProjectExchanger::myGeometries){
+        Geometry *g = geometry->getGeometry().data();
+        qDebug() << g->getFeatureName();
+    }*/
+
+    //add features to the job
+    job->addFeaturesFromXml(ProjectExchanger::myStations.values());
+    job->addFeaturesFromXml(ProjectExchanger::myCoordinateSystems.values());
+    job->addFeaturesFromXml(ProjectExchanger::myTransformationParameters.values());
+    job->addFeaturesFromXml(ProjectExchanger::myGeometries.values());
+
+    //add loaded features to OiFeatureState
+    /*foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
         if(!station.isNull() && !station->getStation().isNull()){
             job->addFeature(station);
             if(!station->getStation()->getPosition().isNull()){
@@ -228,7 +260,7 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
                 job->addFeature(geometry);
             }
         }
-    }
+    }*/
 
     //add configs to OiConfigState
     /*foreach(const MeasurementConfig &mConfig, ProjectExchanger::myMConfigs){
@@ -759,7 +791,9 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument &project){
             if(!coordinateSystem.isNull() && coordinateSystem.hasAttribute("ref")){
                 QPointer<FeatureWrapper> mySystem = ProjectExchanger::myCoordinateSystems.value(coordinateSystem.attribute("ref").toInt());
                 if(!mySystem.isNull() && !mySystem->getCoordinateSystem().isNull()){
-                    *(myStation->getStation()->stationSystem.data()) = *(mySystem->getCoordinateSystem().data());
+                    myStation->getStation()->stationSystem = mySystem->getCoordinateSystem();
+                    myStation->getStation()->stationSystem->isStationSystem = true;
+                    mySystem->getCoordinateSystem()->station = myStation->getStation();
                 }else{
                     result = false;
                 }
@@ -840,7 +874,8 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                     QDomElement observation = observationList.at(j).toElement();
                     if(observation.hasAttribute("ref") && ProjectExchanger::myObservations.contains(observation.attribute("ref").toInt())){
                         QPointer<Observation> myObservation = ProjectExchanger::myObservations.value(observation.attribute("ref").toInt());
-                        myCoordinateSystem->getCoordinateSystem()->addObservation(myObservation);
+                        myCoordinateSystem->getCoordinateSystem()->observationsList.append(myObservation);
+                        myCoordinateSystem->getCoordinateSystem()->observationsMap.insert(myObservation->getId(), myObservation);
                     }
                 }
             }
@@ -854,7 +889,8 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                     if(geometry.hasAttribute("ref") && ProjectExchanger::myGeometries.contains(geometry.attribute("ref").toInt())){
                         QPointer<FeatureWrapper> myGeometry = ProjectExchanger::myGeometries.value(geometry.attribute("ref").toInt());
                         if(myGeometry->getGeometry()->getIsNominal()){
-                            myCoordinateSystem->getCoordinateSystem()->addNominal(myGeometry);
+                            myCoordinateSystem->getCoordinateSystem()->nominalsList.append(myGeometry);
+                            myCoordinateSystem->getCoordinateSystem()->nominalsMap.insert(myGeometry->getGeometry()->getId(), myGeometry);
                         }
                     }
                 }
@@ -1051,8 +1087,9 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                     QDomElement observation = observationList.at(j).toElement();
                     if(observation.hasAttribute("ref")){
                         QPointer<Observation> myObservation = ProjectExchanger::myObservations.value(observation.attribute("ref").toInt());
-                        myGeometry->getGeometry()->addObservation(myObservation);
-                        myObservation->addTargetGeometry(myGeometry->getGeometry());
+                        if(!myObservation.isNull()){
+                            myGeometry->getGeometry()->addObservation(myObservation);
+                        }
                     }
                 }
             }
@@ -1177,10 +1214,34 @@ bool ProjectExchanger::restoreObservationDependencies(const QDomDocument &projec
             //set station and sensor
             QDomElement station = observation.firstChildElement("station");
             if(!station.isNull() && station.hasAttribute("ref") && ProjectExchanger::myStations.contains(station.attribute("ref").toInt())){
+
+                //get station and assign it to the observation
                 QPointer<FeatureWrapper> myStation = ProjectExchanger::myStations.value(station.attribute("ref").toInt());
                 myObservation->setStation(myStation->getStation());
                 if(!myStation->getStation()->sensorControl->sensor.isNull()){
                     myObservation->getReading()->sensor = myStation->getStation()->sensorControl->sensor;
+                }
+
+                //assign the observation's reading to the station
+                switch(myObservation->getReading()->getTypeOfReading()){
+                case eCartesianReading:
+                    myStation->getStation()->cartesianReadings.append(myObservation->getReading());
+                    break;
+                case ePolarReading:
+                    myStation->getStation()->polarReadings.append(myObservation->getReading());
+                    break;
+                case eDirectionReading:
+                    myStation->getStation()->directionReadings.append(myObservation->getReading());
+                    break;
+                case eDistanceReading:
+                    myStation->getStation()->distanceReadings.append(myObservation->getReading());
+                    break;
+                case eLevelReading:
+                    myStation->getStation()->levelReadings.append(myObservation->getReading());
+                    break;
+                case eTemperatureReading:
+                    myStation->getStation()->temperatureRadings.append(myObservation->getReading());
+                    break;
                 }
             }
 

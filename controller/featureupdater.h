@@ -60,7 +60,7 @@ public slots:
     void recalcTrafoParam(const QPointer<TrafoParam> &trafoParam);
 
     //change the active coordinate system (transforms all observations to the given coordinate system, if possible)
-    void switchCoordinateSystem(const QPointer<CoordinateSystem> &destinationSystem);
+    void switchCoordinateSystem();
 
 private:
 

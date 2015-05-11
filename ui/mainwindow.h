@@ -151,6 +151,7 @@ private slots:
 
     //active group or coordinate system changed
     void on_comboBox_groups_currentIndexChanged(const QString &arg1);
+    void on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1);
 
     //show watch window
     void on_actionWatch_window_triggered();
@@ -165,6 +166,9 @@ private slots:
 
     //show measurement config dialog
     void on_actionMeasurement_Configuration_triggered();
+
+    //activate a station
+    void on_actionActivate_station_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -482,6 +482,28 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1){
 }
 
 /*!
+ * \brief MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged
+ * \param arg1
+ */
+void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    sourceModel->setActiveCoordinateSystem(arg1);
+
+}
+
+/*!
  * \brief MainWindow::on_actionWatch_window_triggered
  */
 void MainWindow::on_actionWatch_window_triggered(){
@@ -492,6 +514,17 @@ void MainWindow::on_actionWatch_window_triggered(){
  * \brief MainWindow::on_actionOpen_triggered
  */
 void MainWindow::on_actionOpen_triggered(){
+
+    QString filename = QFileDialog::getOpenFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
+    if(filename.compare("") == 0){
+        return;
+    }
+
+    QPointer<QIODevice> device = new QFile(filename);
+    QFileInfo info(filename);
+    QString projectName = info.fileName();
+
+    emit this->loadProject(projectName, device);
 
 }
 
@@ -524,6 +557,36 @@ void MainWindow::on_actionClose_triggered(){
  */
 void MainWindow::on_actionMeasurement_Configuration_triggered(){
     this->measurementConfigDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_actionActivate_station_triggered
+ */
+void MainWindow::on_actionActivate_station_triggered(){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check selected index
+    QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
+    if(selection.size() != 1){
+        Console::getInstance()->addLine("No station selected");
+        return;
+    }
+    QModelIndex index = selection.at(0);
+
+    //set selected station
+    sourceModel->setActiveStation(model->mapToSource(index));
+
 }
 
 /*!
@@ -581,6 +644,9 @@ void MainWindow::connectDialogs(){
 
     //connect plugin manager dialog
     QObject::connect(&this->pluginManagerDialog, &PluginManagerDialog::loadPlugins, &this->pluginLoaderDialog, &PluginLoaderDialog::show, Qt::AutoConnection);
+
+    //connect feature functions dialog
+    QObject::connect(&this->featureFunctionsDialog, &FeatureFunctionsDialog::recalculateActiveFeature, &this->control, &Controller::recalcActiveFeature, Qt::AutoConnection);
 
 }
 

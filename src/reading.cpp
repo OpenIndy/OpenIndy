@@ -669,7 +669,7 @@ bool Reading::fromOpenIndyXML(QDomElement &xmlElem){
         }
     }
 
-    return false;
+    return true;
 }
 
 /*!

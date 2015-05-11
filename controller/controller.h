@@ -29,12 +29,6 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = 0);
 
-    //############
-    //load configs
-    //############
-
-    void loadConfigs();
-
 public slots:
 
     //#######################
@@ -43,6 +37,9 @@ public slots:
 
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
+
+    //recalculation
+    void recalcActiveFeature();
 
     //set sensor configuration for active sensor
     void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
@@ -58,17 +55,15 @@ public slots:
     //import or export features
     void importNominals(const ExchangeParams &params);
 
-    //save or load projects
-    void saveProject();
-    void saveProject(const QString &fileName);
-    void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
-
     //set display configs
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
     void setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config);
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
     //save or load a job
+    void saveProject();
+    void saveProject(const QString &fileName);
+    void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
     const QPointer<OiJob> &createDefaultJob();
 
     //sensor actions

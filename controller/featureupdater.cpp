@@ -238,17 +238,11 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
 /*!
  * \brief FeatureUpdater::switchCoordinateSystem
  * Does all recalculation steps necessary when the active coordinate system has changed
- * \param destinationSystem
  */
-void FeatureUpdater::switchCoordinateSystem(const QPointer<CoordinateSystem> &destinationSystem){
+void FeatureUpdater::switchCoordinateSystem(){
 
     //check current job
     if(this->currentJob.isNull()){
-        return;
-    }
-
-    //check system
-    if(destinationSystem.isNull()){
         return;
     }
 
@@ -313,6 +307,7 @@ void FeatureUpdater::connectJob(){
     QObject::connect(this, &FeatureUpdater::trafoParamRecalculated, this->currentJob.data(), &OiJob::trafoParamRecalculated, Qt::AutoConnection);
 
     QObject::connect(this->currentJob.data(), &OiJob::recalcFeature, this, &FeatureUpdater::recalcFeature, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureUpdater::switchCoordinateSystem, Qt::AutoConnection);
 
 }
 
@@ -326,6 +321,7 @@ void FeatureUpdater::disconnectJob(){
     QObject::disconnect(this, &FeatureUpdater::trafoParamRecalculated, this->currentJob.data(), &OiJob::trafoParamRecalculated);
 
     QObject::disconnect(this->currentJob.data(), &OiJob::recalcFeature, this, &FeatureUpdater::recalcFeature);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureUpdater::switchCoordinateSystem);
 
 }
 
@@ -555,7 +551,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
 
     //if coord sys needs to be re-switched
     if(!trafoParam->getDestinationSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystem(trafoParam->getDestinationSystem());
+        this->switchCoordinateSystem();
     }
 
 }
@@ -739,7 +735,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
 
     //if coord sys needs to be re-switched
     if(!trafoParam->getDestinationSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystem(trafoParam->getDestinationSystem());
+        this->switchCoordinateSystem();
     }
 
 }
@@ -842,14 +838,6 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
 
 }
 
-
-
-
-
-
-
-
-
 /*!
  * \brief FeatureUpdater::switchCoordinateSystemWithoutTransformation
  * \param destinationSystem
@@ -861,14 +849,14 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
         return;
     }
 
-    //check system
+    //check destination system
     if(destinationSystem.isNull()){
         return;
     }
 
-    //#######################################################
-    //transform all observations to current coordinate system
-    //#######################################################
+    //################################################
+    //transform all observations to destination system
+    //################################################
 
     //run through all station systems
     foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
@@ -881,7 +869,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
         //run through all observations of the station system
         foreach(const QPointer<Observation> &obs, station->getCoordinateSystem()->getObservations()){
 
-            bool isSolved = (station->getCoordinateSystem() == this->currentJob->getActiveCoordinateSystem());
+            bool isSolved = (station->getCoordinateSystem() == destinationSystem);
 
             //set observation to solved only if it has been measured in the active coordinate system
             if(!obs.isNull()){
@@ -892,9 +880,9 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
 
     }
 
-    //###################################################################################
-    //set nominals to solved only if their nominal system is the active coordinate system
-    //###################################################################################
+    //#############################################################################
+    //set nominals to solved only if their nominal system is the destination system
+    //#############################################################################
 
     //run through all nominal systems
     foreach(const QPointer<CoordinateSystem> &system, this->currentJob->getCoordinateSystemsList()){
@@ -907,7 +895,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
         //run through all nominals of the system
         foreach(const QPointer<FeatureWrapper> &feature, system->getNominals()){
 
-            bool isSolved = (system == this->currentJob->getActiveCoordinateSystem());
+            bool isSolved = (system == destinationSystem);
 
             //check feature
             if(!feature.isNull() && !feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){

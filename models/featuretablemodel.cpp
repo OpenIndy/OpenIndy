@@ -388,8 +388,85 @@ QPointer<Station> FeatureTableModel::getActiveStation() const{
 
 }
 
-void FeatureTableModel::setActiveStation(const QModelIndex &index)
-{
+/*!
+ * \brief FeatureTableModel::setActiveStation
+ * \param index
+ */
+void FeatureTableModel::setActiveStation(const QModelIndex &index){
+
+    //check index
+    if(!index.isValid()){
+        return;
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check if row index is valid
+    if(index.row() >= this->currentJob->getFeatureCount()){
+        return;
+    }
+
+    //check feature at index
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeaturesList().at(index.row());
+    if(feature.isNull() || feature->getStation().isNull()){
+        Console::getInstance()->addLine("No station selected");
+        return;
+    }
+
+    //set active station
+    feature->getStation()->setActiveStationState(true);
+
+}
+
+/*!
+ * \brief FeatureTableModel::getActiveCoordinateSystem
+ * \return
+ */
+QPointer<CoordinateSystem> FeatureTableModel::getActiveCoordinateSystem() const{
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return QPointer<CoordinateSystem>(NULL);
+    }
+
+    return this->currentJob->getActiveCoordinateSystem();
+
+}
+
+/*!
+ * \brief FeatureTableModel::setActiveCoordinateSystem
+ * \param name
+ */
+void FeatureTableModel::setActiveCoordinateSystem(const QString &name){
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //get and check feature with the given name
+    QList<QPointer<FeatureWrapper> > features = this->currentJob->getFeaturesByName(name);
+    if(features.size() != 1){
+        return;
+    }
+    QPointer<FeatureWrapper> feature = features.at(0);
+
+    //get and check coordinate system
+    QPointer<CoordinateSystem> system(NULL);
+    if(!feature->getStation().isNull() && !feature->getStation()->getCoordinateSystem().isNull()){ //station system
+        system = feature->getStation()->getCoordinateSystem();
+    }else if(!feature->getCoordinateSystem().isNull()){ //nominal system
+        system = feature->getCoordinateSystem();
+    }
+    if(system.isNull()){
+        return;
+    }
+
+    //set active system
+    system->setActiveCoordinateSystemState(true);
 
 }
 
@@ -658,21 +735,11 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
         return QColor(Qt::lightGray);
     }
 
-    //nominals
-    if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
-        return QColor(QColor::fromRgb(230,230,180));
-    }
-
     //get the display attribute
     int attr = getDisplayAttributes().at(column);
 
-    //check if the feature is solved or not
-    if(feature->getFeature()->getIsSolved()){
-        return QVariant();
-    }
-
     //set background for parameter cells of unsolved features
-    if(getIsFeatureDisplayAttribute(attr)){ //feature attributes
+    if(!feature->getFeature()->getIsSolved() && getIsFeatureDisplayAttribute(attr)){ //feature attributes
 
         switch((FeatureDisplayAttributes)attr){
         case eFeatureDisplayX:
@@ -748,6 +815,11 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
 
     }
 
+    //nominals
+    if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+        return QColor(QColor::fromRgb(230,230,180));
+    }
+
     return QVariant();
 
 }
@@ -764,6 +836,7 @@ void FeatureTableModel::connectJob(){
     QObject::connect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
 
 }
 
@@ -779,5 +852,6 @@ void FeatureTableModel::disconnectJob(){
     QObject::disconnect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::updateModel);
 
 }

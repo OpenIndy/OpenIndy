@@ -231,12 +231,15 @@ void MeasurementConfigurationDialog::on_pushButton_set_clicked(){
     //get selected measurement config name
     QModelIndexList selection = this->ui->listView_measurementConfigs->selectionModel()->selectedIndexes();
     if(selection.size() != 1){
+        this->close();
         return;
     }
     QString name = selection.at(0).data().toString();
 
     //set the selected measurement config for the active feature
     emit this->setMeasurementConfiguration(name);
+
+    this->close();
 
 }
 
@@ -267,14 +270,14 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
 
     //from now on trigger edits
-    this->ui->comboBox_readingType->blockSignals(true);
-    this->ui->lineEdit_distancInterval->blockSignals(true);
-    this->ui->lineEdit_iterations->blockSignals(true);
-    this->ui->lineEdit_numMeas->blockSignals(true);
-    this->ui->lineEdit_timeInterval->blockSignals(true);
-    this->ui->checkBox_distanceDependent->blockSignals(true);
-    this->ui->checkBox_timeDependent->blockSignals(true);
-    this->ui->checkBox_twoFace->blockSignals(true);
+    this->ui->comboBox_readingType->blockSignals(false);
+    this->ui->lineEdit_distancInterval->blockSignals(false);
+    this->ui->lineEdit_iterations->blockSignals(false);
+    this->ui->lineEdit_numMeas->blockSignals(false);
+    this->ui->lineEdit_timeInterval->blockSignals(false);
+    this->ui->checkBox_distanceDependent->blockSignals(false);
+    this->ui->checkBox_timeDependent->blockSignals(false);
+    this->ui->checkBox_twoFace->blockSignals(false);
 
 }
 
@@ -304,6 +307,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
 
     //getmeasurement config from GUI selection
     MeasurementConfig mConfig;
+    mConfig.setName(name);
     mConfig.setTypeOfReading(getReadingTypeEnum(this->ui->comboBox_readingType->currentText()));
     mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble());
     mConfig.setIterations(this->ui->lineEdit_iterations->text().toInt());
@@ -315,6 +319,14 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
 
     //replace the selected measurement config
     mConfigModel->replaceMeasurementConfig(name, mConfig);
+
+    //select the new config in tree view
+    if(this->ui->listView_measurementConfigs->model()->hasIndex(selection.at(0).row(), selection.at(0).column())){
+        QModelIndex newSelection = mConfigModel->getIndex(mConfig.getName());
+        if(newSelection.isValid()){
+            this->ui->listView_measurementConfigs->selectionModel()->select(newSelection, QItemSelectionModel::Select);
+        }
+    }
 
 }
 

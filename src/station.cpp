@@ -11,7 +11,7 @@
  * \brief Station::Station
  * \param parent
  */
-Station::Station(QObject *parent) : Feature(parent){
+Station::Station(QObject *parent) : Feature(parent), isActiveStation(false){
 
     //set up feature wrapper
     if(!this->selfFeature.isNull()){
@@ -39,7 +39,7 @@ Station::Station(QObject *parent) : Feature(parent){
  * \param name
  * \param parent
  */
-Station::Station(const QString &name, QObject *parent) : Feature(parent){
+Station::Station(const QString &name, QObject *parent) : Feature(parent), isActiveStation(false){
 
     //set up feature wrapper
     if(!this->selfFeature.isNull()){

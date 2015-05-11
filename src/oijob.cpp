@@ -2669,7 +2669,6 @@ void OiJob::setGeometrySimulationData(const int &featureId){
  */
 void OiJob::setGeometryMeasurementConfig(const int &featureId){
     emit this->geometryMeasurementConfigChanged(featureId);
-    qDebug() << featureId;
 }
 
 /*!
@@ -3625,6 +3624,55 @@ void OiJob::resetDependencies(const InputElement &element, const QPointer<Featur
 
         if(!element.geometry.isNull() && !element.geometry->getFeatureWrapper().isNull()){
             feature->removePreviouslyNeeded(element.geometry->getFeatureWrapper());
+        }
+
+    }
+
+}
+
+/*!
+ * \brief OiJob::addFeaturesFromXml
+ * Add features when a project has been loaded (only accessible from ProjectExchanger)
+ * \param features
+ */
+void OiJob::addFeaturesFromXml(const QList<QPointer<FeatureWrapper> > &features){
+
+    foreach(const QPointer<FeatureWrapper> &feature, features){
+
+        //check if feature is valid
+        if(feature.isNull() || feature->getFeature().isNull()){
+            continue;
+        }
+
+        //check if the feature is a station system
+        if(!feature->getCoordinateSystem().isNull() && feature->getCoordinateSystem()->getIsStationSystem()){
+            continue;
+        }
+
+        feature->getFeature()->job = this;
+
+        //connect the feature's signals to slots in OiJob
+        this->connectFeature(feature);
+
+        //add the feature
+        this->featureContainer.addFeature(feature);
+
+        //save active feature
+        if(feature->getFeature()->getIsActiveFeature()){
+            this->activeFeature = feature;
+        }
+
+        //save active coordinate system
+        if(!feature->getCoordinateSystem().isNull() && feature->getCoordinateSystem()->getIsActiveCoordinateSystem()){
+            this->activeCoordinateSystem = feature->getCoordinateSystem();
+        }else if(!feature->getStation().isNull() && !feature->getStation()->getCoordinateSystem().isNull()
+                 && feature->getStation()->getCoordinateSystem()->getIsActiveCoordinateSystem()){
+            this->activeCoordinateSystem = feature->getStation()->getCoordinateSystem();
+        }
+
+        //save active station
+        if(!feature->getStation().isNull() && feature->getStation()->getIsActiveStation()){
+            this->activeStation = feature->getStation();
         }
 
     }

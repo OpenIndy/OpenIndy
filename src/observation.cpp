@@ -271,6 +271,10 @@ QDomElement Observation::toOpenIndyXML(QDomDocument &xmlDoc) const{
         observation.setAttribute("sigmaY", 0.0);
         observation.setAttribute("sigmaZ", 0.0);
     }*/
+    observation.setAttribute("sigmaX", 0.0);
+    observation.setAttribute("sigmaY", 0.0);
+    observation.setAttribute("sigmaZ", 0.0);
+
     observation.setAttribute("isValid", this->isValid);
     observation.setAttribute("isSolved", this->isSolved);
 

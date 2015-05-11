@@ -399,6 +399,14 @@ void FeatureFunctionsDialog::removeSelectedFunction(){
 }
 
 /*!
+ * \brief FeatureFunctionsDialog::on_cmd_ok_clicked
+ */
+void FeatureFunctionsDialog::on_cmd_ok_clicked(){
+    emit this->recalculateActiveFeature();
+    this->close();
+}
+
+/*!
  * \brief FeatureFunctionsDialog::showEvent
  * \param event
  */
@@ -782,4 +790,3 @@ void FunctionPluginLoader::functionConfigurationChanged(){
     }
 }
 */
-

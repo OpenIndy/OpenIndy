@@ -52,6 +52,8 @@ CoordinateSystem::CoordinateSystem(const CoordinateSystem &copy, QObject *parent
     }
 
     //copy attributes
+    this->name = copy.name;
+    this->id = copy.id;
     this->origin = copy.origin;
     this->xAxis = copy.xAxis;
     this->yAxis = copy.yAxis;
@@ -76,6 +78,8 @@ CoordinateSystem &CoordinateSystem::operator=(const CoordinateSystem &copy){
     }
 
     //copy attributes
+    this->name = copy.name;
+    this->id = copy.id;
     this->origin = copy.origin;
     this->xAxis = copy.xAxis;
     this->yAxis = copy.yAxis;

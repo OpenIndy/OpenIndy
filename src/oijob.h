@@ -19,12 +19,15 @@
 #include "types.h"
 #include "util.h"
 
+class ProjectExchanger;
+
 /*!
  * \brief The OiJob class
  * Represents an OpenIndy job (holds all features and active states)
  */
 class OiJob : public QObject
 {
+    friend class ProjectExchanger;
     Q_OBJECT
 
 public:
@@ -269,6 +272,12 @@ private:
 
     void setUpDependencies(const InputElement &element, const QPointer<Feature> &feature);
     void resetDependencies(const InputElement &element, const QPointer<Feature> &feature);
+
+    //###################################################################################
+    //add features when a project has been loaded (only accessible from ProjectExchanger)
+    //###################################################################################
+
+    void addFeaturesFromXml(const QList<QPointer<FeatureWrapper> > &features);
 
 private:
 
