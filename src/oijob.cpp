@@ -1381,7 +1381,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
         }
         if(!destinationSystems.at(0)->getCoordinateSystem().isNull()){
             destSystem = destinationSystems.at(0)->getCoordinateSystem();
-        }else if(!destinationSystems.at(0)->getStation().isNull() && !startSystems.at(0)->getStation()->getCoordinateSystem().isNull()){
+        }else if(!destinationSystems.at(0)->getStation().isNull() && !destinationSystems.at(0)->getStation()->getCoordinateSystem().isNull()){
             destSystem = destinationSystems.at(0)->getStation()->getCoordinateSystem();
         }
 

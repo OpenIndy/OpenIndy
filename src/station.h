@@ -12,6 +12,7 @@
 class Reading;
 class CoordinateSystem;
 class Sensor;
+class ProjectExchanger;
 
 /*!
  * \brief The Station class
@@ -19,6 +20,7 @@ class Sensor;
 class Station : public Feature
 {
     friend class OiJob;
+    friend class ProjectExchanger;
     Q_OBJECT
 
 public:
@@ -43,6 +45,7 @@ public:
     const QPointer<CoordinateSystem> &getCoordinateSystem() const;
 
     SensorTypes getActiveSensorType() const;
+    QList<ReadingTypes> getSupportedReadingTypes() const;
     void setSensor(const QPointer<Sensor> &sensor);
 
     const QPointer<SensorListener const> getSensorListener() const;

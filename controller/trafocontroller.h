@@ -29,13 +29,13 @@ public slots:
     void transformObservations(const QPointer<Feature> &feature, const QPointer<CoordinateSystem> &destinationSystem);
     void transformObservations(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem);
 
+    bool getTransformationMatrix(OiMat &trafoMat, const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem);
+
 private:
 
     //##############
     //helper methods
     //##############
-
-    bool getTransformationMatrix(OiMat &trafoMat, const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem);
 
     QPointer<TrafoParam> findTransformation(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem);
 

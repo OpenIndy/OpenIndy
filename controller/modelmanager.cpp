@@ -40,6 +40,7 @@ QStandardItemModel ModelManager::availableSerialPortsModel;
 QStandardItemModel ModelManager::availableIpAdressesModel;
 QStringListModel ModelManager::readingTypeNamesModel;
 PluginTreeViewModel ModelManager::pluginTreeViewModel;
+TrafoParamTableProxyModel ModelManager::trafoParamTableProxyModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -169,6 +170,14 @@ FeatureTableModel &ModelManager::getFeatureTableModel(){
  */
 FeatureTableProxyModel &ModelManager::getFeatureTableProxyModel(){
     return ModelManager::featureTableProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getTrafoParamTableProxyModel
+ * \return
+ */
+TrafoParamTableProxyModel &ModelManager::getTrafoParamTableProxyModel(){
+    return ModelManager::trafoParamTableProxyModel;
 }
 
 /*!
@@ -730,6 +739,7 @@ void ModelManager::initFeatureTableModels(){
 
     //assign source models
     ModelManager::featureTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
+    ModelManager::trafoParamTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
 
 }
 

@@ -171,7 +171,9 @@ SOURCES += \
     ui/dialogs/settingsdialog.cpp \
     models/treeitems/plugintreeitem.cpp \
     models/plugintreeviewmodel.cpp \
-    ui/dialogs/pluginmanagerdialog.cpp
+    ui/dialogs/pluginmanagerdialog.cpp \
+    ui/dialogs/watchwindowdialog.cpp \
+    controller/exchange/projectexchanger.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -290,7 +292,9 @@ HEADERS  += \
     ui/dialogs/settingsdialog.h \
     models/treeitems/plugintreeitem.h \
     models/plugintreeviewmodel.h \
-    ui/dialogs/pluginmanagerdialog.h
+    ui/dialogs/pluginmanagerdialog.h \
+    ui/dialogs/watchwindowdialog.h \
+    controller/exchange/projectexchanger.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -303,4 +307,5 @@ FORMS    += \
     ui/dialogs/movesensordialog.ui \
     ui/dialogs/sensortaskinfodialog.ui \
     ui/dialogs/settingsdialog.ui \
-    ui/dialogs/pluginmanagerdialog.ui
+    ui/dialogs/pluginmanagerdialog.ui \
+    ui/dialogs/watchwindowdialog.ui

@@ -113,6 +113,16 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
  */
 bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem){
 
+    //if start and destination system are identical there is no real transformation
+    if(startSystem == destinationSystem){
+        trafoMat = OiMat(4,4);
+        trafoMat.setAt(0, 0, 1.0);
+        trafoMat.setAt(1, 1, 1.0);
+        trafoMat.setAt(2, 2, 1.0);
+        trafoMat.setAt(3, 3, 1.0);
+        return true;
+    }
+
     //try to find a corresponding transformation to directly transform between systems
     QPointer<TrafoParam> trafoParam = this->findTransformation(startSystem, destinationSystem);
     if(!trafoParam.isNull()){

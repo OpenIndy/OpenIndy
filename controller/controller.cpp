@@ -137,6 +137,53 @@ void Controller::importNominals(const ExchangeParams &params){
 
 }
 
+void Controller::saveProject()
+{
+
+}
+
+/*!
+ * \brief Controller::saveProject
+ * \param fileName
+ */
+void Controller::saveProject(const QString &fileName){
+
+    //check job
+    if(this->job.isNull()){
+        Console::getInstance()->addLine("No job available");
+        return;
+    }
+
+    //set name
+    QFileInfo info(fileName);
+    this->job->setJobName(info.fileName());
+
+    //set device
+    QPointer<QIODevice> device = new QFile(fileName);
+    this->job->setJobDevice(device);
+
+    //get project xml
+    QDomDocument project = ProjectExchanger::saveProject(this->job);
+    if(project.isNull()){
+        Console::getInstance()->addLine("Error while create project XML");
+        return;
+    }
+
+    //save project xml
+    this->job->getJobDevice()->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+    QTextStream stream(this->job->getJobDevice());
+    project.save(stream, 4);
+    this->job->getJobDevice()->close();
+
+    Console::getInstance()->addLine("OpenIndy project successfully stored.");
+
+}
+
+void Controller::loadProject(const QString &projectName, const QPointer<QIODevice> &device)
+{
+
+}
+
 /*!
  * \brief Controller::setFeatureTableColumnConfig
  * \param config
@@ -163,8 +210,9 @@ void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config)
 
 /*!
  * \brief Controller::createDefaultJob
+ * \return
  */
-void Controller::createDefaultJob(){
+const QPointer<OiJob> &Controller::createDefaultJob(){
 
     //create job with a station and a nominal system
     QPointer<OiJob> job = new OiJob();
@@ -186,6 +234,8 @@ void Controller::createDefaultJob(){
     //activate features
     station->setActiveStationState(true);
     station->getCoordinateSystem()->setActiveCoordinateSystemState(true);
+
+    return this->job;
 
 }
 

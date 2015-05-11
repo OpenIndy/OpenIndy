@@ -14,6 +14,7 @@
 #include "oijob.h"
 #include "featuretablemodel.h"
 #include "featuretableproxymodel.h"
+#include "trafoparamtableproxymodel.h"
 #include "featuretablecolumnconfig.h"
 #include "trafoparamtablecolumnconfig.h"
 #include "parameterdisplayconfig.h"
@@ -83,6 +84,7 @@ public:
     //general feature models
     static FeatureTableModel &getFeatureTableModel();
     static FeatureTableProxyModel &getFeatureTableProxyModel();
+    static TrafoParamTableProxyModel &getTrafoParamTableProxyModel();
     static FeatureTreeViewModel &getFeatureTreeViewModel();
     static AvailableElementsTreeViewProxyModel &getAvailableElementsTreeViewProxyModel();
     static UsedElementsModel &getUsedElementsModel();
@@ -168,6 +170,7 @@ private:
     //general feature models
     static FeatureTableModel featureTableModel;
     static FeatureTableProxyModel featureTableProxyModel;
+    static TrafoParamTableProxyModel trafoParamTableProxyModel;
     static FeatureTreeViewModel featureTreeViewModel;
     static AvailableElementsTreeViewProxyModel availableElementsTreeViewProxyModel;
     static UsedElementsModel usedElementsModel;

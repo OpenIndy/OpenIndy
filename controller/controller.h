@@ -16,6 +16,7 @@
 #include "dataexchanger.h"
 #include "sensorconfigurationmanager.h"
 #include "featureupdater.h"
+#include "projectexchanger.h"
 
 /*!
  * \brief The Controller class
@@ -53,13 +54,18 @@ public slots:
     //import or export features
     void importNominals(const ExchangeParams &params);
 
+    //save or load projects
+    void saveProject();
+    void saveProject(const QString &fileName);
+    void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
+
     //set display configs
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
     void setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config);
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
     //save or load a job
-    void createDefaultJob();
+    const QPointer<OiJob> &createDefaultJob();
 
     //sensor actions
     void startConnect();

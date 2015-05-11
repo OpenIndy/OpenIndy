@@ -204,6 +204,24 @@ SensorTypes Station::getActiveSensorType() const{
 }
 
 /*!
+ * \brief Station::getSupportedReadingTypes
+ * \return
+ */
+QList<ReadingTypes> Station::getSupportedReadingTypes() const{
+
+    QList<ReadingTypes> readingTypes;
+
+    //check sensor
+    if(this->sensorControl.isNull() || this->sensorControl->getSensor().isNull()){
+        return readingTypes;
+    }
+
+    readingTypes = this->sensorControl->getSensor()->getSupportedReadingTypes();
+    return readingTypes;
+
+}
+
+/*!
  * \brief Station::setSensor
  * \param sensor
  */

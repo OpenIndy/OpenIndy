@@ -17,6 +17,7 @@
 class Sensor;
 class Observation;
 class CoordinateSystem;
+class ProjectExchanger;
 
 //###########################
 //definition of reading types
@@ -128,6 +129,7 @@ class Reading : public Element
     friend class Station;
     friend class CoordinateSystem;
     friend class Observation;
+    friend class ProjectExchanger;
     Q_OBJECT
 
 private:

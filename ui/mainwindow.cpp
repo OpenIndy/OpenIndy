@@ -20,8 +20,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->connectDialogs();
     this->connectController();
 
-    //create default job
-    this->control.createDefaultJob();
+    //create default job and pass it to the watch window
+    QPointer<OiJob> job = this->control.createDefaultJob();
+    this->watchWindowDialog.setCurrentJob(job);
 
 }
 
@@ -354,6 +355,29 @@ void MainWindow::on_tableView_features_clicked(const QModelIndex &index){
 }
 
 /*!
+ * \brief MainWindow::on_tableView_trafoParams_clicked
+ * \param index
+ */
+void MainWindow::on_tableView_trafoParams_clicked(const QModelIndex &index){
+
+    //get and check model
+    TrafoParamTableProxyModel *model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //set active feature
+    sourceModel->setActiveFeature(model->mapToSource(index));
+
+}
+
+/*!
  * \brief MainWindow::on_actionSet_function_triggered
  */
 void MainWindow::on_actionSet_function_triggered(){
@@ -457,6 +481,44 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1){
 }
 
 /*!
+ * \brief MainWindow::on_actionWatch_window_triggered
+ */
+void MainWindow::on_actionWatch_window_triggered(){
+    this->watchWindowDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_actionOpen_triggered
+ */
+void MainWindow::on_actionOpen_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_actionSave_triggered
+ */
+void MainWindow::on_actionSave_triggered(){
+
+}
+
+/*!
+ * \brief MainWindow::on_actionSave_as_triggered
+ */
+void MainWindow::on_actionSave_as_triggered(){
+    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename to save under", "oiProject", "xml (*.xml)");
+    if(filename.compare("") != 0){
+        emit this->saveProject(filename);
+    }
+}
+
+/*!
+ * \brief MainWindow::on_actionClose_triggered
+ */
+void MainWindow::on_actionClose_triggered(){
+    this->close();
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -465,6 +527,11 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::addFeatures, &this->control, &Controller::addFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::importNominals, &this->control, &Controller::importNominals, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(this, static_cast<void (MainWindow::*)()>(&MainWindow::saveProject),
+                     &this->control, static_cast<void (Controller::*)()>(&Controller::saveProject), Qt::AutoConnection);
+    QObject::connect(this, static_cast<void (MainWindow::*)(const QString&)>(&MainWindow::saveProject),
+                     &this->control, static_cast<void (Controller::*)(const QString&)>(&Controller::saveProject), Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::loadProject, &this->control, &Controller::loadProject, Qt::AutoConnection);
     //QObject::connect(this, &MainWindow::setActiveFeature, &this->control, &Controller::setActiveFeature, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
@@ -515,6 +582,9 @@ void MainWindow::assignModels(){
     this->ui->tableView_features->setModel(&ModelManager::getFeatureTableProxyModel());
     FeatureTableDelegate *featureTableDelegate = new FeatureTableDelegate();
     this->ui->tableView_features->setItemDelegate(featureTableDelegate);
+    this->ui->tableView_trafoParams->setModel(&ModelManager::getTrafoParamTableProxyModel());
+    TrafoParamDelegate *trafoParamTableDelegate = new TrafoParamDelegate();
+    this->ui->tableView_trafoParams->setItemDelegate(trafoParamTableDelegate);
 
     //assign console model
     this->ui->listView_console->setModel(&Console::getInstance()->getConsoleModel());

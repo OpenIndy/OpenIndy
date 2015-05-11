@@ -22,8 +22,10 @@
 #include "movesensordialog.h"
 #include "sensortaskinfodialog.h"
 #include "pluginmanagerdialog.h"
+#include "watchwindowdialog.h"
 
 #include "featuretabledelegate.h"
+#include "trafoparamtabledelegate.h"
 
 namespace Ui {
 class MainWindow;
@@ -64,6 +66,7 @@ signals:
 
     //save or load projects
     void saveProject();
+    void saveProject(const QString &fileName);
     void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
 
 private slots:
@@ -128,6 +131,7 @@ private slots:
 
     //feature table view interactions
     void on_tableView_features_clicked(const QModelIndex &index);
+    void on_tableView_trafoParams_clicked(const QModelIndex &index);
 
     //function dialog
     void on_actionSet_function_triggered();
@@ -142,6 +146,17 @@ private slots:
 
     //active group or coordinate system changed
     void on_comboBox_groups_currentIndexChanged(const QString &arg1);
+
+    //show watch window
+    void on_actionWatch_window_triggered();
+
+    //save or load projects
+    void on_actionOpen_triggered();
+    void on_actionSave_triggered();
+    void on_actionSave_as_triggered();
+
+    //close OpenIndy
+    void on_actionClose_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -185,6 +200,7 @@ private:
     MoveSensorDialog moveSensorDialog;
     SensorTaskInfoDialog sensorTaskInfoDialog;
     PluginManagerDialog pluginManagerDialog;
+    WatchWindowDialog watchWindowDialog;
 
     //##########
     //sensor pad

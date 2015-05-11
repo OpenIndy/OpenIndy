@@ -12,6 +12,7 @@
 
 class Station;
 class SensorListener;
+class ProjectExchanger;
 
 /*!
  * \brief The SensorControl class
@@ -19,6 +20,7 @@ class SensorListener;
  */
 class SensorControl : public QObject
 {
+    friend class ProjectExchanger;
     Q_OBJECT
 
 public:
