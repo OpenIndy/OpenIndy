@@ -638,6 +638,11 @@ void ModelManager::updateJob(){
     QObject::connect(ModelManager::currentJob.data(), &OiJob::featureSetChanged, ModelManager::myInstance.data(), &ModelManager::featureSetChanged, Qt::AutoConnection);
     QObject::connect(ModelManager::currentJob.data(), &OiJob::featureNameChanged, ModelManager::myInstance.data(), &ModelManager::featureNameChanged, Qt::AutoConnection);
 
+    //update models
+    ModelManager::myInstance->featureSetChanged();
+    ModelManager::myInstance->coordSystemSetChanged();
+    ModelManager::myInstance->availableGroupsChanged();
+
 }
 
 /*!

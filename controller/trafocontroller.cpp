@@ -53,7 +53,7 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
     if(startSystem == destinationSystem){
         foreach(const QPointer<Observation> &observation, startSystem->getObservations()){
             if(!observation.isNull()){
-                observation->setXYZ(observation->getOriginalXYZ());
+                observation->xyz = observation->getOriginalXYZ();
                 observation->setIsSolved(true);
             }
         }
@@ -72,15 +72,16 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
         startSystem->setIsSolved(true);
 
         //transform coordinate system origin and axes
-        startSystem->origin.setVector(trafoMat * startSystem->getOrigin().getVector());
+        startSystem->origin.setVector(trafoMat * startSystem->getOrigin().getVectorH());
 
         //transform observations
         foreach(const QPointer<Observation> &obs, startSystem->getObservations()) {
-            if(obs->getOriginalStatistic().getQxx().getRowCount() == 4 && obs->getOriginalStatistic().getQxx().getColCount() == 4
-                    && obs->getOriginalXYZ().getSize() == 4){
+            if(obs->getOriginalXYZ().getSize() == 4){
                 obs->xyz = trafoMat * obs->originalXyz;
-                obs->statistic.setQxx(trafoMat * obs->originalStatistic.getQxx());
                 obs->setIsSolved(true);
+            }
+            if(obs->getOriginalStatistic().getQxx().getRowCount() == 4 && obs->getOriginalStatistic().getQxx().getColCount() == 4){
+                obs->statistic.setQxx(trafoMat * obs->originalStatistic.getQxx());
             }
         }
 

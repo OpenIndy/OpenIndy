@@ -183,6 +183,40 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         }
         }
 
+    }else if(getIsTrafoParamDisplayAttribute(attr)){
+
+        switch((TrafoParamDisplayAttributes)attr){
+        case eTrafoParamDisplayName:{
+
+            //check if the feature is a nominal geometry
+            bool isNominal = (!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal());
+            QPointer<CoordinateSystem> nominalSystem(NULL);
+            if(isNominal){
+                nominalSystem = feature->getGeometry()->getNominalSystem();
+            }
+
+            //only commit the new feature name if it is valid
+            if(!this->currentJob->validateFeatureName(value.toString(), feature->getFeatureTypeEnum(), isNominal, nominalSystem)){
+                return false;
+            }
+
+            //commit the new feature name
+            feature->getFeature()->setFeatureName(value.toString());
+
+            return true;
+
+        }case eTrafoParamDisplayComment:{
+            feature->getFeature()->setComment(value.toString());
+            return true;
+        }case eTrafoParamDisplayGroup:{
+            feature->getFeature()->setGroupName(value.toString());
+            return true;
+        }case eTrafoParamDisplayIsUsed:{
+            feature->getTrafoParam()->setIsUsed(value.toBool());
+            return true;
+        }
+        }
+
     }
 
     return false;
@@ -837,6 +871,7 @@ void FeatureTableModel::connectJob(){
     QObject::connect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
 
 }
 
@@ -853,5 +888,6 @@ void FeatureTableModel::disconnectJob(){
     QObject::disconnect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableModel::updateModel);
 
 }

@@ -13,31 +13,54 @@ TrafoParamDelegate::TrafoParamDelegate(QObject * parent)
  * \param index
  */
 QWidget* TrafoParamDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
-    /*QLineEdit* myEditor = new QLineEdit(parent);
-    //QCheckBox* myCheckbox = new QCheckBox(parent);
-    QComboBox* myCombobox = new QComboBox(parent);
-    QDateTimeEdit* myDateTimeEdit = new QDateTimeEdit(parent);
-    QComboBox* myDatumTrafoCB = new QComboBox(parent);
-    const TrafoParamProxyModel *myModel = static_cast<const TrafoParamProxyModel*>(index.model());
-    if(myModel != NULL && (myModel->mapToSource(index).column() == 3 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 12)){ //column feature name or comment
-        return myEditor;
+
+    //create editor
+    QWidget *editor = NULL;
+
+    //check model index
+    if(!index.isValid()){
+        return editor;
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 25){
-        //myCheckbox->setText("use");
-        //return myCheckbox;
-        myCombobox->addItem("true");
-        myCombobox->addItem("false");
-        return myCombobox;
+
+    //get and check models
+    const TrafoParamTableProxyModel *model = static_cast<const TrafoParamTableProxyModel*>(index.model());
+    if(model == NULL){
+        return editor;
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 38){
-        return myDateTimeEdit;
+
+    //get and check column index
+    int column = model->mapToSource(index).column();
+    if(column < 0 || getDisplayAttributes().size() <= column){
+        return editor;
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 26){
-        myDatumTrafoCB->addItem("true");
-        myDatumTrafoCB->addItem("false");
-        return myDatumTrafoCB;
-    }*/
-    return NULL;
+
+    //get and check display attribute
+    int attr = getDisplayAttributes().at(column);
+    if(!getIsTrafoParamDisplayAttribute(attr)){
+        return editor;
+    }
+
+    //create editor for some columns
+    switch((TrafoParamDisplayAttributes)attr){
+    case eTrafoParamDisplayName:
+        editor = new QLineEdit(parent);
+        break;
+    case eTrafoParamDisplayComment:
+        editor = new QLineEdit(parent);
+        break;
+    case eTrafoParamDisplayGroup:
+        editor = new QLineEdit(parent);
+        break;
+    case eTrafoParamDisplayIsUsed:
+        QComboBox *comboEdit = new QComboBox(parent);
+        comboEdit->addItem("true");
+        comboEdit->addItem("false");
+        editor = comboEdit;
+        break;
+    }
+
+    return editor;
+
 }
 
 /*!
@@ -47,42 +70,51 @@ QWidget* TrafoParamDelegate::createEditor(QWidget *parent, const QStyleOptionVie
  * \param index
  */
 void TrafoParamDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
-    /*const TrafoParamProxyModel *myModel = static_cast<const TrafoParamProxyModel*>(index.model());
-    if(myModel != NULL && (myModel->mapToSource(index).column() == 3 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 12)){ //column feature name or comment
-         QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
-         if(myEditor != NULL){
-             myEditor->setText(index.data().toString());
-         }
-    }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 25){
 
-        QComboBox* myCombobox = qobject_cast<QComboBox*>(editor);
-        if(myCombobox != NULL){
-            bool state = index.data().toBool();
-            if(state){
-                myCombobox->setCurrentText("true");
-            }else{
-                myCombobox->setCurrentText("false");
-            }
-        }
+    //check model index
+    if(!index.isValid()){
+        return;
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 38){
-        QDateTimeEdit* myDateTimeEdit = qobject_cast<QDateTimeEdit*>(editor);
-        if(myDateTimeEdit != NULL){
-            myDateTimeEdit->setDateTime(index.data().toDateTime());
-        }
+
+    //get and check models
+    const TrafoParamTableProxyModel *model = static_cast<const TrafoParamTableProxyModel*>(index.model());
+    if(model == NULL){
+        return;
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 26){
-        QComboBox* myDatumTrafoCB = qobject_cast<QComboBox*>(editor);
-        if(myDatumTrafoCB != NULL){
-            bool state = index.data().toBool();
-            if(state){
-                myDatumTrafoCB->setCurrentText("true");
-            }else{
-                myDatumTrafoCB->setCurrentText("false");
-            }
-        }
-    }*/
+
+    //get and check column index
+    int column = model->mapToSource(index).column();
+    if(column < 0 || getDisplayAttributes().size() <= column){
+        return;
+    }
+
+    //get and check display attribute
+    int attr = getDisplayAttributes().at(column);
+    if(!getIsTrafoParamDisplayAttribute(attr)){
+        return;
+    }
+
+    //create editor for some columns
+    switch((TrafoParamDisplayAttributes)attr){
+    case eTrafoParamDisplayName:{
+        QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
+        myEditor->setText(index.data().toString());
+        break;
+    }case eTrafoParamDisplayComment:{
+        QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
+        myEditor->setText(index.data().toString());
+        break;
+    }case eTrafoParamDisplayGroup:{
+        QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
+        myEditor->setText(index.data().toString());
+        break;
+    }case eTrafoParamDisplayIsUsed:{
+        QComboBox* myEditor = qobject_cast<QComboBox*>(editor);
+        myEditor->setCurrentText(index.data().toBool()?"true":"false");
+        break;
+    }
+    }
+
 }
 
 /*!
@@ -93,45 +125,49 @@ void TrafoParamDelegate::setEditorData(QWidget *editor, const QModelIndex &index
  * \param index
  */
 void TrafoParamDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const{
-    /*const TrafoParamProxyModel *myModel = static_cast<const TrafoParamProxyModel*>(index.model());
-    if(myModel != NULL && (myModel->mapToSource(index).column() == 3 || myModel->mapToSource(index).column() == 2 || myModel->mapToSource(index).column() == 12)){ //column feature name or comment
-        QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
-        if(myEditor != NULL){
-            model->setData(index, myEditor->text());
-            return;
-        }
-    }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 25){
 
-        QComboBox* myCombobox = qobject_cast<QComboBox*>(editor);
-        if(myCombobox != NULL){
-            QString state = myCombobox->currentText();
-            if(state.compare("true") == 0){
-                model->setData(index,true);
-            }else{
-                model->setData(index,false);
-            }
-            return;
-        }
+    //check model index
+    if(!index.isValid()){
+        return;
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 38){
-        QDateTimeEdit* myDateTimeEdit = qobject_cast<QDateTimeEdit*>(editor);
-        if(myDateTimeEdit != NULL){
-            model->setData(index,myDateTimeEdit->dateTime());
-            return;
-        }
+
+    //get and check models
+    const TrafoParamTableProxyModel *trafoModel = static_cast<const TrafoParamTableProxyModel*>(index.model());
+    if(trafoModel == NULL){
+        return;
     }
-    if(myModel != NULL && myModel->mapToSource(index).column() == 26){
-        QComboBox* myDatumTrafoCB = qobject_cast<QComboBox*>(editor);
-        if(myDatumTrafoCB != NULL){
-            QString state = myDatumTrafoCB->currentText();
-            if(state.compare("true") == 0){
-                model->setData(index,true);
-            }else{
-                model->setData(index,false);
-            }
-            return;
-        }
+
+    //get and check column index
+    int column = trafoModel->mapToSource(index).column();
+    if(column < 0 || getDisplayAttributes().size() <= column){
+        return;
     }
-    return;*/
+
+    //get and check display attribute
+    int attr = getDisplayAttributes().at(column);
+    if(!getIsTrafoParamDisplayAttribute(attr)){
+        return;
+    }
+
+    //create editor for some columns
+    switch((TrafoParamDisplayAttributes)attr){
+    case eTrafoParamDisplayName:{
+        QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
+        trafoModel->sourceModel()->setData(trafoModel->mapToSource(index), myEditor->text());
+        break;
+    }case eTrafoParamDisplayComment:{
+        QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
+        trafoModel->sourceModel()->setData(trafoModel->mapToSource(index), myEditor->text());
+        break;
+    }case eTrafoParamDisplayGroup:{
+        QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
+        trafoModel->sourceModel()->setData(trafoModel->mapToSource(index), myEditor->text());
+        break;
+    }case eTrafoParamDisplayIsUsed:{
+        QComboBox* myEditor = qobject_cast<QComboBox*>(editor);
+        trafoModel->sourceModel()->setData(trafoModel->mapToSource(index), (myEditor->currentText().compare("true") == 0));
+        break;
+    }
+    }
+
 }

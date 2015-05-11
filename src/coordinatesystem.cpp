@@ -319,13 +319,18 @@ bool CoordinateSystem::addTransformationParameter(const QPointer<TrafoParam> &tr
 
     if(!trafoParam.isNull() && !trafoParam->getStartSystem().isNull() && !trafoParam->getDestinationSystem().isNull()){
 
+        //check if the trafo param is already contained
+        if(this->trafoParams.contains(trafoParam)){
+            return false;
+        }
+
         //check if the trafoParam is in the same job
         if(!this->job.isNull() && !this->job->getTransformationParametersList().contains(trafoParam)){
             return false;
         }
 
         //check if this system is either start or destination system
-        if(trafoParam->getStartSystem() != this || trafoParam->getDestinationSystem() != this){
+        if(trafoParam->getStartSystem() != this && trafoParam->getDestinationSystem() != this){
             return false;
         }
 

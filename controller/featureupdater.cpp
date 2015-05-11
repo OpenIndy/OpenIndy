@@ -341,7 +341,8 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
     foreach(QPointer<FeatureWrapper> neededFeature, feature->getPreviouslyNeeded()){
 
         //check needed feature
-        if(neededFeature.isNull() || neededFeature->getFeature().isNull()){
+        if(neededFeature.isNull() || neededFeature->getFeature().isNull()
+                || !neededFeature->getTrafoParam().isNull()){
             continue;
         }
 
@@ -363,7 +364,8 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
     foreach(QPointer<FeatureWrapper> dependentFeature, feature->getUsedFor()){
 
         //check needed feature
-        if(dependentFeature.isNull() || dependentFeature->getFeature().isNull()){
+        if(dependentFeature.isNull() || dependentFeature->getFeature().isNull()
+                || !dependentFeature->getTrafoParam().isNull()){
             continue;
         }
 
@@ -423,10 +425,8 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
     //set up start system
     //###################
 
-    //if coord sys needs to be switched to "from" system
-    if(!trafoParam->getStartSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystemWithoutTransformation(trafoParam->getStartSystem());
-    }
+    //switch coordinate system to "from" system
+    this->switchCoordinateSystemWithoutTransformation(trafoParam->getStartSystem());
 
     //set up input elements for alignment transformations
     if(isAlignment){
@@ -473,7 +473,10 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
             //add all points
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
                 if(!element.point->getIsNominal() && element.point->getIsSolved()){
-                    sorter.addLocPoint(Point(*element.point.data()));
+                    Point p(false);
+                    p.setFeatureName(element.point->getFeatureName());
+                    p.setPoint(element.point->getPosition());
+                    sorter.addLocPoint(p);
                 }
             }
 
@@ -485,7 +488,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
     //set up destination system
     //#########################
 
-    //if coord sys needs to be switched to "to" system
+    //switch system to "to" system
     this->switchCoordinateSystemWithoutTransformation(trafoParam->getDestinationSystem());
 
     //set up input elements for alignment transformations
@@ -533,7 +536,11 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
             //add all points
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
                 if(!element.point->getIsNominal() && element.point->getIsSolved()){
-                    sorter.addLocPoint(Point(*element.point.data()));
+                    Point p(false);
+                    p.setFeatureName(element.point->getFeatureName());
+                    p.setPoint(element.point->getPosition());
+                    sorter.addRefPoint(p);
+                    //sorter.addLocPoint(Point(*element.point.data()));
                 }
             }
 
@@ -549,10 +556,8 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
     systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
     systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
 
-    //if coord sys needs to be re-switched
-    if(!trafoParam->getDestinationSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystem();
-    }
+    //switch back to the active system
+    this->switchCoordinateSystem();
 
 }
 
@@ -605,10 +610,8 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
     //set up start system
     //###################
 
-    //if coord sys needs to be switched to "from" system
-    if(!trafoParam->getStartSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystemWithoutTransformation(trafoParam->getStartSystem());
-    }
+    //switch to "from" system
+    this->switchCoordinateSystemWithoutTransformation(trafoParam->getStartSystem());
 
     //set up input elements for alignment transformations
     if(isAlignment){
@@ -668,7 +671,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
     //set up destination system
     //#########################
 
-    //if coord sys needs to be switched to "to" system
+    //switch to "to" system
     this->switchCoordinateSystemWithoutTransformation(trafoParam->getDestinationSystem());
 
     //set up input elements for alignment transformations
@@ -733,10 +736,8 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
     systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
     systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
 
-    //if coord sys needs to be re-switched
-    if(!trafoParam->getDestinationSystem()->getIsActiveCoordinateSystem()){
-        this->switchCoordinateSystem();
-    }
+    //switch back to active system
+    this->switchCoordinateSystem();
 
 }
 
@@ -873,6 +874,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
 
             //set observation to solved only if it has been measured in the active coordinate system
             if(!obs.isNull()){
+                obs->setXYZ(obs->getOriginalXYZ());
                 obs->setIsSolved(isSolved);
             }
 
@@ -910,7 +912,65 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
     //recalc all features
     //###################
 
-    this->recalcFeatureSet();
+    this->recalcFeatureSetWithoutTransformation();
+
+}
+
+/*!
+ * \brief FeatureUpdater::recalcFeatureSetWithoutTransformation
+ */
+void FeatureUpdater::recalcFeatureSetWithoutTransformation(){
+
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //set all features to not have been updated
+    foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
+        if(!feature.isNull() && !feature->getFeature().isNull()){
+            feature->getFeature()->setIsUpdated(false);
+        }
+    }
+
+    //recalc recursively
+    foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
+
+        //check feature
+        if(feature.isNull() || feature->getFeature().isNull()){
+            continue;
+        }
+
+        //recalc the feature if it was not recalced yet and is no trafo param
+        if(!feature->getFeature()->getIsUpdated() && feature->getFeatureTypeEnum() != eTrafoParamFeature){
+            this->recalcFeatureWithoutTransformation(feature->getFeature());
+        }
+
+    }
+
+}
+
+/*!
+ * \brief FeatureUpdater::recalcFeatureWithoutTransformation
+ * \param feature
+ */
+void FeatureUpdater::recalcFeatureWithoutTransformation(const QPointer<Feature> &feature){
+
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check the feature
+    if(feature.isNull() || feature->getFeatureWrapper().isNull() || !feature->getFeatureWrapper()->getTrafoParam().isNull()){
+        return;
+    }
+
+    //set feature to not updated
+    feature->setIsUpdated(false);
+
+    //recalculate feature
+    this->recursiveFeatureRecalculation(feature);
 
 }
 

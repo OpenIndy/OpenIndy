@@ -1287,6 +1287,10 @@ bool OiJob::setActiveGroup(const QString &group){
         this->activeGroup = group;
         emit this->activeGroupChanged();
         return true;
+    }else if(group.compare("All Groups") == 0){
+        this->activeGroup = group;
+        emit this->activeGroupChanged();
+        return true;
     }
     return false;
 }
@@ -2413,13 +2417,15 @@ void OiJob::setActiveCoordinateSystem(const int &featureId){
             return;
         }
 
-        //set currently active system to deactive
-        if(!this->activeCoordinateSystem.isNull()){
-            this->activeCoordinateSystem->setActiveCoordinateSystemState(false);
-        }
+        QPointer<CoordinateSystem> oldSystem = this->activeCoordinateSystem;
 
         //save system as active system
         this->activeCoordinateSystem = feature->getCoordinateSystem();
+
+        //set currently active system to deactive
+        if(!oldSystem.isNull()){
+            oldSystem->setActiveCoordinateSystemState(false);
+        }
 
         emit this->activeCoordinateSystemChanged();
 
@@ -2429,11 +2435,6 @@ void OiJob::setActiveCoordinateSystem(const int &featureId){
         if(!this->activeCoordinateSystem.isNull() && this->activeCoordinateSystem == feature->getCoordinateSystem()){
             this->activeCoordinateSystem = QPointer<CoordinateSystem>(NULL);
             emit this->activeCoordinateSystemChanged();
-            return;
-        }
-
-        //if there is a new active system
-        if(!this->activeCoordinateSystem.isNull()){
             return;
         }
 

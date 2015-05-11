@@ -477,7 +477,12 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1){
         return;
     }
 
-    sourceModel->setActiveGroupName(arg1);
+    //check group name
+    if(arg1.compare("") == 0){
+        this->ui->comboBox_groups->setCurrentText(sourceModel->getActiveGroupName());
+    }else{
+        sourceModel->setActiveGroupName(arg1);
+    }
 
 }
 
@@ -499,7 +504,15 @@ void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString
         return;
     }
 
-    sourceModel->setActiveCoordinateSystem(arg1);
+    //check system name
+    if(arg1.compare("") == 0){
+        QPointer<CoordinateSystem> activeSystem = sourceModel->getActiveCoordinateSystem();
+        if(!activeSystem.isNull()){
+            this->ui->comboBox_activeCoordSystem->setCurrentText(activeSystem->getFeatureName());
+        }
+    }else{
+        sourceModel->setActiveCoordinateSystem(arg1);
+    }
 
 }
 

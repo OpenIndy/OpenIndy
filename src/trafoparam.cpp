@@ -169,6 +169,8 @@ bool TrafoParam::setCoordinateSystems(const QPointer<CoordinateSystem> &from, co
 
         this->from = from;
         this->to = to;
+        from->addTransformationParameter(this);
+        to->addTransformationParameter(this);
 
         emit this->coordinateSystemsChanged(this->id);
 
@@ -513,7 +515,10 @@ QString TrafoParam::getDisplayDestinationSystem() const{
  * \return
  */
 QString TrafoParam::getDisplayTranslationX(const UnitType &type, const int &digits) const{
-    return QString::number(convertToDefault(this->translation.getAt(0), type), 'f', digits);
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->translation.getAt(0), type), 'f', digits);
+    }
+    return QString("");
 }
 
 /*!
@@ -523,7 +528,10 @@ QString TrafoParam::getDisplayTranslationX(const UnitType &type, const int &digi
  * \return
  */
 QString TrafoParam::getDisplayTranslationY(const UnitType &type, const int &digits) const{
-    return QString::number(convertToDefault(this->translation.getAt(1), type), 'f', digits);
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->translation.getAt(1), type), 'f', digits);
+    }
+    return QString("");
 }
 
 /*!
@@ -533,7 +541,10 @@ QString TrafoParam::getDisplayTranslationY(const UnitType &type, const int &digi
  * \return
  */
 QString TrafoParam::getDisplayTranslationZ(const UnitType &type, const int &digits) const{
-    return QString::number(convertToDefault(this->translation.getAt(2), type), 'f', digits);
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->translation.getAt(2), type), 'f', digits);
+    }
+    return QString("");
 }
 
 /*!
@@ -543,7 +554,10 @@ QString TrafoParam::getDisplayTranslationZ(const UnitType &type, const int &digi
  * \return
  */
 QString TrafoParam::getDisplayRotationX(const UnitType &type, const int &digits) const{
-    return QString::number(convertToDefault(this->rotation.getAt(0), type), 'f', digits);
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->rotation.getAt(0), type), 'f', digits);
+    }
+    return QString("");
 }
 
 /*!
@@ -553,7 +567,10 @@ QString TrafoParam::getDisplayRotationX(const UnitType &type, const int &digits)
  * \return
  */
 QString TrafoParam::getDisplayRotationY(const UnitType &type, const int &digits) const{
-    return QString::number(convertToDefault(this->rotation.getAt(1), type), 'f', digits);
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->rotation.getAt(1), type), 'f', digits);
+    }
+    return QString("");
 }
 
 /*!
@@ -563,7 +580,10 @@ QString TrafoParam::getDisplayRotationY(const UnitType &type, const int &digits)
  * \return
  */
 QString TrafoParam::getDisplayRotationZ(const UnitType &type, const int &digits) const{
-    return QString::number(convertToDefault(this->rotation.getAt(2), type), 'f', digits);
+    if(this->isSolved){
+        return QString::number(convertToDefault(this->rotation.getAt(2), type), 'f', digits);
+    }
+    return QString("");
 }
 
 /*!
@@ -572,7 +592,10 @@ QString TrafoParam::getDisplayRotationZ(const UnitType &type, const int &digits)
  * \return
  */
 QString TrafoParam::getDisplayScaleX(const int &digits) const{
-    return QString::number(this->scale.getAt(0), 'f', digits);
+    if(this->isSolved){
+        return QString::number(this->scale.getAt(0), 'f', digits);
+    }
+    return QString("");
 }
 
 /*!
@@ -581,7 +604,10 @@ QString TrafoParam::getDisplayScaleX(const int &digits) const{
  * \return
  */
 QString TrafoParam::getDisplayScaleY(const int &digits) const{
-    return QString::number(this->scale.getAt(1), 'f', digits);
+    if(this->isSolved){
+        return QString::number(this->scale.getAt(1), 'f', digits);
+    }
+    return QString("");
 }
 
 /*!
@@ -590,7 +616,10 @@ QString TrafoParam::getDisplayScaleY(const int &digits) const{
  * \return
  */
 QString TrafoParam::getDisplayScaleZ(const int &digits) const{
-    return QString::number(this->scale.getAt(2), 'f', digits);
+    if(this->isSolved){
+        return QString::number(this->scale.getAt(2), 'f', digits);
+    }
+    return QString("");
 }
 
 /*!

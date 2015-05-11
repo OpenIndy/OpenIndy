@@ -669,6 +669,9 @@ bool Reading::fromOpenIndyXML(QDomElement &xmlElem){
         }
     }
 
+    this->toCartesian();
+    this->toPolar();
+
     return true;
 }
 

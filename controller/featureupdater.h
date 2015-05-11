@@ -80,6 +80,8 @@ private:
 
     //change the active coordinate system (does not transform observations)
     void switchCoordinateSystemWithoutTransformation(const QPointer<CoordinateSystem> &destinationSystem);
+    void recalcFeatureSetWithoutTransformation();
+    void recalcFeatureWithoutTransformation(const QPointer<Feature> &feature);
 
     void copyGeometry(InputElement &newElement, const QPointer<FeatureWrapper> &oldElement, const ElementTypes &type);
 

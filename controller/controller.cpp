@@ -57,7 +57,11 @@ void Controller::recalcActiveFeature(){
     }
 
     //recalculate the active feature
-    this->featureUpdater.recalcFeature(feature->getFeature());
+    if(!feature->getTrafoParam().isNull()){
+        this->featureUpdater.recalcTrafoParam(feature->getTrafoParam());
+    }else{
+        this->featureUpdater.recalcFeature(feature->getFeature());
+    }
 
 }
 
@@ -309,6 +313,9 @@ void Controller::loadProject(const QString &projectName, const QPointer<QIODevic
 
     //set new job
     this->setJob(newJob);
+
+    //switch to active coordinate system
+    this->featureUpdater.switchCoordinateSystem();
 
     Console::getInstance()->addLine("OpenIndy project successfully loaded.");
 

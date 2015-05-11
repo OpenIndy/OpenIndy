@@ -210,7 +210,7 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
         }
     }
 
-    /*foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
+    foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
         Station *s = station->getStation().data();
         qDebug() << s->getFeatureName();
     }
@@ -225,13 +225,18 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
     foreach(const QPointer<FeatureWrapper> &geometry, ProjectExchanger::myGeometries){
         Geometry *g = geometry->getGeometry().data();
         qDebug() << g->getFeatureName();
-    }*/
+    }
 
     //add features to the job
     job->addFeaturesFromXml(ProjectExchanger::myStations.values());
     job->addFeaturesFromXml(ProjectExchanger::myCoordinateSystems.values());
     job->addFeaturesFromXml(ProjectExchanger::myTransformationParameters.values());
     job->addFeaturesFromXml(ProjectExchanger::myGeometries.values());
+
+    //set id count
+    if(project.documentElement().hasAttribute("idCount")){
+        job->nextId = project.documentElement().attribute("idCount").toInt() + 1;
+    }
 
     //add loaded features to OiFeatureState
     /*foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){

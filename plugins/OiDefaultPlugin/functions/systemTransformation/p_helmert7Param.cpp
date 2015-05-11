@@ -301,8 +301,18 @@ void Helmert7Param::fillTrafoParam(OiMat r, vector<OiVec> locC, vector<OiVec> re
 
     double sumVV = 0.0;
 
+    OiVec start(4);
+    OiVec dest(4);
     for (int i = 0;i<this->locSystem.size();i++) {
-        OiVec diffVec = this->refSystem.at(i)-(tp.getHomogenMatrix()*this->locSystem.at(i));
+        start.setAt(0, this->refSystem.at(i).getAt(0));
+        start.setAt(1, this->refSystem.at(i).getAt(1));
+        start.setAt(2, this->refSystem.at(i).getAt(2));
+        start.setAt(3, 1.0);
+        dest.setAt(0, this->locSystem.at(i).getAt(0));
+        dest.setAt(1, this->locSystem.at(i).getAt(1));
+        dest.setAt(2, this->locSystem.at(i).getAt(2));
+        dest.setAt(3, 1.0);
+        OiVec diffVec = start-(tp.getHomogenMatrix()*dest);
         sumVV += diffVec.getAt(0)*diffVec.getAt(0);
         sumVV += diffVec.getAt(1)*diffVec.getAt(1);
         sumVV += diffVec.getAt(2)*diffVec.getAt(2);
