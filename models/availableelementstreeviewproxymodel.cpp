@@ -400,8 +400,21 @@ void AvailableElementsTreeViewProxyModel::addInputElement(const QPointer<Feature
         return;
     }
 
+    //check if the type is one of direction, position or radius and the item is a corresponding geometry
+    bool elementCheck = false;
+    if(type == eDirectionElement && !item->getFeature().isNull() && !item->getFeature()->getGeometry().isNull()
+            && item->getFeature()->getGeometry()->hasDirection()){
+        elementCheck = true;
+    }else if(type == ePositionElement && !item->getFeature().isNull() && !item->getFeature()->getGeometry().isNull()
+             && item->getFeature()->getGeometry()->hasPosition()){
+         elementCheck = true;
+     }else if(type == eRadiusElement && !item->getFeature().isNull() && !item->getFeature()->getGeometry().isNull()
+              && item->getFeature()->getGeometry()->hasRadius()){
+          elementCheck = true;
+      }
+
     //if this item is of the right type
-    if(item->getElementType() == type){
+    if(item->getElementType() == type || elementCheck){
 
         //check if the element equals the feature to be calculated
         if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){

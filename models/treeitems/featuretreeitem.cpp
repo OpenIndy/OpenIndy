@@ -42,6 +42,17 @@ FeatureTreeItem::FeatureTreeItem(const QPointer<FeatureWrapper> &feature, QObjec
 
     //set information about child items
     this->containedElementTypes.append(getElementTypeEnum(feature->getFeatureTypeEnum()));
+    if(!feature->getGeometry().isNull()){
+        if(feature->getGeometry()->hasDirection()){
+            this->containedElementTypes.append(eDirectionElement);
+        }
+        if(feature->getGeometry()->hasPosition()){
+            this->containedElementTypes.append(ePositionElement);
+        }
+        if(feature->getGeometry()->hasRadius()){
+            this->containedElementTypes.append(eRadiusElement);
+        }
+    }
 
     //set feature
     this->feature = feature;

@@ -2115,7 +2115,7 @@ void OiJob::addInputFeature(const QPointer<FeatureWrapper> &target, const int &f
     }case eDirectionElement:{
 
         //check direction
-        if(feature->getGeometry().isNull() || feature->getGeometry()->hasDirection()){
+        if(feature->getGeometry().isNull() || !feature->getGeometry()->hasDirection()){
             return;
         }
 
@@ -2127,7 +2127,7 @@ void OiJob::addInputFeature(const QPointer<FeatureWrapper> &target, const int &f
     }case ePositionElement:{
 
         //check position
-        if(feature->getGeometry().isNull() || feature->getGeometry()->hasPosition()){
+        if(feature->getGeometry().isNull() || !feature->getGeometry()->hasPosition()){
             return;
         }
 
@@ -2139,7 +2139,7 @@ void OiJob::addInputFeature(const QPointer<FeatureWrapper> &target, const int &f
     }case eRadiusElement:{
 
         //check radius
-        if(feature->getGeometry().isNull() || feature->getGeometry()->hasRadius()){
+        if(feature->getGeometry().isNull() || !feature->getGeometry()->hasRadius()){
             return;
         }
 

@@ -50,7 +50,7 @@ bool BestFitPlane::setUpResult(Plane &plane){
     }
     QList<QPointer<Observation> > inputObservations;
     foreach(const InputElement &element, this->inputElements[0]){
-        if(!element.point.isNull() && element.observation->getIsSolved() && element.observation->getIsValid()){
+        if(!element.observation.isNull() && element.observation->getIsSolved() && element.observation->getIsValid()){
             inputObservations.append(element.observation);
             this->setUseState(0, element.id, true);
             continue;

@@ -347,7 +347,7 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
         }
 
         //recalculate needed feature
-        this->recalcFeature(neededFeature->getFeature());
+        this->recursiveFeatureRecalculation(neededFeature->getFeature());
 
     }
 
@@ -370,7 +370,7 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
         }
 
         //recalculate dependent feature
-        this->recalcFeature(dependentFeature->getFeature());
+        this->recursiveFeatureRecalculation(dependentFeature->getFeature());
 
     }
 

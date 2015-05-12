@@ -120,56 +120,71 @@ QVariant UsedElementsModel::data(const QModelIndex &index, int role) const{
     }else if(role == Qt::DecorationRole){
 
         if(element.typeOfElement == ePointElement){
-            QPixmap pix(":/Images/icons/point_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Point.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eLineElement){
-            QPixmap pix(":/Images/icons/line_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Line.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == ePlaneElement){
-            QPixmap pix(":/Images/icons/plane_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Plane.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eSphereElement){
-            QPixmap pix(":/Images/icons/sphere_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Sphere.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eStationElement){
-            QPixmap pix(":/Images/icons/station.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Station.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eScalarEntityAngleElement){
-            QPixmap pix(":/Images/icons/scalarEntities_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Scalar Entities.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eScalarEntityDistanceElement){
-            QPixmap pix(":/Images/icons/scalarEntities_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Scalar Entities.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eTrafoParamElement){
-            QPixmap pix(":/Images/icons/trafoParam.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/TrafoParam.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eCoordinateSystemElement){
-            QPixmap pix(":/Images/icons/coordinateSystem.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Coordinatesystem.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eCircleElement){
-            QPixmap pix(":/Images/icons/circle_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Circle.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eConeElement){
-            QPixmap pix(":/Images/icons/cone_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Cone.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eCylinderElement){
-            QPixmap pix(":/Images/icons/cylinder_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Cylinder.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eEllipsoidElement){
-            QPixmap pix(":/Images/icons/ellipse_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Ellipsoid.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eHyperboloidElement){
-            QPixmap pix(":/Images/icons/hyperboloid_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Hyperboloid.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eParaboloidElement){
-            QPixmap pix(":/Images/icons/paraboloid_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Paraboloid.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == eNurbsElement){
-            QPixmap pix(":/Images/icons/nurbs_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/Nurbs.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }else if(element.typeOfElement == ePointCloudElement){
-            QPixmap pix(":/Images/icons/pointCloud_5e8acf.png");
-            return pix.scaledToHeight(12, Qt::SmoothTransformation);
+            QPixmap pix(":/Images/icons/PointCloud.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
+        }else if(element.typeOfElement == eScalarEntityMeasurementSeriesElement){
+            QPixmap pix(":/Images/icons/Scalar Entities.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
+        }else if(element.typeOfElement == eScalarEntityTemperatureElement){
+            QPixmap pix(":/Images/icons/Scalar Entities.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
+        }else if(element.typeOfElement == eEllipseElement){
+            QPixmap pix(":/Images/icons/Ellipse.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
+        }else if(element.typeOfElement == eSlottedHoleElement){
+            QPixmap pix(":/Images/icons/Slotted Hole.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
+        }else if(element.typeOfElement == eTorusElement){
+            QPixmap pix(":/Images/icons/Torus.svg");
+            return pix.scaledToHeight(20, Qt::SmoothTransformation);
         }
 
     }
