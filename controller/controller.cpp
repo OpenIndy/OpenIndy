@@ -452,7 +452,7 @@ void Controller::startMeasurement(){
 
     //perform measurement
     int id = activeFeature->getGeometry()->getId();
-    MeasurementConfig mConfig;
+    MeasurementConfig mConfig = activeFeature->getGeometry()->getMeasurementConfig();
     activeStation->measure(id, mConfig);
 
 }
@@ -640,8 +640,25 @@ void Controller::startChangeMotorState(){
  * \param task
  */
 void Controller::startCustomAction(const QString &task){
-    qDebug() << task;
-    //TODO implement custom action
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted(QString("custom action: %1 ...").arg(task));
+
+    //do self defined action
+    activeStation->selfDefinedAction(task);
+
 }
 
 /*!

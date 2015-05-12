@@ -52,6 +52,8 @@ void SensorListener::startStreaming(){
             return;
         }
 
+        if(!this->sensor->getIsBusy()){
+
         //check connection state
         if(!this->sensor->getConnectionState()){
             emit this->connectionLost();
@@ -60,18 +62,24 @@ void SensorListener::startStreaming(){
             continue;
         }
 
-        //get sensor status information
-        QMap<QString,QString> status = this->sensor->getSensorStatus();
-        emit this->realTimeStatus(status);
+        //qDebug() << "busy?: " << this->sensor->getIsBusy();
 
-        //get reading (current sensor position)
-        QVariantMap reading = this->sensor->readingStream(this->streamFormat);
-        emit this->realTimeReading(reading);
+
+
+            //get sensor status information
+            QMap<QString,QString> status = this->sensor->getSensorStatus();
+            emit this->realTimeStatus(status);
+
+            //get reading (current sensor position)
+            QVariantMap reading = this->sensor->readingStream(this->streamFormat);
+            emit this->realTimeReading(reading);
+
+        }
 
         this->locker.unlock();
 
         //sleep for 100 ms to avoid overhead
-        QThread::msleep(100);
+        QThread::msleep(20);
 
     }
 

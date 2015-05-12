@@ -1197,4 +1197,33 @@ void SensorControl::compensation(){
  */
 void SensorControl::selfDefinedAction(const QString &action){
 
+    this->locker.lock();
+
+    //check sensor
+    if(this->sensor.isNull()){
+        this->locker.unlock();
+        return;
+    }
+
+    //start compensation if the sensor is connected
+    bool success = false;
+    QString msg;
+    if(this->sensor->getConnectionState()){
+
+        bool success = this->sensor->doSelfDefinedAction(action);
+        if(success){
+            msg = "self defined action finished";
+            success = true;
+        }else{
+            msg = "failed to do self defined action";
+        }
+
+    }else{
+        msg = "sensor not connected";
+    }
+
+    emit this->commandFinished(success, msg);
+
+    this->locker.unlock();
+
 }
