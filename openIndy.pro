@@ -177,7 +177,9 @@ SOURCES += \
     ui/dialogs/measurementconfigurationdialog.cpp \
     models/measurementconfigurationmodel.cpp \
     models/measurementconfigurationproxymodel.cpp \
-    ui/delegates/measurementconfigurationlistdelegate.cpp
+    ui/delegates/measurementconfigurationlistdelegate.cpp \
+    models/availablefunctionslistmodel.cpp \
+    models/availablefunctionslistproxymodel.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -302,7 +304,9 @@ HEADERS  += \
     ui/dialogs/measurementconfigurationdialog.h \
     models/measurementconfigurationmodel.h \
     models/measurementconfigurationproxymodel.h \
-    ui/delegates/measurementconfigurationlistdelegate.h
+    ui/delegates/measurementconfigurationlistdelegate.h \
+    models/availablefunctionslistmodel.h \
+    models/availablefunctionslistproxymodel.h
 
 FORMS    += \
     ui/mainwindow.ui \

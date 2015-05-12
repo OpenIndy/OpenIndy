@@ -40,6 +40,26 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
     this->featureAttributesFromGUI(attributes);
     emit this->addFeatures(attributes);
 
+    //get selected function
+    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+    if(function.name.compare("") == 0 || function.plugin.name.compare("") == 0){
+        this->close();
+        return;
+    }
+
+    //get and cast source model
+    AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
+    if(source_model == NULL){
+        this->close();
+        return;
+    }
+
+    //set default function
+    QPair<QString, QString> functionPlugin;
+    functionPlugin.first = function.name;
+    functionPlugin.second = function.plugin.file_path;
+    source_model->setDefaultFunction(this->typeOfFeature, functionPlugin);
+
     this->close();
 
 }
@@ -201,6 +221,10 @@ void CreateFeatureDialog::initModels(){
     //set model for possible nominal systems of a nominal geometry
     this->ui->comboBox_nominalSystem->setModel(&ModelManager::getNominalSystemsModel());
 
+    //set model for available functions
+    this->functionListModel = ModelManager::getAvailableFunctionsProxyModel();
+    this->ui->comboBox_function->setModel(this->functionListModel);
+
 }
 
 /*!
@@ -209,40 +233,17 @@ void CreateFeatureDialog::initModels(){
  */
 void CreateFeatureDialog::initFunctionsModel(){
 
-    switch(this->typeOfFeature){
-    case ePointFeature:
-        break;
-    case eLineFeature:
-        break;
-    case ePlaneFeature:
-        break;
-    case eCircleFeature:
-        break;
-    case eSphereFeature:
-        break;
-    case ePointCloudFeature:
-        break;
-    case eConeFeature:
-        break;
-    case eCylinderFeature:
-        break;
-    case eEllipsoidFeature:
-        break;
-    case eParaboloidFeature:
-        break;
-    case eHyperboloidFeature:
-        break;
-    case eNurbsFeature:
-        break;
-    case eScalarEntityAngleFeature:
-        break;
-    case eScalarEntityDistanceFeature:
-        break;
-    case eScalarEntityMeasurementSeriesFeature:
-        break;
-    case eScalarEntityTemperatureFeature:
-        break;
+    //set the filter for the function list model
+    this->functionListModel->setFilter(this->typeOfFeature);
+
+    //get and cast source model
+    AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
+    if(source_model == NULL){
+        return;
     }
+
+    //select default function
+    this->ui->comboBox_function->setCurrentText(source_model->getDefaultFunction(this->typeOfFeature).first);
 
 }
 
@@ -273,13 +274,11 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
 
-
-        /*
-        attributes.functionPlugin.first = this->ui->comboBox_function
-        attributes.functionPlugin.second = this->ui->checkBox_isActual->isChecked();
-        */
-        //TODO: get function and plugin from model
-
     }
+
+    //fill selected function plugin
+    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+    attributes.functionPlugin.first = function.name;
+    attributes.functionPlugin.second = function.plugin.file_path;
 
 }

@@ -71,7 +71,13 @@ private:
 private:
     Ui::CreateFeatureDialog *ui;
 
+    //#################
+    //helper attributes
+    //#################
+
     FeatureTypes typeOfFeature;
+
+    QPointer<AvailableFunctionsListProxyModel> functionListModel;
 
 };
 

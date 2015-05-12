@@ -33,6 +33,8 @@
 #include "plugintreeviewmodel.h"
 #include "measurementconfigurationmodel.h"
 #include "measurementconfigurationproxymodel.h"
+#include "availablefunctionslistmodel.h"
+#include "availablefunctionslistproxymodel.h"
 
 /*!
  * \brief The ModelManager class
@@ -145,6 +147,9 @@ public:
     static QPointer<QStringListModel> getExchangeSimpleAsciiDelimiters(const QString &pluginName, const QString &exchangeName);
     static QPointer<QStringListModel> getExchangeSimpleAsciiSupportedGeometries(const QString &pluginName, const QString &exchangeName);
 
+    //function list filter model
+    static QPointer<AvailableFunctionsListProxyModel> getAvailableFunctionsProxyModel();
+
 private slots:
 
     //##########################################
@@ -207,6 +212,7 @@ private:
     static FunctionTableModel functionTableModel;
     static FunctionTableProxyModel functionTableProxyModel;
     static ActiveFeatureFunctionsModel activeFeatureFunctionsModel;
+    static AvailableFunctionsListModel functionsListModel;
 
     //sensor models
     static QStringListModel sensorTypeNamesModel;

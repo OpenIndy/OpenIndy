@@ -36,7 +36,28 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
         return;
     }
 
-    this->job->addFeatures(attributes);
+    QList<QPointer<FeatureWrapper> > features = this->job->addFeatures(attributes);
+
+    //create functions for the created features
+    if(attributes.functionPlugin.first.compare("") == 0 || attributes.functionPlugin.second.compare("") == 0){
+        return;
+    }
+    foreach(const QPointer<FeatureWrapper> &feature, features){
+
+        if(feature.isNull() || feature->getFeature().isNull()){
+            continue;
+        }
+
+        //load function plugin
+        QPointer<Function> function = PluginLoader::loadFunctionPlugin(attributes.functionPlugin.second, attributes.functionPlugin.first);
+        if(function.isNull()){
+            return;
+        }
+
+        //assign function to feature
+        feature->getFeature()->addFunction(function);
+
+    }
 
 }
 

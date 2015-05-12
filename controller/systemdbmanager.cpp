@@ -1211,6 +1211,121 @@ QList<sdb::Function> SystemDbManager::getChangeFunctions(const FeatureTypes &typ
 }
 
 /*!
+ * \brief SystemDbManager::getDefaultFunction
+ * \param type
+ * \return
+ */
+sdb::Function SystemDbManager::getDefaultFunction(const FeatureTypes &type){
+
+    sdb::Function result;
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        QSqlQuery command(SystemDbManager::db);
+
+        QString query = QString("SELECT %1 FROM functionPlugin AS fp %2 %3 %4 WHERE %5")
+                .arg("fp.id, fp.iid, fp.name, fp.description, p.name AS pluginName, p.file_path AS filepath")
+                .arg("INNER JOIN elementPlugin AS ep ON fp.id = ep.functionPlugin_id")
+                .arg("INNER JOIN plugin AS p ON p.id = fp.plugin_id")
+                .arg("INNER JOIN element AS e ON e.id = ep.element_id")
+                .arg(QString("e.element_type = \'%1\' AND ep.use_as_default = 1").arg(getFeatureTypeName(type)));
+
+        command.exec(query);
+        while(command.next()){
+
+            result.id = command.value("id").toInt();
+            result.iid = command.value("iid").toString();
+            result.name = command.value("name").toString();
+            result.description = command.value("description").toString();
+            sdb::Plugin plugin;
+            plugin.name = command.value("pluginName").toString();
+            plugin.file_path = command.value("filepath").toString();
+            result.plugin = plugin;
+
+            QSqlQuery command2(SystemDbManager::db);
+
+            //query applicableFor features
+            QString queryApplicableFor = QString("SELECT e.element_type FROM elementPlugin AS ep INNER JOIN element AS e %1")
+                    .arg(QString("ON ep.element_id = e.id WHERE ep.functionPlugin_id = %1")
+                         .arg(result.id));
+            command2.exec(queryApplicableFor);
+            while(command2.next()){
+                result.applicableFor.append(getFeatureTypeEnum(command2.value("element_type").toString()));
+            }
+
+            //query neededElements elements
+            QString queryNeededElements = QString("SELECT e.element_type FROM pluginElement AS pe INNER JOIN element AS e %1")
+                    .arg(QString("ON pe.element_id = e.id WHERE pe.functionPlugin_id = %1")
+                         .arg(result.id));
+            command2.exec(queryNeededElements);
+            while(command2.next()){
+                result.neededElements.append(getElementTypeEnum(command2.value("element_type").toString()));
+            }
+
+            break;
+
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+    return result;
+
+}
+
+/*!
+ * \brief SystemDbManager::setDefaultFunction
+ * \param type
+ * \param functionName
+ * \param pluginPath
+ */
+void SystemDbManager::setDefaultFunction(const FeatureTypes &type, const QString &functionName, const QString &pluginPath){
+
+    if(!SystemDbManager::isInit){ SystemDbManager::init(); }
+    if(SystemDbManager::connect()){
+
+        bool transaction = SystemDbManager::db.transaction();
+        if(transaction){
+
+            QSqlQuery command(SystemDbManager::db);
+
+            //set default state of all functions for featureType to false
+            QString query = QString("UPDATE elementPlugin SET use_as_default = 0 WHERE id IN %1")
+                    .arg(QString("(SELECT ep.id FROM elementPlugin AS ep %1 %2")
+                         .arg("INNER JOIN element AS e ON ep.element_id = e.id")
+                         .arg(QString("WHERE e.element_type = \'%1\')").arg(getFeatureTypeName(type))));
+
+            if(command.exec(query)){
+
+                //set default state of the given function to true
+                query = QString("UPDATE elementPlugin SET use_as_default = 1 WHERE id IN %1")
+                        .arg(QString("(SELECT ep.id FROM elementPlugin AS ep %1 %2 %3 %4")
+                             .arg("INNER JOIN element AS e ON ep.element_id = e.id")
+                             .arg("INNER JOIN functionPlugin AS fp ON ep.functionPlugin_id = fp.id")
+                             .arg("INNER JOIN plugin AS p ON fp.plugin_id = p.id")
+                             .arg(QString("WHERE e.element_type = \'%1\' AND fp.name = \'%2\' AND p.file_path = \'%3\')")
+                                  .arg(getFeatureTypeName(type))
+                                  .arg(functionName)
+                                  .arg(pluginPath)));
+                command.exec(query);
+
+            }
+
+            if(!SystemDbManager::db.commit()){
+                SystemDbManager::db.rollback();
+            }
+
+        }else{
+            Console::getInstance()->addLine( QString("Database error: %1").arg(SystemDbManager::db.lastError().text()) );
+        }
+
+        SystemDbManager::disconnect();
+    }
+
+}
+
+/*!
  * \brief SystemDbManager::getTools
  * Returns a list of all available tools
  * \return

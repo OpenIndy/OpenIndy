@@ -44,6 +44,7 @@ TrafoParamTableProxyModel ModelManager::trafoParamTableProxyModel;
 MeasurementConfigurationModel ModelManager::measurementConfigurationModel;
 MeasurementConfigurationProxyModel ModelManager::measurementConfigurationProxyModel;
 QPointer<MeasurementConfigManager> ModelManager::measurementConfigManager;
+AvailableFunctionsListModel ModelManager::functionsListModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -521,6 +522,16 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiSupportedGeometri
 
     return model;
 
+}
+
+/*!
+ * \brief ModelManager::getAvailableFunctionsProxyModel
+ * \return
+ */
+QPointer<AvailableFunctionsListProxyModel> ModelManager::getAvailableFunctionsProxyModel(){
+    QPointer<AvailableFunctionsListProxyModel> model = new AvailableFunctionsListProxyModel();
+    model->setSourceModel(&ModelManager::functionsListModel);
+    return model;
 }
 
 /*!
@@ -1028,6 +1039,7 @@ void ModelManager::initPluginModels(){
     ModelManager::functionTableModel.setPlugins(ModelManager::plugins);
     ModelManager::sensorTableModel.setPlugins(ModelManager::plugins);
     ModelManager::pluginTreeViewModel.setPlugins(ModelManager::plugins);
+    ModelManager::functionsListModel.setPlugins(ModelManager::plugins);
 
     //update plugin names model
     QStringList pluginNames;

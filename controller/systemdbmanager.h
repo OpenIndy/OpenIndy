@@ -180,6 +180,9 @@ public:
     static QList<sdb::Function> getCreateFunctions(const FeatureTypes &type);
     static QList<sdb::Function> getChangeFunctions(const FeatureTypes &type);
 
+    static sdb::Function getDefaultFunction(const FeatureTypes &type);
+    static void setDefaultFunction(const FeatureTypes &type, const QString &functionName, const QString &pluginPath);
+
     //#########
     //get tools
     //#########

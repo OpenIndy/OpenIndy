@@ -21,16 +21,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0,0,0,0">
-     <property name="spacing">
-      <number>10</number>
-     </property>
-     <property name="sizeConstraint">
-      <enum>QLayout::SetDefaultConstraint</enum>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,2">
        <property name="sizeConstraint">
@@ -137,47 +128,54 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="sizeConstraint">
-        <enum>QLayout::SetDefaultConstraint</enum>
+      <widget class="QCheckBox" name="checkBox_common">
+       <property name="text">
+        <string>common</string>
        </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_actual">
+       <property name="text">
+        <string>actual</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_nominal">
+       <property name="text">
+        <string>nominal</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,2">
        <item>
-        <widget class="QCheckBox" name="checkBox_common">
+        <widget class="QLabel" name="label_mConfig">
          <property name="text">
-          <string>common</string>
+          <string>measurement config:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_actual">
+        <widget class="QComboBox" name="comboBox_mConfig"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,2">
+       <item>
+        <widget class="QLabel" name="label_nominalSystem">
          <property name="text">
-          <string>actual</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
+          <string>nominal system</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_nominal">
-         <property name="text">
-          <string>nominal</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,2">
-         <item>
-          <widget class="QLabel" name="label_nominalSystem">
-           <property name="text">
-            <string>nominal system</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBox_nominalSystem"/>
-         </item>
-        </layout>
+        <widget class="QComboBox" name="comboBox_nominalSystem"/>
        </item>
       </layout>
      </item>
@@ -241,13 +239,6 @@
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QToolButton" name="toolButton_mConfig">
-         <property name="text">
-          <string>measurement config</string>
-         </property>
-        </widget>
-       </item>
        <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">

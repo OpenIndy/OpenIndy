@@ -305,7 +305,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     }
     QString name = selection.at(0).data().toString();
 
-    //getmeasurement config from GUI selection
+    //get measurement config from GUI selection
     MeasurementConfig mConfig;
     mConfig.setName(name);
     mConfig.setTypeOfReading(getReadingTypeEnum(this->ui->comboBox_readingType->currentText()));
@@ -321,12 +321,12 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfigModel->replaceMeasurementConfig(name, mConfig);
 
     //select the new config in tree view
-    if(this->ui->listView_measurementConfigs->model()->hasIndex(selection.at(0).row(), selection.at(0).column())){
+    /*if(this->ui->listView_measurementConfigs->model()->hasIndex(selection.at(0).row(), selection.at(0).column())){
         QModelIndex newSelection = mConfigModel->getIndex(mConfig.getName());
         if(newSelection.isValid()){
             this->ui->listView_measurementConfigs->selectionModel()->select(newSelection, QItemSelectionModel::Select);
         }
-    }
+    }*/
 
 }
 

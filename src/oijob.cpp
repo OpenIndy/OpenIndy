@@ -1464,6 +1464,9 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
             this->featureContainer.addFeature(feature);
             this->connectFeature(feature);
 
+            //add feature to result list
+            result.append(feature);
+
         }
 
         //create actual
@@ -1496,6 +1499,9 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
             this->featureContainer.addFeature(feature);
             this->connectFeature(feature);
 
+            //add feature to result list
+            result.append(feature);
+
         }
 
         //create non-geometry feature
@@ -1525,6 +1531,9 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
             //add and connect feature
             this->featureContainer.addFeature(feature);
             this->connectFeature(feature);
+
+            //add feature to result list
+            result.append(feature);
 
         }
 

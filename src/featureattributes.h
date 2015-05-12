@@ -31,7 +31,7 @@ public:
     QString nominalSystem;
 
     //a function
-    QPair<QString, QString> functionPlugin; //T1 = plugin, T2 = function
+    QPair<QString, QString> functionPlugin; //T1 = function, T2 = file path
 
     //only when typeOfFeature specifies a trafo param
     QString startSystem;

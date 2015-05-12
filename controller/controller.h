@@ -18,6 +18,7 @@
 #include "measurementconfigmanager.h"
 #include "featureupdater.h"
 #include "projectexchanger.h"
+#include "pluginloader.h"
 
 /*!
  * \brief The Controller class
