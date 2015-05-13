@@ -108,12 +108,12 @@ void Position::setVector(const OiVec &v){
  */
 void Position::setVector(const double &x, const double &y, const double &z, const double &h){
     this->xyz.setAt(0, x / h);
-    this->xyz.setAt(0, y / h);
-    this->xyz.setAt(0, z / h);
+    this->xyz.setAt(1, y / h);
+    this->xyz.setAt(2, z / h);
     this->xyzH.setAt(0, x);
-    this->xyzH.setAt(0, y);
-    this->xyzH.setAt(0, z);
-    this->xyzH.setAt(0, h);
+    this->xyzH.setAt(1, y);
+    this->xyzH.setAt(2, z);
+    this->xyzH.setAt(3, h);
 }
 
 /*!

@@ -131,8 +131,8 @@ void Line::recalc(){
 
     Geometry::recalc();
 
-    //reset line definition if not solved
-    if(!this->isSolved){
+    //reset line definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->xyz.setVector(0.0, 0.0, 0.0);
         this->axis.setVector(0.0, 0.0, 0.0);
     }

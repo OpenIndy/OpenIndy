@@ -151,8 +151,8 @@ void Circle::recalc(){
 
     Geometry::recalc();
 
-    //reset circle definition if not solved
-    if(!this->isSolved){
+    //reset circle definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->center.setVector(0.0, 0.0, 0.0);
         this->normal.setVector(0.0, 0.0, 0.0);
         this->radius.setRadius(0.0);

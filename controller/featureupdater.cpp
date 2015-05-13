@@ -457,7 +457,9 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
 
             }
 
-            systemTransformation->inputElementsStartSystem.insert(key, newElements);
+            if(newElements.size() > 0){
+                systemTransformation->inputElementsStartSystem.insert(key, newElements);
+            }
 
         }
 
@@ -520,7 +522,9 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
 
             }
 
-            systemTransformation->inputElementsDestinationSystem.insert(key, newElements);
+            if(newElements.size() > 0){
+                systemTransformation->inputElementsDestinationSystem.insert(key, newElements);
+            }
 
         }
 
@@ -642,7 +646,9 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
 
             }
 
-            systemTransformation->inputElementsStartSystem.insert(key, newElements);
+            if(newElements.size() > 0){
+                systemTransformation->inputElementsStartSystem.insert(key, newElements);
+            }
 
         }
 
@@ -659,7 +665,10 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
                 if((!trafoParam->getStartSystem()->getIsStationSystem() && element.point->getIsNominal())
                         || element.point->getIsSolved()){
-                    sorter.addLocPoint(Point(*element.point.data()));
+                    Point p(element.point->getIsNominal());
+                    p.setFeatureName(element.point->getFeatureName());
+                    p.setPoint(element.point->getPosition());
+                    sorter.addLocPoint(p);
                 }
             }
 
@@ -703,7 +712,9 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
 
             }
 
-            systemTransformation->inputElementsDestinationSystem.insert(key, newElements);
+            if(newElements.size() > 0){
+                systemTransformation->inputElementsDestinationSystem.insert(key, newElements);
+            }
 
         }
 
@@ -720,7 +731,10 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
                 if((!trafoParam->getDestinationSystem()->getIsStationSystem() && element.point->getIsNominal())
                         || element.point->getIsSolved()){
-                    sorter.addRefPoint(Point(*element.point.data()));
+                    Point p(element.point->getIsNominal());
+                    p.setFeatureName(element.point->getFeatureName());
+                    p.setPoint(element.point->getPosition());
+                    sorter.addRefPoint(p);
                 }
             }
 
@@ -882,6 +896,12 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
 
     }
 
+    //###################
+    //recalc all features
+    //###################
+
+    this->recalcFeatureSetWithoutTransformation();
+
     //#############################################################################
     //set nominals to solved only if their nominal system is the destination system
     //#############################################################################
@@ -907,12 +927,6 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
         }
 
     }
-
-    //###################
-    //recalc all features
-    //###################
-
-    this->recalcFeatureSetWithoutTransformation();
 
 }
 

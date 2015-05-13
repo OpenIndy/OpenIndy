@@ -97,8 +97,8 @@ void ScalarEntityTemperature::recalc(){
 
     Geometry::recalc();
 
-    //reset temperature definition if not solved
-    if(!this->isSolved){
+    //reset temperature definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->temperature = 0.0;
     }
 

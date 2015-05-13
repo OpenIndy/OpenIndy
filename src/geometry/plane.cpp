@@ -181,8 +181,8 @@ void Plane::recalc(){
 
     Geometry::recalc();
 
-    //reset plane definition if not solved
-    if(!this->isSolved){
+    //reset plane definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->xyz.setVector(0.0, 0.0, 0.0);
         this->normal.setVector(0.0, 0.0, 0.0);
         this->d = 0.0;

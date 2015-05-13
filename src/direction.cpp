@@ -88,12 +88,12 @@ Direction::~Direction(){
  */
 void Direction::setVector(const double &x, const double &y, const double &z, const double &h){
     this->ijk.setAt(0, x / h);
-    this->ijk.setAt(0, y / h);
-    this->ijk.setAt(0, z / h);
+    this->ijk.setAt(1, y / h);
+    this->ijk.setAt(2, z / h);
     this->ijkH.setAt(0, x);
-    this->ijkH.setAt(0, y);
-    this->ijkH.setAt(0, z);
-    this->ijkH.setAt(0, h);
+    this->ijkH.setAt(1, y);
+    this->ijkH.setAt(2, z);
+    this->ijkH.setAt(3, h);
 }
 
 /*!

@@ -173,8 +173,8 @@ void Ellipse::recalc(){
 
     Geometry::recalc();
 
-    //reset ellipse definition if not solved
-    if(!this->isSolved){
+    //reset ellipse definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->center.setVector(0.0, 0.0, 0.0);
         this->normal.setVector(0.0, 0.0, 0.0);
         this->a = 0.0;

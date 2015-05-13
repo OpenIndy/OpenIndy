@@ -30,10 +30,10 @@ Geometry::Geometry(const Geometry &copy, QObject *parent) : Feature(copy, parent
     this->activeMeasurementConfig = copy.activeMeasurementConfig;
 
     //copy nominals, actual, observations
-    this->nominals = copy.nominals;
-    this->actual = copy.actual;
-    this->observations = copy.observations;
-    this->nominalSystem = copy.nominalSystem;
+    //this->nominals = copy.nominals;
+    //this->actual = copy.actual;
+    //this->observations = copy.observations;
+    //this->nominalSystem = copy.nominalSystem;
 
 }
 
@@ -52,10 +52,10 @@ Geometry &Geometry::operator=(const Geometry &copy){
     this->activeMeasurementConfig = copy.activeMeasurementConfig;
 
     //copy nominals, actual, observations
-    this->nominals = copy.nominals;
-    this->actual = copy.actual;
-    this->observations = copy.observations;
-    this->nominalSystem = copy.nominalSystem;
+    //this->nominals = copy.nominals;
+    //this->actual = copy.actual;
+    //this->observations = copy.observations;
+    //this->nominalSystem = copy.nominalSystem;
 
     return *this;
 

@@ -153,8 +153,8 @@ void Cylinder::recalc(){
 
     Geometry::recalc();
 
-    //reset cylinder definition if not solved
-    if(!this->isSolved){
+    //reset cylinder definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->axisPoint.setVector(0.0, 0.0, 0.0);
         this->axis.setVector(0.0, 0.0, 0.0);
         this->radius.setRadius(0.0);

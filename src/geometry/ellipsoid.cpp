@@ -163,8 +163,8 @@ void Ellipsoid::recalc(){
 
     Geometry::recalc();
 
-    //reset ellipsoid definition if not solved
-    if(!this->isSolved){
+    //reset ellipsoid definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->center.setVector(0.0, 0.0, 0.0);
         this->majorAxis.setVector(0.0, 0.0, 0.0);
         this->a = 0.0;

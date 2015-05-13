@@ -28,8 +28,8 @@ Feature::Feature(const Feature &copy, QObject *parent) : Element(copy, parent){
     this->isUpdated = copy.isUpdated;
 
     //copy functions (usedFor is not copied)
-    this->functionList = copy.functionList;
-    this->previouslyNeeded = copy.previouslyNeeded;
+    //this->functionList = copy.functionList;
+    //this->previouslyNeeded = copy.previouslyNeeded;
 
     this->selfFeature = new FeatureWrapper();
 
@@ -51,8 +51,8 @@ Feature &Feature::operator=(const Feature &copy){
     this->isUpdated = copy.isUpdated;
 
     //copy functions (usedFor is not copied)
-    this->functionList = copy.functionList;
-    this->previouslyNeeded = copy.previouslyNeeded;
+    //this->functionList = copy.functionList;
+    //this->previouslyNeeded = copy.previouslyNeeded;
 
     this->selfFeature = new FeatureWrapper();
 

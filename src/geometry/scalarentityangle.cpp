@@ -97,8 +97,8 @@ void ScalarEntityAngle::recalc(){
 
     Geometry::recalc();
 
-    //reset angle definition if not solved
-    if(!this->isSolved){
+    //reset angle definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->angle = 0.0;
     }
 

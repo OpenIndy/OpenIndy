@@ -131,8 +131,8 @@ void Sphere::recalc(){
 
     Geometry::recalc();
 
-    //reset sphere definition if not solved
-    if(!this->isSolved){
+    //reset sphere definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->center.setVector(0.0, 0.0, 0.0);
         this->radius.setRadius(0.0);
     }

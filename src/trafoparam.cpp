@@ -44,8 +44,8 @@ TrafoParam::TrafoParam(const TrafoParam &copy, QObject *parent) : Feature(copy, 
     }
 
     //copy attributes
-    this->from = copy.from;
-    this->to = copy.to;
+    //this->from = copy.from;
+    //this->to = copy.to;
     this->isUsed = copy.isUsed;
     this->validTime = copy.validTime;
     this->isMovement = copy.isMovement;
@@ -72,8 +72,8 @@ TrafoParam &TrafoParam::operator=(const TrafoParam &copy){
     }
 
     //copy attributes
-    this->from = copy.from;
-    this->to = copy.to;
+    //this->from = copy.from;
+    //this->to = copy.to;
     this->isUsed = copy.isUsed;
     this->validTime = copy.validTime;
     this->isMovement = copy.isMovement;
@@ -324,7 +324,7 @@ bool TrafoParam::setTransformationParameters(const OiMat &rotation, const OiMat 
         r.setAt(1, qAsin(rotation.getAt(2,0))); //beta
         r.setAt(2, qAtan2(-rotation.getAt(1,0), rotation.getAt(0,0))); //gamma
         if( qFabs(qCos(r.getAt(1)) * qCos(r.getAt(2))) - qFabs(rotation.getAt(0,0)) > 0.01 ){
-            r.setAt(1, 3.141592653589793 - r.getAt(1));
+            r.setAt(1, PI - r.getAt(1));
         }
 
         this->translation = t;

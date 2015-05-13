@@ -143,8 +143,8 @@ void Paraboloid::recalc(){
 
     Geometry::recalc();
 
-    //reset paraboloid definition if not solved
-    if(!this->isSolved){
+    //reset paraboloid definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->apex.setVector(0.0, 0.0, 0.0);
         this->axis.setVector(0.0, 0.0, 0.0);
         this->a = 0.0;

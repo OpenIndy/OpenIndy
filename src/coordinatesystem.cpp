@@ -59,7 +59,7 @@ CoordinateSystem::CoordinateSystem(const CoordinateSystem &copy, QObject *parent
     this->yAxis = copy.yAxis;
     this->zAxis = copy.zAxis;
     this->isStationSystem = copy.isStationSystem;
-    this->station = copy.station;
+    //this->station = copy.station;
     this->isActiveCoordinateSystem = copy.isActiveCoordinateSystem;
     this->expansionOrigin = copy.expansionOrigin;
 
@@ -85,7 +85,7 @@ CoordinateSystem &CoordinateSystem::operator=(const CoordinateSystem &copy){
     this->yAxis = copy.yAxis;
     this->zAxis = copy.zAxis;
     this->isStationSystem = copy.isStationSystem;
-    this->station = copy.station;
+    //this->station = copy.station;
     this->isActiveCoordinateSystem = copy.isActiveCoordinateSystem;
     this->expansionOrigin = copy.expansionOrigin;
 

@@ -97,8 +97,8 @@ void ScalarEntityMeasurementSeries::recalc(){
 
     Geometry::recalc();
 
-    //reset measurement series definition if not solved
-    if(!this->isSolved){
+    //reset measurement series definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->seriesValue = 0.0;
     }
 

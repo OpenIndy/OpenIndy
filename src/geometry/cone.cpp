@@ -145,8 +145,8 @@ void Cone::recalc(){
 
     Geometry::recalc();
 
-    //reset cone definition if not solved
-    if(!this->isSolved){
+    //reset cone definition if not solved and no nominal
+    if(!this->isSolved && !this->isNominal){
         this->apex.setVector(0.0, 0.0, 0.0);
         this->axis.setVector(0.0, 0.0, 0.0);
         this->aperture = 0.0;

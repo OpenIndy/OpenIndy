@@ -52,19 +52,16 @@ void SensorListener::startStreaming(){
             return;
         }
 
+        //if the tracker is busy do not call tracker methods
         if(!this->sensor->getIsBusy()){
 
-        //check connection state
-        if(!this->sensor->getConnectionState()){
-            emit this->connectionLost();
-            this->locker.unlock();
-            QThread::msleep(100);
-            continue;
-        }
-
-        //qDebug() << "busy?: " << this->sensor->getIsBusy();
-
-
+            //check connection state
+            if(!this->sensor->getConnectionState()){
+                emit this->connectionLost();
+                this->locker.unlock();
+                QThread::msleep(100);
+                continue;
+            }
 
             //get sensor status information
             QMap<QString,QString> status = this->sensor->getSensorStatus();
@@ -78,7 +75,7 @@ void SensorListener::startStreaming(){
 
         this->locker.unlock();
 
-        //sleep for 100 ms to avoid overhead
+        //sleep for 20 ms to avoid overhead
         QThread::msleep(20);
 
     }

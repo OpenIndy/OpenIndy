@@ -85,13 +85,13 @@ Station::Station(const Station &copy, QObject *parent) : Feature(copy, parent){
     }
 
     //copy measured readings
-    this->cartesianReadings = copy.cartesianReadings;
-    this->directionReadings = copy.directionReadings;
-    this->distanceReadings = copy.distanceReadings;
-    this->polarReadings = copy.polarReadings;
-    this->levelReadings = copy.levelReadings;
-    this->temperatureRadings = copy.temperatureRadings;
-    this->undefinedReadings = copy.undefinedReadings;
+    //this->cartesianReadings = copy.cartesianReadings;
+    //this->directionReadings = copy.directionReadings;
+    //this->distanceReadings = copy.distanceReadings;
+    //this->polarReadings = copy.polarReadings;
+    //this->levelReadings = copy.levelReadings;
+    //this->temperatureRadings = copy.temperatureRadings;
+    //this->undefinedReadings = copy.undefinedReadings;
 
 }
 
@@ -114,13 +114,13 @@ Station &Station::operator=(const Station &copy){
     }
 
     //copy measured readings
-    this->cartesianReadings = copy.cartesianReadings;
-    this->directionReadings = copy.directionReadings;
-    this->distanceReadings = copy.distanceReadings;
-    this->polarReadings = copy.polarReadings;
-    this->levelReadings = copy.levelReadings;
-    this->temperatureRadings = copy.temperatureRadings;
-    this->undefinedReadings = copy.undefinedReadings;
+    //this->cartesianReadings = copy.cartesianReadings;
+    //this->directionReadings = copy.directionReadings;
+    //this->distanceReadings = copy.distanceReadings;
+    //this->polarReadings = copy.polarReadings;
+    //this->levelReadings = copy.levelReadings;
+    //this->temperatureRadings = copy.temperatureRadings;
+    //this->undefinedReadings = copy.undefinedReadings;
 
     return *this;
 
