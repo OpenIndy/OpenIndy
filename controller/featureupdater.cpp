@@ -128,11 +128,14 @@ void FeatureUpdater::recalcFeatureSet(){
     //set all features to not have been updated
     foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
         if(!feature.isNull() && !feature->getFeature().isNull()){
+            feature->getFeature()->blockSignals(true);
             feature->getFeature()->setIsUpdated(false);
+            feature->getFeature()->blockSignals(false);
         }
     }
 
-    //recalc recursively
+    //recalc recursively (block signals during recalculation, one signal for all features is emitted at the end)
+    this->blockSignals(true);
     foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
 
         //check feature
@@ -146,6 +149,7 @@ void FeatureUpdater::recalcFeatureSet(){
         }
 
     }
+    this->blockSignals(false);
 
     emit this->featuresRecalculated();
 
@@ -282,7 +286,9 @@ void FeatureUpdater::switchCoordinateSystem(){
 
             //check feature
             if(!feature.isNull() && !feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                feature->getFeature()->blockSignals(true);
                 feature->getGeometry()->setIsSolved(isSolved);
+                feature->getFeature()->blockSignals(false);
             }
 
         }

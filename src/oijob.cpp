@@ -1422,7 +1422,7 @@ QList<QPointer<FeatureWrapper> > OiJob::addFeatures(const FeatureAttributes &fAt
 
     //check if the group is a new group
     bool isNewGroup = false;
-    if(fAttr.group.compare("") != 0 && this->featureContainer.getFeatureGroupList().contains(fAttr.group)){
+    if(fAttr.group.compare("") != 0 && !this->featureContainer.getFeatureGroupList().contains(fAttr.group)){
         isNewGroup = true;
     }
 
@@ -1586,12 +1586,6 @@ bool OiJob::addFeatures(const QList<QPointer<FeatureWrapper> > &features){
         //add feature type to list of added feature types
         if(!addedFeatureTypes.contains(feature->getFeatureTypeEnum())){
             addedFeatureTypes.append(feature->getFeatureTypeEnum());
-        }
-
-        //if a group is set for the new feature emit the group changed signal
-        if(feature->getFeature()->getGroupName().compare("") != 0
-                && !this->featureContainer.getFeatureGroupList().contains(feature->getFeature()->getGroupName())){
-            emit this->availableGroupsChanged();
         }
 
     }
@@ -3243,6 +3237,13 @@ bool OiJob::checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature){
 
     }
 
+    //check if the group is a new group
+    bool isNewGroup = false;
+    if(feature->getFeature()->getGroupName().compare("") != 0
+            && !this->featureContainer.getFeatureGroupList().contains(feature->getFeature()->getGroupName())){
+        isNewGroup = true;
+    }
+
     //add the feature to the internal lists and maps
     this->featureContainer.addFeature(feature);
 
@@ -3263,6 +3264,11 @@ bool OiJob::checkAndSetUpNewFeature(const QPointer<FeatureWrapper> &feature){
                 nominal->setActual(feature->getGeometry());
             }
         }
+    }
+
+    //if a group is set for the new feature emit the group changed signal
+    if(isNewGroup){
+       emit this->availableGroupsChanged();
     }
 
     return true;

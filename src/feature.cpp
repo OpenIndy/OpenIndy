@@ -219,7 +219,7 @@ const bool &Feature::getIsUpdated() const{
 void Feature::setIsUpdated(const bool &isUpdated){
     if(isUpdated != this->isUpdated){
         this->isUpdated = isUpdated;
-        emit this->featureIsUpdatedChanged(this->id);
+        //emit this->featureIsUpdatedChanged(this->id);
     }
 }
 
