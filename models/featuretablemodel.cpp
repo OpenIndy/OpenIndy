@@ -35,7 +35,7 @@ int FeatureTableModel::rowCount(const QModelIndex &parent) const{
  * \return
  */
 int FeatureTableModel::columnCount(const QModelIndex &parent) const{
-    return getDisplayAttributes().size();
+    return getFeatureDisplayAttributes().size();
 }
 
 /*!
@@ -96,7 +96,7 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
             (0 <= section) &&
             (section < columnCount())){
 
-        return getDisplayAttributeName(getDisplayAttributes().at(section));
+        return getFeatureDisplayAttributeName(getFeatureDisplayAttributes().at(section));
 
     }
 
@@ -144,12 +144,12 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
 
     //get and check column index
     int column = index.column();
-    if(column < 0 || getDisplayAttributes().size() <= column){
+    if(column < 0 || getFeatureDisplayAttributes().size() <= column){
         return false;
     }
 
     //get display attribute
-    int attr = getDisplayAttributes().at(column);
+    int attr = getFeatureDisplayAttributes().at(column);
 
     //if a non-trafo param feature has been edited
     if(getIsFeatureDisplayAttribute(attr)){
@@ -596,12 +596,12 @@ void FeatureTableModel::updateModel(){
 QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feature, const int &column) const{
 
     //check if the column exists in available display attributes
-    if(column < 0 || getDisplayAttributes().size() <= column){
+    if(column < 0 || getFeatureDisplayAttributes().size() <= column){
         return QVariant();
     }
 
     //get the display attribute
-    int attr = getDisplayAttributes().at(column);
+    int attr = getFeatureDisplayAttributes().at(column);
 
     if(getIsFeatureDisplayAttribute(attr)){ //feature attributes
 
@@ -750,7 +750,7 @@ QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feat
 QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &feature, const int &column) const{
 
     //check if the column exists in available display attributes
-    if(column < 0 || getDisplayAttributes().size() <= column){
+    if(column < 0 || getFeatureDisplayAttributes().size() <= column){
         return QVariant();
     }
 
@@ -770,7 +770,7 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
     }
 
     //get the display attribute
-    int attr = getDisplayAttributes().at(column);
+    int attr = getFeatureDisplayAttributes().at(column);
 
     //set background for parameter cells of unsolved features
     if(!feature->getFeature()->getIsSolved() && getIsFeatureDisplayAttribute(attr)){ //feature attributes

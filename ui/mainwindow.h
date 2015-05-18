@@ -26,6 +26,8 @@
 #include "watchwindowdialog.h"
 #include "measurementconfigurationdialog.h"
 #include "settingsdialog.h"
+#include "actualpropertiesdialog.h"
+#include "nominalpropertiesdialog.h"
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
@@ -86,6 +88,7 @@ private slots:
     void importNominalsFinished(const bool &success);
 
     //active feature changes
+    void activeFeatureChanged();
     void activeCoordinateSystemChanged();
 
     //feature(s) added or removed
@@ -137,6 +140,9 @@ private slots:
 
     //feature table view interactions
     void on_tableView_features_clicked(const QModelIndex &index);
+    void on_tableView_features_customContextMenuRequested(const QPoint &pos);
+    void deleteFeatures(bool checked);
+    void showFeatureProperties(bool checked);
     void on_tableView_trafoParams_clicked(const QModelIndex &index);
 
     //function dialog
@@ -219,6 +225,8 @@ private:
     WatchWindowDialog watchWindowDialog;
     MeasurementConfigurationDialog measurementConfigDialog;
     SettingsDialog settingsDialog;
+    ActualPropertiesDialog actualPropertiesDialog;
+    NominalPropertiesDialog nominalPropertiesDialog;
 
     //##########
     //sensor pad

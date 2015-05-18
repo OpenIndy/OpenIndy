@@ -55,7 +55,9 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
         }
 
         //assign function to feature
+        feature->getFeature()->blockSignals(true);
         feature->getFeature()->addFunction(function);
+        feature->getFeature()->blockSignals(false);
 
     }
 
@@ -235,6 +237,22 @@ void Controller::setFeatureTableColumnConfig(const FeatureTableColumnConfig &con
  */
 void Controller::setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config){
     ModelManager::setTrafoParamColumnConfig(config);
+}
+
+/*!
+ * \brief Controller::setObservationTableColumnConfig
+ * \param config
+ */
+void Controller::setObservationTableColumnConfig(const ObservationTableColumnConfig &config){
+    ModelManager::setObservationTableColumnConfig(config);
+}
+
+/*!
+ * \brief Controller::setReadingTableColumnConfig
+ * \param config
+ */
+void Controller::setReadingTableColumnConfig(const ReadingTableColumnConfig &config){
+    ModelManager::setReadingTableColumnConfig(config);
 }
 
 /*!
@@ -818,11 +836,15 @@ void Controller::initDisplayConfigs(){
     //create default configs
     FeatureTableColumnConfig featureTableColumnConfig;
     TrafoParamTableColumnConfig trafoParamTableColumnConfig;
+    ObservationTableColumnConfig observationTableColumnConfig;
+    ReadingTableColumnConfig readingTableColumnConfig;
     ParameterDisplayConfig parameterDisplayConfig;
 
     //pass the default configs to model manager
     ModelManager::setFeatureTableColumnConfig(featureTableColumnConfig);
     ModelManager::setTrafoParamColumnConfig(trafoParamTableColumnConfig);
+    ModelManager::setObservationTableColumnConfig(observationTableColumnConfig);
+    ModelManager::setReadingTableColumnConfig(readingTableColumnConfig);
     ModelManager::setParameterDisplayConfig(parameterDisplayConfig);
 
 }

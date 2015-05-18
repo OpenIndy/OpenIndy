@@ -34,12 +34,12 @@ QWidget* FeatureTableDelegate::createEditor(QWidget *parent, const QStyleOptionV
 
     //get and check column index
     int column = model->mapToSource(index).column();
-    if(column < 0 || getDisplayAttributes().size() <= column){
+    if(column < 0 || getFeatureDisplayAttributes().size() <= column){
         return editor;
     }
 
     //get and check display attribute
-    int attr = getDisplayAttributes().at(column);
+    int attr = getFeatureDisplayAttributes().at(column);
     if(!getIsFeatureDisplayAttribute(attr)){
         return editor;
     }
@@ -82,12 +82,12 @@ void FeatureTableDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
 
     //get and check column index
     int column = model->mapToSource(index).column();
-    if(column < 0 || getDisplayAttributes().size() <= column){
+    if(column < 0 || getFeatureDisplayAttributes().size() <= column){
         return;
     }
 
     //get and check display attribute
-    int attr = getDisplayAttributes().at(column);
+    int attr = getFeatureDisplayAttributes().at(column);
     if(!getIsFeatureDisplayAttribute(attr)){
         return;
     }
@@ -139,12 +139,12 @@ void FeatureTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *mod
 
     //get and check column index
     int column = featureTableProxyModel->mapToSource(index).column();
-    if(column < 0 || getDisplayAttributes().size() <= column){
+    if(column < 0 || getFeatureDisplayAttributes().size() <= column){
         return;
     }
 
     //get and check display attribute
-    int attr = getDisplayAttributes().at(column);
+    int attr = getFeatureDisplayAttributes().at(column);
     if(!getIsFeatureDisplayAttribute(attr)){
         return;
     }

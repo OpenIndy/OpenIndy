@@ -68,6 +68,8 @@ public:
     const SimulationData &getSimulationData();
     void setSimulationData(const SimulationData &s);
 
+    const QList<ReadingTypes> &getUsedReadingTypes() const;
+
     //###################################################################
     //check wether this geometry has a direction, a position and a radius
     //###################################################################
@@ -139,6 +141,8 @@ protected:
 
     Statistic statistic;
     SimulationData simulationData;
+
+    QList<ReadingTypes> usedReadingTypes;
 
     //current measurement config that is used to create readings until the user selects another one
     MeasurementConfig activeMeasurementConfig; //only for this geometry instance

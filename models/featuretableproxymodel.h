@@ -49,19 +49,6 @@ private:
     //##############
 
     FeatureTableColumnConfig featureTableColumnConfig;
-
-    //#############################
-    //helper attributes for sorting
-    //#############################
-/*
-    static QString leftName;
-    static QString rightName;
-    static int leftId;
-    static int rightId;
-    static bool leftNominal;
-    static bool rightNominal;
-    static int leftSmallestId;
-    static int rightSmallestId;*/
     
 };
 

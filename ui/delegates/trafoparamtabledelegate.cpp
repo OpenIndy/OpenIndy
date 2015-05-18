@@ -30,12 +30,12 @@ QWidget* TrafoParamDelegate::createEditor(QWidget *parent, const QStyleOptionVie
 
     //get and check column index
     int column = model->mapToSource(index).column();
-    if(column < 0 || getDisplayAttributes().size() <= column){
+    if(column < 0 || getFeatureDisplayAttributes().size() <= column){
         return editor;
     }
 
     //get and check display attribute
-    int attr = getDisplayAttributes().at(column);
+    int attr = getFeatureDisplayAttributes().at(column);
     if(!getIsTrafoParamDisplayAttribute(attr)){
         return editor;
     }
@@ -84,12 +84,12 @@ void TrafoParamDelegate::setEditorData(QWidget *editor, const QModelIndex &index
 
     //get and check column index
     int column = model->mapToSource(index).column();
-    if(column < 0 || getDisplayAttributes().size() <= column){
+    if(column < 0 || getFeatureDisplayAttributes().size() <= column){
         return;
     }
 
     //get and check display attribute
-    int attr = getDisplayAttributes().at(column);
+    int attr = getFeatureDisplayAttributes().at(column);
     if(!getIsTrafoParamDisplayAttribute(attr)){
         return;
     }
@@ -139,12 +139,12 @@ void TrafoParamDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
 
     //get and check column index
     int column = trafoModel->mapToSource(index).column();
-    if(column < 0 || getDisplayAttributes().size() <= column){
+    if(column < 0 || getFeatureDisplayAttributes().size() <= column){
         return;
     }
 
     //get and check display attribute
-    int attr = getDisplayAttributes().at(column);
+    int attr = getFeatureDisplayAttributes().at(column);
     if(!getIsTrafoParamDisplayAttribute(attr)){
         return;
     }

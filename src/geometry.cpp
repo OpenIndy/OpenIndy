@@ -252,6 +252,11 @@ void Geometry::addObservation(const QPointer<Observation> &obs){
         //update target geometries
         obs->addTargetGeometry(this);
 
+        //update used reading types
+        if(!obs->getReading().isNull() && !this->usedReadingTypes.contains(obs->getReading()->getTypeOfReading())){
+            this->usedReadingTypes.append(obs->getReading()->getTypeOfReading());
+        }
+
         this->isUpdated = false;
 
         emit this->geomObservationsChanged(this->id);
@@ -276,6 +281,11 @@ void Geometry::removeObservation(const QPointer<Observation> &obs){
 
         //update target geometries
         obs->removeTargetGeometry(this);
+
+        //update used reading types
+        if(!obs->getReading().isNull() && this->usedReadingTypes.contains(obs->getReading()->getTypeOfReading())){
+            this->usedReadingTypes.removeOne(obs->getReading()->getTypeOfReading());
+        }
 
         this->isUpdated = false;
 
@@ -371,6 +381,14 @@ const SimulationData &Geometry::getSimulationData(){
  */
 void Geometry::setSimulationData(const SimulationData &s){
     this->simulationData = s;
+}
+
+/*!
+ * \brief Geometry::getUsedReadingTypes
+ * \return
+ */
+const QList<ReadingTypes> &Geometry::getUsedReadingTypes() const{
+    return this->usedReadingTypes;
 }
 
 /*!

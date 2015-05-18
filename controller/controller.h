@@ -59,6 +59,8 @@ public slots:
     //set display configs
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
     void setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config);
+    void setObservationTableColumnConfig(const ObservationTableColumnConfig &config);
+    void setReadingTableColumnConfig(const ReadingTableColumnConfig &config);
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
     //save or load a job

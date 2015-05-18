@@ -45,6 +45,12 @@ MeasurementConfigurationModel ModelManager::measurementConfigurationModel;
 MeasurementConfigurationProxyModel ModelManager::measurementConfigurationProxyModel;
 QPointer<MeasurementConfigManager> ModelManager::measurementConfigManager;
 AvailableFunctionsListModel ModelManager::functionsListModel;
+ObservationModel ModelManager::observationModel;
+ObservationProxyModel ModelManager::observationProxyModel;
+ReadingModel ModelManager::readingModel;
+ReadingProxyModel ModelManager::readingProxyModel;
+ObservationTableColumnConfig ModelManager::observationTableColumnConfig;
+ReadingTableColumnConfig ModelManager::readingTableColumnConfig;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -71,6 +77,8 @@ void ModelManager::init(){
     ModelManager::initReadingTypesModels();
     ModelManager::initGroupsModel();
     ModelManager::initMeasurementConfigModels();
+    ModelManager::initObservationModels();
+    ModelManager::initReadingModels();
 
 }
 
@@ -159,6 +167,40 @@ const TrafoParamTableColumnConfig &ModelManager::getTrafoParamTableColumnConfig(
 void ModelManager::setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config){
     ModelManager::trafoParamTableColumnConfig = config;
     ModelManager::updateTrafoParamTableColumnConfig();
+}
+
+/*!
+ * \brief ModelManager::getObservationTableColumnConfig
+ * \return
+ */
+const ObservationTableColumnConfig &ModelManager::getObservationTableColumnConfig(){
+    return ModelManager::observationTableColumnConfig;
+}
+
+/*!
+ * \brief ModelManager::setObservationTableColumnConfig
+ * \param config
+ */
+void ModelManager::setObservationTableColumnConfig(const ObservationTableColumnConfig &config){
+    ModelManager::observationTableColumnConfig = config;
+    ModelManager::updateObservationTableColumnConfig();
+}
+
+/*!
+ * \brief ModelManager::getReadingTableColumnConfig
+ * \return
+ */
+const ReadingTableColumnConfig &ModelManager::getReadingTableColumnConfig(){
+    return ModelManager::readingTableColumnConfig;
+}
+
+/*!
+ * \brief ModelManager::setReadingTableColumnConfig
+ * \param config
+ */
+void ModelManager::setReadingTableColumnConfig(const ReadingTableColumnConfig &config){
+    ModelManager::readingTableColumnConfig = config;
+    ModelManager::updateReadingTableColumnConfig();
 }
 
 /*!
@@ -429,6 +471,38 @@ MeasurementConfigurationProxyModel &ModelManager::getMeasurementConfigurationPro
 }
 
 /*!
+ * \brief ModelManager::getObservationModel
+ * \return
+ */
+ObservationModel &ModelManager::getObservationModel(){
+    return ModelManager::observationModel;
+}
+
+/*!
+ * \brief ModelManager::getObservationProxyModel
+ * \return
+ */
+ObservationProxyModel &ModelManager::getObservationProxyModel(){
+    return ModelManager::observationProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getReadingModel
+ * \return
+ */
+ReadingModel &ModelManager::getReadingModel(){
+    return ModelManager::readingModel;
+}
+
+/*!
+ * \brief ModelManager::getReadingProxyModel
+ * \return
+ */
+ReadingProxyModel &ModelManager::getReadingProxyModel(){
+    return ModelManager::readingProxyModel;
+}
+
+/*!
  * \brief ModelManager::getExchangeSimpleAsciiNames
  * \param pluginName
  * \return
@@ -641,6 +715,8 @@ void ModelManager::updateJob(){
     ModelManager::functionTableProxyModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::usedElementsModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::availableElementsTreeViewProxyModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::observationModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::readingModel.setCurrentJob(ModelManager::currentJob);
 
     //connect the job to slots in model manager
     QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);
@@ -671,6 +747,20 @@ void ModelManager::updateTrafoParamTableColumnConfig(){
 }
 
 /*!
+ * \brief ModelManager::updateObservationTableColumnConfig
+ */
+void ModelManager::updateObservationTableColumnConfig(){
+
+}
+
+/*!
+ * \brief ModelManager::updateReadingTableColumnConfig
+ */
+void ModelManager::updateReadingTableColumnConfig(){
+
+}
+
+/*!
  * \brief ModelManager::updateParameterDisplayConfig
  * Passes the new parameter display config to all static models
  */
@@ -678,6 +768,8 @@ void ModelManager::updateParameterDisplayConfig(){
 
     //pass the parameter display config to all static models that need it
     ModelManager::featureTableModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
+    ModelManager::observationModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
+    ModelManager::readingModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
 
 }
 
@@ -1056,5 +1148,25 @@ void ModelManager::initPluginModels(){
 void ModelManager::initGroupsModel(){
 
     ModelManager::updateGroupsModel();
+
+}
+
+/*!
+ * \brief ModelManager::initObservationModels
+ */
+void ModelManager::initObservationModels(){
+
+    //assign source models
+    ModelManager::observationProxyModel.setSourceModel(&ModelManager::observationModel);
+
+}
+
+/*!
+ * \brief ModelManager::initReadingModels
+ */
+void ModelManager::initReadingModels(){
+
+    //assign source models
+    ModelManager::readingProxyModel.setSourceModel(&ModelManager::readingModel);
 
 }

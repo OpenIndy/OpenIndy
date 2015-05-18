@@ -18,8 +18,12 @@ QMap<ReadingTypes, QString> readingTypesMap;
 
 QMap<FeatureDisplayAttributes, QString> featureDisplayAttributesMap;
 QMap<TrafoParamDisplayAttributes, QString> trafoParamDisplayAttributesMap;
+QMap<ObservationDisplayattributes, QString> observationDisplayAttributesMap;
+QMap<ReadingDisplayAttributes, QString> readingDisplayAttributesMap;
 
-QList<int> displayAttributes;
+QList<int> featureDisplayAttributes;
+QList<ObservationDisplayattributes> observationDisplayAttributes;
+QList<ReadingDisplayAttributes> readingDisplayAttributes;
 
 QMap<UnitType, QString> unitTypesMap;
 
@@ -42,8 +46,12 @@ void init(){
     geometryTypesMap.clear();
     readingTypesMap.clear();
     featureDisplayAttributesMap.clear();
+    observationDisplayAttributesMap.clear();
+    readingDisplayAttributesMap.clear();
     trafoParamDisplayAttributesMap.clear();
-    displayAttributes.clear();
+    featureDisplayAttributes.clear();
+    observationDisplayAttributes.clear();
+    readingDisplayAttributes.clear();
     unitTypesMap.clear();
     sensorTypesMap.clear();
 
@@ -263,6 +271,46 @@ void init(){
     featureDisplayAttributesMap.insert(eFeatureDisplayExpansionOriginY, "expansion y");
     featureDisplayAttributesMap.insert(eFeatureDisplayExpansionOriginZ, "expansion z");
 
+    //fill observation display attributes map
+    observationDisplayAttributesMap.insert(eObservationDisplayId, "id");
+    observationDisplayAttributesMap.insert(eObservationDisplayStation, "station");
+    observationDisplayAttributesMap.insert(eObservationDisplayTargetGeometries, "target geometries");
+    observationDisplayAttributesMap.insert(eObservationDisplayX, "x");
+    observationDisplayAttributesMap.insert(eObservationDisplayY, "y");
+    observationDisplayAttributesMap.insert(eObservationDisplayZ, "z");
+    observationDisplayAttributesMap.insert(eObservationDisplaySigmaX, "sigma x");
+    observationDisplayAttributesMap.insert(eObservationDisplaySigmaY, "sigma y");
+    observationDisplayAttributesMap.insert(eObservationDisplaySigmaZ, "sigma z");
+    observationDisplayAttributesMap.insert(eObservationDisplayIsValid, "valid");
+    observationDisplayAttributesMap.insert(eObservationDisplayIsSolved, "solved");
+
+    //fill reading display attributes map
+    readingDisplayAttributesMap.insert(eReadingDisplayId, "id");
+    readingDisplayAttributesMap.insert(eReadingDisplayType, "type");
+    readingDisplayAttributesMap.insert(eReadingDisplayTime, "time");
+    readingDisplayAttributesMap.insert(eReadingDisplaySensor, "sensor");
+    readingDisplayAttributesMap.insert(eReadingDisplayIsFrontSide, "front side");
+    readingDisplayAttributesMap.insert(eReadingDisplayAzimuth, "azimuth");
+    readingDisplayAttributesMap.insert(eReadingDisplayZenith, "zenith");
+    readingDisplayAttributesMap.insert(eReadingDisplayDistance, "distance");
+    readingDisplayAttributesMap.insert(eReadingDisplayX, "x");
+    readingDisplayAttributesMap.insert(eReadingDisplayY, "y");
+    readingDisplayAttributesMap.insert(eReadingDisplayZ, "z");
+    readingDisplayAttributesMap.insert(eReadingDisplayRX, "RX");
+    readingDisplayAttributesMap.insert(eReadingDisplayRY, "RY");
+    readingDisplayAttributesMap.insert(eReadingDisplayRZ, "RZ");
+    readingDisplayAttributesMap.insert(eReadingDisplayTemperature, "temperature");
+    readingDisplayAttributesMap.insert(eReadingDisplaySigmaAzimuth, "sigma azimuth");
+    readingDisplayAttributesMap.insert(eReadingDisplaySigmaZenith, "sigma zenith");
+    readingDisplayAttributesMap.insert(eReadingDisplaySigmaDistance, "sigma distance");
+    readingDisplayAttributesMap.insert(eReadingDisplaySigmaX, "sigma x");
+    readingDisplayAttributesMap.insert(eReadingDisplaySigmaY, "sigma y");
+    readingDisplayAttributesMap.insert(eReadingDisplaySigmaZ, "sigma z");
+    readingDisplayAttributesMap.insert(eReadingDisplaySigmaRX, "sigma RX");
+    readingDisplayAttributesMap.insert(eReadingDisplaySigmaRY, "sigma RY");
+    readingDisplayAttributesMap.insert(eReadingDisplaySigmaRZ, "sigma RZ");
+    readingDisplayAttributesMap.insert(eReadingDisplaySigmaTemperature, "sigma temperature");
+
     //fill trafo param display attributes map
     trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayType, "type");
     trafoParamDisplayAttributesMap.insert(eTrafoParamDisplayName, "name");
@@ -291,19 +339,29 @@ void init(){
 
     //fill available display attributes
     for(int i = 0; i < 10; i++){ //general feature attributes
-        displayAttributes.append(i);
+        featureDisplayAttributes.append(i);
     }
     for(int i = 100; i < 102; i++){ //geometry specific attributes
-        displayAttributes.append(i);
+        featureDisplayAttributes.append(i);
     }
     for(int i = 200; i < 220; i++){ //unknown geometry parameters
-        displayAttributes.append(i);
+        featureDisplayAttributes.append(i);
     }
     for(int i = 300; i < 303; i++){ //coordinate system specific
-        displayAttributes.append(i);
+        featureDisplayAttributes.append(i);
     }
     for(int i = 400; i < 414; i++){ //trafo param specific
-        displayAttributes.append(i);
+        featureDisplayAttributes.append(i);
+    }
+
+    //fill available observation display attributes
+    foreach(const ObservationDisplayattributes &attr, observationDisplayAttributesMap.keys()){
+        observationDisplayAttributes.append(attr);
+    }
+
+    //fill available reading display attributes
+    foreach(const ReadingDisplayAttributes &attr, readingDisplayAttributesMap.keys()){
+        readingDisplayAttributes.append(attr);
     }
 
     //fill unit types map
@@ -769,18 +827,48 @@ ReadingTypes getReadingTypeEnum(const QString &name){
 }
 
 /*!
- * \brief getDisplayAttributes
+ * \brief getFeatureDisplayAttributes
  * Returns a list of enum values (feature attributes and trafo param attributes)
  * \return
  */
-const QList<int> &getDisplayAttributes(){
+const QList<int> &getFeatureDisplayAttributes(){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
         internal::init();
     }
 
-    return internal::displayAttributes;
+    return internal::featureDisplayAttributes;
+
+}
+
+/*!
+ * \brief getObservationDisplayAttributes
+ * \return
+ */
+const QList<ObservationDisplayattributes> &getObservationDisplayAttributes(){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::observationDisplayAttributes;
+
+}
+
+/*!
+ * \brief getReadingDisplayAttributes
+ * \return
+ */
+const QList<ReadingDisplayAttributes> &getReadingDisplayAttributes(){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::readingDisplayAttributes;
 
 }
 
@@ -816,7 +904,7 @@ bool getIsTrafoParamDisplayAttribute(const int &attr){
  * \param attr
  * \return
  */
-const QString &getDisplayAttributeName(const int &attr){
+const QString &getFeatureDisplayAttributeName(const int &attr){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
@@ -824,9 +912,9 @@ const QString &getDisplayAttributeName(const int &attr){
     }
 
     if(getIsFeatureDisplayAttribute(attr)){ //feature display attribute
-        return internal::featureDisplayAttributesMap.value((FeatureDisplayAttributes)attr);
+        return internal::featureDisplayAttributesMap[(FeatureDisplayAttributes)attr];
     }else if(getIsTrafoParamDisplayAttribute(attr)){ //trafo param display attribute
-        return internal::trafoParamDisplayAttributesMap.value((TrafoParamDisplayAttributes)attr);
+        return internal::trafoParamDisplayAttributesMap[(TrafoParamDisplayAttributes)attr];
     }
 
     return internal::undefined;
@@ -838,14 +926,14 @@ const QString &getDisplayAttributeName(const int &attr){
  * \param attr
  * \return
  */
-const QString &getDisplayAttributeName(const FeatureDisplayAttributes &attr){
+const QString &getFeatureDisplayAttributeName(const FeatureDisplayAttributes &attr){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
         internal::init();
     }
 
-    return internal::featureDisplayAttributesMap.value(attr);
+    return internal::featureDisplayAttributesMap[attr];
 
 }
 
@@ -854,14 +942,161 @@ const QString &getDisplayAttributeName(const FeatureDisplayAttributes &attr){
  * \param attr
  * \return
  */
-const QString &getDisplayAttributeName(const TrafoParamDisplayAttributes &attr){
+const QString &getFeatureDisplayAttributeName(const TrafoParamDisplayAttributes &attr){
 
     //fill helper maps if not yet done
     if(!internal::isInit){
         internal::init();
     }
 
-    return internal::trafoParamDisplayAttributesMap.value(attr);
+    return internal::trafoParamDisplayAttributesMap[attr];
+
+}
+
+/*!
+ * \brief getReadingDisplayAttributeVisibility
+ * \param attr
+ * \param type
+ * \return
+ */
+bool getReadingDisplayAttributeVisibility(const ReadingDisplayAttributes &attr, const ReadingTypes &type){
+
+    switch(attr){
+    case eReadingDisplayAzimuth:
+        if(type != ePolarReading && type != eDirectionReading){
+            return false;
+        }
+        break;
+    case eReadingDisplayZenith:
+        if(type != ePolarReading && type != eDirectionReading){
+            return false;
+        }
+        break;
+    case eReadingDisplayDistance:
+        if(type != ePolarReading && type != eDistanceReading){
+            return false;
+        }
+        break;
+    case eReadingDisplayX:
+        if(type != eCartesianReading){
+            return false;
+        }
+        break;
+    case eReadingDisplayY:
+        if(type != eCartesianReading){
+            return false;
+        }
+        break;
+    case eReadingDisplayZ:
+        if(type != eCartesianReading){
+            return false;
+        }
+        break;
+    case eReadingDisplayRX:
+        if(type != eLevelReading){
+            return false;
+        }
+        break;
+    case eReadingDisplayRY:
+        if(type != eLevelReading){
+            return false;
+        }
+        break;
+    case eReadingDisplayRZ:
+        if(type != eLevelReading){
+            return false;
+        }
+        break;
+    case eReadingDisplayTemperature:
+        if(type != eTemperatureReading){
+            return false;
+        }
+        break;
+    case eReadingDisplaySigmaAzimuth:
+        if(type != ePolarReading && type != eDirectionReading){
+            return false;
+        }
+        break;
+    case eReadingDisplaySigmaZenith:
+        if(type != ePolarReading && type != eDirectionReading){
+            return false;
+        }
+        break;
+    case eReadingDisplaySigmaDistance:
+        if(type != ePolarReading && type != eDistanceReading){
+            return false;
+        }
+        break;
+    case eReadingDisplaySigmaX:
+        if(type != eCartesianReading){
+            return false;
+        }
+        break;
+    case eReadingDisplaySigmaY:
+        if(type != eCartesianReading){
+            return false;
+        }
+        break;
+    case eReadingDisplaySigmaZ:
+        if(type != eCartesianReading){
+            return false;
+        }
+        break;
+    case eReadingDisplaySigmaRX:
+        if(type != eLevelReading){
+            return false;
+        }
+        break;
+    case eReadingDisplaySigmaRY:
+        if(type != eLevelReading){
+            return false;
+        }
+        break;
+    case eReadingDisplaySigmaRZ:
+        if(type != eLevelReading){
+            return false;
+        }
+        break;
+    case eReadingDisplaySigmaTemperature:
+        if(type != eTemperatureReading){
+            return false;
+        }
+        break;
+    }
+
+    return true;
+
+}
+
+/*!
+ * \brief getObservationDisplayAttributesName
+ * \param attr
+ * \return
+ */
+const QString &getObservationDisplayAttributesName(const ObservationDisplayattributes &attr){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::observationDisplayAttributesMap[attr];
+
+}
+
+/*!
+ * \brief getReadingDisplayAttributeName
+ * \param attr
+ * \return
+ */
+const QString &getReadingDisplayAttributeName(const ReadingDisplayAttributes &attr){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::readingDisplayAttributesMap[attr];
 
 }
 

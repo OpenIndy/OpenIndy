@@ -60,6 +60,38 @@ void MainWindow::importNominalsFinished(const bool &success){
 }
 
 /*!
+ * \brief MainWindow::activeFeatureChanged
+ */
+void MainWindow::activeFeatureChanged(){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    //update magnify window
+    this->ui->label_magnifyName->setText(feature->getFeature()->getFeatureName());
+    if(!feature->getGeometry().isNull()){
+        this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nominal":"actual");
+    }
+    this->ui->label_magnifyActualNominal->setText("actual");
+
+}
+
+/*!
  * \brief MainWindow::activeCoordinateSystemChanged
  */
 void MainWindow::activeCoordinateSystemChanged(){
@@ -356,6 +388,97 @@ void MainWindow::on_tableView_features_clicked(const QModelIndex &index){
 }
 
 /*!
+ * \brief MainWindow::on_tableView_features_customContextMenuRequested
+ * \param pos
+ */
+void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &pos){
+
+    //create menu and add delete action
+    QMenu *menu = new QMenu();
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete selected feature(s)"), this, SLOT(deleteFeatures(bool)));
+
+    //get feature table models
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
+    if(model == NULL){
+        delete menu;
+        return;
+    }
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
+    if(sourceModel == NULL){
+        delete menu;
+        return;
+    }
+
+    //get the selected index (where the right click was done)
+    QModelIndex selectedIndex = this->ui->tableView_features->indexAt(pos);
+
+    //get and check the feature at that index
+    int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(selectedIndex));
+    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    if(job.isNull() || id < 0){
+        delete menu;
+        return;
+    }
+    QPointer<FeatureWrapper> selectedFeature = job->getFeatureById(id);
+    if(selectedFeature.isNull() || selectedFeature->getFeature().isNull()){
+        delete menu;
+        return;
+    }
+
+    //if the selected feature is the active feature
+    if(selectedFeature->getFeature()->getIsActiveFeature()){
+
+        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                        this, SLOT(showFeatureProperties(bool)));
+
+    }
+
+    menu->exec(this->ui->tableView_features->mapToGlobal(pos));
+
+}
+
+/*!
+ * \brief MainWindow::deleteFeatures
+ * \param checked
+ */
+void MainWindow::deleteFeatures(bool checked){
+
+
+
+}
+
+/*!
+ * \brief MainWindow::showFeatureProperties
+ * \param checked
+ */
+void MainWindow::showFeatureProperties(bool checked){
+
+    //get feature table models
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    //depending on the type of feature display a special properties dialog
+    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
+        this->actualPropertiesDialog.show();
+    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+        this->nominalPropertiesDialog.show();
+    }
+
+}
+
+/*!
  * \brief MainWindow::on_tableView_trafoParams_clicked
  * \param index
  */
@@ -422,7 +545,7 @@ void MainWindow::setSensorConfiguration(const QString &name){
         return;
     }
 
-    //ask the user wether only to set the sensor config or also to connect to the sensor
+    //ask the user wether only to set the sensor config or to also connect to the sensor
     QMessageBox msgBox;
     msgBox.setText("Do you want to connect the sensor?");
     msgBox.setInformativeText("");
@@ -629,6 +752,7 @@ void MainWindow::connectController(){
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::nominalImportFinished, this, &MainWindow::importNominalsFinished, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::activeFeatureChanged, this, &MainWindow::activeFeatureChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::activeCoordinateSystemChanged, this, &MainWindow::activeCoordinateSystemChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::stationSensorChanged, this, &MainWindow::stationSensorChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::sensorActionStarted, this, &MainWindow::sensorActionStarted, Qt::AutoConnection);
@@ -709,6 +833,10 @@ void MainWindow::initFeatureTableViews(){
     this->ui->tableView_features->verticalHeader()->setDefaultSectionSize(22);
     this->ui->tableView_trafoParams->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
+
+    //enable context menu
+    this->ui->tableView_features->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->ui->tableView_trafoParams->setContextMenuPolicy(Qt::CustomContextMenu);
 
 }
 

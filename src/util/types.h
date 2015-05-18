@@ -251,6 +251,52 @@ enum TrafoParamDisplayAttributes{
 
 };
 
+enum ObservationDisplayattributes{
+
+    eObservationDisplayId = 0,
+    eObservationDisplayStation,
+    eObservationDisplayTargetGeometries,
+    eObservationDisplayX,
+    eObservationDisplayY,
+    eObservationDisplayZ,
+    eObservationDisplaySigmaX,
+    eObservationDisplaySigmaY,
+    eObservationDisplaySigmaZ,
+    eObservationDisplayIsValid,
+    eObservationDisplayIsSolved
+
+};
+
+enum ReadingDisplayAttributes{
+
+    eReadingDisplayId = 0,
+    eReadingDisplayType,
+    eReadingDisplayTime,
+    eReadingDisplaySensor,
+    eReadingDisplayIsFrontSide,
+    eReadingDisplayAzimuth,
+    eReadingDisplayZenith,
+    eReadingDisplayDistance,
+    eReadingDisplayX,
+    eReadingDisplayY,
+    eReadingDisplayZ,
+    eReadingDisplayRX,
+    eReadingDisplayRY,
+    eReadingDisplayRZ,
+    eReadingDisplayTemperature,
+    eReadingDisplaySigmaAzimuth,
+    eReadingDisplaySigmaZenith,
+    eReadingDisplaySigmaDistance,
+    eReadingDisplaySigmaX,
+    eReadingDisplaySigmaY,
+    eReadingDisplaySigmaZ,
+    eReadingDisplaySigmaRX,
+    eReadingDisplaySigmaRY,
+    eReadingDisplaySigmaRZ,
+    eReadingDisplaySigmaTemperature
+
+};
+
 //###############
 //available units
 //###############

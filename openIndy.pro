@@ -179,7 +179,15 @@ SOURCES += \
     models/measurementconfigurationproxymodel.cpp \
     ui/delegates/measurementconfigurationlistdelegate.cpp \
     models/availablefunctionslistmodel.cpp \
-    models/availablefunctionslistproxymodel.cpp
+    models/availablefunctionslistproxymodel.cpp \
+    models/observationmodel.cpp \
+    models/observationproxymodel.cpp \
+    models/readingmodel.cpp \
+    models/readingproxymodel.cpp \
+    controller/config/observationtablecolumnconfig.cpp \
+    controller/config/readingtablecolumnconfig.cpp \
+    ui/dialogs/actualpropertiesdialog.cpp \
+    ui/dialogs/nominalpropertiesdialog.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -306,7 +314,15 @@ HEADERS  += \
     models/measurementconfigurationproxymodel.h \
     ui/delegates/measurementconfigurationlistdelegate.h \
     models/availablefunctionslistmodel.h \
-    models/availablefunctionslistproxymodel.h
+    models/availablefunctionslistproxymodel.h \
+    models/observationmodel.h \
+    models/observationproxymodel.h \
+    models/readingmodel.h \
+    models/readingproxymodel.h \
+    controller/config/observationtablecolumnconfig.h \
+    controller/config/readingtablecolumnconfig.h \
+    ui/dialogs/actualpropertiesdialog.h \
+    ui/dialogs/nominalpropertiesdialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -321,4 +337,6 @@ FORMS    += \
     ui/dialogs/settingsdialog.ui \
     ui/dialogs/pluginmanagerdialog.ui \
     ui/dialogs/watchwindowdialog.ui \
-    ui/dialogs/measurementconfigurationdialog.ui
+    ui/dialogs/measurementconfigurationdialog.ui \
+    ui/dialogs/actualpropertiesdialog.ui \
+    ui/dialogs/nominalpropertiesdialog.ui

@@ -593,7 +593,7 @@ QString Feature::getDisplayIsSolved() const{
  * \return
  */
 QString Feature::getDisplayIsUpdated() const{
-    return this->isUpdated?"false":"true";
+    return this->isUpdated?"true":"false";
 }
 
 /*!

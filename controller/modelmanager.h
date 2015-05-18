@@ -35,6 +35,10 @@
 #include "measurementconfigurationproxymodel.h"
 #include "availablefunctionslistmodel.h"
 #include "availablefunctionslistproxymodel.h"
+#include "observationmodel.h"
+#include "observationproxymodel.h"
+#include "readingmodel.h"
+#include "readingproxymodel.h"
 
 /*!
  * \brief The ModelManager class
@@ -80,6 +84,12 @@ public:
 
     static const TrafoParamTableColumnConfig &getTrafoParamTableColumnConfig();
     static void setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config);
+
+    static const ObservationTableColumnConfig &getObservationTableColumnConfig();
+    static void setObservationTableColumnConfig(const ObservationTableColumnConfig &config);
+
+    static const ReadingTableColumnConfig &getReadingTableColumnConfig();
+    static void setReadingTableColumnConfig(const ReadingTableColumnConfig &config);
 
     static const ParameterDisplayConfig &getParameterDisplayConfig();
     static void setParameterDisplayConfig(const ParameterDisplayConfig &config);
@@ -137,6 +147,12 @@ public:
     //measurement config models
     static MeasurementConfigurationModel &getMeasurementConfigurationModel();
     static MeasurementConfigurationProxyModel &getMeasurementConfigurationProxyModel();
+
+    //get observation and reading models
+    static ObservationModel &getObservationModel();
+    static ObservationProxyModel &getObservationProxyModel();
+    static ReadingModel &getReadingModel();
+    static ReadingProxyModel &getReadingProxyModel();
 
     //############################################################
     //get dynamic models (models that are newly created each time)
@@ -234,6 +250,12 @@ private:
     static MeasurementConfigurationModel measurementConfigurationModel;
     static MeasurementConfigurationProxyModel measurementConfigurationProxyModel;
 
+    //observation and reading models
+    static ObservationModel observationModel;
+    static ObservationProxyModel observationProxyModel;
+    static ReadingModel readingModel;
+    static ReadingProxyModel readingProxyModel;
+
     //##################
     //empty dummy models
     //##################
@@ -249,6 +271,8 @@ private:
     static void updateJob();
     static void updateFeatureTableColumnConfig();
     static void updateTrafoParamTableColumnConfig();
+    static void updateObservationTableColumnConfig();
+    static void updateReadingTableColumnConfig();
     static void updateParameterDisplayConfig();
     static void updateSensorConfigManager();
     static void updateMeasurementConfigManager();
@@ -287,12 +311,17 @@ private:
 
     static void initGroupsModel();
 
+    static void initObservationModels();
+    static void initReadingModels();
+
     //###############
     //display configs
     //###############
 
     static FeatureTableColumnConfig featureTableColumnConfig; //defines which columns shall be visible in feature table proxy model
     static TrafoParamTableColumnConfig trafoParamTableColumnConfig; //defines which columns shall be visible in trafo param proxy model
+    static ObservationTableColumnConfig observationTableColumnConfig; //defines which columns shall be visible in observation proxy model
+    static ReadingTableColumnConfig readingTableColumnConfig; //defines which columns shall be visible in reading proxy model
     static ParameterDisplayConfig parameterDisplayConfig; //defines in which unit and with how many digits a parameter value shall be displayed
 
     //##############

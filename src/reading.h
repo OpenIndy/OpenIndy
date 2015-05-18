@@ -207,6 +207,36 @@ public:
     const QPointer<Observation> &getObservation() const;
     void setObservation(const QPointer<Observation> &observation);
 
+    //###############
+    //display methods
+    //###############
+
+    QString getDisplayId() const;
+    QString getDisplayType() const;
+    QString getDisplayTime() const;
+    QString getDisplaySensor() const;
+    QString getDisplayIsFrontside() const;
+    QString getDisplayAzimuth(const UnitType &type, const int &digits) const;
+    QString getDisplayZenith(const UnitType &type, const int &digits) const;
+    QString getDisplayDistance(const UnitType &type, const int &digits) const;
+    QString getDisplayX(const UnitType &type, const int &digits) const;
+    QString getDisplayY(const UnitType &type, const int &digits) const;
+    QString getDisplayZ(const UnitType &type, const int &digits) const;
+    QString getDisplayRX(const UnitType &type, const int &digits) const;
+    QString getDisplayRY(const UnitType &type, const int &digits) const;
+    QString getDisplayRZ(const UnitType &type, const int &digits) const;
+    QString getDisplayTemperature(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaAzimuth(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaZenith(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaDistance(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaX(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaY(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaZ(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaRX(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaRY(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaRZ(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaTemperature(const UnitType &type, const int &digits) const;
+
     //#################
     //save and load XML
     //#################

@@ -48,18 +48,25 @@ const QString &getFeatureTypeIconPath(const FeatureTypes &type);
 const QString &getReadingTypeName(const ReadingTypes &type);
 ReadingTypes getReadingTypeEnum(const QString &name);
 
-//####################################################
-//global functions to query feature display attributes
-//####################################################
+//############################################
+//global functions to query display attributes
+//############################################
 
-const QList<int> &getDisplayAttributes();
+const QList<int> &getFeatureDisplayAttributes();
+const QList<ObservationDisplayattributes> &getObservationDisplayAttributes();
+const QList<ReadingDisplayAttributes> &getReadingDisplayAttributes();
 
 bool getIsFeatureDisplayAttribute(const int &attr);
 bool getIsTrafoParamDisplayAttribute(const int &attr);
 
-const QString &getDisplayAttributeName(const int &attr);
-const QString &getDisplayAttributeName(const FeatureDisplayAttributes &attr);
-const QString &getDisplayAttributeName(const TrafoParamDisplayAttributes &attr);
+const QString &getFeatureDisplayAttributeName(const int &attr);
+const QString &getFeatureDisplayAttributeName(const FeatureDisplayAttributes &attr);
+const QString &getFeatureDisplayAttributeName(const TrafoParamDisplayAttributes &attr);
+
+bool getReadingDisplayAttributeVisibility(const ReadingDisplayAttributes &attr, const ReadingTypes &type);
+
+const QString &getObservationDisplayAttributesName(const ObservationDisplayattributes &attr);
+const QString &getReadingDisplayAttributeName(const ReadingDisplayAttributes &attr);
 
 //###############################
 //global functions to query units

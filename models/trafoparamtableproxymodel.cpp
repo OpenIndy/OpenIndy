@@ -84,10 +84,10 @@ bool TrafoParamTableProxyModel::filterAcceptsRow(int source_row, const QModelInd
 bool TrafoParamTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
 
     //get and check display attribute
-    if(getDisplayAttributes().size() < source_column){
+    if(getFeatureDisplayAttributes().size() < source_column){
         return false;
     }
-    int attr = getDisplayAttributes().at(source_column);
+    int attr = getFeatureDisplayAttributes().at(source_column);
 
     //check if the attribute belongs to a trafo param feature
     if(!getIsTrafoParamDisplayAttribute(attr)){

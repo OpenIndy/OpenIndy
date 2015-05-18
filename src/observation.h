@@ -69,6 +69,22 @@ public:
     void setIsSolved(const bool &isSolved);
     const bool &getIsSolved() const;
 
+    //###############
+    //display methods
+    //###############
+
+    QString getDisplayId() const;
+    QString getDisplayStation() const;
+    QString getDisplayTargetGeometries() const;
+    QString getDisplayX(const UnitType &type, const int &digits) const;
+    QString getDisplayY(const UnitType &type, const int &digits) const;
+    QString getDisplayZ(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaX(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaY(const UnitType &type, const int &digits) const;
+    QString getDisplaySigmaZ(const UnitType &type, const int &digits) const;
+    QString getDisplayIsValid() const;
+    QString getDisplayIsSolved() const;
+
     //#################
     //save and load XML
     //#################

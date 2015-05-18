@@ -238,6 +238,145 @@ const bool &Observation::getIsSolved() const{
 }
 
 /*!
+ * \brief Observation::getDisplayId
+ * \return
+ */
+QString Observation::getDisplayId() const{
+    return QString::number(this->id);
+}
+
+/*!
+ * \brief Observation::getDisplayStation
+ * \return
+ */
+QString Observation::getDisplayStation() const{
+
+    if(this->station.isNull()){
+        return "";
+    }
+    return this->station->getFeatureName();
+
+}
+
+/*!
+ * \brief Observation::getDisplayTargetGeometries
+ * \return
+ */
+QString Observation::getDisplayTargetGeometries() const{
+
+    QString result = "";
+    foreach(const QPointer<Geometry> &geometry, this->targetGeometriesList){
+
+        if(geometry.isNull()){
+            continue;
+        }
+
+        if(result.compare("") == 0){
+            result.append(geometry->getFeatureName());
+        }else{
+            result.append(QString(", %1").arg(geometry->getFeatureName()));
+        }
+
+    }
+    return result;
+
+}
+
+/*!
+ * \brief Observation::getDisplayX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Observation::getDisplayX(const UnitType &type, const int &digits) const{
+    if(this->isValid && this->isSolved){
+        return QString::number(convertFromDefault(this->xyz.getAt(0), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Observation::getDisplayY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Observation::getDisplayY(const UnitType &type, const int &digits) const{
+    if(this->isValid && this->isSolved){
+        return QString::number(convertFromDefault(this->xyz.getAt(1), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Observation::getDisplayZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Observation::getDisplayZ(const UnitType &type, const int &digits) const{
+    if(this->isValid && this->isSolved){
+        return QString::number(convertFromDefault(this->xyz.getAt(2), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Observation::getDisplaySigmaX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Observation::getDisplaySigmaX(const UnitType &type, const int &digits) const{
+    /*if(this->isValid && this->isSolved){
+        return QString::number(convertFromDefault(this->xyz.getAt(0), type), 'f', digits);
+    }*/
+    return QString("");
+}
+
+/*!
+ * \brief Observation::getDisplaySigmaY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Observation::getDisplaySigmaY(const UnitType &type, const int &digits) const{
+    /*if(this->isValid && this->isSolved){
+        return QString::number(convertFromDefault(this->xyz.getAt(0), type), 'f', digits);
+    }*/
+    return QString("");
+}
+
+/*!
+ * \brief Observation::getDisplaySigmaZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Observation::getDisplaySigmaZ(const UnitType &type, const int &digits) const{
+    /*if(this->isValid && this->isSolved){
+        return QString::number(convertFromDefault(this->xyz.getAt(0), type), 'f', digits);
+    }*/
+    return QString("");
+}
+
+/*!
+ * \brief Observation::getDisplayIsValid
+ * \return
+ */
+QString Observation::getDisplayIsValid() const{
+    return this->isValid?"true":"false";
+}
+
+/*!
+ * \brief Observation::getDisplayIsSolved
+ * \return
+ */
+QString Observation::getDisplayIsSolved() const{
+    return this->isSolved?"true":"false";
+}
+
+/*!
  * \brief Observation::toOpenIndyXML
  * \param xmlDoc
  * \return

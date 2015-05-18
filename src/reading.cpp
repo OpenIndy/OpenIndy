@@ -1,6 +1,7 @@
 #include "reading.h"
 
 #include "observation.h"
+#include "sensor.h"
 
 /*!
  * \brief Reading::Reading
@@ -467,6 +468,323 @@ void Reading::setObservation(const QPointer<Observation> &observation){
     observation->reading = this;
     this->observation = observation;
 
+}
+
+/*!
+ * \brief Reading::getDisplayId
+ * \return
+ */
+QString Reading::getDisplayId() const{
+    return QString::number(this->id);
+}
+
+/*!
+ * \brief Reading::getDisplayType
+ * \return
+ */
+QString Reading::getDisplayType() const{
+    return getReadingTypeName(this->typeOfReading);
+}
+
+/*!
+ * \brief Reading::getDisplayTime
+ * \return
+ */
+QString Reading::getDisplayTime() const{
+    return this->measuredAt.toString();
+}
+
+/*!
+ * \brief Reading::getDisplaySensor
+ * \return
+ */
+QString Reading::getDisplaySensor() const{
+
+    if(this->sensor.isNull()){
+        return "";
+    }
+    return this->sensor->getMetaData().name;
+
+}
+
+/*!
+ * \brief Reading::getDisplayIsFrontside
+ * \return
+ */
+QString Reading::getDisplayIsFrontside() const{
+    return (this->face == eFrontSide)?"true":"false";
+}
+
+/*!
+ * \brief Reading::getDisplayAzimuth
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplayAzimuth(const UnitType &type, const int &digits) const{
+    if(this->rPolar.isValid){
+        return QString::number(convertFromDefault(this->rPolar.azimuth, type), 'f', digits);
+    }else if(this->rDirection.isValid){
+        return QString::number(convertFromDefault(this->rDirection.azimuth, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplayZenith
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplayZenith(const UnitType &type, const int &digits) const{
+    if(this->rPolar.isValid){
+        return QString::number(convertFromDefault(this->rPolar.zenith, type), 'f', digits);
+    }else if(this->rDirection.isValid){
+        return QString::number(convertFromDefault(this->rDirection.zenith, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplayDistance
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplayDistance(const UnitType &type, const int &digits) const{
+    if(this->rPolar.isValid){
+        return QString::number(convertFromDefault(this->rPolar.distance, type), 'f', digits);
+    }else if(this->rDistance.isValid){
+        return QString::number(convertFromDefault(this->rDistance.distance, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplayX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplayX(const UnitType &type, const int &digits) const{
+    if(this->rCartesian.isValid){
+        return QString::number(convertFromDefault(this->rCartesian.xyz.getAt(0), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplayY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplayY(const UnitType &type, const int &digits) const{
+    if(this->rCartesian.isValid){
+        return QString::number(convertFromDefault(this->rCartesian.xyz.getAt(1), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplayZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplayZ(const UnitType &type, const int &digits) const{
+    if(this->rCartesian.isValid){
+        return QString::number(convertFromDefault(this->rCartesian.xyz.getAt(2), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplayRX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplayRX(const UnitType &type, const int &digits) const{
+    if(this->rLevel.isValid){
+        return QString::number(convertFromDefault(this->rLevel.RX, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplayRY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplayRY(const UnitType &type, const int &digits) const{
+    if(this->rLevel.isValid){
+        return QString::number(convertFromDefault(this->rLevel.RY, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplayRZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplayRZ(const UnitType &type, const int &digits) const{
+    if(this->rLevel.isValid){
+        return QString::number(convertFromDefault(this->rLevel.RZ, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplayTemperature
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplayTemperature(const UnitType &type, const int &digits) const{
+    if(this->rTemperature.isValid){
+        return QString::number(convertFromDefault(this->rTemperature.temperature, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplaySigmaAzimuth
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplaySigmaAzimuth(const UnitType &type, const int &digits) const{
+    if(this->rPolar.isValid){
+        return QString::number(convertFromDefault(this->rPolar.sigmaAzimuth, type), 'f', digits);
+    }else if(this->rDirection.isValid){
+        return QString::number(convertFromDefault(this->rDirection.sigmaAzimuth, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplaySigmaZenith
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplaySigmaZenith(const UnitType &type, const int &digits) const{
+    if(this->rPolar.isValid){
+        return QString::number(convertFromDefault(this->rPolar.sigmaZenith, type), 'f', digits);
+    }else if(this->rDirection.isValid){
+        return QString::number(convertFromDefault(this->rDirection.sigmaZenith, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplaySigmaDistance
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplaySigmaDistance(const UnitType &type, const int &digits) const{
+    if(this->rPolar.isValid){
+        return QString::number(convertFromDefault(this->rPolar.sigmaDistance, type), 'f', digits);
+    }else if(this->rDistance.isValid){
+        return QString::number(convertFromDefault(this->rDistance.sigmaDistance, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplaySigmaX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplaySigmaX(const UnitType &type, const int &digits) const{
+    if(this->rCartesian.isValid){
+        return QString::number(convertFromDefault(this->rCartesian.sigmaXyz.getAt(0), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplaySigmaY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplaySigmaY(const UnitType &type, const int &digits) const{
+    if(this->rCartesian.isValid){
+        return QString::number(convertFromDefault(this->rCartesian.sigmaXyz.getAt(1), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplaySigmaZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplaySigmaZ(const UnitType &type, const int &digits) const{
+    if(this->rCartesian.isValid){
+        return QString::number(convertFromDefault(this->rCartesian.sigmaXyz.getAt(2), type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplaySigmaRX
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplaySigmaRX(const UnitType &type, const int &digits) const{
+    if(this->rLevel.isValid){
+        return QString::number(convertFromDefault(this->rLevel.RX, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplaySigmaRY
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplaySigmaRY(const UnitType &type, const int &digits) const{
+    if(this->rLevel.isValid){
+        return QString::number(convertFromDefault(this->rLevel.RY, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplaySigmaRZ
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplaySigmaRZ(const UnitType &type, const int &digits) const{
+    if(this->rLevel.isValid){
+        return QString::number(convertFromDefault(this->rLevel.RZ, type), 'f', digits);
+    }
+    return QString("");
+}
+
+/*!
+ * \brief Reading::getDisplaySigmaTemperature
+ * \param type
+ * \param digits
+ * \return
+ */
+QString Reading::getDisplaySigmaTemperature(const UnitType &type, const int &digits) const{
+    if(this->rTemperature.isValid){
+        return QString::number(convertFromDefault(this->rTemperature.temperature, type), 'f', digits);
+    }
+    return QString("");
 }
 
 /*!
