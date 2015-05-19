@@ -738,6 +738,53 @@ void Controller::measurementFinished(const int &geomId, const QList<QPointer<Rea
         return;
     }
 
+    //get and check feature with the id geomId
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(geomId);
+    if(feature.isNull() || feature->getGeometry().isNull()){
+        foreach(const QPointer<Reading> &reading, readings){
+            if(!reading.isNull()){
+                delete reading;
+            }
+        }
+        return;
+    }
+
+    //if the feature is a nominal add the observation to its actual
+    if(feature->getGeometry()->getIsNominal()){
+
+        //check actual
+        if(!feature->getGeometry()->getActual().isNull() && !feature->getGeometry()->getActual()->getFeatureWrapper().isNull()
+                && !feature->getGeometry()->getActual()->getFeatureWrapper()->getGeometry().isNull()){ //has actual
+            feature = feature->getGeometry()->getActual()->getFeatureWrapper();
+        }else if(feature->getGeometry()->getActual().isNull()){ //does not have an actual
+
+            //create a new feature
+            FeatureAttributes attributes;
+            attributes.count = 1;
+            attributes.group = feature->getFeature()->getGroupName();
+            attributes.name = feature->getFeature()->getFeatureName();
+            attributes.typeOfFeature = feature->getFeatureTypeEnum();
+            QList<QPointer<FeatureWrapper> > features = this->job->addFeatures(attributes);
+
+            //check feature
+            if(features.size() == 1 && !features.at(0).isNull() && !features.at(0)->getGeometry().isNull()){
+                feature = features.at(0);
+            }
+
+        }
+
+        //check feature
+        if(feature.isNull() || feature->getGeometry().isNull() || feature->getGeometry()->getIsNominal()){
+            foreach(const QPointer<Reading> &reading, readings){
+                if(!reading.isNull()){
+                    delete reading;
+                }
+            }
+            return;
+        }
+
+    }
+
     //add observations
     this->job->addMeasurementResults(geomId, readings);
 

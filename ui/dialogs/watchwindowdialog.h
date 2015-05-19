@@ -20,6 +20,8 @@
 #include "oijob.h"
 #include "featurewrapper.h"
 #include "trafocontroller.h"
+#include "parameterdisplayconfig.h"
+#include "modelmanager.h"
 
 /*!
  * \brief The WatchWindowSettings class

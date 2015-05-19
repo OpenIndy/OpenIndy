@@ -64,8 +64,8 @@ void SensorListener::startStreaming(){
             }
 
             //get sensor status information
-            QMap<QString,QString> status = this->sensor->getSensorStatus();
-            emit this->realTimeStatus(status);
+            //QMap<QString,QString> status = this->sensor->getSensorStatus();
+            //emit this->realTimeStatus(status);
 
             //get reading (current sensor position)
             QVariantMap reading = this->sensor->readingStream(this->streamFormat);

@@ -1616,6 +1616,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         }else{
             displayX = activeGeometry->getPosition().getVector().getAt(0) - trackerXYZ.getAt(0);
         }
+        displayX = convertFromDefault(displayX, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
         if(qFabs(displayX) >= qFabs(this->settings.displayValues.value("x"))){
@@ -1644,6 +1645,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         }else{
             displayY = activeGeometry->getPosition().getVector().getAt(1) - trackerXYZ.getAt(1);
         }
+        displayY = convertFromDefault(displayY, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
         if(qFabs(displayY) >= qFabs(this->settings.displayValues.value("x"))){
@@ -1672,6 +1674,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         }else{
             displayZ = activeGeometry->getPosition().getVector().getAt(2) - trackerXYZ.getAt(2);
         }
+        displayZ = convertFromDefault(displayZ, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
         if(qFabs(displayZ) >= qFabs(this->settings.displayValues.value("z"))){
@@ -1703,6 +1706,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         }else{
             streamData.value("d3D")->setPalette(Qt::green);
         }
+        displayD3D = convertFromDefault(displayD3D, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //format display value
         name = "<p align=\"left\">d3D</p>";
