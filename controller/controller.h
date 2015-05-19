@@ -4,6 +4,10 @@
 #include <QObject>
 #include <QPointer>
 #include <QString>
+#include <QIODevice>
+#include <QFile>
+#include <QFileInfo>
+#include <QRegExp>
 
 #include "oijob.h"
 #include "modelmanager.h"
@@ -63,6 +67,9 @@ public slots:
 
     //import or export features
     void importNominals(const ExchangeParams &params);
+
+    //import observations
+    void importObservations(const QString &filename);
 
     //set display configs
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
@@ -154,9 +161,15 @@ signals:
     //import export task status changes
     //#################################
 
+    //nominal import
     void nominalImportStarted();
     void nominalImportProgressUpdated(const int &progress, const QString &msg);
     void nominalImportFinished(const bool &success);
+
+    //observation import
+    void observationImportStarted();
+    void observationImportProgressUpdated(const int &progress, const QString &msg);
+    void observationImportFinished(const bool &success);
 
     //##############
     //sensor actions

@@ -189,7 +189,8 @@ SOURCES += \
     controller/config/readingtablecolumnconfig.cpp \
     ui/dialogs/actualpropertiesdialog.cpp \
     ui/dialogs/nominalpropertiesdialog.cpp \
-    ui/actions/toolaction.cpp
+    ui/actions/toolaction.cpp \
+    controller/exchange/observationimporter.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -325,7 +326,8 @@ HEADERS  += \
     controller/config/readingtablecolumnconfig.h \
     ui/dialogs/actualpropertiesdialog.h \
     ui/dialogs/nominalpropertiesdialog.h \
-    ui/actions/toolaction.h
+    ui/actions/toolaction.h \
+    controller/exchange/observationimporter.h
 
 FORMS    += \
     ui/mainwindow.ui \

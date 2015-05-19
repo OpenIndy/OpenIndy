@@ -61,6 +61,30 @@ void MainWindow::importNominalsFinished(const bool &success){
 }
 
 /*!
+ * \brief MainWindow::importObservationsStarted
+ */
+void MainWindow::importObservationsStarted(){
+    this->loadingDialog.show();
+}
+
+/*!
+ * \brief MainWindow::importObservationsFinished
+ * \param success
+ */
+void MainWindow::importObservationsFinished(const bool &success){
+
+    //print import success to console
+    if(success){
+        Console::getInstance()->addLine("Observations successfully imported");
+    }else{
+        Console::getInstance()->addLine("Observations not imported successfully");
+    }
+
+    this->loadingDialog.close();
+
+}
+
+/*!
  * \brief MainWindow::activeFeatureChanged
  */
 void MainWindow::activeFeatureChanged(){
@@ -652,7 +676,7 @@ void MainWindow::on_actionWatch_window_triggered(){
  */
 void MainWindow::on_actionOpen_triggered(){
 
-    QString filename = QFileDialog::getOpenFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
+    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "oiProject", "xml (*.xml)");
     if(filename.compare("") == 0){
         return;
     }
@@ -676,7 +700,7 @@ void MainWindow::on_actionSave_triggered(){
  * \brief MainWindow::on_actionSave_as_triggered
  */
 void MainWindow::on_actionSave_as_triggered(){
-    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename to save under", "oiProject", "xml (*.xml)");
+    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
     if(filename.compare("") != 0){
         emit this->saveProject(filename);
     }
@@ -795,6 +819,8 @@ void MainWindow::connectController(){
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::nominalImportFinished, this, &MainWindow::importNominalsFinished, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::observationImportStarted, this, &MainWindow::importObservationsStarted, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::observationImportFinished, this, &MainWindow::importObservationsFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::activeFeatureChanged, this, &MainWindow::activeFeatureChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::activeCoordinateSystemChanged, this, &MainWindow::activeCoordinateSystemChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::stationSensorChanged, this, &MainWindow::stationSensorChanged, Qt::AutoConnection);
@@ -819,6 +845,7 @@ void MainWindow::connectDialogs(){
 
     //connect loading dialog
     QObject::connect(&this->control, &Controller::nominalImportProgressUpdated, &this->loadingDialog, &LoadingDialog::updateProgress, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::observationImportProgressUpdated, &this->loadingDialog, &LoadingDialog::updateProgress, Qt::AutoConnection);
 
     //connect sensor config dialog
     QObject::connect(&this->sensorConfigurationDialog, &SensorConfigurationDialog::setSensorConfiguration, this, &MainWindow::setSensorConfiguration, Qt::AutoConnection);
@@ -837,6 +864,9 @@ void MainWindow::connectDialogs(){
 
     //connect settings dialog
     QObject::connect(&this->settingsDialog, &SettingsDialog::setDisplayConfig, &this->control, &Controller::setParameterDisplayConfig, Qt::AutoConnection);
+
+    //connect actual properties dialog
+    QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::importObservations, &this->control, &Controller::importObservations, Qt::AutoConnection);
 
 }
 

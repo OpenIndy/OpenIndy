@@ -88,6 +88,10 @@ private slots:
     void importNominalsStarted();
     void importNominalsFinished(const bool &success);
 
+    //observation import
+    void importObservationsStarted();
+    void importObservationsFinished(const bool &success);
+
     //active feature changes
     void activeFeatureChanged();
     void activeCoordinateSystemChanged();

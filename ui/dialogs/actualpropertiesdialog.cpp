@@ -293,6 +293,34 @@ ActualPropertiesDialog::~ActualPropertiesDialog(){
 }
 
 /*!
+ * \brief ActualPropertiesDialog::on_tableView_observation_customContextMenuRequested
+ * \param pos
+ */
+void ActualPropertiesDialog::on_tableView_observation_customContextMenuRequested(const QPoint &pos){
+
+    //create menu and add import action
+    QMenu *menu = new QMenu();
+    menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("import observations"), this, SLOT(importObservationsMenuClicked(bool)));
+    menu->exec(this->ui->tableView_observation->mapToGlobal(pos));
+
+}
+
+/*!
+ * \brief ActualPropertiesDialog::importObservationsMenuClicked
+ * \param checked
+ */
+void ActualPropertiesDialog::importObservationsMenuClicked(bool checked){
+
+    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "");
+    if(filename.compare("") == 0){
+        return;
+    }
+
+    emit this->importObservations(filename);
+
+}
+
+/*!
  * \brief ActualPropertiesDialog::showEvent
  * \param event
  */
@@ -316,6 +344,9 @@ void ActualPropertiesDialog::initGUI(){
     this->ui->tableView_observation->verticalHeader()->setDefaultSectionSize(22);
     this->ui->tableView_readings->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->ui->tableView_readings->verticalHeader()->setDefaultSectionSize(22);
+
+    //enable context menu in observations table view
+    this->ui->tableView_observation->setContextMenuPolicy(Qt::CustomContextMenu);
 
 }
 

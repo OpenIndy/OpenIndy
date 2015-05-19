@@ -13,6 +13,7 @@
 #include "exchangeParams.h"
 #include "pluginloader.h"
 #include "console.h"
+#include "observationimporter.h"
 
 /*!
  * \brief The DataExchanger class
@@ -38,8 +39,12 @@ public:
     //start import or export
     //######################
 
+    //import or export features
     bool importData(const ExchangeParams &params);
     bool exportData(const ExchangeParams &params);
+
+    //import observations
+    bool importObservations(const QString &filename);
 
 signals:
 
@@ -47,9 +52,15 @@ signals:
     //inform about exchange progress
     //##############################
 
-    void updateProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
-    void importFinished(const bool &success);
-    void exportFinished(const bool &success);
+    //nominal im- and export
+    void updateNominalImportProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
+    void updateNominalExportProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
+    void nominalImportFinished(const bool &success);
+    void nominalExportFinished(const bool &success);
+
+    //observation import
+    void updateObservationImportProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
+    void observationImportFinished(const bool &success);
 
 private slots:
 
@@ -58,6 +69,8 @@ private slots:
     //########################################################
 
     void importFeatures(const bool &success);
+
+    void importObservationsFinished(const bool &success);
 
 private:
 
@@ -69,6 +82,8 @@ private:
 
     ExchangeParams exchangeParams;
     QPointer<ExchangeInterface> exchange;
+
+    QPointer<ObservationImporter> observationImporter;
 
     //#########################
     //thread the plugin runs on

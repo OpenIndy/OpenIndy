@@ -2276,6 +2276,7 @@ void OiJob::addMeasurementResults(const int &geomId, const QList<QPointer<Readin
     }
 
     //run through all readings
+    feature->getGeometry()->blockSignals(true);
     foreach(const QPointer<Reading> &reading, readings){
 
         //check reading
@@ -2298,6 +2299,10 @@ void OiJob::addMeasurementResults(const int &geomId, const QList<QPointer<Readin
         }
 
     }
+    feature->getGeometry()->blockSignals(false);
+
+    //emit the observations changed signal only once at the end
+    feature->getGeometry()->geomObservationsChanged(feature->getGeometry()->getId());
 
     //recalculate the feature
     emit this->recalcFeature(feature->getFeature());

@@ -131,7 +131,7 @@ bool DataExchanger::importData(const ExchangeParams &params){
     QObject::connect(&this->exchangeThread, SIGNAL(started()), this->exchange.data(), SLOT(importOiData()), Qt::AutoConnection);
     QObject::connect(this->exchange.data(), SIGNAL(importFinished(const bool&)), this, SLOT(importFeatures(const bool&)), Qt::AutoConnection);
     QObject::connect(this->exchange.data(), SIGNAL(exportFinished(const bool&)), this, SIGNAL(exportFinished(const bool&)), Qt::AutoConnection);
-    QObject::connect(this->exchange.data(), SIGNAL(updateProgress(const int&, const QString&)), this, SIGNAL(updateProgress(const int&, const QString&)), Qt::AutoConnection);
+    QObject::connect(this->exchange.data(), SIGNAL(updateProgress(const int&, const QString&)), this, SIGNAL(updateNominalImportProgress(const int&, const QString&)), Qt::AutoConnection);
 
     //move exchange plugin to thread and start data exchange
     this->exchange->moveToThread(&this->exchangeThread);
@@ -155,13 +155,50 @@ bool DataExchanger::exportData(const ExchangeParams &params){
 }
 
 /*!
+ * \brief DataExchanger::importObservations
+ * \param filename
+ * \return
+ */
+bool DataExchanger::importObservations(const QString &filename){
+
+    //quit the thread if it is still running
+    if(this->exchangeThread.isRunning()){
+        this->exchangeThread.quit();
+        this->exchangeThread.wait();
+    }
+
+    //check current job and pass it to observation importer
+    if(this->currentJob.isNull()){
+        Console::getInstance()->addLine("No job specified");
+        return false;
+    }
+
+    //create observation importer and pass the current job
+    this->observationImporter = new ObservationImporter();
+    this->observationImporter->setCurrentJob(this->currentJob);
+    this->observationImporter->setFileName(filename);
+
+    //connect observation importer
+    QObject::connect(&this->exchangeThread, SIGNAL(started()), this->observationImporter.data(), SLOT(importObservations()), Qt::AutoConnection);
+    QObject::connect(this->observationImporter.data(), SIGNAL(importFinished(const bool&)), this, SLOT(importObservationsFinished(const bool&)), Qt::AutoConnection);
+    QObject::connect(this->observationImporter.data(), SIGNAL(updateProgress(const int&, const QString&)), this, SIGNAL(updateObservationImportProgress(const int&, const QString&)), Qt::AutoConnection);
+
+    //move exchange plugin to thread and start data exchange
+    this->observationImporter->moveToThread(&this->exchangeThread);
+    this->exchangeThread.start();
+
+    return true;
+
+}
+
+/*!
  * \brief DataExchanger::importFeatures
  * \param success
  */
 void DataExchanger::importFeatures(const bool &success){
 
     if(!success){
-        emit this->importFinished(false);
+        emit this->nominalImportFinished(false);
         return;
     }
 
@@ -178,6 +215,31 @@ void DataExchanger::importFeatures(const bool &success){
         this->exchangeThread.wait();
     }
 
-    emit this->importFinished(import);
+    emit this->nominalImportFinished(import);
+
+}
+
+/*!
+ * \brief DataExchanger::importObservationsFinished
+ * \param success
+ */
+void DataExchanger::importObservationsFinished(const bool &success){
+
+    if(!success){
+        emit this->observationImportFinished(false);
+        delete this->observationImporter;
+        return;
+    }
+
+    //delete observation importer instance because it is not necessary anymore
+    delete this->observationImporter;
+
+    //stop thread if it is still running
+    if(this->exchangeThread.isRunning()){
+        this->exchangeThread.quit();
+        this->exchangeThread.wait();
+    }
+
+    emit this->observationImportFinished(success);
 
 }

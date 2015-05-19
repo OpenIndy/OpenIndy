@@ -16,6 +16,8 @@
 #include <QKeyEvent>
 #include <QClipboard>
 #include <QPointer>
+#include <QMenu>
+#include <QFileDialog>
 
 #include "modelmanager.h"
 
@@ -33,6 +35,24 @@ class ActualPropertiesDialog : public QDialog
 public:
     explicit ActualPropertiesDialog(QWidget *parent = 0);
     ~ActualPropertiesDialog();
+
+signals:
+
+    //###################
+    //import observations
+    //###################
+
+    void importObservations(const QString &filename);
+
+private slots:
+
+    //#########################
+    //actions triggered by user
+    //#########################
+
+    //import observations
+    void on_tableView_observation_customContextMenuRequested(const QPoint &pos);
+    void importObservationsMenuClicked(bool checked);
 
 private:
 

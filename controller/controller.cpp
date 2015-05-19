@@ -249,6 +249,22 @@ void Controller::importNominals(const ExchangeParams &params){
 }
 
 /*!
+ * \brief Controller::importObservations
+ * \param filename
+ */
+void Controller::importObservations(const QString &filename){
+
+    //try to start import nominal task
+    if(!this->exchanger.importObservations(filename)){
+        return;
+    }
+
+    //show loading dialog during import
+    emit this->observationImportStarted();
+
+}
+
+/*!
  * \brief Controller::setFeatureTableColumnConfig
  * \param config
  */
@@ -967,8 +983,13 @@ void Controller::registerMetaTypes(){
  */
 void Controller::connectDataExchanger(){
 
-    QObject::connect(&this->exchanger, &DataExchanger::importFinished, this, &Controller::nominalImportFinished, Qt::AutoConnection);
-    QObject::connect(&this->exchanger, &DataExchanger::updateProgress, this, &Controller::nominalImportProgressUpdated, Qt::AutoConnection);
+    //nominal import
+    QObject::connect(&this->exchanger, &DataExchanger::nominalImportFinished, this, &Controller::nominalImportFinished, Qt::AutoConnection);
+    QObject::connect(&this->exchanger, &DataExchanger::updateNominalImportProgress, this, &Controller::nominalImportProgressUpdated, Qt::AutoConnection);
+
+    //observation import
+    QObject::connect(&this->exchanger, &DataExchanger::observationImportFinished, this, &Controller::observationImportFinished, Qt::AutoConnection);
+    QObject::connect(&this->exchanger, &DataExchanger::updateObservationImportProgress, this, &Controller::observationImportProgressUpdated, Qt::AutoConnection);
 
 }
 
