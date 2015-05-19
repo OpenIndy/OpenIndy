@@ -13,6 +13,7 @@
 #include "modelmanager.h"
 #include "console.h"
 #include "exchangeParams.h"
+#include "toolaction.h"
 
 #include "createfeaturedialog.h"
 #include "pluginloaderdialog.h"
@@ -180,6 +181,9 @@ private slots:
     //show settings dialog
     void on_actionView_settings_triggered();
 
+    //show tool widget
+    void showToolWidget(const QString &pluginName, const QString &toolName);
+
 private:
     Ui::MainWindow *ui;
 
@@ -202,6 +206,8 @@ private:
     void initFeatureTableViews();
 
     void initSensorPad();
+
+    void initToolMenus();
 
     //##############################
     //methods to update GUI elements

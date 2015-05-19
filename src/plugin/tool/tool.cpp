@@ -24,6 +24,14 @@ const PluginMetaData &Tool::getMetaData() const{
 }
 
 /*!
+ * \brief Tool::getToolType
+ * \return
+ */
+const ToolTypes &Tool::getToolType() const{
+    return this->toolType;
+}
+
+/*!
  * \brief Tool::getJob
  * \return
  */
@@ -68,5 +76,7 @@ void Tool::watchWindowKeyPressed(const Qt::Key &key){
  * \brief Tool::init
  */
 void Tool::init(){
+
+    this->toolType = eUnknownTool;
 
 }

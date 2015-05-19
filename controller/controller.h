@@ -30,6 +30,14 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = 0);
 
+public:
+
+    //###############################
+    //getter to query available tools
+    //###############################
+
+    QList<QPointer<Tool> > getAvailableTools() const;
+
 public slots:
 
     //#######################

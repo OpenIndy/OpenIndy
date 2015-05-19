@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QCloseEvent>
 
+#include "types.h"
 #include "oirequestresponse.h"
 #include "pluginmetadata.h"
 #include "oijob.h"
@@ -30,11 +31,13 @@ public:
 
     const PluginMetaData &getMetaData() const;
 
+    const ToolTypes &getToolType() const;
+
     const QPointer<OiJob> &getJob() const;
     void setJob(const QPointer<OiJob> &job);
 
     //#########################
-    //ovverride QWidget methods
+    //override QWidget methods
     //#########################
 
     void closeEvent(QCloseEvent *event);
@@ -64,6 +67,8 @@ protected:
     //###########################
 
     PluginMetaData metaData;
+
+    ToolTypes toolType;
 
     QPointer<OiJob> job; //the OpenIndy job that this tool works on
 

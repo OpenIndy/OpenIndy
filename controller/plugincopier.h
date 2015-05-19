@@ -16,8 +16,11 @@
 #include "oimetadata.h"
 #include "systemdbmanager.h"
 
+class PluginLoader;
+
 class PluginCopier : public QObject
 {
+    friend class PluginLoader;
     Q_OBJECT
 
 public:
@@ -56,6 +59,12 @@ private:
     bool checkDependencies(const QString &sourcePath, const PluginMetaData &metaData);
 
     bool savePlugin(const QString &path);
+
+    //#################
+    //helper attributes
+    //#################
+
+    QString importPluginPath; //save file path of an imported plugin to be able to add it to database later
 
 };
 

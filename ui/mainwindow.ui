@@ -302,6 +302,11 @@ background-position: center center;</string>
     <addaction name="actionCreate_pointcloud"/>
     <addaction name="actionCreate_circle"/>
    </widget>
+   <widget class="QMenu" name="menuReport">
+    <property name="title">
+     <string>Report</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSensor"/>
    <addaction name="menuFeatures"/>
@@ -311,6 +316,7 @@ background-position: center center;</string>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
    <addaction name="menuTools"/>
+   <addaction name="menuReport"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

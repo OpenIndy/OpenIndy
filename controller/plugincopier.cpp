@@ -105,12 +105,8 @@ void PluginCopier::importPlugin(const QString &path){
         return;
     }
 
-    //add plugin to database
-    if(!this->savePlugin(pluginDir.absoluteFilePath(pluginFileInfo.fileName()))){
-        emit this->sendError(QString("Plugin %1 has not been saved in system database").arg(pluginFileInfo.fileName()));
-        emit this->importFinished(false);
-        return;
-    }
+    //save plugin path to be able to add the plugin to database later
+    this->importPluginPath = pluginDir.absoluteFilePath(pluginFileInfo.fileName());
 
     emit this->importFinished(true);
 

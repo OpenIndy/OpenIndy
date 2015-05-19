@@ -101,7 +101,7 @@ private slots:
     //clean up copier
     //###############
 
-    void taskFinished();
+    void importTaskFinished(const bool &success);
 
 private:
 

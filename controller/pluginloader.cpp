@@ -23,13 +23,11 @@ PluginLoader::PluginLoader(QObject *parent) : QObject(parent){
                      this, SIGNAL(sendMessage(const QString&)), Qt::AutoConnection);
     QObject::connect(&PluginLoader::pluginCopier, SIGNAL(sendError(const QString&)),
                      this, SIGNAL(sendError(const QString&)), Qt::AutoConnection);
-    QObject::connect(&PluginLoader::pluginCopier, SIGNAL(importFinished(const bool&)),
-                     this, SIGNAL(importFinished(const bool&)), Qt::AutoConnection);
     QObject::connect(&PluginLoader::pluginCopier, SIGNAL(deletionFinished(const bool&)),
                      this, SIGNAL(deletionFinished(const bool&)), Qt::AutoConnection);
 
     QObject::connect(&PluginLoader::pluginCopier, SIGNAL(importFinished(const bool&)),
-                     this, SLOT(taskFinished()), Qt::AutoConnection);
+                     this, SLOT(importTaskFinished(const bool&)), Qt::AutoConnection);
 
 }
 
@@ -485,12 +483,29 @@ QList<QPointer<ExchangeDefinedFormat> > PluginLoader::loadExchangeDefinedFormatP
 }
 
 /*!
- * \brief PluginLoader::taskFinished
+ * \brief PluginLoader::importTaskFinished
  * Is called when the plugin copier has finished a task (import or deletion)
+ * \param success
  */
-void PluginLoader::taskFinished(){
+void PluginLoader::importTaskFinished(const bool &success){
 
     PluginLoader::copierThread.quit();
     PluginLoader::copierThread.wait();
+
+    //if the plugin has been successfully imported add it to database
+    if(success){
+
+        if(!this->pluginCopier.savePlugin(this->pluginCopier.importPluginPath)){
+            emit this->sendError(QString("Plugin %1 has not been saved in system database").arg(this->pluginCopier.importPluginPath));
+            emit this->importFinished(false);
+            return;
+        }
+
+        emit this->importFinished(true);
+        return;
+
+    }
+
+    emit this->importFinished(false);
 
 }

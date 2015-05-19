@@ -25,6 +25,31 @@ Controller::Controller(QObject *parent) : QObject(parent){
 }
 
 /*!
+ * \brief Controller::getAvailableTools
+ * \return
+ */
+QList<QPointer<Tool> > Controller::getAvailableTools() const{
+
+    QList<QPointer<Tool> > resultSet;
+
+    //get available tools from database
+    QList<sdb::Tool> toolPlugins = SystemDbManager::getTools();
+
+    //load all tool plugins and add them to the result list
+    foreach(const sdb::Tool &tool, toolPlugins){
+
+        QPointer<Tool> toolPlugin = PluginLoader::loadToolPlugin(tool.plugin.file_path, tool.name);
+        if(!toolPlugin.isNull()){
+            resultSet.append(toolPlugin);
+        }
+
+    }
+
+    return resultSet;
+
+}
+
+/*!
  * \brief Controller::addFeatures
  * \param attributes
  */

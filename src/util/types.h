@@ -371,4 +371,15 @@ enum SensorFunctions{
 
 };
 
+//################################
+//tool types (categories of tools)
+//################################
+
+enum ToolTypes{
+
+    eReportTool,
+    eUnknownTool
+
+};
+
 #endif // TYPES_H

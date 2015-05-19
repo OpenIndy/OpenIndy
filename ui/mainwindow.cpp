@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //init GUI elements
     this->initFeatureTableViews();
     this->initSensorPad();
+    this->initToolMenus();
 
     //connect controller and dialogs
     this->connectDialogs();
@@ -733,6 +734,48 @@ void MainWindow::on_actionView_settings_triggered(){
 }
 
 /*!
+ * \brief MainWindow::showToolWidget
+ * \param pluginName
+ * \param toolName
+ */
+void MainWindow::showToolWidget(const QString &pluginName, const QString &toolName){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get a list of available tool plugins
+    QList<QPointer<Tool> > tools = this->control.getAvailableTools();
+
+    //search the list for the specified tool
+    foreach(const QPointer<Tool> &tool, tools){
+
+        if(tool.isNull()){
+            continue;
+        }
+
+        if(tool->getMetaData().pluginName.compare(pluginName) == 0
+                && tool->getMetaData().name.compare(toolName) == 0){
+            tool->setJob(sourceModel->getCurrentJob());
+            tool->show();
+            continue;
+        }else{
+            delete tool;
+        }
+
+    }
+
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -915,6 +958,46 @@ void MainWindow::initSensorPad(){
     QObject::connect(this->actionToggleSightOrientation, &QAction::triggered, &this->control, &Controller::startToggleSight, Qt::AutoConnection);
     QObject::connect(this->actionCompensation, &QAction::triggered, &this->control, &Controller::startCompensation, Qt::AutoConnection);
     QObject::connect(this->actionMove, &QAction::triggered, this, &MainWindow::showMoveSensorDialog, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief MainWindow::initToolMenus
+ */
+void MainWindow::initToolMenus(){
+
+    //get all available tool plugins
+    QList<QPointer<Tool> > tools = this->control.getAvailableTools();
+
+    //add each tool as menu entry
+    foreach(const QPointer<Tool> &tool, tools){
+
+        if(tool.isNull()){
+            continue;
+        }
+
+        //create an action and add it to the corresponding menu item
+        ToolAction *action;
+        action = new ToolAction();
+        action->setToolName(tool->getMetaData().name);
+        action->setPluginName(tool->getMetaData().pluginName);
+        action->setText(tool->getMetaData().name);
+        switch(tool->getToolType()){
+        case eReportTool:
+            this->ui->menuReport->addAction(action);
+            break;
+        case eUnknownTool:
+            this->ui->menuTools->addAction(action);
+            break;
+        }
+
+        //connect the triggered event of the action
+        QObject::connect(action, &ToolAction::openToolWidget, this, &MainWindow::showToolWidget);
+
+        //delete the tool
+        delete tool;
+
+    }
 
 }
 

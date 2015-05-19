@@ -102,4 +102,12 @@ QList<ConnectionTypes> getAvailableConnectionTypes();
 const QString &getConnectionTypeName(const ConnectionTypes &type);
 ConnectionTypes getConnectionTypeEnum(const QString &name);
 
+//####################################
+//global functions to query tool types
+//####################################
+
+QList<ToolTypes> getAvailableToolTypes();
+const QString &getToolTypeName(const ToolTypes &type);
+ToolTypes getToolTypeEnum(const QString &name);
+
 #endif // UTIL_H

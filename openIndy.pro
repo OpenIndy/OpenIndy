@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql serialport network opengl xml websockets
+QT       += core gui sql svg serialport network opengl xml websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -55,6 +55,7 @@ INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/ui/delegates
 INCLUDEPATH += $$PWD/ui/dialogs
 INCLUDEPATH += $$PWD/ui/widgets
+INCLUDEPATH += $$PWD/ui/actions
 INCLUDEPATH += $$PWD/ui/selectionmodels
 
 INCLUDEPATH += $$PWD/lib/openIndyLib/include
@@ -187,7 +188,8 @@ SOURCES += \
     controller/config/observationtablecolumnconfig.cpp \
     controller/config/readingtablecolumnconfig.cpp \
     ui/dialogs/actualpropertiesdialog.cpp \
-    ui/dialogs/nominalpropertiesdialog.cpp
+    ui/dialogs/nominalpropertiesdialog.cpp \
+    ui/actions/toolaction.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -322,7 +324,8 @@ HEADERS  += \
     controller/config/observationtablecolumnconfig.h \
     controller/config/readingtablecolumnconfig.h \
     ui/dialogs/actualpropertiesdialog.h \
-    ui/dialogs/nominalpropertiesdialog.h
+    ui/dialogs/nominalpropertiesdialog.h \
+    ui/actions/toolaction.h
 
 FORMS    += \
     ui/mainwindow.ui \

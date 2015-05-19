@@ -33,6 +33,8 @@ QMap<SensorFunctions, QString> sensorFunctionsMap;
 
 QMap<ConnectionTypes, QString> connectionTypesMap;
 
+QMap<ToolTypes, QString> toolTypesMap;
+
 QString undefined = "";
 
 bool isInit = false;
@@ -54,6 +56,7 @@ void init(){
     readingDisplayAttributes.clear();
     unitTypesMap.clear();
     sensorTypesMap.clear();
+    toolTypesMap.clear();
 
     //fill element map
     elementTypesMap.insert(eCircleElement, "circle");
@@ -393,6 +396,10 @@ void init(){
     //fill connection types map
     connectionTypesMap.insert(eSerialConnection, "serial");
     connectionTypesMap.insert(eNetworkConnection, "network");
+
+    //fill tool types map
+    toolTypesMap.insert(eReportTool, "report");
+    toolTypesMap.insert(eUnknownTool, "tool");
 
     isInit = true;
 
@@ -1206,7 +1213,14 @@ UnitType getUnitTypeEnum(const QString &name){
  * \return
  */
 QList<SensorTypes> getAvailableSensorTypes(){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
     return internal::sensorTypesMap.keys();
+
 }
 
 /*!
@@ -1251,7 +1265,14 @@ SensorTypes getSensorTypeEnum(const QString &name){
  * \return
  */
 QList<SensorFunctions> getAvailableSensorFunctions(){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
     return internal::sensorFunctionsMap.keys();
+
 }
 
 /*!
@@ -1296,7 +1317,14 @@ SensorFunctions getSensorFunctionEnum(const QString &name){
  * \return
  */
 QList<ConnectionTypes> getAvailableConnectionTypes(){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
     return internal::connectionTypesMap.keys();
+
 }
 
 /*!
@@ -1333,5 +1361,57 @@ ConnectionTypes getConnectionTypeEnum(const QString &name){
 
     //get the corresponding connection type enum value
     return internal::connectionTypesMap.key(name, eNetworkConnection);
+
+}
+
+/*!
+ * \brief getAvailableToolTypes
+ * \return
+ */
+QList<ToolTypes> getAvailableToolTypes(){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    return internal::toolTypesMap.keys();
+
+}
+
+/*!
+ * \brief getToolTypeName
+ * \param type
+ * \return
+ */
+const QString &getToolTypeName(const ToolTypes &type){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding tool type name
+    if(internal::toolTypesMap.contains(type)){
+        return internal::toolTypesMap[type];
+    }
+    return internal::undefined;
+
+}
+
+/*!
+ * \brief getToolTypeEnum
+ * \param name
+ * \return
+ */
+ToolTypes getToolTypeEnum(const QString &name){
+
+    //fill helper maps if not yet done
+    if(!internal::isInit){
+        internal::init();
+    }
+
+    //get the corresponding tool type enum value
+    return internal::toolTypesMap.key(name, eUnknownTool);
 
 }
