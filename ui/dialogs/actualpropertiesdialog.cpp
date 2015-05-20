@@ -340,9 +340,9 @@ void ActualPropertiesDialog::showEvent(QShowEvent *event){
 void ActualPropertiesDialog::initGUI(){
 
     //resize rows and columns to table view contents
-    this->ui->tableView_observation->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //this->ui->tableView_observation->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->ui->tableView_observation->verticalHeader()->setDefaultSectionSize(22);
-    this->ui->tableView_readings->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //this->ui->tableView_readings->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->ui->tableView_readings->verticalHeader()->setDefaultSectionSize(22);
 
     //enable context menu in observations table view

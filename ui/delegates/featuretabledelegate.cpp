@@ -173,3 +173,22 @@ void FeatureTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *mod
     }
 
 }
+
+QSize FeatureTableDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const{
+
+    //check model index
+    if(!index.isValid()){
+        return QSize(5, 22);
+    }
+
+    //get and check models
+    const FeatureTableProxyModel *featureTableProxyModel = static_cast<const FeatureTableProxyModel*>(index.model());
+    if(featureTableProxyModel == NULL){
+        return QSize(5, 22);
+    }
+
+    QString input = featureTableProxyModel->data(index).toString();
+
+    return QSize(option.font.pointSizeF() * input.size(), 22);
+
+}
