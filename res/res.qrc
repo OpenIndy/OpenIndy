@@ -68,29 +68,31 @@
         <file>icons/featureToolBar.png</file>
         <file>icons/simulation.png</file>
         <file>icons/streamingLogo.png</file>
-        <file>icons/Point Cloud.svg</file>
-        <file>icons/Cone.svg</file>
-        <file>icons/Ellipse.svg</file>
-        <file>icons/Ellipsoid.svg</file>
-        <file>icons/Point.svg</file>
-        <file>icons/Nurbs Surface.svg</file>
-        <file>icons/Paraboloid.svg</file>
-        <file>icons/Line.svg</file>
-        <file>icons/Hyperboloid.svg</file>
-        <file>icons/Sphere.svg</file>
-        <file>icons/Plane.svg</file>
-        <file>icons/Circle.svg</file>
-        <file>icons/Cylinder.svg</file>
-        <file>icons/Torus.svg</file>
-        <file>icons/Scalar Entities.svg</file>
-        <file>icons/Slotted Hole.svg</file>
-        <file>icons/Station.svg</file>
-        <file>icons/Coordinatesystem.svg</file>
-        <file>icons/TrafoParam.svg</file>
-        <file>icons/sensor control pad.svg</file>
-        <file>icons/open.svg</file>
-        <file>icons/save.svg</file>
-        <file>icons/help.svg</file>
-        <file>icons/function.svg</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file>icons/toolbars/feature/Circle.png</file>
+        <file>icons/toolbars/feature/Cone.png</file>
+        <file>icons/toolbars/feature/Coordinatesystem.png</file>
+        <file>icons/toolbars/feature/Cylinder.png</file>
+        <file>icons/toolbars/feature/Ellipse.png</file>
+        <file>icons/toolbars/feature/Ellipsoid.png</file>
+        <file>icons/toolbars/feature/Hyperboloid.png</file>
+        <file>icons/toolbars/feature/Line.png</file>
+        <file>icons/toolbars/feature/Nurbs Surface.png</file>
+        <file>icons/toolbars/feature/Paraboloid.png</file>
+        <file>icons/toolbars/feature/Plane.png</file>
+        <file>icons/toolbars/feature/Point Cloud.png</file>
+        <file>icons/toolbars/feature/Point.png</file>
+        <file>icons/toolbars/feature/Scalar Entities.png</file>
+        <file>icons/toolbars/feature/Slotted Hole.png</file>
+        <file>icons/toolbars/feature/Sphere.png</file>
+        <file>icons/toolbars/feature/Station.png</file>
+        <file>icons/toolbars/feature/Torus.png</file>
+        <file>icons/toolbars/feature/TrafoParam.png</file>
+        <file>icons/toolbars/standard/function.png</file>
+        <file>icons/toolbars/standard/help.png</file>
+        <file>icons/toolbars/standard/open.png</file>
+        <file>icons/toolbars/standard/save.png</file>
+        <file>icons/toolbars/standard/sensor control pad.png</file>
     </qresource>
 </RCC>
