@@ -602,7 +602,7 @@ color: rgb(255, 255, 255);
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/open.svg</normaloff>:/Images/icons/open.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/open.png</normaloff>:/icons/icons/toolbars/standard/open.png</iconset>
    </property>
    <property name="text">
     <string>open project</string>
@@ -620,16 +620,19 @@ color: rgb(255, 255, 255);
   <action name="actionShow_help">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/help.svg</normaloff>:/Images/icons/help.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/help.png</normaloff>:/icons/icons/toolbars/standard/help.png</iconset>
    </property>
    <property name="text">
     <string>show help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
   <action name="actionControl_pad">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/sensor control pad.svg</normaloff>:/Images/icons/sensor control pad.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/sensor control pad.png</normaloff>:/icons/icons/toolbars/standard/sensor control pad.png</iconset>
    </property>
    <property name="text">
     <string>sensor control</string>
@@ -683,7 +686,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_point">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Point.svg</normaloff>:/Images/icons/Point.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Point.png</normaloff>:/icons/icons/toolbars/feature/Point.png</iconset>
    </property>
    <property name="text">
     <string>create point</string>
@@ -692,7 +695,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_line">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Line.svg</normaloff>:/Images/icons/Line.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Line.png</normaloff>:/icons/icons/toolbars/feature/Line.png</iconset>
    </property>
    <property name="text">
     <string>create line</string>
@@ -701,7 +704,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_plane">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Plane.svg</normaloff>:/Images/icons/Plane.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Plane.png</normaloff>:/icons/icons/toolbars/feature/Plane.png</iconset>
    </property>
    <property name="text">
     <string>create plane</string>
@@ -710,7 +713,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_sphere">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Sphere.svg</normaloff>:/Images/icons/Sphere.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Sphere.png</normaloff>:/icons/icons/toolbars/feature/Sphere.png</iconset>
    </property>
    <property name="text">
     <string>create sphere</string>
@@ -719,7 +722,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_station">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Station.svg</normaloff>:/Images/icons/Station.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Station.png</normaloff>:/icons/icons/toolbars/feature/Station.png</iconset>
    </property>
    <property name="text">
     <string>create station</string>
@@ -728,7 +731,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_coordinatesystem">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Coordinatesystem.svg</normaloff>:/Images/icons/Coordinatesystem.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Coordinatesystem.png</normaloff>:/icons/icons/toolbars/feature/Coordinatesystem.png</iconset>
    </property>
    <property name="text">
     <string>create coordinatesystem</string>
@@ -755,7 +758,7 @@ color: rgb(255, 255, 255);
   <action name="actionSet_function">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/function.svg</normaloff>:/Images/icons/function.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/function.png</normaloff>:/icons/icons/toolbars/standard/function.png</iconset>
    </property>
    <property name="text">
     <string>set function</string>
@@ -764,7 +767,7 @@ color: rgb(255, 255, 255);
   <action name="actionSave">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/save.svg</normaloff>:/Images/icons/save.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/save.png</normaloff>:/icons/icons/toolbars/standard/save.png</iconset>
    </property>
    <property name="text">
     <string>save</string>
@@ -791,7 +794,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_scalar_entity">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Scalar Entities.svg</normaloff>:/Images/icons/Scalar Entities.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Scalar Entities.png</normaloff>:/icons/icons/toolbars/feature/Scalar Entities.png</iconset>
    </property>
    <property name="text">
     <string>create scalar entity</string>
@@ -810,7 +813,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_trafoParam">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/TrafoParam.svg</normaloff>:/Images/icons/TrafoParam.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/TrafoParam.png</normaloff>:/icons/icons/toolbars/feature/TrafoParam.png</iconset>
    </property>
    <property name="text">
     <string>create transformation parameter</string>
@@ -827,7 +830,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_cone">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Cone.svg</normaloff>:/Images/icons/Cone.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Cone.png</normaloff>:/icons/icons/toolbars/feature/Cone.png</iconset>
    </property>
    <property name="text">
     <string>create cone</string>
@@ -839,7 +842,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_cylinder">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Cylinder.svg</normaloff>:/Images/icons/Cylinder.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Cylinder.png</normaloff>:/icons/icons/toolbars/feature/Cylinder.png</iconset>
    </property>
    <property name="text">
     <string>create cylinder</string>
@@ -851,7 +854,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_ellipsoid">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Ellipsoid.svg</normaloff>:/Images/icons/Ellipsoid.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Ellipsoid.png</normaloff>:/icons/icons/toolbars/feature/Ellipsoid.png</iconset>
    </property>
    <property name="text">
     <string>create ellipsoid</string>
@@ -863,7 +866,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_hyperboloid">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Hyperboloid.svg</normaloff>:/Images/icons/Hyperboloid.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Hyperboloid.png</normaloff>:/icons/icons/toolbars/feature/Hyperboloid.png</iconset>
    </property>
    <property name="text">
     <string>create hyperboloid</string>
@@ -875,7 +878,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_paraboloid">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Paraboloid.svg</normaloff>:/Images/icons/Paraboloid.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Paraboloid.png</normaloff>:/icons/icons/toolbars/feature/Paraboloid.png</iconset>
    </property>
    <property name="text">
     <string>create paraboloid</string>
@@ -887,7 +890,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_nurbs">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Nurbs Surface.svg</normaloff>:/Images/icons/Nurbs Surface.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Nurbs Surface.png</normaloff>:/icons/icons/toolbars/feature/Nurbs Surface.png</iconset>
    </property>
    <property name="text">
     <string>create nurbs</string>
@@ -899,7 +902,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_pointcloud">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Point Cloud.svg</normaloff>:/Images/icons/Point Cloud.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Point Cloud.png</normaloff>:/icons/icons/toolbars/feature/Point Cloud.png</iconset>
    </property>
    <property name="text">
     <string>create pointcloud</string>
@@ -911,7 +914,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_circle">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Circle.svg</normaloff>:/Images/icons/Circle.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Circle.png</normaloff>:/icons/icons/toolbars/feature/Circle.png</iconset>
    </property>
    <property name="text">
     <string>create circle</string>
@@ -980,7 +983,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_torus">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Torus.svg</normaloff>:/Images/icons/Torus.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Torus.png</normaloff>:/icons/icons/toolbars/feature/Torus.png</iconset>
    </property>
    <property name="text">
     <string>create torus</string>
@@ -992,7 +995,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_slotted_hole">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Slotted Hole.svg</normaloff>:/Images/icons/Slotted Hole.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Slotted Hole.png</normaloff>:/icons/icons/toolbars/feature/Slotted Hole.png</iconset>
    </property>
    <property name="text">
     <string>create slotted hole</string>
@@ -1004,7 +1007,7 @@ color: rgb(255, 255, 255);
   <action name="actionCreate_ellipse">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/Ellipse.svg</normaloff>:/Images/icons/Ellipse.svg</iconset>
+     <normaloff>:/icons/icons/toolbars/feature/Ellipse.png</normaloff>:/icons/icons/toolbars/feature/Ellipse.png</iconset>
    </property>
    <property name="text">
     <string>create ellipse</string>
