@@ -254,7 +254,7 @@ void Controller::importNominals(const ExchangeParams &params){
  */
 void Controller::importObservations(const QString &filename){
 
-    //try to start import nominal task
+    //try to start import observations task
     if(!this->exchanger.importObservations(filename)){
         return;
     }

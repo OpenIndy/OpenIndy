@@ -25,17 +25,14 @@ public:
     const FeatureTableColumnConfig &getFeatureTableColumnConfig() const;
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
 
-    //##############################
-    //get id of the feature at index
-    //##############################
-
-    //int getFeatureIdAtIndex(const QModelIndex &index);
-    
-protected:
-
     //###########################################
     //override methods of sort filter proxy model
     //###########################################
+
+    QModelIndex mapFromSource(const QModelIndex &sourceIndex) const;
+    QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
+    
+protected:
 
     bool filterAcceptsRow (int source_row, const QModelIndex &source_parent ) const;
     bool filterAcceptsColumn (int source_column, const QModelIndex &source_parent ) const;

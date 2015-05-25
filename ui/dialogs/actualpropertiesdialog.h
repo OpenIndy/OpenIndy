@@ -20,6 +20,8 @@
 #include <QFileDialog>
 
 #include "modelmanager.h"
+#include "observationtabledelegate.h"
+#include "readingtabledelegate.h"
 
 namespace Ui {
 class ActualPropertiesDialog;
@@ -53,6 +55,9 @@ private slots:
     //import observations
     void on_tableView_observation_customContextMenuRequested(const QPoint &pos);
     void importObservationsMenuClicked(bool checked);
+
+    //resize table views
+    void resizeTableView();
 
 private:
 

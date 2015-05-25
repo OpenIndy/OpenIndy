@@ -25,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     QPointer<OiJob> job = this->control.createDefaultJob();
     this->watchWindowDialog.setCurrentJob(job);
 
+    //initially resize table view to fit the default job
+    this->resizeTableView();
+
 }
 
 /*!
@@ -800,6 +803,15 @@ void MainWindow::showToolWidget(const QString &pluginName, const QString &toolNa
 }
 
 /*!
+ * \brief MainWindow::resizeTableView
+ * Triggered whenever the user double clicks a header item of a table view
+ */
+void MainWindow::resizeTableView(){
+    this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_trafoParams->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -900,11 +912,10 @@ void MainWindow::assignModels(){
  */
 void MainWindow::initFeatureTableViews(){
 
-    //resize rows and columns to table view contents
-    this->ui->tableView_features->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    //this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    //resize rows and columns to table view contents on double click
+    QObject::connect(this->ui->tableView_features->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     this->ui->tableView_features->verticalHeader()->setDefaultSectionSize(22);
-    this->ui->tableView_trafoParams->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    QObject::connect(this->ui->tableView_trafoParams->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
 
     //enable context menu

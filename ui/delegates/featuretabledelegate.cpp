@@ -174,6 +174,12 @@ void FeatureTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *mod
 
 }
 
+/*!
+ * \brief FeatureTableDelegate::sizeHint
+ * \param option
+ * \param index
+ * \return
+ */
 QSize FeatureTableDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const{
 
     //check model index
@@ -189,6 +195,10 @@ QSize FeatureTableDelegate::sizeHint(const QStyleOptionViewItem &option, const Q
 
     QString input = featureTableProxyModel->data(index).toString();
 
-    return QSize(option.font.pointSizeF() * input.size(), 22);
+    QFontMetrics metrics(option.font);
+
+    int width = metrics.width(input) + option.decorationSize.width();
+
+    return QSize(width, 22);
 
 }

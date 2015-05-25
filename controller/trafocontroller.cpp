@@ -18,6 +18,8 @@ void TrafoController::transformObservations(const QPointer<Feature> &feature, co
         return;
     }
 
+    QList<QPointer<CoordinateSystem> > startSystems;
+
     //run through all observations of the feature
     foreach(const QPointer<Observation> &obs, feature->getFeatureWrapper()->getGeometry()->getObservations()){
 
@@ -29,16 +31,23 @@ void TrafoController::transformObservations(const QPointer<Feature> &feature, co
         //get the station system from which the observation was made
         QPointer<CoordinateSystem> startSystem = obs->getStation()->getCoordinateSystem();
 
-        //transform all observations of the station system
-        this->transformObservations(startSystem, destinationSystem);
+        //add the start system to the list of start systems
+        if(!startSystems.contains(startSystem)){
+            startSystems.append(startSystem);
+        }
 
+    }
+
+    //transform all observations of the start system
+    foreach(const QPointer<CoordinateSystem> &system, startSystems){
+        this->transformObservations(system, destinationSystem);
     }
 
 }
 
 /*!
  * \brief TrafoController::transformObservations
- * Transforms all observations of the start
+ * Transforms all observations of the start system to the destination system
  * \param startSystem
  * \param destinationSystem
  */

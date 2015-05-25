@@ -49,6 +49,7 @@ QList<QPointer<Function> > OiTemplatePlugin::createFunctions(){
     resultSet.append(new ExtendedTemperatureCompensation());
     resultSet.append(new Helmert6Param());
     resultSet.append(new BestFitSphereRauls());
+    resultSet.append(new BestFitCircle2());
 
     return resultSet;
 }
@@ -158,6 +159,8 @@ QPointer<Function> OiTemplatePlugin::createFunction(const QString &name){
         result = new Helmert7Param();
     }else if(name.compare("BestFitCircle") == 0){
         result = new BestFitCircle();
+    }else if(name.compare("BestFitCircle2") == 0){
+        result = new BestFitCircle2();
     }else if(name.compare("StandardTempComp") == 0){
         result = new SimpleTemperatureCompensation();
     }else if(name.compare("9ParameterHelmertTransformation") == 0){

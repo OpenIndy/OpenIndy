@@ -2305,7 +2305,7 @@ void OiJob::addMeasurementResults(const int &geomId, const QList<QPointer<Readin
     feature->getGeometry()->geomObservationsChanged(feature->getGeometry()->getId());
 
     //recalculate the feature
-    //emit this->recalcFeature(feature->getFeature());
+    emit this->recalcFeature(feature->getFeature());
 
 }
 

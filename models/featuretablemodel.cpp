@@ -96,7 +96,95 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
             (0 <= section) &&
             (section < columnCount())){
 
-        return getFeatureDisplayAttributeName(getFeatureDisplayAttributes().at(section));
+        //get header
+        QString header = getFeatureDisplayAttributeName(getFeatureDisplayAttributes().at(section));
+
+        //add unit information to header
+        if(getIsFeatureDisplayAttribute(getFeatureDisplayAttributes().at(section))){
+
+            switch((FeatureDisplayAttributes)getFeatureDisplayAttributes().at(section)){
+            case eFeatureDisplayStDev:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayX:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayY:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayZ:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayRadiusA:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayRadiusB:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayAperture:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eAngular))));
+                break;
+            case eFeatureDisplayA:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayB:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayC:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayAngle:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eAngular))));
+                break;
+            case eFeatureDisplayDistance:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayTemperature:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eTemperature))));
+                break;
+            case eFeatureDisplayLength:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayExpansionOriginX:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayExpansionOriginY:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayExpansionOriginZ:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            }
+
+        }else if(getIsTrafoParamDisplayAttribute(getFeatureDisplayAttributes().at(section))){
+
+            switch((TrafoParamDisplayAttributes)getFeatureDisplayAttributes().at(section)){
+            case eTrafoParamDisplayStDev:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eTrafoParamDisplayTranslationX:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eTrafoParamDisplayTranslationY:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eTrafoParamDisplayTranslationZ:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eTrafoParamDisplayRotationX:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eAngular))));
+                break;
+            case eTrafoParamDisplayRotationY:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eAngular))));
+                break;
+            case eTrafoParamDisplayRotationZ:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eAngular))));
+                break;
+            }
+
+        }
+
+        return header;
 
     }
 

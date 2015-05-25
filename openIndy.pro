@@ -190,7 +190,9 @@ SOURCES += \
     ui/dialogs/actualpropertiesdialog.cpp \
     ui/dialogs/nominalpropertiesdialog.cpp \
     ui/actions/toolaction.cpp \
-    controller/exchange/observationimporter.cpp
+    controller/exchange/observationimporter.cpp \
+    ui/delegates/observationtabledelegate.cpp \
+    ui/delegates/readingtabledelegate.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -327,7 +329,9 @@ HEADERS  += \
     ui/dialogs/actualpropertiesdialog.h \
     ui/dialogs/nominalpropertiesdialog.h \
     ui/actions/toolaction.h \
-    controller/exchange/observationimporter.h
+    controller/exchange/observationimporter.h \
+    ui/delegates/observationtabledelegate.h \
+    ui/delegates/readingtabledelegate.h
 
 FORMS    += \
     ui/mainwindow.ui \

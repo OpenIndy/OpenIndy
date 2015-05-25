@@ -188,6 +188,9 @@ private slots:
     //show tool widget
     void showToolWidget(const QString &pluginName, const QString &toolName);
 
+    //resize table views
+    void resizeTableView();
+
 private:
     Ui::MainWindow *ui;
 

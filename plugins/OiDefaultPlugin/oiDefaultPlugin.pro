@@ -159,7 +159,8 @@ SOURCES += \
     lib/fitting/util/mystring.cpp \
     lib/fitting/util/rho.cpp \
     p_factory.cpp \
-    main.cpp
+    main.cpp \
+    functions/fit/p_bestfitcircle2.cpp
 
 HEADERS += \
     functions/construct/p_intersectlineplane.h \
@@ -267,7 +268,8 @@ HEADERS += \
     ../../lib/openIndyLib/include/linearalgebra.h \
     ../../lib/openIndyLib/include/oimat.h \
     ../../lib/openIndyLib/include/oivec.h \
-    ../../lib/openIndyLib/include/chooselalib.h
+    ../../lib/openIndyLib/include/chooselalib.h \
+    functions/fit/p_bestfitcircle2.h
 
 OTHER_FILES += metaInfo.json
 

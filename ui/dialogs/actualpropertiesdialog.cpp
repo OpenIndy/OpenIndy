@@ -321,6 +321,14 @@ void ActualPropertiesDialog::importObservationsMenuClicked(bool checked){
 }
 
 /*!
+ * \brief ActualPropertiesDialog::resizeTableView
+ */
+void ActualPropertiesDialog::resizeTableView(){
+    this->ui->tableView_observation->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_readings->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+}
+
+/*!
  * \brief ActualPropertiesDialog::showEvent
  * \param event
  */
@@ -339,14 +347,20 @@ void ActualPropertiesDialog::showEvent(QShowEvent *event){
  */
 void ActualPropertiesDialog::initGUI(){
 
-    //resize rows and columns to table view contents
-    //this->ui->tableView_observation->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //resize rows and columns to table view contents on double click
+    QObject::connect(this->ui->tableView_observation->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &ActualPropertiesDialog::resizeTableView, Qt::AutoConnection);
     this->ui->tableView_observation->verticalHeader()->setDefaultSectionSize(22);
-    //this->ui->tableView_readings->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    QObject::connect(this->ui->tableView_readings->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &ActualPropertiesDialog::resizeTableView, Qt::AutoConnection);
     this->ui->tableView_readings->verticalHeader()->setDefaultSectionSize(22);
 
     //enable context menu in observations table view
     this->ui->tableView_observation->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    //set up delegates
+    ObservationTableDelegate *observationTableDelegate = new ObservationTableDelegate();
+    this->ui->tableView_observation->setItemDelegate(observationTableDelegate);
+    ReadingTableDelegate *readingTableDelegate = new ReadingTableDelegate();
+    this->ui->tableView_readings->setItemDelegate(readingTableDelegate);
 
 }
 

@@ -110,12 +110,12 @@ void ParameterDisplayConfig::setDisplayDigits(const DimensionType &dimension, co
 void ParameterDisplayConfig::init(){
 
     //default units
-    this->metricDisplayUnit = eUnitMeter;
+    this->metricDisplayUnit = eUnitMilliMeter;
     this->angularDisplayUnit = eUnitDecimalDegree;
     this->temperatureDisplayUnit = eUnitGrad;
 
     //default digits
-    this->metricDisplayDigits = 4;
+    this->metricDisplayDigits = 2;
     this->angularDisplayDigits = 6;
     this->temperatureDisplayDigits = 2;
     this->dimensionlessDisplayDigits = 6;

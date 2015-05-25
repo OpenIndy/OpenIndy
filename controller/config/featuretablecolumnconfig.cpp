@@ -55,6 +55,18 @@ void FeatureTableColumnConfig::setColumnPosition(const FeatureDisplayAttributes 
 }
 
 /*!
+ * \brief FeatureTableColumnConfig::getDisplayAttributeAt
+ * \param column
+ * \return
+ */
+FeatureDisplayAttributes FeatureTableColumnConfig::getDisplayAttributeAt(const int &column) const{
+    if(this->displayColumns.size() > column){
+        return this->displayColumns.at(column);
+    }
+    return eFeatureDisplayType;
+}
+
+/*!
  * \brief FeatureTableColumnConfig::init
  * Set up default column config
  */
@@ -64,7 +76,6 @@ void FeatureTableColumnConfig::init(){
     this->displayColumns.append(eFeatureDisplayType);
     this->displayColumns.append(eFeatureDisplayName);
     this->displayColumns.append(eFeatureDisplayGroup);
-    this->displayColumns.append(eFeatureDisplayIsSolved);
     this->displayColumns.append(eFeatureDisplayX);
     this->displayColumns.append(eFeatureDisplayY);
     this->displayColumns.append(eFeatureDisplayZ);
@@ -76,6 +87,7 @@ void FeatureTableColumnConfig::init(){
     this->displayColumns.append(eFeatureDisplayPrimaryJ);
     this->displayColumns.append(eFeatureDisplayPrimaryK);
     this->displayColumns.append(eFeatureDisplayRadiusA);
+    this->displayColumns.append(eFeatureDisplayIsSolved);
     this->displayColumns.append(eFeatureDisplayComment);
 
 }

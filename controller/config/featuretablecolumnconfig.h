@@ -20,6 +20,8 @@ public:
     int getColumnPosition(const FeatureDisplayAttributes &column) const;
     void setColumnPosition(const FeatureDisplayAttributes &column, const int &index);
 
+    FeatureDisplayAttributes getDisplayAttributeAt(const int &column) const;
+
 private:
     void init();
 

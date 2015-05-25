@@ -23,26 +23,63 @@ void FeatureTableProxyModel::setFeatureTableColumnConfig(const FeatureTableColum
 }
 
 /*!
- * \brief FeatureTableProxyModel::getFeatureIdAtIndex
- * \param index
+ * \brief FeatureTableProxyModel::mapFromSource
+ * Reimplemented here to be able to sort columns
+ * \param sourceIndex
  * \return
  */
-/*int FeatureTableProxyModel::getFeatureIdAtIndex(const QModelIndex &index){
+QModelIndex FeatureTableProxyModel::mapFromSource(const QModelIndex &sourceIndex) const{
 
-    //check index
-    if(!index.isValid()){
-        return -1;
+    //get and check proxyIndex
+    QModelIndex proxyIndex = QSortFilterProxyModel::mapFromSource(sourceIndex);
+    if(!proxyIndex.isValid()){
+        return proxyIndex;
+    }
+
+    //set up new column position (column sorting)
+    int columnIndex = sourceIndex.column();
+    int columnPosition = this->featureTableColumnConfig.getColumnPosition((FeatureDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex));
+    //proxyIndex = this->createIndex(proxyIndex.row(), columnPosition);
+    return this->index(proxyIndex.row(), columnPosition);
+
+    return proxyIndex;
+
+}
+
+/*!
+ * \brief FeatureTableProxyModel::mapToSource
+ * Reimplemented here to be able to sort columns
+ * \param proxyIndex
+ * \return
+ */
+QModelIndex FeatureTableProxyModel::mapToSource(const QModelIndex &proxyIndex) const{
+
+    //get and check sourceIndex
+    QModelIndex sourceIndex = QSortFilterProxyModel::mapToSource(proxyIndex);
+    if(!sourceIndex.isValid()){
+        return sourceIndex;
     }
 
     //get and cast source model
     FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
     if(source_model == NULL){
-        return -1;
+        return QModelIndex();
     }
 
-    return source_model->getFeatureIdAtIndex(this->mapToSource(index));
+    //get display attribute at column position
+    FeatureDisplayAttributes attr = this->featureTableColumnConfig.getDisplayAttributeAt(proxyIndex.column());
 
-}*/
+    //get the index of the attribute in the list of all available attributes
+    int sourceColumn = getFeatureDisplayAttributes().indexOf(attr);
+
+    //set up correct column position for the source index
+    sourceIndex = this->createIndex(sourceIndex.row(), sourceColumn);
+
+    return source_model->index(sourceIndex.row(), sourceColumn);
+
+    return sourceIndex;
+
+}
 
 /*!
  * \brief FeatureTableProxyModel::filterAcceptsRow
