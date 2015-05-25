@@ -407,11 +407,11 @@ void AvailableElementsTreeViewProxyModel::addInputElement(const QPointer<Feature
         elementCheck = true;
     }else if(type == ePositionElement && !item->getFeature().isNull() && !item->getFeature()->getGeometry().isNull()
              && item->getFeature()->getGeometry()->hasPosition()){
-         elementCheck = true;
-     }else if(type == eRadiusElement && !item->getFeature().isNull() && !item->getFeature()->getGeometry().isNull()
+        elementCheck = true;
+    }else if(type == eRadiusElement && !item->getFeature().isNull() && !item->getFeature()->getGeometry().isNull()
               && item->getFeature()->getGeometry()->hasRadius()){
-          elementCheck = true;
-      }
+        elementCheck = true;
+    }
 
     //if this item is of the right type
     if(item->getElementType() == type || elementCheck){

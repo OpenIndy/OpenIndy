@@ -15,6 +15,7 @@ void ChangeRadius::init(){
 
     //set spplicable for
     this->applicableFor.append(eSphereFeature);
+    this->applicableFor.append(eCircleFeature);
 
     //set double parameter
     this->doubleParameters.insert("offset", 0.0);
@@ -28,6 +29,15 @@ void ChangeRadius::init(){
  */
 bool ChangeRadius::exec(Sphere &sphere){
     return this->setUpResult(sphere);
+}
+
+/*!
+ * \brief ChangeRadius::exec
+ * \param circle
+ * \return
+ */
+bool ChangeRadius::exec(Circle &circle){
+    return this->setUpResult(circle);
 }
 
 /*!
@@ -52,6 +62,34 @@ bool ChangeRadius::setUpResult(Sphere &sphere){
 
     //set result
     sphere.setSphere(position, radius);
+
+    return true;
+
+}
+
+/*!
+ * \brief ChangeRadius::setUpResult
+ * \param circle
+ * \return
+ */
+bool ChangeRadius::setUpResult(Circle &circle){
+
+    //get and check offset
+    double offset = 0.0;
+    if(this->scalarInputParams.doubleParameter.contains("offset")){
+        offset = this->scalarInputParams.doubleParameter.value("offset");
+    }else{
+        offset = this->doubleParameters.value("offset");
+    }
+
+    //add offset to radius of the circle
+    Position position = circle.getPosition();
+    Direction direction = circle.getDirection();
+    Radius radius = circle.getRadius();
+    radius.setRadius(radius.getRadius() + offset);
+
+    //set result
+    circle.setCircle(position, direction, radius);
 
     return true;
 

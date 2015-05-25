@@ -148,7 +148,7 @@ const double &Plane::getDistanceFromOrigin() const{
 void Plane::setPlane(const Position &xyz, const Direction &normal){
 
     //set the given parameters
-    this->xyz;
+    this->xyz.setVector(xyz.getVector());
     this->normal = normal;
 
     //calculate the other parameters

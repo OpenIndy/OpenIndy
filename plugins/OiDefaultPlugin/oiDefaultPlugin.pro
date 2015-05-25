@@ -160,7 +160,9 @@ SOURCES += \
     lib/fitting/util/rho.cpp \
     p_factory.cpp \
     main.cpp \
-    functions/fit/p_bestfitcircle2.cpp
+    functions/fit/p_bestfitcircle2.cpp \
+    functions/objectTransformation/p_rectifytopoint.cpp \
+    functions/objectTransformation/p_shift.cpp
 
 HEADERS += \
     functions/construct/p_intersectlineplane.h \
@@ -269,7 +271,9 @@ HEADERS += \
     ../../lib/openIndyLib/include/oimat.h \
     ../../lib/openIndyLib/include/oivec.h \
     ../../lib/openIndyLib/include/chooselalib.h \
-    functions/fit/p_bestfitcircle2.h
+    functions/fit/p_bestfitcircle2.h \
+    functions/objectTransformation/p_rectifytopoint.h \
+    functions/objectTransformation/p_shift.h
 
 OTHER_FILES += metaInfo.json
 

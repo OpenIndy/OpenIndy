@@ -40,6 +40,8 @@
 #include "p_changeradius.h"
 #include "p_register.h"
 #include "p_translatebyvalue.h"
+#include "p_rectifytopoint.h"
+#include "p_shift.h"
 
 #include "p_helmert7Param.h"
 #include "p_simpletemperaturecompensation.h"

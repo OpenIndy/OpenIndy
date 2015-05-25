@@ -50,6 +50,8 @@ QList<QPointer<Function> > OiTemplatePlugin::createFunctions(){
     resultSet.append(new Helmert6Param());
     resultSet.append(new BestFitSphereRauls());
     resultSet.append(new BestFitCircle2());
+    resultSet.append(new RectifyToPoint());
+    resultSet.append(new Shift());
 
     return resultSet;
 }
@@ -169,6 +171,10 @@ QPointer<Function> OiTemplatePlugin::createFunction(const QString &name){
         result = new Helmert6Param();
     }else if(name.compare("BestFitSphereRauls") == 0){
         result = new BestFitSphereRauls();
+    }else if(name.compare("RectifyToPoint") == 0){
+        result = new RectifyToPoint();
+    }else if(name.compare("Shift") == 0){
+        result = new Shift();
     }
     return result;
 }

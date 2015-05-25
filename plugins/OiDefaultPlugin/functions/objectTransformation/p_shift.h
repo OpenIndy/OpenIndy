@@ -1,18 +1,15 @@
-#ifndef P_CHANGERADIUS_H
-#define P_CHANGERADIUS_H
+#ifndef P_SHIFTPLANE_H
+#define P_SHIFTPLANE_H
 
-#include <QObject>
-#include <QPointer>
+#include <QList>
+#include <QString>
 
 #include "objecttransformation.h"
 #include "oivec.h"
 #include "oimat.h"
 
-/*!
- * \brief The ChangeRadius class
- */
-class ChangeRadius : public ObjectTransformation
-{  
+class Shift : public ObjectTransformation
+{
     Q_OBJECT
 
 public:
@@ -29,8 +26,7 @@ protected:
     //exec methods
     //############
 
-    bool exec(Sphere &sphere);
-    bool exec(Circle &circle);
+    bool exec(Plane &plane);
 
 private:
 
@@ -38,9 +34,8 @@ private:
     //helper methods
     //##############
 
-    bool setUpResult(Sphere &sphere);
-    bool setUpResult(Circle &circle);
+    bool setUpResult(Plane &plane);
 
 };
 
-#endif // P_CHANGERADIUS_H
+#endif // P_SHIFTPLANE_H

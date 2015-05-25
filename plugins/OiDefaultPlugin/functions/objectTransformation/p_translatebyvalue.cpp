@@ -104,6 +104,8 @@ bool TranslateByValue::setUpResult(Point &point){
     position.setVector(x_point);
     point.setPoint(position);
 
+    return true;
+
 }
 
 /*!
@@ -142,6 +144,8 @@ bool TranslateByValue::setUpResult(Line &line){
     Position position;
     position.setVector(x_line);
     line.setLine(position, line.getDirection());
+
+    return true;
 
 }
 
@@ -182,6 +186,8 @@ bool TranslateByValue::setUpResult(Plane &plane){
     position.setVector(x_plane);
     plane.setPlane(position, plane.getDirection());
 
+    return true;
+
 }
 
 /*!
@@ -220,5 +226,7 @@ bool TranslateByValue::setUpResult(Sphere &sphere){
     Position position;
     position.setVector(x_sphere);
     sphere.setSphere(position, sphere.getRadius());
+
+    return true;
 
 }
