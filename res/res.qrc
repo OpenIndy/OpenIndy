@@ -94,5 +94,8 @@
         <file>icons/toolbars/standard/open.png</file>
         <file>icons/toolbars/standard/save.png</file>
         <file>icons/toolbars/standard/sensor control pad.png</file>
+        <file>icons/toolbars/standard/Measurement Config.png</file>
+        <file>icons/toolbars/standard/Sensor Set.png</file>
+        <file>icons/toolbars/standard/Watch Window.png</file>
     </qresource>
 </RCC>

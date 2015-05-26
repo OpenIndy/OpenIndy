@@ -488,12 +488,6 @@ color: rgb(255, 255, 255);
    </widget>
   </widget>
   <widget class="QToolBar" name="toolBar_features">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -660,9 +654,6 @@ color: rgb(255, 255, 255);
    </property>
   </action>
   <action name="actionWatch_window">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
    <property name="icon">
     <iconset resource="../res/res.qrc">
      <normaloff>:/icons/icons/toolbars/standard/Watch Window.png</normaloff>:/icons/icons/toolbars/standard/Watch Window.png</iconset>
