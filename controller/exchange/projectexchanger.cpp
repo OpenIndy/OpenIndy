@@ -1312,21 +1312,21 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.station = station;
                             element.id = station->getId();
                             element.typeOfElement = eStationElement;
-                            myFunction->addInputElement(element, inputElement.attribute("executionIndex").toInt());
+                            myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myCoordinateSystems.contains(inputElement.attribute("ref").toInt())){
                             QPointer<CoordinateSystem> coordinateSystem = ProjectExchanger::myCoordinateSystems.value(inputElement.attribute("ref").toInt())->getCoordinateSystem();
                             InputElement element;
                             element.coordSystem = coordinateSystem;
                             element.id = coordinateSystem->getId();
                             element.typeOfElement = eCoordinateSystemElement;
-                            myFunction->addInputElement(element, inputElement.attribute("executionIndex").toInt());
+                            myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myTransformationParameters.contains(inputElement.attribute("ref").toInt())){
                             QPointer<TrafoParam> trafoParam = ProjectExchanger::myTransformationParameters.value(inputElement.attribute("ref").toInt())->getTrafoParam();
                             InputElement element;
                             element.trafoParam = trafoParam;
                             element.id = trafoParam->getId();
                             element.typeOfElement = eTrafoParamElement;
-                            myFunction->addInputElement(element, inputElement.attribute("executionIndex").toInt());
+                            myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myGeometries.contains(inputElement.attribute("ref").toInt())){
                             QPointer<FeatureWrapper> geometry = ProjectExchanger::myGeometries.value(inputElement.attribute("ref").toInt());
                             InputElement element;
@@ -1410,14 +1410,14 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                                 element.typeOfElement = eTorusElement;
                                 break;
                             }
-                            myFunction->addInputElement(element, inputElement.attribute("executionIndex").toInt());
+                            myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myObservations.contains(inputElement.attribute("ref").toInt())){
                             QPointer<Observation> observation = ProjectExchanger::myObservations.value(inputElement.attribute("ref").toInt());
                             InputElement element;
                             element.observation = observation;
                             element.id = observation->getId();
                             element.typeOfElement = eObservationElement;
-                            myFunction->addInputElement(element, inputElement.attribute("executionIndex").toInt());
+                            myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myReadings.contains(inputElement.attribute("ref").toInt())){
                             QPointer<Reading> reading = ProjectExchanger::myReadings.value(inputElement.attribute("ref").toInt());
                             InputElement element;
@@ -1448,7 +1448,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                                 break;
                             }
                             element.id = reading->getId();
-                            myFunction->addInputElement(element, inputElement.attribute("executionIndex").toInt());
+                            myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }
 
                     }
