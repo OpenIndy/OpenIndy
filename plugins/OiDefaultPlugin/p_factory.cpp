@@ -51,6 +51,7 @@ QList<QPointer<Function> > OiTemplatePlugin::createFunctions(){
     resultSet.append(new BestFitSphereRauls());
     resultSet.append(new BestFitCircle2());
     resultSet.append(new RectifyToPoint());
+    resultSet.append(new RectifyToVector());
     resultSet.append(new Shift());
 
     return resultSet;
@@ -175,6 +176,8 @@ QPointer<Function> OiTemplatePlugin::createFunction(const QString &name){
         result = new RectifyToPoint();
     }else if(name.compare("Shift") == 0){
         result = new Shift();
+    }else if(name.compare("RectifyToVector") == 0){
+        return new RectifyToVector();
     }
     return result;
 }

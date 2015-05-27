@@ -41,6 +41,7 @@
 #include "p_register.h"
 #include "p_translatebyvalue.h"
 #include "p_rectifytopoint.h"
+#include "p_rectifytovector.h"
 #include "p_shift.h"
 
 #include "p_helmert7Param.h"

@@ -162,7 +162,8 @@ SOURCES += \
     main.cpp \
     functions/fit/p_bestfitcircle2.cpp \
     functions/objectTransformation/p_rectifytopoint.cpp \
-    functions/objectTransformation/p_shift.cpp
+    functions/objectTransformation/p_shift.cpp \
+    functions/objectTransformation/p_rectifytovector.cpp
 
 HEADERS += \
     functions/construct/p_intersectlineplane.h \
@@ -273,7 +274,8 @@ HEADERS += \
     ../../lib/openIndyLib/include/chooselalib.h \
     functions/fit/p_bestfitcircle2.h \
     functions/objectTransformation/p_rectifytopoint.h \
-    functions/objectTransformation/p_shift.h
+    functions/objectTransformation/p_shift.h \
+    functions/objectTransformation/p_rectifytovector.h
 
 OTHER_FILES += metaInfo.json
 

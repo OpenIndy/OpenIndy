@@ -1,17 +1,18 @@
-#ifndef P_RECTIFYTOPOINT_H
-#define P_RECTIFYTOPOINT_H
+#ifndef P_RECTIFYTOVECTOR_H
+#define P_RECTIFYTOVECTOR_H
 
 #include <QObject>
 #include <QPointer>
+#include <QtMath>
 
 #include "objecttransformation.h"
 #include "oivec.h"
 #include "oimat.h"
 
 /*!
- * \brief The RectifyToPoint class
+ * \brief The RectifyToVector class
  */
-class RectifyToPoint : public ObjectTransformation
+class RectifyToVector : public ObjectTransformation
 {
     Q_OBJECT
 
@@ -43,4 +44,4 @@ private:
 
 };
 
-#endif // P_RECTIFYTOPOINT_H
+#endif // P_RECTIFYTOVECTOR_H
