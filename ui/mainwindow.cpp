@@ -553,12 +553,10 @@ void MainWindow::on_actionSet_function_triggered(){
 }
 
 /*!
- * \brief MainWindow::on_actionSet_instrument_triggered
+ * \brief MainWindow::on_actionSet_sensor_triggered
  */
-void MainWindow::on_actionSet_instrument_triggered(){
-
+void MainWindow::on_actionSet_sensor_triggered(){
     this->sensorConfigurationDialog.show();
-
 }
 
 /*!

@@ -154,7 +154,7 @@ private slots:
     void on_actionSet_function_triggered();
 
     //sensor dialogs
-    void on_actionSet_instrument_triggered();
+    void on_actionSet_sensor_triggered();
     void setSensorConfiguration(const QString &name);
     void showMoveSensorDialog();
 

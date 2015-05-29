@@ -615,7 +615,7 @@ bool Geometry::fromOpenIndyXML(QDomElement &xmlElem){
  */
 QString Geometry::getDisplayStDev(const UnitType &type, const int &digits) const{
     if(this->statistic.getIsValid()){
-        return QString::number(convertToDefault(this->statistic.getStdev(), type), 'f', digits);
+        return QString::number(convertFromDefault(this->statistic.getStdev(), type), 'f', digits);
     }
     return QString("");
 }
