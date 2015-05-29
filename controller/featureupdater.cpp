@@ -38,7 +38,7 @@ void FeatureUpdater::setCurrentJob(const QPointer<OiJob> &job){
  * \brief FeatureUpdater::recalcAll
  * Recalculates the hole set of features and trafo params of the current OpenIndy job
  */
-void FeatureUpdater::recalcAll(){
+/*void FeatureUpdater::recalcAll(){
 
     //check job
     if(this->currentJob.isNull()){
@@ -107,7 +107,7 @@ void FeatureUpdater::recalcAll(){
     //recalculate all features
     this->recalcFeatureSet();
 
-}
+}*/
 
 /*!
  * \brief FeatureUpdater::recalcFeatureSet
@@ -145,7 +145,8 @@ void FeatureUpdater::recalcFeatureSet(){
 
         //recalc the feature if it was not recalced yet and is no trafo param
         if(!feature->getFeature()->getIsUpdated() && feature->getFeatureTypeEnum() != eTrafoParamFeature){
-            this->recalcFeature(feature->getFeature());
+            //this->recalcFeature(feature->getFeature());
+            this->recursiveFeatureRecalculation(feature->getFeature());
         }
 
     }
@@ -180,8 +181,14 @@ void FeatureUpdater::recalcFeature(const QPointer<Feature> &feature){
     //transform all observations of the feature to the active coordinate system
     this->trafoController.transformObservations(feature, this->currentJob->getActiveCoordinateSystem());
 
-    //set feature to not updated
-    feature->setIsUpdated(false);
+    //set all features to not have been updated
+    foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
+        if(!feature.isNull() && !feature->getFeature().isNull()){
+            feature->getFeature()->blockSignals(true);
+            feature->getFeature()->setIsUpdated(false);
+            feature->getFeature()->blockSignals(false);
+        }
+    }
 
     //recalculate feature
     this->recursiveFeatureRecalculation(feature);
@@ -330,6 +337,38 @@ void FeatureUpdater::disconnectJob(){
     QObject::disconnect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureUpdater::switchCoordinateSystem);
 
 }
+
+/*!
+ * \brief FeatureUpdater::setFeatureIsUpdated
+ * Sets isUpdated for the given feature and all dependent features
+ * \param feature
+ * \param isUpdated
+ */
+/*void FeatureUpdater::setFeatureIsUpdated(const QPointer<Feature> &feature, bool isUpdated){
+
+    //check if isUpdated is already set correctly
+    if(feature->getIsUpdated() == isUpdated){
+        return;
+    }
+
+    //set isUpdated for feature
+    feature->setIsUpdated(isUpdated);
+
+    //set isUpdated for previously needed features
+    foreach(const QPointer<FeatureWrapper> &neededFeature, feature->getPreviouslyNeeded()){
+        if(!neededFeature.isNull() || !neededFeature->getFeature().isNull()){
+            this->setFeatureIsUpdated(neededFeature->getFeature(), isUpdated);
+        }
+    }
+
+    //set isUpdated for used for features
+    foreach(const QPointer<FeatureWrapper> &usedFor, feature->getUsedFor()){
+        if(!usedFor.isNull() || !usedFor->getFeature().isNull()){
+            this->setFeatureIsUpdated(usedFor->getFeature(), isUpdated);
+        }
+    }
+
+}*/
 
 /*!
  * \brief FeatureUpdater::recursiveFeatureRecalculation

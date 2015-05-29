@@ -149,6 +149,7 @@ private slots:
     void deleteFeatures(bool checked);
     void showFeatureProperties(bool checked);
     void on_tableView_trafoParams_clicked(const QModelIndex &index);
+    void on_tableView_trafoParams_customContextMenuRequested(const QPoint &pos);
 
     //function dialog
     void on_actionSet_function_triggered();

@@ -37,6 +37,10 @@ public:
 
 private:
 
+    //#############################
+    //helper methods and attributes
+    //#############################
+
     //helper methods for loading different types of elements & configs
     static bool loadObservations(const QDomDocument &project);
     static bool loadStations(const QDomDocument &project);

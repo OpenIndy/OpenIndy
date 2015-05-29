@@ -458,6 +458,8 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
 
         menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         this, SLOT(showFeatureProperties(bool)));
+        menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                        &this->control, SLOT(recalcActiveFeature()));
 
     }
 
@@ -526,6 +528,56 @@ void MainWindow::on_tableView_trafoParams_clicked(const QModelIndex &index){
 
     //set active feature
     sourceModel->setActiveFeature(model->mapToSource(index));
+
+}
+
+/*!
+ * \brief MainWindow::on_tableView_trafoParams_customContextMenuRequested
+ * Show context menu for trafo param features
+ * \param pos
+ */
+void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoint &pos){
+
+    //create menu
+    QMenu *menu = new QMenu();
+
+    //get trafo param table models
+    TrafoParamTableProxyModel *model = static_cast<TrafoParamTableProxyModel*>(this->ui->tableView_trafoParams->model());
+    if(model == NULL){
+        delete menu;
+        return;
+    }
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
+    if(sourceModel == NULL){
+        delete menu;
+        return;
+    }
+
+    //get the selected index (where the right click was done)
+    QModelIndex selectedIndex = this->ui->tableView_trafoParams->indexAt(pos);
+
+    //get and check the feature at that index
+    int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(selectedIndex));
+    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    if(job.isNull() || id < 0){
+        delete menu;
+        return;
+    }
+    QPointer<FeatureWrapper> selectedFeature = job->getFeatureById(id);
+    if(selectedFeature.isNull() || selectedFeature->getFeature().isNull()){
+        delete menu;
+        return;
+    }
+
+    //if the selected feature is the active feature
+    if(selectedFeature->getFeature()->getIsActiveFeature()){
+
+        menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                        &this->control, SLOT(recalcActiveFeature()));
+
+    }
+
+    menu->exec(this->ui->tableView_features->mapToGlobal(pos));
 
 }
 

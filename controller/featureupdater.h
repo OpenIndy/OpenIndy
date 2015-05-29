@@ -54,7 +54,6 @@ public slots:
     //#####################
 
     //recalculate features
-    void recalcAll();
     void recalcFeatureSet();
     void recalcFeature(const QPointer<Feature> &feature);
     void recalcTrafoParam(const QPointer<TrafoParam> &trafoParam);
@@ -71,6 +70,7 @@ private:
     void connectJob();
     void disconnectJob();
 
+    //void setFeatureIsUpdated(const QPointer<Feature> &feature, bool isUpdated = false);
     void recursiveFeatureRecalculation(const QPointer<Feature> &feature);
 
     //set up input elements for trafo param features

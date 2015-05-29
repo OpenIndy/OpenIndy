@@ -397,6 +397,9 @@ void Controller::loadProject(const QString &projectName, const QPointer<QIODevic
     //switch to active coordinate system
     this->featureUpdater.switchCoordinateSystem();
 
+    //connect active station
+    this->activeStationChangedCallback();
+
     Console::getInstance()->addLine("OpenIndy project successfully loaded.");
 
 }
