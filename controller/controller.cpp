@@ -329,6 +329,11 @@ void Controller::saveProject(const QString &fileName){
     QPointer<QIODevice> device = new QFile(fileName);
     this->job->setJobDevice(device);
 
+    //set config manager
+    if(!this->measurementConfigManager.isNull()){
+        ProjectExchanger::setMeasurementConfigManager(*this->measurementConfigManager.data());
+    }
+
     //get project xml
     QDomDocument project = ProjectExchanger::saveProject(this->job);
     if(project.isNull()){

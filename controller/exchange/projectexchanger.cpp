@@ -9,6 +9,7 @@ QMap<int, QPointer<FeatureWrapper> > ProjectExchanger::myGeometries;
 QList<int> ProjectExchanger::stationPoints;
 QMap<QString, MeasurementConfig> ProjectExchanger::myMConfigs;
 QMap<QString, SensorConfiguration> ProjectExchanger::mySConfigs;
+MeasurementConfigManager ProjectExchanger::mConfigManager;
 
 /*!
  * \brief ProjectExchanger::saveProject
@@ -139,14 +140,14 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     QDomElement sensorConfigs = project.createElement("sensorConfigs");
 
     //add measurement configs
-    /*QList<MeasurementConfig> mConfigs = OiConfigState::getAllMeasurementConfigs();
+    QList<MeasurementConfig> mConfigs = ProjectExchanger::mConfigManager.getSavedMeasurementConfigs();
     foreach(const MeasurementConfig &mConfig, mConfigs){
         QDomElement config = mConfig.toOpenIndyXML(project);
         if(!config.isNull()){
             measurementConfigs.appendChild(config);
         }
     }
-    configs.appendChild(measurementConfigs);*/
+    configs.appendChild(measurementConfigs);
 
     //add sensor configs
     /*QList<SensorConfiguration> sConfigs = OiConfigState::getAllSensorConfigs();
@@ -212,19 +213,15 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
 
     foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
         Station *s = station->getStation().data();
-        qDebug() << s->getFeatureName();
     }
     foreach(const QPointer<FeatureWrapper> &system, ProjectExchanger::myCoordinateSystems){
         CoordinateSystem *c = system->getCoordinateSystem().data();
-        qDebug() << c->getFeatureName();
     }
     foreach(const QPointer<FeatureWrapper> &trafoParam, ProjectExchanger::myTransformationParameters){
         TrafoParam *t = trafoParam->getTrafoParam().data();
-        qDebug() << t->getFeatureName();
     }
     foreach(const QPointer<FeatureWrapper> &geometry, ProjectExchanger::myGeometries){
         Geometry *g = geometry->getGeometry().data();
-        qDebug() << g->getFeatureName();
     }
 
     //add features to the job
@@ -298,6 +295,22 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
 
     return job;
 
+}
+
+/*!
+ * \brief ProjectExchanger::getMeasurementConfigManager
+ * \return
+ */
+MeasurementConfigManager &ProjectExchanger::getMeasurementConfigManager(){
+    return ProjectExchanger::mConfigManager;
+}
+
+/*!
+ * \brief ProjectExchanger::setMeasurementConfigManager
+ * \param mConfigManager
+ */
+void ProjectExchanger::setMeasurementConfigManager(const MeasurementConfigManager &mConfigManager){
+    ProjectExchanger::mConfigManager = mConfigManager;
 }
 
 /*!

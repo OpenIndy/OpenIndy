@@ -18,6 +18,7 @@
 #include "types.h"
 #include "util.h"
 #include "console.h"
+#include "measurementconfigmanager.h"
 
 /*!
  * \brief The OiProjectExchanger class
@@ -34,6 +35,13 @@ public:
 
     static QDomDocument saveProject(const QPointer<OiJob> &job);
     static const QPointer<OiJob> &loadProject(const QDomDocument &project);
+
+    //#####################################
+    //get or set measurement config manager
+    //#####################################
+
+    static MeasurementConfigManager &getMeasurementConfigManager();
+    static void setMeasurementConfigManager(const MeasurementConfigManager &mConfigManager);
 
 private:
 
@@ -73,6 +81,8 @@ private:
     static void clearHelperMaps(bool deleteOnClear);
 
     static QList<int> stationPoints;
+
+    static MeasurementConfigManager mConfigManager;
 
 };
 
