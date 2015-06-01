@@ -721,7 +721,22 @@ void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString
  * \brief MainWindow::on_actionWatch_window_triggered
  */
 void MainWindow::on_actionWatch_window_triggered(){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    this->watchWindowDialog.setCurrentJob(sourceModel->getCurrentJob());
     this->watchWindowDialog.show();
+
 }
 
 /*!

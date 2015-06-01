@@ -754,7 +754,7 @@ void SensorControl::setSensor(const QPointer<Sensor> &sensor){
         //stop listener thread if it is still running
         if(this->listenerThread.isRunning()){
             this->listenerThread.quit();
-            this->listenerThread.wait();
+            this->listenerThread.wait(5000);
         }
 
         this->usedSensors.append(this->sensor);
