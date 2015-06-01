@@ -211,7 +211,7 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
         }
     }
 
-    foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
+    /*foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
         Station *s = station->getStation().data();
     }
     foreach(const QPointer<FeatureWrapper> &system, ProjectExchanger::myCoordinateSystems){
@@ -222,7 +222,7 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
     }
     foreach(const QPointer<FeatureWrapper> &geometry, ProjectExchanger::myGeometries){
         Geometry *g = geometry->getGeometry().data();
-    }
+    }*/
 
     //add features to the job
     job->addFeaturesFromXml(ProjectExchanger::myStations.values());

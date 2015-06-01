@@ -3670,7 +3670,21 @@ void OiJob::addFeaturesFromXml(const QList<QPointer<FeatureWrapper> > &features)
             continue;
         }
 
+        //pass the job instance to the feature
         feature->getFeature()->job = this;
+        if(!feature->getStation().isNull()){
+
+            //pass job to the station system
+            if(!feature->getStation()->getCoordinateSystem().isNull()){
+                feature->getStation()->getCoordinateSystem()->job = this;
+            }
+
+            //pass the job to the station point
+            if(!feature->getStation()->getPosition().isNull()){
+                feature->getStation()->getPosition()->job = this;
+            }
+
+        }
 
         //connect the feature's signals to slots in OiJob
         this->connectFeature(feature);
