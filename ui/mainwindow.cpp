@@ -111,11 +111,7 @@ void MainWindow::activeFeatureChanged(){
     }
 
     //update magnify window
-    this->ui->label_magnifyName->setText(feature->getFeature()->getFeatureName());
-    if(!feature->getGeometry().isNull()){
-        this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nominal":"actual");
-    }
-    this->ui->label_magnifyActualNominal->setText("actual");
+    this->updateMagnifyWindow(feature);
 
 }
 
@@ -1237,5 +1233,46 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
         this->customActionMapper->setMapping(customAction.data(), action);
     }
     QObject::connect(this->customActionMapper.data(), SIGNAL(mapped(const QString&)), &this->control, SLOT(startCustomAction(const QString&)), Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief MainWindow::updateMagnifyWindow
+ * \param feature
+ */
+void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
+
+    //update contents
+    this->ui->label_magnifyName->setText(feature->getFeature()->getFeatureName());
+    if(!feature->getGeometry().isNull()){
+        this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nominal":"actual");
+    }
+    this->ui->label_magnifyActualNominal->setText("actual");
+
+    //resize labels to maximum
+    QFont fontActualNominal = this->ui->label_magnifyActualNominal->font();
+    double h = this->ui->label_magnifyActualNominal->height();
+    double w = this->ui->label_magnifyActualNominal->width();
+    QFontMetrics fmActualNominal(fontActualNominal);
+    double scaleW = w/fmActualNominal.width(this->ui->label_magnifyActualNominal->text());
+    double scaleH = h/fmActualNominal.height();
+    if(scaleH > scaleW){
+        fontActualNominal.setPointSizeF(fontActualNominal.pointSizeF()*scaleW);
+    }else{
+        fontActualNominal.setPointSizeF(fontActualNominal.pointSizeF()*scaleH);
+    }
+    this->ui->label_magnifyActualNominal->setFont(fontActualNominal);
+    QFont fontName = this->ui->label_magnifyName->font();
+    h = this->ui->label_magnifyName->height();
+    w = this->ui->label_magnifyName->width();
+    QFontMetrics fmName(fontName);
+    scaleW = w/fmName.width(this->ui->label_magnifyName->text());
+    scaleH = h/fmName.height();
+    if(scaleH > scaleW){
+        fontName.setPointSizeF(fontName.pointSizeF()*scaleW);
+    }else{
+        fontName.setPointSizeF(fontName.pointSizeF()*scaleH);
+    }
+    this->ui->label_magnifyName->setFont(fontName);
 
 }

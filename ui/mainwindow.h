@@ -225,6 +225,8 @@ private:
 
     void activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
 
+    void updateMagnifyWindow(const QPointer<FeatureWrapper> &feature);
+
     //############################
     //OpenIndy dialogs and widgets
     //############################
