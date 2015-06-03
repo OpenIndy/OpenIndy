@@ -416,6 +416,16 @@ void MainWindow::on_tableView_features_clicked(const QModelIndex &index){
 }
 
 /*!
+ * \brief MainWindow::tableViewFeaturesSelectionChangedByKeyboard
+ * Triggered whenever the user selects a feature by using keyboard
+ * \param selected
+ * \param deselected
+ */
+void MainWindow::tableViewFeaturesSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected){
+    this->on_tableView_features_clicked(selected);
+}
+
+/*!
  * \brief MainWindow::on_tableView_features_customContextMenuRequested
  * \param pos
  */
@@ -529,6 +539,15 @@ void MainWindow::on_tableView_trafoParams_clicked(const QModelIndex &index){
     //set active feature
     sourceModel->setActiveFeature(model->mapToSource(index));
 
+}
+
+/*!
+ * \brief MainWindow::tableViewTrafoParamsSelectionChangedByKeyboard
+ * \param selected
+ * \param deselected
+ */
+void MainWindow::tableViewTrafoParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected){
+    this->on_tableView_trafoParams_clicked(selected);
 }
 
 /*!
@@ -986,6 +1005,10 @@ void MainWindow::initFeatureTableViews(){
     //enable context menu
     this->ui->tableView_features->setContextMenuPolicy(Qt::CustomContextMenu);
     this->ui->tableView_trafoParams->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    //change active feature by using up and down keys
+    QObject::connect(this->ui->tableView_features->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewFeaturesSelectionChangedByKeyboard, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_trafoParams->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewTrafoParamsSelectionChangedByKeyboard, Qt::AutoConnection);
 
 }
 
