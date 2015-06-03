@@ -683,8 +683,14 @@ void ModelManager::featureNameChanged(const int &featureId, const QString &oldNa
         return;
     }
 
+    //update coordinate systems model if the name of a coordinate system has been changed
+    QPointer<FeatureWrapper> feature = ModelManager::currentJob->getFeatureById(featureId);
+    if(!feature.isNull() && (!feature->getCoordinateSystem().isNull() || !feature->getStation().isNull())){
+        ModelManager::updateCoordinateSystemsModel();
+    }
+
     //resort table model
-    ModelManager::featureTableProxyModel.sort(0);
+    //ModelManager::featureTableProxyModel.sort(0);
 
 }
 

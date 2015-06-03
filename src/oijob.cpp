@@ -2554,9 +2554,15 @@ void OiJob::setFeatureGroup(const int &featureId, const QString &oldGroup){
     //update feature container
     this->featureContainer.featureGroupChanged(featureId, oldGroup);
 
+    //check if there is another feature with the group oldGroup
+    bool wasLastGroup = false;
+    if(!this->featureContainer.getFeatureGroupList().contains(oldGroup)){
+        wasLastGroup = true;
+    }
+
     emit this->featureAttributesChanged();
     emit this->featureGroupChanged(featureId, oldGroup);
-    if(isNewGroup){
+    if(isNewGroup || wasLastGroup){
         emit this->availableGroupsChanged();
     }
 

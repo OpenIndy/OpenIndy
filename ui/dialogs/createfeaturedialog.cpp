@@ -225,6 +225,9 @@ void CreateFeatureDialog::initModels(){
     this->functionListModel = ModelManager::getAvailableFunctionsProxyModel();
     this->ui->comboBox_function->setModel(this->functionListModel);
 
+    //set model for available group names
+    this->ui->comboBox_group->setModel(&ModelManager::getGroupNamesModel());
+
 }
 
 /*!
