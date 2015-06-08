@@ -21,6 +21,7 @@ class Station : public Feature
 {
     friend class OiJob;
     friend class ProjectExchanger;
+    friend class Observation;
     Q_OBJECT
 
 public:
@@ -162,6 +163,7 @@ private slots:
     void connectSensorControl();
 
     void addReadings(const int &geomId, const QList<QPointer<Reading> > &readings);
+    void removeReading(const QPointer<Reading> &reading);
 
 protected:
 

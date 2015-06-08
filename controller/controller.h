@@ -68,8 +68,10 @@ public slots:
     //import or export features
     void importNominals(const ExchangeParams &params);
 
-    //import observations
+    //add or remove observations
     void importObservations(const QString &filename);
+    void removeObservations(const int &featureId);
+    void removeAllObservations();
 
     //set display configs
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);

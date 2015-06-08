@@ -2310,6 +2310,52 @@ void OiJob::addMeasurementResults(const int &geomId, const QList<QPointer<Readin
 }
 
 /*!
+ * \brief OiJob::removeObservations
+ * \param featureId
+ */
+void OiJob::removeObservations(const int &featureId){
+
+    //get and check feature with the id featureId
+    QPointer<FeatureWrapper> feature = this->featureContainer.getFeatureById(featureId);
+    if(feature.isNull() || feature->getGeometry().isNull()){
+        return;
+    }
+
+    //run through all observations of the feature
+    QList<QPointer<Observation> > observations = feature->getGeometry()->getObservations();
+    foreach(const QPointer<Observation> &obs, observations){
+        delete obs;
+    }
+
+    //recalculate the feature
+    emit this->recalcFeature(feature->getFeature());
+
+}
+
+/*!
+ * \brief OiJob::removeAllObservations
+ */
+void OiJob::removeAllObservations(){
+
+    //get a list of all geometries
+    QList<QPointer<FeatureWrapper> > geometries = this->featureContainer.getGeometriesList();
+
+    //remove all observations
+    foreach(const QPointer<FeatureWrapper> &geom, geometries){
+
+        //check geometry
+        if(geom.isNull() || geom->getGeometry().isNull()){
+            continue;
+        }
+
+        //remove all observations of the current geometry
+        this->removeObservations(geom->getGeometry()->getId());
+
+    }
+
+}
+
+/*!
  * \brief OiJob::setActiveFeature
  * \param featureId
  */

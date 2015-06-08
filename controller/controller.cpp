@@ -265,6 +265,37 @@ void Controller::importObservations(const QString &filename){
 }
 
 /*!
+ * \brief Controller::removeObservations
+ * \param featureId
+ */
+void Controller::removeObservations(const int &featureId){
+
+    //check job
+    if(this->job.isNull()){
+        Console::getInstance()->addLine("No job available");
+        return;
+    }
+
+    this->job->removeObservations(featureId);
+
+}
+
+/*!
+ * \brief Controller::removeAllObservations
+ */
+void Controller::removeAllObservations(){
+
+    //check job
+    if(this->job.isNull()){
+        Console::getInstance()->addLine("No job available");
+        return;
+    }
+
+    this->job->removeAllObservations();
+
+}
+
+/*!
  * \brief Controller::setFeatureTableColumnConfig
  * \param config
  */

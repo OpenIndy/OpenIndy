@@ -577,6 +577,22 @@ void Station::addReadings(const int &geomId, const QList<QPointer<Reading> > &re
 }
 
 /*!
+ * \brief Station::removeReading
+ * \param reading
+ */
+void Station::removeReading(const QPointer<Reading> &reading){
+
+    this->cartesianReadings.removeOne(reading);
+    this->directionReadings.removeOne(reading);
+    this->distanceReadings.removeOne(reading);
+    this->polarReadings.removeOne(reading);
+    this->levelReadings.removeOne(reading);
+    this->temperatureRadings.removeOne(reading);
+    this->undefinedReadings.removeOne(reading);
+
+}
+
+/*!
  * \brief Station::setJob
  * \param job
  */

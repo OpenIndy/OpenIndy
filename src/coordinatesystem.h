@@ -25,6 +25,7 @@ class CoordinateSystem : public Feature
     friend class OiJob;
     friend class TrafoController;
     friend class ProjectExchanger;
+    friend class Observation;
     Q_OBJECT
 
 public:
@@ -128,6 +129,14 @@ protected:
     //######################################
 
     void setUpFeatureId();
+
+private slots:
+
+    //##############
+    //helper methods
+    //##############
+
+    void removeObservation(const QPointer<Observation> &obs);
 
 private:
 

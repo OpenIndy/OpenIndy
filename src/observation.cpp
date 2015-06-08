@@ -1,6 +1,8 @@
 #include "observation.h"
 
 #include "station.h"
+#include "coordinatesystem.h"
+#include "function.h"
 
 /*!
  * \brief Observation::Observation
@@ -60,6 +62,55 @@ Observation &Observation::operator=(const Observation &copy){
  * \brief Observation::~Observation
  */
 Observation::~Observation(){
+
+    //check the corresponding reading
+    if(this->getReading().isNull()){
+        return;
+    }
+
+    QList<QPointer<Geometry> > targetGeometries;
+
+    //remove observation and reading from its target geometries
+    foreach(const QPointer<Geometry> &geom, this->targetGeometriesList){
+
+        //check target geometry
+        if(geom.isNull()){
+            continue;
+        }
+        targetGeometries.append(geom);
+
+        //remove observation and reading from functions of the targte geometry
+        foreach(const QPointer<Function> &function, geom->getFunctions()){
+
+            //check function and remove elements
+            if(!function.isNull()){
+                function->blockSignals(true);
+                function->removeInputElement(this->getId());
+                function->removeInputElement(this->getReading()->getId());
+                function->blockSignals(false);
+            }
+
+        }
+
+    }
+    foreach(const QPointer<Geometry> &geom, targetGeometries){
+        geom->blockSignals(true);
+        this->removeTargetGeometry(geom->getId());
+        geom->blockSignals(false);
+    }
+
+    //remove observation and reading from the station and station system
+    if(!this->getStation().isNull() && !this->getStation()->getCoordinateSystem().isNull()){
+        this->getStation()->blockSignals(true);
+        this->getStation()->getCoordinateSystem()->blockSignals(true);
+        this->getStation()->removeReading(this->getReading());
+        this->getStation()->getCoordinateSystem()->removeObservation(this);
+        this->getStation()->blockSignals(false);
+        this->getStation()->getCoordinateSystem()->blockSignals(false);
+    }
+
+    //delete the corresponding reading
+    delete this->getReading();
 
 }
 

@@ -58,6 +58,10 @@ signals:
     void addFeatures(const FeatureAttributes &attributes);
     void removeFeature(const int &featureId);
 
+    //remove observations
+    void removeObservations(const int &featureId);
+    void removeAllObservations();
+
     //set sensor configuration for active sensor
     void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
 
@@ -193,6 +197,10 @@ private slots:
 
     //resize table views
     void resizeTableView();
+
+    //remove observations
+    void on_actionRemoveObservations_triggered();
+    void removeObservationOfActiveFeature();
 
 private:
     Ui::MainWindow *ui;

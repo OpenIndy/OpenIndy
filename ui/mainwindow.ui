@@ -334,6 +334,7 @@ background-position: center center;</string>
    <addaction name="actionShow_help"/>
    <addaction name="actionSensor_real_time_data"/>
    <addaction name="actionConsole"/>
+   <addaction name="actionRemoveObservations"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolbarCreateFeature">
@@ -1023,6 +1024,15 @@ color: rgb(255, 255, 255);
    </property>
    <property name="toolTip">
     <string>create ellipse</string>
+   </property>
+  </action>
+  <action name="actionRemoveObservations">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/cancel.png</normaloff>:/Images/icons/cancel.png</iconset>
+   </property>
+   <property name="text">
+    <string>removeObservations</string>
    </property>
   </action>
  </widget>

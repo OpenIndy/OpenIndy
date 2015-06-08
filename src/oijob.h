@@ -116,8 +116,16 @@ public:
     //remove input elements from a feature's function
     void removeInputElement(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const int &elementId);
 
+    //##########################
+    //add or remove observations
+    //##########################
+
     //add new observations
     void addMeasurementResults(const int &geomId, const QList<QPointer<Reading> > &readings);
+
+    //remove existing observations
+    void removeObservations(const int &featureId);
+    void removeAllObservations();
 
 signals:
 

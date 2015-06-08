@@ -808,3 +808,19 @@ void CoordinateSystem::setUpFeatureId(){
     Feature::setUpFeatureId();
 
 }
+
+/*!
+ * \brief CoordinateSystem::removeObservation
+ * \param obs
+ */
+void CoordinateSystem::removeObservation(const QPointer<Observation> &obs){
+
+    //check observation
+    if(obs.isNull()){
+        return;
+    }
+
+    this->observationsList.removeOne(obs);
+    this->observationsMap.remove(obs->getId());
+
+}

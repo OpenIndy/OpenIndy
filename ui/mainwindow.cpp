@@ -467,6 +467,14 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         &this->control, SLOT(recalcActiveFeature()));
 
+        //if the active feature is a geometry
+        if(!selectedFeature->getGeometry().isNull()){
+
+            menu->addAction(QIcon(""), QString("remove observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                                 this, SLOT(removeObservationOfActiveFeature()));
+
+        }
+
     }
 
     menu->exec(this->ui->tableView_features->mapToGlobal(pos));
@@ -892,6 +900,38 @@ void MainWindow::resizeTableView(){
 }
 
 /*!
+ * \brief MainWindow::on_actionRemoveObservations_triggered
+ */
+void MainWindow::on_actionRemoveObservations_triggered(){
+    emit this->removeAllObservations();
+}
+
+/*!
+ * \brief MainWindow::removeObservationOfActiveFeature
+ */
+void MainWindow::removeObservationOfActiveFeature(){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check the active feature
+    QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+    if(!feature.isNull() && !feature->getFeature().isNull()){
+        emit this->removeObservations(feature->getFeature()->getId());
+    }
+
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -906,7 +946,8 @@ void MainWindow::connectController(){
     QObject::connect(this, static_cast<void (MainWindow::*)(const QString&)>(&MainWindow::saveProject),
                      &this->control, static_cast<void (Controller::*)(const QString&)>(&Controller::saveProject), Qt::AutoConnection);
     QObject::connect(this, &MainWindow::loadProject, &this->control, &Controller::loadProject, Qt::AutoConnection);
-    //QObject::connect(this, &MainWindow::setActiveFeature, &this->control, &Controller::setActiveFeature, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::removeObservations, &this->control, &Controller::removeObservations, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::removeAllObservations, &this->control, &Controller::removeAllObservations, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
