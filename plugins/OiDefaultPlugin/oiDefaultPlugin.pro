@@ -163,7 +163,8 @@ SOURCES += \
     functions/fit/p_bestfitcircle2.cpp \
     functions/objectTransformation/p_rectifytopoint.cpp \
     functions/objectTransformation/p_shift.cpp \
-    functions/objectTransformation/p_rectifytovector.cpp
+    functions/objectTransformation/p_rectifytovector.cpp \
+    functions/fit/p_bestfitcylinder.cpp
 
 HEADERS += \
     functions/construct/p_intersectlineplane.h \
@@ -275,7 +276,8 @@ HEADERS += \
     functions/fit/p_bestfitcircle2.h \
     functions/objectTransformation/p_rectifytopoint.h \
     functions/objectTransformation/p_shift.h \
-    functions/objectTransformation/p_rectifytovector.h
+    functions/objectTransformation/p_rectifytovector.h \
+    functions/fit/p_bestfitcylinder.h
 
 OTHER_FILES += metaInfo.json
 
