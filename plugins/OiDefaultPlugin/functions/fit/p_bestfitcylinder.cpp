@@ -57,7 +57,7 @@ bool BestFitCylinder::setUpResult(Cylinder &cylinder){
         }
         this->setUseState(0, element.id, false);
     }
-    if(inputObservations.size() < 3){
+    if(inputObservations.size() < 5){
         emit this->sendMessage(QString("Not enough valid observations to fit the cylinder %1").arg(cylinder.getFeatureName()));
         return false;
     }

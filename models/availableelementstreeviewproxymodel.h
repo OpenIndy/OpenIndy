@@ -79,7 +79,7 @@ private:
 
     void resetSelectedFunctionPosition();
 
-    void addInputElement(const QPointer<FeatureTreeItem> &item, const ElementTypes &type);
+    void addInputElement(QList<FeatureTreeItem *> &inputElements, const QPointer<FeatureTreeItem> &item, const ElementTypes &type);
 
     //###########
     //current job
