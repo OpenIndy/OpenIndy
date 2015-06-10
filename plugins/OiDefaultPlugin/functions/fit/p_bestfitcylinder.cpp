@@ -69,12 +69,26 @@ bool BestFitCylinder::setUpResult(Cylinder &cylinder){
     }
 
     //fit the cylinder using the previously generated approximations
-    if(!this->approximateCylinder(cylinder, inputObservations)){
+    if(!this->fitCylinder(cylinder, inputObservations)){
         emit this->sendMessage(QString("Error while fitting cylinder %1").arg(cylinder.getFeatureName()));
         return false;
     }
 
     //check that the direction vector is defined by the first two observations
+    OiVec pos1 = inputObservations.at(0)->getXYZ();
+    pos1.removeLast();
+    OiVec pos2 = inputObservations.at(1)->getXYZ();
+    pos2.removeLast();
+    OiVec direction = pos2 - pos1;
+    direction.normalize();
+    double angle = 0.0; //angle between r and direction
+    OiVec::dot(angle, cylinder.getDirection().getVector(), direction);
+    angle = qAbs(qAcos(angle));
+    if(angle > (PI/2.0)){
+        Direction cylinderDirection = cylinder.getDirection();
+        cylinderDirection.setVector(cylinder.getDirection().getVector() * -1.0);
+        cylinder.setCylinder(cylinder.getPosition(), cylinderDirection, cylinder.getRadius());
+    }
 
     return true;
 
@@ -517,7 +531,7 @@ bool BestFitCylinder::fitCylinder(Cylinder &cylinder, const QList<QPointer<Obser
         numIterations++;
         OiVec::dot(stopXX, x, x);
 
-    }while( (stopXX > 0.0000001) && numIterations < 100 );
+    }while( (stopXX > 0.000000001) && numIterations < 100 );
 
     if(numIterations >= 100){
         return false;
@@ -546,8 +560,8 @@ bool BestFitCylinder::fitCylinder(Cylinder &cylinder, const QList<QPointer<Obser
 
     //calculate point on cylinder axis
     OiVec xyz(3);
-    xyz.setAt(0, this->approxXm);
-    xyz.setAt(1, this->approxYm);
+    xyz.setAt(0, _X0);
+    xyz.setAt(1, _Y0);
     xyz.setAt(2, 0.0);
     OiMat::solve(xyz, Rall, -1.0 * xyz);
 
