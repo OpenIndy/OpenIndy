@@ -41,6 +41,15 @@ bool ChangeRadius::exec(Circle &circle){
 }
 
 /*!
+ * \brief ChangeRadius::exec
+ * \param cylinder
+ * \return
+ */
+bool ChangeRadius::exec(Cylinder &cylinder){
+    return this->setUpResult(cylinder);
+}
+
+/*!
  * \brief ChangeRadius::setUpResult
  * \param sphere
  * \return
@@ -90,6 +99,34 @@ bool ChangeRadius::setUpResult(Circle &circle){
 
     //set result
     circle.setCircle(position, direction, radius);
+
+    return true;
+
+}
+
+/*!
+ * \brief ChangeRadius::setUpResult
+ * \param cylinder
+ * \return
+ */
+bool ChangeRadius::setUpResult(Cylinder &cylinder){
+
+    //get and check offset
+    double offset = 0.0;
+    if(this->scalarInputParams.doubleParameter.contains("offset")){
+        offset = this->scalarInputParams.doubleParameter.value("offset");
+    }else{
+        offset = this->doubleParameters.value("offset");
+    }
+
+    //add offset to radius of the cylinder
+    Position position = cylinder.getPosition();
+    Direction direction = cylinder.getDirection();
+    Radius radius = cylinder.getRadius();
+    radius.setRadius(radius.getRadius() + offset);
+
+    //set result
+    cylinder.setCylinder(position, direction, radius);
 
     return true;
 

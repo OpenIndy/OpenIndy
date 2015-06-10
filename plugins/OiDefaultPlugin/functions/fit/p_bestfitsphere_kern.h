@@ -1,5 +1,5 @@
-#ifndef P_BESTFITSPHERERAULS_H
-#define P_BESTFITSPHERERAULS_H
+#ifndef P_BESTFITSPHERE_KERN_H
+#define P_BESTFITSPHERE_KERN_H
 
 #include <QObject>
 #include <QPointer>
@@ -8,11 +8,12 @@
 #include "fitfunction.h"
 #include "oivec.h"
 #include "oimat.h"
+#include "cfitting_sphere.h"
 
 /*!
- * \brief The BestFitSphereRauls class
+ * \brief The BestFitSphere_kern class
  */
-class BestFitSphereRauls : public FitFunction
+class BestFitSphere_kern : public FitFunction
 {
     Q_OBJECT
 
@@ -38,9 +39,8 @@ private:
     //helper methods
     //##############
 
-    bool approximate(Sphere &sphere, const QList<QPointer<Observation> > &inputObservations);
-    bool fit(Sphere &sphere, const QList<QPointer<Observation> > &inputObservations);
+    bool setUpResult(Sphere &sphere);
 
 };
 
-#endif // P_BESTFITSPHERERAULS_H
+#endif // P_BESTFITSPHERE_KERN_H

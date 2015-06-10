@@ -1,12 +1,12 @@
-#include "p_bestfitcircle2.h"
+#include "p_bestfitcircleinplane.h"
 
 /*!
- * \brief BestFitCircle2::init
+ * \brief BestFitCircleInPlane::init
  */
-void BestFitCircle2::init(){
+void BestFitCircleInPlane::init(){
 
     //set plugin meta data
-    this->metaData.name = "BestFitCircle2";
+    this->metaData.name = "BestFitCircleInPlane";
     this->metaData.pluginName = "OpenIndy Default Plugin";
     this->metaData.author = "bra";
     this->metaData.description = QString("%1 %2 %3")
@@ -29,20 +29,20 @@ void BestFitCircle2::init(){
 }
 
 /*!
- * \brief BestFitCircle2::exec
+ * \brief BestFitCircleInPlane::exec
  * \param circle
  * \return
  */
-bool BestFitCircle2::exec(Circle &circle){
+bool BestFitCircleInPlane::exec(Circle &circle){
     return this->setUpResult(circle);
 }
 
 /*!
- * \brief BestFitCircle2::setUpResult
+ * \brief BestFitCircleInPlane::setUpResult
  * \param circle
  * \return
  */
-bool BestFitCircle2::setUpResult(Circle &circle){
+bool BestFitCircleInPlane::setUpResult(Circle &circle){
 
     //get and check input observations
     if(!this->inputElements.contains(0) || this->inputElements[0].size() < 3){

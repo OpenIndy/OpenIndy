@@ -32,8 +32,8 @@ QList<QPointer<Function> > OiTemplatePlugin::createFunctions(){
     resultSet.append(new BestFitPoint());
     resultSet.append(new BestFitLine());
     resultSet.append(new BestFitPlane());
-    resultSet.append(new BestFitPlane2());
-    resultSet.append(new BestFitSphere());
+    resultSet.append(new BestFitPlane_kern());
+    resultSet.append(new BestFitSphere_kern());
     resultSet.append(new PointFromPoints());
     resultSet.append(new LineFromPoints());
     resultSet.append(new PlaneFromPoints());
@@ -48,8 +48,8 @@ QList<QPointer<Function> > OiTemplatePlugin::createFunctions(){
     resultSet.append(new SimpleTemperatureCompensation());
     resultSet.append(new ExtendedTemperatureCompensation());
     resultSet.append(new Helmert6Param());
-    resultSet.append(new BestFitSphereRauls());
-    resultSet.append(new BestFitCircle2());
+    resultSet.append(new BestFitSphere());
+    resultSet.append(new BestFitCircleInPlane());
     resultSet.append(new RectifyToPoint());
     resultSet.append(new RectifyToVector());
     resultSet.append(new Shift());
@@ -137,10 +137,10 @@ QPointer<Function> OiTemplatePlugin::createFunction(const QString &name){
         result = new BestFitLine();
     }else if(name.compare("BestFitPlane") == 0){
         result = new BestFitPlane();
-    }else if(name.compare("BestFitPlane2") == 0){
-        result = new BestFitPlane2();
-    }else if(name.compare("BestFitSphere") == 0){
-        result = new BestFitSphere();
+    }else if(name.compare("BestFitPlane_kern") == 0){
+        result = new BestFitPlane_kern();
+    }else if(name.compare("BestFitSphere_kern") == 0){
+        result = new BestFitSphere_kern();
     }else if(name.compare("PointFromPoints") == 0){
         result = new PointFromPoints();
     }else if(name.compare("LineFromPoints") == 0){
@@ -163,16 +163,16 @@ QPointer<Function> OiTemplatePlugin::createFunction(const QString &name){
         result = new Helmert7Param();
     }else if(name.compare("BestFitCircle") == 0){
         result = new BestFitCircle();
-    }else if(name.compare("BestFitCircle2") == 0){
-        result = new BestFitCircle2();
+    }else if(name.compare("BestFitCircleInPlane") == 0){
+        result = new BestFitCircleInPlane();
     }else if(name.compare("StandardTempComp") == 0){
         result = new SimpleTemperatureCompensation();
     }else if(name.compare("9ParameterHelmertTransformation") == 0){
         result = new ExtendedTemperatureCompensation();
     }else if(name.compare("6ParameterHelmertTransformation") == 0){
         result = new Helmert6Param();
-    }else if(name.compare("BestFitSphereRauls") == 0){
-        result = new BestFitSphereRauls();
+    }else if(name.compare("BestFitSphere") == 0){
+        result = new BestFitSphere();
     }else if(name.compare("RectifyToPoint") == 0){
         result = new RectifyToPoint();
     }else if(name.compare("Shift") == 0){

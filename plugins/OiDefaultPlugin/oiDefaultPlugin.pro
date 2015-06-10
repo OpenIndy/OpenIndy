@@ -79,10 +79,7 @@ SOURCES += \
     functions/fit/p_bestfitcircle.cpp \
     functions/fit/p_bestfitline.cpp \
     functions/fit/p_bestfitplane.cpp \
-    functions/fit/p_bestfitplane2.cpp \
     functions/fit/p_bestfitpoint.cpp \
-    functions/fit/p_bestfitsphere.cpp \
-    functions/fit/p_bestfitsphererauls.cpp \
     functions/objectTransformation/p_changeradius.cpp \
     functions/systemTransformation/materials.cpp \
     functions/systemTransformation/p_extendedtemperaturecompensation.cpp \
@@ -160,11 +157,14 @@ SOURCES += \
     lib/fitting/util/rho.cpp \
     p_factory.cpp \
     main.cpp \
-    functions/fit/p_bestfitcircle2.cpp \
     functions/objectTransformation/p_rectifytopoint.cpp \
     functions/objectTransformation/p_shift.cpp \
     functions/objectTransformation/p_rectifytovector.cpp \
-    functions/fit/p_bestfitcylinder.cpp
+    functions/fit/p_bestfitcylinder.cpp \
+    functions/fit/p_bestfitcircleinplane.cpp \
+    functions/fit/p_bestfitplane_kern.cpp \
+    functions/fit/p_bestfitsphere_kern.cpp \
+    functions/fit/p_bestfitsphere.cpp
 
 HEADERS += \
     functions/construct/p_intersectlineplane.h \
@@ -177,10 +177,7 @@ HEADERS += \
     functions/fit/p_bestfitcircle.h \
     functions/fit/p_bestfitline.h \
     functions/fit/p_bestfitplane.h \
-    functions/fit/p_bestfitplane2.h \
     functions/fit/p_bestfitpoint.h \
-    functions/fit/p_bestfitsphere.h \
-    functions/fit/p_bestfitsphererauls.h \
     functions/objectTransformation/p_changeradius.h \
     functions/systemTransformation/materials.h \
     functions/systemTransformation/p_extendedtemperaturecompensation.h \
@@ -273,11 +270,14 @@ HEADERS += \
     ../../lib/openIndyLib/include/oimat.h \
     ../../lib/openIndyLib/include/oivec.h \
     ../../lib/openIndyLib/include/chooselalib.h \
-    functions/fit/p_bestfitcircle2.h \
     functions/objectTransformation/p_rectifytopoint.h \
     functions/objectTransformation/p_shift.h \
     functions/objectTransformation/p_rectifytovector.h \
-    functions/fit/p_bestfitcylinder.h
+    functions/fit/p_bestfitcylinder.h \
+    functions/fit/p_bestfitcircleinplane.h \
+    functions/fit/p_bestfitplane_kern.h \
+    functions/fit/p_bestfitsphere_kern.h \
+    functions/fit/p_bestfitsphere.h
 
 OTHER_FILES += metaInfo.json
 

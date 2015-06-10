@@ -1,5 +1,5 @@
-#ifndef P_BESTFTICIRCLE2_H
-#define P_BESTFTICIRCLE2_H
+#ifndef P_BESTFITPLANE_KERN_H
+#define P_BESTFITPLANE_KERN_H
 
 #include <QObject>
 #include <QPointer>
@@ -8,14 +8,13 @@
 #include "fitfunction.h"
 #include "oivec.h"
 #include "oimat.h"
-
-using namespace std;
+#include "cfitting_plane.h"
 
 /*!
- * \brief The BestFitLine class
+ * \brief The BestFitPlane_kern class
  */
-class BestFitCircle2 : public FitFunction
-{ 
+class BestFitPlane_kern : public FitFunction
+{
     Q_OBJECT
 
 public:
@@ -32,16 +31,8 @@ protected:
     //exec methods
     //############
 
-    bool exec(Circle &circle);
-
-private:
-
-    //##############
-    //helper methods
-    //##############
-
-    bool setUpResult(Circle &circle);
+    bool exec(Plane &plane);
 
 };
 
-#endif // P_BESTFTICIRCLE2_H
+#endif // P_BESTFITPLANE_KERN_H

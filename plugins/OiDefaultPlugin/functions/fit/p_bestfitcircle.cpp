@@ -9,7 +9,7 @@ void BestFitCircle::init(){
     this->metaData.name = "BestFitCircle";
     this->metaData.pluginName = "OpenIndy Default Plugin";
     this->metaData.author = "Michael Loesler - derletztekick.com";
-    this->metaData.description = QString("%1 %2")
+    this->metaData.description = QString("%1 %2 %3")
             .arg("This function estimates a spatial circle usnig a general least squares algorithm.")
             .arg("Insert at least three non-collinear observed points, to get the best fit circle.")
             .arg("The algorithm was taken from the OpenSource FormFittingToolbox (c) M.Loesler (GNU-GPL).");

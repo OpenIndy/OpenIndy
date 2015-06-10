@@ -1,12 +1,12 @@
-#include "p_bestfitplane2.h"
+#include "p_bestfitplane_kern.h"
 
 /*!
- * \brief BestFitPlane2::init
+ * \brief BestFitPlane_kern::init
  */
-void BestFitPlane2::init(){
+void BestFitPlane_kern::init(){
 
     //set plugin meta data
-    this->metaData.name = "BestFitPlane2";
+    this->metaData.name = "BestFitPlane_kern";
     this->metaData.pluginName = "OpenIndy Default Plugin";
     this->metaData.author = "kern";
     this->metaData.description = QString("%1 %2")
@@ -28,11 +28,11 @@ void BestFitPlane2::init(){
 }
 
 /*!
- * \brief BestFitPlane2::exec
+ * \brief BestFitPlane_kern::exec
  * \param plane
  * \return
  */
-bool BestFitPlane2::exec(Plane &plane){
+bool BestFitPlane_kern::exec(Plane &plane){
 
     //get and check input observations
     if(!this->inputElements.contains(0) || this->inputElements[0].size() < 3){

@@ -8,7 +8,6 @@
 #include "fitfunction.h"
 #include "oivec.h"
 #include "oimat.h"
-#include "cfitting_sphere.h"
 
 /*!
  * \brief The BestFitSphere class
@@ -39,7 +38,8 @@ private:
     //helper methods
     //##############
 
-    bool setUpResult(Sphere &sphere);
+    bool approximate(Sphere &sphere, const QList<QPointer<Observation> > &inputObservations);
+    bool fit(Sphere &sphere, const QList<QPointer<Observation> > &inputObservations);
 
 };
 
