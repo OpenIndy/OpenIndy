@@ -208,7 +208,8 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
     }
 
     //add the input elements
-    if(getIsFeature(neededElement)){ //feature
+    if(getIsFeature(neededElement) || neededElement == eDirectionElement
+            || neededElement == ePositionElement || neededElement == eRadiusElement){ //feature
 
         //temporary save all feature pointers
         QList<QPointer<FeatureWrapper> > features;
