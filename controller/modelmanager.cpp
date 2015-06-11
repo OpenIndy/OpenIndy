@@ -51,6 +51,7 @@ ReadingModel ModelManager::readingModel;
 ReadingProxyModel ModelManager::readingProxyModel;
 ObservationTableColumnConfig ModelManager::observationTableColumnConfig;
 ReadingTableColumnConfig ModelManager::readingTableColumnConfig;
+QStringListModel ModelManager::scalarEntityTypeNamesModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -79,6 +80,7 @@ void ModelManager::init(){
     ModelManager::initMeasurementConfigModels();
     ModelManager::initObservationModels();
     ModelManager::initReadingModels();
+    ModelManager::initScalarEntityTypesModels();
 
 }
 
@@ -332,6 +334,14 @@ PluginTreeViewModel &ModelManager::getPluginTreeViewModel(){
  */
 QStringListModel &ModelManager::getReadingTypeNamesModel(){
     return ModelManager::readingTypeNamesModel;
+}
+
+/*!
+ * \brief ModelManager::getScalarEntityTypeNamesModel
+ * \return
+ */
+QStringListModel &ModelManager::getScalarEntityTypeNamesModel(){
+    return ModelManager::scalarEntityTypeNamesModel;
 }
 
 /*!
@@ -1122,6 +1132,20 @@ void ModelManager::initReadingTypesModels(){
     readingTypes.append(getReadingTypeName(eTemperatureReading));
     readingTypes.append(getReadingTypeName(eLevelReading));
     ModelManager::readingTypeNamesModel.setStringList(readingTypes);
+
+}
+
+/*!
+ * \brief ModelManager::initScalarEntityTypesModels
+ */
+void ModelManager::initScalarEntityTypesModels(){
+
+    QStringList scalarEntityTypes;
+    scalarEntityTypes.append(getFeatureTypeName(eScalarEntityAngleFeature));
+    scalarEntityTypes.append(getFeatureTypeName(eScalarEntityDistanceFeature));
+    scalarEntityTypes.append(getFeatureTypeName(eScalarEntityMeasurementSeriesFeature));
+    scalarEntityTypes.append(getFeatureTypeName(eScalarEntityTemperatureFeature));
+    ModelManager::scalarEntityTypeNamesModel.setStringList(scalarEntityTypes);
 
 }
 

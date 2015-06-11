@@ -3037,14 +3037,37 @@ QStringList OiJob::createFeatureNames(const QString &name, const int &count) con
 
     int index = baseName.lastIndexOf(QRegExp("[0-9]*$"), baseName.length()-1);
     while(index > -1){
-        postFix.append(QStringRef(&baseName, index, baseName.length() - index));
+        postFix.prepend(QStringRef(&baseName, index, baseName.length() - index).toString());
         baseName.resize(index);
         index = baseName.lastIndexOf(QRegExp("[0-9]*$"), baseName.length()-1);
     }
 
+    //add leading zero
+    int numLeadingZeros = 0;
+    while(postFix.size() > 1 && postFix.at(0) == '0'){
+        numLeadingZeros++;
+        postFix.remove(0, 1);
+    }
+
+    numLeadingZeros = numLeadingZeros + postFix.length();
+
     int postFixInt = postFix.toInt();
+    QString leadZeros = "";
+
     for(int i = 0; i < count; i++){
-        result.append(QString("%1%2").arg(baseName).arg(QString::number(postFixInt + i)));
+        leadZeros.clear();
+
+        postFix = QString::number(postFixInt+i);
+
+        int diff = numLeadingZeros - postFix.length();
+
+        if(diff > 0){
+            for(int j = 0; j < diff; j++){
+                leadZeros.append("0");
+            }
+        }
+
+        result.append(QString("%1%2%3").arg(baseName).arg(leadZeros).arg(postFix));
     }
 
     return result;

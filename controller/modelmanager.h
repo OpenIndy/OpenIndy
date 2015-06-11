@@ -123,6 +123,9 @@ public:
     //reading types models
     static QStringListModel &getReadingTypeNamesModel();
 
+    //scalar entity type model
+    static QStringListModel &getScalarEntityTypeNamesModel();
+
     //function models
     static FunctionTableModel &getFunctionTableModel();
     static FunctionTableProxyModel &getFunctionTableProxyModel();
@@ -224,6 +227,9 @@ private:
     //reading models
     static QStringListModel readingTypeNamesModel;
 
+    //scalar entity type model
+    static QStringListModel scalarEntityTypeNamesModel;
+
     //function models
     static FunctionTableModel functionTableModel;
     static FunctionTableProxyModel functionTableProxyModel;
@@ -306,6 +312,8 @@ private:
     static void initUnitTypesModels();
 
     static void initReadingTypesModels();
+
+    static void initScalarEntityTypesModels();
 
     static void initPluginModels();
 

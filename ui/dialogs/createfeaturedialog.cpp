@@ -228,6 +228,9 @@ void CreateFeatureDialog::initModels(){
     //set model for available group names
     this->ui->comboBox_group->setModel(&ModelManager::getGroupNamesModel());
 
+    //set model for available scalar entities
+    this->ui->comboBox_entityType->setModel(&ModelManager::getScalarEntityTypeNamesModel());
+
 }
 
 /*!
@@ -268,6 +271,14 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.startSystem = this->ui->comboBox_startSystem->currentText();
         attributes.destinationSystem = this->ui->comboBox_destinationSystem->currentText();
         attributes.isMovement = this->ui->checkBox_movement->isChecked();
+
+    }else if(getIsScalarEntity(this->typeOfFeature)){
+
+        attributes.typeOfFeature = getFeatureTypeEnum(this->ui->comboBox_entityType->currentText());
+        attributes.isActual = this->ui->checkBox_actual->isChecked();
+        attributes.isNominal = this->ui->checkBox_nominal->isChecked();
+        attributes.isCommon = this->ui->checkBox_common->isChecked();
+        attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
 
     }else if(this->typeOfFeature != eCoordinateSystemFeature
              && this->typeOfFeature != eStationFeature){
