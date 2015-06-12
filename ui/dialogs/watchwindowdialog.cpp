@@ -1719,25 +1719,37 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     }
 
     //set visibility
+
+    //list of visible layouts (0=name 1=x 2=y 3=z 4=d3D
+    QStringList visibleLayouts;
+
     if(this->settings.displayValues.contains("x")){
         this->streamData["x"]->setVisible(true);
+        visibleLayouts.append("1");
     }else{
         this->streamData["x"]->setVisible(false);
+        visibleLayouts.removeOne("1");
     }
     if(this->settings.displayValues.contains("y")){
         this->streamData["y"]->setVisible(true);
+        visibleLayouts.append("2");
     }else{
         this->streamData["y"]->setVisible(false);
+        visibleLayouts.removeOne("2");
     }
     if(this->settings.displayValues.contains("z")){
         this->streamData["z"]->setVisible(true);
+        visibleLayouts.append("3");
     }else{
         this->streamData["z"]->setVisible(false);
+        visibleLayouts.removeOne("3");
     }
     if(this->settings.displayValues.contains("d3D")){
         this->streamData["d3D"]->setVisible(true);
+        visibleLayouts.append("4");
     }else{
         this->streamData["d3D"]->setVisible(false);
+        visibleLayouts.removeOne("4");
     }
     //this->streamData["name"]->setVisible(true);
     //this->streamData["x"]->setVisible(true);
@@ -1749,7 +1761,22 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     //this->streamData["distance"]->setVisible(false);
 
     //stretch visible elements
-    masterLayout->setStretch(numVisibleElements,1);
+    //masterLayout->setStretch(numVisibleElements,1);
+
+    //stretch name field
+    masterLayout->setStretch(0,1);
+
+
+    for(int j = 1; j < 5; j++){
+        masterLayout->setStretch(j,0);
+    }
+
+    for(int i = 1; i < 5; i++){
+
+        if(visibleLayouts.contains(QString::number(i))){
+            masterLayout->setStretch(i,numVisibleElements);
+        }
+    }
 
     //resize labels (maximum font size that is possible)
     this->resizeWatchWindowValues();
