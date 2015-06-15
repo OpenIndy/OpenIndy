@@ -1007,13 +1007,13 @@ void Controller::logToConsole(const QString &msg){
  */
 void Controller::registerMetaTypes(){
 
-    qRegisterMetaType<MeasurementConfig>();
-    qRegisterMetaType<SensorConfiguration>();
-    qRegisterMetaType<QList<QPointer<Reading> > >();
-    qRegisterMetaType<QPointer<Feature> >();
-    qRegisterMetaType<QPointer<Function> >();
-    qRegisterMetaType<QPointer<FeatureWrapper> >();
-    qRegisterMetaType<QPointer<Observation> >();
+    qRegisterMetaType<oi::MeasurementConfig>("MeasurementConfig");
+    qRegisterMetaType<oi::SensorConfiguration>("SensorConfiguration");
+    qRegisterMetaType<QList<QPointer<oi::Reading> > >("QList<QPointer<Reading> >");
+    qRegisterMetaType<QPointer<oi::Feature> >("QPointer<Feature>");
+    qRegisterMetaType<QPointer<oi::Function> >("QPointer<Function>");
+    qRegisterMetaType<QPointer<oi::FeatureWrapper> >("QPointer<FeatureWrapper>");
+    qRegisterMetaType<QPointer<oi::Observation> >("QPointer<Observation>");
 
 }
 
