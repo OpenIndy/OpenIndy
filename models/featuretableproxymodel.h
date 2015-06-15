@@ -8,6 +8,8 @@
 #include "featuretablemodel.h"
 #include "featuretablecolumnconfig.h"
 
+using namespace oi;
+
 /*!
  * \brief The FeatureTableProxyModel class
  */

@@ -11,6 +11,8 @@
 #include "oimetadata.h"
 #include "pluginloader.h"
 
+using namespace oi;
+
 /*!
  * \brief The SensorTableProxyModel class
  * Model that holds all available sensor plugins filtered by sensor type

@@ -10,6 +10,8 @@
 #include "util.h"
 #include "sensorconfigurationmanager.h"
 
+using namespace oi;
+
 /*!
  * \brief The SensorConfigurationTreeViewModel class
  * Model that holds all available sensor configurations

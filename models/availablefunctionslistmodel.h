@@ -13,6 +13,8 @@
 #include "systemdbmanager.h"
 #include "function.h"
 
+using namespace oi;
+
 /*!
  * \brief The AvailableFunctionsListModel class
  * Model that holds all available create functions (possible first functions of a feature)

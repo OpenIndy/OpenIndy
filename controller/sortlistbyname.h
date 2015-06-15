@@ -11,6 +11,8 @@
 #include "scalarentitydistance.h"
 #include "scalarentityangle.h"
 
+using namespace oi;
+
 struct LocRefBool{
     bool loc;
     bool ref;

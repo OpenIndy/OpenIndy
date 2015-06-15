@@ -8,6 +8,8 @@
 #include "util.h"
 #include "sensorconfigurationmodel.h"
 
+using namespace oi;
+
 /*!
  * \brief The SensorConfigurationProxyModel class
  * Model that holds all available sensor configurations filtered by saved and project property

@@ -10,6 +10,8 @@
 
 #include "pluginloader.h"
 
+using namespace oi;
+
 namespace Ui {
 class PluginLoaderDialog;
 }

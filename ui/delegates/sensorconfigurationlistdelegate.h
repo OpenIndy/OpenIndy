@@ -9,6 +9,8 @@
 #include "sensorconfigurationmodel.h"
 #include "sensorconfigurationproxymodel.h"
 
+using namespace oi;
+
 /*!
  * \brief The SensorConfigurationListDelegate class
  * Delegate to edit data in SensorConfigurationModel

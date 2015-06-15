@@ -11,6 +11,8 @@
 #include "observation.h"
 #include "reading.h"
 
+using namespace oi;
+
 /*!
  * \brief The FeatureTreeItem class
  * Class used to hold single items of the ActiveFeatureFunctionModel

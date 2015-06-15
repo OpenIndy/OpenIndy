@@ -17,6 +17,8 @@
 #include "oijob.h"
 #include "sortlistbyname.h"
 
+using namespace oi;
+
 /*!
  * \brief The FeatureUpdater class
  * Handles all recalculation tasks of features of an OpenIndy job

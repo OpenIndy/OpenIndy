@@ -8,6 +8,8 @@
 #include "readingmodel.h"
 #include "readingtablecolumnconfig.h"
 
+using namespace oi;
+
 /*!
  * \brief The ReadingProxyModel class
  */

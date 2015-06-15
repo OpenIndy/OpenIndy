@@ -23,6 +23,8 @@
 #include "observationtabledelegate.h"
 #include "readingtabledelegate.h"
 
+using namespace oi;
+
 namespace Ui {
 class ActualPropertiesDialog;
 }

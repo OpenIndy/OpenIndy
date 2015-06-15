@@ -12,6 +12,8 @@
 #include "parameterdisplayconfig.h"
 #include "console.h"
 
+using namespace oi;
+
 /*!
  * \brief The FeatureTableModel class
  * Model with all features of an OpenIndy job

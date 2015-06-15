@@ -13,6 +13,8 @@
 #include "featurewrapper.h"
 #include "coordinatesystem.h"
 
+using namespace oi;
+
 /*!
  * \brief The ExchangeParams class
  * Holds parameters for exchange plugins

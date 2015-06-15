@@ -23,6 +23,8 @@
 #include "parameterdisplayconfig.h"
 #include "modelmanager.h"
 
+using namespace oi;
+
 /*!
  * \brief The WatchWindowSettings class
  */

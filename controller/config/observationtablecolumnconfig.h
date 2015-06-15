@@ -5,6 +5,8 @@
 
 #include "types.h"
 
+using namespace oi;
+
 /*!
  * \brief The ObservationTableColumnConfig class
  * Used to specify which attributes of an observation shall be displayed

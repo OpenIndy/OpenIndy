@@ -15,6 +15,8 @@
 #include "modelmanager.h"
 #include "exchangeParams.h"
 
+using namespace oi;
+
 namespace Ui {
 class ImportNominalDialog;
 }

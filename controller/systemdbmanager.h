@@ -15,6 +15,8 @@
 #include "types.h"
 #include "util.h"
 
+using namespace oi;
+
 //###############################################
 //exchange classes to save database query results
 //###############################################

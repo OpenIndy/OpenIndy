@@ -8,6 +8,8 @@
 #include "oijob.h"
 #include "parameterdisplayconfig.h"
 
+using namespace oi;
+
 /*!
  * \brief The ObservationModel class
  * Model that represents all information and attributes of the observations of the active feature

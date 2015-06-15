@@ -20,6 +20,8 @@
 #include "console.h"
 #include "measurementconfigmanager.h"
 
+using namespace oi;
+
 /*!
  * \brief The OiProjectExchanger class
  * This class provides methods to save and load OpenIndy projects and different configs

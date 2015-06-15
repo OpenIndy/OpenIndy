@@ -9,6 +9,8 @@
 #include "featuretableproxymodel.h"
 #include "featuretablemodel.h"
 
+using namespace oi;
+
 /*!
  * \brief The FeatureTableDelegate class
  * Delegate to edit data in FeatureTableModel

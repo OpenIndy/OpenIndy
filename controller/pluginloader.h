@@ -24,6 +24,8 @@
 #include "exchangedefinedformat.h"
 #include "plugincopier.h"
 
+using namespace oi;
+
 /*!
  * \brief The PluginLoader class
  * Loads OpenIndy plugins

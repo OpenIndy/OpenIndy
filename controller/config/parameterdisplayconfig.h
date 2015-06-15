@@ -3,6 +3,8 @@
 
 #include "types.h"
 
+using namespace oi;
+
 /*!
  * \brief The ParameterDisplayConfig class
  * Used to specify in which unit and with how many digits a parameter value shall be displayed

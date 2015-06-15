@@ -14,6 +14,8 @@
 #include "util.h"
 #include "systemdbmanager.h"
 
+using namespace oi;
+
 /*!
  * \brief The PluginInfoWidget class
  * Widget to display information about plugins

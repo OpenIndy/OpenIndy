@@ -11,6 +11,8 @@
 #include "featuretreeviewmodel.h"
 #include "function.h"
 
+using namespace oi;
+
 /*!
  * \brief The AvailableElementsTreeViewProxyModel class
  * Model that holds all available elements that fit the requirements of a function of the active feature

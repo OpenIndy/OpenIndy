@@ -24,6 +24,8 @@
 #include "projectexchanger.h"
 #include "pluginloader.h"
 
+using namespace oi;
+
 /*!
  * \brief The Controller class
  */

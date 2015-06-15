@@ -8,6 +8,8 @@
 #include "plugintreeitem.h"
 #include "systemdbmanager.h"
 
+using namespace oi;
+
 /*!
  * \brief The PluginTreeViewModel class
  * Model that holds all plugins currently loaded into OpenIndy

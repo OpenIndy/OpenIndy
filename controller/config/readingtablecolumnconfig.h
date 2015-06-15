@@ -5,6 +5,8 @@
 
 #include "types.h"
 
+using namespace oi;
+
 /*!
  * \brief The ReadingTableColumnConfig class
  * Used to specify which attributes of a reading shall be displayed

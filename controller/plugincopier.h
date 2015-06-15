@@ -16,6 +16,8 @@
 #include "oimetadata.h"
 #include "systemdbmanager.h"
 
+using namespace oi;
+
 class PluginLoader;
 
 class PluginCopier : public QObject

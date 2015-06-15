@@ -9,6 +9,8 @@
 #include "oijob.h"
 #include "console.h"
 
+using namespace oi;
+
 /*!
  * \brief The ObservationImporter class
  * Imports observations into the active actual geometry

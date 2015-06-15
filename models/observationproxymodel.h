@@ -8,6 +8,8 @@
 #include "observationmodel.h"
 #include "observationtablecolumnconfig.h"
 
+using namespace oi;
+
 /*!
  * \brief The ObservationProxyModel class
  */

@@ -24,6 +24,8 @@
 #include "scalarparameterwidget.h"
 #include "sensorconfigurationlistdelegate.h"
 
+using namespace oi;
+
 namespace Ui {
 class SensorConfigurationDialog;
 }

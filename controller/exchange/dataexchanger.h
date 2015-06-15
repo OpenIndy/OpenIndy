@@ -15,6 +15,8 @@
 #include "console.h"
 #include "observationimporter.h"
 
+using namespace oi;
+
 /*!
  * \brief The DataExchanger class
  * Imports or exports nominals by invoking plugins

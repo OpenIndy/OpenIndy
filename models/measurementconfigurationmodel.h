@@ -10,6 +10,8 @@
 #include "util.h"
 #include "measurementconfigmanager.h"
 
+using namespace oi;
+
 /*!
  * \brief The MeasurementConfigurationModel class
  * Model that holds all available measurement configurations

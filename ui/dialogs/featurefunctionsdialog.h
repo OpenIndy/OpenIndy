@@ -17,6 +17,8 @@
 #include "scalarparameterwidget.h"
 #include "multiselectionmodel.h"
 
+using namespace oi;
+
 //#include "customparameterwidget.h"
 //#include "oimultiselectionmodel.h"
 

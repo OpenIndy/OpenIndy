@@ -9,6 +9,8 @@
 #include "measurementconfigurationmodel.h"
 #include "measurementconfigurationproxymodel.h"
 
+using namespace oi;
+
 /*!
  * \brief The MeasurementConfigurationListDelegate class
  * Delegate to edit data in MeasurementConfigurationModel

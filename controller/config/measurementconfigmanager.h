@@ -11,6 +11,8 @@
 #include "measurementconfig.h"
 #include "console.h"
 
+using namespace oi;
+
 /*!
  * \brief The MeasurementConfigManager class
  * Used to save and manage all available measurement configs

@@ -7,6 +7,8 @@
 #include "observation.h"
 #include "function.h"
 
+using namespace oi;
+
 /*!
  * \brief The TrafoController class
  *

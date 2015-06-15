@@ -5,6 +5,8 @@
 
 #include "types.h"
 
+using namespace oi;
+
 /*!
  * \brief The TrafoParamTableColumnConfig class
  * Used to specify which attributes of a feature shall be displayed (e.g. trafo param table view)

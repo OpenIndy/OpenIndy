@@ -8,6 +8,8 @@
 #include "featuretablemodel.h"
 #include "trafoparamtablecolumnconfig.h"
 
+using namespace oi;
+
 /*!
  * \brief The TrafoParamTableProxyModel class
  */

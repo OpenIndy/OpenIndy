@@ -8,6 +8,8 @@
 #include "oijob.h"
 #include "parameterdisplayconfig.h"
 
+using namespace oi;
+
 /*!
  * \brief The ReadingModel class
  */

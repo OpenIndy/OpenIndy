@@ -40,6 +40,8 @@
 #include "readingmodel.h"
 #include "readingproxymodel.h"
 
+using namespace oi;
+
 /*!
  * \brief The ModelManager class
  */

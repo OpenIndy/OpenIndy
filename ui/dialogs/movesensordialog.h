@@ -11,6 +11,8 @@
 #include "reading.h"
 #include "modelmanager.h"
 
+using namespace oi;
+
 namespace Ui {
 class MoveSensorDialog;
 }

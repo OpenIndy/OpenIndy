@@ -23,6 +23,8 @@
 #include "modelmanager.h"
 #include "measurementconfigurationlistdelegate.h"
 
+using namespace oi;
+
 namespace Ui {
 class MeasurementConfigurationDialog;
 }

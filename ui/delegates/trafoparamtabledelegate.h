@@ -9,6 +9,8 @@
 
 #include "trafoparamtableproxymodel.h"
 
+using namespace oi;
+
 class TrafoParamDelegate : public QItemDelegate
 {
 public:

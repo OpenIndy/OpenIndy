@@ -11,6 +11,8 @@
 #include "types.h"
 #include "util.h"
 
+using namespace oi;
+
 /*!
  * \brief The FeatureTreeViewModel class
  * Model that holds all features of an OpenIndy job in a tree structure

@@ -34,17 +34,6 @@ unix:ICON = $$PWD/res/openIndy.icns
 linux: LIBS = -lGLU
 #-----------------------------------Linear Algebra---------------------------------------
 
-INCLUDEPATH += $$PWD/src
-INCLUDEPATH += $$PWD/src/geometry
-INCLUDEPATH += $$PWD/src/plugin
-INCLUDEPATH += $$PWD/src/plugin/function
-INCLUDEPATH += $$PWD/src/plugin/sensor
-INCLUDEPATH += $$PWD/src/plugin/networkAdjustment
-INCLUDEPATH += $$PWD/src/plugin/simulation
-INCLUDEPATH += $$PWD/src/plugin/tool
-INCLUDEPATH += $$PWD/src/plugin/exchange
-INCLUDEPATH += $$PWD/src/util
-
 INCLUDEPATH += $$PWD/models
 INCLUDEPATH += $$PWD/models/treeitems
 INCLUDEPATH += $$PWD/controller
@@ -58,18 +47,47 @@ INCLUDEPATH += $$PWD/ui/widgets
 INCLUDEPATH += $$PWD/ui/actions
 INCLUDEPATH += $$PWD/ui/selectionmodels
 
-INCLUDEPATH += $$PWD/lib/openIndyLib/include
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include/geometry
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include/util
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include/plugin
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include/plugin/exchange
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include/plugin/function
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include/plugin/networkAdjustment
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include/plugin/sensor
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include/plugin/simulation
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include/plugin/tool
+INCLUDEPATH += $$PWD/lib/OpenIndy-Core/lib/OpenIndy-Math/include
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/release/ -lopenIndyLib
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/debug/ -lopenIndyLib
-else:unix: CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/debug -lopenIndyLib
-else:unix: CONFIG(release, debug|release): LIBS += -L$$PWD/lib/openIndyLib/bin/release -lopenIndyLib
+#--------------
+# OpenIndy-Core
+#--------------
 
-INCLUDEPATH += $$PWD/lib/openIndyLib/bin/debug
-DEPENDPATH += $$PWD/lib/openIndyLib/bin/debug
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/OpenIndy-Core/bin/release/ -lopenIndyCore
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/OpenIndy-Core/bin/debug/ -lopenIndyCore
+else:unix:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/OpenIndy-Core/bin/release/ -lopenIndyCore
+else:unix:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/OpenIndy-Core/bin/debug/ -lopenIndyCore
 
-INCLUDEPATH += $$PWD/lib/openIndyLib/bin/release
-DEPENDPATH += $$PWD/lib/openIndyLib/bin/release
+INCLUDEPATH += -L$$PWD/lib/OpenIndy-Core/bin/debug
+DEPENDPATH += -L$$PWD/lib/OpenIndy-Core/bin/debug
+
+INCLUDEPATH += -L$$PWD/lib/OpenIndy-Core/bin/release
+DEPENDPATH += -L$$PWD/lib/OpenIndy-Core/bin/release
+
+#--------------
+# OpenIndy-Math
+#--------------
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/OpenIndy-Core/lib/OpenIndy-Math/bin/release/ -lopenIndyMath
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug/ -lopenIndyMath
+else:unix:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/OpenIndy-Core/lib/OpenIndy-Math/bin/release/ -lopenIndyMath
+else:unix:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug/ -lopenIndyMath
+
+INCLUDEPATH += -L$$PWD/lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug
+DEPENDPATH += -L$$PWD/lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug
+
+INCLUDEPATH += -L$$PWD/lib/OpenIndy-Core/lib/OpenIndy-Math/bin/release
+DEPENDPATH += -L$$PWD/lib/OpenIndy-Core/lib/OpenIndy-Math/bin/release
 
 SOURCES += \
     main.cpp \
@@ -77,61 +95,11 @@ SOURCES += \
     ui/dialogs/createfeaturedialog.cpp \
     controller/console.cpp \
     controller/controller.cpp \
-    src/featureattributes.cpp \
     controller/modelmanager.cpp \
     controller/systemdbmanager.cpp \
     models/featuretablemodel.cpp \
     models/featuretableproxymodel.cpp \
-    src/featurecontainer.cpp \
-    src/oijob.cpp \
-    src/coordinatesystem.cpp \
-    src/direction.cpp \
-    src/element.cpp \
-    src/feature.cpp \
-    src/featurewrapper.cpp \
-    src/geometry.cpp \
-    src/measurementconfig.cpp \
-    src/observation.cpp \
     controller/oimetadata.cpp \
-    src/oirequestresponse.cpp \
-    src/position.cpp \
-    src/radius.cpp \
-    src/reading.cpp \
-    src/residual.cpp \
-    src/sensorconfiguration.cpp \
-    src/sensorcontrol.cpp \
-    src/sensorlistener.cpp \
-    src/station.cpp \
-    src/statistic.cpp \
-    src/trafoparam.cpp \
-    src/util/util.cpp \
-    src/geometry/circle.cpp \
-    src/geometry/cone.cpp \
-    src/geometry/cylinder.cpp \
-    src/geometry/ellipse.cpp \
-    src/geometry/ellipsoid.cpp \
-    src/geometry/hyperboloid.cpp \
-    src/geometry/line.cpp \
-    src/geometry/nurbs.cpp \
-    src/geometry/paraboloid.cpp \
-    src/geometry/plane.cpp \
-    src/geometry/point.cpp \
-    src/geometry/pointcloud.cpp \
-    src/geometry/scalarentityangle.cpp \
-    src/geometry/scalarentitydistance.cpp \
-    src/geometry/scalarentitymeasurementseries.cpp \
-    src/geometry/scalarentitytemperature.cpp \
-    src/geometry/slottedhole.cpp \
-    src/geometry/sphere.cpp \
-    src/geometry/torus.cpp \
-    src/plugin/pluginmetadata.cpp \
-    src/plugin/tool/tool.cpp \
-    src/plugin/simulation/simulationmodel.cpp \
-    src/plugin/function/function.cpp \
-    src/plugin/sensor/sensor.cpp \
-    src/plugin/exchange/exchangedefinedformat.cpp \
-    src/plugin/exchange/exchangesimpleascii.cpp \
-    src/plugin/exchange/exchangeinterface.cpp \
     controller/config/featuretablecolumnconfig.cpp \
     controller/config/trafoparamtablecolumnconfig.cpp \
     controller/config/parameterdisplayconfig.cpp \
@@ -199,76 +167,10 @@ HEADERS  += \
     ui/dialogs/createfeaturedialog.h \
     controller/console.h \
     controller/controller.h \
-    src/featureattributes.h \
     controller/modelmanager.h \
     controller/systemdbmanager.h \
     models/featuretablemodel.h \
     models/featuretableproxymodel.h \
-    src/featurecontainer.h \
-    src/oijob.h \
-    src/coordinatesystem.h \
-    src/direction.h \
-    src/element.h \
-    src/feature.h \
-    src/featurewrapper.h \
-    src/geometry.h \
-    src/measurementconfig.h \
-    src/observation.h \
-    controller/oimetadata.h \
-    src/oirequestresponse.h \
-    src/position.h \
-    src/radius.h \
-    src/reading.h \
-    src/residual.h \
-    src/sensorconfiguration.h \
-    src/sensorcontrol.h \
-    src/sensorlistener.h \
-    src/station.h \
-    src/statistic.h \
-    src/trafoparam.h \
-    src/util/types.h \
-    src/util/util.h \
-    src/geometry/circle.h \
-    src/geometry/cone.h \
-    src/geometry/cylinder.h \
-    src/geometry/ellipse.h \
-    src/geometry/ellipsoid.h \
-    src/geometry/hyperboloid.h \
-    src/geometry/line.h \
-    src/geometry/nurbs.h \
-    src/geometry/paraboloid.h \
-    src/geometry/plane.h \
-    src/geometry/point.h \
-    src/geometry/pointcloud.h \
-    src/geometry/scalarentityangle.h \
-    src/geometry/scalarentitydistance.h \
-    src/geometry/scalarentitymeasurementseries.h \
-    src/geometry/scalarentitytemperature.h \
-    src/geometry/slottedhole.h \
-    src/geometry/sphere.h \
-    src/geometry/torus.h \
-    src/plugin/pluginmetadata.h \
-    src/plugin/tool/tool.h \
-    src/plugin/simulation/simulationmodel.h \
-    src/plugin/sensor/lasertracker.h \
-    src/plugin/sensor/sensor.h \
-    src/plugin/sensor/totalstation.h \
-    src/plugin/networkAdjustment/networkadjustment.h \
-    src/plugin/function/constructfunction.h \
-    src/plugin/function/fitfunction.h \
-    src/plugin/function/function.h \
-    src/plugin/function/generatefeaturefunction.h \
-    src/plugin/function/geodeticfunction.h \
-    src/plugin/function/objecttransformation.h \
-    src/plugin/function/systemtransformation.h \
-    src/plugin/exchange/exchangedefinedformat.h \
-    src/plugin/exchange/exchangeinterface.h \
-    src/plugin/exchange/exchangesimpleascii.h \
-    lib/openIndyLib/include/chooselalib.h \
-    lib/openIndyLib/include/global.h \
-    lib/openIndyLib/include/linearalgebra.h \
-    lib/openIndyLib/include/oimat.h \
-    lib/openIndyLib/include/oivec.h \
     controller/config/featuretablecolumnconfig.h \
     controller/config/trafoparamtablecolumnconfig.h \
     controller/config/parameterdisplayconfig.h \
@@ -331,7 +233,12 @@ HEADERS  += \
     ui/actions/toolaction.h \
     controller/exchange/observationimporter.h \
     ui/delegates/observationtabledelegate.h \
-    ui/delegates/readingtabledelegate.h
+    ui/delegates/readingtabledelegate.h \
+    lib/OpenIndy-Core/lib/OpenIndy-Math/include/chooselalib.h \
+    lib/OpenIndy-Core/lib/OpenIndy-Math/include/global.h \
+    lib/OpenIndy-Core/lib/OpenIndy-Math/include/linearalgebra.h \
+    lib/OpenIndy-Core/lib/OpenIndy-Math/include/oimat.h \
+    lib/OpenIndy-Core/lib/OpenIndy-Math/include/oivec.h
 
 FORMS    += \
     ui/mainwindow.ui \

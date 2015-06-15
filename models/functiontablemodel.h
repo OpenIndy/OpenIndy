@@ -11,6 +11,8 @@
 #include "util.h"
 #include "systemdbmanager.h"
 
+using namespace oi;
+
 /*!
  * \brief The FunctionTableModel class
  * Model that holds all available function plugins

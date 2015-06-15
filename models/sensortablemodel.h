@@ -13,6 +13,8 @@
 #include "oimetadata.h"
 #include "pluginloader.h"
 
+using namespace oi;
+
 /*!
  * \brief The SensorTableModel class
  * Model that holds all available sensor plugins

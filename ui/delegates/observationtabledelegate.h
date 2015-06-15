@@ -9,6 +9,8 @@
 #include "observationproxymodel.h"
 #include "observationmodel.h"
 
+using namespace oi;
+
 /*!
  * \brief The ObservationTableDelegate class
  */

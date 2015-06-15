@@ -11,6 +11,8 @@
 #include "sensorconfiguration.h"
 #include "console.h"
 
+using namespace oi;
+
 /*!
  * \brief The SensorConfigurationManager class
  * Used to save and manage all available sensor configs

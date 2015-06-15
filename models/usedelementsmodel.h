@@ -13,6 +13,8 @@
 #include "featuretreeitem.h"
 #include "function.h"
 
+using namespace oi;
+
 /*!
  * \brief The UsedElementsModel class
  * Model that holds all used elements of a function of the active feature at a special position

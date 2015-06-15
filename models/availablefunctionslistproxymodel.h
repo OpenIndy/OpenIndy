@@ -11,6 +11,8 @@
 #include "oimetadata.h"
 #include "pluginloader.h"
 
+using namespace oi;
+
 /*!
  * \brief The AvailableFunctionsListProxyModel class
  * Model that holds all available functions filtered by feature type

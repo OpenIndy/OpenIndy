@@ -9,6 +9,8 @@
 #include "systemdbmanager.h"
 #include "oimetadata.h"
 
+using namespace oi;
+
 class PluginTreeItem : public QObject
 {
     friend class PluginTreeItem;

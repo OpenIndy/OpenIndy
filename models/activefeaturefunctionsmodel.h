@@ -12,6 +12,8 @@
 #include "util.h"
 #include "function.h"
 
+using namespace oi;
+
 /*!
  * \brief The ActiveFeatureFunctionsModel class
  * Model that holds all functions of the active feature in a tree hierarchy

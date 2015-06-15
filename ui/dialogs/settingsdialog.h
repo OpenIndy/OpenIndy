@@ -12,6 +12,8 @@
 #include "modelmanager.h"
 #include "parameterdisplayconfig.h"
 
+using namespace oi;
+
 namespace Ui {
 class SettingsDialog;
 }

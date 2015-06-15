@@ -8,6 +8,8 @@
 #include "util.h"
 #include "measurementconfigurationmodel.h"
 
+using namespace oi;
+
 /*!
  * \brief The MeasurementConfigurationProxyModel class
  * Model that holds all available measurement configurations filtered by saved and project property

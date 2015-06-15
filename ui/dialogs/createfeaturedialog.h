@@ -9,6 +9,8 @@
 #include "featureattributes.h"
 #include "modelmanager.h"
 
+using namespace oi;
+
 namespace Ui {
 class CreateFeatureDialog;
 }
