@@ -1,0 +1,3 @@
+[submodule "lib/OpenIndy-Core"]
+	path = lib/OpenIndy-Core
+	url = https://github.com/OpenIndy/OpenIndy-Core.git
