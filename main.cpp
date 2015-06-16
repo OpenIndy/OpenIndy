@@ -61,7 +61,6 @@ int main(int argc, char *argv[])
        if (i!=argc) isSilent = true;
     }
 
-
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
 
     a.setOrganizationName(Company);

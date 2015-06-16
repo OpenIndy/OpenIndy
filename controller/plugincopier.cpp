@@ -143,6 +143,9 @@ bool PluginCopier::checkPluginMetaData(PluginMetaData &metaData, const QString &
     metaData.description = pluginLoader.metaData().value("MetaData").toObject().value("description").toString();
     metaData.dependenciesPath = pluginLoader.metaData().value("MetaData").toObject().value("libPaths").toArray();
 
+    qDebug() << metaData.iid;
+    qDebug() << OiMetaData::iid_Plugin;
+
     //check OpenIndy version
     if(metaData.iid.compare(OiMetaData::iid_Plugin) != 0){
         emit this->sendError("Plugin version does not match this OpenIndy version");
