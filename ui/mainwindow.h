@@ -117,6 +117,7 @@ private slots:
     //sensor actions
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
+    void measurementCompleted();
 
     //#########################
     //actions triggered by user
@@ -157,8 +158,6 @@ private slots:
     void on_tableView_features_clicked(const QModelIndex &index);
     void tableViewFeaturesSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
     void on_tableView_features_customContextMenuRequested(const QPoint &pos);
-    void deleteFeatures(bool checked);
-    void showFeatureProperties(bool checked);
     void on_tableView_trafoParams_clicked(const QModelIndex &index);
     void tableViewTrafoParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
     void on_tableView_trafoParams_customContextMenuRequested(const QPoint &pos);
@@ -244,6 +243,17 @@ private:
 
     void updateMagnifyWindow(const QPointer<FeatureWrapper> &feature);
 
+    //##############
+    //helper methods
+    //##############
+
+    //helper methods that work on the active feature
+    void showFeatureProperties(bool checked);
+
+    //helper methods that work on a user defined selection of features
+    void aimAndMeasureFeatures();
+    void deleteFeatures(bool checked);
+
     //############################
     //OpenIndy dialogs and widgets
     //############################
@@ -282,6 +292,13 @@ private:
     QList<QPointer<QAction> > selfDefinedActions;
 
     QPointer<QSignalMapper> customActionMapper;
+
+    //#################
+    //helper attributes
+    //#################
+
+    //ordered list of feature id's that are currently aimed and measured (ALT + F3)
+    QList<int> measureFeatures;
 
 };
 

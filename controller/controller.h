@@ -94,6 +94,7 @@ public slots:
     void startMeasurement();
     void startMove(const Reading &reading);
     void startAim();
+    void startAimAndMeasure();
     void startToggleSight();
     void startInitialize();
     void startHome();
@@ -181,6 +182,7 @@ signals:
 
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
+    void measurementCompleted();
 
 private slots:
 

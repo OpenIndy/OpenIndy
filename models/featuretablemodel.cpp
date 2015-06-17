@@ -496,6 +496,28 @@ void FeatureTableModel::setActiveFeature(const QModelIndex &index){
 }
 
 /*!
+ * \brief FeatureTableModel::setActiveFeature
+ * \param index
+ */
+void FeatureTableModel::setActiveFeature(const int &id){
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //get and check feature with the given id
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id);
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    //set active feature
+    feature->getFeature()->setActiveFeatureState(true);
+
+}
+
+/*!
  * \brief FeatureTableModel::getActiveStation
  * \return
  */
@@ -533,6 +555,29 @@ void FeatureTableModel::setActiveStation(const QModelIndex &index){
 
     //check feature at index
     QPointer<FeatureWrapper> feature = this->currentJob->getFeaturesList().at(index.row());
+    if(feature.isNull() || feature->getStation().isNull()){
+        Console::getInstance()->addLine("No station selected");
+        return;
+    }
+
+    //set active station
+    feature->getStation()->setActiveStationState(true);
+
+}
+
+/*!
+ * \brief FeatureTableModel::setActiveStation
+ * \param id
+ */
+void FeatureTableModel::setActiveStation(const int &id){
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //get and check feature with the given id
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id);
     if(feature.isNull() || feature->getStation().isNull()){
         Console::getInstance()->addLine("No station selected");
         return;

@@ -575,7 +575,8 @@ void Controller::startMove(const Reading &reading){
     //get and check active feature
     QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
     if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
-
+        Console::getInstance()->addLine("No active feature");
+        return;
     }
 
     //get and check active station
@@ -592,12 +593,12 @@ void Controller::startMove(const Reading &reading){
     if(reading.getTypeOfReading() == eCartesianReading){
         activeStation->move(reading.getCartesianReading().xyz.getAt(0),
                             reading.getCartesianReading().xyz.getAt(1),
-                            reading.getCartesianReading().xyz.getAt(2));
+                            reading.getCartesianReading().xyz.getAt(2), false);
         return;
     }else if(reading.getTypeOfReading() == ePolarReading){
         activeStation->move(reading.getPolarReading().azimuth,
                             reading.getPolarReading().zenith,
-                            reading.getPolarReading().distance, false);
+                            reading.getPolarReading().distance, false, false);
         return;
     }
 
@@ -610,7 +611,106 @@ void Controller::startMove(const Reading &reading){
  */
 void Controller::startAim(){
 
-    //TODO implement transformation here
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
+    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
+        Console::getInstance()->addLine("No active feature");
+        return;
+    }
+
+    //get and check active coordinate system
+    QPointer<CoordinateSystem> activeCoordinateSystem = this->job->getActiveCoordinateSystem();
+    if(activeCoordinateSystem.isNull()){
+        Console::getInstance()->addLine("No active coordinate system");
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull() || activeStation->getCoordinateSystem().isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //create trafo controller instance and get the transformation matrix
+    TrafoController trafoController;
+    OiMat t(4, 4);
+    trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem());
+
+    //transform position of the active feature into the station coordinate system
+    if(activeFeature->getGeometry()->hasPosition()){
+        Console::getInstance()->addLine("Active feature has no position to aim");
+        return;
+    }
+    OiVec pos = activeFeature->getGeometry()->getPosition().getVectorH();
+    pos = t * pos;
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("moving sensor...");
+
+    //aim the active feature
+    activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), false);
+
+}
+
+/*!
+ * \brief Controller::startAimAndMeasure
+ */
+void Controller::startAimAndMeasure(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
+    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
+        Console::getInstance()->addLine("No active feature");
+        return;
+    }
+
+    //get and check active coordinate system
+    QPointer<CoordinateSystem> activeCoordinateSystem = this->job->getActiveCoordinateSystem();
+    if(activeCoordinateSystem.isNull()){
+        Console::getInstance()->addLine("No active coordinate system");
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull() || activeStation->getCoordinateSystem().isNull()){
+        Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //create trafo controller instance and get the transformation matrix
+    TrafoController trafoController;
+    OiMat t(4, 4);
+    if(!trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
+        Console::getInstance()->addLine("No transformation found to transform between active coordinate system and the active station's system");
+        return;
+    }
+
+    //transform position of the active feature into the station coordinate system
+    if(activeFeature->getGeometry()->hasPosition()){
+        Console::getInstance()->addLine("Active feature has no position to aim");
+        return;
+    }
+    OiVec pos = activeFeature->getGeometry()->getPosition().getVectorH();
+    pos = t * pos;
+
+    //inform about start of sensor action
+    emit this->sensorActionStarted("moving sensor and performing measurement...");
+
+    //aim the active feature and perform measurement
+    activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), true, activeFeature->getGeometry()->getId(),
+                        activeFeature->getGeometry()->getMeasurementConfig());
 
 }
 
@@ -848,6 +948,9 @@ void Controller::measurementFinished(const int &geomId, const QList<QPointer<Rea
 
     //add observations
     this->job->addMeasurementResults(geomId, readings);
+
+    //complete the measurement task by informing MainWindow about its success
+    emit this->measurementCompleted();
 
 }
 

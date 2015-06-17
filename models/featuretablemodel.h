@@ -53,9 +53,11 @@ public:
 
     QPointer<FeatureWrapper> getActiveFeature() const;
     void setActiveFeature(const QModelIndex &index);
+    void setActiveFeature(const int &id);
 
     QPointer<Station> getActiveStation() const;
     void setActiveStation(const QModelIndex &index);
+    void setActiveStation(const int &id);
 
     QPointer<CoordinateSystem> getActiveCoordinateSystem() const;
     void setActiveCoordinateSystem(const QString &name);
