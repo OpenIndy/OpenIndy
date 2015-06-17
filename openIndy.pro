@@ -72,7 +72,7 @@ isEmpty(OpenIndy_VERSION){
 }else{
     message(OpenIndy version:)
     message($$OpenIndy_VERSION)
-    VERSION = OpenIndy_VERSION
+    VERSION = $$OpenIndy_VERSION
 }
 
 RESOURCES += \
