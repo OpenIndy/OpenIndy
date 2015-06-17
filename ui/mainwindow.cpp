@@ -965,6 +965,13 @@ void MainWindow::removeObservationOfActiveFeature(){
 }
 
 /*!
+ * \brief MainWindow::on_actionAbout_OpenIndy_triggered
+ */
+void MainWindow::on_actionAbout_OpenIndy_triggered(){
+    this->aboutDialog.show();
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){

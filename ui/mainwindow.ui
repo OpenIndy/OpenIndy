@@ -235,6 +235,7 @@ background-position: center center;</string>
      <string>Help</string>
     </property>
     <addaction name="actionShow_help"/>
+    <addaction name="actionAbout_OpenIndy"/>
    </widget>
    <widget class="QMenu" name="menuSensor">
     <property name="title">
@@ -630,7 +631,7 @@ color: rgb(255, 255, 255);
      <normaloff>:/icons/icons/toolbars/standard/help.png</normaloff>:/icons/icons/toolbars/standard/help.png</iconset>
    </property>
    <property name="text">
-    <string>show help</string>
+    <string>Show Help</string>
    </property>
    <property name="shortcut">
     <string>F1</string>
@@ -1033,6 +1034,15 @@ color: rgb(255, 255, 255);
    </property>
    <property name="text">
     <string>removeObservations</string>
+   </property>
+  </action>
+  <action name="actionAbout_OpenIndy">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/openIndy.png</normaloff>:/Images/icons/openIndy.png</iconset>
+   </property>
+   <property name="text">
+    <string>About OpenIndy</string>
    </property>
   </action>
  </widget>

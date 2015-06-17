@@ -28,14 +28,12 @@ const QString AppName = "OpenIndy";
 const QString AppUrl  = "www.fh-mainz.de";
 const QString AppAuthor = "B.Sc. Martin Lux, B.Sc. Benedikt Rauls, B.Sc. Jens Wambach, Prof. Dr.-Ing. Fredie kern";
 const QString AppAuthorMail = ",,,fredie.kern@fh-mainz.de";
-const QString AppVersionNoDebug = "0.1";
-const QString AppMinorVersion = ".2";
 const QString AppDate = "2014 (" + _date + "," + _time + ")";
 
 #ifdef QT_NO_DEBUG
-const QString AppVersion = AppVersionNoDebug + AppMinorVersion;
+const QString AppVersion = QString(OPENINDY_VERSION);
 #else
-const QString AppVersion = AppVersionNoDebug + AppMinorVersion + " [DEBUG]";
+const QString AppVersion = QString("%1 %2").arg(OPENINDY_VERSION).arg(" [DEBUG]");
 #endif
 
 
@@ -73,7 +71,7 @@ int main(int argc, char *argv[])
     QSplashScreen *splash;
     if (!isSilent)
     {
-      QPixmap pixmap( "splash.png" );  // splash.png muss da liegen, wo *.exe liegt
+      QPixmap pixmap( "splash.png" );  // splash.png has to be placed next to the *.exe
       QString tmp;
 
       splash = new QSplashScreen(pixmap);

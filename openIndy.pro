@@ -32,6 +32,7 @@ OpenIndyMath_VERSION = $$system(git --git-dir $$PWD/lib/OpenIndy-Core/lib/OpenIn
 OpenIndyMath_VERSION = $$replace(OpenIndyMath_VERSION, "-g"{1}\w*, ) # remove commit hash after tag name
 OpenIndyMath_VERSION = $$replace(OpenIndyMath_VERSION, "-", ".") # remove remaining hyphen
 OpenIndyMath_VERSION = $$replace(OpenIndyMath_VERSION, "\b[0-9a-f]{5,40}\b", ) # remove commit hash (only if no tag has been set yet)
+DEFINES += OPENINDY_MATH_VERSION=\\\"$$OpenIndyMath_VERSION\\\"
 
 isEmpty(OpenIndyMath_VERSION){
     message("no math version")
@@ -50,6 +51,7 @@ OpenIndyCore_VERSION = $$replace(OpenIndyCore_VERSION, "-", ".") # remove remain
 PluginVersion = $$replace(OpenIndyCore_VERSION, "[/.]", )
 DEFINES += PLUGIN_INTERFACE_VERSION=$$PluginVersion
 OpenIndyCore_VERSION = $$replace(OpenIndyCore_VERSION, "\b[0-9a-f]{5,40}\b", ) # remove commit hash (only if no tag has been set yet)
+DEFINES += OPENINDY_CORE_VERSION=\\\"$$OpenIndyCore_VERSION\\\"
 
 isEmpty(OpenIndyCore_VERSION){
     message("no core version")
@@ -66,6 +68,7 @@ OpenIndy_VERSION = $$system(git --git-dir $$PWD/.git --work-tree $$PWD describe 
 OpenIndy_VERSION = $$replace(OpenIndy_VERSION, "-g"{1}\w*, ) # remove commit hash after tag name
 OpenIndy_VERSION = $$replace(OpenIndy_VERSION, "-", ".") # remove remaining hyphen
 OpenIndy_VERSION = $$replace(OpenIndy_VERSION, "\b[0-9a-f]{5,40}\b", ) # remove commit hash (only if no tag has been set yet)
+DEFINES += OPENINDY_VERSION=\\\"$$OpenIndy_VERSION\\\"
 
 isEmpty(OpenIndy_VERSION){
     message("no OpenIndy version")
@@ -211,7 +214,8 @@ SOURCES += \
     ui/actions/toolaction.cpp \
     controller/exchange/observationimporter.cpp \
     ui/delegates/observationtabledelegate.cpp \
-    ui/delegates/readingtabledelegate.cpp
+    ui/delegates/readingtabledelegate.cpp \
+    ui/dialogs/aboutdialog.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -288,7 +292,8 @@ HEADERS  += \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/global.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/linearalgebra.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oimat.h \
-    lib/OpenIndy-Core/lib/OpenIndy-Math/include/oivec.h
+    lib/OpenIndy-Core/lib/OpenIndy-Math/include/oivec.h \
+    ui/dialogs/aboutdialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -305,4 +310,5 @@ FORMS    += \
     ui/dialogs/watchwindowdialog.ui \
     ui/dialogs/measurementconfigurationdialog.ui \
     ui/dialogs/actualpropertiesdialog.ui \
-    ui/dialogs/nominalpropertiesdialog.ui
+    ui/dialogs/nominalpropertiesdialog.ui \
+    ui/dialogs/aboutdialog.ui

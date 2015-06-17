@@ -29,6 +29,7 @@
 #include "settingsdialog.h"
 #include "actualpropertiesdialog.h"
 #include "nominalpropertiesdialog.h"
+#include "aboutdialog.h"
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
@@ -207,6 +208,9 @@ private slots:
     void on_actionRemoveObservations_triggered();
     void removeObservationOfActiveFeature();
 
+    //show about dialog
+    void on_actionAbout_OpenIndy_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -258,6 +262,7 @@ private:
     SettingsDialog settingsDialog;
     ActualPropertiesDialog actualPropertiesDialog;
     NominalPropertiesDialog nominalPropertiesDialog;
+    AboutDialog aboutDialog;
 
     //##########
     //sensor pad
