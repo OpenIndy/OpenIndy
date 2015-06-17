@@ -226,7 +226,6 @@ HEADERS  += \
     controller/config/trafoparamtablecolumnconfig.h \
     controller/config/parameterdisplayconfig.h \
     models/trafoparamtableproxymodel.h \
-    src/plugin/plugin.h \
     controller/plugincopier.h \
     controller/pluginloader.h \
     ui/dialogs/pluginloaderdialog.h \
