@@ -121,6 +121,9 @@ private slots:
     //actions triggered by user
     //#########################
 
+    //key pressed
+    void keyPressEvent(QKeyEvent * e);
+
     //create feature actions
     void on_actionCreate_point_triggered();
     void on_actionCreate_line_triggered();

@@ -545,6 +545,12 @@ void Controller::startMeasurement(){
         return;
     }
 
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        Console::getInstance()->addLine("No sensor connected to the active station");
+        return;
+    }
+
     //inform about start of sensor action
     emit this->sensorActionStarted("performing measurement...");
 

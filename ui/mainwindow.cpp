@@ -216,6 +216,39 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
 }
 
 /*!
+ * \brief MainWindow::keyPressEvent
+ * Triggered whenever the user has pressed a key
+ * \param e
+ */
+void MainWindow::keyPressEvent(QKeyEvent *e){
+
+    switch(e->key()){
+    case Qt::Key_F3: //measure
+        this->control.startMeasurement();
+        break;
+    case Qt::Key_A: //aim
+        if(e->modifiers() == Qt::AltModifier){
+            this->control.startAim();
+        }
+        break;
+    case Qt::Key_F7: //delete observations
+        QMessageBox msgBox;
+        msgBox.setText("Delete all observations?");
+        msgBox.setInformativeText("");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+        switch (ret) {
+        case QMessageBox::Yes:
+            emit this->removeAllObservations();
+            break;
+        }
+        break;
+    }
+
+}
+
+/*!
  * \brief MainWindow::on_actionCreate_point_triggered
  */
 void MainWindow::on_actionCreate_point_triggered(){
@@ -651,7 +684,7 @@ void MainWindow::setSensorConfiguration(const QString &name){
     msgBox.setText("Do you want to connect the sensor?");
     msgBox.setInformativeText("");
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setDefaultButton(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Yes);
     int ret = msgBox.exec();
 
     switch (ret) {
