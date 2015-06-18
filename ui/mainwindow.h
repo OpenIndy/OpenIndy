@@ -210,6 +210,17 @@ private slots:
     //show about dialog
     void on_actionAbout_OpenIndy_triggered();
 
+    //##############
+    //helper methods
+    //##############
+
+    //helper methods that work on the active feature
+    void showFeatureProperties(bool checked);
+
+    //helper methods that work on a user defined selection of features
+    void aimAndMeasureFeatures();
+    void deleteFeatures(bool checked);
+
 private:
     Ui::MainWindow *ui;
 
@@ -242,17 +253,6 @@ private:
     void activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
 
     void updateMagnifyWindow(const QPointer<FeatureWrapper> &feature);
-
-    //##############
-    //helper methods
-    //##############
-
-    //helper methods that work on the active feature
-    void showFeatureProperties(bool checked);
-
-    //helper methods that work on a user defined selection of features
-    void aimAndMeasureFeatures();
-    void deleteFeatures(bool checked);
 
     //############################
     //OpenIndy dialogs and widgets

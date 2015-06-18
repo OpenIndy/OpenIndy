@@ -586,6 +586,12 @@ void Controller::startMove(const Reading &reading){
         return;
     }
 
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        Console::getInstance()->addLine("No sensor connected to the active station");
+        return;
+    }
+
     //inform about start of sensor action
     emit this->sensorActionStarted("moving sensor...");
 
@@ -637,24 +643,64 @@ void Controller::startAim(){
         return;
     }
 
-    //create trafo controller instance and get the transformation matrix
-    TrafoController trafoController;
-    OiMat t(4, 4);
-    trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem());
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        Console::getInstance()->addLine("No sensor connected to the active station");
+        return;
+    }
 
     //transform position of the active feature into the station coordinate system
-    if(activeFeature->getGeometry()->hasPosition()){
+    if(!activeFeature->getGeometry()->hasPosition()){
         Console::getInstance()->addLine("Active feature has no position to aim");
         return;
     }
-    OiVec pos = activeFeature->getGeometry()->getPosition().getVectorH();
-    pos = t * pos;
 
-    //inform about start of sensor action
-    emit this->sensorActionStarted("moving sensor...");
+    //create trafo controller instance to get the transformation matrix
+    TrafoController trafoController;
+    OiMat t(4, 4);
+    OiVec pos;
 
-    //aim the active feature
-    activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), false);
+    //transform the active feature into the station coordinate system
+    //switch between actual and nominal if the active feature is not solved
+    if(activeFeature->getGeometry()->getIsNominal()){ //nominal
+
+        //transform the nominal into the station coordinate system
+        if(trafoController.getTransformationMatrix(t, activeFeature->getGeometry()->getNominalSystem(), activeStation->getCoordinateSystem())){
+            pos = activeFeature->getGeometry()->getPosition().getVectorH();
+            pos = t * pos;
+        }else if(!activeFeature->getGeometry()->getActual().isNull() && activeFeature->getGeometry()->getActual()->hasPosition()
+                 && activeFeature->getGeometry()->getActual()->getIsSolved()
+                 && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
+            pos = activeFeature->getGeometry()->getActual()->getPosition().getVectorH();
+            pos = t * pos;
+        }
+
+    }else{ //actual
+
+        //transform the actual into the station coordinate system
+        if(activeFeature->getGeometry()->getIsSolved() && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
+            pos = activeFeature->getGeometry()->getPosition().getVectorH();
+            pos = t * pos;
+        }else if(activeFeature->getGeometry()->getNominals().size() > 0){
+
+            //use nominal instead of actual
+            foreach(const QPointer<Geometry> &nominal, activeFeature->getGeometry()->getNominals()){
+                if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), activeStation->getCoordinateSystem())){
+                    pos = nominal->getPosition().getVectorH();
+                    pos = t * pos;
+                    break;
+                }
+            }
+
+        }
+
+    }
+
+    //aim the active feature if a valid position has been found
+    if(pos.getSize() == 4){
+        emit this->sensorActionStarted("moving sensor...");
+        activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), false);
+    }
 
 }
 
@@ -689,28 +735,65 @@ void Controller::startAimAndMeasure(){
         return;
     }
 
-    //create trafo controller instance and get the transformation matrix
-    TrafoController trafoController;
-    OiMat t(4, 4);
-    if(!trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
-        Console::getInstance()->addLine("No transformation found to transform between active coordinate system and the active station's system");
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        Console::getInstance()->addLine("No sensor connected to the active station");
         return;
     }
 
     //transform position of the active feature into the station coordinate system
-    if(activeFeature->getGeometry()->hasPosition()){
+    if(!activeFeature->getGeometry()->hasPosition()){
         Console::getInstance()->addLine("Active feature has no position to aim");
         return;
     }
-    OiVec pos = activeFeature->getGeometry()->getPosition().getVectorH();
-    pos = t * pos;
 
-    //inform about start of sensor action
-    emit this->sensorActionStarted("moving sensor and performing measurement...");
+    //create trafo controller instance to get the transformation matrix
+    TrafoController trafoController;
+    OiMat t(4, 4);
+    OiVec pos;
 
-    //aim the active feature and perform measurement
-    activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), true, activeFeature->getGeometry()->getId(),
-                        activeFeature->getGeometry()->getMeasurementConfig());
+    //transform the active feature into the station coordinate system
+    //switch between actual and nominal if the active feature is not solved
+    if(activeFeature->getGeometry()->getIsNominal()){ //nominal
+
+        //transform the nominal into the station coordinate system
+        if(trafoController.getTransformationMatrix(t, activeFeature->getGeometry()->getNominalSystem(), activeStation->getCoordinateSystem())){
+            pos = activeFeature->getGeometry()->getPosition().getVectorH();
+            pos = t * pos;
+        }else if(!activeFeature->getGeometry()->getActual().isNull() && activeFeature->getGeometry()->getActual()->hasPosition()
+                 && activeFeature->getGeometry()->getActual()->getIsSolved()
+                 && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
+            pos = activeFeature->getGeometry()->getActual()->getPosition().getVectorH();
+            pos = t * pos;
+        }
+
+    }else{ //actual
+
+        //transform the actual into the station coordinate system
+        if(activeFeature->getGeometry()->getIsSolved() && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
+            pos = activeFeature->getGeometry()->getPosition().getVectorH();
+            pos = t * pos;
+        }else if(activeFeature->getGeometry()->getNominals().size() > 0){
+
+            //use nominal instead of actual
+            foreach(const QPointer<Geometry> &nominal, activeFeature->getGeometry()->getNominals()){
+                if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), activeStation->getCoordinateSystem())){
+                    pos = nominal->getPosition().getVectorH();
+                    pos = t * pos;
+                    break;
+                }
+            }
+
+        }
+
+    }
+
+    //aim the active feature if a valid position has been found
+    if(pos.getSize() == 4){
+        emit this->sensorActionStarted("moving sensor...");
+        activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), true, activeFeature->getGeometry()->getId(),
+                            activeFeature->getGeometry()->getMeasurementConfig());
+    }
 
 }
 
@@ -728,6 +811,12 @@ void Controller::startToggleSight(){
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
         Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        Console::getInstance()->addLine("No sensor connected to the active station");
         return;
     }
 
@@ -756,6 +845,12 @@ void Controller::startInitialize(){
         return;
     }
 
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        Console::getInstance()->addLine("No sensor connected to the active station");
+        return;
+    }
+
     //inform about start of sensor action
     emit this->sensorActionStarted("initializing sensor...");
 
@@ -778,6 +873,12 @@ void Controller::startHome(){
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
         Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        Console::getInstance()->addLine("No sensor connected to the active station");
         return;
     }
 
@@ -806,6 +907,12 @@ void Controller::startCompensation(){
         return;
     }
 
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        Console::getInstance()->addLine("No sensor connected to the active station");
+        return;
+    }
+
     //inform about start of sensor action
     emit this->sensorActionStarted("starting compensation...");
 
@@ -828,6 +935,12 @@ void Controller::startChangeMotorState(){
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
         Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        Console::getInstance()->addLine("No sensor connected to the active station");
         return;
     }
 
@@ -854,6 +967,12 @@ void Controller::startCustomAction(const QString &task){
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
         Console::getInstance()->addLine("No active station");
+        return;
+    }
+
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        Console::getInstance()->addLine("No sensor connected to the active station");
         return;
     }
 

@@ -973,6 +973,87 @@ void MainWindow::on_actionAbout_OpenIndy_triggered(){
 }
 
 /*!
+ * \brief MainWindow::showFeatureProperties
+ * \param checked
+ */
+void MainWindow::showFeatureProperties(bool checked){
+
+    //get feature table models
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    //depending on the type of feature display a special properties dialog
+    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
+        this->actualPropertiesDialog.show();
+    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+        this->nominalPropertiesDialog.show();
+    }
+
+}
+
+/*!
+ * \brief MainWindow::aimAndMeasureFeatures
+ */
+void MainWindow::aimAndMeasureFeatures(){
+
+    //get feature table models
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get current job
+    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    if(job.isNull()){
+        return;
+    }
+
+    //get selected features
+    this->measureFeatures.clear();
+    QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
+    foreach(const QModelIndex &index, selection){
+        int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
+        if(id >= 0){
+            this->measureFeatures.append(id);
+        }
+    }
+
+    //aim and measure the first feature in the list of selected features
+    if(this->measureFeatures.size() > 0){
+        sourceModel->setActiveFeature(this->measureFeatures[0]);
+        this->measureFeatures.removeAt(0);
+        this->control.startAimAndMeasure();
+    }
+
+}
+
+/*!
+ * \brief MainWindow::deleteFeatures
+ * \param checked
+ */
+void MainWindow::deleteFeatures(bool checked){
+
+
+
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -1357,86 +1438,5 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
         fontName.setPointSizeF(fontName.pointSizeF()*scaleH);
     }
     this->ui->label_magnifyName->setFont(fontName);
-
-}
-
-/*!
- * \brief MainWindow::showFeatureProperties
- * \param checked
- */
-void MainWindow::showFeatureProperties(bool checked){
-
-    //get feature table models
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //get and check active feature
-    QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
-    if(feature.isNull() || feature->getFeature().isNull()){
-        return;
-    }
-
-    //depending on the type of feature display a special properties dialog
-    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
-        this->actualPropertiesDialog.show();
-    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
-        this->nominalPropertiesDialog.show();
-    }
-
-}
-
-/*!
- * \brief MainWindow::aimAndMeasureFeatures
- */
-void MainWindow::aimAndMeasureFeatures(){
-
-    //get feature table models
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //get current job
-    QPointer<OiJob> job = sourceModel->getCurrentJob();
-    if(job.isNull()){
-        return;
-    }
-
-    //get selected features
-    this->measureFeatures.clear();
-    QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
-    foreach(const QModelIndex &index, selection){
-        int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
-        if(id >= 0){
-            this->measureFeatures.append(id);
-        }
-    }
-
-    //aim and measure the first feature in the list of selected features
-    if(this->measureFeatures.size() > 0){
-        sourceModel->setActiveFeature(this->measureFeatures[0]);
-        this->measureFeatures.removeAt(0);
-        this->control.startAimAndMeasure();
-    }
-
-}
-
-/*!
- * \brief MainWindow::deleteFeatures
- * \param checked
- */
-void MainWindow::deleteFeatures(bool checked){
-
-
 
 }
