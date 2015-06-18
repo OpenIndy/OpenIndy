@@ -1029,7 +1029,7 @@ void MainWindow::aimAndMeasureFeatures(){
     QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
     foreach(const QModelIndex &index, selection){
         int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
-        if(id >= 0){
+        if(id >= 0 && !this->measureFeatures.contains(id)){
             this->measureFeatures.append(id);
         }
     }
