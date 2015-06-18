@@ -309,15 +309,15 @@ background-position: center center;</string>
     </property>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuSensor"/>
-   <addaction name="menuFeatures"/>
-   <addaction name="menuFunctions"/>
-   <addaction name="menuPlugins"/>
-   <addaction name="menuSettings"/>
    <addaction name="menuView"/>
-   <addaction name="menuHelp"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuFeatures"/>
+   <addaction name="menuSensor"/>
+   <addaction name="menuFunctions"/>
    <addaction name="menuTools"/>
    <addaction name="menuReport"/>
+   <addaction name="menuPlugins"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
