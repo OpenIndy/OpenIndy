@@ -94,6 +94,7 @@ INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/controller/config
 INCLUDEPATH += $$PWD/controller/exchange
 INCLUDEPATH += $$PWD/controller/param
+INCLUDEPATH += $$PWD/controller/network
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/ui/delegates
 INCLUDEPATH += $$PWD/ui/dialogs
@@ -215,7 +216,12 @@ SOURCES += \
     controller/exchange/observationimporter.cpp \
     ui/delegates/observationtabledelegate.cpp \
     ui/delegates/readingtabledelegate.cpp \
-    ui/dialogs/aboutdialog.cpp
+    ui/dialogs/aboutdialog.cpp \
+    controller/network/oinetworkconnection.cpp \
+    controller/network/oirequesthandler.cpp \
+    controller/network/oiserver.cpp \
+    controller/network/oiwebsocket.cpp \
+    controller/network/oiwebsocketserver.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -293,7 +299,12 @@ HEADERS  += \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/linearalgebra.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oimat.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oivec.h \
-    ui/dialogs/aboutdialog.h
+    ui/dialogs/aboutdialog.h \
+    controller/network/oinetworkconnection.h \
+    controller/network/oirequesthandler.h \
+    controller/network/oiserver.h \
+    controller/network/oiwebsocket.h \
+    controller/network/oiwebsocketserver.h
 
 FORMS    += \
     ui/mainwindow.ui \
