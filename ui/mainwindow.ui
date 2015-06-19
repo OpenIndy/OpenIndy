@@ -112,9 +112,9 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="table">
+      <widget class="QWidget" name="tab_features">
        <attribute name="title">
-        <string>table</string>
+        <string>features</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -145,7 +145,7 @@ background-position: center center;</string>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="graphic">
+      <widget class="QWidget" name="tab_graphic">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>

@@ -7,6 +7,7 @@
 #include <QIODevice>
 #include <QListView>
 #include <QSignalMapper>
+#include <QClipboard>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -220,6 +221,9 @@ private slots:
     //helper methods that work on a user defined selection of features
     void aimAndMeasureFeatures();
     void deleteFeatures(bool checked);
+
+    //copy values from and to clipboard
+    void copyToClipboard();
 
 private:
     Ui::MainWindow *ui;

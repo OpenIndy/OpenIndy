@@ -54,12 +54,22 @@ private slots:
     //actions triggered by user
     //#########################
 
+    //key pressed
+    void keyPressEvent(QKeyEvent * e);
+
     //import observations
     void on_tableView_observation_customContextMenuRequested(const QPoint &pos);
     void importObservationsMenuClicked(bool checked);
 
     //resize table views
     void resizeTableView();
+
+    //##############
+    //helper methods
+    //##############
+
+    //copy values from and to clipboard
+    void copyToClipboard();
 
 private:
 

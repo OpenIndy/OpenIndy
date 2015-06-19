@@ -19,7 +19,7 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="observations">
+     <widget class="QWidget" name="tab_observations">
       <attribute name="title">
        <string>observations</string>
       </attribute>
@@ -29,7 +29,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="readings">
+     <widget class="QWidget" name="tab_readings">
       <attribute name="title">
        <string>readings</string>
       </attribute>

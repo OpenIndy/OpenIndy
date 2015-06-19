@@ -271,7 +271,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
         }
         break;
 
-    case Qt::Key_F7: //delete observations
+    case Qt::Key_F7:{ //delete observations
 
         QMessageBox msgBox;
         msgBox.setText("Delete all observations?");
@@ -283,6 +283,13 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
         case QMessageBox::Yes:
             emit this->removeAllObservations();
             break;
+        }
+        break;
+
+    }case Qt::Key_C: //copy to clipboard
+
+        if(e->modifiers() == Qt::CTRL){
+            this->copyToClipboard();
         }
         break;
 
@@ -1050,6 +1057,72 @@ void MainWindow::aimAndMeasureFeatures(){
 void MainWindow::deleteFeatures(bool checked){
 
 
+
+}
+
+/*!
+ * \brief MainWindow::copyToClipboard
+ * Copies the current selection into the clipboard
+ */
+void MainWindow::copyToClipboard(){
+
+    //init variables
+    QAbstractItemModel *model = NULL;
+    QItemSelectionModel *selectionModel = NULL;
+    QModelIndexList selection;
+
+    //get selection of the active table view
+    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
+        model = this->ui->tableView_features->model();
+        selectionModel = this->ui->tableView_features->selectionModel();
+        selection = selectionModel->selectedIndexes();
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
+        model = this->ui->tableView_trafoParams->model();
+        selectionModel = this->ui->tableView_trafoParams->selectionModel();
+        selection = selectionModel->selectedIndexes();
+    }
+
+    //check and sort selection
+    if(selection.size() <= 0){
+        return;
+    }
+    qSort(selection);
+
+    //###############################
+    //copy the selection to clipboard
+    //###############################
+
+    QString copy_table;
+    QModelIndex last = selection.last();
+    QModelIndex previous = selection.first();
+    selection.removeFirst();
+
+    //loop over all selected rows and columns
+    for(int i = 0; i < selection.size(); i++){
+
+        QVariant data = model->data(previous);
+        QString text = data.toString();
+
+        QModelIndex index = selection.at(i);
+        copy_table.append(text);
+
+        //if new line
+        if(index.row() != previous.row()){
+            copy_table.append('\n');
+        }else{ //if same line, but new column
+            copy_table.append('\t');
+        }
+        previous = index;
+
+    }
+
+    //get last selected cell
+    copy_table.append(model->data(last).toString());
+    copy_table.append('\n');
+
+    //set values to clipboard, so you can copy them
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(copy_table);
 
 }
 
