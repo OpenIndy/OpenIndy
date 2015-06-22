@@ -152,8 +152,18 @@ bool FunctionTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex
 
                 }else if(this->currentJob->getActiveFeature()->getFeatureTypeEnum() == eTrafoParamFeature){ //trafo param
 
-                    if(function.iid.compare(OiMetaData::iid_SystemTransformation) == 0){
-                        return true;
+                    if(this->currentJob->getActiveFeature()->getFeature()->getFunctions().size() == 0){ // first function
+
+                        if(function.iid.compare(OiMetaData::iid_SystemTransformation) == 0){
+                            return true;
+                        }
+
+                    }else{ //not the first function
+
+                        if(function.iid.compare(OiMetaData::iid_ObjectTransformation) == 0){
+                            return true;
+                        }
+
                     }
 
                 }
