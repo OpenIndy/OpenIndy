@@ -37,17 +37,10 @@ int OiNetworkConnection::getInternalRef(){
  * Is called whenever a response to a request of this client is available
  * \param response
  */
-void OiNetworkConnection::receiveResponse(const QPointer<OiRequestResponse> &response){
-
-    if(response.isNull()){
-        return;
-    }
+void OiNetworkConnection::receiveResponse(OiRequestResponse response){
 
     //send response to client
-    this->socket->write(response->response.toByteArray());
-    if(response->myRequestType != OiRequestResponse::eStartWatchwindow){
-        delete response;
-    }
+    this->socket->write(response.response.toByteArray());
 
 }
 
@@ -58,10 +51,10 @@ void OiNetworkConnection::receiveResponse(const QPointer<OiRequestResponse> &res
 void OiNetworkConnection::readMessage(){
 
     //create new xml request
-    QPointer<OiRequestResponse> request = new OiRequestResponse();
-    request->requesterId = this->internalRef;
+    OiRequestResponse request;
+    request.requesterId = this->internalRef;
     QString xmlRequest = this->socket->readAll();
-    request->request.setContent(xmlRequest);
+    request.request.setContent(xmlRequest);
 
     emit this->sendRequest(request);
 

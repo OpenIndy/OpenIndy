@@ -36,17 +36,10 @@ bool OiWebSocket::setSocket(const QPointer<QWebSocket> &mySocket){
  * Is called whenever a response to a request of this client is available
  * \param response
  */
-void OiWebSocket::receiveResponse(const QPointer<OiRequestResponse> &response){
-
-    if(response.isNull()){
-        return;
-    }
+void OiWebSocket::receiveResponse(OiRequestResponse response){
 
     //send response to client
-    this->socket->sendTextMessage(response->response.toByteArray());
-    if(response->myRequestType != OiRequestResponse::eStartWatchwindow){
-        delete response;
-    }
+    this->socket->sendTextMessage(response.response.toByteArray());
 
 }
 
@@ -57,9 +50,9 @@ void OiWebSocket::receiveResponse(const QPointer<OiRequestResponse> &response){
 void OiWebSocket::readMessage(const QString &msg){
 
     //create new xml request
-    QPointer<OiRequestResponse> request = new OiRequestResponse();
-    request->requesterId = this->internalRef;
-    request->request.setContent(msg);
+    OiRequestResponse request;
+    request.requesterId = this->internalRef;
+    request.request.setContent(msg);
 
     emit this->sendRequest(request);
 

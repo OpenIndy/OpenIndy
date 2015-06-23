@@ -59,7 +59,7 @@ void OiServer::stopServer(){
  */
 void OiServer::incomingConnection(qintptr socketDescriptor){
 
-    Console::addLine("Connecting to client " + QString::number(socketDescriptor) + " ...");
+    Console::getInstance()->addLine("Connecting to client " + QString::number(socketDescriptor) + " ...");
 
     //create and connect the network connection
     QPointer<OiNetworkConnection> myConnection = new OiNetworkConnection();
@@ -77,15 +77,11 @@ void OiServer::incomingConnection(qintptr socketDescriptor){
  * Is called from OiRequestHandler whenever a client request was done and the response is available
  * \param response
  */
-void OiServer::receiveResponse(const QPointer<OiRequestResponse> &response){
-
-    if(response.isNull()){
-        return;
-    }
+void OiServer::receiveResponse(OiRequestResponse response){
 
     //send the response to the correct client
     foreach(const QPointer<OiNetworkConnection> &socket, this->usedSockets){
-        if(!socket.isNull() && socket->getInternalRef() == response->requesterId){
+        if(!socket.isNull() && socket->getInternalRef() == response.requesterId){
             socket->receiveResponse(response);
             return;
         }

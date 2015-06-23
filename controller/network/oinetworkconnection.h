@@ -11,6 +11,8 @@
 #include "console.h"
 #include "oirequestresponse.h"
 
+using namespace oi;
+
 /*!
  * \brief The OiNetworkConnection class
  * Represents a socket connection of a client to OpenIndy
@@ -36,7 +38,7 @@ signals:
     //send a request to OpenIndy
     //##########################
 
-    void sendRequest(const QPointer<OiRequestResponse> &request);
+    void sendRequest(OiRequestResponse request);
 
 public slots:
 
@@ -44,7 +46,7 @@ public slots:
     //recevie response from OpenIndy
     //##############################
 
-    void receiveResponse(const QPointer<OiRequestResponse> &response);
+    void receiveResponse(OiRequestResponse response);
 
 private slots:
 

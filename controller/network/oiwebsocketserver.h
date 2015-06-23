@@ -9,6 +9,8 @@
 #include "oiwebsocket.h"
 #include "oirequesthandler.h"
 
+using namespace oi;
+
 /*!
  * \brief The OiWebSocketServer class
  * Class to handle all web socket connections to OpenIndy
@@ -38,7 +40,7 @@ private slots:
     //send response to the requester
     //##############################
 
-    void receiveResponse(const QPointer<OiRequestResponse> &response);
+    void receiveResponse(OiRequestResponse response);
 
 private:
 

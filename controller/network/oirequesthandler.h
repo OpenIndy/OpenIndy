@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtXml>
 #include <QThread>
+#include <QPointer>
 
 #include "oirequestresponse.h"
 #include "featurewrapper.h"
@@ -12,13 +13,15 @@
 #include "sensorlistener.h"
 #include "featureupdater.h"
 
+using namespace oi;
+
 struct WatchWindowTask{
     bool taskInProcess;
-    OiRequestResponse *request;
+    OiRequestResponse request;
 };
 struct MeasurementTask{
     bool taskInProcess;
-    OiRequestResponse *request;
+    OiRequestResponse request;
 };
 
 /*!
@@ -32,48 +35,98 @@ private:
     explicit OiRequestHandler(QObject *parent = 0);
 
 public:
-    static OiRequestHandler *getInstance();
+    static QPointer<OiRequestHandler> getInstance();
+
+    //######################
+    //get or set current job
+    //######################
+
+    const QPointer<OiJob> &getJob() const;
+    void setJob(const QPointer<OiJob> &job);
 
 public slots:
-    bool receiveRequest(OiRequestResponse *request);
 
-    void receiveOiToolResponse(OiRequestResponse *response);
+    //################
+    //receive requests
+    //################
+
+    bool receiveRequest(OiRequestResponse request);
+
+    //#####################
+    //receive tool response
+    //#####################
+
+    void receiveOiToolResponse(OiRequestResponse response);
 
 signals:
-    bool sendResponse(OiRequestResponse *response);
 
-    void sendOiToolRequest(OiRequestResponse *request);
+    //#############
+    //send response
+    //#############
+
+    bool sendResponse(OiRequestResponse response);
+
+    //#################
+    //send tool request
+    //#################
+
+    void sendOiToolRequest(OiRequestResponse request);
+
+    //######################
+    //trigger sensor actions
+    //######################
+
+    void startAim();
+    void startMeasurement();
 
 private:
-    static OiRequestHandler *myRequestHandler;
+
+    //#################
+    //helper attributes
+    //#################
+
+    static QPointer<OiRequestHandler> myRequestHandler;
 
     QThread workerThread;
 
-    WatchWindowTask myWatchWindowTask;
-    MeasurementTask myMeasurementTask;
+    //save tasks which are currently in process
+    WatchWindowTask watchWindowTask;
+    MeasurementTask measurementTask;
 
-    void getProject(OiRequestResponse *request);
-    void setProject(OiRequestResponse *request);
-    void getActiveFeature(OiRequestResponse *request);
-    void setActiveFeature(OiRequestResponse *request);
-    void getActiveStation(OiRequestResponse *request);
-    void setActiveStation(OiRequestResponse *request);
-    void getActiveCoordinateSystem(OiRequestResponse *request);
-    void setActiveCoordinateSystem(OiRequestResponse *request);
-    void aim(OiRequestResponse *request);
-    void move(OiRequestResponse *request);
-    void measure(OiRequestResponse *request);
-    void startWatchwindow(OiRequestResponse *request);
-    void stopWatchwindow(OiRequestResponse *request);
+    QPointer<OiJob> currentJob;
 
-    void prepareResponse(OiRequestResponse *request);
+    //##############
+    //helper methods
+    //##############
 
-    bool buildWatchWindowMessage(QDomElement &wwTag, int readingType, QVariantMap streamData);
+    //request processing
+    void getProject(OiRequestResponse request);
+    void setProject(OiRequestResponse request);
+    void getActiveFeature(OiRequestResponse request);
+    void setActiveFeature(OiRequestResponse request);
+    void getActiveStation(OiRequestResponse request);
+    void setActiveStation(OiRequestResponse request);
+    void getActiveCoordinateSystem(OiRequestResponse request);
+    void setActiveCoordinateSystem(OiRequestResponse request);
+    void aim(OiRequestResponse request);
+    void move(OiRequestResponse request);
+    void measure(OiRequestResponse request);
+    void startWatchwindow(OiRequestResponse request);
+    void stopWatchwindow(OiRequestResponse request);
+
+    //prepare response to client
+    void prepareResponse(OiRequestResponse &request);
+
+    bool buildWatchWindowMessage(QDomElement &wwTag, const int &readingType, const QVariantMap &streamData);
 
 private slots:
-    void receiveWatchWindowData(QVariantMap data);
 
-    void measurementFinished(bool success);
+    //##################################
+    //watch window and measure callbacks
+    //##################################
+
+    void receiveWatchWindowData(const QVariantMap &data);
+    void measurementFinished(const bool &success);
 };
 
 #endif // OIREQUESTHANDLER_H

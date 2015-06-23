@@ -29,9 +29,9 @@ int OiWebSocketServer::generateUniqueId(){
  */
 void OiWebSocketServer::startServer(){
     if(!this->listen(QHostAddress::Any,1235)){
-        Console::addLine("could not start local server");
+        Console::getInstance()->addLine("could not start local server");
     }else{
-        Console::addLine("local server ready ...");
+        Console::getInstance()->addLine("local server ready ...");
     }
 }
 
@@ -67,7 +67,7 @@ void OiWebSocketServer::incomingConnection(){
     QPointer<OiWebSocket> myConnection = new OiWebSocket();
     myConnection->setSocket(mySocket);
 
-    Console::addLine("Connecting to client " + QString::number(myConnection->getInternalRef()) + " ...");
+    Console::getInstance()->addLine("Connecting to client " + QString::number(myConnection->getInternalRef()) + " ...");
 
     QObject::connect(myConnection, &OiWebSocket::finished, myConnection, &OiWebSocket::deleteLater, Qt::AutoConnection);
     QObject::connect(myConnection, &OiWebSocket::sendRequest, OiRequestHandler::getInstance(), &OiRequestHandler::receiveRequest, Qt::AutoConnection);
@@ -82,15 +82,11 @@ void OiWebSocketServer::incomingConnection(){
  * Is called from OiRequestHandler whenever a client request was done and the response is available
  * \param response
  */
-void OiWebSocketServer::receiveResponse(const QPointer<OiRequestResponse> &response){
-
-    if(response.isNull()){
-        return;
-    }
+void OiWebSocketServer::receiveResponse(OiRequestResponse response){
 
     //send the response to the correct client
     foreach(const QPointer<OiWebSocket> &socket, this->usedSockets){
-        if(!socket.isNull() && socket->getInternalRef() == response->requesterId){
+        if(!socket.isNull() && socket->getInternalRef() == response.requesterId){
             socket->receiveResponse(response);
             return;
         }
