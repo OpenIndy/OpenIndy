@@ -18,6 +18,9 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize config manager
     this->initConfigManager();
 
+    //start OpenIndy server
+    this->startServer();
+
     //connect helper objects
     this->connectDataExchanger();
     this->connectFeatureUpdater();
@@ -1242,6 +1245,31 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<QPointer<oi::Function> >("QPointer<Function>");
     qRegisterMetaType<QPointer<oi::FeatureWrapper> >("QPointer<FeatureWrapper>");
     qRegisterMetaType<QPointer<oi::Observation> >("QPointer<Observation>");
+    qRegisterMetaType<oi::OiRequestResponse>("OiRequestResponse");
+
+}
+
+/*!
+ * \brief Controller::startServer
+ */
+void Controller::startServer(){
+
+    //start web socket server
+    this->webSocketServer.startServer();
+
+    //connect web socket server
+
+}
+
+/*!
+ * \brief Controller::stopServer
+ */
+void Controller::stopServer(){
+
+    //stop web socket server
+    this->webSocketServer.stopServer();
+
+    //disconnect web socket server
 
 }
 

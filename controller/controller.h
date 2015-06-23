@@ -23,6 +23,7 @@
 #include "featureupdater.h"
 #include "projectexchanger.h"
 #include "pluginloader.h"
+#include "oiwebsocketserver.h"
 
 using namespace oi;
 
@@ -213,6 +214,10 @@ private:
 
     void registerMetaTypes();
 
+    //start or stop OpenIndy server
+    void startServer();
+    void stopServer();
+
     //######################
     //connect helper objects
     //######################
@@ -237,6 +242,9 @@ private:
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
+
+    //server instances
+    OiWebSocketServer webSocketServer;
 
 };
 
