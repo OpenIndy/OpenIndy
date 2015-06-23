@@ -304,7 +304,8 @@ HEADERS  += \
     controller/network/oirequesthandler.h \
     controller/network/oiserver.h \
     controller/network/oiwebsocket.h \
-    controller/network/oiwebsocketserver.h
+    controller/network/oiwebsocketserver.h \
+    lib/OpenIndy-Core/include/oirequestresponse.h
 
 FORMS    += \
     ui/mainwindow.ui \
