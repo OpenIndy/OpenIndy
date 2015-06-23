@@ -1213,6 +1213,9 @@ void MainWindow::assignModels(){
     TrafoParamDelegate *trafoParamTableDelegate = new TrafoParamDelegate();
     this->ui->tableView_trafoParams->setItemDelegate(trafoParamTableDelegate);
 
+    //assign feature tree view model
+    this->ui->treeView_featureOverview->setModel(&ModelManager::getFeatureTreeViewModel());
+
     //assign console model
     this->ui->listView_console->setModel(&Console::getInstance()->getConsoleModel());
 

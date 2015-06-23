@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql svg serialport network opengl xml websockets
+QT       += core gui sql svg serialport network opengl xml websockets 3dcore 3drenderer 3dinput
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -215,7 +215,8 @@ SOURCES += \
     controller/exchange/observationimporter.cpp \
     ui/delegates/observationtabledelegate.cpp \
     ui/delegates/readingtabledelegate.cpp \
-    ui/dialogs/aboutdialog.cpp
+    ui/dialogs/aboutdialog.cpp \
+    ui/widgets/glviewwidget.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -293,7 +294,8 @@ HEADERS  += \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/linearalgebra.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oimat.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oivec.h \
-    ui/dialogs/aboutdialog.h
+    ui/dialogs/aboutdialog.h \
+    ui/widgets/glviewwidget.h
 
 FORMS    += \
     ui/mainwindow.ui \
