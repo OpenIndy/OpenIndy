@@ -34,6 +34,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     root.setAttribute("name", job->getJobName());
     root.setAttribute("date", dateTime);
     root.setAttribute("idCount", QString::number(job->generateUniqueId()));
+    root.setAttribute("version", QString(OPENINDY_VERSION));
     project.appendChild(root);
 
     //add active station and active coordinate system
