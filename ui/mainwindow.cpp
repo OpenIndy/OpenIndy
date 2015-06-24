@@ -253,6 +253,18 @@ void MainWindow::measurementCompleted(){
  */
 void MainWindow::keyPressEvent(QKeyEvent *e){
 
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
     //check triggered keys
     switch(e->key()){
     case Qt::Key_F3: //measure
@@ -273,15 +285,21 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
 
     case Qt::Key_F7:{ //delete observations
 
+        //get and check the active feature
+        QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+        if(feature.isNull() || feature->getFeature().isNull()){
+            return;
+        }
+
         QMessageBox msgBox;
-        msgBox.setText("Delete all observations?");
+        msgBox.setText(QString("Delete observations of feature %1?").arg(feature->getFeature()->getFeatureName()));
         msgBox.setInformativeText("");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::Yes);
         int ret = msgBox.exec();
         switch (ret) {
         case QMessageBox::Yes:
-            emit this->removeAllObservations();
+            this->removeObservationOfActiveFeature();
             break;
         }
         break;
