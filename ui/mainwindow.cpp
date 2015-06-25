@@ -518,7 +518,9 @@ void MainWindow::on_tableView_features_clicked(const QModelIndex &index){
  * \param deselected
  */
 void MainWindow::tableViewFeaturesSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected){
-    this->on_tableView_features_clicked(selected);
+    if(selected.isValid() && deselected.isValid()){
+        this->on_tableView_features_clicked(selected);
+    }
 }
 
 /*!
@@ -610,7 +612,9 @@ void MainWindow::on_tableView_trafoParams_clicked(const QModelIndex &index){
  * \param deselected
  */
 void MainWindow::tableViewTrafoParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected){
-    this->on_tableView_trafoParams_clicked(selected);
+    if(selected.isValid() && deselected.isValid()){
+        this->on_tableView_trafoParams_clicked(selected);
+    }
 }
 
 /*!
@@ -834,6 +838,10 @@ void MainWindow::on_actionOpen_triggered(){
     QPointer<QIODevice> device = new QFile(filename);
     QFileInfo info(filename);
     QString projectName = info.fileName();
+
+    //clear current selection in table view
+    this->ui->tableView_features->clearSelection();
+    this->ui->tableView_trafoParams->clearSelection();
 
     emit this->loadProject(projectName, device);
 

@@ -1538,5 +1538,11 @@ void ProjectExchanger::clearHelperMaps(bool deleteOnClear){
     ProjectExchanger::myObservations.clear();
     ProjectExchanger::myStations.clear();
     ProjectExchanger::myCoordinateSystems.clear();
+    ProjectExchanger::myReadings.clear();
+    ProjectExchanger::myTransformationParameters.clear();
+    ProjectExchanger::myGeometries.clear();
+    ProjectExchanger::myMConfigs.clear();
+    ProjectExchanger::mySConfigs.clear();
+    ProjectExchanger::stationPoints.clear();
 
 }
