@@ -11,6 +11,7 @@
 #include "util.h"
 #include "parameterdisplayconfig.h"
 #include "console.h"
+#include "measurementconfigmanager.h"
 
 using namespace oi;
 
@@ -83,6 +84,13 @@ public:
     const ParameterDisplayConfig &getParameterDisplayConfig() const;
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
+    //#########################
+    //get or set config manager
+    //#########################
+
+    const QPointer<MeasurementConfigManager> &getMeasurementConfigManager() const;
+    void setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &mConfigManager);
+
 private slots:
 
     //##############################################################
@@ -116,6 +124,12 @@ private:
     //##############
 
     ParameterDisplayConfig parameterDisplayConfig;
+
+    //##############
+    //config manager
+    //##############
+
+    QPointer<MeasurementConfigManager> measurementConfigManager;
     
 };
 

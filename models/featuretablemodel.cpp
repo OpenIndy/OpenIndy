@@ -268,6 +268,26 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         }case eFeatureDisplayGroup:{
             feature->getFeature()->setGroupName(value.toString());
             return true;
+        }case eFeatureDisplayMeasurementConfig:{
+
+            //check if the feature is a geometry
+            if(feature->getGeometry().isNull()){
+                return false;
+            }
+
+            //get config from config name
+            QString mConfigName = value.toString();
+            if(this->measurementConfigManager.isNull()){
+                return false;
+            }
+            MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(mConfigName);
+
+            //update feature's measurement config
+            if(mConfig.getIsValid()){
+                feature->getGeometry()->setMeasurementConfig(mConfig);
+                return true;
+            }
+
         }
         }
 
@@ -607,6 +627,22 @@ const ParameterDisplayConfig &FeatureTableModel::getParameterDisplayConfig() con
 void FeatureTableModel::setParameterDisplayConfig(const ParameterDisplayConfig &config){
     this->parameterDisplayConfig = config;
     this->updateModel();
+}
+
+/*!
+ * \brief FeatureTableModel::getMeasurementConfigManager
+ * \return
+ */
+const QPointer<MeasurementConfigManager> &FeatureTableModel::getMeasurementConfigManager() const{
+    return this->measurementConfigManager;
+}
+
+/*!
+ * \brief FeatureTableModel::setMeasurementConfigManager
+ * \param mConfigManager
+ */
+void FeatureTableModel::setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &mConfigManager){
+    this->measurementConfigManager = mConfigManager;
 }
 
 /*!

@@ -810,6 +810,7 @@ void ModelManager::updateMeasurementConfigManager(){
 
     //pass the measurement config manager to all static models that need it
     ModelManager::measurementConfigurationModel.setMeasurementConfigurationManager(ModelManager::measurementConfigManager);
+    ModelManager::featureTableModel.setMeasurementConfigManager(ModelManager::measurementConfigManager);
 
 }
 
