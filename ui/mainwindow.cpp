@@ -311,6 +311,13 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
         }
         break;
 
+    case Qt::Key_V: //paste from clipboard
+
+        if(e->modifiers() == Qt::CTRL){
+            this->pasteFromClipboard();
+        }
+        break;
+
     }
 
 }
@@ -1116,7 +1123,7 @@ void MainWindow::deleteFeatures(bool checked){
         return;
     }
 
-    //get selected index and map them to source
+    //get selected indexes
     selection = selectionModel->selectedIndexes();
     if(selection.size() <= 0){
         Console::getInstance()->addLine("No features selected");
@@ -1188,9 +1195,9 @@ void MainWindow::copyToClipboard(){
 
         //if new line
         if(index.row() != previous.row()){
-            copy_table.append('\n');
+            copy_table.append("\n");
         }else{ //if same line, but new column
-            copy_table.append('\t');
+            copy_table.append("\t");
         }
         previous = index;
 
@@ -1198,11 +1205,93 @@ void MainWindow::copyToClipboard(){
 
     //get last selected cell
     copy_table.append(model->data(last).toString());
-    copy_table.append('\n');
+    copy_table.append("\n");
 
     //set values to clipboard, so you can copy them
     QClipboard *clipboard = QApplication::clipboard();
+    clipboard->clear();
     clipboard->setText(copy_table);
+
+}
+
+/*!
+ * \brief MainWindow::pasteFromClipboard
+ */
+void MainWindow::pasteFromClipboard(){
+
+    //init variables
+    QSortFilterProxyModel *model = NULL;
+    QItemSelectionModel *selectionModel = NULL;
+    QModelIndexList selection;
+
+    //get models depending on the current tab view
+    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
+
+        model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+        if(model == NULL){
+            return;
+        }
+
+        //get selection
+        selectionModel = this->ui->tableView_features->selectionModel();
+
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
+
+        model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
+        if(model == NULL){
+            return;
+        }
+
+        //get selection
+        selectionModel = this->ui->tableView_trafoParams->selectionModel();
+
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get selected indexes
+    selection = selectionModel->selectedIndexes();
+    if(selection.size() <= 0){
+        Console::getInstance()->addLine("No features selected");
+        return;
+    }
+    qSort(selection);
+
+    //get values from clipboard, so you can copy them
+    QClipboard *clipboard = QApplication::clipboard();
+    QString copy_table = clipboard->text();
+
+    //seperate copy table into columns: only one column is allowed
+    QStringList columns = copy_table.split('\t');
+    if(columns.size() != 1){
+        return;
+    }
+
+    //seperate copy table into rows: either one or selection.size rows are allowed
+    QStringList rows = copy_table.split('\n');
+    if(rows.size() != 2 && rows.size() != selection.size()+1){
+        return;
+    }
+    rows.removeLast();
+
+    //edit entries at selected indexes
+    if(rows.size() == 1){
+        foreach(const QModelIndex &index, selection){
+            QModelIndex currentIndex = model->index(index.row(), index.column());
+            sourceModel->setData(model->mapToSource(currentIndex), rows.at(0));
+        }
+    }else{
+        int i = 0;
+        foreach(const QModelIndex &index, selection){
+            QModelIndex currentIndex = model->index(index.row(), index.column());
+            sourceModel->setData(model->mapToSource(currentIndex), rows.at(i));
+            i++;
+        }
+    }
 
 }
 

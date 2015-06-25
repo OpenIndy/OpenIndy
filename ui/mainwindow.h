@@ -224,6 +224,7 @@ private slots:
 
     //copy values from and to clipboard
     void copyToClipboard();
+    void pasteFromClipboard();
 
 private:
     Ui::MainWindow *ui;
