@@ -1074,7 +1074,61 @@ void MainWindow::aimAndMeasureFeatures(){
  */
 void MainWindow::deleteFeatures(bool checked){
 
+    //init variables
+    QSortFilterProxyModel *model = NULL;
+    QItemSelectionModel *selectionModel = NULL;
+    QModelIndexList selection;
 
+    //get models depending on the current tab view
+    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
+
+        model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+        if(model == NULL){
+            return;
+        }
+
+        //get selection
+        selectionModel = this->ui->tableView_features->selectionModel();
+
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
+
+        model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
+        if(model == NULL){
+            return;
+        }
+
+        //get selection
+        selectionModel = this->ui->tableView_trafoParams->selectionModel();
+
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get selected index and map them to source
+    selection = selectionModel->selectedIndexes();
+    if(selection.size() <= 0){
+        Console::getInstance()->addLine("No features selected");
+        return;
+    }
+    qSort(selection);
+
+    //get the id's of the selected features
+    QSet<int> featureIds;
+    foreach(const QModelIndex &index, selection){
+        int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
+        if(id >= 0){
+            featureIds.insert(id);
+        }
+    }
+
+    //remove the selected features
+    if(featureIds.size() > 0){
+        emit this->removeFeatures(featureIds);
+    }
 
 }
 
@@ -1161,6 +1215,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::loadProject, &this->control, &Controller::loadProject, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeObservations, &this->control, &Controller::removeObservations, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeAllObservations, &this->control, &Controller::removeAllObservations, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::removeFeatures, &this->control, &Controller::removeFeatures, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);

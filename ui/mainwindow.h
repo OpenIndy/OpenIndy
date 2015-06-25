@@ -60,7 +60,7 @@ signals:
 
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
-    void removeFeature(const int &featureId);
+    void removeFeatures(const QSet<int> &featureIds);
 
     //remove observations
     void removeObservations(const int &featureId);

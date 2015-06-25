@@ -89,6 +89,25 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
 }
 
 /*!
+ * \brief Controller::removeFeatures
+ * \param featureIds
+ */
+void Controller::removeFeatures(const QSet<int> &featureIds){
+
+    //check job
+    if(this->job.isNull()){
+        Console::getInstance()->addLine("No active job");
+        return;
+    }
+
+    //remove features
+    if(!this->job->removeFeatures(featureIds)){
+        Console::getInstance()->addLine("Error while removeing features");
+    }
+
+}
+
+/*!
  * \brief Controller::recalcActiveFeature
  */
 void Controller::recalcActiveFeature(){

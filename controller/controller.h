@@ -52,6 +52,7 @@ public slots:
 
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
+    void removeFeatures(const QSet<int> &featureIds);
 
     //recalculation
     void recalcActiveFeature();
