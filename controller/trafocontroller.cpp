@@ -135,7 +135,7 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
 
     //try to find a corresponding transformation to directly transform between systems
     QPointer<TrafoParam> trafoParam = this->findTransformation(startSystem, destinationSystem);
-    if(!trafoParam.isNull()){
+    if(!trafoParam.isNull() && trafoParam->getIsSolved()){
         if(trafoParam->getStartSystem() == startSystem){
             trafoMat = trafoParam->getHomogenMatrix();
         }else{
@@ -148,7 +148,7 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
     foreach(const QPointer<TrafoParam> &tp, startSystem->getTransformationParameters()){
 
         //check tp
-        if(tp.isNull() || !tp->getIsUsed()){
+        if(tp.isNull() || !tp->getIsUsed() || !tp->getIsSolved()){
             continue;
         }
 
@@ -156,7 +156,7 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
         foreach(const QPointer<TrafoParam> &t, tp->getStartSystem()->getTransformationParameters()){
 
             //check t
-            if(t.isNull() || !t->getIsUsed() || !t->getIsDatumTrafo()){
+            if(t.isNull() || !t->getIsUsed() || !tp->getIsSolved() || !t->getIsDatumTrafo()){
                 continue;
             }
 
@@ -189,7 +189,7 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
         foreach(const QPointer<TrafoParam> &t, tp->getDestinationSystem()->getTransformationParameters()) {
 
             //check tp
-            if(tp.isNull() || !tp->getIsUsed()){
+            if(tp.isNull() || !tp->getIsUsed() || !tp->getIsSolved()){
                 continue;
             }
 
