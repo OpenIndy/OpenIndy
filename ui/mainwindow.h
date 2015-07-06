@@ -86,6 +86,9 @@ signals:
     void saveProject(const QString &fileName);
     void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
 
+    //log messages
+    void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private slots:
 
     //#############################
@@ -119,6 +122,9 @@ private slots:
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
+
+    //display a message box
+    void showMessageBox(const QString &msg, const MessageTypes &msgType);
 
     //#########################
     //actions triggered by user

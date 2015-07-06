@@ -70,13 +70,13 @@ void MeasurementConfigManager::addMeasurementConfig(const MeasurementConfig &mCo
 
     //check if mConfig is valid
     if(!mConfig.getIsValid()){
-        Console::getInstance()->addLine("Cannot add a measurement configuration with an empty name");
+        Console::getInstance()->addLine("Cannot add a measurement configuration with an empty name", eErrorMessage);
         return;
     }
 
     //check if mConfig already exists
     if(this->savedMeasurementConfigs.contains(mConfig.getName())){
-        Console::getInstance()->addLine(QString("A measurement configuration with the name %1 already exists").arg(mConfig.getName()));
+        Console::getInstance()->addLine(QString("A measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
         return;
     }
 
@@ -93,13 +93,13 @@ void MeasurementConfigManager::removeMeasurementConfig(const QString &name){
 
     //check name
     if(name.compare("") == 0){
-        Console::getInstance()->addLine("Cannot remove a measurement configuration with an empty name");
+        Console::getInstance()->addLine("Cannot remove a measurement configuration with an empty name", eErrorMessage);
         return;
     }
 
     //check if the measurement config exists
     if(!this->savedMeasurementConfigs.contains(name)){
-        Console::getInstance()->addLine(QString("A measurement configuration with the name %1 does not exist").arg(name));
+        Console::getInstance()->addLine(QString("A measurement configuration with the name %1 does not exist").arg(name), eErrorMessage);
         return;
     }
 

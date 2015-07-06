@@ -474,7 +474,7 @@ void FeatureTableModel::setActiveStation(const QModelIndex &index){
     //check feature at index
     QPointer<FeatureWrapper> feature = this->currentJob->getFeaturesList().at(index.row());
     if(feature.isNull() || feature->getStation().isNull()){
-        Console::getInstance()->addLine("No station selected");
+        Console::getInstance()->addLine("No station selected", eWarningMessage);
         return;
     }
 
@@ -497,7 +497,7 @@ void FeatureTableModel::setActiveStation(const int &id){
     //get and check feature with the given id
     QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id);
     if(feature.isNull() || feature->getStation().isNull()){
-        Console::getInstance()->addLine("No station selected");
+        Console::getInstance()->addLine("No station selected", eWarningMessage);
         return;
     }
 

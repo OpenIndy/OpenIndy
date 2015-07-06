@@ -48,7 +48,7 @@ signals:
     //signals to inform OpenIndy about import issues
     //##############################################
 
-    void sendMessage(const QString &msg);
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
     void updateProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
     void importFinished(const bool &success);
 

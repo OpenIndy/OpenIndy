@@ -55,14 +55,14 @@ bool ObservationImporter::importObservations(){
 
     //check job
     if(this->currentJob.isNull()){
-        Console::getInstance()->addLine("No active job");
+        emit this->sendMessage("No active job", eErrorMessage, eMessageBoxMessage);
         emit this->importFinished(false);
         return false;
     }
 
     //check active station
     if(this->currentJob->getActiveStation().isNull()){
-        Console::getInstance()->addLine("No active station");
+        emit this->sendMessage("No active station", eErrorMessage, eMessageBoxMessage);
         emit this->importFinished(false);
         return false;
     }
@@ -70,14 +70,14 @@ bool ObservationImporter::importObservations(){
     //check active feature
     if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getGeometry().isNull()
             || this->currentJob->getActiveFeature()->getGeometry()->getIsNominal()){
-        Console::getInstance()->addLine("You have to select an actual geometry before importing observations");
+        emit this->sendMessage("You have to select an actual geometry before importing observations", eErrorMessage, eMessageBoxMessage);
         emit this->importFinished(false);
         return false;
     }
 
     //check filename
     if(this->filename.compare("") == 0){
-        Console::getInstance()->addLine("No file specified");
+        emit this->sendMessage("No file specified", eErrorMessage, eMessageBoxMessage);
         emit this->importFinished(false);
         return false;
     }
@@ -86,7 +86,7 @@ bool ObservationImporter::importObservations(){
     QPointer<QFile> device = new QFile(this->filename);
     QFileInfo fileInfo(*device.data());
     if(!fileInfo.exists()){
-        Console::getInstance()->addLine("The selected file cannot be found in the file system");
+        emit this->sendMessage("The selected file cannot be found in the file system", eErrorMessage, eMessageBoxMessage);
         emit this->importFinished(false);
         return false;
     }
@@ -164,7 +164,7 @@ bool ObservationImporter::importObservations(){
         delete device;
 
     }catch(const exception &e){
-        Console::getInstance()->addLine("Error while opening file.");
+        emit this->sendMessage("Error while opening file", eErrorMessage, eMessageBoxMessage);
         emit this->importFinished(false);
         return false;
     }

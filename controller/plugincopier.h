@@ -44,8 +44,7 @@ signals:
     //#####################
 
     void updateProgress(const int &progress);
-    void sendMessage(const QString &msg);
-    void sendError(const QString &error);
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
     void importFinished(const bool &success);
     void deletionFinished(const bool &success);
 

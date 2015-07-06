@@ -52,7 +52,7 @@ bool DataExchanger::importData(const ExchangeParams &params){
 
     //check current job
     if(this->currentJob.isNull()){
-        Console::getInstance()->addLine("No job specified");
+        Console::getInstance()->addLine("No job specified", eErrorMessage);
         return false;
     }
 
@@ -60,20 +60,20 @@ bool DataExchanger::importData(const ExchangeParams &params){
     QList<QPointer<FeatureWrapper> > features = this->currentJob->getFeaturesByName(params.nominalSystem);
     if(features.size() != 1 || features.at(0).isNull() || features.at(0)->getCoordinateSystem().isNull()
             || features.at(0)->getCoordinateSystem()->getIsStationSystem()){
-        Console::getInstance()->addLine("No valid nominal system");
+        Console::getInstance()->addLine("No valid nominal system", eErrorMessage);
         return false;
     }
 
     //check if given plugin name is empty
     if(params.pluginName.compare("") == 0 || params.exchangeName.compare("") == 0){
-        Console::getInstance()->addLine(QString("No exchange available with the name %1 in the plugin %2").arg(params.exchangeName).arg(params.pluginName));
+        Console::getInstance()->addLine(QString("No exchange available with the name %1 in the plugin %2").arg(params.exchangeName).arg(params.pluginName), eErrorMessage);
         return false;
     }
 
     //get the plugin from database and check if it is valid
     sdb::Plugin plugin = SystemDbManager::getPlugin(params.pluginName);
     if(plugin.name.compare("") == 0){
-        Console::getInstance()->addLine("No valid plugin specified");
+        Console::getInstance()->addLine("No valid plugin specified", eErrorMessage);
         return false;
     }
 
@@ -110,7 +110,7 @@ bool DataExchanger::importData(const ExchangeParams &params){
 
     //check if the loaded exchange method is ok
     if(exchange.isNull()){
-        Console::getInstance()->addLine(QString("No exchange available with the name %1 in the plugin %2").arg(params.exchangeName).arg(params.pluginName));
+        Console::getInstance()->addLine(QString("No exchange available with the name %1 in the plugin %2").arg(params.exchangeName).arg(params.pluginName), eErrorMessage);
         return false;
     }
     this->exchange = exchange;
@@ -169,7 +169,7 @@ bool DataExchanger::importObservations(const QString &filename){
 
     //check current job and pass it to observation importer
     if(this->currentJob.isNull()){
-        Console::getInstance()->addLine("No job specified");
+        Console::getInstance()->addLine("No job specified", eErrorMessage);
         return false;
     }
 

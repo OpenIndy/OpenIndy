@@ -103,6 +103,9 @@ public slots:
     void startChangeMotorState();
     void startCustomAction(const QString &task);
 
+    //log messages to the specified destination
+    void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
+
 signals:
 
     //#################################################
@@ -185,6 +188,12 @@ signals:
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
 
+    //#############
+    //show messages
+    //#############
+
+    void showMessageBox(const QString &msg, const MessageTypes &msgType);
+
 private slots:
 
     //###################################
@@ -209,8 +218,6 @@ private:
 
     void initDisplayConfigs();
     void initConfigManager();
-
-    void logToConsole(const QString &msg);
 
     void registerMetaTypes();
 

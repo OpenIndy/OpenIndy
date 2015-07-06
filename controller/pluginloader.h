@@ -85,8 +85,7 @@ signals:
     //#####################
 
     void updateProgress(const int &progress);
-    void sendMessage(const QString &msg);
-    void sendError(const QString &error);
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
     void importFinished(const bool &success);
     void deletionFinished(const bool &success);
 
@@ -119,36 +118,6 @@ private:
 
     static PluginCopier pluginCopier;
     static QThread copierThread;
-    
-    /*
-public slots:
-
-//integrating an openIndy plugin
-    //! try to find an oiPlugin
-    static QString findOiPlugin(QString dirPath);
-
-    //! get meta data
-    static PluginMetaData* getPluginMetaData(QString path);
-
-    //! copy the oiPlugin to the oi main application
-    static bool copyPlugin(QString filename);
-
-//loading stored openIndy plugins
-
-
-    //static PluginCopier* getCopier();
-    static bool deletePlugin(PluginMetaData* metaData);
-
-private:
-
-    //! gets the meta Data of the oiPlugin
-    static bool getMetaData(QString path);
-
-    //! check whether the oiPlugin is valid
-    static bool checkPlugin();
-
-
-    //static PluginCopier *pCopier;*/
 
 };
 

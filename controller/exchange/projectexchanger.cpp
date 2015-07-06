@@ -22,7 +22,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
 
     //check job
     if(job.isNull()){
-        Console::getInstance()->addLine("No project available");
+        Console::getInstance()->addLine("No project available", eErrorMessage);
         return project;
     }
 

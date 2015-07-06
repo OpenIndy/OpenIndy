@@ -54,9 +54,9 @@ void MainWindow::importNominalsFinished(const bool &success){
 
     //print import success to console
     if(success){
-        Console::getInstance()->addLine("Nominals successfully imported");
+        emit this->log("Nominals successfully imported", eInformationMessage, eMessageBoxMessage);
     }else{
-        Console::getInstance()->addLine("Nominals not imported successfully");
+        emit this->log("Nominals not imported successfully", eErrorMessage, eMessageBoxMessage);
     }
 
     this->loadingDialog.close();
@@ -78,9 +78,9 @@ void MainWindow::importObservationsFinished(const bool &success){
 
     //print import success to console
     if(success){
-        Console::getInstance()->addLine("Observations successfully imported");
+        emit this->log("Observations successfully imported", eInformationMessage, eMessageBoxMessage);
     }else{
-        Console::getInstance()->addLine("Observations not imported successfully");
+        emit this->log("Observations not imported successfully", eErrorMessage, eMessageBoxMessage);
     }
 
     this->loadingDialog.close();
@@ -212,7 +212,7 @@ void MainWindow::sensorActionStarted(const QString &name){
  */
 void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
     this->sensorTaskInfoDialog.close();
-    Console::getInstance()->addLine(msg);
+    emit this->log(msg, eInformationMessage, eMessageBoxMessage);
 }
 
 /*!
@@ -243,6 +243,37 @@ void MainWindow::measurementCompleted(){
         this->measureFeatures.removeAt(0);
         this->control.startAimAndMeasure();
     }
+
+}
+
+/*!
+ * \brief MainWindow::showMessageBox
+ * \param msg
+ * \param msgType
+ */
+void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType){
+
+    QMessageBox msgBox;
+
+    switch(msgType){
+    case eInformationMessage:
+        msgBox.setIcon(QMessageBox::Information);
+        break;
+    case eWarningMessage:
+        msgBox.setIcon(QMessageBox::Warning);
+        break;
+    case eErrorMessage:
+        msgBox.setIcon(QMessageBox::Critical);
+        break;
+    case eCriticalMessage:
+        msgBox.setIcon(QMessageBox::Critical);
+        break;
+    }
+
+    msgBox.setText(msg);
+    msgBox.setStandardButtons(QMessageBox::Ok);
+
+    msgBox.exec();
 
 }
 
@@ -712,7 +743,7 @@ void MainWindow::setSensorConfiguration(const QString &name){
 
     //check name
     if(name.compare("") == 0){
-        Console::getInstance()->addLine("Invalid configuration name");
+        emit this->log("Invalid configuration name", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -905,7 +936,7 @@ void MainWindow::on_actionActivate_station_triggered(){
     //get and check selected index
     QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
     if(selection.size() != 1){
-        Console::getInstance()->addLine("No station selected");
+        emit this->log("No station selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
     QModelIndex index = selection.at(0);
@@ -1126,7 +1157,7 @@ void MainWindow::deleteFeatures(bool checked){
     //get selected indexes
     selection = selectionModel->selectedIndexes();
     if(selection.size() <= 0){
-        Console::getInstance()->addLine("No features selected");
+        emit this->log("No features selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
     qSort(selection);
@@ -1256,7 +1287,7 @@ void MainWindow::pasteFromClipboard(){
     //get selected indexes
     selection = selectionModel->selectedIndexes();
     if(selection.size() <= 0){
-        Console::getInstance()->addLine("No features selected");
+        emit this->log("No features selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
     qSort(selection);
@@ -1301,6 +1332,7 @@ void MainWindow::pasteFromClipboard(){
 void MainWindow::connectController(){
 
     //connect actions triggered by user to slots in controller
+    QObject::connect(this, &MainWindow::log, &this->control, &Controller::log, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::addFeatures, &this->control, &Controller::addFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::importNominals, &this->control, &Controller::importNominals, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationChanged, Qt::AutoConnection);
@@ -1325,6 +1357,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionStarted, this, &MainWindow::sensorActionStarted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
 
 }
 
