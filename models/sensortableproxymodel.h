@@ -30,6 +30,14 @@ public:
 
     const SensorTypes &getSensorType() const;
     void setSensorType(const SensorTypes &type);
+
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
     
 protected:
 

@@ -9,8 +9,11 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //register meta types
     this->registerMetaTypes();
 
-    //initialize model manager
+    //initialize and connect model manager
     ModelManager::init();
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(ModelManager::myInstance.data(), &ModelManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
+    }
 
     //initialize display configs
     this->initDisplayConfigs();
@@ -1241,6 +1244,10 @@ void Controller::initConfigManager(){
     ModelManager::setSensorConfigManager(this->sensorConfigManager);
     ModelManager::setMeasurementConfigManager(this->measurementConfigManager);
 
+    //connect config manager
+    QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
+    QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
+
 }
 
 /*!
@@ -1263,6 +1270,9 @@ void Controller::registerMetaTypes(){
  * \brief Controller::connectDataExchanger
  */
 void Controller::connectDataExchanger(){
+
+    //messaging
+    QObject::connect(&this->exchanger, &DataExchanger::sendMessage, this, &Controller::log, Qt::AutoConnection);
 
     //nominal import
     QObject::connect(&this->exchanger, &DataExchanger::nominalImportFinished, this, &Controller::nominalImportFinished, Qt::AutoConnection);

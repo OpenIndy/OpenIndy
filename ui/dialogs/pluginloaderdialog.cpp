@@ -11,10 +11,12 @@ PluginLoaderDialog::PluginLoaderDialog(QWidget *parent) : QDialog(parent),
     ui->setupUi(this);
 
     //connect plugin loader
-    QObject::connect(PluginLoader::getInstance().data(), SIGNAL(updateProgress(const int&)),
-                     this->ui->progressBar, SLOT(setValue(int)), Qt::AutoConnection);
-    QObject::connect(PluginLoader::getInstance().data(), SIGNAL(importFinished(const bool&)),
-                     this, SLOT(importFinished(const bool&)), Qt::AutoConnection);
+    QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::updateProgress,
+                     this->ui->progressBar, &QProgressBar::setValue, Qt::AutoConnection);
+    QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::importFinished,
+                     this, &PluginLoaderDialog::importFinished, Qt::AutoConnection);
+    QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::sendMessage,
+                     this, &PluginLoaderDialog::sendMessage, Qt::AutoConnection);
 }
 
 /*!

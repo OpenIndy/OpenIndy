@@ -35,6 +35,14 @@ public:
     //#########################
 
     sdb::Function getFunctionAtIndex(const int &index) const;
+
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
     
 protected:
 

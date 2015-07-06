@@ -52,7 +52,7 @@ bool DataExchanger::importData(const ExchangeParams &params){
 
     //check current job
     if(this->currentJob.isNull()){
-        Console::getInstance()->addLine("No job specified", eErrorMessage);
+        emit this->sendMessage("No job specified", eErrorMessage, eMessageBoxMessage);
         return false;
     }
 
@@ -60,20 +60,20 @@ bool DataExchanger::importData(const ExchangeParams &params){
     QList<QPointer<FeatureWrapper> > features = this->currentJob->getFeaturesByName(params.nominalSystem);
     if(features.size() != 1 || features.at(0).isNull() || features.at(0)->getCoordinateSystem().isNull()
             || features.at(0)->getCoordinateSystem()->getIsStationSystem()){
-        Console::getInstance()->addLine("No valid nominal system", eErrorMessage);
+        emit this->sendMessage("No valid nominal system", eErrorMessage, eMessageBoxMessage);
         return false;
     }
 
     //check if given plugin name is empty
     if(params.pluginName.compare("") == 0 || params.exchangeName.compare("") == 0){
-        Console::getInstance()->addLine(QString("No exchange available with the name %1 in the plugin %2").arg(params.exchangeName).arg(params.pluginName), eErrorMessage);
+        emit this->sendMessage(QString("No exchange available with the name %1 in the plugin %2").arg(params.exchangeName).arg(params.pluginName), eErrorMessage, eMessageBoxMessage);
         return false;
     }
 
     //get the plugin from database and check if it is valid
     sdb::Plugin plugin = SystemDbManager::getPlugin(params.pluginName);
     if(plugin.name.compare("") == 0){
-        Console::getInstance()->addLine("No valid plugin specified", eErrorMessage);
+        emit this->sendMessage("No valid plugin specified", eErrorMessage, eMessageBoxMessage);
         return false;
     }
 
@@ -110,7 +110,7 @@ bool DataExchanger::importData(const ExchangeParams &params){
 
     //check if the loaded exchange method is ok
     if(exchange.isNull()){
-        Console::getInstance()->addLine(QString("No exchange available with the name %1 in the plugin %2").arg(params.exchangeName).arg(params.pluginName), eErrorMessage);
+        emit this->sendMessage(QString("No exchange available with the name %1 in the plugin %2").arg(params.exchangeName).arg(params.pluginName), eErrorMessage, eMessageBoxMessage);
         return false;
     }
     this->exchange = exchange;
@@ -169,7 +169,7 @@ bool DataExchanger::importObservations(const QString &filename){
 
     //check current job and pass it to observation importer
     if(this->currentJob.isNull()){
-        Console::getInstance()->addLine("No job specified", eErrorMessage);
+        emit this->sendMessage("No job specified", eErrorMessage, eMessageBoxMessage);
         return false;
     }
 
@@ -179,9 +179,10 @@ bool DataExchanger::importObservations(const QString &filename){
     this->observationImporter->setFileName(filename);
 
     //connect observation importer
-    QObject::connect(&this->exchangeThread, SIGNAL(started()), this->observationImporter.data(), SLOT(importObservations()), Qt::AutoConnection);
-    QObject::connect(this->observationImporter.data(), SIGNAL(importFinished(const bool&)), this, SLOT(importObservationsFinished(const bool&)), Qt::AutoConnection);
-    QObject::connect(this->observationImporter.data(), SIGNAL(updateProgress(const int&, const QString&)), this, SIGNAL(updateObservationImportProgress(const int&, const QString&)), Qt::AutoConnection);
+    QObject::connect(&this->exchangeThread, &QThread::started, this->observationImporter.data(), &ObservationImporter::importObservations, Qt::AutoConnection);
+    QObject::connect(this->observationImporter.data(), &ObservationImporter::importFinished, this, &DataExchanger::importObservationsFinished, Qt::AutoConnection);
+    QObject::connect(this->observationImporter.data(), &ObservationImporter::updateProgress, this, &DataExchanger::updateObservationImportProgress, Qt::AutoConnection);
+    QObject::connect(this->observationImporter.data(), &ObservationImporter::sendMessage, this, &DataExchanger::sendMessage, Qt::AutoConnection);
 
     //move exchange plugin to thread and start data exchange
     this->observationImporter->moveToThread(&this->exchangeThread);

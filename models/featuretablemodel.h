@@ -91,6 +91,14 @@ public:
     const QPointer<MeasurementConfigManager> &getMeasurementConfigManager() const;
     void setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &mConfigManager);
 
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private slots:
 
     //##############################################################

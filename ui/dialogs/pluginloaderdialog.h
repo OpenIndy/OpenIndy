@@ -29,6 +29,14 @@ public:
 
     void showEvent(QShowEvent *event);
 
+signals:
+
+    //#############
+    //send messages
+    //#############
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private slots:
 
     //#########################

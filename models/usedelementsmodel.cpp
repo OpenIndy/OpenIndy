@@ -257,47 +257,6 @@ void UsedElementsModel::removeUsedElements(const QModelIndexList &selection){
 }
 
 /*!
- * \brief UsedElementsModel::getElementIdAtIndex
- * \param index
- * \return
- */
-/*int UsedElementsModel::getElementIdAtIndex(const QModelIndex &index){
-
-    //check index
-    if(!index.isValid()){
-        return -1;
-    }
-
-    //check current job
-    if(this->currentJob.isNull()){
-        return -1;
-    }
-
-    //get and check active feature
-    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
-        return -1;
-    }
-    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
-
-    //check selected function position
-    if(this->functionPosition < 0 || this->functionPosition >= feature->getFunctions().size()
-            || feature->getFunctions().at(this->functionPosition).isNull()){
-        return -1;
-    }
-    Function *function = feature->getFunctions().at(this->functionPosition);
-
-    //check and get input element
-    if(!function->getInputElements().contains(this->neededElementIndex)
-            || index.row() >= function->getInputElements()[this->neededElementIndex].size()){
-        return -1;
-    }
-    InputElement element = function->getInputElements()[this->neededElementIndex].at(index.row());
-
-    return element.id;
-
-}*/
-
-/*!
  * \brief UsedElementsModel::getCurrentJob
  * \return
  */
