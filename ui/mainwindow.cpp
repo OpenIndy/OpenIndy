@@ -9,14 +9,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->setupUi(this);
 
-    //assign models of ModelManager to GUI-elements
-    this->assignModels();
-
-    //init GUI elements
-    this->initFeatureTableViews();
-    this->initSensorPad();
-    this->initToolMenus();
-
     //connect controller and dialogs
     this->connectDialogs();
     this->connectController();
@@ -24,6 +16,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //create default job and pass it to the watch window
     QPointer<OiJob> job = this->control.createDefaultJob();
     this->watchWindowDialog.setCurrentJob(job);
+
+    //assign models of ModelManager to GUI-elements
+    this->assignModels();
+
+    //init GUI elements
+    this->initFeatureTableViews();
+    this->initSensorPad();
+    this->initToolMenus();
+    this->initFilterComboBoxes();
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -145,9 +146,11 @@ void MainWindow::activeCoordinateSystemChanged(){
 
 }
 
-void MainWindow::coordSystemSetChanged()
-{
-
+/*!
+ * \brief MainWindow::coordSystemSetChanged
+ */
+void MainWindow::coordSystemSetChanged(){
+    this->updateSystemFilterSize();
 }
 
 void MainWindow::stationSetChanged()
@@ -155,13 +158,52 @@ void MainWindow::stationSetChanged()
 
 }
 
-void MainWindow::availableGroupsChanged()
-{
-
+/*!
+ * \brief MainWindow::availableGroupsChanged
+ */
+void MainWindow::availableGroupsChanged(){
+    this->updateGroupFilterSize();
 }
 
 void MainWindow::activeGroupChanged()
 {
+
+}
+
+/*!
+ * \brief MainWindow::featureNameChanged
+ * \param featureId
+ * \param oldName
+ */
+void MainWindow::featureNameChanged(const int &featureId, const QString &oldName){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check current job
+    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    if(job.isNull()){
+        return;
+    }
+
+    //get the feature with the given id
+    QPointer<FeatureWrapper> feature = job->getFeatureById(featureId);
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    if(feature->getFeatureTypeEnum() == eStationFeature || feature->getFeatureTypeEnum() == eCoordinateSystemFeature){
+        this->updateSystemFilterSize();
+    }
 
 }
 
@@ -1358,6 +1400,9 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
 
 }
 
@@ -1567,6 +1612,15 @@ void MainWindow::initToolMenus(){
 }
 
 /*!
+ * \brief MainWindow::initFilterComboBoxes
+ * Initialize the size of filter combo boxes (group names, systems etc.)
+ */
+void MainWindow::initFilterComboBoxes(){
+    this->updateGroupFilterSize();
+    this->updateSystemFilterSize();
+}
+
+/*!
  * \brief MainWindow::activeSensorTypeChanged
  * Depending on the active stations's sensor set visibility of sensor pad actions
  * \param type
@@ -1714,5 +1768,85 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
         fontName.setPointSizeF(fontName.pointSizeF()*scaleH);
     }
     this->ui->label_magnifyName->setFont(fontName);
+
+}
+
+/*!
+ * \brief MainWindow::updateGroupFilterSize
+ */
+void MainWindow::updateGroupFilterSize(){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check current job
+    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    if(job.isNull()){
+        return;
+    }
+
+    //get the largest group name
+    const QStringList &groupNames = job->getFeatureGroupList();
+    QString largestGroup = "All Groups";
+    foreach(const QString &group, groupNames){
+        if(group.length() > largestGroup.length()){
+            largestGroup = group;
+        }
+    }
+
+    //update combobox width with respect to the largest item
+    this->ui->comboBox_groups->setMinimumContentsLength(largestGroup.length());
+
+}
+
+/*!
+ * \brief MainWindow::updateSystemFilterSize
+ */
+void MainWindow::updateSystemFilterSize(){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check current job
+    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    if(job.isNull()){
+        return;
+    }
+
+    //get the largest system name
+    const QList<QPointer<CoordinateSystem> > &nominalSystems = job->getCoordinateSystemsList();
+    QList<QPointer<CoordinateSystem> > &stationSystems = job->getStationSystemsList();
+    QString largestSystemName = "";
+    foreach(const QPointer<CoordinateSystem> &system, nominalSystems){
+        if(!system.isNull() && system->getFeatureName().length() > largestSystemName.length()){
+            largestSystemName = system->getFeatureName();
+        }
+    }
+    foreach(const QPointer<CoordinateSystem> &system, stationSystems){
+        if(!system.isNull() && system->getFeatureName().length() > largestSystemName.length()){
+            largestSystemName = system->getFeatureName();
+        }
+    }
+
+    //update combobox width with respect to the largest item
+    this->ui->comboBox_activeCoordSystem->setMinimumContentsLength(largestSystemName.length());
 
 }

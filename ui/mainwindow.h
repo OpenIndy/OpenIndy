@@ -115,6 +115,9 @@ private slots:
     void availableGroupsChanged();
     void activeGroupChanged();
 
+    //feature specific attributes changed
+    void featureNameChanged(const int &featureId, const QString &oldName);
+
     //station changes
     void stationSensorChanged(const int &featureId);
 
@@ -252,10 +255,9 @@ private:
     //##################################
 
     void initFeatureTableViews();
-
     void initSensorPad();
-
     void initToolMenus();
+    void initFilterComboBoxes();
 
     //##############################
     //methods to update GUI elements
@@ -264,6 +266,9 @@ private:
     void activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
 
     void updateMagnifyWindow(const QPointer<FeatureWrapper> &feature);
+
+    void updateGroupFilterSize();
+    void updateSystemFilterSize();
 
     //############################
     //OpenIndy dialogs and widgets
