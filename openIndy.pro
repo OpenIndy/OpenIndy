@@ -100,6 +100,7 @@ INCLUDEPATH += $$PWD/ui/dialogs
 INCLUDEPATH += $$PWD/ui/widgets
 INCLUDEPATH += $$PWD/ui/actions
 INCLUDEPATH += $$PWD/ui/selectionmodels
+INCLUDEPATH += $$PWD/ui/3dengine
 
 INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include
 INCLUDEPATH += $$PWD/lib/OpenIndy-Core/include/geometry
@@ -216,7 +217,8 @@ SOURCES += \
     ui/delegates/observationtabledelegate.cpp \
     ui/delegates/readingtabledelegate.cpp \
     ui/dialogs/aboutdialog.cpp \
-    ui/widgets/glviewwidget.cpp
+    ui/widgets/glviewwidget.cpp \
+    ui/3dengine/glwindow.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -295,7 +297,8 @@ HEADERS  += \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oimat.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oivec.h \
     ui/dialogs/aboutdialog.h \
-    ui/widgets/glviewwidget.h
+    ui/widgets/glviewwidget.h \
+    ui/3dengine/glwindow.h
 
 FORMS    += \
     ui/mainwindow.ui \
