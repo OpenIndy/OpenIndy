@@ -127,6 +127,16 @@ void Controller::setNominalParameters(const int &featureId, const QMap<UnknownPa
         return;
     }
 
+    //get and check the feature by its id
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
+    if(feature.isNull() || feature->getGeometry().isNull()){
+        this->log(QString("No feature with the id %1").arg(featureId), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //update the feature's parameters
+    feature->getGeometry()->setUnknownParameters(parameters);
+
 }
 
 /*!

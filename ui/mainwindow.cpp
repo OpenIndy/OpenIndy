@@ -264,7 +264,7 @@ void MainWindow::sensorActionStarted(const QString &name){
  */
 void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
     this->sensorTaskInfoDialog.close();
-    emit this->log(msg, eInformationMessage, eMessageBoxMessage);
+    emit this->log(msg, eInformationMessage, eConsoleMessage);
 }
 
 /*!
@@ -1105,21 +1105,31 @@ void MainWindow::showFeatureProperties(bool checked){
     //get parameter display config
     const ParameterDisplayConfig &dConfig = sourceModel->getParameterDisplayConfig();
 
-    //depending on the type of feature display a special properties dialog
-    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){ //actual
-
+    //display properties dialog for actuals
+    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
         this->actualPropertiesDialog.show();
+        return;
+    }
 
-    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){ //nominal
+    //display properties dialog for nominals
+    if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal() && feature->getGeometry()->getIsSolved()){
 
         this->nominalPropertiesDialog.setCurrentNominal(feature->getFeature()->getId(), feature->getFeature()->getFeatureName(),
                                                         feature->getFeatureTypeEnum());
 
-        QMap<UnknownParameters, QString> parameters;
+        QMap<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
+        QMap<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
+        QMap<UnknownParameters, QString> parameters = feature->getGeometry()->getUnknownParameters(displayUnits, displayDigits);
         this->nominalPropertiesDialog.setUnknownNominalParameters(parameters);
 
         this->nominalPropertiesDialog.show();
 
+        return;
+
+    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal() && !feature->getGeometry()->getIsSolved()){
+        emit this->log(QString("Switch to the nominal system of %1 to edit its properties").arg(feature->getGeometry()->getFeatureName()),
+                       eInformationMessage, eMessageBoxMessage);
+        return;
     }
 
 }
@@ -1453,6 +1463,9 @@ void MainWindow::connectDialogs(){
 
     //connect actual properties dialog
     QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::importObservations, &this->control, &Controller::importObservations, Qt::AutoConnection);
+
+    //connect nominal properties dialog
+    QObject::connect(&this->nominalPropertiesDialog, &NominalPropertiesDialog::nominalParametersChanged, &this->control, &Controller::setNominalParameters, Qt::AutoConnection);
 
 }
 

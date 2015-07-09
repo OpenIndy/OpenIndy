@@ -774,6 +774,9 @@ void NominalPropertiesDialog::getParametersFromGUI(QMap<UnknownParameters, doubl
     //get a list of unknown parameters that correspond to the current geometry type
     QList<UnknownParameters> currentUnknownParameters = getUnknownParameters(type);
 
+    //get parameter display config
+    const ParameterDisplayConfig &dConfig = ModelManager::getParameterDisplayConfig();
+
     foreach(const UnknownParameters &param, currentUnknownParameters){
 
         //get values from GUI elements (only use values that differ from the initial input)
@@ -782,19 +785,19 @@ void NominalPropertiesDialog::getParametersFromGUI(QMap<UnknownParameters, doubl
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalX->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalX->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalX->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownY:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalY->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalY->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalY->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownZ:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalZ->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalZ->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalZ->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownPrimaryI:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalI1->text()) == 0){
@@ -836,67 +839,67 @@ void NominalPropertiesDialog::getParametersFromGUI(QMap<UnknownParameters, doubl
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalR1->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalR1->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalR1->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownRadiusB:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalR2->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalR2->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalR2->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownAperture:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalAperture->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalAperture->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalAperture->text().toDouble(), dConfig.getDisplayUnit(eAngular)));
             break;
         case eUnknownA:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalA->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalA->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalA->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownB:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalB->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalB->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalB->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownC:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalC->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalC->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalC->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownAngle:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalAngle->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalAngle->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalAngle->text().toDouble(), dConfig.getDisplayUnit(eAngular)));
             break;
         case eUnknownDistance:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalDistance->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalDistance->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalDistance->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownMeasurementSeries:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalMeasurementSeries->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalMeasurementSeries->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalMeasurementSeries->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownTemperature:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalTemperature->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalTemperature->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalTemperature->text().toDouble(), dConfig.getDisplayUnit(eTemperature)));
             break;
         case eUnknownLength:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalLength->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalLength->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalLength->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         }
 
