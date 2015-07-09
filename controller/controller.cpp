@@ -1220,6 +1220,8 @@ void Controller::setJob(const QPointer<OiJob> &job){
     this->exchanger.setCurrentJob(this->job);
     this->featureUpdater.setCurrentJob(this->job);
 
+    emit this->currentJobChanged();
+
 }
 
 /*!

@@ -121,6 +121,9 @@ private slots:
     //station changes
     void stationSensorChanged(const int &featureId);
 
+    //hole job instance changed
+    void currentJobChanged();
+
     //sensor actions
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);

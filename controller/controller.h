@@ -169,6 +169,9 @@ signals:
     void trafoParamValidTimeChanged(const int &featureId);
     void trafoParamIsMovementChanged(const int &featureId);
 
+    //hole job instance changed
+    void currentJobChanged();
+
     //#################################
     //import export task status changes
     //#################################

@@ -13,9 +13,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->connectDialogs();
     this->connectController();
 
-    //create default job and pass it to the watch window
+    //create default job
     QPointer<OiJob> job = this->control.createDefaultJob();
-    this->watchWindowDialog.setCurrentJob(job);
 
     //assign models of ModelManager to GUI-elements
     this->assignModels();
@@ -235,6 +234,17 @@ void MainWindow::stationSensorChanged(const int &featureId){
     //set sensor action's visibility depending on the sensor type
     this->activeSensorTypeChanged(activeStation->getActiveSensorType(), activeStation->getSupportedSensorActions(),
                                   activeStation->getSelfDefinedActions());
+
+}
+
+/*!
+ * \brief MainWindow::currentJobChanged
+ */
+void MainWindow::currentJobChanged(){
+
+    //get current job and pass it to watch window
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
+    this->watchWindowDialog.setCurrentJob(job);
 
 }
 
@@ -887,22 +897,7 @@ void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString
  * \brief MainWindow::on_actionWatch_window_triggered
  */
 void MainWindow::on_actionWatch_window_triggered(){
-
-    //get and check model
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    this->watchWindowDialog.setCurrentJob(sourceModel->getCurrentJob());
     this->watchWindowDialog.show();
-
 }
 
 /*!
@@ -1416,6 +1411,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::currentJobChanged, Qt::AutoConnection);
 
 }
 
