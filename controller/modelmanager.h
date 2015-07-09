@@ -42,15 +42,26 @@
 
 using namespace oi;
 
+class Controller;
+
 /*!
  * \brief The ModelManager class
  */
 class ModelManager : public QObject
 {
+    friend class Controller;
     Q_OBJECT
 
 private:
     explicit ModelManager(QObject *parent = 0);
+
+signals:
+
+    //############
+    //log messages
+    //############
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
 public:
 

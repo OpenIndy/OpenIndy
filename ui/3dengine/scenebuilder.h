@@ -50,6 +50,9 @@ public slots:
 private:
     QList<QPointer<Qt3D::QEntity> > entities;
     QPointer<OiJob> currentJob;
+
+    void addPointToScene(Qt3D::QEntity *rootEntity, float x, float y, float z);
+    void testScene(Qt3D::QEntity *rootEntity);
 };
 
 #endif // SCENEBUILDER_H

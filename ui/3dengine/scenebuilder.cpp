@@ -17,6 +17,66 @@ void SceneBuilder::setCurrentJob(const QPointer<OiJob> &value)
 
 void SceneBuilder::buildScene(Qt3D::QEntity *rootEntity)
 {
+
+    /*if(this->currentJob.isNull()){
+        return;
+    }
+
+    QList<QPointer<FeatureWrapper> > geoms = this->currentJob->getGeometriesList();
+
+    foreach(const QPointer<FeatureWrapper> &f, geoms){
+        if(f.isNull() || f->getGeometry().isNull()){
+            continue;
+        }
+
+        if(f->getGeometry()->hasPosition()){
+            float x = (float)f->getGeometry()->getPosition().getVector().getAt(0);
+            float y = (float)f->getGeometry()->getPosition().getVector().getAt(1);
+            float z = (float)f->getGeometry()->getPosition().getVector().getAt(2);
+
+            this->addPointToScene(rootEntity,x,y,z);
+        }
+
+    }*/
+
+    this->testScene(rootEntity);
+
+
+}
+
+
+
+void SceneBuilder::addPointToScene(Qt3D::QEntity *rootEntity, float x, float y, float z)
+{
+
+    // Cuboid shape data
+    Qt3D::QCuboidMesh *cuboid = new Qt3D::QCuboidMesh();
+
+    // CuboidMesh Transform
+    Qt3D::QScaleTransform *cuboidScale = new Qt3D::QScaleTransform();
+    Qt3D::QTranslateTransform *cuboidTranslation = new Qt3D::QTranslateTransform();
+    Qt3D::QTransform *cuboidTransforms = new Qt3D::QTransform();
+
+    cuboidScale->setScale3D(QVector3D(4.0f, 4.0f, 4.0f));
+    cuboidTranslation->setTranslation(QVector3D(x, y, z));
+
+    cuboidTransforms->addTransform(cuboidTranslation);
+    cuboidTransforms->addTransform(cuboidScale);
+
+    Qt3D::QPhongMaterial *cuboidMaterial = new Qt3D::QPhongMaterial();
+    cuboidMaterial->setDiffuse(QColor(QRgb(0x665423)));
+
+    //Cuboid
+    Qt3D::QEntity *m_cuboidEntity = new Qt3D::QEntity(rootEntity);
+    m_cuboidEntity->addComponent(cuboid);
+    m_cuboidEntity->addComponent(cuboidMaterial);
+    m_cuboidEntity->addComponent(cuboidTransforms);
+
+}
+
+
+void SceneBuilder::testScene(Qt3D::QEntity *rootEntity)
+{
     // Material
     Qt3D::QMaterial *material = new Qt3D::QPhongMaterial(rootEntity);
 
@@ -125,8 +185,6 @@ void SceneBuilder::buildScene(Qt3D::QEntity *rootEntity)
     m_cuboidEntity->addComponent(cuboid);
     m_cuboidEntity->addComponent(cuboidMaterial);
     m_cuboidEntity->addComponent(cuboidTransforms);
-
-
 }
 
 

@@ -74,6 +74,14 @@ public:
     const QPointer<SensorConfigurationManager> &getSensorConfigurationManager() const;
     void setSensorConfigurationManager(const QPointer<SensorConfigurationManager> &manager);
 
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private slots:
 
     //###########################################

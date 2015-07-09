@@ -33,6 +33,14 @@ public:
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 protected:
 
     bool filterAcceptsRow (int source_row, const QModelIndex &source_parent) const;

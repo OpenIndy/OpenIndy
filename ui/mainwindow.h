@@ -60,7 +60,7 @@ signals:
 
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
-    void removeFeature(const int &featureId);
+    void removeFeatures(const QSet<int> &featureIds);
 
     //remove observations
     void removeObservations(const int &featureId);
@@ -85,6 +85,9 @@ signals:
     void saveProject();
     void saveProject(const QString &fileName);
     void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
+
+    //log messages
+    void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
 private slots:
 
@@ -112,13 +115,22 @@ private slots:
     void availableGroupsChanged();
     void activeGroupChanged();
 
+    //feature specific attributes changed
+    void featureNameChanged(const int &featureId, const QString &oldName);
+
     //station changes
     void stationSensorChanged(const int &featureId);
+
+    //hole job instance changed
+    void currentJobChanged();
 
     //sensor actions
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
+
+    //display a message box
+    void showMessageBox(const QString &msg, const MessageTypes &msgType);
 
     //#########################
     //actions triggered by user
@@ -224,6 +236,7 @@ private slots:
 
     //copy values from and to clipboard
     void copyToClipboard();
+    void pasteFromClipboard();
 
 private:
     Ui::MainWindow *ui;
@@ -245,10 +258,9 @@ private:
     //##################################
 
     void initFeatureTableViews();
-
     void initSensorPad();
-
     void initToolMenus();
+    void initFilterComboBoxes();
 
     //##############################
     //methods to update GUI elements
@@ -257,6 +269,9 @@ private:
     void activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
 
     void updateMagnifyWindow(const QPointer<FeatureWrapper> &feature);
+
+    void updateGroupFilterSize();
+    void updateSystemFilterSize();
 
     //############################
     //OpenIndy dialogs and widgets

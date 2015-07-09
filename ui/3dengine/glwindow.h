@@ -40,6 +40,36 @@
 #include <QWindow>
 #include <QDebug>
 
+#include <QWheelEvent>
+#include <QMouseEvent>
+
+#include <QHBoxLayout>
+
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QCamera>
+#include <Qt3DCore/QCameraLens>
+#include <Qt3DCore/QTransform>
+#include <Qt3DCore/QLookAtTransform>
+#include <Qt3DCore/QScaleTransform>
+#include <Qt3DCore/QRotateTransform>
+#include <Qt3DCore/QTranslateTransform>
+#include <Qt3DCore/QAspectEngine>
+
+#include <Qt3DInput/QInputAspect>
+
+#include <Qt3DRenderer/QRenderAspect>
+#include <Qt3DRenderer/QFrameGraph>
+#include <Qt3DRenderer/QForwardRenderer>
+#include <Qt3DRenderer/QPhongMaterial>
+
+#include <Qt3DRenderer/QCylinderMesh>
+#include <Qt3DRenderer/QSphereMesh>
+#include <Qt3DRenderer/QTorusMesh>
+
+#include <QPropertyAnimation>
+
+#include "scenebuilder.h"
+
 class GlWindow : public QWindow
 {
     Q_OBJECT
@@ -47,8 +77,24 @@ public:
     explicit GlWindow(QScreen *screen = 0);
     ~GlWindow();
 
+    QPointer<OiJob> getCurrentJob() const;
+    void setCurrentJob(const QPointer<OiJob> &value);
+
 protected:
     void wheelEvent(QWheelEvent * ev);
+    void mouseDoubleClickEvent(QMouseEvent * event);
+
+private:
+    Qt3D::QAspectEngine engine;
+    Qt3D::QCamera *cameraEntity;
+    Qt3D::QInputAspect *input;
+    Qt3D::QEntity *rootEntity;
+    Qt3D::QFrameGraph *frameGraph;
+    Qt3D::QForwardRenderer *forwardRenderer;
+
+    QVector3D cameraPosition;
+
+    SceneBuilder scene;
 
 };
 

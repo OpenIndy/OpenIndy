@@ -72,13 +72,13 @@ void SensorConfigurationManager::addSensorConfig(const SensorConfiguration &sCon
 
     //check if sConfig is valid
     if(!sConfig.getIsValid()){
-        Console::getInstance()->addLine("Cannot add a sensor configuration with an empty name");
+        Console::getInstance()->addLine("Cannot add a sensor configuration with an empty name", eErrorMessage);
         return;
     }
 
     //check if sConfig already exists
     if(this->savedSensorConfigs.contains(sConfig.getName())){
-        Console::getInstance()->addLine(QString("A sensor configuration with the name %1 already exists").arg(sConfig.getName()));
+        Console::getInstance()->addLine(QString("A sensor configuration with the name %1 already exists").arg(sConfig.getName()), eErrorMessage);
         return;
     }
 
@@ -96,13 +96,13 @@ void SensorConfigurationManager::removeSensorConfig(const QString &name){
 
     //check name
     if(name.compare("") == 0){
-        Console::getInstance()->addLine("Cannot remove a sensor configuration with an empty name");
+        Console::getInstance()->addLine("Cannot remove a sensor configuration with an empty name", eErrorMessage);
         return;
     }
 
     //check if the sensor config exists
     if(!this->savedSensorConfigs.contains(name)){
-        Console::getInstance()->addLine(QString("A sensor configuration with the name %1 does not exist").arg(name));
+        Console::getInstance()->addLine(QString("A sensor configuration with the name %1 does not exist").arg(name), eErrorMessage);
         return;
     }
 

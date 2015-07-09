@@ -27,6 +27,14 @@ public:
     const ReadingTableColumnConfig &getReadingTableColumnConfig() const;
     void setReadingTableColumnConfig(const ReadingTableColumnConfig &config);
 
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 protected:
 
     //###########################################

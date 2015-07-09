@@ -129,7 +129,7 @@ void SensorConfigurationDialog::on_pushButton_set_clicked(){
     //get selected sensor config name
     QModelIndexList selection = this->ui->listView_sensorConfigs->selectionModel()->selectedIndexes();
     if(selection.size() != 1){
-        Console::getInstance()->addLine("No sensor configuration selected");
+        Console::getInstance()->addLine("No sensor configuration selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
     QString name = selection.at(0).data().toString();

@@ -53,6 +53,12 @@ signals:
     void measurementConfigurationsChanged();
     void activeMeasurementConfigurationChanged(const GeometryTypes &type);
 
+    //############
+    //log messages
+    //############
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private:
 
     //########################

@@ -22,7 +22,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
 
     //check job
     if(job.isNull()){
-        Console::getInstance()->addLine("No project available");
+        Console::getInstance()->addLine("No project available", eErrorMessage);
         return project;
     }
 
@@ -34,6 +34,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     root.setAttribute("name", job->getJobName());
     root.setAttribute("date", dateTime);
     root.setAttribute("idCount", QString::number(job->generateUniqueId()));
+    root.setAttribute("version", QString(OPENINDY_VERSION));
     project.appendChild(root);
 
     //add active station and active coordinate system
@@ -1537,5 +1538,11 @@ void ProjectExchanger::clearHelperMaps(bool deleteOnClear){
     ProjectExchanger::myObservations.clear();
     ProjectExchanger::myStations.clear();
     ProjectExchanger::myCoordinateSystems.clear();
+    ProjectExchanger::myReadings.clear();
+    ProjectExchanger::myTransformationParameters.clear();
+    ProjectExchanger::myGeometries.clear();
+    ProjectExchanger::myMConfigs.clear();
+    ProjectExchanger::mySConfigs.clear();
+    ProjectExchanger::stationPoints.clear();
 
 }

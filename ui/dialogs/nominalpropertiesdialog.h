@@ -36,6 +36,41 @@ public:
     explicit NominalPropertiesDialog(QWidget *parent = 0);
     ~NominalPropertiesDialog();
 
+    //########################################################
+    //get or set information about the current nominal feature
+    //########################################################
+
+    const int &getId() const;
+    void setId(const int &id);
+
+    const QString &getName() const;
+    void setName(const QString &name);
+
+    const FeatureTypes &getType() const;
+    void setType(const FeatureTypes &type);
+
+    void setCurrentNominal(const int &id, const QString &name, const FeatureTypes &type);
+
+    const QMap<UnknownParameters, QString> &getUnknownNominalParameters() const;
+    void setUnknownNominalParameters(const QMap<UnknownParameters, QString> &parameters);
+
+signals:
+
+    //#######################
+    //edit nominal parameters
+    //#######################
+
+    void nominalParametersChanged(const int &id, const QMap<UnknownParameters, double> &parameters);
+
+private slots:
+
+    //#########################
+    //actions triggered by user
+    //#########################
+
+    void on_toolButton_cancel_clicked();
+    void on_toolButton_ok_clicked();
+
 private:
 
     //##################################
@@ -47,8 +82,27 @@ private:
     void initGUI();
     void initModels();
 
+    //##############
+    //helper methods
+    //##############
+
+    void setVisibility(const UnknownParameters &param, const bool &visible);
+
+    void setParametersToGUI(const UnknownParameters &param, const QString &value);
+    void getParametersFromGUI(QMap<UnknownParameters, double> &parameters);
+
 private:
     Ui::NominalPropertiesDialog *ui;
+
+    //####################################################
+    //attributes that describe the current nominal feature
+    //####################################################
+
+    int id;
+    QString name;
+    FeatureTypes type;
+    QMap<UnknownParameters, QString> parameters;
+
 };
 
 #endif // NOMINALPROPERTIESDIALOG_H

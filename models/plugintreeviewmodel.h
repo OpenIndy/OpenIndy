@@ -42,6 +42,14 @@ public:
     const QList<sdb::Plugin> &getPlugins() const;
     void setPlugins(const QList<sdb::Plugin> &plugins);
 
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private:
 
     //##############

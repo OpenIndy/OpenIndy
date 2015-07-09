@@ -53,6 +53,12 @@ signals:
     void sensorConfigurationsChanged();
     void activeSensorConfigurationChanged();
 
+    //############
+    //log messages
+    //############
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private:
 
     //###################

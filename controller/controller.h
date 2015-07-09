@@ -52,6 +52,10 @@ public slots:
 
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
+    void removeFeatures(const QSet<int> &featureIds);
+
+    //change feature parameters
+    void setNominalParameters(const int &featureId, const QMap<UnknownParameters, double> &parameters);
 
     //recalculation
     void recalcActiveFeature();
@@ -101,6 +105,9 @@ public slots:
     void startCompensation();
     void startChangeMotorState();
     void startCustomAction(const QString &task);
+
+    //log messages to the specified destination
+    void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
 
 signals:
 
@@ -162,6 +169,9 @@ signals:
     void trafoParamValidTimeChanged(const int &featureId);
     void trafoParamIsMovementChanged(const int &featureId);
 
+    //hole job instance changed
+    void currentJobChanged();
+
     //#################################
     //import export task status changes
     //#################################
@@ -183,6 +193,12 @@ signals:
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
+
+    //#############
+    //show messages
+    //#############
+
+    void showMessageBox(const QString &msg, const MessageTypes &msgType);
 
 private slots:
 
@@ -208,8 +224,6 @@ private:
 
     void initDisplayConfigs();
     void initConfigManager();
-
-    void logToConsole(const QString &msg);
 
     void registerMetaTypes();
 

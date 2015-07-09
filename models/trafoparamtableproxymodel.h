@@ -26,6 +26,14 @@ public:
 
     const TrafoParamTableColumnConfig &getTrafoParamTableColumnConfig() const;
     void setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config);
+
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
     
 protected:
 

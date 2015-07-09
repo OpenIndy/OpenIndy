@@ -7,9 +7,13 @@
 #include <QStringList>
 #include <QStringListModel>
 #include <QDateTime>
-
 #include <QTextStream>
 #include <QFile>
+
+#include "types.h"
+#include "util.h"
+
+using namespace oi;
 
 class Console : public QObject
 {
@@ -41,10 +45,10 @@ public slots:
     //write messages to console
     //#########################
 
-    void addLine(const QString &msg);
-    void addLine(const QString &msg, const bool &value);
-    void addLine(const QString &msg, const double &value);
-    void addLine(const QString &msg, const int &value);
+    void addLine(const QString &msg, const MessageTypes &msgType);
+    void addLine(const QString &msg, const MessageTypes &msgType, const bool &value);
+    void addLine(const QString &msg, const MessageTypes &msgType, const double &value);
+    void addLine(const QString &msg, const MessageTypes &msgType, const int &value);
 
 private:
 

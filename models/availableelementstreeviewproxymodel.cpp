@@ -280,47 +280,6 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
 }
 
 /*!
- * \brief AvailableElementsTreeViewProxyModel::getItemAtIndex
- * \param index
- * \return
- */
-/*QPointer<FeatureTreeItem> AvailableElementsTreeViewProxyModel::getItemAtIndex(const QModelIndex &index){
-
-    QPointer<FeatureTreeItem> item(NULL);
-
-    //get source index
-    QModelIndex sourceIndex = this->mapToSource(index);
-
-    //get corresponding feature tree item
-    if(sourceIndex.isValid()){
-        item = static_cast<FeatureTreeItem*>(sourceIndex.internalPointer());
-    }
-
-    return item;
-
-
-
-    FeatureTreeViewModel *model = dynamic_cast<FeatureTreeViewModel*>(this->sourceModel());
-    if(model != NULL){
-        QList<int> rowIndex;
-        QModelIndex parent = this->mapToSource(index);
-        rowIndex.append(parent.row());
-        while(parent.parent().isValid()){
-            parent = parent.parent();
-            rowIndex.append(parent.row());
-        }
-        item = model->getRootItem();
-        for(int i = rowIndex.size()-1; i >= 0; i--){
-            item = item->getChild(rowIndex.at(i));
-            if(item == NULL){
-                break;
-            }
-        }
-    }
-    return item;
-}*/
-
-/*!
  * \brief AvailableElementsTreeViewProxyModel::filterAcceptsRow
  * \param source_row
  * \param source_parent

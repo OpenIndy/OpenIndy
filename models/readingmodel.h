@@ -49,6 +49,14 @@ public:
     const ParameterDisplayConfig &getParameterDisplayConfig() const;
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private slots:
 
     //##############################################################

@@ -9,8 +9,11 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //register meta types
     this->registerMetaTypes();
 
-    //initialize model manager
+    //initialize and connect model manager
     ModelManager::init();
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(ModelManager::myInstance.data(), &ModelManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
+    }
 
     //initialize display configs
     this->initDisplayConfigs();
@@ -57,11 +60,15 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
 
     //check job
     if(this->job.isNull()){
-        Console::getInstance()->addLine("No active job");
+        this->log("No active job", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     QList<QPointer<FeatureWrapper> > features = this->job->addFeatures(attributes);
+    if(features.size() == 0){
+        this->log("No feature were created - See console output for details", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
 
     //create functions for the created features
     if(attributes.functionPlugin.first.compare("") == 0 || attributes.functionPlugin.second.compare("") == 0){
@@ -84,6 +91,40 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
         feature->getFeature()->addFunction(function);
         feature->getFeature()->blockSignals(false);
 
+    }
+
+}
+
+/*!
+ * \brief Controller::removeFeatures
+ * \param featureIds
+ */
+void Controller::removeFeatures(const QSet<int> &featureIds){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No active job", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //remove features
+    if(!this->job->removeFeatures(featureIds)){
+        this->log("Error while removeing features", eErrorMessage, eMessageBoxMessage);
+    }
+
+}
+
+/*!
+ * \brief Controller::setNominalParameters
+ * \param featureId
+ * \param parameters
+ */
+void Controller::setNominalParameters(const int &featureId, const QMap<UnknownParameters, double> &parameters){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No active job", eErrorMessage, eMessageBoxMessage);
+        return;
     }
 
 }
@@ -128,28 +169,28 @@ void Controller::sensorConfigurationChanged(const QString &name, const bool &con
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        Console::getInstance()->addLine("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //get and check the specified sensor config
     SensorConfiguration sConfig = this->sensorConfigManager->getSavedSensorConfig(name);
     if(!sConfig.getIsValid()){
-        Console::getInstance()->addLine(QString("No sensor configuration available with the name %1").arg(name));
+        this->log(QString("No sensor configuration available with the name %1").arg(name), eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //get and check plugin information
     sdb::Plugin plugin = SystemDbManager::getPlugin(sConfig.getPluginName());
     if(plugin.id == -1){
-        Console::getInstance()->addLine(QString("No plugin available with the name %1").arg(sConfig.getPluginName()));
+        this->log(QString("No plugin available with the name %1").arg(sConfig.getPluginName()), eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //create sensor instance and assign it to the active station
     QPointer<Sensor> sensor = PluginLoader::loadSensorPlugin(plugin.file_path, sConfig.getSensorName());
     if(sensor.isNull()){
-        Console::getInstance()->addLine(QString("No sensor available with the name %1").arg(sConfig.getSensorName()));
+        this->log(QString("No sensor available with the name %1").arg(sConfig.getSensorName()), eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -178,14 +219,14 @@ void Controller::measurementConfigurationChanged(const QString &name){
     //get and check active feature
     QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
     if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
-        Console::getInstance()->addLine("No active geometry selected");
+        this->log("No active geometry selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //get and check the specified measurement config
     MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(name);
     if(!mConfig.getIsValid()){
-        Console::getInstance()->addLine(QString("No measurement configuration available with the name %1").arg(name));
+        this->log(QString("No measurement configuration available with the name %1").arg(name), eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -193,28 +234,6 @@ void Controller::measurementConfigurationChanged(const QString &name){
     activeFeature->getGeometry()->setMeasurementConfig(mConfig);
 
 }
-
-/*!
- * \brief Controller::setActiveFeature
- * \param featureId
- */
-/*void Controller::setActiveFeature(const int &featureId){
-
-    //check job
-    if(this->job.isNull()){
-        Console::getInstance()->addLine("No active job");
-        return;
-    }
-
-    //set active feature
-    QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
-    if(!feature.isNull() && !feature->getFeature().isNull()){
-        feature->getFeature()->setActiveFeatureState(true);
-    }else{
-        Console::getInstance()->addLine(QString("No is no feature with the id %1 that could be activated").arg(featureId));
-    }
-
-}*/
 
 /*!
  * \brief Controller::setActiveStation
@@ -272,7 +291,7 @@ void Controller::removeObservations(const int &featureId){
 
     //check job
     if(this->job.isNull()){
-        Console::getInstance()->addLine("No job available");
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -287,7 +306,7 @@ void Controller::removeAllObservations(){
 
     //check job
     if(this->job.isNull()){
-        Console::getInstance()->addLine("No job available");
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -348,7 +367,7 @@ void Controller::saveProject(const QString &fileName){
 
     //check job
     if(this->job.isNull()){
-        Console::getInstance()->addLine("No job available");
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -368,7 +387,7 @@ void Controller::saveProject(const QString &fileName){
     //get project xml
     QDomDocument project = ProjectExchanger::saveProject(this->job);
     if(project.isNull()){
-        Console::getInstance()->addLine("Error while create project XML");
+        this->log("Error while creating project XML", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -378,7 +397,7 @@ void Controller::saveProject(const QString &fileName){
     project.save(stream, 4);
     this->job->getJobDevice()->close();
 
-    Console::getInstance()->addLine("OpenIndy project successfully stored.");
+    this->log("OpenIndy project successfully stored.", eInformationMessage, eConsoleMessage);
 
 }
 
@@ -391,7 +410,7 @@ void Controller::loadProject(const QString &projectName, const QPointer<QIODevic
 
     //check device
     if(device.isNull()){
-        Console::getInstance()->addLine("No device");
+        this->log("No device", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -405,7 +424,7 @@ void Controller::loadProject(const QString &projectName, const QPointer<QIODevic
         project.setContent(device);
         device->close();
     }catch(const exception &e){
-        Console::getInstance()->addLine("Error while opening OpenIndy xml file.");
+        this->log("Error while opening OpenIndy xml file.", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -414,7 +433,7 @@ void Controller::loadProject(const QString &projectName, const QPointer<QIODevic
 
     //check job
     if(newJob.isNull()){
-        Console::getInstance()->addLine("Error while parsing OpenIndy xml file.");
+        this->log("Error while parsing OpenIndy xml file.", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -436,7 +455,7 @@ void Controller::loadProject(const QString &projectName, const QPointer<QIODevic
     //connect active station
     this->activeStationChangedCallback();
 
-    Console::getInstance()->addLine("OpenIndy project successfully loaded.");
+    this->log("OpenIndy project successfully loaded.", eInformationMessage, eConsoleMessage);
 
 }
 
@@ -484,7 +503,7 @@ void Controller::startConnect(){
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -509,7 +528,7 @@ void Controller::startDisconnect(){
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -534,20 +553,20 @@ void Controller::startMeasurement(){
     //get and check active feature
     QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
     if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
-        Console::getInstance()->addLine("No active feature");
+        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
-        Console::getInstance()->addLine("No sensor connected to the active station");
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -575,20 +594,20 @@ void Controller::startMove(const Reading &reading){
     //get and check active feature
     QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
     if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
-        Console::getInstance()->addLine("No active feature");
+        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
-        Console::getInstance()->addLine("No sensor connected to the active station");
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -625,33 +644,33 @@ void Controller::startAim(){
     //get and check active feature
     QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
     if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
-        Console::getInstance()->addLine("No active feature");
+        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //get and check active coordinate system
     QPointer<CoordinateSystem> activeCoordinateSystem = this->job->getActiveCoordinateSystem();
     if(activeCoordinateSystem.isNull()){
-        Console::getInstance()->addLine("No active coordinate system");
+        this->log("No active coordinate system", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull() || activeStation->getCoordinateSystem().isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
-        Console::getInstance()->addLine("No sensor connected to the active station");
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //transform position of the active feature into the station coordinate system
     if(!activeFeature->getGeometry()->hasPosition()){
-        Console::getInstance()->addLine("Active feature has no position to aim");
+        this->log("Active feature has no position to aim", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -717,33 +736,33 @@ void Controller::startAimAndMeasure(){
     //get and check active feature
     QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
     if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
-        Console::getInstance()->addLine("No active feature");
+        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //get and check active coordinate system
     QPointer<CoordinateSystem> activeCoordinateSystem = this->job->getActiveCoordinateSystem();
     if(activeCoordinateSystem.isNull()){
-        Console::getInstance()->addLine("No active coordinate system");
+        this->log("No active coordinate system", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull() || activeStation->getCoordinateSystem().isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
-        Console::getInstance()->addLine("No sensor connected to the active station");
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //transform position of the active feature into the station coordinate system
     if(!activeFeature->getGeometry()->hasPosition()){
-        Console::getInstance()->addLine("Active feature has no position to aim");
+        this->log("Active feature has no position to aim", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -810,13 +829,13 @@ void Controller::startToggleSight(){
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
-        Console::getInstance()->addLine("No sensor connected to the active station");
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -841,13 +860,13 @@ void Controller::startInitialize(){
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
-        Console::getInstance()->addLine("No sensor connected to the active station");
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -872,13 +891,13 @@ void Controller::startHome(){
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
-        Console::getInstance()->addLine("No sensor connected to the active station");
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -903,13 +922,13 @@ void Controller::startCompensation(){
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
-        Console::getInstance()->addLine("No sensor connected to the active station");
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -934,13 +953,13 @@ void Controller::startChangeMotorState(){
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
-        Console::getInstance()->addLine("No sensor connected to the active station");
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -966,13 +985,13 @@ void Controller::startCustomAction(const QString &task){
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station");
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
-        Console::getInstance()->addLine("No sensor connected to the active station");
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -981,6 +1000,27 @@ void Controller::startCustomAction(const QString &task){
 
     //do self defined action
     activeStation->selfDefinedAction(task);
+
+}
+
+/*!
+ * \brief Controller::log
+ * Prints a message to the specified destination
+ * \param msg
+ * \param msgType
+ * \param msgDest
+ */
+void Controller::log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest){
+
+    switch(msgDest){
+    case eConsoleMessage:
+        Console::getInstance()->addLine(msg, msgType);
+        break;
+    case eMessageBoxMessage:
+        Console::getInstance()->addLine(msg, msgType);
+        emit this->showMessageBox(msg, msgType);
+        break;
+    }
 
 }
 
@@ -1093,7 +1133,7 @@ void Controller::setJob(const QPointer<OiJob> &job){
     this->job = job;
 
     //log messages to console
-    QObject::connect(this->job.data(), &OiJob::sendMessage, this, &Controller::logToConsole, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::sendMessage, this, &Controller::log, Qt::AutoConnection);
 
     //active feature changes
     QObject::connect(this->job.data(), &OiJob::activeFeatureChanged, this, &Controller::activeFeatureChanged, Qt::AutoConnection);
@@ -1180,6 +1220,8 @@ void Controller::setJob(const QPointer<OiJob> &job){
     this->exchanger.setCurrentJob(this->job);
     this->featureUpdater.setCurrentJob(this->job);
 
+    emit this->currentJobChanged();
+
 }
 
 /*!
@@ -1219,14 +1261,10 @@ void Controller::initConfigManager(){
     ModelManager::setSensorConfigManager(this->sensorConfigManager);
     ModelManager::setMeasurementConfigManager(this->measurementConfigManager);
 
-}
+    //connect config manager
+    QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
+    QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
 
-/*!
- * \brief Controller::logToConsole
- * \param msg
- */
-void Controller::logToConsole(const QString &msg){
-    Console::getInstance()->addLine(msg);
 }
 
 /*!
@@ -1249,6 +1287,9 @@ void Controller::registerMetaTypes(){
  * \brief Controller::connectDataExchanger
  */
 void Controller::connectDataExchanger(){
+
+    //messaging
+    QObject::connect(&this->exchanger, &DataExchanger::sendMessage, this, &Controller::log, Qt::AutoConnection);
 
     //nominal import
     QObject::connect(&this->exchanger, &DataExchanger::nominalImportFinished, this, &Controller::nominalImportFinished, Qt::AutoConnection);

@@ -14,7 +14,7 @@
   </as:Header>
   <as:AssemblyStructure>
     <as:Structure ID="NewFile" taxonomy="XML" reference="">
-      <oiProjectData name="%string%" date="%YYYY-MM-DD:HH:MM:SS%" idCount="%12345%">
+      <oiProjectData name="%string%" date="%YYYY-MM-DD:HH:MM:SS%" idCount="%12345%" version="%string%">
         <activeCoordinateSystem ref="%12345%" />
         <activeStation ref="%12345%" />
         <stations>
@@ -284,7 +284,6 @@
           <as:constraint action="makeOptional(//geometry/radius)" />
           <as:constraint action="makeOptional(//geometry/seriesValue)" />
           <as:constraint action="makeOptional(//geometry/spatialDirection)" />
-          <as:constraint action="makeOptional(//geometry/temperature,)" />
           <as:constraint action="makeOptional(//geometry/temperature,)" />
           <as:constraint action="makeOptional(//geometry/usedFor)" />
           <as:constraint action="setNumberMask(//inputElement/@index,#######)" />

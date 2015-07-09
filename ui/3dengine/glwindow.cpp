@@ -58,15 +58,72 @@ GlWindow::GlWindow(QScreen *screen)
     format.setSamples( 4 );
     setFormat(format);
     create();
+
+    engine.registerAspect(new Qt3D::QRenderAspect());
+    input = new Qt3D::QInputAspect;
+    engine.registerAspect(input);
+    engine.initialize();
+    QVariantMap data;
+    data.insert(QStringLiteral("surface"), QVariant::fromValue(static_cast<QSurface *>(this)));
+    data.insert(QStringLiteral("eventSource"), QVariant::fromValue(this));
+    engine.setData(data);
+
+    // Root entity
+    rootEntity = new Qt3D::QEntity();
+
+    // Camera
+    cameraEntity = new Qt3D::QCamera(rootEntity);
+
+    cameraEntity->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
+    cameraPosition = QVector3D(0, 0, -40.0f);
+    cameraEntity->setPosition(cameraPosition);
+    cameraEntity->setUpVector(QVector3D(0, 1, 0));
+    cameraEntity->setViewCenter(QVector3D(0, 0, 0));
+    input->setCamera(cameraEntity);
+
+    // FrameGraph
+    frameGraph = new Qt3D::QFrameGraph();
+    forwardRenderer = new Qt3D::QForwardRenderer();
+    forwardRenderer->setClearColor(QColor::fromRgbF(0.0, 0.5, 1.0, 1.0));
+    forwardRenderer->setCamera(cameraEntity);
+    frameGraph->setActiveFrameGraph(forwardRenderer);
+
+    scene.buildScene(rootEntity);
+
+    rootEntity->addComponent(frameGraph);
+
+    engine.setRootEntity(rootEntity);
 }
 
 GlWindow::~GlWindow()
 {
 }
 
+QPointer<OiJob> GlWindow::getCurrentJob() const
+{
+    return this->scene.getCurrentJob();
+}
+
+void GlWindow::setCurrentJob(const QPointer<OiJob> &value)
+{
+    this->scene.setCurrentJob(value);
+}
+
 void GlWindow::wheelEvent(QWheelEvent *ev)
 {
-
+    cameraPosition = cameraEntity->position();
+    cameraPosition.setZ(cameraPosition.z()+ev->delta()/10);
+    cameraEntity->setPosition(cameraPosition);
     ev->accept();
+}
+
+void GlWindow::mouseDoubleClickEvent(QMouseEvent *event)
+{
+
+    //TODO bei doppelklick soll neu gezeichnet werden
+    scene.buildScene(rootEntity);
+    engine.setRootEntity(rootEntity);
+    event->accept();
+
 }
 
