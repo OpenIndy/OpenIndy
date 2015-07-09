@@ -1,12 +1,9 @@
-#ifndef GLVIEWWIDGET_H
-#define GLVIEWWIDGET_H
+#ifndef SCENEBUILDER_H
+#define SCENEBUILDER_H
 
-#include <QWidget>
-#include <QWindow>
-#include <QScreen>
-#include <QWheelEvent>
-
-#include <QHBoxLayout>
+#include <QObject>
+#include <QList>
+#include <QPointer>
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QCamera>
@@ -28,42 +25,31 @@
 #include <Qt3DRenderer/QCylinderMesh>
 #include <Qt3DRenderer/QSphereMesh>
 #include <Qt3DRenderer/QTorusMesh>
+#include <Qt3DRenderer/QCuboidMesh>
 
 #include <QPropertyAnimation>
 
+#include "oijob.h"
 
-#include "glwindow.h"
-#include "scenebuilder.h"
+using namespace oi;
 
-
-class GlViewWidget : public QWidget
+class SceneBuilder : public QObject
 {
     Q_OBJECT
 public:
-    explicit GlViewWidget(QWidget *parent = 0);
+    explicit SceneBuilder(QObject *parent = 0);
 
     QPointer<OiJob> getCurrentJob() const;
     void setCurrentJob(const QPointer<OiJob> &value);
 
 signals:
 
-protected:
-     void mouseDoubleClickEvent(QMouseEvent * event);
-     void wheelEvent(QWheelEvent * event);
-
-
 public slots:
+    void buildScene(Qt3D::QEntity *rootEntity);
 
 private:
-     Qt3D::QAspectEngine engine;
-     Qt3D::QCamera *cameraEntity;
-     Qt3D::QInputAspect *input;
-
-     QVector3D cameraPosition;
-
-     SceneBuilder scene;
-
-
+    QList<QPointer<Qt3D::QEntity> > entities;
+    QPointer<OiJob> currentJob;
 };
 
-#endif // GLVIEWWIDGET_H
+#endif // SCENEBUILDER_H

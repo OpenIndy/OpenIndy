@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //create default job and pass it to the watch window
     QPointer<OiJob> job = this->control.createDefaultJob();
     this->watchWindowDialog.setCurrentJob(job);
+    this->ui->widget_3dView->setCurrentJob(job);
 
     //initially resize table view to fit the default job
     this->resizeTableView();

@@ -218,7 +218,8 @@ SOURCES += \
     ui/delegates/readingtabledelegate.cpp \
     ui/dialogs/aboutdialog.cpp \
     ui/widgets/glviewwidget.cpp \
-    ui/3dengine/glwindow.cpp
+    ui/3dengine/glwindow.cpp \
+    ui/3dengine/scenebuilder.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -298,7 +299,8 @@ HEADERS  += \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oivec.h \
     ui/dialogs/aboutdialog.h \
     ui/widgets/glviewwidget.h \
-    ui/3dengine/glwindow.h
+    ui/3dengine/glwindow.h \
+    ui/3dengine/scenebuilder.h
 
 FORMS    += \
     ui/mainwindow.ui \

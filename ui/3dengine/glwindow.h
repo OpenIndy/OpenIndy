@@ -38,6 +38,7 @@
 #define GLWINDOW_H
 
 #include <QWindow>
+#include <QDebug>
 
 class GlWindow : public QWindow
 {
@@ -47,7 +48,8 @@ public:
     ~GlWindow();
 
 protected:
-    virtual void keyPressEvent(QKeyEvent *e);
+    void wheelEvent(QWheelEvent * ev);
+
 };
 
 #endif // QT3D_GLWINDOW_H

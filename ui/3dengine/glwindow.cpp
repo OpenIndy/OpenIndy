@@ -37,6 +37,7 @@
 #include "glwindow.h"
 
 #include <QKeyEvent>
+#include <QWheelEvent>
 #include <QGuiApplication>
 #include <QOpenGLContext>
 
@@ -63,15 +64,9 @@ GlWindow::~GlWindow()
 {
 }
 
-void GlWindow::keyPressEvent( QKeyEvent* e )
+void GlWindow::wheelEvent(QWheelEvent *ev)
 {
-    switch ( e->key() )
-    {
-        case Qt::Key_Escape:
-            QGuiApplication::quit();
-            break;
 
-        default:
-            QWindow::keyPressEvent( e );
-    }
+    ev->accept();
 }
+
