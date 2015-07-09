@@ -54,6 +54,9 @@ public slots:
     void addFeatures(const FeatureAttributes &attributes);
     void removeFeatures(const QSet<int> &featureIds);
 
+    //change feature parameters
+    void setNominalParameters(const int &featureId, const QMap<UnknownParameters, double> &parameters);
+
     //recalculation
     void recalcActiveFeature();
 

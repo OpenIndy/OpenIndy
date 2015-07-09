@@ -115,6 +115,21 @@ void Controller::removeFeatures(const QSet<int> &featureIds){
 }
 
 /*!
+ * \brief Controller::setNominalParameters
+ * \param featureId
+ * \param parameters
+ */
+void Controller::setNominalParameters(const int &featureId, const QMap<UnknownParameters, double> &parameters){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No active job", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+}
+
+/*!
  * \brief Controller::recalcActiveFeature
  */
 void Controller::recalcActiveFeature(){

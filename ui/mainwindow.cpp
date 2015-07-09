@@ -1107,11 +1107,24 @@ void MainWindow::showFeatureProperties(bool checked){
         return;
     }
 
+    //get parameter display config
+    const ParameterDisplayConfig &dConfig = sourceModel->getParameterDisplayConfig();
+
     //depending on the type of feature display a special properties dialog
-    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
+    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){ //actual
+
         this->actualPropertiesDialog.show();
-    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+
+    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){ //nominal
+
+        this->nominalPropertiesDialog.setCurrentNominal(feature->getFeature()->getId(), feature->getFeature()->getFeatureName(),
+                                                        feature->getFeatureTypeEnum());
+
+        QMap<UnknownParameters, QString> parameters;
+        this->nominalPropertiesDialog.setUnknownNominalParameters(parameters);
+
         this->nominalPropertiesDialog.show();
+
     }
 
 }
