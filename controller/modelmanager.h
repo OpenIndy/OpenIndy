@@ -126,6 +126,9 @@ public:
     //group name model
     static QStringListModel &getGroupNamesModel();
 
+    //actual nominal filter model
+    static QStringListModel &getActualNominalFilterModel();
+
     //unit types models
     static QStringListModel &getUnitTypesModel(const DimensionType &dimension);
 
@@ -227,6 +230,9 @@ private:
 
     //group name model
     static QStringListModel groupNamesModel;
+
+    //actual nominal filter model
+    static QStringListModel actualNominalFilterModel;
 
     //unit types models
     static QStringListModel metricUnitTypesModel;
@@ -331,6 +337,8 @@ private:
     static void initPluginModels();
 
     static void initGroupsModel();
+
+    static void initActualNominalFilterModel();
 
     static void initObservationModels();
     static void initReadingModels();

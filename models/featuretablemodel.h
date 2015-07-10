@@ -70,6 +70,13 @@ public:
     const QString &getActiveGroupName() const;
     void setActiveGroupName(const QString &group);
 
+    //################################
+    //get or set actual nominal filter
+    //################################
+
+    const ActualNominalFilter &getActualNominalFilter() const;
+    void setActualNominalFilter(const ActualNominalFilter &filter);
+
     //###############################
     //get or set current OpenIndy job
     //###############################
@@ -138,6 +145,12 @@ private:
     //##############
 
     QPointer<MeasurementConfigManager> measurementConfigManager;
+
+    //#################
+    //helper attributes
+    //#################
+
+    ActualNominalFilter actualNominalFilter;
     
 };
 

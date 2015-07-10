@@ -896,6 +896,29 @@ void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString
 }
 
 /*!
+ * \brief MainWindow::on_comboBox_actualNominal_currentIndexChanged
+ * \param arg1
+ */
+void MainWindow::on_comboBox_actualNominal_currentIndexChanged(const QString &arg1){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //update actual nominal filter
+    sourceModel->setActualNominalFilter(getActualNominalFilterEnum(arg1));
+
+}
+
+/*!
  * \brief MainWindow::on_actionWatch_window_triggered
  */
 void MainWindow::on_actionWatch_window_triggered(){
@@ -1513,6 +1536,9 @@ void MainWindow::assignModels(){
     //assign coordinate system model
     this->ui->comboBox_activeCoordSystem->setModel(&ModelManager::getCoordinateSystemsModel());
 
+    //assign actual nominal filter model
+    this->ui->comboBox_actualNominal->setModel(&ModelManager::getActualNominalFilterModel());
+
 }
 
 /*!
@@ -1661,6 +1687,7 @@ void MainWindow::initToolMenus(){
 void MainWindow::initFilterComboBoxes(){
     this->updateGroupFilterSize();
     this->updateSystemFilterSize();
+    this->updateActualNominalFilterSize();
 }
 
 /*!
@@ -1891,5 +1918,24 @@ void MainWindow::updateSystemFilterSize(){
 
     //update combobox width with respect to the largest item
     this->ui->comboBox_activeCoordSystem->setMinimumContentsLength(largestSystemName.length());
+
+}
+
+/*!
+ * \brief MainWindow::updateActualNominalFilterSize
+ */
+void MainWindow::updateActualNominalFilterSize(){
+
+    //get the largest group name
+    QStringList actualNominalfilters = ModelManager::getActualNominalFilterModel().stringList();
+    QString largestFilter = "";
+    foreach(const QString &filter, actualNominalfilters){
+        if(filter.length() > largestFilter.length()){
+            largestFilter = filter;
+        }
+    }
+
+    //update combobox width with respect to the largest item
+    this->ui->comboBox_actualNominal->setMinimumContentsLength(largestFilter.length());
 
 }

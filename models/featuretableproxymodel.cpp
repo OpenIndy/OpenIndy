@@ -118,16 +118,19 @@ bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
     }
 
     //filter by group name
-    if(source_model->getCurrentJob()->getActiveGroup().compare("All Groups") == 0){
-        return true;
-    }else{
-        if(feature->getFeature()->getGroupName().compare(source_model->getCurrentJob()->getActiveGroup()) == 0){
-            return true;
+    if(source_model->getCurrentJob()->getActiveGroup().compare("All Groups") != 0){
+        if(feature->getFeature()->getGroupName().compare(source_model->getCurrentJob()->getActiveGroup()) != 0){
+            return false;
         }
+    }
+
+    //filter by actual nominal
+    if((source_model->getActualNominalFilter() == eFilterActual && !feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal())
+            || (source_model->getActualNominalFilter() == eFilterNominal && (feature->getGeometry().isNull() || !feature->getGeometry()->getIsNominal()))){
         return false;
     }
 
-    return false;
+    return true;
 
 }
 

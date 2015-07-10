@@ -586,6 +586,23 @@ void FeatureTableModel::setActiveGroupName(const QString &group){
 }
 
 /*!
+ * \brief FeatureTableModel::getActualNominalFilter
+ * \return
+ */
+const ActualNominalFilter &FeatureTableModel::getActualNominalFilter() const{
+    return this->actualNominalFilter;
+}
+
+/*!
+ * \brief FeatureTableModel::setActualNominalFilter
+ * \param filter
+ */
+void FeatureTableModel::setActualNominalFilter(const ActualNominalFilter &filter){
+    this->actualNominalFilter = filter;
+    this->updateModel();
+}
+
+/*!
  * \brief FeatureTableModel::getCurrentJob
  * \return
  */

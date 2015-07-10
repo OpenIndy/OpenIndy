@@ -187,9 +187,10 @@ private slots:
     //toggle visibility of widgets
     void on_actionControl_pad_triggered();
 
-    //active group or coordinate system changed
+    //active group, active coordinate system or actual nominal filter changed
     void on_comboBox_groups_currentIndexChanged(const QString &arg1);
     void on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1);
+    void on_comboBox_actualNominal_currentIndexChanged(const QString &arg1);
 
     //show watch window
     void on_actionWatch_window_triggered();
@@ -273,6 +274,7 @@ private:
 
     void updateGroupFilterSize();
     void updateSystemFilterSize();
+    void updateActualNominalFilterSize();
 
     //############################
     //OpenIndy dialogs and widgets
