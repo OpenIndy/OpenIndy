@@ -119,7 +119,7 @@ void Controller::removeFeatures(const QSet<int> &featureIds){
  * \param featureId
  * \param parameters
  */
-void Controller::setNominalParameters(const int &featureId, const QMap<UnknownParameters, double> &parameters){
+void Controller::setNominalParameters(const int &featureId, const QMap<GeometryParameters, double> &parameters){
 
     //check job
     if(this->job.isNull()){
@@ -130,12 +130,37 @@ void Controller::setNominalParameters(const int &featureId, const QMap<UnknownPa
     //get and check the feature by its id
     QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
     if(feature.isNull() || feature->getGeometry().isNull()){
-        this->log(QString("No feature with the id %1").arg(featureId), eErrorMessage, eMessageBoxMessage);
+        this->log(QString("No geometry with the id %1").arg(featureId), eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //update the feature's parameters
     feature->getGeometry()->setUnknownParameters(parameters);
+
+}
+
+/*!
+ * \brief Controller::setTrafoParamParameters
+ * \param featureId
+ * \param parameters
+ */
+void Controller::setTrafoParamParameters(const int &featureId, const QMap<TrafoParamParameters, double> &parameters){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No active job", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get and check the feature by its id
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
+    if(feature.isNull() || feature->getTrafoParam().isNull()){
+        this->log(QString("No trafo param with the id %1").arg(featureId), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //update the feature's parameters
+    feature->getTrafoParam()->setUnknownParameters(parameters);
 
 }
 

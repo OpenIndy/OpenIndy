@@ -1,57 +1,92 @@
-#ifndef EDITTRAFOPARAMDIALOG_H
-#define EDITTRAFOPARAMDIALOG_H
+#ifndef TRAFOPARAMPROPERTIESDIALOG_H
+#define TRAFOPARAMPROPERTIESDIALOG_H
 
 #include <QDialog>
-#include <QMessageBox>
+#include <QMap>
 #include <QShowEvent>
 #include <QDesktopWidget>
-#include "featurewrapper.h"
-#include "functionstatistic.h"
-#include "matrixmodel.h"
-#include "oifeaturestate.h"
+#include <QPointer>
+
+#include "modelmanager.h"
+
+using namespace oi;
 
 namespace Ui {
-class EditTrafoparamDialog;
+class TrafoParamPropertiesDialog;
 }
+
 /*!
- * \brief The EditTrafoparamDialog class for editing transformation parameters by hand or creating own parameters by hand without running any functions.
+ * \brief The TrafoParamPropertiesDialog class
  */
-class EditTrafoparamDialog : public QDialog
+class TrafoParamPropertiesDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit EditTrafoparamDialog(QWidget *parent = 0);
-    ~EditTrafoparamDialog();
+    explicit TrafoParamPropertiesDialog(QWidget *parent = 0);
+    ~TrafoParamPropertiesDialog();
 
-    FunctionStatistic *fModel;
-    MatrixModel *mModel;
+    //############################################################
+    //get or set information about the current trafo param feature
+    //############################################################
+
+    const int &getId() const;
+    void setId(const int &id);
+
+    const QString &getName() const;
+    void setName(const QString &name);
+
+    void setCurrentTrafoParam(const int &id, const QString &name);
+
+    const QMap<TrafoParamParameters, QString> &getUnknownTrafoParamParameters() const;
+    void setUnknownTrafoParamParameters(const QMap<TrafoParamParameters, QString> &parameters);
 
 signals:
 
-public slots:
+    //###########################
+    //edit trafo param parameters
+    //###########################
+
+    void trafoParamParametersChanged(const int &id, const QMap<TrafoParamParameters, double> &parameters);
+
+private slots:
+
+    //#########################
+    //actions triggered by user
+    //#########################
+
+    void on_toolButton_cancel_clicked();
+    void on_toolButton_ok_clicked();
+
+private:
+
+    //##################################
+    //methods to initialize GUI elements
+    //##################################
 
     void showEvent(QShowEvent *event);
 
-private slots:
-    void on_toolButton_cancel_clicked();
-
-    void on_toolButton_ok_clicked();
-
     void initGUI();
+    void initModels();
 
-    void getValues();
+    //##############
+    //helper methods
+    //##############
 
-    void on_checkBox_identicalScale_toggled(bool checked);
-
-    void on_comboBox_displayedFunction_currentIndexChanged(const QString &arg1);
+    void setParametersToGUI(const TrafoParamParameters &param, const QString &value);
+    void getParametersFromGUI(QMap<TrafoParamParameters, double> &parameters);
 
 private:
-    Ui::EditTrafoparamDialog *ui;
+    Ui::TrafoParamPropertiesDialog *ui;
 
-    OiMat getTranslationMatrix(double tx, double ty, double tz);
-    OiMat getScaleMatrix(double sx, double sy, double sz);
-    OiMat getRotationMatrix(double rx, double ry, double rz);
+    //####################################################
+    //attributes that describe the current nominal feature
+    //####################################################
+
+    int id;
+    QString name;
+    QMap<TrafoParamParameters, QString> parameters;
+
 };
 
-#endif // EDITTRAFOPARAMDIALOG_H
+#endif // TRAFOPARAMPROPERTIESDIALOG_H

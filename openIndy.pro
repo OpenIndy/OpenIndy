@@ -215,7 +215,8 @@ SOURCES += \
     controller/exchange/observationimporter.cpp \
     ui/delegates/observationtabledelegate.cpp \
     ui/delegates/readingtabledelegate.cpp \
-    ui/dialogs/aboutdialog.cpp
+    ui/dialogs/aboutdialog.cpp \
+    ui/dialogs/trafoparampropertiesdialog.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -293,7 +294,8 @@ HEADERS  += \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/linearalgebra.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oimat.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oivec.h \
-    ui/dialogs/aboutdialog.h
+    ui/dialogs/aboutdialog.h \
+    ui/dialogs/trafoparampropertiesdialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -311,4 +313,5 @@ FORMS    += \
     ui/dialogs/measurementconfigurationdialog.ui \
     ui/dialogs/actualpropertiesdialog.ui \
     ui/dialogs/nominalpropertiesdialog.ui \
-    ui/dialogs/aboutdialog.ui
+    ui/dialogs/aboutdialog.ui \
+    ui/dialogs/trafoparampropertiesdialog.ui

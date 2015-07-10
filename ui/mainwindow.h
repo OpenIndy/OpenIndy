@@ -30,6 +30,7 @@
 #include "settingsdialog.h"
 #include "actualpropertiesdialog.h"
 #include "nominalpropertiesdialog.h"
+#include "trafoparampropertiesdialog.h"
 #include "aboutdialog.h"
 
 #include "featuretabledelegate.h"
@@ -291,6 +292,7 @@ private:
     SettingsDialog settingsDialog;
     ActualPropertiesDialog actualPropertiesDialog;
     NominalPropertiesDialog nominalPropertiesDialog;
+    TrafoParamPropertiesDialog trafoParamPropertiesDialog;
     AboutDialog aboutDialog;
 
     //##########

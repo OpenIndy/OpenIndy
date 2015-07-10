@@ -2,19 +2,9 @@
 #define NOMINALPROPERTIESDIALOG_H
 
 #include <QDialog>
-#include <QCloseEvent>
 #include <QMap>
-#include <QLayout>
-#include <QLineEdit>
-#include <QComboBox>
-#include <QLabel>
-#include <QtSerialPort/QSerialPort>
-#include <QtSerialPort/QSerialPortInfo>
-#include <QtNetwork/QNetworkInterface>
 #include <QShowEvent>
 #include <QDesktopWidget>
-#include <QKeyEvent>
-#include <QClipboard>
 #include <QPointer>
 
 #include "modelmanager.h"
@@ -51,8 +41,8 @@ public:
 
     void setCurrentNominal(const int &id, const QString &name, const FeatureTypes &type);
 
-    const QMap<UnknownParameters, QString> &getUnknownNominalParameters() const;
-    void setUnknownNominalParameters(const QMap<UnknownParameters, QString> &parameters);
+    const QMap<GeometryParameters, QString> &getUnknownNominalParameters() const;
+    void setUnknownNominalParameters(const QMap<GeometryParameters, QString> &parameters);
 
 signals:
 
@@ -60,7 +50,7 @@ signals:
     //edit nominal parameters
     //#######################
 
-    void nominalParametersChanged(const int &id, const QMap<UnknownParameters, double> &parameters);
+    void nominalParametersChanged(const int &id, const QMap<GeometryParameters, double> &parameters);
 
 private slots:
 
@@ -86,10 +76,10 @@ private:
     //helper methods
     //##############
 
-    void setVisibility(const UnknownParameters &param, const bool &visible);
+    void setVisibility(const GeometryParameters &param, const bool &visible);
 
-    void setParametersToGUI(const UnknownParameters &param, const QString &value);
-    void getParametersFromGUI(QMap<UnknownParameters, double> &parameters);
+    void setParametersToGUI(const GeometryParameters &param, const QString &value);
+    void getParametersFromGUI(QMap<GeometryParameters, double> &parameters);
 
 private:
     Ui::NominalPropertiesDialog *ui;
@@ -101,7 +91,7 @@ private:
     int id;
     QString name;
     FeatureTypes type;
-    QMap<UnknownParameters, QString> parameters;
+    QMap<GeometryParameters, QString> parameters;
 
 };
 

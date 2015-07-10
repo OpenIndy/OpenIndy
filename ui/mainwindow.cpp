@@ -748,6 +748,8 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
 
+        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                        this, SLOT(showFeatureProperties(bool)));
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         &this->control, SLOT(recalcActiveFeature()));
 
@@ -1119,7 +1121,7 @@ void MainWindow::showFeatureProperties(bool checked){
 
         QMap<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
         QMap<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
-        QMap<UnknownParameters, QString> parameters = feature->getGeometry()->getUnknownParameters(displayUnits, displayDigits);
+        QMap<GeometryParameters, QString> parameters = feature->getGeometry()->getUnknownParameters(displayUnits, displayDigits);
         this->nominalPropertiesDialog.setUnknownNominalParameters(parameters);
 
         this->nominalPropertiesDialog.show();
@@ -1130,6 +1132,22 @@ void MainWindow::showFeatureProperties(bool checked){
         emit this->log(QString("Switch to the nominal system of %1 to edit its properties").arg(feature->getGeometry()->getFeatureName()),
                        eInformationMessage, eMessageBoxMessage);
         return;
+    }
+
+    //display properties dialog for trafo params
+    if(!feature->getTrafoParam().isNull()){
+
+        this->trafoParamPropertiesDialog.setCurrentTrafoParam(feature->getFeature()->getId(), feature->getFeature()->getFeatureName());
+
+        QMap<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
+        QMap<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
+        QMap<TrafoParamParameters, QString> parameters = feature->getTrafoParam()->getUnknownParameters(displayUnits, displayDigits);
+        this->trafoParamPropertiesDialog.setUnknownTrafoParamParameters(parameters);
+
+        this->trafoParamPropertiesDialog.show();
+
+        return;
+
     }
 
 }
@@ -1466,6 +1484,9 @@ void MainWindow::connectDialogs(){
 
     //connect nominal properties dialog
     QObject::connect(&this->nominalPropertiesDialog, &NominalPropertiesDialog::nominalParametersChanged, &this->control, &Controller::setNominalParameters, Qt::AutoConnection);
+
+    //connect trafo param properties dialog
+    QObject::connect(&this->trafoParamPropertiesDialog, &TrafoParamPropertiesDialog::trafoParamParametersChanged, &this->control, &Controller::setTrafoParamParameters, Qt::AutoConnection);
 
 }
 
