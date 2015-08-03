@@ -188,8 +188,8 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
         //search trafo param in tp that are in relation to the target system
         foreach(const QPointer<TrafoParam> &t, tp->getDestinationSystem()->getTransformationParameters()) {
 
-            //check tp
-            if(tp.isNull() || !tp->getIsUsed() || !tp->getIsSolved()){
+            //check t
+            if(t.isNull() || !t->getIsUsed() || !tp->getIsSolved() || !t->getIsDatumTrafo()){
                 continue;
             }
 

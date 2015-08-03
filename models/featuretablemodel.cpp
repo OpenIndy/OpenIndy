@@ -324,6 +324,11 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 feature->getTrafoParam()->setIsUsed(value.toBool());
                 return true;
             }
+        }case eTrafoParamDisplayIsDatumTransformation:{
+            if(value.type() == QVariant::Bool){
+                feature->getTrafoParam()->setIsDatumTrafo(value.toBool());
+                return true;
+            }
         }
         }
 
@@ -817,6 +822,8 @@ QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feat
             return feature->getFeature()->getDisplayValidTime();
         case eTrafoParamDisplayIsMovement:
             return feature->getFeature()->getDisplayIsMovement();
+        case eTrafoParamDisplayIsDatumTransformation:
+            return feature->getFeature()->getDisplayIsDatumTransformation();
         }
 
     }
