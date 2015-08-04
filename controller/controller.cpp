@@ -387,6 +387,7 @@ void Controller::setReadingTableColumnConfig(const ReadingTableColumnConfig &con
  */
 void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config){
     ModelManager::setParameterDisplayConfig(config);
+    emit this->updateStatusBar();
 }
 
 void Controller::saveProject()
@@ -1054,6 +1055,10 @@ void Controller::log(const QString &msg, const MessageTypes &msgType, const Mess
     case eMessageBoxMessage:
         Console::getInstance()->addLine(msg, msgType);
         emit this->showMessageBox(msg, msgType);
+        break;
+    case eStatusBarMessage:
+        Console::getInstance()->addLine(msg, msgType);
+        emit this->showStatusMessage(msg, msgType);
         break;
     }
 

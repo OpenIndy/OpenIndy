@@ -130,8 +130,9 @@ private slots:
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
 
-    //display a message box
+    //display messages
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
+    void showStatusMessage(const QString &msg, const MessageTypes &msgType);
 
     //#########################
     //actions triggered by user
@@ -240,6 +241,9 @@ private slots:
     void copyToClipboard();
     void pasteFromClipboard();
 
+    //set up status bar
+    void updateStatusBar();
+
 private:
     Ui::MainWindow *ui;
 
@@ -253,6 +257,7 @@ private:
 
     void connectController();
     void connectDialogs();
+    void connectStatusBar();
     void assignModels();
 
     //##################################
@@ -263,6 +268,7 @@ private:
     void initSensorPad();
     void initToolMenus();
     void initFilterComboBoxes();
+    void initStatusBar();
 
     //##############################
     //methods to update GUI elements
@@ -315,6 +321,15 @@ private:
     QList<QPointer<QAction> > selfDefinedActions;
 
     QPointer<QSignalMapper> customActionMapper;
+
+    //##################
+    //status bar widgets
+    //##################
+
+    QLabel *label_statusUnitMetric;
+    QLabel *label_statusUnitAngular;
+    QLabel *label_statusUnitTemperature;
+    QLabel *label_statusSensor;
 
     //#################
     //helper attributes

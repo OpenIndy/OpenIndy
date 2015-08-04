@@ -9,9 +9,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->setupUi(this);
 
-    //connect controller and dialogs
+    //connect controller, dialogs and status bar
     this->connectDialogs();
     this->connectController();
+    this->connectStatusBar();
 
     //create default job
     QPointer<OiJob> job = this->control.createDefaultJob();
@@ -24,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->initSensorPad();
     this->initToolMenus();
     this->initFilterComboBoxes();
+    this->initStatusBar();
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -326,6 +328,35 @@ void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType)
     msgBox.setStandardButtons(QMessageBox::Ok);
 
     msgBox.exec();
+
+}
+
+/*!
+ * \brief MainWindow::showStatusMessage
+ * \param msg
+ * \param msgType
+ */
+void MainWindow::showStatusMessage(const QString &msg, const MessageTypes &msgType){
+
+    QString status;
+
+    switch(msgType){
+    case eInformationMessage:
+        break;
+    case eWarningMessage:
+        status.append("WARNING: ");
+        break;
+    case eErrorMessage:
+        status.append("ERROR: ");
+        break;
+    case eCriticalMessage:
+        status.append("CRITICAL: ");
+        break;
+    }
+
+    status.append(msg);
+
+    this->ui->statusBar->showMessage(status);
 
 }
 
@@ -1428,6 +1459,22 @@ void MainWindow::pasteFromClipboard(){
 }
 
 /*!
+ * \brief MainWindow::updateStatusBar
+ */
+void MainWindow::updateStatusBar(){
+
+    const ParameterDisplayConfig &pConfig = ModelManager::getParameterDisplayConfig();
+
+    //update units
+    this->label_statusUnitMetric->setText(getUnitTypeName(pConfig.getDisplayUnit(eMetric)));
+    this->label_statusUnitAngular->setText(getUnitTypeName(pConfig.getDisplayUnit(eAngular)));
+    this->label_statusUnitTemperature->setText(getUnitTypeName(pConfig.getDisplayUnit(eTemperature)));
+
+    //update sensor status
+
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -1459,6 +1506,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
@@ -1510,6 +1558,16 @@ void MainWindow::connectDialogs(){
 
     //connect trafo param properties dialog
     QObject::connect(&this->trafoParamPropertiesDialog, &TrafoParamPropertiesDialog::trafoParamParametersChanged, &this->control, &Controller::setTrafoParamParameters, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief MainWindow::connectStatusBar
+ */
+void MainWindow::connectStatusBar(){
+
+    //connect unit updates
+    QObject::connect(&this->control, &Controller::updateStatusBar, this, &MainWindow::updateStatusBar, Qt::AutoConnection);
 
 }
 
@@ -1688,6 +1746,36 @@ void MainWindow::initFilterComboBoxes(){
     this->updateGroupFilterSize();
     this->updateSystemFilterSize();
     this->updateActualNominalFilterSize();
+}
+
+/*!
+ * \brief MainWindow::initStatusBar
+ */
+void MainWindow::initStatusBar(){
+
+    //create GUI elements
+    this->label_statusSensor = new QLabel();
+    this->label_statusUnitMetric = new QLabel();
+    this->label_statusUnitAngular = new QLabel();
+    this->label_statusUnitTemperature = new QLabel();
+
+    //format GUI elements
+    this->label_statusUnitMetric->setMinimumWidth(50);
+    this->label_statusUnitMetric->setAlignment(Qt::AlignHCenter);
+    this->label_statusUnitAngular->setMinimumWidth(50);
+    this->label_statusUnitAngular->setAlignment(Qt::AlignHCenter);
+    this->label_statusUnitTemperature->setMinimumWidth(50);
+    this->label_statusUnitTemperature->setAlignment(Qt::AlignHCenter);
+
+    //add GUI elements to status bar
+    this->ui->statusBar->addPermanentWidget(this->label_statusSensor);
+    this->ui->statusBar->addPermanentWidget(this->label_statusUnitMetric);
+    this->ui->statusBar->addPermanentWidget(this->label_statusUnitAngular);
+    this->ui->statusBar->addPermanentWidget(this->label_statusUnitTemperature);
+
+    //show initial status
+    this->updateStatusBar();
+
 }
 
 /*!
