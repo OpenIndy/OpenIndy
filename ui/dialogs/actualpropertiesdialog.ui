@@ -13,11 +13,14 @@
   <property name="windowTitle">
    <string>feature data</string>
   </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget_selectedFeature">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_observations">
       <attribute name="title">
@@ -72,90 +75,23 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
-        <layout class="QVBoxLayout" name="verticalLayout_6">
+        <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout">
+          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,1">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLabel" name="label_displayFunction">
-               <property name="text">
-                <string>function statistic:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="comboBox_displayedFunction"/>
-             </item>
-            </layout>
+            <widget class="QLabel" name="label_displayFunction">
+             <property name="text">
+              <string>function statistic:</string>
+             </property>
+            </widget>
            </item>
            <item>
-            <widget class="QTableView" name="tableView_displayedfunctionStatistic"/>
+            <widget class="QComboBox" name="comboBox_displayedFunction"/>
            </item>
           </layout>
          </item>
          <item>
-          <widget class="QTabWidget" name="tabWidget_covarianceMatrices">
-           <property name="currentIndex">
-            <number>1</number>
-           </property>
-           <widget class="QWidget" name="tab_sigmaXXaposteriori">
-            <attribute name="title">
-             <string>Qxx á posteriori</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_4">
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_22" stretch="1,1">
-               <item>
-                <widget class="QLabel" name="label_s0aposteriori">
-                 <property name="text">
-                  <string>s0 á posteriori:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_s0aposterioriValue">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QTableView" name="tableView_qxxAposteriori"/>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="tab_sigmaXXapriori">
-            <attribute name="title">
-             <string>Sxx á priori</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_14">
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_23">
-               <item>
-                <widget class="QLabel" name="label_s0apriori">
-                 <property name="text">
-                  <string>s0 á priori</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_s0aprioriValue">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QTableView" name="tableView_sxxApriori"/>
-             </item>
-            </layout>
-           </widget>
-          </widget>
+          <widget class="QTableView" name="tableView_displayedfunctionStatistic"/>
          </item>
         </layout>
        </item>

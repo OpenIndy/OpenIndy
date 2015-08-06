@@ -89,8 +89,8 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
                 obs->xyz = trafoMat * obs->originalXyz;
                 obs->setIsSolved(true);
             }
-            if(obs->getOriginalStatistic().getQxx().getRowCount() == 4 && obs->getOriginalStatistic().getQxx().getColCount() == 4){
-                obs->statistic.setQxx(trafoMat * obs->originalStatistic.getQxx());
+            if(obs->getOriginalSigmaXyz().getSize() == 4){
+                obs->sigmaXyz = trafoMat * obs->originalSigmaXyz;
             }
         }
 

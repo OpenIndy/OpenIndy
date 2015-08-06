@@ -629,6 +629,24 @@ QPointer<AvailableFunctionsListProxyModel> ModelManager::getAvailableFunctionsPr
 }
 
 /*!
+ * \brief ModelManager::getFunctionStatisticModel
+ * \return
+ */
+QPointer<FunctionStatisticModel> ModelManager::getFunctionStatisticModel(){
+
+    //check the current job
+    if(ModelManager::currentJob.isNull() || ModelManager::currentJob->getActiveFeature().isNull()){
+        return QPointer<FunctionStatisticModel>();
+    }
+
+    QPointer<Feature> activeFeature = ModelManager::currentJob->getActiveFeature()->getFeature();
+
+    QPointer<FunctionStatisticModel> model = new FunctionStatisticModel(activeFeature);
+    model->setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
+    return model;
+}
+
+/*!
  * \brief ModelManager::featureSetChanged
  */
 void ModelManager::featureSetChanged(){

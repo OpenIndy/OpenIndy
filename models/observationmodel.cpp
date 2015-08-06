@@ -127,6 +127,56 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         return observation->getDisplayIsValid();
     case eObservationDisplayIsSolved:
         return observation->getDisplayIsSolved();
+    case eObservationDisplayVX:
+        if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
+            const Statistic &statistic = geometry->getFunctions().at(0)->getStatistic();
+            Residual residual = statistic.getDisplayResidual(observation->getId());
+            QString attr = getObservationDisplayAttributesName(eObservationDisplayVX);
+            if(residual.elementId == observation->getId() && residual.corrections.contains(attr)){
+                return QString::number(convertFromDefault(residual.corrections[attr],
+                                                          this->parameterDisplayConfig.getDisplayUnit(eMetric)),
+                                       'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+        }
+        break;
+    case eObservationDisplayVY:
+        if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
+            const Statistic &statistic = geometry->getFunctions().at(0)->getStatistic();
+            Residual residual = statistic.getDisplayResidual(observation->getId());
+            QString attr = getObservationDisplayAttributesName(eObservationDisplayVY);
+            if(residual.elementId == observation->getId() && residual.corrections.contains(attr)){
+                return QString::number(convertFromDefault(residual.corrections[attr],
+                                                          this->parameterDisplayConfig.getDisplayUnit(eMetric)),
+                                       'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+        }
+        break;
+    case eObservationDisplayVZ:
+        if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
+            const Statistic &statistic = geometry->getFunctions().at(0)->getStatistic();
+            Residual residual = statistic.getDisplayResidual(observation->getId());
+            QString attr = getObservationDisplayAttributesName(eObservationDisplayVZ);
+            if(residual.elementId == observation->getId() && residual.corrections.contains(attr)){
+                return QString::number(convertFromDefault(residual.corrections[attr],
+                                                          this->parameterDisplayConfig.getDisplayUnit(eMetric)),
+                                       'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+        }
+        break;
+    case eObservationDisplayV:
+        if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
+            const Statistic &statistic = geometry->getFunctions().at(0)->getStatistic();
+            Residual residual = statistic.getDisplayResidual(observation->getId());
+            QString attr = getObservationDisplayAttributesName(eObservationDisplayV);
+            if(residual.elementId == observation->getId() && residual.corrections.contains(attr)){
+                return QString::number(convertFromDefault(residual.corrections[attr],
+                                                          this->parameterDisplayConfig.getDisplayUnit(eMetric)),
+                                       'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+        }
+        break;
+    case eObservationDisplayIsUsed:
+        return "true";
     }
 
     return QVariant();

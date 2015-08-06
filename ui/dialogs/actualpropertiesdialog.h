@@ -22,6 +22,7 @@
 #include "modelmanager.h"
 #include "observationtabledelegate.h"
 #include "readingtabledelegate.h"
+#include "functionstatisticmodel.h"
 
 using namespace oi;
 
@@ -64,6 +65,9 @@ private slots:
     //resize table views
     void resizeTableView();
 
+    //function statistic
+    void on_comboBox_displayedFunction_currentIndexChanged(int index);
+
     //##############
     //helper methods
     //##############
@@ -81,6 +85,12 @@ private:
 
     void initGUI();
     void initModels();
+
+    //#################
+    //helper attributes
+    //#################
+
+    QPointer<FunctionStatisticModel> functionStatisticModel;
 
     /*
 

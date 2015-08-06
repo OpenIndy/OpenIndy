@@ -216,7 +216,8 @@ SOURCES += \
     ui/delegates/observationtabledelegate.cpp \
     ui/delegates/readingtabledelegate.cpp \
     ui/dialogs/aboutdialog.cpp \
-    ui/dialogs/trafoparampropertiesdialog.cpp
+    ui/dialogs/trafoparampropertiesdialog.cpp \
+    models/functionstatisticmodel.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -295,7 +296,8 @@ HEADERS  += \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oimat.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oivec.h \
     ui/dialogs/aboutdialog.h \
-    ui/dialogs/trafoparampropertiesdialog.h
+    ui/dialogs/trafoparampropertiesdialog.h \
+    models/functionstatisticmodel.h
 
 FORMS    += \
     ui/mainwindow.ui \

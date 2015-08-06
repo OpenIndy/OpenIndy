@@ -39,6 +39,7 @@
 #include "observationproxymodel.h"
 #include "readingmodel.h"
 #include "readingproxymodel.h"
+#include "functionstatisticmodel.h"
 
 using namespace oi;
 
@@ -184,6 +185,9 @@ public:
 
     //function list filter model
     static QPointer<AvailableFunctionsListProxyModel> getAvailableFunctionsProxyModel();
+
+    //statistic models
+    static QPointer<FunctionStatisticModel> getFunctionStatisticModel();
 
 private slots:
 

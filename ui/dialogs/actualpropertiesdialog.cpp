@@ -344,6 +344,22 @@ void ActualPropertiesDialog::importObservationsMenuClicked(bool checked){
 void ActualPropertiesDialog::resizeTableView(){
     this->ui->tableView_observation->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_readings->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_displayedfunctionStatistic->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+}
+
+/*!
+ * \brief ActualPropertiesDialog::on_comboBox_displayedFunction_currentIndexChanged
+ * \param index
+ */
+void ActualPropertiesDialog::on_comboBox_displayedFunction_currentIndexChanged(int index){
+
+    //check function statistic model
+    if(this->functionStatisticModel.isNull()){
+        return;
+    }
+
+    this->functionStatisticModel->setFunctionIndex(index);
+
 }
 
 /*!
@@ -422,6 +438,20 @@ void ActualPropertiesDialog::showEvent(QShowEvent *event){
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
 
+    //assign function statistic model
+    if(!this->functionStatisticModel.isNull()){
+        delete this->functionStatisticModel;
+        this->ui->tableView_displayedfunctionStatistic->setModel(NULL);
+    }
+    this->functionStatisticModel = ModelManager::getFunctionStatisticModel();
+    if(!this->functionStatisticModel.isNull()){
+        int functionIndex = this->ui->comboBox_displayedFunction->currentIndex();
+        if(functionIndex >= 0){
+            this->functionStatisticModel->setFunctionIndex(functionIndex);
+        }
+        this->ui->tableView_displayedfunctionStatistic->setModel(this->functionStatisticModel);
+    }
+
     event->accept();
 
 }
@@ -436,6 +466,8 @@ void ActualPropertiesDialog::initGUI(){
     this->ui->tableView_observation->verticalHeader()->setDefaultSectionSize(22);
     QObject::connect(this->ui->tableView_readings->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &ActualPropertiesDialog::resizeTableView, Qt::AutoConnection);
     this->ui->tableView_readings->verticalHeader()->setDefaultSectionSize(22);
+    QObject::connect(this->ui->tableView_displayedfunctionStatistic->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &ActualPropertiesDialog::resizeTableView, Qt::AutoConnection);
+    this->ui->tableView_displayedfunctionStatistic->verticalHeader()->setDefaultSectionSize(22);
 
     //enable context menu in observations table view
     this->ui->tableView_observation->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -456,5 +488,8 @@ void ActualPropertiesDialog::initModels(){
     //assign observation and reading models
     this->ui->tableView_observation->setModel(&ModelManager::getObservationProxyModel());
     this->ui->tableView_readings->setModel(&ModelManager::getReadingProxyModel());
+
+    //assign active feature functions model
+    this->ui->comboBox_displayedFunction->setModel(&ModelManager::getActiveFeatureFunctionsModel());
 
 }
