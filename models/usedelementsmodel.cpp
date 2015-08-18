@@ -119,7 +119,13 @@ QVariant UsedElementsModel::data(const QModelIndex &index, int role) const{
 
     }else if(role == Qt::DecorationRole){
 
-        QPixmap pix(getElementTypeIconPath(element.typeOfElement));
+        //get and check icon path
+        const QString &iconPath = getElementTypeIconPath(element.typeOfElement);
+        if(iconPath.compare("") == 0){
+            return QVariant();
+        }
+
+        QPixmap pix(iconPath);
         return pix.scaledToHeight(20, Qt::SmoothTransformation);
 
     }

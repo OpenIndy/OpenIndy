@@ -92,46 +92,6 @@ private:
 
     QPointer<FunctionStatisticModel> functionStatisticModel;
 
-    /*
-
-    ReadingModel *rModel;
-    ObservationModel *oModel;
-    FunctionStatistic *fModel;
-    MatrixModel *qxxModel;
-    MatrixModel *sxxModel;
-
-    ObservationProxyModel *observationOverviewModel;
-    ReadingProxyModel *readingOverviewModel;
-
-    //void getActiveFeature(FeatureWrapper *activeFeature);
-
-    void showEvent(QShowEvent *event);
-
-public slots:
-
-    void resizeView();
-
-private slots:
-    void on_pushButton_cancel_clicked();
-
-    void on_pushButton_ok_clicked();
-
-    void initGUI();
-
-    void on_comboBox_displayedFunction_currentIndexChanged(const QString &arg1);
-
-    void closeEvent(QCloseEvent *event);
-
-    void displayUsedReadings();
-
-    void on_comboBox_readings_currentTextChanged(const QString &arg1);
-
-    void updateModels();
-
-    void keyPressEvent(QKeyEvent *event);
-
-    void copyValuesFromView();*/
-
 private:
     Ui::ActualPropertiesDialog *ui;
 };

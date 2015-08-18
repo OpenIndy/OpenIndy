@@ -66,12 +66,24 @@ QVariant FeatureTreeViewModel::data(const QModelIndex &index, int role) const{
 
     if(item != NULL){
         if(role == Qt::DisplayRole){ //return display text for tree view item
+
             return item->getDisplayValue();
+
         }else if(role == Qt::DecorationRole){ //return icon for tree view item
+
             if(item->getIsFeature() && !item->getFeature().isNull()){
-                QPixmap pix(getFeatureTypeIconPath(item->getFeature()->getFeatureTypeEnum()));
+
+                //get and check icon path
+                const QString &iconPath = getFeatureTypeIconPath(item->getFeature()->getFeatureTypeEnum());
+                if(iconPath.compare("") == 0){
+                    return QVariant();
+                }
+
+                QPixmap pix(iconPath);
                 return pix.scaledToHeight(20, Qt::SmoothTransformation);
+
             }
+
         }
     }
 

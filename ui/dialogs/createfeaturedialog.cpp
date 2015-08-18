@@ -40,6 +40,12 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
     this->featureAttributesFromGUI(attributes);
     emit this->addFeatures(attributes);
 
+    //only set default function, if an actual feature has been created
+    if(!attributes.isActual){
+        this->close();
+        return;
+    }
+
     //get selected function
     sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
     if(function.name.compare("") == 0 || function.plugin.name.compare("") == 0){
@@ -77,13 +83,30 @@ void CreateFeatureDialog::on_toolButton_cancel_clicked(){
  */
 void CreateFeatureDialog::on_checkBox_nominal_toggled(bool checked){
 
-    //set visible state of nominal system combo box
+    //set visible states of actual/nominal dependent GUI elements
     if(checked){
         this->ui->label_nominalSystem->setVisible(true);
         this->ui->comboBox_nominalSystem->setVisible(true);
     }else{
         this->ui->label_nominalSystem->setVisible(false);
         this->ui->comboBox_nominalSystem->setVisible(false);
+    }
+
+}
+
+/*!
+ * \brief CreateFeatureDialog::on_checkBox_actual_toggled
+ * \param checked
+ */
+void CreateFeatureDialog::on_checkBox_actual_toggled(bool checked){
+
+    //set visible states of actual/nominal dependent GUI elements
+    if(checked){
+        this->ui->label_function->setVisible(true);
+        this->ui->comboBox_function->setVisible(true);
+    }else{
+        this->ui->label_function->setVisible(false);
+        this->ui->comboBox_function->setVisible(false);
     }
 
 }
@@ -291,8 +314,10 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
     }
 
     //fill selected function plugin
-    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
-    attributes.functionPlugin.first = function.name;
-    attributes.functionPlugin.second = function.plugin.file_path;
+    if(attributes.isActual){
+        sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+        attributes.functionPlugin.first = function.name;
+        attributes.functionPlugin.second = function.plugin.file_path;
+    }
 
 }

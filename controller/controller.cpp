@@ -76,7 +76,13 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
     }
     foreach(const QPointer<FeatureWrapper> &feature, features){
 
+        //check feature
         if(feature.isNull() || feature->getFeature().isNull()){
+            continue;
+        }
+
+        //check if the feature is a nominal geometry
+        if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
             continue;
         }
 
@@ -161,6 +167,7 @@ void Controller::setTrafoParamParameters(const int &featureId, const QMap<TrafoP
 
     //update the feature's parameters
     feature->getTrafoParam()->setUnknownParameters(parameters);
+    feature->getTrafoParam()->setIsSolved(true);
 
 }
 
@@ -204,7 +211,7 @@ void Controller::sensorConfigurationChanged(const QString &name, const bool &con
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station", eErrorMessage, eMessageBoxMessage);
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -274,17 +281,17 @@ void Controller::measurementConfigurationChanged(const QString &name){
  * \brief Controller::setActiveStation
  * \param featureId
  */
-void Controller::setActiveStation(const int &featureId){
+/*void Controller::setActiveStation(const int &featureId){
 
-}
+}*/
 
 /*!
  * \brief Controller::setActiveCoordinateSystem
  * \param featureId
  */
-void Controller::setActiveCoordinateSystem(const int &featureId){
+/*void Controller::setActiveCoordinateSystem(const int &featureId){
 
-}
+}*/
 
 /*!
  * \brief Controller::importNominals

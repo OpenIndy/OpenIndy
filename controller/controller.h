@@ -69,8 +69,8 @@ public slots:
 
     //set active feature states
     //void setActiveFeature(const int &featureId);
-    void setActiveStation(const int &featureId);
-    void setActiveCoordinateSystem(const int &featureId);
+    //void setActiveStation(const int &featureId);
+    //void setActiveCoordinateSystem(const int &featureId);
 
     //import or export features
     void importNominals(const ExchangeParams &params);

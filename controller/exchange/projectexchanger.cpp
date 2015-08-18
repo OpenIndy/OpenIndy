@@ -1318,6 +1318,14 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                 QDomNodeList elementList = inputElements.childNodes();
                 for(int j = 0; j < elementList.size(); j++){
                     QDomElement inputElement = elementList.at(j).toElement();
+
+                    //get shouldBeUsed
+                    bool shouldBeUsed = true;
+                    if(inputElement.hasAttribute("shouldBeUsed")){
+                        shouldBeUsed = inputElement.attribute("shouldBeUsed").toInt();
+                    }
+
+                    //create and add input elements
                     if(inputElement.hasAttribute("index") && inputElement.hasAttribute("type") && inputElement.hasAttribute("ref")){
 
                         if(ProjectExchanger::myStations.contains(inputElement.attribute("ref").toInt())){
@@ -1326,6 +1334,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.station = station;
                             element.id = station->getId();
                             element.typeOfElement = eStationElement;
+                            element.shouldBeUsed = shouldBeUsed;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myCoordinateSystems.contains(inputElement.attribute("ref").toInt())){
                             QPointer<CoordinateSystem> coordinateSystem = ProjectExchanger::myCoordinateSystems.value(inputElement.attribute("ref").toInt())->getCoordinateSystem();
@@ -1333,6 +1342,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.coordSystem = coordinateSystem;
                             element.id = coordinateSystem->getId();
                             element.typeOfElement = eCoordinateSystemElement;
+                            element.shouldBeUsed = shouldBeUsed;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myTransformationParameters.contains(inputElement.attribute("ref").toInt())){
                             QPointer<TrafoParam> trafoParam = ProjectExchanger::myTransformationParameters.value(inputElement.attribute("ref").toInt())->getTrafoParam();
@@ -1340,12 +1350,14 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.trafoParam = trafoParam;
                             element.id = trafoParam->getId();
                             element.typeOfElement = eTrafoParamElement;
+                            element.shouldBeUsed = shouldBeUsed;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myGeometries.contains(inputElement.attribute("ref").toInt())){
                             QPointer<FeatureWrapper> geometry = ProjectExchanger::myGeometries.value(inputElement.attribute("ref").toInt());
                             InputElement element;
                             element.geometry = geometry->getGeometry();
                             element.id = geometry->getGeometry()->getId();
+                            element.shouldBeUsed = shouldBeUsed;
                             switch(geometry->getFeatureTypeEnum()){
                             case eCircleFeature:
                                 element.circle = geometry->getCircle();
@@ -1431,10 +1443,12 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.observation = observation;
                             element.id = observation->getId();
                             element.typeOfElement = eObservationElement;
+                            element.shouldBeUsed = shouldBeUsed;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myReadings.contains(inputElement.attribute("ref").toInt())){
                             QPointer<Reading> reading = ProjectExchanger::myReadings.value(inputElement.attribute("ref").toInt());
                             InputElement element;
+                            element.shouldBeUsed = shouldBeUsed;
                             switch(reading->getTypeOfReading()){
                             case eDistanceReading:
                                 element.distanceReading = reading;

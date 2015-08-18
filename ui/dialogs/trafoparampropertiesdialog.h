@@ -79,9 +79,9 @@ private:
 private:
     Ui::TrafoParamPropertiesDialog *ui;
 
-    //####################################################
-    //attributes that describe the current nominal feature
-    //####################################################
+    //################################################
+    //attributes that describe the current trafo param
+    //################################################
 
     int id;
     QString name;
