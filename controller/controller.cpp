@@ -70,10 +70,10 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
         return;
     }
 
-    //create functions for the created features
-    if(attributes.functionPlugin.first.compare("") == 0 || attributes.functionPlugin.second.compare("") == 0){
-        return;
-    }
+    //get saved measurement config
+    MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(attributes.mConfig);
+
+    //create functions and measurement configs for the created features
     foreach(const QPointer<FeatureWrapper> &feature, features){
 
         //check feature
@@ -87,14 +87,19 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
         }
 
         //load function plugin
-        QPointer<Function> function = PluginLoader::loadFunctionPlugin(attributes.functionPlugin.second, attributes.functionPlugin.first);
-        if(function.isNull()){
-            return;
+        QPointer<Function> function(NULL);
+        if(attributes.functionPlugin.first.compare("") != 0 && attributes.functionPlugin.second.compare("") != 0){
+            function = PluginLoader::loadFunctionPlugin(attributes.functionPlugin.second, attributes.functionPlugin.first);
         }
 
-        //assign function to feature
+        //assign function and measurement config to feature
         feature->getFeature()->blockSignals(true);
-        feature->getFeature()->addFunction(function);
+        if(!function.isNull()){
+            feature->getFeature()->addFunction(function);
+        }
+        if(mConfig.getIsValid() && !feature->getGeometry().isNull()){
+            feature->getGeometry()->setMeasurementConfig(mConfig);
+        }
         feature->getFeature()->blockSignals(false);
 
     }

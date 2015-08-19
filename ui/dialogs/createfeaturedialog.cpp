@@ -104,9 +104,13 @@ void CreateFeatureDialog::on_checkBox_actual_toggled(bool checked){
     if(checked){
         this->ui->label_function->setVisible(true);
         this->ui->comboBox_function->setVisible(true);
+        this->ui->label_mConfig->setVisible(true);
+        this->ui->comboBox_mConfig->setVisible(true);
     }else{
         this->ui->label_function->setVisible(false);
         this->ui->comboBox_function->setVisible(false);
+        this->ui->label_mConfig->setVisible(false);
+        this->ui->comboBox_mConfig->setVisible(false);
     }
 
 }
@@ -159,6 +163,8 @@ void CreateFeatureDialog::initGUI(){
         this->ui->label_entityType->setVisible(false);
         this->ui->comboBox_entityType->setVisible(false);
         this->ui->checkBox_movement->setVisible(true);
+        this->ui->label_mConfig->setVisible(false);
+        this->ui->comboBox_mConfig->setVisible(false);
 
         //set checked state
         this->ui->checkBox_movement->setChecked(false);
@@ -181,6 +187,8 @@ void CreateFeatureDialog::initGUI(){
         this->ui->checkBox_movement->setVisible(false);
         this->ui->label_entityType->setVisible(false);
         this->ui->comboBox_entityType->setVisible(false);
+        this->ui->label_mConfig->setVisible(false);
+        this->ui->comboBox_mConfig->setVisible(false);
 
     }else if(getIsScalarEntity(this->typeOfFeature)){
 
@@ -199,6 +207,8 @@ void CreateFeatureDialog::initGUI(){
         this->ui->checkBox_movement->setVisible(false);
         this->ui->label_entityType->setVisible(true);
         this->ui->comboBox_entityType->setVisible(true);
+        this->ui->label_mConfig->setVisible(true);
+        this->ui->comboBox_mConfig->setVisible(true);
 
         //set checked state
         this->ui->checkBox_actual->setChecked(true);
@@ -222,6 +232,8 @@ void CreateFeatureDialog::initGUI(){
         this->ui->checkBox_movement->setVisible(false);
         this->ui->label_entityType->setVisible(false);
         this->ui->comboBox_entityType->setVisible(false);
+        this->ui->label_mConfig->setVisible(true);
+        this->ui->comboBox_mConfig->setVisible(true);
 
         //set checked state
         this->ui->checkBox_actual->setChecked(true);
@@ -253,6 +265,9 @@ void CreateFeatureDialog::initModels(){
 
     //set model for available scalar entities
     this->ui->comboBox_entityType->setModel(&ModelManager::getScalarEntityTypeNamesModel());
+
+    //set model for available measurement configs
+    this->ui->comboBox_mConfig->setModel(&ModelManager::getMeasurementConfigurationModel());
 
 }
 
@@ -302,6 +317,7 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
+        attributes.mConfig = this->ui->comboBox_mConfig->currentText();
 
     }else if(this->typeOfFeature != eCoordinateSystemFeature
              && this->typeOfFeature != eStationFeature){
@@ -310,6 +326,7 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
+        attributes.mConfig = this->ui->comboBox_mConfig->currentText();
 
     }
 

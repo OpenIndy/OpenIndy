@@ -915,7 +915,7 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
             return QColor(Qt::yellow);
         }
 
-    }else if(getIsTrafoParamDisplayAttribute(attr)){ //trafo param attributes
+    }else if(!feature->getFeature()->getIsSolved() && getIsTrafoParamDisplayAttribute(attr)){ //trafo param attributes
 
         switch((TrafoParamDisplayAttributes)attr){
         case eTrafoParamDisplayTranslationX:
