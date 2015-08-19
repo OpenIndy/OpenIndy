@@ -260,6 +260,13 @@ void MainWindow::currentJobChanged(){
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     this->watchWindowDialog.setCurrentJob(job);
 
+    //set window title
+    if(!job.isNull()){
+        this->setWindowTitle(job->getJobName());
+    }else{
+        this->setWindowTitle("");
+    }
+
 }
 
 /*!

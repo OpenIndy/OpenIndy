@@ -38,9 +38,7 @@ const QString AppVersion = QString("%1 %2").arg(OPENINDY_VERSION).arg(" [DEBUG]"
 
 
 /*!
- * \brief main class of openIndy
- * In this class you need to set the LinearAlgebra implementation that openIndy should use for calculation.
- * The class also includes the splash screent that displays at the start of openIndy.
+ * \brief main
  * \param argc
  * \param argv
  * \return
@@ -65,7 +63,7 @@ int main(int argc, char *argv[])
     a.setOrganizationDomain(Company);
     a.setApplicationName(AppName);
     a.setApplicationVersion(AppVersion);
-    a.setApplicationDisplayName("_"+AppName+"_");
+    a.setApplicationDisplayName(AppName);
 
 
     QSplashScreen *splash;
