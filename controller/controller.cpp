@@ -73,6 +73,12 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
     //get saved measurement config
     MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(attributes.mConfig);
 
+    //check if there is at least a function or a measurement config that shall be set
+    if(!mConfig.getIsValid() && (attributes.functionPlugin.first.compare("") == 0
+                                 || attributes.functionPlugin.second.compare("") == 0)){
+        return;
+    }
+
     //create functions and measurement configs for the created features
     foreach(const QPointer<FeatureWrapper> &feature, features){
 

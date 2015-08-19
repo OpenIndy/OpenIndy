@@ -111,6 +111,7 @@ private slots:
     //feature(s) added or removed
     void coordSystemSetChanged();
     void stationSetChanged();
+    void trafoParamSetChanged();
 
     //group(s) added or removed
     void availableGroupsChanged();
