@@ -72,6 +72,12 @@ signals:
 
     void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
+    //########################################################
+    //inform when the name of a measurement config has changed
+    //########################################################
+
+    void measurementConfigNameChanged(const MeasurementConfig &mConfig);
+
 private slots:
 
     //###########################################

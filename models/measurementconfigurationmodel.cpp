@@ -61,6 +61,12 @@ QVariant MeasurementConfigurationModel::data(const QModelIndex &index, int role)
 
     //check if the index is a saved config
     if(index.row() < this->measurementConfigManager->getSavedMeasurementConfigs().size()){
+
+        MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfigs().at(index.row());
+
+        qDebug() << mConfig.getName();
+        return mConfig.getName();
+
         return this->measurementConfigManager->getSavedMeasurementConfigs().at(index.row()).getName();
     }
 
@@ -113,17 +119,17 @@ bool MeasurementConfigurationModel::setData(const QModelIndex &index, const QVar
 
     //check measurement config manager
     if(this->measurementConfigManager.isNull()){
-        return true;
+        return false;
     }
 
     //check index
     if(!index.isValid()){
-        return true;
+        return false;
     }
 
     //check new name
     if(value.toString().compare("") == 0){
-        return true;
+        return false;
     }
 
     //check if the index is a saved config
@@ -136,12 +142,13 @@ bool MeasurementConfigurationModel::setData(const QModelIndex &index, const QVar
             QString oldName = mConfig.getName();
             mConfig.setName(value.toString());
             this->measurementConfigManager->replaceMeasurementConfig(oldName, mConfig);
+            emit this->measurementConfigNameChanged(mConfig);
             return true;
         }
 
     }
 
-    return true;
+    return false;
 
 }
 

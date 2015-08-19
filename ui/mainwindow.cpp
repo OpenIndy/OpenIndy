@@ -1025,7 +1025,20 @@ void MainWindow::on_actionClose_triggered(){
  * \brief MainWindow::on_actionMeasurement_Configuration_triggered
  */
 void MainWindow::on_actionMeasurement_Configuration_triggered(){
+
+    //get feature table model
+    const FeatureTableModel &model = ModelManager::getFeatureTableModel();
+
+    //check if there is an active feature and pass its config to the measurement config dialog
+    QPointer<FeatureWrapper> activeFeature = model.getActiveFeature();
+    if(!activeFeature.isNull() && !activeFeature->getGeometry().isNull()){
+        this->measurementConfigDialog.setMeasurementConfiguration(activeFeature->getGeometry()->getMeasurementConfig().getName());
+    }else{
+        this->measurementConfigDialog.setMeasurementConfiguration("");
+    }
+
     this->measurementConfigDialog.show();
+
 }
 
 /*!
@@ -1556,7 +1569,7 @@ void MainWindow::connectDialogs(){
     QObject::connect(&this->sensorConfigurationDialog, &SensorConfigurationDialog::setSensorConfiguration, this, &MainWindow::setSensorConfiguration, Qt::AutoConnection);
 
     //connect measurement config dialog
-    QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::setMeasurementConfiguration, this, &MainWindow::measurementConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::measurementConfigurationChanged, this, &MainWindow::measurementConfigurationChanged, Qt::AutoConnection);
 
     //connect move sensor dialog
     QObject::connect(&this->moveSensorDialog, &MoveSensorDialog::moveSensor, &this->control, &Controller::startMove, Qt::AutoConnection);

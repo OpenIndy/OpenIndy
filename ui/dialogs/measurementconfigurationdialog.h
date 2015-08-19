@@ -40,13 +40,19 @@ public:
     explicit MeasurementConfigurationDialog(QWidget *parent = 0);
     ~MeasurementConfigurationDialog();
 
+    //#############################################
+    //set the currently selected measurement config
+    //#############################################
+
+    void setMeasurementConfiguration(const QString &name);
+
 signals:
 
     //#############################################################################
     //signals to inform about measurement config selection (for the active feature)
     //#############################################################################
 
-    void setMeasurementConfiguration(const QString &name);
+    void measurementConfigurationChanged(const QString &name);
 
 private slots:
 
@@ -75,6 +81,9 @@ private slots:
     //set measurement config for the active feature
     void on_pushButton_set_clicked();
 
+    //triggered when measurement config name has been edited
+    void measurementConfigNameChanged(const MeasurementConfig &mConfig);
+
 private:
     Ui::MeasurementConfigurationDialog *ui;
 
@@ -93,6 +102,7 @@ private:
     //##################################
 
     void showEvent(QShowEvent *event);
+    void closeEvent(QShowEvent *event);
 
     void initGUI();
     void initModels();

@@ -13,7 +13,8 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
  * \param parent
  */
 MeasurementConfigManager::MeasurementConfigManager(const MeasurementConfigManager &copy, QObject *parent){
-    this->savedMeasurementConfigs = copy.savedMeasurementConfigs;
+    this->savedMeasurementConfigMap = copy.savedMeasurementConfigMap;
+    this->savedMeasurementConfigList = copy.savedMeasurementConfigList;
     this->activeMeasurementConfigs = copy.activeMeasurementConfigs;
 }
 
@@ -23,7 +24,8 @@ MeasurementConfigManager::MeasurementConfigManager(const MeasurementConfigManage
  * \return
  */
 MeasurementConfigManager &MeasurementConfigManager::operator=(const MeasurementConfigManager &copy){
-    this->savedMeasurementConfigs = copy.savedMeasurementConfigs;
+    this->savedMeasurementConfigMap = copy.savedMeasurementConfigMap;
+    this->savedMeasurementConfigList = copy.savedMeasurementConfigList;
     this->activeMeasurementConfigs = copy.activeMeasurementConfigs;
     return *this;
 }
@@ -34,7 +36,7 @@ MeasurementConfigManager &MeasurementConfigManager::operator=(const MeasurementC
  * \return
  */
 MeasurementConfig MeasurementConfigManager::getSavedMeasurementConfig(const QString &name) const{
-    return this->savedMeasurementConfigs.value(name, MeasurementConfig());
+    return this->savedMeasurementConfigMap.value(name, MeasurementConfig());
 }
 
 /*!
@@ -42,7 +44,7 @@ MeasurementConfig MeasurementConfigManager::getSavedMeasurementConfig(const QStr
  * \return
  */
 QList<MeasurementConfig> MeasurementConfigManager::getSavedMeasurementConfigs() const{
-    return this->savedMeasurementConfigs.values();
+    return this->savedMeasurementConfigList;
 }
 
 /*!
@@ -50,7 +52,7 @@ QList<MeasurementConfig> MeasurementConfigManager::getSavedMeasurementConfigs() 
  * \return
  */
 QList<MeasurementConfig> MeasurementConfigManager::getProjectMeasurementConfigs() const{
-    return this->projectMeasurementConfigs.values();
+    return this->projectMeasurementConfigList;
 }
 
 /*!
@@ -58,7 +60,7 @@ QList<MeasurementConfig> MeasurementConfigManager::getProjectMeasurementConfigs(
  * \param type
  * \return
  */
-const MeasurementConfig &MeasurementConfigManager::getActiveMeasurementConfig(const GeometryTypes &type) const{
+MeasurementConfig MeasurementConfigManager::getActiveMeasurementConfig(const GeometryTypes &type) const{
     return this->activeMeasurementConfigs.value(type, MeasurementConfig());
 }
 
@@ -70,13 +72,13 @@ void MeasurementConfigManager::addMeasurementConfig(const MeasurementConfig &mCo
 
     //check if mConfig is valid
     if(!mConfig.getIsValid()){
-        Console::getInstance()->addLine("Cannot add a measurement configuration with an empty name", eErrorMessage);
+        emit this->sendMessage("Cannot add a measurement configuration with an empty name", eErrorMessage);
         return;
     }
 
     //check if mConfig already exists
-    if(this->savedMeasurementConfigs.contains(mConfig.getName())){
-        Console::getInstance()->addLine(QString("A measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
+    if(this->savedMeasurementConfigMap.contains(mConfig.getName())){
+        emit this->sendMessage(QString("A measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
         return;
     }
 
@@ -93,13 +95,13 @@ void MeasurementConfigManager::removeMeasurementConfig(const QString &name){
 
     //check name
     if(name.compare("") == 0){
-        Console::getInstance()->addLine("Cannot remove a measurement configuration with an empty name", eErrorMessage);
+        emit this->sendMessage("Cannot remove a measurement configuration with an empty name", eErrorMessage);
         return;
     }
 
     //check if the measurement config exists
-    if(!this->savedMeasurementConfigs.contains(name)){
-        Console::getInstance()->addLine(QString("A measurement configuration with the name %1 does not exist").arg(name), eErrorMessage);
+    if(!this->savedMeasurementConfigMap.contains(name)){
+        emit this->sendMessage(QString("A measurement configuration with the name %1 does not exist").arg(name), eErrorMessage);
         return;
     }
 
@@ -116,16 +118,65 @@ void MeasurementConfigManager::removeMeasurementConfig(const QString &name){
 void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig){
 
     //get the old measurement config
-    if(!this->savedMeasurementConfigs.contains(name)){
+    if(!this->savedMeasurementConfigMap.contains(name)){
         return;
     }
-    MeasurementConfig oldConfig = this->savedMeasurementConfigs.value(name);
+    MeasurementConfig oldConfig = this->savedMeasurementConfigMap.value(name);
 
-    //remove the old measurement config
-    this->removeMeasurementConfig(oldConfig.getName());
+    //###########################
+    //replace mConfig in database
+    //###########################
 
-    //add the new measurement config
-    this->addMeasurementConfig(mConfig);
+    SystemDbManager::removeMeasurementConfig(name);
+    SystemDbManager::addMeasurementConfig(mConfig.getName());
+
+    //########################
+    //replace mConfig xml file
+    //########################
+
+    //create xml document
+    QDomDocument mConfigXml("measurementConfig");
+
+    //add mConfig to document as xml
+    QDomElement root = mConfig.toOpenIndyXML(mConfigXml);
+    mConfigXml.appendChild(root);
+
+    //get config folder (create if does not exist yet)
+    QString appPath = qApp->applicationDirPath();
+    QDir mConfigFolder(appPath.append("/config/measurementConfigs"));
+    if(!mConfigFolder.exists()){
+        mConfigFolder.mkpath(".");
+    }
+
+    //set the file name
+    QString fileName = mConfig.getName();
+
+    //remove old config file
+    QFile oldConfigFile(mConfigFolder.absoluteFilePath(name + ".xml"));
+    if(oldConfigFile.exists()){
+        oldConfigFile.remove();
+    }
+
+    //save mConfig to xml file
+    QFile configFile(mConfigFolder.absoluteFilePath(fileName.append(".xml")));
+    configFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+    QTextStream stream(&configFile);
+    mConfigXml.save(stream, 4);
+    configFile.close();
+
+    //###############################
+    //replace mConfig in list and map
+    //###############################
+
+    //replace mConfig in map
+    this->savedMeasurementConfigMap.remove(name);
+    this->savedMeasurementConfigMap.insert(mConfig.getName(), mConfig);
+
+    //replace mConfig in list
+    int index = this->savedMeasurementConfigList.indexOf(oldConfig, 0);
+    if(index != -1){
+        this->savedMeasurementConfigList.replace(index, mConfig);
+    }
 
 }
 
@@ -191,16 +242,10 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         mConfigNames.append(savedConfig.getName());
 
         //add the loaded measurement config to the list of saved configs and emit the corresponding signal
-        this->savedMeasurementConfigs.insert(savedConfig.getName(), savedConfig);
+        this->savedMeasurementConfigMap.insert(savedConfig.getName(), savedConfig);
+        this->savedMeasurementConfigList.append(savedConfig);
 
     }
-
-    //get default measurement config
-    /*QString mConfigName = SystemDbManager::getDefaultMeasurementConfig();
-    if(this->savedSensorConfigs.contains(mConfigName)){
-        this->activeSensorConfig = this->savedSensorConfigs.value(sConfigName);
-        emit this->activeSensorConfigurationChanged();
-    }*/
 
     //emit signals
     emit this->measurementConfigurationsChanged();
@@ -248,10 +293,11 @@ void MeasurementConfigManager::saveMeasurementConfig(const MeasurementConfig &mC
     SystemDbManager::addMeasurementConfig(mConfig.getName());
 
     //########################################
-    //add sConfig to the list of saved configs
+    //add mConfig to the list of saved configs
     //########################################
 
-    this->savedMeasurementConfigs.insert(mConfig.getName(), mConfig);
+    this->savedMeasurementConfigMap.insert(mConfig.getName(), mConfig);
+    this->savedMeasurementConfigList.append(mConfig);
 
     //############
     //emit signals
@@ -285,7 +331,7 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString &name){
     }
 
     //############################
-    //remove sConfig from database
+    //remove mConfig from database
     //############################
 
     SystemDbManager::removeMeasurementConfig(name);
@@ -294,13 +340,8 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString &name){
     //remove mConfig from the list of saved configs
     //#############################################
 
-    this->savedMeasurementConfigs.remove(name);
-
-    //reset active sensor config
-    /*if(name.compare(this->activeSensorConfig.getName()) == 0){
-        this->activeSensorConfig = SensorConfiguration();
-        emit this->activeSensorConfigurationChanged();
-    }*/
+    MeasurementConfig mConfig = this->savedMeasurementConfigMap.take(name);
+    this->savedMeasurementConfigList.removeOne(mConfig);
 
     //############
     //emit signals
