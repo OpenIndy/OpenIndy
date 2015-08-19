@@ -831,6 +831,8 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
     }
     systemTransformation->inputElementsDestinationSystem.clear();
 
+    //TODO bool oder aehnliches verwenden und nicht keys
+
     //get and check keys
     bool isAlignment;
     QList<int> keys = systemTransformation->getInputElements().keys();
@@ -859,7 +861,10 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
             //add all points
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
                 if(element.point->getIsNominal() && element.point->getNominalSystem() == trafoParam->getStartSystem()){
-                    sorter.addLocPoint(Point(*element.point.data()));
+                    Point p(true);
+                    p.setFeatureName(element.point->getFeatureName());
+                    p.setPoint(element.point->getPosition());
+                    sorter.addLocPoint(p);
                 }
             }
 
@@ -884,7 +889,10 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
             //add all points
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
                 if(element.point->getIsNominal() && element.point->getNominalSystem() == trafoParam->getDestinationSystem()){
-                    sorter.addLocPoint(Point(*element.point.data()));
+                    Point p(true);
+                    p.setFeatureName(element.point->getFeatureName());
+                    p.setPoint(element.point->getPosition());
+                    sorter.addRefPoint(p);
                 }
             }
 
