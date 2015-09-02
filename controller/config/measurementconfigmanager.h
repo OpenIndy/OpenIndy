@@ -32,13 +32,26 @@ public:
     //get or set measurement configs
     //##############################
 
+    bool hasSavedMeasurementConfig(const QString &name);
+    bool hasProjectMeasurementConfig(const QString &name);
+
+    bool hasSavedMeasurementConfig(const MeasurementConfig &mConfig);
+    bool hasProjectMeasurementConfig(const MeasurementConfig &mConfig);
+
     MeasurementConfig getSavedMeasurementConfig(const QString &name) const;
+    MeasurementConfig getProjectMeasurementConfig(const QString &name) const;
+
     QList<MeasurementConfig> getSavedMeasurementConfigs() const;
     QList<MeasurementConfig> getProjectMeasurementConfigs() const;
+
     MeasurementConfig getActiveMeasurementConfig(const GeometryTypes &type) const;
 
     void addMeasurementConfig(const MeasurementConfig &mConfig);
+    void addProjectMeasurementConfig(const MeasurementConfig &mConfig);
+
     void removeMeasurementConfig(const QString &name);
+    void removeProjectMeasurementConfig(const QString &name);
+    void removeAllProjectMeasurementConfigs();
 
     void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
 

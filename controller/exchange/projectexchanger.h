@@ -42,8 +42,8 @@ public:
     //get or set measurement config manager
     //#####################################
 
-    static MeasurementConfigManager &getMeasurementConfigManager();
-    static void setMeasurementConfigManager(const MeasurementConfigManager &mConfigManager);
+    static QPointer<MeasurementConfigManager> &getMeasurementConfigManager();
+    static void setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &mConfigManager);
 
 private:
 
@@ -84,7 +84,7 @@ private:
 
     static QList<int> stationPoints;
 
-    static MeasurementConfigManager mConfigManager;
+    static QPointer<MeasurementConfigManager> mConfigManager;
 
 };
 

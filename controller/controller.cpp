@@ -260,9 +260,9 @@ void Controller::sensorConfigurationChanged(const QString &name, const bool &con
 
 /*!
  * \brief Controller::measurementConfigurationChanged
- * \param name
+ * \param mConfig
  */
-void Controller::measurementConfigurationChanged(const QString &name){
+void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfig){
 
     //check job
     if(this->job.isNull()){
@@ -277,9 +277,8 @@ void Controller::measurementConfigurationChanged(const QString &name){
     }
 
     //get and check the specified measurement config
-    MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(name);
     if(!mConfig.getIsValid()){
-        this->log(QString("No measurement configuration available with the name %1").arg(name), eErrorMessage, eMessageBoxMessage);
+        this->log("No measurement configuration selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -432,11 +431,6 @@ void Controller::saveProject(const QString &fileName){
     //set device
     QPointer<QIODevice> device = new QFile(fileName);
     this->job->setJobDevice(device);
-
-    //set config manager
-    if(!this->measurementConfigManager.isNull()){
-        ProjectExchanger::setMeasurementConfigManager(*this->measurementConfigManager.data());
-    }
 
     //get project xml
     QDomDocument project = ProjectExchanger::saveProject(this->job);
@@ -1318,6 +1312,9 @@ void Controller::initConfigManager(){
     //pass config managers to model manager
     ModelManager::setSensorConfigManager(this->sensorConfigManager);
     ModelManager::setMeasurementConfigManager(this->measurementConfigManager);
+
+    //pass config manager to project exchanger
+    ProjectExchanger::setMeasurementConfigManager(this->measurementConfigManager);
 
     //connect config manager
     QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);

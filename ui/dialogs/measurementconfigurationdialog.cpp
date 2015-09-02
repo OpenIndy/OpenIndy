@@ -27,12 +27,12 @@ MeasurementConfigurationDialog::~MeasurementConfigurationDialog(){
 
 /*!
  * \brief MeasurementConfigurationDialog::setMeasurementConfiguration
- * \param name
+ * \param mConfig
  */
-void MeasurementConfigurationDialog::setMeasurementConfiguration(const QString &name){
+void MeasurementConfigurationDialog::setMeasurementConfiguration(const MeasurementConfig &mConfig){
 
     //check if name is empty
-    if(name.compare("") == 0){
+    if(!mConfig.getIsValid()){
         this->ui->listView_measurementConfigs->selectionModel()->clearSelection();
         this->updateGuiFromMeasurementConfig(MeasurementConfig());
         this->ui->widget_measurementConfigValues->setEnabled(false);
@@ -41,20 +41,8 @@ void MeasurementConfigurationDialog::setMeasurementConfiguration(const QString &
     //get measurement config model
     const MeasurementConfigurationModel &model = ModelManager::getMeasurementConfigurationModel();
 
-    //get measurement config manager
-    const QPointer<MeasurementConfigManager> &manager = ModelManager::getMeasurementConfigManager();
-    if(manager.isNull()){
-        return;
-    }
-
-    //get measurement config by name
-    MeasurementConfig mConfig = manager->getSavedMeasurementConfig(name);
-    if(!mConfig.getIsValid()){
-        return;
-    }
-
     //get model index of mConfig
-    QModelIndex index = model.getIndex(name);
+    QModelIndex index = model.getIndex(mConfig);
     if(!index.isValid()){
         return;
     }
@@ -63,7 +51,12 @@ void MeasurementConfigurationDialog::setMeasurementConfiguration(const QString &
     this->ui->listView_measurementConfigs->selectionModel()->clearSelection();
     this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
     this->updateGuiFromMeasurementConfig(mConfig);
-    this->ui->widget_measurementConfigValues->setEnabled(true);
+    if(mConfig.getIsSaved()){
+        this->ui->widget_measurementConfigValues->setEnabled(true);
+    }else{
+        this->ui->widget_measurementConfigValues->setEnabled(false);
+    }
+    this->selectedMeasurementConfig = mConfig;
 
 }
 
@@ -99,6 +92,15 @@ void MeasurementConfigurationDialog::on_listView_measurementConfigs_clicked(cons
     //update GUI from selected measurement config
     this->updateGuiFromMeasurementConfig(mConfig);
 
+    //toggle enabled state depending on what mConfig has been selected (project vs. saved)
+    if(mConfig.getIsSaved()){
+        this->ui->widget_measurementConfigValues->setEnabled(true);
+    }else{
+        this->ui->widget_measurementConfigValues->setEnabled(false);
+    }
+
+    this->selectedMeasurementConfig = mConfig;
+
 }
 
 /*!
@@ -126,16 +128,27 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const
     }
 
     //check if the selected config is a saved config
-    if(!mConfigModel->getIsSaved(mConfigProxyModel->mapToSource(index))){
-        return;
-    }
+    bool isSaved = mConfigModel->getIsSaved(mConfigProxyModel->mapToSource(index));
 
     //set selected index
     this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
+    this->updateGuiFromMeasurementConfig(mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index)));
+    if(isSaved){
+        this->ui->widget_measurementConfigValues->setEnabled(true);
+    }else{
+        this->ui->widget_measurementConfigValues->setEnabled(false);
+    }
+    this->selectedMeasurementConfig = mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index));
 
-    QMenu *menu = new QMenu();
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedMeasurementConfig()));
-    menu->exec(ui->listView_measurementConfigs->mapToGlobal(point));
+    if(isSaved){
+        QMenu *menu = new QMenu();
+        menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedMeasurementConfig()));
+        menu->exec(ui->listView_measurementConfigs->mapToGlobal(point));
+    }else{
+        QMenu *menu = new QMenu();
+        menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("clone config"), this, SLOT(cloneSelectedMeasurementConfig()));
+        menu->exec(ui->listView_measurementConfigs->mapToGlobal(point));
+    }
 
 }
 
@@ -172,6 +185,36 @@ void MeasurementConfigurationDialog::removeSelectedMeasurementConfig(){
     this->ui->listView_measurementConfigs->selectionModel()->clearSelection();
     this->updateGuiFromMeasurementConfig(MeasurementConfig());
     this->ui->widget_measurementConfigValues->setEnabled(false);
+    this->selectedMeasurementConfig = MeasurementConfig();
+
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::cloneSelectedMeasurementConfig
+ */
+void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig(){
+
+    //get selected measurement config
+    MeasurementConfig mConfig = this->selectedMeasurementConfig;
+
+    //get and check measurement config proxy model
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_measurementConfigs->model());
+    if(mConfigProxyModel == NULL){
+        return;
+    }
+
+    //get and check measurement config model
+    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
+    if(mConfigModel == NULL){
+        return;
+    }
+
+    mConfigModel->cloneMeasurementConfig(mConfig);
+
+    //select the new item
+    QModelIndex index = mConfigModel->getIndex(mConfig);
+    this->ui->listView_measurementConfigs->selectionModel()->clearSelection();
+    this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
 
 }
 
@@ -182,6 +225,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
 
     MeasurementConfig mConfig;
     mConfig.setName("new config");
+    mConfig.setIsSaved(true);
 
     //get and check measurement config proxy model
     MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_measurementConfigs->model());
@@ -208,6 +252,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
     this->updateGuiFromMeasurementConfig(mConfig);
     this->ui->listView_measurementConfigs->edit(mConfigProxyModel->mapFromSource(index));
+    this->selectedMeasurementConfig = mConfig;
 
 }
 
@@ -277,16 +322,11 @@ void MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged(con
  */
 void MeasurementConfigurationDialog::on_pushButton_set_clicked(){
 
-    //get selected measurement config name
-    QModelIndexList selection = this->ui->listView_measurementConfigs->selectionModel()->selectedIndexes();
-    if(selection.size() != 1){
-        this->close();
-        return;
-    }
-    QString name = selection.at(0).data().toString();
+    //get selected measurement config
+    MeasurementConfig mConfig = this->selectedMeasurementConfig;
 
     //set the selected measurement config for the active feature
-    emit this->measurementConfigurationChanged(name);
+    emit this->measurementConfigurationChanged(mConfig);
 
     this->close();
 
@@ -298,6 +338,39 @@ void MeasurementConfigurationDialog::on_pushButton_set_clicked(){
  */
 void MeasurementConfigurationDialog::measurementConfigNameChanged(const MeasurementConfig &mConfig){
     this->updateGuiFromMeasurementConfig(mConfig);
+}
+
+/*!
+ * \brief MeasurementConfigurationDialog::on_checkBox_showAll_stateChanged
+ * \param arg1
+ */
+void MeasurementConfigurationDialog::on_checkBox_showAll_stateChanged(int arg1){
+
+    //get measurement config model
+    const MeasurementConfigurationModel &model = ModelManager::getMeasurementConfigurationModel();
+
+    //get selected measurement config
+    MeasurementConfig mConfig = this->selectedMeasurementConfig;
+
+    //set filter
+    ModelManager::getMeasurementConfigurationProxyModel().setFilter(this->ui->checkBox_showAll->isChecked());
+
+    //set selected index
+    this->ui->listView_measurementConfigs->clearSelection();
+    QModelIndex index = model.getIndex(mConfig);
+    if(index.isValid()){
+        this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
+        this->updateGuiFromMeasurementConfig(mConfig);
+        if(mConfig.getIsSaved()){
+            this->ui->widget_measurementConfigValues->setEnabled(true);
+        }else{
+            this->ui->widget_measurementConfigValues->setEnabled(false);
+        }
+    }else{
+        this->updateGuiFromMeasurementConfig(MeasurementConfig());
+        this->ui->widget_measurementConfigValues->setEnabled(false);
+    }
+
 }
 
 /*!
@@ -317,7 +390,8 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->ui->checkBox_twoFace->blockSignals(true);
 
     //set up GUI elements
-    this->ui->label_configName->setText(mConfig.getName());
+    this->ui->label_configName->setText(QString("%1%2").arg((!mConfig.getIsValid() || mConfig.getIsSaved())?"":"*")
+                                        .arg(mConfig.getName()));
     this->ui->comboBox_readingType->setCurrentText(getReadingTypeName(mConfig.getTypeOfReading()));
     this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
     this->ui->lineEdit_iterations->setText(QString::number(mConfig.getIterations()));
@@ -374,9 +448,11 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfig.setDistanceDependent(this->ui->checkBox_distanceDependent->isChecked());
     mConfig.setTimeDependent(this->ui->checkBox_timeDependent->isChecked());
     mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
+    mConfig.setIsSaved(true);
 
     //replace the selected measurement config
     mConfigModel->replaceMeasurementConfig(name, mConfig);
+    this->selectedMeasurementConfig = mConfig;
 
 }
 

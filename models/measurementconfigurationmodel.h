@@ -42,7 +42,7 @@ public:
     //get informations about measurement configs
     //##########################################
 
-    QModelIndex getIndex(const QString &name) const;
+    QModelIndex getIndex(const MeasurementConfig &mConfig) const;
 
     MeasurementConfig getMeasurementConfig(const QModelIndex &index) const;
 
@@ -56,6 +56,8 @@ public:
     void removeMeasurementConfig(const QModelIndex &index);
 
     void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
+
+    void cloneMeasurementConfig(const MeasurementConfig &mConfig);
 
     //#######################################
     //get or set sensor configuration manager

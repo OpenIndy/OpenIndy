@@ -31,12 +31,99 @@ MeasurementConfigManager &MeasurementConfigManager::operator=(const MeasurementC
 }
 
 /*!
+ * \brief MeasurementConfigManager::hasSavedMeasurementConfig
+ * Checks wether there is a saved measurement config with the given name
+ * \param name
+ * \return
+ */
+bool MeasurementConfigManager::hasSavedMeasurementConfig(const QString &name){
+    return this->savedMeasurementConfigMap.contains(name);
+}
+
+/*!
+ * \brief MeasurementConfigManager::hasProjectMeasurementConfig
+ * Checks wether there is a project measurement config with the given name
+ * \param name
+ * \return
+ */
+bool MeasurementConfigManager::hasProjectMeasurementConfig(const QString &name){
+    return this->projectMeasurementConfigMap.contains(name);
+}
+
+/*!
+ * \brief MeasurementConfigManager::hasSavedMeasurementConfig
+ * Checks wether there is a saved measurement config with the same name and parameters
+ * \param mConfig
+ * \return
+ */
+bool MeasurementConfigManager::hasSavedMeasurementConfig(const MeasurementConfig &mConfig){
+
+    if(!this->savedMeasurementConfigMap.contains(mConfig.getName())){
+        return false;
+    }
+
+    //get saved config and compare it to the given one
+    MeasurementConfig savedConfig = this->savedMeasurementConfigMap.value(mConfig.getName());
+    if(savedConfig.getCount() == mConfig.getCount()
+            && savedConfig.getIterations() == mConfig.getIterations()
+            && savedConfig.getMeasureTwoSides() == mConfig.getMeasureTwoSides()
+            && savedConfig.getTimeDependent() == mConfig.getTimeDependent()
+            && savedConfig.getDistanceDependent() == mConfig.getDistanceDependent()
+            && savedConfig.getTimeInterval() == mConfig.getTimeInterval()
+            && savedConfig.getDistanceInterval() == mConfig.getDistanceInterval()
+            && savedConfig.getTypeOfReading() == mConfig.getTypeOfReading()){
+        return true;
+    }
+
+    return false;
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::hasProjectMeasurementConfig
+ * Checks wether there is a project measurement config with the same name and parameters
+ * \param mConfig
+ * \return
+ */
+bool MeasurementConfigManager::hasProjectMeasurementConfig(const MeasurementConfig &mConfig){
+
+    if(!this->projectMeasurementConfigMap.contains(mConfig.getName())){
+        return false;
+    }
+
+    //get project config and compare it to the given one
+    MeasurementConfig projectConfig = this->projectMeasurementConfigMap.value(mConfig.getName());
+    if(projectConfig.getCount() == mConfig.getCount()
+            && projectConfig.getIterations() == mConfig.getIterations()
+            && projectConfig.getMeasureTwoSides() == mConfig.getMeasureTwoSides()
+            && projectConfig.getTimeDependent() == mConfig.getTimeDependent()
+            && projectConfig.getDistanceDependent() == mConfig.getDistanceDependent()
+            && projectConfig.getTimeInterval() == mConfig.getTimeInterval()
+            && projectConfig.getDistanceInterval() == mConfig.getDistanceInterval()
+            && projectConfig.getTypeOfReading() == mConfig.getTypeOfReading()){
+        return true;
+    }
+
+    return false;
+
+}
+
+/*!
  * \brief MeasurementConfigManager::getSavedMeasurementConfig
  * \param name
  * \return
  */
 MeasurementConfig MeasurementConfigManager::getSavedMeasurementConfig(const QString &name) const{
     return this->savedMeasurementConfigMap.value(name, MeasurementConfig());
+}
+
+/*!
+ * \brief MeasurementConfigManager::getProjectMeasurementConfig
+ * \param name
+ * \return
+ */
+MeasurementConfig MeasurementConfigManager::getProjectMeasurementConfig(const QString &name) const{
+    return this->projectMeasurementConfigMap.value(name, MeasurementConfig());
 }
 
 /*!
@@ -83,7 +170,35 @@ void MeasurementConfigManager::addMeasurementConfig(const MeasurementConfig &mCo
     }
 
     //save mConfig
-    this->saveMeasurementConfig(mConfig);
+    MeasurementConfig savedConfig = mConfig;
+    savedConfig.setIsSaved(true);
+    this->saveMeasurementConfig(savedConfig);
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::addProjectMeasurementConfig
+ * \param mConfig
+ */
+void MeasurementConfigManager::addProjectMeasurementConfig(const MeasurementConfig &mConfig){
+
+    //check if mConfig is valid
+    if(!mConfig.getIsValid()){
+        emit this->sendMessage("Cannot add a measurement configuration with an empty name", eErrorMessage);
+        return;
+    }
+
+    //check if mConfig already exists
+    if(this->projectMeasurementConfigMap.contains(mConfig.getName())){
+        emit this->sendMessage(QString("A measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
+        return;
+    }
+
+    //save mConfig
+    this->projectMeasurementConfigList.append(mConfig);
+    this->projectMeasurementConfigMap.insert(mConfig.getName(), mConfig);
+
+    emit this->measurementConfigurationsChanged();
 
 }
 
@@ -107,6 +222,35 @@ void MeasurementConfigManager::removeMeasurementConfig(const QString &name){
 
     //delete mConfig
     this->deleteMeasurementConfig(name);
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::removeProjectMeasurementConfig
+ * \param name
+ */
+void MeasurementConfigManager::removeProjectMeasurementConfig(const QString &name){
+
+    if(this->projectMeasurementConfigMap.contains(name)){
+
+        MeasurementConfig mConfig = this->projectMeasurementConfigMap.take(name);
+        this->projectMeasurementConfigList.removeOne(mConfig);
+
+        emit this->measurementConfigurationsChanged();
+
+    }
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::removeAllProjectMeasurementConfigs
+ */
+void MeasurementConfigManager::removeAllProjectMeasurementConfigs(){
+
+    this->projectMeasurementConfigList.clear();
+    this->projectMeasurementConfigMap.clear();
+
+    emit this->measurementConfigurationsChanged();
 
 }
 

@@ -9,7 +9,7 @@ QMap<int, QPointer<FeatureWrapper> > ProjectExchanger::myGeometries;
 QList<int> ProjectExchanger::stationPoints;
 QMap<QString, MeasurementConfig> ProjectExchanger::myMConfigs;
 QMap<QString, SensorConfiguration> ProjectExchanger::mySConfigs;
-MeasurementConfigManager ProjectExchanger::mConfigManager;
+QPointer<MeasurementConfigManager> ProjectExchanger::mConfigManager;
 
 /*!
  * \brief ProjectExchanger::saveProject
@@ -141,7 +141,10 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     QDomElement sensorConfigs = project.createElement("sensorConfigs");
 
     //add measurement configs
-    QList<MeasurementConfig> mConfigs = ProjectExchanger::mConfigManager.getSavedMeasurementConfigs();
+    QList<MeasurementConfig> mConfigs;
+    if(!ProjectExchanger::mConfigManager.isNull()){
+        mConfigs = ProjectExchanger::mConfigManager->getSavedMeasurementConfigs();
+    }
     foreach(const MeasurementConfig &mConfig, mConfigs){
         QDomElement config = mConfig.toOpenIndyXML(project);
         if(!config.isNull()){
@@ -212,19 +215,6 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
         }
     }
 
-    /*foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
-        Station *s = station->getStation().data();
-    }
-    foreach(const QPointer<FeatureWrapper> &system, ProjectExchanger::myCoordinateSystems){
-        CoordinateSystem *c = system->getCoordinateSystem().data();
-    }
-    foreach(const QPointer<FeatureWrapper> &trafoParam, ProjectExchanger::myTransformationParameters){
-        TrafoParam *t = trafoParam->getTrafoParam().data();
-    }
-    foreach(const QPointer<FeatureWrapper> &geometry, ProjectExchanger::myGeometries){
-        Geometry *g = geometry->getGeometry().data();
-    }*/
-
     //add features to the job
     job->addFeaturesFromXml(ProjectExchanger::myStations.values());
     job->addFeaturesFromXml(ProjectExchanger::myCoordinateSystems.values());
@@ -236,42 +226,14 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
         job->nextId = project.documentElement().attribute("idCount").toInt() + 1;
     }
 
-    //add loaded features to OiFeatureState
-    /*foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
-        if(!station.isNull() && !station->getStation().isNull()){
-            job->addFeature(station);
-            if(!station->getStation()->getPosition().isNull()){
-                ProjectExchanger::stationPoints.append(station->getStation()->getPosition()->getId());
+    //add project measurement configs to config manager
+    if(!ProjectExchanger::mConfigManager.isNull()){
+        foreach(const MeasurementConfig &mConfig, ProjectExchanger::myMConfigs.values()){
+            if(mConfig.getIsValid() && !mConfig.getIsSaved()){
+                ProjectExchanger::mConfigManager->addProjectMeasurementConfig(mConfig);
             }
         }
     }
-    foreach(const QPointer<FeatureWrapper> &system, ProjectExchanger::myCoordinateSystems){
-        if(!system.isNull() && !system->getCoordinateSystem().isNull()){
-            if(!system->getCoordinateSystem()->getIsStationSystem()){
-                job->addFeature(system);
-            }
-        }
-    }
-    foreach(const QPointer<FeatureWrapper> &trafoParam, ProjectExchanger::myTransformationParameters){
-        if(!trafoParam.isNull() && !trafoParam->getTrafoParam().isNull()){
-            job->addFeature(trafoParam);
-        }
-    }
-    foreach(const QPointer<FeatureWrapper> &geometry, ProjectExchanger::myGeometries){
-        if(!geometry.isNull() && !geometry->getGeometry().isNull()){
-            if(!ProjectExchanger::stationPoints.contains(geometry->getGeometry()->getId())){
-                job->addFeature(geometry);
-            }
-        }
-    }*/
-
-    //add configs to OiConfigState
-    /*foreach(const MeasurementConfig &mConfig, ProjectExchanger::myMConfigs){
-        ProjectExchanger::addProjectMeasurementConfig(mConfig);
-    }
-    foreach(const SensorConfiguration &sConfig, ProjectExchanger::mySConfigs){
-        ProjectExchanger::addProjectSensorConfig(sConfig);
-    }*/
 
     //set active station and active coordinate system
     QDomElement activeStation = project.documentElement().firstChildElement("activeStation");
@@ -302,7 +264,7 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
  * \brief ProjectExchanger::getMeasurementConfigManager
  * \return
  */
-MeasurementConfigManager &ProjectExchanger::getMeasurementConfigManager(){
+QPointer<MeasurementConfigManager> &ProjectExchanger::getMeasurementConfigManager(){
     return ProjectExchanger::mConfigManager;
 }
 
@@ -310,7 +272,7 @@ MeasurementConfigManager &ProjectExchanger::getMeasurementConfigManager(){
  * \brief ProjectExchanger::setMeasurementConfigManager
  * \param mConfigManager
  */
-void ProjectExchanger::setMeasurementConfigManager(const MeasurementConfigManager &mConfigManager){
+void ProjectExchanger::setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &mConfigManager){
     ProjectExchanger::mConfigManager = mConfigManager;
 }
 
@@ -713,6 +675,9 @@ bool ProjectExchanger::loadConfigs(const QDomDocument &project){
                 QDomElement mConfigElement = mConfigList.at(i).toElement();
                 MeasurementConfig mConfig;
                 if(mConfig.fromOpenIndyXML(mConfigElement)){
+                    if(!mConfigManager.isNull() && mConfigManager->hasSavedMeasurementConfig(mConfig)){
+                        mConfig.setIsSaved(true);
+                    }
                     ProjectExchanger::myMConfigs.insert(mConfig.getName(), mConfig);
                 }
             }

@@ -980,7 +980,10 @@ void MainWindow::on_actionWatch_window_triggered(){
  */
 void MainWindow::on_actionOpen_triggered(){
 
-    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "oiProject", "oi.xml (*.oi.xml)");
+    QFileDialog dlg;
+    dlg.exec();
+
+    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "oi.xml (*.oi.xml)");
     if(filename.compare("") == 0){
         return;
     }
@@ -1032,9 +1035,9 @@ void MainWindow::on_actionMeasurement_Configuration_triggered(){
     //check if there is an active feature and pass its config to the measurement config dialog
     QPointer<FeatureWrapper> activeFeature = model.getActiveFeature();
     if(!activeFeature.isNull() && !activeFeature->getGeometry().isNull()){
-        this->measurementConfigDialog.setMeasurementConfiguration(activeFeature->getGeometry()->getMeasurementConfig().getName());
+        this->measurementConfigDialog.setMeasurementConfiguration(activeFeature->getGeometry()->getMeasurementConfig());
     }else{
-        this->measurementConfigDialog.setMeasurementConfiguration("");
+        this->measurementConfigDialog.setMeasurementConfiguration(MeasurementConfig());
     }
 
     this->measurementConfigDialog.show();
@@ -1967,20 +1970,8 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
  */
 void MainWindow::updateGroupFilterSize(){
 
-    //get and check model
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
     //get and check current job
-    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(job.isNull()){
         return;
     }
@@ -2004,20 +1995,8 @@ void MainWindow::updateGroupFilterSize(){
  */
 void MainWindow::updateSystemFilterSize(){
 
-    //get and check model
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
     //get and check current job
-    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(job.isNull()){
         return;
     }

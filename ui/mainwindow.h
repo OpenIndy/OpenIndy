@@ -71,7 +71,7 @@ signals:
     void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
 
     //set measurement configuration for active feature
-    void measurementConfigurationChanged(const QString &name);
+    void measurementConfigurationChanged(const MeasurementConfig &mConfig);
 
     //recalculation of features
     void recalcAll();
