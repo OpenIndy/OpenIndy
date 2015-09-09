@@ -980,8 +980,8 @@ void MainWindow::on_actionWatch_window_triggered(){
  */
 void MainWindow::on_actionOpen_triggered(){
 
-    QFileDialog dlg;
-    dlg.exec();
+    //QFileDialog dlg;
+    //dlg.exec();
 
     QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "oi.xml (*.oi.xml)");
     if(filename.compare("") == 0){
