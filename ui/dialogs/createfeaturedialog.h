@@ -50,6 +50,7 @@ private slots:
     void on_toolButton_ok_clicked();
     void on_toolButton_cancel_clicked();
     void on_checkBox_nominal_toggled(bool checked);
+    void on_checkBox_actual_toggled(bool checked);
 
 private:
 

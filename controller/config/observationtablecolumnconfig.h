@@ -16,16 +16,16 @@ class ObservationTableColumnConfig
 public:
     ObservationTableColumnConfig();
 
-    bool getColumnVisibility(const ObservationDisplayattributes &column) const;
-    void setColumnVisibility(const ObservationDisplayattributes &column, const bool &isVisible);
+    bool getColumnVisibility(const ObservationDisplayAttributes &column) const;
+    void setColumnVisibility(const ObservationDisplayAttributes &column, const bool &isVisible);
 
-    int getColumnPosition(const ObservationDisplayattributes &column) const;
-    void setColumnPosition(const ObservationDisplayattributes &column, const int &index);
+    int getColumnPosition(const ObservationDisplayAttributes &column) const;
+    void setColumnPosition(const ObservationDisplayAttributes &column, const int &index);
 
 private:
     void init();
 
-    QList<ObservationDisplayattributes> displayColumns;
+    QList<ObservationDisplayAttributes> displayColumns;
 };
 
 #endif // OBSERVATIONTABLECOLUMNCONFIG_H

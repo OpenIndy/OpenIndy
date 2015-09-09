@@ -32,13 +32,26 @@ public:
     //get or set measurement configs
     //##############################
 
+    bool hasSavedMeasurementConfig(const QString &name);
+    bool hasProjectMeasurementConfig(const QString &name);
+
+    bool hasSavedMeasurementConfig(const MeasurementConfig &mConfig);
+    bool hasProjectMeasurementConfig(const MeasurementConfig &mConfig);
+
     MeasurementConfig getSavedMeasurementConfig(const QString &name) const;
+    MeasurementConfig getProjectMeasurementConfig(const QString &name) const;
+
     QList<MeasurementConfig> getSavedMeasurementConfigs() const;
     QList<MeasurementConfig> getProjectMeasurementConfigs() const;
-    const MeasurementConfig &getActiveMeasurementConfig(const GeometryTypes &type) const;
+
+    MeasurementConfig getActiveMeasurementConfig(const GeometryTypes &type) const;
 
     void addMeasurementConfig(const MeasurementConfig &mConfig);
+    void addProjectMeasurementConfig(const MeasurementConfig &mConfig);
+
     void removeMeasurementConfig(const QString &name);
+    void removeProjectMeasurementConfig(const QString &name);
+    void removeAllProjectMeasurementConfigs();
 
     void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
 
@@ -65,8 +78,11 @@ private:
     //save measurement configs
     //########################
 
-    QMap<QString, MeasurementConfig> savedMeasurementConfigs;
-    QMap<QString, MeasurementConfig> projectMeasurementConfigs;
+    QMap<QString, MeasurementConfig> savedMeasurementConfigMap;
+    QMap<QString, MeasurementConfig> projectMeasurementConfigMap;
+
+    QList<MeasurementConfig> savedMeasurementConfigList;
+    QList<MeasurementConfig> projectMeasurementConfigList;
 
     QMap<GeometryTypes, MeasurementConfig> activeMeasurementConfigs;
 

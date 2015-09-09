@@ -56,7 +56,7 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
     }
 
     //check if the index is a project sensor config
-    if(source_row < this->rowCount(source_parent) && this->showAll == true){
+    if(this->showAll == true){
         return true;
     }
 

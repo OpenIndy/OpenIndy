@@ -1,428 +1,6 @@
 #include "nominalpropertiesdialog.h"
 #include "ui_nominalpropertiesdialog.h"
 
-/*
-NominalDataDialog::NominalDataDialog(QWidget *parent) :
-    QDialog(parent), ui(new Ui::NominalDataDialog)
-{
-    ui->setupUi(this);
-}
-
-NominalDataDialog::~NominalDataDialog()
-{
-    delete ui;
-}
-
-void NominalDataDialog::on_toolButton_ok_clicked()
-{
-    NominalAttributeExchange nominalValue;
-    //nominalValue.nomX = ui->lineEdit_nominalX->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
-    //nominalValue.nomY = ui->lineEdit_nominalY->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
-    //nominalValue.nomZ = ui->lineEdit_nominalZ->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
-    nominalValue.nomI = ui->lineEdit_nominalI->text().toDouble();
-    nominalValue.nomJ = ui->lineEdit_nominalJ->text().toDouble();
-    nominalValue.nomK = ui->lineEdit_nominalK->text().toDouble();
-    //nominalValue.nomR = ui->lineEdit_nominalR->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
-    //nominalValue.nomSDE = ui->lineEdit_nominalSDE->text().toDouble()/OiUnitConverter::getDistanceMultiplier();
-    //nominalValue.nomSAE = ui->lineEdit_nominalSAE->text().toDouble()/OiUnitConverter::getAngleMultiplier();
-    //nominalValue.nomSTE = OiUnitConverter::getReverseTemperature(ui->lineEdit_nominalTemperature->text().toDouble());
-    nominalValue.nomSMSE = ui->lineEdit_nominalMeasurementSeries->text().toDouble();
-
-    emit sendNominalValues(nominalValue);
-
-    this->close();
-}
-
-void NominalDataDialog::on_toolButton_cancel_clicked()
-{
-    this->close();
-}
-
-void NominalDataDialog::setLabelText()
-{
-    ui->label_nominalI->setText(QString("nominal I value"));
-    ui->label_nominalJ->setText(QString("nominal J value"));
-    ui->label_nominalK->setText(QString("nominal K value"));
-    ui->label_nominalMeasurementSeries->setText(QString("nominal measurement series"));
-    //ui->label_nominalR->setText(QString("nominal radius value " + OiUnitConverter::getDistanceUnitString()));
-    //ui->label_nominalSAE->setText(QString("nominal scalar entity angle value " + OiUnitConverter::getAngleUnitString()));
-    //ui->label_nominalSDE->setText(QString("nominal scalar distance value " + OiUnitConverter::getDistanceUnitString()));
-    //ui->label_nominalTemperature->setText(QString("nominal scalar entity temperature value " + OiUnitConverter::getTemperatureUnitString()));
-    //ui->label_nominalX->setText(QString("nominal X value " + OiUnitConverter::getDistanceUnitString()));
-    //ui->label_nominalY->setText(QString("nominal Y value " + OiUnitConverter::getDistanceUnitString()));
-    //ui->label_nominalZ->setText(QString("nominal Z value " + OiUnitConverter::getDistanceUnitString()));
-}
-
-void NominalDataDialog::showEvent(QShowEvent *event)
-{
-    //Put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
-    ui->label_nominalI->setEnabled(false);
-    ui->label_nominalJ->setEnabled(false);
-    ui->label_nominalJ->setEnabled(false);
-    ui->label_nominalX->setEnabled(false);
-    ui->label_nominalY->setEnabled(false);
-    ui->label_nominalZ->setEnabled(false);
-    ui->label_nominalR->setEnabled(false);
-    ui->lineEdit_nominalI->setEnabled(false);
-    ui->lineEdit_nominalJ->setEnabled(false);
-    ui->lineEdit_nominalJ->setEnabled(false);
-    ui->lineEdit_nominalX->setEnabled(false);
-    ui->lineEdit_nominalY->setEnabled(false);
-    ui->lineEdit_nominalZ->setEnabled(false);
-    ui->lineEdit_nominalR->setEnabled(false);
-    ui->label_nominalSAE->setEnabled(false);
-    ui->label_nominalSDE->setEnabled(false);
-    ui->lineEdit_nominalSAE->setEnabled(false);
-    ui->lineEdit_nominalSDE->setEnabled(false);
-    ui->label_nominalMeasurementSeries->setEnabled(false);
-    ui->lineEdit_nominalMeasurementSeries->setEnabled(false);
-    ui->lineEdit_nominalTemperature->setEnabled(false);
-    ui->label_nominalTemperature->setEnabled(false);
-
-    this->setLabelText();
-
-    this->setWindowTitle(QString("nominal data of " + OiJob::getActiveFeature()->getFeature()->getFeatureName()));
-
-    switch (OiJob::getActiveFeature()->getTypeOfFeature()) {
-    case Configuration::ePointFeature:
-        ui->label_nominalI->setEnabled(false);
-        ui->label_nominalJ->setEnabled(false);
-        ui->label_nominalK->setEnabled(false);
-        ui->label_nominalX->setEnabled(true);
-        ui->label_nominalY->setEnabled(true);
-        ui->label_nominalZ->setEnabled(true);
-        ui->label_nominalR->setEnabled(false);
-        ui->lineEdit_nominalI->setEnabled(false);
-        ui->lineEdit_nominalJ->setEnabled(false);
-        ui->lineEdit_nominalK->setEnabled(false);
-        ui->lineEdit_nominalX->setEnabled(true);
-        ui->lineEdit_nominalY->setEnabled(true);
-        ui->lineEdit_nominalZ->setEnabled(true);
-        ui->lineEdit_nominalR->setEnabled(false);
-        ui->label_nominalSAE->setEnabled(false);
-        ui->label_nominalSDE->setEnabled(false);
-        ui->lineEdit_nominalSAE->setEnabled(false);
-        ui->lineEdit_nominalSDE->setEnabled(false);
-        ui->label_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalTemperature->setEnabled(false);
-        ui->label_nominalTemperature->setEnabled(false);
-        break;
-    case Configuration::ePlaneFeature:
-        ui->label_nominalI->setEnabled(true);
-        ui->label_nominalJ->setEnabled(true);
-        ui->label_nominalK->setEnabled(true);
-        ui->label_nominalX->setEnabled(true);
-        ui->label_nominalY->setEnabled(true);
-        ui->label_nominalZ->setEnabled(true);
-        ui->label_nominalR->setEnabled(false);
-        ui->lineEdit_nominalI->setEnabled(true);
-        ui->lineEdit_nominalJ->setEnabled(true);
-        ui->lineEdit_nominalK->setEnabled(true);
-        ui->lineEdit_nominalX->setEnabled(true);
-        ui->lineEdit_nominalY->setEnabled(true);
-        ui->lineEdit_nominalZ->setEnabled(true);
-        ui->lineEdit_nominalR->setEnabled(false);
-        ui->label_nominalSAE->setEnabled(false);
-        ui->label_nominalSDE->setEnabled(false);
-        ui->lineEdit_nominalSAE->setEnabled(false);
-        ui->lineEdit_nominalSDE->setEnabled(false);
-        ui->label_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalTemperature->setEnabled(false);
-        ui->label_nominalTemperature->setEnabled(false);
-        break;
-    case Configuration::eLineFeature:
-        ui->label_nominalI->setEnabled(true);
-        ui->label_nominalJ->setEnabled(true);
-        ui->label_nominalK->setEnabled(true);
-        ui->label_nominalX->setEnabled(true);
-        ui->label_nominalY->setEnabled(true);
-        ui->label_nominalZ->setEnabled(true);
-        ui->label_nominalR->setEnabled(false);
-        ui->lineEdit_nominalI->setEnabled(true);
-        ui->lineEdit_nominalJ->setEnabled(true);
-        ui->lineEdit_nominalK->setEnabled(true);
-        ui->lineEdit_nominalX->setEnabled(true);
-        ui->lineEdit_nominalY->setEnabled(true);
-        ui->lineEdit_nominalZ->setEnabled(true);
-        ui->lineEdit_nominalR->setEnabled(false);
-        ui->label_nominalSAE->setEnabled(false);
-        ui->label_nominalSDE->setEnabled(false);
-        ui->lineEdit_nominalSAE->setEnabled(false);
-        ui->lineEdit_nominalSDE->setEnabled(false);
-        ui->label_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalTemperature->setEnabled(false);
-        ui->label_nominalTemperature->setEnabled(false);
-        break;
-    case Configuration::eSphereFeature:
-        ui->label_nominalI->setEnabled(false);
-        ui->label_nominalJ->setEnabled(false);
-        ui->label_nominalK->setEnabled(false);
-        ui->label_nominalX->setEnabled(true);
-        ui->label_nominalY->setEnabled(true);
-        ui->label_nominalZ->setEnabled(true);
-        ui->label_nominalR->setEnabled(true);
-        ui->lineEdit_nominalI->setEnabled(false);
-        ui->lineEdit_nominalJ->setEnabled(false);
-        ui->lineEdit_nominalK->setEnabled(false);
-        ui->lineEdit_nominalX->setEnabled(true);
-        ui->lineEdit_nominalY->setEnabled(true);
-        ui->lineEdit_nominalZ->setEnabled(true);
-        ui->lineEdit_nominalR->setEnabled(true);
-        ui->label_nominalSAE->setEnabled(false);
-        ui->label_nominalSDE->setEnabled(false);
-        ui->lineEdit_nominalSAE->setEnabled(false);
-        ui->lineEdit_nominalSDE->setEnabled(false);
-        ui->label_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalTemperature->setEnabled(false);
-        ui->label_nominalTemperature->setEnabled(false);
-        break;
-    case Configuration::eScalarEntityAngleFeature:
-        ui->label_nominalI->setEnabled(false);
-        ui->label_nominalJ->setEnabled(false);
-        ui->label_nominalK->setEnabled(false);
-        ui->label_nominalX->setEnabled(false);
-        ui->label_nominalY->setEnabled(false);
-        ui->label_nominalZ->setEnabled(false);
-        ui->label_nominalR->setEnabled(false);
-        ui->lineEdit_nominalI->setEnabled(false);
-        ui->lineEdit_nominalJ->setEnabled(false);
-        ui->lineEdit_nominalK->setEnabled(false);
-        ui->lineEdit_nominalX->setEnabled(false);
-        ui->lineEdit_nominalY->setEnabled(false);
-        ui->lineEdit_nominalZ->setEnabled(false);
-        ui->lineEdit_nominalR->setEnabled(false);
-        ui->label_nominalSAE->setEnabled(true);
-        ui->label_nominalSDE->setEnabled(false);
-        ui->lineEdit_nominalSAE->setEnabled(true);
-        ui->lineEdit_nominalSDE->setEnabled(false);
-        ui->label_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalTemperature->setEnabled(false);
-        ui->label_nominalTemperature->setEnabled(false);
-        break;
-    case Configuration::eScalarEntityDistanceFeature:
-        ui->label_nominalI->setEnabled(false);
-        ui->label_nominalJ->setEnabled(false);
-        ui->label_nominalK->setEnabled(false);
-        ui->label_nominalX->setEnabled(false);
-        ui->label_nominalY->setEnabled(false);
-        ui->label_nominalZ->setEnabled(false);
-        ui->label_nominalR->setEnabled(false);
-        ui->lineEdit_nominalI->setEnabled(false);
-        ui->lineEdit_nominalJ->setEnabled(false);
-        ui->lineEdit_nominalK->setEnabled(false);
-        ui->lineEdit_nominalX->setEnabled(false);
-        ui->lineEdit_nominalY->setEnabled(false);
-        ui->lineEdit_nominalZ->setEnabled(false);
-        ui->lineEdit_nominalR->setEnabled(false);
-        ui->label_nominalSAE->setEnabled(false);
-        ui->label_nominalSDE->setEnabled(true);
-        ui->lineEdit_nominalSAE->setEnabled(false);
-        ui->lineEdit_nominalSDE->setEnabled(true);
-        ui->label_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalTemperature->setEnabled(false);
-        ui->label_nominalTemperature->setEnabled(false);
-        break;
-    case Configuration::eScalarEntityTemperatureFeature:
-        ui->label_nominalI->setEnabled(false);
-        ui->label_nominalJ->setEnabled(false);
-        ui->label_nominalK->setEnabled(false);
-        ui->label_nominalX->setEnabled(false);
-        ui->label_nominalY->setEnabled(false);
-        ui->label_nominalZ->setEnabled(false);
-        ui->label_nominalR->setEnabled(false);
-        ui->lineEdit_nominalI->setEnabled(false);
-        ui->lineEdit_nominalJ->setEnabled(false);
-        ui->lineEdit_nominalK->setEnabled(false);
-        ui->lineEdit_nominalX->setEnabled(false);
-        ui->lineEdit_nominalY->setEnabled(false);
-        ui->lineEdit_nominalZ->setEnabled(false);
-        ui->lineEdit_nominalR->setEnabled(false);
-        ui->label_nominalSAE->setEnabled(false);
-        ui->label_nominalSDE->setEnabled(false);
-        ui->lineEdit_nominalSAE->setEnabled(false);
-        ui->lineEdit_nominalSDE->setEnabled(false);
-        ui->label_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalTemperature->setEnabled(true);
-        ui->label_nominalTemperature->setEnabled(true);
-        break;
-    case Configuration::eScalarEntityMeasurementSeriesFeature:
-        ui->label_nominalI->setEnabled(false);
-        ui->label_nominalJ->setEnabled(false);
-        ui->label_nominalK->setEnabled(false);
-        ui->label_nominalX->setEnabled(false);
-        ui->label_nominalY->setEnabled(false);
-        ui->label_nominalZ->setEnabled(false);
-        ui->label_nominalR->setEnabled(false);
-        ui->lineEdit_nominalI->setEnabled(false);
-        ui->lineEdit_nominalJ->setEnabled(false);
-        ui->lineEdit_nominalK->setEnabled(false);
-        ui->lineEdit_nominalX->setEnabled(false);
-        ui->lineEdit_nominalY->setEnabled(false);
-        ui->lineEdit_nominalZ->setEnabled(false);
-        ui->lineEdit_nominalR->setEnabled(false);
-        ui->label_nominalSAE->setEnabled(false);
-        ui->label_nominalSDE->setEnabled(false);
-        ui->lineEdit_nominalSAE->setEnabled(false);
-        ui->lineEdit_nominalSDE->setEnabled(false);
-        ui->label_nominalMeasurementSeries->setEnabled(true);
-        ui->lineEdit_nominalMeasurementSeries->setEnabled(true);
-        ui->lineEdit_nominalTemperature->setEnabled(false);
-        ui->label_nominalTemperature->setEnabled(false);
-        break;
-    default:
-        ui->label_nominalI->setEnabled(false);
-        ui->label_nominalJ->setEnabled(false);
-        ui->label_nominalK->setEnabled(false);
-        ui->label_nominalX->setEnabled(false);
-        ui->label_nominalY->setEnabled(false);
-        ui->label_nominalZ->setEnabled(false);
-        ui->label_nominalR->setEnabled(false);
-        ui->lineEdit_nominalI->setEnabled(false);
-        ui->lineEdit_nominalJ->setEnabled(false);
-        ui->lineEdit_nominalK->setEnabled(false);
-        ui->lineEdit_nominalX->setEnabled(false);
-        ui->lineEdit_nominalY->setEnabled(false);
-        ui->lineEdit_nominalZ->setEnabled(false);
-        ui->lineEdit_nominalR->setEnabled(false);
-        ui->label_nominalSAE->setEnabled(false);
-        ui->label_nominalSDE->setEnabled(false);
-        ui->lineEdit_nominalSAE->setEnabled(false);
-        ui->lineEdit_nominalSDE->setEnabled(false);
-        ui->label_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalMeasurementSeries->setEnabled(false);
-        ui->lineEdit_nominalTemperature->setEnabled(false);
-        ui->label_nominalTemperature->setEnabled(false);
-        break;
-    }
-
-    fillGUI();
-
-    event->accept();
-}
-
-void NominalDataDialog::fillGUI(){
-
-    switch (OiJob::getActiveFeature()->getTypeOfFeature()) {
-    case Configuration::ePointFeature:
-        //ui->lineEdit_nominalX->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(0)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
-        //ui->lineEdit_nominalY->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(1)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
-        //ui->lineEdit_nominalZ->setText(QString::number(OiFeatureState::getActiveFeature()->getPoint()->xyz.getAt(2)*OiUnitConverter::getDistanceMultiplier(),'f',OiUnitConverter::distanceDigits));
-        ui->lineEdit_nominalI->setText("");
-        ui->lineEdit_nominalJ->setText("");
-        ui->lineEdit_nominalK->setText("");
-        ui->lineEdit_nominalMeasurementSeries->setText("");
-        ui->lineEdit_nominalR->setText("");
-        ui->lineEdit_nominalSAE->setText("");
-        ui->lineEdit_nominalSDE->setText("");
-        ui->lineEdit_nominalTemperature->setText("");
-        break;
-    case Configuration::ePlaneFeature:
-        ui->lineEdit_nominalX->setText(QString::number(OiJob::getActiveFeature()->getPlane()->xyz.getAt(0),'f',6));
-        ui->lineEdit_nominalY->setText(QString::number(OiJob::getActiveFeature()->getPlane()->xyz.getAt(1),'f',6));
-        ui->lineEdit_nominalZ->setText(QString::number(OiJob::getActiveFeature()->getPlane()->xyz.getAt(2),'f',6));
-        ui->lineEdit_nominalI->setText(QString::number(OiJob::getActiveFeature()->getPlane()->ijk.getAt(0),'f',6));
-        ui->lineEdit_nominalJ->setText(QString::number(OiJob::getActiveFeature()->getPlane()->ijk.getAt(1),'f',6));
-        ui->lineEdit_nominalK->setText(QString::number(OiJob::getActiveFeature()->getPlane()->ijk.getAt(2),'f',6));
-        ui->lineEdit_nominalMeasurementSeries->setText("");
-        ui->lineEdit_nominalR->setText("");
-        ui->lineEdit_nominalSAE->setText("");
-        ui->lineEdit_nominalSDE->setText("");
-        ui->lineEdit_nominalTemperature->setText("");
-        break;
-    case Configuration::eLineFeature:
-        ui->lineEdit_nominalX->setText(QString::number(OiJob::getActiveFeature()->getLine()->xyz.getAt(0),'f',6));
-        ui->lineEdit_nominalY->setText(QString::number(OiJob::getActiveFeature()->getLine()->xyz.getAt(1),'f',6));
-        ui->lineEdit_nominalZ->setText(QString::number(OiJob::getActiveFeature()->getLine()->xyz.getAt(2),'f',6));
-        ui->lineEdit_nominalI->setText(QString::number(OiJob::getActiveFeature()->getLine()->ijk.getAt(0),'f',6));
-        ui->lineEdit_nominalJ->setText(QString::number(OiJob::getActiveFeature()->getLine()->ijk.getAt(1),'f',6));
-        ui->lineEdit_nominalK->setText(QString::number(OiJob::getActiveFeature()->getLine()->ijk.getAt(2),'f',6));
-        ui->lineEdit_nominalMeasurementSeries->setText("");
-        ui->lineEdit_nominalR->setText("");
-        ui->lineEdit_nominalSAE->setText("");
-        ui->lineEdit_nominalSDE->setText("");
-        ui->lineEdit_nominalTemperature->setText("");
-        break;
-    case Configuration::eSphereFeature:
-        ui->lineEdit_nominalX->setText(QString::number(OiJob::getActiveFeature()->getSphere()->xyz.getAt(0),'f',6));
-        ui->lineEdit_nominalY->setText(QString::number(OiJob::getActiveFeature()->getSphere()->xyz.getAt(1),'f',6));
-        ui->lineEdit_nominalZ->setText(QString::number(OiJob::getActiveFeature()->getSphere()->xyz.getAt(2),'f',6));
-        ui->lineEdit_nominalR->setText(QString::number(OiJob::getActiveFeature()->getSphere()->radius,'f',6));
-        ui->lineEdit_nominalMeasurementSeries->setText("");
-        ui->lineEdit_nominalSAE->setText("");
-        ui->lineEdit_nominalSDE->setText("");
-        ui->lineEdit_nominalTemperature->setText("");
-        ui->lineEdit_nominalI->setText("");
-        ui->lineEdit_nominalJ->setText("");
-        ui->lineEdit_nominalK->setText("");
-        break;
-    case Configuration::eScalarEntityAngleFeature:
-        //ui->lineEdit_nominalSAE->setText(QString::number(OiFeatureState::getActiveFeature()->getScalarEntityAngle()->getAngle()*OiUnitConverter::getAngleMultiplier(),'f',6));
-        ui->lineEdit_nominalI->setText("");
-        ui->lineEdit_nominalJ->setText("");
-        ui->lineEdit_nominalK->setText("");
-        ui->lineEdit_nominalMeasurementSeries->setText("");
-        ui->lineEdit_nominalR->setText("");
-        ui->lineEdit_nominalSDE->setText("");
-        ui->lineEdit_nominalTemperature->setText("");
-        ui->lineEdit_nominalX->setText("");
-        ui->lineEdit_nominalY->setText("");
-        ui->lineEdit_nominalZ->setText("");
-        break;
-    case Configuration::eScalarEntityDistanceFeature:
-        //ui->lineEdit_nominalSDE->setText(QString::number(OiFeatureState::getActiveFeature()->getScalarEntityDistance()->getDistance()*OiUnitConverter::getDistanceMultiplier(),'f',6));
-        ui->lineEdit_nominalI->setText("");
-        ui->lineEdit_nominalJ->setText("");
-        ui->lineEdit_nominalK->setText("");
-        ui->lineEdit_nominalMeasurementSeries->setText("");
-        ui->lineEdit_nominalR->setText("");
-        ui->lineEdit_nominalSAE->setText("");
-        ui->lineEdit_nominalTemperature->setText("");
-        ui->lineEdit_nominalX->setText("");
-        ui->lineEdit_nominalY->setText("");
-        ui->lineEdit_nominalZ->setText("");
-        break;
-    case Configuration::eScalarEntityTemperatureFeature:
-        ui->lineEdit_nominalI->setText("");
-        ui->lineEdit_nominalJ->setText("");
-        ui->lineEdit_nominalK->setText("");
-        ui->lineEdit_nominalMeasurementSeries->setText("");
-        ui->lineEdit_nominalR->setText("");
-        ui->lineEdit_nominalSAE->setText("");
-        //ui->lineEdit_nominalTemperature->setText(QString::number(OiUnitConverter::getTemperature(OiFeatureState::getActiveFeature()->getScalarEntityTemperature()->getTemperature()),'f',OiUnitConverter::temperatureDigits));
-        ui->lineEdit_nominalX->setText("");
-        ui->lineEdit_nominalY->setText("");
-        ui->lineEdit_nominalZ->setText("");
-        ui->lineEdit_nominalSDE->setText("");
-        break;
-    case Configuration::eScalarEntityMeasurementSeriesFeature:
-        ui->lineEdit_nominalI->setText("");
-        ui->lineEdit_nominalJ->setText("");
-        ui->lineEdit_nominalK->setText("");
-        ui->lineEdit_nominalMeasurementSeries->setText(QString::number(OiJob::getActiveFeature()->getScalarEntityMeasurementSeries()->getSeriesValue(),'f',6));
-        ui->lineEdit_nominalR->setText("");
-        ui->lineEdit_nominalSAE->setText("");
-        ui->lineEdit_nominalTemperature->setText("");
-        ui->lineEdit_nominalX->setText("");
-        ui->lineEdit_nominalY->setText("");
-        ui->lineEdit_nominalZ->setText("");
-        ui->lineEdit_nominalSDE->setText("");
-        break;
-    default:
-        break;
-    }
-}
-*/
-
 /*!
  * \brief NominalPropertiesDialog::NominalPropertiesDialog
  * \param parent
@@ -508,7 +86,7 @@ void NominalPropertiesDialog::setCurrentNominal(const int &id, const QString &na
  * \brief NominalPropertiesDialog::getUnknownNominalParameters
  * \return
  */
-const QMap<UnknownParameters, QString> &NominalPropertiesDialog::getUnknownNominalParameters() const{
+const QMap<GeometryParameters, QString> &NominalPropertiesDialog::getUnknownNominalParameters() const{
     return this->parameters;
 }
 
@@ -516,7 +94,7 @@ const QMap<UnknownParameters, QString> &NominalPropertiesDialog::getUnknownNomin
  * \brief NominalPropertiesDialog::setUnknownNominalParameters
  * \param parameters
  */
-void NominalPropertiesDialog::setUnknownNominalParameters(const QMap<UnknownParameters, QString> &parameters){
+void NominalPropertiesDialog::setUnknownNominalParameters(const QMap<GeometryParameters, QString> &parameters){
     this->parameters = parameters;
 }
 
@@ -533,7 +111,7 @@ void NominalPropertiesDialog::on_toolButton_cancel_clicked(){
 void NominalPropertiesDialog::on_toolButton_ok_clicked(){
 
     //get a map of unknown parameters
-    QMap<UnknownParameters, double> parameters;
+    QMap<GeometryParameters, double> parameters;
     this->getParametersFromGUI(parameters);
 
     emit this->nominalParametersChanged(this->id, parameters);
@@ -571,13 +149,13 @@ void NominalPropertiesDialog::initGUI(){
     GeometryTypes type = getGeometryTypeEnum(this->type);
 
     //get a list of all available unknown parameters
-    QList<UnknownParameters> availableUnknownParameters = getAvailableUnknownParameters();
+    QList<GeometryParameters> availableUnknownParameters = getAvailableGeometryParameters();
 
     //get a list of unknown parameters that correspond to the current geometry type
-    QList<UnknownParameters> currentUnknownParameters = getUnknownParameters(type);
+    QList<GeometryParameters> currentUnknownParameters = getGeometryParameters(type);
 
     //filter GUI elements depending on the type of geometry
-    foreach(const UnknownParameters &param, availableUnknownParameters){
+    foreach(const GeometryParameters &param, availableUnknownParameters){
 
         //set visibility
         if(currentUnknownParameters.contains(param)){ //set visible
@@ -600,7 +178,7 @@ void NominalPropertiesDialog::initModels(){
 
 }
 
-void NominalPropertiesDialog::setVisibility(const UnknownParameters &param, const bool &visible){
+void NominalPropertiesDialog::setVisibility(const GeometryParameters &param, const bool &visible){
 
     switch(param){
     case eUnknownX:
@@ -692,7 +270,7 @@ void NominalPropertiesDialog::setVisibility(const UnknownParameters &param, cons
  * \param param
  * \param value
  */
-void NominalPropertiesDialog::setParametersToGUI(const UnknownParameters &param, const QString &value){
+void NominalPropertiesDialog::setParametersToGUI(const GeometryParameters &param, const QString &value){
 
     switch(param){
     case eUnknownX:
@@ -763,7 +341,7 @@ void NominalPropertiesDialog::setParametersToGUI(const UnknownParameters &param,
  * \brief NominalPropertiesDialog::getParametersFromGUI
  * \param parameters
  */
-void NominalPropertiesDialog::getParametersFromGUI(QMap<UnknownParameters, double> &parameters){
+void NominalPropertiesDialog::getParametersFromGUI(QMap<GeometryParameters, double> &parameters){
 
     //check if the current nominal is a geometry
     if(!getIsGeometry(this->type)){
@@ -772,9 +350,12 @@ void NominalPropertiesDialog::getParametersFromGUI(QMap<UnknownParameters, doubl
     GeometryTypes type = getGeometryTypeEnum(this->type);
 
     //get a list of unknown parameters that correspond to the current geometry type
-    QList<UnknownParameters> currentUnknownParameters = getUnknownParameters(type);
+    QList<GeometryParameters> currentUnknownParameters = getGeometryParameters(type);
 
-    foreach(const UnknownParameters &param, currentUnknownParameters){
+    //get parameter display config
+    const ParameterDisplayConfig &dConfig = ModelManager::getParameterDisplayConfig();
+
+    foreach(const GeometryParameters &param, currentUnknownParameters){
 
         //get values from GUI elements (only use values that differ from the initial input)
         switch(param){
@@ -782,19 +363,19 @@ void NominalPropertiesDialog::getParametersFromGUI(QMap<UnknownParameters, doubl
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalX->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalX->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalX->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownY:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalY->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalY->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalY->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownZ:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalZ->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalZ->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalZ->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownPrimaryI:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalI1->text()) == 0){
@@ -836,67 +417,67 @@ void NominalPropertiesDialog::getParametersFromGUI(QMap<UnknownParameters, doubl
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalR1->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalR1->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalR1->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownRadiusB:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalR2->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalR2->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalR2->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownAperture:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalAperture->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalAperture->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalAperture->text().toDouble(), dConfig.getDisplayUnit(eAngular)));
             break;
         case eUnknownA:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalA->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalA->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalA->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownB:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalB->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalB->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalB->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownC:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalC->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalC->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalC->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownAngle:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalAngle->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalAngle->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalAngle->text().toDouble(), dConfig.getDisplayUnit(eAngular)));
             break;
         case eUnknownDistance:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalDistance->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalDistance->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalDistance->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownMeasurementSeries:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalMeasurementSeries->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalMeasurementSeries->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalMeasurementSeries->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         case eUnknownTemperature:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalTemperature->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalTemperature->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalTemperature->text().toDouble(), dConfig.getDisplayUnit(eTemperature)));
             break;
         case eUnknownLength:
             if(this->parameters.contains(param) && this->parameters.value(param).compare(this->ui->lineEdit_nominalLength->text()) == 0){
                 break;
             }
-            parameters.insert(param, this->ui->lineEdit_nominalLength->text().toDouble());
+            parameters.insert(param, convertToDefault(this->ui->lineEdit_nominalLength->text().toDouble(), dConfig.getDisplayUnit(eMetric)));
             break;
         }
 

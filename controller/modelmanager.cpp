@@ -52,6 +52,7 @@ ReadingProxyModel ModelManager::readingProxyModel;
 ObservationTableColumnConfig ModelManager::observationTableColumnConfig;
 ReadingTableColumnConfig ModelManager::readingTableColumnConfig;
 QStringListModel ModelManager::scalarEntityTypeNamesModel;
+QStringListModel ModelManager::actualNominalFilterModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -81,6 +82,7 @@ void ModelManager::init(){
     ModelManager::initObservationModels();
     ModelManager::initReadingModels();
     ModelManager::initScalarEntityTypesModels();
+    ModelManager::initActualNominalFilterModel();
 
 }
 
@@ -292,6 +294,14 @@ QStringListModel &ModelManager::getNominalSystemsModel(){
  */
 QStringListModel &ModelManager::getGroupNamesModel(){
     return ModelManager::groupNamesModel;
+}
+
+/*!
+ * \brief ModelManager::getActualNominalFilterModel
+ * \return
+ */
+QStringListModel &ModelManager::getActualNominalFilterModel(){
+    return ModelManager::actualNominalFilterModel;
 }
 
 /*!
@@ -615,6 +625,24 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiSupportedGeometri
 QPointer<AvailableFunctionsListProxyModel> ModelManager::getAvailableFunctionsProxyModel(){
     QPointer<AvailableFunctionsListProxyModel> model = new AvailableFunctionsListProxyModel();
     model->setSourceModel(&ModelManager::functionsListModel);
+    return model;
+}
+
+/*!
+ * \brief ModelManager::getFunctionStatisticModel
+ * \return
+ */
+QPointer<FunctionStatisticModel> ModelManager::getFunctionStatisticModel(){
+
+    //check the current job
+    if(ModelManager::currentJob.isNull() || ModelManager::currentJob->getActiveFeature().isNull()){
+        return QPointer<FunctionStatisticModel>();
+    }
+
+    QPointer<Feature> activeFeature = ModelManager::currentJob->getActiveFeature()->getFeature();
+
+    QPointer<FunctionStatisticModel> model = new FunctionStatisticModel(activeFeature);
+    model->setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
     return model;
 }
 
@@ -1216,6 +1244,22 @@ void ModelManager::initPluginModels(){
 void ModelManager::initGroupsModel(){
 
     ModelManager::updateGroupsModel();
+
+}
+
+/*!
+ * \brief ModelManager::initActualNominalFilterModel
+ */
+void ModelManager::initActualNominalFilterModel(){
+
+    //create filter options
+    QList<ActualNominalFilter> actualNominalFilters = getAvailableActualNominalFilters();
+    QStringList items;
+    foreach(const ActualNominalFilter &filter, actualNominalFilters){
+        items.append(getActualNominalFilterName(filter));
+    }
+
+    ModelManager::actualNominalFilterModel.setStringList(items);
 
 }
 

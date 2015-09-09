@@ -40,13 +40,19 @@ public:
     explicit MeasurementConfigurationDialog(QWidget *parent = 0);
     ~MeasurementConfigurationDialog();
 
+    //#############################################
+    //set the currently selected measurement config
+    //#############################################
+
+    void setMeasurementConfiguration(const MeasurementConfig &mConfig);
+
 signals:
 
     //#############################################################################
     //signals to inform about measurement config selection (for the active feature)
     //#############################################################################
 
-    void setMeasurementConfiguration(const QString &name);
+    void measurementConfigurationChanged(const MeasurementConfig &mConfig);
 
 private slots:
 
@@ -58,6 +64,7 @@ private slots:
     void on_listView_measurementConfigs_clicked(const QModelIndex &index);
     void measurementConfigContextMenuRequested(const QPoint &point);
     void removeSelectedMeasurementConfig();
+    void cloneSelectedMeasurementConfig();
 
     //add new measurement configs
     void on_pushButton_add_clicked();
@@ -74,6 +81,12 @@ private slots:
 
     //set measurement config for the active feature
     void on_pushButton_set_clicked();
+
+    //triggered when measurement config name has been edited
+    void measurementConfigNameChanged(const MeasurementConfig &mConfig);
+
+    //set measurement config filter
+    void on_checkBox_showAll_stateChanged(int arg1);
 
 private:
     Ui::MeasurementConfigurationDialog *ui;
@@ -93,9 +106,16 @@ private:
     //##################################
 
     void showEvent(QShowEvent *event);
+    void closeEvent(QShowEvent *event);
 
     void initGUI();
     void initModels();
+
+    //################
+    //helper variables
+    //################
+
+    MeasurementConfig selectedMeasurementConfig;
 
 };
 

@@ -89,8 +89,8 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
                 obs->xyz = trafoMat * obs->originalXyz;
                 obs->setIsSolved(true);
             }
-            if(obs->getOriginalStatistic().getQxx().getRowCount() == 4 && obs->getOriginalStatistic().getQxx().getColCount() == 4){
-                obs->statistic.setQxx(trafoMat * obs->originalStatistic.getQxx());
+            if(obs->getOriginalSigmaXyz().getSize() == 4){
+                obs->sigmaXyz = trafoMat * obs->originalSigmaXyz;
             }
         }
 
@@ -144,24 +144,43 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
         return true;
     }
 
+    //helper variable to ensure that the trafo chain contains a datum transformation
+    bool datumTrafoInChain = false;
+
     //try to find a transformation chain
     foreach(const QPointer<TrafoParam> &tp, startSystem->getTransformationParameters()){
+
+        qDebug() << "tp: " << tp->getFeatureName();
+        qDebug() << "start: " << startSystem->getFeatureName();
+        qDebug() << "dest: " << destinationSystem->getFeatureName();
 
         //check tp
         if(tp.isNull() || !tp->getIsUsed() || !tp->getIsSolved()){
             continue;
         }
 
+        //check if tp is a datum transformation
+        if(tp->getIsDatumTrafo()){
+            datumTrafoInChain = true;
+        }else{
+            datumTrafoInChain = false;
+        }
+
         //search trafo param in tp that are in relation to the target system
         foreach(const QPointer<TrafoParam> &t, tp->getStartSystem()->getTransformationParameters()){
 
+            qDebug() << "t: " << t->getFeatureName();
+
             //check t
-            if(t.isNull() || !t->getIsUsed() || !tp->getIsSolved() || !t->getIsDatumTrafo()){
+            if(t.isNull() || !t->getIsUsed() || !tp->getIsSolved() || (!t->getIsDatumTrafo() && !datumTrafoInChain)){
                 continue;
             }
 
-            //check if the start system is the active system
-            if(t->getStartSystem()->getIsActiveCoordinateSystem()){
+            qDebug() << "t start: " << t->getStartSystem()->getFeatureName();
+            qDebug() << "t dest: " << t->getDestinationSystem()->getFeatureName();
+
+            //check if the start system of t is the destination system
+            if(t->getStartSystem() == destinationSystem){
 
                 trafoMat = t->getHomogenMatrix().inv();
                 if(tp->getStartSystem() == startSystem){
@@ -171,7 +190,7 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
                 }
                 return true;
 
-            }else if(t->getDestinationSystem()->getIsActiveCoordinateSystem()){
+            }else if(t->getDestinationSystem() == destinationSystem){
 
                 trafoMat = t->getHomogenMatrix();
                 if(tp->getStartSystem() == startSystem){
@@ -188,26 +207,31 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
         //search trafo param in tp that are in relation to the target system
         foreach(const QPointer<TrafoParam> &t, tp->getDestinationSystem()->getTransformationParameters()) {
 
-            //check tp
-            if(tp.isNull() || !tp->getIsUsed() || !tp->getIsSolved()){
+            qDebug() << "t: " << t->getFeatureName();
+
+            //check t
+            if(t.isNull() || !t->getIsUsed() || !tp->getIsSolved() || (!t->getIsDatumTrafo() && !datumTrafoInChain)){
                 continue;
             }
 
-            //check if start system is the active system
-            if(t->getStartSystem()->getIsActiveCoordinateSystem()){
+            qDebug() << "t start: " << t->getStartSystem()->getFeatureName();
+            qDebug() << "t dest: " << t->getDestinationSystem()->getFeatureName();
+
+            //check if the start system of t is the destination system
+            if(t->getStartSystem() == destinationSystem){
 
                 trafoMat = t->getHomogenMatrix().inv();
-                if(tp->getStartSystem() == destinationSystem){
+                if(tp->getStartSystem() == startSystem){
                     trafoMat = trafoMat * tp->getHomogenMatrix();
                 }else{
                     trafoMat = trafoMat * tp->getHomogenMatrix().inv();
                 }
                 return true;
 
-            }else if(t->getDestinationSystem()->getIsActiveCoordinateSystem()){
+            }else if(t->getDestinationSystem() == destinationSystem){
 
                 trafoMat = t->getHomogenMatrix();
-                if(tp->getStartSystem() == destinationSystem){
+                if(tp->getStartSystem() == startSystem){
                     trafoMat = trafoMat * tp->getHomogenMatrix();
                 }else{
                     trafoMat = trafoMat * tp->getHomogenMatrix().inv();

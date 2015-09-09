@@ -123,7 +123,7 @@
             <functions>
               <function name="%string%" plugin="%string%" executionIndex="%12345%" type="%string%">
                 <inputElements>
-                  <inputElement index="%12345%" type="%string%" ref="%12345%" />
+                  <inputElement index="%12345%" type="%string%" ref="%12345%" isUsed="%true%" shouldBeUsed="%true%" />
                 </inputElements>
                 <integerParameters>
                   <parameter value="%12345%" name="%string%" />
@@ -287,7 +287,9 @@
           <as:constraint action="makeOptional(//geometry/temperature,)" />
           <as:constraint action="makeOptional(//geometry/usedFor)" />
           <as:constraint action="setNumberMask(//inputElement/@index,#######)" />
+          <as:constraint action="datatype(//inputElement/@isUsed,boolean)" />
           <as:constraint action="setNumberMask(//inputElement/@ref,#######)" />
+          <as:constraint action="datatype(//inputElement/@shouldBeUsed,boolean)" />
           <as:constraint action="makeRepeatable(//inputElements/inputElement)" />
           <as:constraint action="makeRepeatable(//integerParameters/parameter)" />
           <as:constraint action="setNumberMask(//measurement/@sigma,####.######)" />

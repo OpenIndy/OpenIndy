@@ -219,7 +219,9 @@ SOURCES += \
     ui/dialogs/aboutdialog.cpp \
     ui/widgets/glviewwidget.cpp \
     ui/3dengine/glwindow.cpp \
-    ui/3dengine/scenebuilder.cpp
+    ui/3dengine/scenebuilder.cpp \
+    ui/dialogs/trafoparampropertiesdialog.cpp \
+    models/functionstatisticmodel.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -300,7 +302,9 @@ HEADERS  += \
     ui/dialogs/aboutdialog.h \
     ui/widgets/glviewwidget.h \
     ui/3dengine/glwindow.h \
-    ui/3dengine/scenebuilder.h
+    ui/3dengine/scenebuilder.h \
+    ui/dialogs/trafoparampropertiesdialog.h \
+    models/functionstatisticmodel.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -318,4 +322,5 @@ FORMS    += \
     ui/dialogs/measurementconfigurationdialog.ui \
     ui/dialogs/actualpropertiesdialog.ui \
     ui/dialogs/nominalpropertiesdialog.ui \
-    ui/dialogs/aboutdialog.ui
+    ui/dialogs/aboutdialog.ui \
+    ui/dialogs/trafoparampropertiesdialog.ui

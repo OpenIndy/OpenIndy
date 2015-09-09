@@ -324,6 +324,11 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 feature->getTrafoParam()->setIsUsed(value.toBool());
                 return true;
             }
+        }case eTrafoParamDisplayIsDatumTransformation:{
+            if(value.type() == QVariant::Bool){
+                feature->getTrafoParam()->setIsDatumTrafo(value.toBool());
+                return true;
+            }
         }
         }
 
@@ -586,6 +591,23 @@ void FeatureTableModel::setActiveGroupName(const QString &group){
 }
 
 /*!
+ * \brief FeatureTableModel::getActualNominalFilter
+ * \return
+ */
+const ActualNominalFilter &FeatureTableModel::getActualNominalFilter() const{
+    return this->actualNominalFilter;
+}
+
+/*!
+ * \brief FeatureTableModel::setActualNominalFilter
+ * \param filter
+ */
+void FeatureTableModel::setActualNominalFilter(const ActualNominalFilter &filter){
+    this->actualNominalFilter = filter;
+    this->updateModel();
+}
+
+/*!
  * \brief FeatureTableModel::getCurrentJob
  * \return
  */
@@ -800,6 +822,8 @@ QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feat
             return feature->getFeature()->getDisplayValidTime();
         case eTrafoParamDisplayIsMovement:
             return feature->getFeature()->getDisplayIsMovement();
+        case eTrafoParamDisplayIsDatumTransformation:
+            return feature->getFeature()->getDisplayIsDatumTransformation();
         }
 
     }
@@ -891,7 +915,7 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
             return QColor(Qt::yellow);
         }
 
-    }else if(getIsTrafoParamDisplayAttribute(attr)){ //trafo param attributes
+    }else if(!feature->getFeature()->getIsSolved() && getIsTrafoParamDisplayAttribute(attr)){ //trafo param attributes
 
         switch((TrafoParamDisplayAttributes)attr){
         case eTrafoParamDisplayTranslationX:

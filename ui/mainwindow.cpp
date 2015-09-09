@@ -9,9 +9,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->setupUi(this);
 
-    //connect controller and dialogs
+    //connect controller, dialogs and status bar
     this->connectDialogs();
     this->connectController();
+    this->connectStatusBar();
 
     //create default job
     QPointer<OiJob> job = this->control.createDefaultJob();
@@ -25,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->initToolMenus();
 
     this->initFilterComboBoxes();
+    this->initStatusBar();
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -153,8 +155,20 @@ void MainWindow::coordSystemSetChanged(){
     this->updateSystemFilterSize();
 }
 
-void MainWindow::stationSetChanged()
-{
+/*!
+ * \brief MainWindow::stationSetChanged
+ */
+void MainWindow::stationSetChanged(){
+
+}
+
+/*!
+ * \brief MainWindow::trafoParamSetChanged
+ */
+void MainWindow::trafoParamSetChanged(){
+
+    //activate trafo param tab
+    this->ui->tabWidget_views->setCurrentWidget(this->ui->tab_trafoParam);
 
 }
 
@@ -248,6 +262,13 @@ void MainWindow::currentJobChanged(){
     this->watchWindowDialog.setCurrentJob(job);
     this->ui->widget_3dView->setCurrentJob(job);
 
+    //set window title
+    if(!job.isNull()){
+        this->setWindowTitle(job->getJobName());
+    }else{
+        this->setWindowTitle("");
+    }
+
 }
 
 /*!
@@ -266,7 +287,7 @@ void MainWindow::sensorActionStarted(const QString &name){
  */
 void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
     this->sensorTaskInfoDialog.close();
-    emit this->log(msg, eInformationMessage, eMessageBoxMessage);
+    emit this->log(msg, eInformationMessage, eConsoleMessage);
 }
 
 /*!
@@ -328,6 +349,35 @@ void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType)
     msgBox.setStandardButtons(QMessageBox::Ok);
 
     msgBox.exec();
+
+}
+
+/*!
+ * \brief MainWindow::showStatusMessage
+ * \param msg
+ * \param msgType
+ */
+void MainWindow::showStatusMessage(const QString &msg, const MessageTypes &msgType){
+
+    QString status;
+
+    switch(msgType){
+    case eInformationMessage:
+        break;
+    case eWarningMessage:
+        status.append("WARNING: ");
+        break;
+    case eErrorMessage:
+        status.append("ERROR: ");
+        break;
+    case eCriticalMessage:
+        status.append("CRITICAL: ");
+        break;
+    }
+
+    status.append(msg);
+
+    this->ui->statusBar->showMessage(status);
 
 }
 
@@ -750,6 +800,8 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
 
+        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                        this, SLOT(showFeatureProperties(bool)));
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         &this->control, SLOT(recalcActiveFeature()));
 
@@ -896,6 +948,29 @@ void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString
 }
 
 /*!
+ * \brief MainWindow::on_comboBox_actualNominal_currentIndexChanged
+ * \param arg1
+ */
+void MainWindow::on_comboBox_actualNominal_currentIndexChanged(const QString &arg1){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //update actual nominal filter
+    sourceModel->setActualNominalFilter(getActualNominalFilterEnum(arg1));
+
+}
+
+/*!
  * \brief MainWindow::on_actionWatch_window_triggered
  */
 void MainWindow::on_actionWatch_window_triggered(){
@@ -907,7 +982,10 @@ void MainWindow::on_actionWatch_window_triggered(){
  */
 void MainWindow::on_actionOpen_triggered(){
 
-    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "oiProject", "oi.xml (*.oi.xml)");
+    QFileDialog dlg;
+    dlg.exec();
+
+    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "oi.xml (*.oi.xml)");
     if(filename.compare("") == 0){
         return;
     }
@@ -952,7 +1030,20 @@ void MainWindow::on_actionClose_triggered(){
  * \brief MainWindow::on_actionMeasurement_Configuration_triggered
  */
 void MainWindow::on_actionMeasurement_Configuration_triggered(){
+
+    //get feature table model
+    const FeatureTableModel &model = ModelManager::getFeatureTableModel();
+
+    //check if there is an active feature and pass its config to the measurement config dialog
+    QPointer<FeatureWrapper> activeFeature = model.getActiveFeature();
+    if(!activeFeature.isNull() && !activeFeature->getGeometry().isNull()){
+        this->measurementConfigDialog.setMeasurementConfiguration(activeFeature->getGeometry()->getMeasurementConfig());
+    }else{
+        this->measurementConfigDialog.setMeasurementConfiguration(MeasurementConfig());
+    }
+
     this->measurementConfigDialog.show();
+
 }
 
 /*!
@@ -1107,20 +1198,46 @@ void MainWindow::showFeatureProperties(bool checked){
     //get parameter display config
     const ParameterDisplayConfig &dConfig = sourceModel->getParameterDisplayConfig();
 
-    //depending on the type of feature display a special properties dialog
-    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){ //actual
-
+    //display properties dialog for actuals
+    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
         this->actualPropertiesDialog.show();
+        return;
+    }
 
-    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){ //nominal
+    //display properties dialog for nominals
+    if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal() && feature->getGeometry()->getIsSolved()){
 
         this->nominalPropertiesDialog.setCurrentNominal(feature->getFeature()->getId(), feature->getFeature()->getFeatureName(),
                                                         feature->getFeatureTypeEnum());
 
-        QMap<UnknownParameters, QString> parameters;
+        QMap<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
+        QMap<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
+        QMap<GeometryParameters, QString> parameters = feature->getGeometry()->getUnknownParameters(displayUnits, displayDigits);
         this->nominalPropertiesDialog.setUnknownNominalParameters(parameters);
 
         this->nominalPropertiesDialog.show();
+
+        return;
+
+    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal() && !feature->getGeometry()->getIsSolved()){
+        emit this->log(QString("Switch to the nominal system of %1 to edit its properties").arg(feature->getGeometry()->getFeatureName()),
+                       eInformationMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //display properties dialog for trafo params
+    if(!feature->getTrafoParam().isNull()){
+
+        this->trafoParamPropertiesDialog.setCurrentTrafoParam(feature->getFeature()->getId(), feature->getFeature()->getFeatureName());
+
+        QMap<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
+        QMap<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
+        QMap<TrafoParamParameters, QString> parameters = feature->getTrafoParam()->getUnknownParameters(displayUnits, displayDigits);
+        this->trafoParamPropertiesDialog.setUnknownTrafoParamParameters(parameters);
+
+        this->trafoParamPropertiesDialog.show();
+
+        return;
 
     }
 
@@ -1379,6 +1496,22 @@ void MainWindow::pasteFromClipboard(){
 }
 
 /*!
+ * \brief MainWindow::updateStatusBar
+ */
+void MainWindow::updateStatusBar(){
+
+    const ParameterDisplayConfig &pConfig = ModelManager::getParameterDisplayConfig();
+
+    //update units
+    this->label_statusUnitMetric->setText(getUnitTypeName(pConfig.getDisplayUnit(eMetric)));
+    this->label_statusUnitAngular->setText(getUnitTypeName(pConfig.getDisplayUnit(eAngular)));
+    this->label_statusUnitTemperature->setText(getUnitTypeName(pConfig.getDisplayUnit(eTemperature)));
+
+    //update sensor status
+
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -1410,10 +1543,12 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::currentJobChanged, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::trafoParamSetChanged, this, &MainWindow::trafoParamSetChanged, Qt::AutoConnection);
 
 }
 
@@ -1439,7 +1574,7 @@ void MainWindow::connectDialogs(){
     QObject::connect(&this->sensorConfigurationDialog, &SensorConfigurationDialog::setSensorConfiguration, this, &MainWindow::setSensorConfiguration, Qt::AutoConnection);
 
     //connect measurement config dialog
-    QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::setMeasurementConfiguration, this, &MainWindow::measurementConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::measurementConfigurationChanged, this, &MainWindow::measurementConfigurationChanged, Qt::AutoConnection);
 
     //connect move sensor dialog
     QObject::connect(&this->moveSensorDialog, &MoveSensorDialog::moveSensor, &this->control, &Controller::startMove, Qt::AutoConnection);
@@ -1455,6 +1590,22 @@ void MainWindow::connectDialogs(){
 
     //connect actual properties dialog
     QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::importObservations, &this->control, &Controller::importObservations, Qt::AutoConnection);
+
+    //connect nominal properties dialog
+    QObject::connect(&this->nominalPropertiesDialog, &NominalPropertiesDialog::nominalParametersChanged, &this->control, &Controller::setNominalParameters, Qt::AutoConnection);
+
+    //connect trafo param properties dialog
+    QObject::connect(&this->trafoParamPropertiesDialog, &TrafoParamPropertiesDialog::trafoParamParametersChanged, &this->control, &Controller::setTrafoParamParameters, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief MainWindow::connectStatusBar
+ */
+void MainWindow::connectStatusBar(){
+
+    //connect unit updates
+    QObject::connect(&this->control, &Controller::updateStatusBar, this, &MainWindow::updateStatusBar, Qt::AutoConnection);
 
 }
 
@@ -1483,6 +1634,9 @@ void MainWindow::assignModels(){
 
     //assign coordinate system model
     this->ui->comboBox_activeCoordSystem->setModel(&ModelManager::getCoordinateSystemsModel());
+
+    //assign actual nominal filter model
+    this->ui->comboBox_actualNominal->setModel(&ModelManager::getActualNominalFilterModel());
 
 }
 
@@ -1632,6 +1786,37 @@ void MainWindow::initToolMenus(){
 void MainWindow::initFilterComboBoxes(){
     this->updateGroupFilterSize();
     this->updateSystemFilterSize();
+    this->updateActualNominalFilterSize();
+}
+
+/*!
+ * \brief MainWindow::initStatusBar
+ */
+void MainWindow::initStatusBar(){
+
+    //create GUI elements
+    this->label_statusSensor = new QLabel();
+    this->label_statusUnitMetric = new QLabel();
+    this->label_statusUnitAngular = new QLabel();
+    this->label_statusUnitTemperature = new QLabel();
+
+    //format GUI elements
+    this->label_statusUnitMetric->setMinimumWidth(50);
+    this->label_statusUnitMetric->setAlignment(Qt::AlignHCenter);
+    this->label_statusUnitAngular->setMinimumWidth(50);
+    this->label_statusUnitAngular->setAlignment(Qt::AlignHCenter);
+    this->label_statusUnitTemperature->setMinimumWidth(50);
+    this->label_statusUnitTemperature->setAlignment(Qt::AlignHCenter);
+
+    //add GUI elements to status bar
+    this->ui->statusBar->addPermanentWidget(this->label_statusSensor);
+    this->ui->statusBar->addPermanentWidget(this->label_statusUnitMetric);
+    this->ui->statusBar->addPermanentWidget(this->label_statusUnitAngular);
+    this->ui->statusBar->addPermanentWidget(this->label_statusUnitTemperature);
+
+    //show initial status
+    this->updateStatusBar();
+
 }
 
 /*!
@@ -1790,20 +1975,8 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
  */
 void MainWindow::updateGroupFilterSize(){
 
-    //get and check model
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
     //get and check current job
-    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(job.isNull()){
         return;
     }
@@ -1827,20 +2000,8 @@ void MainWindow::updateGroupFilterSize(){
  */
 void MainWindow::updateSystemFilterSize(){
 
-    //get and check model
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
     //get and check current job
-    QPointer<OiJob> job = sourceModel->getCurrentJob();
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(job.isNull()){
         return;
     }
@@ -1862,5 +2023,24 @@ void MainWindow::updateSystemFilterSize(){
 
     //update combobox width with respect to the largest item
     this->ui->comboBox_activeCoordSystem->setMinimumContentsLength(largestSystemName.length());
+
+}
+
+/*!
+ * \brief MainWindow::updateActualNominalFilterSize
+ */
+void MainWindow::updateActualNominalFilterSize(){
+
+    //get the largest group name
+    QStringList actualNominalfilters = ModelManager::getActualNominalFilterModel().stringList();
+    QString largestFilter = "";
+    foreach(const QString &filter, actualNominalfilters){
+        if(filter.length() > largestFilter.length()){
+            largestFilter = filter;
+        }
+    }
+
+    //update combobox width with respect to the largest item
+    this->ui->comboBox_actualNominal->setMinimumContentsLength(largestFilter.length());
 
 }

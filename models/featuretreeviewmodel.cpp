@@ -66,72 +66,24 @@ QVariant FeatureTreeViewModel::data(const QModelIndex &index, int role) const{
 
     if(item != NULL){
         if(role == Qt::DisplayRole){ //return display text for tree view item
+
             return item->getDisplayValue();
+
         }else if(role == Qt::DecorationRole){ //return icon for tree view item
-            if(item->getIsFeature() && !item->getFeature()->getPoint().isNull()){
-                QPixmap pix(":/Images/icons/Point.svg");
+
+            if(item->getIsFeature() && !item->getFeature().isNull()){
+
+                //get and check icon path
+                const QString &iconPath = getFeatureTypeIconPath(item->getFeature()->getFeatureTypeEnum());
+                if(iconPath.compare("") == 0){
+                    return QVariant();
+                }
+
+                QPixmap pix(iconPath);
                 return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getLine().isNull()){
-                QPixmap pix(":/Images/icons/Line.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getPlane().isNull()){
-                QPixmap pix(":/Images/icons/Plane.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getSphere().isNull()){
-                QPixmap pix(":/Images/icons/Sphere.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getStation().isNull()){
-                QPixmap pix(":/Images/icons/Station.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getScalarEntityAngle().isNull()){
-                QPixmap pix(":/Images/icons/Scalar Entities.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getScalarEntityDistance().isNull()){
-                QPixmap pix(":/Images/icons/Scalar Entities.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getTrafoParam().isNull()){
-                QPixmap pix(":/Images/icons/TrafoParam.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getCoordinateSystem().isNull()){
-                QPixmap pix(":/Images/icons/Coordinatesystem.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getCircle().isNull()){
-                QPixmap pix(":/Images/icons/Circle.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getCone().isNull()){
-                QPixmap pix(":/Images/icons/Cone.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getCylinder().isNull()){
-                QPixmap pix(":/Images/icons/Cylinder.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getEllipsoid().isNull()){
-                QPixmap pix(":/Images/icons/Ellipsoid.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getHyperboloid().isNull()){
-                QPixmap pix(":/Images/icons/Hyperboloid.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getParaboloid().isNull()){
-                QPixmap pix(":/Images/icons/Paraboloid.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getNurbs().isNull()){
-                QPixmap pix(":/Images/icons/Nurbs.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getPointCloud().isNull()){
-                QPixmap pix(":/Images/icons/PointCloud.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getScalarEntityTemperature().isNull()){
-                QPixmap pix(":/Images/icons/Scalar Entities.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getEllipse().isNull()){
-                QPixmap pix(":/Images/icons/Ellipse.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getTorus().isNull()){
-                QPixmap pix(":/Images/icons/Torus.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
-            }else if(item->getIsFeature() && !item->getFeature()->getSlottedHole().isNull()){
-                QPixmap pix(":/Images/icons/Slotted Hole.svg");
-                return pix.scaledToHeight(20, Qt::SmoothTransformation);
+
             }
+
         }
     }
 

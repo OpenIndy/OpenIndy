@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>390</height>
+    <height>446</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,7 +23,7 @@
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,2">
+      <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="2,3">
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
@@ -45,7 +45,7 @@
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2">
+        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,3">
          <item>
           <widget class="QLabel" name="label_name">
            <property name="text">
@@ -63,7 +63,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,2">
+        <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="2,3">
          <item>
           <widget class="QLabel" name="label_group">
            <property name="text">
@@ -81,7 +81,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,2">
+        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="2,3">
          <item>
           <widget class="QLabel" name="label_count">
            <property name="text">
@@ -102,7 +102,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,2">
+        <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="2,3">
          <item>
           <widget class="QLabel" name="label_function">
            <property name="text">
@@ -152,7 +152,7 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,2">
+      <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="2,3">
        <item>
         <widget class="QLabel" name="label_mConfig">
          <property name="text">
@@ -166,7 +166,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,2">
+      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="2,3">
        <item>
         <widget class="QLabel" name="label_nominalSystem">
          <property name="text">
@@ -192,7 +192,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,2">
+        <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="2,3">
          <item>
           <widget class="QLabel" name="label_startSystem">
            <property name="text">
@@ -206,7 +206,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,2">
+        <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="2,3">
          <item>
           <widget class="QLabel" name="label_destinationSystem">
            <property name="text">

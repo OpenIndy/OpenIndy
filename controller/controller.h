@@ -55,7 +55,8 @@ public slots:
     void removeFeatures(const QSet<int> &featureIds);
 
     //change feature parameters
-    void setNominalParameters(const int &featureId, const QMap<UnknownParameters, double> &parameters);
+    void setNominalParameters(const int &featureId, const QMap<GeometryParameters, double> &parameters);
+    void setTrafoParamParameters(const int &featureId, const QMap<TrafoParamParameters, double> &parameters);
 
     //recalculation
     void recalcActiveFeature();
@@ -64,12 +65,12 @@ public slots:
     void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
 
     //set measurement configuration for active feature
-    void measurementConfigurationChanged(const QString &name);
+    void measurementConfigurationChanged(const MeasurementConfig &mConfig);
 
     //set active feature states
     //void setActiveFeature(const int &featureId);
-    void setActiveStation(const int &featureId);
-    void setActiveCoordinateSystem(const int &featureId);
+    //void setActiveStation(const int &featureId);
+    //void setActiveCoordinateSystem(const int &featureId);
 
     //import or export features
     void importNominals(const ExchangeParams &params);
@@ -199,6 +200,13 @@ signals:
     //#############
 
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
+    void showStatusMessage(const QString &msg, const MessageTypes &msgType);
+
+    //#################
+    //update status bar
+    //#################
+
+    void updateStatusBar();
 
 private slots:
 

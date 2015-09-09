@@ -30,6 +30,7 @@
 #include "settingsdialog.h"
 #include "actualpropertiesdialog.h"
 #include "nominalpropertiesdialog.h"
+#include "trafoparampropertiesdialog.h"
 #include "aboutdialog.h"
 
 #include "featuretabledelegate.h"
@@ -70,7 +71,7 @@ signals:
     void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
 
     //set measurement configuration for active feature
-    void measurementConfigurationChanged(const QString &name);
+    void measurementConfigurationChanged(const MeasurementConfig &mConfig);
 
     //recalculation of features
     void recalcAll();
@@ -110,6 +111,7 @@ private slots:
     //feature(s) added or removed
     void coordSystemSetChanged();
     void stationSetChanged();
+    void trafoParamSetChanged();
 
     //group(s) added or removed
     void availableGroupsChanged();
@@ -129,8 +131,9 @@ private slots:
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
 
-    //display a message box
+    //display messages
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
+    void showStatusMessage(const QString &msg, const MessageTypes &msgType);
 
     //#########################
     //actions triggered by user
@@ -186,9 +189,10 @@ private slots:
     //toggle visibility of widgets
     void on_actionControl_pad_triggered();
 
-    //active group or coordinate system changed
+    //active group, active coordinate system or actual nominal filter changed
     void on_comboBox_groups_currentIndexChanged(const QString &arg1);
     void on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1);
+    void on_comboBox_actualNominal_currentIndexChanged(const QString &arg1);
 
     //show watch window
     void on_actionWatch_window_triggered();
@@ -238,6 +242,9 @@ private slots:
     void copyToClipboard();
     void pasteFromClipboard();
 
+    //set up status bar
+    void updateStatusBar();
+
 private:
     Ui::MainWindow *ui;
 
@@ -251,6 +258,7 @@ private:
 
     void connectController();
     void connectDialogs();
+    void connectStatusBar();
     void assignModels();
 
     //##################################
@@ -261,6 +269,7 @@ private:
     void initSensorPad();
     void initToolMenus();
     void initFilterComboBoxes();
+    void initStatusBar();
 
     //##############################
     //methods to update GUI elements
@@ -272,6 +281,7 @@ private:
 
     void updateGroupFilterSize();
     void updateSystemFilterSize();
+    void updateActualNominalFilterSize();
 
     //############################
     //OpenIndy dialogs and widgets
@@ -291,6 +301,7 @@ private:
     SettingsDialog settingsDialog;
     ActualPropertiesDialog actualPropertiesDialog;
     NominalPropertiesDialog nominalPropertiesDialog;
+    TrafoParamPropertiesDialog trafoParamPropertiesDialog;
     AboutDialog aboutDialog;
 
     //##########
@@ -311,6 +322,15 @@ private:
     QList<QPointer<QAction> > selfDefinedActions;
 
     QPointer<QSignalMapper> customActionMapper;
+
+    //##################
+    //status bar widgets
+    //##################
+
+    QLabel *label_statusUnitMetric;
+    QLabel *label_statusUnitAngular;
+    QLabel *label_statusUnitTemperature;
+    QLabel *label_statusSensor;
 
     //#################
     //helper attributes

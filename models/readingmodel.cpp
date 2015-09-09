@@ -276,6 +276,11 @@ void ReadingModel::updateModel(){
  */
 void ReadingModel::connectJob(){
 
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
     QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ReadingModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::geometryObservationsChanged, this, &ReadingModel::updateModel, Qt::AutoConnection);
 

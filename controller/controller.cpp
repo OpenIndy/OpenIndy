@@ -70,25 +70,42 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
         return;
     }
 
-    //create functions for the created features
-    if(attributes.functionPlugin.first.compare("") == 0 || attributes.functionPlugin.second.compare("") == 0){
+    //get saved measurement config
+    MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(attributes.mConfig);
+
+    //check if there is at least a function or a measurement config that shall be set
+    if(!mConfig.getIsValid() && (attributes.functionPlugin.first.compare("") == 0
+                                 || attributes.functionPlugin.second.compare("") == 0)){
         return;
     }
+
+    //create functions and measurement configs for the created features
     foreach(const QPointer<FeatureWrapper> &feature, features){
 
+        //check feature
         if(feature.isNull() || feature->getFeature().isNull()){
             continue;
         }
 
-        //load function plugin
-        QPointer<Function> function = PluginLoader::loadFunctionPlugin(attributes.functionPlugin.second, attributes.functionPlugin.first);
-        if(function.isNull()){
-            return;
+        //check if the feature is a nominal geometry
+        if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            continue;
         }
 
-        //assign function to feature
+        //load function plugin
+        QPointer<Function> function(NULL);
+        if(attributes.functionPlugin.first.compare("") != 0 && attributes.functionPlugin.second.compare("") != 0){
+            function = PluginLoader::loadFunctionPlugin(attributes.functionPlugin.second, attributes.functionPlugin.first);
+        }
+
+        //assign function and measurement config to feature
         feature->getFeature()->blockSignals(true);
-        feature->getFeature()->addFunction(function);
+        if(!function.isNull()){
+            feature->getFeature()->addFunction(function);
+        }
+        if(mConfig.getIsValid() && !feature->getGeometry().isNull()){
+            feature->getGeometry()->setMeasurementConfig(mConfig);
+        }
         feature->getFeature()->blockSignals(false);
 
     }
@@ -119,13 +136,49 @@ void Controller::removeFeatures(const QSet<int> &featureIds){
  * \param featureId
  * \param parameters
  */
-void Controller::setNominalParameters(const int &featureId, const QMap<UnknownParameters, double> &parameters){
+void Controller::setNominalParameters(const int &featureId, const QMap<GeometryParameters, double> &parameters){
 
     //check job
     if(this->job.isNull()){
         this->log("No active job", eErrorMessage, eMessageBoxMessage);
         return;
     }
+
+    //get and check the feature by its id
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
+    if(feature.isNull() || feature->getGeometry().isNull()){
+        this->log(QString("No geometry with the id %1").arg(featureId), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //update the feature's parameters
+    feature->getGeometry()->setUnknownParameters(parameters);
+
+}
+
+/*!
+ * \brief Controller::setTrafoParamParameters
+ * \param featureId
+ * \param parameters
+ */
+void Controller::setTrafoParamParameters(const int &featureId, const QMap<TrafoParamParameters, double> &parameters){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No active job", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get and check the feature by its id
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
+    if(feature.isNull() || feature->getTrafoParam().isNull()){
+        this->log(QString("No trafo param with the id %1").arg(featureId), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //update the feature's parameters
+    feature->getTrafoParam()->setUnknownParameters(parameters);
+    feature->getTrafoParam()->setIsSolved(true);
 
 }
 
@@ -169,7 +222,7 @@ void Controller::sensorConfigurationChanged(const QString &name, const bool &con
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
-        Console::getInstance()->addLine("No active station", eErrorMessage, eMessageBoxMessage);
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -207,9 +260,9 @@ void Controller::sensorConfigurationChanged(const QString &name, const bool &con
 
 /*!
  * \brief Controller::measurementConfigurationChanged
- * \param name
+ * \param mConfig
  */
-void Controller::measurementConfigurationChanged(const QString &name){
+void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfig){
 
     //check job
     if(this->job.isNull()){
@@ -224,9 +277,8 @@ void Controller::measurementConfigurationChanged(const QString &name){
     }
 
     //get and check the specified measurement config
-    MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(name);
     if(!mConfig.getIsValid()){
-        this->log(QString("No measurement configuration available with the name %1").arg(name), eErrorMessage, eMessageBoxMessage);
+        this->log("No measurement configuration selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -239,17 +291,17 @@ void Controller::measurementConfigurationChanged(const QString &name){
  * \brief Controller::setActiveStation
  * \param featureId
  */
-void Controller::setActiveStation(const int &featureId){
+/*void Controller::setActiveStation(const int &featureId){
 
-}
+}*/
 
 /*!
  * \brief Controller::setActiveCoordinateSystem
  * \param featureId
  */
-void Controller::setActiveCoordinateSystem(const int &featureId){
+/*void Controller::setActiveCoordinateSystem(const int &featureId){
 
-}
+}*/
 
 /*!
  * \brief Controller::importNominals
@@ -352,6 +404,7 @@ void Controller::setReadingTableColumnConfig(const ReadingTableColumnConfig &con
  */
 void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config){
     ModelManager::setParameterDisplayConfig(config);
+    emit this->updateStatusBar();
 }
 
 void Controller::saveProject()
@@ -378,11 +431,6 @@ void Controller::saveProject(const QString &fileName){
     //set device
     QPointer<QIODevice> device = new QFile(fileName);
     this->job->setJobDevice(device);
-
-    //set config manager
-    if(!this->measurementConfigManager.isNull()){
-        ProjectExchanger::setMeasurementConfigManager(*this->measurementConfigManager.data());
-    }
 
     //get project xml
     QDomDocument project = ProjectExchanger::saveProject(this->job);
@@ -1020,6 +1068,10 @@ void Controller::log(const QString &msg, const MessageTypes &msgType, const Mess
         Console::getInstance()->addLine(msg, msgType);
         emit this->showMessageBox(msg, msgType);
         break;
+    case eStatusBarMessage:
+        Console::getInstance()->addLine(msg, msgType);
+        emit this->showStatusMessage(msg, msgType);
+        break;
     }
 
 }
@@ -1260,6 +1312,9 @@ void Controller::initConfigManager(){
     //pass config managers to model manager
     ModelManager::setSensorConfigManager(this->sensorConfigManager);
     ModelManager::setMeasurementConfigManager(this->measurementConfigManager);
+
+    //pass config manager to project exchanger
+    ProjectExchanger::setMeasurementConfigManager(this->measurementConfigManager);
 
     //connect config manager
     QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
