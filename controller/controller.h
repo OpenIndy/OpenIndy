@@ -42,7 +42,7 @@ public:
     //getter to query available tools
     //###############################
 
-    QList<QPointer<Tool> > getAvailableTools() const;
+    const QList<QPointer<Tool> > &getAvailableTools() const;
 
 public slots:
 
@@ -232,6 +232,9 @@ private:
 
     void initDisplayConfigs();
     void initConfigManager();
+    void initToolPlugins();
+
+    void connectToolPlugin(const QPointer<Tool> &tool);
 
     void registerMetaTypes();
 
@@ -259,6 +262,9 @@ private:
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
+
+    //tool plugins
+    QList<QPointer<Tool> > toolPlugins;
 
 };
 

@@ -31,25 +31,8 @@ Controller::Controller(QObject *parent) : QObject(parent){
  * \brief Controller::getAvailableTools
  * \return
  */
-QList<QPointer<Tool> > Controller::getAvailableTools() const{
-
-    QList<QPointer<Tool> > resultSet;
-
-    //get available tools from database
-    QList<sdb::Tool> toolPlugins = SystemDbManager::getTools();
-
-    //load all tool plugins and add them to the result list
-    foreach(const sdb::Tool &tool, toolPlugins){
-
-        QPointer<Tool> toolPlugin = PluginLoader::loadToolPlugin(tool.plugin.file_path, tool.name);
-        if(!toolPlugin.isNull()){
-            resultSet.append(toolPlugin);
-        }
-
-    }
-
-    return resultSet;
-
+const QList<QPointer<Tool> > &Controller::getAvailableTools() const{
+    return this->toolPlugins;
 }
 
 /*!
@@ -1319,6 +1302,53 @@ void Controller::initConfigManager(){
     //connect config manager
     QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
     QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief Controller::initToolPlugins
+ */
+void Controller::initToolPlugins(){
+
+    //get available tools from database
+    QList<sdb::Tool> toolPlugins = SystemDbManager::getTools();
+
+    //load all tool plugins and add them to the list of tool plugins
+    this->toolPlugins.clear();
+    foreach(const sdb::Tool &tool, toolPlugins){
+
+        QPointer<Tool> toolPlugin = PluginLoader::loadToolPlugin(tool.plugin.file_path, tool.name);
+        if(!toolPlugin.isNull()){
+            this->connectToolPlugin(toolPlugin);
+            this->toolPlugins.append(toolPlugin);
+        }
+
+    }
+
+}
+
+/*!
+ * \brief Controller::connectToolPlugin
+ * \param tool
+ */
+void Controller::connectToolPlugin(const QPointer<Tool> &tool){
+
+    if(tool.isNull()){
+        return;
+    }
+
+    QObject::connect(tool.data(), &Tool::startConnect, this, &Controller::startConnect, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startDisconnect, this, &Controller::startDisconnect, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startMove, this, &Controller::startMove, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startAim, this, &Controller::startAim, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startAimAndMeasure, this, &Controller::startAimAndMeasure, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startToggleSight, this, &Controller::startToggleSight, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startInitialize, this, &Controller::startInitialize, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startHome, this, &Controller::startHome, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startCompensation, this, &Controller::startCompensation, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startChangeMotorState, this, &Controller::startChangeMotorState, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startCustomAction, this, &Controller::startCustomAction, Qt::AutoConnection);
 
 }
 

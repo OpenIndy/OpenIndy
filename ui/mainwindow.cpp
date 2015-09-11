@@ -1101,7 +1101,7 @@ void MainWindow::showToolWidget(const QString &pluginName, const QString &toolNa
     }
 
     //get a list of available tool plugins
-    QList<QPointer<Tool> > tools = this->control.getAvailableTools();
+    const QList<QPointer<Tool> > &tools = this->control.getAvailableTools();
 
     //search the list for the specified tool
     foreach(const QPointer<Tool> &tool, tools){
@@ -1115,8 +1115,6 @@ void MainWindow::showToolWidget(const QString &pluginName, const QString &toolNa
             tool->setJob(sourceModel->getCurrentJob());
             tool->show();
             continue;
-        }else{
-            delete tool;
         }
 
     }
