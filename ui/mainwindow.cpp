@@ -1738,7 +1738,7 @@ void MainWindow::initSensorPad(){
 void MainWindow::initToolMenus(){
 
     //get all available tool plugins
-    QList<QPointer<Tool> > tools = this->control.getAvailableTools();
+    const QList<QPointer<Tool> > &tools = this->control.getAvailableTools();
 
     //add each tool as menu entry
     foreach(const QPointer<Tool> &tool, tools){
@@ -1764,9 +1764,6 @@ void MainWindow::initToolMenus(){
 
         //connect the triggered event of the action
         QObject::connect(action, &ToolAction::openToolWidget, this, &MainWindow::showToolWidget);
-
-        //delete the tool
-        delete tool;
 
     }
 

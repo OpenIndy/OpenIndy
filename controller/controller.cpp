@@ -21,6 +21,9 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize config manager
     this->initConfigManager();
 
+    //initialize tool plugins
+    this->initToolPlugins();
+
     //connect helper objects
     this->connectDataExchanger();
     this->connectFeatureUpdater();
@@ -1319,6 +1322,7 @@ void Controller::initToolPlugins(){
 
         QPointer<Tool> toolPlugin = PluginLoader::loadToolPlugin(tool.plugin.file_path, tool.name);
         if(!toolPlugin.isNull()){
+            toolPlugin->setAttribute(Qt::WA_DeleteOnClose, false);
             this->connectToolPlugin(toolPlugin);
             this->toolPlugins.append(toolPlugin);
         }
