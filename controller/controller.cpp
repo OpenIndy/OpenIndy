@@ -365,8 +365,43 @@ void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config)
     emit this->updateStatusBar();
 }
 
-void Controller::saveProject()
-{
+/*!
+ * \brief Controller::saveProject
+ */
+void Controller::saveProject(){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get and check name and file path
+    QString name = this->job->getJobName();
+    QPointer<QIODevice> device = this->job->getJobDevice();
+    if(name.compare("") == 0 || device.isNull()){
+        emit this->saveAsTriggered();
+        return;
+    }
+
+    //get project xml
+    QDomDocument project = ProjectExchanger::saveProject(this->job);
+    if(project.isNull()){
+        this->log("Error while creating project XML", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //save project xml
+    bool isOpen = device->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+    if(isOpen){
+        QTextStream stream(device);
+        project.save(stream, 4);
+        device->close();
+    }else{
+        this->log(QString("Cannot open file %1").arg(name), eInformationMessage, eStatusBarMessage);
+    }
+
+    this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
 
 }
 
@@ -398,12 +433,18 @@ void Controller::saveProject(const QString &fileName){
     }
 
     //save project xml
-    this->job->getJobDevice()->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-    QTextStream stream(this->job->getJobDevice());
-    project.save(stream, 4);
-    this->job->getJobDevice()->close();
+    bool isOpen = this->job->getJobDevice()->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+    if(isOpen){
+        QTextStream stream(this->job->getJobDevice());
+        project.save(stream, 4);
+        this->job->getJobDevice()->close();
+    }else{
+        this->log(QString("Cannot open file %1").arg(info.fileName()), eInformationMessage, eStatusBarMessage);
+    }
 
-    this->log("OpenIndy project successfully stored.", eInformationMessage, eConsoleMessage);
+    emit this->currentJobChanged();
+
+    this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
 
 }
 

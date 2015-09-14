@@ -1004,7 +1004,7 @@ void MainWindow::on_actionOpen_triggered(){
  * \brief MainWindow::on_actionSave_triggered
  */
 void MainWindow::on_actionSave_triggered(){
-
+    emit this->saveProject();
 }
 
 /*!
@@ -1545,6 +1545,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::currentJobChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::trafoParamSetChanged, this, &MainWindow::trafoParamSetChanged, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::saveAsTriggered, this, &MainWindow::on_actionSave_as_triggered, Qt::AutoConnection);
 
 }
 

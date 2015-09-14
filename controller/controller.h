@@ -208,6 +208,12 @@ signals:
 
     void updateStatusBar();
 
+    //########################
+    //trigger GUI interactions
+    //########################
+
+    void saveAsTriggered();
+
 private slots:
 
     //###################################
