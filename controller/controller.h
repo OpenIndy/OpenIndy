@@ -238,6 +238,11 @@ private:
 
     void registerMetaTypes();
 
+    //create feature helpers
+    bool createActualFromNominal(const QPointer<Geometry> &geometry);
+    void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
+                                 const MeasurementConfig &mConfig, const QString &path, const QString &fName);
+
     //######################
     //connect helper objects
     //######################

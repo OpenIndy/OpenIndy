@@ -66,35 +66,7 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
     }
 
     //create functions and measurement configs for the created features
-    foreach(const QPointer<FeatureWrapper> &feature, features){
-
-        //check feature
-        if(feature.isNull() || feature->getFeature().isNull()){
-            continue;
-        }
-
-        //check if the feature is a nominal geometry
-        if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
-            continue;
-        }
-
-        //load function plugin
-        QPointer<Function> function(NULL);
-        if(attributes.functionPlugin.first.compare("") != 0 && attributes.functionPlugin.second.compare("") != 0){
-            function = PluginLoader::loadFunctionPlugin(attributes.functionPlugin.second, attributes.functionPlugin.first);
-        }
-
-        //assign function and measurement config to feature
-        feature->getFeature()->blockSignals(true);
-        if(!function.isNull()){
-            feature->getFeature()->addFunction(function);
-        }
-        if(mConfig.getIsValid() && !feature->getGeometry().isNull()){
-            feature->getGeometry()->setMeasurementConfig(mConfig);
-        }
-        feature->getFeature()->blockSignals(false);
-
-    }
+    this->addFunctionsAndMConfigs(features, mConfig, attributes.functionPlugin.second, attributes.functionPlugin.first);
 
 }
 
@@ -602,6 +574,18 @@ void Controller::startMeasurement(){
     if(!activeStation->getIsSensorConnected()){
         this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
+    }
+
+    //create actual from nominal (if a nominal is selected)
+    if(activeFeature->getGeometry()->getIsNominal()){
+        if(!this->createActualFromNominal(activeFeature->getGeometry())
+                || activeFeature->getGeometry()->getActual().isNull()
+                || activeFeature->getGeometry()->getActual()->getFeatureWrapper().isNull()){
+            this->log("Cannot create actual for nominal", eErrorMessage, eMessageBoxMessage);
+            return;
+        }
+        activeFeature = activeFeature->getGeometry()->getActual()->getFeatureWrapper();
+        activeFeature->getFeature()->setActiveFeatureState(true);
     }
 
     //inform about start of sensor action
@@ -1362,6 +1346,8 @@ void Controller::connectToolPlugin(const QPointer<Tool> &tool){
  */
 void Controller::registerMetaTypes(){
 
+    qRegisterMetaType<oi::MessageTypes>("MessageTypes");
+    qRegisterMetaType<oi::MessageDestinations>("MessageDestinations");
     qRegisterMetaType<oi::MeasurementConfig>("MeasurementConfig");
     qRegisterMetaType<oi::SensorConfiguration>("SensorConfiguration");
     qRegisterMetaType<QList<QPointer<oi::Reading> > >("QList<QPointer<Reading> >");
@@ -1369,6 +1355,103 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<QPointer<oi::Function> >("QPointer<Function>");
     qRegisterMetaType<QPointer<oi::FeatureWrapper> >("QPointer<FeatureWrapper>");
     qRegisterMetaType<QPointer<oi::Observation> >("QPointer<Observation>");
+
+}
+
+/*!
+ * \brief Controller::createActualFromNominal
+ * \param geometry
+ * \return
+ */
+bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
+
+    //check job
+    if(this->job.isNull()){
+        return false;
+    }
+
+    //check geometry
+    if(geometry.isNull() || geometry->getFeatureWrapper().isNull()){
+        return false;
+    }
+
+    //check if actual already exists
+    if(!geometry->getActual().isNull()){
+        return true;
+    }
+
+    //set up feature attributes
+    FeatureAttributes attr;
+    attr.count = 1;
+    attr.typeOfFeature = geometry->getFeatureWrapper()->getFeatureTypeEnum();
+    attr.name = geometry->getFeatureName();
+    attr.group = geometry->getGroupName();
+    attr.isActual = true;
+
+    //create actual
+    this->job->addFeatures(attr);
+    if(geometry->getActual().isNull() || geometry->getActual()->getFeatureWrapper().isNull()){
+        return false;
+    }
+
+    //set function and measurement config
+    QList<QPointer<FeatureWrapper> > actuals;
+    actuals.append(geometry->getActual()->getFeatureWrapper());
+    MeasurementConfig mConfig;
+    if(!this->measurementConfigManager.isNull()){
+        mConfig = this->measurementConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(attr.typeOfFeature));
+    }
+    sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(attr.typeOfFeature);
+    this->addFunctionsAndMConfigs(actuals, mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
+
+    return true;
+
+
+}
+
+/*!
+ * \brief Controller::addFunctionsAndMConfigs
+ * \param actuals
+ * \param mConfig
+ * \param path
+ * \param fName
+ */
+void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals, const MeasurementConfig &mConfig, const QString &path, const QString &fName){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    foreach(const QPointer<FeatureWrapper> &feature, actuals){
+
+        //check feature
+        if(feature.isNull() || feature->getFeature().isNull()){
+            continue;
+        }
+
+        //check if the feature is a nominal geometry
+        if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            continue;
+        }
+
+        //load function plugin
+        QPointer<Function> function(NULL);
+        if(path != 0 && fName != 0){
+            function = PluginLoader::loadFunctionPlugin(path, fName);
+        }
+
+        //assign function and measurement config to feature
+        feature->getFeature()->blockSignals(true);
+        if(!function.isNull()){
+            feature->getFeature()->addFunction(function);
+        }
+        if(mConfig.getIsValid() && !feature->getGeometry().isNull()){
+            feature->getGeometry()->setMeasurementConfig(mConfig);
+        }
+        feature->getFeature()->blockSignals(false);
+
+    }
 
 }
 
