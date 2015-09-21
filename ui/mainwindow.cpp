@@ -1692,6 +1692,7 @@ void MainWindow::initSensorPad(){
     //add the actions to the sensor pad
     this->ui->toolBar_controlPad->addAction(this->actionConnect);
     this->ui->toolBar_controlPad->addAction(this->actionDisconnect);
+    this->ui->toolBar_controlPad->addAction(this->actionInitialize);
     this->ui->toolBar_controlPad->addAction(this->actionMeasure);
     this->ui->toolBar_controlPad->addAction(this->actionAim);
     this->ui->toolBar_controlPad->addAction(this->actionMove);
@@ -1705,6 +1706,8 @@ void MainWindow::initSensorPad(){
     this->actionConnect->setEnabled(false);
     this->actionDisconnect->setVisible(false);
     this->actionDisconnect->setEnabled(false);
+    this->actionInitialize->setVisible(false);
+    this->actionInitialize->setEnabled(false);
     this->actionMeasure->setVisible(false);
     this->actionMeasure->setEnabled(false);
     this->actionAim->setVisible(false);
@@ -1723,6 +1726,7 @@ void MainWindow::initSensorPad(){
     //connect actions
     QObject::connect(this->actionConnect, &QAction::triggered, &this->control, &Controller::startConnect, Qt::AutoConnection);
     QObject::connect(this->actionDisconnect, &QAction::triggered, &this->control, &Controller::startDisconnect, Qt::AutoConnection);
+    QObject::connect(this->actionInitialize, &QAction::triggered, &this->control, &Controller::startInitialize, Qt::AutoConnection);
     QObject::connect(this->actionMeasure, &QAction::triggered, &this->control, &Controller::startMeasurement, Qt::AutoConnection);
     QObject::connect(this->actionAim, &QAction::triggered, &this->control, &Controller::startAim, Qt::AutoConnection);
     QObject::connect(this->actionHome, &QAction::triggered, &this->control, &Controller::startHome, Qt::AutoConnection);
@@ -1827,6 +1831,8 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
         this->actionConnect->setEnabled(true);
         this->actionDisconnect->setVisible(true);
         this->actionDisconnect->setEnabled(true);
+        this->actionInitialize->setVisible(true);
+        this->actionInitialize->setEnabled(true);
         this->actionMeasure->setVisible(true);
         this->actionMeasure->setEnabled(true);
         this->actionAim->setVisible(true);
@@ -1850,6 +1856,8 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
         this->actionConnect->setEnabled(true);
         this->actionDisconnect->setVisible(true);
         this->actionDisconnect->setEnabled(true);
+        this->actionInitialize->setVisible(false);
+        this->actionInitialize->setEnabled(false);
         this->actionMeasure->setVisible(true);
         this->actionMeasure->setEnabled(true);
         this->actionAim->setVisible(true);
@@ -1873,6 +1881,8 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
         this->actionConnect->setEnabled(false);
         this->actionDisconnect->setVisible(false);
         this->actionDisconnect->setEnabled(false);
+        this->actionInitialize->setVisible(false);
+        this->actionInitialize->setEnabled(false);
         this->actionMeasure->setVisible(false);
         this->actionMeasure->setEnabled(false);
         this->actionAim->setVisible(false);
