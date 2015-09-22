@@ -889,6 +889,28 @@ void MainWindow::on_actionControl_pad_triggered(){
 }
 
 /*!
+ * \brief MainWindow::on_actionConsole_triggered
+ */
+void MainWindow::on_actionConsole_triggered(){
+    if(this->ui->dockWidget_Console->isVisible()){
+        this->ui->dockWidget_Console->setVisible(false);
+    }else{
+        this->ui->dockWidget_Console->setVisible(true);
+    }
+}
+
+/*!
+ * \brief MainWindow::on_actionMagnify_triggered
+ */
+void MainWindow::on_actionMagnify_triggered(){
+    if(this->ui->dockWidget_magnify->isVisible()){
+        this->ui->dockWidget_magnify->setVisible(false);
+    }else{
+        this->ui->dockWidget_magnify->setVisible(true);
+    }
+}
+
+/*!
  * \brief MainWindow::on_comboBox_groups_currentIndexChanged
  * \param arg1
  */

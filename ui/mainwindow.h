@@ -188,6 +188,8 @@ private slots:
 
     //toggle visibility of widgets
     void on_actionControl_pad_triggered();
+    void on_actionConsole_triggered();
+    void on_actionMagnify_triggered();
 
     //active group, active coordinate system or actual nominal filter changed
     void on_comboBox_groups_currentIndexChanged(const QString &arg1);
