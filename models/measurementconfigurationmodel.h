@@ -42,7 +42,7 @@ public:
     //get informations about measurement configs
     //##########################################
 
-    QModelIndex getIndex(const QString &name) const;
+    QModelIndex getIndex(const MeasurementConfig &mConfig) const;
 
     MeasurementConfig getMeasurementConfig(const QModelIndex &index) const;
 
@@ -57,12 +57,28 @@ public:
 
     void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
 
+    void cloneMeasurementConfig(const MeasurementConfig &mConfig);
+
     //#######################################
     //get or set sensor configuration manager
     //#######################################
 
     const QPointer<MeasurementConfigManager> &getMeasurementConfigurationManager() const;
     void setMeasurementConfigurationManager(const QPointer<MeasurementConfigManager> &manager);
+
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
+    //########################################################
+    //inform when the name of a measurement config has changed
+    //########################################################
+
+    void measurementConfigNameChanged(const MeasurementConfig &mConfig);
 
 private slots:
 

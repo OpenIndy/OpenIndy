@@ -221,7 +221,9 @@ SOURCES += \
     controller/network/oirequesthandler.cpp \
     controller/network/oiserver.cpp \
     controller/network/oiwebsocket.cpp \
-    controller/network/oiwebsocketserver.cpp
+    controller/network/oiwebsocketserver.cpp \
+    ui/dialogs/trafoparampropertiesdialog.cpp \
+    models/functionstatisticmodel.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -305,7 +307,9 @@ HEADERS  += \
     controller/network/oiserver.h \
     controller/network/oiwebsocket.h \
     controller/network/oiwebsocketserver.h \
-    lib/OpenIndy-Core/include/oirequestresponse.h
+    lib/OpenIndy-Core/include/oirequestresponse.h \
+    ui/dialogs/trafoparampropertiesdialog.h \
+    models/functionstatisticmodel.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -323,4 +327,5 @@ FORMS    += \
     ui/dialogs/measurementconfigurationdialog.ui \
     ui/dialogs/actualpropertiesdialog.ui \
     ui/dialogs/nominalpropertiesdialog.ui \
-    ui/dialogs/aboutdialog.ui
+    ui/dialogs/aboutdialog.ui \
+    ui/dialogs/trafoparampropertiesdialog.ui

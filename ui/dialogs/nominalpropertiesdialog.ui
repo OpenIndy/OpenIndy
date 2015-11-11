@@ -7,195 +7,362 @@
     <x>0</x>
     <y>0</y>
     <width>455</width>
-    <height>388</height>
+    <height>602</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>nominal data for</string>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
+  <property name="minimumSize">
+   <size>
+    <width>455</width>
+    <height>100</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string/>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetMinimumSize</enum>
+   </property>
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMinimumSize</enum>
+     </property>
      <item>
-      <widget class="QLabel" name="label_nominalX">
-       <property name="text">
-        <string>nominal X value</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalX">
+         <property name="text">
+          <string>nominal X:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalX"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_nominalX"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_nominalY">
-       <property name="text">
-        <string>nominal Y value</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="lineEdit_nominalY"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_nominalZ">
-       <property name="text">
-        <string>nominal Z value</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalY">
+         <property name="text">
+          <string>nominal Y:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalY"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_nominalZ"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_nominalI">
-       <property name="text">
-        <string>nominal I value</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="lineEdit_nominalI"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_nominalJ">
-       <property name="text">
-        <string>nominal J value</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalZ">
+         <property name="text">
+          <string>nominal Z:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalZ"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_nominalJ"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_nominalK">
-       <property name="text">
-        <string>nominal K value</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="lineEdit_nominalK"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_nominalR">
-       <property name="text">
-        <string>nominal radius value</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalI1">
+         <property name="text">
+          <string>nominal I1:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalI1"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_nominalR"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_nominalSDE">
-       <property name="text">
-        <string>nominal scalar distance value</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="lineEdit_nominalSDE"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_nominalSAE">
-       <property name="text">
-        <string>nominal scalar angle value</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalJ1">
+         <property name="text">
+          <string>nominal J1:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalJ1"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_nominalSAE"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_nominalTemperature">
-       <property name="text">
-        <string>nominal temperature value</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="lineEdit_nominalTemperature"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="1,1">
-     <item>
-      <widget class="QLabel" name="label_nominalMeasurementSeries">
-       <property name="text">
-        <string>nominal measurement series value</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalK1">
+         <property name="text">
+          <string>nominal K1:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalK1"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_nominalMeasurementSeries"/>
+      <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalR1">
+         <property name="text">
+          <string>nominal radius1:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalR1"/>
+       </item>
+      </layout>
      </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,1,1">
      <item>
-      <spacer name="horizontalSpacer">
+      <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalR2">
+         <property name="text">
+          <string>nominal radius2:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalR2"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalI2">
+         <property name="text">
+          <string>nominal I2:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalI2"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalJ2">
+         <property name="text">
+          <string>nominal J2:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalJ2"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalK2">
+         <property name="text">
+          <string>nominal K2:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalK2"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_18" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalAperture">
+         <property name="text">
+          <string>nominal aperture:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalAperture"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalA">
+         <property name="text">
+          <string>nominal A:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalA"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalB">
+         <property name="text">
+          <string>nominal B:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalB"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalC">
+         <property name="text">
+          <string>nominal C:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalC"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_16" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalAngle">
+         <property name="text">
+          <string>nominal angle:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalAngle"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_17" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalDistance">
+         <property name="text">
+          <string>nominal distance:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalDistance"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalMeasurementSeries">
+         <property name="text">
+          <string>nominal measurement series:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalMeasurementSeries"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalTemperature">
+         <property name="text">
+          <string>nominal temperature:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalTemperature"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_21" stretch="1,1">
+       <item>
+        <widget class="QLabel" name="label_nominalLength">
+         <property name="text">
+          <string>nominal length:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_nominalLength"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::MinimumExpanding</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>20</height>
+         <height>40</height>
         </size>
        </property>
       </spacer>
      </item>
      <item>
-      <widget class="QToolButton" name="toolButton_cancel">
-       <property name="text">
-        <string>cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="toolButton_ok">
-       <property name="text">
-        <string>ok</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,1,1">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QToolButton" name="toolButton_cancel">
+         <property name="text">
+          <string>cancel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="toolButton_ok">
+         <property name="text">
+          <string>ok</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

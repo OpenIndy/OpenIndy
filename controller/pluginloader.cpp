@@ -19,10 +19,8 @@ PluginLoader::PluginLoader(QObject *parent) : QObject(parent){
 
     QObject::connect(&PluginLoader::pluginCopier, SIGNAL(updateProgress(const int&)),
                      this, SIGNAL(updateProgress(const int&)), Qt::AutoConnection);
-    QObject::connect(&PluginLoader::pluginCopier, SIGNAL(sendMessage(const QString&)),
-                     this, SIGNAL(sendMessage(const QString&)), Qt::AutoConnection);
-    QObject::connect(&PluginLoader::pluginCopier, SIGNAL(sendError(const QString&)),
-                     this, SIGNAL(sendError(const QString&)), Qt::AutoConnection);
+    QObject::connect(&PluginLoader::pluginCopier, SIGNAL(sendMessage(const QString&, const MessageTypes&, const MessageDestinations&)),
+                     this, SIGNAL(sendMessage(const QString&, const MessageTypes&, const MessageDestinations&)), Qt::AutoConnection);
     QObject::connect(&PluginLoader::pluginCopier, SIGNAL(deletionFinished(const bool&)),
                      this, SIGNAL(deletionFinished(const bool&)), Qt::AutoConnection);
 
@@ -138,7 +136,7 @@ QPointer<Sensor> PluginLoader::loadSensorPlugin(const QString &path, const QStri
             sensor->init();
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected sensor: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected sensor: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return sensor;
@@ -164,7 +162,7 @@ QPointer<Function> PluginLoader::loadFunctionPlugin(const QString &path, const Q
             function->init();
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected function: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected function: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return function;
@@ -190,7 +188,7 @@ QPointer<SimulationModel> PluginLoader::loadSimulationPlugin(const QString &path
             simulation->init();
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected simulation: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected simulation: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return simulation;
@@ -213,7 +211,7 @@ QPointer<NetworkAdjustment> PluginLoader::loadNetworkAdjustmentPlugin(const QStr
         Plugin *networkAdjustmentFactory = qobject_cast<Plugin *>(plugin);
         networkAdjustment = networkAdjustmentFactory->createNetworkAdjustment(name);
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected network adjustment: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected network adjustment: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return networkAdjustment;
@@ -239,7 +237,7 @@ QPointer<Tool> PluginLoader::loadToolPlugin(const QString &path, const QString &
             tool->init();
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected tool: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected tool: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return tool;
@@ -265,7 +263,7 @@ QPointer<ExchangeSimpleAscii> PluginLoader::loadExchangeSimpleAsciiPlugin(const 
             exchange->init();
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected simple ascii exchange: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected simple ascii exchange: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return exchange;
@@ -291,7 +289,7 @@ QPointer<ExchangeDefinedFormat> PluginLoader::loadExchangeDefinedFormatPlugin(co
             exchange->init();
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load selected defined format exchange: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected defined format exchange: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return exchange;
@@ -318,7 +316,7 @@ QList<QPointer<Sensor> > PluginLoader::loadSensorPlugins(const QString &path){
             }
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load sensors: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load sensors: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return sensorList;
@@ -345,7 +343,7 @@ QList<QPointer<Function> > PluginLoader::loadFunctionPlugins(const QString &path
             }
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load functions: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load functions: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return functionList;
@@ -372,7 +370,7 @@ QList<QPointer<SimulationModel> > PluginLoader::loadSimulationPlugins(const QStr
             }
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load simulations: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load simulations: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return simulationList;
@@ -394,7 +392,7 @@ QList<QPointer<NetworkAdjustment> > PluginLoader::loadNetworkAdjustmentPlugins(c
         Plugin *networkAdjustmenFactory = qobject_cast<Plugin *>(plugin);
         networkAdjustmentList = networkAdjustmenFactory->createNetworkAdjustments();
     }else{
-        Console::getInstance()->addLine(QString("Cannot load network adjustments: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load network adjustments: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return networkAdjustmentList;
@@ -421,7 +419,7 @@ QList<QPointer<Tool> > PluginLoader::loadToolPlugins(const QString &path){
             }
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load tools: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load tools: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return toolList;
@@ -448,7 +446,7 @@ QList<QPointer<ExchangeSimpleAscii> > PluginLoader::loadExchangeSimpleAsciiPlugi
             }
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load simple ascii exchanges: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load simple ascii exchanges: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return exchangeList;
@@ -475,7 +473,7 @@ QList<QPointer<ExchangeDefinedFormat> > PluginLoader::loadExchangeDefinedFormatP
             }
         }
     }else{
-        Console::getInstance()->addLine(QString("Cannot load defined format exchanges: %1").arg(pluginLoader.errorString()));
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load defined format exchanges: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
     return exchangeList;
@@ -496,7 +494,7 @@ void PluginLoader::importTaskFinished(const bool &success){
     if(success){
 
         if(!this->pluginCopier.savePlugin(this->pluginCopier.importPluginPath)){
-            emit this->sendError(QString("Plugin %1 has not been saved in system database").arg(this->pluginCopier.importPluginPath));
+            emit this->sendMessage(QString("Plugin %1 has not been saved in system database").arg(this->pluginCopier.importPluginPath), eErrorMessage, eConsoleMessage);
             emit this->importFinished(false);
             return;
         }

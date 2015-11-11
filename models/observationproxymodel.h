@@ -27,6 +27,14 @@ public:
     const ObservationTableColumnConfig &getObservationTableColumnConfig() const;
     void setObservationTableColumnConfig(const ObservationTableColumnConfig &config);
 
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 protected:
 
     //###########################################

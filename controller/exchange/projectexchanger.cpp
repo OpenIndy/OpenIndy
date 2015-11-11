@@ -9,7 +9,7 @@ QMap<int, QPointer<FeatureWrapper> > ProjectExchanger::myGeometries;
 QList<int> ProjectExchanger::stationPoints;
 QMap<QString, MeasurementConfig> ProjectExchanger::myMConfigs;
 QMap<QString, SensorConfiguration> ProjectExchanger::mySConfigs;
-MeasurementConfigManager ProjectExchanger::mConfigManager;
+QPointer<MeasurementConfigManager> ProjectExchanger::mConfigManager;
 
 /*!
  * \brief ProjectExchanger::saveProject
@@ -22,7 +22,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
 
     //check job
     if(job.isNull()){
-        Console::getInstance()->addLine("No project available");
+        Console::getInstance()->addLine("No project available", eErrorMessage);
         return project;
     }
 
@@ -34,6 +34,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     root.setAttribute("name", job->getJobName());
     root.setAttribute("date", dateTime);
     root.setAttribute("idCount", QString::number(job->generateUniqueId()));
+    root.setAttribute("version", QString(OPENINDY_VERSION));
     project.appendChild(root);
 
     //add active station and active coordinate system
@@ -140,7 +141,10 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     QDomElement sensorConfigs = project.createElement("sensorConfigs");
 
     //add measurement configs
-    QList<MeasurementConfig> mConfigs = ProjectExchanger::mConfigManager.getSavedMeasurementConfigs();
+    QList<MeasurementConfig> mConfigs;
+    if(!ProjectExchanger::mConfigManager.isNull()){
+        mConfigs = ProjectExchanger::mConfigManager->getSavedMeasurementConfigs();
+    }
     foreach(const MeasurementConfig &mConfig, mConfigs){
         QDomElement config = mConfig.toOpenIndyXML(project);
         if(!config.isNull()){
@@ -211,19 +215,6 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
         }
     }
 
-    /*foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
-        Station *s = station->getStation().data();
-    }
-    foreach(const QPointer<FeatureWrapper> &system, ProjectExchanger::myCoordinateSystems){
-        CoordinateSystem *c = system->getCoordinateSystem().data();
-    }
-    foreach(const QPointer<FeatureWrapper> &trafoParam, ProjectExchanger::myTransformationParameters){
-        TrafoParam *t = trafoParam->getTrafoParam().data();
-    }
-    foreach(const QPointer<FeatureWrapper> &geometry, ProjectExchanger::myGeometries){
-        Geometry *g = geometry->getGeometry().data();
-    }*/
-
     //add features to the job
     job->addFeaturesFromXml(ProjectExchanger::myStations.values());
     job->addFeaturesFromXml(ProjectExchanger::myCoordinateSystems.values());
@@ -235,42 +226,14 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
         job->nextId = project.documentElement().attribute("idCount").toInt() + 1;
     }
 
-    //add loaded features to OiFeatureState
-    /*foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
-        if(!station.isNull() && !station->getStation().isNull()){
-            job->addFeature(station);
-            if(!station->getStation()->getPosition().isNull()){
-                ProjectExchanger::stationPoints.append(station->getStation()->getPosition()->getId());
+    //add project measurement configs to config manager
+    if(!ProjectExchanger::mConfigManager.isNull()){
+        foreach(const MeasurementConfig &mConfig, ProjectExchanger::myMConfigs.values()){
+            if(mConfig.getIsValid() && !mConfig.getIsSaved()){
+                ProjectExchanger::mConfigManager->addProjectMeasurementConfig(mConfig);
             }
         }
     }
-    foreach(const QPointer<FeatureWrapper> &system, ProjectExchanger::myCoordinateSystems){
-        if(!system.isNull() && !system->getCoordinateSystem().isNull()){
-            if(!system->getCoordinateSystem()->getIsStationSystem()){
-                job->addFeature(system);
-            }
-        }
-    }
-    foreach(const QPointer<FeatureWrapper> &trafoParam, ProjectExchanger::myTransformationParameters){
-        if(!trafoParam.isNull() && !trafoParam->getTrafoParam().isNull()){
-            job->addFeature(trafoParam);
-        }
-    }
-    foreach(const QPointer<FeatureWrapper> &geometry, ProjectExchanger::myGeometries){
-        if(!geometry.isNull() && !geometry->getGeometry().isNull()){
-            if(!ProjectExchanger::stationPoints.contains(geometry->getGeometry()->getId())){
-                job->addFeature(geometry);
-            }
-        }
-    }*/
-
-    //add configs to OiConfigState
-    /*foreach(const MeasurementConfig &mConfig, ProjectExchanger::myMConfigs){
-        ProjectExchanger::addProjectMeasurementConfig(mConfig);
-    }
-    foreach(const SensorConfiguration &sConfig, ProjectExchanger::mySConfigs){
-        ProjectExchanger::addProjectSensorConfig(sConfig);
-    }*/
 
     //set active station and active coordinate system
     QDomElement activeStation = project.documentElement().firstChildElement("activeStation");
@@ -301,7 +264,7 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
  * \brief ProjectExchanger::getMeasurementConfigManager
  * \return
  */
-MeasurementConfigManager &ProjectExchanger::getMeasurementConfigManager(){
+QPointer<MeasurementConfigManager> &ProjectExchanger::getMeasurementConfigManager(){
     return ProjectExchanger::mConfigManager;
 }
 
@@ -309,7 +272,7 @@ MeasurementConfigManager &ProjectExchanger::getMeasurementConfigManager(){
  * \brief ProjectExchanger::setMeasurementConfigManager
  * \param mConfigManager
  */
-void ProjectExchanger::setMeasurementConfigManager(const MeasurementConfigManager &mConfigManager){
+void ProjectExchanger::setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &mConfigManager){
     ProjectExchanger::mConfigManager = mConfigManager;
 }
 
@@ -712,6 +675,9 @@ bool ProjectExchanger::loadConfigs(const QDomDocument &project){
                 QDomElement mConfigElement = mConfigList.at(i).toElement();
                 MeasurementConfig mConfig;
                 if(mConfig.fromOpenIndyXML(mConfigElement)){
+                    if(!mConfigManager.isNull() && mConfigManager->hasSavedMeasurementConfig(mConfig)){
+                        mConfig.setIsSaved(true);
+                    }
                     ProjectExchanger::myMConfigs.insert(mConfig.getName(), mConfig);
                 }
             }
@@ -1317,6 +1283,14 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                 QDomNodeList elementList = inputElements.childNodes();
                 for(int j = 0; j < elementList.size(); j++){
                     QDomElement inputElement = elementList.at(j).toElement();
+
+                    //get shouldBeUsed
+                    bool shouldBeUsed = true;
+                    if(inputElement.hasAttribute("shouldBeUsed")){
+                        shouldBeUsed = inputElement.attribute("shouldBeUsed").toInt();
+                    }
+
+                    //create and add input elements
                     if(inputElement.hasAttribute("index") && inputElement.hasAttribute("type") && inputElement.hasAttribute("ref")){
 
                         if(ProjectExchanger::myStations.contains(inputElement.attribute("ref").toInt())){
@@ -1325,6 +1299,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.station = station;
                             element.id = station->getId();
                             element.typeOfElement = eStationElement;
+                            element.shouldBeUsed = shouldBeUsed;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myCoordinateSystems.contains(inputElement.attribute("ref").toInt())){
                             QPointer<CoordinateSystem> coordinateSystem = ProjectExchanger::myCoordinateSystems.value(inputElement.attribute("ref").toInt())->getCoordinateSystem();
@@ -1332,6 +1307,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.coordSystem = coordinateSystem;
                             element.id = coordinateSystem->getId();
                             element.typeOfElement = eCoordinateSystemElement;
+                            element.shouldBeUsed = shouldBeUsed;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myTransformationParameters.contains(inputElement.attribute("ref").toInt())){
                             QPointer<TrafoParam> trafoParam = ProjectExchanger::myTransformationParameters.value(inputElement.attribute("ref").toInt())->getTrafoParam();
@@ -1339,12 +1315,14 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.trafoParam = trafoParam;
                             element.id = trafoParam->getId();
                             element.typeOfElement = eTrafoParamElement;
+                            element.shouldBeUsed = shouldBeUsed;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myGeometries.contains(inputElement.attribute("ref").toInt())){
                             QPointer<FeatureWrapper> geometry = ProjectExchanger::myGeometries.value(inputElement.attribute("ref").toInt());
                             InputElement element;
                             element.geometry = geometry->getGeometry();
                             element.id = geometry->getGeometry()->getId();
+                            element.shouldBeUsed = shouldBeUsed;
                             switch(geometry->getFeatureTypeEnum()){
                             case eCircleFeature:
                                 element.circle = geometry->getCircle();
@@ -1430,10 +1408,12 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.observation = observation;
                             element.id = observation->getId();
                             element.typeOfElement = eObservationElement;
+                            element.shouldBeUsed = shouldBeUsed;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myReadings.contains(inputElement.attribute("ref").toInt())){
                             QPointer<Reading> reading = ProjectExchanger::myReadings.value(inputElement.attribute("ref").toInt());
                             InputElement element;
+                            element.shouldBeUsed = shouldBeUsed;
                             switch(reading->getTypeOfReading()){
                             case eDistanceReading:
                                 element.distanceReading = reading;
@@ -1537,5 +1517,11 @@ void ProjectExchanger::clearHelperMaps(bool deleteOnClear){
     ProjectExchanger::myObservations.clear();
     ProjectExchanger::myStations.clear();
     ProjectExchanger::myCoordinateSystems.clear();
+    ProjectExchanger::myReadings.clear();
+    ProjectExchanger::myTransformationParameters.clear();
+    ProjectExchanger::myGeometries.clear();
+    ProjectExchanger::myMConfigs.clear();
+    ProjectExchanger::mySConfigs.clear();
+    ProjectExchanger::stationPoints.clear();
 
 }

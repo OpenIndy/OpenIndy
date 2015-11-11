@@ -50,6 +50,21 @@ public:
     const ParameterDisplayConfig &getParameterDisplayConfig() const;
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
+    //#########################
+    //use or unuse observations
+    //#########################
+
+    void setShouldBeUsed(const QPointer<FeatureWrapper> &target, const int &functionIndex, const int &neededElementIndex,
+                         const int &elementId, const bool &use, const bool &recalc);
+
 private slots:
 
     //##############################################################
@@ -57,6 +72,8 @@ private slots:
     //##############################################################
 
     void updateModel();
+
+    void featureRecalculated(const int &featureId);
 
 private:
 

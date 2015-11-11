@@ -39,18 +39,30 @@
 #include "observationproxymodel.h"
 #include "readingmodel.h"
 #include "readingproxymodel.h"
+#include "functionstatisticmodel.h"
 
 using namespace oi;
+
+class Controller;
 
 /*!
  * \brief The ModelManager class
  */
 class ModelManager : public QObject
 {
+    friend class Controller;
     Q_OBJECT
 
 private:
     explicit ModelManager(QObject *parent = 0);
+
+signals:
+
+    //############
+    //log messages
+    //############
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
 public:
 
@@ -115,6 +127,9 @@ public:
     //group name model
     static QStringListModel &getGroupNamesModel();
 
+    //actual nominal filter model
+    static QStringListModel &getActualNominalFilterModel();
+
     //unit types models
     static QStringListModel &getUnitTypesModel(const DimensionType &dimension);
 
@@ -171,6 +186,9 @@ public:
     //function list filter model
     static QPointer<AvailableFunctionsListProxyModel> getAvailableFunctionsProxyModel();
 
+    //statistic models
+    static QPointer<FunctionStatisticModel> getFunctionStatisticModel();
+
 private slots:
 
     //##########################################
@@ -216,6 +234,9 @@ private:
 
     //group name model
     static QStringListModel groupNamesModel;
+
+    //actual nominal filter model
+    static QStringListModel actualNominalFilterModel;
 
     //unit types models
     static QStringListModel metricUnitTypesModel;
@@ -320,6 +341,8 @@ private:
     static void initPluginModels();
 
     static void initGroupsModel();
+
+    static void initActualNominalFilterModel();
 
     static void initObservationModels();
     static void initReadingModels();

@@ -104,6 +104,39 @@ void ParameterDisplayConfig::setDisplayDigits(const DimensionType &dimension, co
 }
 
 /*!
+ * \brief ParameterDisplayConfig::getDisplayUnits
+ * \return
+ */
+QMap<DimensionType, UnitType> ParameterDisplayConfig::getDisplayUnits() const{
+
+    QMap<DimensionType, UnitType> displayUnits;
+
+    displayUnits.insert(eMetric, this->metricDisplayUnit);
+    displayUnits.insert(eAngular, this->angularDisplayUnit);
+    displayUnits.insert(eTemperature, this->temperatureDisplayUnit);
+
+    return displayUnits;
+
+}
+
+/*!
+ * \brief ParameterDisplayConfig::getDisplayDigits
+ * \return
+ */
+QMap<DimensionType, int> ParameterDisplayConfig::getDisplayDigits() const{
+
+    QMap<DimensionType, int> displayDigits;
+
+    displayDigits.insert(eMetric, this->metricDisplayDigits);
+    displayDigits.insert(eAngular, this->angularDisplayDigits);
+    displayDigits.insert(eTemperature, this->temperatureDisplayDigits);
+    displayDigits.insert(eDimensionless, this->dimensionlessDisplayDigits);
+
+    return displayDigits;
+
+}
+
+/*!
  * \brief ParameterDisplayConfig::init
  * Set up default parameter display config
  */

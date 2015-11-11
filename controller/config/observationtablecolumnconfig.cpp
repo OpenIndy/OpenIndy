@@ -15,7 +15,7 @@ ObservationTableColumnConfig::ObservationTableColumnConfig(){
  * \param column
  * \return
  */
-bool ObservationTableColumnConfig::getColumnVisibility(const ObservationDisplayattributes &column) const{
+bool ObservationTableColumnConfig::getColumnVisibility(const ObservationDisplayAttributes &column) const{
     return this->displayColumns.contains(column);
 }
 
@@ -24,7 +24,7 @@ bool ObservationTableColumnConfig::getColumnVisibility(const ObservationDisplaya
  * \param column
  * \param isVisible
  */
-void ObservationTableColumnConfig::setColumnVisibility(const ObservationDisplayattributes &column, const bool &isVisible){
+void ObservationTableColumnConfig::setColumnVisibility(const ObservationDisplayAttributes &column, const bool &isVisible){
     if(isVisible && !this->displayColumns.contains(column)){
         this->displayColumns.append(column);
     }else{
@@ -38,7 +38,7 @@ void ObservationTableColumnConfig::setColumnVisibility(const ObservationDisplaya
  * \param column
  * \return
  */
-int ObservationTableColumnConfig::getColumnPosition(const ObservationDisplayattributes &column) const{
+int ObservationTableColumnConfig::getColumnPosition(const ObservationDisplayAttributes &column) const{
     return this->displayColumns.indexOf(column);
 }
 
@@ -47,7 +47,7 @@ int ObservationTableColumnConfig::getColumnPosition(const ObservationDisplayattr
  * \param column
  * \param index
  */
-void ObservationTableColumnConfig::setColumnPosition(const ObservationDisplayattributes &column, const int &index){
+void ObservationTableColumnConfig::setColumnPosition(const ObservationDisplayAttributes &column, const int &index){
     if(this->displayColumns.contains(column) && index >= 0 && index < this->displayColumns.size()){
         this->displayColumns.removeOne(column);
         this->displayColumns.insert(index, column);
@@ -72,5 +72,10 @@ void ObservationTableColumnConfig::init(){
     this->displayColumns.append(eObservationDisplaySigmaZ);
     this->displayColumns.append(eObservationDisplayIsValid);
     this->displayColumns.append(eObservationDisplayIsSolved);
+    this->displayColumns.append(eObservationDisplayVX);
+    this->displayColumns.append(eObservationDisplayVY);
+    this->displayColumns.append(eObservationDisplayVZ);
+    this->displayColumns.append(eObservationDisplayV);
+    this->displayColumns.append(eObservationDisplayIsUsed);
 
 }

@@ -64,6 +64,9 @@ signals:
     void updateObservationImportProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
     void observationImportFinished(const bool &success);
 
+    //print messages
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private slots:
 
     //########################################################

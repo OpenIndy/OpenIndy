@@ -22,6 +22,7 @@
 #include "modelmanager.h"
 #include "observationtabledelegate.h"
 #include "readingtabledelegate.h"
+#include "functionstatisticmodel.h"
 
 using namespace oi;
 
@@ -54,12 +55,25 @@ private slots:
     //actions triggered by user
     //#########################
 
+    //key pressed
+    void keyPressEvent(QKeyEvent * e);
+
     //import observations
     void on_tableView_observation_customContextMenuRequested(const QPoint &pos);
     void importObservationsMenuClicked(bool checked);
 
     //resize table views
     void resizeTableView();
+
+    //function statistic
+    void on_comboBox_displayedFunction_currentIndexChanged(int index);
+
+    //##############
+    //helper methods
+    //##############
+
+    //copy values from and to clipboard
+    void copyToClipboard();
 
 private:
 
@@ -72,45 +86,11 @@ private:
     void initGUI();
     void initModels();
 
-    /*
+    //#################
+    //helper attributes
+    //#################
 
-    ReadingModel *rModel;
-    ObservationModel *oModel;
-    FunctionStatistic *fModel;
-    MatrixModel *qxxModel;
-    MatrixModel *sxxModel;
-
-    ObservationProxyModel *observationOverviewModel;
-    ReadingProxyModel *readingOverviewModel;
-
-    //void getActiveFeature(FeatureWrapper *activeFeature);
-
-    void showEvent(QShowEvent *event);
-
-public slots:
-
-    void resizeView();
-
-private slots:
-    void on_pushButton_cancel_clicked();
-
-    void on_pushButton_ok_clicked();
-
-    void initGUI();
-
-    void on_comboBox_displayedFunction_currentIndexChanged(const QString &arg1);
-
-    void closeEvent(QCloseEvent *event);
-
-    void displayUsedReadings();
-
-    void on_comboBox_readings_currentTextChanged(const QString &arg1);
-
-    void updateModels();
-
-    void keyPressEvent(QKeyEvent *event);
-
-    void copyValuesFromView();*/
+    QPointer<FunctionStatisticModel> functionStatisticModel;
 
 private:
     Ui::ActualPropertiesDialog *ui;

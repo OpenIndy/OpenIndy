@@ -33,12 +33,14 @@ QStringListModel &Console::getConsoleModel(){
 /*!
  * \brief Console::addLine
  * \param msg
+ * \param msgType
  */
-void Console::addLine(const QString &msg){
+void Console::addLine(const QString &msg, const MessageTypes &msgType){
 
     //update entries list and model
-    this->log.append(QString("[%1] {openIndyLog} : %2")
+    this->log.append(QString("[%1] {%2} : %3")
                      .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
+                     .arg(getMessageTypeName(msgType))
                      .arg(msg));
     this->output.setStringList(this->log);
 
@@ -49,16 +51,19 @@ void Console::addLine(const QString &msg){
     this->writeToLogFile(this->log.last());
 
 }
+
 /*!
  * \brief Console::addLine
  * \param msg
+ * \param msgType
  * \param value
  */
-void Console::addLine(const QString &msg, const bool &value){
+void Console::addLine(const QString &msg, const MessageTypes &msgType, const bool &value){
 
     //update entries list and model
-    this->log.append(QString("[%1] {openIndyLog} : %2%3")
+    this->log.append(QString("[%1] {%2} : %3 %4")
                      .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
+                     .arg(getMessageTypeName(msgType))
                      .arg(msg)
                      .arg(value?"true":"false"));
     this->output.setStringList(this->log);
@@ -74,13 +79,15 @@ void Console::addLine(const QString &msg, const bool &value){
 /*!
  * \brief Console::addLine
  * \param msg
+ * \param msgType
  * \param value
  */
-void Console::addLine(const QString &msg, const double &value){
+void Console::addLine(const QString &msg, const MessageTypes &msgType, const double &value){
 
     //update entries list and model
-    this->log.append(QString("[%1] {openIndyLog} : %2%3")
+    this->log.append(QString("[%1] {%2} : %3 %4")
                      .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
+                     .arg(getMessageTypeName(msgType))
                      .arg(msg)
                      .arg(QString::number(value, 'f', 6)));
     this->output.setStringList(this->log);
@@ -96,13 +103,15 @@ void Console::addLine(const QString &msg, const double &value){
 /*!
  * \brief Console::addLine
  * \param msg
+ * \param msgType
  * \param value
  */
-void Console::addLine(const QString &msg, const int &value){
+void Console::addLine(const QString &msg, const MessageTypes &msgType, const int &value){
 
     //update entries list and model
-    this->log.append(QString("[%1] {openIndyLog} : %2%3")
+    this->log.append(QString("[%1] {%2} : %3 %4")
                      .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
+                     .arg(getMessageTypeName(msgType))
                      .arg(msg)
                      .arg(QString::number(value)));
     this->output.setStringList(this->log);

@@ -119,73 +119,14 @@ QVariant UsedElementsModel::data(const QModelIndex &index, int role) const{
 
     }else if(role == Qt::DecorationRole){
 
-        if(element.typeOfElement == ePointElement){
-            QPixmap pix(":/Images/icons/Point.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eLineElement){
-            QPixmap pix(":/Images/icons/Line.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == ePlaneElement){
-            QPixmap pix(":/Images/icons/Plane.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eSphereElement){
-            QPixmap pix(":/Images/icons/Sphere.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eStationElement){
-            QPixmap pix(":/Images/icons/Station.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eScalarEntityAngleElement){
-            QPixmap pix(":/Images/icons/Scalar Entities.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eScalarEntityDistanceElement){
-            QPixmap pix(":/Images/icons/Scalar Entities.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eTrafoParamElement){
-            QPixmap pix(":/Images/icons/TrafoParam.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eCoordinateSystemElement){
-            QPixmap pix(":/Images/icons/Coordinatesystem.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eCircleElement){
-            QPixmap pix(":/Images/icons/Circle.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eConeElement){
-            QPixmap pix(":/Images/icons/Cone.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eCylinderElement){
-            QPixmap pix(":/Images/icons/Cylinder.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eEllipsoidElement){
-            QPixmap pix(":/Images/icons/Ellipsoid.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eHyperboloidElement){
-            QPixmap pix(":/Images/icons/Hyperboloid.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eParaboloidElement){
-            QPixmap pix(":/Images/icons/Paraboloid.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eNurbsElement){
-            QPixmap pix(":/Images/icons/Nurbs.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == ePointCloudElement){
-            QPixmap pix(":/Images/icons/PointCloud.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eScalarEntityMeasurementSeriesElement){
-            QPixmap pix(":/Images/icons/Scalar Entities.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eScalarEntityTemperatureElement){
-            QPixmap pix(":/Images/icons/Scalar Entities.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eEllipseElement){
-            QPixmap pix(":/Images/icons/Ellipse.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eSlottedHoleElement){
-            QPixmap pix(":/Images/icons/Slotted Hole.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
-        }else if(element.typeOfElement == eTorusElement){
-            QPixmap pix(":/Images/icons/Torus.svg");
-            return pix.scaledToHeight(20, Qt::SmoothTransformation);
+        //get and check icon path
+        const QString &iconPath = getElementTypeIconPath(element.typeOfElement);
+        if(iconPath.compare("") == 0){
+            return QVariant();
         }
+
+        QPixmap pix(iconPath);
+        return pix.scaledToHeight(20, Qt::SmoothTransformation);
 
     }
 
@@ -255,47 +196,6 @@ void UsedElementsModel::removeUsedElements(const QModelIndexList &selection){
     }
 
 }
-
-/*!
- * \brief UsedElementsModel::getElementIdAtIndex
- * \param index
- * \return
- */
-/*int UsedElementsModel::getElementIdAtIndex(const QModelIndex &index){
-
-    //check index
-    if(!index.isValid()){
-        return -1;
-    }
-
-    //check current job
-    if(this->currentJob.isNull()){
-        return -1;
-    }
-
-    //get and check active feature
-    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
-        return -1;
-    }
-    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
-
-    //check selected function position
-    if(this->functionPosition < 0 || this->functionPosition >= feature->getFunctions().size()
-            || feature->getFunctions().at(this->functionPosition).isNull()){
-        return -1;
-    }
-    Function *function = feature->getFunctions().at(this->functionPosition);
-
-    //check and get input element
-    if(!function->getInputElements().contains(this->neededElementIndex)
-            || index.row() >= function->getInputElements()[this->neededElementIndex].size()){
-        return -1;
-    }
-    InputElement element = function->getInputElements()[this->neededElementIndex].at(index.row());
-
-    return element.id;
-
-}*/
 
 /*!
  * \brief UsedElementsModel::getCurrentJob

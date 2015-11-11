@@ -44,6 +44,12 @@ signals:
     //###########################
 
     void startAddFunction(const QPointer<Function> &function);
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
     
 protected:
 

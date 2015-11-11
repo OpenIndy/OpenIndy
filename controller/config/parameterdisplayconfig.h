@@ -1,6 +1,8 @@
 #ifndef PARAMETERDISPLAYCONFIG_H
 #define PARAMETERDISPLAYCONFIG_H
 
+#include <QMap>
+
 #include "types.h"
 
 using namespace oi;
@@ -19,6 +21,9 @@ public:
 
     int getDisplayDigits(const DimensionType &dimension) const;
     void setDisplayDigits(const DimensionType &dimension, const int &digits);
+
+    QMap<DimensionType, UnitType> getDisplayUnits() const;
+    QMap<DimensionType, int> getDisplayDigits() const;
 
 private:
     void init();

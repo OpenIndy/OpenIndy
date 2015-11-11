@@ -66,6 +66,7 @@ void TrafoParamTableColumnConfig::init(){
     this->displayColumns.append(eTrafoParamDisplayGroup);
     this->displayColumns.append(eTrafoParamDisplayIsSolved);
     this->displayColumns.append(eTrafoParamDisplayIsUsed);
+    this->displayColumns.append(eTrafoParamDisplayIsDatumTransformation);
     this->displayColumns.append(eTrafoParamDisplayStartSystem);
     this->displayColumns.append(eTrafoParamDisplayDestinationSystem);
     this->displayColumns.append(eTrafoParamDisplayTranslationX);

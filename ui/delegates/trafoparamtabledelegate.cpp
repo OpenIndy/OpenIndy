@@ -51,13 +51,19 @@ QWidget* TrafoParamDelegate::createEditor(QWidget *parent, const QStyleOptionVie
     case eTrafoParamDisplayGroup:
         editor = new QLineEdit(parent);
         break;
-    case eTrafoParamDisplayIsUsed:
+    case eTrafoParamDisplayIsUsed: {
         QComboBox *comboEdit = new QComboBox(parent);
         comboEdit->addItem("true");
         comboEdit->addItem("false");
         editor = comboEdit;
         break;
-    }
+    }case eTrafoParamDisplayIsDatumTransformation:{
+        QComboBox *comboEdit = new QComboBox(parent);
+        comboEdit->addItem("true");
+        comboEdit->addItem("false");
+        editor = comboEdit;
+        break;
+    }}
 
     return editor;
 
@@ -109,6 +115,10 @@ void TrafoParamDelegate::setEditorData(QWidget *editor, const QModelIndex &index
         myEditor->setText(index.data().toString());
         break;
     }case eTrafoParamDisplayIsUsed:{
+        QComboBox* myEditor = qobject_cast<QComboBox*>(editor);
+        myEditor->setCurrentText(index.data().toBool()?"true":"false");
+        break;
+    }case eTrafoParamDisplayIsDatumTransformation:{
         QComboBox* myEditor = qobject_cast<QComboBox*>(editor);
         myEditor->setCurrentText(index.data().toBool()?"true":"false");
         break;
@@ -164,6 +174,10 @@ void TrafoParamDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
         trafoModel->sourceModel()->setData(trafoModel->mapToSource(index), myEditor->text());
         break;
     }case eTrafoParamDisplayIsUsed:{
+        QComboBox* myEditor = qobject_cast<QComboBox*>(editor);
+        trafoModel->sourceModel()->setData(trafoModel->mapToSource(index), (myEditor->currentText().compare("true") == 0));
+        break;
+    }case eTrafoParamDisplayIsDatumTransformation:{
         QComboBox* myEditor = qobject_cast<QComboBox*>(editor);
         trafoModel->sourceModel()->setData(trafoModel->mapToSource(index), (myEditor->currentText().compare("true") == 0));
         break;

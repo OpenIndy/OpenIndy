@@ -11,14 +11,12 @@ PluginLoaderDialog::PluginLoaderDialog(QWidget *parent) : QDialog(parent),
     ui->setupUi(this);
 
     //connect plugin loader
-    QObject::connect(PluginLoader::getInstance().data(), SIGNAL(updateProgress(const int&)),
-                     this->ui->progressBar, SLOT(setValue(int)), Qt::AutoConnection);
-    QObject::connect(PluginLoader::getInstance().data(), SIGNAL(sendMessage(const QString&)),
-                     Console::getInstance().data(), SLOT(addLine(const QString&)), Qt::AutoConnection);
-    QObject::connect(PluginLoader::getInstance().data(), SIGNAL(sendError(const QString&)),
-                     Console::getInstance().data(), SLOT(addLine(const QString&)), Qt::AutoConnection);
-    QObject::connect(PluginLoader::getInstance().data(), SIGNAL(importFinished(const bool&)),
-                     this, SLOT(importFinished(const bool&)), Qt::AutoConnection);
+    QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::updateProgress,
+                     this->ui->progressBar, &QProgressBar::setValue, Qt::AutoConnection);
+    QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::importFinished,
+                     this, &PluginLoaderDialog::importFinished, Qt::AutoConnection);
+    QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::sendMessage,
+                     this, &PluginLoaderDialog::sendMessage, Qt::AutoConnection);
 }
 
 /*!
@@ -55,7 +53,7 @@ void PluginLoaderDialog::on_toolButton_Path_clicked(){
     //get and check plugin meta data as a preview
     PluginMetaData metaData = PluginLoader::getPluginMetaData(pluginDir);
     if(metaData.iid.compare("") == 0){
-        Console::getInstance()->addLine(QString("No plugin found at path: %1").arg(pluginDir));
+        Console::getInstance()->addLine(QString("No plugin found at path: %1").arg(pluginDir), eErrorMessage, eMessageBoxMessage);
         return;
     }
 

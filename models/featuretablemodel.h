@@ -11,6 +11,7 @@
 #include "util.h"
 #include "parameterdisplayconfig.h"
 #include "console.h"
+#include "measurementconfigmanager.h"
 
 using namespace oi;
 
@@ -69,6 +70,13 @@ public:
     const QString &getActiveGroupName() const;
     void setActiveGroupName(const QString &group);
 
+    //################################
+    //get or set actual nominal filter
+    //################################
+
+    const ActualNominalFilter &getActualNominalFilter() const;
+    void setActualNominalFilter(const ActualNominalFilter &filter);
+
     //###############################
     //get or set current OpenIndy job
     //###############################
@@ -82,6 +90,21 @@ public:
 
     const ParameterDisplayConfig &getParameterDisplayConfig() const;
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
+
+    //#########################
+    //get or set config manager
+    //#########################
+
+    const QPointer<MeasurementConfigManager> &getMeasurementConfigManager() const;
+    void setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &mConfigManager);
+
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
 private slots:
 
@@ -116,6 +139,18 @@ private:
     //##############
 
     ParameterDisplayConfig parameterDisplayConfig;
+
+    //##############
+    //config manager
+    //##############
+
+    QPointer<MeasurementConfigManager> measurementConfigManager;
+
+    //#################
+    //helper attributes
+    //#################
+
+    ActualNominalFilter actualNominalFilter;
     
 };
 

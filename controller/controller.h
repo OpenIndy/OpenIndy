@@ -43,7 +43,7 @@ public:
     //getter to query available tools
     //###############################
 
-    QList<QPointer<Tool> > getAvailableTools() const;
+    const QList<QPointer<Tool> > &getAvailableTools() const;
 
 public slots:
 
@@ -53,6 +53,11 @@ public slots:
 
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
+    void removeFeatures(const QSet<int> &featureIds);
+
+    //change feature parameters
+    void setNominalParameters(const int &featureId, const QMap<GeometryParameters, double> &parameters);
+    void setTrafoParamParameters(const int &featureId, const QMap<TrafoParamParameters, double> &parameters);
 
     //recalculation
     void recalcActiveFeature();
@@ -61,12 +66,12 @@ public slots:
     void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
 
     //set measurement configuration for active feature
-    void measurementConfigurationChanged(const QString &name);
+    void measurementConfigurationChanged(const MeasurementConfig &mConfig);
 
     //set active feature states
     //void setActiveFeature(const int &featureId);
-    void setActiveStation(const int &featureId);
-    void setActiveCoordinateSystem(const int &featureId);
+    //void setActiveStation(const int &featureId);
+    //void setActiveCoordinateSystem(const int &featureId);
 
     //import or export features
     void importNominals(const ExchangeParams &params);
@@ -102,6 +107,9 @@ public slots:
     void startCompensation();
     void startChangeMotorState();
     void startCustomAction(const QString &task);
+
+    //log messages to the specified destination
+    void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
 
 signals:
 
@@ -163,6 +171,9 @@ signals:
     void trafoParamValidTimeChanged(const int &featureId);
     void trafoParamIsMovementChanged(const int &featureId);
 
+    //hole job instance changed
+    void currentJobChanged();
+
     //#################################
     //import export task status changes
     //#################################
@@ -184,6 +195,25 @@ signals:
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
+
+    //#############
+    //show messages
+    //#############
+
+    void showMessageBox(const QString &msg, const MessageTypes &msgType);
+    void showStatusMessage(const QString &msg, const MessageTypes &msgType);
+
+    //#################
+    //update status bar
+    //#################
+
+    void updateStatusBar();
+
+    //########################
+    //trigger GUI interactions
+    //########################
+
+    void saveAsTriggered();
 
 private slots:
 
@@ -209,14 +239,20 @@ private:
 
     void initDisplayConfigs();
     void initConfigManager();
+    void initToolPlugins();
 
-    void logToConsole(const QString &msg);
+    void connectToolPlugin(const QPointer<Tool> &tool);
 
     void registerMetaTypes();
 
     //start or stop OpenIndy server
     void startServer();
     void stopServer();
+
+    //create feature helpers
+    bool createActualFromNominal(const QPointer<Geometry> &geometry);
+    void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
+                                 const MeasurementConfig &mConfig, const QString &path, const QString &fName);
 
     //######################
     //connect helper objects
@@ -243,8 +279,11 @@ private:
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
 
-    //server instances
+    //server instance
     OiWebSocketServer webSocketServer;
+
+    //tool plugins
+    QList<QPointer<Tool> > toolPlugins;
 
 };
 

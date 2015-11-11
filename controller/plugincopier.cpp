@@ -41,7 +41,7 @@ void PluginCopier::importPlugin(const QString &path){
     pluginDir.mkpath(pluginDir.absolutePath());
 
     if(QFile::exists(pluginDir.absoluteFilePath(pluginFileInfo.fileName()))){
-        emit this->sendError(QString("Plugin %1 already exists").arg(pluginFileInfo.fileName()));
+        emit this->sendMessage(QString("Plugin %1 already exists").arg(pluginFileInfo.fileName()), eErrorMessage);
         emit this->importFinished(false);
         return;
     }
@@ -53,7 +53,7 @@ void PluginCopier::importPlugin(const QString &path){
 
         //check if the dependencies exist
         if(!this->checkDependencies(pluginFileInfo.absoluteDir().absolutePath(), metaData)){
-            emit this->sendError(QString("Not all specified dependencies could be found for plugin %1").arg(pluginFileInfo.fileName()));
+            emit this->sendMessage(QString("Not all specified dependencies could be found for plugin %1").arg(pluginFileInfo.fileName()), eCriticalMessage);
             emit this->importFinished(false);
             return;
         }
@@ -87,7 +87,7 @@ void PluginCopier::importPlugin(const QString &path){
 
             }else{
 
-                emit this->sendError(QString("Copy failed for file %1 (unknown file format)").arg(sourcePathInfo.fileName()));
+                emit this->sendMessage(QString("Copy failed for file %1 (unknown file format)").arg(sourcePathInfo.fileName()), eCriticalMessage);
 
             }
 
@@ -100,7 +100,7 @@ void PluginCopier::importPlugin(const QString &path){
 
     //copy plugin itself
     if(!QFile::copy(pluginFileInfo.absoluteFilePath(), pluginDir.absoluteFilePath(pluginFileInfo.fileName()))){
-        emit this->sendError(QString("Copy failed for plugin %1").arg(pluginFileInfo.fileName()));
+        emit this->sendMessage(QString("Copy failed for plugin %1").arg(pluginFileInfo.fileName()), eErrorMessage);
         emit this->importFinished(false);
         return;
     }
@@ -143,21 +143,24 @@ bool PluginCopier::checkPluginMetaData(PluginMetaData &metaData, const QString &
     metaData.description = pluginLoader.metaData().value("MetaData").toObject().value("description").toString();
     metaData.dependenciesPath = pluginLoader.metaData().value("MetaData").toObject().value("libPaths").toArray();
 
+    qDebug() << "plugin: " <<  metaData.iid;
+    qDebug() << "oi: " << OiMetaData::iid_Plugin;
+
     //check OpenIndy version
     if(metaData.iid.compare(OiMetaData::iid_Plugin) != 0){
-        emit this->sendError("Plugin version does not match this OpenIndy version");
+        emit this->sendMessage("Plugin version does not match this OpenIndy version", eCriticalMessage);
         return false;
     }
 
     //check operating system
     if(metaData.operatingSystem.compare(OiMetaData::getOperatingSys()) != 0){
-        emit this->sendError("Plugin has been compiled on a different OS than this OpenIndy version");
+        emit this->sendMessage("Plugin has been compiled on a different OS than this OpenIndy version", eCriticalMessage);
         return false;
     }
 
     //check compiler
     if(metaData.compiler.compare(OiMetaData::getCompiler()) != 0){
-        emit this->sendError("Plugin has been compiled with a different compiler than this OpenIndy version");
+        emit this->sendMessage("Plugin has been compiled with a different compiler than this OpenIndy version", eCriticalMessage);
         return false;
     }
 
@@ -220,7 +223,7 @@ bool PluginCopier::checkDependencies(const QString &sourcePath, const PluginMeta
         QFileInfo fileInfo(p);
 
         if(!fileInfo.exists()){
-            this->sendError(QString("dependency " + fileInfo.fileName() + " does not exist"));
+            this->sendMessage(QString("dependency " + fileInfo.fileName() + " does not exist"), eCriticalMessage);
             return false;
         }
     }

@@ -7,6 +7,7 @@
 #include <QIODevice>
 #include <QListView>
 #include <QSignalMapper>
+#include <QClipboard>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -29,6 +30,7 @@
 #include "settingsdialog.h"
 #include "actualpropertiesdialog.h"
 #include "nominalpropertiesdialog.h"
+#include "trafoparampropertiesdialog.h"
 #include "aboutdialog.h"
 
 #include "featuretabledelegate.h"
@@ -59,7 +61,7 @@ signals:
 
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
-    void removeFeature(const int &featureId);
+    void removeFeatures(const QSet<int> &featureIds);
 
     //remove observations
     void removeObservations(const int &featureId);
@@ -69,7 +71,7 @@ signals:
     void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
 
     //set measurement configuration for active feature
-    void measurementConfigurationChanged(const QString &name);
+    void measurementConfigurationChanged(const MeasurementConfig &mConfig);
 
     //recalculation of features
     void recalcAll();
@@ -84,6 +86,9 @@ signals:
     void saveProject();
     void saveProject(const QString &fileName);
     void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
+
+    //log messages
+    void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
 private slots:
 
@@ -106,18 +111,29 @@ private slots:
     //feature(s) added or removed
     void coordSystemSetChanged();
     void stationSetChanged();
+    void trafoParamSetChanged();
 
     //group(s) added or removed
     void availableGroupsChanged();
     void activeGroupChanged();
 
+    //feature specific attributes changed
+    void featureNameChanged(const int &featureId, const QString &oldName);
+
     //station changes
     void stationSensorChanged(const int &featureId);
+
+    //hole job instance changed
+    void currentJobChanged();
 
     //sensor actions
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
+
+    //display messages
+    void showMessageBox(const QString &msg, const MessageTypes &msgType);
+    void showStatusMessage(const QString &msg, const MessageTypes &msgType);
 
     //#########################
     //actions triggered by user
@@ -172,10 +188,13 @@ private slots:
 
     //toggle visibility of widgets
     void on_actionControl_pad_triggered();
+    void on_actionConsole_triggered();
+    void on_actionMagnify_triggered();
 
-    //active group or coordinate system changed
+    //active group, active coordinate system or actual nominal filter changed
     void on_comboBox_groups_currentIndexChanged(const QString &arg1);
     void on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1);
+    void on_comboBox_actualNominal_currentIndexChanged(const QString &arg1);
 
     //show watch window
     void on_actionWatch_window_triggered();
@@ -221,6 +240,13 @@ private slots:
     void aimAndMeasureFeatures();
     void deleteFeatures(bool checked);
 
+    //copy values from and to clipboard
+    void copyToClipboard();
+    void pasteFromClipboard();
+
+    //set up status bar
+    void updateStatusBar();
+
 private:
     Ui::MainWindow *ui;
 
@@ -234,6 +260,7 @@ private:
 
     void connectController();
     void connectDialogs();
+    void connectStatusBar();
     void assignModels();
 
     //##################################
@@ -241,10 +268,10 @@ private:
     //##################################
 
     void initFeatureTableViews();
-
     void initSensorPad();
-
     void initToolMenus();
+    void initFilterComboBoxes();
+    void initStatusBar();
 
     //##############################
     //methods to update GUI elements
@@ -253,6 +280,10 @@ private:
     void activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
 
     void updateMagnifyWindow(const QPointer<FeatureWrapper> &feature);
+
+    void updateGroupFilterSize();
+    void updateSystemFilterSize();
+    void updateActualNominalFilterSize();
 
     //############################
     //OpenIndy dialogs and widgets
@@ -272,6 +303,7 @@ private:
     SettingsDialog settingsDialog;
     ActualPropertiesDialog actualPropertiesDialog;
     NominalPropertiesDialog nominalPropertiesDialog;
+    TrafoParamPropertiesDialog trafoParamPropertiesDialog;
     AboutDialog aboutDialog;
 
     //##########
@@ -292,6 +324,15 @@ private:
     QList<QPointer<QAction> > selfDefinedActions;
 
     QPointer<QSignalMapper> customActionMapper;
+
+    //##################
+    //status bar widgets
+    //##################
+
+    QLabel *label_statusUnitMetric;
+    QLabel *label_statusUnitAngular;
+    QLabel *label_statusUnitTemperature;
+    QLabel *label_statusSensor;
 
     //#################
     //helper attributes
