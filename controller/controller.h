@@ -37,6 +37,7 @@ class Controller : public QObject
 
 public:
     explicit Controller(QObject *parent = 0);
+    ~Controller();
 
 public:
 

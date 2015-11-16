@@ -38,6 +38,19 @@ Controller::Controller(QObject *parent) : QObject(parent){
 }
 
 /*!
+ * \brief Controller::~Controller
+ */
+Controller::~Controller(){
+
+    //stop web socket server thread
+    if(this->serverThread.isRunning()){
+        this->serverThread.quit();
+        this->serverThread.wait();
+    }
+
+}
+
+/*!
  * \brief Controller::getAvailableTools
  * \return
  */
