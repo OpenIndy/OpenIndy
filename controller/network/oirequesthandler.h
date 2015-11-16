@@ -8,9 +8,10 @@
 
 #include "oirequestresponse.h"
 #include "featurewrapper.h"
-#include "projectexchanger.h"
 #include "station.h"
 #include "sensorlistener.h"
+
+#include "projectexchanger.h"
 #include "featureupdater.h"
 #include "featuresorter.h"
 #include "measurementconfigmanager.h"

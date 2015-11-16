@@ -780,15 +780,15 @@ void OiRequestHandler::getObservations(OiRequestResponse &request){
         id.appendChild(idText);
         observation.appendChild(id);
         QDomElement x = request.response.createElement("x");
-        QDomText xText = request.response.createTextNode(QString::number(obs->getXYZ().getAt(0)));
+        QDomText xText = request.response.createTextNode(QString::number(obs->getXYZ().getAt(0), 'f', 7));
         x.appendChild(xText);
         observation.appendChild(x);
         QDomElement y = request.response.createElement("y");
-        QDomText yText = request.response.createTextNode(QString::number(obs->getXYZ().getAt(1)));
+        QDomText yText = request.response.createTextNode(QString::number(obs->getXYZ().getAt(1), 'f', 7));
         y.appendChild(yText);
         observation.appendChild(y);
         QDomElement z = request.response.createElement("z");
-        QDomText zText = request.response.createTextNode(QString::number(obs->getXYZ().getAt(2)));
+        QDomText zText = request.response.createTextNode(QString::number(obs->getXYZ().getAt(2), 'f', 7));
         z.appendChild(zText);
         observation.appendChild(z);
         QDomElement isValid = request.response.createElement("isValid");
@@ -816,19 +816,19 @@ void OiRequestHandler::getObservations(OiRequestResponse &request){
 
                 //set up deviations
                 QDomElement vx = request.response.createElement("vx");
-                QDomText vxText = request.response.createTextNode(QString::number(residual.corrections[attrVx]));
+                QDomText vxText = request.response.createTextNode(QString::number(residual.corrections[attrVx], 'f', 7));
                 vx.appendChild(vxText);
                 observation.appendChild(vx);
                 QDomElement vy = request.response.createElement("vy");
-                QDomText vyText = request.response.createTextNode(QString::number(residual.corrections[attrVy]));
+                QDomText vyText = request.response.createTextNode(QString::number(residual.corrections[attrVy], 'f', 7));
                 vy.appendChild(vyText);
                 observation.appendChild(vy);
                 QDomElement vz = request.response.createElement("vz");
-                QDomText vzText = request.response.createTextNode(QString::number(residual.corrections[attrVz]));
+                QDomText vzText = request.response.createTextNode(QString::number(residual.corrections[attrVz], 'f', 7));
                 vz.appendChild(vzText);
                 observation.appendChild(vz);
                 QDomElement v = request.response.createElement("v");
-                QDomText vText = request.response.createTextNode(QString::number(residual.corrections[attrV]));
+                QDomText vText = request.response.createTextNode(QString::number(residual.corrections[attrV], 'f', 7));
                 v.appendChild(vText);
                 observation.appendChild(v);
 
@@ -1557,7 +1557,7 @@ void OiRequestHandler::addParameters(QDomDocument &document, QDomElement &parame
     foreach(const QString &key, keys){
         QDomElement parameter = document.createElement("parameter");
         parameter.setAttribute("name", key);
-        parameter.setAttribute("value", QString::number(values.value(key)));
+        parameter.setAttribute("value", QString::number(values.value(key), 'f', 7));
         parameters.appendChild(parameter);
     }
 
