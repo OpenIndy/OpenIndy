@@ -76,6 +76,17 @@ public slots:
     //job state changes
     //#################
 
+    //active feature changes
+    void activeFeatureChanged();
+    void activeStationChanged();
+    void activeCoordinateSystemChanged();
+
+    //feature(s) added or removed
+    void featureSetChanged();
+
+    //general feature attributes changed
+    void featureAttributesChanged();
+
 signals:
 
     //##################################

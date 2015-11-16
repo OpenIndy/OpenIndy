@@ -203,6 +203,7 @@ signals:
 
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
+    void showClientMessage(const QString &msg, const MessageTypes &msgType);
 
     //#################
     //update status bar

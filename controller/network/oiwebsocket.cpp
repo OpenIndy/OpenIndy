@@ -73,7 +73,9 @@ void OiWebSocket::receiveResponse(const oi::OiRequestResponse &response){
     qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
 
     //send response to client
-    this->socket->sendTextMessage(response.response.toByteArray());
+    if(this->internalRef == response.requesterId || response.requesterId == -1){
+        this->socket->sendTextMessage(response.response.toByteArray());
+    }
 
 }
 

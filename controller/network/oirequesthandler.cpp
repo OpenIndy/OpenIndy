@@ -158,23 +158,170 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse request){
 
 }
 
-void OiRequestHandler::sensorActionStarted(const QString &name)
-{
+/*!
+ * \brief OiRequestHandler::sensorActionStarted
+ * \param name
+ */
+void OiRequestHandler::sensorActionStarted(const QString &name){
+
+    //set up request
+    OiRequestResponse request;
+    request.requesterId = -1;
+    request.myRequestType = OiRequestResponse::eSensorActionStarted;
+    this->prepareResponse(request);
+
+    //set up action
+    QDomElement response = request.response.createElement("action");
+    response.setAttribute("name", name);
+    request.response.documentElement().appendChild(response);
+
+    emit this->sendResponse(request);
 
 }
 
-void OiRequestHandler::sensorActionFinished(const bool &success, const QString &msg)
-{
+/*!
+ * \brief OiRequestHandler::sensorActionFinished
+ * \param success
+ * \param msg
+ */
+void OiRequestHandler::sensorActionFinished(const bool &success, const QString &msg){
+
+    //set up request
+    OiRequestResponse request;
+    request.requesterId = -1;
+    request.myRequestType = OiRequestResponse::eSensorActionFinished;
+    this->prepareResponse(request);
+
+    //set up action
+    QDomElement response = request.response.createElement("action");
+    response.setAttribute("success", success?"1":"0");
+    response.setAttribute("message", msg);
+    request.response.documentElement().appendChild(response);
+
+    emit this->sendResponse(request);
 
 }
 
-void OiRequestHandler::log(const QString &msg, const MessageTypes &msgType)
-{
+/*!
+ * \brief OiRequestHandler::log
+ * \param msg
+ * \param msgType
+ */
+void OiRequestHandler::log(const QString &msg, const MessageTypes &msgType){
+
+    //set up request
+    OiRequestResponse request;
+    request.requesterId = -1;
+    request.myRequestType = OiRequestResponse::eMessageBox;
+    this->prepareResponse(request);
+
+    //set up message
+    QDomElement response = request.response.createElement("message");
+    response.setAttribute("text", msg);
+    response.setAttribute("type", QString::number(msgType));
+    request.response.documentElement().appendChild(response);
+
+    emit this->sendResponse(request);
 
 }
 
-void OiRequestHandler::realTimeReading(const QVariantMap &reading)
-{
+/*!
+ * \brief OiRequestHandler::realTimeReading
+ * \param reading
+ */
+void OiRequestHandler::realTimeReading(const QVariantMap &reading){
+
+    //set up request
+    OiRequestResponse request;
+    request.requesterId = -1;
+    request.myRequestType = OiRequestResponse::eRealTimeReading;
+    this->prepareResponse(request);
+
+    //set up real time data
+    QStringList keys = reading.keys();
+    foreach(const QString &key, keys){
+        QDomElement measurement = request.response.createElement("measurement");
+        measurement.setAttribute("name", key);
+        measurement.setAttribute("value", reading.value(key).toString());
+        request.response.documentElement().appendChild(measurement);
+    }
+
+    emit this->sendResponse(request);
+
+}
+
+/*!
+ * \brief OiRequestHandler::activeFeatureChanged
+ */
+void OiRequestHandler::activeFeatureChanged(){
+
+    //set up request
+    OiRequestResponse request;
+    request.requesterId = -1;
+    request.myRequestType = OiRequestResponse::eActiveFeatureChanged;
+    this->prepareResponse(request);
+
+    emit this->sendResponse(request);
+
+}
+
+/*!
+ * \brief OiRequestHandler::activeStationChanged
+ */
+void OiRequestHandler::activeStationChanged(){
+
+    //set up request
+    OiRequestResponse request;
+    request.requesterId = -1;
+    request.myRequestType = OiRequestResponse::eActiveStationChanged;
+    this->prepareResponse(request);
+
+    emit this->sendResponse(request);
+
+}
+
+/*!
+ * \brief OiRequestHandler::activeCoordinateSystemChanged
+ */
+void OiRequestHandler::activeCoordinateSystemChanged(){
+
+    //set up request
+    OiRequestResponse request;
+    request.requesterId = -1;
+    request.myRequestType = OiRequestResponse::eActiveCoordinateSystemChanged;
+    this->prepareResponse(request);
+
+    emit this->sendResponse(request);
+
+}
+
+/*!
+ * \brief OiRequestHandler::featureSetChanged
+ */
+void OiRequestHandler::featureSetChanged(){
+
+    //set up request
+    OiRequestResponse request;
+    request.requesterId = -1;
+    request.myRequestType = OiRequestResponse::eFeatureSetChanged;
+    this->prepareResponse(request);
+
+    emit this->sendResponse(request);
+
+}
+
+/*!
+ * \brief OiRequestHandler::featureAttributesChanged
+ */
+void OiRequestHandler::featureAttributesChanged(){
+
+    //set up request
+    OiRequestResponse request;
+    request.requesterId = -1;
+    request.myRequestType = OiRequestResponse::eFeatureAttributesChanged;
+    this->prepareResponse(request);
+
+    emit this->sendResponse(request);
 
 }
 
