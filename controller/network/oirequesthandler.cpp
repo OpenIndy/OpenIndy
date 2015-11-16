@@ -30,6 +30,38 @@ void OiRequestHandler::setCurrentJob(const QPointer<OiJob> &job){
 }
 
 /*!
+ * \brief OiRequestHandler::getSensorConfigManager
+ * \return
+ */
+const QPointer<SensorConfigurationManager> &OiRequestHandler::getSensorConfigManager() const{
+    return this->sensorConfigManager;
+}
+
+/*!
+ * \brief OiRequestHandler::setSensorConfigManager
+ * \param sensorConfigManager
+ */
+void OiRequestHandler::setSensorConfigManager(const QPointer<SensorConfigurationManager> &sensorConfigManager){
+    this->sensorConfigManager = sensorConfigManager;
+}
+
+/*!
+ * \brief OiRequestHandler::getMeasurementConfigManager
+ * \return
+ */
+const QPointer<MeasurementConfigManager> &OiRequestHandler::getMeasurementConfigManager() const{
+    return this->measurementConfigManager;
+}
+
+/*!
+ * \brief OiRequestHandler::setMeasurementConfigManager
+ * \param measurementConfigManager
+ */
+void OiRequestHandler::setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &measurementConfigManager){
+    this->measurementConfigManager = measurementConfigManager;
+}
+
+/*!
  * \brief OiRequestHandler::receiveRequest
  * Parses a XML request and calls the corresponding method to do the requested task
  * \param request
@@ -145,18 +177,6 @@ void OiRequestHandler::realTimeReading(const QVariantMap &reading)
 {
 
 }
-
-/*!
- * \brief OiRequestHandler::receiveOiToolResponse
- * \param response
- */
-/*void OiRequestHandler::receiveOiToolResponse(OiRequestResponse response){
-
-    response.myRequestType = OiRequestResponse::eOiToolRequest;
-
-    emit this->sendResponse(response);
-
-}*/
 
 /*!
  * \brief OiRequestHandler::getProject
@@ -377,9 +397,10 @@ void OiRequestHandler::aim(OiRequestResponse &request){
     request.myRequestType = OiRequestResponse::eAim;
     this->prepareResponse(request);
 
-    //check if active feature is valid
-    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getGeometry().isNull()){
-        request.response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveFeature);
+    //get feature id
+    QDomElement id = request.request.documentElement().firstChildElement("feature");
+    if(id.isNull() || !id.hasAttribute("ref")){
+        request.response.documentElement().setAttribute("errorCode", OiRequestResponse::eWrongFormat);
         emit this->sendResponse(request);
         return;
     }
@@ -404,6 +425,15 @@ void OiRequestHandler::aim(OiRequestResponse &request){
         emit this->sendResponse(request);
         return;
     }
+
+    //set the active feature
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id.attribute("ref").toInt());
+    if(feature.isNull() || feature->getGeometry().isNull()){
+        request.response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoFeatureWithId);
+        emit this->sendResponse(request);
+        return;
+    }
+    feature->getGeometry()->setActiveFeatureState(true);
 
     //start aiming the active feature
     emit this->startAim();
@@ -422,9 +452,10 @@ void OiRequestHandler::measure(OiRequestResponse &request){
     request.myRequestType = OiRequestResponse::eMeasure;
     this->prepareResponse(request);
 
-    //check if active feature is valid
-    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getGeometry().isNull()){
-        request.response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoActiveFeature);
+    //get feature id
+    QDomElement id = request.request.documentElement().firstChildElement("feature");
+    if(id.isNull() || !id.hasAttribute("ref")){
+        request.response.documentElement().setAttribute("errorCode", OiRequestResponse::eWrongFormat);
         emit this->sendResponse(request);
         return;
     }
@@ -450,8 +481,19 @@ void OiRequestHandler::measure(OiRequestResponse &request){
         return;
     }
 
+    //set the active feature
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id.attribute("ref").toInt());
+    if(feature.isNull() || feature->getGeometry().isNull()){
+        request.response.documentElement().setAttribute("errorCode", OiRequestResponse::eNoFeatureWithId);
+        emit this->sendResponse(request);
+        return;
+    }
+    feature->getGeometry()->setActiveFeatureState(true);
+
     //start measurement
     emit this->startMeasurement();
+
+    emit this->sendResponse(request);
 
 }
 
@@ -633,6 +675,12 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
     request.myRequestType = OiRequestResponse::eAddFeatures;
     this->prepareResponse(request);
 
+    //check measurement config manager
+    if(this->measurementConfigManager.isNull()){
+        this->sendErrorMessage(request, OiRequestResponse::eGetMeasurementConfigs, OiRequestResponse::eNoMeasurementConfigManager);
+        return;
+    }
+
     //check request
     QDomElement type = request.request.documentElement().firstChildElement("type");
     QDomElement name = request.request.documentElement().firstChildElement("name");
@@ -643,14 +691,14 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
     QDomElement nominalSystem = request.request.documentElement().firstChildElement("nominalSystem");
     QDomElement measurementConfig = request.request.documentElement().firstChildElement("measurementConfig");
     if(type.isNull() || name.isNull() || group.isNull() || count.isNull()
-            || !getAvailableFeatureTypes().contains(type.text().toInt())){
+            || this->getFeatureType(type.text().toInt()) == eUndefinedFeature){
         this->sendErrorMessage(request, OiRequestResponse::eAddFeatures, OiRequestResponse::eWrongFormat);
         return;
     }
 
     //set up feature attributes
     FeatureAttributes attr;
-    attr.typeOfFeature = type.text().toInt();
+    attr.typeOfFeature = this->getFeatureType(type.text().toInt());
     attr.name = name.text();
     attr.group = group.text();
     attr.count = count.text().toInt();
@@ -668,7 +716,20 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
     }
 
     //add features
-    this->currentJob->addFeatures(attr);
+    QList<QPointer<FeatureWrapper> > features = this->currentJob->addFeatures(attr);
+
+    //get and check measurement config
+    MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(attr.mConfig);
+    if(!mConfig.getIsValid()){
+        mConfig = this->measurementConfigManager->getProjectMeasurementConfig(attr.mConfig);
+    }
+
+    //pass measurement config to features
+    foreach(const QPointer<FeatureWrapper> &feature, features){
+        if(!feature.isNull() && !feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
+            feature->getGeometry()->setMeasurementConfig(mConfig);
+        }
+    }
 
     emit this->sendResponse(request);
 
@@ -730,82 +791,56 @@ void OiRequestHandler::getObservations(OiRequestResponse &request){
         QDomText zText = request.response.createTextNode(QString::number(obs->getXYZ().getAt(2)));
         z.appendChild(zText);
         observation.appendChild(z);
-        QDomElement vx = request.response.createElement("vx");
-        QDomText vxText = request.response.createTextNode(QString::number(0.0));
-        vx.appendChild(vxText);
-        observation.appendChild(isNominal);
-        QDomElement vy = request.response.createElement("vy");
-        QDomText vyText = request.response.createTextNode(QString::number(0.0));
-        vy.appendChild(vyText);
-        observation.appendChild(vy);
-        QDomElement vz = request.response.createElement("vz");
-        QDomText vzText = request.response.createTextNode(QString::number(0.0));
-        vz.appendChild(vzText);
-        observation.appendChild(vz);
-        QDomElement v = request.response.createElement("v");
-        QDomText vText = request.response.createTextNode(QString::number(0.0));
-        v.appendChild(vText);
-        observation.appendChild(v);
-        QDomElement isUsed = request.response.createElement("isUsed");
-        QDomText isUsedText = request.response.createTextNode(true);
-        isUsed.appendChild(isUsedText);
-        observation.appendChild(isUsed);
         QDomElement isValid = request.response.createElement("isValid");
         QDomText isValidText = request.response.createTextNode(obs->getIsValid()?"1":"0");
         isValid.appendChild(isValidText);
         observation.appendChild(isValid);
 
-        /*
-         * case eObservationDisplayVX:
-            if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
-                const Statistic &statistic = geometry->getFunctions().at(0)->getStatistic();
-                Residual residual = statistic.getDisplayResidual(observation->getId());
-                QString attr = getObservationDisplayAttributesName(eObservationDisplayVX);
-                if(residual.elementId == observation->getId() && residual.corrections.contains(attr)){
-                    return QString::number(convertFromDefault(residual.corrections[attr],
-                                                              this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-                                           'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
-                }
+        //add deviations and use state
+        if(feature->getGeometry()->getFunctions().size() > 0
+                && !feature->getGeometry()->getFunctions().at(0).isNull()){
+
+            //get function and statistic
+            QPointer<Function> function = feature->getGeometry()->getFunctions().at(0);
+            const Statistic &statistic = function->getStatistic();
+            Residual residual = statistic.getDisplayResidual(obs->getId());
+
+            //get deviation attributes
+            QString attrVx = getObservationDisplayAttributesName(eObservationDisplayVX);
+            QString attrVy = getObservationDisplayAttributesName(eObservationDisplayVY);
+            QString attrVz = getObservationDisplayAttributesName(eObservationDisplayVZ);
+            QString attrV = getObservationDisplayAttributesName(eObservationDisplayV);
+            if(residual.elementId == obs->getId() && residual.corrections.contains(attrVx)
+                    && residual.corrections.contains(attrVy) && residual.corrections.contains(attrVz)
+                    && residual.corrections.contains(attrV)){
+
+                //set up deviations
+                QDomElement vx = request.response.createElement("vx");
+                QDomText vxText = request.response.createTextNode(QString::number(residual.corrections[attrVx]));
+                vx.appendChild(vxText);
+                observation.appendChild(vx);
+                QDomElement vy = request.response.createElement("vy");
+                QDomText vyText = request.response.createTextNode(QString::number(residual.corrections[attrVy]));
+                vy.appendChild(vyText);
+                observation.appendChild(vy);
+                QDomElement vz = request.response.createElement("vz");
+                QDomText vzText = request.response.createTextNode(QString::number(residual.corrections[attrVz]));
+                vz.appendChild(vzText);
+                observation.appendChild(vz);
+                QDomElement v = request.response.createElement("v");
+                QDomText vText = request.response.createTextNode(QString::number(residual.corrections[attrV]));
+                v.appendChild(vText);
+                observation.appendChild(v);
+
             }
-            break;
-        case eObservationDisplayVY:
-            if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
-                const Statistic &statistic = geometry->getFunctions().at(0)->getStatistic();
-                Residual residual = statistic.getDisplayResidual(observation->getId());
-                QString attr = getObservationDisplayAttributesName(eObservationDisplayVY);
-                if(residual.elementId == observation->getId() && residual.corrections.contains(attr)){
-                    return QString::number(convertFromDefault(residual.corrections[attr],
-                                                              this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-                                           'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
-                }
-            }
-            break;
-        case eObservationDisplayVZ:
-            if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
-                const Statistic &statistic = geometry->getFunctions().at(0)->getStatistic();
-                Residual residual = statistic.getDisplayResidual(observation->getId());
-                QString attr = getObservationDisplayAttributesName(eObservationDisplayVZ);
-                if(residual.elementId == observation->getId() && residual.corrections.contains(attr)){
-                    return QString::number(convertFromDefault(residual.corrections[attr],
-                                                              this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-                                           'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
-                }
-            }
-            break;
-        case eObservationDisplayV:
-            if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
-                const Statistic &statistic = geometry->getFunctions().at(0)->getStatistic();
-                Residual residual = statistic.getDisplayResidual(observation->getId());
-                QString attr = getObservationDisplayAttributesName(eObservationDisplayV);
-                if(residual.elementId == observation->getId() && residual.corrections.contains(attr)){
-                    return QString::number(convertFromDefault(residual.corrections[attr],
-                                                              this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-                                           'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
-                }
-            }
-            break;
+
+            //set up use state
+            QDomElement isUsed = request.response.createElement("isUsed");
+            QDomText isUsedText = request.response.createTextNode(function->getIsUsed(0, obs->getId())?"1":"0");
+            isUsed.appendChild(isUsedText);
+            observation.appendChild(isUsed);
+
         }
-         * */
 
         //add observation
         response.appendChild(observation);
@@ -823,6 +858,66 @@ void OiRequestHandler::getObservations(OiRequestResponse &request){
  */
 void OiRequestHandler::removeObservations(OiRequestResponse &request){
 
+    //set up request
+    request.myRequestType = OiRequestResponse::eRemoveObservations;
+    this->prepareResponse(request);
+
+    //check request
+    QDomElement id = request.request.documentElement().firstChildElement("id");
+    QDomElement observations = request.request.documentElement().firstChildElement("observations");
+    if(id.isNull() || observations.isNull()){
+        this->sendErrorMessage(request, OiRequestResponse::eRemoveObservations, OiRequestResponse::eWrongFormat);
+        return;
+    }
+
+    //get and check feature
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id.text().toInt());
+    if(feature.isNull() || feature->getGeometry().isNull()){
+        this->sendErrorMessage(request, OiRequestResponse::eRemoveObservations, OiRequestResponse::eNoFeatureWithId);
+        return;
+    }
+
+    //get a list of observations and functions of the feature
+    QList<QPointer<Observation> > featureObservations = feature->getGeometry()->getObservations();
+    QList<QPointer<Function> > featureFunctions = feature->getGeometry()->getFunctions();
+
+    //get a list of observation id's that shall be removed
+    QList<int> obs2Remove;
+    QDomNodeList observationList = observations.childNodes();
+    for(int i = 0; i < observationList.size(); i++){
+
+        //parse node to element
+        QDomElement elem = observationList.at(i).toElement();
+        if(elem.isNull() || !elem.hasAttribute("id")){
+            continue;
+        }
+
+        obs2Remove.append(elem.attribute("id").toInt());
+
+    }
+
+    //run through all observations and remove the marked ones
+    foreach(const QPointer<Observation> &obs, featureObservations){
+
+        //check observation
+        if(obs.isNull() || !obs2Remove.contains(obs->getId())){
+            continue;
+        }
+
+        //remove observation from functions
+        foreach(const QPointer<Function> &function, featureFunctions){
+            if(!function.isNull()){
+                function->removeInputElement(obs->getId());
+            }
+        }
+
+        //reset dependency between feature and observation
+        obs->removeTargetGeometry(feature->getGeometry()->getId());
+
+    }
+
+    emit this->sendResponse(request);
+
 }
 
 /*!
@@ -832,25 +927,30 @@ void OiRequestHandler::removeObservations(OiRequestResponse &request){
 void OiRequestHandler::getParameters(OiRequestResponse &request){
 
     //set up request
-    request.myRequestType = OiRequestResponse::eGetObservations;
+    request.myRequestType = OiRequestResponse::eGetParameters;
     this->prepareResponse(request);
 
     //check request
     QDomElement id = request.request.documentElement().firstChildElement("id");
     if(id.isNull()){
-        this->sendErrorMessage(request, OiRequestResponse::eGetObservations, OiRequestResponse::eWrongFormat);
+        this->sendErrorMessage(request, OiRequestResponse::eGetParameters, OiRequestResponse::eWrongFormat);
         return;
     }
 
     //get and check feature by id
     QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id.text().toInt());
     if(feature.isNull() || feature->getFeature().isNull()){
-        this->sendErrorMessage(request, OiRequestResponse::eGetObservations, OiRequestResponse::eNoFeatureWithId);
+        this->sendErrorMessage(request, OiRequestResponse::eGetParameters, OiRequestResponse::eNoFeatureWithId);
         return;
     }
 
     //add id
     request.response.documentElement().appendChild(request.response.importNode(id, true));
+
+    //add parameters
+    QDomElement parameters = request.response.createElement("parameters");
+    this->addParameters(request.response, parameters, feature);
+    request.response.appendChild(parameters);
 
     emit this->sendResponse(request);
 
@@ -862,6 +962,114 @@ void OiRequestHandler::getParameters(OiRequestResponse &request){
  */
 void OiRequestHandler::getMeasurementConfigs(OiRequestResponse &request){
 
+    //set up request
+    request.myRequestType = OiRequestResponse::eGetMeasurementConfigs;
+    this->prepareResponse(request);
+
+    //check measurement config manager
+    if(this->measurementConfigManager.isNull()){
+        this->sendErrorMessage(request, OiRequestResponse::eGetMeasurementConfigs, OiRequestResponse::eNoMeasurementConfigManager);
+        return;
+    }
+
+    //get all measurement configs
+    QList<MeasurementConfig> savedConfigs = this->measurementConfigManager->getSavedMeasurementConfigs();
+    QList<MeasurementConfig> projectConfigs = this->measurementConfigManager->getProjectMeasurementConfigs();
+
+    //add configs
+    QDomElement configs = request.response.createElement("measurementConfigs");
+    foreach(const MeasurementConfig &mConfig, savedConfigs){
+        QDomElement config = request.response.createElement("measurementConfig");
+        QDomElement name = request.response.createElement("name");
+        QDomText nameText = request.response.createTextNode(mConfig.getName());
+        name.appendChild(nameText);
+        config.appendChild(name);
+        QDomElement isSaved = request.response.createElement("isSaved");
+        QDomText isSavedText = request.response.createTextNode("1");
+        isSaved.appendChild(isSavedText);
+        config.appendChild(isSaved);
+        QDomElement count = request.response.createElement("count");
+        QDomText countText = request.response.createTextNode(QString::number(mConfig.getCount()));
+        count.appendChild(countText);
+        config.appendChild(count);
+        QDomElement iterations = request.response.createElement("iterations");
+        QDomText iterationsText = request.response.createTextNode(QString::number(mConfig.getIterations()));
+        iterations.appendChild(iterationsText);
+        config.appendChild(iterations);
+        QDomElement measureTwoSides = request.response.createElement("measureTwoSides");
+        QDomText measureTwoSidesText = request.response.createTextNode(mConfig.getMeasureTwoSides()?"1":"0");
+        measureTwoSides.appendChild(measureTwoSidesText);
+        config.appendChild(measureTwoSides);
+        QDomElement timeDependent = request.response.createElement("timeDependent");
+        QDomText timeDependentText = request.response.createTextNode(mConfig.getTimeDependent()?"1":"0");
+        timeDependent.appendChild(timeDependentText);
+        config.appendChild(timeDependent);
+        QDomElement distanceDependent = request.response.createElement("distanceDependent");
+        QDomText distanceDependentText = request.response.createTextNode(mConfig.getDistanceDependent()?"1":"0");
+        distanceDependent.appendChild(distanceDependentText);
+        config.appendChild(distanceDependent);
+        QDomElement timeInterval = request.response.createElement("timeInterval");
+        QDomText timeIntervalText = request.response.createTextNode(QString::number(mConfig.getTimeInterval()));
+        timeInterval.appendChild(timeIntervalText);
+        config.appendChild(timeInterval);
+        QDomElement distanceInterval = request.response.createElement("distanceInterval");
+        QDomText distanceIntervalText = request.response.createTextNode(QString::number(mConfig.getDistanceInterval()));
+        distanceInterval.appendChild(distanceIntervalText);
+        config.appendChild(distanceInterval);
+        QDomElement typeOfReading = request.response.createElement("typeOfReading");
+        QDomText typeOfReadingText = request.response.createTextNode(QString::number(mConfig.getTypeOfReading()));
+        typeOfReading.appendChild(typeOfReadingText);
+        config.appendChild(typeOfReading);
+        configs.appendChild(config);
+    }
+    foreach(const MeasurementConfig &mConfig, projectConfigs){
+        QDomElement config = request.response.createElement("measurementConfig");
+        QDomElement name = request.response.createElement("name");
+        QDomText nameText = request.response.createTextNode(mConfig.getName());
+        name.appendChild(nameText);
+        config.appendChild(name);
+        QDomElement isSaved = request.response.createElement("isSaved");
+        QDomText isSavedText = request.response.createTextNode("0");
+        isSaved.appendChild(isSavedText);
+        config.appendChild(isSaved);
+        QDomElement count = request.response.createElement("count");
+        QDomText countText = request.response.createTextNode(QString::number(mConfig.getCount()));
+        count.appendChild(countText);
+        config.appendChild(count);
+        QDomElement iterations = request.response.createElement("iterations");
+        QDomText iterationsText = request.response.createTextNode(QString::number(mConfig.getIterations()));
+        iterations.appendChild(iterationsText);
+        config.appendChild(iterations);
+        QDomElement measureTwoSides = request.response.createElement("measureTwoSides");
+        QDomText measureTwoSidesText = request.response.createTextNode(mConfig.getMeasureTwoSides()?"1":"0");
+        measureTwoSides.appendChild(measureTwoSidesText);
+        config.appendChild(measureTwoSides);
+        QDomElement timeDependent = request.response.createElement("timeDependent");
+        QDomText timeDependentText = request.response.createTextNode(mConfig.getTimeDependent()?"1":"0");
+        timeDependent.appendChild(timeDependentText);
+        config.appendChild(timeDependent);
+        QDomElement distanceDependent = request.response.createElement("distanceDependent");
+        QDomText distanceDependentText = request.response.createTextNode(mConfig.getDistanceDependent()?"1":"0");
+        distanceDependent.appendChild(distanceDependentText);
+        config.appendChild(distanceDependent);
+        QDomElement timeInterval = request.response.createElement("timeInterval");
+        QDomText timeIntervalText = request.response.createTextNode(QString::number(mConfig.getTimeInterval()));
+        timeInterval.appendChild(timeIntervalText);
+        config.appendChild(timeInterval);
+        QDomElement distanceInterval = request.response.createElement("distanceInterval");
+        QDomText distanceIntervalText = request.response.createTextNode(QString::number(mConfig.getDistanceInterval()));
+        distanceInterval.appendChild(distanceIntervalText);
+        config.appendChild(distanceInterval);
+        QDomElement typeOfReading = request.response.createElement("typeOfReading");
+        QDomText typeOfReadingText = request.response.createTextNode(QString::number(mConfig.getTypeOfReading()));
+        typeOfReading.appendChild(typeOfReadingText);
+        config.appendChild(typeOfReading);
+        configs.appendChild(config);
+    }
+    request.response.documentElement().appendChild(configs);
+
+    emit this->sendResponse(request);
+
 }
 
 /*!
@@ -870,6 +1078,74 @@ void OiRequestHandler::getMeasurementConfigs(OiRequestResponse &request){
  */
 void OiRequestHandler::getMeasurementConfig(OiRequestResponse &request){
 
+    //set up request
+    request.myRequestType = OiRequestResponse::eGetMeasurementConfig;
+    this->prepareResponse(request);
+
+    //check request
+    QDomElement id = request.request.documentElement().firstChildElement("id");
+    if(id.isNull()){
+        this->sendErrorMessage(request, OiRequestResponse::eGetMeasurementConfig, OiRequestResponse::eWrongFormat);
+        return;
+    }
+
+    //get and check feature by id
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id.text().toInt());
+    if(feature.isNull() || feature->getGeometry().isNull()){
+        this->sendErrorMessage(request, OiRequestResponse::eGetMeasurementConfig, OiRequestResponse::eNoFeatureWithId);
+        return;
+    }
+
+    //add id
+    request.response.documentElement().appendChild(request.response.importNode(id, true));
+
+    //add config
+    MeasurementConfig mConfig = feature->getGeometry()->getMeasurementConfig();
+    QDomElement config = request.response.createElement("measurementConfig");
+    QDomElement name = request.response.createElement("name");
+    QDomText nameText = request.response.createTextNode(mConfig.getName());
+    name.appendChild(nameText);
+    config.appendChild(name);
+    QDomElement isSaved = request.response.createElement("isSaved");
+    QDomText isSavedText = request.response.createTextNode("0");
+    isSaved.appendChild(isSavedText);
+    config.appendChild(isSaved);
+    QDomElement count = request.response.createElement("count");
+    QDomText countText = request.response.createTextNode(QString::number(mConfig.getCount()));
+    count.appendChild(countText);
+    config.appendChild(count);
+    QDomElement iterations = request.response.createElement("iterations");
+    QDomText iterationsText = request.response.createTextNode(QString::number(mConfig.getIterations()));
+    iterations.appendChild(iterationsText);
+    config.appendChild(iterations);
+    QDomElement measureTwoSides = request.response.createElement("measureTwoSides");
+    QDomText measureTwoSidesText = request.response.createTextNode(mConfig.getMeasureTwoSides()?"1":"0");
+    measureTwoSides.appendChild(measureTwoSidesText);
+    config.appendChild(measureTwoSides);
+    QDomElement timeDependent = request.response.createElement("timeDependent");
+    QDomText timeDependentText = request.response.createTextNode(mConfig.getTimeDependent()?"1":"0");
+    timeDependent.appendChild(timeDependentText);
+    config.appendChild(timeDependent);
+    QDomElement distanceDependent = request.response.createElement("distanceDependent");
+    QDomText distanceDependentText = request.response.createTextNode(mConfig.getDistanceDependent()?"1":"0");
+    distanceDependent.appendChild(distanceDependentText);
+    config.appendChild(distanceDependent);
+    QDomElement timeInterval = request.response.createElement("timeInterval");
+    QDomText timeIntervalText = request.response.createTextNode(QString::number(mConfig.getTimeInterval()));
+    timeInterval.appendChild(timeIntervalText);
+    config.appendChild(timeInterval);
+    QDomElement distanceInterval = request.response.createElement("distanceInterval");
+    QDomText distanceIntervalText = request.response.createTextNode(QString::number(mConfig.getDistanceInterval()));
+    distanceInterval.appendChild(distanceIntervalText);
+    config.appendChild(distanceInterval);
+    QDomElement typeOfReading = request.response.createElement("typeOfReading");
+    QDomText typeOfReadingText = request.response.createTextNode(QString::number(mConfig.getTypeOfReading()));
+    typeOfReading.appendChild(typeOfReadingText);
+    config.appendChild(typeOfReading);
+    request.response.documentElement().appendChild(config);
+
+    emit this->sendResponse(request);
+
 }
 
 /*!
@@ -877,6 +1153,50 @@ void OiRequestHandler::getMeasurementConfig(OiRequestResponse &request){
  * \param request
  */
 void OiRequestHandler::setMeasurementConfig(OiRequestResponse &request){
+
+    //set up request
+    request.myRequestType = OiRequestResponse::eSetMeasurementConfig;
+    this->prepareResponse(request);
+
+    //check measurement config manager
+    if(this->measurementConfigManager.isNull()){
+        this->sendErrorMessage(request, OiRequestResponse::eSetMeasurementConfig, OiRequestResponse::eNoMeasurementConfigManager);
+        return;
+    }
+
+    //check request
+    QDomElement id = request.request.documentElement().firstChildElement("id");
+    QDomElement measurementConfig = request.request.documentElement().firstChildElement("measurementConfig");
+    QDomElement isSaved = request.request.documentElement().firstChildElement("isSaved");
+    if(id.isNull() || measurementConfig.isNull() || isSaved.isNull()){
+        this->sendErrorMessage(request, OiRequestResponse::eSetMeasurementConfig, OiRequestResponse::eWrongFormat);
+        return;
+    }
+
+    //get and check feature by id
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id.text().toInt());
+    if(feature.isNull() || feature->getGeometry().isNull()){
+        this->sendErrorMessage(request, OiRequestResponse::eSetMeasurementConfig, OiRequestResponse::eNoFeatureWithId);
+        return;
+    }
+
+    //get and check measurement config
+    MeasurementConfig mConfig;
+    bool savedConfig = (bool)isSaved.text().toInt();
+    if(savedConfig){
+        mConfig = this->measurementConfigManager->getSavedMeasurementConfig(measurementConfig.text());
+    }else{
+        mConfig = this->measurementConfigManager->getProjectMeasurementConfig(measurementConfig.text());
+    }
+    if(!mConfig.getIsValid()){
+        this->sendErrorMessage(request, OiRequestResponse::eSetMeasurementConfig, OiRequestResponse::eNoMeasurementConfig);
+        return;
+    }
+
+    //pass measurement config to feature
+    feature->getGeometry()->setMeasurementConfig(mConfig);
+
+    emit this->sendResponse(request);
 
 }
 
@@ -932,6 +1252,314 @@ OiRequestResponse::RequestType OiRequestHandler::getRequestType(int id) const{
     }
 
     return OiRequestResponse::eUnknownRequest;
+
+}
+
+/*!
+ * \brief OiRequestHandler::getFeatureType
+ * \param type
+ * \return
+ */
+FeatureTypes OiRequestHandler::getFeatureType(int type) const{
+
+    switch(type){
+    case 0:
+        return eCircleFeature;
+    case 1:
+        return eConeFeature;
+    case 2:
+        return eCylinderFeature;
+    case 3:
+        return eEllipseFeature;
+    case 4:
+        return eEllipsoidFeature;
+    case 5:
+        return eHyperboloidFeature;
+    case 6:
+        return eLineFeature;
+    case 7:
+        return eNurbsFeature;
+    case 8:
+        return eParaboloidFeature;
+    case 9:
+        return ePlaneFeature;
+    case 10:
+        return ePointFeature;
+    case 11:
+        return ePointCloudFeature;
+    case 12:
+        return eScalarEntityAngleFeature;
+    case 13:
+        return eScalarEntityDistanceFeature;
+    case 14:
+        return eScalarEntityMeasurementSeriesFeature;
+    case 15:
+        return eScalarEntityTemperatureFeature;
+    case 16:
+        return eSlottedHoleFeature;
+    case 17:
+        return eSphereFeature;
+    case 18:
+        return eTorusFeature;
+    case 19:
+        return eCoordinateSystemFeature;
+    case 20:
+        return eStationFeature;
+    case 21:
+        return eTrafoParamFeature;
+    }
+
+    return eUndefinedFeature;
+
+}
+
+/*!
+ * \brief OiRequestHandler::addParameters
+ * Adds parameter elements the the parameters tag depending on the type of feature
+ * \param document
+ * \param parameters
+ * \param feature
+ */
+void OiRequestHandler::addParameters(QDomDocument &document, QDomElement &parameters, const QPointer<FeatureWrapper> &feature){
+
+    QMap<QString, double> values;
+
+    //get parameter/value pairs
+    switch(feature->getFeatureTypeEnum()){
+    case eCircleFeature:
+        if(feature->getCircle().isNull()){
+            return;
+        }
+        values.insert("x", feature->getCircle()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getCircle()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getCircle()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getCircle()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getCircle()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getCircle()->getDirection().getVector().getAt(2));
+        values.insert("radius", feature->getCircle()->getRadius().getRadius());
+        break;
+    case eConeFeature:
+        if(feature->getCone().isNull()){
+            return;
+        }
+        values.insert("x", feature->getCone()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getCone()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getCone()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getCone()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getCone()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getCone()->getDirection().getVector().getAt(2));
+        values.insert("aperture", feature->getCone()->getAperture());
+        break;
+    case eCylinderFeature:
+        if(feature->getCylinder().isNull()){
+            return;
+        }
+        values.insert("x", feature->getCylinder()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getCylinder()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getCylinder()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getCylinder()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getCylinder()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getCylinder()->getDirection().getVector().getAt(2));
+        values.insert("radius", feature->getCylinder()->getRadius().getRadius());
+        break;
+    case eEllipseFeature:
+        if(feature->getEllipse().isNull()){
+            return;
+        }
+        values.insert("x", feature->getEllipse()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getEllipse()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getEllipse()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getEllipse()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getEllipse()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getEllipse()->getDirection().getVector().getAt(2));
+        values.insert("a", feature->getEllipse()->getA());
+        values.insert("b", feature->getEllipse()->getB());
+        values.insert("i 2", feature->getEllipse()->getSemiMajorAxisDirection().getVector().getAt(0));
+        values.insert("j 2", feature->getEllipse()->getSemiMajorAxisDirection().getVector().getAt(1));
+        values.insert("k 2", feature->getEllipse()->getSemiMajorAxisDirection().getVector().getAt(2));
+        break;
+    case eEllipsoidFeature:
+        if(feature->getEllipsoid().isNull()){
+            return;
+        }
+        values.insert("x", feature->getEllipsoid()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getEllipsoid()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getEllipsoid()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getEllipsoid()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getEllipsoid()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getEllipsoid()->getDirection().getVector().getAt(2));
+        values.insert("a", feature->getEllipsoid()->getA());
+        values.insert("b", feature->getEllipsoid()->getB());
+        break;
+    case eHyperboloidFeature:
+        if(feature->getHyperboloid().isNull()){
+            return;
+        }
+        values.insert("x", feature->getHyperboloid()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getHyperboloid()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getHyperboloid()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getHyperboloid()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getHyperboloid()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getHyperboloid()->getDirection().getVector().getAt(2));
+        values.insert("a", feature->getHyperboloid()->getA());
+        values.insert("c", feature->getHyperboloid()->getC());
+        break;
+    case eLineFeature:
+        if(feature->getLine().isNull()){
+            return;
+        }
+        values.insert("x", feature->getLine()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getLine()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getLine()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getLine()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getLine()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getLine()->getDirection().getVector().getAt(2));
+        break;
+    case eNurbsFeature:
+        break;
+    case eParaboloidFeature:
+        if(feature->getParaboloid().isNull()){
+            return;
+        }
+        values.insert("x", feature->getParaboloid()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getParaboloid()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getParaboloid()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getParaboloid()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getParaboloid()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getParaboloid()->getDirection().getVector().getAt(2));
+        values.insert("a", feature->getParaboloid()->getA());
+        break;
+    case ePlaneFeature:
+        if(feature->getPlane().isNull()){
+            return;
+        }
+        values.insert("x", feature->getPlane()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getPlane()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getPlane()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getPlane()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getPlane()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getPlane()->getDirection().getVector().getAt(2));
+        break;
+    case ePointFeature:
+        if(feature->getPoint().isNull()){
+            return;
+        }
+        values.insert("x", feature->getPoint()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getPoint()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getPoint()->getPosition().getVector().getAt(2));
+    case ePointCloudFeature:
+        break;
+    case eScalarEntityAngleFeature:
+        if(feature->getScalarEntityAngle().isNull()){
+            return;
+        }
+        values.insert("angle", feature->getScalarEntityAngle()->getAngle());
+        break;
+    case eScalarEntityDistanceFeature:
+        if(feature->getScalarEntityDistance().isNull()){
+            return;
+        }
+        values.insert("distance", feature->getScalarEntityDistance()->getDistance());
+        break;
+    case eScalarEntityMeasurementSeriesFeature:
+        if(feature->getScalarEntityMeasurementSeries().isNull()){
+            return;
+        }
+        values.insert("measurement series", feature->getScalarEntityMeasurementSeries()->getSeriesValue());
+        break;
+    case eScalarEntityTemperatureFeature:
+        if(feature->getScalarEntityTemperature().isNull()){
+            return;
+        }
+        values.insert("temperature", feature->getScalarEntityTemperature()->getTemperature());
+        break;
+    case eSlottedHoleFeature:
+        if(feature->getSlottedHole().isNull()){
+            return;
+        }
+        values.insert("x", feature->getSlottedHole()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getSlottedHole()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getSlottedHole()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getSlottedHole()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getSlottedHole()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getSlottedHole()->getDirection().getVector().getAt(2));
+        values.insert("radius", feature->getSlottedHole()->getRadius().getRadius());
+        values.insert("length", feature->getSlottedHole()->getLength());
+        values.insert("i", feature->getSlottedHole()->getHoleAxis().getVector().getAt(0));
+        values.insert("j", feature->getSlottedHole()->getHoleAxis().getVector().getAt(1));
+        values.insert("k", feature->getSlottedHole()->getHoleAxis().getVector().getAt(2));
+        break;
+    case eSphereFeature:
+        if(feature->getSphere().isNull()){
+            return;
+        }
+        values.insert("x", feature->getSphere()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getSphere()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getSphere()->getPosition().getVector().getAt(2));
+        values.insert("radius", feature->getCircle()->getRadius().getRadius());
+        break;
+    case eTorusFeature:
+        if(feature->getTorus().isNull()){
+            return;
+        }
+        values.insert("x", feature->getTorus()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getTorus()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getTorus()->getPosition().getVector().getAt(2));
+        values.insert("i", feature->getTorus()->getDirection().getVector().getAt(0));
+        values.insert("j", feature->getTorus()->getDirection().getVector().getAt(1));
+        values.insert("k", feature->getTorus()->getDirection().getVector().getAt(2));
+        values.insert("radius", feature->getTorus()->getRadius().getRadius());
+        values.insert("radius 2", feature->getTorus()->getSmallRadius().getRadius());
+        break;
+    case eCoordinateSystemFeature:
+        if(feature->getCoordinateSystem().isNull()){
+            return;
+        }
+        values.insert("x", feature->getCoordinateSystem()->getOrigin().getVector().getAt(0));
+        values.insert("y", feature->getCoordinateSystem()->getOrigin().getVector().getAt(1));
+        values.insert("z", feature->getCoordinateSystem()->getOrigin().getVector().getAt(2));
+        values.insert("i", feature->getCoordinateSystem()->getXAxis().getVector().getAt(0));
+        values.insert("j", feature->getCoordinateSystem()->getXAxis().getVector().getAt(1));
+        values.insert("k", feature->getCoordinateSystem()->getXAxis().getVector().getAt(2));
+        values.insert("i 2", feature->getCoordinateSystem()->getYAxis().getVector().getAt(0));
+        values.insert("j 2", feature->getCoordinateSystem()->getYAxis().getVector().getAt(1));
+        values.insert("k 2", feature->getCoordinateSystem()->getYAxis().getVector().getAt(2));
+        values.insert("i 3", feature->getCoordinateSystem()->getZAxis().getVector().getAt(0));
+        values.insert("j 3", feature->getCoordinateSystem()->getZAxis().getVector().getAt(1));
+        values.insert("k 3", feature->getCoordinateSystem()->getZAxis().getVector().getAt(2));
+        break;
+    case eStationFeature:
+        if(feature->getStation().isNull()){
+            return;
+        }
+        values.insert("x", feature->getStation()->getPosition()->getPosition().getVector().getAt(0));
+        values.insert("y", feature->getStation()->getPosition()->getPosition().getVector().getAt(1));
+        values.insert("z", feature->getStation()->getPosition()->getPosition().getVector().getAt(2));
+        break;
+    case eTrafoParamFeature:
+        if(feature->getTrafoParam().isNull()){
+            return;
+        }
+        values.insert("tx", feature->getTrafoParam()->getTranslation().getAt(0));
+        values.insert("ty", feature->getTrafoParam()->getTranslation().getAt(1));
+        values.insert("tz", feature->getTrafoParam()->getTranslation().getAt(2));
+        values.insert("rx", feature->getTrafoParam()->getRotation().getAt(0));
+        values.insert("ry", feature->getTrafoParam()->getRotation().getAt(1));
+        values.insert("rz", feature->getTrafoParam()->getRotation().getAt(2));
+        values.insert("sx", feature->getTrafoParam()->getScale().getAt(0));
+        values.insert("sy", feature->getTrafoParam()->getScale().getAt(1));
+        values.insert("sz", feature->getTrafoParam()->getScale().getAt(2));
+        break;
+    }
+
+    //add the parameters
+    QStringList keys = values.keys();
+    foreach(const QString &key, keys){
+        QDomElement parameter = document.createElement("parameter");
+        parameter.setAttribute("name", key);
+        parameter.setAttribute("value", QString::number(values.value(key)));
+        parameters.appendChild(parameter);
+    }
 
 }
 

@@ -13,6 +13,8 @@
 #include "sensorlistener.h"
 #include "featureupdater.h"
 #include "featuresorter.h"
+#include "measurementconfigmanager.h"
+#include "sensorconfigurationmanager.h"
 
 /*!
  * \brief The OiRequestHandler class
@@ -31,6 +33,16 @@ public:
 
     const QPointer<OiJob> &getCurrentJob() const;
     void setCurrentJob(const QPointer<OiJob> &job);
+
+    //##########################
+    //get or set config managers
+    //##########################
+
+    const QPointer<SensorConfigurationManager> &getSensorConfigManager() const;
+    void setSensorConfigManager(const QPointer<SensorConfigurationManager> &sensorConfigManager);
+
+    const QPointer<MeasurementConfigManager> &getMeasurementConfigManager() const;
+    void setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &measurementConfigManager);
 
 public slots:
 
@@ -109,6 +121,12 @@ private:
     //parse request type id
     OiRequestResponse::RequestType getRequestType(int id) const;
 
+    //parse feature type
+    FeatureTypes getFeatureType(int type) const;
+
+    //add feature parameters
+    void addParameters(QDomDocument &document, QDomElement &parameters, const QPointer<FeatureWrapper> &feature);
+
     //send an error messages
     void sendErrorMessage(OiRequestResponse request, OiRequestResponse::RequestType type, OiRequestResponse::ErrorCode error);
 
@@ -127,6 +145,13 @@ private slots:
     //void measurementFinished(const bool &success);
 
 private:
+
+    //##############
+    //config manager
+    //##############
+
+    QPointer<SensorConfigurationManager> sensorConfigManager;
+    QPointer<MeasurementConfigManager> measurementConfigManager;
 
     //#################
     //helper attributes

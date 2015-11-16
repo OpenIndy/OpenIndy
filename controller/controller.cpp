@@ -1335,6 +1335,10 @@ void Controller::initConfigManager(){
     //pass config manager to project exchanger
     ProjectExchanger::setMeasurementConfigManager(this->measurementConfigManager);
 
+    //pass config manager to request handler
+    this->requestHandler.setMeasurementConfigManager(this->measurementConfigManager);
+    this->requestHandler.setSensorConfigManager(this->sensorConfigManager);
+
     //connect config manager
     QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
     QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
