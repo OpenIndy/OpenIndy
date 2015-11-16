@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QRegExp>
+#include <QThread>
 
 #include "oijob.h"
 #include "modelmanager.h"
@@ -171,7 +172,7 @@ signals:
     void trafoParamValidTimeChanged(const int &featureId);
     void trafoParamIsMovementChanged(const int &featureId);
 
-    //hole job instance changed
+    //whole job instance changed
     void currentJobChanged();
 
     //#################################
@@ -215,6 +216,14 @@ signals:
 
     void saveAsTriggered();
 
+    //##############################
+    //web socket server interactions
+    //##############################
+
+    //start and stop server
+    void startWebSocketServer();
+    void stopWebSocketServer();
+
 private slots:
 
     //###################################
@@ -246,6 +255,7 @@ private:
     void registerMetaTypes();
 
     //start or stop OpenIndy server
+    void initServer();
     void startServer();
     void stopServer();
 
@@ -260,6 +270,7 @@ private:
 
     void connectDataExchanger();
     void connectFeatureUpdater();
+    void connectRequestHandler();
 
 private:
 
@@ -279,8 +290,12 @@ private:
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
 
-    //server instance
-    OiWebSocketServer webSocketServer;
+    //thread and server instance
+    QThread serverThread;
+    QPointer<OiWebSocketServer> webSocketServer;
+
+    //request handler for web socket requests
+    OiRequestHandler requestHandler;
 
     //tool plugins
     QList<QPointer<Tool> > toolPlugins;

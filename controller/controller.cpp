@@ -6,6 +6,8 @@
  */
 Controller::Controller(QObject *parent) : QObject(parent){
 
+    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+
     //register meta types
     this->registerMetaTypes();
 
@@ -21,7 +23,8 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize config manager
     this->initConfigManager();
 
-    //start OpenIndy server
+    //init and start OpenIndy server
+    this->initServer();
     this->startServer();
 
     //initialize tool plugins
@@ -30,6 +33,7 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //connect helper objects
     this->connectDataExchanger();
     this->connectFeatureUpdater();
+    this->connectRequestHandler();
 
 }
 
@@ -1285,6 +1289,7 @@ void Controller::setJob(const QPointer<OiJob> &job){
     ModelManager::setCurrentJob(this->job);
     this->exchanger.setCurrentJob(this->job);
     this->featureUpdater.setCurrentJob(this->job);
+    this->requestHandler.setCurrentJob(this->job);
 
     emit this->currentJobChanged();
 
@@ -1405,14 +1410,39 @@ void Controller::registerMetaTypes(){
 }
 
 /*!
+ * \brief Controller::initServer
+ */
+void Controller::initServer(){
+
+    //create server object
+    this->webSocketServer = new OiWebSocketServer();
+
+    //connect server object
+    QObject::connect(this, &Controller::startWebSocketServer, this->webSocketServer, &OiWebSocketServer::startServer, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::stopWebSocketServer, this->webSocketServer, &OiWebSocketServer::stopServer, Qt::QueuedConnection);
+    QObject::connect(this->webSocketServer, &OiWebSocketServer::sendMessage, this, &Controller::log, Qt::QueuedConnection);
+    QObject::connect(this->webSocketServer, &OiWebSocketServer::sendRequest, &this->requestHandler, &OiRequestHandler::receiveRequest, Qt::QueuedConnection);
+    QObject::connect(&this->requestHandler, &OiRequestHandler::sendResponse, this->webSocketServer, &OiWebSocketServer::receiveResponse, Qt::QueuedConnection);
+
+    //move server object to thread
+    if(!this->serverThread.isRunning()){
+        this->serverThread.start();
+    }
+    this->webSocketServer->moveToThread(&this->serverThread);
+
+}
+
+/*!
  * \brief Controller::startServer
  */
 void Controller::startServer(){
 
-    //start web socket server
-    this->webSocketServer.startServer();
+    //check server instance
+    if(this->webSocketServer.isNull()){
+        return;
+    }
 
-    //connect web socket server
+    emit this->startWebSocketServer();
 
 }
 
@@ -1421,10 +1451,12 @@ void Controller::startServer(){
  */
 void Controller::stopServer(){
 
-    //stop web socket server
-    this->webSocketServer.stopServer();
+    //check server instance
+    if(this->webSocketServer.isNull()){
+        return;
+    }
 
-    //disconnect web socket server
+    emit this->stopWebSocketServer();
 
 }
 
@@ -1547,5 +1579,16 @@ void Controller::connectDataExchanger(){
  * \brief Controller::connectFeatureUpdater
  */
 void Controller::connectFeatureUpdater(){
+
+}
+
+/*!
+ * \brief Controller::connectRequestHandler
+ */
+void Controller::connectRequestHandler(){
+
+    //sensor actions
+    QObject::connect(&this->requestHandler, &OiRequestHandler::startAim, this, &Controller::startAim, Qt::AutoConnection);
+    QObject::connect(&this->requestHandler, &OiRequestHandler::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
 
 }

@@ -7,10 +7,23 @@ int OiWebSocketServer::currentId = 0;
  * \param parent
  */
 OiWebSocketServer::OiWebSocketServer(QObject *parent) :
-    QWebSocketServer("", QWebSocketServer::NonSecureMode, parent)
-{
-    QObject::connect(OiRequestHandler::getInstance(), &OiRequestHandler::sendResponse, this, &OiWebSocketServer::receiveResponse, Qt::AutoConnection);
+    QWebSocketServer("OiServer", QWebSocketServer::NonSecureMode, parent){
+
+    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+
+    //create web socket streamer
+    this->streamer = new OiWebSocketStreamer();
+
+    //listen to incoming connections
     QObject::connect(this, &OiWebSocketServer::newConnection, this, &OiWebSocketServer::incomingConnection, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief OiWebSocketServer::~OiWebSocketServer
+ */
+OiWebSocketServer::~OiWebSocketServer(){
+    this->stopServer();
 }
 
 /*!
@@ -29,9 +42,9 @@ int OiWebSocketServer::generateUniqueId(){
  */
 void OiWebSocketServer::startServer(){
     if(!this->listen(QHostAddress::Any,1235)){
-        Console::getInstance()->addLine("could not start local server");
+        emit this->sendMessage("Cannot start local server", eErrorMessage);
     }else{
-        Console::getInstance()->addLine("local server ready ...");
+        emit this->sendMessage("Local server ready ...", eInformationMessage);
     }
 }
 
@@ -46,10 +59,11 @@ void OiWebSocketServer::stopServer(){
         this->close();
     }
 
-    //stop the already existing threads
+    //close the already existing sockets
     for(int i = 0; i < this->usedSockets.size(); i++){
         if(!this->usedSockets[i].isNull()){
-            this->usedSockets[i]->exit();
+            this->usedSockets[i]->close();
+            delete this->usedSockets[i];
         }
     }
 
@@ -62,34 +76,21 @@ void OiWebSocketServer::stopServer(){
  */
 void OiWebSocketServer::incomingConnection(){
 
+    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+
     //create web socket instance
     QPointer<QWebSocket> mySocket = this->nextPendingConnection();
     QPointer<OiWebSocket> myConnection = new OiWebSocket();
     myConnection->setSocket(mySocket);
 
-    Console::getInstance()->addLine("Connecting to client " + QString::number(myConnection->getInternalRef()) + " ...");
+    emit this->sendMessage(QString("Connecting to client %1 ...").arg(QString::number(myConnection->getInternalRef())), eInformationMessage);
 
-    QObject::connect(myConnection, &OiWebSocket::finished, myConnection, &OiWebSocket::deleteLater, Qt::AutoConnection);
-    QObject::connect(myConnection, &OiWebSocket::sendRequest, OiRequestHandler::getInstance(), &OiRequestHandler::receiveRequest, Qt::AutoConnection);
+    //connect web socket
+    QObject::connect(myConnection, &OiWebSocket::disconnected, myConnection, &OiWebSocket::deleteLater, Qt::AutoConnection);
+    QObject::connect(myConnection, &OiWebSocket::sendRequest, this, &OiWebSocketServer::sendRequest, Qt::AutoConnection);
+    QObject::connect(this, &OiWebSocketServer::receiveResponse, myConnection, &OiWebSocket::receiveResponse, Qt::AutoConnection);
 
+    //add web socket to list of used sockets
     this->usedSockets.append(myConnection);
-    myConnection->start();
-
-}
-
-/*!
- * \brief OiServer::receiveResponse
- * Is called from OiRequestHandler whenever a client request was done and the response is available
- * \param response
- */
-void OiWebSocketServer::receiveResponse(OiRequestResponse response){
-
-    //send the response to the correct client
-    foreach(const QPointer<OiWebSocket> &socket, this->usedSockets){
-        if(!socket.isNull() && socket->getInternalRef() == response.requesterId){
-            socket->receiveResponse(response);
-            return;
-        }
-    }
 
 }

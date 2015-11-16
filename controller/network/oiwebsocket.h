@@ -3,26 +3,27 @@
 
 #include <QObject>
 #include <QWebSocket>
-#include <QThread>
 #include <QtXml>
 #include <QPointer>
 
 #include "types.h"
-#include "console.h"
 #include "oirequestresponse.h"
-
-using namespace oi;
 
 /*!
  * \brief The OiWebSocket class
  * Represents a websocket connection of a client to OpenIndy
  */
-class OiWebSocket : public QThread
+class OiWebSocket : public QObject
 {
     Q_OBJECT
 
 public:
     explicit OiWebSocket(QObject *parent = 0);
+    ~OiWebSocket();
+
+    //##########
+    //set socket
+    //##########
 
     bool setSocket(const QPointer<QWebSocket> &mySocket);
 
@@ -30,23 +31,36 @@ public:
     //get socket identifier
     //#####################
 
-    int getInternalRef();
+    int getInternalRef() const;
 
 signals:
+
+    //###############################
+    //inform about connection changes
+    //###############################
+
+    void connected();
+    void disconnected();
 
     //##########################
     //send a request to OpenIndy
     //##########################
 
-    void sendRequest(OiRequestResponse request);
+    void sendRequest(const oi::OiRequestResponse &request);
 
 public slots:
+
+    //#######################
+    //close socket connection
+    //#######################
+
+    void close();
 
     //##############################
     //recevie response from OpenIndy
     //##############################
 
-    void receiveResponse(OiRequestResponse response);
+    void receiveResponse(const oi::OiRequestResponse &response);
 
 private slots:
 

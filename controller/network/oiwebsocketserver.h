@@ -5,11 +5,10 @@
 #include <QList>
 #include <QPointer>
 
-#include "console.h"
+#include "types.h"
 #include "oiwebsocket.h"
 #include "oirequesthandler.h"
-
-using namespace oi;
+#include "oiwebsocketstreamer.h"
 
 /*!
  * \brief The OiWebSocketServer class
@@ -21,8 +20,29 @@ class OiWebSocketServer : public QWebSocketServer
 
 public:
     explicit OiWebSocketServer(QObject *parent = 0);
+    ~OiWebSocketServer();
 
     static int generateUniqueId();
+
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
+    //##########################
+    //send a request to OpenIndy
+    //##########################
+
+    void sendRequest(oi::OiRequestResponse request);
+
+    //##############################
+    //send response to the requester
+    //##############################
+
+    void receiveResponse(const OiRequestResponse &response);
 
 public slots:
 
@@ -32,15 +52,14 @@ public slots:
 
     void startServer();
     void stopServer();
-    void incomingConnection();
 
 private slots:
 
-    //##############################
-    //send response to the requester
-    //##############################
+    //######################
+    //new client connections
+    //######################
 
-    void receiveResponse(OiRequestResponse response);
+    void incomingConnection();
 
 private:
 
@@ -48,8 +67,10 @@ private:
     //helper attributes
     //#################
 
-    QList<QPointer<OiWebSocket> > usedSockets;
+    QPointer<OiWebSocketStreamer> streamer;
+
     static int currentId;
+    QList<QPointer<OiWebSocket> > usedSockets;
 
 };
 
