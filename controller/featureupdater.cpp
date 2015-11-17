@@ -35,81 +35,6 @@ void FeatureUpdater::setCurrentJob(const QPointer<OiJob> &job){
 }
 
 /*!
- * \brief FeatureUpdater::recalcAll
- * Recalculates the hole set of features and trafo params of the current OpenIndy job
- */
-/*void FeatureUpdater::recalcAll(){
-
-    //check job
-    if(this->currentJob.isNull()){
-        return;
-    }
-
-    //check active coordinate system
-    if(this->currentJob->getActiveCoordinateSystem().isNull()){
-        return;
-    }
-
-    //save a list with ids of the solved trafo params
-    QList<int> solvedTrafoParams;
-
-    //run through all nominal systems
-    foreach(const QPointer<CoordinateSystem> &system, this->currentJob->getCoordinateSystemsList()){
-
-        //check system
-        if(system.isNull()){
-            continue;
-        }
-
-        //run through all trafo params of the system
-        foreach(const QPointer<TrafoParam> &tp, system->getTransformationParameters()){
-
-            //check trafo param
-            if(tp.isNull()){
-                continue;
-            }
-
-            //recalculate the trafo param if not yet done
-            if(!solvedTrafoParams.contains(tp->getId())){
-               this->recalcTrafoParam(tp);
-               solvedTrafoParams.append(tp->getId());
-            }
-
-        }
-
-    }
-
-    //run through all station systems
-    foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
-
-        //check station system
-        if(station.isNull() || station->getCoordinateSystem().isNull()){
-            continue;
-        }
-
-        //run through all trafo params of the station system
-        foreach(const QPointer<TrafoParam> &tp, station->getCoordinateSystem()->getTransformationParameters()){
-
-            //check trafo param
-            if(tp.isNull()){
-                continue;
-            }
-
-            //recalculate the trafo param if not yet done
-            if(!solvedTrafoParams.contains(tp->getId())){
-                this->recalcTrafoParam(tp);
-                solvedTrafoParams.append(tp->getId());
-            }
-
-        }
-    }
-
-    //recalculate all features
-    this->recalcFeatureSet();
-
-}*/
-
-/*!
  * \brief FeatureUpdater::recalcFeatureSet
  * Recalculate the hole set of features of the current OpenIndy job
  */
@@ -244,6 +169,9 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
 
     }
 
+    //recalculate the whole feature set (because transformation parameters have changed)
+    this->switchCoordinateSystem();
+
 }
 
 /*!
@@ -321,6 +249,8 @@ void FeatureUpdater::connectJob(){
 
     QObject::connect(this->currentJob.data(), &OiJob::recalcFeature, this, &FeatureUpdater::recalcFeature, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureUpdater::switchCoordinateSystem, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::trafoParamParametersChanged, this, &FeatureUpdater::switchCoordinateSystem, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::trafoParamIsUsedChanged, this, &FeatureUpdater::switchCoordinateSystem, Qt::AutoConnection);
 
 }
 
