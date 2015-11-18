@@ -6,6 +6,8 @@
  */
 Controller::Controller(QObject *parent) : QObject(parent){
 
+    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+
     //register meta types
     this->registerMetaTypes();
 
@@ -21,12 +23,30 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize config manager
     this->initConfigManager();
 
+    //init and start OpenIndy server
+    this->initServer();
+    this->startServer();
+
     //initialize tool plugins
     this->initToolPlugins();
 
     //connect helper objects
     this->connectDataExchanger();
     this->connectFeatureUpdater();
+    this->connectRequestHandler();
+
+}
+
+/*!
+ * \brief Controller::~Controller
+ */
+Controller::~Controller(){
+
+    //stop web socket server thread
+    if(this->serverThread.isRunning()){
+        this->serverThread.quit();
+        this->serverThread.wait();
+    }
 
 }
 
@@ -1282,6 +1302,7 @@ void Controller::setJob(const QPointer<OiJob> &job){
     ModelManager::setCurrentJob(this->job);
     this->exchanger.setCurrentJob(this->job);
     this->featureUpdater.setCurrentJob(this->job);
+    this->requestHandler.setCurrentJob(this->job);
 
     emit this->currentJobChanged();
 
@@ -1326,6 +1347,10 @@ void Controller::initConfigManager(){
 
     //pass config manager to project exchanger
     ProjectExchanger::setMeasurementConfigManager(this->measurementConfigManager);
+
+    //pass config manager to request handler
+    this->requestHandler.setMeasurementConfigManager(this->measurementConfigManager);
+    this->requestHandler.setSensorConfigManager(this->sensorConfigManager);
 
     //connect config manager
     QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
@@ -1397,6 +1422,58 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<QPointer<oi::Function> >("QPointer<Function>");
     qRegisterMetaType<QPointer<oi::FeatureWrapper> >("QPointer<FeatureWrapper>");
     qRegisterMetaType<QPointer<oi::Observation> >("QPointer<Observation>");
+    qRegisterMetaType<oi::OiRequestResponse>("OiRequestResponse");
+
+}
+
+/*!
+ * \brief Controller::initServer
+ */
+void Controller::initServer(){
+
+    //create server object
+    this->webSocketServer = new OiWebSocketServer();
+
+    //connect server object
+    QObject::connect(this, &Controller::startWebSocketServer, this->webSocketServer, &OiWebSocketServer::startServer, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::stopWebSocketServer, this->webSocketServer, &OiWebSocketServer::stopServer, Qt::QueuedConnection);
+    QObject::connect(this->webSocketServer, &OiWebSocketServer::sendMessage, this, &Controller::log, Qt::QueuedConnection);
+    QObject::connect(this->webSocketServer, &OiWebSocketServer::sendRequest, &this->requestHandler, &OiRequestHandler::receiveRequest, Qt::QueuedConnection);
+    QObject::connect(&this->requestHandler, &OiRequestHandler::sendResponse, this->webSocketServer, &OiWebSocketServer::receiveResponse, Qt::QueuedConnection);
+
+    //move server object to thread
+    if(!this->serverThread.isRunning()){
+        this->serverThread.start();
+    }
+    this->webSocketServer->moveToThread(&this->serverThread);
+
+}
+
+/*!
+ * \brief Controller::startServer
+ */
+void Controller::startServer(){
+
+    //check server instance
+    if(this->webSocketServer.isNull()){
+        return;
+    }
+
+    emit this->startWebSocketServer();
+
+}
+
+/*!
+ * \brief Controller::stopServer
+ */
+void Controller::stopServer(){
+
+    //check server instance
+    if(this->webSocketServer.isNull()){
+        return;
+    }
+
+    emit this->stopWebSocketServer();
 
 }
 
@@ -1519,5 +1596,26 @@ void Controller::connectDataExchanger(){
  * \brief Controller::connectFeatureUpdater
  */
 void Controller::connectFeatureUpdater(){
+
+}
+
+/*!
+ * \brief Controller::connectRequestHandler
+ */
+void Controller::connectRequestHandler(){
+
+    //sensor actions
+    QObject::connect(&this->requestHandler, &OiRequestHandler::startAim, this, &Controller::startAim, Qt::AutoConnection);
+    QObject::connect(&this->requestHandler, &OiRequestHandler::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
+
+    //connect streaming
+    QObject::connect(this, &Controller::sensorActionStarted, &this->requestHandler, &OiRequestHandler::sensorActionStarted, Qt::AutoConnection);
+    QObject::connect(this, &Controller::sensorActionFinished, &this->requestHandler, &OiRequestHandler::sensorActionFinished, Qt::AutoConnection);
+    QObject::connect(this, &Controller::showClientMessage, &this->requestHandler, &OiRequestHandler::log, Qt::AutoConnection);
+    QObject::connect(this, &Controller::activeFeatureChanged, &this->requestHandler, &OiRequestHandler::activeFeatureChanged, Qt::AutoConnection);
+    QObject::connect(this, &Controller::activeStationChanged, &this->requestHandler, &OiRequestHandler::activeStationChanged, Qt::AutoConnection);
+    QObject::connect(this, &Controller::activeCoordinateSystemChanged, &this->requestHandler, &OiRequestHandler::activeCoordinateSystemChanged, Qt::AutoConnection);
+    QObject::connect(this, &Controller::featureSetChanged, &this->requestHandler, &OiRequestHandler::featureSetChanged, Qt::AutoConnection);
+    QObject::connect(this, &Controller::featureAttributesChanged, &this->requestHandler, &OiRequestHandler::featureAttributesChanged, Qt::AutoConnection);
 
 }

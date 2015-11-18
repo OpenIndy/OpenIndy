@@ -1091,6 +1091,17 @@ void MainWindow::on_actionActivate_station_triggered(){
     }
     QModelIndex index = selection.at(0);
 
+    //let the user confirm the task
+    QMessageBox msgBox;
+    msgBox.setText(QString("Do you really want to activate station %1?").arg(index.data(Qt::DisplayRole).toString()));
+    msgBox.setInformativeText("");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+    int ret = msgBox.exec();
+    if(ret == QMessageBox::No){
+        return;
+    }
+
     //set selected station
     sourceModel->setActiveStation(model->mapToSource(index));
 

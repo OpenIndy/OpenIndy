@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QRegExp>
+#include <QThread>
 
 #include "oijob.h"
 #include "modelmanager.h"
@@ -23,6 +24,7 @@
 #include "featureupdater.h"
 #include "projectexchanger.h"
 #include "pluginloader.h"
+#include "oiwebsocketserver.h"
 
 using namespace oi;
 
@@ -35,6 +37,7 @@ class Controller : public QObject
 
 public:
     explicit Controller(QObject *parent = 0);
+    ~Controller();
 
 public:
 
@@ -170,7 +173,7 @@ signals:
     void trafoParamValidTimeChanged(const int &featureId);
     void trafoParamIsMovementChanged(const int &featureId);
 
-    //hole job instance changed
+    //whole job instance changed
     void currentJobChanged();
 
     //#################################
@@ -201,6 +204,7 @@ signals:
 
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
+    void showClientMessage(const QString &msg, const MessageTypes &msgType);
 
     //#################
     //update status bar
@@ -213,6 +217,14 @@ signals:
     //########################
 
     void saveAsTriggered();
+
+    //##############################
+    //web socket server interactions
+    //##############################
+
+    //start and stop server
+    void startWebSocketServer();
+    void stopWebSocketServer();
 
 private slots:
 
@@ -244,6 +256,11 @@ private:
 
     void registerMetaTypes();
 
+    //start or stop OpenIndy server
+    void initServer();
+    void startServer();
+    void stopServer();
+
     //create feature helpers
     bool createActualFromNominal(const QPointer<Geometry> &geometry);
     void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
@@ -255,6 +272,7 @@ private:
 
     void connectDataExchanger();
     void connectFeatureUpdater();
+    void connectRequestHandler();
 
 private:
 
@@ -273,6 +291,13 @@ private:
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
+
+    //thread and server instance
+    QThread serverThread;
+    QPointer<OiWebSocketServer> webSocketServer;
+
+    //request handler for web socket requests
+    OiRequestHandler requestHandler;
 
     //tool plugins
     QList<QPointer<Tool> > toolPlugins;
