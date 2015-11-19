@@ -1002,10 +1002,7 @@ void MainWindow::on_actionWatch_window_triggered(){
  */
 void MainWindow::on_actionOpen_triggered(){
 
-    //QFileDialog dlg;
-    //dlg.exec();
-
-    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "oi.xml (*.oi.xml)");
+    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "xml (*.xml)");
     if(filename.compare("") == 0){
         return;
     }
@@ -1033,7 +1030,7 @@ void MainWindow::on_actionSave_triggered(){
  * \brief MainWindow::on_actionSave_as_triggered
  */
 void MainWindow::on_actionSave_as_triggered(){
-    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "oi.xml (*.oi.xml)");
+    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
     if(filename.compare("") != 0){
         emit this->saveProject(filename);
     }
