@@ -5,6 +5,13 @@
  */
 MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(parent){
 
+    //connect geometry updates
+    QObject::connect(this, static_cast<void (MeasurementConfigManager::*)()>(&MeasurementConfigManager::measurementConfigurationsChanged),
+                     this, static_cast<void (MeasurementConfigManager::*)()>(&MeasurementConfigManager::updateGeometries), Qt::AutoConnection);
+    QObject::connect(this, &MeasurementConfigManager::measurementConfigurationReplaced,
+                     this, static_cast<void (MeasurementConfigManager::*)(const MeasurementConfig&, const MeasurementConfig &newMConfig)>
+                     (&MeasurementConfigManager::updateGeometries), Qt::AutoConnection);
+
 }
 
 /*!
@@ -28,6 +35,32 @@ MeasurementConfigManager &MeasurementConfigManager::operator=(const MeasurementC
     this->savedMeasurementConfigList = copy.savedMeasurementConfigList;
     this->activeMeasurementConfigs = copy.activeMeasurementConfigs;
     return *this;
+}
+
+/*!
+ * \brief MeasurementConfigManager::getCurrentJob
+ * \return
+ */
+const QPointer<OiJob> &MeasurementConfigManager::getCurrentJob() const{
+    return this->currentJob;
+}
+
+/*!
+ * \brief MeasurementConfigManager::setCurrentJob
+ * \param job
+ */
+void MeasurementConfigManager::setCurrentJob(const QPointer<OiJob> &job){
+    if(!job.isNull()){
+
+        //disconnect current job
+        if(!this->currentJob.isNull()){
+            this->disconnectJob();
+        }
+
+        this->currentJob = job;
+        this->connectJob();
+
+    }
 }
 
 /*!
@@ -322,6 +355,8 @@ void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, con
         this->savedMeasurementConfigList.replace(index, mConfig);
     }
 
+    emit this->measurementConfigurationReplaced(oldConfig, mConfig);
+
 }
 
 /*!
@@ -492,5 +527,94 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString &name){
     //############
 
     emit this->measurementConfigurationsChanged();
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::updateGeometries
+ * Calles whenever a measurement config has been added or removed
+ */
+void MeasurementConfigManager::updateGeometries(){
+
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //get a list of used measurement configs
+    const QList<QPair<QString, bool> > &usedConfigs = this->currentJob->getUsedMeasurementConfigs();
+
+    //check each used measurement config (wether it still exists)
+    QList<QPair<QString, bool> > removedConfigs;
+    QPair<QString, bool> key;
+    foreach(key, usedConfigs){
+        if(key.second && !this->savedMeasurementConfigMap.contains(key.first)){
+            removedConfigs.append(key);
+        }else if(!key.second && !this->projectMeasurementConfigMap.contains(key.first)){
+            removedConfigs.append(key);
+        }
+    }
+
+    //reset all geometry's mConfigs whose config has been removed
+    foreach(key, removedConfigs){
+
+        //get geometries by mConfig
+        QList<QPointer<Geometry> > geometries = this->currentJob->getGeometriesByMConfig(key);
+
+        //reset mConfigs
+        foreach(const QPointer<Geometry> &geom, geometries){
+            if(!geom.isNull()){
+                geom->setMeasurementConfig(MeasurementConfig());
+            }
+        }
+
+    }
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::updateGeometries
+ * Called whenever the attributes of an existing measurement config have changed
+ * \param oldMConfig
+ * \param newMConfig
+ */
+void MeasurementConfigManager::updateGeometries(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig){
+
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check both configs
+    if(!oldMConfig.getIsValid() || !newMConfig.getIsValid()){
+        return;
+    }
+
+    //get a list of geometries which are using the old config
+    QPair<QString, bool> mConfig;
+    mConfig.first = oldMConfig.getName();
+    mConfig.second = oldMConfig.getIsSaved();
+    QList<QPointer<Geometry> > geometries = this->currentJob->getGeometriesByMConfig(mConfig);
+
+    //pass the new config to the geometries
+    foreach(const QPointer<Geometry> &geom, geometries){
+        if(!geom.isNull()){
+            geom->setMeasurementConfig(newMConfig);
+        }
+    }
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::connectJob
+ */
+void MeasurementConfigManager::connectJob(){
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::disconnectJob
+ */
+void MeasurementConfigManager::disconnectJob(){
 
 }

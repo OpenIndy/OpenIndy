@@ -401,6 +401,9 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->ui->checkBox_timeDependent->setChecked(mConfig.getTimeDependent());
     this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
 
+    //update selected measurement config
+    this->selectedMeasurementConfig = mConfig;
+
     //from now on trigger edits
     this->ui->comboBox_readingType->blockSignals(false);
     this->ui->lineEdit_distancInterval->blockSignals(false);
@@ -477,7 +480,7 @@ void MeasurementConfigurationDialog::showEvent(QShowEvent *event){
  * \brief MeasurementConfigurationDialog::closeEvent
  * \param event
  */
-void MeasurementConfigurationDialog::closeEvent(QShowEvent *event){
+void MeasurementConfigurationDialog::closeEvent(QCloseEvent *event){
 
     QObject::disconnect(&ModelManager::getMeasurementConfigurationModel(), &MeasurementConfigurationModel::measurementConfigNameChanged,
                         this, &MeasurementConfigurationDialog::measurementConfigNameChanged);

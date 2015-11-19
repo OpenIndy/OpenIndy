@@ -28,6 +28,13 @@ public:
 
     MeasurementConfigManager &operator=(const MeasurementConfigManager &copy);
 
+    //###################################
+    //get or set the current OpenIndy job
+    //###################################
+
+    const QPointer<OiJob> &getCurrentJob() const;
+    void setCurrentJob(const QPointer<OiJob> &job);
+
     //##############################
     //get or set measurement configs
     //##############################
@@ -64,6 +71,7 @@ signals:
     //##################################
 
     void measurementConfigurationsChanged();
+    void measurementConfigurationReplaced(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig);
     void activeMeasurementConfigurationChanged(const GeometryTypes &type);
 
     //############
@@ -73,6 +81,22 @@ signals:
     void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
 private:
+
+    //##############
+    //helper methods
+    //##############
+
+    //save or remove configs
+    void saveMeasurementConfig(const MeasurementConfig &mConfig);
+    void deleteMeasurementConfig(const QString &name);
+
+    //update geometries when measurement configs change
+    void updateGeometries();
+    void updateGeometries(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig);
+
+    //job connects
+    void connectJob();
+    void disconnectJob();
 
     //########################
     //save measurement configs
@@ -86,12 +110,11 @@ private:
 
     QMap<GeometryTypes, MeasurementConfig> activeMeasurementConfigs;
 
-    //##############
-    //helper methods
-    //##############
+    //#################
+    //helper attributes
+    //#################
 
-    void saveMeasurementConfig(const MeasurementConfig &mConfig);
-    void deleteMeasurementConfig(const QString &name);
+    QPointer<OiJob> currentJob;
 
 };
 

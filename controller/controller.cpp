@@ -1303,6 +1303,9 @@ void Controller::setJob(const QPointer<OiJob> &job){
     this->exchanger.setCurrentJob(this->job);
     this->featureUpdater.setCurrentJob(this->job);
     this->requestHandler.setCurrentJob(this->job);
+    if(!this->measurementConfigManager.isNull()){
+        this->measurementConfigManager->setCurrentJob(this->job);
+    }
 
     emit this->currentJobChanged();
 
@@ -1561,14 +1564,14 @@ void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > 
         }
 
         //assign function and measurement config to feature
-        feature->getFeature()->blockSignals(true);
+        this->job->blockSignals(true);
         if(!function.isNull()){
             feature->getFeature()->addFunction(function);
         }
         if(mConfig.getIsValid() && !feature->getGeometry().isNull()){
             feature->getGeometry()->setMeasurementConfig(mConfig);
         }
-        feature->getFeature()->blockSignals(false);
+        this->job->blockSignals(false);
 
     }
 
