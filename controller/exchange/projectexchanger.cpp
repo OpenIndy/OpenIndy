@@ -144,6 +144,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     QList<MeasurementConfig> mConfigs;
     if(!ProjectExchanger::mConfigManager.isNull()){
         mConfigs = ProjectExchanger::mConfigManager->getSavedMeasurementConfigs();
+        mConfigs.append(ProjectExchanger::mConfigManager->getProjectMeasurementConfigs());
     }
     foreach(const MeasurementConfig &mConfig, mConfigs){
         QDomElement config = mConfig.toOpenIndyXML(project);
