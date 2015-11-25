@@ -647,6 +647,40 @@ QPointer<FunctionStatisticModel> ModelManager::getFunctionStatisticModel(){
 }
 
 /*!
+ * \brief ModelManager::getSensorAccuracyModel
+ * \return
+ */
+QPointer<SensorAccuracyModel> ModelManager::getSensorAccuracyModel(){
+
+    //create and connect model
+    QPointer<SensorAccuracyModel> model = new SensorAccuracyModel();
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(ModelManager::myInstance, &ModelManager::parameterDisplayConfigChanged,
+                         model, &SensorAccuracyModel::setParameterDisplayConfig, Qt::AutoConnection);
+    }
+
+    return model;
+
+}
+
+/*!
+ * \brief ModelManager::getSensorParametersModel
+ * \return
+ */
+QPointer<SensorParametersModel> ModelManager::getSensorParametersModel(){
+
+    //create and connect model
+    QPointer<SensorParametersModel> model = new SensorParametersModel();
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(ModelManager::myInstance, &ModelManager::parameterDisplayConfigChanged,
+                         model, &SensorParametersModel::setParameterDisplayConfig, Qt::AutoConnection);
+    }
+
+    return model;
+
+}
+
+/*!
  * \brief ModelManager::featureSetChanged
  */
 void ModelManager::featureSetChanged(){
@@ -814,6 +848,10 @@ void ModelManager::updateParameterDisplayConfig(){
     ModelManager::featureTableModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
     ModelManager::observationModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
     ModelManager::readingModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
+
+    if(!ModelManager::myInstance.isNull()){
+        emit ModelManager::myInstance->parameterDisplayConfigChanged(ModelManager::parameterDisplayConfig);
+    }
 
 }
 

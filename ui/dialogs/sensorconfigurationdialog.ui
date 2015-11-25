@@ -11,7 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>sensor</string>
+   <string>sensor configuration</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
@@ -312,7 +315,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>152</width>
-                <height>104</height>
+                <height>123</height>
                </rect>
               </property>
               <attribute name="label">
@@ -385,8 +388,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>118</width>
-                <height>104</height>
+                <width>113</width>
+                <height>123</height>
                </rect>
               </property>
               <attribute name="label">
@@ -459,8 +462,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>172</width>
-                <height>48</height>
+                <width>176</width>
+                <height>57</height>
                </rect>
               </property>
               <attribute name="label">
@@ -505,8 +508,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>667</width>
-                <height>309</height>
+                <width>136</width>
+                <height>90</height>
                </rect>
               </property>
               <attribute name="label">
@@ -569,8 +572,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>100</width>
-                <height>30</height>
+                <width>98</width>
+                <height>28</height>
                </rect>
               </property>
               <attribute name="label">

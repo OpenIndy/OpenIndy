@@ -224,7 +224,7 @@ background-position: center center;</string>
      <x>0</x>
      <y>0</y>
      <width>1081</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -274,9 +274,10 @@ background-position: center center;</string>
      <string>Station</string>
     </property>
     <addaction name="actionCreate_station"/>
+    <addaction name="actionActivate_station"/>
     <addaction name="actionSet_sensor"/>
     <addaction name="actionMeasurement_Configuration"/>
-    <addaction name="actionActivate_station"/>
+    <addaction name="actionStationProperties"/>
    </widget>
    <widget class="QMenu" name="menuFunctions">
     <property name="title">
@@ -361,8 +362,9 @@ background-position: center center;</string>
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="actionControl_pad"/>
-   <addaction name="actionSet_function"/>
+   <addaction name="actionSet_sensor"/>
    <addaction name="actionMeasurement_Configuration"/>
+   <addaction name="actionSet_function"/>
    <addaction name="actionWatch_window"/>
    <addaction name="actionShow_help"/>
    <addaction name="actionSensor_real_time_data"/>
@@ -795,7 +797,7 @@ color: rgb(255, 255, 255);
      <normaloff>:/icons/icons/toolbars/standard/Sensor Set.png</normaloff>:/icons/icons/toolbars/standard/Sensor Set.png</iconset>
    </property>
    <property name="text">
-    <string>set sensor</string>
+    <string>sensor configuration</string>
    </property>
   </action>
   <action name="actionSet_function">
@@ -1075,6 +1077,14 @@ color: rgb(255, 255, 255);
    </property>
    <property name="text">
     <string>About OpenIndy</string>
+   </property>
+  </action>
+  <action name="actionStationProperties">
+   <property name="text">
+    <string>properties</string>
+   </property>
+   <property name="toolTip">
+    <string>active station properties</string>
    </property>
   </action>
  </widget>

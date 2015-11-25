@@ -529,6 +529,7 @@ void SensorConfigurationDialog::updateSensorConfigFromSelection(){
     sConfig.setIntegerParameter(intParams);
     sConfig.setDoubleParameter(doubleParams);
     sConfig.setStringParameter(stringParams);
+    sConfig.setAvailableStringParameter(sensorTableModel->getStringParameter());
 
     //#############################
     //replace the old sensor config

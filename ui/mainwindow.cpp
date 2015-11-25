@@ -878,6 +878,40 @@ void MainWindow::showMoveSensorDialog(){
 }
 
 /*!
+ * \brief MainWindow::on_actionStationProperties_triggered
+ */
+void MainWindow::on_actionStationProperties_triggered(){
+
+    //get feature table models
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    //display properties dialog for stations
+    if(!feature->getStation().isNull()){
+
+        //pass information to the station properties dialog
+        this->stationPropertiesDialog.setIsActiveStation(feature->getStation()->getIsActiveStation());
+        this->stationPropertiesDialog.setSensorConfiguration(feature->getStation()->getSensorConfiguration());
+
+        this->stationPropertiesDialog.show();
+
+    }
+
+}
+
+/*!
  * \brief MainWindow::on_actionControl_pad_triggered
  */
 void MainWindow::on_actionControl_pad_triggered(){
@@ -1267,6 +1301,17 @@ void MainWindow::showFeatureProperties(bool checked){
 
     }
 
+    //display properties dialog for stations
+    if(!feature->getStation().isNull()){
+
+        //pass information to the station properties dialog
+        this->stationPropertiesDialog.setIsActiveStation(feature->getStation()->getIsActiveStation());
+        this->stationPropertiesDialog.setSensorConfiguration(feature->getStation()->getSensorConfiguration());
+
+        this->stationPropertiesDialog.show();
+
+    }
+
 }
 
 /*!
@@ -1433,7 +1478,7 @@ void MainWindow::copyToClipboard(){
     copy_table.append(model->data(last).toString());
     copy_table.append("\n");
 
-    //set values to clipboard, so you can copy them
+    //set values to clipboard, so you can paste them elsewhere
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->clear();
     clipboard->setText(copy_table);
@@ -1623,6 +1668,10 @@ void MainWindow::connectDialogs(){
 
     //connect trafo param properties dialog
     QObject::connect(&this->trafoParamPropertiesDialog, &TrafoParamPropertiesDialog::trafoParamParametersChanged, &this->control, &Controller::setTrafoParamParameters, Qt::AutoConnection);
+
+    //connect station properties dialog
+    QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
+    QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
 
 }
 

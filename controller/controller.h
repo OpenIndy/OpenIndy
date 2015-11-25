@@ -66,6 +66,7 @@ public slots:
 
     //set sensor configuration for active sensor
     void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
+    void sensorConfigurationUpdated(const SensorConfiguration &sConfig);
 
     //set measurement configuration for active feature
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);

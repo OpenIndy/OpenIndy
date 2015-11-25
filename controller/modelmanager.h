@@ -40,6 +40,8 @@
 #include "readingmodel.h"
 #include "readingproxymodel.h"
 #include "functionstatisticmodel.h"
+#include "sensoraccuracymodel.h"
+#include "sensorparametersmodel.h"
 
 using namespace oi;
 
@@ -63,6 +65,12 @@ signals:
     //############
 
     void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
+    //#######################
+    //display configs changed
+    //#######################
+
+    void parameterDisplayConfigChanged(const ParameterDisplayConfig &dConfig);
 
 public:
 
@@ -189,6 +197,10 @@ public:
     //statistic models
     static QPointer<FunctionStatisticModel> getFunctionStatisticModel();
 
+    //sensor models
+    static QPointer<SensorAccuracyModel> getSensorAccuracyModel();
+    static QPointer<SensorParametersModel> getSensorParametersModel();
+
 private slots:
 
     //##########################################
@@ -205,12 +217,6 @@ private slots:
 
     //feature specific attributes changed
     void featureNameChanged(const int &featureId, const QString &oldName);
-
-    //###############################
-    //update models on config changes
-    //###############################
-
-    //void sensorConfigurationsChanged();
 
 private:
 

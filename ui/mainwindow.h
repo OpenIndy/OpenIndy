@@ -32,6 +32,7 @@
 #include "nominalpropertiesdialog.h"
 #include "trafoparampropertiesdialog.h"
 #include "aboutdialog.h"
+#include "stationpropertiesdialog.h"
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
@@ -185,6 +186,7 @@ private slots:
     void on_actionSet_sensor_triggered();
     void setSensorConfiguration(const QString &name);
     void showMoveSensorDialog();
+    void on_actionStationProperties_triggered();
 
     //toggle visibility of widgets
     void on_actionControl_pad_triggered();
@@ -305,6 +307,7 @@ private:
     NominalPropertiesDialog nominalPropertiesDialog;
     TrafoParamPropertiesDialog trafoParamPropertiesDialog;
     AboutDialog aboutDialog;
+    StationPropertiesDialog stationPropertiesDialog;
 
     //##########
     //sensor pad

@@ -187,6 +187,7 @@ void Controller::recalcActiveFeature(){
 
 /*!
  * \brief Controller::sensorConfigurationChanged
+ * Set a new sensor configuration for the active sensor
  * \param name
  * \param connectSensor
  */
@@ -233,6 +234,30 @@ void Controller::sensorConfigurationChanged(const QString &name, const bool &con
     if(connectSensor){
         this->startConnect();
     }
+
+}
+
+/*!
+ * \brief Controller::sensorConfigurationUpdated
+ * Update the current sensor configuration of the active sensor
+ * \param sConfig
+ */
+void Controller::sensorConfigurationUpdated(const SensorConfiguration &sConfig){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //set sensor configuration
+    activeStation->setSensorConfiguration(sConfig);
 
 }
 
@@ -1426,6 +1451,7 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<QPointer<oi::FeatureWrapper> >("QPointer<FeatureWrapper>");
     qRegisterMetaType<QPointer<oi::Observation> >("QPointer<Observation>");
     qRegisterMetaType<oi::OiRequestResponse>("OiRequestResponse");
+    qRegisterMetaType<ParameterDisplayConfig>("ParameterDisplayConfig");
 
 }
 

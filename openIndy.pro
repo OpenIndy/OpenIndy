@@ -224,7 +224,12 @@ SOURCES += \
     models/functionstatisticmodel.cpp \
     controller/network/oiwebsocketstreamer.cpp \
     controller/config/featuretablesortingconfig.cpp \
-    controller/featuresorter.cpp
+    controller/featuresorter.cpp \
+    ui/dialogs/stationpropertiesdialog.cpp \
+    models/sensoraccuracymodel.cpp \
+    models/sensorparametersmodel.cpp \
+    ui/delegates/sensoraccuracydelegate.cpp \
+    ui/delegates/sensorparametersdelegate.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -311,7 +316,12 @@ HEADERS  += \
     models/functionstatisticmodel.h \
     controller/network/oiwebsocketstreamer.h \
     controller/config/featuretablesortingconfig.h \
-    controller/featuresorter.h
+    controller/featuresorter.h \
+    ui/dialogs/stationpropertiesdialog.h \
+    models/sensoraccuracymodel.h \
+    models/sensorparametersmodel.h \
+    ui/delegates/sensoraccuracydelegate.h \
+    ui/delegates/sensorparametersdelegate.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -330,4 +340,5 @@ FORMS    += \
     ui/dialogs/actualpropertiesdialog.ui \
     ui/dialogs/nominalpropertiesdialog.ui \
     ui/dialogs/aboutdialog.ui \
-    ui/dialogs/trafoparampropertiesdialog.ui
+    ui/dialogs/trafoparampropertiesdialog.ui \
+    ui/dialogs/stationpropertiesdialog.ui
