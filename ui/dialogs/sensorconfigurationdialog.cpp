@@ -28,16 +28,16 @@ SensorConfigurationDialog::~SensorConfigurationDialog(){
 /*!
  * \brief SensorConfigurationDialog::scalarParameterChanged
  */
-void SensorConfigurationDialog::scalarParameterChanged(){
+/*void SensorConfigurationDialog::scalarParameterChanged(){
     this->updateSensorConfigFromSelection();
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_listView_sensorConfigs_clicked
  * Triggered whenever the user selects a sensor config
  * \param index
  */
-void SensorConfigurationDialog::on_listView_sensorConfigs_clicked(const QModelIndex &index){
+/*void SensorConfigurationDialog::on_listView_sensorConfigs_clicked(const QModelIndex &index){
 
     //check index
     if(!index.isValid()){
@@ -95,13 +95,13 @@ void SensorConfigurationDialog::on_listView_sensorConfigs_clicked(const QModelIn
     QMultiMap<QString, QString> availableStringOptions = sensorTableModel->getStringParameter();
     this->updateScalarParametersFromSensorConfig(intParams, doubleParams, stringParams, availableStringOptions);
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentIndexChanged
  * \param arg1
  */
-void SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1){
+/*void SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1){
 
     //get and check model
     SensorTableProxyModel *sensorTableProxyModel = static_cast<SensorTableProxyModel *>(this->ui->tableView_sensorPlugins->model());
@@ -112,19 +112,19 @@ void SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentIndexCha
     //set filter for sensor table model
     sensorTableProxyModel->setSensorType(getSensorTypeEnum(arg1));
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_pushButton_cancel_clicked
  */
-void SensorConfigurationDialog::on_pushButton_cancel_clicked(){
+/*void SensorConfigurationDialog::on_pushButton_cancel_clicked(){
     this->close();
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_pushButton_set_clicked
  */
-void SensorConfigurationDialog::on_pushButton_set_clicked(){
+/*void SensorConfigurationDialog::on_pushButton_set_clicked(){
 
     //get selected sensor config name
     QModelIndexList selection = this->ui->listView_sensorConfigs->selectionModel()->selectedIndexes();
@@ -138,13 +138,13 @@ void SensorConfigurationDialog::on_pushButton_set_clicked(){
 
     this->close();
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_tableView_sensorPlugins_clicked
  * \param index
  */
-void SensorConfigurationDialog::on_tableView_sensorPlugins_clicked(const QModelIndex &index){
+/*void SensorConfigurationDialog::on_tableView_sensorPlugins_clicked(const QModelIndex &index){
 
     //check index
     if(!index.isValid()){
@@ -210,13 +210,13 @@ void SensorConfigurationDialog::on_tableView_sensorPlugins_clicked(const QModelI
 
     this->updateSensorConfigFromSelection();
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_comboBox_typeOfConnection_currentIndexChanged
  * \param arg1
  */
-void SensorConfigurationDialog::on_comboBox_typeOfConnection_currentIndexChanged(const QString &arg1){
+/*void SensorConfigurationDialog::on_comboBox_typeOfConnection_currentIndexChanged(const QString &arg1){
 
     //set visibility
     if(arg1.compare(getConnectionTypeName(eSerialConnection)) == 0){
@@ -258,79 +258,78 @@ void SensorConfigurationDialog::on_comboBox_typeOfConnection_currentIndexChanged
     //update selected sensor config
     this->updateSensorConfigFromSelection();
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_comboBox_ip_currentTextChanged
  * \param arg1
  */
-void SensorConfigurationDialog::on_comboBox_ip_currentTextChanged(const QString &arg1){
+/*void SensorConfigurationDialog::on_comboBox_ip_currentTextChanged(const QString &arg1){
     this->updateSensorConfigFromSelection();
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_lineEdit_port_textChanged
  * \param arg1
  */
-void SensorConfigurationDialog::on_lineEdit_port_textChanged(const QString &arg1){
+/*void SensorConfigurationDialog::on_lineEdit_port_textChanged(const QString &arg1){
     this->updateSensorConfigFromSelection();
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_comboBox_comPort_currentIndexChanged
  * \param index
  */
-void SensorConfigurationDialog::on_comboBox_comPort_currentIndexChanged(int index){
+/*void SensorConfigurationDialog::on_comboBox_comPort_currentIndexChanged(int index){
     this->updateSensorConfigFromSelection();
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_comboBox_baudrate_currentIndexChanged
  * \param index
  */
-void SensorConfigurationDialog::on_comboBox_baudrate_currentIndexChanged(int index){
+/*void SensorConfigurationDialog::on_comboBox_baudrate_currentIndexChanged(int index){
     this->updateSensorConfigFromSelection();
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_comboBox_databits_currentIndexChanged
  * \param index
  */
-void SensorConfigurationDialog::on_comboBox_databits_currentIndexChanged(int index){
+/*void SensorConfigurationDialog::on_comboBox_databits_currentIndexChanged(int index){
     this->updateSensorConfigFromSelection();
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_comboBox_flowcontrol_currentIndexChanged
  * \param index
  */
-void SensorConfigurationDialog::on_comboBox_flowcontrol_currentIndexChanged(int index){
+/*void SensorConfigurationDialog::on_comboBox_flowcontrol_currentIndexChanged(int index){
     this->updateSensorConfigFromSelection();
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_comboBox_parity_currentIndexChanged
  * \param index
  */
-void SensorConfigurationDialog::on_comboBox_parity_currentIndexChanged(int index){
+/*void SensorConfigurationDialog::on_comboBox_parity_currentIndexChanged(int index){
     this->updateSensorConfigFromSelection();
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_comboBox_stopbits_currentIndexChanged
  * \param index
  */
-void SensorConfigurationDialog::on_comboBox_stopbits_currentIndexChanged(int index){
+/*void SensorConfigurationDialog::on_comboBox_stopbits_currentIndexChanged(int index){
     this->updateSensorConfigFromSelection();
-}
-
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::updateConnectionConfigFromSensorConfig
  * \param supportedConnections
  * \param cConfig
  */
-void SensorConfigurationDialog::updateConnectionConfigFromSensorConfig(const QList<ConnectionTypes> supportedConnections, const ConnectionConfig &cConfig){
+/*void SensorConfigurationDialog::updateConnectionConfigFromSensorConfig(const QList<ConnectionTypes> supportedConnections, const ConnectionConfig &cConfig){
 
     //do not trigger edits while setting up connection config
     this->ui->comboBox_typeOfConnection->blockSignals(true);
@@ -426,15 +425,15 @@ void SensorConfigurationDialog::updateConnectionConfigFromSensorConfig(const QLi
     this->ui->comboBox_ip->blockSignals(false);
     this->ui->lineEdit_port->blockSignals(false);
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::updateAccuracyFromSensorConfig
  * \param accuracy
  */
-void SensorConfigurationDialog::updateAccuracyFromSensorConfig(const Accuracy &accuracy){
+/*void SensorConfigurationDialog::updateAccuracyFromSensorConfig(const Accuracy &accuracy){
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::updateScalarParametersFromSensorConfig
@@ -443,18 +442,18 @@ void SensorConfigurationDialog::updateAccuracyFromSensorConfig(const Accuracy &a
  * \param stringParams
  * \param availableStringOptions
  */
-void SensorConfigurationDialog::updateScalarParametersFromSensorConfig(const QMap<QString, int> &intParams, const QMap<QString, double> &doubleParams, const QMap<QString, QString> &stringParams, const QMultiMap<QString, QString> &availableStringOptions){
+/*void SensorConfigurationDialog::updateScalarParametersFromSensorConfig(const QMap<QString, int> &intParams, const QMap<QString, double> &doubleParams, const QMap<QString, QString> &stringParams, const QMultiMap<QString, QString> &availableStringOptions){
 
     this->scalarParameterWidget->setIntParameter(intParams);
     this->scalarParameterWidget->setDoubleParameter(doubleParams);
     this->scalarParameterWidget->setStringParameter(availableStringOptions, stringParams);
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::updateSensorConfigFromSelection
  */
-void SensorConfigurationDialog::updateSensorConfigFromSelection(){
+/*void SensorConfigurationDialog::updateSensorConfigFromSelection(){
 
     //####################
     //get and check models
@@ -539,21 +538,15 @@ void SensorConfigurationDialog::updateSensorConfigFromSelection(){
     sensorConfigModel->replaceSensorConfig(name, sConfig);
 
     //select the new config in tree view
-    /*if(this->ui->listView_sensorConfigs->model()->hasIndex(selection.at(0).row(), selection.at(0).column())){
-        QModelIndex newSelection = sensorConfigModel->getIndex(sConfig.getName());
-        if(newSelection.isValid()){
-            qDebug() << "true";
-            this->ui->listView_sensorConfigs->selectionModel()->select(newSelection, QItemSelectionModel::Select);
-        }
-    }*/
 
-}
+
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::sensorConfigContextMenuRequested
  * \param point
  */
-void SensorConfigurationDialog::sensorConfigContextMenuRequested(const QPoint &point){
+/*void SensorConfigurationDialog::sensorConfigContextMenuRequested(const QPoint &point){
 
     //get and check index
     QModelIndex index = this->ui->listView_sensorConfigs->indexAt(point);
@@ -585,12 +578,12 @@ void SensorConfigurationDialog::sensorConfigContextMenuRequested(const QPoint &p
     menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedSensorConfig()));
     menu->exec(ui->listView_sensorConfigs->mapToGlobal(point));
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::removeSelectedSensorConfig
  */
-void SensorConfigurationDialog::removeSelectedSensorConfig(){
+/*void SensorConfigurationDialog::removeSelectedSensorConfig(){
 
     //get and check index
     QModelIndexList selection = this->ui->listView_sensorConfigs->selectionModel()->selectedIndexes();
@@ -616,13 +609,13 @@ void SensorConfigurationDialog::removeSelectedSensorConfig(){
 
     sensorConfigModel->removeSensorConfig(sensorConfigProxyModel->mapToSource(index));
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::on_pushButton_add_clicked
  * Triggered whenever the user wants to add a new sensor config
  */
-void SensorConfigurationDialog::on_pushButton_add_clicked(){
+/*void SensorConfigurationDialog::on_pushButton_add_clicked(){
 
     SensorConfiguration sConfig;
     sConfig.setName("new config");
@@ -651,7 +644,7 @@ void SensorConfigurationDialog::on_pushButton_add_clicked(){
     this->ui->listView_sensorConfigs->selectionModel()->clearSelection();
     this->ui->listView_sensorConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
 
-}
+}*/
 
 /*!
  * \brief SensorConfigurationDialog::showEvent
@@ -683,7 +676,7 @@ void SensorConfigurationDialog::initGUI(){
     QGridLayout *extraParameterLayout = new QGridLayout();
     this->ui->widget_scalarParameter->setLayout(extraParameterLayout);
     this->scalarParameterWidget = new ScalarParameterWidget();
-    QObject::connect(this->scalarParameterWidget, &ScalarParameterWidget::scalarParametersChanged, this, &SensorConfigurationDialog::scalarParameterChanged, Qt::AutoConnection);
+    //QObject::connect(this->scalarParameterWidget, &ScalarParameterWidget::scalarParametersChanged, this, &SensorConfigurationDialog::scalarParameterChanged, Qt::AutoConnection);
     extraParameterLayout->addWidget(this->scalarParameterWidget);
 
     //set initial visibility of widgets
@@ -691,7 +684,7 @@ void SensorConfigurationDialog::initGUI(){
 
     //allow contect menu for sensor config model
     this->ui->listView_sensorConfigs->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(this->ui->listView_sensorConfigs, &QListView::customContextMenuRequested, this, &SensorConfigurationDialog::sensorConfigContextMenuRequested, Qt::AutoConnection);
+    //QObject::connect(this->ui->listView_sensorConfigs, &QListView::customContextMenuRequested, this, &SensorConfigurationDialog::sensorConfigContextMenuRequested, Qt::AutoConnection);
 
     //assign delegate to sensor configs list view
     SensorConfigurationListDelegate *delegate = new SensorConfigurationListDelegate();

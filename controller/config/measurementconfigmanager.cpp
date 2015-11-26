@@ -163,7 +163,7 @@ MeasurementConfig MeasurementConfigManager::getProjectMeasurementConfig(const QS
  * \brief MeasurementConfigManager::getSavedMeasurementConfigs
  * \return
  */
-QList<MeasurementConfig> MeasurementConfigManager::getSavedMeasurementConfigs() const{
+const QList<MeasurementConfig> &MeasurementConfigManager::getSavedMeasurementConfigs() const{
     return this->savedMeasurementConfigList;
 }
 
@@ -171,7 +171,7 @@ QList<MeasurementConfig> MeasurementConfigManager::getSavedMeasurementConfigs() 
  * \brief MeasurementConfigManager::getProjectMeasurementConfigs
  * \return
  */
-QList<MeasurementConfig> MeasurementConfigManager::getProjectMeasurementConfigs() const{
+const QList<MeasurementConfig> &MeasurementConfigManager::getProjectMeasurementConfigs() const{
     return this->projectMeasurementConfigList;
 }
 
@@ -188,7 +188,7 @@ MeasurementConfig MeasurementConfigManager::getActiveMeasurementConfig(const Geo
  * \brief MeasurementConfigManager::addMeasurementConfig
  * \param mConfig
  */
-void MeasurementConfigManager::addMeasurementConfig(const MeasurementConfig &mConfig){
+void MeasurementConfigManager::addSavedMeasurementConfig(const MeasurementConfig &mConfig){
 
     //check if mConfig is valid
     if(!mConfig.getIsValid()){
@@ -239,7 +239,7 @@ void MeasurementConfigManager::addProjectMeasurementConfig(const MeasurementConf
  * \brief MeasurementConfigManager::removeMeasurementConfig
  * \param name
  */
-void MeasurementConfigManager::removeMeasurementConfig(const QString &name){
+void MeasurementConfigManager::removeSavedMeasurementConfig(const QString &name){
 
     //check name
     if(name.compare("") == 0){
@@ -271,6 +271,21 @@ void MeasurementConfigManager::removeProjectMeasurementConfig(const QString &nam
 
         emit this->measurementConfigurationsChanged();
 
+    }
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::removeAllSavedMeasurementConfigs
+ */
+void MeasurementConfigManager::removeAllSavedMeasurementConfigs(){
+
+    //get a list of saved measurement configs
+    QList<MeasurementConfig> configs = this->getSavedMeasurementConfigs();
+
+    //remove measurement configs
+    foreach(const MeasurementConfig &mConfig, configs){
+        this->deleteMeasurementConfig(mConfig.getName());
     }
 
 }
@@ -420,13 +435,43 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         }
         mConfigNames.append(savedConfig.getName());
 
-        //add the loaded measurement config to the list of saved configs and emit the corresponding signal
+        //add the loaded measurement config to the list of saved configs
         this->savedMeasurementConfigMap.insert(savedConfig.getName(), savedConfig);
         this->savedMeasurementConfigList.append(savedConfig);
 
     }
 
     //emit signals
+    emit this->measurementConfigurationsChanged();
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::synchronize
+ * \param other
+ */
+void MeasurementConfigManager::synchronize(const MeasurementConfigManager &other){
+
+    //do not trigger signals during synchronization
+    this->blockSignals(true);
+
+    //remove measurement configs
+    this->removeAllSavedMeasurementConfigs();
+    this->removeAllProjectMeasurementConfigs();
+
+    //add new configs
+    QList<MeasurementConfig> savedConfigs = other.getSavedMeasurementConfigs();
+    QList<MeasurementConfig> projectConfigs = other.getProjectMeasurementConfigs();
+    foreach(const MeasurementConfig &mConfig, savedConfigs){
+        this->addSavedMeasurementConfig(mConfig);
+    }
+    foreach(const MeasurementConfig &mConfig, projectConfigs){
+        this->addProjectMeasurementConfig(mConfig);
+    }
+
+    //trigger edits again
+    this->blockSignals(false);
+
     emit this->measurementConfigurationsChanged();
 
 }
@@ -616,5 +661,35 @@ void MeasurementConfigManager::connectJob(){
  * \brief MeasurementConfigManager::disconnectJob
  */
 void MeasurementConfigManager::disconnectJob(){
+
+}
+
+/*!
+ * \brief MeasurementConfigManager::equals
+ * \param mConfigA
+ * \param mConfigB
+ * \return
+ */
+bool MeasurementConfigManager::equals(const MeasurementConfig &mConfigA, const MeasurementConfig &mConfigB){
+
+    //compare general attributes
+    if(mConfigA.getName().compare(mConfigB.getName()) != 0
+            || mConfigA.getIsSaved() != mConfigB.getIsSaved()){
+        return false;
+    }
+
+    //compare measurement config values
+    if(mConfigA.getCount() != mConfigB.getCount()
+            || mConfigA.getIterations() != mConfigB.getIterations()
+            || mConfigA.getMeasureTwoSides() != mConfigB.getMeasureTwoSides()
+            || mConfigA.getTimeDependent() != mConfigB.getTimeDependent()
+            || mConfigA.getDistanceDependent() != mConfigB.getDistanceDependent()
+            || mConfigA.getTimeInterval() != mConfigB.getTimeInterval()
+            || !almostEqual(mConfigA.getDistanceInterval(), mConfigB.getDistanceInterval(), 8)
+            || mConfigA.getTypeOfReading() != mConfigB.getTypeOfReading()){
+        return false;
+    }
+
+    return true;
 
 }

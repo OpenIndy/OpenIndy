@@ -32,17 +32,37 @@ public:
     //get or set sensor configs
     //#########################
 
+    //check presence of a config
+    bool hasSavedSensorConfig(const QString &name);
+    bool hasProjectSensorConfig(const QString &name);
+    bool hasSavedSensorConfig(const SensorConfiguration &sConfig);
+    bool hasProjectSensorConfig(const SensorConfiguration &sConfig);
+
+    //get configs
     SensorConfiguration getSavedSensorConfig(const QString &name) const;
-    QList<SensorConfiguration> getSavedSensorConfigs() const;
-    QList<SensorConfiguration> getProjectSensorConfigs() const;
-    const SensorConfiguration &getActiveSensorConfig(const QString &name) const;
+    SensorConfiguration getProjectSensorConfig(const QString &name) const;
+    const QList<SensorConfiguration> &getSavedSensorConfigs() const;
+    const QList<SensorConfiguration> &getProjectSensorConfigs() const;
 
-    void addSensorConfig(const SensorConfiguration &sConfig);
-    void removeSensorConfig(const QString &name);
+    //active config
+    const SensorConfiguration &getActiveSensorConfig() const;
 
+    //add or remove configs
+    void addSavedSensorConfig(const SensorConfiguration &sConfig);
+    void addProjectSensorConfig(const SensorConfiguration &sConfig);
+    void removeSavedSensorConfig(const QString &name);
+    void removeProjectSensorConfig(const QString &name);
+    void removeAllSavedSensorConfigs();
+    void removeAllProjectSensorConfigs();
+
+    //replace a config
     void replaceSensorConfig(const QString &name, const SensorConfiguration &sConfig);
 
+    //load configs from xml
     void loadFromConfigFolder();
+
+    //synchronize config manager
+    void synchronize(const SensorConfigurationManager &other);
 
 signals:
 
@@ -51,6 +71,7 @@ signals:
     //##################################
 
     void sensorConfigurationsChanged();
+    void sensorConfigurationReplaced(const SensorConfiguration &oldSConfig, const SensorConfiguration &newSConfig);
     void activeSensorConfigurationChanged();
 
     //############
@@ -61,6 +82,17 @@ signals:
 
 private:
 
+    //##############
+    //helper methods
+    //##############
+
+    //save or remove configs
+    void saveSensorConfig(const SensorConfiguration &sConfig);
+    void deleteSensorConfig(const QString &name);
+
+    //compare two configs
+    bool equals(const SensorConfiguration &sConfigA, const SensorConfiguration &sConfigB);
+
     //###################
     //save sensor configs
     //###################
@@ -68,14 +100,10 @@ private:
     QMap<QString, SensorConfiguration> savedSensorConfigs;
     QMap<QString, SensorConfiguration> projectSensorConfigs;
 
+    QList<SensorConfiguration> savedSensorConfigList;
+    QList<SensorConfiguration> projectSensorConfigList;
+
     SensorConfiguration activeSensorConfig;
-
-    //##############
-    //helper methods
-    //##############
-
-    void saveSensorConfig(const SensorConfiguration &sConfig);
-    void deleteSensorConfig(const QString &name);
 
 };
 

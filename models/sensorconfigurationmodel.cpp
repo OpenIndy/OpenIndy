@@ -470,7 +470,7 @@ QModelIndex SensorConfigurationModel::addSensorConfig(const SensorConfiguration 
     }
 
     //add the sensor config
-    this->sensorConfigManager->addSensorConfig(sConfig);
+    this->sensorConfigManager->addSavedSensorConfig(sConfig);
 
     //get all saved sensor configs
     QList<SensorConfiguration> savedSensorConfigs = this->sensorConfigManager->getSavedSensorConfigs();
@@ -504,7 +504,7 @@ void SensorConfigurationModel::removeSensorConfig(const QModelIndex &index){
 
     //check if the index is a saved config
     if(index.row() < this->sensorConfigManager->getSavedSensorConfigs().size()){
-        this->sensorConfigManager->removeSensorConfig(this->sensorConfigManager->getSavedSensorConfigs().at(index.row()).getName());
+        this->sensorConfigManager->removeSavedSensorConfig(this->sensorConfigManager->getSavedSensorConfigs().at(index.row()).getName());
     }
 
     this->updateModel();

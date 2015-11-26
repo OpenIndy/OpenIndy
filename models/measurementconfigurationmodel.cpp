@@ -261,7 +261,7 @@ QModelIndex MeasurementConfigurationModel::addMeasurementConfig(const Measuremen
     }
 
     //add the measurement config
-    this->measurementConfigManager->addMeasurementConfig(mConfig);
+    this->measurementConfigManager->addSavedMeasurementConfig(mConfig);
 
     //get all saved measurement configs
     QList<MeasurementConfig> savedMeasurementConfigs = this->measurementConfigManager->getSavedMeasurementConfigs();
@@ -295,7 +295,7 @@ void MeasurementConfigurationModel::removeMeasurementConfig(const QModelIndex &i
 
     //check if the index is a saved config
     if(index.row() < this->measurementConfigManager->getSavedMeasurementConfigs().size()){
-        this->measurementConfigManager->removeMeasurementConfig(this->measurementConfigManager->getSavedMeasurementConfigs().at(index.row()).getName());
+        this->measurementConfigManager->removeSavedMeasurementConfig(this->measurementConfigManager->getSavedMeasurementConfigs().at(index.row()).getName());
     }
 
     this->updateModel();
@@ -343,7 +343,7 @@ void MeasurementConfigurationModel::cloneMeasurementConfig(const MeasurementConf
     //add the measurement config
     MeasurementConfig savedConfig = mConfig;
     savedConfig.setIsSaved(true);
-    this->measurementConfigManager->addMeasurementConfig(mConfig);
+    this->measurementConfigManager->addSavedMeasurementConfig(mConfig);
 
     this->updateModel();
 

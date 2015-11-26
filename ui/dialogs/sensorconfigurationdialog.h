@@ -47,10 +47,10 @@ signals:
     //signals to inform about sensor config selection
     //###############################################
 
-    void setSensorConfiguration(const QString &name);
+    void setSensorConfiguration(const SensorConfiguration &sConfig);
 
 private slots:
-
+/*
     //#################################
     //scalar parameter changed callback
     //#################################
@@ -87,7 +87,7 @@ private slots:
     void on_comboBox_flowcontrol_currentIndexChanged(int index);
     void on_comboBox_parity_currentIndexChanged(int index);
     void on_comboBox_stopbits_currentIndexChanged(int index);
-
+*/
 private:
     Ui::SensorConfigurationDialog *ui;
 
@@ -101,7 +101,7 @@ private:
     //##############
     //helper methods
     //##############
-
+/*
     //update GUI elements from the selected sensor config
     void updateConnectionConfigFromSensorConfig(const QList<ConnectionTypes> supportedConnections, const ConnectionConfig &cConfig);
     void updateAccuracyFromSensorConfig(const Accuracy &accuracy);
@@ -112,7 +112,7 @@ private:
 
     //update the selected sensor config from GUI elements
     void updateSensorConfigFromSelection();
-
+*/
     //##################################
     //methods to initialize GUI elements
     //##################################
