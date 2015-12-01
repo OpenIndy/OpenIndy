@@ -85,6 +85,11 @@ void SensorConfigurationDialog::on_pushButton_remove_clicked(){
     QModelIndex index = this->sensorConfigModel->getActiveSensorConfigIndex();
     bool success = this->sensorConfigModel->removeSensorConfiguration(index);
 
+    //update change status
+    if(success){
+        this->setChangesMade(true);
+    }
+
 }
 
 /*!
@@ -98,6 +103,11 @@ void SensorConfigurationDialog::on_pushButton_add_clicked(){
     }
 
     SensorConfiguration sConfig = this->sensorConfigModel->addSensorConfiguration();
+
+    //update change status
+    if(sConfig.getIsValid()){
+        this->setChangesMade(true);
+    }
 
 }
 
