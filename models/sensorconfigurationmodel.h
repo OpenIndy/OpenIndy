@@ -10,8 +10,6 @@
 #include "util.h"
 #include "sensorconfigurationmanager.h"
 
-using namespace oi;
-
 /*!
  * \brief The SensorConfigurationTreeViewModel class
  * Model that holds all available sensor configurations
@@ -38,51 +36,49 @@ public:
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
-    //#####################################
-    //get informations about sensor configs
-    //#####################################
-
-    QModelIndex getIndex(const QString &name) const;
-
-    SensorTypes getSensorType(const QModelIndex &index) const;
-    QString getSensorName(const QModelIndex &index) const;
-    QString getPluginName(const QModelIndex &index) const;
-
-    ConnectionConfig getConnectionConfig(const QModelIndex &index);
-
-    Accuracy getAccuracy(const QModelIndex &index);
-
-    QMap<QString, int> getIntegerParameter(const QModelIndex &index);
-    QMap<QString, double> getDoubleParameter(const QModelIndex &index);
-    QMap<QString, QString> getStringParameter(const QModelIndex &index);
-
-    bool getIsSaved(const QModelIndex &index) const;
-
-    //############################
-    //add or remove sensor configs
-    //############################
-
-    QModelIndex addSensorConfig(const SensorConfiguration &sConfig);
-    void removeSensorConfig(const QModelIndex &index);
-
-    void replaceSensorConfig(const QString &name, const SensorConfiguration &sConfig);
-
     //#######################################
     //get or set sensor configuration manager
     //#######################################
 
-    const QPointer<SensorConfigurationManager> &getSensorConfigurationManager() const;
-    void setSensorConfigurationManager(const QPointer<SensorConfigurationManager> &manager);
+    const SensorConfigurationManager &getSensorConfigurationManager() const;
+    void setSensorConfigurationManager(const SensorConfigurationManager &manager);
+
+    //####################################
+    //get or set sensor config information
+    //####################################
+
+    //add or remove configs
+    SensorConfiguration addSensorConfiguration();
+    bool removeSensorConfiguration(const QModelIndex &index);
+
+    //update the active sensor config
+    void updateSensorAccuracy(const SensorConfiguration &sConfig);
+    void updateSensorParameters(const SensorConfiguration &sConfig);
+    void updateSensorPlugin(const SensorConfiguration &sConfig);
+    void updateSensorConnection(const SensorConfiguration &sConfig);
+
+    //get or set active sensor config
+    const SensorConfiguration &getActiveSensorConfig() const;
+    QModelIndex getActiveSensorConfigIndex() const;
+    void setActiveSensorConfig(const SensorConfiguration &sConfig);
+    void setActiveSensorConfig(const QModelIndex &index);
 
 signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+    //##################################
+    //inform about sensor config changes
+    //##################################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+    //active config changed
+    void activeSensorConfigChanged();
 
-private slots:
+    //config renamed
+    void sensorConfigRenamed();
+
+    //configs added or removed
+    void sensorConfigsChanged();
+
+public slots:
 
     //###########################################
     //update the model when configuration changes
@@ -92,17 +88,11 @@ private slots:
 
 private:
 
-    //##############
-    //helper methods
-    //##############
-
-    void connectConfigManager();
-
     //#####################
     //sensor config manager
     //#####################
 
-    QPointer<SensorConfigurationManager> sensorConfigManager;
+    SensorConfigurationManager sensorConfigManager;
 
 };
 

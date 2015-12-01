@@ -17,9 +17,7 @@ SensorConfigurationListDelegate::SensorConfigurationListDelegate(QObject * paren
  * \param index
  */
 QWidget* SensorConfigurationListDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
-
     return new QLineEdit(parent);
-
 }
 
 /*!

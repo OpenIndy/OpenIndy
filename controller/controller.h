@@ -64,17 +64,17 @@ public slots:
     //recalculation
     void recalcActiveFeature();
 
-    //set sensor configuration for active sensor
-    void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
+    //set sensor configuration for active station
+    void setSensorConfig(const SensorConfiguration &sConfig, bool connectSensor);
+
+    //sensor configs edited
+    void sensorConfigurationsEdited(const SensorConfigurationManager &manager);
+
+    //active station's sensor config edited
     void sensorConfigurationUpdated(const SensorConfiguration &sConfig);
 
     //set measurement configuration for active feature
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
-
-    //set active feature states
-    //void setActiveFeature(const int &featureId);
-    //void setActiveStation(const int &featureId);
-    //void setActiveCoordinateSystem(const int &featureId);
 
     //import or export features
     void importNominals(const ExchangeParams &params);

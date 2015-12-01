@@ -274,6 +274,14 @@ void StationPropertiesDialog::initGUI(){
         this->ui->pushButton_sensorConfig1->setEnabled(false);
     }
 
+    //init table views
+    this->ui->tableView_accuracy->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    this->ui->tableView_accuracy->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->ui->tableView_accuracy->setEditTriggers(QAbstractItemView::DoubleClicked);
+    this->ui->tableView_sensorParameters->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    this->ui->tableView_sensorParameters->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->ui->tableView_sensorParameters->setEditTriggers(QAbstractItemView::DoubleClicked);
+
 }
 
 /*!
@@ -282,18 +290,18 @@ void StationPropertiesDialog::initGUI(){
 void StationPropertiesDialog::initModels(){
 
     //get models from model manager
-    this->accuracyModel = ModelManager::getSensorAccuracyModel();
-    this->sensorParametersModel = ModelManager::getSensorParametersModel();
+    this->accuracyModel = ModelManager::getSensorAccuracyModel(this);
+    this->sensorParametersModel = ModelManager::getSensorParametersModel(this);
 
     //assign models and delegates
     if(!this->accuracyModel.isNull()){
         this->ui->tableView_accuracy->setModel(this->accuracyModel);
-        SensorAccuracyDelegate *delegate = new SensorAccuracyDelegate();
+        SensorAccuracyDelegate *delegate = new SensorAccuracyDelegate(this);
         this->ui->tableView_accuracy->setItemDelegate(delegate);
     }
     if(!this->sensorParametersModel.isNull()){
         this->ui->tableView_sensorParameters->setModel(this->sensorParametersModel);
-        SensorParametersDelegate *delegate = new SensorParametersDelegate();
+        SensorParametersDelegate *delegate = new SensorParametersDelegate(this);
         this->ui->tableView_sensorParameters->setItemDelegate(delegate);
     }
 
@@ -304,14 +312,6 @@ void StationPropertiesDialog::initModels(){
     if(!this->sensorParametersModel.isNull()){
         QObject::connect(this->sensorParametersModel, &SensorParametersModel::sensorConfigurationChanged, this, &StationPropertiesDialog::updateSensorParameters, Qt::AutoConnection);
     }
-
-    //init table views
-    this->ui->tableView_accuracy->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    this->ui->tableView_accuracy->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    this->ui->tableView_accuracy->setEditTriggers(QAbstractItemView::DoubleClicked);
-    this->ui->tableView_sensorParameters->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    this->ui->tableView_sensorParameters->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    this->ui->tableView_sensorParameters->setEditTriggers(QAbstractItemView::DoubleClicked);
 
 }
 

@@ -160,8 +160,6 @@ public:
     static QStringListModel &getSensorTypeNamesModel();
     static SensorTableModel &getSensorTableModel();
     static SensorTableProxyModel &getSensorTableProxyModel();
-    static SensorConfigurationModel &getSensorConfigurationModel();
-    static SensorConfigurationProxyModel &getSensorConfigurationProxyModel();
 
     //sensor connection models
     static QStandardItemModel &getBaudRateTypesModel();
@@ -198,8 +196,10 @@ public:
     static QPointer<FunctionStatisticModel> getFunctionStatisticModel();
 
     //sensor models
-    static QPointer<SensorAccuracyModel> getSensorAccuracyModel();
-    static QPointer<SensorParametersModel> getSensorParametersModel();
+    static QPointer<SensorConfigurationModel> getSensorConfigurationModel(QObject *parent = NULL);
+    static QPointer<SensorConfigurationProxyModel> getSensorConfigurationProxyModel(QPointer<SensorConfigurationModel> sourceModel);
+    static QPointer<SensorAccuracyModel> getSensorAccuracyModel(QObject *parent = NULL);
+    static QPointer<SensorParametersModel> getSensorParametersModel(QObject *parent = NULL);
 
 private slots:
 
@@ -269,8 +269,6 @@ private:
     static QStringListModel sensorTypeNamesModel;
     static SensorTableModel sensorTableModel;
     static SensorTableProxyModel sensorTableProxyModel;
-    static SensorConfigurationModel sensorConfigurationModel;
-    static SensorConfigurationProxyModel sensorConfigurationProxyModel;
 
     //sensor connection models
     static QStandardItemModel baudRateTypesModel;

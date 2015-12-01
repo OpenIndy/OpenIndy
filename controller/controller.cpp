@@ -191,7 +191,7 @@ void Controller::recalcActiveFeature(){
  * \param name
  * \param connectSensor
  */
-void Controller::sensorConfigurationChanged(const QString &name, const bool &connectSensor){
+void Controller::setSensorConfig(const SensorConfiguration &sConfig, bool connectSensor){
 
     //check job
     if(this->job.isNull()){
@@ -206,9 +206,8 @@ void Controller::sensorConfigurationChanged(const QString &name, const bool &con
     }
 
     //get and check the specified sensor config
-    SensorConfiguration sConfig = this->sensorConfigManager->getSavedSensorConfig(name);
     if(!sConfig.getIsValid()){
-        this->log(QString("No sensor configuration available with the name %1").arg(name), eErrorMessage, eMessageBoxMessage);
+        this->log("Invalid sensor configuration selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -235,11 +234,38 @@ void Controller::sensorConfigurationChanged(const QString &name, const bool &con
         this->startConnect();
     }
 
+    //update the active sensor config of the config manager
+    if(!this->sensorConfigManager.isNull()){
+        this->sensorConfigManager->setActiveSensorConfig(sConfig);
+    }
+
+}
+
+/*!
+ * \brief Controller::sensorConfigurationsEdited
+ * Synchronize the sensor config manager with the given one
+ * \param manager
+ */
+void Controller::sensorConfigurationsEdited(const SensorConfigurationManager &manager){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //check sensor config manager
+    if(this->sensorConfigManager.isNull()){
+        return;
+    }
+
+    //synchronize the managers
+    this->sensorConfigManager->synchronize(manager);
+
 }
 
 /*!
  * \brief Controller::sensorConfigurationUpdated
- * Update the current sensor configuration of the active sensor
+ * Update the current sensor configuration of the active station
  * \param sConfig
  */
 void Controller::sensorConfigurationUpdated(const SensorConfiguration &sConfig){

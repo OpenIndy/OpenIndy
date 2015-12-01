@@ -841,12 +841,12 @@ void MainWindow::on_actionSet_sensor_triggered(){
 
 /*!
  * \brief MainWindow::setSensorConfiguration
- * \param name
+ * \param sConfig
  */
-void MainWindow::setSensorConfiguration(const QString &name){
+void MainWindow::setSensorConfiguration(const SensorConfiguration &sConfig){
 
     //check name
-    if(name.compare("") == 0){
+    if(!sConfig.getIsValid()){
         emit this->log("Invalid configuration name", eErrorMessage, eMessageBoxMessage);
         return;
     }
@@ -861,10 +861,10 @@ void MainWindow::setSensorConfiguration(const QString &name){
 
     switch (ret) {
     case QMessageBox::Yes:
-        emit this->sensorConfigurationChanged(name, true);
+        emit this->sensorConfigurationChanged(sConfig, true);
         break;
     case QMessageBox::No:
-        emit this->sensorConfigurationChanged(name, false);
+        emit this->sensorConfigurationChanged(sConfig, false);
         break;
     }
 
@@ -1591,7 +1591,8 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::log, &this->control, &Controller::log, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::addFeatures, &this->control, &Controller::addFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::importNominals, &this->control, &Controller::importNominals, Qt::AutoConnection);
-    QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::setSensorConfig, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::sensorConfigurationsEdited, &this->control, &Controller::sensorConfigurationsEdited, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::measurementConfigurationChanged, &this->control, &Controller::measurementConfigurationChanged, Qt::AutoConnection);
     QObject::connect(this, static_cast<void (MainWindow::*)()>(&MainWindow::saveProject),
                      &this->control, static_cast<void (Controller::*)()>(&Controller::saveProject), Qt::AutoConnection);
@@ -1643,7 +1644,8 @@ void MainWindow::connectDialogs(){
     QObject::connect(&this->control, &Controller::observationImportProgressUpdated, &this->loadingDialog, &LoadingDialog::updateProgress, Qt::AutoConnection);
 
     //connect sensor config dialog
-    //QObject::connect(&this->sensorConfigurationDialog, &SensorConfigurationDialog::setSensorConfiguration, this, &MainWindow::setSensorConfiguration, Qt::AutoConnection);
+    QObject::connect(&this->sensorConfigurationDialog, &SensorConfigurationDialog::setSensorConfig, this, &MainWindow::setSensorConfiguration, Qt::AutoConnection);
+    QObject::connect(&this->sensorConfigurationDialog, &SensorConfigurationDialog::sensorConfigurationsEdited, this, &MainWindow::sensorConfigurationsEdited, Qt::AutoConnection);
 
     //connect measurement config dialog
     QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::measurementConfigurationChanged, this, &MainWindow::measurementConfigurationChanged, Qt::AutoConnection);

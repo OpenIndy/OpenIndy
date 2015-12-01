@@ -14,9 +14,12 @@ SensorParametersModel::SensorParametersModel(QObject *parent) : QAbstractTableMo
  * \return
  */
 int SensorParametersModel::rowCount(const QModelIndex &parent) const{
-    return this->sConfig.getStringParameter().uniqueKeys().size()
-            + this->sConfig.getDoubleParameter().size()
-            + this->sConfig.getIntegerParameter().size();
+    if(this->sConfig.getIsValid()){
+        return this->sConfig.getStringParameter().uniqueKeys().size()
+                + this->sConfig.getDoubleParameter().size()
+                + this->sConfig.getIntegerParameter().size();
+    }
+    return 0;
 }
 
 /*!

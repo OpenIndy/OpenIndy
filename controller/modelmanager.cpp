@@ -27,8 +27,8 @@ ActiveFeatureFunctionsModel ModelManager::activeFeatureFunctionsModel;
 QPointer<SensorConfigurationManager> ModelManager::sensorConfigManager;
 SensorTableModel ModelManager::sensorTableModel;
 SensorTableProxyModel ModelManager::sensorTableProxyModel;
-SensorConfigurationModel ModelManager::sensorConfigurationModel;
-SensorConfigurationProxyModel ModelManager::sensorConfigurationProxyModel;
+//SensorConfigurationModel ModelManager::sensorConfigurationModel;
+//SensorConfigurationProxyModel ModelManager::sensorConfigurationProxyModel;
 QStringListModel ModelManager::sensorTypeNamesModel;
 QList<sdb::Plugin> ModelManager::plugins;
 QStandardItemModel ModelManager::baudRateTypesModel;
@@ -403,22 +403,6 @@ SensorTableProxyModel &ModelManager::getSensorTableProxyModel(){
 }
 
 /*!
- * \brief ModelManager::getSensorConfigurationModel
- * \return
- */
-SensorConfigurationModel &ModelManager::getSensorConfigurationModel(){
-    return ModelManager::sensorConfigurationModel;
-}
-
-/*!
- * \brief ModelManager::getSensorConfigurationProxyModel
- * \return
- */
-SensorConfigurationProxyModel &ModelManager::getSensorConfigurationProxyModel(){
-    return ModelManager::sensorConfigurationProxyModel;
-}
-
-/*!
  * \brief ModelManager::getBaudRateTypesModel
  * \return
  */
@@ -647,13 +631,51 @@ QPointer<FunctionStatisticModel> ModelManager::getFunctionStatisticModel(){
 }
 
 /*!
+ * \brief ModelManager::getSensorConfigurationModel
+ * \return
+ */
+QPointer<SensorConfigurationModel> ModelManager::getSensorConfigurationModel(QObject *parent){
+
+    //create sensor config model
+    QPointer<SensorConfigurationModel> model = new SensorConfigurationModel(parent);
+
+    //assign current sensor config manager
+    if(!ModelManager::sensorConfigManager.isNull()){
+        SensorConfigurationManager manager(*ModelManager::sensorConfigManager.data());
+        model->setSensorConfigurationManager(manager);
+    }
+
+    return model;
+
+}
+
+/*!
+ * \brief ModelManager::getSensorConfigurationProxyModel
+ * \param sourceModel
+ * \return
+ */
+QPointer<SensorConfigurationProxyModel> ModelManager::getSensorConfigurationProxyModel(QPointer<SensorConfigurationModel> sourceModel){
+
+    //check source model
+    if(sourceModel.isNull()){
+        return QPointer<SensorConfigurationProxyModel>();
+    }
+
+    QPointer<SensorConfigurationProxyModel> model = new SensorConfigurationProxyModel(sourceModel->parent());
+    model->setSourceModel(sourceModel);
+
+    return model;
+
+}
+
+/*!
  * \brief ModelManager::getSensorAccuracyModel
  * \return
  */
-QPointer<SensorAccuracyModel> ModelManager::getSensorAccuracyModel(){
+QPointer<SensorAccuracyModel> ModelManager::getSensorAccuracyModel(QObject *parent){
 
     //create and connect model
-    QPointer<SensorAccuracyModel> model = new SensorAccuracyModel();
+    QPointer<SensorAccuracyModel> model = new SensorAccuracyModel(parent);
     if(!ModelManager::myInstance.isNull()){
         QObject::connect(ModelManager::myInstance, &ModelManager::parameterDisplayConfigChanged,
                          model, &SensorAccuracyModel::setParameterDisplayConfig, Qt::AutoConnection);
@@ -667,10 +689,10 @@ QPointer<SensorAccuracyModel> ModelManager::getSensorAccuracyModel(){
  * \brief ModelManager::getSensorParametersModel
  * \return
  */
-QPointer<SensorParametersModel> ModelManager::getSensorParametersModel(){
+QPointer<SensorParametersModel> ModelManager::getSensorParametersModel(QObject *parent){
 
     //create and connect model
-    QPointer<SensorParametersModel> model = new SensorParametersModel();
+    QPointer<SensorParametersModel> model = new SensorParametersModel(parent);
     if(!ModelManager::myInstance.isNull()){
         QObject::connect(ModelManager::myInstance, &ModelManager::parameterDisplayConfigChanged,
                          model, &SensorParametersModel::setParameterDisplayConfig, Qt::AutoConnection);
@@ -859,13 +881,6 @@ void ModelManager::updateParameterDisplayConfig(){
  * \brief ModelManager::updateSensorConfigManager
  */
 void ModelManager::updateSensorConfigManager(){
-
-    //pass the sensor config manager to all static models that need it
-    ModelManager::sensorConfigurationModel.setSensorConfigurationManager(ModelManager::sensorConfigManager);
-
-    //connect the config manager to slots in ModelManager
-    //QObject::connect(&ModelManager::sensorConfigManager, &SensorConfigurationManager::sensorConfigurationsChanged,
-    //                 ModelManager::myInstance.data(), &ModelManager::sensorConfigurationsChanged, Qt::AutoConnection);
 
 }
 
@@ -1058,7 +1073,7 @@ void ModelManager::initSensorTableModels(){
  * \brief ModelManager::initSensorListViewModels
  */
 void ModelManager::initSensorListViewModels(){
-
+/*
     //assign source models
     ModelManager::sensorConfigurationProxyModel.setSourceModel(&ModelManager::sensorConfigurationModel);
 
@@ -1067,7 +1082,7 @@ void ModelManager::initSensorListViewModels(){
         QObject::connect(&ModelManager::sensorConfigurationModel, &SensorConfigurationModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
         QObject::connect(&ModelManager::sensorConfigurationProxyModel, &SensorConfigurationProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
     }
-
+*/
 }
 
 /*!

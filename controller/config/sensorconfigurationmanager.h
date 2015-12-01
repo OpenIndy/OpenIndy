@@ -46,17 +46,18 @@ public:
 
     //active config
     const SensorConfiguration &getActiveSensorConfig() const;
+    void setActiveSensorConfig(const SensorConfiguration &sConfig);
 
     //add or remove configs
-    void addSavedSensorConfig(const SensorConfiguration &sConfig);
+    void addSavedSensorConfig(const SensorConfiguration &sConfig, bool save = true);
     void addProjectSensorConfig(const SensorConfiguration &sConfig);
-    void removeSavedSensorConfig(const QString &name);
+    void removeSavedSensorConfig(const QString &name, bool save = true);
     void removeProjectSensorConfig(const QString &name);
-    void removeAllSavedSensorConfigs();
+    void removeAllSavedSensorConfigs(bool save = true);
     void removeAllProjectSensorConfigs();
 
     //replace a config
-    void replaceSensorConfig(const QString &name, const SensorConfiguration &sConfig);
+    void replaceSensorConfig(const QString &name, const SensorConfiguration &sConfig, bool save = true);
 
     //load configs from xml
     void loadFromConfigFolder();
@@ -87,8 +88,8 @@ private:
     //##############
 
     //save or remove configs
-    void saveSensorConfig(const SensorConfiguration &sConfig);
-    void deleteSensorConfig(const QString &name);
+    void saveSensorConfig(const SensorConfiguration &sConfig, bool save);
+    void deleteSensorConfig(const QString &name, bool save);
 
     //compare two configs
     bool equals(const SensorConfiguration &sConfigA, const SensorConfiguration &sConfigB);
@@ -97,14 +98,17 @@ private:
     //save sensor configs
     //###################
 
-    QMap<QString, SensorConfiguration> savedSensorConfigs;
-    QMap<QString, SensorConfiguration> projectSensorConfigs;
+    QMap<QString, SensorConfiguration> savedSensorConfigsMap;
+    QMap<QString, SensorConfiguration> projectSensorConfigsMap;
 
-    QList<SensorConfiguration> savedSensorConfigList;
-    QList<SensorConfiguration> projectSensorConfigList;
+    QList<SensorConfiguration> savedSensorConfigsList;
+    QList<SensorConfiguration> projectSensorConfigsList;
 
     SensorConfiguration activeSensorConfig;
 
 };
+
+Q_DECLARE_METATYPE( SensorConfigurationManager )
+Q_DECLARE_METATYPE( SensorConfigurationManager* )
 
 #endif // SENSORCONFIGURATIONMANAGER_H

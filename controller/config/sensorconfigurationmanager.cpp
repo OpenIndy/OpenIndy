@@ -13,10 +13,10 @@ SensorConfigurationManager::SensorConfigurationManager(QObject *parent) : QObjec
  * \param parent
  */
 SensorConfigurationManager::SensorConfigurationManager(const SensorConfigurationManager &copy, QObject *parent) : QObject(parent){
-    this->savedSensorConfigs = copy.savedSensorConfigs;
-    this->savedSensorConfigList = copy.savedSensorConfigList;
-    this->projectSensorConfigs = copy.projectSensorConfigs;
-    this->projectSensorConfigList = copy.projectSensorConfigList;
+    this->savedSensorConfigsMap = copy.savedSensorConfigsMap;
+    this->savedSensorConfigsList = copy.savedSensorConfigsList;
+    this->projectSensorConfigsMap = copy.projectSensorConfigsMap;
+    this->projectSensorConfigsList = copy.projectSensorConfigsList;
     this->activeSensorConfig = copy.activeSensorConfig;
 }
 
@@ -26,10 +26,10 @@ SensorConfigurationManager::SensorConfigurationManager(const SensorConfiguration
  * \return
  */
 SensorConfigurationManager &SensorConfigurationManager::operator=(const SensorConfigurationManager &copy){
-    this->savedSensorConfigs = copy.savedSensorConfigs;
-    this->savedSensorConfigList = copy.savedSensorConfigList;
-    this->projectSensorConfigs = copy.projectSensorConfigs;
-    this->projectSensorConfigList = copy.projectSensorConfigList;
+    this->savedSensorConfigsMap = copy.savedSensorConfigsMap;
+    this->savedSensorConfigsList = copy.savedSensorConfigsList;
+    this->projectSensorConfigsMap = copy.projectSensorConfigsMap;
+    this->projectSensorConfigsList = copy.projectSensorConfigsList;
     this->activeSensorConfig = copy.activeSensorConfig;
     return *this;
 }
@@ -41,7 +41,7 @@ SensorConfigurationManager &SensorConfigurationManager::operator=(const SensorCo
  * \return
  */
 bool SensorConfigurationManager::hasSavedSensorConfig(const QString &name){
-    return this->savedSensorConfigs.contains(name);
+    return this->savedSensorConfigsMap.contains(name);
 }
 
 /*!
@@ -51,7 +51,7 @@ bool SensorConfigurationManager::hasSavedSensorConfig(const QString &name){
  * \return
  */
 bool SensorConfigurationManager::hasProjectSensorConfig(const QString &name){
-    return this->projectSensorConfigs.contains(name);
+    return this->projectSensorConfigsMap.contains(name);
 }
 
 /*!
@@ -62,12 +62,12 @@ bool SensorConfigurationManager::hasProjectSensorConfig(const QString &name){
  */
 bool SensorConfigurationManager::hasSavedSensorConfig(const SensorConfiguration &sConfig){
 
-    if(!this->savedSensorConfigs.contains(sConfig.getName())){
+    if(!this->savedSensorConfigsMap.contains(sConfig.getName())){
         return false;
     }
 
     //get saved config and compare it to the given one
-    SensorConfiguration savedConfig = this->savedSensorConfigs.value(sConfig.getName());
+    SensorConfiguration savedConfig = this->savedSensorConfigsMap.value(sConfig.getName());
 
     return this->equals(sConfig, savedConfig);
 
@@ -81,12 +81,12 @@ bool SensorConfigurationManager::hasSavedSensorConfig(const SensorConfiguration 
  */
 bool SensorConfigurationManager::hasProjectSensorConfig(const SensorConfiguration &sConfig){
 
-    if(!this->projectSensorConfigs.contains(sConfig.getName())){
+    if(!this->projectSensorConfigsMap.contains(sConfig.getName())){
         return false;
     }
 
     //get project config and compare it to the given one
-    SensorConfiguration projectConfig = this->projectSensorConfigs.value(sConfig.getName());
+    SensorConfiguration projectConfig = this->projectSensorConfigsMap.value(sConfig.getName());
 
     return this->equals(sConfig, projectConfig);
 
@@ -99,7 +99,7 @@ bool SensorConfigurationManager::hasProjectSensorConfig(const SensorConfiguratio
  * \return
  */
 SensorConfiguration SensorConfigurationManager::getSavedSensorConfig(const QString &name) const{
-    return this->savedSensorConfigs.value(name, SensorConfiguration());
+    return this->savedSensorConfigsMap.value(name, SensorConfiguration());
 }
 
 /*!
@@ -108,7 +108,7 @@ SensorConfiguration SensorConfigurationManager::getSavedSensorConfig(const QStri
  * \return
  */
 SensorConfiguration SensorConfigurationManager::getProjectSensorConfig(const QString &name) const{
-    return this->projectSensorConfigs.value(name, SensorConfiguration());
+    return this->projectSensorConfigsMap.value(name, SensorConfiguration());
 }
 
 /*!
@@ -116,7 +116,7 @@ SensorConfiguration SensorConfigurationManager::getProjectSensorConfig(const QSt
  * \return
  */
 const QList<SensorConfiguration> &SensorConfigurationManager::getSavedSensorConfigs() const{
-    return this->savedSensorConfigList;
+    return this->savedSensorConfigsList;
 }
 
 /*!
@@ -124,7 +124,7 @@ const QList<SensorConfiguration> &SensorConfigurationManager::getSavedSensorConf
  * \return
  */
 const QList<SensorConfiguration> &SensorConfigurationManager::getProjectSensorConfigs() const{
-    return this->projectSensorConfigList;
+    return this->projectSensorConfigsList;
 }
 
 /*!
@@ -137,10 +137,20 @@ const SensorConfiguration &SensorConfigurationManager::getActiveSensorConfig() c
 }
 
 /*!
- * \brief SensorConfigurationManager::addSensorConfig
+ * \brief SensorConfigurationManager::setActiveSensorConfig
  * \param sConfig
  */
-void SensorConfigurationManager::addSavedSensorConfig(const SensorConfiguration &sConfig){
+void SensorConfigurationManager::setActiveSensorConfig(const SensorConfiguration &sConfig){
+    this->activeSensorConfig = sConfig;
+    emit this->activeSensorConfigurationChanged();
+}
+
+/*!
+ * \brief SensorConfigurationManager::addSavedSensorConfig
+ * \param sConfig
+ * \param save
+ */
+void SensorConfigurationManager::addSavedSensorConfig(const SensorConfiguration &sConfig, bool save){
 
     //check if sConfig is valid
     if(!sConfig.getIsValid()){
@@ -149,13 +159,13 @@ void SensorConfigurationManager::addSavedSensorConfig(const SensorConfiguration 
     }
 
     //check if sConfig already exists
-    if(this->savedSensorConfigs.contains(sConfig.getName())){
+    if(this->savedSensorConfigsMap.contains(sConfig.getName())){
         emit this->sendMessage(QString("A sensor configuration with the name %1 already exists").arg(sConfig.getName()), eErrorMessage);
         return;
     }
 
     //save sConfig
-    this->saveSensorConfig(sConfig);
+    this->saveSensorConfig(sConfig, save);
 
 
 }
@@ -173,22 +183,23 @@ void SensorConfigurationManager::addProjectSensorConfig(const SensorConfiguratio
     }
 
     //check if sConfig already exists
-    if(this->projectSensorConfigs.contains(sConfig.getName())){
+    if(this->projectSensorConfigsMap.contains(sConfig.getName())){
         emit this->sendMessage(QString("A sensor configuration with the name %1 already exists").arg(sConfig.getName()), eErrorMessage);
         return;
     }
 
     //save sConfig
-    this->projectSensorConfigList.append(sConfig);
-    this->projectSensorConfigs.insert(sConfig.getName(), sConfig);
+    this->projectSensorConfigsList.append(sConfig);
+    this->projectSensorConfigsMap.insert(sConfig.getName(), sConfig);
 
 }
 
 /*!
- * \brief SensorConfigurationManager::removeSensorConfig
+ * \brief SensorConfigurationManager::removeSavedSensorConfig
  * \param name
+ * \param save
  */
-void SensorConfigurationManager::removeSavedSensorConfig(const QString &name){
+void SensorConfigurationManager::removeSavedSensorConfig(const QString &name, bool save){
 
     //check name
     if(name.compare("") == 0){
@@ -197,13 +208,13 @@ void SensorConfigurationManager::removeSavedSensorConfig(const QString &name){
     }
 
     //check if the sensor config exists
-    if(!this->savedSensorConfigs.contains(name)){
+    if(!this->savedSensorConfigsMap.contains(name)){
         emit this->sendMessage(QString("A sensor configuration with the name %1 does not exist").arg(name), eErrorMessage);
         return;
     }
 
     //delete sConfig
-    this->deleteSensorConfig(name);
+    this->deleteSensorConfig(name, save);
 
 }
 
@@ -214,28 +225,28 @@ void SensorConfigurationManager::removeSavedSensorConfig(const QString &name){
 void SensorConfigurationManager::removeProjectSensorConfig(const QString &name){
 
     //check if the sensor config exists
-    if(!this->projectSensorConfigs.contains(name)){
+    if(!this->projectSensorConfigsMap.contains(name)){
         emit this->sendMessage(QString("A sensor configuration with the name %1 does not exist").arg(name), eErrorMessage);
         return;
     }
 
     //remove sensor config
-    SensorConfiguration sConfig = this->projectSensorConfigs.take(name);
-    this->projectSensorConfigList.removeOne(sConfig);
+    SensorConfiguration sConfig = this->projectSensorConfigsMap.take(name);
+    this->projectSensorConfigsList.removeOne(sConfig);
 
 }
 
 /*!
  * \brief SensorConfigurationManager::removeAllSensorConfigs
  */
-void SensorConfigurationManager::removeAllSavedSensorConfigs(){
+void SensorConfigurationManager::removeAllSavedSensorConfigs(bool save){
 
     //get a list of saved sensor configs
     QList<SensorConfiguration> configs = this->getSavedSensorConfigs();
 
     //remove sensor configs
     foreach(const SensorConfiguration &sConfig, configs){
-        this->deleteSensorConfig(sConfig.getName());
+        this->deleteSensorConfig(sConfig.getName(), save);
     }
 
 }
@@ -245,8 +256,8 @@ void SensorConfigurationManager::removeAllSavedSensorConfigs(){
  */
 void SensorConfigurationManager::removeAllProjectSensorConfigs(){
 
-    this->projectSensorConfigList.clear();
-    this->projectSensorConfigs.clear();
+    this->projectSensorConfigsList.clear();
+    this->projectSensorConfigsMap.clear();
 
     emit this->sensorConfigurationsChanged();
 
@@ -257,68 +268,86 @@ void SensorConfigurationManager::removeAllProjectSensorConfigs(){
  * Replaces the sensor config with the name name by the given sensor config
  * \param name
  * \param sConfig
+ * \param save
  */
-void SensorConfigurationManager::replaceSensorConfig(const QString &name, const SensorConfiguration &sConfig){
+void SensorConfigurationManager::replaceSensorConfig(const QString &name, const SensorConfiguration &sConfig, bool save){
 
     //get the old sensor config
-    if(!this->savedSensorConfigs.contains(name)){
+    if(!this->savedSensorConfigsMap.contains(name)){
         return;
     }
-    SensorConfiguration oldConfig = this->savedSensorConfigs.value(name);
+    SensorConfiguration oldConfig = this->savedSensorConfigsMap.value(name);
+
+    //check active config
+    bool isActive = false;
+    if(this->activeSensorConfig.getIsSaved() && this->activeSensorConfig.getName().compare(name) == 0){
+        isActive = true;
+    }
 
     //###########################
     //replace mConfig in database
     //###########################
 
-    SystemDbManager::removeSensorConfig(name);
-    SystemDbManager::addSensorConfig(sConfig.getName());
+    if(save){
+        SystemDbManager::removeSensorConfig(name);
+        SystemDbManager::addSensorConfig(sConfig.getName());
+    }
 
     //########################
     //replace sConfig xml file
     //########################
 
-    //create xml document
-    QDomDocument sConfigXml("sensorConfig");
+    if(save){
 
-    //add mConfig to document as xml
-    QDomElement root = sConfig.toOpenIndyXML(sConfigXml);
-    sConfigXml.appendChild(root);
+        //create xml document
+        QDomDocument sConfigXml("sensorConfig");
 
-    //get config folder (create if does not exist yet)
-    QString appPath = qApp->applicationDirPath();
-    QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
-    if(!sConfigFolder.exists()){
-        sConfigFolder.mkpath(".");
+        //add mConfig to document as xml
+        QDomElement root = sConfig.toOpenIndyXML(sConfigXml);
+        sConfigXml.appendChild(root);
+
+        //get config folder (create if does not exist yet)
+        QString appPath = qApp->applicationDirPath();
+        QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
+        if(!sConfigFolder.exists()){
+            sConfigFolder.mkpath(".");
+        }
+
+        //set the file name
+        QString fileName = sConfig.getName();
+
+        //remove old config file
+        QFile oldConfigFile(sConfigFolder.absoluteFilePath(name + ".xml"));
+        if(oldConfigFile.exists()){
+            oldConfigFile.remove();
+        }
+
+        //save mConfig to xml file
+        QFile configFile(sConfigFolder.absoluteFilePath(fileName.append(".xml")));
+        configFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+        QTextStream stream(&configFile);
+        sConfigXml.save(stream, 4);
+        configFile.close();
+
     }
-
-    //set the file name
-    QString fileName = sConfig.getName();
-
-    //remove old config file
-    QFile oldConfigFile(sConfigFolder.absoluteFilePath(name + ".xml"));
-    if(oldConfigFile.exists()){
-        oldConfigFile.remove();
-    }
-
-    //save mConfig to xml file
-    QFile configFile(sConfigFolder.absoluteFilePath(fileName.append(".xml")));
-    configFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-    QTextStream stream(&configFile);
-    sConfigXml.save(stream, 4);
-    configFile.close();
 
     //###############################
     //replace sConfig in list and map
     //###############################
 
     //replace sConfig in map
-    this->savedSensorConfigs.remove(name);
-    this->savedSensorConfigs.insert(sConfig.getName(), sConfig);
+    this->savedSensorConfigsMap.remove(name);
+    this->savedSensorConfigsMap.insert(sConfig.getName(), sConfig);
 
     //replace sConfig in list
-    int index = this->savedSensorConfigList.indexOf(oldConfig, 0);
+    int index = this->savedSensorConfigsList.indexOf(oldConfig, 0);
     if(index != -1){
-        this->savedSensorConfigList.replace(index, sConfig);
+        this->savedSensorConfigsList.replace(index, sConfig);
+    }
+
+    //update active sensor config
+    if(isActive){
+        this->activeSensorConfig = sConfig;
     }
 
     emit this->sensorConfigurationReplaced(oldConfig, sConfig);
@@ -388,15 +417,15 @@ void SensorConfigurationManager::loadFromConfigFolder(){
         sConfigNames.append(savedConfig.getName());
 
         //add the loaded sensor config to the list of saved configs
-        this->savedSensorConfigs.insert(savedConfig.getName(), savedConfig);
-        this->savedSensorConfigList.append(savedConfig);
+        this->savedSensorConfigsMap.insert(savedConfig.getName(), savedConfig);
+        this->savedSensorConfigsList.append(savedConfig);
 
     }
 
     //get default sensor config
     QString sConfigName = SystemDbManager::getDefaultSensorConfig();
-    if(this->savedSensorConfigs.contains(sConfigName)){
-        this->activeSensorConfig = this->savedSensorConfigs.value(sConfigName);
+    if(this->savedSensorConfigsMap.contains(sConfigName)){
+        this->activeSensorConfig = this->savedSensorConfigsMap.value(sConfigName);
         emit this->activeSensorConfigurationChanged();
     }
 
@@ -438,48 +467,56 @@ void SensorConfigurationManager::synchronize(const SensorConfigurationManager &o
 /*!
  * \brief SensorConfigurationManager::saveSensorConfig
  * \param sConfig
+ * \param save
  */
-void SensorConfigurationManager::saveSensorConfig(const SensorConfiguration &sConfig){
+void SensorConfigurationManager::saveSensorConfig(const SensorConfiguration &sConfig, bool save){
 
     //###################################
     //create config file at config folder
     //###################################
 
-    //create xml document
-    QDomDocument sConfigXml("sensorConfig");
+    if(save){
 
-    //add sConfig to document as xml
-    QDomElement root = sConfig.toOpenIndyXML(sConfigXml);
-    sConfigXml.appendChild(root);
+        //create xml document
+        QDomDocument sConfigXml("sensorConfig");
 
-    //get config folder (create if does not exist yet)
-    QString appPath = qApp->applicationDirPath();
-    QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
-    if(!sConfigFolder.exists()){
-        sConfigFolder.mkpath(".");
+        //add sConfig to document as xml
+        QDomElement root = sConfig.toOpenIndyXML(sConfigXml);
+        sConfigXml.appendChild(root);
+
+        //get config folder (create if does not exist yet)
+        QString appPath = qApp->applicationDirPath();
+        QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
+        if(!sConfigFolder.exists()){
+            sConfigFolder.mkpath(".");
+        }
+
+        //set the file name
+        QString fileName = sConfig.getName();
+
+        //save sConfig to xml file
+        QFile configFile(sConfigFolder.absoluteFilePath(fileName.append(".xml")));
+        configFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+        QTextStream stream(&configFile);
+        sConfigXml.save(stream, 4);
+        configFile.close();
+
     }
-
-    //set the file name
-    QString fileName = sConfig.getName();
-
-    //save sConfig to xml file
-    QFile configFile(sConfigFolder.absoluteFilePath(fileName.append(".xml")));
-    configFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-    QTextStream stream(&configFile);
-    sConfigXml.save(stream, 4);
-    configFile.close();
 
     //##################
     //add database entry
     //##################
 
-    SystemDbManager::addSensorConfig(sConfig.getName());
+    if(save){
+        SystemDbManager::addSensorConfig(sConfig.getName());
+    }
 
     //########################################
     //add sConfig to the list of saved configs
     //########################################
 
-    this->savedSensorConfigs.insert(sConfig.getName(), sConfig);
+    this->savedSensorConfigsMap.insert(sConfig.getName(), sConfig);
+    this->savedSensorConfigsList.append(sConfig);
 
     //############
     //emit signals
@@ -492,41 +529,46 @@ void SensorConfigurationManager::saveSensorConfig(const SensorConfiguration &sCo
 /*!
  * \brief SensorConfigurationManager::deleteSensorConfig
  * \param name
+ * \param save
  */
-void SensorConfigurationManager::deleteSensorConfig(const QString &name){
+void SensorConfigurationManager::deleteSensorConfig(const QString &name, bool save){
 
     //#####################################
     //remove config file from config folder
     //#####################################
 
     //get config folder
-    QString appPath = qApp->applicationDirPath();
-    QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
-    if(sConfigFolder.exists()){
+    if(save){
+        QString appPath = qApp->applicationDirPath();
+        QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
+        if(sConfigFolder.exists()){
 
-        //get config file
-        QFile configFile(sConfigFolder.absoluteFilePath(name + ".xml"));
-        if(configFile.exists()){
-            configFile.remove();
+            //get config file
+            QFile configFile(sConfigFolder.absoluteFilePath(name + ".xml"));
+            if(configFile.exists()){
+                configFile.remove();
+            }
+
         }
-
     }
 
     //############################
     //remove sConfig from database
     //############################
 
-    SystemDbManager::removeSensorConfig(name);
+    if(save){
+        SystemDbManager::removeSensorConfig(name);
+    }
 
     //#############################################
     //remove sConfig from the list of saved configs
     //#############################################
 
-    SensorConfiguration sConfig = this->savedSensorConfigs.take(name);
-    this->savedSensorConfigList.removeOne(sConfig);
+    SensorConfiguration sConfig = this->savedSensorConfigsMap.take(name);
+    this->savedSensorConfigsList.removeOne(sConfig);
 
     //reset active sensor config
-    if(name.compare(this->activeSensorConfig.getName()) == 0){
+    if(name.compare(this->activeSensorConfig.getName()) == 0 && this->activeSensorConfig.getIsSaved()){
         this->activeSensorConfig = SensorConfiguration();
         emit this->activeSensorConfigurationChanged();
     }

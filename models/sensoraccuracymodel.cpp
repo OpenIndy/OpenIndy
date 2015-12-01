@@ -16,7 +16,11 @@ SensorAccuracyModel::SensorAccuracyModel(QObject *parent) : QAbstractTableModel(
  * \return
  */
 int SensorAccuracyModel::rowCount(const QModelIndex &parent) const{
-    return (15 + this->sConfig.getAccuracy().sigmaUndefined.values().size());
+    if(this->sConfig.getIsValid() && this->sConfig.getPluginName().compare("") != 0
+            && this->sConfig.getSensorName().compare("") != 0){
+        return (15 + this->sConfig.getAccuracy().sigmaUndefined.values().size());
+    }
+    return 0;
 }
 
 /*!
