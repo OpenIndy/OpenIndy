@@ -678,6 +678,8 @@ bool ProjectExchanger::loadConfigs(const QDomDocument &project){
                 if(mConfig.fromOpenIndyXML(mConfigElement)){
                     if(!mConfigManager.isNull() && mConfigManager->hasSavedMeasurementConfig(mConfig)){
                         mConfig.setIsSaved(true);
+                    }else{
+                        mConfig.setIsSaved(false);
                     }
                     ProjectExchanger::myMConfigs.insert(mConfig.getName(), mConfig);
                 }

@@ -97,14 +97,7 @@ bool MeasurementConfigManager::hasSavedMeasurementConfig(const MeasurementConfig
 
     //get saved config and compare it to the given one
     MeasurementConfig savedConfig = this->savedMeasurementConfigMap.value(mConfig.getName());
-    if(savedConfig.getCount() == mConfig.getCount()
-            && savedConfig.getIterations() == mConfig.getIterations()
-            && savedConfig.getMeasureTwoSides() == mConfig.getMeasureTwoSides()
-            && savedConfig.getTimeDependent() == mConfig.getTimeDependent()
-            && savedConfig.getDistanceDependent() == mConfig.getDistanceDependent()
-            && savedConfig.getTimeInterval() == mConfig.getTimeInterval()
-            && savedConfig.getDistanceInterval() == mConfig.getDistanceInterval()
-            && savedConfig.getTypeOfReading() == mConfig.getTypeOfReading()){
+    if(this->equals(savedConfig, mConfig)){
         return true;
     }
 
@@ -126,14 +119,7 @@ bool MeasurementConfigManager::hasProjectMeasurementConfig(const MeasurementConf
 
     //get project config and compare it to the given one
     MeasurementConfig projectConfig = this->projectMeasurementConfigMap.value(mConfig.getName());
-    if(projectConfig.getCount() == mConfig.getCount()
-            && projectConfig.getIterations() == mConfig.getIterations()
-            && projectConfig.getMeasureTwoSides() == mConfig.getMeasureTwoSides()
-            && projectConfig.getTimeDependent() == mConfig.getTimeDependent()
-            && projectConfig.getDistanceDependent() == mConfig.getDistanceDependent()
-            && projectConfig.getTimeInterval() == mConfig.getTimeInterval()
-            && projectConfig.getDistanceInterval() == mConfig.getDistanceInterval()
-            && projectConfig.getTypeOfReading() == mConfig.getTypeOfReading()){
+    if(this->equals(projectConfig, mConfig)){
         return true;
     }
 
@@ -673,8 +659,7 @@ void MeasurementConfigManager::disconnectJob(){
 bool MeasurementConfigManager::equals(const MeasurementConfig &mConfigA, const MeasurementConfig &mConfigB){
 
     //compare general attributes
-    if(mConfigA.getName().compare(mConfigB.getName()) != 0
-            || mConfigA.getIsSaved() != mConfigB.getIsSaved()){
+    if(mConfigA.getName().compare(mConfigB.getName()) != 0){
         return false;
     }
 

@@ -26,16 +26,6 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
-            <widget class="QCheckBox" name="checkBox_showAll">
-             <property name="toolTip">
-              <string>show project sensor configs</string>
-             </property>
-             <property name="text">
-              <string>show all</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <spacer name="horizontalSpacer_2">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
