@@ -32,6 +32,7 @@
 #include "nominalpropertiesdialog.h"
 #include "trafoparampropertiesdialog.h"
 #include "aboutdialog.h"
+#include "stationpropertiesdialog.h"
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
@@ -67,8 +68,11 @@ signals:
     void removeObservations(const int &featureId);
     void removeAllObservations();
 
+    //sensor configs edited
+    void sensorConfigurationsEdited(const SensorConfigurationManager &manager);
+
     //set sensor configuration for active sensor
-    void sensorConfigurationChanged(const QString &name, const bool &connectSensor);
+    void sensorConfigurationChanged(const SensorConfiguration &sConfig, bool connectSensor);
 
     //set measurement configuration for active feature
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
@@ -183,8 +187,9 @@ private slots:
 
     //sensor dialogs
     void on_actionSet_sensor_triggered();
-    void setSensorConfiguration(const QString &name);
+    void setSensorConfiguration(const SensorConfiguration &sConfig);
     void showMoveSensorDialog();
+    void on_actionStationProperties_triggered();
 
     //toggle visibility of widgets
     void on_actionControl_pad_triggered();
@@ -305,6 +310,7 @@ private:
     NominalPropertiesDialog nominalPropertiesDialog;
     TrafoParamPropertiesDialog trafoParamPropertiesDialog;
     AboutDialog aboutDialog;
+    StationPropertiesDialog stationPropertiesDialog;
 
     //##########
     //sensor pad

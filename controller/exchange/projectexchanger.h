@@ -28,7 +28,6 @@ using namespace oi;
  */
 class ProjectExchanger
 {
-    //friend class OiRequestHandler;
 public:
 
     //##############################

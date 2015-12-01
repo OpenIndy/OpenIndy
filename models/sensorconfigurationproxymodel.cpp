@@ -51,7 +51,7 @@ bool SensorConfigurationProxyModel::filterAcceptsRow(int source_row, const QMode
     }
 
     //check if the index is a saved config
-    if(source_row < sourceModel->getSensorConfigurationManager()->getSavedSensorConfigs().size()){
+    if(source_row < sourceModel->getSensorConfigurationManager().getSavedSensorConfigs().size()){
         return true;
     }
 

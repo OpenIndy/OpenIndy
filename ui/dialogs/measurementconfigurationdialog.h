@@ -106,7 +106,7 @@ private:
     //##################################
 
     void showEvent(QShowEvent *event);
-    void closeEvent(QShowEvent *event);
+    void closeEvent(QCloseEvent *event);
 
     void initGUI();
     void initModels();

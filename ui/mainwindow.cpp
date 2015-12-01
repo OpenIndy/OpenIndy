@@ -841,12 +841,12 @@ void MainWindow::on_actionSet_sensor_triggered(){
 
 /*!
  * \brief MainWindow::setSensorConfiguration
- * \param name
+ * \param sConfig
  */
-void MainWindow::setSensorConfiguration(const QString &name){
+void MainWindow::setSensorConfiguration(const SensorConfiguration &sConfig){
 
     //check name
-    if(name.compare("") == 0){
+    if(!sConfig.getIsValid()){
         emit this->log("Invalid configuration name", eErrorMessage, eMessageBoxMessage);
         return;
     }
@@ -861,10 +861,10 @@ void MainWindow::setSensorConfiguration(const QString &name){
 
     switch (ret) {
     case QMessageBox::Yes:
-        emit this->sensorConfigurationChanged(name, true);
+        emit this->sensorConfigurationChanged(sConfig, true);
         break;
     case QMessageBox::No:
-        emit this->sensorConfigurationChanged(name, false);
+        emit this->sensorConfigurationChanged(sConfig, false);
         break;
     }
 
@@ -875,6 +875,40 @@ void MainWindow::setSensorConfiguration(const QString &name){
  */
 void MainWindow::showMoveSensorDialog(){
     this->moveSensorDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_actionStationProperties_triggered
+ */
+void MainWindow::on_actionStationProperties_triggered(){
+
+    //get feature table models
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    //display properties dialog for stations
+    if(!feature->getStation().isNull()){
+
+        //pass information to the station properties dialog
+        this->stationPropertiesDialog.setIsActiveStation(feature->getStation()->getIsActiveStation());
+        this->stationPropertiesDialog.setSensorConfiguration(feature->getStation()->getSensorConfiguration());
+
+        this->stationPropertiesDialog.show();
+
+    }
+
 }
 
 /*!
@@ -1002,10 +1036,7 @@ void MainWindow::on_actionWatch_window_triggered(){
  */
 void MainWindow::on_actionOpen_triggered(){
 
-    //QFileDialog dlg;
-    //dlg.exec();
-
-    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "oi.xml (*.oi.xml)");
+    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "xml (*.xml)");
     if(filename.compare("") == 0){
         return;
     }
@@ -1033,7 +1064,7 @@ void MainWindow::on_actionSave_triggered(){
  * \brief MainWindow::on_actionSave_as_triggered
  */
 void MainWindow::on_actionSave_as_triggered(){
-    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "oi.xml (*.oi.xml)");
+    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
     if(filename.compare("") != 0){
         emit this->saveProject(filename);
     }
@@ -1090,6 +1121,17 @@ void MainWindow::on_actionActivate_station_triggered(){
         return;
     }
     QModelIndex index = selection.at(0);
+
+    //let the user confirm the task
+    QMessageBox msgBox;
+    msgBox.setText(QString("Do you really want to activate station %1?").arg(index.data(Qt::DisplayRole).toString()));
+    msgBox.setInformativeText("");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+    int ret = msgBox.exec();
+    if(ret == QMessageBox::No){
+        return;
+    }
 
     //set selected station
     sourceModel->setActiveStation(model->mapToSource(index));
@@ -1259,6 +1301,17 @@ void MainWindow::showFeatureProperties(bool checked){
 
     }
 
+    //display properties dialog for stations
+    if(!feature->getStation().isNull()){
+
+        //pass information to the station properties dialog
+        this->stationPropertiesDialog.setIsActiveStation(feature->getStation()->getIsActiveStation());
+        this->stationPropertiesDialog.setSensorConfiguration(feature->getStation()->getSensorConfiguration());
+
+        this->stationPropertiesDialog.show();
+
+    }
+
 }
 
 /*!
@@ -1425,7 +1478,7 @@ void MainWindow::copyToClipboard(){
     copy_table.append(model->data(last).toString());
     copy_table.append("\n");
 
-    //set values to clipboard, so you can copy them
+    //set values to clipboard, so you can paste them elsewhere
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->clear();
     clipboard->setText(copy_table);
@@ -1538,7 +1591,8 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::log, &this->control, &Controller::log, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::addFeatures, &this->control, &Controller::addFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::importNominals, &this->control, &Controller::importNominals, Qt::AutoConnection);
-    QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::setSensorConfig, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::sensorConfigurationsEdited, &this->control, &Controller::sensorConfigurationsEdited, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::measurementConfigurationChanged, &this->control, &Controller::measurementConfigurationChanged, Qt::AutoConnection);
     QObject::connect(this, static_cast<void (MainWindow::*)()>(&MainWindow::saveProject),
                      &this->control, static_cast<void (Controller::*)()>(&Controller::saveProject), Qt::AutoConnection);
@@ -1590,7 +1644,8 @@ void MainWindow::connectDialogs(){
     QObject::connect(&this->control, &Controller::observationImportProgressUpdated, &this->loadingDialog, &LoadingDialog::updateProgress, Qt::AutoConnection);
 
     //connect sensor config dialog
-    QObject::connect(&this->sensorConfigurationDialog, &SensorConfigurationDialog::setSensorConfiguration, this, &MainWindow::setSensorConfiguration, Qt::AutoConnection);
+    QObject::connect(&this->sensorConfigurationDialog, &SensorConfigurationDialog::setSensorConfig, this, &MainWindow::setSensorConfiguration, Qt::AutoConnection);
+    QObject::connect(&this->sensorConfigurationDialog, &SensorConfigurationDialog::sensorConfigurationsEdited, this, &MainWindow::sensorConfigurationsEdited, Qt::AutoConnection);
 
     //connect measurement config dialog
     QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::measurementConfigurationChanged, this, &MainWindow::measurementConfigurationChanged, Qt::AutoConnection);
@@ -1615,6 +1670,10 @@ void MainWindow::connectDialogs(){
 
     //connect trafo param properties dialog
     QObject::connect(&this->trafoParamPropertiesDialog, &TrafoParamPropertiesDialog::trafoParamParametersChanged, &this->control, &Controller::setTrafoParamParameters, Qt::AutoConnection);
+
+    //connect station properties dialog
+    QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
+    QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
 
 }
 

@@ -22,8 +22,15 @@ const SensorTypes &SensorTableProxyModel::getSensorType() const{
  * \param type
  */
 void SensorTableProxyModel::setSensorType(const SensorTypes &type){
+
+    //check sensor type
+    if(type != eLaserTracker && type != eTotalStation){
+        return;
+    }
+
     this->sensorType = type;
     this->invalidateFilter();
+
 }
 
 /*!
@@ -33,11 +40,6 @@ void SensorTableProxyModel::setSensorType(const SensorTypes &type){
  * \return
  */
 bool SensorTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
-
-    //check the current sensor types filter
-    if(this->sensorType == eUndefinedSensor){
-        return true;
-    }
 
     //get and cast source model
     SensorTableModel *source_model = dynamic_cast<SensorTableModel *>(this->sourceModel());

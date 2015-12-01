@@ -7,6 +7,7 @@
 #include "oijob.h"
 #include "featuretablemodel.h"
 #include "featuretablecolumnconfig.h"
+#include "featuresorter.h"
 
 using namespace oi;
 
@@ -19,6 +20,13 @@ class FeatureTableProxyModel : public QSortFilterProxyModel
 
 public:
     explicit FeatureTableProxyModel(QObject *parent = 0);
+
+    //###############################
+    //get or set current OpenIndy job
+    //###############################
+
+    const QPointer<OiJob> &getCurrentJob() const;
+    void setCurrentJob(const QPointer<OiJob> &job);
 
     //#########################
     //get or set display config
@@ -56,6 +64,18 @@ private:
     //##############
 
     FeatureTableColumnConfig featureTableColumnConfig;
+
+    //###########
+    //current job
+    //###########
+
+    QPointer<OiJob> job;
+
+    //##############
+    //feature sorter
+    //##############
+
+    FeatureSorter sorter;
     
 };
 

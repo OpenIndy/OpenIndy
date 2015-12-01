@@ -2,6 +2,7 @@
 #define PARAMETERDISPLAYCONFIG_H
 
 #include <QMap>
+#include <QObject>
 
 #include "types.h"
 
@@ -37,5 +38,8 @@ private:
     int temperatureDisplayDigits; //number of digits that are displayed for temperature parameter values
     int dimensionlessDisplayDigits; //number of digits that are displayed for dimensionless parameter values
 };
+
+Q_DECLARE_METATYPE( ParameterDisplayConfig )
+Q_DECLARE_METATYPE( ParameterDisplayConfig* )
 
 #endif // PARAMETERDISPLAYCONFIG_H

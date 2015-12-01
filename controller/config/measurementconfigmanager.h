@@ -28,42 +28,57 @@ public:
 
     MeasurementConfigManager &operator=(const MeasurementConfigManager &copy);
 
+    //###################################
+    //get or set the current OpenIndy job
+    //###################################
+
+    const QPointer<OiJob> &getCurrentJob() const;
+    void setCurrentJob(const QPointer<OiJob> &job);
+
     //##############################
     //get or set measurement configs
     //##############################
 
+    //check presence of a config
     bool hasSavedMeasurementConfig(const QString &name);
     bool hasProjectMeasurementConfig(const QString &name);
-
     bool hasSavedMeasurementConfig(const MeasurementConfig &mConfig);
     bool hasProjectMeasurementConfig(const MeasurementConfig &mConfig);
 
+    //get configs
     MeasurementConfig getSavedMeasurementConfig(const QString &name) const;
     MeasurementConfig getProjectMeasurementConfig(const QString &name) const;
+    const QList<MeasurementConfig> &getSavedMeasurementConfigs() const;
+    const QList<MeasurementConfig> &getProjectMeasurementConfigs() const;
 
-    QList<MeasurementConfig> getSavedMeasurementConfigs() const;
-    QList<MeasurementConfig> getProjectMeasurementConfigs() const;
-
+    //active config
     MeasurementConfig getActiveMeasurementConfig(const GeometryTypes &type) const;
 
-    void addMeasurementConfig(const MeasurementConfig &mConfig);
+    //add or remove configs
+    void addSavedMeasurementConfig(const MeasurementConfig &mConfig);
     void addProjectMeasurementConfig(const MeasurementConfig &mConfig);
-
-    void removeMeasurementConfig(const QString &name);
+    void removeSavedMeasurementConfig(const QString &name);
     void removeProjectMeasurementConfig(const QString &name);
+    void removeAllSavedMeasurementConfigs();
     void removeAllProjectMeasurementConfigs();
 
+    //replace a config
     void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
 
+    //load configs from xml
     void loadFromConfigFolder();
+
+    //synchronize config manager
+    void synchronize(const MeasurementConfigManager &other);
 
 signals:
 
-    //##################################
-    //inform about sensor config changes
-    //##################################
+    //#######################################
+    //inform about measurement config changes
+    //#######################################
 
     void measurementConfigurationsChanged();
+    void measurementConfigurationReplaced(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig);
     void activeMeasurementConfigurationChanged(const GeometryTypes &type);
 
     //############
@@ -73,6 +88,25 @@ signals:
     void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
 private:
+
+    //##############
+    //helper methods
+    //##############
+
+    //save or remove configs
+    void saveMeasurementConfig(const MeasurementConfig &mConfig);
+    void deleteMeasurementConfig(const QString &name);
+
+    //update geometries when measurement configs change
+    void updateGeometries();
+    void updateGeometries(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig);
+
+    //job connects
+    void connectJob();
+    void disconnectJob();
+
+    //compare two configs
+    bool equals(const MeasurementConfig &mConfigA, const MeasurementConfig &mConfigB);
 
     //########################
     //save measurement configs
@@ -86,12 +120,11 @@ private:
 
     QMap<GeometryTypes, MeasurementConfig> activeMeasurementConfigs;
 
-    //##############
-    //helper methods
-    //##############
+    //#################
+    //helper attributes
+    //#################
 
-    void saveMeasurementConfig(const MeasurementConfig &mConfig);
-    void deleteMeasurementConfig(const QString &name);
+    QPointer<OiJob> currentJob;
 
 };
 

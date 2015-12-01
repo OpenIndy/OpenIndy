@@ -18,11 +18,12 @@
 #include <QMenu>
 
 #include "types.h"
-#include "console.h"
 #include "sensorconfiguration.h"
+
 #include "modelmanager.h"
-#include "scalarparameterwidget.h"
 #include "sensorconfigurationlistdelegate.h"
+#include "sensoraccuracydelegate.h"
+#include "sensorparametersdelegate.h"
 
 using namespace oi;
 
@@ -43,84 +44,107 @@ public:
 
 signals:
 
-    //###############################################
-    //signals to inform about sensor config selection
-    //###############################################
+    //#########
+    //messaging
+    //#########
 
-    void setSensorConfiguration(const QString &name);
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
+    //#############################################
+    //signals to inform about sensor config changes
+    //#############################################
+
+    //sensor configs edited
+    void sensorConfigurationsEdited(const SensorConfigurationManager &manager);
+
+    //set and/or connect a sensor config
+    void setSensorConfig(const SensorConfiguration &sConfig);
 
 private slots:
-
-    //#################################
-    //scalar parameter changed callback
-    //#################################
-
-    void scalarParameterChanged();
 
     //#########################
     //actions triggered by user
     //#########################
 
-    //sensor configs list view
-    void on_listView_sensorConfigs_clicked(const QModelIndex &index);
-    void sensorConfigContextMenuRequested(const QPoint &point);
-    void removeSelectedSensorConfig();
+    //save, set or cancel
+    void on_pushButton_save_clicked();
+    void on_pushButton_setAndConnect_clicked();
+    void on_pushButton_cancel_clicked();
 
-    //add new sensor config
+    //add or remove sensor configs
+    void on_pushButton_remove_clicked();
     void on_pushButton_add_clicked();
 
-    //sensor types combo box
+    //#######################
+    //sensor config callbacks
+    //#######################
+
+    //active sensor config changed
+    void activeSensorConfigChanged();
+
+    //sensor config renamed
+    void sensorConfigRenamed();
+
+    //sensor configs added or removed
+    void sensorConfigsChanged();
+
+    //sensor config definition changed
+    void sensorAccuracyChanged(const SensorConfiguration &sConfig);
+    void sensorParametersChanged(const SensorConfiguration &sConfig);
+    void sensorConnectionChanged();
+    void sensorPluginChanged();
+
+    //sensor type changed
     void on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1);
 
-    //set or cancel
-    void on_pushButton_cancel_clicked();
-    void on_pushButton_set_clicked();
+    //#########################
+    //selection model callbacks
+    //#########################
 
-    //sensor plugin changed
-    void on_tableView_sensorPlugins_clicked(const QModelIndex &index);
-    void on_comboBox_typeOfConnection_currentIndexChanged(const QString &arg1);
-    void on_comboBox_ip_currentTextChanged(const QString &arg1);
-    void on_lineEdit_port_textChanged(const QString &arg1);
-    void on_comboBox_comPort_currentIndexChanged(int index);
-    void on_comboBox_baudrate_currentIndexChanged(int index);
-    void on_comboBox_databits_currentIndexChanged(int index);
-    void on_comboBox_flowcontrol_currentIndexChanged(int index);
-    void on_comboBox_parity_currentIndexChanged(int index);
-    void on_comboBox_stopbits_currentIndexChanged(int index);
+    void configSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void sensorPluginSelectionChanged(const QModelIndex &index);
 
 private:
     Ui::SensorConfigurationDialog *ui;
-
-    //#################
-    //helper attributes
-    //#################
-
-    //widget with scalar input parameters
-    ScalarParameterWidget *scalarParameterWidget;
 
     //##############
     //helper methods
     //##############
 
-    //update GUI elements from the selected sensor config
-    void updateConnectionConfigFromSensorConfig(const QList<ConnectionTypes> supportedConnections, const ConnectionConfig &cConfig);
-    void updateAccuracyFromSensorConfig(const Accuracy &accuracy);
-    void updateScalarParametersFromSensorConfig(const QMap<QString, int> &intParams,
-                                                const QMap<QString, double> &doubleParams,
-                                                const QMap<QString, QString> &stringParams,
-                                                const QMultiMap<QString, QString> &availableStringOptions);
+    void updateGuiFromSensorConfig(const SensorConfiguration &sConfig);
 
-    //update the selected sensor config from GUI elements
-    void updateSensorConfigFromSelection();
+    void toggleVisibility(const SensorConfiguration &sConfig);
+    void toggleCommandVisibility();
+
+    void setChangesMade(bool changesMade);
 
     //##################################
     //methods to initialize GUI elements
     //##################################
 
     void showEvent(QShowEvent *event);
+    void closeEvent(QCloseEvent *event);
 
     void initGUI();
     void initModels();
+    void connectModels();
+
+    //#################
+    //helper attributes
+    //#################
+
+    //indicates wether there are unsaved changes
+    bool changesMade;
+
+    //######
+    //models
+    //######
+
+    //sensor models
+    QPointer<SensorConfigurationModel> sensorConfigModel;
+    QPointer<SensorConfigurationProxyModel> sensorConfigProxyModel;
+    QPointer<SensorAccuracyModel> sensorAccuracyModel;
+    QPointer<SensorParametersModel> sensorParametersModel;
 
 };
 

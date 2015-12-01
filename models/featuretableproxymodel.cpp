@@ -6,6 +6,25 @@ FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
 }
 
 /*!
+ * \brief FeatureTableProxyModel::getCurrentJob
+ * \return
+ */
+const QPointer<OiJob> &FeatureTableProxyModel::getCurrentJob() const{
+    return this->job;
+}
+
+/*!
+ * \brief FeatureTableProxyModel::setCurrentJob
+ * \param job
+ */
+void FeatureTableProxyModel::setCurrentJob(const QPointer<OiJob> &job){
+    if(!job.isNull()){
+        this->job = job;
+        this->sorter.setCurrentJob(job);
+    }
+}
+
+/*!
  * \brief FeatureTableProxyModel::getFeatureTableColumnConfig
  * \return
  */
@@ -188,47 +207,10 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
         return false;
     }
 
-    //get relevant properties of left and right feature
-    QString leftName = "", rightName = "";
-    int leftId = 0, rightId = 0;
-    bool leftNominal = false, rightNominal = false;
+    //get features
     QPointer<FeatureWrapper> leftFeature = source_model->getCurrentJob()->getFeaturesList().at(leftIndex);
     QPointer<FeatureWrapper> rightFeature = source_model->getCurrentJob()->getFeaturesList().at(rightIndex);
-    if(!leftFeature.isNull() && !leftFeature->getFeature().isNull()
-            && !rightFeature.isNull() && !rightFeature->getFeature().isNull()){
-        leftName = leftFeature->getFeature()->getFeatureName();
-        rightName = rightFeature->getFeature()->getFeatureName();
-        leftId = leftFeature->getFeature()->getId();
-        rightId = rightFeature->getFeature()->getId();
-        if(!leftFeature->getGeometry().isNull()){
-            leftNominal = leftFeature->getGeometry()->getIsNominal();
-        }
-        if(!rightFeature->getGeometry().isNull()){
-            rightNominal = rightFeature->getGeometry()->getIsNominal();
-        }
-    }
 
-    //compare the properties of left and right feature
-    if(leftName.compare(rightName) == 0){ //if feature names are equal
-
-        if(leftNominal != rightNominal){ //if one is actual and the other one is nominal
-            return rightNominal;
-        }
-
-        return leftId < rightId;
-
-    }else{ //if feature names are not equal
-
-        //use the actual of a nominal for sorting
-        if(!leftFeature->getGeometry().isNull() && leftFeature->getGeometry()->getIsNominal() && !leftFeature->getGeometry()->getActual().isNull()){
-            leftId = leftFeature->getGeometry()->getActual()->getId();
-        }
-        if(!rightFeature->getGeometry().isNull() && rightFeature->getGeometry()->getIsNominal() && !rightFeature->getGeometry()->getActual().isNull()){
-            rightId = rightFeature->getGeometry()->getActual()->getId();
-        }
-
-        return leftId < rightId;
-
-    }
+    return this->sorter.lessThan(leftFeature, rightFeature);
 
 }

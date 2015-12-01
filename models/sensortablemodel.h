@@ -41,22 +41,27 @@ public:
     //get sensor information
     //######################
 
-    QModelIndex getSelectedIndex() const;
+    //get or set selection
+    QPair<QString, QString> getSelectedSensorPlugin() const;
+    void selectSensorPlugin(const QModelIndex &index);
+    void selectSensorPlugin(const SensorConfiguration &sConfig);
     void selectSensorPlugin(const QString &sensorName, const QString &pluginName);
 
-    QString getSensorDescription(const QModelIndex &index) const;
-    QString getSensorName(const QModelIndex &index) const;
-    QString getPluginName(const QModelIndex &index) const;
+    //get general sensor information
+    SensorTypes getSensorType() const;
     SensorTypes getSensorType(const QModelIndex &index) const;
+    QString getSensorDescription() const;
+    QString getSensorDescription(const QModelIndex &index) const;
+    QString getPluginFilePath() const;
     QString getPluginFilePath(const QModelIndex &index) const;
 
-    QList<ConnectionTypes> getSupportedConnectionTypes(const QModelIndex &index);
+    //get supported connection / reading or action types
+    QList<ReadingTypes> getSupportedReadingTypes() const;
+    QList<SensorFunctions> getSupportedSensorActions() const;
+    QList<ConnectionTypes> getSupportedConnectionTypes() const;
 
-    Accuracy getAccuracy(const QModelIndex &index);
-
-    QMap<QString, int> getIntegerParameter();
-    QMap<QString, double> getDoubleParameter();
-    QMultiMap<QString, QString> getStringParameter();
+    //get default sensor config
+    SensorConfiguration getDefaultSensorConfig() const;
 
     //######################################
     //get or set currently available plugins
@@ -73,7 +78,13 @@ signals:
 
     void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
-private slots:
+    //##################################
+    //inform about sensor plugin changes
+    //##################################
+
+    void selectedSensorPluginChanged();
+
+public slots:
 
     //##############################################
     //update the model when the plugins were changed
@@ -93,7 +104,7 @@ private:
     //save selected plugin
     //####################
 
-    QModelIndex selectedIndex;
+    QPair<QString, QString> selectedSensor; //first=plugin, second=sensor
     
 };
 

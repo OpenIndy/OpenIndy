@@ -47,36 +47,54 @@ QVariant SensorTableModel::data(const QModelIndex &index, int role) const{
         return QVariant();
     }
 
-    //set background for selected index
-    if(this->selectedIndex.row() == index.row() && role == Qt::BackgroundRole){
-        return QColor(QColor::fromCmykF(0.59, 0.40, 0.10, 0.10).lighter());
-    }
+    //get row and column index
+    int rowIndex = index.row();
+    int columnIndex = index.column();
 
-    //check role
-    if(role != Qt::DisplayRole){
-        return QVariant();
-    }
-
+    //get plugin and sensor
+    sdb::Plugin currentPlugin;
+    sdb::Sensor currentSensor;
     int numSensorPlugins = 0;
     foreach(const sdb::Plugin &plugin, this->plugins){
 
         //run through all function of the current plugin
+        bool sensorFound = false;
         foreach(const sdb::Sensor &sensor, plugin.sensors){
 
             //if the current sensor corresponds to the given row index
-            if(index.row() == numSensorPlugins){
-
-                if(index.column() == 0){
-                    return sensor.name;
-                }else if(index.column() == 1){
-                    return plugin.name;
-                }else if(index.column() == 2){
-                    return sensor.iid;
-                }
-
+            if(rowIndex == numSensorPlugins){
+                currentPlugin = plugin;
+                currentSensor = sensor;
+                sensorFound = true;
+                break;
             }
-
             numSensorPlugins++;
+
+        }
+
+        if(sensorFound){
+            break;
+        }
+
+    }
+
+    if(role == Qt::DisplayRole){
+
+        switch(columnIndex){
+        case 0:
+            return currentSensor.name;
+        case 1:
+            return currentPlugin.name;
+        case 2:
+            return currentSensor.iid;
+        }
+
+    }else if(role == Qt::BackgroundRole){
+
+        //active sensor
+        if(this->selectedSensor.first.compare(currentPlugin.name) == 0
+                && this->selectedSensor.second.compare(currentSensor.name) == 0){
+            return QColor(QColor::fromCmykF(0.59, 0.40, 0.10, 0.10).lighter());
         }
 
     }
@@ -117,29 +135,47 @@ QVariant SensorTableModel::headerData(int section, Qt::Orientation orientation, 
  * \brief SensorTableModel::getSelectedIndex
  * \return
  */
-QModelIndex SensorTableModel::getSelectedIndex() const{
-    return this->selectedIndex;
+QPair<QString, QString> SensorTableModel::getSelectedSensorPlugin() const{
+    return this->selectedSensor;
 }
 
 /*!
  * \brief SensorTableModel::selectSensorPlugin
- * \param sensorName
- * \param pluginName
+ * \param index
  */
-void SensorTableModel::selectSensorPlugin(const QString &sensorName, const QString &pluginName){
+void SensorTableModel::selectSensorPlugin(const QModelIndex &index){
 
-    //get the right sensor
+    //check index
+    if(!index.isValid()){
+        return;
+    }
+
+    //get row index
+    int rowIndex = index.row();
+
+    //get type of the right sensor
     int numSensorPlugins = 0;
     foreach(const sdb::Plugin &plugin, this->plugins){
 
         //run through all sensor of the current plugin
         foreach(const sdb::Sensor &sensor, plugin.sensors){
 
-            //if the current sensor corresponds to the given row index
-            if(sensor.name.compare(sensorName) == 0 && plugin.name.compare(pluginName) == 0){
+            //if the current function corresponds to the given row index
+            if(numSensorPlugins == rowIndex){
 
-                this->selectedIndex = this->createIndex(numSensorPlugins, 0);
+                //check if sConfig is different from the current selection
+                if(this->selectedSensor.first.compare(plugin.name) == 0
+                        && this->selectedSensor.second.compare(sensor.name) == 0){
+                    return;
+                }
+
+                this->selectedSensor.first = plugin.name;
+                this->selectedSensor.second = sensor.name;
+
                 this->updateModel();
+
+                emit this->selectedSensorPluginChanged();
+
                 return;
 
             }
@@ -152,123 +188,55 @@ void SensorTableModel::selectSensorPlugin(const QString &sensorName, const QStri
 }
 
 /*!
- * \brief SensorTableModel::getSensorDescription
- * \param index
- * \return
+ * \brief SensorTableModel::selectSensorPlugin
+ * \param sConfig
  */
-QString SensorTableModel::getSensorDescription(const QModelIndex &index) const{
+void SensorTableModel::selectSensorPlugin(const SensorConfiguration &sConfig){
 
-    //check index
-    if(!index.isValid()){
-        return "";
+    //check if sConfig is different from the current selection
+    if(this->selectedSensor.first.compare(sConfig.getPluginName()) == 0
+            && this->selectedSensor.second.compare(sConfig.getSensorName()) == 0){
+        return;
     }
 
-    //get description of the right sensor
-    int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    this->selectedSensor.first = sConfig.getPluginName();
+    this->selectedSensor.second = sConfig.getSensorName();
 
-        //run through all sensor of the current plugin
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
+    this->updateModel();
 
-            //if the current sensor corresponds to the given row index
-            if(index.row() == numSensorPlugins){
-
-                return sensor.description;
-
-            }
-
-            numSensorPlugins++;
-        }
-
-    }
-
-    return "";
+    emit this->selectedSensorPluginChanged();
 
 }
 
 /*!
- * \brief SensorTableModel::getSensorName
- * \param index
- * \return
+ * \brief SensorTableModel::selectSensorPlugin
+ * \param sensorName
+ * \param pluginName
  */
-QString SensorTableModel::getSensorName(const QModelIndex &index) const{
+void SensorTableModel::selectSensorPlugin(const QString &sensorName, const QString &pluginName){
 
-    //check index
-    if(!index.isValid()){
-        return "";
+    //check if sConfig is different from the current selection
+    if(this->selectedSensor.first.compare(pluginName) == 0
+            && this->selectedSensor.second.compare(sensorName) == 0){
+        return;
     }
 
-    //get description of the right sensor
-    int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    this->selectedSensor.first = pluginName;
+    this->selectedSensor.second = sensorName;
 
-        //run through all sensor of the current plugin
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
+    this->updateModel();
 
-            //if the current function corresponds to the given row index
-            if(index.row() == numSensorPlugins){
-
-                return sensor.name;
-
-            }
-
-            numSensorPlugins++;
-        }
-
-    }
-
-    return "";
-
-}
-
-/*!
- * \brief SensorTableModel::getPluginName
- * \param index
- * \return
- */
-QString SensorTableModel::getPluginName(const QModelIndex &index) const{
-
-    //check index
-    if(!index.isValid()){
-        return "";
-    }
-
-    //get description of the right sensor
-    int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
-
-        //run through all sensor of the current plugin
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
-
-            //if the current function corresponds to the given row index
-            if(index.row() == numSensorPlugins){
-
-                return plugin.name;
-
-            }
-
-            numSensorPlugins++;
-        }
-
-    }
-
-    return "";
+    emit this->selectedSensorPluginChanged();
 
 }
 
 /*!
  * \brief SensorTableModel::getSensorType
- * \param index
  * \return
  */
-SensorTypes SensorTableModel::getSensorType(const QModelIndex &index) const{
+SensorTypes SensorTableModel::getSensorType() const{
 
-    //check index
-    if(!index.isValid()){
-        return eUndefinedSensor;
-    }
-
-    //get description of the right sensor
+    //get type of the right sensor
     int numSensorPlugins = 0;
     foreach(const sdb::Plugin &plugin, this->plugins){
 
@@ -276,7 +244,8 @@ SensorTypes SensorTableModel::getSensorType(const QModelIndex &index) const{
         foreach(const sdb::Sensor &sensor, plugin.sensors){
 
             //if the current function corresponds to the given row index
-            if(index.row() == numSensorPlugins){
+            if(plugin.name.compare(this->selectedSensor.first) == 0
+                    && sensor.name.compare(this->selectedSensor.second) == 0){
 
                 return OiMetaData::getSensorTypeEnum(sensor.iid);
 
@@ -292,16 +261,60 @@ SensorTypes SensorTableModel::getSensorType(const QModelIndex &index) const{
 }
 
 /*!
- * \brief SensorTableModel::getPluginFilePath
+ * \brief SensorTableModel::getSensorType
  * \param index
  * \return
  */
-QString SensorTableModel::getPluginFilePath(const QModelIndex &index) const{
+SensorTypes SensorTableModel::getSensorType(const QModelIndex &index) const{
 
     //check index
     if(!index.isValid()){
-        return "";
+        return eUndefinedSensor;
     }
+
+    //get rowIndex
+    int rowIndex = index.row();
+
+    //get plugin and sensor index
+    QModelIndex pluginIndex = this->index(rowIndex, 1);
+    QModelIndex sensorIndex = this->index(rowIndex, 0);
+    if(!pluginIndex.isValid() || !sensorIndex.isValid()){
+        return eUndefinedSensor;
+    }
+
+    //get plugin and sensor name
+    QString pluginName = this->data(pluginIndex).toString();
+    QString sensorName = this->data(sensorIndex).toString();
+
+    //get type of the right sensor
+    int numSensorPlugins = 0;
+    foreach(const sdb::Plugin &plugin, this->plugins){
+
+        //run through all sensor of the current plugin
+        foreach(const sdb::Sensor &sensor, plugin.sensors){
+
+            //if the current function corresponds to the given row index
+            if(plugin.name.compare(pluginName) == 0
+                    && sensor.name.compare(sensorName) == 0){
+
+                return OiMetaData::getSensorTypeEnum(sensor.iid);
+
+            }
+
+            numSensorPlugins++;
+        }
+
+    }
+
+    return eUndefinedSensor;
+
+}
+
+/*!
+ * \brief SensorTableModel::getSensorDescription
+ * \return
+ */
+QString SensorTableModel::getSensorDescription() const{
 
     //get description of the right sensor
     int numSensorPlugins = 0;
@@ -310,8 +323,89 @@ QString SensorTableModel::getPluginFilePath(const QModelIndex &index) const{
         //run through all sensor of the current plugin
         foreach(const sdb::Sensor &sensor, plugin.sensors){
 
-            //if the current sensor corresponds to the given row index
-            if(index.row() == numSensorPlugins){
+            //if the current function corresponds to the given row index
+            if(plugin.name.compare(this->selectedSensor.first) == 0
+                    && sensor.name.compare(this->selectedSensor.second) == 0){
+
+                return sensor.description;
+
+            }
+
+            numSensorPlugins++;
+        }
+
+    }
+
+    return "";
+
+}
+
+/*!
+ * \brief SensorTableModel::getSensorDescription
+ * \param index
+ * \return
+ */
+QString SensorTableModel::getSensorDescription(const QModelIndex &index) const{
+
+    //check index
+    if(!index.isValid()){
+        return eUndefinedSensor;
+    }
+
+    //get rowIndex
+    int rowIndex = index.row();
+
+    //get plugin and sensor index
+    QModelIndex pluginIndex = this->index(rowIndex, 1);
+    QModelIndex sensorIndex = this->index(rowIndex, 0);
+    if(!pluginIndex.isValid() || !sensorIndex.isValid()){
+        return eUndefinedSensor;
+    }
+
+    //get plugin and sensor name
+    QString pluginName = this->data(pluginIndex).toString();
+    QString sensorName = this->data(sensorIndex).toString();
+
+    //get description of the right sensor
+    int numSensorPlugins = 0;
+    foreach(const sdb::Plugin &plugin, this->plugins){
+
+        //run through all sensor of the current plugin
+        foreach(const sdb::Sensor &sensor, plugin.sensors){
+
+            //if the current function corresponds to the given row index
+            if(plugin.name.compare(pluginName) == 0
+                    && sensor.name.compare(sensorName) == 0){
+
+                return sensor.description;
+
+            }
+
+            numSensorPlugins++;
+        }
+
+    }
+
+    return "";
+
+}
+
+/*!
+ * \brief SensorTableModel::getPluginFilePath
+ * \return
+ */
+QString SensorTableModel::getPluginFilePath() const{
+
+    //get plugin file path of the right sensor
+    int numSensorPlugins = 0;
+    foreach(const sdb::Plugin &plugin, this->plugins){
+
+        //run through all sensor of the current plugin
+        foreach(const sdb::Sensor &sensor, plugin.sensors){
+
+            //if the current function corresponds to the given row index
+            if(plugin.name.compare(this->selectedSensor.first) == 0
+                    && sensor.name.compare(this->selectedSensor.second) == 0){
 
                 return plugin.file_path;
 
@@ -327,27 +421,78 @@ QString SensorTableModel::getPluginFilePath(const QModelIndex &index) const{
 }
 
 /*!
- * \brief SensorTableModel::getSupportedConnectionTypes
+ * \brief SensorTableModel::getPluginFilePath
  * \param index
  * \return
  */
-QList<ConnectionTypes> SensorTableModel::getSupportedConnectionTypes(const QModelIndex &index){
+QString SensorTableModel::getPluginFilePath(const QModelIndex &index) const{
+
+    //check index
+    if(!index.isValid()){
+        return eUndefinedSensor;
+    }
+
+    //get rowIndex
+    int rowIndex = index.row();
+
+    //get plugin and sensor index
+    QModelIndex pluginIndex = this->index(rowIndex, 1);
+    QModelIndex sensorIndex = this->index(rowIndex, 0);
+    if(!pluginIndex.isValid() || !sensorIndex.isValid()){
+        return eUndefinedSensor;
+    }
+
+    //get plugin and sensor name
+    QString pluginName = this->data(pluginIndex).toString();
+    QString sensorName = this->data(sensorIndex).toString();
+
+    //get description of the right sensor
+    int numSensorPlugins = 0;
+    foreach(const sdb::Plugin &plugin, this->plugins){
+
+        //run through all sensor of the current plugin
+        foreach(const sdb::Sensor &sensor, plugin.sensors){
+
+            //if the current function corresponds to the given row index
+            if(plugin.name.compare(pluginName) == 0
+                    && sensor.name.compare(sensorName) == 0){
+
+                return plugin.file_path;
+
+            }
+
+            numSensorPlugins++;
+        }
+
+    }
+
+    return "";
+
+}
+
+/*!
+ * \brief SensorTableModel::getSupportedReadingTypes
+ * \return
+ */
+QList<ReadingTypes> SensorTableModel::getSupportedReadingTypes() const{
+
+    QList<ReadingTypes> types;
 
     //get and check sensor name and plugin file path
-    QString sensorName = this->getSensorName(index);
-    QString filePath = this->getPluginFilePath(index);
+    QString sensorName = this->selectedSensor.second;
+    QString filePath = this->getPluginFilePath();
     if(sensorName.compare("") == 0 || filePath.compare("") == 0){
-        return QList<ConnectionTypes>();
+        return types;
     }
 
     //load and check sensor plugin
     QPointer<Sensor> sensor = PluginLoader::loadSensorPlugin(filePath, sensorName);
     if(sensor.isNull()){
-        return QList<ConnectionTypes>();
+        return types;
     }
 
-    QList<ConnectionTypes> types = sensor->getSupportedConnectionTypes();
-
+    //get reading types and delete sensor
+    types = sensor->getSupportedReadingTypes();
     delete sensor;
 
     return types;
@@ -355,94 +500,115 @@ QList<ConnectionTypes> SensorTableModel::getSupportedConnectionTypes(const QMode
 }
 
 /*!
- * \brief SensorTableModel::getAccuracy
- * \param index
+ * \brief SensorTableModel::getSupportedSensorActions
  * \return
  */
-Accuracy SensorTableModel::getAccuracy(const QModelIndex &index){
+QList<SensorFunctions> SensorTableModel::getSupportedSensorActions() const{
 
-    return Accuracy();
-
-}
-
-/*!
- * \brief SensorTableModel::getIntegerParameter
- * \return
- */
-QMap<QString, int> SensorTableModel::getIntegerParameter(){
+    QList<SensorFunctions> functions;
 
     //get and check sensor name and plugin file path
-    QString sensorName = this->getSensorName(this->selectedIndex);
-    QString filePath = this->getPluginFilePath(this->selectedIndex);
+    QString sensorName = this->selectedSensor.second;
+    QString filePath = this->getPluginFilePath();
     if(sensorName.compare("") == 0 || filePath.compare("") == 0){
-        return QMap<QString, int>();
+        return functions;
     }
 
     //load and check sensor plugin
     QPointer<Sensor> sensor = PluginLoader::loadSensorPlugin(filePath, sensorName);
     if(sensor.isNull()){
-        return QMap<QString, int>();
+        return functions;
     }
 
-    QMap<QString, int> params = sensor->getIntegerParameter();
-
+    //get functions and delete sensor
+    functions =  sensor->getSupportedSensorActions();
     delete sensor;
 
-    return params;
+    return functions;
 
 }
 
 /*!
- * \brief SensorTableModel::getDoubleParameter
+ * \brief SensorTableModel::getSupportedConnectionTypes
  * \return
  */
-QMap<QString, double> SensorTableModel::getDoubleParameter(){
+QList<ConnectionTypes> SensorTableModel::getSupportedConnectionTypes() const{
+
+    QList<ConnectionTypes> types;
 
     //get and check sensor name and plugin file path
-    QString sensorName = this->getSensorName(this->selectedIndex);
-    QString filePath = this->getPluginFilePath(this->selectedIndex);
+    QString sensorName = this->selectedSensor.second;
+    QString filePath = this->getPluginFilePath();
     if(sensorName.compare("") == 0 || filePath.compare("") == 0){
-        return QMap<QString, double>();
+        return types;
     }
 
     //load and check sensor plugin
     QPointer<Sensor> sensor = PluginLoader::loadSensorPlugin(filePath, sensorName);
     if(sensor.isNull()){
-        return QMap<QString, double>();
+        return types;
     }
 
-    QMap<QString, double> params = sensor->getDoubleParameter();
-
+    //get connection types and delete sensor
+    types =  sensor->getSupportedConnectionTypes();
     delete sensor;
 
-    return params;
+    return types;
 
 }
 
 /*!
- * \brief SensorTableModel::getStringParameter
+ * \brief SensorTableModel::getDefaultSensorConfig
+ * Sets up
  * \return
  */
-QMultiMap<QString, QString> SensorTableModel::getStringParameter(){
+SensorConfiguration SensorTableModel::getDefaultSensorConfig() const{
+
+    SensorConfiguration sConfig;
 
     //get and check sensor name and plugin file path
-    QString sensorName = this->getSensorName(this->selectedIndex);
-    QString filePath = this->getPluginFilePath(this->selectedIndex);
+    QString sensorName = this->selectedSensor.second;
+    QString filePath = this->getPluginFilePath();
     if(sensorName.compare("") == 0 || filePath.compare("") == 0){
-        return QMultiMap<QString, QString>();
+        return sConfig;
     }
 
     //load and check sensor plugin
     QPointer<Sensor> sensor = PluginLoader::loadSensorPlugin(filePath, sensorName);
     if(sensor.isNull()){
-        return QMultiMap<QString, QString>();
+        return sConfig;
     }
 
-    QMultiMap<QString, QString> params = sensor->getStringParameter();
+    //set general attributes
+    sConfig.setName(sensor->getMetaData().name);
+    sConfig.setTypeOfSensor(getSensorType());
+    sConfig.setPluginName(sensor->getMetaData().pluginName);
+    sConfig.setSensorName(sensor->getMetaData().name);
+
+    //set accuracy
+    sConfig.setAccuracy(sensor->getDefaultAccuracy());
+
+    //set sensor parameters
+    sConfig.setIntegerParameter(sensor->getIntegerParameter());
+    sConfig.setDoubleParameter(sensor->getDoubleParameter());
+    sConfig.setAvailableStringParameter(sensor->getStringParameter());
+    QStringList keys = sensor->getStringParameter().keys();
+    QMap<QString, QString> stringParams;
+    foreach(const QString &key, keys){
+        stringParams.insert(key, sensor->getStringParameter().value(key));
+    }
+    sConfig.setStringParameter(stringParams);
+
+    //set connection type
+    ConnectionConfig cConfig;
+    if(sensor->getSupportedConnectionTypes().size() > 0){
+        cConfig.typeOfConnection = sensor->getSupportedConnectionTypes().first();
+    }
+    sConfig.setConnectionConfig(cConfig);
 
     delete sensor;
 
-    return params;
+    return sConfig;
 
 }
 

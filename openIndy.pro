@@ -94,6 +94,7 @@ INCLUDEPATH += $$PWD/controller
 INCLUDEPATH += $$PWD/controller/config
 INCLUDEPATH += $$PWD/controller/exchange
 INCLUDEPATH += $$PWD/controller/param
+INCLUDEPATH += $$PWD/controller/network
 INCLUDEPATH += $$PWD/ui
 INCLUDEPATH += $$PWD/ui/delegates
 INCLUDEPATH += $$PWD/ui/dialogs
@@ -216,8 +217,19 @@ SOURCES += \
     ui/delegates/observationtabledelegate.cpp \
     ui/delegates/readingtabledelegate.cpp \
     ui/dialogs/aboutdialog.cpp \
+    controller/network/oirequesthandler.cpp \
+    controller/network/oiwebsocket.cpp \
+    controller/network/oiwebsocketserver.cpp \
     ui/dialogs/trafoparampropertiesdialog.cpp \
-    models/functionstatisticmodel.cpp
+    models/functionstatisticmodel.cpp \
+    controller/network/oiwebsocketstreamer.cpp \
+    controller/config/featuretablesortingconfig.cpp \
+    controller/featuresorter.cpp \
+    ui/dialogs/stationpropertiesdialog.cpp \
+    models/sensoraccuracymodel.cpp \
+    models/sensorparametersmodel.cpp \
+    ui/delegates/sensoraccuracydelegate.cpp \
+    ui/delegates/sensorparametersdelegate.cpp
 
 HEADERS  += \
     ui/mainwindow.h \
@@ -296,8 +308,20 @@ HEADERS  += \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oimat.h \
     lib/OpenIndy-Core/lib/OpenIndy-Math/include/oivec.h \
     ui/dialogs/aboutdialog.h \
+    controller/network/oirequesthandler.h \
+    controller/network/oiwebsocket.h \
+    controller/network/oiwebsocketserver.h \
+    lib/OpenIndy-Core/include/oirequestresponse.h \
     ui/dialogs/trafoparampropertiesdialog.h \
-    models/functionstatisticmodel.h
+    models/functionstatisticmodel.h \
+    controller/network/oiwebsocketstreamer.h \
+    controller/config/featuretablesortingconfig.h \
+    controller/featuresorter.h \
+    ui/dialogs/stationpropertiesdialog.h \
+    models/sensoraccuracymodel.h \
+    models/sensorparametersmodel.h \
+    ui/delegates/sensoraccuracydelegate.h \
+    ui/delegates/sensorparametersdelegate.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -316,4 +340,5 @@ FORMS    += \
     ui/dialogs/actualpropertiesdialog.ui \
     ui/dialogs/nominalpropertiesdialog.ui \
     ui/dialogs/aboutdialog.ui \
-    ui/dialogs/trafoparampropertiesdialog.ui
+    ui/dialogs/trafoparampropertiesdialog.ui \
+    ui/dialogs/stationpropertiesdialog.ui

@@ -40,6 +40,8 @@
 #include "readingmodel.h"
 #include "readingproxymodel.h"
 #include "functionstatisticmodel.h"
+#include "sensoraccuracymodel.h"
+#include "sensorparametersmodel.h"
 
 using namespace oi;
 
@@ -63,6 +65,12 @@ signals:
     //############
 
     void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
+    //#######################
+    //display configs changed
+    //#######################
+
+    void parameterDisplayConfigChanged(const ParameterDisplayConfig &dConfig);
 
 public:
 
@@ -152,8 +160,6 @@ public:
     static QStringListModel &getSensorTypeNamesModel();
     static SensorTableModel &getSensorTableModel();
     static SensorTableProxyModel &getSensorTableProxyModel();
-    static SensorConfigurationModel &getSensorConfigurationModel();
-    static SensorConfigurationProxyModel &getSensorConfigurationProxyModel();
 
     //sensor connection models
     static QStandardItemModel &getBaudRateTypesModel();
@@ -189,6 +195,12 @@ public:
     //statistic models
     static QPointer<FunctionStatisticModel> getFunctionStatisticModel();
 
+    //sensor models
+    static QPointer<SensorConfigurationModel> getSensorConfigurationModel(QObject *parent = NULL);
+    static QPointer<SensorConfigurationProxyModel> getSensorConfigurationProxyModel(QPointer<SensorConfigurationModel> sourceModel);
+    static QPointer<SensorAccuracyModel> getSensorAccuracyModel(QObject *parent = NULL);
+    static QPointer<SensorParametersModel> getSensorParametersModel(QObject *parent = NULL);
+
 private slots:
 
     //##########################################
@@ -205,12 +217,6 @@ private slots:
 
     //feature specific attributes changed
     void featureNameChanged(const int &featureId, const QString &oldName);
-
-    //###############################
-    //update models on config changes
-    //###############################
-
-    //void sensorConfigurationsChanged();
 
 private:
 
@@ -263,8 +269,6 @@ private:
     static QStringListModel sensorTypeNamesModel;
     static SensorTableModel sensorTableModel;
     static SensorTableProxyModel sensorTableProxyModel;
-    static SensorConfigurationModel sensorConfigurationModel;
-    static SensorConfigurationProxyModel sensorConfigurationProxyModel;
 
     //sensor connection models
     static QStandardItemModel baudRateTypesModel;
