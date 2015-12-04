@@ -16,7 +16,6 @@
 #include "types.h"
 #include "util.h"
 #include "station.h"
-#include "sensorlistener.h"
 #include "oijob.h"
 #include "featurewrapper.h"
 #include "trafocontroller.h"
@@ -135,12 +134,11 @@ private:
     void initGUI();
     void initModels();
 
-    //##################################################
-    //methods to connect or disconnect the active sensor
-    //##################################################
+    //##############################
+    //connect job and active station
+    //##############################
 
-    void connectActiveSensor();
-    void disconnectSensor();
+    void connectSensor();
 
     void connectJob();
 
@@ -162,7 +160,8 @@ private:
 
     QPointer<OiJob> currentJob;
 
-    QPointer<Station> activeStation; //save active station here, to be able to disconnect it
+    //save active station here, to be able to disconnect it
+    QPointer<Station> activeStation;
 
     //####################
     //dynamic GUI elements

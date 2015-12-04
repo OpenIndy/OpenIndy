@@ -242,6 +242,28 @@ void Controller::setSensorConfig(const SensorConfiguration &sConfig, bool connec
 }
 
 /*!
+ * \brief Controller::removeActiveStationSensor
+ * Resets the sensor of the active station
+ */
+void Controller::removeActiveStationSensor(){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> station = this->job->getActiveStation();
+    if(station.isNull()){
+        return;
+    }
+
+    //reset the sensor of the active station
+    station->resetSensor();
+
+}
+
+/*!
  * \brief Controller::sensorConfigurationsEdited
  * Synchronize the sensor config manager with the given one
  * \param manager
@@ -1174,9 +1196,24 @@ void Controller::activeStationChangedCallback(){
         return;
     }
 
-    //connect sensor action results
-    QObject::connect(activeStation.data(), &Station::commandFinished, this, &Controller::sensorActionFinished, Qt::AutoConnection);
-    QObject::connect(activeStation.data(), &Station::measurementFinished, this, &Controller::measurementFinished, Qt::AutoConnection);
+    //disconnect all stations
+    QList<QPointer<Station> > stations = this->job->getStationsList();
+    foreach(const QPointer<Station> &station, stations){
+
+        //check station
+        if(station.isNull()){
+            continue;
+        }
+
+        //disconnect all slots from signals
+        QObject::disconnect(station, &Station::commandFinished, 0, 0);
+        QObject::disconnect(station, &Station::measurementFinished, 0, 0);
+
+    }
+
+    //connect sensor action results of active station
+    QObject::connect(activeStation, &Station::commandFinished, this, &Controller::sensorActionFinished, Qt::AutoConnection);
+    QObject::connect(activeStation, &Station::measurementFinished, this, &Controller::measurementFinished, Qt::AutoConnection);
 
 }
 
@@ -1478,6 +1515,17 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<QPointer<oi::Observation> >("QPointer<Observation>");
     qRegisterMetaType<oi::OiRequestResponse>("OiRequestResponse");
     qRegisterMetaType<ParameterDisplayConfig>("ParameterDisplayConfig");
+
+    qRegisterMetaType<oi::Sensor>("Sensor");
+    qRegisterMetaType<QPointer<oi::Sensor> >("QPointer<Sensor>");
+    qRegisterMetaType<oi::ReadingTypes>("ReadingTypes");
+    qRegisterMetaType<QList<oi::ReadingTypes> >("QList<ReadingTypes>");
+    qRegisterMetaType<oi::SensorTypes>("SensorTypes");
+    qRegisterMetaType<QList<oi::SensorTypes> >("QList<SensorTypes>");
+    qRegisterMetaType<oi::ConnectionTypes>("ConnectionTypes");
+    qRegisterMetaType<QList<oi::ConnectionTypes> >("QList<ConnectionTypes>");
+    qRegisterMetaType<oi::SensorFunctions>("SensorFunctions");
+    qRegisterMetaType<QList<oi::SensorFunctions> >("QList<SensorFunctions>");
 
 }
 

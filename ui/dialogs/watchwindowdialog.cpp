@@ -1021,6 +1021,7 @@ const QPointer<OiJob> &WatchWindowDialog::getCurrentJob() const{
 void WatchWindowDialog::setCurrentJob(const QPointer<OiJob> &job){
     if(!job.isNull()){
         this->currentJob = job;
+        this->connectJob();
     }
 }
 
@@ -1260,9 +1261,14 @@ void WatchWindowDialog::showEvent(QShowEvent *event){
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
 
-    //disconnect old sensor and connect new one
-    this->disconnectSensor();
-    this->connectActiveSensor();
+    //connect sensor
+    this->connectSensor();
+
+    //start reading stream
+    if(!this->activeStation.isNull() && this->activeStation->getIsSensorConnected()){
+        this->activeStation->setStreamFormat(this->settings.readingType);
+        this->activeStation->startReadingStream();
+    }
 
     event->accept();
 
@@ -1274,8 +1280,10 @@ void WatchWindowDialog::showEvent(QShowEvent *event){
  */
 void WatchWindowDialog::closeEvent(QCloseEvent *event){
 
-    //disconnect old sensor
-    this->disconnectSensor();
+    //stop reading stream
+    if(!this->activeStation.isNull() && this->activeStation->getIsSensorConnected()){
+        this->activeStation->stopReadingStream();
+    }
 
     event->accept();
 
@@ -1466,84 +1474,33 @@ void WatchWindowDialog::initModels(){
 }
 
 /*!
- * \brief WatchWindowDialog::connectActiveSensor
+ * \brief WatchWindowDialog::connectSensor
  * Connects the active sensor so that real time readings are recognized by the watch window
  */
-void WatchWindowDialog::connectActiveSensor(){
+void WatchWindowDialog::connectSensor(){
 
     //check current job
     if(this->currentJob.isNull()){
         return;
     }
 
-    //check the active station
-    if(this->currentJob->getActiveStation().isNull()){ //no active station available
-        return;
-    }else if(this->activeStation.isNull()){ //the active station has not been set yet
-
-        //save and connect the active station
-        this->activeStation = this->currentJob->getActiveStation();
-        QObject::connect(this->activeStation.data(), &Station::sensorChanged, this, &WatchWindowDialog::connectActiveSensor, Qt::AutoConnection);
-        if(!this->activeStation->getSensorListener().isNull()){
-            QObject::connect(this->activeStation->getSensorListener().data(), &SensorListener::realTimeReading, this, &WatchWindowDialog::realTimeReading, Qt::AutoConnection);
-        }
-
-        //update settings based on the new sensor
-        this->initModels();
-
-    }else if(this->activeStation != this->currentJob->getActiveStation()){ //there is a new active station
-
-        //disconnect the old station
-        this->disconnectSensor();
-
-        //save and connect the active station
-        this->activeStation = this->currentJob->getActiveStation();
-        QObject::connect(this->activeStation.data(), &Station::sensorChanged, this, &WatchWindowDialog::connectActiveSensor, Qt::AutoConnection);
-        if(!this->activeStation->getSensorListener().isNull()){
-            QObject::connect(this->activeStation->getSensorListener().data(), &SensorListener::realTimeReading, this, &WatchWindowDialog::realTimeReading, Qt::AutoConnection);
-        }
-
-        //update settings based on the new sensor
-        this->initModels();
-
-    }else{ //there is a new active sensor
-
-        //disconnect the old station
-        this->disconnectSensor();
-
-        //save and connect the active station
-        this->activeStation = this->currentJob->getActiveStation();
-        QObject::connect(this->activeStation.data(), &Station::sensorChanged, this, &WatchWindowDialog::connectActiveSensor, Qt::AutoConnection);
-        if(!this->activeStation->getSensorListener().isNull()){
-            QObject::connect(this->activeStation->getSensorListener().data(), &SensorListener::realTimeReading, this, &WatchWindowDialog::realTimeReading, Qt::AutoConnection);
-        }
-
-        //update settings based on the new sensor
-        this->initModels();
-
-    }
-
-}
-
-/*!
- * \brief WatchWindowDialog::disconnectSensor
- * Disconnects the current sensor so that relatime readings are not recognized by the watch window anymore
- */
-void WatchWindowDialog::disconnectSensor(){
-
-    //check the active station
-    if(this->activeStation.isNull()){
+    //get and check the active station
+    QPointer<Station> station = this->currentJob->getActiveStation();
+    if(station.isNull()){
         return;
     }
 
-    //disconnect the active station
-    QObject::disconnect(this->activeStation.data(), &Station::sensorChanged, this, &WatchWindowDialog::connectActiveSensor);
-    if(!this->activeStation->getSensorListener().isNull()){
-        QObject::disconnect(this->activeStation->getSensorListener().data(), &SensorListener::realTimeReading, this, &WatchWindowDialog::realTimeReading);
+    //check and disconnect the old station
+    if(!this->activeStation.isNull()){
+        QObject::disconnect(this->activeStation, &Station::realTimeReading, this, &WatchWindowDialog::realTimeReading);
     }
 
-    //reset active station
-    this->activeStation = QPointer<Station>(NULL);
+    //save and connect active station
+    this->activeStation = station;
+    QObject::connect(this->activeStation, &Station::realTimeReading, this, &WatchWindowDialog::realTimeReading);
+
+    //update settings based on the new sensor
+    this->initModels();
 
 }
 
@@ -1552,7 +1509,7 @@ void WatchWindowDialog::disconnectSensor(){
  */
 void WatchWindowDialog::connectJob(){
 
-    QObject::connect(this->currentJob.data(), &OiJob::activeStationChanged, this, &WatchWindowDialog::connectActiveSensor, Qt::AutoConnection);
+    //QObject::connect(this->currentJob, &OiJob::activeStationChanged, this, &WatchWindowDialog::connectSensor, Qt::AutoConnection);
 
 }
 

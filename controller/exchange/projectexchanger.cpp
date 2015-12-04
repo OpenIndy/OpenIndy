@@ -736,6 +736,7 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument &project){
             QDomElement usedSensors = station.firstChildElement("usedSensors");
             if(!usedSensors.isNull()){
                 QDomNodeList usedSensorsList = usedSensors.childNodes();
+                QList<Sensor> myUsedSensors;
                 for(int j = 0; j < usedSensorsList.size(); j++){
                     QDomElement usedSensor = usedSensorsList.at(j).toElement();
                     if(usedSensor.hasAttribute("name") && usedSensor.hasAttribute("plugin")){
@@ -743,11 +744,13 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument &project){
                         if(plugin.file_path.compare("") != 0){
                             QPointer<Sensor> mySensor = PluginLoader::loadSensorPlugin(plugin.file_path, usedSensor.attribute("name"));
                             if(!mySensor.isNull()){
-                                myStation->getStation()->sensorControl->usedSensors.append(mySensor);
+                                myUsedSensors.append(Sensor(*mySensor.data()));
+                                delete mySensor;
                             }
                         }
                     }
                 }
+                myStation->getStation()->setUsedSensors(myUsedSensors);
             }
 
             //load active sensor plugin
@@ -757,12 +760,10 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument &project){
                 if(plugin.file_path.compare("") != 0){
                     QPointer<Sensor> mySensor = PluginLoader::loadSensorPlugin(plugin.file_path, activeSensor.attribute("name"));
                     if(!mySensor.isNull()){
-                        myStation->getStation()->sensorControl->setSensor(mySensor);
+                        myStation->getStation()->setSensor(mySensor);
                     }
                 }
-            }/*else{
-                result = false;
-            }*/
+            }
 
             //set position point
             QDomElement position = station.firstChildElement("position");
@@ -1205,8 +1206,8 @@ bool ProjectExchanger::restoreObservationDependencies(const QDomDocument &projec
                 //get station and assign it to the observation
                 QPointer<FeatureWrapper> myStation = ProjectExchanger::myStations.value(station.attribute("ref").toInt());
                 myObservation->setStation(myStation->getStation());
-                if(!myStation->getStation()->sensorControl->sensor.isNull()){
-                    myObservation->getReading()->sensor = myStation->getStation()->sensorControl->sensor;
+                if(myStation->getStation()->getIsSensorSet()){
+                    myObservation->getReading()->setSensorConfiguration(myStation->getStation()->getSensorConfiguration());
                 }
 
                 //assign the observation's reading to the station

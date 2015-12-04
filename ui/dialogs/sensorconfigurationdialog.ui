@@ -375,6 +375,28 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>listView_sensorConfigs</tabstop>
+  <tabstop>pushButton_setAndConnect</tabstop>
+  <tabstop>pushButton_cancel</tabstop>
+  <tabstop>tabWidget_sensorConfig</tabstop>
+  <tabstop>pushButton_remove</tabstop>
+  <tabstop>comboBox_availableSensorTypes</tabstop>
+  <tabstop>tableView_sensorPlugins</tabstop>
+  <tabstop>textBrowser_description</tabstop>
+  <tabstop>pushButton_save</tabstop>
+  <tabstop>comboBox_databits</tabstop>
+  <tabstop>comboBox_stopbits</tabstop>
+  <tabstop>comboBox_comPort</tabstop>
+  <tabstop>tableView_sensorParams</tabstop>
+  <tabstop>comboBox_flowcontrol</tabstop>
+  <tabstop>comboBox_ip</tabstop>
+  <tabstop>comboBox_typeOfConnection</tabstop>
+  <tabstop>lineEdit_port</tabstop>
+  <tabstop>tableView_accuracy</tabstop>
+  <tabstop>comboBox_parity</tabstop>
+  <tabstop>comboBox_baudrate</tabstop>
+ </tabstops>
  <resources>
   <include location="../../res/res.qrc"/>
  </resources>

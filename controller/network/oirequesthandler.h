@@ -9,7 +9,6 @@
 #include "oirequestresponse.h"
 #include "featurewrapper.h"
 #include "station.h"
-#include "sensorlistener.h"
 
 #include "projectexchanger.h"
 #include "featureupdater.h"

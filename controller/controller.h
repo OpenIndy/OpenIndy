@@ -67,6 +67,9 @@ public slots:
     //set sensor configuration for active station
     void setSensorConfig(const SensorConfiguration &sConfig, bool connectSensor);
 
+    //remove the sensor of the active station
+    void removeActiveStationSensor();
+
     //sensor configs edited
     void sensorConfigurationsEdited(const SensorConfigurationManager &manager);
 
@@ -233,6 +236,7 @@ private slots:
     //slots to react on job state changes
     //###################################
 
+    //active station changed
     void activeStationChangedCallback();
 
     //################################

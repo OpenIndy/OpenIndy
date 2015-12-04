@@ -68,6 +68,9 @@ signals:
     void removeObservations(const int &featureId);
     void removeAllObservations();
 
+    //remove the sensor of the active station
+    void removeActiveStationSensor();
+
     //sensor configs edited
     void sensorConfigurationsEdited(const SensorConfigurationManager &manager);
 
@@ -110,6 +113,7 @@ private slots:
 
     //active feature changes
     void activeFeatureChanged();
+    void activeStationChanged();
     void activeCoordinateSystemChanged();
 
     //feature(s) added or removed

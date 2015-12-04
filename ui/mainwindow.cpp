@@ -118,6 +118,47 @@ void MainWindow::activeFeatureChanged(){
 }
 
 /*!
+ * \brief MainWindow::activeStationChanged
+ */
+void MainWindow::activeStationChanged(){
+
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> station = sourceModel->getActiveStation();
+    if(station.isNull() || !station->getIsSensorSet()){
+        return;
+    }
+
+    //ask the user wether to take the sensor from the last station
+    QMessageBox msgBox;
+    msgBox.setText("Do you want to take the sensor from the last station?");
+    msgBox.setInformativeText("");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+    int ret = msgBox.exec();
+
+    switch (ret) {
+    case QMessageBox::Yes:
+        break;
+    case QMessageBox::No:
+        emit this->removeActiveStationSensor();
+        break;
+    }
+
+}
+
+/*!
  * \brief MainWindow::activeCoordinateSystemChanged
  */
 void MainWindow::activeCoordinateSystemChanged(){
@@ -246,8 +287,12 @@ void MainWindow::stationSensorChanged(const int &featureId){
     }
 
     //set sensor action's visibility depending on the sensor type
-    this->activeSensorTypeChanged(activeStation->getActiveSensorType(), activeStation->getSupportedSensorActions(),
-                                  activeStation->getSelfDefinedActions());
+    SensorTypes type = activeStation->getActiveSensorType();
+    QList<SensorFunctions> sensorActions = activeStation->getSupportedSensorActions();
+    QStringList selfDefinedActions = activeStation->getSelfDefinedActions();
+    this->activeSensorTypeChanged(type, sensorActions, selfDefinedActions);
+
+    //TODO Absturz
 
 }
 
@@ -1602,6 +1647,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::removeObservations, &this->control, &Controller::removeObservations, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeAllObservations, &this->control, &Controller::removeAllObservations, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeFeatures, &this->control, &Controller::removeFeatures, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::removeActiveStationSensor, &this->control, &Controller::removeActiveStationSensor, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -1622,6 +1668,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::currentJobChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::trafoParamSetChanged, this, &MainWindow::trafoParamSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::saveAsTriggered, this, &MainWindow::on_actionSave_as_triggered, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::activeStationChanged, this, &MainWindow::activeStationChanged, Qt::AutoConnection);
 
 }
 
