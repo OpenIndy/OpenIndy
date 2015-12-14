@@ -107,6 +107,7 @@ QList<sdb::Plugin> SystemDbManager::getPlugins(){
                 .arg("id, iid, name, description, version, author, compiler, operating_sys,")
                 .arg("has_dependencies, file_path, is_active");
         command.exec(query);
+        qDebug() << query;
         while(command.next()){
 
             sdb::Plugin plugin;
