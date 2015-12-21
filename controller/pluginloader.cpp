@@ -307,6 +307,8 @@ QList<QPointer<Sensor> > PluginLoader::loadSensorPlugins(const QString &path){
 
     QPluginLoader pluginLoader(path);
     QObject *plugin = pluginLoader.instance();
+    QString msg = pluginLoader.errorString();
+    qDebug() << msg;
     if(plugin){
         Plugin *sensorFactory = qobject_cast<Plugin *>(plugin);
         sensorList = sensorFactory->createSensors();
