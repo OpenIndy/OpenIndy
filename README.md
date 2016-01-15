@@ -21,3 +21,5 @@ Build
 The easiest way to build OpenIndy is to use the [Qt Creator](http://www.qt.io/download/). You can build OpenIndy in `debug` or `release` mode.
 We recommend the msvc 2013 compiler (to get it simply install visual studio express).
 In the project settings in Qt-Creator add an additional make step -> make install.
+
+After the build is finished copy the database (/db/oisystemdb.sqlite) to the executable (/bin/debug or /bin/release)
