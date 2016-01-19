@@ -20,4 +20,4 @@ Build
 
 The easiest way to build OpenIndy is to use the Qt Creator. You can build OpenIndy in `debug` or `release` mode.
 First you need to compile the [OpenIndy-Core](https://github.com/OpenIndy/OpenIndy-Core) library and all its dependencies.
-Afterwards you can compile OpenIndy using the same compiler as for the [OpenIndy-Core](https://github.com/OpenIndy/OpenIndy-Core) project.
+Afterwards you can compile OpenIndy using the same compiler as for the [OpenIndy-Core](https://github.com/OpenIndy/OpenIndy-Core) project
