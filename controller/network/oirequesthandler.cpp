@@ -1097,7 +1097,15 @@ void OiRequestHandler::getParameters(OiRequestResponse &request){
     //add parameters
     QDomElement parameters = request.response.createElement("parameters");
     this->addParameters(request.response, parameters, feature);
-    request.response.appendChild(parameters);
+    request.response.documentElement().appendChild(parameters);
+
+    //add standard deviation
+    if(getIsGeometry(feature->getFeatureTypeEnum())){
+        QDomElement stdev = request.response.createElement("stdev");
+        QDomText stdevText = request.response.createTextNode(QString::number(feature->getGeometry()->getStatistic().getStdev(), 'f', 7));
+        stdev.appendChild(stdevText);
+        request.response.documentElement().appendChild(stdev);
+    }
 
     emit this->sendResponse(request);
 
