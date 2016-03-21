@@ -149,6 +149,9 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse request){
     case OiRequestResponse::eSetMeasurementConfig:
         this->setMeasurementConfig(request);
         return true;
+    case OiRequestResponse::eGetCoordinateSystems:
+        this->getCoordinateSystems(request);
+        return true;
     default:
         this->sendErrorMessage(request, OiRequestResponse::eGetProject, OiRequestResponse::eUnknownRequestType);
         return false;
@@ -1376,6 +1379,84 @@ void OiRequestHandler::setMeasurementConfig(OiRequestResponse &request){
 }
 
 /*!
+ * \brief OiRequestHandler::getCoordinateSystems
+ * \param request
+ */
+void OiRequestHandler::getCoordinateSystems(OiRequestResponse &request){
+
+    //set up request
+    request.myRequestType = OiRequestResponse::eGetCoordinateSystems;
+    this->prepareResponse(request);
+
+    //get all coordinate systems
+    QList<QPointer<CoordinateSystem> > systems = this->currentJob->getCoordinateSystemsList();
+    QList<QPointer<CoordinateSystem> > stations = this->currentJob->getStationSystemsList();
+
+    //create and add coordinate systems
+    QDomElement response = request.response.createElement("systems");
+    foreach(const QPointer<CoordinateSystem> &system, systems){
+
+        //check coordinate system
+        if(system.isNull()){
+            continue;
+        }
+
+        //create coordinate system element
+        QDomElement systemTag = request.response.createElement("system");
+
+        //add coordinate system information
+        QDomElement id = request.response.createElement("id");
+        QDomText idText = request.response.createTextNode(QString::number(system->getId()));
+        id.appendChild(idText);
+        systemTag.appendChild(id);
+        QDomElement name = request.response.createElement("name");
+        QDomText nameText = request.response.createTextNode(system->getFeatureName());
+        name.appendChild(nameText);
+        systemTag.appendChild(name);
+        QDomElement group = request.response.createElement("group");
+        QDomText groupText = request.response.createTextNode(system->getGroupName());
+        group.appendChild(groupText);
+        systemTag.appendChild(group);
+
+        //add coordinate system
+        response.appendChild(systemTag);
+
+    }
+    foreach(const QPointer<CoordinateSystem> &system, stations){
+
+        //check coordinate system
+        if(system.isNull()){
+            continue;
+        }
+
+        //create coordinate system element
+        QDomElement systemTag = request.response.createElement("system");
+
+        //add coordinate system information
+        QDomElement id = request.response.createElement("id");
+        QDomText idText = request.response.createTextNode(QString::number(system->getId()));
+        id.appendChild(idText);
+        systemTag.appendChild(id);
+        QDomElement name = request.response.createElement("name");
+        QDomText nameText = request.response.createTextNode(system->getFeatureName());
+        name.appendChild(nameText);
+        systemTag.appendChild(name);
+        QDomElement group = request.response.createElement("group");
+        QDomText groupText = request.response.createTextNode(system->getGroupName());
+        group.appendChild(groupText);
+        systemTag.appendChild(group);
+
+        //add coordinate system
+        response.appendChild(systemTag);
+
+    }
+    request.response.documentElement().appendChild(response);
+
+    emit this->sendResponse(request);
+
+}
+
+/*!
  * \brief OiRequestHandler::getRequestType
  * Converts the given id to the corresponding request type
  * \param id
@@ -1424,6 +1505,8 @@ OiRequestResponse::RequestType OiRequestHandler::getRequestType(int id) const{
         return OiRequestResponse::eGetMeasurementConfig;
     case 19:
         return OiRequestResponse::eSetMeasurementConfig;
+    case 20:
+        return OiRequestResponse::eGetCoordinateSystems;
     }
 
     return OiRequestResponse::eUnknownRequest;

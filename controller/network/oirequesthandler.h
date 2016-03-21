@@ -128,6 +128,7 @@ private:
     void getMeasurementConfigs(OiRequestResponse &request);
     void getMeasurementConfig(OiRequestResponse &request);
     void setMeasurementConfig(OiRequestResponse &request);
+    void getCoordinateSystems(OiRequestResponse &request);
 
     //parse request type id
     OiRequestResponse::RequestType getRequestType(int id) const;
