@@ -69,8 +69,6 @@ void OiRequestHandler::setMeasurementConfigManager(const QPointer<MeasurementCon
  */
 bool OiRequestHandler::receiveRequest(OiRequestResponse request){
 
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
-
     //check request
     if(request.request.isNull() || request.request.documentElement().isNull()
             || request.request.documentElement().tagName().compare("OiRequest") != 0
@@ -1093,6 +1091,28 @@ void OiRequestHandler::getParameters(OiRequestResponse &request){
 
     //add id
     request.response.documentElement().appendChild(request.response.importNode(id, true));
+
+    //add feature information
+    QDomElement name = request.response.createElement("name");
+    QDomText nameText = request.response.createTextNode(feature->getFeature()->getFeatureName());
+    name.appendChild(nameText);
+    request.response.documentElement().appendChild(name);
+    QDomElement type = request.response.createElement("type");
+    QDomText typeText = request.response.createTextNode(QString::number(feature->getFeatureTypeEnum()));
+    type.appendChild(typeText);
+    request.response.documentElement().appendChild(type);
+    QDomElement group = request.response.createElement("group");
+    QDomText groupText = request.response.createTextNode(feature->getFeature()->getGroupName());
+    group.appendChild(groupText);
+    request.response.documentElement().appendChild(group);
+    QDomElement isSolved = request.response.createElement("isSolved");
+    QDomText isSolvedText = request.response.createTextNode(feature->getFeature()->getIsSolved()?"1":"0");
+    isSolved.appendChild(isSolvedText);
+    request.response.documentElement().appendChild(isSolved);
+    QDomElement isNominal = request.response.createElement("isNominal");
+    QDomText isNominalText = request.response.createTextNode((feature->getGeometry().isNull() || !feature->getGeometry()->getIsNominal())?"0":"1");
+    isNominal.appendChild(isNominalText);
+    request.response.documentElement().appendChild(isNominal);
 
     //add parameters
     QDomElement parameters = request.response.createElement("parameters");
