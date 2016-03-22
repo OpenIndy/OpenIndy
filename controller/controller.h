@@ -113,6 +113,8 @@ public slots:
     void startCompensation();
     void startChangeMotorState();
     void startCustomAction(const QString &task);
+    void startWatchWindow(ReadingTypes streamFormat);
+    void stopWatchWindow();
 
     //log messages to the specified destination
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
@@ -198,6 +200,7 @@ signals:
     //sensor actions
     //##############
 
+    //sensor actions
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
@@ -206,6 +209,7 @@ signals:
     //show messages
     //#############
 
+    //messaging
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showClientMessage(const QString &msg, const MessageTypes &msgType);
@@ -251,14 +255,15 @@ private:
     //helper methods
     //##############
 
+    //set OpenIndy job
     void setJob(const QPointer<OiJob> &job);
 
+    //init configs and plugins
     void initDisplayConfigs();
     void initConfigManager();
     void initToolPlugins();
 
-    void connectToolPlugin(const QPointer<Tool> &tool);
-
+    //register meta types
     void registerMetaTypes();
 
     //start or stop OpenIndy server
@@ -271,13 +276,17 @@ private:
     void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
                                  const MeasurementConfig &mConfig, const QString &path, const QString &fName);
 
-    //######################
-    //connect helper objects
-    //######################
+    //###############
+    //set up connects
+    //###############
 
+    //connect helper objects
     void connectDataExchanger();
     void connectFeatureUpdater();
     void connectRequestHandler();
+
+    //connect tools
+    void connectToolPlugin(const QPointer<Tool> &tool);
 
 private:
 

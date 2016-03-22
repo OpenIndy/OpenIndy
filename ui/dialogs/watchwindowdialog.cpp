@@ -1247,8 +1247,6 @@ void WatchWindowDialog::realTimeReading(const QVariantMap &reading){
         this->setUpCartesianWatchWindow(reading);
     }
 
-
-
 }
 
 /*!
@@ -1265,10 +1263,7 @@ void WatchWindowDialog::showEvent(QShowEvent *event){
     this->connectSensor();
 
     //start reading stream
-    if(!this->activeStation.isNull() && this->activeStation->getIsSensorConnected()){
-        this->activeStation->setStreamFormat(this->settings.readingType);
-        this->activeStation->startReadingStream();
-    }
+    emit this->startStreaming(this->settings.readingType);
 
     event->accept();
 
@@ -1282,7 +1277,7 @@ void WatchWindowDialog::closeEvent(QCloseEvent *event){
 
     //stop reading stream
     if(!this->activeStation.isNull() && this->activeStation->getIsSensorConnected()){
-        this->activeStation->stopReadingStream();
+        emit this->stopStreaming();
     }
 
     event->accept();

@@ -1156,6 +1156,64 @@ void Controller::startCustomAction(const QString &task){
 }
 
 /*!
+ * \brief Controller::startWatchWindow
+ * \param streamFormat
+ */
+void Controller::startWatchWindow(ReadingTypes streamFormat){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //start streaming
+    activeStation->setStreamFormat(streamFormat);
+    activeStation->startReadingStream();
+
+}
+
+/*!
+ * \brief Controller::stopWatchWindow
+ */
+void Controller::stopWatchWindow(){
+
+    //check current job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active station
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(activeStation.isNull()){
+        this->log("No active station", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //check sensor
+    if(!activeStation->getIsSensorConnected()){
+        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //stop streaming
+    activeStation->stopReadingStream();
+
+}
+
+/*!
  * \brief Controller::log
  * Prints a message to the specified destination
  * \param msg
@@ -1473,32 +1531,6 @@ void Controller::initToolPlugins(){
 }
 
 /*!
- * \brief Controller::connectToolPlugin
- * \param tool
- */
-void Controller::connectToolPlugin(const QPointer<Tool> &tool){
-
-    if(tool.isNull()){
-        return;
-    }
-
-    QObject::connect(tool.data(), &Tool::startConnect, this, &Controller::startConnect, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startDisconnect, this, &Controller::startDisconnect, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startMove, this, &Controller::startMove, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startAim, this, &Controller::startAim, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startAimAndMeasure, this, &Controller::startAimAndMeasure, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startToggleSight, this, &Controller::startToggleSight, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startInitialize, this, &Controller::startInitialize, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startHome, this, &Controller::startHome, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startCompensation, this, &Controller::startCompensation, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startChangeMotorState, this, &Controller::startChangeMotorState, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::startCustomAction, this, &Controller::startCustomAction, Qt::AutoConnection);
-    QObject::connect(tool.data(), &Tool::sendMessage, this, &Controller::log, Qt::AutoConnection);
-
-}
-
-/*!
  * \brief Controller::registerMetaTypes
  * Registers meta types to be able to use them in signal slot connections
  */
@@ -1710,6 +1742,8 @@ void Controller::connectRequestHandler(){
     //sensor actions
     QObject::connect(&this->requestHandler, &OiRequestHandler::startAim, this, &Controller::startAim, Qt::AutoConnection);
     QObject::connect(&this->requestHandler, &OiRequestHandler::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
+    QObject::connect(&this->requestHandler, &OiRequestHandler::startReadingStream, this, &Controller::startWatchWindow, Qt::AutoConnection);
+    QObject::connect(&this->requestHandler, &OiRequestHandler::stopReadingStream, this, &Controller::stopWatchWindow, Qt::AutoConnection);
 
     //connect streaming
     QObject::connect(this, &Controller::sensorActionStarted, &this->requestHandler, &OiRequestHandler::sensorActionStarted, Qt::AutoConnection);
@@ -1720,5 +1754,31 @@ void Controller::connectRequestHandler(){
     QObject::connect(this, &Controller::activeCoordinateSystemChanged, &this->requestHandler, &OiRequestHandler::activeCoordinateSystemChanged, Qt::AutoConnection);
     QObject::connect(this, &Controller::featureSetChanged, &this->requestHandler, &OiRequestHandler::featureSetChanged, Qt::AutoConnection);
     QObject::connect(this, &Controller::featureAttributesChanged, &this->requestHandler, &OiRequestHandler::featureAttributesChanged, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief Controller::connectToolPlugin
+ * \param tool
+ */
+void Controller::connectToolPlugin(const QPointer<Tool> &tool){
+
+    if(tool.isNull()){
+        return;
+    }
+
+    QObject::connect(tool.data(), &Tool::startConnect, this, &Controller::startConnect, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startDisconnect, this, &Controller::startDisconnect, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startMove, this, &Controller::startMove, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startAim, this, &Controller::startAim, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startAimAndMeasure, this, &Controller::startAimAndMeasure, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startToggleSight, this, &Controller::startToggleSight, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startInitialize, this, &Controller::startInitialize, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startHome, this, &Controller::startHome, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startCompensation, this, &Controller::startCompensation, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startChangeMotorState, this, &Controller::startChangeMotorState, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::startCustomAction, this, &Controller::startCustomAction, Qt::AutoConnection);
+    QObject::connect(tool.data(), &Tool::sendMessage, this, &Controller::log, Qt::AutoConnection);
 
 }

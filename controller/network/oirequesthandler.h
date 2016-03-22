@@ -15,6 +15,16 @@
 #include "featuresorter.h"
 #include "measurementconfigmanager.h"
 #include "sensorconfigurationmanager.h"
+#include "trafocontroller.h"
+
+/*!
+ * \brief The WatchWindowTask struct
+ */
+struct WatchWindowTask{
+    bool taskInProgress;
+    ReadingTypes type;
+    OiRequestResponse request;
+};
 
 /*!
  * \brief The OiRequestHandler class
@@ -100,6 +110,8 @@ signals:
 
     void startAim();
     void startMeasurement();
+    void startReadingStream(ReadingTypes type);
+    void stopReadingStream();
 
 private:
 
@@ -145,7 +157,8 @@ private:
     //prepare response to client
     void prepareResponse(OiRequestResponse &request) const;
 
-    //bool buildWatchWindowMessage(QDomElement &wwTag, const int &readingType, const QVariantMap &streamData);
+    //set up watch window data
+    bool buildWatchWindowMessage(QDomElement &wwTag, const QVariantMap &streamData);
 
 private slots:
 
@@ -158,20 +171,22 @@ private slots:
 
 private:
 
-    //##############
-    //config manager
-    //##############
-
-    QPointer<SensorConfigurationManager> sensorConfigManager;
-    QPointer<MeasurementConfigManager> measurementConfigManager;
-
     //#################
     //helper attributes
     //#################
 
+    //config manager
+    QPointer<SensorConfigurationManager> sensorConfigManager;
+    QPointer<MeasurementConfigManager> measurementConfigManager;
+
+    //job
     QPointer<OiJob> currentJob;
 
+    //feature sorter
     FeatureSorter sorter;
+
+    //watch window task
+    WatchWindowTask watchWindowTask;
 
 };
 

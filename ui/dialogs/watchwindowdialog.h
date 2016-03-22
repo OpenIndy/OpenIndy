@@ -77,15 +77,16 @@ signals:
     //inform about actions triggered by user
     //######################################
 
-    void startMeasure();
-    void useLastReading();
-    //void doSelfDefinedAction(QString key);
     void keyPressed(Qt::Key key);
 
-    /*void sendSettingsReady(bool);
-    void sendCheckBoxReady(bool);
-    void sendGUIReady(bool);
-    void closeWatchWindow();*/
+    //####################
+    //start sensor actions
+    //####################
+
+    void startMeasure();
+    void useLastReading();
+    void startStreaming(ReadingTypes streamFormat);
+    void stopStreaming();
 
 private slots:
 
@@ -139,7 +140,6 @@ private:
     //##############################
 
     void connectSensor();
-
     void connectJob();
 
     //#############################################
