@@ -92,15 +92,15 @@ QVariant SensorAccuracyModel::data(const QModelIndex &index, int role) const{
                                                       this->parameterDisplayConfig.getDisplayUnit(eMetric)),
                                    'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
         case 9:
-            return QString::number(convertFromDefault(this->sConfig.getAccuracy().sigmaRX,
+            return QString::number(convertFromDefault(this->sConfig.getAccuracy().sigmaI,
                                                       this->parameterDisplayConfig.getDisplayUnit(eAngular)),
                                    'f', this->parameterDisplayConfig.getDisplayDigits(eAngular));
         case 10:
-            return QString::number(convertFromDefault(this->sConfig.getAccuracy().sigmaRY,
+            return QString::number(convertFromDefault(this->sConfig.getAccuracy().sigmaJ,
                                                       this->parameterDisplayConfig.getDisplayUnit(eAngular)),
                                    'f', this->parameterDisplayConfig.getDisplayDigits(eAngular));
         case 11:
-            return QString::number(convertFromDefault(this->sConfig.getAccuracy().sigmaRZ,
+            return QString::number(convertFromDefault(this->sConfig.getAccuracy().sigmaK,
                                                       this->parameterDisplayConfig.getDisplayUnit(eAngular)),
                                    'f', this->parameterDisplayConfig.getDisplayDigits(eAngular));
         case 13:
@@ -274,13 +274,13 @@ bool SensorAccuracyModel::setData(const QModelIndex & index, const QVariant & va
             accuracy.sigmaXyz.setAt(2, convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eMetric)));
             break;
         case 9:
-            accuracy.sigmaRX = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eAngular));
+            accuracy.sigmaI = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eAngular));
             break;
         case 10:
-            accuracy.sigmaRY = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eAngular));
+            accuracy.sigmaJ = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eAngular));
             break;
         case 11:
-            accuracy.sigmaRZ = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eAngular));
+            accuracy.sigmaK = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eAngular));
             break;
         case 13:
             accuracy.sigmaTemp = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eTemperature));
