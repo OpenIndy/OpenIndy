@@ -116,6 +116,12 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         case eObservationDisplayZ:
             return observation->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eObservationDisplayI:
+            return observation->getDisplayI(6);
+        case eObservationDisplayJ:
+            return observation->getDisplayJ(6);
+        case eObservationDisplayK:
+            return observation->getDisplayK(6);
         case eObservationDisplaySigmaX:
             return observation->getDisplaySigmaX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                  this->parameterDisplayConfig.getDisplayDigits(eMetric));
@@ -125,6 +131,12 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         case eObservationDisplaySigmaZ:
             return observation->getDisplaySigmaZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                  this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eObservationDisplaySigmaI:
+            return observation->getDisplaySigmaI(6);
+        case eObservationDisplaySigmaJ:
+            return observation->getDisplaySigmaJ(6);
+        case eObservationDisplaySigmaK:
+            return observation->getDisplaySigmaK(6);
         case eObservationDisplayIsValid:
             return observation->getDisplayIsValid();
         case eObservationDisplayIsSolved:
