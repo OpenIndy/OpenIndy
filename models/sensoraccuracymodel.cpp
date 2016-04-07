@@ -92,17 +92,11 @@ QVariant SensorAccuracyModel::data(const QModelIndex &index, int role) const{
                                                       this->parameterDisplayConfig.getDisplayUnit(eMetric)),
                                    'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
         case 9:
-            return QString::number(convertFromDefault(this->sConfig.getAccuracy().sigmaRX,
-                                                      this->parameterDisplayConfig.getDisplayUnit(eAngular)),
-                                   'f', this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            return QString::number(this->sConfig.getAccuracy().sigmaI, 'f', 6);
         case 10:
-            return QString::number(convertFromDefault(this->sConfig.getAccuracy().sigmaRY,
-                                                      this->parameterDisplayConfig.getDisplayUnit(eAngular)),
-                                   'f', this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            return QString::number(this->sConfig.getAccuracy().sigmaJ, 'f', 6);
         case 11:
-            return QString::number(convertFromDefault(this->sConfig.getAccuracy().sigmaRZ,
-                                                      this->parameterDisplayConfig.getDisplayUnit(eAngular)),
-                                   'f', this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            return QString::number(this->sConfig.getAccuracy().sigmaK, 'f', 6);
         case 13:
             return QString::number(convertFromDefault(this->sConfig.getAccuracy().sigmaTemp,
                                                       this->parameterDisplayConfig.getDisplayUnit(eTemperature)),
@@ -153,11 +147,11 @@ QVariant SensorAccuracyModel::headerData(int section, Qt::Orientation orientatio
         case 7:
             return "z";
         case 9:
-            return "RX";
+            return "i";
         case 10:
-            return "RY";
+            return "j";
         case 11:
-            return "RZ";
+            return "k";
         case 13:
             return "temperature";
         default:
@@ -274,13 +268,13 @@ bool SensorAccuracyModel::setData(const QModelIndex & index, const QVariant & va
             accuracy.sigmaXyz.setAt(2, convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eMetric)));
             break;
         case 9:
-            accuracy.sigmaRX = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eAngular));
+            accuracy.sigmaI = value.toDouble();
             break;
         case 10:
-            accuracy.sigmaRY = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eAngular));
+            accuracy.sigmaJ = value.toDouble();
             break;
         case 11:
-            accuracy.sigmaRZ = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eAngular));
+            accuracy.sigmaK = value.toDouble();
             break;
         case 13:
             accuracy.sigmaTemp = convertToDefault(value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(eTemperature));

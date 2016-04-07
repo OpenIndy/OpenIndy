@@ -606,9 +606,9 @@ bool SensorConfigurationManager::equals(const SensorConfiguration &sConfigA, con
             || !almostEqual(sConfigA.getAccuracy().sigmaXyz.getAt(1), sConfigB.getAccuracy().sigmaXyz.getAt(1), 8)
             || !almostEqual(sConfigA.getAccuracy().sigmaXyz.getAt(2), sConfigB.getAccuracy().sigmaXyz.getAt(2), 8)
             || !almostEqual(sConfigA.getAccuracy().sigmaTemp, sConfigB.getAccuracy().sigmaTemp, 8)
-            || !almostEqual(sConfigA.getAccuracy().sigmaRX, sConfigB.getAccuracy().sigmaRX, 8)
-            || !almostEqual(sConfigA.getAccuracy().sigmaRY, sConfigB.getAccuracy().sigmaRY, 8)
-            || !almostEqual(sConfigA.getAccuracy().sigmaRZ, sConfigB.getAccuracy().sigmaRZ, 8)
+            || !almostEqual(sConfigA.getAccuracy().sigmaI, sConfigB.getAccuracy().sigmaI, 8)
+            || !almostEqual(sConfigA.getAccuracy().sigmaJ, sConfigB.getAccuracy().sigmaJ, 8)
+            || !almostEqual(sConfigA.getAccuracy().sigmaK, sConfigB.getAccuracy().sigmaK, 8)
             || sConfigA.getAccuracy().sigmaUndefined.keys() != sConfigB.getAccuracy().sigmaUndefined.keys()){
         return false;
     }
