@@ -63,6 +63,7 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
         foreach(const QPointer<Observation> &observation, startSystem->getObservations()){
             if(!observation.isNull()){
                 observation->xyz = observation->getOriginalXYZ();
+                observation->ijk = observation->getOriginalIJK();
                 observation->setIsSolved(true);
             }
         }
@@ -78,6 +79,12 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
     //check if matrix is 4x4 = homogeneous matrix
     if(hasTransformation && trafoMat.getRowCount() == 4 && trafoMat.getColCount() == 4){
 
+        //create homogeneous rotation matrix
+        OiMat rotMat = trafoMat;
+        rotMat.setAt(0, 3, 0.0);
+        rotMat.setAt(1, 3, 0.0);
+        rotMat.setAt(2, 3, 0.0);
+
         startSystem->setIsSolved(true);
 
         //transform coordinate system origin and axes
@@ -89,8 +96,21 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
                 obs->xyz = trafoMat * obs->originalXyz;
                 obs->setIsSolved(true);
             }
+            if(obs->getOriginalIJK().getSize() == 4 && obs->hasDirection == true){
+                obs->ijk = rotMat * obs->originalIjk;
+                obs->ijk.removeLast();
+                obs->ijk.normalize();
+                obs->ijk.add(1.0);
+                obs->setIsSolved(true);
+            }
             if(obs->getOriginalSigmaXyz().getSize() == 4){
                 obs->sigmaXyz = trafoMat * obs->originalSigmaXyz;
+            }
+            if(obs->originalSigmaIjk.getSize() == 4 && obs->hasDirection == true){
+                obs->sigmaIjk = rotMat * obs->originalSigmaIjk;
+                obs->sigmaIjk.removeLast();
+                obs->sigmaIjk.normalize();
+                obs->sigmaIjk.add(1.0);
             }
         }
 
