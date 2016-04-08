@@ -1279,6 +1279,24 @@ void MainWindow::on_actionAbout_OpenIndy_triggered(){
 }
 
 /*!
+ * \brief MainWindow::on_pushButton_addBundle_clicked
+ */
+void MainWindow::on_pushButton_addBundle_clicked(){
+    emit this->addBundleSystem();
+}
+
+/*!
+ * \brief MainWindow::on_pushButton_removeBundle_clicked
+ */
+void MainWindow::on_pushButton_removeBundle_clicked(){
+
+    //get selected bundle system
+
+    //remove bundle system
+
+}
+
+/*!
  * \brief MainWindow::showFeatureProperties
  * \param checked
  */
@@ -1648,6 +1666,8 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::removeAllObservations, &this->control, &Controller::removeAllObservations, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeFeatures, &this->control, &Controller::removeFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeActiveStationSensor, &this->control, &Controller::removeActiveStationSensor, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::addBundleSystem, &this->control, &Controller::addBundleSystem, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::removeBundleSystem, &this->control, &Controller::removeBundleSystem, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -1763,6 +1783,9 @@ void MainWindow::assignModels(){
 
     //assign actual nominal filter model
     this->ui->comboBox_actualNominal->setModel(&ModelManager::getActualNominalFilterModel());
+
+    //assign bundle system model
+    this->ui->listView_bundle->setModel(&ModelManager::getBundleSystemsModel());
 
 }
 

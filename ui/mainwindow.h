@@ -89,6 +89,10 @@ signals:
     //import or export features
     void importNominals(const ExchangeParams &params);
 
+    //add or remove bundle system
+    void addBundleSystem();
+    void removeBundleSystem(const int &id);
+
     //save or load projects
     void saveProject();
     void saveProject(const QString &fileName);
@@ -237,6 +241,10 @@ private slots:
 
     //show about dialog
     void on_actionAbout_OpenIndy_triggered();
+
+    //add or remove bundle system
+    void on_pushButton_addBundle_clicked();
+    void on_pushButton_removeBundle_clicked();
 
     //##############
     //helper methods

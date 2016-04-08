@@ -459,6 +459,54 @@ void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config)
 }
 
 /*!
+ * \brief Controller::addBundleSystem
+ */
+void Controller::addBundleSystem(){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //create feature name
+    QString bundleName = "Bundle01";
+    int index = 1;
+    while(!this->job->validateFeatureName(bundleName, eCoordinateSystemFeature)){
+        if(index < 9){
+            bundleName = QString("Bundle0%1").arg(++index);
+        }else{
+            bundleName = QString("Bundle%1").arg(++index);
+        }
+    }
+
+    //create feature attributes
+    FeatureAttributes attr;
+    attr.count = 1;
+    attr.typeOfFeature = eCoordinateSystemFeature;
+    attr.name = bundleName;
+    attr.isBundleSystem = true;
+
+    //add feature
+    this->job->addFeatures(attr);
+
+}
+
+/*!
+ * \brief Controller::removeBundleSystem
+ * \param id
+ */
+void Controller::removeBundleSystem(const int &id){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+}
+
+/*!
  * \brief Controller::saveProject
  */
 void Controller::saveProject(){

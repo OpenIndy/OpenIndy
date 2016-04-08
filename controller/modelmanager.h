@@ -42,6 +42,7 @@
 #include "functionstatisticmodel.h"
 #include "sensoraccuracymodel.h"
 #include "sensorparametersmodel.h"
+#include "bundlesystemsmodel.h"
 
 using namespace oi;
 
@@ -131,6 +132,7 @@ public:
     //coordinate system models
     static QStringListModel &getCoordinateSystemsModel();
     static QStringListModel &getNominalSystemsModel();
+    static BundleSystemsModel &getBundleSystemsModel();
 
     //group name model
     static QStringListModel &getGroupNamesModel();
@@ -237,6 +239,7 @@ private:
     //coordinate systems models
     static QStringListModel coordinateSystemsModel;
     static QStringListModel nominalSystemsModel;
+    static BundleSystemsModel bundleSystemsModel;
 
     //group name model
     static QStringListModel groupNamesModel;

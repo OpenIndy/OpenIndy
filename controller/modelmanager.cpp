@@ -53,6 +53,7 @@ ObservationTableColumnConfig ModelManager::observationTableColumnConfig;
 ReadingTableColumnConfig ModelManager::readingTableColumnConfig;
 QStringListModel ModelManager::scalarEntityTypeNamesModel;
 QStringListModel ModelManager::actualNominalFilterModel;
+BundleSystemsModel ModelManager::bundleSystemsModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -286,6 +287,14 @@ QStringListModel &ModelManager::getCoordinateSystemsModel(){
  */
 QStringListModel &ModelManager::getNominalSystemsModel(){
     return ModelManager::nominalSystemsModel;
+}
+
+/*!
+ * \brief ModelManager::getBundleSystemsModel
+ * \return
+ */
+BundleSystemsModel &ModelManager::getBundleSystemsModel(){
+    return ModelManager::bundleSystemsModel;
 }
 
 /*!
@@ -817,6 +826,7 @@ void ModelManager::updateJob(){
     ModelManager::availableElementsTreeViewProxyModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::observationModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::readingModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::bundleSystemsModel.setCurrentJob(ModelManager::currentJob);
 
     //connect the job to slots in model manager
     QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);

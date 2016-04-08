@@ -94,6 +94,10 @@ public slots:
     void setReadingTableColumnConfig(const ReadingTableColumnConfig &config);
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
+    //add or remove bundle system
+    void addBundleSystem();
+    void removeBundleSystem(const int &id);
+
     //save or load a job
     void saveProject();
     void saveProject(const QString &fileName);

@@ -13,7 +13,7 @@
 #include "fitfunction.h"
 #include "generatefeaturefunction.h"
 #include "geodeticfunction.h"
-#include "networkadjustment.h"
+#include "bundleadjustment.h"
 #include "objecttransformation.h"
 #include "systemtransformation.h"
 #include "exchangeinterface.h"
@@ -40,7 +40,7 @@ public:
     static QString iid_FitFunction;
     static QString iid_GenerateFeatureFunction;
     static QString iid_GeodeticFunction;
-    static QString iid_NetworkAdjustment;
+    static QString iid_BundleAdjustment;
     static QString iid_ObjectTransformation;
     static QString iid_SystemTransformation;
     static QString iid_Sensor;

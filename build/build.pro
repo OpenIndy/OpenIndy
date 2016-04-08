@@ -125,7 +125,8 @@ SOURCES += \
     $$PWD/../models/sensoraccuracymodel.cpp \
     $$PWD/../models/sensorparametersmodel.cpp \
     $$PWD/../ui/delegates/sensoraccuracydelegate.cpp \
-    $$PWD/../ui/delegates/sensorparametersdelegate.cpp
+    $$PWD/../ui/delegates/sensorparametersdelegate.cpp \
+    $$PWD/../models/bundlesystemsmodel.cpp
 
 # header files
 HEADERS  += \
@@ -212,7 +213,8 @@ HEADERS  += \
     $$PWD/../models/sensoraccuracymodel.h \
     $$PWD/../models/sensorparametersmodel.h \
     $$PWD/../ui/delegates/sensoraccuracydelegate.h \
-    $$PWD/../ui/delegates/sensorparametersdelegate.h
+    $$PWD/../ui/delegates/sensorparametersdelegate.h \
+    $$PWD/../models/bundlesystemsmodel.h \
 
 # ui files
 FORMS    += \
