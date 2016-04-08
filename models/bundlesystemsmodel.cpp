@@ -80,13 +80,13 @@ QVariant BundleSystemsModel::headerData(int section, Qt::Orientation orientation
 }
 
 /*!
- * \brief MeasurementConfigurationModel::flags
+ * \brief BundleSystemsModel::flags
  * \param index
  * \return
  */
 Qt::ItemFlags BundleSystemsModel::flags(const QModelIndex &index) const{
     Qt::ItemFlags myFlags = QAbstractListModel::flags(index);
-    return (myFlags | Qt::ItemIsEditable);
+    return myFlags;
 }
 
 /*!
@@ -125,6 +125,32 @@ void BundleSystemsModel::setCurrentJob(const QPointer<OiJob> &job){
         this->updateModel();
 
     }
+}
+
+/*!
+ * \brief BundleSystemsModel::getSelectedBundleSystem
+ * \param index
+ * \return
+ */
+int BundleSystemsModel::getSelectedBundleSystem(const QModelIndex &index){
+
+    //check index
+    if(!index.isValid()){
+        return -1;
+    }
+
+    //get bundle system
+    int row = index.row();
+    if(this->bundleSystems.size() <= row){
+        return -1;
+    }
+    QPointer<CoordinateSystem> system = this->bundleSystems.at(row);
+    if(system.isNull()){
+        return -1;
+    }
+
+    return system->getId();
+
 }
 
 /*!

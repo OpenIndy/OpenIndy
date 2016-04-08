@@ -91,7 +91,11 @@ signals:
 
     //add or remove bundle system
     void addBundleSystem();
-    void removeBundleSystem(const int &id);
+    void removeBundleSystem(const int &bundleId);
+
+    //load or calculate bundle
+    void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
+    void runBundle(const int &bundleId);
 
     //save or load projects
     void saveProject();
@@ -246,6 +250,10 @@ private slots:
     void on_pushButton_addBundle_clicked();
     void on_pushButton_removeBundle_clicked();
 
+    //load or calculate bundle
+    void on_action_RunBundle_triggered();
+    void on_pushButton_loadBundleTemplate_clicked();
+
     //##############
     //helper methods
     //##############
@@ -264,6 +272,9 @@ private slots:
     //set up status bar
     void updateStatusBar();
 
+    //update bundle view
+    void bundleSelectionChanged();
+
 private:
     Ui::MainWindow *ui;
 
@@ -278,6 +289,7 @@ private:
     void connectController();
     void connectDialogs();
     void connectStatusBar();
+    void connectBundleView();
     void assignModels();
 
     //##################################
@@ -289,6 +301,7 @@ private:
     void initToolMenus();
     void initFilterComboBoxes();
     void initStatusBar();
+    void initBundleTemplates();
 
     //##############################
     //methods to update GUI elements

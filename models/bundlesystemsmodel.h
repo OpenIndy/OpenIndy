@@ -45,6 +45,12 @@ public:
     const QPointer<OiJob> &getCurrentJob() const;
     void setCurrentJob(const QPointer<OiJob> &job);
 
+    //###################
+    //get selected system
+    //###################
+
+    int getSelectedBundleSystem(const QModelIndex &index);
+
 signals:
 
     //#########################

@@ -1,0 +1,41 @@
+<as:CAM
+ xmlns:as="http://www.oasis-open.org/committees/cam"
+ xmlns:camed="http://jcam.org.uk/editor"
+ xmlns:xml="http://www.w3.org/XML/1998/namespace"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema" CAMlevel="1" version="1.1" cameditor="3.2.1">
+  <as:Header>
+    <as:Description>No Description</as:Description>
+    <as:Owner>Not Set</as:Owner>
+    <as:Version>0.1</as:Version>
+    <as:DateTime>2016-04-08T12:20:25</as:DateTime>
+  </as:Header>
+  <as:AssemblyStructure>
+    <as:Structure ID="NewFile" taxonomy="JSON" reference="">
+      <JSONRoot>
+        <parameters>
+          <parameter>%tx%</parameter>
+          <parameter>%ty%</parameter>
+          <parameter>%tz%</parameter>
+          <parameter>%rx%</parameter>
+          <parameter>%ry%</parameter>
+          <parameter>%rz%</parameter>
+          <parameter>%m%</parameter>
+        </parameters>
+        <levelStations>%0%</levelStations>
+        <plugin>
+          <name>%Bundle%</name>
+          <pluginName>%OiSigma3D%</pluginName>
+        </plugin>
+        <maxIterations>%100%</maxIterations>
+        <name>%string%</name>
+      </JSONRoot>
+    </as:Structure>
+  </as:AssemblyStructure>
+  <as:BusinessUseContext>
+    <as:Rules>
+      <as:default>
+        <as:context />
+      </as:default>
+    </as:Rules>
+  </as:BusinessUseContext>
+</as:CAM>

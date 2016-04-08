@@ -43,6 +43,7 @@
 #include "sensoraccuracymodel.h"
 #include "sensorparametersmodel.h"
 #include "bundlesystemsmodel.h"
+#include "bundletemplatesmodel.h"
 
 using namespace oi;
 
@@ -182,6 +183,9 @@ public:
     static ReadingModel &getReadingModel();
     static ReadingProxyModel &getReadingProxyModel();
 
+    //bundle templates
+    static BundleTemplatesModel &getBundleTemplatesModel();
+
     //############################################################
     //get dynamic models (models that are newly created each time)
     //############################################################
@@ -291,6 +295,9 @@ private:
     static ObservationProxyModel observationProxyModel;
     static ReadingModel readingModel;
     static ReadingProxyModel readingProxyModel;
+
+    //bundle templates
+    static BundleTemplatesModel bundleTemplatesModel;
 
     //##################
     //empty dummy models

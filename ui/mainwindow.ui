@@ -185,13 +185,13 @@ background-position: center center;</string>
          <attribute name="title">
           <string>bundle</string>
          </attribute>
-         <layout class="QGridLayout" name="gridLayout_4">
+         <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
            <widget class="QSplitter" name="splitter">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <widget class="QWidget" name="layoutWidget">
+            <widget class="QWidget" name="">
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -233,14 +233,31 @@ background-position: center center;</string>
                </layout>
               </item>
               <item>
-               <widget class="QListView" name="listView_bundle">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>1</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
+               <widget class="QListView" name="listView_bundle"/>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <spacer name="horizontalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_runBundle">
+                  <property name="text">
+                   <string>run bundle</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
@@ -258,7 +275,7 @@ background-position: center center;</string>
               <attribute name="title">
                <string>general settings</string>
               </attribute>
-              <layout class="QGridLayout" name="gridLayout_5">
+              <layout class="QGridLayout" name="gridLayout_4">
                <item row="0" column="0">
                 <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,1">
                  <item>
@@ -416,6 +433,7 @@ background-position: center center;</string>
     <addaction name="actionSet_sensor"/>
     <addaction name="actionMeasurement_Configuration"/>
     <addaction name="actionStationProperties"/>
+    <addaction name="action_RunBundle"/>
    </widget>
    <widget class="QMenu" name="menuFunctions">
     <property name="title">
@@ -1225,10 +1243,32 @@ color: rgb(255, 255, 255);
     <string>active station properties</string>
    </property>
   </action>
+  <action name="action_RunBundle">
+   <property name="text">
+    <string>run bundle</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
   <include location="../res/res.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton_runBundle</sender>
+   <signal>clicked()</signal>
+   <receiver>action_RunBundle</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>325</x>
+     <y>353</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

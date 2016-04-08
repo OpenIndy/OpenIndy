@@ -504,6 +504,64 @@ void Controller::removeBundleSystem(const int &id){
         return;
     }
 
+    //remove bundle system
+    this->job->removeFeature(id);
+
+}
+
+/*!
+ * \brief Controller::loadBundleTemplate
+ * \param bundleId
+ * \param bundleTemplate
+ */
+void Controller::loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get bundle system
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
+    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
+        this->log(QString("No bundle system with id %1").arg(bundleId), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get bundle and plugin name
+    QString bundleName, pluginName;
+    bundleName = bundleTemplate.value("plugin").toObject().value("name").toString();
+    pluginName = bundleTemplate.value("plugin").toObject().value("pluginName").toString();
+
+    //get and check plugin information
+    sdb::Plugin plugin = SystemDbManager::getPlugin(pluginName);
+    if(plugin.id == -1){
+        this->log(QString("No plugin available with the name %1").arg(pluginName), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //load bundle plugin
+    QPointer<BundleAdjustment> bundlePlugin(NULL);
+    bundlePlugin = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundleName);
+    if(bundlePlugin.isNull()){
+        this->log(QString("Cannot load bundle template %1").arg(bundleTemplate.value("name").toString()), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //set up bundle plugin
+    feature->getCoordinateSystem()->setBundlePlugin(bundlePlugin);
+
+    this->log(QString("Bundle template %1 loaded successfully").arg(bundleTemplate.value("name").toString()), eInformationMessage, eMessageBoxMessage);
+
+}
+
+/*!
+ * \brief Controller::runBundle
+ * \param bundleId
+ */
+void Controller::runBundle(const int &bundleId){
+
 }
 
 /*!

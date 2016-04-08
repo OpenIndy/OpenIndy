@@ -20,12 +20,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //assign models of ModelManager to GUI-elements
     this->assignModels();
 
+    //connect bundle view
+    this->connectBundleView();
+
     //init GUI elements
     this->initFeatureTableViews();
     this->initSensorPad();
     this->initToolMenus();
     this->initFilterComboBoxes();
     this->initStatusBar();
+    this->initBundleTemplates();
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -1291,8 +1295,72 @@ void MainWindow::on_pushButton_addBundle_clicked(){
 void MainWindow::on_pushButton_removeBundle_clicked(){
 
     //get selected bundle system
+    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
+    if(selection.size() != 1){
+        return;
+    }
+    QModelIndex index = selection.at(0);
+
+    //get system id
+    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
+    if(id < 0){
+        return;
+    }
 
     //remove bundle system
+    emit this->removeBundleSystem(id);
+
+}
+
+/*!
+ * \brief MainWindow::on_action_RunBundle_triggered
+ */
+void MainWindow::on_action_RunBundle_triggered(){
+
+    //get selected bundle system
+    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
+    if(selection.size() != 1){
+        return;
+    }
+    QModelIndex index = selection.at(0);
+
+    //get system id
+    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
+    if(id < 0){
+        return;
+    }
+
+    //calculate bundle
+    emit this->runBundle(id);
+
+}
+
+/*!
+ * \brief MainWindow::on_pushButton_loadBundleTemplate_clicked
+ */
+void MainWindow::on_pushButton_loadBundleTemplate_clicked(){
+
+    //get selected bundle system
+    QModelIndexList bundleSelection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
+    if(bundleSelection.size() != 1){
+        return;
+    }
+    QModelIndex index = bundleSelection.at(0);
+
+    //get system id
+    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
+    if(id < 0){
+        return;
+    }
+
+    //get selected bundle template
+    int templateIndex = this->ui->comboBox_bundleTemplate->currentIndex();
+    QJsonObject bundleTemplate = ModelManager::getBundleTemplatesModel().getBundleTemplate(templateIndex);
+    if(bundleTemplate.isEmpty()){
+        return;
+    }
+
+    emit this->loadBundleTemplate(id, bundleTemplate);
 
 }
 
@@ -1646,6 +1714,29 @@ void MainWindow::updateStatusBar(){
 }
 
 /*!
+ * \brief MainWindow::bundleSelectionChanged
+ */
+void MainWindow::bundleSelectionChanged(){
+
+    qDebug() << "bundle changed";
+
+    //get selection
+    QItemSelection selection = this->ui->listView_bundle->selectionModel()->selection();
+
+    //update visibility depending on current selection
+    if(selection.size() != 1){
+        this->ui->tabWidget_bundle->setEnabled(false);
+        this->ui->pushButton_removeBundle->setEnabled(false);
+        this->ui->pushButton_runBundle->setEnabled(false);
+    }else{
+        this->ui->tabWidget_bundle->setEnabled(true);
+        this->ui->pushButton_removeBundle->setEnabled(true);
+        this->ui->pushButton_runBundle->setEnabled(true);
+    }
+
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -1668,6 +1759,8 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::removeActiveStationSensor, &this->control, &Controller::removeActiveStationSensor, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::addBundleSystem, &this->control, &Controller::addBundleSystem, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeBundleSystem, &this->control, &Controller::removeBundleSystem, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::loadBundleTemplate, &this->control, &Controller::loadBundleTemplate, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::runBundle, &this->control, &Controller::runBundle, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -1759,6 +1852,19 @@ void MainWindow::connectStatusBar(){
 }
 
 /*!
+ * \brief MainWindow::connectBundleView
+ */
+void MainWindow::connectBundleView(){
+
+    //connect bundle selection
+    QObject::connect(this->ui->listView_bundle->selectionModel(), &QItemSelectionModel::selectionChanged,
+                     this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
+    QObject::connect(&ModelManager::getBundleSystemsModel(), &BundleSystemsModel::layoutChanged,
+                     this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
+
+}
+
+/*!
  * \brief MainWindow::assignModels
  * Assign the models of ModelManager to GUI-elements in MainWindow
  */
@@ -1784,8 +1890,9 @@ void MainWindow::assignModels(){
     //assign actual nominal filter model
     this->ui->comboBox_actualNominal->setModel(&ModelManager::getActualNominalFilterModel());
 
-    //assign bundle system model
+    //assign bundle models
     this->ui->listView_bundle->setModel(&ModelManager::getBundleSystemsModel());
+    this->ui->comboBox_bundleTemplate->setModel(&ModelManager::getBundleTemplatesModel());
 
 }
 
@@ -1966,6 +2073,22 @@ void MainWindow::initStatusBar(){
 
     //show initial status
     this->updateStatusBar();
+
+}
+
+/*!
+ * \brief MainWindow::initBundleTemplates
+ */
+void MainWindow::initBundleTemplates(){
+
+    //load bundle templates
+    ModelManager::getBundleTemplatesModel().loadTemplates();
+    this->ui->comboBox_bundleTemplate->setCurrentIndex(0);
+
+    //set initial visibility
+    this->ui->tabWidget_bundle->setEnabled(false);
+    this->ui->pushButton_removeBundle->setEnabled(false);
+    this->ui->pushButton_runBundle->setEnabled(false);
 
 }
 

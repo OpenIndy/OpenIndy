@@ -54,6 +54,7 @@ ReadingTableColumnConfig ModelManager::readingTableColumnConfig;
 QStringListModel ModelManager::scalarEntityTypeNamesModel;
 QStringListModel ModelManager::actualNominalFilterModel;
 BundleSystemsModel ModelManager::bundleSystemsModel;
+BundleTemplatesModel ModelManager::bundleTemplatesModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -513,6 +514,14 @@ ReadingModel &ModelManager::getReadingModel(){
  */
 ReadingProxyModel &ModelManager::getReadingProxyModel(){
     return ModelManager::readingProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getBundleTemplatesModel
+ * \return
+ */
+BundleTemplatesModel &ModelManager::getBundleTemplatesModel(){
+    return ModelManager::bundleTemplatesModel;
 }
 
 /*!

@@ -98,6 +98,10 @@ public slots:
     void addBundleSystem();
     void removeBundleSystem(const int &id);
 
+    //load or calculate bundle
+    void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
+    void runBundle(const int &bundleId);
+
     //save or load a job
     void saveProject();
     void saveProject(const QString &fileName);
