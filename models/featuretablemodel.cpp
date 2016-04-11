@@ -76,6 +76,21 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         //return the color in which to display the feature at index.column()
         return this->getBackgroundValue(feature, columnIndex);
 
+    }else if(role == Qt::CheckStateRole && !feature->getGeometry().isNull()
+             && !feature->getGeometry()->getIsNominal()){
+
+        //get the display attribute
+        int attr = getFeatureDisplayAttributes().at(columnIndex);
+
+        //get common state
+        switch((FeatureDisplayAttributes)attr){
+        case eFeatureDisplayIsCommon:
+            if(feature->getGeometry()->getIsCommon()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
+        }
+
     }
 
     return QVariant();
@@ -200,8 +215,38 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
  * \return
  */
 Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
+
+    //get parent flags
     Qt::ItemFlags myFlags = QAbstractTableModel::flags(index);
-    return (myFlags | Qt::ItemIsEditable);
+
+    //get display attribute
+    int rowIndex = index.row();
+    int columnIndex = index.column();
+    int attr = getFeatureDisplayAttributes().at(columnIndex);
+    FeatureDisplayAttributes fAttr = (FeatureDisplayAttributes)attr;
+
+    //get the feature to display at index.row()
+    if(this->currentJob->getFeatureCount() <= rowIndex){
+        return myFlags;
+    }
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeaturesList().at(rowIndex);
+
+    //check the feature
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return myFlags;
+    }
+
+    //check display attribute
+    if(fAttr == eFeatureDisplayName || fAttr == eFeatureDisplayComment
+            || fAttr == eFeatureDisplayGroup){
+        return (myFlags | Qt::ItemIsEditable);
+    }else if(fAttr == eFeatureDisplayIsCommon && !feature->getGeometry().isNull()
+             && !feature->getGeometry()->getIsNominal()){
+        return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
+    }
+
+    return myFlags;
+
 }
 
 /*!
@@ -240,7 +285,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
     int attr = getFeatureDisplayAttributes().at(column);
 
     //if a non-trafo param feature has been edited
-    if(getIsFeatureDisplayAttribute(attr)){
+    if(getIsFeatureDisplayAttribute(attr) && role == Qt::DisplayRole){
 
         switch((FeatureDisplayAttributes)attr){
         case eFeatureDisplayName:{
@@ -291,7 +336,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         }
         }
 
-    }else if(getIsTrafoParamDisplayAttribute(attr)){
+    }else if(getIsTrafoParamDisplayAttribute(attr) && role == Qt::DisplayRole){
 
         switch((TrafoParamDisplayAttributes)attr){
         case eTrafoParamDisplayName:{
@@ -331,6 +376,15 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             }
         }
         }
+
+    }else if(!feature->getGeometry().isNull() && role == Qt::CheckStateRole){
+
+        switch((FeatureDisplayAttributes)attr){
+        case eFeatureDisplayIsCommon:{
+            bool isCommon = value.toBool();
+            feature->getGeometry()->setCommonState(isCommon);
+            break;
+        }}
 
     }
 
@@ -963,6 +1017,7 @@ void FeatureTableModel::connectJob(){
     QObject::connect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::geometryIsCommonChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
 
 }
 
@@ -980,5 +1035,6 @@ void FeatureTableModel::disconnectJob(){
     QObject::disconnect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::geometryIsCommonChanged, this, &FeatureTableModel::updateModel);
 
 }

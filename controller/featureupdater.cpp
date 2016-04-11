@@ -175,6 +175,28 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
 }
 
 /*!
+ * \brief FeatureUpdater::recalcBundle
+ * \param bundleSystem
+ */
+void FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem){
+
+    //check bundle system
+
+    //clear old bundle results
+
+    //collect all common points
+
+    //set up bundle input
+
+    //calculate bundle
+
+    //save bundle results
+
+    //recalculate all features
+
+}
+
+/*!
  * \brief FeatureUpdater::switchCoordinateSystem
  * Does all recalculation steps necessary when the active coordinate system has changed
  */

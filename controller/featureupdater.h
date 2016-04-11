@@ -59,6 +59,7 @@ public slots:
     void recalcFeatureSet();
     void recalcFeature(const QPointer<Feature> &feature);
     void recalcTrafoParam(const QPointer<TrafoParam> &trafoParam);
+    void recalcBundle(const QPointer<CoordinateSystem> &bundleSystem);
 
     //change the active coordinate system (transforms all observations to the given coordinate system, if possible)
     void switchCoordinateSystem();

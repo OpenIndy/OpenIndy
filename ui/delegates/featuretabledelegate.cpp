@@ -93,24 +93,24 @@ void FeatureTableDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
     }
 
     //set editor default input for some columns
-    QLineEdit *customEditor = NULL;
+    QLineEdit *customLineEdit = NULL;
     switch((FeatureDisplayAttributes)attr){
     case eFeatureDisplayName:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            customEditor->setText(index.data().toString());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            customLineEdit->setText(index.data().toString());
         }
         break;
     case eFeatureDisplayComment:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            customEditor->setText(index.data().toString());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            customLineEdit->setText(index.data().toString());
         }
         break;
     case eFeatureDisplayGroup:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            customEditor->setText(index.data().toString());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            customLineEdit->setText(index.data().toString());
         }
         break;
     }
@@ -150,24 +150,24 @@ void FeatureTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *mod
     }
 
     //set editor default input for some columns
-    QLineEdit *customEditor = NULL;
+    QLineEdit *customLineEdit = NULL;
     switch((FeatureDisplayAttributes)attr){
     case eFeatureDisplayName:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customEditor->text());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text());
         }
         break;
     case eFeatureDisplayComment:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customEditor->text());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text());
         }
         break;
     case eFeatureDisplayGroup:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customEditor->text());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text());
         }
         break;
     }
