@@ -1,24 +1,35 @@
 #include "bundlegeometriesmodel.h"
 
-/*
-SettingsModel::SettingsModel(QObject *parent) : QAbstractItemModel(parent){
-    rootItem = new SettingsItem(eSettingsUndefined, "Einstellungsparameter");
+/*!
+ * \brief BundleGeometriesModel::BundleGeometriesModel
+ * \param parent
+ */
+BundleGeometriesModel::BundleGeometriesModel(QObject *parent) : QAbstractItemModel(parent){
+    this->rootItem = new BundleGeometryItem("geometries");
 }
 
-SettingsModel::~SettingsModel(){
-    delete rootItem;
+/*!
+ * \brief BundleGeometriesModel::~BundleGeometriesModel
+ */
+BundleGeometriesModel::~BundleGeometriesModel(){
+    delete this->rootItem;
 }
 
-int SettingsModel::rowCount(const QModelIndex &parent) const{
+/*!
+ * \brief BundleGeometriesModel::rowCount
+ * \param parent
+ * \return
+ */
+int BundleGeometriesModel::rowCount(const QModelIndex &parent) const{
 
-    SettingsItem *parentItem;
+    BundleGeometryItem *parentItem;
     if(parent.column() > 0)
         return 0;
 
     if(!parent.isValid())
         parentItem = rootItem;
     else
-        parentItem = static_cast<SettingsItem*>(parent.internalPointer());
+        parentItem = static_cast<BundleGeometryItem*>(parent.internalPointer());
 
     //check parent item
     if(!parentItem)
@@ -28,13 +39,18 @@ int SettingsModel::rowCount(const QModelIndex &parent) const{
 
 }
 
-int SettingsModel::columnCount(const QModelIndex &parent) const{
+/*!
+ * \brief BundleGeometriesModel::columnCount
+ * \param parent
+ * \return
+ */
+int BundleGeometriesModel::columnCount(const QModelIndex &parent) const{
 
     if(parent.isValid()){
 
         //get and check item
-        SettingsItem *item;
-        item = static_cast<SettingsItem*>(parent.internalPointer());
+        BundleGeometryItem *item;
+        item = static_cast<BundleGeometryItem*>(parent.internalPointer());
         if(!item)
             return 0;
 
@@ -43,137 +59,93 @@ int SettingsModel::columnCount(const QModelIndex &parent) const{
     }else{
         return rootItem->columnCount();
     }
+
 }
 
-QVariant SettingsModel::data(const QModelIndex &index, int role) const{
+/*!
+ * \brief BundleGeometriesModel::data
+ * \param index
+ * \param role
+ * \return
+ */
+QVariant BundleGeometriesModel::data(const QModelIndex &index, int role) const{
 
     if(!index.isValid()){
         return QVariant();
     }
 
     //get and check item
-    SettingsItem *item = static_cast<SettingsItem*>(index.internalPointer());
+    BundleGeometryItem *item = static_cast<BundleGeometryItem*>(index.internalPointer());
     if(!item)
         return QVariant();
 
-    if(role == Qt::DisplayRole){
-        return item->data(index.column());
-    }else if(role == Qt::BackgroundRole){
-
-        if(item->parentItem() == rootItem){
-            return QColor(QColor::fromCmykF(0.25, 0.0, 0.09, 0.29));
-        }
-        if(item->getKey() == eSettingsColorWarning && index.column() == 1){
-            return QColor(item->getValue().toString());
-        }
-
-    }else if(role == Qt::FontRole){
-
-        if(item->getKey() == eSettingsUndefined && index.column() == 0){
-            return QFont("Times", 9, QFont::Bold);
-        }
-
+    int columnIndex = index.column();
+    if(role == Qt::DisplayRole && columnIndex == 0){
+        return item->data(columnIndex);
     }
 
     return QVariant();
 
 }
 
-QVariant SettingsModel::headerData(int section, Qt::Orientation orientation, int role) const{
-
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-        return rootItem->data(section);
-
+/*!
+ * \brief BundleGeometriesModel::headerData
+ * \param section
+ * \param orientation
+ * \param role
+ * \return
+ */
+QVariant BundleGeometriesModel::headerData(int section, Qt::Orientation orientation, int role) const{
+    if (orientation == Qt::Horizontal && section == 0 && role == Qt::DisplayRole)
+        return "geometries";
     return QVariant();
-
 }
 
-Qt::ItemFlags SettingsModel::flags(const QModelIndex &index) const{
+/*!
+ * \brief BundleGeometriesModel::flags
+ * \param index
+ * \return
+ */
+Qt::ItemFlags BundleGeometriesModel::flags(const QModelIndex &index) const{
     Qt::ItemFlags myFlags = QAbstractItemModel::flags(index);
-    return (myFlags | Qt::ItemIsEditable);
+    return myFlags;
 }
 
-bool SettingsModel::setData(const QModelIndex & index, const QVariant & value, int role){
-
+/*!
+ * \brief BundleGeometriesModel::setData
+ * \param index
+ * \param value
+ * \param role
+ * \return
+ */
+bool BundleGeometriesModel::setData(const QModelIndex & index, const QVariant & value, int role){
     if(!index.isValid()){
         return false;
     }
-
-    //get and check item
-    SettingsItem *item = static_cast<SettingsItem*>(index.internalPointer());
-    if(!item)
-        return false;
-
-    // get & set item
-    SettingTypes sType = item->getKey();
-    item->setValue(value);
-
-    //get value from editor for the model
-    switch(sType){
-    case eSettingsCloseProgramAfterMeasurement:
-        return this->updateGeneralSetting(item);
-    case eSettingsTakeMeasurementTaskFromProDat:
-        return this->updateGeneralSetting(item);
-    case eSettingsDeinitializeTrackerAfterMeasurement:
-        return this->updateGeneralSetting(item);
-    case eSettingsOnlySaveCompleteMeasurement:
-        return this->updateGeneralSetting(item);
-    case eSettingsInterpolatedPointCount:
-        return this->updateGeneralSetting(item);
-    case eSettingsSizeIcons:
-        return this->updateVisualSetting(item);
-    case eSettingsSizeFont:
-        return this->updateVisualSetting(item);
-    case eSettingsDefaultSize:
-        return this->updateVisualSetting(item);
-    case eSettingsColorWarning:
-        return this->updateVisualSetting(item);
-    case eSettingsArchive:
-        return this->updateProDatSetting(item);
-    case eSettingsPathArchiveDir:
-        return this->updateProDatSetting(item);
-    case eSettingsNameInputFile:
-        return this->updateProDatSetting(item);
-    case eSettingsPathInputDir:
-        return this->updateProDatSetting(item);
-    case eSettingsNameOutputFile:
-        return this->updateProDatSetting(item);
-    case eSettingsPathOutputDir:
-        return this->updateProDatSetting(item);
-    case eSettingsTrackerType:
-        return this->updateSensorSetting(item);
-    case eSettingsIp:
-        return this->updateSensorSetting(item);
-    case eSettingsProbe:
-        return this->updateSensorSetting(item);
-    case eSettingsScanFrequency:
-        return this->updateMeasurementSetting(item);
-    case eSettingsScanDelta:
-        return this->updateMeasurementSetting(item);
-    case eSettingsSinglePointFrequency:
-        return this->updateMeasurementSetting(item);
-    default:
-        return false;
-    }
-
-    return true;
-
+    return false;
 }
 
-QModelIndex SettingsModel::index(int row, int column, const QModelIndex &parent) const{
+/*!
+ * \brief BundleGeometriesModel::index
+ * \param row
+ * \param column
+ * \param parent
+ * \return
+ */
+QModelIndex BundleGeometriesModel::index(int row, int column, const QModelIndex &parent) const{
 
     if(!hasIndex(row, column, parent)){
         return QModelIndex();
     }
 
-    SettingsItem *parentItem;
+    BundleGeometryItem *parentItem;
     if(!parent.isValid()){
         parentItem = this->rootItem;
     }else{
-        parentItem = static_cast<SettingsItem*>(parent.internalPointer());
+        parentItem = static_cast<BundleGeometryItem*>(parent.internalPointer());
     }
 
-    SettingsItem *childItem = parentItem->child(row);
+    BundleGeometryItem *childItem = parentItem->child(row);
     if(childItem){
         return createIndex(row, column, childItem);
     }else{
@@ -182,16 +154,21 @@ QModelIndex SettingsModel::index(int row, int column, const QModelIndex &parent)
 
 }
 
-QModelIndex SettingsModel::parent(const QModelIndex &index) const{
+/*!
+ * \brief BundleGeometriesModel::parent
+ * \param index
+ * \return
+ */
+QModelIndex BundleGeometriesModel::parent(const QModelIndex &index) const{
 
     if(!index.isValid())
         return QModelIndex();
 
-    SettingsItem *childItem = static_cast<SettingsItem*>(index.internalPointer());
+    BundleGeometryItem *childItem = static_cast<BundleGeometryItem*>(index.internalPointer());
     if(!childItem)
         return QModelIndex();
 
-    SettingsItem *parentItem = childItem->parentItem();
+    BundleGeometryItem *parentItem = childItem->parentItem();
     if(parentItem == rootItem || !parentItem)
         return QModelIndex();
 
@@ -199,7 +176,135 @@ QModelIndex SettingsModel::parent(const QModelIndex &index) const{
 
 }
 
-void SettingsModel::updateModel(){
+/*!
+ * \brief BundleGeometriesModel::getCurrentJob
+ * \return
+ */
+const QPointer<oi::OiJob> &BundleGeometriesModel::getCurrentJob() const{
+    return this->currentJob;
+}
+
+/*!
+ * \brief BundleGeometriesModel::setCurrentJob
+ * \param job
+ */
+void BundleGeometriesModel::setCurrentJob(const QPointer<oi::OiJob> &job){
+
+    //disconnect old job
+    this->disconnectJob();
+
+    //set up new job
+    this->currentJob = job;
+    this->connectJob();
+
+    this->updateModel();
+
+}
+
+/*!
+ * \brief BundleGeometriesModel::getStations
+ * \return
+ */
+const QJsonArray &BundleGeometriesModel::getStations(){
+    return this->usedStations;
+}
+
+/*!
+ * \brief BundleGeometriesModel::setStations
+ * \param stations
+ */
+void BundleGeometriesModel::setStations(const QJsonArray &stations){
+    this->usedStations = stations;
+    this->updateModel();
+}
+
+/*!
+ * \brief BundleGeometriesModel::updateModel
+ */
+void BundleGeometriesModel::updateModel(){
+
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    emit this->beginResetModel();
+
+    //remove current items
+    this->rootItem->removeAllChildren();
+
+    //iterate over used stations
+    for(int i = 0; i < this->usedStations.size(); i++){
+
+        //get and check station
+        QJsonObject station = this->usedStations.at(i).toObject();
+        if(station.isEmpty()){
+            continue;
+        }
+
+        //get station id
+        int id = station.value("id").toInt();
+
+        //get and check station
+        QPointer<oi::FeatureWrapper> feature = this->currentJob->getFeatureById(id);
+        if(feature.isNull() || feature->getStation().isNull()){
+            continue;
+        }
+        QString name = feature->getStation()->getFeatureName();
+
+        //create station item
+        BundleGeometryItem *stationItem = new BundleGeometryItem(name);
+
+        //get target geometries
+        QList<QPointer<oi::Geometry> > geometries = feature->getStation()->getTargetGeometries();
+        foreach(const QPointer<oi::Geometry> &geom, geometries){
+            if(!geom.isNull() && geom->getIsCommon()){
+                BundleGeometryItem *geomItem = new BundleGeometryItem(geom->getFeatureName());
+                stationItem->appendChild(geomItem);
+            }
+        }
+
+        //add station item
+        this->rootItem->appendChild(stationItem);
+
+    }
+
+    emit this->endResetModel();
+
+    //update layout
     emit this->layoutAboutToBeChanged();
     emit this->layoutChanged();
-}*/
+
+}
+
+/*!
+ * \brief BundleGeometriesModel::connectJob
+ */
+void BundleGeometriesModel::connectJob(){
+
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    QObject::connect(this->currentJob, &oi::OiJob::featureSetChanged, this, &BundleGeometriesModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob, &oi::OiJob::featureNameChanged, this, &BundleGeometriesModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob, &oi::OiJob::geometryIsCommonChanged, this, &BundleGeometriesModel::updateModel, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief BundleGeometriesModel::disconnectJob
+ */
+void BundleGeometriesModel::disconnectJob(){
+
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    QObject::disconnect(this->currentJob, &oi::OiJob::featureSetChanged, this, &BundleGeometriesModel::updateModel);
+    QObject::disconnect(this->currentJob, &oi::OiJob::featureNameChanged, this, &BundleGeometriesModel::updateModel);
+    QObject::disconnect(this->currentJob, &oi::OiJob::geometryIsCommonChanged, this, &BundleGeometriesModel::updateModel);
+
+}

@@ -285,7 +285,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
     int attr = getFeatureDisplayAttributes().at(column);
 
     //if a non-trafo param feature has been edited
-    if(getIsFeatureDisplayAttribute(attr) && role == Qt::DisplayRole){
+    if(getIsFeatureDisplayAttribute(attr) && role == Qt::EditRole){
 
         switch((FeatureDisplayAttributes)attr){
         case eFeatureDisplayName:{
@@ -336,7 +336,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         }
         }
 
-    }else if(getIsTrafoParamDisplayAttribute(attr) && role == Qt::DisplayRole){
+    }else if(getIsTrafoParamDisplayAttribute(attr) && role == Qt::EditRole){
 
         switch((TrafoParamDisplayAttributes)attr){
         case eTrafoParamDisplayName:{

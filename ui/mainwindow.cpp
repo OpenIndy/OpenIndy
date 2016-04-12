@@ -320,6 +320,9 @@ void MainWindow::currentJobChanged(){
     if(!this->bundleStationsModel.isNull()){
         this->bundleStationsModel->setCurrentJob(ModelManager::getCurrentJob());
     }
+    if(!this->bundleGeometriesModel.isNull()){
+        this->bundleGeometriesModel->setCurrentJob(ModelManager::getCurrentJob());
+    }
 
 }
 
@@ -1806,13 +1809,15 @@ void MainWindow::bundleSelectionChanged(){
     this->bundleStationsModel->setStations(inputStations);
 
     //set up input geometries
+    this->ui->treeView_inputGeometries->setEnabled(true);
+    this->bundleGeometriesModel->setStations(inputStations);
 
     //set up result
 
 }
 
 /*!
- * \brief MainWindow::bundeSettingsChanged
+ * \brief MainWindow::bundleSettingsChanged
  * Is called whenever the settings of a bundle have changed
  */
 void MainWindow::bundleSettingsChanged(){
@@ -1864,7 +1869,11 @@ void MainWindow::bundleSettingsChanged(){
     param.insert("stringParameter", stringParameter);
 
     //set up input stations
-    param.insert("inputStations", this->bundleStationsModel->getStations());
+    QJsonArray stations = this->bundleStationsModel->getStations();
+    param.insert("inputStations", stations);
+
+    //update bundle geometries model
+    this->bundleGeometriesModel->setStations(stations);
 
     emit this->updateBundleAdjustment(id, param);
 
@@ -2039,6 +2048,9 @@ void MainWindow::assignModels(){
     this->bundleStationsModel = ModelManager::getBundleStationsModel(this);
     this->bundleStationsModel->setCurrentJob(ModelManager::getCurrentJob());
     this->ui->treeView_inputStations->setModel(this->bundleStationsModel);
+    this->bundleGeometriesModel = ModelManager::getBundleGeometriesModel(this);
+    this->bundleGeometriesModel->setCurrentJob(ModelManager::getCurrentJob());
+    this->ui->treeView_inputGeometries->setModel(this->bundleGeometriesModel);
 
 }
 
@@ -2498,5 +2510,7 @@ void MainWindow::resetBundleView(){
                      this, &MainWindow::bundleSettingsChanged, Qt::AutoConnection);
 
     //reset input geometries
+    this->bundleGeometriesModel->setStations(stations);
+    this->ui->treeView_inputGeometries->setEnabled(false);
 
 }

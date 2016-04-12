@@ -12,7 +12,7 @@ BundleStationsModel::BundleStationsModel(QObject *parent) : QAbstractItemModel(p
  * \brief BundleStationsModel::~BundleStationsModel
  */
 BundleStationsModel::~BundleStationsModel(){
-    delete rootItem;
+    delete this->rootItem;
 }
 
 /*!

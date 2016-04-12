@@ -4,8 +4,10 @@
 #include <QAbstractTableModel>
 #include <QAbstractItemModel>
 #include <QObject>
-#include <QColor>
-#include <QDebug>
+#include <QJsonObject>
+#include <QJsonArray>
+
+#include "oijob.h"
 
 #include "bundlegeometryitem.h"
 
@@ -13,7 +15,7 @@
  * \brief The BundleGeometriesModel class
  * Model with all bundle geometries
  */
-/*class BundleGeometriesModel : public QAbstractItemModel
+class BundleGeometriesModel : public QAbstractItemModel
 {
     Q_OBJECT
 
@@ -40,17 +42,13 @@ public:
     //getter / setter
     //###############
 
-    void setTrackerSettings(const ebk::core::TrackerSettings &trackerSettings);
-    const ebk::core::TrackerSettings &getTrackerSettings();
+    //job
+    const QPointer<oi::OiJob> &getCurrentJob() const;
+    void setCurrentJob(const QPointer<oi::OiJob> &job);
 
-    void setGeneralSettings(const GeneralSettings &settings);
-    const GeneralSettings &getGeneralSettings();
-
-    void setVisualSettings(const VisualizationSettings &settings);
-    const VisualizationSettings &getVisualSettings();
-
-    void setProDatSettings(const ebk::core::ProDatSettings &settings);
-    const ebk::core::ProDatSettings &getProDatSettings();
+    //stations
+    const QJsonArray &getStations();
+    void setStations(const QJsonArray &stations);
 
 private slots:
 
@@ -62,39 +60,25 @@ private slots:
 
 private:
 
-    //############################
-    //helper methods (set up data)
-    //############################
+    //##############
+    //helper methods
+    //##############
 
-    void setupModelData(SettingsItem *parent);
-    void setupModelTracker(SettingsItem *parent);
-    void setupModelMeasurement(SettingsItem *parent);
-    void setupGeneralSettings(SettingsItem *parent);
-    void setupVisualSettings(SettingsItem *parent);
-    void setupProDatSettings(SettingsItem *parent);
-
-    //########
-    //settings
-    //########
-
-    ebk::core::TrackerSettings tracker;
-    GeneralSettings generalSettings;
-    VisualizationSettings visualSettings;
-    ebk::core::ProDatSettings proDatSettings;
-
-    bool updateSensorSetting(SettingsItem *item);
-    bool updateMeasurementSetting(SettingsItem *item);
-    bool updateGeneralSetting(SettingsItem *item);
-    bool updateVisualSetting(SettingsItem *item);
-    bool updateProDatSetting(SettingsItem *item);
+    void connectJob();
+    void disconnectJob();
 
     //#################
     //helper attributes
     //#################
 
-    SettingsItem *rootItem;
+    //root item and job
+    BundleGeometryItem *rootItem;
+    QPointer<oi::OiJob> currentJob;
+
+    //used stations
+    QJsonArray usedStations;
 
 
-};*/
+};
 
 #endif // BUNDLEGEOMETRIESMODEL_H

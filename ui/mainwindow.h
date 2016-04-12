@@ -383,6 +383,7 @@ private:
     //######
 
     QPointer<BundleStationsModel> bundleStationsModel;
+    QPointer<BundleGeometriesModel> bundleGeometriesModel;
 
     //#################
     //helper attributes

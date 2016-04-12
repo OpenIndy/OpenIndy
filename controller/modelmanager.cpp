@@ -732,6 +732,16 @@ QPointer<BundleStationsModel> ModelManager::getBundleStationsModel(QObject *pare
 }
 
 /*!
+ * \brief ModelManager::getBundleGeometriesModel
+ * \param parent
+ * \return
+ */
+QPointer<BundleGeometriesModel> ModelManager::getBundleGeometriesModel(QObject *parent){
+    QPointer<BundleGeometriesModel> model = new BundleGeometriesModel(parent);
+    return model;
+}
+
+/*!
  * \brief ModelManager::featureSetChanged
  */
 void ModelManager::featureSetChanged(){

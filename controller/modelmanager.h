@@ -45,6 +45,7 @@
 #include "bundlesystemsmodel.h"
 #include "bundletemplatesmodel.h"
 #include "bundlestationsmodel.h"
+#include "bundlegeometriesmodel.h"
 
 using namespace oi;
 
@@ -210,6 +211,7 @@ public:
 
     //bundle models
     static QPointer<BundleStationsModel> getBundleStationsModel(QObject *parent = NULL);
+    static QPointer<BundleGeometriesModel> getBundleGeometriesModel(QObject *parent = NULL);
 
 private slots:
 
