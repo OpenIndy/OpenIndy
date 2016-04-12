@@ -26,15 +26,46 @@
           <name>%Bundle%</name>
           <pluginName>%OiSigma3D%</pluginName>
         </plugin>
-        <maxIterations>%100%</maxIterations>
         <name>%string%</name>
+        <inputStations>
+          <station tx="%true%" ty="%true%" tz="%true%" rx="%true%" ry="%true%" rz="%true%" m="%true%" used="%true%" id="%12345%">%string%</station>
+        </inputStations>
+        <integerParameter>
+          <parameter name="%string%">%12345%</parameter>
+        </integerParameter>
+        <doubleParameter>
+          <parameter name="%string%">%1111.0000%</parameter>
+        </doubleParameter>
+        <stringParameter>
+          <parameter name="%string%">%string%</parameter>
+        </stringParameter>
       </JSONRoot>
     </as:Structure>
   </as:AssemblyStructure>
   <as:BusinessUseContext>
     <as:Rules>
       <as:default>
-        <as:context />
+        <as:context>
+          <as:constraint action="makeOptional(//JSONRoot/doubleParameter)" />
+          <as:constraint action="makeOptional(//JSONRoot/inputStations)" />
+          <as:constraint action="makeOptional(//JSONRoot/integerParameter)" />
+          <as:constraint action="makeOptional(//JSONRoot/stringParameter)" />
+          <as:constraint action="makeRepeatable(//doubleParameter/parameter)" />
+          <as:constraint action="setNumberMask(//doubleParameter/parameter,######.####)" />
+          <as:constraint action="makeRepeatable(//inputStations/station)" />
+          <as:constraint action="makeRepeatable(//integerParameter/parameter)" />
+          <as:constraint action="setNumberMask(//integerParameter/parameter,#######)" />
+          <as:constraint action="setNumberMask(//station/@id,#######)" />
+          <as:constraint action="datatype(//station/@m,boolean)" />
+          <as:constraint action="datatype(//station/@rx,boolean)" />
+          <as:constraint action="datatype(//station/@ry,boolean)" />
+          <as:constraint action="datatype(//station/@rz,boolean)" />
+          <as:constraint action="datatype(//station/@tx,boolean)" />
+          <as:constraint action="datatype(//station/@ty,boolean)" />
+          <as:constraint action="datatype(//station/@tz,boolean)" />
+          <as:constraint action="datatype(//station/@used,boolean)" />
+          <as:constraint action="makeRepeatable(//stringParameter/parameter)" />
+        </as:context>
       </as:default>
     </as:Rules>
   </as:BusinessUseContext>

@@ -99,6 +99,9 @@ public slots:
     void removeBundleSystem(const int &id);
 
     //load or calculate bundle
+    QJsonObject getBundleTemplate(const int &bundleId);
+    QPointer<BundleAdjustment> getBundleAdjustment(const int &bundleId);
+    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
     void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
     void runBundle(const int &bundleId);
 

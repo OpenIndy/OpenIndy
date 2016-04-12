@@ -127,7 +127,11 @@ SOURCES += \
     $$PWD/../ui/delegates/sensoraccuracydelegate.cpp \
     $$PWD/../ui/delegates/sensorparametersdelegate.cpp \
     $$PWD/../models/bundlesystemsmodel.cpp \
-    ../models/bundletemplatesmodel.cpp
+    $$PWD/../models/bundletemplatesmodel.cpp \
+    $$PWD/../models/treeitems/bundlegeometryitem.cpp \
+    $$PWD/../models/treeitems/bundlestationitem.cpp \
+    $$PWD/../models/bundlegeometriesmodel.cpp \
+    $$PWD/../models/bundlestationsmodel.cpp
 
 # header files
 HEADERS  += \
@@ -216,7 +220,11 @@ HEADERS  += \
     $$PWD/../ui/delegates/sensoraccuracydelegate.h \
     $$PWD/../ui/delegates/sensorparametersdelegate.h \
     $$PWD/../models/bundlesystemsmodel.h \
-    ../models/bundletemplatesmodel.h
+    $$PWD/../models/bundletemplatesmodel.h \
+    $$PWD/../models/treeitems/bundlegeometryitem.h \
+    $$PWD/../models/treeitems/bundlestationitem.h \
+    $$PWD/../models/bundlegeometriesmodel.h \
+    $$PWD/../models/bundlestationsmodel.h
 
 # ui files
 FORMS    += \

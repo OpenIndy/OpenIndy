@@ -191,7 +191,7 @@ background-position: center center;</string>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <widget class="QWidget" name="">
+            <widget class="QWidget" name="layoutWidget">
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -331,9 +331,36 @@ background-position: center center;</string>
                   </layout>
                  </item>
                  <item>
-                  <widget class="QWidget" name="widget" native="true"/>
+                  <layout class="QHBoxLayout" name="horizontalLayout_6">
+                   <item>
+                    <widget class="QWidget" name="widget_bundleParameters" native="true"/>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_6">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_bundleInputStations">
+              <attribute name="title">
+               <string>input stations</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_6">
+               <item row="0" column="0">
+                <widget class="QTreeView" name="treeView_inputStations"/>
                </item>
               </layout>
              </widget>
@@ -341,11 +368,11 @@ background-position: center center;</string>
               <attribute name="title">
                <string>input geometries</string>
               </attribute>
-             </widget>
-             <widget class="QWidget" name="tab_bundleInputStations">
-              <attribute name="title">
-               <string>input stations</string>
-              </attribute>
+              <layout class="QGridLayout" name="gridLayout_7">
+               <item row="0" column="0">
+                <widget class="QTreeView" name="treeView_inputGeometries"/>
+               </item>
+              </layout>
              </widget>
              <widget class="QWidget" name="tab_bundleResults">
               <attribute name="title">

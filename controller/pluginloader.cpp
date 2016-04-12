@@ -210,6 +210,9 @@ QPointer<BundleAdjustment> PluginLoader::loadBundleAdjustmentPlugin(const QStrin
     if(plugin){
         Plugin *bundleAdjustmentFactory = qobject_cast<Plugin *>(plugin);
         bundleAdjustment = bundleAdjustmentFactory->createBundleAdjustment(name);
+        if(!bundleAdjustment.isNull()){
+            bundleAdjustment->init();
+        }
     }else{
         emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected bundle adjustment: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
@@ -391,6 +394,11 @@ QList<QPointer<BundleAdjustment> > PluginLoader::loadBundleAdjustmentPlugins(con
     if(plugin){
         Plugin *bundleAdjustmentFactory = qobject_cast<Plugin *>(plugin);
         bundleAdjustmentList = bundleAdjustmentFactory->createBundleAdjustments();
+        foreach(const QPointer<BundleAdjustment> &bundle, bundleAdjustmentList){
+            if(!bundle.isNull()){
+                bundle->init();
+            }
+        }
     }else{
         emit PluginLoader::getInstance()->sendMessage(QString("Cannot load bundle adjustments: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }

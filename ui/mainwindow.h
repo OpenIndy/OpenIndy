@@ -36,6 +36,7 @@
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
+#include "bundlestationsmodel.h"
 
 using namespace oi;
 
@@ -94,6 +95,7 @@ signals:
     void removeBundleSystem(const int &bundleId);
 
     //load or calculate bundle
+    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
     void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
     void runBundle(const int &bundleId);
 
@@ -274,6 +276,7 @@ private slots:
 
     //update bundle view
     void bundleSelectionChanged();
+    void bundleSettingsChanged();
 
 private:
     Ui::MainWindow *ui;
@@ -301,24 +304,31 @@ private:
     void initToolMenus();
     void initFilterComboBoxes();
     void initStatusBar();
-    void initBundleTemplates();
+    void initBundleView();
 
     //##############################
     //methods to update GUI elements
     //##############################
 
+    //sensor type
     void activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
 
+    //magnify
     void updateMagnifyWindow(const QPointer<FeatureWrapper> &feature);
 
+    //filter
     void updateGroupFilterSize();
     void updateSystemFilterSize();
     void updateActualNominalFilterSize();
+
+    //bundle view
+    void resetBundleView();
 
     //############################
     //OpenIndy dialogs and widgets
     //############################
 
+    //dialogs
     CreateFeatureDialog createFeatureDialog;
     PluginLoaderDialog pluginLoaderDialog;
     ImportNominalDialog importNominalDialog;
@@ -336,6 +346,9 @@ private:
     TrafoParamPropertiesDialog trafoParamPropertiesDialog;
     AboutDialog aboutDialog;
     StationPropertiesDialog stationPropertiesDialog;
+
+    //widget with scalar input parameters
+    ScalarParameterWidget *bundleParameterWidget;
 
     //##########
     //sensor pad
@@ -364,6 +377,12 @@ private:
     QLabel *label_statusUnitAngular;
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
+
+    //######
+    //models
+    //######
+
+    QPointer<BundleStationsModel> bundleStationsModel;
 
     //#################
     //helper attributes

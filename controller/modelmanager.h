@@ -44,6 +44,7 @@
 #include "sensorparametersmodel.h"
 #include "bundlesystemsmodel.h"
 #include "bundletemplatesmodel.h"
+#include "bundlestationsmodel.h"
 
 using namespace oi;
 
@@ -206,6 +207,9 @@ public:
     static QPointer<SensorConfigurationProxyModel> getSensorConfigurationProxyModel(QPointer<SensorConfigurationModel> sourceModel);
     static QPointer<SensorAccuracyModel> getSensorAccuracyModel(QObject *parent = NULL);
     static QPointer<SensorParametersModel> getSensorParametersModel(QObject *parent = NULL);
+
+    //bundle models
+    static QPointer<BundleStationsModel> getBundleStationsModel(QObject *parent = NULL);
 
 private slots:
 

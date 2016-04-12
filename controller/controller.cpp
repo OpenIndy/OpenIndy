@@ -6,8 +6,6 @@
  */
 Controller::Controller(QObject *parent) : QObject(parent){
 
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
-
     //register meta types
     this->registerMetaTypes();
 
@@ -510,6 +508,133 @@ void Controller::removeBundleSystem(const int &id){
 }
 
 /*!
+ * \brief Controller::getBundleTemplate
+ * \param bundleId
+ * \return
+ */
+QJsonObject Controller::getBundleTemplate(const int &bundleId){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return QJsonObject();
+    }
+
+    //get and check feature
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
+    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
+        return QJsonObject();
+    }
+    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
+
+    return bundleSystem->getBundleTemplate();
+
+}
+
+/*!
+ * \brief Controller::getBundleAdjustment
+ * Returns the bundle plugin of the coordinate system defined by bundleId
+ * \param bundleId
+ * \return
+ */
+QPointer<oi::BundleAdjustment> Controller::getBundleAdjustment(const int &bundleId){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return QPointer<oi::BundleAdjustment>(NULL);
+    }
+
+    //get and check feature
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
+    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
+        return QPointer<oi::BundleAdjustment>(NULL);
+    }
+    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
+
+    return bundleSystem->getBundlePlugin();
+
+}
+
+/*!
+ * \brief Controller::updateBundleAdjustment
+ * Updates the bundle plugin of the coordinate system defined by bundleId
+ * \param bundleId
+ * \param param
+ */
+void Controller::updateBundleAdjustment(const int &bundleId, const QJsonObject &param){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get and check feature
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
+    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
+        return;
+    }
+    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
+
+    //get and check bundle plugin
+    QPointer<BundleAdjustment> bundlePlugin = bundleSystem->getBundlePlugin();
+    if(bundlePlugin.isNull()){
+        return;
+    }
+
+    //update scalar parameters
+    ScalarInputParams scalarParams;
+    QJsonArray params = param.value("integerParameter").toArray();
+    for(int i = 0; i < params.size(); i++){
+        QJsonObject intParam = params.at(i).toObject();
+        if(intParam.contains("name") && intParam.contains("value")){
+            scalarParams.intParameter.insert(intParam.value("name").toString(), intParam.value("value").toInt());
+        }
+    }
+    params = param.value("doubleParameter").toArray();
+    for(int i = 0; i < params.size(); i++){
+        QJsonObject doubleParam = params.at(i).toObject();
+        if(doubleParam.contains("name") && doubleParam.contains("value")){
+            scalarParams.doubleParameter.insert(doubleParam.value("name").toString(), doubleParam.value("value").toDouble());
+        }
+    }
+    params = param.value("stringParameter").toArray();
+    for(int i = 0; i < params.size(); i++){
+        QJsonObject stringParam = params.at(i).toObject();
+        if(stringParam.contains("name") && stringParam.contains("value")){
+            scalarParams.stringParameter.insert(stringParam.value("name").toString(), stringParam.value("value").toString());
+        }
+    }
+
+    //update input stations
+    QList<BundleStation> inputStations;
+    params = param.value("inputStations").toArray();
+    for(int i = 0; i < params.size(); i++){
+        QJsonObject station = params.at(i).toObject();
+        if(!station.contains("id") || !station.contains("used")
+                || !station.value("used").toBool()){
+            continue;
+        }
+        BundleStation bundleStation;
+        bundleStation.id = station.value("id").toInt();
+        bundleStation.tx = station.value("tx").toBool();
+        bundleStation.ty = station.value("ty").toBool();
+        bundleStation.tz = station.value("tz").toBool();
+        bundleStation.rx = station.value("rx").toBool();
+        bundleStation.ry = station.value("ry").toBool();
+        bundleStation.rz = station.value("rz").toBool();
+        bundleStation.m = station.value("m").toBool();
+        inputStations.append(bundleStation);
+    }
+
+    //set up input parameters
+    bundlePlugin->setScalarInputParams(scalarParams);
+    bundlePlugin->setInputStations(inputStations);
+
+}
+
+/*!
  * \brief Controller::loadBundleTemplate
  * \param bundleId
  * \param bundleTemplate
@@ -550,6 +675,7 @@ void Controller::loadBundleTemplate(const int &bundleId, const QJsonObject &bund
     }
 
     //set up bundle plugin
+    feature->getCoordinateSystem()->setBundleTemplate(bundleTemplate);
     feature->getCoordinateSystem()->setBundlePlugin(bundlePlugin);
 
     this->log(QString("Bundle template %1 loaded successfully").arg(bundleTemplate.value("name").toString()), eInformationMessage, eMessageBoxMessage);

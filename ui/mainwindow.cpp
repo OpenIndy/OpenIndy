@@ -20,16 +20,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //assign models of ModelManager to GUI-elements
     this->assignModels();
 
-    //connect bundle view
-    this->connectBundleView();
-
     //init GUI elements
     this->initFeatureTableViews();
     this->initSensorPad();
     this->initToolMenus();
     this->initFilterComboBoxes();
     this->initStatusBar();
-    this->initBundleTemplates();
+    this->initBundleView();
+
+    //connect bundle view
+    this->connectBundleView();
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -314,6 +314,11 @@ void MainWindow::currentJobChanged(){
         this->setWindowTitle(job->getJobName());
     }else{
         this->setWindowTitle("");
+    }
+
+    //pass job to models
+    if(!this->bundleStationsModel.isNull()){
+        this->bundleStationsModel->setCurrentJob(ModelManager::getCurrentJob());
     }
 
 }
@@ -1330,6 +1335,10 @@ void MainWindow::on_action_RunBundle_triggered(){
         return;
     }
 
+    //get selected bundle parameters
+    //TODO zu verwendende stations ermitteln
+    //TODO zu schätzende Parameter je station ermitteln
+
     //calculate bundle
     emit this->runBundle(id);
 
@@ -1360,7 +1369,9 @@ void MainWindow::on_pushButton_loadBundleTemplate_clicked(){
         return;
     }
 
+    //load template
     emit this->loadBundleTemplate(id, bundleTemplate);
+    this->bundleSelectionChanged();
 
 }
 
@@ -1715,24 +1726,147 @@ void MainWindow::updateStatusBar(){
 
 /*!
  * \brief MainWindow::bundleSelectionChanged
+ * Is called whenever another bundle is selected
  */
 void MainWindow::bundleSelectionChanged(){
 
-    qDebug() << "bundle changed";
+    //check job
+    if(ModelManager::getCurrentJob().isNull()){
+        return;
+    }
 
     //get selection
-    QItemSelection selection = this->ui->listView_bundle->selectionModel()->selection();
+    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
 
     //update visibility depending on current selection
     if(selection.size() != 1){
         this->ui->tabWidget_bundle->setEnabled(false);
         this->ui->pushButton_removeBundle->setEnabled(false);
         this->ui->pushButton_runBundle->setEnabled(false);
+        return;
     }else{
         this->ui->tabWidget_bundle->setEnabled(true);
         this->ui->pushButton_removeBundle->setEnabled(true);
         this->ui->pushButton_runBundle->setEnabled(true);
     }
+
+    //get system id
+    QModelIndex index = selection.at(0);
+    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
+    if(id < 0){
+        return;
+    }
+
+    //reset old parameters
+    this->resetBundleView();
+
+    //get and check bundle plugin and template
+    QJsonObject bundleTemplate = this->control.getBundleTemplate(id);
+    QPointer<BundleAdjustment> bundlePlugin = this->control.getBundleAdjustment(id);
+    if(bundlePlugin.isNull()){
+        return;
+    }
+
+    //set up scalar parameters
+    ScalarInputParams scalarParams = bundlePlugin->getScalarInputParams();
+    this->bundleParameterWidget->setEnabled(true);
+    this->bundleParameterWidget->setIntParameter(scalarParams.intParameter);
+    this->bundleParameterWidget->setDoubleParameter(scalarParams.doubleParameter);
+    this->bundleParameterWidget->setStringParameter(bundlePlugin->getStringParameter(), scalarParams.stringParameter);
+
+    //set up input stations
+    QJsonArray inputStations;
+    const QList<BundleStation> &stations = bundlePlugin->getInputStations();
+    foreach(const BundleStation &station, stations){
+
+        //get and check station
+        QPointer<FeatureWrapper> feature = ModelManager::getCurrentJob()->getFeatureById(station.id);
+        if(feature.isNull() || feature->getStation().isNull()){
+            continue;
+        }
+        QString name = feature->getStation()->getFeatureName();
+
+        //create json object
+        QJsonObject inputStation;
+        inputStation.insert("name", QJsonValue(name));
+        inputStation.insert("used", QJsonValue(true));
+        inputStation.insert("id", QJsonValue(station.id));
+        inputStation.insert("tx", QJsonValue(station.tx));
+        inputStation.insert("ty", QJsonValue(station.ty));
+        inputStation.insert("tz", QJsonValue(station.tz));
+        inputStation.insert("rx", QJsonValue(station.rx));
+        inputStation.insert("ry", QJsonValue(station.ry));
+        inputStation.insert("rz", QJsonValue(station.rz));
+        inputStation.insert("m", QJsonValue(station.m));
+        inputStations.append(inputStation);
+
+    }
+    this->ui->treeView_inputStations->setEnabled(true);
+    this->bundleStationsModel->setBundleTemplate(bundleTemplate);
+    this->bundleStationsModel->setStations(inputStations);
+
+    //set up input geometries
+
+    //set up result
+
+}
+
+/*!
+ * \brief MainWindow::bundeSettingsChanged
+ * Is called whenever the settings of a bundle have changed
+ */
+void MainWindow::bundleSettingsChanged(){
+
+    //get selection
+    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
+
+    //get system id
+    if(selection.size() != 1){
+        return;
+    }
+    QModelIndex index = selection.at(0);
+    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
+    if(id < 0){
+        return;
+    }
+
+    //create parameter object
+    QJsonObject param;
+
+    //set up scalar parameters
+    const QMap<QString, int> &intParams = this->bundleParameterWidget->getIntParameter();
+    const QMap<QString, double> &doubleParams = this->bundleParameterWidget->getDoubleParameter();
+    const QMap<QString, QString> &stringParams = this->bundleParameterWidget->getStringParameter();
+    QJsonArray integerParameter, doubleParameter, stringParameter;
+    QMap<QString, int>::ConstIterator intIterator;
+    for(intIterator = intParams.constBegin(); intIterator != intParams.constEnd(); intIterator++){
+        QJsonObject parameter;
+        parameter.insert("name", intIterator.key());
+        parameter.insert("value", intIterator.value());
+        integerParameter.append(parameter);
+    }
+    QMap<QString, double>::ConstIterator doubleIterator;
+    for(doubleIterator = doubleParams.constBegin(); doubleIterator != doubleParams.constEnd(); intIterator++){
+        QJsonObject parameter;
+        parameter.insert("name", doubleIterator.key());
+        parameter.insert("value", doubleIterator.value());
+        doubleParameter.append(parameter);
+    }
+    QMap<QString, QString>::ConstIterator stringIterator;
+    for(stringIterator = stringParams.constBegin(); stringIterator != stringParams.constEnd(); intIterator++){
+        QJsonObject parameter;
+        parameter.insert("name", stringIterator.key());
+        parameter.insert("value", stringIterator.value());
+        stringParameter.append(parameter);
+    }
+    param.insert("integerParameter", integerParameter);
+    param.insert("doubleParameter", doubleParameter);
+    param.insert("stringParameter", stringParameter);
+
+    //set up input stations
+    param.insert("inputStations", this->bundleStationsModel->getStations());
+
+    emit this->updateBundleAdjustment(id, param);
 
 }
 
@@ -1761,6 +1895,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::removeBundleSystem, &this->control, &Controller::removeBundleSystem, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::loadBundleTemplate, &this->control, &Controller::loadBundleTemplate, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::runBundle, &this->control, &Controller::runBundle, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -1862,6 +1997,14 @@ void MainWindow::connectBundleView(){
     QObject::connect(&ModelManager::getBundleSystemsModel(), &BundleSystemsModel::layoutChanged,
                      this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
 
+    //connect scalar parameters widget
+    QObject::connect(this->bundleParameterWidget, &ScalarParameterWidget::scalarParametersChanged,
+                     this, &MainWindow::bundleSettingsChanged, Qt::AutoConnection);
+
+    //connect input stations model
+    QObject::connect(this->bundleStationsModel, &BundleStationsModel::stationsChanged,
+                     this, &MainWindow::bundleSettingsChanged, Qt::AutoConnection);
+
 }
 
 /*!
@@ -1893,6 +2036,9 @@ void MainWindow::assignModels(){
     //assign bundle models
     this->ui->listView_bundle->setModel(&ModelManager::getBundleSystemsModel());
     this->ui->comboBox_bundleTemplate->setModel(&ModelManager::getBundleTemplatesModel());
+    this->bundleStationsModel = ModelManager::getBundleStationsModel(this);
+    this->bundleStationsModel->setCurrentJob(ModelManager::getCurrentJob());
+    this->ui->treeView_inputStations->setModel(this->bundleStationsModel);
 
 }
 
@@ -2077,9 +2223,9 @@ void MainWindow::initStatusBar(){
 }
 
 /*!
- * \brief MainWindow::initBundleTemplates
+ * \brief MainWindow::initBundleView
  */
-void MainWindow::initBundleTemplates(){
+void MainWindow::initBundleView(){
 
     //load bundle templates
     ModelManager::getBundleTemplatesModel().loadTemplates();
@@ -2089,6 +2235,12 @@ void MainWindow::initBundleTemplates(){
     this->ui->tabWidget_bundle->setEnabled(false);
     this->ui->pushButton_removeBundle->setEnabled(false);
     this->ui->pushButton_runBundle->setEnabled(false);
+
+    //init bundle parameter widget
+    QGridLayout *extraParameterLayout = new QGridLayout();
+    this->ui->widget_bundleParameters->setLayout(extraParameterLayout);
+    this->bundleParameterWidget = new ScalarParameterWidget();
+    extraParameterLayout->addWidget(this->bundleParameterWidget);
 
 }
 
@@ -2321,5 +2473,30 @@ void MainWindow::updateActualNominalFilterSize(){
 
     //update combobox width with respect to the largest item
     this->ui->comboBox_actualNominal->setMinimumContentsLength(largestFilter.length());
+
+}
+
+/*!
+ * \brief MainWindow::resetBundleView
+ * Resets the bundle view
+ */
+void MainWindow::resetBundleView(){
+
+    //reset scalar parameters
+    this->bundleParameterWidget->blockSignals(true);
+    this->bundleParameterWidget->clearAll();
+    this->bundleParameterWidget->setEnabled(false);
+    this->bundleParameterWidget->blockSignals(false);
+
+    //reset input stations
+    QJsonArray stations;
+    QObject::disconnect(this->bundleStationsModel, &BundleStationsModel::stationsChanged,
+                        this, &MainWindow::bundleSettingsChanged);
+    this->bundleStationsModel->setStations(stations);
+    this->ui->treeView_inputStations->setEnabled(false);
+    QObject::connect(this->bundleStationsModel, &BundleStationsModel::stationsChanged,
+                     this, &MainWindow::bundleSettingsChanged, Qt::AutoConnection);
+
+    //reset input geometries
 
 }

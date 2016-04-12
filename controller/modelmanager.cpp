@@ -705,6 +705,7 @@ QPointer<SensorAccuracyModel> ModelManager::getSensorAccuracyModel(QObject *pare
 
 /*!
  * \brief ModelManager::getSensorParametersModel
+ * \param parent
  * \return
  */
 QPointer<SensorParametersModel> ModelManager::getSensorParametersModel(QObject *parent){
@@ -718,6 +719,16 @@ QPointer<SensorParametersModel> ModelManager::getSensorParametersModel(QObject *
 
     return model;
 
+}
+
+/*!
+ * \brief ModelManager::getBundleStationsModel
+ * \param parent
+ * \return
+ */
+QPointer<BundleStationsModel> ModelManager::getBundleStationsModel(QObject *parent){
+    QPointer<BundleStationsModel> model = new BundleStationsModel(parent);
+    return model;
 }
 
 /*!
