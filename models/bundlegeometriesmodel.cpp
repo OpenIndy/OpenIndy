@@ -238,14 +238,14 @@ void BundleGeometriesModel::updateModel(){
 
         //get and check station
         QJsonObject station = this->usedStations.at(i).toObject();
-        if(station.isEmpty()){
+        if(station.isEmpty() || !station.value("used").toBool()){
             continue;
         }
 
         //get station id
         int id = station.value("id").toInt();
 
-        //get and check station
+        //get and check station feature
         QPointer<oi::FeatureWrapper> feature = this->currentJob->getFeatureById(id);
         if(feature.isNull() || feature->getStation().isNull()){
             continue;

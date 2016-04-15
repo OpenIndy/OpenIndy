@@ -167,6 +167,9 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
     //helper variable to ensure that the trafo chain contains a datum transformation
     bool datumTrafoInChain = false;
 
+    QString startSystemStr = startSystem->getFeatureName();
+    QString destSystemStr = destinationSystem->getFeatureName();
+
     //try to find a transformation chain
     foreach(const QPointer<TrafoParam> &tp, startSystem->getTransformationParameters()){
 
@@ -247,6 +250,8 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
             }
         }
     }
+
+    return false;
 
 }
 

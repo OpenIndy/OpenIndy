@@ -688,6 +688,33 @@ void Controller::loadBundleTemplate(const int &bundleId, const QJsonObject &bund
  */
 void Controller::runBundle(const int &bundleId){
 
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get bundle system
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
+    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
+        this->log(QString("No bundle system with id %1").arg(bundleId), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
+
+    //check bundle plugin
+    if(bundleSystem->getBundlePlugin().isNull()){
+        this->log(QString("No bundle plugin loaded for bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //calculate bundle adjustment
+    if(!this->featureUpdater.recalcBundle(bundleSystem)){
+        this->log(QString("Error when calculating bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+    this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
+
 }
 
 /*!

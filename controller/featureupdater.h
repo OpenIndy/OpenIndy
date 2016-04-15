@@ -59,7 +59,7 @@ public slots:
     void recalcFeatureSet();
     void recalcFeature(const QPointer<Feature> &feature);
     void recalcTrafoParam(const QPointer<TrafoParam> &trafoParam);
-    void recalcBundle(const QPointer<CoordinateSystem> &bundleSystem);
+    bool recalcBundle(const QPointer<CoordinateSystem> &bundleSystem);
 
     //change the active coordinate system (transforms all observations to the given coordinate system, if possible)
     void switchCoordinateSystem();
@@ -73,7 +73,7 @@ private:
     void connectJob();
     void disconnectJob();
 
-    //void setFeatureIsUpdated(const QPointer<Feature> &feature, bool isUpdated = false);
+    //recursive recalculation
     void recursiveFeatureRecalculation(const QPointer<Feature> &feature);
 
     //set up input elements for trafo param features
@@ -86,7 +86,14 @@ private:
     void recalcFeatureSetWithoutTransformation();
     void recalcFeatureWithoutTransformation(const QPointer<Feature> &feature);
 
+    //copy geometry
     void copyGeometry(InputElement &newElement, const QPointer<FeatureWrapper> &oldElement, const ElementTypes &type);
+
+    //clear or save bundle results
+    void clearBundleResults(const QPointer<CoordinateSystem> &bundleSystem);
+    void saveBundleResults(const QPointer<CoordinateSystem> &bundleSystem);
+    void createBundleGeometries(const QList<BundleGeometry> &geometries, const QPointer<CoordinateSystem> &bundleSystem);
+    void createBundleTransformations(QList<BundleTransformation> &transformations, const QPointer<CoordinateSystem> &bundleSystem);
 
     //##################
     //general attributes

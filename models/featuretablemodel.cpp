@@ -223,7 +223,6 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
     int rowIndex = index.row();
     int columnIndex = index.column();
     int attr = getFeatureDisplayAttributes().at(columnIndex);
-    FeatureDisplayAttributes fAttr = (FeatureDisplayAttributes)attr;
 
     //get the feature to display at index.row()
     if(this->currentJob->getFeatureCount() <= rowIndex){
@@ -236,13 +235,27 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
         return myFlags;
     }
 
-    //check display attribute
-    if(fAttr == eFeatureDisplayName || fAttr == eFeatureDisplayComment
-            || fAttr == eFeatureDisplayGroup){
-        return (myFlags | Qt::ItemIsEditable);
-    }else if(fAttr == eFeatureDisplayIsCommon && !feature->getGeometry().isNull()
-             && !feature->getGeometry()->getIsNominal()){
-        return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
+    if(getIsFeatureDisplayAttribute(attr)){
+
+        //get and check display attribute
+        FeatureDisplayAttributes fAttr = (FeatureDisplayAttributes)attr;
+        if(fAttr == eFeatureDisplayName || fAttr == eFeatureDisplayComment
+                || fAttr == eFeatureDisplayGroup){
+            return (myFlags | Qt::ItemIsEditable);
+        }else if(fAttr == eFeatureDisplayIsCommon && !feature->getGeometry().isNull()
+                 && !feature->getGeometry()->getIsNominal()){
+            return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
+        }
+
+    }else if(getIsTrafoParamDisplayAttribute(attr)){
+
+        //get and check display attribute
+        TrafoParamDisplayAttributes fAttr = (TrafoParamDisplayAttributes)attr;
+        if(fAttr == eTrafoParamDisplayIsUsed || fAttr == eTrafoParamDisplayIsMovement
+                || fAttr == eTrafoParamDisplayIsDatumTransformation){
+            return (myFlags | Qt::ItemIsEditable);
+        }
+
     }
 
     return myFlags;
