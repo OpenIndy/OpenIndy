@@ -374,6 +374,7 @@ void BundleStationsModel::updateModel(){
     }
 
     //add remaining stations
+    QJsonArray stationTemplate = this->bundleTemplate.value("parameters").toArray();
     QList<QPointer<oi::Station> > stations = this->currentJob->getStationsList();
     foreach(const QPointer<oi::Station> &station, stations){
 
@@ -396,7 +397,7 @@ void BundleStationsModel::updateModel(){
         QString name = station->getFeatureName();
 
         //create station items
-        BundleStationItem *stationItem = new BundleStationItem(name, false, id);
+        BundleStationItem *stationItem = new BundleStationItem(name, true, id);
         BundleStationItem *stationTx = new BundleStationItem("tx", false, id);
         BundleStationItem *stationTy = new BundleStationItem("ty", false, id);
         BundleStationItem *stationTz = new BundleStationItem("tz", false, id);
@@ -404,6 +405,25 @@ void BundleStationsModel::updateModel(){
         BundleStationItem *stationRy = new BundleStationItem("ry", false, id);
         BundleStationItem *stationRz = new BundleStationItem("rz", false, id);
         BundleStationItem *stationM = new BundleStationItem("m", false, id);
+
+        //update used state
+        for(int i = 0; i < stationTemplate.size(); i++){
+            if(stationTemplate.at(i).toString().compare("tx") == 0){
+                stationTx->setValue(true);
+            }else if(stationTemplate.at(i).toString().compare("ty") == 0){
+                stationTy->setValue(true);
+            }else if(stationTemplate.at(i).toString().compare("tz") == 0){
+                stationTz->setValue(true);
+            }else if(stationTemplate.at(i).toString().compare("rx") == 0){
+                stationRx->setValue(true);
+            }else if(stationTemplate.at(i).toString().compare("ry") == 0){
+                stationRy->setValue(true);
+            }else if(stationTemplate.at(i).toString().compare("rz") == 0){
+                stationRz->setValue(true);
+            }else if(stationTemplate.at(i).toString().compare("m") == 0){
+                stationM->setValue(true);
+            }
+        }
 
         //add station items
         stationItem->appendChild(stationTx);

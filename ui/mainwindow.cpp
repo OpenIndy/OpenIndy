@@ -1809,6 +1809,7 @@ void MainWindow::bundleSelectionChanged(){
     this->bundleStationsModel->setStations(inputStations);
 
     //set up input geometries
+    inputStations = this->bundleStationsModel->getStations();
     this->ui->treeView_inputGeometries->setEnabled(true);
     this->bundleGeometriesModel->setStations(inputStations);
 
