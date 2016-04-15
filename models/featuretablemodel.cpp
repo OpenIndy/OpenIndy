@@ -219,6 +219,11 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
     //get parent flags
     Qt::ItemFlags myFlags = QAbstractTableModel::flags(index);
 
+    //check index
+    if(!index.isValid()){
+        return myFlags;
+    }
+
     //get display attribute
     int rowIndex = index.row();
     int columnIndex = index.column();

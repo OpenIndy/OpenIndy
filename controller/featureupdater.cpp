@@ -1198,7 +1198,22 @@ void FeatureUpdater::copyGeometry(InputElement &newElement, const QPointer<Featu
  */
 void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundleSystem){
 
+    //get and delete nominals in bundle system
+    QList< QPointer<FeatureWrapper> > nominals = bundleSystem->getNominals();
+    foreach(const QPointer<FeatureWrapper> nominal, nominals){
+        if(!nominal.isNull() && !nominal->getGeometry().isNull()){
+            delete nominal->getGeometry();
+            delete nominal;
+        }
+    }
 
+    //get and delete bundle transformations
+    QList< QPointer<TrafoParam> > transformations = bundleSystem->getTransformationParameters();
+    foreach(const QPointer<TrafoParam> &trafo, transformations){
+        if(!trafo.isNull() && trafo->getIsBundle()){
+            delete trafo;
+        }
+    }
 
 }
 
