@@ -114,10 +114,6 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
             }
         }
 
-        //then apply movements if active system is a part system
-        //if active system is a station -> do nothing
-        //this->CheckToApplyMovements(from);
-
     }else{
 
         //set the coord sys to not solved

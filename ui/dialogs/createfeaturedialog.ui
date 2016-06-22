@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>446</height>
+    <height>474</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -184,13 +184,6 @@
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
-       <item>
-        <widget class="QCheckBox" name="checkBox_movement">
-         <property name="text">
-          <string>movement</string>
-         </property>
-        </widget>
-       </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="2,3">
          <item>
