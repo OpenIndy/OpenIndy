@@ -1698,10 +1698,10 @@ void Controller::setJob(const QPointer<OiJob> &job){
                      this, &Controller::trafoParamSystemsChanged, Qt::AutoConnection);
     QObject::connect(this->job.data(), &OiJob::trafoParamIsUsedChanged,
                      this, &Controller::trafoParamIsUsedChanged, Qt::AutoConnection);
-    QObject::connect(this->job.data(), &OiJob::trafoParamValidTimeChanged,
-                     this, &Controller::trafoParamValidTimeChanged, Qt::AutoConnection);
-    QObject::connect(this->job.data(), &OiJob::trafoParamIsMovementChanged,
-                     this, &Controller::trafoParamIsMovementChanged, Qt::AutoConnection);
+    /*QObject::connect(this->job.data(), &OiJob::trafoParamValidTimeChanged,
+                     this, &Controller::trafoParamValidTimeChanged, Qt::AutoConnection);*/
+    /*QObject::connect(this->job.data(), &OiJob::trafoParamIsMovementChanged,
+                     this, &Controller::trafoParamIsMovementChanged, Qt::AutoConnection);*/
 
     //pass the new job around
     ModelManager::setCurrentJob(this->job);

@@ -188,7 +188,7 @@ signals:
     void trafoParamSystemsChanged(const int &featureId);
     void trafoParamIsUsedChanged(const int &featureId);
     void trafoParamValidTimeChanged(const int &featureId);
-    void trafoParamIsMovementChanged(const int &featureId);
+    //void trafoParamIsMovementChanged(const int &featureId);
 
     //whole job instance changed
     void currentJobChanged();
