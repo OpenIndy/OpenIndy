@@ -91,10 +91,32 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
             return Qt::Unchecked;
         }
 
+    }else if(role == Qt::CheckStateRole && !feature->getTrafoParam().isNull()){
+
+        int attr = getFeatureDisplayAttributes().at(columnIndex);
+
+        //get isSolved from TrafoParam
+        switch((TrafoParamDisplayAttributes)attr){
+        case eTrafoParamDisplayIsSolved:
+            if(feature->getTrafoParam()->getIsSolved()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
+        case eTrafoParamDisplayIsUsed:
+            if(feature->getTrafoParam()->getIsUsed()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
+        case eTrafoParamDisplayIsDatumTransformation:
+            if(feature->getTrafoParam()->getIsDatumTrafo()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
+        default:
+            break;
+        }
     }
-
     return QVariant();
-
 }
 
 /*!
@@ -256,13 +278,16 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
 
         //get and check display attribute
         TrafoParamDisplayAttributes fAttr = (TrafoParamDisplayAttributes)attr;
-        if(fAttr == eTrafoParamDisplayIsUsed || fAttr == eTrafoParamDisplayIsMovement
+        /*if(fAttr == eTrafoParamDisplayIsUsed || fAttr == eTrafoParamDisplayIsMovement
                 || fAttr == eTrafoParamDisplayIsDatumTransformation){
             return (myFlags | Qt::ItemIsEditable);
+        }else*/
+        if(fAttr == eTrafoParamDisplayIsSolved){
+            return (myFlags | Qt::ItemIsUserCheckable);
+        }else if(fAttr == eTrafoParamDisplayIsUsed || fAttr == eTrafoParamDisplayIsDatumTransformation){
+            return(myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
         }
-
     }
-
     return myFlags;
 
 }
@@ -382,7 +407,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         }case eTrafoParamDisplayGroup:{
             feature->getFeature()->setGroupName(value.toString());
             return true;
-        }case eTrafoParamDisplayIsUsed:{
+        }/*case eTrafoParamDisplayIsUsed:{
             if(value.type() == QVariant::Bool){
                 feature->getTrafoParam()->setIsUsed(value.toBool());
                 return true;
@@ -392,7 +417,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 feature->getTrafoParam()->setIsDatumTrafo(value.toBool());
                 return true;
             }
-        }
+        }*/
         }
 
     }else if(!feature->getGeometry().isNull() && role == Qt::CheckStateRole){
@@ -404,6 +429,20 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             break;
         }}
 
+    }else if(!feature->getTrafoParam().isNull() && role == Qt::CheckStateRole){
+
+        switch ((TrafoParamDisplayAttributes)attr) {
+        case eTrafoParamDisplayIsUsed:{
+            bool isUsed = value.toBool();
+            feature->getTrafoParam()->setIsUsed(isUsed);
+            break;
+        }case eTrafoParamDisplayIsDatumTransformation:{
+            bool isDatum = value.toBool();
+            feature->getTrafoParam()->setIsDatumTrafo(isDatum);
+            break;
+        }default:
+            break;
+        }
     }
 
     return false;
@@ -889,19 +928,19 @@ QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feat
         case eTrafoParamDisplayScaleZ:
             return feature->getFeature()->getDisplayScaleZ(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
         case eTrafoParamDisplayIsUsed:
-            return feature->getFeature()->getDisplayIsUsed();
+            //return feature->getFeature()->getDisplayIsUsed();
+            return QVariant();
         case eTrafoParamDisplayValidTime:
             return feature->getFeature()->getDisplayValidTime();
         case eTrafoParamDisplayIsMovement:
             return feature->getFeature()->getDisplayIsMovement();
         case eTrafoParamDisplayIsDatumTransformation:
-            return feature->getFeature()->getDisplayIsDatumTransformation();
+            //return feature->getFeature()->getDisplayIsDatumTransformation();
+            return QVariant();
         }
-
     }
 
     return QVariant();
-
 }
 
 /*!
