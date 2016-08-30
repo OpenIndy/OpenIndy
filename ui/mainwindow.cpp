@@ -1255,7 +1255,17 @@ void MainWindow::resizeTableView(){
  * \brief MainWindow::on_actionRemoveObservations_triggered
  */
 void MainWindow::on_actionRemoveObservations_triggered(){
-    emit this->removeAllObservations();
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("clear observations");
+    msgBox.setText("This action will clear all observations.");
+    msgBox.setInformativeText("Continue?");
+    msgBox.setStandardButtons(QMessageBox::Yes);
+    msgBox.addButton(QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+
+    if(msgBox.exec() == QMessageBox::Yes){
+      emit this->removeAllObservations();
+    }
 }
 
 /*!
