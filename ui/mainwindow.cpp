@@ -1259,8 +1259,7 @@ void MainWindow::on_actionRemoveObservations_triggered(){
     msgBox.setWindowTitle("clear observations");
     msgBox.setText("This action will clear all observations.");
     msgBox.setInformativeText("Continue?");
-    msgBox.setStandardButtons(QMessageBox::Yes);
-    msgBox.addButton(QMessageBox::No);
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox.setDefaultButton(QMessageBox::No);
 
     if(msgBox.exec() == QMessageBox::Yes){
