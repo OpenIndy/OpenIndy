@@ -8,6 +8,7 @@
 #include <QListView>
 #include <QSignalMapper>
 #include <QClipboard>
+#include <QCloseEvent>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -225,6 +226,7 @@ private slots:
 
     //close OpenIndy
     void on_actionClose_triggered();
+    void closeEvent(QCloseEvent *event);
 
     //show measurement config dialog
     void on_actionMeasurement_Configuration_triggered();
@@ -323,6 +325,9 @@ private:
 
     //bundle view
     void resetBundleView();
+
+    //save project help function
+    void saveProjectAs();
 
     //############################
     //OpenIndy dialogs and widgets

@@ -1121,10 +1121,7 @@ void MainWindow::on_actionSave_triggered(){
  * \brief MainWindow::on_actionSave_as_triggered
  */
 void MainWindow::on_actionSave_as_triggered(){
-    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
-    if(filename.compare("") != 0){
-        emit this->saveProject(filename);
-    }
+    this->saveProjectAs();
 }
 
 /*!
@@ -1132,6 +1129,26 @@ void MainWindow::on_actionSave_as_triggered(){
  */
 void MainWindow::on_actionClose_triggered(){
     this->close();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("close application");
+    msgBox.setText("Do you want to save changes?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+
+    int ret = msgBox.exec();
+
+    if(ret == QMessageBox::Yes){
+        this->saveProjectAs();
+        event->accept();
+    }else if(ret == QMessageBox::No){
+        event->accept();
+    }else if(ret == QMessageBox::Cancel){
+        event->ignore();
+    }
 }
 
 /*!
@@ -2523,4 +2540,16 @@ void MainWindow::resetBundleView(){
     this->bundleGeometriesModel->setStations(stations);
     this->ui->treeView_inputGeometries->setEnabled(false);
 
+}
+
+/*!
+ * \brief MainWindow::saveAsProject
+ * creates a file name for save path and emits the signal to save
+ */
+void MainWindow::saveProjectAs()
+{
+    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
+    if(filename.compare("") != 0){
+        emit this->saveProject(filename);
+    }
 }
