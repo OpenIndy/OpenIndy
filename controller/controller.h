@@ -94,6 +94,17 @@ public slots:
     void setReadingTableColumnConfig(const ReadingTableColumnConfig &config);
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
+    //add or remove bundle system
+    void addBundleSystem();
+    void removeBundleSystem(const int &id);
+
+    //load or calculate bundle
+    QJsonObject getBundleTemplate(const int &bundleId);
+    QPointer<BundleAdjustment> getBundleAdjustment(const int &bundleId);
+    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
+    void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
+    void runBundle(const int &bundleId);
+
     //save or load a job
     void saveProject();
     void saveProject(const QString &fileName);
@@ -177,7 +188,7 @@ signals:
     void trafoParamSystemsChanged(const int &featureId);
     void trafoParamIsUsedChanged(const int &featureId);
     void trafoParamValidTimeChanged(const int &featureId);
-    void trafoParamIsMovementChanged(const int &featureId);
+    //void trafoParamIsMovementChanged(const int &featureId);
 
     //whole job instance changed
     void currentJobChanged();

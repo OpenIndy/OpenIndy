@@ -65,6 +65,10 @@ private:
 
     void initFunctionsModel();
 
+    void toggleActualLabels(bool toggle);
+
+    void toggleNominalLabels(bool toggle);
+
     //################
     //GUI interactions
     //################

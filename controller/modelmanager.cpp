@@ -53,6 +53,8 @@ ObservationTableColumnConfig ModelManager::observationTableColumnConfig;
 ReadingTableColumnConfig ModelManager::readingTableColumnConfig;
 QStringListModel ModelManager::scalarEntityTypeNamesModel;
 QStringListModel ModelManager::actualNominalFilterModel;
+BundleSystemsModel ModelManager::bundleSystemsModel;
+BundleTemplatesModel ModelManager::bundleTemplatesModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -289,6 +291,14 @@ QStringListModel &ModelManager::getNominalSystemsModel(){
 }
 
 /*!
+ * \brief ModelManager::getBundleSystemsModel
+ * \return
+ */
+BundleSystemsModel &ModelManager::getBundleSystemsModel(){
+    return ModelManager::bundleSystemsModel;
+}
+
+/*!
  * \brief ModelManager::getGroupNamesModel
  * \return
  */
@@ -507,6 +517,14 @@ ReadingProxyModel &ModelManager::getReadingProxyModel(){
 }
 
 /*!
+ * \brief ModelManager::getBundleTemplatesModel
+ * \return
+ */
+BundleTemplatesModel &ModelManager::getBundleTemplatesModel(){
+    return ModelManager::bundleTemplatesModel;
+}
+
+/*!
  * \brief ModelManager::getExchangeSimpleAsciiNames
  * \param pluginName
  * \return
@@ -687,6 +705,7 @@ QPointer<SensorAccuracyModel> ModelManager::getSensorAccuracyModel(QObject *pare
 
 /*!
  * \brief ModelManager::getSensorParametersModel
+ * \param parent
  * \return
  */
 QPointer<SensorParametersModel> ModelManager::getSensorParametersModel(QObject *parent){
@@ -700,6 +719,26 @@ QPointer<SensorParametersModel> ModelManager::getSensorParametersModel(QObject *
 
     return model;
 
+}
+
+/*!
+ * \brief ModelManager::getBundleStationsModel
+ * \param parent
+ * \return
+ */
+QPointer<BundleStationsModel> ModelManager::getBundleStationsModel(QObject *parent){
+    QPointer<BundleStationsModel> model = new BundleStationsModel(parent);
+    return model;
+}
+
+/*!
+ * \brief ModelManager::getBundleGeometriesModel
+ * \param parent
+ * \return
+ */
+QPointer<BundleGeometriesModel> ModelManager::getBundleGeometriesModel(QObject *parent){
+    QPointer<BundleGeometriesModel> model = new BundleGeometriesModel(parent);
+    return model;
 }
 
 /*!
@@ -817,6 +856,7 @@ void ModelManager::updateJob(){
     ModelManager::availableElementsTreeViewProxyModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::observationModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::readingModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::bundleSystemsModel.setCurrentJob(ModelManager::currentJob);
 
     //connect the job to slots in model manager
     QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);

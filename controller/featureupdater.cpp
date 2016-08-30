@@ -175,6 +175,94 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
 }
 
 /*!
+ * \brief FeatureUpdater::recalcBundle
+ * Recalculates a bundle adjustment
+ * \param bundleSystem
+ * \return
+ */
+bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem){
+
+    //check job
+    if(this->currentJob.isNull()){
+        return false;
+    }
+
+    //check bundle system
+    if(bundleSystem.isNull() || bundleSystem->getBundlePlugin().isNull()){
+        return false;
+    }
+    QPointer<BundleAdjustment> bundlePlugin = bundleSystem->getBundlePlugin();
+
+    //clear old bundle results
+    this->currentJob->blockSignals(true);
+    this->clearBundleResults(bundleSystem);
+    this->currentJob->blockSignals(false);
+
+    //check bundle stations
+    QList<BundleStation> stations = bundlePlugin->getInputStations();
+    if(stations.size() < 2){
+        return false;
+    }
+
+    //set up input geometries
+    QList<BundleStation> inputStations;
+    foreach(BundleStation inputStation, stations){
+
+        //get corresponding station feature
+        QPointer<FeatureWrapper> station = this->currentJob->getFeatureById(inputStation.id);
+        if(station.isNull() || station->getStation().isNull() || station->getStation()->getCoordinateSystem().isNull()){
+            continue;
+        }
+
+        //switch to station system
+        this->switchCoordinateSystemWithoutTransformation(station->getStation()->getCoordinateSystem());
+
+        //add station geometries
+        inputStation.geometries.clear();
+        QList<QPointer<Geometry> > geometries = station->getStation()->getTargetGeometries();
+        foreach(const QPointer<Geometry> &geom, geometries){
+            if(!geom.isNull() && geom->getIsCommon() && geom->getIsSolved()){
+                BundleGeometry inputGeometry;
+                inputGeometry.id = geom->getId();
+                inputGeometry.parameters[eUnknownX] = geom->getPosition().getVector().getAt(0);
+                inputGeometry.parameters[eUnknownY] = geom->getPosition().getVector().getAt(1);
+                inputGeometry.parameters[eUnknownZ] = geom->getPosition().getVector().getAt(2);
+                inputStation.geometries.append(inputGeometry);
+            }
+        }
+        inputStations.append(inputStation);
+
+    }
+
+    //check input stations
+    if(inputStations.size() < 2){
+        return false;
+    }
+
+    //set up base station and job
+    bundlePlugin->setInputStations(inputStations);
+    bundlePlugin->setBaseStation(inputStations.at(0));
+    bundlePlugin->setCurrentJob(this->currentJob);
+
+    //calculate bundle
+    if(!bundlePlugin->runBundle()){
+        this->switchCoordinateSystem();
+        return false;
+    }
+
+    //save bundle results
+    this->currentJob->blockSignals(true);
+    this->saveBundleResults(bundleSystem);
+    this->currentJob->blockSignals(false);
+
+    //recalculate all features
+    this->switchCoordinateSystem();
+
+    return true;
+
+}
+
+/*!
  * \brief FeatureUpdater::switchCoordinateSystem
  * Does all recalculation steps necessary when the active coordinate system has changed
  */
@@ -267,38 +355,6 @@ void FeatureUpdater::disconnectJob(){
     QObject::disconnect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureUpdater::switchCoordinateSystem);
 
 }
-
-/*!
- * \brief FeatureUpdater::setFeatureIsUpdated
- * Sets isUpdated for the given feature and all dependent features
- * \param feature
- * \param isUpdated
- */
-/*void FeatureUpdater::setFeatureIsUpdated(const QPointer<Feature> &feature, bool isUpdated){
-
-    //check if isUpdated is already set correctly
-    if(feature->getIsUpdated() == isUpdated){
-        return;
-    }
-
-    //set isUpdated for feature
-    feature->setIsUpdated(isUpdated);
-
-    //set isUpdated for previously needed features
-    foreach(const QPointer<FeatureWrapper> &neededFeature, feature->getPreviouslyNeeded()){
-        if(!neededFeature.isNull() || !neededFeature->getFeature().isNull()){
-            this->setFeatureIsUpdated(neededFeature->getFeature(), isUpdated);
-        }
-    }
-
-    //set isUpdated for used for features
-    foreach(const QPointer<FeatureWrapper> &usedFor, feature->getUsedFor()){
-        if(!usedFor.isNull() || !usedFor->getFeature().isNull()){
-            this->setFeatureIsUpdated(usedFor->getFeature(), isUpdated);
-        }
-    }
-
-}*/
 
 /*!
  * \brief FeatureUpdater::recursiveFeatureRecalculation
@@ -872,6 +928,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
             //set observation to solved only if it has been measured in the active coordinate system
             if(!obs.isNull()){
                 obs->setXYZ(obs->getOriginalXYZ());
+                obs->setIJK(obs->getOriginalIJK());
                 obs->setIsSolved(isSolved);
             }
 
@@ -1131,6 +1188,165 @@ void FeatureUpdater::copyGeometry(InputElement &newElement, const QPointer<Featu
         }
         return;
     }
+    }
+
+}
+
+/*!
+ * \brief FeatureUpdater::clearBundleResults
+ * \param bundleSystem
+ */
+void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundleSystem){
+
+    //get and delete nominals in bundle system
+    QList< QPointer<FeatureWrapper> > nominals = bundleSystem->getNominals();
+    foreach(const QPointer<FeatureWrapper> nominal, nominals){
+        if(!nominal.isNull() && !nominal->getGeometry().isNull()){
+            delete nominal->getGeometry();
+            delete nominal;
+        }
+    }
+
+    //get and delete bundle transformations
+    QList< QPointer<TrafoParam> > transformations = bundleSystem->getTransformationParameters();
+    foreach(const QPointer<TrafoParam> &trafo, transformations){
+        if(!trafo.isNull() && trafo->getIsBundle()){
+            delete trafo;
+        }
+    }
+
+}
+
+/*!
+ * \brief FeatureUpdater::saveBundleResults
+ * \param bundleSystem
+ */
+void FeatureUpdater::saveBundleResults(const QPointer<CoordinateSystem> &bundleSystem){
+
+    //get bundle plugin
+    QPointer<BundleAdjustment> plugin = bundleSystem->getBundlePlugin();
+
+    //get bundle results
+    QList<BundleGeometry> geometries = plugin->getOutputGeometries();
+    QList<BundleTransformation> transformations = plugin->getOutputTransformations();
+
+    //create nominal geometries in bundle system
+    this->createBundleGeometries(geometries, bundleSystem);
+
+    //create bundle transformations
+    this->createBundleTransformations(transformations, bundleSystem);
+
+}
+
+/*!
+ * \brief FeatureUpdater::createBundleGeometries
+ * \param geometries
+ * \param bundleSystem
+ */
+void FeatureUpdater::createBundleGeometries(const QList<BundleGeometry> &geometries, const QPointer<CoordinateSystem> &bundleSystem){
+
+    //create common points as nominals in bundle system
+    QList<QPointer<FeatureWrapper> > features;
+    foreach(const BundleGeometry &geom, geometries){
+
+        //get corresponding actual
+        QPointer<FeatureWrapper> actual = this->currentJob->getFeatureById(geom.id);
+        if(actual.isNull() || actual->getPoint().isNull()){
+            continue;
+        }
+        QString name = actual->getPoint()->getFeatureName();
+        QString group = actual->getPoint()->getGroupName();
+
+        //create point
+        QPointer<FeatureWrapper> feature = new FeatureWrapper();
+        QPointer<Point> point = new Point(true);
+        feature->setPoint(point);
+
+        //set up point attributes
+        point->setNominalSystem(bundleSystem);
+        point->setFeatureName(name);
+        point->setGroupName(group);
+
+        //set up point coordinates
+        Position pos;
+        double x, y, z;
+        x = geom.parameters[eUnknownX];
+        y = geom.parameters[eUnknownY];
+        z = geom.parameters[eUnknownZ];
+        pos.setVector(x, y, z);
+        point->setPoint(pos);
+
+        //add feature
+        features.append(feature);
+
+    }
+    this->currentJob->addFeatures(features);
+
+}
+
+/*!
+ * \brief FeatureUpdater::createBundleTransformations
+ * \param transformations
+ * \param bundleSystem
+ */
+void FeatureUpdater::createBundleTransformations(QList<BundleTransformation> &transformations, const QPointer<CoordinateSystem> &bundleSystem){
+
+    //create transformations
+    FeatureAttributes fAttr;
+    fAttr.typeOfFeature = eTrafoParamFeature;
+    fAttr.group = bundleSystem->getGroupName();
+    fAttr.count = 1;
+    fAttr.startSystem = bundleSystem->getFeatureName();
+    fAttr.isBundleTrafo = true;
+    QList<QPointer<FeatureWrapper> > features;
+    foreach(const BundleTransformation &transformation, transformations){
+
+        //get station
+        QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(transformation.id);
+        if(feature.isNull() || feature->getStation().isNull()){
+            continue;
+        }
+        QString name = feature->getStation()->getFeatureName();
+
+        //set up name
+        fAttr.name = bundleSystem->getFeatureName();
+        int index = 1;
+        while(!this->currentJob->validateFeatureName(fAttr.name, fAttr.typeOfFeature)){
+            fAttr.name = QString("%1_%2").arg(bundleSystem->getFeatureName()).arg(index);
+            index++;
+        }
+
+        //create trafo param feature
+        fAttr.destinationSystem = name;
+        features.append(this->currentJob->addFeatures(fAttr));
+
+    }
+
+    //check number of created transformations
+    if(transformations.size() != features.size()){
+        this->currentJob->removeFeatures(features);
+        return;
+    }
+
+    //set up transformation parameters
+    int index = 0;
+    foreach(const QPointer<FeatureWrapper> &feature, features){
+
+        //check feature
+        if(feature.isNull() || feature->getTrafoParam().isNull()){
+            index++;
+            continue;
+        }
+        QPointer<TrafoParam> trafo = feature->getTrafoParam();
+
+        //set up parameters
+        QMap<TrafoParamParameters, double> parameters = transformations.at(index).parameters;
+        trafo->setUnknownParameters(parameters);
+        trafo->setIsUsed(true);
+        trafo->setIsDatumTrafo(true);
+
+        index++;
+
     }
 
 }

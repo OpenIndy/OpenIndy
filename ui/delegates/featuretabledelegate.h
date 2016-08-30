@@ -3,6 +3,7 @@
 
 #include <QItemDelegate>
 #include <QLineEdit>
+#include <QCheckBox>
 #include <QModelIndex>
 #include <QAbstractTableModel>
 

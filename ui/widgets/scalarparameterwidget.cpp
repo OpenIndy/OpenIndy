@@ -4,7 +4,7 @@ ScalarParameterWidget::ScalarParameterWidget(QWidget *parent) :
     QWidget(parent)
 {
     //set up regular expressions
-    this->validInt = QRegExp("^-?(0|[1-9]{1}[0-9]{1,9})$");
+    this->validInt = QRegExp("^-?(0|[1-9]{1}[0-9]{0,9})$");
     this->validDouble = QRegExp("^-?(0|[1-9]{1}[0-9]{0,9})(\\.[0-9]+)?$");
     this->intValidator = new QRegExpValidator(this->validInt);
     this->doubleValidator = new QRegExpValidator(this->validDouble);

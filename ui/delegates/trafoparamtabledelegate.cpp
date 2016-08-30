@@ -51,7 +51,7 @@ QWidget* TrafoParamDelegate::createEditor(QWidget *parent, const QStyleOptionVie
     case eTrafoParamDisplayGroup:
         editor = new QLineEdit(parent);
         break;
-    case eTrafoParamDisplayIsUsed: {
+    /*case eTrafoParamDisplayIsUsed: {
         QComboBox *comboEdit = new QComboBox(parent);
         comboEdit->addItem("true");
         comboEdit->addItem("false");
@@ -63,7 +63,7 @@ QWidget* TrafoParamDelegate::createEditor(QWidget *parent, const QStyleOptionVie
         comboEdit->addItem("false");
         editor = comboEdit;
         break;
-    }}
+    }*/}
 
     return editor;
 
@@ -114,7 +114,7 @@ void TrafoParamDelegate::setEditorData(QWidget *editor, const QModelIndex &index
         QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
         myEditor->setText(index.data().toString());
         break;
-    }case eTrafoParamDisplayIsUsed:{
+    }/*case eTrafoParamDisplayIsUsed:{
         QComboBox* myEditor = qobject_cast<QComboBox*>(editor);
         myEditor->setCurrentText(index.data().toBool()?"true":"false");
         break;
@@ -122,7 +122,7 @@ void TrafoParamDelegate::setEditorData(QWidget *editor, const QModelIndex &index
         QComboBox* myEditor = qobject_cast<QComboBox*>(editor);
         myEditor->setCurrentText(index.data().toBool()?"true":"false");
         break;
-    }
+    }*/
     }
 
 }
@@ -173,7 +173,7 @@ void TrafoParamDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
         QLineEdit* myEditor = qobject_cast<QLineEdit*>(editor);
         trafoModel->sourceModel()->setData(trafoModel->mapToSource(index), myEditor->text());
         break;
-    }case eTrafoParamDisplayIsUsed:{
+    }/*case eTrafoParamDisplayIsUsed:{
         QComboBox* myEditor = qobject_cast<QComboBox*>(editor);
         trafoModel->sourceModel()->setData(trafoModel->mapToSource(index), (myEditor->currentText().compare("true") == 0));
         break;
@@ -181,7 +181,7 @@ void TrafoParamDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
         QComboBox* myEditor = qobject_cast<QComboBox*>(editor);
         trafoModel->sourceModel()->setData(trafoModel->mapToSource(index), (myEditor->currentText().compare("true") == 0));
         break;
-    }
+    }*/
     }
 
 }

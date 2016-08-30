@@ -36,6 +36,7 @@
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
+#include "bundlestationsmodel.h"
 
 using namespace oi;
 
@@ -88,6 +89,15 @@ signals:
 
     //import or export features
     void importNominals(const ExchangeParams &params);
+
+    //add or remove bundle system
+    void addBundleSystem();
+    void removeBundleSystem(const int &bundleId);
+
+    //load or calculate bundle
+    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
+    void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
+    void runBundle(const int &bundleId);
 
     //save or load projects
     void saveProject();
@@ -238,6 +248,14 @@ private slots:
     //show about dialog
     void on_actionAbout_OpenIndy_triggered();
 
+    //add or remove bundle system
+    void on_pushButton_addBundle_clicked();
+    void on_pushButton_removeBundle_clicked();
+
+    //load or calculate bundle
+    void on_action_RunBundle_triggered();
+    void on_pushButton_loadBundleTemplate_clicked();
+
     //##############
     //helper methods
     //##############
@@ -256,6 +274,10 @@ private slots:
     //set up status bar
     void updateStatusBar();
 
+    //update bundle view
+    void bundleSelectionChanged();
+    void bundleSettingsChanged();
+
 private:
     Ui::MainWindow *ui;
 
@@ -270,6 +292,7 @@ private:
     void connectController();
     void connectDialogs();
     void connectStatusBar();
+    void connectBundleView();
     void assignModels();
 
     //##################################
@@ -281,23 +304,31 @@ private:
     void initToolMenus();
     void initFilterComboBoxes();
     void initStatusBar();
+    void initBundleView();
 
     //##############################
     //methods to update GUI elements
     //##############################
 
+    //sensor type
     void activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
 
+    //magnify
     void updateMagnifyWindow(const QPointer<FeatureWrapper> &feature);
 
+    //filter
     void updateGroupFilterSize();
     void updateSystemFilterSize();
     void updateActualNominalFilterSize();
+
+    //bundle view
+    void resetBundleView();
 
     //############################
     //OpenIndy dialogs and widgets
     //############################
 
+    //dialogs
     CreateFeatureDialog createFeatureDialog;
     PluginLoaderDialog pluginLoaderDialog;
     ImportNominalDialog importNominalDialog;
@@ -315,6 +346,9 @@ private:
     TrafoParamPropertiesDialog trafoParamPropertiesDialog;
     AboutDialog aboutDialog;
     StationPropertiesDialog stationPropertiesDialog;
+
+    //widget with scalar input parameters
+    ScalarParameterWidget *bundleParameterWidget;
 
     //##########
     //sensor pad
@@ -343,6 +377,13 @@ private:
     QLabel *label_statusUnitAngular;
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
+
+    //######
+    //models
+    //######
+
+    QPointer<BundleStationsModel> bundleStationsModel;
+    QPointer<BundleGeometriesModel> bundleGeometriesModel;
 
     //#################
     //helper attributes

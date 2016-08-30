@@ -6,8 +6,6 @@
  */
 Controller::Controller(QObject *parent) : QObject(parent){
 
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
-
     //register meta types
     this->registerMetaTypes();
 
@@ -456,6 +454,267 @@ void Controller::setReadingTableColumnConfig(const ReadingTableColumnConfig &con
 void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config){
     ModelManager::setParameterDisplayConfig(config);
     emit this->updateStatusBar();
+}
+
+/*!
+ * \brief Controller::addBundleSystem
+ */
+void Controller::addBundleSystem(){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //create feature name
+    QString bundleName = "Bundle01";
+    int index = 1;
+    while(!this->job->validateFeatureName(bundleName, eCoordinateSystemFeature)){
+        if(index < 9){
+            bundleName = QString("Bundle0%1").arg(++index);
+        }else{
+            bundleName = QString("Bundle%1").arg(++index);
+        }
+    }
+
+    //create feature attributes
+    FeatureAttributes attr;
+    attr.count = 1;
+    attr.typeOfFeature = eCoordinateSystemFeature;
+    attr.name = bundleName;
+    attr.isBundleSystem = true;
+
+    //add feature
+    this->job->addFeatures(attr);
+
+}
+
+/*!
+ * \brief Controller::removeBundleSystem
+ * \param id
+ */
+void Controller::removeBundleSystem(const int &id){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //remove bundle system
+    this->job->removeFeature(id);
+
+}
+
+/*!
+ * \brief Controller::getBundleTemplate
+ * \param bundleId
+ * \return
+ */
+QJsonObject Controller::getBundleTemplate(const int &bundleId){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return QJsonObject();
+    }
+
+    //get and check feature
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
+    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
+        return QJsonObject();
+    }
+    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
+
+    return bundleSystem->getBundleTemplate();
+
+}
+
+/*!
+ * \brief Controller::getBundleAdjustment
+ * Returns the bundle plugin of the coordinate system defined by bundleId
+ * \param bundleId
+ * \return
+ */
+QPointer<oi::BundleAdjustment> Controller::getBundleAdjustment(const int &bundleId){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return QPointer<oi::BundleAdjustment>(NULL);
+    }
+
+    //get and check feature
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
+    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
+        return QPointer<oi::BundleAdjustment>(NULL);
+    }
+    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
+
+    return bundleSystem->getBundlePlugin();
+
+}
+
+/*!
+ * \brief Controller::updateBundleAdjustment
+ * Updates the bundle plugin of the coordinate system defined by bundleId
+ * \param bundleId
+ * \param param
+ */
+void Controller::updateBundleAdjustment(const int &bundleId, const QJsonObject &param){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get and check feature
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
+    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
+        return;
+    }
+    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
+
+    //get and check bundle plugin
+    QPointer<BundleAdjustment> bundlePlugin = bundleSystem->getBundlePlugin();
+    if(bundlePlugin.isNull()){
+        return;
+    }
+
+    //update scalar parameters
+    ScalarInputParams scalarParams;
+    QJsonArray params = param.value("integerParameter").toArray();
+    for(int i = 0; i < params.size(); i++){
+        QJsonObject intParam = params.at(i).toObject();
+        if(intParam.contains("name") && intParam.contains("value")){
+            scalarParams.intParameter.insert(intParam.value("name").toString(), intParam.value("value").toInt());
+        }
+    }
+    params = param.value("doubleParameter").toArray();
+    for(int i = 0; i < params.size(); i++){
+        QJsonObject doubleParam = params.at(i).toObject();
+        if(doubleParam.contains("name") && doubleParam.contains("value")){
+            scalarParams.doubleParameter.insert(doubleParam.value("name").toString(), doubleParam.value("value").toDouble());
+        }
+    }
+    params = param.value("stringParameter").toArray();
+    for(int i = 0; i < params.size(); i++){
+        QJsonObject stringParam = params.at(i).toObject();
+        if(stringParam.contains("name") && stringParam.contains("value")){
+            scalarParams.stringParameter.insert(stringParam.value("name").toString(), stringParam.value("value").toString());
+        }
+    }
+
+    //update input stations
+    QList<BundleStation> inputStations;
+    params = param.value("inputStations").toArray();
+    for(int i = 0; i < params.size(); i++){
+        QJsonObject station = params.at(i).toObject();
+        if(!station.contains("id") || !station.contains("used")
+                || !station.value("used").toBool()){
+            continue;
+        }
+        BundleStation bundleStation;
+        bundleStation.id = station.value("id").toInt();
+        bundleStation.tx = station.value("tx").toBool();
+        bundleStation.ty = station.value("ty").toBool();
+        bundleStation.tz = station.value("tz").toBool();
+        bundleStation.rx = station.value("rx").toBool();
+        bundleStation.ry = station.value("ry").toBool();
+        bundleStation.rz = station.value("rz").toBool();
+        bundleStation.m = station.value("m").toBool();
+        inputStations.append(bundleStation);
+    }
+
+    //set up input parameters
+    bundlePlugin->setScalarInputParams(scalarParams);
+    bundlePlugin->setInputStations(inputStations);
+
+}
+
+/*!
+ * \brief Controller::loadBundleTemplate
+ * \param bundleId
+ * \param bundleTemplate
+ */
+void Controller::loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get bundle system
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
+    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
+        this->log(QString("No bundle system with id %1").arg(bundleId), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get bundle and plugin name
+    QString bundleName, pluginName;
+    bundleName = bundleTemplate.value("plugin").toObject().value("name").toString();
+    pluginName = bundleTemplate.value("plugin").toObject().value("pluginName").toString();
+
+    //get and check plugin information
+    sdb::Plugin plugin = SystemDbManager::getPlugin(pluginName);
+    if(plugin.id == -1){
+        this->log(QString("No plugin available with the name %1").arg(pluginName), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //load bundle plugin
+    QPointer<BundleAdjustment> bundlePlugin(NULL);
+    bundlePlugin = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundleName);
+    if(bundlePlugin.isNull()){
+        this->log(QString("Cannot load bundle template %1").arg(bundleTemplate.value("name").toString()), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //set up bundle plugin
+    feature->getCoordinateSystem()->setBundleTemplate(bundleTemplate);
+    feature->getCoordinateSystem()->setBundlePlugin(bundlePlugin);
+
+    this->log(QString("Bundle template %1 loaded successfully").arg(bundleTemplate.value("name").toString()), eInformationMessage, eMessageBoxMessage);
+
+}
+
+/*!
+ * \brief Controller::runBundle
+ * \param bundleId
+ */
+void Controller::runBundle(const int &bundleId){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //get bundle system
+    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
+    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
+        this->log(QString("No bundle system with id %1").arg(bundleId), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
+
+    //check bundle plugin
+    if(bundleSystem->getBundlePlugin().isNull()){
+        this->log(QString("No bundle plugin loaded for bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    //calculate bundle adjustment
+    if(!this->featureUpdater.recalcBundle(bundleSystem)){
+        this->log(QString("Error when calculating bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+    this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
+
 }
 
 /*!
@@ -1439,10 +1698,10 @@ void Controller::setJob(const QPointer<OiJob> &job){
                      this, &Controller::trafoParamSystemsChanged, Qt::AutoConnection);
     QObject::connect(this->job.data(), &OiJob::trafoParamIsUsedChanged,
                      this, &Controller::trafoParamIsUsedChanged, Qt::AutoConnection);
-    QObject::connect(this->job.data(), &OiJob::trafoParamValidTimeChanged,
-                     this, &Controller::trafoParamValidTimeChanged, Qt::AutoConnection);
-    QObject::connect(this->job.data(), &OiJob::trafoParamIsMovementChanged,
-                     this, &Controller::trafoParamIsMovementChanged, Qt::AutoConnection);
+    /*QObject::connect(this->job.data(), &OiJob::trafoParamValidTimeChanged,
+                     this, &Controller::trafoParamValidTimeChanged, Qt::AutoConnection);*/
+    /*QObject::connect(this->job.data(), &OiJob::trafoParamIsMovementChanged,
+                     this, &Controller::trafoParamIsMovementChanged, Qt::AutoConnection);*/
 
     //pass the new job around
     ModelManager::setCurrentJob(this->job);

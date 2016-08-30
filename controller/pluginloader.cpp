@@ -196,25 +196,28 @@ QPointer<SimulationModel> PluginLoader::loadSimulationPlugin(const QString &path
 }
 
 /*!
- * \brief PluginLoader::loadNetworkAdjustmentPlugin
+ * \brief PluginLoader::loadBundleAdjustmentPlugin
  * \param path
  * \param name
  * \return
  */
-QPointer<NetworkAdjustment> PluginLoader::loadNetworkAdjustmentPlugin(const QString &path, const QString &name){
+QPointer<BundleAdjustment> PluginLoader::loadBundleAdjustmentPlugin(const QString &path, const QString &name){
 
-    QPointer<NetworkAdjustment> networkAdjustment(NULL);
+    QPointer<BundleAdjustment> bundleAdjustment(NULL);
 
     QPluginLoader pluginLoader(path);
     QObject *plugin = pluginLoader.instance();
     if(plugin){
-        Plugin *networkAdjustmentFactory = qobject_cast<Plugin *>(plugin);
-        networkAdjustment = networkAdjustmentFactory->createNetworkAdjustment(name);
+        Plugin *bundleAdjustmentFactory = qobject_cast<Plugin *>(plugin);
+        bundleAdjustment = bundleAdjustmentFactory->createBundleAdjustment(name);
+        if(!bundleAdjustment.isNull()){
+            bundleAdjustment->init();
+        }
     }else{
-        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected network adjustment: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected bundle adjustment: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
-    return networkAdjustment;
+    return bundleAdjustment;
 
 }
 
@@ -307,8 +310,6 @@ QList<QPointer<Sensor> > PluginLoader::loadSensorPlugins(const QString &path){
 
     QPluginLoader pluginLoader(path);
     QObject *plugin = pluginLoader.instance();
-    QString msg = pluginLoader.errorString();
-    qDebug() << msg;
     if(plugin){
         Plugin *sensorFactory = qobject_cast<Plugin *>(plugin);
         sensorList = sensorFactory->createSensors();
@@ -380,24 +381,29 @@ QList<QPointer<SimulationModel> > PluginLoader::loadSimulationPlugins(const QStr
 }
 
 /*!
- * \brief PluginLoader::loadNetworkAdjustmentPlugins
+ * \brief PluginLoader::loadBundleAdjustmentPlugins
  * \param path
  * \return
  */
-QList<QPointer<NetworkAdjustment> > PluginLoader::loadNetworkAdjustmentPlugins(const QString &path){
+QList<QPointer<BundleAdjustment> > PluginLoader::loadBundleAdjustmentPlugins(const QString &path){
 
-    QList<QPointer<NetworkAdjustment> > networkAdjustmentList;
+    QList<QPointer<BundleAdjustment> > bundleAdjustmentList;
 
     QPluginLoader pluginLoader(path);
     QObject *plugin = pluginLoader.instance();
     if(plugin){
-        Plugin *networkAdjustmenFactory = qobject_cast<Plugin *>(plugin);
-        networkAdjustmentList = networkAdjustmenFactory->createNetworkAdjustments();
+        Plugin *bundleAdjustmentFactory = qobject_cast<Plugin *>(plugin);
+        bundleAdjustmentList = bundleAdjustmentFactory->createBundleAdjustments();
+        foreach(const QPointer<BundleAdjustment> &bundle, bundleAdjustmentList){
+            if(!bundle.isNull()){
+                bundle->init();
+            }
+        }
     }else{
-        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load network adjustments: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
+        emit PluginLoader::getInstance()->sendMessage(QString("Cannot load bundle adjustments: %1").arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
     }
 
-    return networkAdjustmentList;
+    return bundleAdjustmentList;
 
 }
 
