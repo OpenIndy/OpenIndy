@@ -1142,7 +1142,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     int ret = msgBox.exec();
 
     if(ret == QMessageBox::Yes){
-        this->saveProjectAs();
+        emit this->saveProject();
         event->accept();
     }else if(ret == QMessageBox::No){
         event->accept();
