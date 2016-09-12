@@ -371,7 +371,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
 
             //update feature's measurement config
             if(mConfig.getIsValid()){
-                feature->getGeometry()->setMeasurementConfig(mConfig);
+                feature->getGeometry()->getMyMasterGeometry()->setMeasurementConfig(mConfig);
                 return true;
             }
         }

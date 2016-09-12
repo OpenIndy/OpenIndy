@@ -650,11 +650,8 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
             ProjectExchanger::myGeometries.insert(myFeatureWrapper->getFeature()->getId(), myFeatureWrapper);
 
         }
-
     }
-
     return true;
-
 }
 
 /*!
@@ -1141,7 +1138,7 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                     QDomElement nominalGeometry = nominalList.at(j).toElement();
                     if(nominalGeometry.hasAttribute("ref") && ProjectExchanger::myGeometries.contains(nominalGeometry.attribute("ref").toInt())){
                         QPointer<FeatureWrapper> myNominalGeometry = ProjectExchanger::myGeometries.value(nominalGeometry.attribute("ref").toInt());
-                        myGeometry->getGeometry()->addNominal(myNominalGeometry->getGeometry());
+                        myGeometry->getGeometry()->getMyMasterGeometry()->addNominal(myNominalGeometry->getGeometry());
                     }
                 }
             }
@@ -1150,7 +1147,7 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
             QDomElement actualGeometry = geometry.firstChildElement("actual");
             if(!actualGeometry.isNull() && actualGeometry.hasAttribute("ref") && ProjectExchanger::myGeometries.contains(actualGeometry.attribute("ref").toInt())){
                 QPointer<FeatureWrapper> myActualGeometry = ProjectExchanger::myGeometries.value(actualGeometry.attribute("ref").toInt());
-                myGeometry->getGeometry()->setActual(myActualGeometry->getGeometry());
+                myGeometry->getGeometry()->getMyMasterGeometry()->setActual(myActualGeometry->getGeometry());
             }
 
             //set nominal system
@@ -1164,7 +1161,7 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
             QDomElement mConfigElement = geometry.firstChildElement("measurementConfig");
             if(!mConfigElement.isNull() && mConfigElement.hasAttribute("name") && ProjectExchanger::myMConfigs.contains(mConfigElement.attribute("name"))){
                 MeasurementConfig mConfig = ProjectExchanger::myMConfigs.value(mConfigElement.attribute("name"));
-                myGeometry->getGeometry()->setMeasurementConfig(mConfig);
+                myGeometry->getGeometry()->getMyMasterGeometry()->setMeasurementConfig(mConfig);
             }
 
         }

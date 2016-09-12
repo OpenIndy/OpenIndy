@@ -1162,7 +1162,7 @@ void MainWindow::on_actionMeasurement_Configuration_triggered(){
     //check if there is an active feature and pass its config to the measurement config dialog
     QPointer<FeatureWrapper> activeFeature = model.getActiveFeature();
     if(!activeFeature.isNull() && !activeFeature->getGeometry().isNull()){
-        this->measurementConfigDialog.setMeasurementConfiguration(activeFeature->getGeometry()->getMeasurementConfig());
+        this->measurementConfigDialog.setMeasurementConfiguration(activeFeature->getGeometry()->getMyMasterGeometry()->getMeasurementConfig());
     }else{
         this->measurementConfigDialog.setMeasurementConfiguration(MeasurementConfig());
     }

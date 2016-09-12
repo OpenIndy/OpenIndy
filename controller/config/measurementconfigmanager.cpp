@@ -590,12 +590,12 @@ void MeasurementConfigManager::updateGeometries(){
     foreach(key, removedConfigs){
 
         //get geometries by mConfig
-        QList<QPointer<Geometry> > geometries = this->currentJob->getGeometriesByMConfig(key);
+        QList<QPointer<MasterGeometry> > mGeometries = this->currentJob->getGeometriesByMConfig(key);
 
         //reset mConfigs
-        foreach(const QPointer<Geometry> &geom, geometries){
-            if(!geom.isNull()){
-                geom->setMeasurementConfig(MeasurementConfig());
+        foreach(const QPointer<MasterGeometry> &mGeom, mGeometries){
+            if(!mGeom.isNull()){
+                mGeom->setMeasurementConfig(MeasurementConfig());
             }
         }
 
@@ -625,12 +625,12 @@ void MeasurementConfigManager::updateGeometries(const MeasurementConfig &oldMCon
     QPair<QString, bool> mConfig;
     mConfig.first = oldMConfig.getName();
     mConfig.second = oldMConfig.getIsSaved();
-    QList<QPointer<Geometry> > geometries = this->currentJob->getGeometriesByMConfig(mConfig);
+    QList<QPointer<MasterGeometry> > mGeometries = this->currentJob->getGeometriesByMConfig(mConfig);
 
     //pass the new config to the geometries
-    foreach(const QPointer<Geometry> &geom, geometries){
-        if(!geom.isNull()){
-            geom->setMeasurementConfig(newMConfig);
+    foreach(const QPointer<MasterGeometry> &mGeom, mGeometries){
+        if(!mGeom.isNull()){
+            mGeom->setMeasurementConfig(newMConfig);
         }
     }
 

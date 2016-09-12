@@ -332,7 +332,7 @@ void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfi
     }
 
     //set measurement config for the active feature
-    activeFeature->getGeometry()->setMeasurementConfig(mConfig);
+    activeFeature->getGeometry()->getMyMasterGeometry()->setMeasurementConfig(mConfig);
 
 }
 
@@ -972,12 +972,12 @@ void Controller::startMeasurement(){
     //create actual from nominal (if a nominal is selected)
     if(activeFeature->getGeometry()->getIsNominal()){
         if(!this->createActualFromNominal(activeFeature->getGeometry())
-                || activeFeature->getGeometry()->getActual().isNull()
-                || activeFeature->getGeometry()->getActual()->getFeatureWrapper().isNull()){
+                || activeFeature->getGeometry()->getMyMasterGeometry()->getActual().isNull()
+                || activeFeature->getGeometry()->getMyMasterGeometry()->getActual()->getFeatureWrapper().isNull()){
             this->log("Cannot create actual for nominal", eErrorMessage, eMessageBoxMessage);
             return;
         }
-        activeFeature = activeFeature->getGeometry()->getActual()->getFeatureWrapper();
+        activeFeature = activeFeature->getGeometry()->getMyMasterGeometry()->getActual()->getFeatureWrapper();
         activeFeature->getFeature()->setActiveFeatureState(true);
     }
 
@@ -986,7 +986,7 @@ void Controller::startMeasurement(){
 
     //perform measurement
     int id = activeFeature->getGeometry()->getId();
-    MeasurementConfig mConfig = activeFeature->getGeometry()->getMeasurementConfig();
+    MeasurementConfig mConfig = activeFeature->getGeometry()->getMyMasterGeometry()->getMeasurementConfig();
     activeStation->measure(id, mConfig);
 
 }
@@ -1098,10 +1098,10 @@ void Controller::startAim(){
         if(trafoController.getTransformationMatrix(t, activeFeature->getGeometry()->getNominalSystem(), activeStation->getCoordinateSystem())){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
-        }else if(!activeFeature->getGeometry()->getActual().isNull() && activeFeature->getGeometry()->getActual()->hasPosition()
-                 && activeFeature->getGeometry()->getActual()->getIsSolved()
+        }else if(!activeFeature->getGeometry()->getMyMasterGeometry()->getActual().isNull() && activeFeature->getGeometry()->getMyMasterGeometry()->getActual()->hasPosition()
+                 && activeFeature->getGeometry()->getMyMasterGeometry()->getActual()->getIsSolved()
                  && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
-            pos = activeFeature->getGeometry()->getActual()->getPosition().getVectorH();
+            pos = activeFeature->getGeometry()->getMyMasterGeometry()->getActual()->getPosition().getVectorH();
             pos = t * pos;
         }
 
@@ -1111,10 +1111,10 @@ void Controller::startAim(){
         if(activeFeature->getGeometry()->getIsSolved() && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
-        }else if(activeFeature->getGeometry()->getNominals().size() > 0){
+        }else if(activeFeature->getGeometry()->getMyMasterGeometry()->getNominals().size() > 0){
 
             //use nominal instead of actual
-            foreach(const QPointer<Geometry> &nominal, activeFeature->getGeometry()->getNominals()){
+            foreach(const QPointer<Geometry> &nominal, activeFeature->getGeometry()->getMyMasterGeometry()->getNominals()){
                 if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), activeStation->getCoordinateSystem())){
                     pos = nominal->getPosition().getVectorH();
                     pos = t * pos;
@@ -1190,10 +1190,10 @@ void Controller::startAimAndMeasure(){
         if(trafoController.getTransformationMatrix(t, activeFeature->getGeometry()->getNominalSystem(), activeStation->getCoordinateSystem())){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
-        }else if(!activeFeature->getGeometry()->getActual().isNull() && activeFeature->getGeometry()->getActual()->hasPosition()
-                 && activeFeature->getGeometry()->getActual()->getIsSolved()
+        }else if(!activeFeature->getGeometry()->getMyMasterGeometry()->getActual().isNull() && activeFeature->getGeometry()->getMyMasterGeometry()->getActual()->hasPosition()
+                 && activeFeature->getGeometry()->getMyMasterGeometry()->getActual()->getIsSolved()
                  && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
-            pos = activeFeature->getGeometry()->getActual()->getPosition().getVectorH();
+            pos = activeFeature->getGeometry()->getMyMasterGeometry()->getActual()->getPosition().getVectorH();
             pos = t * pos;
         }
 
@@ -1203,10 +1203,10 @@ void Controller::startAimAndMeasure(){
         if(activeFeature->getGeometry()->getIsSolved() && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
-        }else if(activeFeature->getGeometry()->getNominals().size() > 0){
+        }else if(activeFeature->getGeometry()->getMyMasterGeometry()->getNominals().size() > 0){
 
             //use nominal instead of actual
-            foreach(const QPointer<Geometry> &nominal, activeFeature->getGeometry()->getNominals()){
+            foreach(const QPointer<Geometry> &nominal, activeFeature->getGeometry()->getMyMasterGeometry()->getNominals()){
                 if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), activeStation->getCoordinateSystem())){
                     pos = nominal->getPosition().getVectorH();
                     pos = t * pos;
@@ -1222,7 +1222,7 @@ void Controller::startAimAndMeasure(){
     if(pos.getSize() == 4){
         emit this->sensorActionStarted("moving sensor...");
         activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), true, activeFeature->getGeometry()->getId(),
-                            activeFeature->getGeometry()->getMeasurementConfig());
+                            activeFeature->getGeometry()->getMyMasterGeometry()->getMeasurementConfig());
     }
 
 }
@@ -1561,10 +1561,10 @@ void Controller::measurementFinished(const int &geomId, const QList<QPointer<Rea
     if(feature->getGeometry()->getIsNominal()){
 
         //check actual
-        if(!feature->getGeometry()->getActual().isNull() && !feature->getGeometry()->getActual()->getFeatureWrapper().isNull()
-                && !feature->getGeometry()->getActual()->getFeatureWrapper()->getGeometry().isNull()){ //has actual
-            feature = feature->getGeometry()->getActual()->getFeatureWrapper();
-        }else if(feature->getGeometry()->getActual().isNull()){ //does not have an actual
+        if(!feature->getGeometry()->getMyMasterGeometry()->getActual().isNull() && !feature->getGeometry()->getMyMasterGeometry()->getActual()->getFeatureWrapper().isNull()
+                && !feature->getGeometry()->getMyMasterGeometry()->getActual()->getFeatureWrapper()->getGeometry().isNull()){ //has actual
+            feature = feature->getGeometry()->getMyMasterGeometry()->getActual()->getFeatureWrapper();
+        }else if(feature->getGeometry()->getMyMasterGeometry()->getActual().isNull()){ //does not have an actual
 
             //create a new feature
             FeatureAttributes attributes;
@@ -1889,7 +1889,7 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     }
 
     //check if actual already exists
-    if(!geometry->getActual().isNull()){
+    if(!geometry->getMyMasterGeometry()->getActual().isNull()){
         return true;
     }
 
@@ -1903,13 +1903,13 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
 
     //create actual
     this->job->addFeatures(attr);
-    if(geometry->getActual().isNull() || geometry->getActual()->getFeatureWrapper().isNull()){
+    if(geometry->getMyMasterGeometry()->getActual().isNull() || geometry->getMyMasterGeometry()->getActual()->getFeatureWrapper().isNull()){
         return false;
     }
 
     //set function and measurement config
     QList<QPointer<FeatureWrapper> > actuals;
-    actuals.append(geometry->getActual()->getFeatureWrapper());
+    actuals.append(geometry->getMyMasterGeometry()->getActual()->getFeatureWrapper());
     MeasurementConfig mConfig;
     if(!this->measurementConfigManager.isNull()){
         mConfig = this->measurementConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(attr.typeOfFeature));
@@ -1960,7 +1960,7 @@ void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > 
             feature->getFeature()->addFunction(function);
         }
         if(mConfig.getIsValid() && !feature->getGeometry().isNull()){
-            feature->getGeometry()->setMeasurementConfig(mConfig);
+            feature->getGeometry()->getMyMasterGeometry()->setMeasurementConfig(mConfig);
         }
         this->job->blockSignals(false);
 

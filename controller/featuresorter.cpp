@@ -150,12 +150,12 @@ bool FeatureSorter::sortStandard(QPointer<FeatureWrapper> left, QPointer<Feature
 
         //use the actual of a nominal for sorting
         if(!left->getGeometry().isNull() && left->getGeometry()->getIsNominal()
-                && !left->getGeometry()->getActual().isNull()){
-            leftId = left->getGeometry()->getActual()->getId();
+                && !left->getGeometry()->getMyMasterGeometry()->getActual().isNull()){
+            leftId = left->getGeometry()->getMyMasterGeometry()->getActual()->getId();
         }
         if(!right->getGeometry().isNull() && right->getGeometry()->getIsNominal()
-                && !right->getGeometry()->getActual().isNull()){
-            rightId = right->getGeometry()->getActual()->getId();
+                && !right->getGeometry()->getMyMasterGeometry()->getActual().isNull()){
+            rightId = right->getGeometry()->getMyMasterGeometry()->getActual()->getId();
         }
 
         return leftId < rightId;
