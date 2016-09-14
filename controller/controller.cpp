@@ -63,7 +63,7 @@ const QList<QPointer<Tool> > &Controller::getAvailableTools() const{
 void Controller::addFeatures(const FeatureAttributes &attributes){
 
     //check job
-    if(this->job.isNull()){
+     if(this->job.isNull()){
         this->log("No active job", eErrorMessage, eMessageBoxMessage);
         return;
     }
@@ -1944,7 +1944,10 @@ void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > 
         }
 
         //check if the feature is a nominal geometry
-        if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+        /*if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            continue;
+        }*/
+        if(!feature->getMasterGeometry().isNull() && !feature->getMasterGeometry()->getActual().isNull()){
             continue;
         }
 
@@ -1959,7 +1962,7 @@ void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > 
         if(!function.isNull()){
             feature->getFeature()->addFunction(function);
         }
-        if(mConfig.getIsValid() && !feature->getGeometry().isNull()){
+        if(mConfig.getIsValid() && !feature->getGeometry()->getMyMasterGeometry()->getActual().isNull()){
             feature->getGeometry()->getMyMasterGeometry()->setMeasurementConfig(mConfig);
         }
         this->job->blockSignals(false);
