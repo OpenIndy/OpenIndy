@@ -37,7 +37,8 @@ INCLUDEPATH += \
     $$PWD/../ui/dialogs \
     $$PWD/../ui/widgets \
     $$PWD/../ui/actions \
-    $$PWD/../ui/selectionmodels
+    $$PWD/../ui/selectionmodels \
+    $$PWD/../models/featureTableTreeModel
 
 # source files
 SOURCES += \
@@ -131,7 +132,9 @@ SOURCES += \
     $$PWD/../models/treeitems/bundlegeometryitem.cpp \
     $$PWD/../models/treeitems/bundlestationitem.cpp \
     $$PWD/../models/bundlegeometriesmodel.cpp \
-    $$PWD/../models/bundlestationsmodel.cpp
+    $$PWD/../models/bundlestationsmodel.cpp \
+    $$PWD/../models/featureTableTreeModel/featureitem.cpp \
+    $$PWD/../models/featureTableTreeModel/featuretabletreemodel.cpp
 
 # header files
 HEADERS  += \
@@ -224,7 +227,9 @@ HEADERS  += \
     $$PWD/../models/treeitems/bundlegeometryitem.h \
     $$PWD/../models/treeitems/bundlestationitem.h \
     $$PWD/../models/bundlegeometriesmodel.h \
-    $$PWD/../models/bundlestationsmodel.h
+    $$PWD/../models/bundlestationsmodel.h \
+    ../models/featureTableTreeModel/featureitem.h \
+    ../models/featureTableTreeModel/featuretabletreemodel.h
 
 # ui files
 FORMS    += \

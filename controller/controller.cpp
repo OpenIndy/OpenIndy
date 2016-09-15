@@ -1944,12 +1944,12 @@ void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > 
         }
 
         //check if the feature is a nominal geometry
-        /*if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
-            continue;
-        }*/
-        if(!feature->getMasterGeometry().isNull() && !feature->getMasterGeometry()->getActual().isNull()){
+        if(feature->getGeometry().isNull() || feature->getGeometry()->getIsNominal() || feature->getGeometry()->getMyMasterGeometry().isNull()){
             continue;
         }
+        /*if(!feature->getGeometry().isNull() && !feature->getMasterGeometry()->getActual().isNull()){
+            continue;
+        }*/
 
         //load function plugin
         QPointer<Function> function(NULL);
@@ -1966,9 +1966,7 @@ void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > 
             feature->getGeometry()->getMyMasterGeometry()->setMeasurementConfig(mConfig);
         }
         this->job->blockSignals(false);
-
     }
-
 }
 
 /*!
