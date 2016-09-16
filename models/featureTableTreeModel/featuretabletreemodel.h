@@ -23,6 +23,7 @@ class FeatureTableTreeModel : public QAbstractItemModel
 public:
 
     explicit FeatureTableTreeModel(const QPointer<OiJob> &job, QObject *parent = 0);
+    explicit FeatureTableTreeModel(QObject *parent = 0);
     ~FeatureTableTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -33,9 +34,19 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
+    const QPointer<OiJob> &getCurrentJob() const;
+    void setCurrentJob(const QPointer<OiJob> &job);
+
+    void deleteChildren();
+
 private:
 
-    void setupModelData(FeatureItem *parent);
+    void setupModelData();
+
+    void updateModel();
+
+    void connectJob();
+    void disconnectJob();
 
     FeatureItem *rootItem;
 

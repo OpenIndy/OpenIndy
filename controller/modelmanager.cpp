@@ -55,6 +55,7 @@ QStringListModel ModelManager::scalarEntityTypeNamesModel;
 QStringListModel ModelManager::actualNominalFilterModel;
 BundleSystemsModel ModelManager::bundleSystemsModel;
 BundleTemplatesModel ModelManager::bundleTemplatesModel;
+FeatureTableTreeModel ModelManager::featureTableTreeModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -272,6 +273,15 @@ AvailableElementsTreeViewProxyModel &ModelManager::getAvailableElementsTreeViewP
  */
 UsedElementsModel &ModelManager::getUsedElementsModel(){
     return ModelManager::usedElementsModel;
+}
+
+/*!
+ * \brief ModelManager::getFeatureTableTreeModel
+ * \return
+ */
+FeatureTableTreeModel &ModelManager::getFeatureTableTreeModel()
+{
+    return ModelManager::featureTableTreeModel;
 }
 
 /*!
@@ -857,6 +867,7 @@ void ModelManager::updateJob(){
     ModelManager::observationModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::readingModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::bundleSystemsModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::featureTableTreeModel.setCurrentJob(ModelManager::currentJob);
 
     //connect the job to slots in model manager
     QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);

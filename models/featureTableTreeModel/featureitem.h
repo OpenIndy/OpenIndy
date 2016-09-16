@@ -15,6 +15,8 @@ using namespace oi;
 
 class FeatureItem
 {
+    friend class FeatureItem;
+
 public:
     explicit FeatureItem(const QPointer<FeatureWrapper> &data, FeatureViewState state, FeatureItem *parantItem = 0);
     explicit FeatureItem(FeatureItem *parentItem = 0);
@@ -30,6 +32,8 @@ public:
     QVariant data(int column);
     int row() const;
     FeatureItem *parentItem();
+
+    void deleteChildren();
 
 private:
 

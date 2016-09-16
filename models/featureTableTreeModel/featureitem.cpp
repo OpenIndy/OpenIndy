@@ -10,6 +10,7 @@ FeatureItem::FeatureItem(const QPointer<FeatureWrapper> &data, FeatureViewState 
 {
     m_itemData = data;
     m_state = state;
+    m_parentItem = parantItem;
 }
 
 /*!
@@ -36,6 +37,7 @@ FeatureItem::~FeatureItem()
 void FeatureItem::appendChild(FeatureItem *child)
 {
     m_childItems.append(child);
+    child->m_parentItem = this;
 }
 
 /*!
@@ -84,161 +86,510 @@ int FeatureItem::columnCount() const
  */
 QVariant FeatureItem::data(int column)
 {
-
     if(m_itemData.isNull()){
+        return QVariant();
+    }
+
+    //get the display attribute
+    int attr = getFeatureDisplayAttributes().at(column);
+
+    if(!getIsFeatureDisplayAttribute(attr)){
         return QVariant();
     }
 
     ////////////////////////////////
     //header for master geometries//
     ////////////////////////////////
-    if(m_state == eMasterGeomHeader){
+    if(m_state == eNoMasterGeometry){
 
-        switch (column) {
-        case 0:
+        switch ((FeatureDisplayAttributes)attr) {
+        case eFeatureDisplayType:
             return m_itemData->getFeature()->getDisplayType();
             break;
-        case 1:
+        case eFeatureDisplayName:
             return m_itemData->getFeature()->getFeatureName();
             break;
-        case 3:
+        case eFeatureDisplayComment:
+            return m_itemData->getFeature()->getComment();
+            break;
+        case eFeatureDisplayGroup:
             return m_itemData->getFeature()->getGroupName();
             break;
-        case 10:
-            return m_itemData->getMasterGeometry()->getMeasurementConfig().getName();
+        case eFeatureDisplayIsSolved:
+            return m_itemData->getFeature()->getIsSolved();
+            break;
+        case eFeatureDisplayIsUpdated:
+            return m_itemData->getFeature()->getDisplayIsUpdated();
+            break;
+        case eFeatureDisplayFunctions:
+            return m_itemData->getFeature()->getDisplayFunctions();
+            break;
+        case eFeatureDisplayUsedFor:
+            return m_itemData->getFeature()->getDisplayUsedFor();
+            break;
+        case eFeatureDisplayPreviouslyNeeded:
+            return m_itemData->getFeature()->getDisplayPreviouslyNeeded();
+            break;
+        case eFeatureDisplayStDev:
+            return m_itemData->getFeature()->getDisplayStDev(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayMeasurementConfig:
+            return m_itemData->getFeature()->getDisplayMeasurementConfig();
+            break;
+        case eFeatureDisplayObservations:
+            return m_itemData->getFeature()->getDisplayObservations();
+            break;
+        case eFeatureDisplayX:
+            return m_itemData->getFeature()->getDisplayX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayY:
+            return m_itemData->getFeature()->getDisplayY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayZ:
+            return m_itemData->getFeature()->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayPrimaryI:
+            return m_itemData->getFeature()->getDisplayPrimaryI(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            break;
+        case eFeatureDisplayPrimaryJ:
+            return m_itemData->getFeature()->getDisplayPrimaryJ(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            break;
+        case eFeatureDisplayPrimaryK:
+            return m_itemData->getFeature()->getDisplayPrimaryK(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            break;
+        case eFeatureDisplayRadiusA:
+            return m_itemData->getFeature()->getDisplayRadiusA(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                               this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayRadiusB:
+            return m_itemData->getFeature()->getDisplayRadiusB(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                               this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplaySecondaryI:
+            return m_itemData->getFeature()->getDisplaySecondaryI(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            break;
+        case eFeatureDisplaySecondaryJ:
+            return m_itemData->getFeature()->getDisplaySecondaryJ(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            break;
+        case eFeatureDisplaySecondaryK:
+            return m_itemData->getFeature()->getDisplaySecondaryK(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            break;
+        case eFeatureDisplayAperture:
+            return m_itemData->getFeature()->getDisplayAperture(this->parameterDisplayConfig.getDisplayUnit(eAngular),
+                                                                this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            break;
+        case eFeatureDisplayA:
+            return m_itemData->getFeature()->getDisplayA(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayB:
+            return m_itemData->getFeature()->getDisplayB(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayC:
+            return m_itemData->getFeature()->getDisplayC(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayAngle:
+            return m_itemData->getFeature()->getDisplayAngle(this->parameterDisplayConfig.getDisplayUnit(eAngular),
+                                                             this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            break;
+        case eFeatureDisplayDistance:
+            return m_itemData->getFeature()->getDisplayDistance(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayMeasurementSeries:
+            return m_itemData->getFeature()->getDisplayMeasurementSeries(this->parameterDisplayConfig.getDisplayUnit(eDimensionless),
+                                                                         this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            break;
+        case eFeatureDisplayTemperature:
+            return m_itemData->getFeature()->getDisplayTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
+                                                                   this->parameterDisplayConfig.getDisplayDigits(eTemperature));
+            break;
+        case eFeatureDisplayLength:
+            return m_itemData->getFeature()->getDisplayLength(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayExpansionOriginX:
+            return m_itemData->getFeature()->getDisplayExpansionOriginX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayExpansionOriginY:
+            return m_itemData->getFeature()->getDisplayExpansionOriginY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            break;
+        case eFeatureDisplayExpansionOriginZ:
+            return m_itemData->getFeature()->getDisplayExpansionOriginZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
         default:
             return QVariant();
             break;
         }
 
-     ///////////////////////
-    //actuals and nominals//
     ////////////////////////
-    }else if(m_state == eActualFeature || m_state == eNominalFeature){
-        switch (column) {
-        case 0:
-            return m_itemData->getFeature()->getFeatureName();
+    //actuals of mastergeom//
+    ////////////////////////
+    }else if(m_state == eActualFeature){
+        switch ((FeatureDisplayAttributes)attr) {
+        case eFeatureDisplayType:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayType();
+            }
+            return m_itemData->getMasterGeometry()->getNominals().first()->getDisplayType();
             break;
-        case 1:
-            return m_itemData->getFeature()->getFeatureName();
+        case eFeatureDisplayName:
+            return m_itemData->getMasterGeometry()->getFeatureName();
             break;
-        case 2:
-            return m_itemData->getFeature()->getComment();
+        case eFeatureDisplayComment:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getComment();
+            }
+            return QVariant();
             break;
-        case 3:
-            return m_itemData->getFeature()->getGroupName();
+        case eFeatureDisplayGroup:
+            return m_itemData->getMasterGeometry()->getGroupName();
             break;
-        case 4:
-            return m_itemData->getFeature()->getIsSolved();
+        case eFeatureDisplayIsSolved:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getIsSolved();
+            }
+            return QVariant();
             break;
-        case 5:
-            return m_itemData->getFeature()->getDisplayIsUpdated();
+        case eFeatureDisplayIsUpdated:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayIsUpdated();
+            }
+            return QVariant();
             break;
-        case 6:
+        case eFeatureDisplayFunctions:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayFunctions();
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayUsedFor:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayUsedFor();
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayPreviouslyNeeded:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayPreviouslyNeeded();
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayStDev:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayStDev(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                     this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayMeasurementConfig:
+            return m_itemData->getMasterGeometry()->getDisplayMeasurementConfig();
+            break;
+        case eFeatureDisplayObservations:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayObservations();
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayX:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayY:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayZ:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayPrimaryI:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayPrimaryI(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayPrimaryJ:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayPrimaryJ(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayPrimaryK:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayPrimaryK(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayRadiusA:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayRadiusA(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                       this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayRadiusB:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayRadiusB(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                       this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplaySecondaryI:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplaySecondaryI(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplaySecondaryJ:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplaySecondaryJ(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplaySecondaryK:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplaySecondaryK(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayAperture:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayAperture(this->parameterDisplayConfig.getDisplayUnit(eAngular),
+                                                                                        this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayA:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayA(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayB:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayB(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayC:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayC(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayAngle:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayAngle(this->parameterDisplayConfig.getDisplayUnit(eAngular),
+                                                                                     this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayDistance:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayDistance(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayMeasurementSeries:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayMeasurementSeries(this->parameterDisplayConfig.getDisplayUnit(eDimensionless),
+                                                                                                 this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayTemperature:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
+                                                                                           this->parameterDisplayConfig.getDisplayDigits(eTemperature));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayLength:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayLength(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                      this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayExpansionOriginX:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayExpansionOriginX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayExpansionOriginY:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayExpansionOriginY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        case eFeatureDisplayExpansionOriginZ:
+            if(!m_itemData->getMasterGeometry()->getActual().isNull()){
+                return m_itemData->getMasterGeometry()->getActual()->getDisplayExpansionOriginZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }
+            return QVariant();
+            break;
+        default:
+            return QVariant();
+            break;
+        }
+
+    /////////////////////////////////////
+    //nominal for master geometries//
+    /////////////////////////////////////
+    }else if(m_state == eNominalFeature){
+
+        switch ((FeatureDisplayAttributes)attr) {
+        case eFeatureDisplayType:
+            return m_itemData->getFeature()->getDisplayType();
+            break;
+        case eFeatureDisplayName:
+            return  m_itemData->getGeometry()->getMyMasterGeometry()->getFeatureName();
+            break;
+        case eFeatureDisplayComment:
+                return  m_itemData->getFeature()->getComment();
+            return QVariant();
+            break;
+        case eFeatureDisplayGroup:
+            return m_itemData->getGeometry()->getMyMasterGeometry()->getGroupName();
+            break;
+        case eFeatureDisplayIsSolved:
+            return  m_itemData->getFeature()->getIsSolved();
+            break;
+        case eFeatureDisplayIsUpdated:
+                return  m_itemData->getFeature()->getDisplayIsUpdated();
+            break;
+        case eFeatureDisplayFunctions:
             return m_itemData->getFeature()->getDisplayFunctions();
             break;
-        case 7:
-            return m_itemData->getFeature()->getDisplayUsedFor();
+        case eFeatureDisplayUsedFor:
+            return  m_itemData->getFeature()->getDisplayUsedFor();
             break;
-        case 8:
-            return m_itemData->getFeature()->getDisplayPreviouslyNeeded();
+        case eFeatureDisplayPreviouslyNeeded:
+            return  m_itemData->getFeature()->getDisplayPreviouslyNeeded();
             break;
-        case 9:
-            return m_itemData->getFeature()->getDisplayStDev(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eFeatureDisplayStDev:
+            return  m_itemData->getFeature()->getDisplayStDev(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                                                     this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 10:
-            return QVariant(); //only master geom has measurement config
+        case eFeatureDisplayMeasurementConfig:
+            //return m_itemData->getMasterGeometry()->getDisplayMeasurementConfig();
+            return QVariant();
             break;
-        case 11:
+        case eFeatureDisplayObservations:
             return m_itemData->getFeature()->getDisplayObservations();
             break;
-        case 12:
+        case eFeatureDisplayX:
             return m_itemData->getFeature()->getDisplayX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 13:
+        case eFeatureDisplayY:
             return m_itemData->getFeature()->getDisplayY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 14:
+        case eFeatureDisplayZ:
             return m_itemData->getFeature()->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 15:
+        case eFeatureDisplayPrimaryI:
             return m_itemData->getFeature()->getDisplayPrimaryI(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 16:
+        case eFeatureDisplayPrimaryJ:
             return m_itemData->getFeature()->getDisplayPrimaryJ(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 17:
+        case eFeatureDisplayPrimaryK:
             return m_itemData->getFeature()->getDisplayPrimaryK(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 18:
+        case eFeatureDisplayRadiusA:
             return m_itemData->getFeature()->getDisplayRadiusA(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                               this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                       this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 19:
+        case eFeatureDisplayRadiusB:
             return m_itemData->getFeature()->getDisplayRadiusB(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                               this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                       this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 20:
+        case eFeatureDisplaySecondaryI:
             return m_itemData->getFeature()->getDisplaySecondaryI(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 21:
+        case eFeatureDisplaySecondaryJ:
             return m_itemData->getFeature()->getDisplaySecondaryJ(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 22:
+        case eFeatureDisplaySecondaryK:
             return m_itemData->getFeature()->getDisplaySecondaryK(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 23:
+        case eFeatureDisplayAperture:
             return m_itemData->getFeature()->getDisplayAperture(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                                                this->parameterDisplayConfig.getDisplayDigits(eAngular));
+                                                                                        this->parameterDisplayConfig.getDisplayDigits(eAngular));
             break;
-        case 24:
+        case eFeatureDisplayA:
             return m_itemData->getFeature()->getDisplayA(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 25:
+        case eFeatureDisplayB:
             return m_itemData->getFeature()->getDisplayB(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 26:
+        case eFeatureDisplayC:
             return m_itemData->getFeature()->getDisplayC(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 27:
+        case eFeatureDisplayAngle:
             return m_itemData->getFeature()->getDisplayAngle(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                                             this->parameterDisplayConfig.getDisplayDigits(eAngular));
+                                                                                     this->parameterDisplayConfig.getDisplayDigits(eAngular));
             break;
-        case 28:
+        case eFeatureDisplayDistance:
             return m_itemData->getFeature()->getDisplayDistance(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 29:
+        case eFeatureDisplayMeasurementSeries:
             return m_itemData->getFeature()->getDisplayMeasurementSeries(this->parameterDisplayConfig.getDisplayUnit(eDimensionless),
-                                                                         this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+                                                                                                 this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 30:
+        case eFeatureDisplayTemperature:
             return m_itemData->getFeature()->getDisplayTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
-                                                                   this->parameterDisplayConfig.getDisplayDigits(eTemperature));
+                                                                                           this->parameterDisplayConfig.getDisplayDigits(eTemperature));
             break;
-        case 31:
+        case eFeatureDisplayLength:
             return m_itemData->getFeature()->getDisplayLength(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                      this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 32:
+        case eFeatureDisplayExpansionOriginX:
             return m_itemData->getFeature()->getDisplayExpansionOriginX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 33:
+        case eFeatureDisplayExpansionOriginY:
             return m_itemData->getFeature()->getDisplayExpansionOriginY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 34:
+        case eFeatureDisplayExpansionOriginZ:
             return m_itemData->getFeature()->getDisplayExpansionOriginZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                                                                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
         default:
             return QVariant();
@@ -249,127 +600,127 @@ QVariant FeatureItem::data(int column)
     //differences for master geometries//
     /////////////////////////////////////
     }else if(m_state == eDifferenceFeature){
-        switch (column) {
-        case 0:
+        switch ((FeatureDisplayAttributes)attr) {
+        case eFeatureDisplayType:
+            return m_itemData->getFeature()->getDisplayType();
+            break;
+        case eFeatureDisplayName:
             return m_itemData->getFeature()->getFeatureName();
             break;
-        case 1:
-            return m_itemData->getFeature()->getFeatureName();
-            break;
-        case 2:
+        case eFeatureDisplayComment:
             return m_itemData->getFeature()->getComment();
             break;
-        case 3:
+        case eFeatureDisplayGroup:
             return m_itemData->getFeature()->getGroupName();
             break;
-        case 4:
+        case eFeatureDisplayIsSolved:
             return m_itemData->getFeature()->getIsSolved();
             break;
-        case 5:
+        case eFeatureDisplayIsUpdated:
             return m_itemData->getFeature()->getDisplayIsUpdated();
             break;
-        case 6:
+        case eFeatureDisplayFunctions:
             return m_itemData->getFeature()->getDisplayFunctions();
             break;
-        case 7:
+        case eFeatureDisplayUsedFor:
             return m_itemData->getFeature()->getDisplayUsedFor();
             break;
-        case 8:
+        case eFeatureDisplayPreviouslyNeeded:
             return m_itemData->getFeature()->getDisplayPreviouslyNeeded();
             break;
-        case 9:
+        case eFeatureDisplayStDev:
             return m_itemData->getFeature()->getDisplayStDev(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                              this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 10:
+        case eFeatureDisplayMeasurementConfig:
             return QVariant(); //only master geom has measurement config
             break;
-        case 11:
+        case eFeatureDisplayObservations:
             return m_itemData->getFeature()->getDisplayObservations();
             break;
-        case 12:
+        case eFeatureDisplayX:
             return m_itemData->getFeature()->getDisplayX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                          this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 13:
+        case eFeatureDisplayY:
             return m_itemData->getFeature()->getDisplayY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                          this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 14:
+        case eFeatureDisplayZ:
             return m_itemData->getFeature()->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                          this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 15:
+        case eFeatureDisplayPrimaryI:
             return m_itemData->getFeature()->getDisplayPrimaryI(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 16:
+        case eFeatureDisplayPrimaryJ:
             return m_itemData->getFeature()->getDisplayPrimaryJ(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 17:
+        case eFeatureDisplayPrimaryK:
             return m_itemData->getFeature()->getDisplayPrimaryK(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 18:
+        case eFeatureDisplayRadiusA:
             return m_itemData->getFeature()->getDisplayRadiusA(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 19:
+        case eFeatureDisplayRadiusB:
             return m_itemData->getFeature()->getDisplayRadiusB(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 20:
+        case eFeatureDisplaySecondaryI:
             return m_itemData->getFeature()->getDisplaySecondaryI(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 21:
+        case eFeatureDisplaySecondaryJ:
             return m_itemData->getFeature()->getDisplaySecondaryJ(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 22:
+        case eFeatureDisplaySecondaryK:
             return m_itemData->getFeature()->getDisplaySecondaryK(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 23:
+        case eFeatureDisplayAperture:
             return m_itemData->getFeature()->getDisplayAperture(this->parameterDisplayConfig.getDisplayUnit(eAngular),
                                                                 this->parameterDisplayConfig.getDisplayDigits(eAngular));
             break;
-        case 24:
+        case eFeatureDisplayA:
             return m_itemData->getFeature()->getDisplayA(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                          this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 25:
+        case eFeatureDisplayB:
             return m_itemData->getFeature()->getDisplayB(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 26:
+        case eFeatureDisplayC:
             return m_itemData->getFeature()->getDisplayC(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 27:
+        case eFeatureDisplayAngle:
             return m_itemData->getFeature()->getDisplayAngle(this->parameterDisplayConfig.getDisplayUnit(eAngular),
                                                              this->parameterDisplayConfig.getDisplayDigits(eAngular));
             break;
-        case 28:
+        case eFeatureDisplayDistance:
             return m_itemData->getFeature()->getDisplayDistance(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 29:
+        case eFeatureDisplayMeasurementSeries:
             return m_itemData->getFeature()->getDisplayMeasurementSeries(this->parameterDisplayConfig.getDisplayUnit(eDimensionless),
                                                                          this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
             break;
-        case 30:
+        case eFeatureDisplayTemperature:
             return m_itemData->getFeature()->getDisplayTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
                                                                    this->parameterDisplayConfig.getDisplayDigits(eTemperature));
             break;
-        case 31:
+        case eFeatureDisplayLength:
             return m_itemData->getFeature()->getDisplayLength(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                              this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 32:
+        case eFeatureDisplayExpansionOriginX:
             return m_itemData->getFeature()->getDisplayExpansionOriginX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 33:
+        case eFeatureDisplayExpansionOriginY:
             return m_itemData->getFeature()->getDisplayExpansionOriginY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
-        case 34:
+        case eFeatureDisplayExpansionOriginZ:
             return m_itemData->getFeature()->getDisplayExpansionOriginZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
             break;
@@ -388,7 +739,7 @@ QVariant FeatureItem::data(int column)
  */
 int FeatureItem::row() const
 {
-    if(m_parentItem){
+    if(m_parentItem != NULL){
         return m_parentItem->m_childItems.indexOf(const_cast<FeatureItem*>(this));
     }
     return 0;
@@ -401,4 +752,13 @@ int FeatureItem::row() const
 FeatureItem *FeatureItem::parentItem()
 {
     return m_parentItem;
+}
+
+/*!
+ * \brief FeatureItem::deleteChildren
+ */
+void FeatureItem::deleteChildren()
+{
+    qDeleteAll(this->m_childItems);
+    this->m_childItems.clear();
 }

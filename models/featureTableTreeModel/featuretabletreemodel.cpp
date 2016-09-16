@@ -8,10 +8,20 @@
 FeatureTableTreeModel::FeatureTableTreeModel(const QPointer<OiJob> &job, QObject *parent)
     : QAbstractItemModel(parent)
 {
-    this->currentJob = job;
+    rootItem = new FeatureItem(NULL);
 
-    rootItem = new FeatureItem();
-    this->setupModelData(rootItem);
+    this->setCurrentJob(job);
+
+    this->setupModelData();
+}
+
+/*!
+ * \brief FeatureTableTreeModel::FeatureTableTreeModel
+ * \param parent
+ */
+FeatureTableTreeModel::FeatureTableTreeModel(QObject *parent) : QAbstractItemModel(parent)
+{
+    rootItem = new FeatureItem(NULL);
 }
 
 /*!
@@ -33,11 +43,24 @@ QVariant FeatureTableTreeModel::data(const QModelIndex &index, int role) const
     if(!index.isValid()){
         return QVariant();
     }
-    if(role != Qt::DisplayRole){
+
+    FeatureItem *item = static_cast<FeatureItem*>(index.internalPointer());
+
+    if(!item){
         return QVariant();
     }
 
-    //Datenlogik implementieren
+    if(role == Qt::DisplayRole){
+        return item->data(index.column());
+    }else if(role == Qt::FontRole){
+
+        if(item->parentItem() == rootItem){
+            QFont font;
+            font.setBold(true);
+            return font;
+        }
+    }
+    return QVariant();
 }
 
 /*!
@@ -239,37 +262,126 @@ int FeatureTableTreeModel::columnCount(const QModelIndex &parent) const
 }
 
 /*!
+ * \brief FeatureTableTreeModel::getCurrentJob
+ * \return
+ */
+const QPointer<OiJob> &FeatureTableTreeModel::getCurrentJob() const
+{
+    return this->currentJob;
+}
+
+/*!
+ * \brief FeatureTableTreeModel::setCurrentJob
+ * \param job
+ */
+void FeatureTableTreeModel::setCurrentJob(const QPointer<OiJob> &job)
+{
+    if(!job.isNull()){
+
+        //disconnect current job
+        if(!this->currentJob.isNull()){
+            this->disconnectJob();
+        }
+        this->currentJob = job;
+        this->connectJob();
+        this->updateModel();
+    }
+}
+
+/*!
  * \brief FeatureTableTreeModel::setupModelData
  */
-void FeatureTableTreeModel::setupModelData(FeatureItem *parent)
+void FeatureTableTreeModel::setupModelData()
 {
-    if(parent == NULL){
+    if(rootItem == NULL){
         return;
     }
+
+    //start resetting the model
+    emit this->beginResetModel();
+
+    //delete the old tree hierarchy
+    this->rootItem->deleteChildren();
 
     foreach (QPointer<FeatureWrapper> feature, this->currentJob->getFeaturesList()) {
 
         switch (feature->getFeatureTypeEnum()) {
         case eMasterGeometryFeature:{
-            FeatureItem *fw = new FeatureItem(feature, eMasterGeomHeader);
+            FeatureItem *fw = new FeatureItem(feature, eActualFeature);
 
             bool act = false;
             bool nom = false;
             if(!feature->getMasterGeometry()->getActual().isNull()){
-                FeatureItem *fwAct = new FeatureItem(feature->getMasterGeometry()->getActual()->getFeatureWrapper(), eActualFeature);
+                act = true;
             }
+
+            //solved state für nominals durchlaufen um aktives nominal zu finden
             if(feature->getMasterGeometry()->getNominals().size()> 0){
-                FeatureItem *fwNom = new FeatureItem(feature->getMasterGeometry()->getNominals().first()->getFeatureWrapper(),eNominalFeature);
+                foreach (QPointer<Geometry> geom, feature->getMasterGeometry()->getNominals()) {
+                    if(geom->getIsSolved()){
+                        FeatureItem *fwNom = new FeatureItem(geom->getFeatureWrapper(),eNominalFeature);
+                        fw->appendChild(fwNom);
+                        nom = true;
+                    }
+                }
             }
             if(act && nom){
                 FeatureItem *fwActNom = new FeatureItem(feature, eDifferenceFeature);
+                fw->appendChild(fwActNom);
             }
+            rootItem->appendChild(fw);
             break;
         }default:{
-            FeatureItem *fw = new FeatureItem(feature,eActualFeature);
-            parent->appendChild(fw);
+            FeatureItem *fw = new FeatureItem(feature,eNoMasterGeometry);
+            rootItem->appendChild(fw);
             break;
         }
         }
     }
+    //reset finished
+    emit this->endResetModel();
+}
+
+/*!
+ * \brief FeatureTableTreeModel::updateModel
+ */
+void FeatureTableTreeModel::updateModel()
+{
+    this->setupModelData();
+    emit this->layoutAboutToBeChanged();
+    emit this->layoutChanged();
+}
+
+/*!
+ * \brief FeatureTableTreeModel::connectJob
+ */
+void FeatureTableTreeModel::connectJob()
+{
+    QObject::connect(this->currentJob.data(), &OiJob::featureSetChanged, this, &FeatureTableTreeModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureTableTreeModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableTreeModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableTreeModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableTreeModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableTreeModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableTreeModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableTreeModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableTreeModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::geometryIsCommonChanged, this, &FeatureTableTreeModel::updateModel, Qt::AutoConnection);
+}
+
+/*!
+ * \brief FeatureTableTreeModel::disconnectJob
+ */
+void FeatureTableTreeModel::disconnectJob()
+{
+    QObject::disconnect(this->currentJob.data(), &OiJob::featureSetChanged, this, &FeatureTableTreeModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureTableTreeModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableTreeModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableTreeModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableTreeModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableTreeModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableTreeModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableTreeModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableTreeModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::geometryIsCommonChanged, this, &FeatureTableTreeModel::updateModel);
 }

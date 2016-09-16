@@ -34,6 +34,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //initially resize table view to fit the default job
     this->resizeTableView();
 
+    this->tabifyDockWidget(this->ui->dockWidget_Console,this->ui->dockWidget_featureView);
+    this->tabifyDockWidget(this->ui->dockWidget_Console,this->ui->dockWidget_magnify);
+    this->ui->dockWidget_featureView->show();
+    this->ui->dockWidget_featureView->raise();
 }
 
 /*!
@@ -2057,6 +2061,8 @@ void MainWindow::assignModels(){
     TrafoParamDelegate *trafoParamTableDelegate = new TrafoParamDelegate();
     this->ui->tableView_trafoParams->setItemDelegate(trafoParamTableDelegate);
 
+    this->ui->treeView_features->setModel(&ModelManager::getFeatureTableTreeModel());
+
     //assign console model
     this->ui->listView_console->setModel(&Console::getInstance()->getConsoleModel());
 
@@ -2551,5 +2557,17 @@ void MainWindow::saveProjectAs()
     QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
     if(filename.compare("") != 0){
         emit this->saveProject(filename);
+    }
+}
+
+/*!
+ * \brief MainWindow::on_actionFeature_view_triggered
+ */
+void MainWindow::on_actionFeature_view_triggered()
+{
+    if(this->ui->dockWidget_featureView->isVisible()){
+        this->ui->dockWidget_featureView->setVisible(false);
+    }else{
+        this->ui->dockWidget_featureView->setVisible(true);
     }
 }

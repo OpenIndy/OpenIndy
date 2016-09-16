@@ -280,6 +280,8 @@ private slots:
     void bundleSelectionChanged();
     void bundleSettingsChanged();
 
+    void on_actionFeature_view_triggered();
+
 private:
     Ui::MainWindow *ui;
 

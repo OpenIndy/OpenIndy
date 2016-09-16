@@ -140,7 +140,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab_features">
          <attribute name="title">
@@ -148,30 +148,7 @@
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QTableView" name="tableView_features">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-image: url(:/Images/icons/openIndy_bg.png);
-border-color: rgb(170, 170, 127);
-gridline-color: rgb(170, 170, 127);
-background-repeat: no-repeat;
-background-position: center center;</string>
-            </property>
-            <property name="showGrid">
-             <bool>true</bool>
-            </property>
-            <property name="sortingEnabled">
-             <bool>false</bool>
-            </property>
-           </widget>
+           <widget class="QTreeView" name="treeView_features"/>
           </item>
          </layout>
         </widget>
@@ -406,7 +383,7 @@ background-position: center center;</string>
      <x>0</x>
      <y>0</y>
      <width>1081</width>
-     <height>30</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -479,6 +456,7 @@ background-position: center center;</string>
     <addaction name="actionSimulation"/>
     <addaction name="actionSensor_real_time_data"/>
     <addaction name="actionMagnify"/>
+    <addaction name="actionFeature_view"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
     <property name="title">
@@ -753,6 +731,15 @@ color: rgb(255, 255, 255);
    <addaction name="actionCreate_pointcloud"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_magnify">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="windowTitle">
+    <string>magnify</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
@@ -822,6 +809,48 @@ color: rgb(255, 255, 255);
       </spacer>
      </item>
     </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_featureView">
+   <property name="windowTitle">
+    <string>features</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <item>
+      <widget class="QTableView" name="tableView_features">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-image: url(:/Images/icons/openIndy_bg.png);
+border-color: rgb(170, 170, 127);
+gridline-color: rgb(170, 170, 127);
+background-repeat: no-repeat;
+background-position: center center;</string>
+       </property>
+       <property name="showGrid">
+        <bool>true</bool>
+       </property>
+       <property name="sortingEnabled">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+    <zorder>tableView_features</zorder>
+    <zorder>tableView_features</zorder>
+    <zorder>tableView_features</zorder>
+    <zorder>tableView_features</zorder>
    </widget>
   </widget>
   <action name="actionOpen">
@@ -1273,6 +1302,11 @@ color: rgb(255, 255, 255);
   <action name="action_RunBundle">
    <property name="text">
     <string>run bundle</string>
+   </property>
+  </action>
+  <action name="actionFeature_view">
+   <property name="text">
+    <string>feature view</string>
    </property>
   </action>
  </widget>
