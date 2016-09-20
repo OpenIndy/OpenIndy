@@ -870,6 +870,18 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
 
 }
 
+void MainWindow::treeViewFeaturesSelectionChangedbyKeyboard(const QModelIndex &selected, const QModelIndex &deselected)
+{
+    if(selected.isValid() && deselected.isValid()){
+        this->on_treeView_features_clicked(selected);
+    }
+}
+
+void MainWindow::on_treeView_features_clicked(const QModelIndex &index)
+{
+    //TODO implement
+}
+
 /*!
  * \brief MainWindow::on_actionSet_function_triggered
  */
@@ -1270,6 +1282,7 @@ void MainWindow::showToolWidget(const QString &pluginName, const QString &toolNa
 void MainWindow::resizeTableView(){
     this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->treeView_features->header()->resizeSections(QHeaderView::ResizeToContents);
 }
 
 /*!
@@ -2061,7 +2074,7 @@ void MainWindow::assignModels(){
     TrafoParamDelegate *trafoParamTableDelegate = new TrafoParamDelegate();
     this->ui->tableView_trafoParams->setItemDelegate(trafoParamTableDelegate);
 
-    this->ui->treeView_features->setModel(&ModelManager::getFeatureTableTreeModel());
+    this->ui->treeView_features->setModel(&ModelManager::getFeatureTableTreeProxyModel());
 
     //assign console model
     this->ui->listView_console->setModel(&Console::getInstance()->getConsoleModel());
@@ -2098,14 +2111,20 @@ void MainWindow::initFeatureTableViews(){
     QObject::connect(this->ui->tableView_trafoParams->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
 
+    QObject::connect(this->ui->treeView_features->header(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
+    this->ui->treeView_features->header()->setDefaultSectionSize(22);
+
     //enable context menu
     this->ui->tableView_features->setContextMenuPolicy(Qt::CustomContextMenu);
     this->ui->tableView_trafoParams->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->ui->treeView_features->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    this->ui->treeView_features->header()->
 
     //change active feature by using up and down keys
     QObject::connect(this->ui->tableView_features->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewFeaturesSelectionChangedByKeyboard, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_trafoParams->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewTrafoParamsSelectionChangedByKeyboard, Qt::AutoConnection);
-
+    QObject::connect(this->ui->treeView_features->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::treeViewFeaturesSelectionChangedbyKeyboard,Qt::AutoConnection);
 }
 
 /*!

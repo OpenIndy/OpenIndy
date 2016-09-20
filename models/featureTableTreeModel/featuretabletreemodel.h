@@ -39,6 +39,16 @@ public:
 
     void deleteChildren();
 
+    FeatureItem* getRootItem();
+
+signals:
+
+    //#########################
+    //send messages to OpenIndy
+    //#########################
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private:
 
     void setupModelData();

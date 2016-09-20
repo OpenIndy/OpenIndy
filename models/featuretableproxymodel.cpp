@@ -120,10 +120,10 @@ bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
         return false;
     }
 
-    //check if the feature at index source_row exists
+    /*//check if the feature at index source_row exists
     if(source_model->getCurrentJob()->getFeatureCount() <= source_row){
         return false;
-    }
+    }*/
 
     //get and check the feature
     QPointer<FeatureWrapper> feature = source_model->getCurrentJob()->getFeaturesList().at(source_row);
@@ -133,6 +133,16 @@ bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
 
     //if the feature is a trafo param reject it
     if(!feature->getTrafoParam().isNull()){
+        return false;
+    }
+
+    //if the feature is a station reject it
+    if(!feature->getStation().isNull()){
+        return false;
+    }
+
+    //if the feature is a coordinate system reject it
+    if(!feature->getCoordinateSystem().isNull()){
         return false;
     }
 
@@ -177,7 +187,6 @@ bool FeatureTableProxyModel::filterAcceptsColumn(int source_column, const QModel
         return true;
     }
     return false;
-
 }
 
 /*!

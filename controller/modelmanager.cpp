@@ -56,6 +56,7 @@ QStringListModel ModelManager::actualNominalFilterModel;
 BundleSystemsModel ModelManager::bundleSystemsModel;
 BundleTemplatesModel ModelManager::bundleTemplatesModel;
 FeatureTableTreeModel ModelManager::featureTableTreeModel;
+FeatureTableTreeProxyModel ModelManager::featureTableTreeProxyModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -282,6 +283,15 @@ UsedElementsModel &ModelManager::getUsedElementsModel(){
 FeatureTableTreeModel &ModelManager::getFeatureTableTreeModel()
 {
     return ModelManager::featureTableTreeModel;
+}
+
+/*!
+ * \brief ModelManager::getFeatureTableTreeproxyModel
+ * \return
+ */
+FeatureTableTreeProxyModel &ModelManager::getFeatureTableTreeProxyModel()
+{
+    return ModelManager::featureTableTreeProxyModel;
 }
 
 /*!
@@ -1045,11 +1055,15 @@ void ModelManager::initFeatureTableModels(){
     ModelManager::featureTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
     ModelManager::trafoParamTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
 
+    ModelManager::featureTableTreeProxyModel.setSourceModel(&ModelManager::featureTableTreeModel);
+
     //connect models
     if(ModelManager::myInstance.isNull()){
         QObject::connect(&ModelManager::featureTableModel, &FeatureTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
         QObject::connect(&ModelManager::featureTableProxyModel, &FeatureTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
         QObject::connect(&ModelManager::trafoParamTableProxyModel, &TrafoParamTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+        QObject::connect(&ModelManager::featureTableTreeModel, &FeatureTableTreeModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+        QObject::connect(&ModelManager::featureTableTreeProxyModel, &FeatureTableTreeProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
     }
 
 }

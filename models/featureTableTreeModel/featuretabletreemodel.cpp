@@ -59,7 +59,11 @@ QVariant FeatureTableTreeModel::data(const QModelIndex &index, int role) const
             font.setBold(true);
             return font;
         }
+
+    }else if(role == Qt::CheckStateRole && item->getState() == eActualFeature){
+        //TODO implement check states
     }
+
     return QVariant();
 }
 
@@ -192,19 +196,21 @@ QModelIndex FeatureTableTreeModel::index(int row, int column, const QModelIndex 
         return QModelIndex();
     }
 
-    FeatureItem *parentItem;
+    FeatureItem *parentItem= NULL;
     if(!parent.isValid()){
         parentItem = rootItem;
     }else{
         parentItem = static_cast<FeatureItem*>(parent.internalPointer());
     }
-
-    FeatureItem *childItem = parentItem->child(row);
-    if(childItem){
-        return createIndex(row, column, childItem);
-    }else{
-        return QModelIndex();
+    if(parentItem != NULL){
+        FeatureItem *childItem = parentItem->child(row);
+        if(childItem){
+            return createIndex(row, column, childItem);
+        }else{
+            return QModelIndex();
+        }
     }
+    return QModelIndex();
 }
 
 /*!
@@ -218,14 +224,23 @@ QModelIndex FeatureTableTreeModel::parent(const QModelIndex &child) const
         return QModelIndex();
     }
 
-    FeatureItem *childItem = static_cast<FeatureItem*>(child.internalPointer());
+    /*FeatureItem *childItem = static_cast<FeatureItem*>(child.internalPointer());
     FeatureItem *parentItem = childItem->parentItem();
 
     if(parentItem == rootItem){
         return QModelIndex();
     }
+    return createIndex(parentItem->row(), 0, parentItem);*/
 
-    return createIndex(parentItem->row(), 0, parentItem);
+    FeatureItem *childItem = static_cast<FeatureItem*>(child.internalPointer());
+    if(childItem != NULL){
+        FeatureItem *parentItem = childItem->parentItem();
+        if (parentItem == NULL || parentItem == rootItem)
+            return QModelIndex();
+        return createIndex(parentItem->row(), 0, parentItem);
+    }else{
+        return QModelIndex();
+    }
 }
 
 /*!
@@ -244,6 +259,9 @@ int FeatureTableTreeModel::rowCount(const QModelIndex &parent) const
     }else{
         parentItem = static_cast<FeatureItem*>(parent.internalPointer());
     }
+    if(parentItem == NULL){
+        return 0;
+    }
     return parentItem->childCount();
 }
 
@@ -256,8 +274,10 @@ int FeatureTableTreeModel::columnCount(const QModelIndex &parent) const
 {
     if(parent.isValid()){
         return static_cast<FeatureItem*>(parent.internalPointer())->columnCount();
-    }else{
+    }else if(rootItem != NULL){
         return rootItem->columnCount();
+    }else{
+        return 0;
     }
 }
 
@@ -286,6 +306,15 @@ void FeatureTableTreeModel::setCurrentJob(const QPointer<OiJob> &job)
         this->connectJob();
         this->updateModel();
     }
+}
+
+/*!
+ * \brief FeatureTableTreeModel::getRootItem
+ * \return
+ */
+FeatureItem *FeatureTableTreeModel::getRootItem()
+{
+    return rootItem;
 }
 
 /*!
@@ -319,7 +348,7 @@ void FeatureTableTreeModel::setupModelData()
             if(feature->getMasterGeometry()->getNominals().size()> 0){
                 foreach (QPointer<Geometry> geom, feature->getMasterGeometry()->getNominals()) {
                     if(geom->getIsSolved()){
-                        FeatureItem *fwNom = new FeatureItem(geom->getFeatureWrapper(),eNominalFeature);
+                        FeatureItem *fwNom = new FeatureItem(feature,eNominalFeature);
                         fw->appendChild(fwNom);
                         nom = true;
                     }

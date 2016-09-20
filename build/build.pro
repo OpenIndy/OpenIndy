@@ -134,7 +134,8 @@ SOURCES += \
     $$PWD/../models/bundlegeometriesmodel.cpp \
     $$PWD/../models/bundlestationsmodel.cpp \
     $$PWD/../models/featureTableTreeModel/featureitem.cpp \
-    $$PWD/../models/featureTableTreeModel/featuretabletreemodel.cpp
+    $$PWD/../models/featureTableTreeModel/featuretabletreemodel.cpp \
+    $$PWD/../models/featureTableTreeModel/featuretabletreeproxymodel.cpp
 
 # header files
 HEADERS  += \
@@ -228,8 +229,9 @@ HEADERS  += \
     $$PWD/../models/treeitems/bundlestationitem.h \
     $$PWD/../models/bundlegeometriesmodel.h \
     $$PWD/../models/bundlestationsmodel.h \
-    ../models/featureTableTreeModel/featureitem.h \
-    ../models/featureTableTreeModel/featuretabletreemodel.h
+    $$PWD/../models/featureTableTreeModel/featureitem.h \
+    $$PWD/../models/featureTableTreeModel/featuretabletreemodel.h \
+    $$PWD/../models/featureTableTreeModel/featuretabletreeproxymodel.h
 
 # ui files
 FORMS    += \

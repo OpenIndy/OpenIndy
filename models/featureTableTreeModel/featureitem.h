@@ -35,6 +35,9 @@ public:
 
     void deleteChildren();
 
+    FeatureViewState getState();
+    QPointer<FeatureWrapper> getItemData();
+
 private:
 
     QList<FeatureItem*> m_childItems;
