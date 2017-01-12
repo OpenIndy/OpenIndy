@@ -753,6 +753,9 @@ color: rgb(255, 255, 255);
    <addaction name="actionCreate_pointcloud"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_magnify">
+   <property name="windowTitle">
+    <string>magnify</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>

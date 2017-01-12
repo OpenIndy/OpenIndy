@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //initially resize table view to fit the default job
     this->resizeTableView();
 
+    tabifyDockWidget(this->ui->dockWidget_Console, this->ui->dockWidget_magnify);
 }
 
 /*!
@@ -2409,8 +2410,9 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
     this->ui->label_magnifyName->setText(feature->getFeature()->getFeatureName());
     if(!feature->getGeometry().isNull()){
         this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nominal":"actual");
+    }else{
+        this->ui->label_magnifyActualNominal->setText("-/-");
     }
-    this->ui->label_magnifyActualNominal->setText("actual");
 
     //resize labels to maximum
     QFont fontActualNominal = this->ui->label_magnifyActualNominal->font();
