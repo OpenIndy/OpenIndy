@@ -1197,9 +1197,15 @@ void MainWindow::on_actionActivate_station_triggered(){
     }
     QModelIndex index = selection.at(0);
 
+    //get active feature to check station name
+    QPointer<FeatureWrapper> actStation = sourceModel->getActiveFeature();
+    if(actStation.isNull() || actStation->getFeature().isNull()){
+        return;
+    }
+
     //let the user confirm the task
     QMessageBox msgBox;
-    msgBox.setText(QString("Do you really want to activate station %1?").arg(index.data(Qt::DisplayRole).toString()));
+    msgBox.setText(QString("Do you really want to activate station %1?").arg(actStation->getFeature()->getFeatureName()));
     msgBox.setInformativeText("");
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox.setDefaultButton(QMessageBox::Yes);
