@@ -158,7 +158,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     //add sensor configs
     QList<SensorConfiguration> sConfigs;
     if(!ProjectExchanger::sConfigManager.isNull()){
-        sConfigs = ProjectExchanger::sConfigManager->getSavedSensorConfig();
+        sConfigs = ProjectExchanger::sConfigManager->getSavedSensorConfigs();
         sConfigs.append(ProjectExchanger::sConfigManager->getProjectSensorConfigs());
     }
     foreach(const SensorConfiguration &sConfig, sConfigs){
@@ -241,6 +241,15 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
         }
     }
 
+    //add project sensor configs to config manager
+    if(!ProjectExchanger::sConfigManager.isNull()){
+        foreach (const SensorConfiguration &sConfig, ProjectExchanger::mySConfigs.values()){
+            if(sConfig.getIsValid() && !sConfig.getIsSaved()){
+                ProjectExchanger::sConfigManager->addProjectSensorConfig(sConfig);
+            }
+         }
+    }
+
     //set active station and active coordinate system
     QDomElement activeStation = project.documentElement().firstChildElement("activeStation");
     QDomElement activeCoordinateSystem = project.documentElement().firstChildElement("activeCoordinateSystem");
@@ -280,6 +289,24 @@ QPointer<MeasurementConfigManager> &ProjectExchanger::getMeasurementConfigManage
  */
 void ProjectExchanger::setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &mConfigManager){
     ProjectExchanger::mConfigManager = mConfigManager;
+}
+
+/*!
+ * \brief ProjectExchanger::getSensorConfigManager
+ * \return
+ */
+QPointer<SensorConfigurationManager> &ProjectExchanger::getSensorConfigManager()
+{
+    return ProjectExchanger::sConfigManager;
+}
+
+/*!
+ * \brief ProjectExchanger::setSensorConfigManager
+ * \param sConfigManager
+ */
+void ProjectExchanger::setSensorConfigManager(const QPointer<SensorConfigurationManager> &sConfigManager)
+{
+    ProjectExchanger::sConfigManager = sConfigManager;
 }
 
 /*!

@@ -1755,6 +1755,7 @@ void Controller::initConfigManager(){
 
     //pass config manager to project exchanger
     ProjectExchanger::setMeasurementConfigManager(this->measurementConfigManager);
+    ProjectExchanger::setSensorConfigManager(this->sensorConfigManager);
 
     //pass config manager to request handler
     this->requestHandler.setMeasurementConfigManager(this->measurementConfigManager);

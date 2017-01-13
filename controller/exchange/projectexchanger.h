@@ -45,6 +45,9 @@ public:
     static QPointer<MeasurementConfigManager> &getMeasurementConfigManager();
     static void setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &mConfigManager);
 
+    static QPointer<SensorConfigurationManager> &getSensorConfigManager();
+    static void setSensorConfigManager(const QPointer<SensorConfigurationManager> &sConfigManager);
+
 private:
 
     //#############################
