@@ -19,6 +19,7 @@
 #include "util.h"
 #include "console.h"
 #include "measurementconfigmanager.h"
+#include "sensorconfigurationmanager.h"
 
 using namespace oi;
 
@@ -84,6 +85,7 @@ private:
     static QList<int> stationPoints;
 
     static QPointer<MeasurementConfigManager> mConfigManager;
+    static QPointer<SensorConfigurationManager> sConfigManager;
 
 };
 

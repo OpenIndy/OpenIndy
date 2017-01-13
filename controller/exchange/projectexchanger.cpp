@@ -10,6 +10,7 @@ QList<int> ProjectExchanger::stationPoints;
 QMap<QString, MeasurementConfig> ProjectExchanger::myMConfigs;
 QMap<QString, SensorConfiguration> ProjectExchanger::mySConfigs;
 QPointer<MeasurementConfigManager> ProjectExchanger::mConfigManager;
+QPointer<SensorConfigurationManager> ProjectExchanger::sConfigManager;
 
 /*!
  * \brief ProjectExchanger::saveProject
@@ -155,14 +156,18 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     configs.appendChild(measurementConfigs);
 
     //add sensor configs
-    /*QList<SensorConfiguration> sConfigs = OiConfigState::getAllSensorConfigs();
+    QList<SensorConfiguration> sConfigs;
+    if(!ProjectExchanger::sConfigManager.isNull()){
+        sConfigs = ProjectExchanger::sConfigManager->getSavedSensorConfig();
+        sConfigs.append(ProjectExchanger::sConfigManager->getProjectSensorConfigs());
+    }
     foreach(const SensorConfiguration &sConfig, sConfigs){
         QDomElement config = sConfig.toOpenIndyXML(project);
         if(!config.isNull()){
             sensorConfigs.appendChild(config);
         }
     }
-    configs.appendChild(sensorConfigs);*/
+    configs.appendChild(sensorConfigs);
 
     root.appendChild(configs);
 
