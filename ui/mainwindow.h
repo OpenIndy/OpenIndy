@@ -280,6 +280,8 @@ private slots:
     void bundleSelectionChanged();
     void bundleSettingsChanged();
 
+    void on_actionShortcut_import_triggered();
+
 private:
     Ui::MainWindow *ui;
 

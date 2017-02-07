@@ -2561,3 +2561,12 @@ void MainWindow::saveProjectAs()
         emit this->saveProject(filename);
     }
 }
+
+/*!
+ * \brief MainWindow::on_actionShortcut_import_triggered
+ * shortcut for import nominal features
+ */
+void MainWindow::on_actionShortcut_import_triggered()
+{
+    on_action_importNominals_triggered();
+}

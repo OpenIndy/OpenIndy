@@ -97,5 +97,6 @@
         <file>icons/toolbars/standard/Measurement Config.png</file>
         <file>icons/toolbars/standard/Sensor Set.png</file>
         <file>icons/toolbars/standard/Watch Window.png</file>
+        <file>icons/toolbars/standard/import_icon.PNG</file>
     </qresource>
 </RCC>

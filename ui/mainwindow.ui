@@ -544,6 +544,7 @@ background-position: center center;</string>
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
+   <addaction name="actionShortcut_import"/>
    <addaction name="actionControl_pad"/>
    <addaction name="actionSet_sensor"/>
    <addaction name="actionMeasurement_Configuration"/>
@@ -1276,6 +1277,18 @@ color: rgb(255, 255, 255);
   <action name="action_RunBundle">
    <property name="text">
     <string>run bundle</string>
+   </property>
+  </action>
+  <action name="actionShortcut_import">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/import_icon.PNG</normaloff>:/icons/icons/toolbars/standard/import_icon.PNG</iconset>
+   </property>
+   <property name="text">
+    <string>import</string>
+   </property>
+   <property name="toolTip">
+    <string>opens the import nominals dialog</string>
    </property>
   </action>
  </widget>
