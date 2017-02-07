@@ -121,6 +121,8 @@ void ImportNominalDialog::initModels(){
 
     //assign group names model
     this->ui->comboBox_groupNames->setModel(&ModelManager::getGroupNamesModel());
+    //Set group01 as default for import
+    this->ui->comboBox_groupNames->setCurrentText("Group01");
 
 }
 

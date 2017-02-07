@@ -1021,6 +1021,10 @@ void ModelManager::updateGroupsModel(){
     //add default entry (all groups)
     groups.push_front("All Groups");
 
+    if(groups.size() == 1 && !groups.contains("Group01")){
+        groups.append("Group01");
+    }
+
     ModelManager::groupNamesModel.setStringList(groups);
 
 }
