@@ -109,7 +109,7 @@ void ImportNominalDialog::initModels(){
     this->ui->comboBox_temperature_sa->setModel(&ModelManager::getUnitTypesModel(eTemperature));
 
     //set unit type defaults
-    this->ui->comboBox_distance_sa->setCurrentText(getUnitTypeName(eUnitMeter));
+    this->ui->comboBox_distance_sa->setCurrentText(getUnitTypeName(eUnitMilliMeter));
     this->ui->comboBox_angle_sa->setCurrentText(getUnitTypeName(eUnitDecimalDegree));
     this->ui->comboBox_temperature_sa->setCurrentText(getUnitTypeName(eUnitGrad));
 
