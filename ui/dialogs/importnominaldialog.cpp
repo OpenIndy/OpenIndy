@@ -116,6 +116,10 @@ void ImportNominalDialog::initModels(){
     //assign plugin model
     this->ui->comboBox_plugin_sa->setModel(&ModelManager::getPluginNamesModel());
 
+    if(ModelManager::getPluginNamesModel().stringList().contains("OpenIndy Default Plugin")){
+        this->ui->comboBox_plugin_sa->setCurrentText("OpenIndy Default Plugin");
+    }
+
     //assign nominal systems model
     this->ui->comboBox_system_sa->setModel(&ModelManager::getNominalSystemsModel());
 
