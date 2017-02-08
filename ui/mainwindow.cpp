@@ -1538,6 +1538,19 @@ void MainWindow::aimAndMeasureFeatures(){
  */
 void MainWindow::deleteFeatures(bool checked){
 
+    //security check, if you really want to delete
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("delete selected features");
+    msgBox.setText("Do you want to delete the selected features?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+
+    int ret = msgBox.exec();
+
+    if(ret == QMessageBox::No){
+        return;
+    }
+
     //init variables
     QSortFilterProxyModel *model = NULL;
     QItemSelectionModel *selectionModel = NULL;
