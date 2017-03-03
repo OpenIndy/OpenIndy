@@ -183,36 +183,6 @@ private:
 
     TrafoController trafoController;
 
-
-
-
-
-
-
-/*
- *
- *     //bool isGUIReady;
- *    //bool isSettingsReady;
-    //bool isCheckboxReady;
- *
- *    QThread listenerThread;
-
-    double az;
- *
- *     WatchWindowListener *listener;
-    int activeReadingType;
-
-    bool checkFeatureValid();
-
-    QString getUnitString(QString attribute);
-
-    bool isVisible;
-
-    void stopStream();
-    void startStream();
-
-*/
-
 };
 
 #endif // WATCHWINDOW_H

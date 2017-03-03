@@ -39,8 +39,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>582</width>
-        <height>328</height>
+        <width>578</width>
+        <height>316</height>
        </rect>
       </property>
       <attribute name="label">
@@ -52,8 +52,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>582</width>
-        <height>328</height>
+        <width>578</width>
+        <height>316</height>
        </rect>
       </property>
       <attribute name="label">
@@ -215,14 +215,14 @@
                   <item>
                    <widget class="QLabel" name="label_x">
                     <property name="text">
-                     <string>tolerance [m]</string>
+                     <string>tolerance [mm]</string>
                     </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QLineEdit" name="lineEdit_x">
                     <property name="text">
-                     <string>0.001</string>
+                     <string>0.1</string>
                     </property>
                    </widget>
                   </item>
@@ -256,14 +256,14 @@
                   <item>
                    <widget class="QLabel" name="label_y">
                     <property name="text">
-                     <string>tolerance [m]</string>
+                     <string>tolerance [mm]</string>
                     </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QLineEdit" name="lineEdit_y">
                     <property name="text">
-                     <string>0.001</string>
+                     <string>0.1</string>
                     </property>
                    </widget>
                   </item>
@@ -297,14 +297,14 @@
                   <item>
                    <widget class="QLabel" name="label_z">
                     <property name="text">
-                     <string>tolerance [m]</string>
+                     <string>tolerance [mm]</string>
                     </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QLineEdit" name="lineEdit_z">
                     <property name="text">
-                     <string>0.001</string>
+                     <string>0.1</string>
                     </property>
                    </widget>
                   </item>
@@ -338,14 +338,14 @@
                   <item>
                    <widget class="QLabel" name="label_d3d">
                     <property name="text">
-                     <string>tolerance [m]</string>
+                     <string>tolerance [mm]</string>
                     </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QLineEdit" name="lineEdit_d3d">
                     <property name="text">
-                     <string>0.001</string>
+                     <string>0.1</string>
                     </property>
                    </widget>
                   </item>
@@ -461,14 +461,14 @@
                   <item>
                    <widget class="QLabel" name="label_distance">
                     <property name="text">
-                     <string>tolerance [m]</string>
+                     <string>tolerance [mm]</string>
                     </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QLineEdit" name="lineEdit_distance">
                     <property name="text">
-                     <string>0.001</string>
+                     <string>0.1</string>
                     </property>
                    </widget>
                   </item>
