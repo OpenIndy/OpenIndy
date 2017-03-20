@@ -17,6 +17,12 @@ WatchWindowDialog::WatchWindowDialog(QWidget *parent) : QDialog(parent),
 
     //set up default settings
     this->getDefaultSettings();
+
+    Qt::WindowFlags flags = Qt::Window | Qt::WindowSystemMenuHint
+                                | Qt::WindowMinimizeButtonHint
+                                | Qt::WindowMaximizeButtonHint
+                                | Qt::WindowCloseButtonHint;
+    this->setWindowFlags(flags);
 }
 
 /*!
