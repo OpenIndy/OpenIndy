@@ -274,6 +274,11 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
             return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
         }else if(fAttr == eFeatureDisplayIsSolved){
             return (myFlags | Qt::ItemIsUserCheckable);
+        }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(fAttr == eFeatureDisplayX || fAttr == eFeatureDisplayY || fAttr == eFeatureDisplayZ ||
+                    fAttr == eFeatureDisplayPrimaryI || eFeatureDisplayPrimaryJ || fAttr == eFeatureDisplayPrimaryK){
+                return (myFlags | Qt::ItemIsEditable);
+            }
         }
 
     }else if(getIsTrafoParamDisplayAttribute(attr)){
@@ -375,6 +380,54 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 return true;
             }
         }
+        case eFeatureDisplayX:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownX, convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                return true;
+            }
+            break;
+        case eFeatureDisplayY:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownY,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                return true;
+            }
+            break;
+        case eFeatureDisplayZ:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownZ,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                return true;
+            }
+            break;
+        case eFeatureDisplayPrimaryI:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownPrimaryI,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                return true;
+            }
+            break;
+        case eFeatureDisplayPrimaryJ:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownPrimaryJ,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                return true;
+            }
+            break;
+        case eFeatureDisplayPrimaryK:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownPrimaryK,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                return true;
+            }
+            break;
         }
 
     }else if(getIsTrafoParamDisplayAttribute(attr) && role == Qt::EditRole){
