@@ -849,6 +849,9 @@ void ModelManager::updateJob(){
 
     //pass the job to all static models that need it
     ModelManager::featureTableModel.setCurrentJob(ModelManager::currentJob);
+
+    ModelManager::featureTableProxyModel.setCurrentJob(ModelManager::currentJob);
+
     ModelManager::featureTreeViewModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::activeFeatureFunctionsModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::functionTableProxyModel.setCurrentJob(ModelManager::currentJob);

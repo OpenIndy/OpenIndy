@@ -27,6 +27,8 @@ public:
 
     QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
+    bool activeFeatureIsNominal(const FeatureTableProxyModel *featureTablePM) const;
+
 };
 
 #endif // FEATURETABLEDELEGATE_H
