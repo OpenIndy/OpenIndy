@@ -1,5 +1,5 @@
 node {
-    try {
+    /*try {
         def currentWorkSpace = pwd()
         stage('compile debug') {
             bat '''call "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC\\vcvarsall.bat" x86_amd64
@@ -22,5 +22,5 @@ node {
     } finally {
         // Success or failure, always send notifications
         //notifyBuild(currentBuild.result)
-    }
+    }*/
 }
