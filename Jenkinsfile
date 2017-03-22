@@ -3,7 +3,7 @@ node {
         def currentWorkSpace = pwd()
 		stage('Checkout')
 			checkout scm
-        /*stage('compile debug') {
+        stage('compile debug') {
             bat '''call "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC\\vcvarsall.bat" x86_amd64
             "C:\\Qt\\5.5\\msvc2013_64\\bin\\qmake.exe" openIndy.pro -r -spec win32-msvc2013 "CONFIG+=debug"
             nmake clean
@@ -16,9 +16,6 @@ node {
             nmake clean
             nmake'''
             bat "echo build openIndy release finished"
-        }*/
-		stage('testen'){
-            bat (/echo "${currentWorkSpace}"/)
         }
     } catch (e) {
         // If there was an exception thrown, the build failed
