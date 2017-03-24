@@ -45,6 +45,8 @@ signals:
 
     void recalculateActiveFeature();
 
+    void setFunctionPos(int pos);
+
 private slots:
 
     //#################################
@@ -93,6 +95,7 @@ private:
     //widget with scalar input parameters
     ScalarParameterWidget *scalarParameterWidget;
 
+
     //##################################
     //methods to initialize GUI elements
     //##################################
@@ -102,7 +105,8 @@ private:
     void initGUI();
     void initModels();
 
-
+    void setFunctionParameters(const QModelIndex &index);
+    void setFunctionElements(const QModelIndex &index);
 
 
 

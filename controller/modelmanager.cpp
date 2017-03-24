@@ -55,6 +55,7 @@ QStringListModel ModelManager::scalarEntityTypeNamesModel;
 QStringListModel ModelManager::actualNominalFilterModel;
 BundleSystemsModel ModelManager::bundleSystemsModel;
 BundleTemplatesModel ModelManager::bundleTemplatesModel;
+FunctionWeightsTableModel ModelManager::functionWeightsTableModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -386,6 +387,15 @@ FunctionTableProxyModel &ModelManager::getFunctionTableProxyModel(){
  */
 ActiveFeatureFunctionsModel &ModelManager::getActiveFeatureFunctionsModel(){
     return ModelManager::activeFeatureFunctionsModel;
+}
+
+/*!
+ * \brief ModelManager::getFunctionWeightTableModel
+ * \return
+ */
+FunctionWeightsTableModel &ModelManager::getFunctionWeightTableModel()
+{
+    return ModelManager::functionWeightsTableModel;
 }
 
 /*!
@@ -860,6 +870,8 @@ void ModelManager::updateJob(){
     ModelManager::observationModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::readingModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::bundleSystemsModel.setCurrentJob(ModelManager::currentJob);
+
+    ModelManager::functionWeightsTableModel.setCurrentJob(ModelManager::currentJob);
 
     //connect the job to slots in model manager
     QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);

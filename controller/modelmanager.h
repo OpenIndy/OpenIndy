@@ -46,6 +46,7 @@
 #include "bundletemplatesmodel.h"
 #include "bundlestationsmodel.h"
 #include "bundlegeometriesmodel.h"
+#include "functionweightstablemodel.h"
 
 using namespace oi;
 
@@ -160,6 +161,7 @@ public:
     static FunctionTableModel &getFunctionTableModel();
     static FunctionTableProxyModel &getFunctionTableProxyModel();
     static ActiveFeatureFunctionsModel &getActiveFeatureFunctionsModel();
+    static FunctionWeightsTableModel &getFunctionWeightTableModel();
 
     //sensor models
     static QStringListModel &getSensorTypeNamesModel();
@@ -277,6 +279,7 @@ private:
     static FunctionTableProxyModel functionTableProxyModel;
     static ActiveFeatureFunctionsModel activeFeatureFunctionsModel;
     static AvailableFunctionsListModel functionsListModel;
+    static FunctionWeightsTableModel functionWeightsTableModel;
 
     //sensor models
     static QStringListModel sensorTypeNamesModel;

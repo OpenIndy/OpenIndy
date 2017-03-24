@@ -117,6 +117,9 @@ void FeatureFunctionsDialog::on_tableView_functionPlugins_doubleClicked(const QM
     model->addFunction(index);
 
     //set focus to function configuration tab
+    this->ui->tabWidget_functionParameter->setCurrentIndex(0);
+    this->ui->tabWidget_functionParameter->setTabEnabled(1,false);
+    this->ui->tabWidget_functionParameter->setTabEnabled(2,false);
     this->ui->tabWidget_functionSetter->setCurrentIndex(0);
 
 }
@@ -131,50 +134,24 @@ void FeatureFunctionsDialog::on_treeView_functions_clicked(const QModelIndex &in
     //check if a function item has been selected
     if(index.isValid() && !index.parent().isValid()){ //function item
 
-        //get and check active feature function model
-        ActiveFeatureFunctionsModel *model = static_cast<ActiveFeatureFunctionsModel *>(this->ui->treeView_functions->model());
-        if(model == NULL){
-            return;
-        }
+        emit this->setFunctionPos(index.row());
 
-        //set function dexcription
-        this->ui->textBrowser_description->setText(model->getFunctionDescription(index));
+        //check if weights are supported //TODO check if weights are suppported
 
-        //reset scalar parameter widget and add scalar function parameters
-        this->scalarParameterWidget->clearAll();
-        this->scalarParameterWidget->setIntParameter(model->getIntegerParameter(index));
-        this->scalarParameterWidget->setDoubleParameter(model->getDoubleParameter(index));
-        this->scalarParameterWidget->setStringParameter(model->getStringParameter(index), model->getStringParameterSelection(index));
-
-        //set visibility of widgets
-        this->ui->widget_element->setVisible(false);
-        this->ui->widget_customParameter->setVisible(true);
-        this->ui->widget_filter->setVisible(false);
+        this->setFunctionParameters(index);
+        this->ui->tabWidget_functionParameter->setTabEnabled(0,true);
+        this->ui->tabWidget_functionParameter->setCurrentIndex(0);
+        this->ui->tabWidget_functionParameter->setTabEnabled(1, false);
+        this->ui->tabWidget_functionParameter->setTabEnabled(2, false);
 
     }else if(index.isValid()){ //input element item
 
-        //get and check active feature function model
-        ActiveFeatureFunctionsModel *model = static_cast<ActiveFeatureFunctionsModel *>(this->ui->treeView_functions->model());
-        if(model == NULL){
-            return;
-        }
+        this->setFunctionElements(index);
 
-        //update function position and element index
-        AvailableElementsTreeViewProxyModel *availableElementsModel = static_cast<AvailableElementsTreeViewProxyModel *>(this->ui->treeView_availableElements->model());
-        UsedElementsModel *usedElementsModel = static_cast<UsedElementsModel *>(this->ui->treeView_usedElements->model());
-        if(availableElementsModel != NULL || usedElementsModel != NULL){
-            availableElementsModel->setSelectedFunctionPosition(index.parent().row(), index.row());
-            usedElementsModel->setSelectedFunctionPosition(index.parent().row(), index.row());
-        }
-
-        //set input element dexcription
-        this->ui->textBrowser_description->setText(model->getInputElementDescription(index));
-
-        //set visibility of widgets
-        this->ui->widget_element->setVisible(true);
-        this->ui->widget_customParameter->setVisible(false);
-        this->ui->widget_filter->setVisible(true);
-
+        this->ui->tabWidget_functionParameter->setTabEnabled(1, true);
+        this->ui->tabWidget_functionParameter->setCurrentIndex(1);
+        this->ui->tabWidget_functionParameter->setTabEnabled(2, true);
+        this->ui->tabWidget_functionParameter->setTabEnabled(0,false);
     }
 
 }
@@ -421,9 +398,15 @@ void FeatureFunctionsDialog::showEvent(QShowEvent *event){
     this->ui->widget_customParameter->setVisible(false);
     this->ui->widget_filter->setVisible(false);
 
+    this->ui->tabWidget_functionParameter->setCurrentIndex(0);
+    this->ui->tabWidget_functionParameter->setTabEnabled(1,false);
+    this->ui->tabWidget_functionParameter->setTabEnabled(2,false);
+
     //clear selection
     this->ui->tableView_functionPlugins->selectionModel()->clearSelection();
     this->ui->textBrowser_description_2->setText("");
+
+    QObject::connect(this, &FeatureFunctionsDialog::setFunctionPos, &ModelManager::getFunctionWeightTableModel(), &FunctionWeightsTableModel::setFunctionPosition, Qt::AutoConnection);
 
     event->accept();
 
@@ -470,6 +453,63 @@ void FeatureFunctionsDialog::initModels(){
     QItemSelectionModel *selectionModel = new MultiSelectionModel(&ModelManager::getAvailableElementsTreeViewProxyModel());
     this->ui->treeView_availableElements->setSelectionModel(selectionModel);
 
+    //set weighted elements model
+    this->ui->tableView_weights->setModel(&ModelManager::getFunctionWeightTableModel());
+
+}
+
+/*!
+ * \brief FeatureFunctionsDialog::setFunctionParameters
+ */
+void FeatureFunctionsDialog::setFunctionParameters(const QModelIndex &index)
+{
+    //get and check active feature function model
+    ActiveFeatureFunctionsModel *actFeatModel = static_cast<ActiveFeatureFunctionsModel *>(this->ui->treeView_functions->model());
+    if(actFeatModel == NULL){
+        return;
+    }
+
+    //set function description
+    this->ui->textBrowser_description->setText(actFeatModel->getFunctionDescription(index));
+
+    //reset scalar parameter widget and add scalar function parameters
+    this->scalarParameterWidget->clearAll();
+    this->scalarParameterWidget->setIntParameter(actFeatModel->getIntegerParameter(index));
+    this->scalarParameterWidget->setDoubleParameter(actFeatModel->getDoubleParameter(index));
+    this->scalarParameterWidget->setStringParameter(actFeatModel->getStringParameter(index), actFeatModel->getStringParameterSelection(index));
+
+    //set visibility of widgets
+    this->ui->widget_element->setVisible(true);
+    this->ui->widget_customParameter->setVisible(true);
+    this->ui->widget_filter->setVisible(true);
+}
+
+/*!
+ * \brief FeatureFunctionsDialog::setFunctionElements
+ */
+void FeatureFunctionsDialog::setFunctionElements(const QModelIndex &index)
+{
+    //get and check active feature function model
+    ActiveFeatureFunctionsModel *model = static_cast<ActiveFeatureFunctionsModel *>(this->ui->treeView_functions->model());
+    if(model == NULL){
+        return;
+    }
+
+    //update function position and element index
+    AvailableElementsTreeViewProxyModel *availableElementsModel = static_cast<AvailableElementsTreeViewProxyModel *>(this->ui->treeView_availableElements->model());
+    UsedElementsModel *usedElementsModel = static_cast<UsedElementsModel *>(this->ui->treeView_usedElements->model());
+    if(availableElementsModel != NULL || usedElementsModel != NULL){
+        availableElementsModel->setSelectedFunctionPosition(index.parent().row(), index.row());
+        usedElementsModel->setSelectedFunctionPosition(index.parent().row(), index.row());
+    }
+
+    //set input element dexcription
+    this->ui->textBrowser_description->setText(model->getInputElementDescription(index));
+
+    //set visibility of widgets
+    this->ui->widget_element->setVisible(true);
+    this->ui->widget_customParameter->setVisible(false);
+    this->ui->widget_filter->setVisible(true);
 }
 
 /*
