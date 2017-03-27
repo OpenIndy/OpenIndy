@@ -56,6 +56,11 @@ private:
     QPointer<OiJob> currentJob;
 
     int functionPosition;
+
+    void connectJob();
+    void disconnectJob();
+
+    void featureFunctionChanged();
 };
 
 #endif // FUNCTIONWEIGHTSTABLEMODEL_H

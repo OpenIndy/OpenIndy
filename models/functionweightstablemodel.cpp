@@ -35,7 +35,15 @@ const QPointer<OiJob> &FunctionWeightsTableModel::getCurrentJob() const
 void FunctionWeightsTableModel::setCurrentJob(const QPointer<OiJob> &job)
 {
     if(!job.isNull()){
+
+        //disconnect current job
+        if(!this->currentJob.isNull()){
+            this->disconnectJob();
+        }
+
         this->currentJob = job;
+        this->connectJob();
+        this->updateModel();
     }
 }
 
@@ -64,7 +72,10 @@ int FunctionWeightsTableModel::rowCount(const QModelIndex &parent) const
     }
     Function *function = feature->getFunctions().at(this->functionPosition);
 
-    return function->getInputElements().size();
+    if(function->getInputElements().size() >= 1){
+        return function->getInputElements().value(0).size();
+    }
+    return 0;
 }
 
 /*!
@@ -92,14 +103,14 @@ QVariant FunctionWeightsTableModel::data(const QModelIndex &index, int role) con
 
     //get and check active feature
     if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
-        return 0;
+        return QVariant();
     }
-    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+    QPointer<Feature> feature = this->currentJob->getActiveFeature()->getFeature();
 
     //check selected function position
     if(this->functionPosition < 0 || this->functionPosition >= feature->getFunctions().size()
             || feature->getFunctions().at(this->functionPosition).isNull()){
-        return 0;
+        return QVariant();
     }
     Function *function = feature->getFunctions().at(this->functionPosition);
 
@@ -191,16 +202,14 @@ Qt::ItemFlags FunctionWeightsTableModel::flags(const QModelIndex &index) const
     switch (index.column()) {
     case 1:
         return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-        break;
     case 2:
         return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-        break;
     case 3:
         return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-        break;
     default:
-        break;
+        return myFlags;
     }
+    return myFlags;
 }
 
 /*!
@@ -237,3 +246,22 @@ void FunctionWeightsTableModel::updateModel()
     emit this->layoutAboutToBeChanged();
     emit this->layoutChanged();
 }
+
+/*!
+ * \brief FunctionWeightsTableModel::connectJob
+ */
+void FunctionWeightsTableModel::connectJob()
+{
+    QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FunctionWeightsTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featureFunctionsChanged, this, &FunctionWeightsTableModel::updateModel, Qt::AutoConnection);
+}
+
+/*!
+ * \brief FunctionWeightsTableModel::disconnectJob
+ */
+void FunctionWeightsTableModel::disconnectJob()
+{
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FunctionWeightsTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featureFunctionsChanged, this, &FunctionWeightsTableModel::updateModel);
+}
+
