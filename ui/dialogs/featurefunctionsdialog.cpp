@@ -268,6 +268,8 @@ void FeatureFunctionsDialog::on_cmd_addElement_clicked(){
     //add elements
     model->addInputElements(selection);
 
+    ModelManager::getFunctionWeightTableModel().updateModel();
+
 }
 
 /*!
@@ -388,8 +390,6 @@ void FeatureFunctionsDialog::showEvent(QShowEvent *event){
     this->ui->textBrowser_description_2->setText("");
 
     QObject::connect(this, &FeatureFunctionsDialog::setFunctionPos, &ModelManager::getFunctionWeightTableModel(), &FunctionWeightsTableModel::setFunctionPosition, Qt::AutoConnection);
-
-    ModelManager::getFunctionWeightTableModel().updateModel();
 
     event->accept();
 
