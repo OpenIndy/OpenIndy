@@ -120,6 +120,7 @@ QVariant FunctionWeightsTableModel::data(const QModelIndex &index, int role) con
 
     QList<InputElement> inputElem = function->getInputElements().value(0);
 
+    //get feature from id of inputElement
     FeatureWrapper *fw = this->currentJob->getFeatureById(inputElem.at(index.row()).id);
 
     if(role == Qt::DisplayRole){
@@ -267,21 +268,25 @@ bool FunctionWeightsTableModel::setData(const QModelIndex &index, const QVariant
         case 1:{
             bool useX = value.toBool();
 
-            if(!fw->getGeometry()->getIsNominal()){
+            if(!fw->getGeometry()->getIsNominal()){ //save the ignored parameters for actual features
 
                 for(int i=0; i<inputElem.size();i++){
-                    if(fw->getGeometry()->getId() == inputElem.at(i).id){
+                    if(fw->getGeometry()->getId() == inputElem.at(i).id){ //check id of current feature and input element
                         if(useX){
+                            //remove from ignore list to use
                             if(inputElem.at(i).ignoredDestinationParams.contains(GeometryParameters::eUnknownX)){
                                 inputElem[i].ignoredDestinationParams.removeOne(GeometryParameters::eUnknownX);
                             }
+                            //save in current feature function
                             this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
                             this->updateModel();
                             return true;
                         }else{
+                            //add to ignore list
                             if(!inputElem.at(i).ignoredDestinationParams.contains(GeometryParameters::eUnknownX)){
                                 inputElem[i].ignoredDestinationParams.append(GeometryParameters::eUnknownX);
                             }
+                            //save in current feature function
                             this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
                             this->updateModel();
                             return true;
@@ -293,21 +298,25 @@ bool FunctionWeightsTableModel::setData(const QModelIndex &index, const QVariant
         case 2:{
             bool useY = value.toBool();
 
-            if(!fw->getGeometry()->getIsNominal()){
+            if(!fw->getGeometry()->getIsNominal()){ //save the ignored parameters for actual features
 
                 for(int i=0; i<inputElem.size();i++){
                     if(fw->getGeometry()->getId() == inputElem.at(i).id){
                         if(useY){
+                            //remove from ignore list to use
                             if(inputElem.at(i).ignoredDestinationParams.contains(eUnknownY)){
                                 inputElem[i].ignoredDestinationParams.removeOne(eUnknownY);
                             }
+                            //save in current feature function
                             this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
                             this->updateModel();
                             return true;
                         }else{
+                            //add to ignore list
                             if(!inputElem.at(i).ignoredDestinationParams.contains(eUnknownY)){
                                 inputElem[i].ignoredDestinationParams.append(eUnknownY);
                             }
+                            //save in current feature function
                             this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
                             this->updateModel();
                             return true;
@@ -319,21 +328,25 @@ bool FunctionWeightsTableModel::setData(const QModelIndex &index, const QVariant
         case 3:{
             bool useZ = value.toBool();
 
-            if(!fw->getGeometry()->getIsNominal()){
+            if(!fw->getGeometry()->getIsNominal()){ //save the ignored parameters for actual features
 
                 for(int i=0; i<inputElem.size();i++){
                     if(fw->getGeometry()->getId() == inputElem.at(i).id){
                         if(useZ){
+                            //remove from ignore list to use
                             if(inputElem.at(i).ignoredDestinationParams.contains(eUnknownZ)){
                                 inputElem[i].ignoredDestinationParams.removeOne(eUnknownZ);
                             }
+                            //save in current feature function
                             this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
                             this->updateModel();
                             return true;
                         }else{
+                            //add to ignore list
                             if(!inputElem.at(i).ignoredDestinationParams.contains(eUnknownZ)){
                                 inputElem[i].ignoredDestinationParams.append(eUnknownZ);
                             }
+                            //save in current feature function
                             this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
                             this->updateModel();
                             return true;
@@ -357,6 +370,7 @@ bool FunctionWeightsTableModel::setData(const QModelIndex &index, const QVariant
 void FunctionWeightsTableModel::setFunctionPosition(int pos)
 {
     this->functionPosition = pos;
+    this->updateModel();
 }
 
 /*!

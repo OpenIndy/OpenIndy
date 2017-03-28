@@ -49,6 +49,7 @@ public slots:
     //##############################################
 
     void updateModel();
+
 private:
 
     QPointer<OiJob> currentJob;

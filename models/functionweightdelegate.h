@@ -9,6 +9,7 @@
 
 /*!
  * \brief The FunctionWeightDelegate class
+ * to make the checkboxes set the values to ignore or use parameters
  */
 class FunctionWeightDelegate : public QItemDelegate
 {

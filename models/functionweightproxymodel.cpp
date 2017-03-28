@@ -71,6 +71,7 @@ QModelIndex FunctionWeightProxyModel::mapToSource(const QModelIndex &proxyIndex)
  * \brief FunctionWeightProxyModel::filterAcceptsRow
  * \param source_row
  * \param source_parent
+ * only allow to display actual feature
  * \return
  */
 bool FunctionWeightProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
@@ -86,6 +87,7 @@ bool FunctionWeightProxyModel::filterAcceptsRow(int source_row, const QModelInde
         return false;
     }
 
+    //check feature and function valid
     if(!source_model->getCurrentJob()->getActiveFeature().isNull() &&
             source_model->getCurrentJob()->getActiveFeature()->getFeature()->getFunctions().size() >= 1){
 
@@ -103,6 +105,7 @@ bool FunctionWeightProxyModel::filterAcceptsRow(int source_row, const QModelInde
 
 /*!
  * \brief FunctionWeightProxyModel::filterAcceptsColumn
+ * allows to display all columns in the table view
  * \param source_column
  * \param source_parent
  * \return
