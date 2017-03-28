@@ -289,6 +289,8 @@ void FeatureFunctionsDialog::on_cmd_addElement_clicked(){
     //add elements
     model->addInputElements(selection);
 
+    ModelManager::getFunctionWeightTableModel().updateModel();
+
 }
 
 /*!
@@ -315,6 +317,8 @@ void FeatureFunctionsDialog::on_cmd_removeElement_clicked(){
 
     //add elements
     model->removeUsedElements(selection);
+
+    ModelManager::getFunctionWeightTableModel().updateModel();
 
 }
 
@@ -454,7 +458,10 @@ void FeatureFunctionsDialog::initModels(){
     this->ui->treeView_availableElements->setSelectionModel(selectionModel);
 
     //set weighted elements model
-    this->ui->tableView_weights->setModel(&ModelManager::getFunctionWeightTableModel());
+    //this->ui->tableView_weights->setModel(&ModelManager::getFunctionWeightTableModel());
+    this->ui->tableView_weights->setModel(&ModelManager::getFunctionWeightProxyModel());
+
+    this->ui->tableView_weights->setItemDelegate(&ModelManager::getFunctionWeightDelegate());
 
 }
 

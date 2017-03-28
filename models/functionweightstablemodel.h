@@ -44,8 +44,6 @@ public slots:
 
     void setFunctionPosition(int pos);
 
-private slots:
-
     //##############################################
     //update the model when changes
     //##############################################

@@ -63,14 +63,18 @@ int FunctionWeightsTableModel::rowCount(const QModelIndex &parent) const
     if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
         return 0;
     }
-    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
-
-    //check selected function position
-    if(this->functionPosition < 0 || this->functionPosition >= feature->getFunctions().size()
-            || feature->getFunctions().at(this->functionPosition).isNull()){
+    //check feature for valid trafo param
+    QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
+    if(feature.isNull() || feature->getTrafoParam().isNull()){
         return 0;
     }
-    Function *function = feature->getFunctions().at(this->functionPosition);
+
+    //check selected function position
+    if(this->functionPosition < 0 || this->functionPosition >= feature->getTrafoParam()->getFunctions().size()
+            || feature->getTrafoParam()->getFunctions().at(this->functionPosition).isNull()){
+        return 0;
+    }
+    Function *function = feature->getTrafoParam()->getFunctions().at(this->functionPosition);
 
     if(function->getInputElements().size() >= 1){
         return function->getInputElements().value(0).size();
@@ -123,28 +127,29 @@ QVariant FunctionWeightsTableModel::data(const QModelIndex &index, int role) con
         switch (index.column()) {
         case 0:
             return fw->getFeature()->getFeatureName();
-            break;
+        }
+
+    }else if(role == Qt::CheckStateRole){
+
+        switch (index.column()) {
         case 1:
             if(inputElem.at(index.row()).ignoredDestinationParams.contains(eUnknownX)){
-                return false;
+                return Qt::Unchecked;
             }else{
-                return true;
+                return Qt::Checked;
             }
-            break;
         case 2:
             if(inputElem.at(index.row()).ignoredDestinationParams.contains(eUnknownY)){
-                return false;
+                return Qt::Unchecked;
             }else{
-                return true;
+                return Qt::Checked;
             }
-            break;
         case 3:
             if(inputElem.at(index.row()).ignoredDestinationParams.contains(eUnknownZ)){
-                return false;
+                return Qt::Unchecked;
             }else{
-                return true;
+                return Qt::Checked;
             }
-            break;
         default:
             break;
         }
@@ -206,8 +211,6 @@ Qt::ItemFlags FunctionWeightsTableModel::flags(const QModelIndex &index) const
         return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
     case 3:
         return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-    default:
-        return myFlags;
     }
     return myFlags;
 }
@@ -226,6 +229,124 @@ bool FunctionWeightsTableModel::setData(const QModelIndex &index, const QVariant
         return false;
     }
 
+    //get the feature to index.row
+    if(this->currentJob->getFeatureCount() <= index.row()){
+        return false;
+    }
+
+    //get and check column index
+    int column = index.column();
+    if(column < 0 || 3 < column){
+        return false;
+    }
+
+    //get and check active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return false;
+    }
+    QPointer<Feature> feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check selected function position
+    if(this->functionPosition < 0 || this->functionPosition >= feature->getFunctions().size()
+            || feature->getFunctions().at(this->functionPosition).isNull()){
+        return false;
+    }
+    Function *function = feature->getFunctions().at(this->functionPosition);
+
+    QList<InputElement> inputElem = function->getInputElements().value(0);
+
+    FeatureWrapper *fw = this->currentJob->getFeatureById(inputElem.at(index.row()).id);
+
+    if(fw->getGeometry().isNull()){
+        return false;
+    }
+
+    if(role == Qt::CheckStateRole){
+
+        switch (index.column()) {
+        case 1:{
+            bool useX = value.toBool();
+
+            if(!fw->getGeometry()->getIsNominal()){
+
+                for(int i=0; i<inputElem.size();i++){
+                    if(fw->getGeometry()->getId() == inputElem.at(i).id){
+                        if(useX){
+                            if(inputElem.at(i).ignoredDestinationParams.contains(GeometryParameters::eUnknownX)){
+                                inputElem[i].ignoredDestinationParams.removeOne(GeometryParameters::eUnknownX);
+                            }
+                            this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
+                            this->updateModel();
+                            return true;
+                        }else{
+                            if(!inputElem.at(i).ignoredDestinationParams.contains(GeometryParameters::eUnknownX)){
+                                inputElem[i].ignoredDestinationParams.append(GeometryParameters::eUnknownX);
+                            }
+                            this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
+                            this->updateModel();
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;}
+        case 2:{
+            bool useY = value.toBool();
+
+            if(!fw->getGeometry()->getIsNominal()){
+
+                for(int i=0; i<inputElem.size();i++){
+                    if(fw->getGeometry()->getId() == inputElem.at(i).id){
+                        if(useY){
+                            if(inputElem.at(i).ignoredDestinationParams.contains(eUnknownY)){
+                                inputElem[i].ignoredDestinationParams.removeOne(eUnknownY);
+                            }
+                            this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
+                            this->updateModel();
+                            return true;
+                        }else{
+                            if(!inputElem.at(i).ignoredDestinationParams.contains(eUnknownY)){
+                                inputElem[i].ignoredDestinationParams.append(eUnknownY);
+                            }
+                            this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
+                            this->updateModel();
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;}
+        case 3:{
+            bool useZ = value.toBool();
+
+            if(!fw->getGeometry()->getIsNominal()){
+
+                for(int i=0; i<inputElem.size();i++){
+                    if(fw->getGeometry()->getId() == inputElem.at(i).id){
+                        if(useZ){
+                            if(inputElem.at(i).ignoredDestinationParams.contains(eUnknownZ)){
+                                inputElem[i].ignoredDestinationParams.removeOne(eUnknownZ);
+                            }
+                            this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
+                            this->updateModel();
+                            return true;
+                        }else{
+                            if(!inputElem.at(i).ignoredDestinationParams.contains(eUnknownZ)){
+                                inputElem[i].ignoredDestinationParams.append(eUnknownZ);
+                            }
+                            this->currentJob->getActiveFeature()->getFeature()->getFunctions()[this->functionPosition]->replaceInputElement(inputElem.at(i),this->functionPosition);
+                            this->updateModel();
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;}
+        default:
+            return false;
+            break;
+        }
+    }
     return false;
 }
 

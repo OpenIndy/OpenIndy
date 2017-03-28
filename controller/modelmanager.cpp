@@ -56,6 +56,8 @@ QStringListModel ModelManager::actualNominalFilterModel;
 BundleSystemsModel ModelManager::bundleSystemsModel;
 BundleTemplatesModel ModelManager::bundleTemplatesModel;
 FunctionWeightsTableModel ModelManager::functionWeightsTableModel;
+FunctionWeightProxyModel ModelManager::functionWeightProxyModel;
+FunctionWeightDelegate ModelManager::functionWeightDelegate;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -396,6 +398,24 @@ ActiveFeatureFunctionsModel &ModelManager::getActiveFeatureFunctionsModel(){
 FunctionWeightsTableModel &ModelManager::getFunctionWeightTableModel()
 {
     return ModelManager::functionWeightsTableModel;
+}
+
+/*!
+ * \brief ModelManager::getFunctionWeightProxyModel
+ * \return
+ */
+FunctionWeightProxyModel &ModelManager::getFunctionWeightProxyModel()
+{
+    return ModelManager::functionWeightProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getFunctionWeightDelegate
+ * \return
+ */
+FunctionWeightDelegate &ModelManager::getFunctionWeightDelegate()
+{
+    return ModelManager::functionWeightDelegate;
 }
 
 /*!
@@ -1069,6 +1089,8 @@ void ModelManager::initFeatureTreeViewModels(){
 
     //assign source models
     ModelManager::availableElementsTreeViewProxyModel.setSourceModel(&ModelManager::featureTreeViewModel);
+
+    ModelManager::functionWeightProxyModel.setSourceModel(&ModelManager::functionWeightsTableModel);
 
     //connect models
     if(ModelManager::myInstance.isNull()){
