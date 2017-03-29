@@ -50,6 +50,10 @@ public:
     const ParameterDisplayConfig &getParameterDisplayConfig() const;
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
+public slots:
+
+    void setObservationUseStateByContextmenu(bool use, const QModelIndex &index);
+
 signals:
 
     //#########################
