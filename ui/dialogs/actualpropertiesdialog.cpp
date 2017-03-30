@@ -58,7 +58,6 @@ void ActualPropertiesDialog::on_tableView_observation_customContextMenuRequested
     //create menu and add import action
     QMenu *menu = new QMenu();
     menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("import observations"), this, SLOT(importObservationsMenuClicked(bool)));
-    //menu->exec(this->ui->tableView_observation->mapToGlobal(pos));
 
     //add use / unuse actions
     menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("use selected observation(s)"), this, SLOT(useObservations(bool)));
