@@ -16,6 +16,7 @@
 #include "oijob.h"
 #include "scalarparameterwidget.h"
 #include "multiselectionmodel.h"
+#include "functionweightdelegate.h"
 
 using namespace oi;
 

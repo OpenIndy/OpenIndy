@@ -440,10 +440,9 @@ void FeatureFunctionsDialog::initModels(){
     this->ui->treeView_availableElements->setSelectionModel(selectionModel);
 
     //set weighted elements model
-    //this->ui->tableView_weights->setModel(&ModelManager::getFunctionWeightTableModel());
     this->ui->tableView_weights->setModel(&ModelManager::getFunctionWeightProxyModel());
-
-    this->ui->tableView_weights->setItemDelegate(&ModelManager::getFunctionWeightDelegate());
+    FunctionWeightDelegate *functionweightDelegate = new FunctionWeightDelegate();
+    this->ui->tableView_weights->setItemDelegate(functionweightDelegate);
 
 }
 

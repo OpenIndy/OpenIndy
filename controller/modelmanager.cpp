@@ -57,7 +57,6 @@ BundleSystemsModel ModelManager::bundleSystemsModel;
 BundleTemplatesModel ModelManager::bundleTemplatesModel;
 FunctionWeightsTableModel ModelManager::functionWeightsTableModel;
 FunctionWeightProxyModel ModelManager::functionWeightProxyModel;
-FunctionWeightDelegate ModelManager::functionWeightDelegate;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -407,15 +406,6 @@ FunctionWeightsTableModel &ModelManager::getFunctionWeightTableModel()
 FunctionWeightProxyModel &ModelManager::getFunctionWeightProxyModel()
 {
     return ModelManager::functionWeightProxyModel;
-}
-
-/*!
- * \brief ModelManager::getFunctionWeightDelegate
- * \return
- */
-FunctionWeightDelegate &ModelManager::getFunctionWeightDelegate()
-{
-    return ModelManager::functionWeightDelegate;
 }
 
 /*!
