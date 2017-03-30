@@ -131,7 +131,10 @@ SOURCES += \
     $$PWD/../models/treeitems/bundlegeometryitem.cpp \
     $$PWD/../models/treeitems/bundlestationitem.cpp \
     $$PWD/../models/bundlegeometriesmodel.cpp \
-    $$PWD/../models/bundlestationsmodel.cpp
+    $$PWD/../models/bundlestationsmodel.cpp \
+    $$PWD/../models/functionweightstablemodel.cpp \
+    $$PWD/../models/functionweightproxymodel.cpp \
+    $$PWD/../models/functionweightdelegate.cpp
 
 # header files
 HEADERS  += \
@@ -224,7 +227,10 @@ HEADERS  += \
     $$PWD/../models/treeitems/bundlegeometryitem.h \
     $$PWD/../models/treeitems/bundlestationitem.h \
     $$PWD/../models/bundlegeometriesmodel.h \
-    $$PWD/../models/bundlestationsmodel.h
+    $$PWD/../models/bundlestationsmodel.h \
+    $$PWD/../models/functionweightstablemodel.h \
+    $$PWD/../models/functionweightproxymodel.h \
+    $$PWD/../models/functionweightdelegate.h
 
 # ui files
 FORMS    += \
