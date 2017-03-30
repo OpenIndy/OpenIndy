@@ -363,6 +363,50 @@ void ObservationModel::setParameterDisplayConfig(const ParameterDisplayConfig &c
     this->updateModel();
 }
 
+void ObservationModel::setObservationUseStateByContextmenu(bool use, const QModelIndex &index)
+{
+    //check current job and model index
+    if(this->currentJob.isNull() || !index.isValid()){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    //get and check active geometry
+    QPointer<Geometry> geometry(NULL);
+    if(getIsGeometry(feature->getFeatureTypeEnum())){
+        geometry = feature->getGeometry();
+    }else if(feature->getFeatureTypeEnum() == eStationFeature && !feature->getStation().isNull()){
+        geometry = feature->getStation()->getPosition();
+    }
+    if(geometry.isNull()){
+        return;
+    }
+
+    //get row and column indices
+    int rowIndex = index.row();
+    int columnIndex = index.column();
+
+    //get and check observation
+    QPointer<Observation> observation(NULL);
+    if(rowIndex < geometry->getObservations().size()){
+        observation = geometry->getObservations().at(rowIndex);
+    }
+    if(observation.isNull()){
+        return;
+    }
+
+    if(use){
+        emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), true, true);
+    }else{
+        emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), false, true);
+    }
+}
+
 /*!
  * \brief ObservationModel::updateModel
  */
