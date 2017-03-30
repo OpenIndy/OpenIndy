@@ -1,6 +1,10 @@
 #include "actualpropertiesdialog.h"
 #include "ui_actualpropertiesdialog.h"
 
+/*!
+ * \brief ActualPropertiesDialog::ActualPropertiesDialog
+ * \param parent
+ */
 ActualPropertiesDialog::ActualPropertiesDialog(QWidget *parent) :
     QDialog(parent), ui(new Ui::ActualPropertiesDialog)
 {
@@ -9,12 +13,21 @@ ActualPropertiesDialog::ActualPropertiesDialog(QWidget *parent) :
     //init GUI elements and assign models
     this->initGUI();
     this->initModels();
+
+    QObject::connect(this,&ActualPropertiesDialog::useObservation, &ModelManager::getObservationModel(),
+                     &ObservationModel::setObservationUseStateByContextmenu, Qt::AutoConnection);
+    QObject::connect(this,&ActualPropertiesDialog::unUseObservation, &ModelManager::getObservationModel(),
+                     &ObservationModel::setObservationUseStateByContextmenu, Qt::AutoConnection);
 }
 
 /*!
  * \brief ActualPropertiesDialog::~ActualPropertiesDialog
  */
 ActualPropertiesDialog::~ActualPropertiesDialog(){
+    QObject::disconnect(this,&ActualPropertiesDialog::useObservation, &ModelManager::getObservationModel(),
+                     &ObservationModel::setObservationUseStateByContextmenu);
+    QObject::disconnect(this,&ActualPropertiesDialog::unUseObservation, &ModelManager::getObservationModel(),
+                     &ObservationModel::setObservationUseStateByContextmenu);
     delete this->ui;
 }
 
@@ -45,6 +58,23 @@ void ActualPropertiesDialog::on_tableView_observation_customContextMenuRequested
     //create menu and add import action
     QMenu *menu = new QMenu();
     menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("import observations"), this, SLOT(importObservationsMenuClicked(bool)));
+
+    //add use / unuse actions
+    menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("use selected observation(s)"), this, SLOT(useObservations(bool)));
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("unuse selected observation(s)"), this, SLOT(unUseObservations(bool)));
+
+    //get observation table models
+    ObservationProxyModel *model = static_cast<ObservationProxyModel*>(this->ui->tableView_observation->model());
+    if(model == NULL){
+        delete menu;
+        return;
+    }
+
+    ObservationModel *sourceModel =  static_cast<ObservationModel*>(model->sourceModel());
+    if(sourceModel == NULL){
+        delete menu;
+        return;
+    }
     menu->exec(this->ui->tableView_observation->mapToGlobal(pos));
 
 }
@@ -218,4 +248,116 @@ void ActualPropertiesDialog::initModels(){
     //assign active feature functions model
     this->ui->comboBox_displayedFunction->setModel(&ModelManager::getActiveFeatureFunctionsModel());
 
+}
+
+/*!
+ * \brief ActualPropertiesDialog::on_tabWidget_selectedFeature_customContextMenuRequested
+ * \param pos
+ */
+void ActualPropertiesDialog::on_tabWidget_selectedFeature_customContextMenuRequested(const QPoint &pos)
+{
+    //create  menu and add delete action
+    QMenu *menu = new QMenu();
+
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("use selected observation(s)"), this, SLOT(useObservations(bool)));
+    menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("unuse selected observation(s)"), this, SLOT(unUseObservations(bool)));
+
+    //get observation table models
+    ObservationProxyModel *model = static_cast<ObservationProxyModel*>(this->ui->tableView_observation->model());
+    if(model == NULL){
+        delete menu;
+        return;
+    }
+
+    ObservationModel *sourceModel =  static_cast<ObservationModel*>(model->sourceModel());
+    if(sourceModel == NULL){
+        delete menu;
+        return;
+    }
+}
+
+/*!
+ * \brief ActualPropertiesDialog::unUseObservations
+ * \param use
+ */
+void ActualPropertiesDialog::unUseObservations(bool use)
+{
+    //init variables
+    QPointer<QSortFilterProxyModel> model;
+    QPointer<QItemSelectionModel> selectionModel;
+    QModelIndexList selection;
+
+    //get models of observation tabview
+    if(this->ui->tabWidget_selectedFeature->currentWidget() != this->ui->tab_observations){
+        return;
+    }
+
+    model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get selection
+    selectionModel = this->ui->tableView_observation->selectionModel();
+
+    //get and check source model
+    ObservationModel *sourceModel = static_cast<ObservationModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get selected indexes
+    selection = selectionModel->selectedIndexes();
+    if(selection.size() <= 0){
+        //emit this->log("No observations selected", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+    qSort(selection);
+
+    foreach (QModelIndex idx, selection) {
+        emit this->useObservation(false, idx);
+    }
+}
+
+/*!
+ * \brief ActualPropertiesDialog::useUnuseObservations
+ * \param use
+ */
+void ActualPropertiesDialog::useObservations(bool use)
+{
+    //init variables
+    QPointer<QSortFilterProxyModel> model;
+    QPointer<QItemSelectionModel> selectionModel;
+    QModelIndexList selection;
+
+    //get models of observation tabview
+    if(this->ui->tabWidget_selectedFeature->currentWidget() != this->ui->tab_observations){
+        return;
+    }
+
+    model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get selection
+    selectionModel = this->ui->tableView_observation->selectionModel();
+
+    //get and check source model
+    ObservationModel *sourceModel = static_cast<ObservationModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get selected indexes
+    selection = selectionModel->selectedIndexes();
+    if(selection.size() <= 0){
+        //emit this->log("No observations selected", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+    qSort(selection);
+
+    foreach (QModelIndex idx, selection) {
+        emit this->useObservation(true, idx);
+    }
 }

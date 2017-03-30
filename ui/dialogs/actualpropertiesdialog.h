@@ -49,6 +49,9 @@ signals:
 
     void importObservations(const QString &filename);
 
+    void useObservation(bool use, const QModelIndex &index);
+    void unUseObservation(bool use, const QModelIndex &index);
+
 private slots:
 
     //#########################
@@ -74,6 +77,11 @@ private slots:
 
     //copy values from and to clipboard
     void copyToClipboard();
+
+    void on_tabWidget_selectedFeature_customContextMenuRequested(const QPoint &pos);
+
+    void useObservations(bool use);
+    void unUseObservations(bool use);
 
 private:
 
