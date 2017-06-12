@@ -1294,6 +1294,25 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                         shouldBeUsed = inputElement.attribute("shouldBeUsed").toInt();
                     }
 
+                    //set ignored destination parameters
+
+                    //create the list of ignored parameters
+                    QList<GeometryParameters> restoreIgnoredParameter;
+                    //look for the ignored destination parameter section in the xml file
+                    QDomElement ignoredDestinationParams = inputElement.firstChildElement("ignoredDestinationParams");
+                    // fill the list with ignored parameters
+                    if(!ignoredDestinationParams.isNull()){
+                        QDomNodeList ignoredParamList = ignoredDestinationParams.childNodes();
+                        for(int a=0; a<ignoredParamList.size();a++){
+
+                            QDomElement ignore = ignoredParamList.at(a).toElement();
+
+                            if(ignore.hasAttribute("parameter")){
+                                restoreIgnoredParameter.append(getGeometryParameterEnum(ignore.attribute("parameter")));
+                            }
+                        }
+                    }
+
                     //create and add input elements
                     if(inputElement.hasAttribute("index") && inputElement.hasAttribute("type") && inputElement.hasAttribute("ref")){
 
@@ -1304,6 +1323,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.id = station->getId();
                             element.typeOfElement = eStationElement;
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myCoordinateSystems.contains(inputElement.attribute("ref").toInt())){
                             QPointer<CoordinateSystem> coordinateSystem = ProjectExchanger::myCoordinateSystems.value(inputElement.attribute("ref").toInt())->getCoordinateSystem();
@@ -1312,6 +1332,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.id = coordinateSystem->getId();
                             element.typeOfElement = eCoordinateSystemElement;
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myTransformationParameters.contains(inputElement.attribute("ref").toInt())){
                             QPointer<TrafoParam> trafoParam = ProjectExchanger::myTransformationParameters.value(inputElement.attribute("ref").toInt())->getTrafoParam();
@@ -1320,6 +1341,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.id = trafoParam->getId();
                             element.typeOfElement = eTrafoParamElement;
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myGeometries.contains(inputElement.attribute("ref").toInt())){
                             QPointer<FeatureWrapper> geometry = ProjectExchanger::myGeometries.value(inputElement.attribute("ref").toInt());
@@ -1327,6 +1349,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.geometry = geometry->getGeometry();
                             element.id = geometry->getGeometry()->getId();
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             switch(geometry->getFeatureTypeEnum()){
                             case eCircleFeature:
                                 element.circle = geometry->getCircle();
@@ -1413,11 +1436,13 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.id = observation->getId();
                             element.typeOfElement = eObservationElement;
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myReadings.contains(inputElement.attribute("ref").toInt())){
                             QPointer<Reading> reading = ProjectExchanger::myReadings.value(inputElement.attribute("ref").toInt());
                             InputElement element;
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             switch(reading->getTypeOfReading()){
                             case eDistanceReading:
                                 element.distanceReading = reading;
