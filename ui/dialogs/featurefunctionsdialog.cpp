@@ -115,8 +115,6 @@ void FeatureFunctionsDialog::on_treeView_functions_clicked(const QModelIndex &in
 
         emit this->setFunctionPos(index.row());
 
-        //check if weights are supported //TODO check if weights are suppported
-
         this->setFunctionParameters(index);
         this->ui->tabWidget_functionParameter->setTabEnabled(0,true);
         this->ui->tabWidget_functionParameter->setCurrentIndex(0);
@@ -129,8 +127,15 @@ void FeatureFunctionsDialog::on_treeView_functions_clicked(const QModelIndex &in
 
         this->ui->tabWidget_functionParameter->setTabEnabled(1, true);
         this->ui->tabWidget_functionParameter->setCurrentIndex(1);
-        this->ui->tabWidget_functionParameter->setTabEnabled(2, true);
+        //this->ui->tabWidget_functionParameter->setTabEnabled(2, true);
         this->ui->tabWidget_functionParameter->setTabEnabled(0,false);
+
+        //if the function supports weighted inpul elements, enable the tabwidget to set the weights
+        if(this->checkSupportsWeights()){
+            this->ui->tabWidget_functionParameter->setTabEnabled(2,true);
+        }else{
+            this->ui->tabWidget_functionParameter->setTabEnabled(2,false);
+        }
     }
 
 }
@@ -506,4 +511,29 @@ void FeatureFunctionsDialog::setFunctionElements(const QModelIndex &index)
 void FeatureFunctionsDialog::resizeTableView()
 {
     this->ui->tableView_weights->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+}
+
+/*!
+ * \brief FeatureFunctionsDialog::checkSupportsWeights
+ * \return
+ */
+bool FeatureFunctionsDialog::checkSupportsWeights()
+{
+    //get and check index
+    QModelIndexList selection = this->ui->treeView_functions->selectionModel()->selectedIndexes();
+    if(selection.size() != 1){
+        return false;
+    }
+    QModelIndex index =selection.at(0);
+    if(!index.isValid() || !index.parent().isValid()){
+        return false;
+    }
+
+    //get and check active feature function model
+    ActiveFeatureFunctionsModel *model = static_cast<ActiveFeatureFunctionsModel *>(this->ui->treeView_functions->model());
+    if(model == NULL){
+        return false;
+    }
+
+    return model->getSupportsWeights(index);
 }
