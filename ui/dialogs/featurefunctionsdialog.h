@@ -89,6 +89,9 @@ private slots:
     //resize table views
     void resizeTableView();
 
+    //check if the function supports weights
+    bool checkSupportsWeights();
+
 private:
     Ui::FeatureFunctionsDialog *ui;
 
