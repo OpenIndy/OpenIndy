@@ -90,5 +90,6 @@ void FeatureTableColumnConfig::init(){
     this->displayColumns.append(eFeatureDisplayRadiusA);
     this->displayColumns.append(eFeatureDisplayIsSolved);
     this->displayColumns.append(eFeatureDisplayComment);
-
+    this->displayColumns.append(eFeatureDisplayAngle);
+    this->displayColumns.append(eFeatureDisplayDistance);
 }
