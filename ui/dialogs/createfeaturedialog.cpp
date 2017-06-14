@@ -113,6 +113,8 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
     //init function models based on the current feature type
     this->initFunctionsModel();
 
+    this->ui->comboBox_entityType->setCurrentText(getFeatureTypeName(this->typeOfFeature));
+
     event->accept();
 
 }
