@@ -130,6 +130,7 @@ void Controller::setNominalParameters(const int &featureId, const QMap<GeometryP
     //update the feature's parameters
     feature->getGeometry()->setUnknownParameters(parameters);
 
+    this->featureUpdater.recalcFeature(feature->getFeature());
 }
 
 /*!
