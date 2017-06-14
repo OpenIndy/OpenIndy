@@ -332,3 +332,14 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.functionPlugin.second = function.plugin.file_path;
     }
 }
+
+/*!
+ * \brief CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged check if the type of the scalar entity changed
+ * \param arg1
+ */
+void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QString &arg1)
+{
+    this-> typeOfFeature = getFeatureTypeEnum(arg1);
+    this->initModels();
+    this->initFunctionsModel();
+}
