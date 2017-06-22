@@ -106,6 +106,8 @@ signals:
 
     void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
+    void resizeColumns();
+
 private slots:
 
     //##############################################################

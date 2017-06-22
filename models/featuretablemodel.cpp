@@ -825,6 +825,7 @@ void FeatureTableModel::setMeasurementConfigManager(const QPointer<MeasurementCo
 void FeatureTableModel::updateModel(){
     emit this->layoutAboutToBeChanged();
     emit this->layoutChanged();
+    emit this->resizeColumns();
 }
 
 /*!
