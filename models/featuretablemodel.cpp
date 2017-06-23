@@ -352,16 +352,13 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             //commit the new feature name
             feature->getFeature()->setFeatureName(value.toString());
 
-            emit recalcActiveFeature();
             return true;
 
         }case eFeatureDisplayComment:{
             feature->getFeature()->setComment(value.toString());
-            emit recalcActiveFeature();
             return true;
         }case eFeatureDisplayGroup:{
             feature->getFeature()->setGroupName(value.toString());
-            emit recalcActiveFeature();
             return true;
         }case eFeatureDisplayMeasurementConfig:{
 
@@ -380,7 +377,6 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             //update feature's measurement config
             if(mConfig.getIsValid()){
                 feature->getGeometry()->setMeasurementConfig(mConfig);
-                emit recalcActiveFeature();
                 return true;
             }
         }
@@ -459,17 +455,13 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
 
             //commit the new feature name
             feature->getFeature()->setFeatureName(value.toString());
-
-            emit recalcActiveFeature();
             return true;
 
         }case eTrafoParamDisplayComment:{
             feature->getFeature()->setComment(value.toString());
-            emit recalcActiveFeature();
             return true;
         }case eTrafoParamDisplayGroup:{
             feature->getFeature()->setGroupName(value.toString());
-            emit recalcActiveFeature();
             return true;
         }
         }
@@ -490,12 +482,10 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         case eTrafoParamDisplayIsUsed:{
             bool isUsed = value.toBool();
             feature->getTrafoParam()->setIsUsed(isUsed);
-            emit recalcActiveFeature();
             break;
         }case eTrafoParamDisplayIsDatumTransformation:{
             bool isDatum = value.toBool();
             feature->getTrafoParam()->setIsDatumTrafo(isDatum);
-            emit recalcActiveFeature();
             break;
         }default:
             break;
@@ -503,7 +493,6 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
     }
 
     return false;
-
 }
 
 /*!
