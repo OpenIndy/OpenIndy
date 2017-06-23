@@ -2099,6 +2099,8 @@ void MainWindow::assignModels(){
     this->bundleGeometriesModel->setCurrentJob(ModelManager::getCurrentJob());
     this->ui->treeView_inputGeometries->setModel(this->bundleGeometriesModel);
 
+    QObject::connect(&ModelManager::getFeatureTableModel(),&FeatureTableModel::recalcActiveFeature, &this->control, &Controller::recalcActiveFeature, Qt::AutoConnection);
+
 }
 
 /*!

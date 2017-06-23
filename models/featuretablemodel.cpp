@@ -385,6 +385,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownX, convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
                 feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
                 return true;
             }
             break;
@@ -393,6 +394,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownY,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
                 feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
                 return true;
             }
             break;
@@ -401,6 +403,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownZ,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
                 feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
                 return true;
             }
             break;
@@ -409,6 +412,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownPrimaryI,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
                 feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
                 return true;
             }
             break;
@@ -417,6 +421,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownPrimaryJ,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
                 feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
                 return true;
             }
             break;
@@ -425,6 +430,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownPrimaryK,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
                 feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
                 return true;
             }
             break;
@@ -449,7 +455,6 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
 
             //commit the new feature name
             feature->getFeature()->setFeatureName(value.toString());
-
             return true;
 
         }case eTrafoParamDisplayComment:{
@@ -467,6 +472,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         case eFeatureDisplayIsCommon:{
             bool isCommon = value.toBool();
             feature->getGeometry()->setCommonState(isCommon);
+            emit recalcActiveFeature();
             break;
         }}
 
@@ -487,7 +493,6 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
     }
 
     return false;
-
 }
 
 /*!
