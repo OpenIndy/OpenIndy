@@ -508,7 +508,12 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
             this->pasteFromClipboard();
         }
         break;
+    case Qt::Key_S: //save project
 
+        if(e->modifiers() == Qt::CTRL){
+            emit this->saveProject();
+        }
+        break;
     }
 
 }
@@ -2142,15 +2147,15 @@ void MainWindow::initSensorPad(){
     this->actionInitialize->setText("initialize");
     this->actionMeasure = new QAction(0);
     this->actionMeasure->setShortcut(Qt::Key_F3);
-    this->actionMeasure->setText("measure");
+    this->actionMeasure->setText("measure (F3)");
     this->actionAim = new QAction(0);
     this->actionAim->setShortcut(QKeySequence(Qt::ALT + Qt::Key_A));
-    this->actionAim->setText("aim");
+    this->actionAim->setText("aim (ALT + A)");
     this->actionMove = new QAction(0);
     this->actionMove->setText("move");
     this->actionHome = new QAction(0);
     this->actionHome->setShortcut(Qt::Key_F9);
-    this->actionHome->setText("home");
+    this->actionHome->setText("home (F9)");
     this->actionChangeMotorState = new QAction(0);
     this->actionChangeMotorState->setText("change motor state");
     this->actionToggleSightOrientation = new QAction(0);
