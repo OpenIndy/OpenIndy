@@ -131,6 +131,31 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
 }
 
 /*!
+ * \brief TrafoController::transformCoordSystems
+ * \param startSystem
+ * \param destinationSystem
+ */
+void TrafoController::transformCoordSystems(const QPointer<Coordinatesystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem, bool isStation)
+{
+    //check systems
+    if(startSystem.isNull() || destinationSystem.isNull()){
+        return;
+    }
+
+    if(startSystem == destinationSystem && isStation){
+        OiVec v;
+        v.add(0.0);
+        v.add(0.0);
+        v.add(0.0);
+        QPointer<Position> origin;
+        origin->setVector(v);
+        startSystem->setPosition(origin);
+    }else if(startSystem == destinationSystem){
+        startSystem->set
+    }
+}
+
+/*!
  * \brief TrafoController::getTransformationMatrix
  * \param trafoMat
  * \param startSystem
