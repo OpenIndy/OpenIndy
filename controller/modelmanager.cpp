@@ -840,6 +840,7 @@ void ModelManager::featureNameChanged(const int &featureId, const QString &oldNa
     QPointer<FeatureWrapper> feature = ModelManager::currentJob->getFeatureById(featureId);
     if(!feature.isNull() && (!feature->getCoordinateSystem().isNull() || !feature->getStation().isNull())){
         ModelManager::updateCoordinateSystemsModel();
+        ModelManager::updateNominalSystemsModel();
     }
 
     //resort table model
