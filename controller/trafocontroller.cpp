@@ -135,23 +135,42 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
  * \param startSystem
  * \param destinationSystem
  */
-void TrafoController::transformCoordSystems(const QPointer<Coordinatesystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem, bool isStation)
+void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem)
 {
     //check systems
     if(startSystem.isNull() || destinationSystem.isNull()){
         return;
     }
 
-    if(startSystem == destinationSystem && isStation){
+    if(startSystem == destinationSystem){
         OiVec v;
         v.add(0.0);
         v.add(0.0);
         v.add(0.0);
-        QPointer<Position> origin;
-        origin->setVector(v);
-        startSystem->setPosition(origin);
-    }else if(startSystem == destinationSystem){
-        startSystem->set
+        Position origin;
+        origin.setVector(v);
+        startSystem->setOrigin(origin);
+    }else {
+
+        //get homogeneous transformation matrix to transform
+        //the matrix transforms the origin to current coord system and also handles datum - transformations
+        OiMat trafoMat;
+        bool hasTransformation = this->getTransformationMatrix(trafoMat, startSystem, destinationSystem);
+
+        //if trafo matrix is valid
+        //check if matrix is 4x4 = homogeneous matrix
+        if(hasTransformation && trafoMat.getRowCount() == 4 && trafoMat.getColCount() == 4){
+            OiVec v;
+            v.add(0.0);
+            v.add(0.0);
+            v.add(0.0);
+            v.add(0.0);
+
+            OiVec result = trafoMat * v;
+            Position newOrigin;
+            newOrigin.setVector(result);
+            startSystem->setOrigin(newOrigin);
+        }
     }
 }
 
