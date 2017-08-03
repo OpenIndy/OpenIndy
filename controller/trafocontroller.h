@@ -30,6 +30,7 @@ public slots:
 
     void transformObservations(const QPointer<Feature> &feature, const QPointer<CoordinateSystem> &destinationSystem);
     void transformObservations(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem);
+    void transformCoordSystems(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem, bool isStation);
 
     bool getTransformationMatrix(OiMat &trafoMat, const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem);
 
