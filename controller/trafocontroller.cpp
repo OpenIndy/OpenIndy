@@ -188,6 +188,13 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
     if(isStation){
         startSystem->getStation()->getPosition()->setIsSolved(false);
     }
+    OiVec tmp;
+    tmp.add(0.0);
+    tmp.add(0.0);
+    tmp.add(0.0);
+    Position tmpOrigin;
+    tmpOrigin.setVector(tmp);
+    startSystem->setOrigin(tmpOrigin);
 }
 
 /*!
