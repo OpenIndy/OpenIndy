@@ -287,7 +287,7 @@ void FeatureUpdater::switchCoordinateSystem(){
 
         //transform all observations of the station system to the active coordinate system
         this->trafoController.transformObservations(station->getCoordinateSystem(), this->currentJob->getActiveCoordinateSystem());
-        this->trafoController.transformCoordSystems(station->getCoordinateSystem(), this->currentJob->getActiveCoordinateSystem());
+        this->trafoController.transformCoordSystems(station->getCoordinateSystem(), this->currentJob->getActiveCoordinateSystem(),true);
 
     }
 
@@ -318,7 +318,7 @@ void FeatureUpdater::switchCoordinateSystem(){
         }
 
         //set origin value in current coordinate system
-        this->trafoController.transformCoordSystems(system, this->currentJob->getActiveCoordinateSystem());
+        this->trafoController.transformCoordSystems(system, this->currentJob->getActiveCoordinateSystem(),false);
 
     }
 

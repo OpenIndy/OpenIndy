@@ -135,7 +135,7 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
  * \param startSystem
  * \param destinationSystem
  */
-void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem)
+void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem, bool isStation)
 {
     //check systems
     if(startSystem.isNull() || destinationSystem.isNull()){
@@ -150,6 +150,13 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
         Position origin;
         origin.setVector(v);
         startSystem->setOrigin(origin);
+
+        if(isStation){
+            startSystem->getStation()->getPosition()->setIsSolved(true);
+        }
+
+        return;
+
     }else {
 
         //get homogeneous transformation matrix to transform
@@ -164,13 +171,22 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
             v.add(0.0);
             v.add(0.0);
             v.add(0.0);
-            v.add(0.0);
+            v.add(1.0);
 
             OiVec result = trafoMat * v;
             Position newOrigin;
             newOrigin.setVector(result);
             startSystem->setOrigin(newOrigin);
+
+            if(isStation){
+                startSystem->getStation()->getPosition()->setIsSolved(true);
+            }
+
+            return;
         }
+    }
+    if(isStation){
+        startSystem->getStation()->getPosition()->setIsSolved(false);
     }
 }
 
