@@ -131,6 +131,73 @@ void TrafoController::transformObservations(const QPointer<CoordinateSystem> &st
 }
 
 /*!
+ * \brief TrafoController::transformCoordSystems
+ * \param startSystem
+ * \param destinationSystem
+ */
+void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem, bool isStation)
+{
+    //check systems
+    if(startSystem.isNull() || destinationSystem.isNull()){
+        return;
+    }
+
+    if(startSystem == destinationSystem){
+        OiVec v;
+        v.add(0.0);
+        v.add(0.0);
+        v.add(0.0);
+        Position origin;
+        origin.setVector(v);
+        startSystem->setOrigin(origin);
+
+        if(isStation){
+            startSystem->getStation()->getPosition()->setIsSolved(true);
+        }
+
+        return;
+
+    }else {
+
+        //get homogeneous transformation matrix to transform
+        //the matrix transforms the origin to current coord system and also handles datum - transformations
+        OiMat trafoMat;
+        bool hasTransformation = this->getTransformationMatrix(trafoMat, startSystem, destinationSystem);
+
+        //if trafo matrix is valid
+        //check if matrix is 4x4 = homogeneous matrix
+        if(hasTransformation && trafoMat.getRowCount() == 4 && trafoMat.getColCount() == 4){
+            OiVec v;
+            v.add(0.0);
+            v.add(0.0);
+            v.add(0.0);
+            v.add(1.0);
+
+            OiVec result = trafoMat * v;
+            Position newOrigin;
+            newOrigin.setVector(result);
+            startSystem->setOrigin(newOrigin);
+
+            if(isStation){
+                startSystem->getStation()->getPosition()->setIsSolved(true);
+            }
+
+            return;
+        }
+    }
+    if(isStation){
+        startSystem->getStation()->getPosition()->setIsSolved(false);
+    }
+    OiVec tmp;
+    tmp.add(0.0);
+    tmp.add(0.0);
+    tmp.add(0.0);
+    Position tmpOrigin;
+    tmpOrigin.setVector(tmp);
+    startSystem->setOrigin(tmpOrigin);
+}
+
+/*!
  * \brief TrafoController::getTransformationMatrix
  * \param trafoMat
  * \param startSystem
