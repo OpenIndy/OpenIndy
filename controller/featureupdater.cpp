@@ -887,6 +887,24 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
     }
     systemTransformation->inputElementsDestinationSystem.clear();
 
+    //check if this trafo already exists and temporary de activate the transformation
+    QList<QPointer<TrafoParam> > existingTrafoParams = this->currentJob->getTransformationParametersList();
+
+    QList<QPointer<TrafoParam> > tempUnsolvedTRafoParam;
+
+    //check if trafo param has the same configuration
+    foreach (QPointer<TrafoParam> existingTP, existingTrafoParams) {
+        if((existingTP->getStartSystem() == trafoParam->getStartSystem() && existingTP->getDestinationSystem() == trafoParam->getDestinationSystem())
+                || (existingTP->getStartSystem() == trafoParam->getDestinationSystem() && existingTP->getDestinationSystem() == trafoParam->getStartSystem())){
+
+            //if it is currently used, set it temporarly to unused
+            if(existingTP->getIsUsed()){
+                existingTP->setIsUsed(false);
+                tempUnsolvedTRafoParam.append(existingTP);
+            }
+        }
+    }
+
     //get and check keys
     bool isAlignment;
     QList<int> keys = systemTransformation->getInputElements().keys();
@@ -1031,6 +1049,11 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
     //add sorted lists to the function
     systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
     systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
+
+    //re activate all existing transformations
+    foreach (QPointer<TrafoParam> tp, tempUnsolvedTRafoParam) {
+        tp->setIsUsed(true);
+    }
 
     //switch back to active system
     this->switchCoordinateSystem();
