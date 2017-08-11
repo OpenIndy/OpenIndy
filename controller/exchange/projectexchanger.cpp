@@ -934,11 +934,12 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                     QDomElement trafoParam = trafoParamList.at(j).toElement();
                     if(trafoParam.hasAttribute("ref") && ProjectExchanger::myTransformationParameters.contains(trafoParam.attribute("ref").toInt())){
                         QPointer<FeatureWrapper> myTrafoParam = ProjectExchanger::myTransformationParameters.value(trafoParam.attribute("ref").toInt());
+                        //set the dependency for bundle system and trafoParam
+                        myTrafoParam->getTrafoParam()->setIsBundle(myCoordinateSystem->getCoordinateSystem()->getIsBundleSystem());
                         myCoordinateSystem->getCoordinateSystem()->addTransformationParameter(myTrafoParam->getTrafoParam());
                     }
                 }
             }
-
         }
     }
 
