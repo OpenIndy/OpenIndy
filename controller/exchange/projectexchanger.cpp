@@ -854,6 +854,13 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                 }
             }
 
+            //load bundle adjustments
+            QDomElement bundle_plugin = coordinateSystem.firstChildElement("bundle");
+            if(!bundle_plugin.isNull()){
+                QPointer<BundleAdjustment> myBundle = ProjectExchanger::restoreBundleDependencies(bundle_plugin);
+                myCoordinateSystem->getCoordinateSystem()->setBundlePlugin(myBundle);
+            }
+
             //set observations (made from a station system)
             QDomElement observations = coordinateSystem.firstChildElement("observations");
             if(!observations.isNull()){
@@ -1494,6 +1501,51 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
 
     return result;
 
+}
+
+/*!
+ * \brief ProjectExchanger::restoreBundleDependencies
+ * \param bundle
+ * \return
+ */
+QPointer<BundleAdjustment> ProjectExchanger::restoreBundleDependencies(QDomElement &bundle)
+{
+    QPointer<BundleAdjustment> result;
+
+    if(!bundle.isNull()){
+
+        if(!bundle.hasAttribute("name") || !bundle.hasAttribute("plugin")){
+            return result;
+        }
+
+        sdb::Plugin plugin = SystemDbManager::getPlugin(bundle.attribute("plugin"));
+        QPointer<BundleAdjustment> myBundle(NULL);
+        if(plugin.file_path.compare("") != 0){
+            myBundle = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundle.attribute("name"));
+            if(myBundle.isNull()){
+                return result;
+            }
+        }else{
+            return result;
+        }
+
+        //load bundle from xml
+        myBundle->fromOpenIndyXML(bundle);
+
+        //add bundleCoordinateSystem
+        QDomElement bundleCoordSys = bundle.firstChildElement("bundleCoordinateSystem");
+        if(!bundleCoordSys.isNull() && bundleCoordSys.hasAttribute("ref")){
+            QPointer<FeatureWrapper> mySystem = ProjectExchanger::myCoordinateSystems.value(bundleCoordSys.attribute(ref).toInt());
+            if(!mySystem.isNull() && !mySystem->getCoordinateSystem().isNull()){
+                myBundle->setBundleSystem(mySystem);
+            }else{
+                return result;
+            }
+        }else{
+            return result;
+        }
+    }
+    return result;
 }
 
 /*!

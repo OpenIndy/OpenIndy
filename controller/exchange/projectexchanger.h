@@ -66,6 +66,7 @@ private:
     static bool restoreObservationDependencies(const QDomDocument &project);
 
     static QList<QPointer<Function> > restoreFunctionDependencies(const QDomElement &functions);
+    static QPointer<BundleAdjustment> restoreBundleDependencies(QDomElement &bundle);
 
     //helper maps for loading an OpenIndy project (key is the id of an element)
     static QMap<int, QPointer<Observation> > myObservations;
