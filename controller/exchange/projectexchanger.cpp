@@ -1535,9 +1535,9 @@ QPointer<BundleAdjustment> ProjectExchanger::restoreBundleDependencies(QDomEleme
         //add bundleCoordinateSystem
         QDomElement bundleCoordSys = bundle.firstChildElement("bundleCoordinateSystem");
         if(!bundleCoordSys.isNull() && bundleCoordSys.hasAttribute("ref")){
-            QPointer<FeatureWrapper> mySystem = ProjectExchanger::myCoordinateSystems.value(bundleCoordSys.attribute(ref).toInt());
+            QPointer<FeatureWrapper> mySystem = ProjectExchanger::myCoordinateSystems.value(bundleCoordSys.attribute("ref").toInt());
             if(!mySystem.isNull() && !mySystem->getCoordinateSystem().isNull()){
-                myBundle->setBundleSystem(mySystem);
+                myBundle->setBundleSystem(mySystem->getCoordinateSystem());
             }else{
                 return result;
             }
