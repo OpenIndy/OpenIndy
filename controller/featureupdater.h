@@ -80,11 +80,16 @@ private:
     void setUpTrafoParamActualActual(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
     void setUpTrafoParamActualNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
     void setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
+    void setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
 
     //change the active coordinate system (does not transform observations)
     void switchCoordinateSystemWithoutTransformation(const QPointer<CoordinateSystem> &destinationSystem);
     void recalcFeatureSetWithoutTransformation();
     void recalcFeatureWithoutTransformation(const QPointer<Feature> &feature);
+    //change with transformation for bundle
+    void switchCoordinateSystemWithTransformation(const QPointer<CoordinateSystem> &destinationSystem);
+
+    void transformObsAndNominals(const QPointer<CoordinateSystem> &destinationSystem);
 
     //copy geometry
     void copyGeometry(InputElement &newElement, const QPointer<FeatureWrapper> &oldElement, const ElementTypes &type);
@@ -92,7 +97,7 @@ private:
     //clear or save bundle results
     void clearBundleResults(const QPointer<CoordinateSystem> &bundleSystem);
     void saveBundleResults(const QPointer<CoordinateSystem> &bundleSystem);
-    void createBundleGeometries(const QList<BundleGeometry> &geometries, const QPointer<CoordinateSystem> &bundleSystem);
+    //void createBundleGeometries(const QList<BundleGeometry> &geometries, const QPointer<CoordinateSystem> &bundleSystem);
     void createBundleTransformations(QList<BundleTransformation> &transformations, const QPointer<CoordinateSystem> &bundleSystem);
 
     //##################
