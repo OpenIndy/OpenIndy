@@ -858,7 +858,9 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
             QDomElement bundle_plugin = coordinateSystem.firstChildElement("bundle");
             if(!bundle_plugin.isNull()){
                 QPointer<BundleAdjustment> myBundle = ProjectExchanger::restoreBundleDependencies(bundle_plugin);
-                myCoordinateSystem->getCoordinateSystem()->setBundlePlugin(myBundle);
+                if(!myBundle.isNull()){
+                    myCoordinateSystem->getCoordinateSystem()->setBundlePlugin(myBundle);
+                }
             }
 
             //set observations (made from a station system)
