@@ -1540,6 +1540,7 @@ QPointer<BundleAdjustment> ProjectExchanger::restoreBundleDependencies(QDomEleme
             QPointer<FeatureWrapper> mySystem = ProjectExchanger::myCoordinateSystems.value(bundleCoordSys.attribute("ref").toInt());
             if(!mySystem.isNull() && !mySystem->getCoordinateSystem().isNull()){
                 myBundle->setBundleSystem(mySystem->getCoordinateSystem());
+                result = myBundle;
             }else{
                 return result;
             }
