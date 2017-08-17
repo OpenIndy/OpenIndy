@@ -1542,7 +1542,6 @@ void FeatureUpdater::createBundleTransformations(QList<BundleTransformation> &tr
     fAttr.group = bundleSystem->getGroupName();
     fAttr.count = 1;
     fAttr.startSystem = bundleSystem->getFeatureName();
-    fAttr.isBundleTrafo = true;
     QList<QPointer<FeatureWrapper> > features;
     foreach(const BundleTransformation &transformation, transformations){
 
