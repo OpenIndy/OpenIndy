@@ -243,6 +243,16 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
     if(inputStations.size() < 2){
         return false;
     }
+    bool hasCommonPoints = false;
+    foreach (BundleStation bStation, inputStations) {
+        if(bStation.geometries.size() > 2){
+            hasCommonPoints = true;
+        }
+    }
+
+    if(!hasCommonPoints){
+        return false;
+    }
 
     //set up base station and job
     bundlePlugin->setInputStations(inputStations);
