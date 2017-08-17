@@ -854,6 +854,15 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                 }
             }
 
+            //load bundle adjustments
+            QDomElement bundle_plugin = coordinateSystem.firstChildElement("bundle");
+            if(!bundle_plugin.isNull()){
+                QPointer<BundleAdjustment> myBundle = ProjectExchanger::restoreBundleDependencies(bundle_plugin);
+                if(!myBundle.isNull()){
+                    myCoordinateSystem->getCoordinateSystem()->setBundlePlugin(myBundle);
+                }
+            }
+
             //set observations (made from a station system)
             QDomElement observations = coordinateSystem.firstChildElement("observations");
             if(!observations.isNull()){
@@ -934,11 +943,12 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                     QDomElement trafoParam = trafoParamList.at(j).toElement();
                     if(trafoParam.hasAttribute("ref") && ProjectExchanger::myTransformationParameters.contains(trafoParam.attribute("ref").toInt())){
                         QPointer<FeatureWrapper> myTrafoParam = ProjectExchanger::myTransformationParameters.value(trafoParam.attribute("ref").toInt());
+                        //set the dependency for bundle system and trafoParam
+                        myTrafoParam->getTrafoParam()->setIsBundle(myCoordinateSystem->getCoordinateSystem()->getIsBundleSystem());
                         myCoordinateSystem->getCoordinateSystem()->addTransformationParameter(myTrafoParam->getTrafoParam());
                     }
                 }
             }
-
         }
     }
 
@@ -1493,6 +1503,52 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
 
     return result;
 
+}
+
+/*!
+ * \brief ProjectExchanger::restoreBundleDependencies
+ * Helper method which gets a bundle adjustment tag as input and then returns a pointer to the bundle adjustment
+ * \param bundle
+ * \return
+ */
+QPointer<BundleAdjustment> ProjectExchanger::restoreBundleDependencies(QDomElement &bundle){
+    QPointer<BundleAdjustment> result;
+
+    if(!bundle.isNull()){
+
+        if(!bundle.hasAttribute("name") || !bundle.hasAttribute("plugin")){
+            return result;
+        }
+
+        sdb::Plugin plugin = SystemDbManager::getPlugin(bundle.attribute("plugin"));
+        QPointer<BundleAdjustment> myBundle(NULL);
+        if(plugin.file_path.compare("") != 0){
+            myBundle = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundle.attribute("name"));
+            if(myBundle.isNull()){
+                return result;
+            }
+        }else{
+            return result;
+        }
+
+        //load bundle from xml
+        myBundle->fromOpenIndyXML(bundle);
+
+        //add bundleCoordinateSystem
+        QDomElement bundleCoordSys = bundle.firstChildElement("bundleCoordinateSystem");
+        if(!bundleCoordSys.isNull() && bundleCoordSys.hasAttribute("ref")){
+            QPointer<FeatureWrapper> mySystem = ProjectExchanger::myCoordinateSystems.value(bundleCoordSys.attribute("ref").toInt());
+            if(!mySystem.isNull() && !mySystem->getCoordinateSystem().isNull()){
+                myBundle->setBundleSystem(mySystem->getCoordinateSystem());
+                result = myBundle;
+            }else{
+                return result;
+            }
+        }else{
+            return result;
+        }
+    }
+    return result;
 }
 
 /*!
