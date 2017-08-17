@@ -1507,11 +1507,11 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
 
 /*!
  * \brief ProjectExchanger::restoreBundleDependencies
+ * Helper method which gets a bundle adjustment tag as input and then returns a pointer to the bundle adjustment
  * \param bundle
  * \return
  */
-QPointer<BundleAdjustment> ProjectExchanger::restoreBundleDependencies(QDomElement &bundle)
-{
+QPointer<BundleAdjustment> ProjectExchanger::restoreBundleDependencies(QDomElement &bundle){
     QPointer<BundleAdjustment> result;
 
     if(!bundle.isNull()){
