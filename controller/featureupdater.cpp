@@ -263,8 +263,12 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
     //recalculate all features
     this->switchCoordinateSystem();
 
-    return true;
+    //recalc all transformations that include the bundle system
+    //except own station-> bundle transformations
+    this->recalcAllBundleTrafoDependencies(bundleSystem);
+    this->recalcFeatureSet();
 
+    return true;
 }
 
 /*!
@@ -1594,4 +1598,37 @@ void FeatureUpdater::createBundleTransformations(QList<BundleTransformation> &tr
 
     }
 
+}
+
+/*!
+ * \brief FeatureUpdater::recalcAllBundleTrafoDependencies
+ * \param bundleSystem
+ */
+void FeatureUpdater::recalcAllBundleTrafoDependencies(const QPointer<CoordinateSystem> &bundleSystem)
+{
+    //if bundle system
+    if(bundleSystem->getIsBundleSystem()){
+        //get all trafo params from job
+        QList<QPointer<TrafoParam> > globalTps = this->currentJob->getTransformationParametersList();
+
+        foreach (QPointer<TrafoParam> gTP, globalTps) {
+            bool recalc = true;
+
+            if(gTP->getStartSystem() == bundleSystem || gTP->getDestinationSystem() == bundleSystem){
+                //and check if they are included in bundle trafo
+                foreach (QPointer<TrafoParam> bundleTP, bundleSystem->getTransformationParameters()) {
+                    if(gTP->getId() == bundleTP->getId()){
+                        recalc = false;
+                    }
+                }
+            }else{
+                recalc = false;
+            }
+
+            //if not, but they include the bundle system => recalc
+            if(recalc){
+                gTP->recalc();
+            }
+        }
+    }
 }
