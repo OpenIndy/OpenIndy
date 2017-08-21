@@ -99,6 +99,8 @@ private:
     void saveBundleResults(const QPointer<CoordinateSystem> &bundleSystem);
     //void createBundleGeometries(const QList<BundleGeometry> &geometries, const QPointer<CoordinateSystem> &bundleSystem);
     void createBundleTransformations(QList<BundleTransformation> &transformations, const QPointer<CoordinateSystem> &bundleSystem);
+    //recalc bundle- trafoParam dependencies
+    void recalcAllBundleTrafoDependencies(const QPointer<CoordinateSystem> &bundleSystem);
 
     //##################
     //general attributes
