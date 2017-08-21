@@ -35,6 +35,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->resizeTableView();
 
     tabifyDockWidget(this->ui->dockWidget_Console, this->ui->dockWidget_magnify);
+
+    this->ui->tabWidget_bundle->setTabEnabled(2,false);
+    this->ui->tabWidget_bundle->setTabEnabled(3,false);
 }
 
 /*!
