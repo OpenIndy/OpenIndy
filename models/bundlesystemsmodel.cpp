@@ -122,6 +122,11 @@ void BundleSystemsModel::setCurrentJob(const QPointer<OiJob> &job){
 
         this->currentJob = job;
         this->connectJob();
+
+        //get bundle systems
+        emit this->beginResetModel();
+        this->bundleSystems = this->currentJob->getBundleSystemList();
+        emit this->endResetModel();
         this->updateModel();
 
     }
