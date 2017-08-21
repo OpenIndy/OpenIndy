@@ -1470,10 +1470,33 @@ void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundle
     QList< QPointer<TrafoParam> > transformations = bundleSystem->getTransformationParameters();
     foreach(const QPointer<TrafoParam> &trafo, transformations){
         if(!trafo.isNull() && trafo->getIsBundle()){
-            delete trafo;
+
+            //check if trafo is between a "bundle-station" and "bundle" or "bundle" and "PART" system
+            if(trafo->getStartSystem() == bundleSystem){
+
+                //if second coordinate system is a bundlestation => delete trafoParam
+                if(!trafo->getDestinationSystem()->getStation().isNull()){
+                    foreach (BundleStation bStation, bundleSystem->getBundlePlugin()->getInputStations()) {
+                        if(bStation.id == trafo->getDestinationSystem()->getStation()->getId()){
+                            delete trafo;
+                            break;
+                        }
+                    }
+                }
+            }else if(trafo->getDestinationSystem() == bundleSystem){
+
+                if(!trafo->getStartSystem()->getStation().isNull()){
+                    //if second coordinate system is a bundlestation => delete trafoParam
+                    foreach (BundleStation bStation, bundleSystem->getBundlePlugin()->getInputStations()) {
+                        if(bStation.id == trafo->getStartSystem()->getStation()->getId()){
+                            delete trafo;
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
-
 }
 
 /*!
