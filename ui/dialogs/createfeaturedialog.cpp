@@ -31,9 +31,22 @@ void CreateFeatureDialog::setFeatureType(const FeatureTypes &type){
 }
 
 /*!
+ * \brief CreateFeatureDialog::featureCreated
+ * \param created
+ * \return
+ */
+bool CreateFeatureDialog::featureCreated(bool created)
+{
+    this->created = created;
+    return created;
+}
+
+/*!
  * \brief CreateFeatureDialog::on_toolButton_ok_clicked
  */
 void CreateFeatureDialog::on_toolButton_ok_clicked(){
+
+    this->created = false;
 
     //get feature attributes from GUI elements and emit add features signal
     FeatureAttributes attributes;
@@ -42,21 +55,27 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
 
     //only set default function, if an actual feature has been created
     if(!attributes.isActual){
-        this->close();
+        if(this->created){
+            this->close();
+        }
         return;
     }
 
     //get selected function
     sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
     if(function.name.compare("") == 0 || function.plugin.name.compare("") == 0){
-        this->close();
+        if(this->created){
+            this->close();
+        }
         return;
     }
 
     //get and cast source model
     AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
     if(source_model == NULL){
-        this->close();
+        if(this->created){
+            this->close();
+        }
         return;
     }
 
@@ -66,8 +85,9 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
     functionPlugin.second = function.plugin.file_path;
     source_model->setDefaultFunction(this->typeOfFeature, functionPlugin);
 
-    this->close();
-
+    if(this->created){
+        this->close();
+    }
 }
 
 /*!
