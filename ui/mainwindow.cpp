@@ -38,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     this->ui->tabWidget_bundle->setTabEnabled(2,false);
     this->ui->tabWidget_bundle->setTabEnabled(3,false);
+
+    this->resizeTableView();
 }
 
 /*!
@@ -1281,6 +1283,8 @@ void MainWindow::showToolWidget(const QString &pluginName, const QString &toolNa
 void MainWindow::resizeTableView(){
     this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_features->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_trafoParams->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
 }
 
 /*!
@@ -2118,9 +2122,11 @@ void MainWindow::initFeatureTableViews(){
 
     //resize rows and columns to table view contents on double click
     QObject::connect(this->ui->tableView_features->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
-    this->ui->tableView_features->verticalHeader()->setDefaultSectionSize(22);
+    //this->ui->tableView_features->verticalHeader()->setDefaultSectionSize(22);
+    QObject::connect(this->ui->tableView_features->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_trafoParams->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
-    this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
+    //this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
+    QObject::connect(this->ui->tableView_trafoParams->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
 
     //enable context menu
     this->ui->tableView_features->setContextMenuPolicy(Qt::CustomContextMenu);
