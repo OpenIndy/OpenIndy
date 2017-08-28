@@ -83,13 +83,11 @@ private:
 signals:
     void modelChanged();
 
-    void changedColumnOrder();
+    void changedColumnOrder();*/
 
 private slots:
     void on_pushButton_ok_clicked();
-
-    void on_pushButton_cancel_clicked();
-
+/*
     void initGUI();
 
     void showEvent(QShowEvent *event);
@@ -119,12 +117,12 @@ private slots:
     void on_toolButton_up_clicked();
 
     void on_toolButton_down_clicked();
-
+*/
 private:
 
-    Ui::SettingsDialog *ui;
+    //Ui::SettingsDialog *ui;
 
-    PluginInfoWidget *myPluginInformation;*/
+    //PluginInfoWidget *myPluginInformation;
 };
 
 #endif // SETTINGSDIALOG_H

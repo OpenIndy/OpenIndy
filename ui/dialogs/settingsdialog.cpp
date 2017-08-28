@@ -27,10 +27,10 @@ void SettingsDialog::setPluginsModel(PluginTreeViewModel *model){
     this->ui->treeView_plugins->setModel(model);
     this->ui->treeView_plugins->expandToDepth(1);
 }
-
+*/
 void SettingsDialog::on_pushButton_ok_clicked()
 {
-
+/*
     //first call generate, so they get the new unit string, if changed.
     saveSettings();
     //! generate lists for gui and view modification
@@ -38,15 +38,10 @@ void SettingsDialog::on_pushButton_ok_clicked()
 
     //then they get the boolean for display or not.
     getFeatureColumns();
-    getTrafoParamColumns();
+    getTrafoParamColumns();*/
     this->close();
 }
-
-void SettingsDialog::on_pushButton_cancel_clicked()
-{
-    this->close();
-}
-
+/*
 void SettingsDialog::initGUI(){
 
     this->ui->checkBox_differences->setChecked(false);
@@ -411,6 +406,8 @@ void SettingsDialog::showEvent(QShowEvent *event){
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move( screen.center() - this->rect().center() );
 
+    this->ui->tabWidget_settings->setTabEnabled(2,false);
+    this->ui->tabWidget_settings->setTabEnabled(3,false);
 }
 
 /*!
