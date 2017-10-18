@@ -197,7 +197,7 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         case eObservationDisplayIsUsed:
             if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
                 QPointer<Function> function = geometry->getFunctions()[0];
-                return function->getIsUsed(0, observation->getId())?Qt::Checked:Qt::Unchecked;
+                return function->getShouldBeUsed(0, observation->getId())?Qt::Checked:Qt::Unchecked;
             }
             return Qt::Unchecked;
         }

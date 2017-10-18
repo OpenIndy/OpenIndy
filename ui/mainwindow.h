@@ -66,6 +66,8 @@ signals:
     void addFeatures(const FeatureAttributes &attributes);
     void removeFeatures(const QSet<int> &featureIds);
 
+    bool featureCreated(bool);
+
     //remove observations
     void removeObservations(const int &featureId);
     void removeAllObservations();

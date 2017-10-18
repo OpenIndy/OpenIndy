@@ -71,8 +71,10 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
     QList<QPointer<FeatureWrapper> > features = this->job->addFeatures(attributes);
     if(features.size() == 0){
         this->log("No feature were created - See console output for details", eErrorMessage, eMessageBoxMessage);
+        emit this->featureCreated(false);
         return;
     }
+    emit this->featureCreated(true);
 
     //get saved measurement config
     MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(attributes.mConfig);
