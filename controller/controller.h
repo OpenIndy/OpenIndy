@@ -148,6 +148,8 @@ signals:
     void trafoParamSetChanged();
     void geometrySetChanged();
 
+    bool featureCreated(bool created);
+
     //group(s) added or removed
     void availableGroupsChanged();
     void activeGroupChanged();

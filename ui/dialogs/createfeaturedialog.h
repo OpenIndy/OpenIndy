@@ -33,6 +33,8 @@ public:
     const FeatureTypes &getFeatureType() const;
     void setFeatureType(const FeatureTypes &type);
 
+    bool featureCreated(bool created);
+
 signals:
 
     //#######################################
@@ -76,6 +78,8 @@ private:
     //################
 
     void featureAttributesFromGUI(FeatureAttributes &attributes);
+
+    bool created;
 
 private:
     Ui::CreateFeatureDialog *ui;

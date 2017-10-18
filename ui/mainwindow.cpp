@@ -1986,6 +1986,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::saveAsTriggered, this, &MainWindow::on_actionSave_as_triggered, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::activeStationChanged, this, &MainWindow::activeStationChanged, Qt::AutoConnection);
 
+    QObject::connect(&this->control, &Controller::featureCreated, this, &MainWindow::featureCreated, Qt::AutoConnection);
 }
 
 /*!
@@ -1995,6 +1996,7 @@ void MainWindow::connectDialogs(){
 
     //connect create feature dialog
     QObject::connect(&this->createFeatureDialog, &CreateFeatureDialog::addFeatures, this, &MainWindow::addFeatures, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::featureCreated, &this->createFeatureDialog, &CreateFeatureDialog::featureCreated, Qt::AutoConnection);
 
     //connect console
     QObject::connect(Console::getInstance().data(), &Console::lineAdded, this->ui->listView_console, &QListView::scrollToBottom, Qt::AutoConnection);
