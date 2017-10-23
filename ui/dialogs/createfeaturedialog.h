@@ -92,6 +92,8 @@ private:
 
     QPointer<AvailableFunctionsListProxyModel> functionListModel;
 
+    void setDialogName();
+
 };
 
 #endif // CREATEFEATUREDIALOG_H
