@@ -247,6 +247,9 @@ signals:
     void startWebSocketServer();
     void stopWebSocketServer();
 
+    //error create trafo Param
+    void requestMessageBoxTrafoParam();
+
 private slots:
 
     //###################################
