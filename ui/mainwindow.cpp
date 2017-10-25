@@ -486,27 +486,14 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
         if(feature.isNull() || feature->getFeature().isNull()){
             return;
         }
-
-        QMessageBox msgBox;
-        msgBox.setText(QString("Delete observations of feature %1?").arg(feature->getFeature()->getFeatureName()));
-        msgBox.setInformativeText("");
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::Yes);
-        int ret = msgBox.exec();
-        switch (ret) {
-        case QMessageBox::Yes:
-            this->removeObservationOfActiveFeature();
-            break;
-        }
+        this->removeObservationOfActiveFeature();
         break;
-
     }case Qt::Key_C: //copy to clipboard
 
         if(e->modifiers() == Qt::CTRL){
             this->copyToClipboard();
         }
         break;
-
     case Qt::Key_V: //paste from clipboard
 
         if(e->modifiers() == Qt::CTRL){
@@ -1323,9 +1310,19 @@ void MainWindow::removeObservationOfActiveFeature(){
     //get and check the active feature
     QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
     if(!feature.isNull() && !feature->getFeature().isNull()){
-        emit this->removeObservations(feature->getFeature()->getId());
-    }
 
+        QMessageBox msgBox;
+        msgBox.setText(QString("Delete observations of feature %1?").arg(feature->getFeature()->getFeatureName()));
+        msgBox.setInformativeText("");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+        switch (ret) {
+        case QMessageBox::Yes:
+            emit this->removeObservations(feature->getFeature()->getId());
+            break;
+        }
+    }
 }
 
 /*!
