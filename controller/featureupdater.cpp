@@ -608,7 +608,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
     QList<int> keys = systemTransformation->getInputElements().keys();
     if(keys.size() <= 0){ //no input elements
         return;
-    }else if(keys.size() == 1){ //normal transformation
+    }else if((keys.size() == 1) || (keys.size() == 2)){ //normal transformation
         isAlignment = false;
     }else{ //alignment
         isAlignment = true;
@@ -678,9 +678,34 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
                     sorter.addLocPoint(p);
                 }
             }
-
         }
+        //bestFit with level
+        if(keys.size() == 2){
+            //get input elements at the position key
+            QList<InputElement> newElements;
 
+            //get input elements at the position key
+            QList<InputElement> inputElements = systemTransformation->getInputElements().value(1);
+            foreach(const InputElement &element, inputElements){
+
+                //check geometry
+                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
+                    continue;
+                }
+
+                //check if the geometry is an actual and is solved
+                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                    continue;
+                }
+                Plane plane = *element.geometry->getFeatureWrapper()->getPlane();
+                InputElement copyElement(element.id);
+                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
+                newElements.append(copyElement);
+            }
+            if(newElements.size() > 0){
+                systemTransformation->inputElementsStartSystem.insert(1, newElements);
+            }
+        }
     }
 
     //#########################
@@ -744,9 +769,34 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
                     sorter.addRefPoint(p);
                 }
             }
-
         }
+        //bestFit with level
+        if(keys.size() == 2){
+            //get input elements at the position key
+            QList<InputElement> newElements;
 
+            //get input elements at the position key
+            QList<InputElement> inputElements = systemTransformation->getInputElements().value(1);
+            foreach(const InputElement &element, inputElements){
+
+                //check geometry
+                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
+                    continue;
+                }
+
+                //check if the geometry is an actual and is solved
+                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                    continue;
+                }
+
+                InputElement copyElement(element.id);
+                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
+                newElements.append(copyElement);
+            }
+            if(newElements.size() > 0){
+                systemTransformation->inputElementsDestinationSystem.insert(1, newElements);
+            }
+        }
     }
 
     //#########################
@@ -759,7 +809,6 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
 
     //switch back to active system
     this->switchCoordinateSystem();
-
 }
 
 /*!
@@ -924,7 +973,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
     QList<int> keys = systemTransformation->getInputElements().keys();
     if(keys.size() <= 0){ //no input elements
         return;
-    }else if(keys.size() == 1){ //normal transformation
+    }else if(keys.size() == 1 || keys.size() == 2){ //normal transformation
         isAlignment = false;
     }else{ //alignment
         isAlignment = true;
@@ -992,6 +1041,33 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
                 }
             }
         }
+        //bestFit with level
+        if(keys.size() == 2){
+            //get input elements at the position key
+            QList<InputElement> newElements;
+
+            //get input elements at the position key
+            QList<InputElement> inputElements = systemTransformation->getInputElements().value(1);
+            foreach(const InputElement &element, inputElements){
+
+                //check geometry
+                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
+                    continue;
+                }
+
+                //check if the geometry is an actual and is solved
+                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                    continue;
+                }
+                Plane plane = *element.geometry->getFeatureWrapper()->getPlane();
+                InputElement copyElement(element.id);
+                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
+                newElements.append(copyElement);
+            }
+            if(newElements.size() > 0){
+                systemTransformation->inputElementsStartSystem.insert(1, newElements);
+            }
+        }
     }
 
     //#########################
@@ -1052,6 +1128,34 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
                     p.setPoint(element.point->getPosition());
                     sorter.addRefPoint(p);
                 }
+            }
+        }
+        if(keys.size() == 2){
+            //get input elements at the position key
+            QList<InputElement> newElements;
+
+            //get input elements at the position key
+            QList<InputElement> inputElements = systemTransformation->getInputElements().value(1);
+            foreach(const InputElement &element, inputElements){
+
+                //check geometry
+                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
+                    continue;
+                }
+
+                //check if the geometry is an actual and is solved
+                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                    continue;
+                }
+
+                InputElement copyElement(element.id);
+                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
+                newElements.append(copyElement);
+
+            }
+
+            if(newElements.size() > 0){
+                systemTransformation->inputElementsDestinationSystem.insert(1, newElements);
             }
         }
     }
