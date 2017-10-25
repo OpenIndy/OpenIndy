@@ -135,6 +135,8 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
 
     this->ui->comboBox_entityType->setCurrentText(getFeatureTypeName(this->typeOfFeature));
 
+    this->setDialogName();
+
     event->accept();
 
 }
@@ -353,6 +355,13 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.functionPlugin.first = function.name;
         attributes.functionPlugin.second = function.plugin.file_path;
     }
+}
+
+void CreateFeatureDialog::setDialogName()
+{
+
+    QString title = "create " + getFeatureTypeName(typeOfFeature);
+    this->setWindowTitle(title);
 }
 
 /*!
