@@ -2606,7 +2606,7 @@ void MainWindow::createMessageBoxTrafoParamWarning()
     QMessageBox msgBox;
     msgBox.setText("Transformation with these coordinate systems already exists and is used.");
     msgBox.setInformativeText("New transformation is created but not set to use.");
-    msgBox.setStandardButtons(QMessageBox::Yes);
-    msgBox.setDefaultButton(QMessageBox::Yes);
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
     int ret = msgBox.exec();
 }

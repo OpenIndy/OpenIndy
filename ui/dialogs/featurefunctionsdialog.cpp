@@ -449,6 +449,8 @@ void FeatureFunctionsDialog::initModels(){
     FunctionWeightDelegate *functionweightDelegate = new FunctionWeightDelegate();
     this->ui->tableView_weights->setItemDelegate(functionweightDelegate);
 
+    this->ui->tableView_weights->setSortingEnabled(true);
+
 }
 
 /*!

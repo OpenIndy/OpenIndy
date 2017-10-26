@@ -112,11 +112,6 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
                 return Qt::Checked;
             }
             return Qt::Unchecked;
-        case eTrafoParamDisplayIsDatumTransformation:
-            if(feature->getTrafoParam()->getIsDatumTrafo()){
-                return Qt::Checked;
-            }
-            return Qt::Unchecked;
         default:
             break;
         }
@@ -288,7 +283,7 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
 
         if(fAttr == eTrafoParamDisplayIsSolved){
             return (myFlags | Qt::ItemIsUserCheckable);
-        }else if(fAttr == eTrafoParamDisplayIsUsed || fAttr == eTrafoParamDisplayIsDatumTransformation){
+        }else if(fAttr == eTrafoParamDisplayIsUsed){//else if(fAttr == eTrafoParamDisplayIsUsed || fAttr == eTrafoParamDisplayIsDatumTransformation){
             return(myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
         }
     }
@@ -483,11 +478,11 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             bool isUsed = value.toBool();
             feature->getTrafoParam()->setIsUsed(isUsed);
             break;
-        }case eTrafoParamDisplayIsDatumTransformation:{
+        }/*case eTrafoParamDisplayIsDatumTransformation:{
             bool isDatum = value.toBool();
             feature->getTrafoParam()->setIsDatumTrafo(isDatum);
             break;
-        }default:
+        }*/default:
             break;
         }
     }
