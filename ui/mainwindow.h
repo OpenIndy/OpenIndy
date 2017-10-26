@@ -284,6 +284,9 @@ private slots:
 
     void on_actionShortcut_import_triggered();
 
+    //trafo Param create...already exist use
+    void createMessageBoxTrafoParamWarning();
+
 private:
     Ui::MainWindow *ui;
 

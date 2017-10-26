@@ -76,6 +76,31 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
     }
     emit this->featureCreated(true);
 
+    //check used states of trafo params
+    for(int i = 0; i<features.size(); i++){
+        if(!features.at(i)->getTrafoParam().isNull()){
+
+            //check if other trafos with this coordinate systems already exist and are active/ used
+            for(int j=0; j<this->job->getTransformationParametersList().size(); j++){
+
+                if((features.at(i)->getTrafoParam()->getStartSystem() == this->job->getTransformationParametersList().at(j)->getStartSystem()
+                        && features.at(i)->getTrafoParam()->getDestinationSystem() == this->job->getTransformationParametersList().at(j)->getDestinationSystem())
+                        || (features.at(i)->getTrafoParam()->getStartSystem() == this->job->getTransformationParametersList().at(j)->getDestinationSystem()
+                            && features.at(i)->getTrafoParam()->getDestinationSystem() == this->job->getTransformationParametersList().at(j)->getStartSystem())){
+
+                    if(this->job->getTransformationParametersList().at(j)->getFeatureName().compare(features.at(i)->getFeature()->getFeatureName()) != 0){
+
+                        if(this->job->getTransformationParametersList().at(j)->getIsUsed()){
+                            features.at(i)->getTrafoParam()->setIsUsed(false);
+                            emit this->requestMessageBoxTrafoParam();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     //get saved measurement config
     MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(attributes.mConfig);
 

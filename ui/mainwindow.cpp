@@ -1984,6 +1984,8 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::activeStationChanged, this, &MainWindow::activeStationChanged, Qt::AutoConnection);
 
     QObject::connect(&this->control, &Controller::featureCreated, this, &MainWindow::featureCreated, Qt::AutoConnection);
+
+    QObject::connect(&this->control, &Controller::requestMessageBoxTrafoParam, this, &MainWindow::createMessageBoxTrafoParamWarning, Qt::AutoConnection);
 }
 
 /*!
@@ -2597,4 +2599,14 @@ void MainWindow::saveProjectAs()
 void MainWindow::on_actionShortcut_import_triggered()
 {
     on_action_importNominals_triggered();
+}
+
+void MainWindow::createMessageBoxTrafoParamWarning()
+{
+    QMessageBox msgBox;
+    msgBox.setText("Transformation with these coordinate systems already exists and is used.");
+    msgBox.setInformativeText("New transformation is created but not set to use.");
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    int ret = msgBox.exec();
 }

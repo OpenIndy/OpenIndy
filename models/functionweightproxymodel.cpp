@@ -6,7 +6,7 @@
  */
 FunctionWeightProxyModel::FunctionWeightProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
-
+    this->setDynamicSortFilter(true);
 }
 
 /*!
@@ -113,4 +113,39 @@ bool FunctionWeightProxyModel::filterAcceptsRow(int source_row, const QModelInde
 bool FunctionWeightProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const
 {
     return true;
+}
+
+/*!
+ * \brief FunctionWeightProxyModel::lessThan
+ * \param source_left
+ * \param source_right
+ * \return
+ */
+bool FunctionWeightProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const
+{
+
+    //get and cast source model
+    FunctionWeightsTableModel *source_model = dynamic_cast<FunctionWeightsTableModel *>(this->sourceModel());
+    if(source_model == NULL){
+        return false;
+    }
+
+    //check if job is set
+    if(source_model->getCurrentJob().isNull()){
+        return false;
+    }
+
+    //check feature and function valid
+    if(!source_model->getCurrentJob()->getActiveFeature().isNull() &&
+            source_model->getCurrentJob()->getActiveFeature()->getFeature()->getFunctions().size() >= 1){
+
+        QPointer<Function> function = source_model->getCurrentJob()->getActiveFeature()->getFeature()->getFunctions().at(0);
+        QList<InputElement> inputElem = function->getInputElements().value(0);
+
+        QPointer<FeatureWrapper> fwRight = source_model->getCurrentJob()->getFeatureById(inputElem.at(source_right.row()).id);
+        QPointer<FeatureWrapper> fwLeft = source_model->getCurrentJob()->getFeatureById(inputElem.at(source_left.row()).id);
+
+        return QString::localeAwareCompare(fwLeft->getFeature()->getFeatureName(), fwRight->getFeature()->getFeatureName()) > 0;
+    }
+    return false;
 }
