@@ -70,6 +70,7 @@ private:
 private slots:
     void on_pushButton_ok_clicked();
 
+    void on_checkBox_sounds_toggled(bool checked);
 };
 
 #endif // SETTINGSDIALOG_H

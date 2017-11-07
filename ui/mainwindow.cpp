@@ -383,6 +383,22 @@ void MainWindow::measurementCompleted(){
 }
 
 /*!
+ * \brief MainWindow::measurementDone plays a sound for successful and failed measurement if checked in settings
+ * \param success
+ */
+void MainWindow::measurementDone(bool success)
+{
+    if(ModelManager::getParameterDisplayConfig().getUseSounds()){
+        if(success){
+            QSound::play(":/sounds/measure_success.wav");
+        }else{
+            QSound::play(":/sounds/measure_fail.wav");
+        }
+    }
+    return;
+}
+
+/*!
  * \brief MainWindow::showMessageBox
  * \param msg
  * \param msgType
@@ -1973,6 +1989,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionStarted, this, &MainWindow::sensorActionStarted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::measurementDone, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);

@@ -39,6 +39,8 @@
 #include "trafoparamtabledelegate.h"
 #include "bundlestationsmodel.h"
 
+#include <QSound>
+
 using namespace oi;
 
 namespace Ui {
@@ -151,6 +153,7 @@ private slots:
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
+    void measurementDone(bool success);
 
     //display messages
     void showMessageBox(const QString &msg, const MessageTypes &msgType);

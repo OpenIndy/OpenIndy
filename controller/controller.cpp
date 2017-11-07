@@ -1559,6 +1559,7 @@ void Controller::activeStationChangedCallback(){
     //connect sensor action results of active station
     QObject::connect(activeStation, &Station::commandFinished, this, &Controller::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(activeStation, &Station::measurementFinished, this, &Controller::measurementFinished, Qt::AutoConnection);
+    QObject::connect(activeStation, &Station::measurementDone, this, &Controller::measurementDone, Qt::AutoConnection);
 
 }
 

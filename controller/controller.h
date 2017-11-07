@@ -217,6 +217,7 @@ signals:
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
+    void measurementDone(bool success);
 
     //#############
     //show messages
