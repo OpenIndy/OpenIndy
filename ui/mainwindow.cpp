@@ -707,6 +707,41 @@ void MainWindow::on_tableView_features_clicked(const QModelIndex &index){
 }
 
 /*!
+ * \brief MainWindow::on_tableView_features_doubleClicked
+ * \param index
+ */
+void MainWindow::on_tableView_features_doubleClicked(const QModelIndex &index)
+{
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //set active feature
+    sourceModel->setActiveFeature(model->mapToSource(index));
+
+    FeatureTableColumnConfig ftc = model->getFeatureTableColumnConfig();
+    qDebug() << "col " << index.column();
+    qDebug() << ftc.getDisplayAttributeAt(index.column());
+
+    if(model->getFeatureTableColumnConfig().getDisplayAttributeAt(index.column()) == eFeatureDisplayFunctions){
+
+        QPointer<FeatureWrapper> selectedFeature = sourceModel->getCurrentJob()->getActiveFeature();
+
+        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            this->on_actionSet_function_triggered();
+        }
+    }
+}
+
+/*!
  * \brief MainWindow::tableViewFeaturesSelectionChangedByKeyboard
  * Triggered whenever the user selects a feature by using keyboard
  * \param selected
@@ -759,6 +794,10 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
 
+        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                            this, SLOT(on_actionSet_function_triggered()));
+        }
         menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         this, SLOT(showFeatureProperties(bool)));
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
@@ -767,7 +806,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         //if the active feature is a geometry
         if(!selectedFeature->getGeometry().isNull()){
 
-            menu->addAction(QIcon(""), QString("remove observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+            menu->addAction(QIcon(":/Images/icons/cancel.png"), QString("remove observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                                  this, SLOT(removeObservationOfActiveFeature()));
 
         }
@@ -799,6 +838,42 @@ void MainWindow::on_tableView_trafoParams_clicked(const QModelIndex &index){
     //set active feature
     sourceModel->setActiveFeature(model->mapToSource(index));
 
+}
+
+/*!
+ * \brief MainWindow::on_tableView_trafoParams_doubleClicked
+ * \param index
+ */
+void MainWindow::on_tableView_trafoParams_doubleClicked(const QModelIndex &index)
+{
+    //get and check model
+    TrafoParamTableProxyModel *model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //set active feature
+    sourceModel->setActiveFeature(model->mapToSource(index));
+
+    TrafoParamTableColumnConfig ftc = model->getTrafoParamTableColumnConfig();
+    qDebug() << "col " << index.column();
+    qDebug() << ftc.getDisplayAttributeAt(index.column());
+
+
+    if(model->getTrafoParamTableColumnConfig().getDisplayAttributeAt(index.column()) == eTrafoParamDisplayFunctions){
+
+        QPointer<FeatureWrapper> selectedFeature = sourceModel->getCurrentJob()->getActiveFeature();
+
+        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            this->on_actionSet_function_triggered();
+        }
+    }
 }
 
 /*!
@@ -853,6 +928,10 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
 
+        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                            this, SLOT(on_actionSet_function_triggered()));
+        }
         menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         this, SLOT(showFeatureProperties(bool)));
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),

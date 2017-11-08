@@ -27,6 +27,61 @@ void TrafoParamTableProxyModel::setTrafoParamTableColumnConfig(const TrafoParamT
 }
 
 /*!
+ * \brief TrafoParamTableProxyModel::mapFromSource
+ * \param sourceIndex
+ * \return
+ */
+QModelIndex TrafoParamTableProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
+{
+    //get and check proxyIndex
+    QModelIndex proxyIndex = QSortFilterProxyModel::mapFromSource(sourceIndex);
+    if(!proxyIndex.isValid()){
+        return proxyIndex;
+    }
+
+    //set up new column position (column sorting)
+    int columnIndex = sourceIndex.column();
+    int columnPosition = this->trafoParamTableColumnConfig.getColumnPosition((TrafoParamDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex));
+    //proxyIndex = this->createIndex(proxyIndex.row(), columnPosition);
+    return this->index(proxyIndex.row(), columnPosition);
+
+    return proxyIndex;
+}
+
+/*!
+ * \brief TrafoParamTableProxyModel::mapToSource
+ * \param proxyIndex
+ * \return
+ */
+QModelIndex TrafoParamTableProxyModel::mapToSource(const QModelIndex &proxyIndex) const
+{
+    //get and check sourceIndex
+    QModelIndex sourceIndex = QSortFilterProxyModel::mapToSource(proxyIndex);
+    if(!sourceIndex.isValid()){
+        return sourceIndex;
+    }
+
+    //get and cast source model
+    FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
+    if(source_model == NULL){
+        return QModelIndex();
+    }
+
+    //get display attribute at column position
+    TrafoParamDisplayAttributes attr = this->trafoParamTableColumnConfig.getDisplayAttributeAt(proxyIndex.column());
+
+    //get the index of the attribute in the list of all available attributes
+    int sourceColumn = getFeatureDisplayAttributes().indexOf(attr);
+
+    //set up correct column position for the source index
+    sourceIndex = this->createIndex(sourceIndex.row(), sourceColumn);
+
+    return source_model->index(sourceIndex.row(), sourceColumn);
+
+    return sourceIndex;
+}
+
+/*!
  * \brief TrafoParamTableProxyModel::filterAcceptsRow
  * \param source_row
  * \param source_parent
