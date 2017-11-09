@@ -1248,7 +1248,7 @@ bool ProjectExchanger::restoreObservationDependencies(const QDomDocument &projec
 
                 //get geometry and assign it
                 QPointer<FeatureWrapper> myMeasuredTargetGeom = ProjectExchanger::myGeometries.value(measuredTargetGeom.attribute("ref").toInt());
-                myObservation->set
+                myObservation->setMeasuredTargetGeometry(myMeasuredTargetGeom->getGeometry());
             }
 
         }
