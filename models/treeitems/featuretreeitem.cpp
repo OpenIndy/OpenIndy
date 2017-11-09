@@ -557,8 +557,18 @@ void FeatureTreeItem::setUpFeature(){
 void FeatureTreeItem::setUpObservation(){
 
     //set display value
-    this->displayValue = this->observation->getReading()->getMeasuredAt().toString();
+    //this->displayValue = this->observation->getReading()->getMeasuredAt().toString();
+    /*if(this->observation->getTargetGeometries().size() > 0){
+        this->displayValue = "id:" + QString::number(this->observation->getId()) + " " +  this->observation->getTargetGeometries().at(0)->getFeatureName();
+    }else{
+        this->displayValue = "id:" + QString::number(this->observation->getId()) + " " + this->observation->getStation()->getFeatureName();
+    }*/
 
+    if(!this->observation->getMeasuredTargetGeometry().isNull()){
+        this->displayValue = "id:" + QString::number(this->observation->getId()) + " " +  this->observation->getMeasuredTargetGeometry()->getFeatureName();
+    }else{
+        this->displayValue = "id:" + QString::number(this->observation->getId()) + " " + this->observation->getStation()->getFeatureName();
+    }
 }
 
 /*!
@@ -569,5 +579,14 @@ void FeatureTreeItem::setUpReading(){
 
     //set display value
     this->displayValue = this->reading->getMeasuredAt().toString();
-
+    /*if(this->reading->getObservation()->getTargetGeometries().size() > 0){
+        this->displayValue = "id:" + QString::number(this->reading->getId()) + this->reading->getObservation()->getTargetGeometries().at(0)->getFeatureName();
+    }else{
+        this->displayValue = "id:" + QString::number(this->reading->getId()) + this->reading->getObservation()->getStation()->getFeatureName();
+    }*/
+    if(!this->reading->getObservation()->getMeasuredTargetGeometry().isNull()){
+        this->displayValue = "id:" + QString::number(this->reading->getId()) + this->reading->getObservation()->getMeasuredTargetGeometry()->getFeatureName();
+    }else{
+        this->displayValue = "id:" + QString::number(this->reading->getId()) + this->reading->getObservation()->getStation()->getFeatureName();
+    }
 }

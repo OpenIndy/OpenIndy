@@ -1242,6 +1242,15 @@ bool ProjectExchanger::restoreObservationDependencies(const QDomDocument &projec
                 }
             }
 
+            //set measuredTargetGeometry
+            QDomElement measuredTargetGeom = observation.firstChildElement("measuredTargetGeometry");
+            if(!measuredTargetGeom.isNull() && measuredTargetGeom.hasAttribute("ref") && ProjectExchanger::myGeometries.contains(measuredTargetGeom.attribute("ref").toInt())){
+
+                //get geometry and assign it
+                QPointer<FeatureWrapper> myMeasuredTargetGeom = ProjectExchanger::myGeometries.value(measuredTargetGeom.attribute("ref").toInt());
+                myObservation->set
+            }
+
         }
     }
 
