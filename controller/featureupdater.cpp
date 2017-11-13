@@ -88,8 +88,6 @@ void FeatureUpdater::recalcFeatureSet(){
  */
 void FeatureUpdater::recalcFeature(const QPointer<Feature> &feature){
 
-    qDebug() << "after delete feature!";
-
     //check job
     if(this->currentJob.isNull()){
         return;
