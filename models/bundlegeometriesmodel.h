@@ -50,13 +50,13 @@ public:
     const QJsonArray &getStations();
     void setStations(const QJsonArray &stations);
 
-private slots:
-
     //###########################################
     //update the model when settings have changed
     //###########################################
 
     void updateModel();
+
+private slots:
 
 private:
 

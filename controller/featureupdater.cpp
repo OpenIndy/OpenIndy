@@ -315,6 +315,7 @@ void FeatureUpdater::connectJob(){
     QObject::connect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureUpdater::switchCoordinateSystem, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::trafoParamParametersChanged, this, &FeatureUpdater::switchCoordinateSystem, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::trafoParamIsUsedChanged, this, &FeatureUpdater::switchCoordinateSystem, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::recalcFeatureSet, this, &FeatureUpdater::recalcFeatureSet, Qt::AutoConnection);
 
 }
 
