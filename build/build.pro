@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql svg serialport network opengl xml websockets
+QT       += core gui sql svg serialport network opengl xml websockets multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4):
 

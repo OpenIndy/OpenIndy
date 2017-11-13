@@ -26,6 +26,9 @@ public:
     QMap<DimensionType, UnitType> getDisplayUnits() const;
     QMap<DimensionType, int> getDisplayDigits() const;
 
+    bool getUseSounds() const;
+    void setUseSounds(const bool use);
+
 private:
     void init();
 
@@ -37,6 +40,8 @@ private:
     int angularDisplayDigits; //number of digits that are displayed for angular parameter values
     int temperatureDisplayDigits; //number of digits that are displayed for temperature parameter values
     int dimensionlessDisplayDigits; //number of digits that are displayed for dimensionless parameter values
+
+    bool useSounds;
 };
 
 Q_DECLARE_METATYPE( ParameterDisplayConfig )
