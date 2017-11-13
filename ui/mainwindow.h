@@ -39,6 +39,8 @@
 #include "trafoparamtabledelegate.h"
 #include "bundlestationsmodel.h"
 
+#include <QSound>
+
 using namespace oi;
 
 namespace Ui {
@@ -151,6 +153,7 @@ private slots:
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
+    void measurementDone(bool success);
 
     //display messages
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
@@ -193,9 +196,11 @@ private slots:
 
     //feature table view interactions
     void on_tableView_features_clicked(const QModelIndex &index);
+    void on_tableView_features_doubleClicked(const QModelIndex &index);
     void tableViewFeaturesSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
     void on_tableView_features_customContextMenuRequested(const QPoint &pos);
     void on_tableView_trafoParams_clicked(const QModelIndex &index);
+    void on_tableView_trafoParams_doubleClicked(const QModelIndex &index);
     void tableViewTrafoParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
     void on_tableView_trafoParams_customContextMenuRequested(const QPoint &pos);
 

@@ -102,6 +102,7 @@ void SettingsDialog::initGUI(){
     this->ui->lineEdit_angleDigits->blockSignals(true);
     this->ui->lineEdit_distanceDigits->blockSignals(true);
     this->ui->lineEdit_temperatureDigits->blockSignals(true);
+    this->ui->checkBox_sounds->blockSignals(true);
 
     //set default unit
     this->ui->comboBox_angleType->setCurrentText(getUnitTypeName(ModelManager::getParameterDisplayConfig().getDisplayUnit(eAngular)));
@@ -110,6 +111,7 @@ void SettingsDialog::initGUI(){
     this->ui->lineEdit_angleDigits->setText(QString::number(ModelManager::getParameterDisplayConfig().getDisplayDigits(eAngular)));
     this->ui->lineEdit_distanceDigits->setText(QString::number(ModelManager::getParameterDisplayConfig().getDisplayDigits(eMetric)));
     this->ui->lineEdit_temperatureDigits->setText(QString::number(ModelManager::getParameterDisplayConfig().getDisplayDigits(eTemperature)));
+    this->ui->checkBox_sounds->setChecked(ModelManager::getParameterDisplayConfig().getUseSounds());
 
     //from now on trigger changes
     this->ui->comboBox_angleType->blockSignals(false);
@@ -118,6 +120,7 @@ void SettingsDialog::initGUI(){
     this->ui->lineEdit_angleDigits->blockSignals(false);
     this->ui->lineEdit_distanceDigits->blockSignals(false);
     this->ui->lineEdit_temperatureDigits->blockSignals(false);
+    this->ui->checkBox_sounds->blockSignals(false);
 }
 
 /*!
@@ -143,6 +146,16 @@ void SettingsDialog::updateDisplayConfigFromSelection(){
     config.setDisplayUnitType(eAngular, getUnitTypeEnum(this->ui->comboBox_angleType->currentText()));
     config.setDisplayUnitType(eMetric, getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
     config.setDisplayUnitType(eTemperature, getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
+    config.setUseSounds(this->ui->checkBox_sounds->isChecked());
 
     emit this->setDisplayConfig(config);
+}
+
+/*!
+ * \brief SettingsDialog::on_checkBox_sounds_toggled
+ * \param checked
+ */
+void SettingsDialog::on_checkBox_sounds_toggled(bool checked)
+{
+    this->updateDisplayConfigFromSelection();
 }

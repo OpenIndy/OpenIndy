@@ -55,6 +55,19 @@ void TrafoParamTableColumnConfig::setColumnPosition(const TrafoParamDisplayAttri
 }
 
 /*!
+ * \brief TrafoParamTableColumnConfig::getDisplayAttributeAt
+ * \param column
+ * \return
+ */
+TrafoParamDisplayAttributes TrafoParamTableColumnConfig::getDisplayAttributeAt(const int &column) const
+{
+    if(this->displayColumns.size() > column){
+        return this->displayColumns.at(column);
+    }
+    return eTrafoParamDisplayType;
+}
+
+/*!
  * \brief TrafoParamTableColumnConfig::init
  * Set up default column config
  */

@@ -27,6 +27,13 @@ public:
     const TrafoParamTableColumnConfig &getTrafoParamTableColumnConfig() const;
     void setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config);
 
+    //###########################################
+    //override methods of sort filter proxy model
+    //###########################################
+
+    QModelIndex mapFromSource(const QModelIndex &sourceIndex) const;
+    QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
+
 signals:
 
     //#########################

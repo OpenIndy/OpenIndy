@@ -31,7 +31,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab_units">
         <attribute name="title">
@@ -146,16 +146,6 @@
          <string>others</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBox_differences">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>show differences</string>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
           <spacer name="verticalSpacer">
            <property name="orientation">
@@ -168,6 +158,16 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="checkBox_sounds">
+           <property name="text">
+            <string>use sounds</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
