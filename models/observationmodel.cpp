@@ -138,9 +138,11 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         case eObservationDisplaySigmaK:
             return observation->getDisplaySigmaK(6);
         case eObservationDisplayIsValid:
-            return observation->getDisplayIsValid();
+            //return observation->getDisplayIsValid();
+            return QVariant();
         case eObservationDisplayIsSolved:
-            return observation->getDisplayIsSolved();
+            //return observation->getDisplayIsSolved();
+            return QVariant();
         case eObservationDisplayVX:
             if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
                 const Statistic &statistic = geometry->getFunctions().at(0)->getStatistic();
@@ -200,6 +202,16 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
                 return function->getShouldBeUsed(0, observation->getId())?Qt::Checked:Qt::Unchecked;
             }
             return Qt::Unchecked;
+        case eObservationDisplayIsSolved:
+            if(observation->getIsSolved()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
+        case eObservationDisplayIsValid:
+            if(observation->getIsValid()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
         }
 
     }
@@ -247,6 +259,10 @@ Qt::ItemFlags ObservationModel::flags(const QModelIndex &index) const{
     ObservationDisplayAttributes attr = attributes.at(index.column());
     if(attr == eObservationDisplayIsUsed){
         return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
+    }else if(attr = eObservationDisplayIsSolved){
+        return (myFlags | Qt::ItemIsUserCheckable);
+    }else if(attr = eObservationDisplayIsValid){
+        return (myFlags | Qt::ItemIsUserCheckable);
     }
 
     return myFlags;

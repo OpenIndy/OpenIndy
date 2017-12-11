@@ -51,3 +51,38 @@ bool ObservationProxyModel::filterAcceptsColumn(int source_column, const QModelI
     return false;
 
 }
+
+/*!
+ * \brief ObservationProxyModel::lessThan
+ * \param source_left
+ * \param source_right
+ * \return
+ */
+bool ObservationProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const
+{
+    ObservationModel *source_model = dynamic_cast<ObservationModel *>(this->sourceModel());
+    if(source_model == NULL){
+        return false;
+    }
+
+    //check if job is set
+    if(source_model->getCurrentJob().isNull()){
+        return false;
+    }
+
+    //check feature, function and observation
+    if(!source_model->getCurrentJob()->getActiveFeature().isNull() &&
+            source_model->getCurrentJob()->getActiveFeature()->getFeature()->getFunctions().size() >= 1){
+
+        //fit function
+        QPointer<Function> function = source_model->getCurrentJob()->getActiveFeature()->getFeature()->getFunctions().at(0);
+        QList<InputElement> inputElem = function->getInputElements().value(0);
+
+        int fwRight = inputElem.at(source_right.row()).id;
+        int fwLeft =  inputElem.at(source_left.row()).id;
+
+        return fwLeft < fwRight;
+    }
+    return false;
+
+}
