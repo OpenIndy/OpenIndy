@@ -232,6 +232,9 @@ void ActualPropertiesDialog::initModels(){
     this->ui->tableView_observation->setModel(&ModelManager::getObservationProxyModel());
     this->ui->tableView_readings->setModel(&ModelManager::getReadingProxyModel());
 
+    this->ui->tableView_observation->setSortingEnabled(true);
+    this->ui->tableView_readings->setSortingEnabled(true);
+
 }
 
 /*!

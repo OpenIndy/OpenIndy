@@ -78,8 +78,12 @@ bool ObservationProxyModel::lessThan(const QModelIndex &source_left, const QMode
         QPointer<Function> function = source_model->getCurrentJob()->getActiveFeature()->getFeature()->getFunctions().at(0);
         QList<InputElement> inputElem = function->getInputElements().value(0);
 
-        int fwRight = inputElem.at(source_right.row()).id;
-        int fwLeft =  inputElem.at(source_left.row()).id;
+        if(inputElem.at(source_right.row()).observation.isNull() || inputElem.at(source_left.row()).observation.isNull()){
+            return false;
+        }
+
+        int fwRight = inputElem.at(source_right.row()).observation->getId();
+        int fwLeft =  inputElem.at(source_left.row()).observation->getId();
 
         return fwLeft < fwRight;
     }
