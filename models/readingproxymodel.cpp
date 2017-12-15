@@ -71,3 +71,41 @@ bool ReadingProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
     return false;
 
 }
+
+/*!
+ * \brief ReadingProxyModel::lessThan
+ * \param source_left
+ * \param source_right
+ * \return
+ */
+bool ReadingProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const
+{
+    ReadingModel *source_model = dynamic_cast<ReadingModel *>(this->sourceModel());
+    if(source_model == NULL){
+        return false;
+    }
+
+    //check if job is set
+    if(source_model->getCurrentJob().isNull()){
+        return false;
+    }
+
+    //check feature, function and observation
+    if(!source_model->getCurrentJob()->getActiveFeature().isNull() &&
+            source_model->getCurrentJob()->getActiveFeature()->getFeature()->getFunctions().size() >= 1){
+
+        //fit function
+        QPointer<Function> function = source_model->getCurrentJob()->getActiveFeature()->getFeature()->getFunctions().at(0);
+        QList<InputElement> inputElem = function->getInputElements().value(0);
+
+        if(inputElem.at(source_right.row()).observation.isNull() || inputElem.at(source_left.row()).observation.isNull()){
+            return false;
+        }
+
+        int fwRight = inputElem.at(source_right.row()).observation->getId();
+        int fwLeft =  inputElem.at(source_left.row()).observation->getId();
+
+        return fwLeft < fwRight;
+    }
+    return false;
+}

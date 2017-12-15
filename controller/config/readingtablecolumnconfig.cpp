@@ -76,7 +76,7 @@ void ReadingTableColumnConfig::init(){
     this->displayColumns.append(eReadingDisplayJ);
     this->displayColumns.append(eReadingDisplayK);
     this->displayColumns.append(eReadingDisplayTemperature);
-    this->displayColumns.append(eReadingDisplaySigmaAzimuth);
+    /*this->displayColumns.append(eReadingDisplaySigmaAzimuth);
     this->displayColumns.append(eReadingDisplaySigmaZenith);
     this->displayColumns.append(eReadingDisplaySigmaDistance);
     this->displayColumns.append(eReadingDisplaySigmaX);
@@ -85,6 +85,6 @@ void ReadingTableColumnConfig::init(){
     this->displayColumns.append(eReadingDisplaySigmaI);
     this->displayColumns.append(eReadingDisplaySigmaJ);
     this->displayColumns.append(eReadingDisplaySigmaK);
-    this->displayColumns.append(eReadingDisplaySigmaTemperature);
+    this->displayColumns.append(eReadingDisplaySigmaTemperature);*/
 
 }
