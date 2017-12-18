@@ -137,6 +137,13 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
 
     this->setDialogName();
 
+    //set combobox size
+    int sizeSystem =oi::getDropDownMenuSize(ModelManager::getCoordinateSystemsModel().stringList(), this->ui->comboBox_startSystem->width());
+    this->ui->comboBox_startSystem->view()->setMinimumWidth(sizeSystem);
+    this->ui->comboBox_destinationSystem->view()->setMinimumWidth(sizeSystem);
+    int sizeNominal = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
+    this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
+
     event->accept();
 
 }
@@ -252,31 +259,15 @@ void CreateFeatureDialog::initModels(){
     this->ui->comboBox_startSystem->setModel(&ModelManager::getCoordinateSystemsModel());
     this->ui->comboBox_destinationSystem->setModel(&ModelManager::getCoordinateSystemsModel());
 
-    //get size of combobox
-    QStringList systems = ModelManager::getCoordinateSystemsModel().stringList();
-    QString largestSystem = "";
-    foreach (const QString &filter, systems) {
-        if(filter.length() > largestSystem.length()){
-            largestSystem = filter;
-        }
-    }
-    //calculate width of popup dependend on size of actul nominal filter
-    QFont font;
-    QFontMetrics fm(font);
-    int width = fm.width(largestSystem);
-    int boxWidth = this->ui->comboBox_startSystem->width();
-
-    if((width + (0.1*width)) > boxWidth){ // if text is bigger than combobox
-        this->ui->comboBox_startSystem->view()->setMinimumWidth(width + (0.1 * width));
-        this->ui->comboBox_destinationSystem->view()->setMinimumWidth(width + (0.1 * width));
-    }else{ // if combobox is bigger than text
-        this->ui->comboBox_startSystem->view()->setMinimumWidth(boxWidth);
-        this->ui->comboBox_destinationSystem->view()->setMinimumWidth(boxWidth);
-    }
-
+    //set combobox size
+    int sizeSystem =oi::getDropDownMenuSize(ModelManager::getCoordinateSystemsModel().stringList(), this->ui->comboBox_startSystem->width());
+    this->ui->comboBox_startSystem->view()->setMinimumWidth(sizeSystem);
+    this->ui->comboBox_destinationSystem->view()->setMinimumWidth(sizeSystem);
 
     //set model for possible nominal systems of a nominal geometry
     this->ui->comboBox_nominalSystem->setModel(&ModelManager::getNominalSystemsModel());
+    int sizeNominal = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
+    this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
 
     //set model for available functions
     this->functionListModel = ModelManager::getAvailableFunctionsProxyModel();

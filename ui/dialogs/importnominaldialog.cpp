@@ -125,26 +125,9 @@ void ImportNominalDialog::initModels(){
     //assign nominal systems model
     this->ui->comboBox_system_sa->setModel(&ModelManager::getNominalSystemsModel());
 
-    //resize combobox for systems (only popup)
-    QStringList systems = ModelManager::getNominalSystemsModel().stringList();
-    QString largestSystem = "";
-    foreach (const QString &filter, systems) {
-        if(filter.length() > largestSystem.length()){
-            largestSystem = filter;
-        }
-    }
-
-    //calculate width of popup dependend on size of actul nominal filter
-    QFont font;
-    QFontMetrics fm(font);
-    int width = fm.width(largestSystem);
-    int boxWidth = this->ui->comboBox_system_sa->width();
-
-    if((width + (0.1*width)) > boxWidth){ // if text is bigger than combobox
-        this->ui->comboBox_system_sa->view()->setMinimumWidth(width + (0.1 * width));
-    }else{ // if combobox is bigger than text
-        this->ui->comboBox_system_sa->view()->setMinimumWidth(boxWidth);
-    }
+    //set combobox size
+    int sizeSystem = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(),this->ui->comboBox_system_sa->width());
+    this->ui->comboBox_system_sa->view()->setMinimumWidth(sizeSystem);
 
     //assign group names model
     this->ui->comboBox_groupNames->setModel(&ModelManager::getGroupNamesModel());

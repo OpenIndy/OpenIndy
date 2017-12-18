@@ -462,7 +462,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_system_sa"/>
+                <widget class="QComboBox" name="comboBox_system_sa">
+                 <property name="sizeAdjustPolicy">
+                  <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>

@@ -2586,25 +2586,10 @@ void MainWindow::updateGroupFilterSize(){
         return;
     }
 
-    //get the largest group name
-    const QStringList &groupNames = job->getFeatureGroupList();
-    QString largestGroup = "All Groups";
-    foreach(const QString &group, groupNames){
-        if(group.length() > largestGroup.length()){
-            largestGroup = group;
-        }
-    }
-    //calculate width of popup dependend on size of group name
-    QFont font;
-    QFontMetrics fm(font);
-    int width = fm.width(largestGroup);
-    int boxWidth = this->ui->comboBox_groups->width();
+    //set combobox size
+    int sizeGroup = oi::getDropDownMenuSize(job->getFeatureGroupList(),this->ui->comboBox_groups->width());
+    this->ui->comboBox_groups->view()->setMinimumWidth(sizeGroup);
 
-    if((width + (0.1*width)) > boxWidth){ // if text is bigger than combobox
-        this->ui->comboBox_groups->view()->setMinimumWidth(width + (0.1 * width));
-    }else{ // if combobox is bigger than text
-        this->ui->comboBox_groups->view()->setMinimumWidth(boxWidth);
-    }
 }
 
 /*!
@@ -2621,6 +2606,7 @@ void MainWindow::updateSystemFilterSize(){
     //get the largest system name
     const QList<QPointer<CoordinateSystem> > &nominalSystems = job->getCoordinateSystemsList();
     QList<QPointer<CoordinateSystem> > &stationSystems = job->getStationSystemsList();
+    QList<QPointer<CoordinateSystem> > &bundleSystems = job->getBundleSystemList();
     QString largestSystemName = "";
     foreach(const QPointer<CoordinateSystem> &system, nominalSystems){
         if(!system.isNull() && system->getFeatureName().length() > largestSystemName.length()){
@@ -2628,6 +2614,11 @@ void MainWindow::updateSystemFilterSize(){
         }
     }
     foreach(const QPointer<CoordinateSystem> &system, stationSystems){
+        if(!system.isNull() && system->getFeatureName().length() > largestSystemName.length()){
+            largestSystemName = system->getFeatureName();
+        }
+    }
+    foreach(const QPointer<CoordinateSystem> &system, bundleSystems){
         if(!system.isNull() && system->getFeatureName().length() > largestSystemName.length()){
             largestSystemName = system->getFeatureName();
         }
@@ -2652,27 +2643,9 @@ void MainWindow::updateSystemFilterSize(){
  */
 void MainWindow::updateActualNominalFilterSize(){
 
-    //get the largest group name
-    QStringList actualNominalfilters = ModelManager::getActualNominalFilterModel().stringList();
-    QString largestFilter = "";
-    foreach(const QString &filter, actualNominalfilters){
-        if(filter.length() > largestFilter.length()){
-            largestFilter = filter;
-        }
-    }
-
-    //calculate width of popup dependend on size of actul nominal filter
-    QFont font;
-    QFontMetrics fm(font);
-    int width = fm.width(largestFilter);
-    int boxWidth = this->ui->comboBox_actualNominal->width();
-
-    if((width + (0.1*width)) > boxWidth){ // if text is bigger than combobox
-        this->ui->comboBox_actualNominal->view()->setMinimumWidth(width + (0.1 * width));
-    }else{ // if combobox is bigger than text
-        this->ui->comboBox_actualNominal->view()->setMinimumWidth(boxWidth);
-    }
-
+    //set combobox size
+    int sizeFilter = oi::getDropDownMenuSize(ModelManager::getActualNominalFilterModel().stringList(),this->ui->comboBox_actualNominal->width());
+    this->ui->comboBox_actualNominal->view()->setMinimumWidth(sizeFilter);
 }
 
 /*!

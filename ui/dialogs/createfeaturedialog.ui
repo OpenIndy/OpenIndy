@@ -175,7 +175,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_nominalSystem"/>
+        <widget class="QComboBox" name="comboBox_nominalSystem">
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -194,7 +198,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBox_startSystem"/>
+          <widget class="QComboBox" name="comboBox_startSystem">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -208,7 +216,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBox_destinationSystem"/>
+          <widget class="QComboBox" name="comboBox_destinationSystem">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

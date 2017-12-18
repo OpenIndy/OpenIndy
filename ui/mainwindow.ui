@@ -61,9 +61,6 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="maxVisibleItems">
-           <number>150</number>
-          </property>
           <property name="sizeAdjustPolicy">
            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
           </property>
