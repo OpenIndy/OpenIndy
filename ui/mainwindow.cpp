@@ -2594,10 +2594,17 @@ void MainWindow::updateGroupFilterSize(){
             largestGroup = group;
         }
     }
+    //calculate width of popup dependend on size of group name
+    QFont font;
+    QFontMetrics fm(font);
+    int width = fm.width(largestGroup);
+    int boxWidth = this->ui->comboBox_groups->width();
 
-    //update combobox width with respect to the largest item
-    this->ui->comboBox_groups->setMinimumContentsLength(largestGroup.length());
-
+    if((width + (0.1*width)) > boxWidth){ // if text is bigger than combobox
+        this->ui->comboBox_groups->view()->setMinimumWidth(width + (0.1 * width));
+    }else{ // if combobox is bigger than text
+        this->ui->comboBox_groups->view()->setMinimumWidth(boxWidth);
+    }
 }
 
 /*!
@@ -2626,8 +2633,17 @@ void MainWindow::updateSystemFilterSize(){
         }
     }
 
-    //update combobox width with respect to the largest item
-    this->ui->comboBox_activeCoordSystem->setMinimumContentsLength(largestSystemName.length());
+    //calculate width of popup dependend on size of group name
+    QFont font;
+    QFontMetrics fm(font);
+    int width = fm.width(largestSystemName);
+    int boxWidth = this->ui->comboBox_activeCoordSystem->width();
+
+    if((width + (0.1*width)) > boxWidth){ // if text is bigger than combobox
+        this->ui->comboBox_activeCoordSystem->view()->setMinimumWidth(width + (0.1 * width));
+    }else{ // if combobox is bigger than text
+        this->ui->comboBox_activeCoordSystem->view()->setMinimumWidth(boxWidth);
+    }
 
 }
 
@@ -2645,8 +2661,17 @@ void MainWindow::updateActualNominalFilterSize(){
         }
     }
 
-    //update combobox width with respect to the largest item
-    this->ui->comboBox_actualNominal->setMinimumContentsLength(largestFilter.length());
+    //calculate width of popup dependend on size of actul nominal filter
+    QFont font;
+    QFontMetrics fm(font);
+    int width = fm.width(largestFilter);
+    int boxWidth = this->ui->comboBox_actualNominal->width();
+
+    if((width + (0.1*width)) > boxWidth){ // if text is bigger than combobox
+        this->ui->comboBox_actualNominal->view()->setMinimumWidth(width + (0.1 * width));
+    }else{ // if combobox is bigger than text
+        this->ui->comboBox_actualNominal->view()->setMinimumWidth(boxWidth);
+    }
 
 }
 

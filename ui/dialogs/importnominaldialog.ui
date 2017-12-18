@@ -31,6 +31,9 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget_import">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="currentIndex">
       <number>1</number>
      </property>
@@ -395,7 +398,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_plugin_sa"/>
+                <widget class="QComboBox" name="comboBox_plugin_sa">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -415,7 +422,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_exchange_sa"/>
+                <widget class="QComboBox" name="comboBox_exchange_sa">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -487,7 +498,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_geometry_sa"/>
+                <widget class="QComboBox" name="comboBox_geometry_sa">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -612,7 +627,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_distance_sa"/>
+                <widget class="QComboBox" name="comboBox_distance_sa">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -632,7 +651,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_angle_sa"/>
+                <widget class="QComboBox" name="comboBox_angle_sa">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -652,7 +675,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_temperature_sa"/>
+                <widget class="QComboBox" name="comboBox_temperature_sa">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>

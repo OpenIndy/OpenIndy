@@ -252,6 +252,29 @@ void CreateFeatureDialog::initModels(){
     this->ui->comboBox_startSystem->setModel(&ModelManager::getCoordinateSystemsModel());
     this->ui->comboBox_destinationSystem->setModel(&ModelManager::getCoordinateSystemsModel());
 
+    //get size of combobox
+    QStringList systems = ModelManager::getCoordinateSystemsModel().stringList();
+    QString largestSystem = "";
+    foreach (const QString &filter, systems) {
+        if(filter.length() > largestSystem.length()){
+            largestSystem = filter;
+        }
+    }
+    //calculate width of popup dependend on size of actul nominal filter
+    QFont font;
+    QFontMetrics fm(font);
+    int width = fm.width(largestSystem);
+    int boxWidth = this->ui->comboBox_startSystem->width();
+
+    if((width + (0.1*width)) > boxWidth){ // if text is bigger than combobox
+        this->ui->comboBox_startSystem->view()->setMinimumWidth(width + (0.1 * width));
+        this->ui->comboBox_destinationSystem->view()->setMinimumWidth(width + (0.1 * width));
+    }else{ // if combobox is bigger than text
+        this->ui->comboBox_startSystem->view()->setMinimumWidth(boxWidth);
+        this->ui->comboBox_destinationSystem->view()->setMinimumWidth(boxWidth);
+    }
+
+
     //set model for possible nominal systems of a nominal geometry
     this->ui->comboBox_nominalSystem->setModel(&ModelManager::getNominalSystemsModel());
 
