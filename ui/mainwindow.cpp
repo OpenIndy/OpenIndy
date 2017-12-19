@@ -2585,11 +2585,10 @@ void MainWindow::updateGroupFilterSize(){
     if(job.isNull()){
         return;
     }
-
+/*
     //set combobox size
-    int sizeGroup = oi::getDropDownMenuSize(job->getFeatureGroupList(),this->ui->comboBox_groups->width());
-    this->ui->comboBox_groups->view()->setMinimumWidth(sizeGroup);
-
+    int sizeGroup = oi::getDropDownMenuSize(ModelManager::getGroupNamesModel().stringList(),this->ui->comboBox_groups->width());
+    this->ui->comboBox_groups->view()->setMinimumWidth(sizeGroup);*/
 }
 
 /*!
@@ -2603,7 +2602,7 @@ void MainWindow::updateSystemFilterSize(){
         return;
     }
 
-    //get the largest system name
+    /*//get the largest system name
     const QList<QPointer<CoordinateSystem> > &nominalSystems = job->getCoordinateSystemsList();
     QList<QPointer<CoordinateSystem> > &stationSystems = job->getStationSystemsList();
     QList<QPointer<CoordinateSystem> > &bundleSystems = job->getBundleSystemList();
@@ -2634,7 +2633,7 @@ void MainWindow::updateSystemFilterSize(){
         this->ui->comboBox_activeCoordSystem->view()->setMinimumWidth(width + (0.1 * width));
     }else{ // if combobox is bigger than text
         this->ui->comboBox_activeCoordSystem->view()->setMinimumWidth(boxWidth);
-    }
+    }*/
 
 }
 
@@ -2643,9 +2642,9 @@ void MainWindow::updateSystemFilterSize(){
  */
 void MainWindow::updateActualNominalFilterSize(){
 
-    //set combobox size
+    /*//set combobox size
     int sizeFilter = oi::getDropDownMenuSize(ModelManager::getActualNominalFilterModel().stringList(),this->ui->comboBox_actualNominal->width());
-    this->ui->comboBox_actualNominal->view()->setMinimumWidth(sizeFilter);
+    this->ui->comboBox_actualNominal->view()->setMinimumWidth(sizeFilter);*/
 }
 
 /*!

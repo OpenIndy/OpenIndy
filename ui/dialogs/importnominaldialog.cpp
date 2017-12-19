@@ -94,8 +94,6 @@ void ImportNominalDialog::showEvent(QShowEvent *event){
     //initialize models for GUI elements
     this->initModels();
 
-    this->ui->tabWidget_import->setTabEnabled(0, false);
-
     event->accept();
 
 }
@@ -125,17 +123,17 @@ void ImportNominalDialog::initModels(){
     //assign nominal systems model
     this->ui->comboBox_system_sa->setModel(&ModelManager::getNominalSystemsModel());
 
-    //set combobox size
+    /*//set combobox size
     int sizeSystem = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(),this->ui->comboBox_system_sa->width());
-    this->ui->comboBox_system_sa->view()->setMinimumWidth(sizeSystem);
+    this->ui->comboBox_system_sa->view()->setMinimumWidth(sizeSystem);*/
 
     //assign group names model
     this->ui->comboBox_groupNames->setModel(&ModelManager::getGroupNamesModel());
     //Set group01 as default for import
     this->ui->comboBox_groupNames->setCurrentText("Group01");
 
-    int sizeGroup = oi::getDropDownMenuSize(ModelManager::getGroupNamesModel().stringList(), this->ui->comboBox_groupNames->width());
-    this->ui->comboBox_groupNames->view()->setMinimumWidth(sizeGroup);
+    /*int sizeGroup = oi::getDropDownMenuSize(ModelManager::getGroupNamesModel().stringList(), this->ui->comboBox_groupNames->width());
+    this->ui->comboBox_groupNames->view()->setMinimumWidth(sizeGroup);*/
 
 }
 

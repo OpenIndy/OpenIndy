@@ -38,7 +38,7 @@
    <string>openIndy</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../res/res.qrc">
+   <iconset>
     <normaloff>:/Images/icons/openIndy.png</normaloff>:/Images/icons/openIndy.png</iconset>
   </property>
   <property name="layoutDirection">
@@ -220,7 +220,7 @@ background-position: center center;</string>
                    <string/>
                   </property>
                   <property name="icon">
-                   <iconset resource="../res/res.qrc">
+                   <iconset>
                     <normaloff>:/Images/icons/edit_remove.png</normaloff>:/Images/icons/edit_remove.png</iconset>
                   </property>
                  </widget>
@@ -231,7 +231,7 @@ background-position: center center;</string>
                    <string/>
                   </property>
                   <property name="icon">
-                   <iconset resource="../res/res.qrc">
+                   <iconset>
                     <normaloff>:/Images/icons/edit_add.png</normaloff>:/Images/icons/edit_add.png</iconset>
                   </property>
                  </widget>
@@ -424,7 +424,7 @@ background-position: center center;</string>
       <string>import</string>
      </property>
      <property name="icon">
-      <iconset resource="../res/res.qrc">
+      <iconset>
        <normaloff>:/Images/icons/arrow_left.png</normaloff>:/Images/icons/arrow_left.png</iconset>
      </property>
      <addaction name="action_importNominals"/>
@@ -436,7 +436,7 @@ background-position: center center;</string>
       <string>export</string>
      </property>
      <property name="icon">
-      <iconset resource="../res/res.qrc">
+      <iconset>
        <normaloff>:/Images/icons/arrow_right.png</normaloff>:/Images/icons/arrow_right.png</iconset>
      </property>
      <addaction name="action_exportNominals"/>
@@ -836,7 +836,7 @@ color: rgb(255, 255, 255);
   </widget>
   <action name="actionOpen">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/standard/open.png</normaloff>:/icons/icons/toolbars/standard/open.png</iconset>
    </property>
    <property name="text">
@@ -845,7 +845,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionClose">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/cancel.png</normaloff>:/Images/icons/cancel.png</iconset>
    </property>
    <property name="text">
@@ -854,7 +854,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionShow_help">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/standard/help.png</normaloff>:/icons/icons/toolbars/standard/help.png</iconset>
    </property>
    <property name="text">
@@ -866,7 +866,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionControl_pad">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/standard/sensor control pad.png</normaloff>:/icons/icons/toolbars/standard/sensor control pad.png</iconset>
    </property>
    <property name="text">
@@ -878,7 +878,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionMeasurement_Configuration">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/standard/Measurement Config.png</normaloff>:/icons/icons/toolbars/standard/Measurement Config.png</iconset>
    </property>
    <property name="text">
@@ -893,7 +893,7 @@ color: rgb(255, 255, 255);
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/standard/Watch Window.png</normaloff>:/icons/icons/toolbars/standard/Watch Window.png</iconset>
    </property>
    <property name="text">
@@ -905,7 +905,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionConsole">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/console.png</normaloff>:/Images/icons/console.png</iconset>
    </property>
    <property name="text">
@@ -914,7 +914,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionLoad_plugins">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/loadPlugin.png</normaloff>:/Images/icons/loadPlugin.png</iconset>
    </property>
    <property name="text">
@@ -923,7 +923,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_point">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Point.png</normaloff>:/icons/icons/toolbars/feature/Point.png</iconset>
    </property>
    <property name="text">
@@ -932,7 +932,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_line">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Line.png</normaloff>:/icons/icons/toolbars/feature/Line.png</iconset>
    </property>
    <property name="text">
@@ -941,7 +941,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_plane">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Plane.png</normaloff>:/icons/icons/toolbars/feature/Plane.png</iconset>
    </property>
    <property name="text">
@@ -950,7 +950,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_sphere">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Sphere.png</normaloff>:/icons/icons/toolbars/feature/Sphere.png</iconset>
    </property>
    <property name="text">
@@ -959,7 +959,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_station">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Station.png</normaloff>:/icons/icons/toolbars/feature/Station.png</iconset>
    </property>
    <property name="text">
@@ -968,7 +968,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_coordinatesystem">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Coordinatesystem.png</normaloff>:/icons/icons/toolbars/feature/Coordinatesystem.png</iconset>
    </property>
    <property name="text">
@@ -977,7 +977,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionShow_hide_feature_toolbar">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/featureToolBar.png</normaloff>:/Images/icons/featureToolBar.png</iconset>
    </property>
    <property name="text">
@@ -986,7 +986,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionSet_sensor">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/standard/Sensor Set.png</normaloff>:/icons/icons/toolbars/standard/Sensor Set.png</iconset>
    </property>
    <property name="text">
@@ -995,7 +995,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionSet_function">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/standard/function.png</normaloff>:/icons/icons/toolbars/standard/function.png</iconset>
    </property>
    <property name="text">
@@ -1004,7 +1004,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/standard/save.png</normaloff>:/icons/icons/toolbars/standard/save.png</iconset>
    </property>
    <property name="text">
@@ -1013,7 +1013,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionSave_as">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/fileexport.png</normaloff>:/Images/icons/fileexport.png</iconset>
    </property>
    <property name="text">
@@ -1022,7 +1022,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionView_settings">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/settings.png</normaloff>:/Images/icons/settings.png</iconset>
    </property>
    <property name="text">
@@ -1031,7 +1031,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_scalar_entity">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Scalar Entities.png</normaloff>:/icons/icons/toolbars/feature/Scalar Entities.png</iconset>
    </property>
    <property name="text">
@@ -1050,7 +1050,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_trafoParam">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/TrafoParam.png</normaloff>:/icons/icons/toolbars/feature/TrafoParam.png</iconset>
    </property>
    <property name="text">
@@ -1067,7 +1067,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_cone">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Cone.png</normaloff>:/icons/icons/toolbars/feature/Cone.png</iconset>
    </property>
    <property name="text">
@@ -1079,7 +1079,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_cylinder">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Cylinder.png</normaloff>:/icons/icons/toolbars/feature/Cylinder.png</iconset>
    </property>
    <property name="text">
@@ -1091,7 +1091,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_ellipsoid">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Ellipsoid.png</normaloff>:/icons/icons/toolbars/feature/Ellipsoid.png</iconset>
    </property>
    <property name="text">
@@ -1103,7 +1103,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_hyperboloid">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Hyperboloid.png</normaloff>:/icons/icons/toolbars/feature/Hyperboloid.png</iconset>
    </property>
    <property name="text">
@@ -1115,7 +1115,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_paraboloid">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Paraboloid.png</normaloff>:/icons/icons/toolbars/feature/Paraboloid.png</iconset>
    </property>
    <property name="text">
@@ -1127,7 +1127,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_nurbs">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Nurbs Surface.png</normaloff>:/icons/icons/toolbars/feature/Nurbs Surface.png</iconset>
    </property>
    <property name="text">
@@ -1139,7 +1139,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_pointcloud">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Point Cloud.png</normaloff>:/icons/icons/toolbars/feature/Point Cloud.png</iconset>
    </property>
    <property name="text">
@@ -1151,7 +1151,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_circle">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Circle.png</normaloff>:/icons/icons/toolbars/feature/Circle.png</iconset>
    </property>
    <property name="text">
@@ -1160,7 +1160,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionPlugin_manager">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/pluginmanager.png</normaloff>:/Images/icons/pluginmanager.png</iconset>
    </property>
    <property name="text">
@@ -1169,7 +1169,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionSimulation">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/simulation.png</normaloff>:/Images/icons/simulation.png</iconset>
    </property>
    <property name="text">
@@ -1181,7 +1181,7 @@ color: rgb(255, 255, 255);
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/streamingLogo.png</normaloff>:/Images/icons/streamingLogo.png</iconset>
    </property>
    <property name="text">
@@ -1220,7 +1220,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_torus">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Torus.png</normaloff>:/icons/icons/toolbars/feature/Torus.png</iconset>
    </property>
    <property name="text">
@@ -1232,7 +1232,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_slotted_hole">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Slotted Hole.png</normaloff>:/icons/icons/toolbars/feature/Slotted Hole.png</iconset>
    </property>
    <property name="text">
@@ -1244,7 +1244,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionCreate_ellipse">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/feature/Ellipse.png</normaloff>:/icons/icons/toolbars/feature/Ellipse.png</iconset>
    </property>
    <property name="text">
@@ -1256,7 +1256,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionRemoveObservations">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/cancel.png</normaloff>:/Images/icons/cancel.png</iconset>
    </property>
    <property name="text">
@@ -1265,7 +1265,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionAbout_OpenIndy">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/openIndy.png</normaloff>:/Images/icons/openIndy.png</iconset>
    </property>
    <property name="text">
@@ -1287,7 +1287,7 @@ color: rgb(255, 255, 255);
   </action>
   <action name="actionShortcut_import">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/icons/icons/toolbars/standard/import_icon.PNG</normaloff>:/icons/icons/toolbars/standard/import_icon.PNG</iconset>
    </property>
    <property name="text">
@@ -1299,9 +1299,7 @@ color: rgb(255, 255, 255);
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="../res/res.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>pushButton_runBundle</sender>
