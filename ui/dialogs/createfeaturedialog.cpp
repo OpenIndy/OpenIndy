@@ -144,6 +144,9 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
     int sizeNominal = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
     this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
 
+    int sizeGroup = oi::getDropDownMenuSize(ModelManager::getGroupNamesModel().stringList(), this->ui->comboBox_group->width());
+    this->ui->comboBox_group->view()->setMinimumWidth(sizeGroup);
+
     event->accept();
 
 }

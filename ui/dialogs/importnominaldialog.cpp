@@ -134,6 +134,9 @@ void ImportNominalDialog::initModels(){
     //Set group01 as default for import
     this->ui->comboBox_groupNames->setCurrentText("Group01");
 
+    int sizeGroup = oi::getDropDownMenuSize(ModelManager::getGroupNamesModel().stringList(), this->ui->comboBox_groupNames->width());
+    this->ui->comboBox_groupNames->view()->setMinimumWidth(sizeGroup);
+
 }
 
 /*!

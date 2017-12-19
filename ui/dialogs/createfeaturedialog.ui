@@ -35,7 +35,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_entityType"/>
+        <widget class="QComboBox" name="comboBox_entityType">
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -75,6 +79,9 @@
           <widget class="QComboBox" name="comboBox_group">
            <property name="editable">
             <bool>true</bool>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
            </property>
           </widget>
          </item>
@@ -119,7 +126,7 @@
             </sizepolicy>
            </property>
            <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
            </property>
           </widget>
          </item>
@@ -161,7 +168,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_mConfig"/>
+        <widget class="QComboBox" name="comboBox_mConfig">
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
