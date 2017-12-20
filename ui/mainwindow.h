@@ -40,7 +40,6 @@
 #include "bundlestationsmodel.h"
 
 #include <QSound>
-
 using namespace oi;
 
 namespace Ui {
