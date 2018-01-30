@@ -32,7 +32,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pageWatchWindow">
       <property name="geometry">
@@ -85,34 +85,6 @@
                 <number>2</number>
                </property>
               </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_9">
-             <item>
-              <widget class="QLabel" name="label_suppReadings">
-               <property name="text">
-                <string>supported reading types:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="comboBox_readingTypes"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_10">
-             <item>
-              <widget class="QLabel" name="label_polarMode">
-               <property name="text">
-                <string>polar mode:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="comboBox_polarMode"/>
              </item>
             </layout>
            </item>
@@ -220,7 +192,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="lineEdit_x">
+                   <widget class="QLineEdit" name="lineEdit_tolerance_x">
                     <property name="text">
                      <string>0.1</string>
                     </property>
@@ -261,7 +233,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="lineEdit_y">
+                   <widget class="QLineEdit" name="lineEdit_tolerance_y">
                     <property name="text">
                      <string>0.1</string>
                     </property>
@@ -302,7 +274,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="lineEdit_z">
+                   <widget class="QLineEdit" name="lineEdit_tolerance_z">
                     <property name="text">
                      <string>0.1</string>
                     </property>
@@ -343,130 +315,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="lineEdit_d3d">
-                    <property name="text">
-                     <string>0.1</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,0,1,1">
-                  <item>
-                   <widget class="QCheckBox" name="checkBox_azimuth">
-                    <property name="text">
-                     <string>azimuth</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_5">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_azimuth">
-                    <property name="text">
-                     <string>tolerance [°]</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLineEdit" name="lineEdit_azimuth">
-                    <property name="text">
-                     <string>1.0</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,0,1,1">
-                  <item>
-                   <widget class="QCheckBox" name="checkBox_zenith">
-                    <property name="text">
-                     <string>zenith</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_6">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_zenith">
-                    <property name="text">
-                     <string>tolerance [°]</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLineEdit" name="lineEdit_zenith">
-                    <property name="text">
-                     <string>1.0</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,0,1,1">
-                  <item>
-                   <widget class="QCheckBox" name="checkBox_distance">
-                    <property name="text">
-                     <string>distance</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_7">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_distance">
-                    <property name="text">
-                     <string>tolerance [mm]</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLineEdit" name="lineEdit_distance">
+                   <widget class="QLineEdit" name="lineEdit_tolerance_d3d">
                     <property name="text">
                      <string>0.1</string>
                     </property>

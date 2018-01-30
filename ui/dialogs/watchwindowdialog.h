@@ -48,9 +48,13 @@ public:
 
 };
 
+
+
 namespace Ui {
 class WatchWindowDialog;
 }
+
+
 
 /*!
  * \brief The WatchWindowDialog class
@@ -77,8 +81,6 @@ signals:
     //inform about actions triggered by user
     //######################################
 
-    void keyPressed(Qt::Key key);
-
     //####################
     //start sensor actions
     //####################
@@ -94,28 +96,18 @@ private slots:
     //actions triggered by user
     //#########################
 
-    void keyPressEvent(QKeyEvent * e);
-
     //update settings
     void on_spinBox_decimalDigits_valueChanged(int arg1);
-    void on_comboBox_readingTypes_currentIndexChanged(const QString &arg1);
-    void on_comboBox_polarMode_currentIndexChanged(const QString &arg1);
     void on_radioButton_actnom_clicked();
     void on_radioButton_nomact_clicked();
     void on_checkBox_x_clicked();
     void on_checkBox_y_clicked();
     void on_checkBox_z_clicked();
     void on_checkBox_d3d_clicked();
-    void on_checkBox_azimuth_clicked();
-    void on_checkBox_zenith_clicked();
-    void on_checkBox_distance_clicked();
-    void on_lineEdit_x_textChanged(const QString &arg1);
-    void on_lineEdit_y_textChanged(const QString &arg1);
-    void on_lineEdit_z_textChanged(const QString &arg1);
-    void on_lineEdit_d3d_textChanged(const QString &arg1);
-    void on_lineEdit_azimuth_textChanged(const QString &arg1);
-    void on_lineEdit_zenith_textChanged(const QString &arg1);
-    void on_lineEdit_distance_textChanged(const QString &arg1);
+    void on_lineEdit_tolerance_x_textChanged(const QString &arg1);
+    void on_lineEdit_tolerance_y_textChanged(const QString &arg1);
+    void on_lineEdit_tolerance_z_textChanged(const QString &arg1);
+    void on_lineEdit_tolerance_d3d_textChanged(const QString &arg1);
 
     //##################################
     //update watch window display values
@@ -133,7 +125,6 @@ private:
     void closeEvent(QCloseEvent *event);
 
     void initGUI();
-    void initModels();
 
     //##############################
     //connect job and active station
@@ -150,8 +141,8 @@ private:
 
     void getDefaultSettings();
     void resizeWatchWindowValues();
+    void calcFontSize(QFont f, QString attribute);
 
-private:
     Ui::WatchWindowDialog *ui;
 
     //#############################
@@ -182,6 +173,10 @@ private:
     //#################
 
     TrafoController trafoController;
+
+    bool lablesRescaled;
+    int oldWindowHeight;
+    int oldWindowWidth;
 
 };
 
