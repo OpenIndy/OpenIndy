@@ -573,12 +573,12 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     }
 
     //set all streching to 0
-    for(int all=0; all < 6; all++){
+    for(int all=0; all < 5; all++){
         this->masterLayout->setStretch(all, 0);
     }
 
     //set all active attributes to same stretch value
-    for(int i=0; i < 6; i++){
+    for(int i=0; i < 5; i++){
         if(visibleLayouts.contains(QString::number(i))){
             masterLayout->setStretch(i,1);
         }
@@ -647,8 +647,8 @@ void WatchWindowDialog::resizeWatchWindowValues(){
 
     if(!this->lablesRescaled || oldWindowHeight != this->height() || oldWindowWidth != this->width()){
 
-        oldWindowHeight = this->height();
-        oldWindowWidth = this->width();
+        oldWindowHeight = this->rect().height();
+        oldWindowWidth = this->rect().width();
 
         //get current fonts
         QFont fName = this->streamData["name"]->font();
@@ -668,35 +668,39 @@ void WatchWindowDialog::resizeWatchWindowValues(){
         h = this->streamData["name"]->height();
         w = this->streamData["name"]->width();
         QFontMetrics fmName(fName);
-        scale = h/fmName.height();
-        fName.setPointSizeF(fName.pointSizeF()*scale);
+        scale = w/fmName.width(this->streamData["name"]->text());
+        fName.setPointSize(fName.pointSize()*scale);
+
         h = this->streamData["x"]->height();
         w = this->streamData["x"]->width();
         QFontMetrics fmX(fX);
         scale = h/fmX.height();
-        fX.setPointSizeF(fX.pointSizeF()*scale);
+        fX.setPointSize(fX.pointSize()*scale);
+
         h = this->streamData["y"]->height();
         w = this->streamData["y"]->width();
         QFontMetrics fmY(fY);
         scale = h/fmY.height();
-        fY.setPointSizeF(fY.pointSizeF()*scale);
+        fY.setPointSize(fY.pointSize()*scale);
+
         h = this->streamData["z"]->height();
         w = this->streamData["z"]->width();
         QFontMetrics fmZ(fZ);
         scale = h/fmZ.height();
-        fZ.setPointSizeF(fZ.pointSizeF()*scale);
+        fZ.setPointSize(fZ.pointSize()*scale);
+
         h = this->streamData["d3D"]->height();
         w = this->streamData["d3D"]->width();
         QFontMetrics fmd3D(fd3D);
         scale = h/fmd3D.height();
-        fd3D.setPointSizeF(fd3D.pointSizeF()*scale);
+        fd3D.setPointSize(fd3D.pointSize()*scale);
 
         //set new fonts
         this->streamData["name"]->setFont(fName);
         this->streamData["x"]->setFont(fX);
-        this->streamData["y"]->setFont(fX);
-        this->streamData["z"]->setFont(fX);
-        this->streamData["d3D"]->setFont(fX);
+        this->streamData["y"]->setFont(fY);
+        this->streamData["z"]->setFont(fZ);
+        this->streamData["d3D"]->setFont(fd3D);
 
         this->lablesRescaled = true;
     }
