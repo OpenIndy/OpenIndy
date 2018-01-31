@@ -214,6 +214,11 @@ void WatchWindowDialog::showEvent(QShowEvent *event){
 
     this->ui->toolBox->setCurrentIndex(0);
 
+    //set to 0 and false => text will be scaled when window is displayed
+    oldWindowHeight = 0;
+    oldWindowWidth = 0;
+    this->lablesRescaled = false;
+
     event->accept();
 
 }
@@ -253,7 +258,6 @@ void WatchWindowDialog::initGUI(){
     featureName->setAlignment(Qt::AlignVCenter);
     featureName->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     featureName->setScaledContents(true);
-    featureName->setWordWrap(true);
     QHBoxLayout *featureNameLayout = new QHBoxLayout();
     featureNameLayout->addWidget(featureName);
     featureNameLayout->setStretch(0,1);
@@ -268,7 +272,6 @@ void WatchWindowDialog::initGUI(){
     x->setAlignment(Qt::AlignVCenter);
     x->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     x->setScaledContents(true);
-    featureName->setWordWrap(true);
     QHBoxLayout *xLayout = new QHBoxLayout();
     xLayout->addWidget(x);
     xLayout->setStretch(0,1);
@@ -283,7 +286,6 @@ void WatchWindowDialog::initGUI(){
     y->setAlignment(Qt::AlignVCenter);
     y->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     y->setScaledContents(true);
-    featureName->setWordWrap(true);
     QHBoxLayout *yLayout = new QHBoxLayout();
     yLayout->addWidget(y);
     yLayout->setStretch(0,1);
@@ -299,7 +301,6 @@ void WatchWindowDialog::initGUI(){
     z->setAlignment(Qt::AlignVCenter);
     z->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     z->setScaledContents(true);
-    featureName->setWordWrap(true);
     QHBoxLayout *zLayout = new QHBoxLayout();
     zLayout->addWidget(z);
     zLayout->setStretch(0,1);
@@ -315,7 +316,6 @@ void WatchWindowDialog::initGUI(){
     d3D->setAlignment(Qt::AlignVCenter);
     d3D->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     d3D->setScaledContents(true);
-    featureName->setWordWrap(true);
     QHBoxLayout *d3DLayout = new QHBoxLayout();
     d3DLayout->addWidget(d3D);
     d3DLayout->setStretch(0,1);
@@ -366,7 +366,9 @@ void WatchWindowDialog::connectJob(){
  * \brief WatchWindowDialog::setUpCartesianWatchWindow
  * \param reading
  */
-void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
+void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading, bool rerender){
+
+    //qDebug() << "setUpCartesianWatchWindow";
 
     //init variables
     QString name, value, displayValue;
@@ -537,44 +539,39 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     }
 
     //set visibility
-
     //list of visible layouts (0=name 1=x 2=y 3=z 4=d3D
     QStringList visibleLayouts;
-
-    visibleLayouts.append("0");
 
     if(this->settings.displayValues.contains("x")){
         this->streamData["x"]->setVisible(true);
         visibleLayouts.append("1");
     }else{
         this->streamData["x"]->setVisible(false);
-        visibleLayouts.removeOne("1");
     }
     if(this->settings.displayValues.contains("y")){
         this->streamData["y"]->setVisible(true);
         visibleLayouts.append("2");
     }else{
         this->streamData["y"]->setVisible(false);
-        visibleLayouts.removeOne("2");
     }
     if(this->settings.displayValues.contains("z")){
         this->streamData["z"]->setVisible(true);
         visibleLayouts.append("3");
     }else{
         this->streamData["z"]->setVisible(false);
-        visibleLayouts.removeOne("3");
     }
     if(this->settings.displayValues.contains("d3D")){
         this->streamData["d3D"]->setVisible(true);
         visibleLayouts.append("4");
     }else{
         this->streamData["d3D"]->setVisible(false);
-        visibleLayouts.removeOne("4");
     }
 
     //set all streching to 0
-    for(int all=0; all < 5; all++){
-        this->masterLayout->setStretch(all, 0);
+    for(int all=1; all < 5; all++){
+        if(!visibleLayouts.contains(QString::number(all))){
+            this->masterLayout->setStretch(all, 0);
+        }
     }
 
     //set all active attributes to same stretch value
@@ -586,6 +583,10 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
 
     //resize labels (maximum font size that is possible)
     this->resizeWatchWindowValues();
+
+    if(rerender){
+        this->setUpCartesianWatchWindow(reading, false);
+    }
 
 }
 
@@ -625,27 +626,28 @@ void WatchWindowDialog::getDefaultSettings(){
  */
 void WatchWindowDialog::resizeWatchWindowValues(){
 
-    //init variables
-    double w = 0.0, h = 0.0, scale = 0.0;
-
-    this->ui->pageWatchWindow->setLayout(this->masterLayout);
-
-    //show the labels first so the right font is returned
-    this->streamData["name"]->show();
-    if(this->settings.displayValues.contains("x")){
-        this->streamData["x"]->show();
-    }
-    if(this->settings.displayValues.contains("y")){
-        this->streamData["y"]->show();
-    }
-    if(this->settings.displayValues.contains("z")){
-        this->streamData["z"]->show();
-    }
-    if(this->settings.displayValues.contains("d3D")){
-        this->streamData["d3D"]->show();
-    }
-
     if(!this->lablesRescaled || oldWindowHeight != this->height() || oldWindowWidth != this->width()){
+        //init variables
+        double w = 0.0, h = 0.0, scale = 0.0;
+
+        this->ui->pageWatchWindow->setLayout(this->masterLayout);
+
+        //show the labels first so the right font is returned
+        this->streamData["name"]->show();
+        if(this->settings.displayValues.contains("x")){
+            this->streamData["x"]->show();
+        }
+        if(this->settings.displayValues.contains("y")){
+            this->streamData["y"]->show();
+        }
+        if(this->settings.displayValues.contains("z")){
+            this->streamData["z"]->show();
+        }
+        if(this->settings.displayValues.contains("d3D")){
+            this->streamData["d3D"]->show();
+        }
+
+        qDebug() << "RESIZE";
 
         oldWindowHeight = this->rect().height();
         oldWindowWidth = this->rect().width();
@@ -668,7 +670,7 @@ void WatchWindowDialog::resizeWatchWindowValues(){
         h = this->streamData["name"]->height();
         w = this->streamData["name"]->width();
         QFontMetrics fmName(fName);
-        scale = w/fmName.width(this->streamData["name"]->text());
+        scale = h/fmName.height();
         fName.setPointSize(fName.pointSize()*scale);
 
         h = this->streamData["x"]->height();
@@ -735,4 +737,15 @@ void WatchWindowDialog::calcFontSize(QFont f, QString attribute)
     }
     f.setPixelSize(fontSizeGuess);
     this->streamData[attribute]->setFont(f);
+}
+
+/*!
+ * \brief WatchWindowDialog::on_toolBox_currentChanged
+ * \param index
+ */
+void WatchWindowDialog::on_toolBox_currentChanged(int index)
+{
+    if(index == 0){
+        this->lablesRescaled = false;
+    }
 }

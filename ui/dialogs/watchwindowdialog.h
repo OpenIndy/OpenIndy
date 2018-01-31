@@ -115,6 +115,8 @@ private slots:
 
     void realTimeReading(const QVariantMap &reading);
 
+    void on_toolBox_currentChanged(int index);
+
 private:
 
     //##################################
@@ -137,7 +139,7 @@ private:
     //helper methods to display watch window values
     //#############################################
 
-    void setUpCartesianWatchWindow(const QVariantMap &reading);
+    void setUpCartesianWatchWindow(const QVariantMap &reading, bool rerender = true);
 
     void getDefaultSettings();
     void resizeWatchWindowValues();
