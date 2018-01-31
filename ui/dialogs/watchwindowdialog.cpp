@@ -23,6 +23,7 @@ WatchWindowDialog::WatchWindowDialog(QWidget *parent) : QDialog(parent),
                                 | Qt::WindowCloseButtonHint;
     this->setWindowFlags(flags);
 
+    //set values to 0 and false => on first view everything has to be resized
     oldWindowHeight = 0;
     oldWindowWidth = 0;
     this->lablesRescaled = false;
@@ -81,6 +82,7 @@ void WatchWindowDialog::on_radioButton_nomact_clicked(){
  */
 void WatchWindowDialog::on_checkBox_x_clicked(){
 
+    //necessary to rescale all
     this->lablesRescaled = false;
 
     if(this->ui->checkBox_x->isChecked()){
@@ -95,6 +97,7 @@ void WatchWindowDialog::on_checkBox_x_clicked(){
  */
 void WatchWindowDialog::on_checkBox_y_clicked(){
 
+    //necessary to rescale all
     this->lablesRescaled = false;
 
     if(this->ui->checkBox_y->isChecked()){
@@ -109,6 +112,7 @@ void WatchWindowDialog::on_checkBox_y_clicked(){
  */
 void WatchWindowDialog::on_checkBox_z_clicked(){
 
+    //necessary to rescale all
     this->lablesRescaled = false;
 
     if(this->ui->checkBox_z->isChecked()){
@@ -123,6 +127,7 @@ void WatchWindowDialog::on_checkBox_z_clicked(){
  */
 void WatchWindowDialog::on_checkBox_d3d_clicked(){
 
+    //necessary to rescale all
     this->lablesRescaled = false;
 
     if(this->ui->checkBox_d3d->isChecked()){
@@ -200,6 +205,7 @@ void WatchWindowDialog::realTimeReading(const QVariantMap &reading){
  */
 void WatchWindowDialog::showEvent(QShowEvent *event){
 
+    //necessary to rescale all
     this->lablesRescaled = false;
 
     //put the dialog in the screen center
@@ -212,6 +218,7 @@ void WatchWindowDialog::showEvent(QShowEvent *event){
     //start reading stream
     emit this->startStreaming(this->settings.readingType);
 
+    //switch to watchwindow tab
     this->ui->toolBox->setCurrentIndex(0);
 
     //set to 0 and false => text will be scaled when window is displayed
@@ -239,6 +246,7 @@ void WatchWindowDialog::closeEvent(QCloseEvent *event){
 
 /*!
  * \brief WatchWindowDialog::initGUI
+ * all stretch-values are set to 1. This means that all attributes have the same size in the window.
  */
 void WatchWindowDialog::initGUI(){
 
@@ -366,9 +374,7 @@ void WatchWindowDialog::connectJob(){
  * \brief WatchWindowDialog::setUpCartesianWatchWindow
  * \param reading
  */
-void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading, bool rerender){
-
-    //qDebug() << "setUpCartesianWatchWindow";
+void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
 
     //init variables
     QString name, value, displayValue;
@@ -379,7 +385,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading, bo
         return;
     }
 
-    //check the active position (geometry, station, coordinate system
+    //check the active position (geometry, station, coordinate system)
     Position pos;
 
     if(this->currentJob.isNull() || this->currentJob->getActiveFeature().isNull()){
@@ -422,7 +428,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading, bo
     trackerXYZ = trafo * trackerXYZ;
 
     //number of visible elements
-    int numVisibleElements = 1;
+    int numVisibleElements = 1; //1, because name is always displayed
 
     //set feature name
     name ="<p align=\"center\">" + this->currentJob->getActiveFeature()->getFeature()->getFeatureName() + "</p>";
@@ -568,6 +574,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading, bo
     }
 
     //set all streching to 0
+    //except feature name label
     for(int all=1; all < 5; all++){
         if(!visibleLayouts.contains(QString::number(all))){
             this->masterLayout->setStretch(all, 0);
@@ -584,14 +591,11 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading, bo
     //resize labels (maximum font size that is possible)
     this->resizeWatchWindowValues();
 
-    if(rerender){
-        this->setUpCartesianWatchWindow(reading, false);
-    }
-
 }
 
 /*!
  * \brief WatchWindowDialog::getDefaultSettings
+ * get all attributes to display and save their tolerances
  */
 void WatchWindowDialog::getDefaultSettings(){
 
@@ -622,13 +626,13 @@ void WatchWindowDialog::getDefaultSettings(){
 
 /*!
  * \brief WatchWindowDialog::resizeWatchWindowValues
- * Resizes the watch window values so that the font is at maximum
+ * Resizes the watch window values so that the font is maximum
  */
 void WatchWindowDialog::resizeWatchWindowValues(){
 
     if(!this->lablesRescaled || oldWindowHeight != this->height() || oldWindowWidth != this->width()){
         //init variables
-        double w = 0.0, h = 0.0, scale = 0.0;
+        double h = 0.0, scale = 0.0;
 
         this->ui->pageWatchWindow->setLayout(this->masterLayout);
 
@@ -647,8 +651,6 @@ void WatchWindowDialog::resizeWatchWindowValues(){
             this->streamData["d3D"]->show();
         }
 
-        qDebug() << "RESIZE";
-
         oldWindowHeight = this->rect().height();
         oldWindowWidth = this->rect().width();
 
@@ -658,41 +660,34 @@ void WatchWindowDialog::resizeWatchWindowValues(){
         QFont fY = this->streamData["y"]->font();
         QFont fZ = this->streamData["z"]->font();
         QFont fd3D = this->streamData["d3D"]->font();
-    /*
-        this->calcFontSize(fName, "name");
-        this->calcFontSize(fX, "x");
-        this->calcFontSize(fY, "y");
-        this->calcFontSize(fZ, "z");
-        this->calcFontSize(fd3D, "d3D");
-    */
 
         //calculate new fonts
+        //name
         h = this->streamData["name"]->height();
-        w = this->streamData["name"]->width();
         QFontMetrics fmName(fName);
         scale = h/fmName.height();
         fName.setPointSize(fName.pointSize()*scale);
 
+        //x
         h = this->streamData["x"]->height();
-        w = this->streamData["x"]->width();
         QFontMetrics fmX(fX);
         scale = h/fmX.height();
         fX.setPointSize(fX.pointSize()*scale);
 
+        //y
         h = this->streamData["y"]->height();
-        w = this->streamData["y"]->width();
         QFontMetrics fmY(fY);
         scale = h/fmY.height();
         fY.setPointSize(fY.pointSize()*scale);
 
+        //z
         h = this->streamData["z"]->height();
-        w = this->streamData["z"]->width();
         QFontMetrics fmZ(fZ);
         scale = h/fmZ.height();
         fZ.setPointSize(fZ.pointSize()*scale);
 
+        //d3D
         h = this->streamData["d3D"]->height();
-        w = this->streamData["d3D"]->width();
         QFontMetrics fmd3D(fd3D);
         scale = h/fmd3D.height();
         fd3D.setPointSize(fd3D.pointSize()*scale);
@@ -704,48 +699,25 @@ void WatchWindowDialog::resizeWatchWindowValues(){
         this->streamData["z"]->setFont(fZ);
         this->streamData["d3D"]->setFont(fd3D);
 
+        //labels are already rescaled with this GUI setup
         this->lablesRescaled = true;
     }
 }
 
 /*!
- * \brief WatchWindowDialog::calcFontSize
- * \param f
- * \param attribute
- */
-void WatchWindowDialog::calcFontSize(QFont f, QString attribute)
-{
-    const QRect baseRect = this->streamData[attribute]->rect();
-    const QString baseText = this->streamData[attribute]->text();
-    int fontSizeGuess = qMax(1,f.pixelSize());
-
-    for(;;++fontSizeGuess){
-        QFont testFont(f);
-        testFont.setPixelSize(fontSizeGuess);
-        const QRect fontRect = QFontMetrics(testFont).boundingRect(baseText);
-        if(fontRect.height() > baseRect.height() || fontRect.width() > baseRect.width()){
-            break;
-        }
-    }
-    for(;fontSizeGuess>1; --fontSizeGuess){
-        QFont testFont(f);
-        testFont.setPixelSize(fontSizeGuess);
-        const QRect fontRect = QFontMetrics(testFont).boundingRect(baseText);
-        if(fontRect.height() <= baseRect.height() && fontRect.width() <= baseRect.width()){
-            break;
-        }
-    }
-    f.setPixelSize(fontSizeGuess);
-    this->streamData[attribute]->setFont(f);
-}
-
-/*!
  * \brief WatchWindowDialog::on_toolBox_currentChanged
  * \param index
+ * if you switch from settings tab to watchwindow tab you have to recalc label sizes
  */
 void WatchWindowDialog::on_toolBox_currentChanged(int index)
 {
     if(index == 0){
         this->lablesRescaled = false;
     }
+    /*!
+    Display settings are changed in settings tab (activate/ deactivate attributes). Immediately the labels will
+    be resized, but the used size information of the labels is not up to date.
+    Because the current tab is settings, labels of watchwindow tab have their old size.
+    After switching to the watchwindow tab, they will get updated and it is necessary to update the size calculation.
+    */
 }

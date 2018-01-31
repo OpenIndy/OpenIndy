@@ -49,11 +49,9 @@ public:
 };
 
 
-
 namespace Ui {
 class WatchWindowDialog;
 }
-
 
 
 /*!
@@ -115,6 +113,7 @@ private slots:
 
     void realTimeReading(const QVariantMap &reading);
 
+    //switch tab and update geometries
     void on_toolBox_currentChanged(int index);
 
 private:
@@ -139,7 +138,7 @@ private:
     //helper methods to display watch window values
     //#############################################
 
-    void setUpCartesianWatchWindow(const QVariantMap &reading, bool rerender = true);
+    void setUpCartesianWatchWindow(const QVariantMap &reading);
 
     void getDefaultSettings();
     void resizeWatchWindowValues();
@@ -175,6 +174,10 @@ private:
     //#################
 
     TrafoController trafoController;
+
+    //###############################################
+    //helper attribute to rescale the labels and text
+    //###############################################
 
     bool lablesRescaled;
     int oldWindowHeight;
