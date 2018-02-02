@@ -67,14 +67,14 @@ void WatchWindowDialog::on_spinBox_decimalDigits_valueChanged(int arg1){
  * \brief WatchWindowDialog::on_radioButton_actnom_clicked
  */
 void WatchWindowDialog::on_radioButton_actnom_clicked(){
-    this->settings.reference = this->ui->radioButton_actnom->isChecked()?0:1;
+    this->settings.reference = this->ui->radioButton_actnom->isChecked()?eActualNominal:eNominalActual;
 }
 
 /*!
  * \brief WatchWindowDialog::on_radioButton_nomact_clicked
  */
 void WatchWindowDialog::on_radioButton_nomact_clicked(){
-    this->settings.reference = this->ui->radioButton_actnom->isChecked()?0:1;
+    this->settings.reference = this->ui->radioButton_actnom->isChecked()?eActualNominal:eNominalActual;
 }
 
 /*!
@@ -86,9 +86,9 @@ void WatchWindowDialog::on_checkBox_x_clicked(){
     this->lablesRescaled = false;
 
     if(this->ui->checkBox_x->isChecked()){
-        this->settings.displayValues.insert("x", this->ui->lineEdit_tolerance_x->text().toDouble());
+        this->settings.displayValues.insert(eX, this->ui->lineEdit_tolerance_x->text().toDouble());
     }else{
-        this->settings.displayValues.remove("x");
+        this->settings.displayValues.remove(eX);
     }
 }
 
@@ -101,9 +101,9 @@ void WatchWindowDialog::on_checkBox_y_clicked(){
     this->lablesRescaled = false;
 
     if(this->ui->checkBox_y->isChecked()){
-        this->settings.displayValues.insert("y", this->ui->lineEdit_tolerance_y->text().toDouble());
+        this->settings.displayValues.insert(eY, this->ui->lineEdit_tolerance_y->text().toDouble());
     }else{
-        this->settings.displayValues.remove("y");
+        this->settings.displayValues.remove(eY);
     }
 }
 
@@ -116,9 +116,9 @@ void WatchWindowDialog::on_checkBox_z_clicked(){
     this->lablesRescaled = false;
 
     if(this->ui->checkBox_z->isChecked()){
-        this->settings.displayValues.insert("z", this->ui->lineEdit_tolerance_z->text().toDouble());
+        this->settings.displayValues.insert(eZ, this->ui->lineEdit_tolerance_z->text().toDouble());
     }else{
-        this->settings.displayValues.remove("z");
+        this->settings.displayValues.remove(eZ);
     }
 }
 
@@ -131,9 +131,9 @@ void WatchWindowDialog::on_checkBox_d3d_clicked(){
     this->lablesRescaled = false;
 
     if(this->ui->checkBox_d3d->isChecked()){
-        this->settings.displayValues.insert("d3D", this->ui->lineEdit_tolerance_d3d->text().toDouble());
+        this->settings.displayValues.insert(eD3D, this->ui->lineEdit_tolerance_d3d->text().toDouble());
     }else{
-        this->settings.displayValues.remove("d3D");
+        this->settings.displayValues.remove(eD3D);
     }
 }
 
@@ -143,7 +143,7 @@ void WatchWindowDialog::on_checkBox_d3d_clicked(){
  */
 void WatchWindowDialog::on_lineEdit_tolerance_x_textChanged(const QString &arg1){
     if(this->ui->checkBox_x->isChecked()){
-        this->settings.displayValues.insert("x", this->ui->lineEdit_tolerance_x->text().toDouble());
+        this->settings.displayValues.insert(eX, this->ui->lineEdit_tolerance_x->text().toDouble());
     }
 }
 
@@ -153,7 +153,7 @@ void WatchWindowDialog::on_lineEdit_tolerance_x_textChanged(const QString &arg1)
  */
 void WatchWindowDialog::on_lineEdit_tolerance_y_textChanged(const QString &arg1){
     if(this->ui->checkBox_y->isChecked()){
-        this->settings.displayValues.insert("y", this->ui->lineEdit_tolerance_y->text().toDouble());
+        this->settings.displayValues.insert(eY, this->ui->lineEdit_tolerance_y->text().toDouble());
     }
 }
 
@@ -163,7 +163,7 @@ void WatchWindowDialog::on_lineEdit_tolerance_y_textChanged(const QString &arg1)
  */
 void WatchWindowDialog::on_lineEdit_tolerance_z_textChanged(const QString &arg1){
     if(this->ui->checkBox_z->isChecked()){
-        this->settings.displayValues.insert("z", this->ui->lineEdit_tolerance_z->text().toDouble());
+        this->settings.displayValues.insert(eZ, this->ui->lineEdit_tolerance_z->text().toDouble());
     }
 }
 
@@ -173,7 +173,7 @@ void WatchWindowDialog::on_lineEdit_tolerance_z_textChanged(const QString &arg1)
  */
 void WatchWindowDialog::on_lineEdit_tolerance_d3d_textChanged(const QString &arg1){
     if(this->ui->checkBox_d3d->isChecked()){
-        this->settings.displayValues.insert("d3D", this->ui->lineEdit_tolerance_d3d->text().toDouble());
+        this->settings.displayValues.insert(eD3D, this->ui->lineEdit_tolerance_d3d->text().toDouble());
     }
 }
 
@@ -227,7 +227,6 @@ void WatchWindowDialog::showEvent(QShowEvent *event){
     this->lablesRescaled = false;
 
     event->accept();
-
 }
 
 /*!
@@ -271,7 +270,7 @@ void WatchWindowDialog::initGUI(){
     featureNameLayout->setStretch(0,1);
     this->masterLayout->addLayout(featureNameLayout);
     this->masterLayout->setStretch(0, 1);
-    streamData.insert("name", featureName);
+    streamData.insert(eName, featureName);
 
     //x
     QLabel *x = new QLabel();
@@ -285,7 +284,7 @@ void WatchWindowDialog::initGUI(){
     xLayout->setStretch(0,1);
     this->masterLayout->addLayout(xLayout);
     this->masterLayout->setStretch(1,1);
-    streamData.insert("x", x);
+    streamData.insert(eX, x);
 
     //y
     QLabel *y = new QLabel();
@@ -300,7 +299,7 @@ void WatchWindowDialog::initGUI(){
     this->masterLayout->addLayout(yLayout);
     //this->masterLayout->addWidget(y);
     this->masterLayout->setStretch(2,1);
-    streamData.insert("y", y);
+    streamData.insert(eY, y);
 
     //z
     QLabel *z = new QLabel();
@@ -315,7 +314,7 @@ void WatchWindowDialog::initGUI(){
     this->masterLayout->addLayout(zLayout);
     //this->masterLayout->addWidget(z);
     this->masterLayout->setStretch(3, 1);
-    streamData.insert("z", z);
+    streamData.insert(eZ, z);
 
     //d3D
     QLabel *d3D = new QLabel();
@@ -330,7 +329,7 @@ void WatchWindowDialog::initGUI(){
     masterLayout->addLayout(d3DLayout);
     //this->masterLayout->addWidget(d3D);
     this->masterLayout->setStretch(4, 1);
-    streamData.insert("d3D", d3D);
+    streamData.insert(eD3D, d3D);
 
     //assign master layout
     this->ui->pageWatchWindow->setLayout(this->masterLayout);
@@ -433,14 +432,14 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     //set feature name
     name ="<p align=\"center\">" + this->currentJob->getActiveFeature()->getFeature()->getFeatureName() + "</p>";
     displayValue = "<table width=\"100%\"> <tr> <td>" + name + "</td>  </tr> </table>";
-    this->streamData["name"]->setText(displayValue);
+    this->streamData[eName]->setText(displayValue);
 
     //set x
-    if(this->settings.displayValues.contains("x")){
+    if(this->settings.displayValues.contains(eX)){
 
         //get display value
         double displayX;
-        if(this->settings.reference == 0){
+        if(this->settings.reference == eActualNominal){
             displayX = trackerXYZ.getAt(0) - pos.getVector().getAt(0);
         }else{
             displayX = pos.getVector().getAt(0) - trackerXYZ.getAt(0);
@@ -448,27 +447,27 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         displayX = convertFromDefault(displayX, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
-        if(qFabs(displayX) >= qFabs(this->settings.displayValues.value("x"))){
-            streamData.value("x")->setPalette(Qt::red);
+        if(qFabs(displayX) >= qFabs(this->settings.displayValues.value(eX))){
+            streamData.value(eX)->setPalette(Qt::red);
         }else{
-            streamData.value("x")->setPalette(Qt::green);
+            streamData.value(eX)->setPalette(Qt::green);
         }
 
         //format display value
         name = "<p align=\"left\">x</p>";
         value = "<p align=\"right\">" + QString::number(displayX, 'f', this->settings.digits) + "</p>";
         displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"80%\">" + value + "</td> </tr></table>";
-        streamData.value("x")->setText(displayValue);
+        streamData.value(eX)->setText(displayValue);
 
         numVisibleElements++;
     }
 
     //set y
-    if(this->settings.displayValues.contains("y")){
+    if(this->settings.displayValues.contains(eY)){
 
         //get display value
         double displayY;
-        if(this->settings.reference == 0){
+        if(this->settings.reference == eActualNominal){
             displayY = trackerXYZ.getAt(1) - pos.getVector().getAt(1);
         }else{
             displayY = pos.getVector().getAt(1) - trackerXYZ.getAt(1);
@@ -476,27 +475,27 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         displayY = convertFromDefault(displayY, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
-        if(qFabs(displayY) >= qFabs(this->settings.displayValues.value("y"))){
-            streamData.value("y")->setPalette(Qt::red);
+        if(qFabs(displayY) >= qFabs(this->settings.displayValues.value(eY))){
+            streamData.value(eY)->setPalette(Qt::red);
         }else{
-            streamData.value("y")->setPalette(Qt::green);
+            streamData.value(eY)->setPalette(Qt::green);
         }
 
         //format display value
         name = "<p align=\"left\">y</p>";
         value = "<p align=\"right\">" + QString::number(displayY, 'f', this->settings.digits) + "</p>";
         displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"80%\">" + value + "</td> </tr></table>";
-        streamData.value("y")->setText(displayValue);
+        streamData.value(eY)->setText(displayValue);
 
         numVisibleElements++;
     }
 
     //set z
-    if(this->settings.displayValues.contains("z")){
+    if(this->settings.displayValues.contains(eZ)){
 
         //get display value
         double displayZ;
-        if(this->settings.reference == 0){
+        if(this->settings.reference == eActualNominal){
             displayZ = trackerXYZ.getAt(2) - pos.getVector().getAt(2);
         }else{
             displayZ = pos.getVector().getAt(2) - trackerXYZ.getAt(2);
@@ -504,23 +503,23 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         displayZ = convertFromDefault(displayZ, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
-        if(qFabs(displayZ) >= qFabs(this->settings.displayValues.value("z"))){
-            streamData.value("z")->setPalette(Qt::red);
+        if(qFabs(displayZ) >= qFabs(this->settings.displayValues.value(eZ))){
+            streamData.value(eZ)->setPalette(Qt::red);
         }else{
-            streamData.value("z")->setPalette(Qt::green);
+            streamData.value(eZ)->setPalette(Qt::green);
         }
 
         //format display value
         name = "<p align=\"left\">z</p>";
         value = "<p align=\"right\">" + QString::number(displayZ, 'f', this->settings.digits) + "</p>";
         displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"80%\">" + value + "</td> </tr></table>";
-        streamData.value("z")->setText(displayValue);
+        streamData.value(eZ)->setText(displayValue);
 
         numVisibleElements++;
     }
 
     //set d3D
-    if(this->settings.displayValues.contains("d3D")){
+    if(this->settings.displayValues.contains(eD3D)){
 
         //get display value
         OiVec d = pos.getVectorH() - trackerXYZ;
@@ -529,68 +528,67 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         displayD3D = convertFromDefault(displayD3D, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
-        if(qFabs(displayD3D) >= qFabs(this->settings.displayValues.value("d3D"))){
-            streamData.value("d3D")->setPalette(Qt::red);
+        if(qFabs(displayD3D) >= qFabs(this->settings.displayValues.value(eD3D))){
+            streamData.value(eD3D)->setPalette(Qt::red);
         }else{
-            streamData.value("d3D")->setPalette(Qt::green);
+            streamData.value(eD3D)->setPalette(Qt::green);
         }
 
         //format display value
         name = "<p align=\"left\">d3D</p>";
         value = "<p align=\"right\">" + QString::number(displayD3D, 'f', this->settings.digits) + "</p>";
         displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"80%\">" + value + "</td> </tr></table>";
-        streamData.value("d3D")->setText(displayValue);
+        streamData.value(eD3D)->setText(displayValue);
 
         numVisibleElements++;
     }
 
     //set visibility
     //list of visible layouts (0=name 1=x 2=y 3=z 4=d3D
-    QStringList visibleLayouts;
+    QList<DisplayAttributes>  visibleLayouts;
 
-    if(this->settings.displayValues.contains("x")){
-        this->streamData["x"]->setVisible(true);
-        visibleLayouts.append("1");
+    if(this->settings.displayValues.contains(eX)){
+        this->streamData[eX]->setVisible(true);
+        visibleLayouts.append(eX);
     }else{
-        this->streamData["x"]->setVisible(false);
+        this->streamData[eX]->setVisible(false);
     }
-    if(this->settings.displayValues.contains("y")){
-        this->streamData["y"]->setVisible(true);
-        visibleLayouts.append("2");
+    if(this->settings.displayValues.contains(eY)){
+        this->streamData[eY]->setVisible(true);
+        visibleLayouts.append(eY);
     }else{
-        this->streamData["y"]->setVisible(false);
+        this->streamData[eY]->setVisible(false);
     }
-    if(this->settings.displayValues.contains("z")){
-        this->streamData["z"]->setVisible(true);
-        visibleLayouts.append("3");
+    if(this->settings.displayValues.contains(eZ)){
+        this->streamData[eZ]->setVisible(true);
+        visibleLayouts.append(eZ);
     }else{
-        this->streamData["z"]->setVisible(false);
+        this->streamData[eZ]->setVisible(false);
     }
-    if(this->settings.displayValues.contains("d3D")){
-        this->streamData["d3D"]->setVisible(true);
-        visibleLayouts.append("4");
+    if(this->settings.displayValues.contains(eD3D)){
+        this->streamData[eD3D]->setVisible(true);
+        visibleLayouts.append(eD3D);
     }else{
-        this->streamData["d3D"]->setVisible(false);
+        this->streamData[eD3D]->setVisible(false);
     }
 
     //set all streching to 0
     //except feature name label
     for(int all=1; all < 5; all++){
-        if(!visibleLayouts.contains(QString::number(all))){
+        if(!visibleLayouts.contains(getAttributesByInteger(all))){
             this->masterLayout->setStretch(all, 0);
         }
     }
 
     //set all active attributes to same stretch value
     for(int i=0; i < 5; i++){
-        if(visibleLayouts.contains(QString::number(i))){
+        if(visibleLayouts.contains(getAttributesByInteger(i))){
             masterLayout->setStretch(i,1);
         }
     }
 
     //resize labels (maximum font size that is possible)
     this->resizeWatchWindowValues();
-
 }
 
 /*!
@@ -600,27 +598,27 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
 void WatchWindowDialog::getDefaultSettings(){
 
     if(this->ui->checkBox_x->isChecked()){
-        this->settings.displayValues.insert("x", this->ui->lineEdit_tolerance_x->text().toDouble());
+        this->settings.displayValues.insert(eX, this->ui->lineEdit_tolerance_x->text().toDouble());
     }else{
-        this->settings.displayValues.remove("x");
+        this->settings.displayValues.remove(eX);
     }
 
     if(this->ui->checkBox_y->isChecked()){
-        this->settings.displayValues.insert("y", this->ui->lineEdit_tolerance_y->text().toDouble());
+        this->settings.displayValues.insert(eY, this->ui->lineEdit_tolerance_y->text().toDouble());
     }else{
-        this->settings.displayValues.remove("y");
+        this->settings.displayValues.remove(eY);
     }
 
     if(this->ui->checkBox_z->isChecked()){
-        this->settings.displayValues.insert("z", this->ui->lineEdit_tolerance_z->text().toDouble());
+        this->settings.displayValues.insert(eZ, this->ui->lineEdit_tolerance_z->text().toDouble());
     }else{
-        this->settings.displayValues.remove("z");
+        this->settings.displayValues.remove(eZ);
     }
 
     if(this->ui->checkBox_d3d->isChecked()){
-        this->settings.displayValues.insert("d3D", this->ui->lineEdit_tolerance_d3d->text().toDouble());
+        this->settings.displayValues.insert(eD3D, this->ui->lineEdit_tolerance_d3d->text().toDouble());
     }else{
-        this->settings.displayValues.remove("d3D");
+        this->settings.displayValues.remove(eD3D);
     }
 }
 
@@ -637,70 +635,152 @@ void WatchWindowDialog::resizeWatchWindowValues(){
         this->ui->pageWatchWindow->setLayout(this->masterLayout);
 
         //show the labels first so the right font is returned
-        this->streamData["name"]->show();
-        if(this->settings.displayValues.contains("x")){
-            this->streamData["x"]->show();
+        this->streamData[eName]->show();
+        if(this->settings.displayValues.contains(eX)){
+            this->streamData[eX]->show();
         }
-        if(this->settings.displayValues.contains("y")){
-            this->streamData["y"]->show();
+        if(this->settings.displayValues.contains(eY)){
+            this->streamData[eY]->show();
         }
-        if(this->settings.displayValues.contains("z")){
-            this->streamData["z"]->show();
+        if(this->settings.displayValues.contains(eZ)){
+            this->streamData[eZ]->show();
         }
-        if(this->settings.displayValues.contains("d3D")){
-            this->streamData["d3D"]->show();
+        if(this->settings.displayValues.contains(eD3D)){
+            this->streamData[eD3D]->show();
         }
 
         oldWindowHeight = this->rect().height();
         oldWindowWidth = this->rect().width();
 
         //get current fonts
-        QFont fName = this->streamData["name"]->font();
-        QFont fX = this->streamData["x"]->font();
-        QFont fY = this->streamData["y"]->font();
-        QFont fZ = this->streamData["z"]->font();
-        QFont fd3D = this->streamData["d3D"]->font();
+        QFont fName = this->streamData[eName]->font();
+        QFont fX = this->streamData[eX]->font();
+        QFont fY = this->streamData[eY]->font();
+        QFont fZ = this->streamData[eZ]->font();
+        QFont fd3D = this->streamData[eD3D]->font();
 
         //calculate new fonts
         //name
-        h = this->streamData["name"]->height();
+        h = this->streamData[eName]->height();
         QFontMetrics fmName(fName);
         scale = h/fmName.height();
         fName.setPointSize(fName.pointSize()*scale);
 
         //x
-        h = this->streamData["x"]->height();
+        h = this->streamData[eX]->height();
         QFontMetrics fmX(fX);
         scale = h/fmX.height();
         fX.setPointSize(fX.pointSize()*scale);
 
         //y
-        h = this->streamData["y"]->height();
+        h = this->streamData[eY]->height();
         QFontMetrics fmY(fY);
         scale = h/fmY.height();
         fY.setPointSize(fY.pointSize()*scale);
 
         //z
-        h = this->streamData["z"]->height();
+        h = this->streamData[eZ]->height();
         QFontMetrics fmZ(fZ);
         scale = h/fmZ.height();
         fZ.setPointSize(fZ.pointSize()*scale);
 
         //d3D
-        h = this->streamData["d3D"]->height();
+        h = this->streamData[eD3D]->height();
         QFontMetrics fmd3D(fd3D);
         scale = h/fmd3D.height();
         fd3D.setPointSize(fd3D.pointSize()*scale);
 
         //set new fonts
-        this->streamData["name"]->setFont(fName);
-        this->streamData["x"]->setFont(fX);
-        this->streamData["y"]->setFont(fY);
-        this->streamData["z"]->setFont(fZ);
-        this->streamData["d3D"]->setFont(fd3D);
+        this->streamData[eName]->setFont(fName);
+        this->streamData[eX]->setFont(fX);
+        this->streamData[eY]->setFont(fY);
+        this->streamData[eZ]->setFont(fZ);
+        this->streamData[eD3D]->setFont(fd3D);
 
         //labels are already rescaled with this GUI setup
         this->lablesRescaled = true;
+    }
+}
+
+/*!
+ * \brief WatchWindowDialog::getAttributeValue
+ * \param attributeName
+ * \return
+ */
+DisplayAttributes WatchWindowDialog::getAttributeValue(QString attributeName)
+{
+    if(attributeName.compare("name") == 0){
+        return eName;
+    }
+    if(attributeName.compare("x") == 0){
+        return eX;
+    }
+    if(attributeName.compare("y") == 0){
+        return eY;
+    }
+    if(attributeName.compare("z") == 0){
+        return eZ;
+    }
+    if(attributeName.compare("d3D") == 0){
+        return eD3D;
+    }
+   return eNotDeclared;
+}
+
+/*!
+ * \brief WatchWindowDialog::getAttributeName
+ * \param attr
+ * \return
+ */
+QString WatchWindowDialog::getAttributeName(DisplayAttributes attr)
+{
+    switch (attr) {
+    case eName:
+        return "name";
+        break;
+    case eX:
+        return "x";
+        break;
+    case eY:
+        return "y";
+        break;
+    case eZ:
+        return "z";
+        break;
+    case eD3D:
+        return "d3D";
+        break;
+    default:
+        break;
+    }
+}
+
+/*!
+ * \brief WatchWindowDialog::getAttributesByInteger
+ * \param i
+ * \return
+ */
+DisplayAttributes WatchWindowDialog::getAttributesByInteger(int i)
+{
+    switch (i) {
+    case 0:
+        return eName;
+        break;
+    case 1:
+        return eX;
+        break;
+    case 2:
+        return eY;
+        break;
+    case 3:
+        return eZ;
+        break;
+    case 4:
+        return eD3D;
+        break;
+    default:
+        return eNotDeclared;
+        break;
     }
 }
 

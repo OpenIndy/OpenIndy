@@ -22,6 +22,20 @@
 #include "parameterdisplayconfig.h"
 #include "modelmanager.h"
 
+enum DisplayActualNominal{
+    eActualNominal = 0,
+    eNominalActual
+};
+
+enum DisplayAttributes{
+    eName = 0,
+    eX = 1,
+    eY = 2,
+    eZ =3,
+    eD3D = 4,
+    eNotDeclared = 666
+};
+
 using namespace oi;
 
 /*!
@@ -29,7 +43,7 @@ using namespace oi;
  */
 class WatchWindowSettings{
 public:
-    WatchWindowSettings() : digits(2), readingType(eCartesianReading), polarType(0), reference(0){}
+    WatchWindowSettings() : digits(2), readingType(eCartesianReading), reference(eActualNominal){}
 
     //decimal digits for watch window values
     int digits;
@@ -37,14 +51,11 @@ public:
     //reading type for the watch window values
     ReadingTypes readingType;
 
-    //polar type (0 = az,ze,di; 1 = cross,distance)
-    int polarType;
-
     //reference (0 = actual-nominal, 1 = nominal-actual)
-    int reference;
+    DisplayActualNominal reference;
 
     //display values and tolerance
-    QMap<QString, double> displayValues;
+    QMap<DisplayAttributes, double> displayValues;
 
 };
 
@@ -142,7 +153,6 @@ private:
 
     void getDefaultSettings();
     void resizeWatchWindowValues();
-    void calcFontSize(QFont f, QString attribute);
 
     Ui::WatchWindowDialog *ui;
 
@@ -161,7 +171,7 @@ private:
 
     //watch window values
     QVBoxLayout* masterLayout;
-    QMap<QString, QLabel*> streamData;
+    QMap<DisplayAttributes, QLabel*> streamData;
 
     //################
     //display settings
@@ -183,6 +193,10 @@ private:
     int oldWindowHeight;
     int oldWindowWidth;
 
+    //enums and functions for watchwindow settings
+    DisplayAttributes getAttributeValue(QString attributeName);
+    QString getAttributeName(DisplayAttributes attr);
+    DisplayAttributes getAttributesByInteger(int i);
 };
 
 #endif // WATCHWINDOW_H
