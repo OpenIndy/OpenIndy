@@ -522,8 +522,16 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
             emit this->saveProject();
         }
         break;
-    }
+    case Qt::Key_F1: //open properties dialog
 
+        //get and check the active feature
+        QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+        if(feature.isNull() || feature->getFeature().isNull()){
+            return;
+        }
+        this->showFeatureProperties(true);
+        break;
+    }
 }
 
 /*!
