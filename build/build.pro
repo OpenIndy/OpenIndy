@@ -134,7 +134,8 @@ SOURCES += \
     $$PWD/../models/bundlestationsmodel.cpp \
     $$PWD/../models/functionweightstablemodel.cpp \
     $$PWD/../models/functionweightproxymodel.cpp \
-    $$PWD/../models/functionweightdelegate.cpp
+    $$PWD/../models/functionweightdelegate.cpp \
+    $$PWD/../ui/dialogs/exportdialog.cpp
 
 # header files
 HEADERS  += \
@@ -230,7 +231,8 @@ HEADERS  += \
     $$PWD/../models/bundlestationsmodel.h \
     $$PWD/../models/functionweightstablemodel.h \
     $$PWD/../models/functionweightproxymodel.h \
-    $$PWD/../models/functionweightdelegate.h
+    $$PWD/../models/functionweightdelegate.h \
+    $$PWD/../ui/dialogs/exportdialog.h
 
 # ui files
 FORMS    += \
@@ -251,7 +253,8 @@ FORMS    += \
     $$PWD/../ui/dialogs/nominalpropertiesdialog.ui \
     $$PWD/../ui/dialogs/aboutdialog.ui \
     $$PWD/../ui/dialogs/trafoparampropertiesdialog.ui \
-    $$PWD/../ui/dialogs/stationpropertiesdialog.ui
+    $$PWD/../ui/dialogs/stationpropertiesdialog.ui \
+    $$PWD/../ui/dialogs/exportdialog.ui
 
 # resource files
 RESOURCES += \

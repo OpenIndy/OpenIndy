@@ -419,35 +419,11 @@ background-position: center center;</string>
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menu_import">
-     <property name="title">
-      <string>import</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../res/res.qrc">
-       <normaloff>:/Images/icons/arrow_left.png</normaloff>:/Images/icons/arrow_left.png</iconset>
-     </property>
-     <addaction name="action_importNominals"/>
-     <addaction name="action_importMeasurementConfigs"/>
-     <addaction name="action_importSensorConfigs"/>
-    </widget>
-    <widget class="QMenu" name="menu_export">
-     <property name="title">
-      <string>export</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../res/res.qrc">
-       <normaloff>:/Images/icons/arrow_right.png</normaloff>:/Images/icons/arrow_right.png</iconset>
-     </property>
-     <addaction name="action_exportNominals"/>
-     <addaction name="action_exportMeasurementConfigs"/>
-     <addaction name="action_exportSensorConfigs"/>
-    </widget>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
-    <addaction name="menu_import"/>
-    <addaction name="menu_export"/>
+    <addaction name="actionimport"/>
+    <addaction name="actionexport"/>
     <addaction name="actionClose"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -1291,6 +1267,27 @@ color: rgb(255, 255, 255);
    </property>
    <property name="toolTip">
     <string>opens the import nominals dialog</string>
+   </property>
+  </action>
+  <action name="actionimport">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/arrow_left.png</normaloff>:/Images/icons/arrow_left.png</iconset>
+   </property>
+   <property name="text">
+    <string>import</string>
+   </property>
+  </action>
+  <action name="actionexport">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/arrow_right.png</normaloff>:/Images/icons/arrow_right.png</iconset>
+   </property>
+   <property name="text">
+    <string>export</string>
    </property>
   </action>
  </widget>
