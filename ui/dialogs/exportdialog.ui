@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>486</width>
+    <height>387</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -88,14 +88,152 @@
   <widget class="QPushButton" name="pushButton_export">
    <property name="geometry">
     <rect>
-     <x>280</x>
-     <y>250</y>
+     <x>380</x>
+     <y>330</y>
      <width>80</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
     <string>export</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_distance_unit">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>210</y>
+     <width>55</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>distance unit</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_angl_unit">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>260</y>
+     <width>55</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>angle unit</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_temperature_unit">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>300</y>
+     <width>55</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>temperature unit</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox_distance_unit">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>210</y>
+     <width>75</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox_angle_unit">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>260</y>
+     <width>75</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox_temperature_unit">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>300</y>
+     <width>75</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_distanceDigits">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>210</y>
+     <width>55</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>distance digits</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_angleDigits">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>250</y>
+     <width>55</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>angle digits</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_temperatureDigits">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>290</y>
+     <width>55</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>temperature digits</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_distanceDigits">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>200</y>
+     <width>113</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_angleDigits">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>250</y>
+     <width>113</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_temperatureDigits">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>290</y>
+     <width>113</width>
+     <height>24</height>
+    </rect>
    </property>
   </widget>
  </widget>

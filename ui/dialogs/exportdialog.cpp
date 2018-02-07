@@ -6,6 +6,9 @@ ExportDialog::ExportDialog(QWidget *parent) :
     ui(new Ui::ExportDialog)
 {
     ui->setupUi(this);
+    this->ui->lineEdit_distanceDigits->setText("2");
+    this->ui->lineEdit_angleDigits->setText("6");
+    this->ui->lineEdit_temperatureDigits->setText("1");
 }
 
 ExportDialog::~ExportDialog()
@@ -30,6 +33,17 @@ void ExportDialog::showEvent(QShowEvent *event)
  */
 void ExportDialog::initModels()
 {
+    //assign unit types models
+    this->ui->comboBox_distance_unit->setModel(&ModelManager::getUnitTypesModel(eMetric));
+    this->ui->comboBox_angle_unit->setModel(&ModelManager::getUnitTypesModel(eAngular));
+    this->ui->comboBox_temperature_unit->setModel(&ModelManager::getUnitTypesModel(eTemperature));
+
+    //set unit type defaults
+    this->ui->comboBox_distance_unit->setCurrentText(getUnitTypeName(eUnitMilliMeter));
+    this->ui->comboBox_angle_unit->setCurrentText(getUnitTypeName(eUnitDecimalDegree));
+    this->ui->comboBox_temperature_unit->setCurrentText(getUnitTypeName(eUnitGrad));
+
+    //assign plugin model
     this->ui->comboBox_plugin->setModel(&ModelManager::getPluginNamesModel());
 }
 
@@ -57,6 +71,12 @@ void ExportDialog::on_pushButton_export_clicked()
     params.exchangeName = this->ui->comboBox_method->currentText();
     params.pluginName = this->ui->comboBox_plugin->currentText();
     params.isDefinedFormat = false;
+    params.units.insert(eMetric, getUnitTypeEnum(this->ui->comboBox_distance_unit->currentText()));
+    params.units.insert(eAngular, getUnitTypeEnum(this->ui->comboBox_angle_unit->currentText()));
+    params.units.insert(eTemperature, getUnitTypeEnum(this->ui->comboBox_temperature_unit->currentText()));
+    params.distanceDigits = this->ui->lineEdit_distanceDigits->text().toInt();
+    params.angleDigits = this->ui->lineEdit_angleDigits->text().toInt();
+    params.temperatureDigits = this->ui->lineEdit_temperatureDigits->text().toInt();
 
     emit this->startExport(params);
 

@@ -188,6 +188,14 @@ bool DataExchanger::exportData(const ExchangeParams &params){
             simpleAscii->setGeometryType(params.typeOfGeometry);
             simpleAscii->setSkipFirstLine(params.skipFirstLine);
             simpleAscii->setDelimiter(params.delimiter);
+            QMapIterator<DimensionType, UnitType>i(params.units);
+            while(i.hasNext()){
+                i.next();
+                simpleAscii->setUnit(i.key(), i.value());
+            }
+            simpleAscii->setDistanceDigits(params.distanceDigits);
+            simpleAscii->setAngleDigits(params.angleDigits);
+            simpleAscii->setTemperatureDigits(params.angleDigits);
 
             //set user defined columns here hard coded (later selectable in table view)
             //TODO user defined columns
