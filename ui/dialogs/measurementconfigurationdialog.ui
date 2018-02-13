@@ -162,7 +162,7 @@
             <item>
              <widget class="QLabel" name="label_numMeas">
               <property name="text">
-               <string>number of measurements:</string>
+               <string>number of samples per observation</string>
               </property>
              </widget>
             </item>
@@ -180,7 +180,7 @@
             <item>
              <widget class="QLabel" name="label_iterations">
               <property name="text">
-               <string>iterations:</string>
+               <string>number of observations</string>
               </property>
              </widget>
             </item>
@@ -234,6 +234,9 @@
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
              <widget class="QCheckBox" name="checkBox_timeDependent">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>time dependent measurement</string>
               </property>
@@ -243,6 +246,9 @@
              <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="8,7">
               <item>
                <widget class="QLabel" name="label_timeInterval">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
                  <string>time interval [sec]:</string>
                 </property>
@@ -250,8 +256,11 @@
               </item>
               <item>
                <widget class="QLineEdit" name="lineEdit_timeInterval">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
-                 <string>0</string>
+                 <string>1</string>
                 </property>
                </widget>
               </item>
@@ -289,14 +298,14 @@
               <item>
                <widget class="QLabel" name="label_distanceInterval">
                 <property name="text">
-                 <string>distance interval [m]:</string>
+                 <string>distance interval [mm]:</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QLineEdit" name="lineEdit_distancInterval">
                 <property name="text">
-                 <string>0</string>
+                 <string>1</string>
                 </property>
                </widget>
               </item>
