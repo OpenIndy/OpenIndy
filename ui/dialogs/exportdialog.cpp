@@ -1,6 +1,10 @@
 #include "exportdialog.h"
 #include "ui_exportdialog.h"
 
+/*!
+ * \brief ExportDialog::ExportDialog
+ * \param parent
+ */
 ExportDialog::ExportDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ExportDialog)
@@ -11,6 +15,9 @@ ExportDialog::ExportDialog(QWidget *parent) :
     this->ui->lineEdit_temperatureDigits->setText("1");
 }
 
+/*!
+ * \brief ExportDialog::~ExportDialog
+ */
 ExportDialog::~ExportDialog()
 {
     delete ui;
