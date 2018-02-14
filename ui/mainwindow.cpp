@@ -601,10 +601,10 @@ void MainWindow::on_actionCreate_trafoParam_triggered(){
 /*!
  * \brief MainWindow::on_actionCreate_cone_triggered
  */
-void MainWindow::on_actionCreate_cone_triggered(){
+/*void MainWindow::on_actionCreate_cone_triggered(){
     this->createFeatureDialog.setFeatureType(eConeFeature);
     this->createFeatureDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionCreate_cylinder_triggered
@@ -617,42 +617,42 @@ void MainWindow::on_actionCreate_cylinder_triggered(){
 /*!
  * \brief MainWindow::on_actionCreate_ellipsoid_triggered
  */
-void MainWindow::on_actionCreate_ellipsoid_triggered(){
+/*void MainWindow::on_actionCreate_ellipsoid_triggered(){
     this->createFeatureDialog.setFeatureType(eEllipsoidFeature);
     this->createFeatureDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionCreate_hyperboloid_triggered
  */
-void MainWindow::on_actionCreate_hyperboloid_triggered(){
+/*void MainWindow::on_actionCreate_hyperboloid_triggered(){
     this->createFeatureDialog.setFeatureType(eHyperboloidFeature);
     this->createFeatureDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionCreate_paraboloid_triggered
  */
-void MainWindow::on_actionCreate_paraboloid_triggered(){
+/*void MainWindow::on_actionCreate_paraboloid_triggered(){
     this->createFeatureDialog.setFeatureType(eParaboloidFeature);
     this->createFeatureDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionCreate_nurbs_triggered
  */
-void MainWindow::on_actionCreate_nurbs_triggered(){
+/*void MainWindow::on_actionCreate_nurbs_triggered(){
     this->createFeatureDialog.setFeatureType(eNurbsFeature);
     this->createFeatureDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionCreate_pointcloud_triggered
  */
-void MainWindow::on_actionCreate_pointcloud_triggered(){
+/*void MainWindow::on_actionCreate_pointcloud_triggered(){
     this->createFeatureDialog.setFeatureType(ePointCloudFeature);
     this->createFeatureDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionCreate_circle_triggered
@@ -665,26 +665,26 @@ void MainWindow::on_actionCreate_circle_triggered(){
 /*!
  * \brief MainWindow::on_actionCreate_torus_triggered
  */
-void MainWindow::on_actionCreate_torus_triggered(){
+/*void MainWindow::on_actionCreate_torus_triggered(){
     this->createFeatureDialog.setFeatureType(eTorusFeature);
     this->createFeatureDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionCreate_slotted_hole_triggered
  */
-void MainWindow::on_actionCreate_slotted_hole_triggered(){
+/*void MainWindow::on_actionCreate_slotted_hole_triggered(){
     this->createFeatureDialog.setFeatureType(eSlottedHoleFeature);
     this->createFeatureDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionCreate_ellipse_triggered
  */
-void MainWindow::on_actionCreate_ellipse_triggered(){
+/*void MainWindow::on_actionCreate_ellipse_triggered(){
     this->createFeatureDialog.setFeatureType(eEllipseFeature);
     this->createFeatureDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionLoad_plugins_triggered

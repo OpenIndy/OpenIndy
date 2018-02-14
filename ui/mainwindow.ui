@@ -516,12 +516,6 @@ background-position: center center;</string>
     <addaction name="actionCreate_trafoParam"/>
     <addaction name="actionCreate_cylinder"/>
     <addaction name="actionCreate_scalar_entity"/>
-    <addaction name="actionCreate_cone"/>
-    <addaction name="actionCreate_ellipsoid"/>
-    <addaction name="actionCreate_hyperboloid"/>
-    <addaction name="actionCreate_paraboloid"/>
-    <addaction name="actionCreate_nurbs"/>
-    <addaction name="actionCreate_pointcloud"/>
     <addaction name="actionCreate_circle"/>
    </widget>
    <widget class="QMenu" name="menuReport">
@@ -746,17 +740,8 @@ color: rgb(255, 255, 255);
    <addaction name="actionCreate_circle"/>
    <addaction name="actionCreate_sphere"/>
    <addaction name="actionCreate_cylinder"/>
-   <addaction name="actionCreate_cone"/>
-   <addaction name="actionCreate_ellipse"/>
-   <addaction name="actionCreate_slotted_hole"/>
    <addaction name="separator"/>
-   <addaction name="actionCreate_paraboloid"/>
-   <addaction name="actionCreate_ellipsoid"/>
-   <addaction name="actionCreate_torus"/>
-   <addaction name="actionCreate_hyperboloid"/>
    <addaction name="separator"/>
-   <addaction name="actionCreate_nurbs"/>
-   <addaction name="actionCreate_pointcloud"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_magnify">
    <property name="windowTitle">
