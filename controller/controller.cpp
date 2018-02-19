@@ -397,6 +397,18 @@ void Controller::importNominals(const ExchangeParams &params){
 }
 
 /*!
+ * \brief Controller::exportFeatures
+ * \param params
+ */
+void Controller::exportFeatures(const ExchangeParams &params)
+{
+    //try to start export features
+    if(!this->exchanger.exportData(params)){
+        return;
+    }
+}
+
+/*!
  * \brief Controller::importObservations
  * \param filename
  */
