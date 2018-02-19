@@ -81,6 +81,7 @@ public slots:
 
     //import or export features
     void importNominals(const ExchangeParams &params);
+    void exportFeatures(const ExchangeParams &params);
 
     //add or remove observations
     void importObservations(const QString &filename);

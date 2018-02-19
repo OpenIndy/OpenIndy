@@ -34,6 +34,7 @@
 #include "trafoparampropertiesdialog.h"
 #include "aboutdialog.h"
 #include "stationpropertiesdialog.h"
+#include "exportdialog.h"
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
@@ -93,6 +94,7 @@ signals:
 
     //import or export features
     void importNominals(const ExchangeParams &params);
+    void exportFeatures(const ExchangeParams &params);
 
     //add or remove bundle system
     void addBundleSystem();
@@ -191,7 +193,8 @@ private slots:
     void on_actionPlugin_manager_triggered();
 
     //import export actions
-    void on_action_importNominals_triggered();
+    void on_actionimport_triggered();
+    void on_actionexport_triggered();
 
     //feature table view interactions
     void on_tableView_features_clicked(const QModelIndex &index);
@@ -348,6 +351,7 @@ private:
     CreateFeatureDialog createFeatureDialog;
     PluginLoaderDialog pluginLoaderDialog;
     ImportNominalDialog importNominalDialog;
+    ExportDialog exportDialog;
     LoadingDialog loadingDialog;
     FeatureFunctionsDialog featureFunctionsDialog;
     SensorConfigurationDialog sensorConfigurationDialog;

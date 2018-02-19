@@ -74,6 +74,7 @@ private slots:
     //########################################################
 
     void importFeatures(const bool &success);
+    void exportFeatures(const bool &success);
 
     void importObservationsFinished(const bool &success);
 
