@@ -148,9 +148,97 @@ bool DataExchanger::importData(const ExchangeParams &params){
  */
 bool DataExchanger::exportData(const ExchangeParams &params){
 
-    //TODO implement export
+    //quit the thread if it is still running
+    if(this->exchangeThread.isRunning()){
+        this->exchangeThread.quit();
+        this->exchangeThread.wait();
+    }
 
-    return false;
+    //check current job
+    if(this->currentJob.isNull()){
+        emit this->sendMessage("No job specified", eErrorMessage, eMessageBoxMessage);
+        return false;
+    }
+
+    //check if given plugin name is empty
+    if(params.pluginName.compare("") == 0 || params.exchangeName.compare("") == 0){
+        emit this->sendMessage(QString("No exchange available with the name %1 in the plugin %2").arg(params.exchangeName).arg(params.pluginName), eErrorMessage, eMessageBoxMessage);
+        return false;
+    }
+
+    //get the plugin from database and check if it is valid
+    sdb::Plugin plugin = SystemDbManager::getPlugin(params.pluginName);
+    if(plugin.name.compare("") == 0){
+        emit this->sendMessage("No valid plugin specified", eErrorMessage, eMessageBoxMessage);
+        return false;
+    }
+
+    //load exchange method with plugin loader
+    QPointer<ExchangeInterface> exchange(NULL);
+    if(params.isDefinedFormat){
+        QPointer<ExchangeDefinedFormat> definedFormat = PluginLoader::loadExchangeDefinedFormatPlugin(qApp->applicationDirPath() + "/" + plugin.file_path, params.exchangeName);
+        if(!definedFormat.isNull()){
+            definedFormat->setUsedElements(params.usedElements);
+        }
+        exchange = definedFormat;
+    }else{
+        QPointer<ExchangeSimpleAscii> simpleAscii = PluginLoader::loadExchangeSimpleAsciiPlugin(qApp->applicationDirPath() + "/" + plugin.file_path, params.exchangeName);
+        if(!simpleAscii.isNull()){
+
+            simpleAscii->setGeometryType(params.typeOfGeometry);
+            simpleAscii->setSkipFirstLine(params.skipFirstLine);
+            simpleAscii->setDelimiter(params.delimiter);
+            QMapIterator<DimensionType, UnitType>i(params.units);
+            while(i.hasNext()){
+                i.next();
+                simpleAscii->setUnit(i.key(), i.value());
+            }
+            simpleAscii->setDistanceDigits(params.distanceDigits);
+            simpleAscii->setAngleDigits(params.angleDigits);
+            simpleAscii->setTemperatureDigits(params.angleDigits);
+
+            //set user defined columns here hard coded (later selectable in table view)
+            //TODO user defined columns
+            QList<ExchangeSimpleAscii::ColumnType> columns;
+            columns.append(ExchangeSimpleAscii::eColumnFeatureName);
+            columns.append(ExchangeSimpleAscii::eColumnX);
+            columns.append(ExchangeSimpleAscii::eColumnY);
+            columns.append(ExchangeSimpleAscii::eColumnZ);
+            columns.append(ExchangeSimpleAscii::eColumnPrimaryI);
+            columns.append(ExchangeSimpleAscii::eColumnPrimaryJ);
+            columns.append(ExchangeSimpleAscii::eColumnPrimaryK);
+            columns.append(ExchangeSimpleAscii::eColumnRadiusA);
+
+            simpleAscii->setUserDefinedColumns(columns);
+            simpleAscii->setCurrentJob(this->currentJob);
+
+            //simpleAscii->setUserDefinedColumns(params.userDefinedColumns);
+
+        }
+        exchange = simpleAscii;
+    }
+
+    //check if the loaded exchange method is ok
+    if(exchange.isNull()){
+        emit this->sendMessage(QString("No exchange available with the name %1 in the plugin %2").arg(params.exchangeName).arg(params.pluginName), eErrorMessage, eMessageBoxMessage);
+        return false;
+    }
+    this->exchange = exchange;
+
+    //set exchange parameters
+    QIODevice *device = new QFile(params.exchangeFilePath);
+    this->exchange->setDevice(device);
+    this->exchange->setFeatures(params.exportFeatures);
+
+    //connect exchange plugin
+    QObject::connect(&this->exchangeThread, SIGNAL(started()), this->exchange.data(), SLOT(exportOiData()), Qt::AutoConnection);
+    QObject::connect(this->exchange.data(), SIGNAL(exportFinished(const bool&)), this, SLOT(exportFeatures(const bool&)), Qt::AutoConnection);
+
+    //move exchange plugin to thread and start data exchange
+    this->exchange->moveToThread(&this->exchangeThread);
+    this->exchangeThread.start();
+
+    return true;
 
 }
 
@@ -218,6 +306,22 @@ void DataExchanger::importFeatures(const bool &success){
 
     emit this->nominalImportFinished(import);
 
+}
+
+/*!
+ * \brief DataExchanger::exportFeatures
+ * \param success
+ */
+void DataExchanger::exportFeatures(const bool &success)
+{
+    //delete exchange instance because it is not necessary anymore
+    delete this->exchange;
+
+    //stop thread if it is still running
+    if(this->exchangeThread.isRunning()){
+        this->exchangeThread.quit();
+        this->exchangeThread.wait();
+    }
 }
 
 /*!

@@ -701,10 +701,19 @@ void MainWindow::on_actionPlugin_manager_triggered(){
 }
 
 /*!
- * \brief MainWindow::on_action_importNominals_triggered
+ * \brief MainWindow::on_actionimport_triggered
  */
-void MainWindow::on_action_importNominals_triggered(){
+void MainWindow::on_actionimport_triggered()
+{
     this->importNominalDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_actionexport_triggered
+ */
+void MainWindow::on_actionexport_triggered()
+{
+    this->exportDialog.show();
 }
 
 /*!
@@ -2047,6 +2056,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::log, &this->control, &Controller::log, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::addFeatures, &this->control, &Controller::addFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::importNominals, &this->control, &Controller::importNominals, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::exportFeatures, &this->control, &Controller::exportFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::setSensorConfig, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::sensorConfigurationsEdited, &this->control, &Controller::sensorConfigurationsEdited, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::measurementConfigurationChanged, &this->control, &Controller::measurementConfigurationChanged, Qt::AutoConnection);
@@ -2105,8 +2115,9 @@ void MainWindow::connectDialogs(){
     //connect console
     QObject::connect(Console::getInstance().data(), &Console::lineAdded, this->ui->listView_console, &QListView::scrollToBottom, Qt::AutoConnection);
 
-    //connect import dialogs
+    //connect import / export dialogs
     QObject::connect(&this->importNominalDialog, &ImportNominalDialog::startImport, this, &MainWindow::importNominals, Qt::AutoConnection);
+    QObject::connect(&this->exportDialog, &ExportDialog::startExport, this, &MainWindow::exportFeatures, Qt::AutoConnection);
 
     //connect loading dialog
     QObject::connect(&this->control, &Controller::nominalImportProgressUpdated, &this->loadingDialog, &LoadingDialog::updateProgress, Qt::AutoConnection);
@@ -2700,7 +2711,7 @@ void MainWindow::saveProjectAs()
  */
 void MainWindow::on_actionShortcut_import_triggered()
 {
-    on_action_importNominals_triggered();
+    on_actionimport_triggered();
 }
 
 void MainWindow::createMessageBoxTrafoParamWarning()

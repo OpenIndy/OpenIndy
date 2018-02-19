@@ -47,6 +47,10 @@ public:
     //defined format parameters
     QList<ElementTypes> usedElements;
 
+    double distanceDigits;
+    double angleDigits;
+    double temperatureDigits;
+
 };
 
 #endif // EXCHANGEPARAMS_H
