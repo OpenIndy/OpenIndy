@@ -176,17 +176,17 @@ private slots:
     void on_actionCreate_coordinatesystem_triggered();
     void on_actionCreate_scalar_entity_triggered();
     void on_actionCreate_trafoParam_triggered();
-    void on_actionCreate_cone_triggered();
+    //void on_actionCreate_cone_triggered();
     void on_actionCreate_cylinder_triggered();
-    void on_actionCreate_ellipsoid_triggered();
-    void on_actionCreate_hyperboloid_triggered();
-    void on_actionCreate_paraboloid_triggered();
-    void on_actionCreate_nurbs_triggered();
-    void on_actionCreate_pointcloud_triggered();
+    //void on_actionCreate_ellipsoid_triggered();
+    //void on_actionCreate_hyperboloid_triggered();
+    //void on_actionCreate_paraboloid_triggered();
+    //void on_actionCreate_nurbs_triggered();
+    //void on_actionCreate_pointcloud_triggered();
     void on_actionCreate_circle_triggered();
-    void on_actionCreate_torus_triggered();
-    void on_actionCreate_slotted_hole_triggered();
-    void on_actionCreate_ellipse_triggered();
+    //void on_actionCreate_torus_triggered();
+    //void on_actionCreate_slotted_hole_triggered();
+    //void on_actionCreate_ellipse_triggered();
 
     //plugin actions
     void on_actionLoad_plugins_triggered();
