@@ -780,6 +780,12 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
 
         }
 
+        if(!selectedFeature->getStation().isNull()){
+
+            menu->addAction(QString("activate station %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                            this, SLOT(on_actionActivate_station_triggered()));
+        }
+
     }
 
     menu->exec(this->ui->tableView_features->mapToGlobal(pos));
