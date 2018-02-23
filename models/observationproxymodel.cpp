@@ -60,6 +60,12 @@ bool ObservationProxyModel::filterAcceptsColumn(int source_column, const QModelI
  */
 bool ObservationProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const
 {
+
+    int col = source_left.column();
+    if((ObservationDisplayAttributes)col != eObservationDisplayId){
+        return false;
+    }
+
     ObservationModel *source_model = dynamic_cast<ObservationModel *>(this->sourceModel());
     if(source_model == NULL){
         return false;
@@ -85,7 +91,7 @@ bool ObservationProxyModel::lessThan(const QModelIndex &source_left, const QMode
         int fwRight = inputElem.at(source_right.row()).observation->getId();
         int fwLeft =  inputElem.at(source_left.row()).observation->getId();
 
-        return fwLeft < fwRight;
+        return fwLeft > fwRight;
     }
     return false;
 
